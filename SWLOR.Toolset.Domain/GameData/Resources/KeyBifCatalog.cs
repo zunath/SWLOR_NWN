@@ -5,7 +5,7 @@ using Radoub.Formats.Key;
 namespace SWLOR.Toolset.Domain.GameData.Resources
 {
     /// <summary>
-    /// Loads nwn_base.key from an NWN install's "data" directory and exposes resource lookup by
+    /// Loads the NWN install's KEY archives from its "data" directory and exposes resource lookup by
     /// <see cref="ResourceIdentity"/>, resolving through the referenced BIF archives on demand.
     /// BIF metadata is read once per archive via <see cref="BifReader.ReadMetadataOnly(string)"/>
     /// (cheap - just the resource table); actual resource bytes are only extracted when
@@ -14,43 +14,89 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
     public sealed class KeyBifCatalog
     {
         private readonly string _dataDirectory;
-        private readonly KeyFile _keyFile;
-        private readonly Dictionary<ResourceIdentity, KeyResourceEntry> _index;
-        private readonly ConcurrentDictionary<int, Lazy<BifFile?>> _bifCache = new();
+        private readonly IReadOnlyList<KeyFile> _keyFiles;
+        private readonly Dictionary<ResourceIdentity, (int KeyIndex, KeyResourceEntry Entry)> _index;
+        private readonly ConcurrentDictionary<(int KeyIndex, int BifIndex), Lazy<BifFile?>> _bifCache = new();
 
-        private KeyBifCatalog(string dataDirectory, KeyFile keyFile)
+        private KeyBifCatalog(string dataDirectory, IReadOnlyList<KeyFile> keyFiles)
         {
             _dataDirectory = dataDirectory;
-            _keyFile = keyFile;
-            _index = new Dictionary<ResourceIdentity, KeyResourceEntry>();
+            _keyFiles = keyFiles;
+            _index = new Dictionary<ResourceIdentity, (int, KeyResourceEntry)>();
 
-            foreach (var entry in keyFile.ResourceEntries)
+            for (var keyIndex = 0; keyIndex < keyFiles.Count; keyIndex++)
             {
-                // nwn_base.key should not have duplicate resref+type pairs, but if it ever does,
-                // last-wins matches the "later entry overrides" convention used elsewhere here.
-                _index[new ResourceIdentity(entry.ResRef, entry.ResourceType)] = entry;
+                foreach (var entry in keyFiles[keyIndex].ResourceEntries)
+                {
+                    // Last wins, and the archives load in the game's own precedence order, so a retail
+                    // or patch archive overrides the base one exactly as it does at runtime.
+                    _index[new ResourceIdentity(entry.ResRef, entry.ResourceType)] = (keyIndex, entry);
+                }
             }
         }
 
         /// <summary>
-        /// Total number of resources indexed from nwn_base.key.
+        /// Total number of resources indexed across every loaded KEY archive.
         /// </summary>
         public int ResourceCount => _index.Count;
 
         /// <summary>
-        /// Resource identities declared by nwn_base.key. The index is immutable after loading,
+        /// Resource identities declared by the loaded KEY archives. The index is immutable after loading,
         /// so callers may enumerate this collection concurrently with lazy BIF extraction.
         /// </summary>
         public IEnumerable<ResourceIdentity> Resources => _index.Keys;
 
         /// <summary>
-        /// Load nwn_base.key from the given NWN install "data" directory.
+        /// The KEY archives NWN:EE ships, in the order the game layers them - later overrides earlier.
+        /// Any that is absent is skipped.
+        /// </summary>
+        /// <remarks>
+        /// Official content is spread across several archives, not just the base one: a stock install
+        /// carries nwn_base.key and nwn_retail.key. Loading only the base archive made everything the
+        /// others hold look absent, so Standard palette entries were filtered out by ResolvableMembers
+        /// and their models and textures failed to resolve.
+        /// </remarks>
+        private static readonly string[] KeyArchivesInPrecedenceOrder =
+        {
+            "nwn_base.key",
+            "nwn_base_loc.key",
+            "nwn_retail.key",
+            "xp1.key",
+            "xp2.key",
+            "xp3.key",
+            "xp2patch.key"
+        };
+
+        /// <summary>
+        /// Load the install's KEY archives from its "data" directory. At least one must be readable.
         /// </summary>
         public static KeyBifCatalog Load(string dataDirectory)
         {
-            var keyPath = Path.Combine(dataDirectory, "nwn_base.key");
-            var keyFile = KeyReader.Read(keyPath);
-            return new KeyBifCatalog(dataDirectory, keyFile);
+            var loaded = new List<KeyFile>();
+
+            foreach (var name in KeyArchivesInPrecedenceOrder)
+            {
+                var keyPath = Path.Combine(dataDirectory, name);
+                if (!File.Exists(keyPath))
+                    continue;
+
+                try
+                {
+                    loaded.Add(KeyReader.Read(keyPath));
+                }
+                catch (Exception)
+                {
+                    // One unreadable archive must not cost the caller the ones that are fine.
+                }
+            }
+
+            if (loaded.Count == 0)
+            {
+                // Preserve the original failure for a directory with no readable base archive.
+                loaded.Add(KeyReader.Read(Path.Combine(dataDirectory, "nwn_base.key")));
+            }
+
+            return new KeyBifCatalog(dataDirectory, loaded);
         }
 
         /// <summary>
@@ -62,14 +108,15 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         {
             bytes = Array.Empty<byte>();
 
-            if (!_index.TryGetValue(identity, out var entry))
+            if (!_index.TryGetValue(identity, out var indexed))
                 return false;
 
-            var bifEntry = _keyFile.GetBifForResource(entry);
+            var (keyIndex, entry) = indexed;
+            var bifEntry = _keyFiles[keyIndex].GetBifForResource(entry);
             if (bifEntry == null)
                 return false;
 
-            var bif = GetOrLoadBif(entry.BifIndex, bifEntry);
+            var bif = GetOrLoadBif(keyIndex, entry.BifIndex, bifEntry);
             if (bif == null)
                 return false;
 
@@ -81,10 +128,12 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             return true;
         }
 
-        private BifFile? GetOrLoadBif(int bifIndex, KeyBifEntry bifEntry)
+        private BifFile? GetOrLoadBif(int keyIndex, int bifIndex, KeyBifEntry bifEntry)
         {
+            // Keyed by archive as well as index: BIF indices are per-KEY, so two archives both have a
+            // bif 0 and caching on the index alone would hand one archive's BIF to the other.
             var lazyBif = _bifCache.GetOrAdd(
-                bifIndex,
+                (keyIndex, bifIndex),
                 _ => new Lazy<BifFile?>(
                     () => LoadBif(bifEntry),
                     LazyThreadSafetyMode.ExecutionAndPublication));

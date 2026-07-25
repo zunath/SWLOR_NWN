@@ -1176,6 +1176,15 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </remarks>
         private string NameFor(string resRef)
         {
+            // Base-game blueprints are not in the module, so the catalog knows nothing about them; their
+            // only name is the one the palette file declares.
+            if (IsStandardSource)
+            {
+                return _categories.StandardNames(SelectedType).TryGetValue(resRef, out var standardName)
+                    ? standardName
+                    : resRef;
+            }
+
             var entries = _workspaceContext.Catalog?.Entries;
             if (entries == null)
                 return resRef;

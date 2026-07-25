@@ -782,7 +782,17 @@ void main()
             Model = source.Model
         };
 
-        /// <summary>Live move preview: reprojects the current screen position onto the horizontal plane at the instance's original Z (Z never changes during a move), optionally grid-snapping X/Y while Ctrl is held.</summary>
+        /// <summary>
+        /// Live move preview: follows the destination floor, optionally grid-snapping X/Y while Ctrl is
+        /// held.
+        /// </summary>
+        /// <remarks>
+        /// The height comes from the walkmesh under the cursor, the same source new placement already
+        /// uses. Holding the instance's original Z instead - which is what this did - left anything
+        /// dragged onto a slope or a different elevation floating above its new floor or buried under it.
+        /// The original Z is still the fallback for a drag that leaves the walkmesh entirely, since
+        /// there is nothing better to put it on.
+        /// </remarks>
         private void UpdateMovePreview(Point screenPos, bool snap)
         {
             // Esc already cancelled this drag (_manipulationPreview cleared) - a mouse move that
@@ -794,11 +804,20 @@ void main()
             if (ray == null)
                 return;
 
-            if (AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, original.Position.Z) is not { } hit)
+            var scene = Scene;
+            var ground = scene != null ? AreaWalkmesh.RaycastGround(ray.Value, scene) : null;
+
+            var hit = ground
+                ?? AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, original.Position.Z);
+
+            if (hit is not { } target)
                 return; // Ray parallel to the plane this frame - keep the previous preview rather than snapping to a bogus point.
 
-            var position = snap ? AreaManipulation.SnapToGridXy(hit, AreaManipulation.DefaultGridSnapMeters) : hit;
-            _manipulationPreview = ClonePreview(original, new Vector3(position.X, position.Y, original.Position.Z), original.Orientation);
+            var position = snap ? AreaManipulation.SnapToGridXy(target, AreaManipulation.DefaultGridSnapMeters) : target;
+
+            // Off the walkmesh there is no floor to sit on, so the instance keeps the height it had.
+            var z = ground != null ? position.Z : original.Position.Z;
+            _manipulationPreview = ClonePreview(original, new Vector3(position.X, position.Y, z), original.Orientation);
             ManipulationPreviewChanged?.Invoke(original, _manipulationPreview);
         }
 
@@ -1455,6 +1474,18 @@ void main()
         private const float TileCullFloorMargin = 5f;
         private const float TileCullCeilingMargin = 20f;
 
+        /// <summary>
+        /// Whether an instance's model could be on screen, from the same world bounds picking uses.
+        /// </summary>
+        private bool IsInstanceVisible(InstanceMarker instance)
+        {
+            // No resolved bounds means nothing to cull against; draw it and let the model pass decide.
+            if (AreaPicking.ComputeModelWorldBounds(instance) is not { } bounds)
+                return true;
+
+            return IsAabbInFrustum(bounds.Min, bounds.Max, _viewProjection);
+        }
+
         private bool IsPlacementVisible(TilePlacement placement)
         {
             var min = new Vector3(
@@ -1510,6 +1541,13 @@ void main()
                     continue;
 
                 var instance = Displayed(raw);
+
+                // Culled like the tile pass already is. esriauncharted holds 5,249 placeables and each
+                // visible-model instance issues several draw calls, so submitting every one of them every
+                // frame made a dense area unusable however little of it was on screen.
+                if (!IsInstanceVisible(instance))
+                    continue;
+
                 var instanceTransform = AreaPicking.ComputeInstanceTransform(instance);
 
                 var buffer = GetOrBuildModelBuffer(raw.Model!);

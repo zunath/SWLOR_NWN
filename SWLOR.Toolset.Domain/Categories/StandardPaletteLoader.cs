@@ -74,9 +74,9 @@ namespace SWLOR.Toolset.Domain.Categories
                 }
 
                 var document = new ItpDocument(GffJsonBridge.ToJsonDocument(GffReader.Read(handle.GetBytes())));
-                var section = ItpCategoryImporter.Import(document, resolveStrRef);
+                var section = ItpCategoryImporter.Import(document, out var names, resolveStrRef);
 
-                return new StandardPalette(section, ResolvableMembers(index, type, section));
+                return new StandardPalette(section, ResolvableMembers(index, type, section), names);
             }
             catch (Exception ex)
             {

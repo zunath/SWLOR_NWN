@@ -15,13 +15,27 @@ namespace SWLOR.Toolset.Domain.Categories
         /// <summary>What every failure and every unsupported type resolves to: no folders, no resrefs.</summary>
         public static StandardPalette Empty { get; } = new(
             new CategorySection(),
-            new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase),
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
 
-        internal StandardPalette(CategorySection section, IReadOnlySet<string> resRefs)
+        internal StandardPalette(
+            CategorySection section,
+            IReadOnlySet<string> resRefs,
+            IReadOnlyDictionary<string, string> names)
         {
             Section = section;
             ResRefs = resRefs;
+            Names = names;
         }
+
+        /// <summary>
+        /// Display names the palette file declares for its own entries, by resref.
+        /// </summary>
+        /// <remarks>
+        /// The base game's blueprints are not in the module, so the module catalog has no name for them.
+        /// The palette file is the only place one exists.
+        /// </remarks>
+        public IReadOnlyDictionary<string, string> Names { get; }
 
         /// <summary>The imported category tree. Empty when the base game or the palette is unavailable.</summary>
         public CategorySection Section { get; }

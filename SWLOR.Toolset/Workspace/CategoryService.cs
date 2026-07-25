@@ -174,6 +174,13 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public IReadOnlySet<string> StandardResRefs(ResourceType type) => StandardPaletteFor(type).ResRefs;
 
+        /// <summary>
+        /// Display names for the base game's blueprints, by resref. The module catalog has none - these
+        /// blueprints are not in the module - so the palette file is the only source.
+        /// </summary>
+        public IReadOnlyDictionary<string, string> StandardNames(ResourceType type) =>
+            StandardPaletteFor(type).Names;
+
         /// <summary>Every resref of a type that actually exists in the module, for counts and Unsorted.</summary>
         public IReadOnlySet<string> ExistingResRefs(ResourceType type)
         {

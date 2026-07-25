@@ -158,6 +158,40 @@ namespace SWLOR.Toolset.Tests
                 because: "at least one of the module's palettes has categories worth seeding");
         }
 
+        /// <summary>
+        /// Leaf names are the only names the base game's blueprints have - they are not in the module,
+        /// so the module catalog cannot supply one. Discarding them left the Standard palette showing a
+        /// bare resref for nearly every entry.
+        /// </summary>
+        [Test]
+        public void Leaf_Names_Are_Reported_By_ResRef()
+        {
+            ItpCategoryImporter.Import(RealisticPalette(), out var names, strRef => $"Strref {strRef}");
+
+            names["_mdrn_dt_slid006"].Should().Be("Bulkhead Door");
+            names["_mdrn_dt_jumpto"].Should().Be("Jump to Creature");
+        }
+
+        /// <summary>A leaf may label itself by STRREF instead of NAME, exactly as its parent can.</summary>
+        [Test]
+        public void A_Leaf_Named_By_StrRef_Is_Resolved()
+        {
+            ItpCategoryImporter.Import(Parse("""
+            {
+              "__data_type": "ITP ",
+              "MAIN": { "type": "list", "value": [
+                { "__struct_id": 0, "NAME": { "type": "cexostring", "value": "Doors" },
+                  "LIST": { "type": "list", "value": [
+                    { "__struct_id": 0, "STRREF": { "type": "dword", "value": 5555 },
+                      "RESREF": { "type": "resref", "value": "door01" } }
+                  ] } }
+              ] }
+            }
+            """), out var names, strRef => strRef == 5555 ? "Castle Gate" : null);
+
+            names["door01"].Should().Be("Castle Gate");
+        }
+
         [Test]
         public void An_Empty_Palette_Imports_As_An_Empty_Section()
         {

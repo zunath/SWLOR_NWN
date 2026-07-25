@@ -27,14 +27,30 @@ namespace SWLOR.Toolset.Domain.Categories
         /// for the base-game palettes, which label categories by TLK reference rather than by string;
         /// without it those folders fall back to a legible placeholder that a builder can rename.
         /// </summary>
-        public static CategorySection Import(ItpDocument document, Func<uint, string?>? resolveStrRef = null)
+        public static CategorySection Import(ItpDocument document, Func<uint, string?>? resolveStrRef = null) =>
+            Import(document, out _, resolveStrRef);
+
+        /// <summary>
+        /// Builds a section and also hands back the display name each leaf declares.
+        /// </summary>
+        /// <remarks>
+        /// A palette leaf carries a NAME or a STRREF of its own, and those are the only names the base
+        /// game has for its blueprints - there is no module file to read one from. Discarding them is why
+        /// the Standard palette showed a cryptic resref for nearly every entry.
+        /// </remarks>
+        public static CategorySection Import(
+            ItpDocument document,
+            out IReadOnlyDictionary<string, string> leafNames,
+            Func<uint, string?>? resolveStrRef = null)
         {
             ArgumentNullException.ThrowIfNull(document);
 
+            var names = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var section = new CategorySection();
-            foreach (var folder in ImportChildren(document.Nodes, resolveStrRef))
+            foreach (var folder in ImportChildren(document.Nodes, resolveStrRef, names: names))
                 section.AddFolder(folder);
 
+            leafNames = names;
             return section;
         }
 
@@ -46,7 +62,8 @@ namespace SWLOR.Toolset.Domain.Categories
         private static List<CategoryFolder> ImportChildren(
             IEnumerable<PaletteNode> nodes,
             Func<uint, string?>? resolveStrRef,
-            List<string>? membersForParent = null)
+            List<string>? membersForParent = null,
+            Dictionary<string, string>? names = null)
         {
             var folders = new List<CategoryFolder>();
 
@@ -57,7 +74,12 @@ namespace SWLOR.Toolset.Domain.Categories
 
                 if (!string.IsNullOrWhiteSpace(node.ResRef))
                 {
-                    membersForParent?.Add(node.ResRef.Trim());
+                    var resRef = node.ResRef.Trim();
+                    membersForParent?.Add(resRef);
+
+                    if (names != null && ResolveName(node, resolveStrRef) is { } leafName)
+                        names[resRef] = leafName;
+
                     continue;
                 }
 
@@ -69,13 +91,13 @@ namespace SWLOR.Toolset.Domain.Categories
                 if (name == null)
                 {
                     // Transparent wrapper: hoist rather than create a folder nobody can name or find.
-                    folders.AddRange(ImportChildren(children, resolveStrRef, membersForParent));
+                    folders.AddRange(ImportChildren(children, resolveStrRef, membersForParent, names));
                     continue;
                 }
 
                 var folder = new CategoryFolder(name);
                 var members = new List<string>();
-                foreach (var child in ImportChildren(children, resolveStrRef, members))
+                foreach (var child in ImportChildren(children, resolveStrRef, members, names))
                     folder.AddChild(child);
 
                 foreach (var member in members)

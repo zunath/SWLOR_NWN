@@ -33,12 +33,18 @@ namespace SWLOR.Toolset.Viewport
         /// How much of one pad step a pixel of drag is worth. Tuned so a drag across the preview is
         /// a bit more than a full turn - enough to see every side without wearing out a wrist.
         /// </summary>
-        private const float OrbitPerPixel = 0.06f;
+        private const float OrbitPerPixel = 0.16f;
 
         private AppearanceSectionViewModel? _viewModel;
 
-        /// <summary>Where the pointer was last seen during a left-drag, or null when not dragging.</summary>
+        /// <summary>How far a pixel of right-drag slides the camera, in metres.</summary>
+        private const float PanPerPixel = 0.02f;
+
+        /// <summary>Where the pointer was last seen during a drag, or null when not dragging.</summary>
         private Avalonia.Point? _dragFrom;
+
+        /// <summary>True while the drag in flight is a right-button pan rather than a turn.</summary>
+        private bool _dragPans;
 
         public ModelPreviewControl()
         {
@@ -106,8 +112,9 @@ namespace SWLOR.Toolset.Viewport
                 return;
 
             var point = e.GetCurrentPoint(_viewportInput ?? (Control)_modelView);
-            if (point.Properties.IsLeftButtonPressed)
+            if (point.Properties.IsLeftButtonPressed || point.Properties.IsRightButtonPressed)
             {
+                _dragPans = point.Properties.IsRightButtonPressed;
                 _dragFrom = point.Position;
                 e.Pointer.Capture(_viewportInput);
                 e.Handled = true;
@@ -133,8 +140,11 @@ namespace SWLOR.Toolset.Viewport
             var deltaY = (float)(position.Y - _dragFrom.Value.Y);
             _dragFrom = position;
 
-            // Negated so the model follows the mouse: dragging right turns its near face right.
-            _modelView.NudgeOrbit(-deltaX * OrbitPerPixel, -deltaY * OrbitPerPixel);
+            if (_dragPans)
+                _modelView.NudgePan(-deltaX * PanPerPixel, deltaY * PanPerPixel);
+            else
+                // Negated so the model follows the mouse: dragging right turns its near face right.
+                _modelView.NudgeOrbit(-deltaX * OrbitPerPixel, -deltaY * OrbitPerPixel);
             e.Handled = true;
         }
 
@@ -143,6 +153,7 @@ namespace SWLOR.Toolset.Viewport
             if (_dragFrom != null)
             {
                 _dragFrom = null;
+                _dragPans = false;
                 e.Pointer.Capture(null);
                 e.Handled = true;
                 return;

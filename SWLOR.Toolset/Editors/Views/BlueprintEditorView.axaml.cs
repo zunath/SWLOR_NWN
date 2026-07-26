@@ -8,10 +8,10 @@ namespace SWLOR.Toolset.Editors
     {
         /// <summary>
         /// How close to the end of the model grid counts as "about to run out", in pixels. A little
-        /// over one row of tiles, so the next page is published before the last row is reached and
-        /// the grid never visibly stops.
+        /// several rows of tiles, so with the small page size the next pages are already published by
+        /// the time you reach them and the grid never visibly stops.
         /// </summary>
-        private const double LoadAheadPixels = 220;
+        private const double LoadAheadPixels = 600;
 
         public BlueprintEditorView()
         {

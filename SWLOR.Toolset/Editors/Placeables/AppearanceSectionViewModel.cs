@@ -31,8 +31,13 @@ namespace SWLOR.Toolset.Editors.Placeables
     /// </remarks>
     public partial class AppearanceSectionViewModel : ObservableObject
     {
-        /// <summary>Tiles added per page. Sized to the palette's own search cap.</summary>
-        private const int PageSize = 200;
+        /// <summary>
+        /// Tiles added per page. Small on purpose: every tile published is a control realized and a
+        /// render queued, so a big page is a visible stall mid-scroll. Loading is triggered early
+        /// enough that several small pages feel like continuous scrolling where one large one does
+        /// not.
+        /// </summary>
+        private const int PageSize = 48;
 
         private readonly EditorFieldContext _context;
         private readonly PlaceableModelCatalog _catalog;
@@ -156,24 +161,6 @@ namespace SWLOR.Toolset.Editors.Placeables
         [RelayCommand]
         private void LoadMore() => PublishPage();
 
-        /// <summary>Writes the highlighted model as this placeable's appearance.</summary>
-        [RelayCommand]
-        private void UseHighlighted()
-        {
-            var tile = Highlighted;
-            if (tile == null || tile.Id == CurrentId)
-                return;
-
-            if (!_runEdit($"Change appearance to {tile.Caption}", () => WriteAppearance(tile.Id)))
-                return;
-
-            foreach (var published in Tiles)
-                published.IsCurrent = published.Id == tile.Id;
-
-            NotifyCurrentChanged();
-            AppearanceChanged?.Invoke();
-        }
-
         /// <summary>Re-reads the stored appearance after an undo, redo or reload.</summary>
         public void RefreshFromDocument()
         {
@@ -206,6 +193,25 @@ namespace SWLOR.Toolset.Editors.Placeables
         {
             OnPropertyChanged(nameof(HasHighlight));
             UpdatePreviewScene();
+
+            // Picking a model IS the edit. A confirm button in between only asks a builder to say
+            // twice what they already said once, and undo is the real safety net either way.
+            Apply(value);
+        }
+
+        private void Apply(AppearanceTileViewModel? tile)
+        {
+            if (tile == null || tile.Id == CurrentId)
+                return;
+
+            if (!_runEdit($"Change appearance to {tile.Caption}", () => WriteAppearance(tile.Id)))
+                return;
+
+            foreach (var published in Tiles)
+                published.IsCurrent = published.Id == tile.Id;
+
+            NotifyCurrentChanged();
+            AppearanceChanged?.Invoke();
         }
 
         /// <summary>Rebuilds the single-model scene for whatever should be on screen right now.</summary>

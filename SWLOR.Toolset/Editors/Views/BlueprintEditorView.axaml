@@ -80,10 +80,6 @@
             </ListBox.ItemTemplate>
           </ListBox>
 
-          <!-- Kept as a fallback for anyone driving the grid from the keyboard, where there may be
-               no scroll gesture to trigger the load. -->
-          <Button Grid.Row="3" Content="Load more" Margin="0,6,0,0"
-                  Command="{Binding LoadMoreCommand}" IsVisible="{Binding CanLoadMore}" />
         </Grid>
 
         <StackPanel Grid.Column="1" Spacing="8">
@@ -101,7 +97,7 @@
           <Border Height="190" Background="{DynamicResource PanelRaisedBrush}" CornerRadius="3">
             <viewport:ModelPreviewControl />
           </Border>
-          <TextBlock Text="Left-drag to turn &#x00B7; wheel to zoom" Classes="dim" FontSize="10.5" />
+          <TextBlock Text="Left-drag to turn &#x00B7; right-drag to move &#x00B7; wheel to zoom" Classes="dim" FontSize="10.5" />
 
           <StackPanel Spacing="4" IsVisible="{Binding HasHighlight}">
             <TextBlock Text="{Binding Highlighted.Caption}" TextWrapping="Wrap" />
@@ -109,8 +105,6 @@
             <TextBlock Text="{Binding Highlighted.UsageText}" Classes="count" />
           </StackPanel>
 
-          <Button Content="Use this model" Command="{Binding UseHighlightedCommand}"
-                  IsEnabled="{Binding HasHighlight}" HorizontalAlignment="Stretch" />
         </StackPanel>
       </Grid>
     </DataTemplate>

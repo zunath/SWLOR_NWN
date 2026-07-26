@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             var player = GetPC();
             var regionId = GetLocalInt(OBJECT_SELF, "TAXI_REGION_ID");
-            var destinations = Taxi.GetDestinationsByRegionId(regionId);
+            var destinations = Taxi.GetAvailableDestinationsByRegionId(regionId);
             var destinationId = GetLocalInt(OBJECT_SELF, "TAXI_DESTINATION_ID");
             var destinationType = (TaxiDestinationType) destinationId;
 
@@ -35,7 +35,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 {
                     page.AddResponse(ColorToken.Green($"{destination.Value.Name}"), () =>
                     {
-                        var location = GetLocation(GetWaypointByTag(destination.Value.WaypointTag));
+                        if (!Taxi.TryGetDestinationLocation(destination.Value, out var location))
+                            return;
+
                         AssignCommand(player, () =>
                         {
                             ClearAllActions();
@@ -57,8 +59,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var dbPlayer = DB.Get<Player>(playerId);
 
                 // Register Location option
-                if (!dbPlayer.TaxiDestinations.ContainsKey(regionId) ||
-                    !dbPlayer.TaxiDestinations[regionId].Contains(destinationType))
+                if (destinations.ContainsKey(destinationType) &&
+                    (!dbPlayer.TaxiDestinations.ContainsKey(regionId) ||
+                     !dbPlayer.TaxiDestinations[regionId].Contains(destinationType)))
                 {
                     page.AddResponse(ColorToken.Green("[REGISTER LOCATION]"), () =>
                     {
@@ -84,7 +87,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                                 return;
                             }
 
-                            var location = GetLocation(GetWaypointByTag(destination.Value.WaypointTag));
+                            if (!Taxi.TryGetDestinationLocation(destination.Value, out var location))
+                                return;
+
                             AssignCommand(player, () =>
                             {
                                 ClearAllActions();

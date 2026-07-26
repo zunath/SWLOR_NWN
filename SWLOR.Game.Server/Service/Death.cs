@@ -8,6 +8,8 @@ namespace SWLOR.Game.Server.Service
 {
     public class Death
     {
+        public const string DefaultRespawnWaypointTag = "DTH_DEFAULT_RESPAWN_POINT";
+
         /// <summary>
         /// When a player starts dying, instantly kill them.
         /// </summary>
@@ -98,7 +100,14 @@ namespace SWLOR.Game.Server.Service
             // Already have a respawn point, no need to set the default one.
             if (!string.IsNullOrWhiteSpace(dbPlayer.RespawnAreaResref)) return;
 
-            var waypoint = GetWaypointByTag("DEATH_DEFAULT_RESPAWN_POINT");
+            var waypoint = GetWaypointByTag(DefaultRespawnWaypointTag);
+
+            if (!GetIsObjectValid(waypoint))
+            {
+                Log.Write(LogGroup.Error, $"Default respawn waypoint could not be located. Did you place a waypoint with the tag '{DefaultRespawnWaypointTag}'?");
+                return;
+            }
+
             var position = GetPosition(waypoint);
             var areaResref = GetResRef(GetArea(waypoint));
             var facing = GetFacing(waypoint);
@@ -147,7 +156,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!GetIsObjectValid(area))
             {
-                var defaultLocation = GetLocation(GetWaypointByTag("DTH_DEFAULT_RESPAWN_POINT"));
+                var defaultLocation = GetLocation(GetWaypointByTag(DefaultRespawnWaypointTag));
                 AssignCommand(player, () => ActionJumpToLocation(defaultLocation));
             }
             else

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Serilog;
 using Serilog.Core;
+using Serilog.Events;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
@@ -74,6 +75,22 @@ namespace SWLOR.Game.Server.Service
         /// <param name="printToConsole">If true, the details will be printed to the console.</param>
         public static void Write(LogGroup group, string details, bool printToConsole = false)
         {
+            Write(group, details, LogEventLevel.Information, printToConsole);
+        }
+
+        /// <summary>
+        /// Writes a warning message to the audit log for a given log group.
+        /// </summary>
+        /// <param name="group">The group to audit this log under.</param>
+        /// <param name="details">The details about the entry which will be written to disk.</param>
+        /// <param name="printToConsole">If true, the details will be printed to the console.</param>
+        public static void WriteWarning(LogGroup group, string details, bool printToConsole = false)
+        {
+            Write(group, details, LogEventLevel.Warning, printToConsole);
+        }
+
+        private static void Write(LogGroup group, string details, LogEventLevel level, bool printToConsole)
+        {
             var settings = ApplicationSettings.Get();
             var logDetail = _logGroups[group];
 
@@ -91,7 +108,7 @@ namespace SWLOR.Game.Server.Service
                 Console.WriteLine(details);
             }
 
-            _loggers[group].Information(details);
+            _loggers[group].Write(level, details);
         }
     }
 }

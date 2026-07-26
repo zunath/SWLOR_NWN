@@ -355,12 +355,11 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="dbPlayer">The player's database entity.</param>
         private static void RegisterDefaultRespawnPoint(Player dbPlayer)
         {
-            const string DefaultRespawnWaypointTag = "DTH_DEFAULT_RESPAWN_POINT";
-            var waypoint = GetWaypointByTag(DefaultRespawnWaypointTag);
+            var waypoint = GetWaypointByTag(Death.DefaultRespawnWaypointTag);
 
             if (!GetIsObjectValid(waypoint))
             {
-                Log.Write(LogGroup.Error, $"Default respawn waypoint could not be located. Did you place a waypoint with the tag 'DTH_DEFAULT_RESPAWN_POINT'?");
+                Log.Write(LogGroup.Error, $"Default respawn waypoint could not be located. Did you place a waypoint with the tag '{Death.DefaultRespawnWaypointTag}'?");
                 return;
             }
 

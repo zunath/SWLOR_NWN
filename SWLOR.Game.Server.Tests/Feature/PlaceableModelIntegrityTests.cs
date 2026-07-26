@@ -21,9 +21,11 @@ public class PlaceableModelIntegrityTests
             .GroupBy(entry => entry.Value.ModelName, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(group => group.Key, group => group.Select(entry => entry.Key).ToArray(), StringComparer.OrdinalIgnoreCase);
         var failures = new List<string>();
+        var blueprintCount = 0;
 
         foreach (var path in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "utp"), "*.utp.json"))
         {
+            blueprintCount++;
             using var blueprint = JsonDocument.Parse(File.ReadAllText(path));
             var appearance = GetInt(blueprint.RootElement, "Appearance");
             var resref = GetString(blueprint.RootElement, "TemplateResRef");
@@ -41,6 +43,9 @@ public class PlaceableModelIntegrityTests
             }
         }
 
+        rows.Should().NotBeEmpty("the placeables.2da scan must inspect at least one row");
+        blueprintCount.Should().BeGreaterThan(0, "the blueprint scan must inspect at least one UTP");
+        TestContext.Out.WriteLine($"Scanned {rows.Count} placeable appearances and {blueprintCount} UTP blueprints.");
         failures.Should().BeEmpty(FormatFailures(failures));
     }
 
@@ -50,6 +55,7 @@ public class PlaceableModelIntegrityTests
         var root = FindRepositoryRoot();
         var rows = LoadPlaceableRows(root);
         var failures = new List<string>();
+        var placedCount = 0;
 
         foreach (var path in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "git"), "*.git.json"))
         {
@@ -58,6 +64,7 @@ public class PlaceableModelIntegrityTests
             var index = 0;
             foreach (var placeable in placeables.EnumerateArray())
             {
+                placedCount++;
                 var appearance = GetInt(placeable, "Appearance");
                 if (!rows.TryGetValue(appearance, out var row) || row.ModelName == "****")
                 {
@@ -68,6 +75,9 @@ public class PlaceableModelIntegrityTests
             }
         }
 
+        rows.Should().NotBeEmpty("the placeables.2da scan must inspect at least one row");
+        placedCount.Should().BeGreaterThan(0, "the placed-placeable scan must inspect at least one instance");
+        TestContext.Out.WriteLine($"Scanned {rows.Count} placeable appearances and {placedCount} placed instances.");
         failures.Should().BeEmpty(FormatFailures(failures));
     }
 
@@ -78,11 +88,14 @@ public class PlaceableModelIntegrityTests
         var palettePath = Path.Combine(root.FullName, "Module", "itp", "placeablepalcus.itp.json");
         using var palette = JsonDocument.Parse(File.ReadAllText(palettePath));
         var blueprintDirectory = Path.Combine(root.FullName, "Module", "utp");
-        var failures = EnumeratePaletteResrefs(palette.RootElement)
+        var paletteResrefs = EnumeratePaletteResrefs(palette.RootElement).ToList();
+        var failures = paletteResrefs
             .Where(resref => !File.Exists(Path.Combine(blueprintDirectory, $"{resref}.utp.json")))
             .Select(resref => $"Palette resref {resref} has no UTP blueprint.")
             .ToList();
 
+        paletteResrefs.Should().NotBeEmpty("the palette scan must inspect at least one entry");
+        TestContext.Out.WriteLine($"Scanned {paletteResrefs.Count} placeable palette entries.");
         failures.Should().BeEmpty(FormatFailures(failures));
     }
 
@@ -93,6 +106,8 @@ public class PlaceableModelIntegrityTests
         var moduleDirectory = Path.Combine(root.FullName, "Module");
         var blueprintDirectory = Path.Combine(moduleDirectory, "utp");
         var failures = new List<string>();
+        var scannedFileCount = 0;
+        var gateblockReferenceCount = 0;
 
         foreach (var (directory, pattern) in new[]
                  {
@@ -102,6 +117,7 @@ public class PlaceableModelIntegrityTests
         {
             foreach (var path in Directory.EnumerateFiles(directory, pattern))
             {
+                scannedFileCount++;
                 var json = File.ReadAllText(path);
                 if (!json.Contains("\"CEP_L_GATEBLOCK\"", StringComparison.OrdinalIgnoreCase))
                 {
@@ -111,6 +127,7 @@ public class PlaceableModelIntegrityTests
                 using var document = JsonDocument.Parse(json);
                 foreach (var resref in EnumerateLocalStringValues(document.RootElement, "CEP_L_GATEBLOCK"))
                 {
+                    gateblockReferenceCount++;
                     if (!File.Exists(Path.Combine(blueprintDirectory, $"{resref}.utp.json")))
                     {
                         failures.Add($"{Path.GetFileName(path)} references missing gateblock blueprint {resref}.");
@@ -119,6 +136,8 @@ public class PlaceableModelIntegrityTests
             }
         }
 
+        scannedFileCount.Should().BeGreaterThan(0, "the gateblock scan must inspect at least one module file");
+        TestContext.Out.WriteLine($"Scanned {scannedFileCount} module files and {gateblockReferenceCount} CEP_L_GATEBLOCK references.");
         failures.Should().BeEmpty(FormatFailures(failures));
     }
 
@@ -126,6 +145,7 @@ public class PlaceableModelIntegrityTests
     {
         var path = Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "placeables.2da");
         var rows = new Dictionary<int, PlaceableRow>();
+        var rowIndex = 0;
 
         foreach (var line in File.ReadLines(path))
         {
@@ -135,9 +155,9 @@ public class PlaceableModelIntegrityTests
                 continue;
             }
 
-            var row = int.Parse(match.Groups["row"].Value);
             var label = match.Groups["label"].Value.Trim('"');
-            rows[row] = new PlaceableRow(label, match.Groups["model"].Value);
+            rows[rowIndex] = new PlaceableRow(label, match.Groups["model"].Value);
+            rowIndex++;
         }
 
         return rows;

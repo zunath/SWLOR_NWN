@@ -295,7 +295,7 @@
                     IsVisible="{Binding CanClearChoice}" />
           </Grid>
           <TextBox Text="{Binding GalleryQuery, Mode=TwoWay}"
-                   Watermark="Search by name, resref, group, color, or location" />
+                   Watermark="{Binding GallerySearchWatermark}" />
           <TextBlock Text="{Binding GallerySummary}" Classes="count" />
           <!-- Gallery choices live on the form. They remain paged internally so opening a behavior
                does not create hundreds of preview controls at once; scrolling publishes each next

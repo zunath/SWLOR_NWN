@@ -124,6 +124,10 @@ namespace SWLOR.Toolset.Editors.Placeables
         public bool CanClearChoice => _field.Kind == PlaceableFieldKind.Choice &&
                                       !IsRequired &&
                                       _hasStoredValue;
+        public string GallerySearchWatermark =>
+            _field.Source == PlaceableValueSource.VisualEffects
+                ? "Search by name, resref, group, color, or location"
+                : "Search by name or resref";
         public string GallerySummary => _galleryMatches.Count == 0
             ? "No matches"
             : _galleryPublished >= _galleryMatches.Count

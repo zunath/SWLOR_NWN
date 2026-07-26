@@ -448,6 +448,7 @@ namespace SWLOR.Toolset.Tests
                 gallerySource);
 
             gallery.IsGalleryChoice.Should().BeTrue();
+            gallery.GallerySearchWatermark.Should().Be("Search by name or resref");
             gallery.GalleryTiles.Should().ContainSingle();
             gallery.PickChoiceCommand.Execute(gallery.GalleryTiles.Single());
             new VarTable(document.Root).Single(entry => entry.Name == "RESOURCE_PROP")
@@ -459,6 +460,13 @@ namespace SWLOR.Toolset.Tests
             gallery.CanClearChoice.Should().BeTrue();
             gallery.ClearChoiceCommand.Execute(null);
             new VarTable(document.Root).Should().NotContain(entry => entry.Name == "RESOURCE_PROP");
+
+            new BehaviorFieldViewModel(
+                    Field("teleporter", "VISUAL_EFFECT"),
+                    context,
+                    new BehaviorValueSourceProvider(gameCode: null, tags: () => null))
+                .GallerySearchWatermark.Should().Be(
+                    "Search by name, resref, group, color, or location");
         }
 
         [Test]

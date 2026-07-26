@@ -84,7 +84,10 @@ namespace SWLOR.Toolset.Tests
         {
             // The other direction: the toolset consuming MIT code is fine and expected, but it must not
             // grow a dependency on something that would drag more of the solution across the boundary.
-            var allowed = new HashSet<string>(ToolsetProjects) { "SWLOR.Game.Server", "Radoub.Formats", "Radoub.UI" };
+            // Radoub.UI is deliberately absent: its one consumed type is vendored into
+            // SWLOR.Toolset.Domain/Render, and re-adding the reference would silently re-couple the
+            // toolset to Radoub.UI's Avalonia pin.
+            var allowed = new HashSet<string>(ToolsetProjects) { "SWLOR.Game.Server", "Radoub.Formats" };
             var violations = new List<string>();
 
             foreach (var project in FirstPartyProjects().Where(p => ToolsetProjects.Contains(ProjectName(p))))
@@ -137,7 +140,10 @@ namespace SWLOR.Toolset.Tests
             {
                 Path.Combine("SWLOR.Toolset.Domain", "Render", "TextureLoader.cs"),
                 Path.Combine("SWLOR.Toolset.Domain", "Render", "MdlMeshBuilder.cs"),
-                Path.Combine("SWLOR.Toolset.Domain", "Render", "MdlGeometryFlattener.cs")
+                Path.Combine("SWLOR.Toolset.Domain", "Render", "MdlGeometryFlattener.cs"),
+                // Vendored verbatim out of Radoub.UI, so GPL by copy rather than by adaptation.
+                Path.Combine("SWLOR.Toolset.Domain", "Render", "MdlPartComposer.cs"),
+                Path.Combine("SWLOR.Toolset.Domain", "Render", "MdlPartBoneMap.cs")
             };
 
             foreach (var relative in derived)

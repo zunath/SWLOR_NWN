@@ -1,5 +1,5 @@
 using Radoub.Formats.Mdl;
-using Radoub.UI.Services;
+using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;

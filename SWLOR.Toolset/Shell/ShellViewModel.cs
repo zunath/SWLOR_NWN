@@ -68,6 +68,8 @@ namespace SWLOR.Toolset.Shell
         private readonly ValidationViewModel _validation;
         private readonly Editors.EditorService _editorService;
         private readonly PackService _packService;
+        private readonly ScriptCompileService? _compileService;
+        private readonly ScriptReferenceViewModel? _scriptReference;
 
         public ShellViewModel(
             ToolsetSettings settings,
@@ -84,9 +86,13 @@ namespace SWLOR.Toolset.Shell
             OutputViewModel output,
             ValidationViewModel validation,
             ThumbnailService thumbnails,
+            ScriptCompileService? compileService = null,
+            ScriptReferenceViewModel? scriptReference = null,
             StartupNotice? startupNotice = null)
         {
             _startupNotice = startupNotice;
+            _compileService = compileService;
+            _scriptReference = scriptReference;
             _thumbnails = thumbnails ?? throw new ArgumentNullException(nameof(thumbnails));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
@@ -165,9 +171,22 @@ namespace SWLOR.Toolset.Shell
             if (_activeEditorNotifier != null)
                 _activeEditorNotifier.PropertyChanged += OnActiveEditorPropertyChanged;
 
+            // The right dock follows the tab: the Palette lists the front AREA's tileset, so it has
+            // nothing to say while a script is in front, and Script Reference has nothing to say
+            // while an area is. Insert-at-cursor is retargeted at the same moment.
+            var script = document as Editors.ScriptEditorViewModel;
+            _activeScript = script;
+            _scriptReference?.SetInsertTarget(script != null
+                ? text => script.InsertAtCursorRequested?.Invoke(text)
+                : null);
+            _factory.ShowRightTool(script != null);
+
             NotifyActiveEditorCommandsChanged();
             OnPropertyChanged(nameof(StatusDetail));
+            CompileScriptCommand.NotifyCanExecuteChanged();
         }
+
+        private Editors.ScriptEditorViewModel? _activeScript;
 
         /// <summary>
         /// The active document's own status contribution - the area editor puts the selection's
@@ -238,6 +257,75 @@ namespace SWLOR.Toolset.Shell
 
         [RelayCommand]
         private void FocusValidation() => _factory.Focus(_validation);
+
+        // ----- scripts -----
+
+        private bool CanCompileScript => _activeScript != null && _compileService?.IsAvailable == true;
+
+        /// <summary>Compiles the script in front. Joins the Build menu beside Pack Module.</summary>
+        [RelayCommand(CanExecute = nameof(CanCompileScript))]
+        private async Task CompileScript()
+        {
+            if (_activeScript == null || _compileService == null)
+                return;
+
+            // Compiling the file on disk, so unsaved work would silently not be built.
+            if (!await _activeScript.TrySaveAsync().ConfigureAwait(true))
+            {
+                StatusText = "Compile cancelled: the script could not be saved.";
+                return;
+            }
+
+            var resRef = Path.GetFileNameWithoutExtension(_activeScript.FilePath);
+            StatusText = $"Compiling {resRef}...";
+            _factory.Focus(_output);
+
+            var ok = await _compileService.CompileAsync(resRef).ConfigureAwait(true);
+            StatusText = ok ? $"Compiled {resRef}." : $"Could not compile {resRef} - see Output.";
+        }
+
+        /// <summary>Compiles every entry-point script in the module.</summary>
+        [RelayCommand]
+        private async Task BuildAllScripts()
+        {
+            if (_compileService == null)
+                return;
+
+            StatusText = "Building all scripts...";
+            _factory.Focus(_output);
+
+            var (compiled, failed) = await _compileService.BuildAllAsync().ConfigureAwait(true);
+            StatusText = failed == 0
+                ? $"Built {compiled} script(s)."
+                : $"Built {compiled} script(s); {failed} failed - see Output.";
+        }
+
+        /// <summary>
+        /// Reports compiled scripts that would ship stale. Deliberately a Validation result rather
+        /// than a Problem: the code is fine, the build artifact is not.
+        /// </summary>
+        [RelayCommand]
+        private void CheckScriptStaleness()
+        {
+            if (_compileService == null)
+                return;
+
+            var stale = _compileService.ScanStale();
+            _factory.Focus(_validation);
+
+            if (stale.Count == 0)
+            {
+                _log.AppendLine("All compiled scripts are up to date.");
+                StatusText = "All compiled scripts are up to date.";
+                return;
+            }
+
+            foreach (var entry in stale)
+                _log.AppendLine($"  {entry.Describe()}");
+
+            _log.AppendLine($"{stale.Count} script(s) would ship stale. Build ▸ Build All Scripts fixes this.");
+            StatusText = $"{stale.Count} script(s) need recompiling.";
+        }
 
         [RelayCommand]
         private void About() =>

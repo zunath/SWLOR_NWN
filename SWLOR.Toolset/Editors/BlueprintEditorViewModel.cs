@@ -27,6 +27,7 @@ namespace SWLOR.Toolset.Editors
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
         private readonly IGameCodeIndex? _gameCodeIndex;
+        private readonly IScriptSlotHost? _scriptSlotHost;
         private readonly string _resRef;
         private bool _closeApproved;
         private bool _closePromptOpen;
@@ -58,8 +59,10 @@ namespace SWLOR.Toolset.Editors
             LookupOptionProvider lookups,
             IGameCodeIndex? gameCodeIndex,
             OutputLogService log,
-            IEditorPromptService prompts)
+            IEditorPromptService prompts,
+            IScriptSlotHost? scriptSlotHost = null)
         {
+            _scriptSlotHost = scriptSlotHost;
             _log = log;
             _prompts = prompts;
             _gameCodeIndex = gameCodeIndex;
@@ -94,7 +97,7 @@ namespace SWLOR.Toolset.Editors
                 EditorKind.LocString => new LocStringFieldViewModel(descriptor, _context),
                 EditorKind.TwoDaDropdown => new DropdownFieldViewModel(
                     descriptor, _context, lookups.GetOptions(descriptor.LookupKey)),
-                EditorKind.ScriptSlot => new ScriptFieldViewModel(descriptor, _context),
+                EditorKind.ScriptSlot => new ScriptFieldViewModel(descriptor, _context, _scriptSlotHost),
                 _ => new TextFieldViewModel(descriptor, _context)
             };
         }

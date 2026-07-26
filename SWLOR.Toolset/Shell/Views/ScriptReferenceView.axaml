@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:panels="using:SWLOR.Toolset.Shell.Panels"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="700"
+             x:Class="SWLOR.Toolset.Shell.Views.ScriptReferenceView"
+             x:DataType="panels:ScriptReferenceViewModel">
+
+  <!-- Mirrors the Module Contents panel's shape: own title, search, tree. Search filters WITHIN
+       categories rather than flattening, which keeps Aurora's mental model while being fast. -->
+  <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
+
+    <Border Grid.Row="0" Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="14,9">
+      <TextBlock Classes="title" Text="SCRIPT REFERENCE" />
+    </Border>
+
+    <TextBox Grid.Row="1" Margin="8,8,8,6" Text="{Binding Filter}" Watermark="Search functions and constants..." />
+
+    <ListBox Grid.Row="2" Background="Transparent" BorderThickness="0"
+             ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}"
+             DoubleTapped="OnRowDoubleTapped">
+      <ListBox.Styles>
+        <Style Selector="ListBoxItem">
+          <Setter Property="Padding" Value="0,1" />
+        </Style>
+      </ListBox.Styles>
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="panels:ReferenceNodeViewModel">
+          <Grid ColumnDefinitions="22,*,Auto" Margin="6,0">
+            <Button Grid.Column="0" Content="{Binding Twisty}" Width="22" MinHeight="20" Padding="0"
+                    Background="Transparent" BorderThickness="0" FontSize="11"
+                    Foreground="{DynamicResource InkTertiaryBrush}"
+                    IsVisible="{Binding IsCategory}"
+                    Command="{Binding $parent[ListBox].((panels:ScriptReferenceViewModel)DataContext).ToggleCommand}"
+                    CommandParameter="{Binding}" />
+            <!-- Symbols sit one notch in from their category header, matching the explorer tree. -->
+            <TextBlock Grid.Column="1" Classes="name" Text="{Binding Label}" VerticalAlignment="Center"
+                       IsVisible="{Binding IsCategory}" FontWeight="SemiBold" />
+            <TextBlock Grid.Column="1" Classes="name" Text="{Binding Label}" VerticalAlignment="Center"
+                       IsVisible="{Binding IsSymbol}" Margin="14,0,0,0"
+                       TextTrimming="CharacterEllipsis" />
+            <TextBlock Grid.Column="2" Classes="count" VerticalAlignment="Center" Margin="8,0,10,0"
+                       Text="{Binding Detail}" IsVisible="{Binding IsSymbol}" />
+            <TextBlock Grid.Column="2" Classes="count" VerticalAlignment="Center" Margin="8,0,10,0"
+                       Text="{Binding Count}" IsVisible="{Binding IsCategory}" />
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+
+    <!-- Description pane. Aurora had one and it is the reason the browser is worth opening at all. -->
+    <Border Grid.Row="3" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0"
+            Background="{DynamicResource PanelBrush}" Padding="10,8" MinHeight="70">
+      <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="150">
+        <TextBlock Classes="dim" TextWrapping="Wrap" Text="{Binding Documentation}" />
+      </ScrollViewer>
+    </Border>
+
+    <Grid Grid.Row="4" ColumnDefinitions="*,Auto" Margin="8" ColumnSpacing="6">
+      <TextBlock Grid.Column="0" Classes="count" VerticalAlignment="Center" Text="{Binding SymbolCountLabel}" />
+      <Button Grid.Column="1" Classes="primary" Content="Insert at cursor" Command="{Binding InsertCommand}" />
+    </Grid>
+  </Grid>
+</UserControl>

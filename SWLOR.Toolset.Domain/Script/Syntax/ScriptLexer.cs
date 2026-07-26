@@ -78,14 +78,15 @@ namespace SWLOR.Toolset.Domain.Script.Syntax
 
                 if (c == '"')
                 {
+                    // NWScript has NO escape sequences: a backslash inside a string is a literal
+                    // backslash, and the string ends at the very next quote. Treating '\"' as an
+                    // escape (the C habit) makes the lexer run straight past the closing quote of
+                    // real corpus lines like  return "/\/\\";  in dmfi_plychat_exe.nss - ASCII art,
+                    // not an escape - and swallow the rest of the file as one string.
                     i++;
                     while (i < source.Length && source[i] != '"')
                     {
-                        // NWScript's only escape is \" — a backslash before anything else is literal.
-                        if (source[i] == '\\' && i + 1 < source.Length && source[i + 1] == '"')
-                            i++;
-
-                        // A string never spans a line; stopping here keeps one bad quote from
+                        // A string never spans a line; stopping here keeps one stray quote from
                         // colouring the rest of the file as string.
                         if (source[i] == '\n')
                             break;

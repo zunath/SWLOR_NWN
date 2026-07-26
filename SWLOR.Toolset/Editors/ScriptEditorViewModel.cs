@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Domain.Script.Symbols;
+using SWLOR.Toolset.Domain.Script.Syntax;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
@@ -39,6 +40,7 @@ namespace SWLOR.Toolset.Editors
 
         private readonly ScriptLanguageService? _language;
         private readonly ScriptCompletionEngine? _completion;
+        private readonly ScriptAnalyzer? _analyzer;
 
         public ScriptEditorViewModel(
             string filePath,
@@ -52,6 +54,7 @@ namespace SWLOR.Toolset.Editors
             _resRef = resRef;
             _language = language;
             _completion = language?.CreateCompletionEngine();
+            _analyzer = language != null ? new ScriptAnalyzer(language.Engine) : null;
             Id = $"editor:{filePath}";
             _session = ScriptSession.Open(filePath);
             _text = _session.Document.Text;
@@ -133,6 +136,63 @@ namespace SWLOR.Toolset.Editors
         {
             _text = text;
             AfterHistoryChange();
+            QueueAnalysis();
+        }
+
+        /// <summary>The current advisory findings. Replaced on each idle pass.</summary>
+        public IReadOnlyList<ScriptAnalysisDiagnostic> Diagnostics { get; private set; } =
+            Array.Empty<ScriptAnalysisDiagnostic>();
+
+        /// <summary>Raised after an idle re-analysis, so the view can redraw squiggles.</summary>
+        public event Action<IReadOnlyList<ScriptAnalysisDiagnostic>>? DiagnosticsChanged;
+
+        /// <summary>The script's resref, which the Problems panel groups findings by.</summary>
+        public string ResRef => _resRef;
+
+        private CancellationTokenSource? _analysisCts;
+
+        /// <summary>
+        /// Re-analyses after a short idle. Debounced rather than run per keystroke: the pass is cheap
+        /// but not free, and squiggles that appear mid-word while the author is still typing the name
+        /// are worse than squiggles that appear a moment later.
+        /// </summary>
+        private void QueueAnalysis()
+        {
+            if (_analyzer == null)
+                return;
+
+            _analysisCts?.Cancel();
+            var cts = new CancellationTokenSource();
+            _analysisCts = cts;
+
+            var source = _text;
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(250, cts.Token).ConfigureAwait(false);
+                    var analysis = _analyzer.Analyze(source);
+                    if (cts.IsCancellationRequested)
+                        return;
+
+                    Diagnostics = analysis.Diagnostics;
+                    DiagnosticsChanged?.Invoke(Diagnostics);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Superseded by a newer keystroke; nothing to report.
+                }
+            }, cts.Token);
+        }
+
+        /// <summary>Runs analysis immediately, e.g. right after the tab opens.</summary>
+        public void AnalyzeNow()
+        {
+            if (_analyzer == null)
+                return;
+
+            Diagnostics = _analyzer.Analyze(_text).Diagnostics;
+            DiagnosticsChanged?.Invoke(Diagnostics);
         }
 
         /// <summary>Called by the view when the caret moves.</summary>

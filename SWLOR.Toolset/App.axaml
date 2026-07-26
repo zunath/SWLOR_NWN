@@ -59,11 +59,25 @@
     </DataTemplate>
 
     <DataTemplate DataType="editors:ScriptFieldViewModel">
-      <Grid ColumnDefinitions="180,*" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
-                   Classes="dim" TextTrimming="CharacterEllipsis" />
-        <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" FontFamily="Consolas,monospace" />
-      </Grid>
+      <StackPanel Margin="0,2">
+        <Grid ColumnDefinitions="180,*,Auto,Auto">
+          <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
+                     Classes="dim" TextTrimming="CharacterEllipsis" />
+          <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}"
+                   FontFamily="{DynamicResource MonoFont}" />
+          <Button Grid.Column="2" Content="..." Margin="4,0,0,0" Padding="8,4"
+                  Command="{Binding BrowseCommand}" IsVisible="{Binding CanBrowse}"
+                  ToolTip.Tip="Browse module scripts" />
+          <Button Grid.Column="3" Content="Open" Margin="4,0,0,0" Padding="8,4"
+                  Command="{Binding OpenScriptCommand}" IsVisible="{Binding CanBrowse}"
+                  ToolTip.Tip="Open this script in an editor tab" />
+        </Grid>
+        <!-- A slot naming a script that does not exist is a live, otherwise invisible bug across the
+             2,250 module resources that name one. -->
+        <TextBlock Margin="184,2,0,0" FontSize="11" TextWrapping="Wrap"
+                   Foreground="{DynamicResource AmberBrush}"
+                   IsVisible="{Binding IsMissing}" Text="{Binding MissingMessage}" />
+      </StackPanel>
     </DataTemplate>
 
     <DataTemplate DataType="editors:TextFieldViewModel">

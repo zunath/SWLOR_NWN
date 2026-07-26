@@ -11,6 +11,7 @@ namespace SWLOR.Toolset.Editors.Views
     public partial class ScriptEditorView : UserControl
     {
         private readonly NwScriptColorizer _colorizer = new();
+        private readonly DiagnosticSquiggleRenderer _squiggles = new();
         private TextEditor? _editor;
         private ScriptEditorViewModel? _bound;
         private CompletionWindow? _completionWindow;
@@ -27,6 +28,7 @@ namespace SWLOR.Toolset.Editors.Views
                 _editor.TextChanged += OnEditorTextChanged;
                 _editor.TextArea.Caret.PositionChanged += OnCaretPositionChanged;
                 _editor.TextArea.TextView.LineTransformers.Add(_colorizer);
+                _editor.TextArea.TextView.BackgroundRenderers.Add(_squiggles);
                 _editor.TextArea.TextEntered += OnTextEntered;
                 _editor.TextArea.TextEntering += OnTextEntering;
                 _editor.AddHandler(KeyDownEvent, OnEditorKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
@@ -38,7 +40,10 @@ namespace SWLOR.Toolset.Editors.Views
         private void OnDataContextChanged(object? sender, EventArgs e)
         {
             if (_bound != null)
+            {
                 _bound.TextReplaced -= ReplaceText;
+                _bound.DiagnosticsChanged -= OnDiagnosticsChanged;
+            }
 
             _bound = DataContext as ScriptEditorViewModel;
             if (_bound == null || _editor == null)
@@ -61,6 +66,8 @@ namespace SWLOR.Toolset.Editors.Views
             _bound.UndoRequested = () => _editor.TextArea.Document.UndoStack.Undo();
             _bound.RedoRequested = () => _editor.TextArea.Document.UndoStack.Redo();
             _bound.InsertAtCursorRequested = InsertAtCursor;
+            _bound.DiagnosticsChanged += OnDiagnosticsChanged;
+            _bound.AnalyzeNow();
         }
 
         private void ReplaceText(string text)
@@ -162,6 +169,29 @@ namespace SWLOR.Toolset.Editors.Views
                 list.Add(new ScriptCompletionData(item, replaceFrom, priority--));
 
             _completionWindow.Show();
+        }
+
+        private void OnDiagnosticsChanged(IReadOnlyList<Domain.Script.Syntax.ScriptAnalysisDiagnostic> diagnostics)
+        {
+            // Analysis runs on a background thread; the renderer touches visual state.
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                _squiggles.SetDiagnostics(diagnostics);
+                _editor?.TextArea.TextView.InvalidateLayer(AvaloniaEdit.Rendering.KnownLayer.Selection);
+            });
+        }
+
+        /// <summary>Moves the caret to a 1-based line, for click-to-navigate from Problems.</summary>
+        public void GoToLine(int line)
+        {
+            if (_editor == null || _editor.Document == null)
+                return;
+
+            var clamped = Math.Clamp(line, 1, _editor.Document.LineCount);
+            var offset = _editor.Document.GetLineByNumber(clamped).Offset;
+            _editor.TextArea.Caret.Offset = offset;
+            _editor.TextArea.Caret.BringCaretToView();
+            _editor.Focus();
         }
 
         private CompletionWindow CreateCompletionWindow()

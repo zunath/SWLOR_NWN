@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Gff;
@@ -67,6 +68,16 @@ namespace SWLOR.Toolset.Editors
             Context.IsRefreshing = true;
             Text = SchemaFieldAccessor.GetText(Context.Document, Descriptor);
             Context.IsRefreshing = false;
+            OnTextCommitted();
+        }
+
+        /// <summary>
+        /// Called after the text settles, whether from an edit or a document refresh. Subclasses
+        /// override it to re-evaluate anything derived from the value — a script slot uses it to
+        /// re-check whether the script it names still exists.
+        /// </summary>
+        protected virtual void OnTextCommitted()
+        {
         }
 
         partial void OnTextChanged(string value)
@@ -77,6 +88,8 @@ namespace SWLOR.Toolset.Editors
             if (!Context.RunEdit($"Change {Label}",
                     () => SchemaFieldAccessor.SetText(Context.Document, Descriptor, value)))
                 RefreshFromDocument();
+            else
+                OnTextCommitted();
         }
     }
 
@@ -254,12 +267,68 @@ namespace SWLOR.Toolset.Editors
         }
     }
 
-    /// <summary>Script slots are resref text for now; a picker arrives with later packages.</summary>
+    /// <summary>
+    /// A script slot: resref text, plus the ability to browse, open and create the script it names.
+    /// </summary>
+    /// <remarks>
+    /// The missing-script warning is the point. A slot pointing at a script that does not exist is a
+    /// live and otherwise invisible class of bug — 2,250 module resources name a script by resref,
+    /// nothing validates them, and the failure only shows up in-game as an event that silently does
+    /// nothing.
+    /// </remarks>
     public partial class ScriptFieldViewModel : TextFieldViewModel
     {
-        public ScriptFieldViewModel(FieldDescriptor descriptor, EditorFieldContext context)
+        private readonly IScriptSlotHost? _host;
+
+        public ScriptFieldViewModel(FieldDescriptor descriptor, EditorFieldContext context, IScriptSlotHost? host = null)
             : base(descriptor, context)
         {
+            _host = host;
         }
+
+        public bool CanBrowse => _host != null;
+
+        /// <summary>True when this slot names a script that is not in the module.</summary>
+        public bool IsMissing =>
+            _host != null && !string.IsNullOrWhiteSpace(Text) && !_host.ScriptExists(Text);
+
+        public string MissingMessage => $"'{Text}' does not exist in this module.";
+
+        [RelayCommand]
+        private async Task Browse()
+        {
+            if (_host == null)
+                return;
+
+            var chosen = await _host.PickScriptAsync(Text).ConfigureAwait(true);
+            if (chosen != null)
+                Text = chosen;
+        }
+
+        [RelayCommand]
+        private void OpenScript()
+        {
+            if (!string.IsNullOrWhiteSpace(Text))
+                _host?.OpenScript(Text);
+        }
+
+        protected override void OnTextCommitted() => RaiseMissing();
+
+        private void RaiseMissing()
+        {
+            OnPropertyChanged(nameof(IsMissing));
+            OnPropertyChanged(nameof(MissingMessage));
+        }
+    }
+
+    /// <summary>What a script slot needs from the app to browse, open and validate.</summary>
+    public interface IScriptSlotHost
+    {
+        bool ScriptExists(string resRef);
+
+        void OpenScript(string resRef);
+
+        /// <summary>Shows the picker, returning the chosen resref or null if cancelled.</summary>
+        Task<string?> PickScriptAsync(string current);
     }
 }

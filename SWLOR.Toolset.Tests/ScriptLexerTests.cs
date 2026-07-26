@@ -142,14 +142,41 @@ namespace SWLOR.Toolset.Tests
             Concat(src).Should().Be(src);
         }
 
+        /// <summary>
+        /// NWScript has no escape sequences. A backslash is a literal character and the string ends
+        /// at the very next quote. Treating '\"' as a C-style escape made the lexer run past the
+        /// closing quote of real corpus lines like <c>return "/\/\\";</c> in dmfi_plychat_exe.nss —
+        /// ASCII art, not an escape — and swallow the rest of the file as one string. Found by the
+        /// zero-false-positives gate, not by reasoning.
+        /// </summary>
         [Test]
-        public void EscapedQuoteStaysInsideTheString()
+        public void BackslashInsideAStringIsLiteral()
         {
-            const string src = "string s = \"a\\\"b\";";
+            const string src = "string s = \"/\\/\\\\\";\nint n = 1;";
             var code = ScriptLexer.TokenizeCode(src);
 
-            var str = code.Single(t => t.Kind == ScriptTokenKind.String);
-            str.ToText(src).Should().Be("\"a\\\"b\"");
+            var str = code.First(t => t.Kind == ScriptTokenKind.String);
+            str.ToText(src).Should().Be("\"/\\/\\\\\"", "the string ends at the next quote, escapes or not");
+            code.Should().Contain(t => t.Kind == ScriptTokenKind.Number,
+                "the rest of the file must still lex as code");
+        }
+
+        [Test]
+        public void EveryModuleScript_LexesTheSameNumberOfQuotesAsStringTokens()
+        {
+            // A cross-check on the rule above: with no escapes, every pair of quotes on a line is
+            // exactly one string token, so a lexer that swallows past a closing quote shows up here.
+            foreach (var path in Directory.EnumerateFiles(NssDirectory, "*.nss"))
+            {
+                var source = ScriptTextDocument.Load(path).Text;
+                var tokens = ScriptLexer.Tokenize(source);
+
+                foreach (var token in tokens.Where(t => t.Kind == ScriptTokenKind.String))
+                {
+                    var text = token.ToText(source);
+                    text.Should().NotContain("\n", "a string token must never span a line");
+                }
+            }
         }
 
         [Test]

@@ -23,6 +23,8 @@ namespace SWLOR.Toolset.Shell
         private readonly OutputViewModel _output;
         private readonly ValidationViewModel _validation;
         private readonly PaletteViewModel _palette;
+        private readonly ProblemsViewModel _problems;
+        private readonly ScriptReferenceViewModel _scriptReference;
 
         /// <summary>Where remembered divider positions come from and go, or null in a test with none.</summary>
         private readonly ToolsetSettings? _settings;
@@ -42,6 +44,8 @@ namespace SWLOR.Toolset.Shell
             OutputViewModel output,
             ValidationViewModel validation,
             PaletteViewModel palette,
+            ProblemsViewModel problems,
+            ScriptReferenceViewModel scriptReference,
             ToolsetSettings? settings = null)
         {
             _explorer = explorer;
@@ -50,6 +54,8 @@ namespace SWLOR.Toolset.Shell
             _output = output;
             _validation = validation;
             _palette = palette;
+            _problems = problems;
+            _scriptReference = scriptReference;
             _settings = settings;
         }
 
@@ -81,7 +87,10 @@ namespace SWLOR.Toolset.Shell
             {
                 Id = "PaletteDock",
                 ActiveDockable = _palette,
-                VisibleDockables = CreateList<IDockable>(_palette),
+                // Script Reference tabs beside the Palette, exactly as Output and Validation share
+                // the bottom dock. The Palette lists the front AREA's tileset, so it has nothing to
+                // offer while a script is in front — the shell activates whichever fits the tab.
+                VisibleDockables = CreateList<IDockable>(_palette, _scriptReference),
                 Alignment = Alignment.Right,
                 Proportion = 0.25,
                 // Each panel draws its own title; Dock's chrome adds a dotted drag grip and window
@@ -130,7 +139,7 @@ namespace SWLOR.Toolset.Shell
             {
                 Id = "OutputDock",
                 ActiveDockable = _output,
-                VisibleDockables = CreateList<IDockable>(_output, _validation),
+                VisibleDockables = CreateList<IDockable>(_output, _validation, _problems),
                 Alignment = Alignment.Bottom,
                 Proportion = 0.20,
                 // Each panel draws its own title; Dock's chrome adds a dotted drag grip and window
@@ -208,6 +217,21 @@ namespace SWLOR.Toolset.Shell
             CloseDockable(document);
         }
 
+        /// <summary>
+        /// Brings the right dock's Script Reference or Palette to the front, whichever suits the tab
+        /// that just became active. Called from the same ActiveDocumentChanged hook that already tells
+        /// the Palette which area is in front.
+        /// </summary>
+        public void ShowRightTool(bool scriptReference)
+        {
+            var target = scriptReference ? (IDockable)_scriptReference : _palette;
+            if (target.Owner is IDock dock && dock.ActiveDockable != target)
+                SetActiveDockable(target);
+        }
+
+        /// <summary>Brings the Problems panel to the front of the bottom dock.</summary>
+        public void ShowProblems() => SetActiveDockable(_problems);
+
         public override void InitLayout(IDockable layout)
         {
             ContextLocator = new Dictionary<string, Func<object?>>
@@ -217,7 +241,9 @@ namespace SWLOR.Toolset.Shell
                 [_search.Id] = () => _search,
                 [_output.Id] = () => _output,
                 [_validation.Id] = () => _validation,
-                [_palette.Id] = () => _palette
+                [_palette.Id] = () => _palette,
+                [_problems.Id] = () => _problems,
+                [_scriptReference.Id] = () => _scriptReference
             };
 
             DockableLocator = new Dictionary<string, Func<IDockable?>>

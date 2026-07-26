@@ -38,6 +38,16 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Shared engine-symbol database driving script completion; null disables it.</summary>
         private readonly Workspace.ScriptLanguageService? _scriptLanguage;
+
+        /// <summary>Where script diagnostics land; null in a shell without the panel.</summary>
+        private readonly Shell.Panels.ProblemsViewModel? _problems;
+
+        /// <summary>
+        /// Built once, in the background, on first use. Scanning every blueprint and area for script
+        /// slots is expensive, and the picker is the only thing that needs it — so it must not be
+        /// paid for at startup by builders who never open one.
+        /// </summary>
+        private readonly Lazy<Task<Domain.Script.ScriptUsageIndex?>> _scriptUsageIndex;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -62,7 +72,8 @@ namespace SWLOR.Toolset.Editors
             Domain.GameData.Tlk.TlkService? tlkService = null,
             WaypointAppearanceService? waypointAppearances = null,
             Workspace.BlueprintPreviewRenderer? previewRenderer = null,
-            Workspace.ScriptLanguageService? scriptLanguage = null)
+            Workspace.ScriptLanguageService? scriptLanguage = null,
+            Shell.Panels.ProblemsViewModel? problems = null)
         {
             _workspaceContext = workspaceContext;
             _lookups = lookups;
@@ -80,7 +91,28 @@ namespace SWLOR.Toolset.Editors
             _waypointAppearances = waypointAppearances;
             _previewRenderer = previewRenderer;
             _scriptLanguage = scriptLanguage;
+            _problems = problems;
+            _scriptUsageIndex = new Lazy<Task<Domain.Script.ScriptUsageIndex?>>(() => Task.Run(() =>
+            {
+                var workspace = _workspaceContext.Workspace;
+                if (workspace == null)
+                    return (Domain.Script.ScriptUsageIndex?)null;
+
+                try
+                {
+                    return Domain.Script.ScriptUsageIndex.Build(workspace);
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine($"Could not index script usages: {ex.Message}");
+                    return null;
+                }
+            }));
         }
+
+        /// <summary>Backs the script slots on one editor, describing its owner for the picker title.</summary>
+        private ScriptSlotHost CreateScriptSlotHost(string ownerDescription) =>
+            new(_workspaceContext, () => this, _log, ownerDescription, _scriptUsageIndex);
 
         /// <summary>Opens a NWScript source file as a text editor tab, or activates its open tab.</summary>
         private void OpenScriptEditor(ModuleWorkspace workspace, string resRef)
@@ -101,8 +133,16 @@ namespace SWLOR.Toolset.Editors
             try
             {
                 var editor = new ScriptEditorViewModel(filePath, resRef, _log, _prompts, _scriptLanguage);
-                editor.Closed += _ => _openScriptEditors.Remove(filePath);
+                editor.Closed += _ =>
+                {
+                    _openScriptEditors.Remove(filePath);
+                    // A closed tab's findings must not linger in Problems - they refer to a buffer
+                    // nobody can see or navigate to any more.
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() => _problems?.Clear(resRef));
+                };
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                editor.DiagnosticsChanged += diagnostics =>
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() => _problems?.SetDiagnostics(resRef, diagnostics));
                 _openScriptEditors[filePath] = editor;
                 _factory.OpenDocument(editor);
             }
@@ -156,7 +196,8 @@ namespace SWLOR.Toolset.Editors
                     return;
 
                 var editor = new BlueprintEditorViewModel(
-                    filePath, resRef, type, schema, _lookups, _gameCodeIndex, _log, _prompts);
+                    filePath, resRef, type, schema, _lookups, _gameCodeIndex, _log, _prompts,
+                    CreateScriptSlotHost($"{type.SingularDisplayName()} '{resRef}'"));
                 editor.Closed += _ => _openEditors.Remove(filePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
@@ -261,7 +302,8 @@ namespace SWLOR.Toolset.Editors
                     _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts,
                     ResolveBlueprintName, TryOpenEditor,
                     _tlkService != null ? _tlkService.GetString : null, _waypointAppearances,
-                    _previewRenderer != null ? _previewRenderer.BuildModel : null);
+                    _previewRenderer != null ? _previewRenderer.BuildModel : null,
+                    CreateScriptSlotHost($"Area '{resRef}'"));
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);

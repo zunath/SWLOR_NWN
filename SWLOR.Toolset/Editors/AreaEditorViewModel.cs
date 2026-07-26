@@ -64,6 +64,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Func<ResourceType, string, RenderModel?>? _resolveBlueprintModel;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly IEditorPromptService _prompts;
+        private readonly IScriptSlotHost? _scriptSlotHost;
 
         /// <summary>Resolves a blueprint's display name from the catalog, so the selection bar can lead with it.</summary>
         private readonly Func<ResourceType?, string?, string?>? _resolveBlueprintName;
@@ -1157,8 +1158,10 @@ namespace SWLOR.Toolset.Editors
             Action<ResourceType, string>? openBlueprint = null,
             Func<uint, string?>? resolveStrRef = null,
             WaypointAppearanceService? waypointAppearances = null,
-            Func<ResourceType, string, RenderModel?>? resolveBlueprintModel = null)
+            Func<ResourceType, string, RenderModel?>? resolveBlueprintModel = null,
+            IScriptSlotHost? scriptSlotHost = null)
         {
+            _scriptSlotHost = scriptSlotHost;
             _resolveBlueprintModel = resolveBlueprintModel;
             _waypointAppearances = waypointAppearances;
             _resolveBlueprintName = resolveBlueprintName;
@@ -1184,7 +1187,7 @@ namespace SWLOR.Toolset.Editors
             var areContext = new EditorFieldContext(_areSession.Document, RunAreEdit);
             foreach (var group in AreSchema.Build().Groups)
             {
-                var fields = group.Fields.Select(descriptor => CreateFieldViewModel(descriptor, areContext, lookups)).ToList();
+                var fields = group.Fields.Select(descriptor => CreateFieldViewModel(descriptor, areContext, lookups, scriptSlotHost)).ToList();
                 AreaPropertyGroups.Add(new EditorGroup(group.Title, fields));
             }
 
@@ -1413,7 +1416,8 @@ namespace SWLOR.Toolset.Editors
         private static readonly TimeSpan SceneBuildBannerDelay = TimeSpan.FromMilliseconds(250);
 
         private static FieldViewModel CreateFieldViewModel(
-            FieldDescriptor descriptor, EditorFieldContext context, LookupOptionProvider lookups)
+            FieldDescriptor descriptor, EditorFieldContext context, LookupOptionProvider lookups,
+            IScriptSlotHost? scriptSlotHost)
         {
             return descriptor.Kind switch
             {
@@ -1423,7 +1427,7 @@ namespace SWLOR.Toolset.Editors
                 EditorKind.LocString => new LocStringFieldViewModel(descriptor, context),
                 EditorKind.TwoDaDropdown => new DropdownFieldViewModel(
                     descriptor, context, lookups.GetOptions(descriptor.LookupKey)),
-                EditorKind.ScriptSlot => new ScriptFieldViewModel(descriptor, context),
+                EditorKind.ScriptSlot => new ScriptFieldViewModel(descriptor, context, scriptSlotHost),
                 _ => new TextFieldViewModel(descriptor, context)
             };
         }

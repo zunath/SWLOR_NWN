@@ -232,7 +232,26 @@ namespace SWLOR.Toolset.Shell.Panels
         /// Base-game blueprints are not ours, and a tile is a row in a .set file rather than a resource
         /// at all, so neither offers anything to create, rename, refile or delete.
         /// </summary>
-        public bool CanWrite => IsCustomSource && IsBlueprintMode;
+        /// <summary>
+        /// Whether the module is mid-pack or mid-validation, or null in a test with no shell. A
+        /// <see cref="Func{TResult}"/> because the shell is constructed after this panel - asking it a
+        /// question later avoids the construction cycle a direct reference would create.
+        /// </summary>
+        private readonly Func<bool>? _isModuleLocked;
+
+        /// <summary>
+        /// True when this panel may write to the module: the Custom side of a blueprint type, and no
+        /// module-wide operation in flight.
+        /// </summary>
+        /// <remarks>
+        /// The lock was missing. Creating or deleting a blueprint writes straight to the module, and
+        /// those controls stayed enabled through a pack - which reads the very files being written - so
+        /// a click at the wrong moment could put a half-written resource into the .mod being built.
+        /// </remarks>
+        public bool CanWrite => IsCustomSource && IsBlueprintMode && _isModuleLocked?.Invoke() != true;
+
+        /// <summary>Re-reads <see cref="CanWrite"/>, for when the module-wide lock has flipped.</summary>
+        public void NotifyWriteAvailabilityChanged() => OnPropertyChanged(nameof(CanWrite));
 
         /// <summary>
         /// Why a context menu is empty, so it never opens as a blank popup. Null when there is nothing to
@@ -265,8 +284,10 @@ namespace SWLOR.Toolset.Shell.Panels
             Services.IEditorPromptService? prompts = null,
             TilesetCatalog? tilesets = null,
             Domain.GameData.Tlk.TlkService? tlk = null,
-            ToolsetSettings? settings = null)
+            ToolsetSettings? settings = null,
+            Func<bool>? isModuleLocked = null)
         {
+            _isModuleLocked = isModuleLocked;
             _thumbnails = thumbnails;
             _prompts = prompts;
             _tilesets = tilesets;

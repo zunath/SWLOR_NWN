@@ -677,7 +677,12 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </remarks>
         private void SeedIfNeeded(CategorySection section, IReadOnlyList<ExplorerItem> items)
         {
-            if (!_seeded.Add(SelectedType) || section.Folders.Count > 0 || items.Count == 0)
+            // IsSeeded, not just "has folders". A builder who deliberately empties Areas, Dialogs or
+            // Scripts keeps that flag in the sidecar precisely so the empty arrangement survives a
+            // restart; reading only Folders.Count meant the next launch recreated the default hierarchy
+            // and refiled everything, so a flat section could not be kept. The palette's own seeding
+            // already reads the marker this way.
+            if (!_seeded.Add(SelectedType) || section.IsSeeded || section.Folders.Count > 0 || items.Count == 0)
                 return;
 
             // Areas are filed by display name, which arrives with the background catalog. Seeding off
@@ -694,6 +699,9 @@ namespace SWLOR.Toolset.Shell.Panels
             if (seeded == 0)
                 return;
 
+            // Recorded in the sidecar, so emptying the section later is respected on the next launch
+            // rather than re-seeded. Without this the marker the guard above now reads would never be set.
+            section.IsSeeded = true;
             SaveCategories();
             _log.AppendLine(
                 $"Organised {SelectedType.DisplayName().ToLowerInvariant()} into {seeded} folder(s). " +

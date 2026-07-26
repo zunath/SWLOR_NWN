@@ -43,13 +43,6 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         public string? Note { get; init; }
 
         /// <summary>
-        /// True for values that belong to one placement rather than to the blueprint — an
-        /// exploration note's message, a doorway's destination. The instance editor says so, and the
-        /// blueprint editor warns that a value set here is only a default.
-        /// </summary>
-        public bool IsPerPlacement { get; init; }
-
-        /// <summary>
         /// Shown only under Custom. For a raw field that a behavior would otherwise own, offering it
         /// alongside that behavior invites a builder to set it to something the behavior contradicts.
         /// </summary>

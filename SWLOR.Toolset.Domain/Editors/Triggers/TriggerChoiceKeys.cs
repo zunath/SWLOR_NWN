@@ -13,6 +13,9 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         /// <summary>The module's repute.fac.</summary>
         public const string Factions = "factions";
 
+        /// <summary>traps.2da — the kinds of trap a trap trigger can be.</summary>
+        public const string TrapTypes = "traptypes";
+
         /// <summary>The trigger palette's own categories, by PaletteID.</summary>
         public const string PaletteCategories = "palettecategories";
     }

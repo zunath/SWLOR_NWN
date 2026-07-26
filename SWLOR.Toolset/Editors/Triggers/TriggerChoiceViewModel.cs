@@ -1,31 +1,34 @@
 using Avalonia.Media.Imaging;
+using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 
 namespace SWLOR.Toolset.Editors.Triggers
 {
     /// <summary>
-    /// One entry of a choice row, with its artwork when the choice has any. A load screen is a
-    /// picture, and picking one by name means guessing what "17 Tatooine" looks like.
+    /// One entry of a choice row. A choice that names artwork gets its thumbnail filled in once
+    /// something asks for it — the gallery being opened, or this being the selected screen.
     /// </summary>
-    public sealed class TriggerChoiceViewModel
+    public sealed partial class TriggerChoiceViewModel : ObservableObject
     {
         public TriggerChoice Choice { get; }
-
-        public Bitmap? Preview { get; }
 
         public long Value => Choice.Value;
 
         public string Display => Choice.Display;
 
-        public bool HasPreview => Preview != null;
+        /// <summary>Whether this choice has artwork at all, decoded or not.</summary>
+        public bool HasArtwork => !string.IsNullOrWhiteSpace(Choice.ImageResRef);
 
-        public TriggerChoiceViewModel(TriggerChoice choice, Bitmap? preview)
+        /// <summary>Null until the thumbnail has been decoded; the row shows the name meanwhile.</summary>
+        [ObservableProperty]
+        private Bitmap? _thumbnail;
+
+        public TriggerChoiceViewModel(TriggerChoice choice)
         {
             Choice = choice;
-            Preview = preview;
         }
 
-        /// <summary>The combo box falls back to this for the closed, selected row.</summary>
+        /// <summary>The combo box and any text fallback use this for the selected row.</summary>
         public override string ToString() => Display;
     }
 }

@@ -93,7 +93,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                         {
                             Label = "Destination Tag", Name = "LinkedTo", Kind = TriggerFieldKind.TagReference,
                             FieldType = GffFieldType.CExoString, IsRequired = true,
-                            TagScope = TriggerTagScope.WaypointOrDoor, IsPerPlacement = true
+                            TagScope = TriggerTagScope.WaypointOrDoor
                         },
                         new TriggerFieldDefinition
                         {
@@ -132,19 +132,13 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     {
                         new TriggerFieldDefinition
                         {
-                            Label = "Keeps random spawns out of this volume",
-                            Name = string.Empty, Kind = TriggerFieldKind.Statement,
-                            Note = "Read at module load by the Walkmesh service, which drops every baked "
-                                 + "spawn point inside the volume. Nothing to configure."
-                        },
-                        new TriggerFieldDefinition
-                        {
-                            Label = "Recognised by blueprint resref", Name = string.Empty,
+                            Label = "Nothing to set", Name = string.Empty,
                             Kind = TriggerFieldKind.Statement,
-                            Note = "The runtime matches on '" + NoSpawnResRef + "'. A placement using any "
-                                 + "other blueprint will not exclude spawns — set it on the Basic tab."
+                            Note = "Uses the '" + NoSpawnResRef + "' blueprint, which is how the game "
+                                 + "recognises it."
                         }
                     },
+                    Summary = "Keeps NPCs and resources from spawning inside the trigger.",
                     Manages = new[]
                     {
                         // The runtime finds these by resref, so on a placement that is the field
@@ -175,14 +169,10 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                         new TriggerFieldDefinition
                         {
                             Label = "Message", Name = "DISPLAY_TEXT", Kind = TriggerFieldKind.Paragraph,
-                            Storage = TriggerFieldStorage.Local, IsRequired = true, IsPerPlacement = true
+                            Storage = TriggerFieldStorage.Local, IsRequired = true
                         },
-                        new TriggerFieldDefinition
-                        {
-                            Label = "Shown", Name = string.Empty, Kind = TriggerFieldKind.Statement,
-                            Note = "Once per player, per server reboot, in cyan."
-                        }
                     },
+                    Summary = "Shows a message the first time a player enters, once per server reboot.",
                     Manages = new[]
                     {
                         new TriggerManagedValue
@@ -213,11 +203,12 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     {
                         new TriggerFieldDefinition
                         {
-                            Label = "Resting is allowed inside this volume",
-                            Name = string.Empty, Kind = TriggerFieldKind.Statement,
-                            Note = "Entering permits rest; leaving revokes it. Nothing to configure."
+                            Label = "Nothing to set", Name = string.Empty,
+                            Kind = TriggerFieldKind.Statement,
+                            Note = "Entering the trigger permits rest; leaving revokes it."
                         }
                     },
+                    Summary = "Lets players rest inside the trigger.",
                     Manages = new[]
                     {
                         new TriggerManagedValue
@@ -248,17 +239,17 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                         new TriggerFieldDefinition
                         {
                             Label = "Quest", Name = "QUEST_ID", Kind = TriggerFieldKind.Text,
-                            Storage = TriggerFieldStorage.Local, IsRequired = true, IsPerPlacement = true
+                            Storage = TriggerFieldStorage.Local, IsRequired = true
                         },
                         new TriggerFieldDefinition
                         {
                             Label = "Advance to state", Name = "QUEST_STATE", Kind = TriggerFieldKind.Integer,
-                            Storage = TriggerFieldStorage.Local, IsPerPlacement = true
+                            Storage = TriggerFieldStorage.Local
                         },
                         new TriggerFieldDefinition
                         {
                             Label = "Message", Name = "QUEST_MESSAGE", Kind = TriggerFieldKind.Paragraph,
-                            Storage = TriggerFieldStorage.Local, IsPerPlacement = true
+                            Storage = TriggerFieldStorage.Local
                         }
                     },
                     Manages = new[]
@@ -286,8 +277,8 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     {
                         new TriggerFieldDefinition
                         {
-                            Label = "Trap type", Name = "TrapType", Kind = TriggerFieldKind.Integer,
-                            FieldType = GffFieldType.Byte, Note = "Row in traps.2da."
+                            Label = "Trap type", Name = "TrapType", Kind = TriggerFieldKind.Choice,
+                            FieldType = GffFieldType.Byte, ChoicesKey = TriggerChoiceKeys.TrapTypes
                         },
                         new TriggerFieldDefinition
                         {
@@ -316,12 +307,12 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                         },
                         new TriggerFieldDefinition
                         {
-                            Label = "When triggered", Name = "OnTrapTriggered", Kind = TriggerFieldKind.Script,
+                            Label = "OnTrapTriggered", Name = "OnTrapTriggered", Kind = TriggerFieldKind.Script,
                             FieldType = GffFieldType.ResRef
                         },
                         new TriggerFieldDefinition
                         {
-                            Label = "When disarmed", Name = "OnDisarm", Kind = TriggerFieldKind.Script,
+                            Label = "OnDisarm", Name = "OnDisarm", Kind = TriggerFieldKind.Script,
                             FieldType = GffFieldType.ResRef
                         }
                     },

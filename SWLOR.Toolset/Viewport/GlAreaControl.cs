@@ -515,14 +515,23 @@ void main()
         public event Action? TileRotateRequested;
 
         /// <summary>
-        /// Discards tile geometry above each tile's own base height + ~4m (interior ceilings).
+        /// Discards downward-facing tile geometry above each tile's own base height + 2m.
         /// </summary>
         /// <remarks>
-        /// On by default. An interior tileset's ceiling sits between the camera and everything a builder
-        /// came to edit, so the first thing anyone did with the old toggle was turn it on - which makes it
-        /// the default, not an option. There is no UI for it now; the value is what the editor wants.
+        /// Off, because as written it takes more than the ceiling. The test is "faces downward and is
+        /// high up", and an interior wall is full of downward-facing surfaces that are not ceilings -
+        /// window ledges, sills, the trim band running around the room. Those get discarded too, and
+        /// which of them the camera can see changes as it orbits, so walls appear to come and go while
+        /// panning. Aurora shows those walls solid.
+        /// <para>
+        /// Turning it off restores what the toolbar rework intended - its commit message says ceilings
+        /// default off - and what it left half-done: the toggle was removed while the field stayed true,
+        /// so there has been no way to reach this at all. Hiding ceilings is worth having back once the
+        /// test asks whether a surface IS a ceiling rather than merely whether it faces down; until
+        /// then, showing the room correctly matters more than seeing into it from above.
+        /// </para>
         /// </remarks>
-        private bool _hideCeilings = true;
+        private bool _hideCeilings;
 
         public bool HideCeilings
         {

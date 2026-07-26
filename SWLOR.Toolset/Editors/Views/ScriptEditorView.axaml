@@ -9,7 +9,7 @@
              x:Class="SWLOR.Toolset.Editors.ScriptEditorView"
              x:DataType="editors:ScriptEditorViewModel">
 
-  <Grid RowDefinitions="*,Auto,Auto">
+  <Grid RowDefinitions="*,Auto,Auto,Auto">
     <!-- The buffer is not bound. AvaloniaEdit owns the text, its own undo stack and the caret, so a
          two-way binding would fight it: re-setting Text on every keystroke resets the caret to 0.
          The code-behind seeds the document once and pushes changes out to the view model instead. -->
@@ -28,17 +28,43 @@
          less width than a column would. -->
     <Border Grid.Row="1" Background="{DynamicResource PanelHeaderBrush}"
             BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,1" Padding="14,6">
-      <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto" ColumnSpacing="10">
         <TextBlock Grid.Column="0" Classes="title" Text="OUTLINE" VerticalAlignment="Center" />
+
+        <!-- Compile lives on the document, not in a module-wide menu: it acts on the file in front
+             of you, and F7 does the same thing without leaving the keyboard. -->
+        <Button Grid.Column="2" Classes="primary" Content="Compile (F7)" Padding="10,3"
+                Command="{Binding CompileCommand}" VerticalAlignment="Center"
+                ToolTip.Tip="Save and compile this script to .ncs" />
+
         <!-- The answer to "what is this script attached to?", which nothing else in the pipeline
              can give: 2,250 module resources name a script by resref. -->
-        <TextBlock Grid.Column="2" Classes="count" VerticalAlignment="Center"
+        <TextBlock Grid.Column="3" Classes="count" VerticalAlignment="Center"
                    Foreground="{DynamicResource GreenBrush}"
                    IsVisible="{Binding HasUsageSummary}" Text="{Binding UsageSummary}" />
-        <Button Grid.Column="3" Classes="link" Content="Used by..." Padding="0"
+        <Button Grid.Column="4" Classes="link" Content="Used by..." Padding="0"
                 Command="{Binding ShowUsagesCommand}" VerticalAlignment="Center" />
+        <Button Grid.Column="5" Classes="link" Content="Lexicon (F1)" Padding="0"
+                Command="{Binding OpenLexiconAtCaretCommand}" VerticalAlignment="Center"
+                ToolTip.Tip="Open the NWN Lexicon page for the symbol under the caret" />
       </Grid>
     </Border>
+
+    <!-- Compile outcome, on the document itself. A failure has to be visible where the work happened,
+         not only in a panel that may be behind another tab. Clicking it opens Problems. -->
+    <Button Grid.Row="3" IsVisible="{Binding HasCompileStatus}"
+            Command="{Binding ShowProblemsCommand}"
+            Background="{DynamicResource PanelRaisedBrush}" BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource RuleBrush}" CornerRadius="0" Padding="14,5"
+            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <TextBlock Text="✕" FontSize="10" VerticalAlignment="Center"
+                   Foreground="#E05A5A" IsVisible="{Binding LastCompileFailed}" />
+        <TextBlock Text="●" FontSize="9" VerticalAlignment="Center"
+                   Foreground="{DynamicResource GreenBrush}" IsVisible="{Binding !LastCompileFailed}" />
+        <TextBlock Classes="count" VerticalAlignment="Center" Text="{Binding CompileStatus}" />
+      </StackPanel>
+    </Button>
 
     <ScrollViewer Grid.Row="2" MaxHeight="110" VerticalScrollBarVisibility="Auto"
                   Background="{DynamicResource PanelBrush}">

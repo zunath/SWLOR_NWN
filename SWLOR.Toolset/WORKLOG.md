@@ -1357,3 +1357,45 @@ verification used throughout Phase S could not have caught it.
 - Verified: build clean; **full suite 1060/1061 green** (1 pre-existing skip), 3m33s.
 - **Lesson for later packages:** a launch-and-kill smoke test is not evidence that a feature works.
   Any new docked view needs a headless render test; the harness is now in place for it.
+
+## Script editor UX — 2026-07-28 — Lexicon links, context-driven compile, real hotkeys, split reference
+
+All four from direct feedback on the shipped editor.
+
+- **NWN Lexicon deep links** (`Domain/Script/ScriptLexicon`). The Lexicon is MediaWiki and titles its
+  pages with the exact engine function name, so `ScriptFunction.Name` maps to a page one-to-one with
+  no lookup table to maintain. **Linked, not bundled**, deliberately: the content is GFDL 1.1-or-later
+  ("2002 onwards NWN Lexicon Group"), so a local copy means carrying its licence text and attribution
+  alongside this project's GPL-3.0 — permitted as mere aggregation, but a real obligation over prose
+  that goes stale. A link costs nothing and is always current. `UrlFor` refuses anything that is not a
+  plausible page title so the action disables rather than landing on a "page does not exist" screen.
+  Reachable from the reference panel's **Lexicon** button and **F1** on the symbol under the caret.
+  - `Services/ExternalLinkService` launches it. **Only http/https**: `UseShellExecute` will happily
+    start a local executable or a `file:` path, so the scheme check keeps an unvalidated string from
+    becoming a way to run something from data.
+- **Compile moved off the Build menu onto the document.** It acts on the file in front of you, and as
+  a module-wide menu item it sat greyed out whenever no script was open. Now: a **Compile (F7)** button
+  on the script tab's own header strip, plus a **Compile** item on the Scripts tab's row context menu
+  so an include's dependents can be rebuilt without opening them. `Build All Scripts` and
+  `Check Script Staleness` stay under Build — those genuinely are module-wide.
+- **Hotkeys are real now.** F7 (compile) had been added as an `InputGesture`, which the XAML's own
+  comment warns only *draws* the shortcut — the actual bindings are window `KeyBindings` registered in
+  code-behind. It never fired. F7 and F1 are now handled by the script editor itself so they follow
+  the document and work with the buffer focused; `Ctrl+Shift+B` (Build All Scripts) is a real window
+  binding beside Ctrl+S/Z/Y.
+- **Compiler failures are visible in three places**, not just a panel that may be behind another tab:
+  a **compile status strip on the document** (green tick or red cross, "failed to compile — see
+  Problems", clickable), the **Problems** panel auto-focusing on error, and squiggles on the reported
+  lines. Compile also saves first, since it reads the file from disk and unsaved work would otherwise
+  silently not be built.
+- **Reference panel split into Functions and Constants tabs**, each carrying its own count, using the
+  same tab pattern as Module Contents. One combined tree put a "Constants" branch of 6,201 entries
+  below 1,187 functions, which buried them. The filter resets on tab change: a term that matched
+  functions almost never matches constants, and carrying it across made a freshly-picked tab look
+  empty. The footer now reads "N of M shown" while filtering.
+- Tests (+13): `ScriptLexiconTests` (6 — identifier/refusal cases, absolute https),
+  `ScriptReferenceViewModelTests` (7 — tab selection, watermark, filter reset, Lexicon disabled on a
+  `FOO_*` group header, insert disabled with no active script).
+- **Note on the earlier "1 failing test":** it did not reproduce. A clean TRX-logged run is
+  **1127 passed, 0 failed**. It was flaky under load (a full suite was running alongside other builds);
+  it cannot be named because the first run's output filter discarded the detail.

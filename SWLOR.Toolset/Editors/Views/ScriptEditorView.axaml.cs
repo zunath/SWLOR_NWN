@@ -69,6 +69,7 @@ namespace SWLOR.Toolset.Editors
             _bound.GoToOffsetRequested = GoToOffset;
             _bound.GoToLineRequested = GoToLine;
             _bound.ReplaceAllRequested = ReplaceAllAsOneEdit;
+            _bound.CaretOffsetProbe = () => _editor.TextArea.Caret.Offset;
             _bound.DiagnosticsChanged += OnDiagnosticsChanged;
             _bound.AnalyzeNow();
             RefreshFolding();
@@ -141,6 +142,19 @@ namespace SWLOR.Toolset.Editors
 
                 case Key.F2:
                     _ = _bound.RenameAsync(caret);
+                    e.Handled = true;
+                    break;
+
+                // F1 on a symbol opens its Lexicon page. Handled here as well as by the window
+                // binding so it works with the buffer focused, which is where the caret is.
+                case Key.F1:
+                    _bound.OpenLexiconFor(caret);
+                    e.Handled = true;
+                    break;
+
+                // F7 compiles the script in front of you. Bound on the document, not the shell menu.
+                case Key.F7 when _bound.CompileCommand.CanExecute(null):
+                    _bound.CompileCommand.Execute(null);
                     e.Handled = true;
                     break;
 

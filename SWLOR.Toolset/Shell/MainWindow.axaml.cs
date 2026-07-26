@@ -60,6 +60,10 @@ namespace SWLOR.Toolset.Shell
             Bind(Key.Z, KeyModifiers.Control, viewModel.UndoCommand);
             Bind(Key.Y, KeyModifiers.Control, viewModel.RedoCommand);
 
+            // Module-wide script build. Compiling a single script is F7, handled by the script editor
+            // itself so it follows the document rather than the window.
+            Bind(Key.B, KeyModifiers.Control | KeyModifiers.Shift, viewModel.BuildAllScriptsCommand);
+
             Opened += async (_, _) =>
             {
                 // Nothing before this point is a placement worth recording: a window that has not been

@@ -45,6 +45,9 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Rebuilds a script's .ncs on save; null when no compiler is vendored.</summary>
         private readonly Services.ScriptCompileService? _compileService;
 
+        /// <summary>Opens Lexicon pages in a browser; null disables the action.</summary>
+        private readonly Services.IExternalLinkService? _links;
+
         /// <summary>
         /// Built once, in the background, on first use. Scanning every blueprint and area for script
         /// slots is expensive, and the picker is the only thing that needs it — so it must not be
@@ -78,7 +81,8 @@ namespace SWLOR.Toolset.Editors
             Workspace.BlueprintPreviewRenderer? previewRenderer = null,
             Workspace.ScriptLanguageService? scriptLanguage = null,
             Shell.Panels.ProblemsViewModel? problems = null,
-            Services.ScriptCompileService? compileService = null)
+            Services.ScriptCompileService? compileService = null,
+            Services.IExternalLinkService? links = null)
         {
             _workspaceContext = workspaceContext;
             _lookups = lookups;
@@ -98,6 +102,7 @@ namespace SWLOR.Toolset.Editors
             _scriptLanguage = scriptLanguage;
             _problems = problems;
             _compileService = compileService;
+            _links = links;
             _scriptUsageIndex = new Lazy<Task<Domain.Script.ScriptUsageIndex?>>(() => Task.Run(() =>
             {
                 var workspace = _workspaceContext.Workspace;
@@ -129,6 +134,40 @@ namespace SWLOR.Toolset.Editors
 
             if (_openScriptEditors.TryGetValue(workspace.GetResourcePath(ResourceType.Nss, resRef), out var editor))
                 Avalonia.Threading.Dispatcher.UIThread.Post(() => editor.GoToLineRequested?.Invoke(line));
+        }
+
+        /// <summary>
+        /// Opens a symbol's page in the community NWN Lexicon. Linked rather than bundled: the
+        /// Lexicon is GFDL, and its wiki titles pages with the exact function name, so no map is kept.
+        /// </summary>
+        private void OpenLexiconPage(string name)
+        {
+            if (_links == null)
+                return;
+
+            var url = Domain.Script.ScriptLexicon.UrlFor(name);
+            if (url == null)
+            {
+                _log.AppendLine($"'{name}' is not a name the Lexicon could have a page for.");
+                return;
+            }
+
+            _log.AppendLine($"Opening the Lexicon page for {name}.");
+            _links.Open(url);
+        }
+
+        /// <summary>Compiles a script by resref, for callers outside an open tab (the explorer).</summary>
+        public async Task CompileScriptAsync(string resRef)
+        {
+            if (_compileService == null || !_compileService.IsAvailable)
+            {
+                _log.AppendLine("Cannot compile: nwn_script_comp.exe is missing from tools/SWLOR.CLI.");
+                return;
+            }
+
+            var outcome = await _compileService.CompileAsync(resRef).ConfigureAwait(true);
+            if (!outcome.Succeeded)
+                _factory.ShowProblems();
         }
 
         /// <summary>Backs the script slots on one editor, describing its owner for the picker title.</summary>
@@ -165,6 +204,14 @@ namespace SWLOR.Toolset.Editors
                 editor.CompileOnSave = _compileService != null && _compileService.IsAvailable
                     ? name => _compileService.CompileAsync(name)
                     : null;
+
+                // Compile belongs to the document, not to a module-wide menu. The tab owns the button
+                // and F7; this just gives it the service.
+                editor.CompileRequested = _compileService != null && _compileService.IsAvailable
+                    ? async name => (await _compileService.CompileAsync(name).ConfigureAwait(true)).Succeeded
+                    : null;
+                editor.ShowProblemsRequested = () => _factory.ShowProblems();
+                editor.OpenLexiconRequested = OpenLexiconPage;
                 editor.FindUsages = async name =>
                 {
                     var index = await _scriptUsageIndex.Value.ConfigureAwait(true);

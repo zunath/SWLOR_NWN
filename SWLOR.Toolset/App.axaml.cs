@@ -78,7 +78,8 @@ namespace SWLOR.Toolset
                 sp.GetService<PlaceableAppearanceService>(),
                 sp.GetService<DoorTypeService>(),
                 sp.GetService<SoundService>(),
-                sp.GetService<TwoDaLookupService>()));
+                sp.GetService<TwoDaLookupService>(),
+                sp.GetService<WaypointAppearanceService>()));
             services.AddSingleton(sp => new Editors.EditorService(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<Editors.LookupOptionProvider>(),

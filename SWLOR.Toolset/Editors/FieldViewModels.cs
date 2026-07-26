@@ -19,10 +19,20 @@ namespace SWLOR.Toolset.Editors
         /// <summary>True while the editor is loading values into view models; suppresses writes.</summary>
         public bool IsRefreshing { get; set; }
 
-        public EditorFieldContext(JsonGffDocument document, Func<string, Action, bool> runEdit)
+        /// <summary>
+        /// Resolves a TLK strref for a localized field that carries one but no language-0 override, or
+        /// null when no TLK is loaded - in which case such a field reads blank, as it did before.
+        /// </summary>
+        public Func<uint, string?>? ResolveStrRef { get; }
+
+        public EditorFieldContext(
+            JsonGffDocument document,
+            Func<string, Action, bool> runEdit,
+            Func<uint, string?>? resolveStrRef = null)
         {
             _document = document;
             _runEdit = runEdit;
+            ResolveStrRef = resolveStrRef;
         }
 
         public bool RunEdit(string description, Action mutation)
@@ -65,7 +75,7 @@ namespace SWLOR.Toolset.Editors
         public sealed override void RefreshFromDocument()
         {
             Context.IsRefreshing = true;
-            Text = SchemaFieldAccessor.GetText(Context.Document, Descriptor);
+            Text = SchemaFieldAccessor.GetText(Context.Document, Descriptor, Context.ResolveStrRef);
             Context.IsRefreshing = false;
         }
 
@@ -184,9 +194,27 @@ namespace SWLOR.Toolset.Editors
         public sealed override void RefreshFromDocument()
         {
             Context.IsRefreshing = true;
+
+            // Deliberately the override only, not the resolved strref. This box edits the language-0
+            // text, so showing TLK text in it would invite a stray keystroke to promote a strref-backed
+            // name into a literal override of the same words - a silent change to what the field means.
+            // The TLK text belongs beside the strref instead, where it explains the blank rather than
+            // pretending to be it.
             Text = SchemaFieldAccessor.GetText(Context.Document, Descriptor);
+
             var field = Context.Document.Root.GetOrNull(Descriptor.FieldName);
-            StrRefDisplay = field?.GetLocStringId() is { } id ? $"strref {id}" : null;
+            if (field?.GetLocStringId() is { } id)
+            {
+                var resolved = Context.ResolveStrRef?.Invoke(id);
+                StrRefDisplay = string.IsNullOrWhiteSpace(resolved)
+                    ? $"strref {id}"
+                    : $"strref {id} - “{resolved}”";
+            }
+            else
+            {
+                StrRefDisplay = null;
+            }
+
             OnPropertyChanged(nameof(StrRefDisplay));
             Context.IsRefreshing = false;
         }

@@ -58,7 +58,8 @@ namespace SWLOR.Toolset.Editors
             LookupOptionProvider lookups,
             IGameCodeIndex? gameCodeIndex,
             OutputLogService log,
-            IEditorPromptService prompts)
+            IEditorPromptService prompts,
+            Func<uint, string?>? resolveStrRef = null)
         {
             _log = log;
             _prompts = prompts;
@@ -67,7 +68,7 @@ namespace SWLOR.Toolset.Editors
             BlueprintType = type;
             Id = $"editor:{filePath}";
             _session = DocumentSession.Open(filePath);
-            _context = new EditorFieldContext(_session.Document, RunEdit);
+            _context = new EditorFieldContext(_session.Document, RunEdit, resolveStrRef);
 
             foreach (var group in schema.Groups)
             {

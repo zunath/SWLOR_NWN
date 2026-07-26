@@ -111,7 +111,10 @@ namespace SWLOR.Toolset.Editors
                     return;
 
                 var editor = new BlueprintEditorViewModel(
-                    filePath, resRef, type, schema, _lookups, _gameCodeIndex, _log, _prompts);
+                    filePath, resRef, type, schema, _lookups, _gameCodeIndex, _log, _prompts,
+                    // So a localized field that carries a strref but no language-0 override can show what
+                    // that strref says, instead of a blank the builder reads as missing data.
+                    _tlkService == null ? null : _tlkService.GetString);
                 editor.Closed += _ => _openEditors.Remove(filePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>

@@ -112,8 +112,14 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void ConstantsReferenceFamilies_FallBackToReadablePrefixesWhenTheHeaderHasNoFamily()
         {
+            Db.ConstantFamilyOf(Db.FindConstant("AMBIENT_SOUND_CITY_SLUMS_DAY_CROWDED")!).Should().Be("AMBIENT_SOUND_*");
+            Db.ConstantFamilyOf(Db.FindConstant("AMBIENT_SOUND_CRYPT_SMALL")!).Should().Be("AMBIENT_SOUND_*");
             Db.ConstantFamilyOf(Db.FindConstant("SPELLABILITY_AURA_BLINDING")!).Should().Be("SPELLABILITY_AURA_*");
-            Db.ConstantFamilyOf(Db.FindConstant("SPELLABILITY_DRAGON_BREATH_ACID")!).Should().Be("SPELLABILITY_DRAGON_BREATH_*");
+            Db.ConstantFamilyOf(Db.FindConstant("SPELLABILITY_DRAGON_BREATH_ACID")!).Should().Be("SPELLABILITY_DRAGON_*");
+
+            Db.Constants
+                .Where(c => c.Name.StartsWith("AMBIENT_SOUND_", StringComparison.Ordinal))
+                .Should().OnlyContain(c => Db.ConstantFamilyOf(c) == "AMBIENT_SOUND_*");
         }
 
         [Test]
@@ -126,6 +132,24 @@ namespace SWLOR.Toolset.Tests
                 .ToList();
 
             singletonWildcards.Should().BeEmpty();
+        }
+
+        [Test]
+        public void ConstantsReferenceFamilies_UndocumentedFallbacksStayBroad()
+        {
+            var documented = NwScriptHeaderParser.ParseFile(HeaderPath)
+                .ConstantFamilies
+                .ToHashSet(StringComparer.Ordinal);
+
+            var deepUndocumentedFamilies = Db.Constants
+                .Select(Db.ConstantFamilyOf)
+                .Distinct(StringComparer.Ordinal)
+                .Where(f => f.EndsWith("*", StringComparison.Ordinal))
+                .Where(f => !documented.Contains(f))
+                .Where(f => f[..^1].TrimEnd('_').Split('_').Length > 2)
+                .ToList();
+
+            deepUndocumentedFamilies.Should().BeEmpty();
         }
 
         [Test]

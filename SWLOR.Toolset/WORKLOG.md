@@ -1824,3 +1824,23 @@ family.
   `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
   "FullyQualifiedName~EngineSymbolDatabaseTests|FullyQualifiedName~ScriptReferenceViewModelTests"` -
   23 passed.
+
+## Script reference follow-up - 2026-07-26 - Undocumented constants use broad prefixes
+
+Undocumented Constants-tab families no longer use the deepest shared name prefix. When the header does
+not provide a `FOO_*` family, the fallback now uses the shortest readable prefix: one segment for
+two-part constants such as `ABILITY_CHARISMA`, and two segments for longer constants such as
+`AMBIENT_SOUND_CITY_SLUMS_DAY_CROWDED`.
+
+- **Why.** Longest-prefix grouping still made builders chase incidental subcategories, for example
+  `AMBIENT_SOUND_CITY_*` and `AMBIENT_SOUND_CRYPT_*`, when the useful bucket is `AMBIENT_SOUND_*`.
+  The same problem would recur for any undocumented family with descriptive middle words.
+- **Decision.** Documented header families still win first. Only the structural fallback changed: it
+  now picks a broad domain prefix and then runs through the existing singleton-collapse guard.
+- **Deliberately not done.** No manual exception list was added. The regression test guards the rule
+  generally instead of hardcoding every family name the UI happens to show today.
+- **Verification.** `EngineSymbolDatabaseTests` pins `AMBIENT_SOUND_*` and asserts every
+  undocumented wildcard fallback stays at two segments or fewer. Focused run:
+  `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
+  "FullyQualifiedName~EngineSymbolDatabaseTests|FullyQualifiedName~ScriptReferenceViewModelTests"` -
+  24 passed.

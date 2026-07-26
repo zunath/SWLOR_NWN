@@ -154,20 +154,9 @@ namespace SWLOR.Toolset.Domain.Script.Symbols
 
         private static Dictionary<string, string> BuildStructuralFamilyMap(IReadOnlyList<ScriptConstant> constants)
         {
-            var prefixCounts = new Dictionary<string, int>(StringComparer.Ordinal);
-            foreach (var constant in constants)
-            {
-                foreach (var prefix in FamilyPrefixes(constant.Name))
-                    prefixCounts[prefix] = prefixCounts.TryGetValue(prefix, out var count) ? count + 1 : 1;
-            }
-
             return constants.ToDictionary(
                 c => c.Name,
-                c => FamilyPrefixes(c.Name)
-                    .Where(p => prefixCounts[p] > 1)
-                    .OrderByDescending(FamilyPrefixLength)
-                    .ThenBy(p => p, StringComparer.Ordinal)
-                    .FirstOrDefault() ?? c.Name,
+                c => StructuralFamilyOf(c.Name),
                 StringComparer.OrdinalIgnoreCase);
         }
 
@@ -204,13 +193,17 @@ namespace SWLOR.Toolset.Domain.Script.Symbols
             return result;
         }
 
-        private static IEnumerable<string> FamilyPrefixes(string name)
+        private static string StructuralFamilyOf(string name)
         {
-            for (var i = 0; i < name.Length; i++)
-            {
-                if (name[i] == '_')
-                    yield return name[..(i + 1)] + "*";
-            }
+            var firstUnderscore = name.IndexOf('_');
+            if (firstUnderscore < 0)
+                return name;
+
+            var secondUnderscore = name.IndexOf('_', firstUnderscore + 1);
+            if (secondUnderscore < 0)
+                return name[..(firstUnderscore + 1)] + "*";
+
+            return name[..(secondUnderscore + 1)] + "*";
         }
 
         private static bool IsWildcardFamily(string family) =>

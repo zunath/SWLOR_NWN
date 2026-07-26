@@ -301,6 +301,32 @@ namespace SWLOR.Toolset.Tests
 
             Scan().Should().ContainSingle().Which.ResRef.Should().Be("cond");
         }
+
+        [Test]
+        public void PackReadiness_IsCleanWhenNoScriptsAreStale()
+        {
+            var old = DateTime.UtcNow.AddHours(-2);
+            Source("a", "void main() {}", old);
+            Compiled("a", DateTime.UtcNow);
+
+            ScriptPackReadiness.Evaluate(Scan()).Should().BeNull();
+        }
+
+        [Test]
+        public void PackReadiness_NamesEveryStaleScriptAndOffersBuildThenPack()
+        {
+            Compiled("a", DateTime.UtcNow.AddHours(-2));
+            Source("a", "void main() {}", DateTime.UtcNow);
+
+            var warning = ScriptPackReadiness.Evaluate(Scan());
+
+            warning.Should().NotBeNull();
+            warning!.Headline.Should().Contain("1 stale compiled script");
+            warning.ConfirmLabel.Should().Be("Build then Pack");
+            warning.OutputLines.Should().ContainSingle()
+                .Which.Should().Be("a.ncs is older than a.nss");
+            warning.Message.Should().Contain("Build all scripts now");
+        }
     }
 
     /// <summary>Go-to-definition, find-references and rename.</summary>

@@ -3,6 +3,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Controls;
+using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Settings;
@@ -71,6 +72,7 @@ namespace SWLOR.Toolset.Shell
         private readonly ValidationViewModel _validation;
         private readonly Editors.EditorService _editorService;
         private readonly PackService _packService;
+        private readonly IEditorPromptService _prompts;
         private readonly ScriptCompileService? _compileService;
         private readonly ScriptReferenceViewModel? _scriptReference;
         private readonly ProblemsViewModel? _problems;
@@ -87,6 +89,7 @@ namespace SWLOR.Toolset.Shell
             ToolsetDockFactory factory,
             Editors.EditorService editorService,
             PackService packService,
+            IEditorPromptService prompts,
             OutputViewModel output,
             ValidationViewModel validation,
             ThumbnailService thumbnails,
@@ -110,6 +113,7 @@ namespace SWLOR.Toolset.Shell
             Display = display ?? throw new ArgumentNullException(nameof(display));
             _editorService = editorService ?? throw new ArgumentNullException(nameof(editorService));
             _packService = packService ?? throw new ArgumentNullException(nameof(packService));
+            _prompts = prompts ?? throw new ArgumentNullException(nameof(prompts));
             _output = output ?? throw new ArgumentNullException(nameof(output));
             _validation = validation ?? throw new ArgumentNullException(nameof(validation));
             ArgumentNullException.ThrowIfNull(validation);
@@ -484,6 +488,12 @@ namespace SWLOR.Toolset.Shell
                     return;
                 }
 
+                if (_compileService != null &&
+                    !await ResolveStaleScriptsBeforePackAsync().ConfigureAwait(true))
+                {
+                    return;
+                }
+
                 StatusText = "Packing module...";
                 var exitCode = await _packService.PackAsync(moduleRoot).ConfigureAwait(true);
                 StatusText = exitCode == 0 ? "Pack completed." : $"Pack failed (exit code {exitCode}) — see Output.";
@@ -492,6 +502,50 @@ namespace SWLOR.Toolset.Shell
             {
                 IsPacking = false;
             }
+        }
+
+        private async Task<bool> ResolveStaleScriptsBeforePackAsync()
+        {
+            var stale = _compileService!.ScanStale();
+            var warning = ScriptPackReadiness.Evaluate(stale);
+            if (warning == null)
+                return true;
+
+            _factory.Focus(_output);
+            _log.AppendLine(warning.Headline + ".");
+            foreach (var line in warning.OutputLines)
+                _log.AppendLine($"  {line}");
+
+            StatusText = $"{stale.Count} script(s) need rebuilding before pack.";
+
+            var buildFirst = await _prompts.ConfirmDestructiveAsync(
+                warning.Headline,
+                warning.Message,
+                warning.ConfirmLabel).ConfigureAwait(true);
+
+            if (!buildFirst)
+            {
+                _log.AppendLine("Pack cancelled: stale compiled scripts were not rebuilt.");
+                StatusText = "Pack cancelled: stale scripts need rebuilding.";
+                return false;
+            }
+
+            StatusText = "Building all scripts before pack...";
+            var (_, failed) = await _compileService.BuildAllAsync().ConfigureAwait(true);
+
+            var remaining = _compileService.ScanStale();
+            var remainingWarning = ScriptPackReadiness.Evaluate(remaining);
+            if (remainingWarning == null)
+                return true;
+
+            _log.AppendLine(failed == 0
+                ? "Pack cancelled: stale compiled scripts remain after Build All Scripts."
+                : $"Pack cancelled: Build All Scripts failed for {failed} script(s).");
+            foreach (var line in remainingWarning.OutputLines)
+                _log.AppendLine($"  {line}");
+
+            StatusText = "Pack cancelled: stale scripts remain.";
+            return false;
         }
 
         private bool CanMutateModule() => !IsModuleMutationLocked;

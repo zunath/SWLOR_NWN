@@ -1623,3 +1623,24 @@ kept as an alias, since two shortcuts for one action is just something else to d
   `FieldViewModelFactory`, so the resource picker went in there rather than in a switch of its own.
 - Left for a human: launch the toolset, open a conversation, and confirm it reads the way the
   mockups do. The render tests prove it draws; they do not prove it reads well.
+
+## Script editor improvement 1 - 2026-07-26 - Pack refuses to silently ship stale bytecode
+
+The pack path now runs the existing stale-script scan after Save All and before invoking the module
+packer. If any `.ncs` would ship stale, the Output panel lists each entry with `StaleScript.Describe()`
+and the prompt offers **Build then Pack**; cancelling aborts the pack, and accepting runs Build All
+Scripts, rescans, and only packs if the stale list clears.
+
+- **Why.** `ModulePacker` copies `Module/nss` and `Module/ncs` verbatim. That means source edits do
+  not matter in game until bytecode is rebuilt, so packing with stale artifacts is worse than a normal
+  validation miss: it creates a module that looks current in git but runs old code.
+- **Decision.** The warning text and stale-entry list live in `Domain.Script.ScriptPackReadiness`, so
+  the count/message/output contract is testable without constructing Avalonia shell state. The shell
+  stays responsible for UI decisions: focus Output, prompt through `IEditorPromptService`, run Build
+  All Scripts, and call the packer only after the second scan is clean.
+- **Deliberately not done.** There is no "pack anyway" button. The safe path is build then pack, and a
+  failed or declined build leaves the module unpacked rather than asking the builder to reason about
+  which stale artifact is acceptable.
+- **Verification.** `ScriptStalenessScannerTests` now pins both clean readiness and the stale warning
+  naming the script. Focused run: `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj
+  --no-build --filter "FullyQualifiedName~ScriptStalenessScannerTests"` - 8 passed.

@@ -340,7 +340,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             if (_sources.IsKnown(_field.Source, stored))
             {
                 Status = BehaviorValueStatus.Resolves;
-                StatusText = "resolves";
+                StatusText = null;
                 return;
             }
 

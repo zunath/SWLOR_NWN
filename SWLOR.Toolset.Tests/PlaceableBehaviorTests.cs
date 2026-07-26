@@ -452,6 +452,9 @@ namespace SWLOR.Toolset.Tests
             gallery.PickChoiceCommand.Execute(gallery.GalleryTiles.Single());
             new VarTable(document.Root).Single(entry => entry.Name == "RESOURCE_PROP")
                 .StringValue.Should().Be("visible_prop");
+            gallery.Status.Should().Be(BehaviorValueStatus.Resolves);
+            gallery.StatusText.Should().BeNull(
+                "a valid selection needs no redundant success label beside it");
 
             gallery.CanClearChoice.Should().BeTrue();
             gallery.ClearChoiceCommand.Execute(null);

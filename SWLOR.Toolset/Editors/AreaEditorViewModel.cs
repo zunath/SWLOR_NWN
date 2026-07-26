@@ -334,10 +334,23 @@ namespace SWLOR.Toolset.Editors
             _openBlueprint?.Invoke(type, instance.TemplateResRef);
         }
 
+        /// <summary>
+        /// True only when "Edit object..." would actually open something.
+        /// </summary>
+        /// <remarks>
+        /// A non-null <see cref="InstanceMarker.TemplateResRef"/> was not enough. An instance may
+        /// reference a blueprint that lives only in the Standard palette, a hak, or the base game, and
+        /// <c>EditorService.TryOpenEditor</c> needs a module-local file - so the command lit up for
+        /// perfectly valid instances and then answered with "File not found". A blank resref enabled it
+        /// too, for a command whose own body refuses blanks. This asks the same question the open path
+        /// asks, so the button is enabled exactly when it works.
+        /// </remarks>
         private bool CanEditSelectedBlueprint() =>
-            SelectedSceneInstance is { TemplateResRef: not null } instance &&
-            MapKindToSectionType(instance.Kind) != null &&
-            _openBlueprint != null;
+            _openBlueprint != null &&
+            SelectedSceneInstance is { } instance &&
+            !string.IsNullOrWhiteSpace(instance.TemplateResRef) &&
+            MapKindToSectionType(instance.Kind) is { } type &&
+            File.Exists(_workspace.GetResourcePath(type, instance.TemplateResRef));
 
         /// <summary>
         /// Maps a 3D-view instance's kind to the blueprint type of the section that lists it, or
@@ -547,7 +560,19 @@ namespace SWLOR.Toolset.Editors
         /// cannot either - it does not stamp a tile, it solves for one, and the solver chooses the
         /// facing that matches the neighbours.
         /// </summary>
-        public bool CanRotatePendingTile => _pendingTile is { Columns: 1, Rows: 1, Terrain: null };
+        public bool CanRotatePendingTile => IsRotatable(_pendingTile);
+
+        /// <summary>
+        /// Whether <paramref name="entry"/> is a tile a builder may turn: a single cell, and not a
+        /// terrain brush (which picks its own tiles and so has no one orientation to set).
+        /// </summary>
+        /// <remarks>
+        /// Takes the entry rather than reading <see cref="_pendingTile"/>, because the commit path has
+        /// already cleared that field by the time it needs the answer - which is how every rotated tile
+        /// came to be written at orientation 0 while the HUD reported 90, 180 or 270.
+        /// </remarks>
+        private static bool IsRotatable(TilePaletteEntry? entry) =>
+            entry is { Columns: 1, Rows: 1, Terrain: null };
 
         /// <summary>The armed tile's facing, as the compass label the status line shows.</summary>
         public string PendingTileFacing => _pendingTileOrientation switch
@@ -645,7 +670,9 @@ namespace SWLOR.Toolset.Editors
             var width = AreaTiles.Width(are);
             var height = AreaTiles.Height(are);
 
-            var orientation = CanRotatePendingTile ? _pendingTileOrientation : 0;
+            // Asked of the captured entry, not the field: _pendingTile was cleared at the top of this
+            // method, so CanRotatePendingTile would answer false for every placement.
+            var orientation = IsRotatable(entry) ? _pendingTileOrientation : 0;
             var writes = new List<(int Column, int Row, int TileId)>();
             for (var row = 0; row < entry.Rows; row++)
             {
@@ -1006,6 +1033,11 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Called by the view when the 3D-view rotate gizmo releases (GlAreaControl.InstanceRotated): mirrors <see cref="MoveSelectedInstance"/> for heading.</summary>
         public void RotateSelectedInstance(InstanceMarker instance, Vector2 newOrientation)
         {
+            // Guarded here as well as on CanRotateSelection: the gizmo reaches this directly, and a
+            // sound has no heading to write - the edit would report success having changed nothing.
+            if (instance.Kind == InstanceMarkerKind.Sound)
+                return;
+
             var section = SectionForKind(instance.Kind);
             var index = IndexWithinKind(instance);
             if (section == null || index < 0)
@@ -1060,8 +1092,17 @@ namespace SWLOR.Toolset.Editors
         private const float RotateStepRadians = MathF.PI / 8f;
 
         /// <summary>True when there is a selected instance this editor can actually rotate.</summary>
+        /// <remarks>
+        /// Ambient sounds are excluded even though they have an instance-list section like everything
+        /// else: they carry no heading, so <c>InstanceFieldMap.SetOrientation</c> deliberately writes
+        /// nothing for them. Left enabled, the buttons and the gizmo looked available, produced no edit,
+        /// and the scene came back at the original heading - a control that answers every press by doing
+        /// nothing reads as a broken editor, not an inapplicable one.
+        /// </remarks>
         public bool CanRotateSelection =>
-            SelectedSceneInstance is { } instance && SectionForKind(instance.Kind) != null;
+            SelectedSceneInstance is { } instance &&
+            instance.Kind != InstanceMarkerKind.Sound &&
+            SectionForKind(instance.Kind) != null;
 
         [RelayCommand]
         private void RotateSelectionClockwise() => RotateSelectionBy(-RotateStepRadians);

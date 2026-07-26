@@ -99,5 +99,18 @@ namespace SWLOR.Toolset.Tests
             service.GetString(1).Should().BeNull();
             warning.Should().Contain("optional base-game dialog.tlk");
         }
+
+        [Test]
+        public void TlkService_DeferredLoad_DoesNotReadFilesUntilFirstLookup()
+        {
+            var missingCustom = Path.Combine(
+                Path.GetTempPath(), "missing-custom-" + Guid.NewGuid().ToString("N") + ".json");
+
+            var service = TlkService.LoadDeferredWithOptionalBase(missingCustom, baseTlkPath: null);
+
+            Action firstLookup = () => service.GetCustomText(0);
+            firstLookup.Should().Throw<FileNotFoundException>(
+                "constructing the service must not put TLK parsing on the interactive startup path");
+        }
     }
 }

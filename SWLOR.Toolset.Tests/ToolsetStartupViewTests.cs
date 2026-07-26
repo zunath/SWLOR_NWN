@@ -7,7 +7,7 @@ using SWLOR.Toolset.Shell;
 namespace SWLOR.Toolset.Tests
 {
     /// <summary>
-    /// Guards the lightweight surface that appears before game-data services finish composing.
+    /// Guards the lightweight surface that appears before the interactive shell finishes composing.
     /// </summary>
     public class ToolsetStartupViewTests
     {
@@ -22,7 +22,7 @@ namespace SWLOR.Toolset.Tests
                 "the first paint must not wait for the game-data-backed shell");
             window.FindControl<Border>("StartupPanel")!.IsVisible.Should().BeTrue();
             window.FindControl<ProgressBar>("StartupProgress")!.IsIndeterminate.Should().BeTrue();
-            window.FindControl<TextBlock>("StartupStatus")!.Text.Should().Contain("become available together");
+            window.FindControl<TextBlock>("StartupStatus")!.Text.Should().Contain("loading in the background");
         }
 
         [AvaloniaTest]

@@ -150,6 +150,43 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task FromHakBuilderConfigDeferred_LoadsBaseLayerOffTheCallingThread()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempRoot);
+            var configPath = Path.Combine(tempRoot, "hakbuilder.json");
+            File.WriteAllText(configPath, """{"HakList":[]}""");
+
+            using var factoryStarted = new ManualResetEventSlim();
+            using var releaseFactory = new ManualResetEventSlim();
+
+            try
+            {
+                var index = ResourceIndex.FromHakBuilderConfigDeferred(
+                    configPath,
+                    tempRoot,
+                    () =>
+                    {
+                        factoryStarted.Set();
+                        releaseFactory.Wait();
+                        return null;
+                    });
+
+                factoryStarted.Wait(TimeSpan.FromSeconds(2)).Should().BeTrue();
+                index.InitializationTask.IsCompleted.Should().BeFalse(
+                    "the caller must receive the index before optional base-game archives finish loading");
+
+                releaseFactory.Set();
+                await index.InitializationTask;
+            }
+            finally
+            {
+                releaseFactory.Set();
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
         public void NwnInstallLocator_WhenInstallFound_KeyBifCatalogReportsManyResources()
         {
             var installPath = NwnInstallLocator.Locate();

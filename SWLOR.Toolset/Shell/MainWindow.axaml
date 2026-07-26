@@ -98,8 +98,8 @@
     </Border>
     <Grid Grid.Row="2">
       <DockControl Layout="{Binding Layout}" Margin="4" IsEnabled="{Binding !IsModuleMutationLocked}" />
-      <!-- First-paint surface. App composes game-data services on a worker and hides this only when
-           the real shell is ready, so startup stays responsive without exposing half-loaded tools. -->
+      <!-- First-paint surface. App composes the lightweight shell on a worker and removes this before
+           slower game-data indexes finish; individual features continue loading behind the workspace. -->
       <Border x:Name="StartupPanel"
               Margin="4"
               Background="{DynamicResource ChromeBrush}">
@@ -115,7 +115,7 @@
                        Height="4"
                        IsIndeterminate="True" />
           <TextBlock x:Name="StartupStatus"
-                     Text="Palettes, game resources, and source indexes will become available together."
+                     Text="Opening the workspace. Game resources will continue loading in the background."
                      TextAlignment="Center"
                      TextWrapping="Wrap"
                      Foreground="{DynamicResource InkSecondaryBrush}" />

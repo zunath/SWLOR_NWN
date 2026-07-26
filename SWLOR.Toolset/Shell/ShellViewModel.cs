@@ -70,7 +70,7 @@ namespace SWLOR.Toolset.Shell
         private readonly ToolsetDockFactory _factory;
         private readonly OutputViewModel _output;
         private readonly ValidationViewModel _validation;
-        private readonly Editors.EditorService _editorService;
+        private readonly Lazy<Editors.EditorService> _editorService;
         private readonly PackService _packService;
         private readonly IEditorPromptService _prompts;
         private readonly ScriptCompileService? _compileService;
@@ -87,7 +87,7 @@ namespace SWLOR.Toolset.Shell
             PaletteViewModel palette,
             Viewport.ViewportDisplayOptions display,
             ToolsetDockFactory factory,
-            Editors.EditorService editorService,
+            Func<Editors.EditorService> editorService,
             PackService packService,
             IEditorPromptService prompts,
             OutputViewModel output,
@@ -111,7 +111,10 @@ namespace SWLOR.Toolset.Shell
             _search = search ?? throw new ArgumentNullException(nameof(search));
             _palette = palette ?? throw new ArgumentNullException(nameof(palette));
             Display = display ?? throw new ArgumentNullException(nameof(display));
-            _editorService = editorService ?? throw new ArgumentNullException(nameof(editorService));
+            ArgumentNullException.ThrowIfNull(editorService);
+            _editorService = new Lazy<Editors.EditorService>(
+                editorService,
+                LazyThreadSafetyMode.ExecutionAndPublication);
             _packService = packService ?? throw new ArgumentNullException(nameof(packService));
             _prompts = prompts ?? throw new ArgumentNullException(nameof(prompts));
             _output = output ?? throw new ArgumentNullException(nameof(output));
@@ -134,7 +137,7 @@ namespace SWLOR.Toolset.Shell
             if (_problems != null)
             {
                 _problems.NavigateRequested += row =>
-                    _editorService.NavigateToScriptLine(row.ResRef, row.Diagnostic.Line);
+                    _editorService.Value.NavigateToScriptLine(row.ResRef, row.Diagnostic.Line);
 
                 // The authoritative tier. Compiler findings replace only the compiler's own rows, so
                 // they survive the editor's quarter-second idle re-analysis instead of being wiped by it.
@@ -257,7 +260,7 @@ namespace SWLOR.Toolset.Shell
         [RelayCommand(CanExecute = nameof(CanMutateModule))]
         private async Task SaveAll()
         {
-            var saved = await _editorService.SaveAllAsync().ConfigureAwait(true);
+            var saved = await _editorService.Value.SaveAllAsync().ConfigureAwait(true);
             StatusText = saved ? "All open editors saved." : "Save cancelled or failed - see Output.";
         }
 
@@ -324,7 +327,7 @@ namespace SWLOR.Toolset.Shell
             IsBuildingScripts = true;
             try
             {
-                if (!await _editorService.SaveScriptsAsync(compileOnSave: false).ConfigureAwait(true))
+                if (!await _editorService.Value.SaveScriptsAsync(compileOnSave: false).ConfigureAwait(true))
                 {
                     StatusText = "Build cancelled: an open script could not be saved.";
                     return;
@@ -465,7 +468,9 @@ namespace SWLOR.Toolset.Shell
                 return Task.FromResult(false);
             }
 
-            return _editorService.TryPrepareApplicationCloseAsync();
+            return _editorService.IsValueCreated
+                ? _editorService.Value.TryPrepareApplicationCloseAsync()
+                : Task.FromResult(true);
         }
 
         [RelayCommand(CanExecute = nameof(CanMutateModule))]
@@ -481,7 +486,7 @@ namespace SWLOR.Toolset.Shell
             IsPacking = true;
             try
             {
-                if (!await _editorService.SaveAllAsync().ConfigureAwait(true))
+                if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
                 {
                     StatusText = "Pack cancelled because an open editor could not be saved.";
                     _log.AppendLine("Pack aborted: one or more open editors were not saved.");
@@ -621,6 +626,9 @@ namespace SWLOR.Toolset.Shell
 
             _settings.AddRecentModule(moduleRoot);
             WindowTitle = $"SWLOR Toolset - {Path.GetFileName(Path.GetDirectoryName(moduleRoot)) ?? "Module"}";
+            // Areas, dialogs, and scripts require only directory enumeration. Publish them now so the
+            // builder can begin work while friendly blueprint names and search data are still indexing.
+            _explorer.Initialize();
             _fileWatcher.Watch(moduleRoot);
 
             var catalog = _workspaceContext.Catalog;
@@ -660,9 +668,9 @@ namespace SWLOR.Toolset.Shell
                     }
                     _explorer.RefreshFromCatalog(catalog);
                     _search.Refresh();
-                    // Explorer and Palette intentionally receive their first population here. Building
-                    // provisional trees above and rebuilding them once names arrived doubled the startup
-                    // work and could make the just-opened window stutter on large modules.
+                    // Explorer is refreshed with friendly names after its immediate directory-backed
+                    // population. Palette stays deferred because materializing thousands of tiles on the
+                    // UI thread is not part of the time-to-usable path.
                     _palette.Refresh();
                     StatusText = $"Catalog ready: {catalog.Entries.Count} entries indexed.";
 

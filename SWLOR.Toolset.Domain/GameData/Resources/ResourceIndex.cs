@@ -67,7 +67,8 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         /// </summary>
         public readonly record struct HakLayer(string Name, string DirectoryPath);
 
-        private readonly KeyBifCatalog? _baseLayer;
+        private KeyBifCatalog? _baseLayer;
+        private readonly Func<KeyBifCatalog?>? _baseLayerFactory;
         private readonly IReadOnlyList<HakLayer> _hakLayerSpecs;
         private List<(string Name, HakDirectoryCatalog Catalog)> _hakLayers = new();
 
@@ -102,8 +103,31 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             InitializationTask = Task.Run(Initialize);
         }
 
+        private ResourceIndex(
+            Func<KeyBifCatalog?>? baseLayerFactory,
+            IReadOnlyList<HakLayer> hakLayersInOrder)
+        {
+            _baseLayerFactory = baseLayerFactory;
+            _hakLayerSpecs = hakLayersInOrder ?? Array.Empty<HakLayer>();
+            InitializationTask = Task.Run(Initialize);
+        }
+
         private void Initialize()
         {
+            if (_baseLayerFactory != null)
+            {
+                try
+                {
+                    _baseLayer = _baseLayerFactory();
+                }
+                catch (Exception)
+                {
+                    // Base-game archives are optional. A damaged or disappearing install must not
+                    // prevent the HAK layers from becoming available.
+                    _baseLayer = null;
+                }
+            }
+
             var scanned = new List<(string Name, HakDirectoryCatalog Catalog)>(_hakLayerSpecs.Count);
 
             foreach (var layer in _hakLayerSpecs)
@@ -218,6 +242,28 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             string? swlorHaksRoot = null,
             KeyBifCatalog? baseLayer = null)
         {
+            var layers = ReadHakLayers(hakBuilderConfigPath, swlorHaksRoot);
+            return new ResourceIndex(baseLayer, layers);
+        }
+
+        /// <summary>
+        /// Builds the inexpensive HAK-layer specification immediately while loading the optional
+        /// base-game KEY index on <see cref="InitializationTask"/>. This keeps archive parsing off
+        /// the application startup path without changing the synchronous lookup contract.
+        /// </summary>
+        public static ResourceIndex FromHakBuilderConfigDeferred(
+            string hakBuilderConfigPath,
+            string? swlorHaksRoot = null,
+            Func<KeyBifCatalog?>? baseLayerFactory = null)
+        {
+            var layers = ReadHakLayers(hakBuilderConfigPath, swlorHaksRoot);
+            return new ResourceIndex(baseLayerFactory, layers);
+        }
+
+        private static IReadOnlyList<HakLayer> ReadHakLayers(
+            string hakBuilderConfigPath,
+            string? swlorHaksRoot)
+        {
             var configFullPath = Path.GetFullPath(hakBuilderConfigPath);
             var configDirectory = Path.GetDirectoryName(configFullPath)
                 ?? throw new InvalidOperationException(
@@ -241,7 +287,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
                 layers.Add(new HakLayer(hak.Name, directoryPath));
             }
 
-            return new ResourceIndex(baseLayer, layers);
+            return layers;
         }
 
         private static readonly JsonSerializerOptions JsonOptions = new()

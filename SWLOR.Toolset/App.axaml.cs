@@ -54,44 +54,24 @@ namespace SWLOR.Toolset
         }
 
         /// <summary>
-        /// Builds every game-data-backed service after the first window has painted. The bootstrap
-        /// panel keeps the shell visibly alive but non-interactive until the immutable service graph
-        /// is complete; this avoids injecting permanent null dependencies merely to make startup fast.
+        /// Composes only the lightweight object graph after the first window has painted, attaches the
+        /// usable shell, and then lets game-data indexes continue warming in the background.
         /// </summary>
         private async Task BootstrapAsync(MainWindow window, ToolsetSettings settings)
         {
             var stopwatch = Stopwatch.StartNew();
+            ServiceProvider? result = null;
 
             try
             {
-                var result = await Task.Run(() =>
+                result = await Task.Run(() =>
                 {
                     var services = new ServiceCollection();
                     ConfigureServices(services, settings);
-                    var provider = services.BuildServiceProvider();
-
-                    try
-                    {
-                        // ResourceIndex deliberately scans hak folders on its own worker. Finish that
-                        // scan here so the first palette/viewport action cannot inherit the wait and
-                        // synchronously block the UI thread.
-                        provider.GetService<ResourceIndex>()?.EnsureInitialized();
-
-                        // Some remaining indexes (notably GameCodeIndex and the 2DA lookups) are built
-                        // when first resolved. Warm only those data services here. Shell resolution
-                        // stays on the UI thread because the Palette creates Avalonia bitmap resources
-                        // for its type chips as part of its otherwise-light constructor.
-                        WarmGameDataServices(provider);
-                        return provider;
-                    }
-                    catch
-                    {
-                        provider.Dispose();
-                        throw;
-                    }
+                    return services.BuildServiceProvider();
                 }).ConfigureAwait(true);
 
-                // The user may close the lightweight window while game data is still loading.
+                // The user may close the lightweight window during the short composition step.
                 if (!window.IsVisible)
                 {
                     result.Dispose();
@@ -100,40 +80,82 @@ namespace SWLOR.Toolset
 
                 _serviceProvider = result;
                 var shell = result.GetRequiredService<ShellViewModel>();
+                window.AttachViewModel(shell);
+
                 stopwatch.Stop();
                 result.GetRequiredService<OutputLogService>().AppendLine(
-                    $"Startup services and game-data indexes loaded in {stopwatch.ElapsedMilliseconds}ms.");
+                    $"Interactive shell ready in {stopwatch.ElapsedMilliseconds}ms; game data is loading in the background.");
 
-                window.AttachViewModel(shell);
+                _ = WarmGameDataServicesAsync(result);
                 await shell.InitializeAsync().ConfigureAwait(true);
             }
             catch (Exception ex)
             {
                 stopwatch.Stop();
+                if (result != null)
+                {
+                    if (ReferenceEquals(_serviceProvider, result))
+                        _serviceProvider = null;
+                    result.Dispose();
+                }
+
                 window.ShowStartupError(
                     $"Toolset startup failed after {stopwatch.ElapsedMilliseconds}ms: {ex.GetBaseException().Message}");
             }
         }
 
         /// <summary>
-        /// Forces every immutable service that scans or parses game data to initialize on the bootstrap
-        /// worker. Services not present because the repository layout is unavailable are simply skipped.
+        /// Warms immutable game-data services without holding the shell hostage. Features that consume
+        /// one of these services can wait for that service while the module explorer and local editors
+        /// remain usable.
         /// </summary>
-        private static void WarmGameDataServices(IServiceProvider provider)
+        private static async Task WarmGameDataServicesAsync(IServiceProvider provider)
         {
-            _ = provider.GetService<IGameCodeIndex>();
-            _ = provider.GetService<AppearanceService>();
-            _ = provider.GetService<PortraitService>();
-            _ = provider.GetService<PlaceableAppearanceService>();
-            _ = provider.GetService<PlaceableModelCatalog>();
-            _ = provider.GetService<DoorTypeService>();
-            _ = provider.GetService<SoundService>();
-            _ = provider.GetService<TwoDaLookupService>();
-            _ = provider.GetService<WaypointAppearanceService>();
-            _ = provider.GetService<BaseItemIconService>();
-            _ = provider.GetService<Domain.GameData.Lookups.TilesetCatalog>();
-            _ = provider.GetService<Domain.Render.TileModelCache>();
-            _ = provider.GetService<Domain.Render.TileWalkmeshCache>();
+            var stopwatch = Stopwatch.StartNew();
+            var log = provider.GetRequiredService<OutputLogService>();
+
+            try
+            {
+                var resourceTask = Task.Run(
+                    () => provider.GetService<ResourceIndex>()?.EnsureInitialized());
+                var tlkTask = Task.Run(
+                    () => provider.GetService<TlkService>()?.GetCustomText(0));
+                var editorTask = Task.Run(() =>
+                {
+                    _ = provider.GetService<IGameCodeIndex>();
+                    // EditorService is deliberately absent from the shell's constructor graph. Build
+                    // it beside the source index so an early document click does not inherit that cost.
+                    _ = provider.GetService<Editors.EditorService>();
+                });
+
+                await Task.WhenAll(resourceTask, tlkTask, editorTask).ConfigureAwait(false);
+
+                await Task.Run(() =>
+                {
+                    _ = provider.GetService<AppearanceService>();
+                    _ = provider.GetService<PortraitService>();
+                    _ = provider.GetService<PlaceableAppearanceService>();
+                    _ = provider.GetService<PlaceableModelCatalog>();
+                    _ = provider.GetService<DoorTypeService>();
+                    _ = provider.GetService<SoundService>();
+                    _ = provider.GetService<TwoDaLookupService>();
+                    _ = provider.GetService<WaypointAppearanceService>();
+                    _ = provider.GetService<BaseItemIconService>();
+                    _ = provider.GetService<Domain.GameData.Lookups.TilesetCatalog>();
+                    _ = provider.GetService<Domain.Render.TileModelCache>();
+                    _ = provider.GetService<Domain.Render.TileWalkmeshCache>();
+                }).ConfigureAwait(false);
+
+                stopwatch.Stop();
+                log.AppendLine($"Background game data ready in {stopwatch.ElapsedMilliseconds}ms.");
+            }
+            catch (Exception ex)
+            {
+                stopwatch.Stop();
+                log.AppendLine(
+                    $"Background game-data load failed after {stopwatch.ElapsedMilliseconds}ms: " +
+                    ex.GetBaseException().Message);
+            }
         }
 
         /// <summary>
@@ -284,8 +306,8 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<OutputLogService>(),
                 sp.GetRequiredService<Func<Editors.EditorService>>(),
-                sp.GetService<IGameCodeIndex>(),
-                sp.GetService<ResourceIndex>()));
+                () => sp.GetService<IGameCodeIndex>(),
+                () => sp.GetService<ResourceIndex>()));
             // Constructed explicitly so the settings the layout's divider positions live in are wired in
             // rather than left to constructor selection.
             services.AddSingleton(sp => new ToolsetDockFactory(
@@ -349,35 +371,31 @@ namespace SWLOR.Toolset
             // Reported rather than left silent. Without the base game the Standard palette is empty and
             // base-game models and category names are missing - all of which look like bugs in this
             // toolset unless it says so, which is exactly how it read before this line existed.
-            string? tlkWarning = null;
             if (hasTlk)
             {
                 // The base game's dialog.tlk as well as SWLOR's own, because the base-game palettes name
                 // their categories by strref into it - without this the Standard palette's folders read
                 // as "Category 6782" instead of "Containers & Switches". It lives under lang/<code>/data,
                 // not the data folder the resource index uses.
-                services.AddSingleton(TlkService.LoadWithOptionalBase(
-                    swTlkJsonPath, FindBaseTlk(nwnInstallPath), out tlkWarning));
+                services.AddSingleton(sp => TlkService.LoadDeferredWithOptionalBase(
+                    swTlkJsonPath,
+                    FindBaseTlk(nwnInstallPath),
+                    warning => sp.GetRequiredService<OutputLogService>().AppendLine(warning)));
             }
 
-            ReportNwnInstall(services, nwnInstallPath, settings.NwnInstallOverride, tlkWarning);
+            ReportNwnInstall(services, nwnInstallPath, settings.NwnInstallOverride);
 
             if (File.Exists(hakBuilderConfigPath) && Directory.Exists(swlorHaksRoot))
             {
-                // Attach the base-game KEY/BIF layer when an NWN:EE install is present so base
-                // resources (models, base blueprints) resolve; hak-only otherwise.
-                KeyBifCatalog? baseLayer = null;
-                try
-                {
-                    if (nwnInstallPath != null)
-                        baseLayer = KeyBifCatalog.Load(Path.Combine(nwnInstallPath, "data"));
-                }
-                catch (Exception)
-                {
-                    // A broken install must not stop the toolset; hak layers still work.
-                }
-
-                services.AddSingleton(ResourceIndex.FromHakBuilderConfig(hakBuilderConfigPath, swlorHaksRoot, baseLayer));
+                // KEY parsing and the ~130-folder HAK scan both belong to ResourceIndex's background
+                // initialization task. Creating the service must stay cheap enough for first paint.
+                Func<KeyBifCatalog?>? loadBaseLayer = nwnInstallPath == null
+                    ? null
+                    : () => KeyBifCatalog.Load(Path.Combine(nwnInstallPath, "data"));
+                services.AddSingleton(ResourceIndex.FromHakBuilderConfigDeferred(
+                    hakBuilderConfigPath,
+                    swlorHaksRoot,
+                    loadBaseLayer));
 
                 // The area 3D view needs both, and both need the ResourceIndex above -
                 // registered inside this same guard so resolving either never hits a missing
@@ -487,16 +505,13 @@ namespace SWLOR.Toolset
         /// service that does not exist yet while services are still being registered.
         /// </summary>
         private static void ReportNwnInstall(
-            IServiceCollection services, string? resolvedPath, string? overridePath, string? tlkWarning)
+            IServiceCollection services, string? resolvedPath, string? overridePath)
         {
             var message = resolvedPath != null
                 ? $"NWN:EE install: {resolvedPath}"
                 : "No NWN:EE install found - base-game blueprints, models and the Standard palette will be " +
                   "unavailable. Checked: " + string.Join("; ", NwnInstallLocator.ProbedPaths(overridePath)) +
                   ". Set an explicit path in settings.json (nwnInstallOverride) to override.";
-
-            if (!string.IsNullOrWhiteSpace(tlkWarning))
-                message += Environment.NewLine + tlkWarning;
 
             services.AddSingleton(new StartupNotice(message));
         }

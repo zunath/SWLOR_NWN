@@ -34,7 +34,8 @@ namespace SWLOR.Toolset.Shell
 
         /// <summary>
         /// Creates the lightweight first-paint window. Its menus and workspace remain disabled until
-        /// <see cref="AttachViewModel"/> replaces the startup panel with the fully composed shell.
+        /// <see cref="AttachViewModel"/> replaces the startup panel with the interactive shell while
+        /// optional game-data indexes continue loading.
         /// </summary>
         public MainWindow(ToolsetSettings? settings) : this()
         {

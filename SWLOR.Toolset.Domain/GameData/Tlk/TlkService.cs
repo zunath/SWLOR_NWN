@@ -13,13 +13,22 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
     {
         public const uint CustomTlkBase = 16777216;
 
-        private readonly TlkJsonFile _customTlk;
-        private readonly TlkFile? _baseTlk;
+        private readonly Lazy<(TlkJsonFile Custom, TlkFile? Base)> _data;
 
         public TlkService(TlkJsonFile customTlk, TlkFile? baseTlk = null)
         {
-            _customTlk = customTlk ?? throw new ArgumentNullException(nameof(customTlk));
-            _baseTlk = baseTlk;
+            ArgumentNullException.ThrowIfNull(customTlk);
+            _data = new Lazy<(TlkJsonFile, TlkFile?)>(
+                () => (customTlk, baseTlk),
+                LazyThreadSafetyMode.ExecutionAndPublication);
+        }
+
+        private TlkService(Func<(TlkJsonFile Custom, TlkFile? Base)> load)
+        {
+            ArgumentNullException.ThrowIfNull(load);
+            _data = new Lazy<(TlkJsonFile, TlkFile?)>(
+                load,
+                LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
         /// <summary>
@@ -43,21 +52,50 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             string? baseTlkPath,
             out string? warning)
         {
+            var data = LoadDataWithOptionalBase(customTlkJsonPath, baseTlkPath, out warning);
+            return new TlkService(data.Custom, data.Base);
+        }
+
+        /// <summary>
+        /// Creates the shared resolver immediately but defers parsing both TLK files until the first
+        /// lookup. App startup uses this form so loading hundreds of thousands of strings never gates
+        /// the interactive shell; the background catalog naturally triggers the first lookup.
+        /// </summary>
+        public static TlkService LoadDeferredWithOptionalBase(
+            string customTlkJsonPath,
+            string? baseTlkPath,
+            Action<string>? reportWarning = null)
+        {
+            return new TlkService(() =>
+            {
+                var data = LoadDataWithOptionalBase(customTlkJsonPath, baseTlkPath, out var warning);
+                if (warning != null)
+                    reportWarning?.Invoke(warning);
+
+                return data;
+            });
+        }
+
+        private static (TlkJsonFile Custom, TlkFile? Base) LoadDataWithOptionalBase(
+            string customTlkJsonPath,
+            string? baseTlkPath,
+            out string? warning)
+        {
             var customTlk = TlkJsonFile.Load(customTlkJsonPath);
             warning = null;
             if (baseTlkPath == null)
-                return new TlkService(customTlk);
+                return (customTlk, null);
 
             try
             {
-                return new TlkService(customTlk, TlkReader.Read(baseTlkPath));
+                return (customTlk, TlkReader.Read(baseTlkPath));
             }
             catch (Exception ex)
             {
                 warning =
                     $"Could not load optional base-game dialog.tlk '{baseTlkPath}': {ex.Message}. " +
                     "Custom SWLOR text remains available.";
-                return new TlkService(customTlk);
+                return (customTlk, null);
             }
         }
 
@@ -71,12 +109,12 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             if (strref >= CustomTlkBase)
                 return GetCustomText((int)(strref - CustomTlkBase));
 
-            return _baseTlk?.GetString(strref);
+            return _data.Value.Base?.GetString(strref);
         }
 
         /// <summary>
         /// Convenience accessor for a custom TLK entry by its raw (non-offset) id.
         /// </summary>
-        public string? GetCustomText(int id) => _customTlk.GetText(id);
+        public string? GetCustomText(int id) => _data.Value.Custom.GetText(id);
     }
 }

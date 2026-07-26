@@ -20,8 +20,8 @@ namespace SWLOR.Toolset.Shell.Panels
     public partial class ValidationViewModel : Tool
     {
         private readonly WorkspaceContext _workspaceContext;
-        private readonly IGameCodeIndex? _gameCodeIndex;
-        private readonly Domain.GameData.Resources.ResourceIndex? _resourceIndex;
+        private readonly Func<IGameCodeIndex?>? _gameCodeIndex;
+        private readonly Func<Domain.GameData.Resources.ResourceIndex?>? _resourceIndex;
         private readonly OutputLogService _log;
         private readonly Func<EditorService> _editorService;
         private readonly ModuleValidator _validator = new();
@@ -38,8 +38,8 @@ namespace SWLOR.Toolset.Shell.Panels
             WorkspaceContext workspaceContext,
             OutputLogService log,
             Func<EditorService> editorService,
-            IGameCodeIndex? gameCodeIndex = null,
-            Domain.GameData.Resources.ResourceIndex? resourceIndex = null)
+            Func<IGameCodeIndex?>? gameCodeIndex = null,
+            Func<Domain.GameData.Resources.ResourceIndex?>? resourceIndex = null)
         {
             _resourceIndex = resourceIndex;
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
@@ -73,8 +73,12 @@ namespace SWLOR.Toolset.Shell.Panels
                 }
 
                 Issues.Clear();
+                StatusText = "Loading validation indexes...";
+                var gameCodeIndex = await Task.Run(
+                    () => _gameCodeIndex?.Invoke()).ConfigureAwait(true);
+                var resourceIndex = _resourceIndex?.Invoke();
                 StatusText = "Running validation...";
-                var context = new ValidationContext(workspace, _gameCodeIndex, _resourceIndex);
+                var context = new ValidationContext(workspace, gameCodeIndex, resourceIndex);
                 var result = await _validator.RunAsync(context).ConfigureAwait(true);
 
                 foreach (var issue in result.Issues)

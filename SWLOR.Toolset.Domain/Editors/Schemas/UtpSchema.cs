@@ -8,8 +8,38 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
     /// the module corpus (e.g. Module\utp\_mdrn_chair.utp.json). ItemList (placeable inventory
     /// contents) is intentionally not exposed here; it needs its own dedicated editor.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The placeable editor is four tabs. Basic and Advanced come from this schema; Appearance and
+    /// Behavior are views of their own - a model grid and a behavior list - rather than lists of
+    /// fields, and Variables appears only when there is something raw left to edit.
+    /// </para>
+    /// <para>
+    /// A lot of what Aurora showed is deliberately absent, in every case because the corpus says it
+    /// is not authored: no trap fields (0 trapped blueprints and 2 trapped instances module-wide),
+    /// no saving throws (8,353 of 8,355 blueprints carry Aurora's untouched 16/0/0), no hardness
+    /// (8,199 carry the default 5), no portrait (6,295 have none, and a portrait is the wrong
+    /// artwork for a placeable anyway), no body bag (0 on all 98,856 instances), no faction (two
+    /// values cover 8,329 blueprints), no lock fields (2 locked blueprints, 63 locked instances,
+    /// key-required on two objects), and no legacy .dlg conversation slot - SWLOR dialogs are C#
+    /// classes, reached through the Conversation behavior instead.
+    /// </para>
+    /// <para>
+    /// Absent from the UI is not absent from the file: every one of those fields is written back
+    /// exactly as stored. The editor never normalizes what it does not show.
+    /// </para>
+    /// <para>
+    /// Appearance is not declared here on purpose. As a dropdown it forced the editor to refuse to
+    /// open the 2,982 blueprints whose appearance row is blank in placeables.2da, because a combo
+    /// box cannot represent a value it has no option for. The Appearance tab keeps and marks the
+    /// stored row instead.
+    /// </para>
+    /// </remarks>
     public static class UtpSchema
     {
+        public const string BasicTab = "Basic";
+        public const string AdvancedTab = "Advanced";
+
         public static EditorSchema Build()
         {
             return new EditorSchema
@@ -20,58 +50,40 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                     new FieldGroup
                     {
                         Title = "Identity",
+                        Tab = BasicTab,
                         Fields = new[]
                         {
                             new FieldDescriptor { Label = "Name", FieldName = "LocName", Kind = EditorKind.LocString, FieldType = GffFieldType.CExoLocString },
                             new FieldDescriptor { Label = "Tag", FieldName = "Tag", Kind = EditorKind.Text, FieldType = GffFieldType.CExoString },
-                            new FieldDescriptor { Label = "ResRef", FieldName = "TemplateResRef", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, IsReadOnly = true, Description = "Blueprint resref; matches the file name." },
-                            new FieldDescriptor { Label = "Comment", FieldName = "Comment", Kind = EditorKind.Text, FieldType = GffFieldType.CExoString }
+                            new FieldDescriptor { Label = "ResRef", FieldName = "TemplateResRef", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, IsReadOnly = true, Description = "Blueprint resref; matches the file name." }
                         }
                     },
                     new FieldGroup
                     {
-                        Title = "Appearance & Behavior",
+                        Title = "Flags",
+                        Tab = BasicTab,
                         Fields = new[]
                         {
-                            new FieldDescriptor { Label = "Appearance", FieldName = "Appearance", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Dword, LookupKey = LookupKeys.Placeables },
-                            new FieldDescriptor { Label = "Faction", FieldName = "Faction", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Dword, LookupKey = LookupKeys.Factions },
                             new FieldDescriptor { Label = "Useable", FieldName = "Useable", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
+                            new FieldDescriptor { Label = "Has Inventory", FieldName = "HasInventory", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
                             new FieldDescriptor { Label = "Static", FieldName = "Static", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
                             new FieldDescriptor { Label = "Plot", FieldName = "Plot", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Has Inventory", FieldName = "HasInventory", Kind = EditorKind.Check, FieldType = GffFieldType.Byte }
+                            new FieldDescriptor { Label = "Hit Points", FieldName = "HP", Kind = EditorKind.Integer, FieldType = GffFieldType.Short, Description = "Only matters while Plot is off." }
                         }
                     },
                     new FieldGroup
                     {
-                        Title = "Lock",
+                        Title = "Description",
+                        Tab = BasicTab,
                         Fields = new[]
                         {
-                            new FieldDescriptor { Label = "Locked", FieldName = "Locked", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Lockable", FieldName = "Lockable", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Open Lock DC", FieldName = "OpenLockDC", Kind = EditorKind.Integer, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Close Lock DC", FieldName = "CloseLockDC", Kind = EditorKind.Integer, FieldType = GffFieldType.Byte }
+                            new FieldDescriptor { Label = "Description", FieldName = "Description", Kind = EditorKind.LocString, FieldType = GffFieldType.CExoLocString, Description = "Shown when a player examines it." }
                         }
                     },
                     new FieldGroup
                     {
-                        Title = "Combat",
-                        Fields = new[]
-                        {
-                            new FieldDescriptor { Label = "Hit Points", FieldName = "HP", Kind = EditorKind.Integer, FieldType = GffFieldType.Short },
-                            new FieldDescriptor { Label = "Hardness", FieldName = "Hardness", Kind = EditorKind.Integer, FieldType = GffFieldType.Byte }
-                        }
-                    },
-                    new FieldGroup
-                    {
-                        Title = "Conversation",
-                        Fields = new[]
-                        {
-                            new FieldDescriptor { Label = "Conversation", FieldName = "Conversation", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, Description = "Legacy .dlg resref; SWLOR dialogs are C# classes." }
-                        }
-                    },
-                    new FieldGroup
-                    {
-                        Title = "Scripts",
+                        Title = "Script slots",
+                        Tab = AdvancedTab,
                         Fields = new[]
                         {
                             new FieldDescriptor { Label = "On Used", FieldName = "OnUsed", Kind = EditorKind.ScriptSlot, FieldType = GffFieldType.ResRef },

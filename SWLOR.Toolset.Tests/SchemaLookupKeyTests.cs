@@ -82,7 +82,6 @@ namespace SWLOR.Toolset.Tests
                 (nameof(UtcSchema), "SoundSetFile", LookupKeys.SoundSets),
                 (nameof(UtiSchema), "BaseItem", LookupKeys.BaseItems),
                 (nameof(UtdSchema), "GenericType_New", LookupKeys.DoorTypes),
-                (nameof(UtpSchema), "Appearance", LookupKeys.Placeables),
                 (nameof(UttSchema), "Type", LookupKeys.TriggerTypes)
             };
 
@@ -95,6 +94,21 @@ namespace SWLOR.Toolset.Tests
                 match.Field.Kind.Should().Be(EditorKind.TwoDaDropdown, $"{schema}.{fieldName} must resolve to a name");
                 match.Field.LookupKey.Should().Be(lookupKey);
             }
+        }
+
+        [Test]
+        public void UtpSchema_DoesNotDeclareAppearance_BecauseThePlaceableEditorHasAModelGrid()
+        {
+            // The placeable's appearance used to be the seventh pinned dropdown above. It is not a
+            // schema field any more, and that is deliberate rather than a regression: a combo box
+            // cannot represent a value it has no option for, so the 2,982 blueprints whose row is
+            // blank in placeables.2da could not be opened at all. The Appearance tab shows the model
+            // grid, keeps an unknown row exactly as stored, and marks it.
+            //
+            // Re-declaring it here would restore that block, so this test fails if anyone does.
+            UtpSchema.Build().AllFields
+                .Should().NotContain(field => field.FieldName == "Appearance",
+                    "placeable appearance is edited by the model grid on the Appearance tab");
         }
     }
 }

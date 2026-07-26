@@ -133,10 +133,12 @@ namespace SWLOR.Toolset.Tests
             var path = CorpusPath("utp", "_mdrn_chair.utp.json");
             var original = File.ReadAllBytes(path);
             var document = JsonGffDocument.Parse(original);
-            var descriptor = UtpSchema.Build().AllFields.First(field => field.FieldName == "Hardness");
+            // HP rather than Hardness: hardness measures out as unauthored (8,199 of 8,355
+            // blueprints carry the default 5), so the placeable schema no longer offers it.
+            var descriptor = UtpSchema.Build().AllFields.First(field => field.FieldName == "HP");
 
             using var session = new DocumentSession(path, document);
-            using (session.Begin("Change Hardness"))
+            using (session.Begin("Change Hit Points"))
             {
                 SchemaFieldAccessor.SetInteger(document, descriptor, 10);
             }

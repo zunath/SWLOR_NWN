@@ -37,6 +37,12 @@ namespace SWLOR.Toolset.Domain.Workspace
             return Index().GetValueOrDefault(tag);
         }
 
+        /// <summary>
+        /// Every tag the module defines, for the pickers that offer one rather than asking
+        /// about a tag already stored - the placeable teleporter's destination, for instance.
+        /// </summary>
+        public IReadOnlyCollection<string> Tags => Index().Keys.OrderBy(tag => tag, StringComparer.OrdinalIgnoreCase).ToList();
+
         /// <summary>Drops the cache so the next question re-reads the module.</summary>
         public void Invalidate()
         {

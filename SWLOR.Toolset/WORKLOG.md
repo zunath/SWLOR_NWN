@@ -1440,3 +1440,49 @@ kept as an alias, since two shortcuts for one action is just something else to d
 - `Ctrl+Shift+B` still builds every script, which pairs the way Visual Studio's does.
 - Button relabelled `Compile (Ctrl+B)`. Stale F7 references purged from comments and doc strings too,
   so nothing tells a future reader the wrong key.
+## Placeable editor - 2026-07-26 - Tabs, behaviors, model grid
+
+- The placeable editor is now four tabs (Basic / Appearance / Behavior / Advanced) with a fifth,
+  Variables, that appears only when it has something to hold. Every other blueprint type still
+  renders as one page: `FieldGroup.Tab` defaults to blank, and the view hides the strip below two
+  tabs.
+- **Behavior replaces the script slots as the primary surface.** `Domain\Placeables\` declares each
+  behavior once - script slots, required flags, typed variables, owner file - and that declaration
+  drives the list, the fields, what apply writes, and what a switch clears. Derived from the corpus
+  rather than invented: 94% of the 8,355 blueprints set no script at all, and the 488 that do use
+  only 77 distinct script sets, of which the top twenty cover 88%. Detection is deliberately liberal
+  (an extra `plc_death` on a scavenge point is still a scavenge point) and a behavior is never
+  stored - it is re-derived on open, so an untouched file round-trips byte-identical.
+- **Appearance is no longer a dropdown, and that fixes a live defect.** As a `TwoDaDropdown` it made
+  `DropdownValueValidator` refuse to open the 2,982 blueprints whose appearance row is blank in
+  placeables.2da, because a combo box cannot represent a value it has no option for. The Appearance
+  tab is a searchable model grid over `PlaceableModelCatalog`, which keeps the rows
+  `PlaceableAppearanceService` drops for having no label - 15,761 of the 24,304 rows carrying a model
+  have none, so tiles are pictures and the caption falls back to the model resref. An unknown stored
+  row stays selected and is marked instead of blocking.
+- **Grid performance is inherited from the palette, not reinvented.** Previews go through
+  `ThumbnailService.RequestTileAsync` (model-resref keyed, bounded MRU + disk PNG + shared render
+  pool), and the grid is paged at 200 with a Load more, because the palette's own grid is a WrapPanel
+  in a ListBox and does not virtualize - its speed comes from never holding more than a few hundred
+  tiles.
+- **The 3D preview reuses `GlAreaControl`** via a one-instance `AreaScene` rather than a second GL
+  path, so orbit/pan/zoom, lighting, textures and the model cache all come for free.
+- Value pickers read the game code: `GameCodeIndex` grew loot table ids (same `_builder.Create("ID")`
+  shape `SourceIdScanner` already reads for quests and spawn tables), `DialogBase` subclass names,
+  `SkillType` and `VisualEffect`. `ModuleTagIndex` and `PlaceableAppearanceUsageIndex` scan the module
+  once per session on a background thread; both report whether they were actually built, because an
+  empty index must never read as "this destination does not exist".
+- Cut from the UI on measured evidence, all still written back verbatim: trap fields (0 trapped
+  blueprints, 2 trapped instances), saving throws (8,353 of 8,355 carry Aurora's 16/0/0), hardness
+  (8,199 carry the default 5), portrait (6,295 have none), body bag (0 across all 98,856 instances),
+  faction (two values cover 8,329), lock fields (2 locked blueprints, 63 locked instances), the
+  legacy .dlg conversation slot, and the Comments tab - whose text survives, since 1,677 blueprints
+  carry import attribution in it.
+- Tests (+13): `PlaceableBehaviorTests` covers catalog shape, detection over the whole corpus,
+  base-game chair aliases, apply/clear, hand-edited slots left alone, and an apply-then-undo
+  byte-identical gate. Two existing tests were updated with their reasoning recorded rather than
+  deleted: the pinned placeable Appearance dropdown became a test that the schema must NOT declare
+  one, and the validator's "would be blocked" case became "is no longer blocked" plus a door case
+  that still exercises the guard.
+- Known gap: this worktree has SWLOR_Haks uninitialized, so the 2DA/tileset/model-dependent suites
+  fail for that reason alone. Everything schema-, editing- and behavior-related is green.

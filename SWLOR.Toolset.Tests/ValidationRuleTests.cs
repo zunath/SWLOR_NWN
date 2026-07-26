@@ -816,10 +816,22 @@ namespace SWLOR.Toolset.Tests
 
         public IReadOnlyCollection<string> SpawnTableIds => _validSpawnTableIds;
 
+        public IReadOnlyCollection<string> LootTableIds => Array.Empty<string>();
+
+        public IReadOnlyCollection<string> DialogNames => Array.Empty<string>();
+
+        public IReadOnlyDictionary<int, string> SkillTypes => new Dictionary<int, string>();
+
+        public IReadOnlyDictionary<int, string> VisualEffects => new Dictionary<int, string>();
+
         public bool IsValidNpcGroup(int npcGroupValue) => _validNpcGroups.Contains(npcGroupValue);
 
         public bool IsValidQuestId(string questId) => false;
 
         public bool IsValidSpawnTableId(string spawnTableId) => _validSpawnTableIds.Contains(spawnTableId);
+
+        public bool IsValidLootTableId(string lootTableId) => false;
+
+        public bool IsValidDialogName(string dialogName) => false;
     }
 }

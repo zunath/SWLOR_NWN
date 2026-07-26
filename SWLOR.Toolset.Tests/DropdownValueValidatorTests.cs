@@ -212,16 +212,33 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void RealCorpusPlaceable_WithAnEmpty2DaRow_WouldBeBlocked()
+        public void RealCorpusPlaceable_WithAnEmpty2DaRow_IsNoLongerBlocked()
         {
-            // placeables.2da row 1005 is entirely "****" - no label, no model. A blueprint pointing
-            // at such a row is exactly the case this guard exists for.
+            // placeables.2da row 1005 is entirely "****" - no label, no model - and 2,982 blueprints
+            // point at a row like it. While appearance was a dropdown this guard refused to open
+            // every one of them, because a combo box cannot show a value it has no option for.
+            //
+            // Appearance is now the model grid on the placeable's own tab, which keeps an unknown
+            // row exactly as stored and says so. The guard itself is unchanged and still protects
+            // every remaining dropdown - see the door case below.
             var unresolved = DropdownValueValidator.FindUnresolved(
                 Document(("Appearance", 1005)),
                 UtpSchema.Build(),
                 key => key == "placeables" ? new long[] { 1004, 1007 } : Array.Empty<long>());
 
-            unresolved.Should().ContainSingle().Which.Value.Should().Be(1005);
+            unresolved.Should().BeEmpty();
+        }
+
+        [Test]
+        public void RealCorpusDoor_WithAnUnresolvableTypeRow_IsStillBlocked()
+        {
+            // The mechanism the placeable case used to cover, on a type that still has a dropdown.
+            var unresolved = DropdownValueValidator.FindUnresolved(
+                Document(("GenericType_New", 9999)),
+                UtdSchema.Build(),
+                key => key == "doortypes" ? new long[] { 0, 1, 2 } : Array.Empty<long>());
+
+            unresolved.Should().ContainSingle().Which.Value.Should().Be(9999);
         }
     }
 }

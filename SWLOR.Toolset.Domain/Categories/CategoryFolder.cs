@@ -150,6 +150,27 @@ namespace SWLOR.Toolset.Domain.Categories
             return string.IsNullOrWhiteSpace(repaired) ? null : repaired;
         }
 
+        /// <summary>
+        /// Why a name a builder typed would be refused, or null when it is fine.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="Sanitize"/> is for a name that arrives from a file or a palette, where nobody is
+        /// around to be told and quietly repairing it is the only thing that keeps the module openable.
+        /// A name someone just typed is the opposite case: they are right there, so say what is wrong
+        /// and let them retype it. Neither of those wants the constructor's throw - a command handler
+        /// is not a place an exception has anywhere useful to go, and silently hyphenating what a
+        /// builder typed would leave them looking at a name they did not ask for.
+        /// </remarks>
+        public static string? NameProblem(string? name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return "A category needs a name.";
+
+            return name.IndexOf(PathSeparator) >= 0
+                ? $"A category name cannot contain '{PathSeparator}' - it separates folders in a category path."
+                : null;
+        }
+
         private static string Normalize(string name)
         {
             if (string.IsNullOrWhiteSpace(name))

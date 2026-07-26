@@ -54,6 +54,7 @@ namespace SWLOR.Toolset.Editors
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Triggers.TriggerDocumentViewModel> _openTriggerEditors = new(StringComparer.OrdinalIgnoreCase);
 
         // Keyed by path like the blueprint map rather than by resref like the area map: a script is
         // one file, so the path is its identity and there is no are/git/gic triplet to name.
@@ -232,10 +233,24 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            if (_openTriggerEditors.TryGetValue(filePath, out var existingTrigger))
+            {
+                _factory.ActivateDocument(existingTrigger);
+                return;
+            }
+
             try
             {
                 if (!CanRepresentEveryValue(filePath, resRef, schema))
                     return;
+
+                // Triggers get the behavior editor rather than the generic schema form: what a
+                // trigger is for drives which fields it even has.
+                if (type == ResourceType.Utt)
+                {
+                    OpenTriggerEditor(filePath, resRef);
+                    return;
+                }
 
                 var editor = new BlueprintEditorViewModel(
                     filePath, resRef, type, schema, _lookups, _gameCodeIndex, _log, _prompts,
@@ -271,8 +286,11 @@ namespace SWLOR.Toolset.Editors
                 return _openAreaEditors.ContainsKey(resRef);
 
             var workspace = _workspaceContext.Workspace;
-            return workspace != null &&
-                   _openEditors.ContainsKey(workspace.GetResourcePath(type, resRef));
+            if (workspace == null)
+                return false;
+
+            var path = workspace.GetResourcePath(type, resRef);
+            return _openEditors.ContainsKey(path) || _openTriggerEditors.ContainsKey(path);
         }
 
         /// <summary>
@@ -282,6 +300,12 @@ namespace SWLOR.Toolset.Editors
         public async Task<bool> SaveAllAsync()
         {
             foreach (var editor in _openEditors.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
+            foreach (var editor in _openTriggerEditors.Values.ToList())
             {
                 if (!await editor.TrySaveAsync().ConfigureAwait(true))
                     return false;
@@ -304,6 +328,7 @@ namespace SWLOR.Toolset.Editors
         public async Task<bool> TryPrepareApplicationCloseAsync()
         {
             if (!_openEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openAreaEditors.Values.Any(editor => editor.IsDirty))
                 return true;
 
@@ -316,11 +341,41 @@ namespace SWLOR.Toolset.Editors
 
             foreach (var editor in _openEditors.Values)
                 editor.ApproveApplicationClose();
+            foreach (var editor in _openTriggerEditors.Values)
+                editor.ApproveApplicationClose();
             foreach (var editor in _openAreaEditors.Values)
                 editor.ApproveApplicationClose();
 
             return true;
         }
+
+        /// <summary>Trigger blueprints open in the behavior editor, as a document tab.</summary>
+        private void OpenTriggerEditor(string filePath, string resRef)
+        {
+            var editor = new Triggers.TriggerDocumentViewModel(
+                filePath, resRef, _gameCodeIndex, _log, _prompts, ResolveTagArea, ResolveTriggerChoices);
+            editor.Closed += _ => _openTriggerEditors.Remove(filePath);
+            editor.CloseRequested += _ => _factory.CloseDocument(editor);
+            editor.CatalogEntryChanged += () =>
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Utt, resRef);
+            _openTriggerEditors[filePath] = editor;
+            _factory.OpenDocument(editor);
+        }
+
+        /// <summary>Game-data choice sets a trigger behavior asks for, such as the load screens.</summary>
+        private IReadOnlyList<Domain.Editors.Triggers.TriggerChoice> ResolveTriggerChoices(string key) =>
+            _lookups.GetOptions(key)
+                .Select(option => new Domain.Editors.Triggers.TriggerChoice(option.Id, option.Display))
+                .ToList();
+
+        /// <summary>
+        /// Names the area a waypoint or door tag lives in, or null when nothing defines it — what
+        /// puts a tick or a cross beside a transition's destination.
+        /// </summary>
+        private string? ResolveTagArea(string tag) =>
+            _workspaceContext.Workspace == null || string.IsNullOrWhiteSpace(tag)
+                ? null
+                : _workspaceContext.Workspace.TagIndex.FindAreaDefiningTag(tag);
 
         /// <summary>Areas open in the composite editor (.are properties + .git instance lists).</summary>
         private void OpenAreaEditor(Domain.Workspace.ModuleWorkspace workspace, string resRef)

@@ -120,6 +120,31 @@ namespace SWLOR.Toolset.Tests
             CategoryFolder.Sanitize("   ").Should().BeNull("a folder with no name cannot be shown or addressed");
         }
 
+        /// <summary>
+        /// The other half of <see cref="CategoryFolder.Sanitize"/>'s job. A name out of a file gets
+        /// repaired because nobody is there to be told; a name someone typed gets reported because they
+        /// are, and neither wants the constructor's throw - a command handler cannot catch it anywhere
+        /// useful, and it reached the builder as a crash rather than as a message.
+        /// </summary>
+        [Test]
+        public void NameProblemReportsATypedNameHoldingThePathSeparator()
+        {
+            CategoryFolder.NameProblem("Weapons/Melee").Should().Contain("cannot contain");
+        }
+
+        [Test]
+        public void NameProblemReportsATypedNameWithNothingInIt()
+        {
+            CategoryFolder.NameProblem("   ").Should().NotBeNullOrEmpty();
+            CategoryFolder.NameProblem(null).Should().NotBeNullOrEmpty();
+        }
+
+        [Test]
+        public void NameProblemPassesALegalTypedName()
+        {
+            CategoryFolder.NameProblem("Weapons").Should().BeNull();
+        }
+
         [Test]
         public void SurroundingWhitespaceStillDoesNotCreateADistinctSibling()
         {

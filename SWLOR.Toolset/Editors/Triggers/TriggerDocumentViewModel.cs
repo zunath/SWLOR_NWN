@@ -1,87 +1,62 @@
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
-using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
-using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.GameData.GameCode;
-using SWLOR.Toolset.Domain.Gff;
-using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
-namespace SWLOR.Toolset.Editors
+namespace SWLOR.Toolset.Editors.Triggers
 {
-    /// <summary>A titled group of field view models.</summary>
-    public sealed record EditorGroup(string Title, IReadOnlyList<FieldViewModel> Fields);
-
     /// <summary>
-    /// The generic schema-driven blueprint editor, docked as a document tab. Every mutation
-    /// flows through a one-step DocumentTransaction on the session's undo stack; Save writes
-    /// the document bytes atomically and marks the stack clean.
+    /// A trigger blueprint (.utt) open as a document tab, hosting the shared trigger editor. Revert
+    /// unwinds every unsaved edit; Save writes the file. The same editor serves a placement, where
+    /// the area editor owns the session instead.
     /// </summary>
-    public partial class BlueprintEditorViewModel : Document, IEditorDocument
+    public partial class TriggerDocumentViewModel : Document, IEditorDocument
     {
         private readonly DocumentSession _session;
-        private readonly EditorFieldContext _context;
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
-        private readonly IGameCodeIndex? _gameCodeIndex;
-        private readonly IScriptSlotHost? _scriptSlotHost;
         private readonly string _resRef;
         private bool _closeApproved;
         private bool _closePromptOpen;
         private bool _disposed;
 
-        public ObservableCollection<EditorGroup> Groups { get; } = new();
-
-        public VarTableSectionViewModel? VarTableSection { get; private set; }
+        public TriggerEditorViewModel Editor { get; }
 
         public bool IsDirty => _session.UndoStack.IsDirty;
 
-        /// <summary>This blueprint's resource type — lets the model preview resolve its appearance.</summary>
-        public ResourceType BlueprintType { get; }
+        public bool CanUndo => _session.UndoStack.CanUndo;
 
-        /// <summary>The live (possibly unsaved) document root, for appearance-driven model preview.</summary>
+        public bool CanRedo => _session.UndoStack.CanRedo;
+
+        /// <summary>Raised when the tab closes so the editor registry can forget this instance.</summary>
+        public event Action<TriggerDocumentViewModel>? Closed;
+
+        /// <summary>Raised after an async close prompt approves closing this tab.</summary>
+        public event Action<TriggerDocumentViewModel>? CloseRequested;
 
         /// <summary>Raised after this resource is saved or reloaded so catalog views can re-index it.</summary>
         public event Action? CatalogEntryChanged;
 
-        public BlueprintEditorViewModel(
+        public TriggerDocumentViewModel(
             string filePath,
             string resRef,
-            ResourceType type,
-            EditorSchema schema,
-            LookupOptionProvider lookups,
             IGameCodeIndex? gameCodeIndex,
             OutputLogService log,
             IEditorPromptService prompts,
-            Func<uint, string?>? resolveStrRef = null,
-            IScriptSlotHost? scriptSlotHost = null)
+            Func<string, string?>? resolveTag = null,
+            Func<string, IReadOnlyList<Domain.Editors.Triggers.TriggerChoice>>? resolveChoices = null)
         {
-            _scriptSlotHost = scriptSlotHost;
             _log = log;
             _prompts = prompts;
-            _gameCodeIndex = gameCodeIndex;
             _resRef = resRef;
-            BlueprintType = type;
-            Id = $"editor:{filePath}";
+            Id = $"trigger:{filePath}";
             _session = DocumentSession.Open(filePath);
-            _context = new EditorFieldContext(_session.Document, RunEdit, resolveStrRef);
 
-            foreach (var group in schema.Groups)
-            {
-                var fields = group.Fields
-                    .Select(descriptor => FieldViewModelFactory.Create(descriptor, _context, lookups, scriptSlotHost))
-                    .ToList();
-                Groups.Add(new EditorGroup(group.Title, fields));
-            }
-
-            if (schema.HasVarTable)
-            {
-                VarTableSection = new VarTableSectionViewModel(
-                    _context.RunEdit, new VarTable(_session.Document.Root), gameCodeIndex);
-            }
+            Editor = new TriggerEditorViewModel(
+                _session.Document.Root, resRef, isInstance: false, RunEdit, gameCodeIndex, resolveTag,
+                resolveChoices);
 
             UpdateTitle();
         }
@@ -91,7 +66,6 @@ namespace SWLOR.Toolset.Editors
             try
             {
                 _session.Execute(description, mutation);
-
                 AfterHistoryChange();
                 return true;
             }
@@ -103,12 +77,19 @@ namespace SWLOR.Toolset.Editors
         }
 
         [RelayCommand]
-        private async Task Save()
+        private async Task Save() => await TrySaveAsync().ConfigureAwait(true);
+
+        /// <summary>Unwinds every unsaved edit — the footer's Revert.</summary>
+        [RelayCommand(CanExecute = nameof(IsDirty))]
+        private void Revert()
         {
-            await TrySaveAsync().ConfigureAwait(true);
+            while (_session.UndoStack.CanUndo)
+                _session.Undo();
+
+            Editor.ReloadFromDocument();
+            AfterHistoryChange();
         }
 
-        /// <summary>Saves this editor, returning false when the user cancels or the write fails.</summary>
         public async Task<bool> TrySaveAsync()
         {
             if (!IsDirty)
@@ -125,8 +106,7 @@ namespace SWLOR.Toolset.Editors
                     if (choice == ExternalChangeChoice.Reload)
                     {
                         _session.ReloadFromDisk();
-                        RecreateVarTableSection();
-                        RefreshAllFields();
+                        Editor.ReloadFromDocument();
                         AfterHistoryChange();
                         CatalogEntryChanged?.Invoke();
                         _log.AppendLine($"Reloaded externally changed file {_session.FilePath}.");
@@ -134,7 +114,7 @@ namespace SWLOR.Toolset.Editors
                     }
                 }
 
-                Services.SaveService.WriteAtomic(_session.FilePath, _session.ToBytes());
+                SaveService.WriteAtomic(_session.FilePath, _session.ToBytes());
                 _session.UndoStack.MarkSaved();
                 _session.RecordCurrentFileState();
                 AfterHistoryChange();
@@ -153,7 +133,7 @@ namespace SWLOR.Toolset.Editors
         public void Undo()
         {
             _session.Undo();
-            RefreshAllFields();
+            Editor.ReloadFromDocument();
             AfterHistoryChange();
         }
 
@@ -161,19 +141,9 @@ namespace SWLOR.Toolset.Editors
         public void Redo()
         {
             _session.Redo();
-            RefreshAllFields();
+            Editor.ReloadFromDocument();
             AfterHistoryChange();
         }
-
-        public bool CanUndo => _session.UndoStack.CanUndo;
-
-        public bool CanRedo => _session.UndoStack.CanRedo;
-
-        /// <summary>Raised when the tab closes so the editor registry can forget this instance.</summary>
-        public event Action<BlueprintEditorViewModel>? Closed;
-
-        /// <summary>Raised after an async close prompt approves closing this tab.</summary>
-        public event Action<BlueprintEditorViewModel>? CloseRequested;
 
         /// <summary>Suppresses a second tab-level prompt after the window-level discard decision.</summary>
         internal void ApproveApplicationClose() => _closeApproved = true;
@@ -219,39 +189,17 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
-        private void RecreateVarTableSection()
-        {
-            if (VarTableSection == null)
-                return;
-
-            VarTableSection = new VarTableSectionViewModel(
-                _context.RunEdit, new VarTable(_session.Document.Root), _gameCodeIndex);
-            OnPropertyChanged(nameof(VarTableSection));
-        }
-
-        private void RefreshAllFields()
-        {
-            foreach (var group in Groups)
-            foreach (var field in group.Fields)
-                field.RefreshFromDocument();
-
-            VarTableSection?.RefreshFromDocument();
-        }
-
         private void AfterHistoryChange()
         {
             UpdateTitle();
             UndoCommand.NotifyCanExecuteChanged();
             RedoCommand.NotifyCanExecuteChanged();
+            RevertCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(IsDirty));
-            // The shell's Edit menu mirrors this tab's history, so it needs the change too.
             OnPropertyChanged(nameof(CanUndo));
             OnPropertyChanged(nameof(CanRedo));
         }
 
-        private void UpdateTitle()
-        {
-            Title = IsDirty ? $"{_resRef} *" : _resRef;
-        }
+        private void UpdateTitle() => Title = IsDirty ? $"{_resRef} *" : _resRef;
     }
 }

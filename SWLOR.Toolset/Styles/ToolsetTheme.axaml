@@ -349,6 +349,42 @@
   <Style Selector="TextBlock.dim">
     <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
   </Style>
+
+  <!-- ===================== behavior editors ===================== -->
+  <!-- A titled panel grouping one subject's rows: the behavior's own fields, or the block listing
+       what it manages. -->
+  <Style Selector="Border.card">
+    <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+  </Style>
+
+  <Style Selector="TextBlock.section">
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+    <Setter Property="LetterSpacing" Value="1.3" />
+  </Style>
+
+  <!-- One row of the behavior list. Chrome-free until it is the chosen one, so the rail reads as a
+       list rather than a column of buttons. -->
+  <Style Selector="Button.behavior">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="12,7" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+  </Style>
+
+  <Style Selector="Button.behavior:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+  </Style>
+
+  <Style Selector="Button.behavior.on /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+  </Style>
   <!-- Tab close button. Dock's Fluent theme draws this with a glyph from an icon font that is not
        installed here, so it rendered as an empty box - the "missing glyph" square. Drawn as a vector
        instead, which depends on no font at all. The same style covers document tabs, tool tabs and any

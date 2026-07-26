@@ -61,6 +61,15 @@ namespace SWLOR.Toolset.Domain.Workspace
         }
 
         /// <summary>The subfolder for a resource type (e.g. ".../Module/utc").</summary>
+        /// <summary>
+        /// Which area defines each waypoint/door tag. Built lazily on first use — see
+        /// <see cref="ModuleTagIndex"/> — and consumed by the trigger editor to resolve a
+        /// transition's destination.
+        /// </summary>
+        public ModuleTagIndex TagIndex => _tagIndex ??= new ModuleTagIndex(this);
+
+        private ModuleTagIndex? _tagIndex;
+
         public string GetResourceFolder(ResourceType type) => Path.Combine(ModuleRoot, type.Extension());
 
         /// <summary>

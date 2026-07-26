@@ -96,6 +96,12 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         /// <summary>baseitems.2da - label ("shortsword"), Name is the strref.</summary>
         public static readonly TwoDaLookupTable BaseItem = new("baseitems", "label", "Name");
+
+        /// <summary>
+        /// Load screens. Read by label rather than by StrRef: every SWLOR row points at the same
+        /// generic strref, so the label is the only thing that tells one screen from another.
+        /// </summary>
+        public static readonly TwoDaLookupTable LoadScreen = new("loadscreens", "Label", null);
     }
 
     /// <summary>A 2DA table plus the columns <see cref="TwoDaLookupService"/> should read from it.</summary>

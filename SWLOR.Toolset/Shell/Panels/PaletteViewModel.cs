@@ -945,6 +945,17 @@ namespace SWLOR.Toolset.Shell.Panels
             if (name == null)
                 return;
 
+            // Checked rather than sanitized: the builder typed this and is still here to retype it, so
+            // say what is wrong instead of quietly hyphenating a name they did not ask for. The
+            // constructor would throw, and an exception out of a command handler has nowhere to go.
+            // Asked before the sibling check, so a name holding a separator is reported as that rather
+            // than as a clash with whatever the split happened to land on.
+            if (CategoryFolder.NameProblem(name) is { } problem)
+            {
+                StatusMessage = problem;
+                return;
+            }
+
             var nameAvailable = parent == null
                 ? section.IsNameAvailable(name)
                 : parent.IsNameAvailable(name);
@@ -988,6 +999,12 @@ namespace SWLOR.Toolset.Shell.Panels
 
             if (name == null || name == folder.Name)
                 return;
+
+            if (CategoryFolder.NameProblem(name) is { } problem)
+            {
+                StatusMessage = problem;
+                return;
+            }
 
             var previous = folder.Name;
 

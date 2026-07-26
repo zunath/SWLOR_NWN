@@ -48,6 +48,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.Antitoxin1,
                     Target = AbilityTargetKind.Self,
+                    TargetSetupStatusEffects = new[] { typeof(PoisonStatusEffect) },
+                    ExpectedRemovedTargetStatusEffects = new[] { typeof(PoisonStatusEffect) },
                     ExpectedActivatorStatusEffects = new[] { typeof(Antitoxin1StatusEffect) },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
@@ -58,9 +60,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.EmergencyCocktail1,
                     Target = AbilityTargetKind.Self,
+                    TargetSetupStatusEffects = new[] { typeof(PoisonStatusEffect) },
+                    ExpectedRemovedTargetStatusEffects = new[] { typeof(PoisonStatusEffect) },
                     ExpectedActivatorStatusEffects = new[] { typeof(EmergencyCocktailStatusEffect) },
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsRecast = true,
-                    Notes = "Also grants temporary HP and cleanses poison/toxin; not tracked as status effect types. Declares a capstone stamina cost, but the cocktail's own restore refills the pool in the same tick, so no net dip is observable (live-run verified: before=current=max).",
+                    CostAssertionWaiverReason = "The impact restores more stamina than its own 15 STM cost in the same engine tick, so no post-activation pool dip can be observed.",
+                    Notes = "Asserts the status, a newly added raw temporary-HP effect, and removal of a pre-applied Poison. The capstone's same-tick stamina restore masks its declared cost.",
                 },
 
                 // EmergencyTriageAbilityDefinition - direct heal only, no tracked status effect;
@@ -139,38 +145,37 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
-                // MedKitAbilityDefinition - direct heal only, no tracked status effect. ApplyMedKit
-                // heals every friendly returned by GetFriendlyTargets(activator, target, false),
-                // which resolves to the activator on a self-cast, via a raw EffectHeal.
+                // MedKitAbilityDefinition - direct ally heal only, no tracked status effect.
+                // Wounding a distinct friendly target proves targeting and the raw EffectHeal.
                 new()
                 {
                     Feat = FeatType.MedKit1,
-                    Target = AbilityTargetKind.Self,
-                    ExpectsActivatorHealing = true,
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    ExpectsTargetHealing = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
                 new()
                 {
                     Feat = FeatType.MedKit2,
-                    Target = AbilityTargetKind.Self,
-                    ExpectsActivatorHealing = true,
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    ExpectsTargetHealing = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
                 new()
                 {
                     Feat = FeatType.MedKit3,
-                    Target = AbilityTargetKind.Self,
-                    ExpectsActivatorHealing = true,
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    ExpectsTargetHealing = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
                 new()
                 {
                     Feat = FeatType.MedKit4,
-                    Target = AbilityTargetKind.Self,
-                    ExpectsActivatorHealing = true,
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    ExpectsTargetHealing = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
@@ -181,6 +186,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Feat = FeatType.PainSuppressant1,
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(PainSuppressant1StatusEffect) },
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
@@ -189,6 +195,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Feat = FeatType.PainSuppressant2,
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(PainSuppressant2StatusEffect) },
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
@@ -203,6 +210,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Target = AbilityTargetKind.FriendlyCreature,
                     TargetStartsDead = true,
                     ExpectsTargetRevived = true,
+                    MinimumTargetHitPointsAfterRevive = 1,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                     Notes = "Revival cast on a dead spawned ally (requireDead:true friendly target). Applies EffectResurrection + a token EffectHeal(1) to the target.",
@@ -213,6 +221,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Target = AbilityTargetKind.FriendlyCreature,
                     TargetStartsDead = true,
                     ExpectsTargetRevived = true,
+                    MinimumTargetHitPointsAfterRevive = 2,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                     Notes = "Same requireDead:true friendly-target requirement as Resuscitation1; also heals the revived target for 20% via ApplyActivatedScaledHeal.",
@@ -244,29 +253,65 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
-                // TreatmentKitAbilityDefinition - tiers 1-2 only remove ailments (nothing to assert
-                // as an applied effect); tier 3 additionally grants an unconditional status.
+                // TreatmentKitAbilityDefinition - pre-apply every ailment promised by each rank
+                // and require the real friendly-target cast to remove all of them.
                 new()
                 {
                     Feat = FeatType.TreatmentKit1,
-                    Target = AbilityTargetKind.Self,
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    TargetSetupStatusEffects = new[] { typeof(BleedStatusEffect), typeof(PoisonStatusEffect) },
+                    ExpectedRemovedTargetStatusEffects = new[] { typeof(BleedStatusEffect), typeof(PoisonStatusEffect) },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Only removes Poison/Bleed status effects; nothing is applied to assert.",
                 },
                 new()
                 {
                     Feat = FeatType.TreatmentKit2,
-                    Target = AbilityTargetKind.Self,
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    TargetSetupStatusEffects = new[]
+                    {
+                        typeof(BleedStatusEffect),
+                        typeof(PoisonStatusEffect),
+                        typeof(ToxinStatusEffect),
+                        typeof(BurnStatusEffect),
+                        typeof(ShockStatusEffect),
+                        typeof(DiseaseStatusEffect),
+                    },
+                    ExpectedRemovedTargetStatusEffects = new[]
+                    {
+                        typeof(BleedStatusEffect),
+                        typeof(PoisonStatusEffect),
+                        typeof(ToxinStatusEffect),
+                        typeof(BurnStatusEffect),
+                        typeof(ShockStatusEffect),
+                        typeof(DiseaseStatusEffect),
+                    },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Only removes TreatmentKit2-cleanseable status effects; nothing is applied to assert.",
                 },
                 new()
                 {
                     Feat = FeatType.TreatmentKit3,
-                    Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(AilmentResistance3StatusEffect) },
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    TargetSetupStatusEffects = new[]
+                    {
+                        typeof(BleedStatusEffect),
+                        typeof(PoisonStatusEffect),
+                        typeof(ToxinStatusEffect),
+                        typeof(BurnStatusEffect),
+                        typeof(ShockStatusEffect),
+                        typeof(DiseaseStatusEffect),
+                    },
+                    ExpectedRemovedTargetStatusEffects = new[]
+                    {
+                        typeof(BleedStatusEffect),
+                        typeof(PoisonStatusEffect),
+                        typeof(ToxinStatusEffect),
+                        typeof(BurnStatusEffect),
+                        typeof(ShockStatusEffect),
+                        typeof(DiseaseStatusEffect),
+                    },
+                    ExpectedTargetStatusEffects = new[] { typeof(AilmentResistance3StatusEffect) },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },

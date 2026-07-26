@@ -44,6 +44,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         public Dictionary<StatType, int> ExpectedActivatorStatAdjustments { get; set; } = new();
 
         /// <summary>
+        /// Temporary stat adjustments expected on the TARGET after impact, expressed as a
+        /// delta from the value immediately before activation.
+        /// </summary>
+        public Dictionary<StatType, int> ExpectedTargetStatAdjustments { get; set; } = new();
+
+        /// <summary>
         /// Expect the target's hit points to drop below their pre-activation value.
         /// </summary>
         public bool ExpectsTargetDamage { get; set; }
@@ -85,10 +91,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         public bool ExpectsActivatorTemporaryHP { get; set; }
 
         /// <summary>
-        /// Expect a temporary-hit-point effect on the TARGET after impact - for ally-shield
-        /// abilities that grant raw EffectTemporaryHitpoints to their friendly target. Only
-        /// meaningful for friendly targets: hostile fixtures already carry the executor's
-        /// blanket temp-HP damage buffer, which would satisfy this trivially.
+        /// Expect the number of temporary-hit-point effects on the TARGET to increase after
+        /// impact. Comparing the effect count makes this safe for both friendly targets and
+        /// hostile fixtures that already carry the executor's damage buffer.
         /// </summary>
         public bool ExpectsTargetTemporaryHP { get; set; }
 
@@ -97,6 +102,32 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// executor wounds the caster before activation so the heal is observable.
         /// </summary>
         public bool ExpectsActivatorHealing { get; set; }
+
+        /// <summary>
+        /// Expect a distinct friendly TARGET's hit points to rise above their pre-activation
+        /// value. The executor wounds the target and suppresses its natural NPC regeneration
+        /// before activation so only the tested impact can satisfy the assertion.
+        /// </summary>
+        public bool ExpectsTargetHealing { get; set; }
+
+        /// <summary>
+        /// Minimum hit points the revived target must have after impact. Use this to distinguish
+        /// a bare resurrection from ranks which promise meaningful post-revival healing.
+        /// Requires <see cref="ExpectsTargetRevived"/>.
+        /// </summary>
+        public int MinimumTargetHitPointsAfterRevive { get; set; }
+
+        /// <summary>
+        /// Distance at which a distinct target is spawned. The default preserves the close-range
+        /// fixture used by most abilities; movement abilities can start farther away.
+        /// </summary>
+        public float TargetDistanceMeters { get; set; } = 1.5f;
+
+        /// <summary>
+        /// Maximum allowed caster-to-target distance after impact. This makes leap/intercept
+        /// movement observable instead of passing on damage or status alone.
+        /// </summary>
+        public float? MaximumActivatorDistanceToTargetAfterImpact { get; set; }
 
         /// <summary>
         /// Perk levels seeded onto the caster before activation, for abilities whose impact
@@ -125,6 +156,31 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// A factory because some status effects only have parameterized constructors.
         /// </summary>
         public Func<Service.StatusEffectService.IStatusEffect> TargetSetupStatusEffectFactory { get; set; }
+
+        /// <summary>
+        /// Status effect classes applied to the target before activation. Prefer this for
+        /// parameterless effects; use <see cref="TargetSetupStatusEffectFactory"/> when custom
+        /// constructor state is required.
+        /// </summary>
+        public Type[] TargetSetupStatusEffects { get; set; } = Array.Empty<Type>();
+
+        /// <summary>
+        /// Pre-applied target status effect classes which must be absent after impact. Every
+        /// entry must also appear in <see cref="TargetSetupStatusEffects"/>.
+        /// </summary>
+        public Type[] ExpectedRemovedTargetStatusEffects { get; set; } = Array.Empty<Type>();
+
+        /// <summary>
+        /// Documents why a definition-declared resource cost cannot be observed by this case.
+        /// This is intentionally separate from Notes so cost coverage cannot disappear silently.
+        /// </summary>
+        public string CostAssertionWaiverReason { get; set; }
+
+        /// <summary>
+        /// Documents why an executable impact has no observable outcome assertion. Use only
+        /// where the harness lacks a safe observation seam (for example, enmity-only impacts).
+        /// </summary>
+        public string OutcomeAssertionWaiverReason { get; set; }
 
         /// <summary>
         /// Free-text context for a reviewer: why assertions are relaxed, quirks observed

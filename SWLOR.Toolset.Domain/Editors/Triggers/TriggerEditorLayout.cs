@@ -7,12 +7,33 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
     /// touches; Basic is identity and Advanced is the raw sheet behind it.
     /// </summary>
     /// <remarks>
-    /// Geometry is absent by design: a trigger's dimensions are drawn per placement in the area
-    /// editor, not typed here. So are the per-placement transition fields, which belong to whichever
-    /// behavior claims them.
+    /// <para>
+    /// Geometry is absent by design and no longer even mentioned: a trigger's dimensions are drawn
+    /// per placement in the area editor. So are the per-placement transition fields, which belong to
+    /// whichever behavior claims them.
+    /// </para>
+    /// <para>
+    /// Cursor is absent too. It is not a choice a builder makes - it follows from what the trigger
+    /// is, which is why the Area Transition behavior sets it and everything else leaves it at the
+    /// engine default of 0.
+    /// </para>
     /// </remarks>
     public static class TriggerEditorLayout
     {
+        /// <summary>
+        /// A resref is 16 characters. This is a real engine limit rather than a convention: the GFF
+        /// ResRef field is a fixed 16 bytes, the longest resref anywhere in the module is exactly 16,
+        /// and <c>ResRefLengthRule</c> already validates against the same number.
+        /// </summary>
+        public const int MaxResRefLength = 16;
+
+        /// <summary>
+        /// A tag is a CExoString, so the <b>engine imposes no maximum</b> — this is the base
+        /// toolset's own editor limit, adopted here for parity. Every trigger tag in the module fits
+        /// inside it, the longest being 29 characters.
+        /// </summary>
+        public const int MaxTagLength = 32;
+
         private static readonly IReadOnlyList<TriggerChoice> TriggerTypeChoices = new[]
         {
             new TriggerChoice(0, "Generic"),
@@ -30,23 +51,17 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             new TriggerFieldDefinition
             {
                 Label = "Tag", Name = "Tag", Kind = TriggerFieldKind.Text,
-                FieldType = GffFieldType.CExoString
+                FieldType = GffFieldType.CExoString, MaxLength = MaxTagLength
             },
             new TriggerFieldDefinition
             {
                 Label = "Blueprint", Name = "TemplateResRef", Kind = TriggerFieldKind.Text,
-                FieldType = GffFieldType.ResRef
+                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength
             },
             new TriggerFieldDefinition
             {
-                Label = "Category", Name = "PaletteID", Kind = TriggerFieldKind.Integer,
-                FieldType = GffFieldType.Byte,
-                Note = "Palette id stored in the blueprint."
-            },
-            new TriggerFieldDefinition
-            {
-                Label = "Geometry", Name = string.Empty, Kind = TriggerFieldKind.Statement,
-                Note = "Drawn per placement in the area editor. It is not a field here."
+                Label = "Category", Name = "PaletteID", Kind = TriggerFieldKind.Choice,
+                FieldType = GffFieldType.Byte, ChoicesKey = TriggerChoiceKeys.PaletteCategories
             }
         };
 
@@ -60,8 +75,8 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             },
             new TriggerFieldDefinition
             {
-                Label = "Faction", Name = "Faction", Kind = TriggerFieldKind.Integer,
-                FieldType = GffFieldType.Dword, Note = "Row in the module's repute.fac."
+                Label = "Faction", Name = "Faction", Kind = TriggerFieldKind.Choice,
+                FieldType = GffFieldType.Dword, ChoicesKey = TriggerChoiceKeys.Factions
             },
             new TriggerFieldDefinition
             {
@@ -70,13 +85,8 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             },
             new TriggerFieldDefinition
             {
-                Label = "Cursor", Name = "Cursor", Kind = TriggerFieldKind.Integer,
-                FieldType = GffFieldType.Byte, Note = "0 = unclickable (no cursor)."
-            },
-            new TriggerFieldDefinition
-            {
                 Label = "Key Tag", Name = "KeyName", Kind = TriggerFieldKind.Text,
-                FieldType = GffFieldType.CExoString
+                FieldType = GffFieldType.CExoString, MaxLength = MaxTagLength
             },
             new TriggerFieldDefinition
             {

@@ -11,11 +11,11 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
     /// Nothing here is invented: each behavior is a pattern the module already uses, and the counts
     /// in the comments are its placements across Module\git. A trigger that matches none of them
     /// classifies as Custom, which is the only behavior that exposes raw script slots and the
-    /// VarTable.
+    /// VarTable - and which therefore also covers the do-nothing volume that used to have its own
+    /// "None" entry.
     /// </remarks>
     public static class TriggerBehaviorCatalog
     {
-        public const string NoneId = "none";
         public const string AreaTransitionId = "area_transition";
         public const string NoSpawnZoneId = "no_spawn_zone";
         public const string ExplorationNoteId = "exploration_note";
@@ -39,8 +39,6 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         };
 
         public static IReadOnlyList<TriggerBehavior> All { get; } = Build();
-
-        public static TriggerBehavior None => Get(NoneId);
 
         public static TriggerBehavior Custom => Get(CustomId);
 
@@ -76,41 +74,13 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             if (type == 1)
                 return Get(AreaTransitionId);
 
-            return HasAnyScript(trigger) ? Custom : None;
-        }
-
-        private static bool HasAnyScript(JsonGffStruct trigger)
-        {
-            string[] slots =
-            {
-                "ScriptOnEnter", "ScriptOnExit", "ScriptHeartbeat", "ScriptUserDefine",
-                "OnClick", "OnDisarm", "OnTrapTriggered"
-            };
-
-            return slots.Any(slot => !string.IsNullOrEmpty(trigger.GetStringOrNull(slot)));
+            return Custom;
         }
 
         private static IReadOnlyList<TriggerBehavior> Build()
         {
             return new[]
             {
-                new TriggerBehavior
-                {
-                    Id = NoneId,
-                    DisplayName = "None",
-                    Tagline = "plain trigger",
-                    Fields = new[]
-                    {
-                        new TriggerFieldDefinition
-                        {
-                            Label = "Does nothing on its own",
-                            Name = string.Empty,
-                            Kind = TriggerFieldKind.Statement,
-                            Note = "A volume with no scripts. Useful as a marker other systems look for by tag."
-                        }
-                    }
-                },
-
                 // 297 placements — over half of every trigger in the module.
                 new TriggerBehavior
                 {
@@ -350,6 +320,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                 {
                     Id = CustomId,
                     DisplayName = "Custom…",
+                    Tagline = "raw scripts and variables",
                     AllowsVariables = true,
                     Fields = new[]
                     {

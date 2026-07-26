@@ -33,6 +33,9 @@ namespace SWLOR.Toolset.Editors.Triggers
 
         public bool IsPerPlacement => Definition.IsPerPlacement;
 
+        /// <summary>Characters the box accepts; 0 lets Avalonia treat it as unlimited.</summary>
+        public int MaxLength => Definition.MaxLength;
+
         /// <summary>Resolved at construction, so a game-data choice set and a fixed one read alike.</summary>
         public IReadOnlyList<TriggerChoice> Choices { get; }
 
@@ -200,6 +203,15 @@ namespace SWLOR.Toolset.Editors.Triggers
             {
                 IsStatusGood = false;
                 Status = "required";
+                return;
+            }
+
+            // Silent truncation is the failure mode a length cap invites, so the row starts counting
+            // down before the box stops accepting characters rather than after.
+            if (MaxLength > 0 && Text.Length >= MaxLength - 4)
+            {
+                IsStatusGood = Text.Length < MaxLength;
+                Status = $"{Text.Length}/{MaxLength}";
                 return;
             }
 

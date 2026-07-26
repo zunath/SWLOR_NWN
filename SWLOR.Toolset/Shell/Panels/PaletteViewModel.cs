@@ -885,7 +885,15 @@ namespace SWLOR.Toolset.Shell.Panels
             else
                 section.AddFolder(name);
 
-            SaveCategories();
+            // Stop on a refused write rather than reporting success over it. SaveCategories has already
+            // put the reason in StatusMessage; overwriting that with "Added category" told the builder
+            // the edit had landed when it only existed in memory, and it was gone on restart.
+            if (!SaveCategories())
+            {
+                Refresh();
+                return;
+            }
+
             Refresh();
             StatusMessage = $"Added category '{name}'.";
             _log.AppendLine($"Added category '{name}' to the {SelectedType.DisplayName().ToLowerInvariant()} palette.");
@@ -917,7 +925,12 @@ namespace SWLOR.Toolset.Shell.Panels
             if (section != null && oldPathKey != null)
                 section.RepathPins(oldPathKey, section.PathKey(folder));
 
-            SaveCategories();
+            if (!SaveCategories())
+            {
+                Refresh();
+                return;
+            }
+
             Refresh();
             StatusMessage = $"Renamed '{previous}' to '{folder.Name}'.";
         }
@@ -959,7 +972,12 @@ namespace SWLOR.Toolset.Shell.Panels
 
             section.RemoveFolder(folder);
             SelectedRow = null;
-            SaveCategories();
+            if (!SaveCategories())
+            {
+                Refresh();
+                return;
+            }
+
             Refresh();
             StatusMessage = $"Removed category '{folder.Name}'.";
         }
@@ -998,7 +1016,12 @@ namespace SWLOR.Toolset.Shell.Panels
                 previous.RemoveMember(resRef);
 
             folder.AddMember(resRef);
-            SaveCategories();
+            if (!SaveCategories())
+            {
+                Refresh();
+                return;
+            }
+
             Refresh();
             StatusMessage = $"Filed {label} into '{folder.Name}'.";
         }
@@ -1104,7 +1127,10 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private void ExpandTo(CategoryFolder folder)
         {
-            var section = _categories.Section(SelectedType);
+            // The folder belongs to whichever side is showing. Asking the Custom section to path a
+            // Standard folder returned no ancestors, so clearing a Standard search left the matched
+            // category's parents collapsed and the selected row invisible.
+            var section = CurrentSection();
             if (section == null)
                 return;
 

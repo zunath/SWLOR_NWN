@@ -47,12 +47,19 @@ namespace SWLOR.Toolset.Domain.Placeables
         /// <summary>Flags the behavior requires, ticked on apply and marked in the editor.</summary>
         public IReadOnlyList<PlaceableBehaviorFlag> Flags { get; init; } = Array.Empty<PlaceableBehaviorFlag>();
 
+        /// <summary>
+        /// Root flags this behavior lets the builder choose. These are controls, not requirements:
+        /// applying or saving the behavior preserves the selected value.
+        /// </summary>
+        public IReadOnlyList<PlaceableBehaviorEditableFlag> EditableFlags { get; init; } =
+            Array.Empty<PlaceableBehaviorEditableFlag>();
+
         /// <summary>The local variables that configure this behavior, in the order shown.</summary>
         public IReadOnlyList<PlaceableBehaviorField> Fields { get; init; } = Array.Empty<PlaceableBehaviorField>();
 
         /// <summary>
-        /// True for the two behaviors that describe an absence rather than a system: "None" (a
-        /// decor prop) and "Custom" (wiring no declaration covers). Neither writes anything.
+        /// True for the two behaviors that describe an absence rather than a system: Decor (no
+        /// behavior wiring) and Custom (wiring no declaration covers).
         /// </summary>
         public bool IsSentinel { get; init; }
 

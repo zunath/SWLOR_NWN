@@ -5,10 +5,15 @@ using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Schemas;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.GameData.Tlk;
+using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Placeables;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Editors.Placeables;
 using SWLOR.Toolset.Services;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -46,6 +51,23 @@ namespace SWLOR.Toolset.Tests
             customIndex.Should().BeGreaterThan(0);
             section.Items[customIndex - 1].IsHeader.Should().BeTrue();
             section.Items[customIndex - 1].Text.Should().Be("Custom");
+        }
+
+        [Test]
+        public void Catalog_DecorOffersStaticAndEveryUsableBehaviorIsDynamic()
+        {
+            PlaceableBehaviorCatalog.None.EditableFlags.Should().ContainSingle()
+                .Which.Should().Be(new PlaceableBehaviorEditableFlag(
+                    "Static",
+                    "Static",
+                    "Treat this decor as part of the area geometry instead of an interactive object."));
+
+            PlaceableBehaviorCatalog.Behaviors
+                .Where(behavior => behavior.Flags.Any(flag =>
+                    flag.FieldName == "Useable" && flag.Value))
+                .Should().OnlyContain(behavior => behavior.Flags.Any(flag =>
+                        flag.FieldName == "Static" && !flag.Value),
+                    "usable placeables must be non-static for interaction events to work");
         }
 
         [Test]
@@ -155,6 +177,163 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void EnsureExpectedValues_MaterializesEveryDeclaredScriptFlagAndDefault()
+        {
+            foreach (var behavior in PlaceableBehaviorCatalog.Behaviors
+                         .Where(candidate => !candidate.IsSentinel))
+            {
+                var document = BuildDocument();
+                PlaceableBehaviorApplier.EnsureExpectedValues(document.Root, behavior);
+                var saved = JsonGffDocument.Parse(document.ToBytes());
+
+                foreach (var script in behavior.Scripts)
+                    saved.Root.GetOrNull(script.Key)!.GetString().Should().Be(
+                        script.Value,
+                        $"{behavior.Name} owns the {script.Key} script");
+
+                foreach (var flag in behavior.Flags)
+                    saved.Root.GetOrNull(flag.FieldName)!.GetInteger().Should().Be(
+                        flag.Value ? 1 : 0,
+                        $"{behavior.Name} requires {flag.FieldName} = {flag.Value}");
+
+                var variables = new VarTable(saved.Root);
+                foreach (var field in behavior.Fields)
+                {
+                    if (field.DefaultIntValue is { } intValue)
+                    {
+                        variables.Single(entry => entry.Name == field.VariableName)
+                            .IntValue.Should().Be(
+                                intValue,
+                                $"{behavior.Name} supplies the normal {field.Label} value");
+                    }
+                    else if (!string.IsNullOrWhiteSpace(field.DefaultStringValue))
+                    {
+                        variables.Single(entry => entry.Name == field.VariableName)
+                            .StringValue.Should().Be(
+                                field.DefaultStringValue,
+                                $"{behavior.Name} supplies the normal {field.Label} value");
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void Decor_StaticIsEditableAndSurvivesSerialization()
+        {
+            var document = BuildDocument();
+            var context = new EditorFieldContext(
+                document,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+            var section = new PlaceableBehaviorSectionViewModel(
+                context,
+                new BehaviorValueSourceProvider(gameCode: null, tags: () => null),
+                new AcceptingPrompts(),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+
+            section.Current.Should().BeSameAs(PlaceableBehaviorCatalog.None);
+            section.HasEditableFlags.Should().BeTrue();
+            section.HasSettings.Should().BeTrue();
+            var staticField = section.EditableFlagFields.Should().ContainSingle().Subject;
+            staticField.Label.Should().Be("Static");
+
+            staticField.IsChecked = true;
+
+            document.Root.GetOrNull("Static")!.GetInteger().Should().Be(1);
+            JsonGffDocument.Parse(document.ToBytes()).Root
+                .GetOrNull("Static")!.GetInteger().Should().Be(1);
+
+            PlaceableBehaviorApplier.EnsureExpectedValues(
+                document.Root,
+                PlaceableBehaviorCatalog.None);
+            document.Root.GetOrNull("Static")!.GetInteger().Should().Be(
+                1,
+                "Decor's Static value is a builder choice, not a behavior default");
+        }
+
+        [Test]
+        public async Task BlueprintSave_CompletesNamedBehaviorWiring()
+        {
+            var directory = Path.Combine(
+                Path.GetTempPath(),
+                "swlor-placeable-save-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            var path = Path.Combine(directory, "behavior_save.utp.json");
+
+            try
+            {
+                var modelCatalog = CreateFixturePlaceableModelCatalog(directory);
+                _ = modelCatalog.GetAll();
+                var initial = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utp,
+                    "behavior_save",
+                    "Behavior Save"));
+                initial.Root.GetOrNull("OnUsed")!.SetString("zep_torch");
+                initial.Root.GetOrNull("OnHeartbeat")!.SetString(string.Empty);
+                initial.Root.GetOrNull("Useable")!.SetInteger(0);
+                initial.Root.GetOrNull("Static")!.SetInteger(1);
+                File.WriteAllBytes(path, initial.ToBytes());
+
+                var log = new OutputLogService();
+                var workspace = new WorkspaceContext(_ => throw new NotSupportedException(), log);
+                var editor = new BlueprintEditorViewModel(
+                    path,
+                    "behavior_save",
+                    ResourceType.Utp,
+                    UtpSchema.Build(),
+                    new LookupOptionProvider(workspace),
+                    gameCodeIndex: null,
+                    log,
+                    new AcceptingPrompts(),
+                    placeableSections: (context, runEdit, scriptHost) =>
+                    {
+                        var appearance = new AppearanceSectionViewModel(
+                            context,
+                            modelCatalog,
+                            thumbnails: null,
+                            () => PlaceableAppearanceUsageIndex.Empty,
+                            runEdit);
+                        var behavior = new PlaceableBehaviorSectionViewModel(
+                            context,
+                            new BehaviorValueSourceProvider(gameCode: null, tags: () => null),
+                            new AcceptingPrompts(),
+                            runEdit,
+                            scriptHost);
+                        return new PlaceableEditorSections(appearance, behavior);
+                    });
+
+                editor.PlaceableSections!.Behavior.Current.Id.Should().Be("light_torch");
+                editor.Groups
+                    .SelectMany(group => group.Fields)
+                    .OfType<LocStringFieldViewModel>()
+                    .Single(field => field.Descriptor.FieldName == "LocName")
+                    .Text = "Saved Behavior";
+
+                (await editor.TrySaveAsync()).Should().BeTrue();
+                editor.IsDirty.Should().BeFalse();
+                editor.OnClose().Should().BeTrue();
+
+                var saved = JsonGffDocument.Load(path);
+                saved.Root.GetOrNull("OnUsed")!.GetString().Should().Be("zep_torch");
+                saved.Root.GetOrNull("OnHeartbeat")!.GetString().Should().Be("zep_torchspawn");
+                saved.Root.GetOrNull("Useable")!.GetInteger().Should().Be(1);
+                saved.Root.GetOrNull("Static")!.GetInteger().Should().Be(0);
+            }
+            finally
+            {
+                if (Directory.Exists(directory))
+                    Directory.Delete(directory, recursive: true);
+            }
+        }
+
+        [Test]
         public void GameCodePickerData_UsesOnlyCraftMenuSkillsAndDocumentsEveryVfxGroup()
         {
             var sourceRoot = FindGameServerSource();
@@ -197,6 +376,7 @@ namespace SWLOR.Toolset.Tests
 
             view.Should().NotContain("WHAT THIS BEHAVIOR MANAGES");
             view.Should().Contain("ItemsSource=\"{Binding CustomScriptFields}\"");
+            view.Should().Contain("ItemsSource=\"{Binding EditableFlagFields}\"");
 
             var appPath = Path.Combine(
                 CorpusLocator.RepositoryRoot,
@@ -790,6 +970,20 @@ namespace SWLOR.Toolset.Tests
                     mutation();
                     return true;
                 });
+        }
+
+        private static PlaceableModelCatalog CreateFixturePlaceableModelCatalog(string directory)
+        {
+            var twoDaPath = Path.Combine(directory, "sw_2da");
+            Directory.CreateDirectory(twoDaPath);
+            File.WriteAllText(
+                Path.Combine(twoDaPath, "placeables.2da"),
+                "2DA V2.0\r\n\r\nLabel StrRef ModelName\r\n" +
+                "0 Fixture **** plc_fixture\r\n");
+
+            return new PlaceableModelCatalog(
+                new TwoDaService(twoDaPath),
+                new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
         }
 
         private static string? FindGameServerSource()

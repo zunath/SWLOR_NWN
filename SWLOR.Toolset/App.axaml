@@ -60,10 +60,13 @@
     </DataTemplate>
 
     <DataTemplate DataType="editors:CheckFieldViewModel">
-      <Grid ColumnDefinitions="180,*" Margin="0,2">
+      <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto" Margin="0,2">
         <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
                    Classes="dim" TextTrimming="CharacterEllipsis" />
         <CheckBox Grid.Column="1" IsChecked="{Binding IsChecked, Mode=TwoWay}" IsEnabled="{Binding !IsReadOnly}" />
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}" Classes="dim"
+                   FontSize="11" TextWrapping="Wrap" Margin="0,3,0,3"
+                   IsVisible="{Binding HasDescription}" />
       </Grid>
     </DataTemplate>
 

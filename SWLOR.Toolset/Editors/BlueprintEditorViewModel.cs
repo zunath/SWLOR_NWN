@@ -350,6 +350,12 @@ namespace SWLOR.Toolset.Editors
                     }
                 }
 
+                if (PlaceableSections != null &&
+                    !PlaceableSections.Behavior.EnsureExpectedValuesForSave())
+                {
+                    return false;
+                }
+
                 Services.SaveService.WriteAtomic(_session.FilePath, _session.ToBytes());
                 _session.UndoStack.MarkSaved();
                 _session.RecordCurrentFileState();

@@ -170,6 +170,8 @@
             <TextBlock Text="{Binding CurrentName}" FontSize="15" FontWeight="SemiBold" />
 
             <ItemsControl ItemsSource="{Binding Fields}" IsVisible="{Binding HasFields}" />
+            <ItemsControl ItemsSource="{Binding EditableFlagFields}"
+                          IsVisible="{Binding HasEditableFlags}" />
             <StackPanel Spacing="6" IsVisible="{Binding ShowsCustomFlags}">
               <TextBlock Text="FLAGS" Classes="label" />
               <ItemsControl ItemsSource="{Binding CustomFlagFields}" />

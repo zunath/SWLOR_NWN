@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
+using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Placeables;
 using SWLOR.Toolset.Services;
 
@@ -79,6 +80,9 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// <summary>The typed fields of the selected behavior.</summary>
         public ObservableCollection<BehaviorFieldViewModel> Fields { get; } = new();
 
+        /// <summary>Root flags this behavior intentionally lets the builder choose.</summary>
+        public ObservableCollection<CheckFieldViewModel> EditableFlagFields { get; } = new();
+
         /// <summary>Raw root flags shown only for the Custom behavior.</summary>
         public ObservableCollection<FieldViewModel> CustomFlagFields { get; } = new();
 
@@ -94,9 +98,10 @@ namespace SWLOR.Toolset.Editors.Placeables
         public bool AllowsRawEditing => Current.AllowsRawEditing;
 
         public bool HasFields => Fields.Count > 0;
+        public bool HasEditableFlags => EditableFlagFields.Count > 0;
         public bool ShowsCustomFlags => ReferenceEquals(Current, PlaceableBehaviorCatalog.Custom);
         public bool ShowsCustomScripts => ReferenceEquals(Current, PlaceableBehaviorCatalog.Custom);
-        public bool HasSettings => HasFields || ShowsCustomFlags || ShowsCustomScripts;
+        public bool HasSettings => HasFields || HasEditableFlags || ShowsCustomFlags || ShowsCustomScripts;
 
         /// <summary>Raised when a behavior switch lands, so the editor can refresh its other tabs.</summary>
         public event Action? BehaviorChanged;
@@ -127,6 +132,8 @@ namespace SWLOR.Toolset.Editors.Placeables
             }
 
             foreach (var field in Fields)
+                field.RefreshFromDocument();
+            foreach (var field in EditableFlagFields)
                 field.RefreshFromDocument();
             foreach (var field in CustomFlagFields)
                 field.RefreshFromDocument();
@@ -198,17 +205,50 @@ namespace SWLOR.Toolset.Editors.Placeables
             BehaviorChanged?.Invoke();
         }
 
+        /// <summary>
+        /// Materializes the selected named behavior's implementation values immediately before the
+        /// document is serialized. Authored field values and editable flags, including Decor's
+        /// Static choice, are preserved.
+        /// </summary>
+        public bool EnsureExpectedValuesForSave()
+        {
+            var applied = _runEdit(
+                $"Complete {Current.Name} behavior",
+                () => PlaceableBehaviorApplier.EnsureExpectedValues(_context.Document.Root, Current));
+            if (applied)
+                RefreshFromDocument();
+
+            return applied;
+        }
+
         private void BuildFields()
         {
             Fields.Clear();
             foreach (var field in Current.Fields.Where(field => field.IsVisible))
                 Fields.Add(new BehaviorFieldViewModel(field, _context, _sources));
+
+            EditableFlagFields.Clear();
+            foreach (var flag in Current.EditableFlags)
+            {
+                EditableFlagFields.Add(new CheckFieldViewModel(
+                    new FieldDescriptor
+                    {
+                        Label = flag.Label,
+                        FieldName = flag.FieldName,
+                        Description = flag.Description,
+                        Kind = EditorKind.Check,
+                        FieldType = GffFieldType.Byte
+                    },
+                    _context));
+            }
+
             foreach (var field in CustomFlagFields)
                 field.RefreshFromDocument();
             foreach (var field in CustomScriptFields)
                 field.RefreshFromDocument();
 
             OnPropertyChanged(nameof(HasFields));
+            OnPropertyChanged(nameof(HasEditableFlags));
             OnPropertyChanged(nameof(HasSettings));
         }
 
@@ -216,6 +256,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         {
             OnPropertyChanged(nameof(CurrentName));
             OnPropertyChanged(nameof(AllowsRawEditing));
+            OnPropertyChanged(nameof(HasEditableFlags));
             OnPropertyChanged(nameof(ShowsCustomFlags));
             OnPropertyChanged(nameof(ShowsCustomScripts));
             OnPropertyChanged(nameof(HasSettings));

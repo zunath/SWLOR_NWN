@@ -77,13 +77,29 @@ namespace SWLOR.Toolset.Domain.Placeables
             ClearOwnedVariables(root, from, to);
             ClearOwnedFlags(root, from, to);
 
-            foreach (var slot in to.Scripts)
+            EnsureExpectedValues(root, to);
+        }
+
+        /// <summary>
+        /// Writes the selected named behavior's canonical scripts, required root flags, and missing
+        /// defaults. User-authored visible field values and behavior-editable flags are preserved.
+        /// Sentinels have no implementation wiring to materialize.
+        /// </summary>
+        public static void EnsureExpectedValues(JsonGffStruct root, PlaceableBehavior behavior)
+        {
+            ArgumentNullException.ThrowIfNull(root);
+            ArgumentNullException.ThrowIfNull(behavior);
+
+            if (behavior.IsSentinel)
+                return;
+
+            foreach (var slot in behavior.Scripts)
                 SetString(root, slot.Key, slot.Value, GffFieldType.ResRef);
 
-            foreach (var flag in to.Flags)
+            foreach (var flag in behavior.Flags)
                 SetInteger(root, flag.FieldName, flag.Value ? 1 : 0, GffFieldType.Byte);
 
-            WriteDefaults(root, to);
+            WriteDefaults(root, behavior);
         }
 
         /// <summary>
@@ -267,6 +283,9 @@ namespace SWLOR.Toolset.Domain.Placeables
                 return;
             }
 
+            if (string.Equals(field.GetString(), value, StringComparison.Ordinal))
+                return;
+
             field.SetString(value);
         }
 
@@ -279,6 +298,9 @@ namespace SWLOR.Toolset.Domain.Placeables
                 root.Add(fieldName, JsonGffField.CreateScalar(type, raw));
                 return;
             }
+
+            if (field.GetInteger() == value)
+                return;
 
             field.SetInteger(value);
         }

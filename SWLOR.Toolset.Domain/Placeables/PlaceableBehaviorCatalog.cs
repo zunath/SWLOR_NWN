@@ -48,7 +48,14 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = NoneId,
                     Name = "Decor",
                     Group = string.Empty,
-                    IsSentinel = true
+                    IsSentinel = true,
+                    EditableFlags = new[]
+                    {
+                        new PlaceableBehaviorEditableFlag(
+                            "Static",
+                            "Static",
+                            "Treat this decor as part of the area geometry instead of an interactive object.")
+                    }
                 },
 
                 // ---- Gathering ------------------------------------------------------------
@@ -63,11 +70,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                         ["OnClosed"] = "scav_closed",
                         ["OnInvDisturbed"] = "scav_disturbed"
                     },
-                    Flags = new[]
-                    {
-                        new PlaceableBehaviorFlag("Useable", true),
-                        new PlaceableBehaviorFlag("HasInventory", true)
-                    },
+                    Flags = UsableFlags(new PlaceableBehaviorFlag("HasInventory", true)),
                     Fields = new[]
                     {
                         new PlaceableBehaviorField
@@ -136,7 +139,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                         ["OnUsed"] = "res_used",
                         ["OnHeartbeat"] = "res_heartbeat"
                     },
-                    Flags = new[] { new PlaceableBehaviorFlag("Useable", true) },
+                    Flags = UsableFlags(),
                     Fields = new[]
                     {
                         new PlaceableBehaviorField
@@ -209,7 +212,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                     {
                         ["OnUsed"] = "slice_terminal"
                     },
-                    Flags = new[] { new PlaceableBehaviorFlag("Useable", true) },
+                    Flags = UsableFlags(),
                     Fields = new[]
                     {
                         new PlaceableBehaviorField
@@ -251,7 +254,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                     {
                         ["OnUsed"] = "generic_convo"
                     },
-                    Flags = new[] { new PlaceableBehaviorFlag("Useable", true) },
+                    Flags = UsableFlags(),
                     Fields = new[]
                     {
                         new PlaceableBehaviorField
@@ -283,7 +286,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                     {
                         ["OnUsed"] = "craft_on_used"
                     },
-                    Flags = new[] { new PlaceableBehaviorFlag("Useable", true) },
+                    Flags = UsableFlags(),
                     Fields = new[]
                     {
                         new PlaceableBehaviorField
@@ -305,7 +308,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                     {
                         ["OnUsed"] = "generic_convo"
                     },
-                    Flags = new[] { new PlaceableBehaviorFlag("Useable", true) },
+                    Flags = UsableFlags(),
                     Fields = new[]
                     {
                         new PlaceableBehaviorField
@@ -335,7 +338,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                     {
                         ["OnUsed"] = "teleport"
                     },
-                    Flags = new[] { new PlaceableBehaviorFlag("Useable", true) },
+                    Flags = UsableFlags(),
                     Fields = new[]
                     {
                         new PlaceableBehaviorField
@@ -384,7 +387,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                     {
                         ["OnUsed"] = "quest_enc"
                     },
-                    Flags = new[] { new PlaceableBehaviorFlag("Useable", true) },
+                    Flags = UsableFlags(),
                     Fields = new[]
                     {
                         new PlaceableBehaviorField
@@ -494,7 +497,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                     {
                         ["OnClick"] = "spc_target"
                     },
-                    Flags = new[] { new PlaceableBehaviorFlag("Useable", true) }
+                    Flags = UsableFlags()
                 },
 
                 // ---- Props ----------------------------------------------------------------
@@ -508,7 +511,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                         ["OnUsed"] = "sit"
                     },
                     AlternateScripts = new[] { "x0_o2_use_chair", "x2_plc_used_sit", "zep_use_chair" },
-                    Flags = new[] { new PlaceableBehaviorFlag("Useable", true) }
+                    Flags = UsableFlags()
                 },
                 new PlaceableBehavior
                 {
@@ -520,7 +523,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                         ["OnUsed"] = "zep_torch",
                         ["OnHeartbeat"] = "zep_torchspawn"
                     },
-                    Flags = new[] { new PlaceableBehaviorFlag("Useable", true) }
+                    Flags = UsableFlags()
                 },
                 new PlaceableBehavior
                 {
@@ -532,7 +535,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                         ["OnUsed"] = "zep_onoff"
                     },
                     AlternateScripts = new[] { "nw_02_onoff" },
-                    Flags = new[] { new PlaceableBehaviorFlag("Useable", true) }
+                    Flags = UsableFlags()
                 },
                 new PlaceableBehavior
                 {
@@ -545,7 +548,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                         ["OnHeartbeat"] = "zep_doorspawn",
                         ["OnDeath"] = "zep_doorkill"
                     },
-                    Flags = new[] { new PlaceableBehaviorFlag("Useable", true) }
+                    Flags = UsableFlags()
                 },
 
                 new PlaceableBehavior
@@ -557,6 +560,22 @@ namespace SWLOR.Toolset.Domain.Placeables
                     AllowsRawEditing = true
                 }
             };
+        }
+
+        /// <summary>
+        /// A usable placeable must be dynamic. Static placeables cannot receive normal interaction,
+        /// so every behavior that enables Useable also owns Static = false.
+        /// </summary>
+        private static IReadOnlyList<PlaceableBehaviorFlag> UsableFlags(
+            params PlaceableBehaviorFlag[] additional)
+        {
+            return new[]
+                {
+                    new PlaceableBehaviorFlag("Useable", true),
+                    new PlaceableBehaviorFlag("Static", false)
+                }
+                .Concat(additional)
+                .ToArray();
         }
     }
 }

@@ -1687,3 +1687,26 @@ that script at the matching line through `EditorService.NavigateToScriptLine`.
   exclusion in identifier mode, and string inclusion in substring mode. `ScriptSearchViewLoadsItsXaml`
   covers the docked view. Focused runs: `ScriptWorkspaceSearchTests` - 3 passed;
   `ScriptEditorViewRenderTests` - 7 passed.
+
+## Script editor improvement 4 - 2026-07-26 - Include saves offer to rebuild dependents
+
+Saving an include still returns immediately, but the compile-on-save continuation now turns the
+script editor's existing compile status strip into a clickable rebuild offer when the include has
+transitive dependents. Clicking it builds/checks those dependents through `ScriptCompileService`,
+updates the same strip with the outcome, and opens Problems if any dependent compile fails.
+
+- **Why.** The include graph already knew exactly which scripts were invalidated, but the UI only
+  logged that fact. That made the builder remember a second command after a successful save, which is
+  precisely the kind of small missed step that leaves stale `.ncs` artifacts behind.
+- **Decision.** `Domain.Script.ScriptIncludeRebuildPlanner` owns the offered set and intentionally
+  mirrors `ScriptIncludeGraph.TransitiveDependents`. The app layer only posts the offer back to the UI
+  thread and wires the click to `BuildDependentsAsync`; no prompt is shown from a background
+  continuation.
+- **Deliberately not done.** The save itself is not blocked, and includes are not treated as failed
+  compiles just because they produce no artifact. The offer is actionable but still non-modal, matching
+  the existing async compile-on-save design.
+- **Verification.** `IncludeRebuildOfferMatchesTransitiveDependentsAndRebuildClearsStaleness` proves
+  the offered set equals the graph's transitive dependents, and that refreshing the stale entry
+  artifacts clears the scanner. Focused run:
+  `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
+  "FullyQualifiedName~ScriptStalenessScannerTests"` - 9 passed.

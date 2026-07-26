@@ -285,7 +285,7 @@ namespace SWLOR.Toolset.Editors
                 };
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CompileOnSave = _compileService != null && _compileService.IsAvailable
-                    ? async name => (await _compileService.CompileAsync(name).ConfigureAwait(true)).Succeeded
+                    ? name => CompileOnSaveAsync(workspace, editor, name)
                     : null;
 
                 // Compile belongs to the document, not to a module-wide menu. The tab owns the button
@@ -407,6 +407,34 @@ namespace SWLOR.Toolset.Editors
             {
                 _log.AppendLine($"Failed to open editor for {resRef}: {ex.Message}");
             }
+        }
+
+        private async Task<bool> CompileOnSaveAsync(
+            ModuleWorkspace workspace,
+            ScriptEditorViewModel editor,
+            string resRef)
+        {
+            if (_compileService == null)
+                return false;
+
+            var outcome = await _compileService.CompileAsync(resRef).ConfigureAwait(false);
+
+            var source = workspace.GetResourcePath(ResourceType.Nss, resRef);
+            if (!File.Exists(source) ||
+                Domain.Script.ScriptStalenessScanner.IsEntryPoint(
+                    Domain.Script.ScriptTextDocument.Load(source).Text))
+                return outcome.Succeeded;
+
+            var dependents = _compileService.DependentsOf(resRef);
+            if (dependents.Count == 0)
+                return outcome.Succeeded;
+
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                editor.OfferDependentRebuild(
+                    dependents,
+                    () => _compileService.BuildDependentsAsync(dependents)));
+
+            return outcome.Succeeded;
         }
 
         /// <summary>

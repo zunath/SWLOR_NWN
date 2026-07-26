@@ -327,6 +327,34 @@ namespace SWLOR.Toolset.Tests
                 .Which.Should().Be("a.ncs is older than a.nss");
             warning.Message.Should().Contain("Build all scripts now");
         }
+
+        [Test]
+        public void IncludeRebuildOfferMatchesTransitiveDependentsAndRebuildClearsStaleness()
+        {
+            var old = DateTime.UtcNow.AddHours(-2);
+            Source("one", "#include \"base_inc\"\nvoid main() {}", old);
+            Source("two", "#include \"mid_inc\"\nvoid main() {}", old);
+            Source("mid_inc", "#include \"base_inc\"\nint Mid() { return 1; }", old);
+            Source("helper_inc", "#include \"base_inc\"\nint Helper() { return 1; }", old);
+            Compiled("one", DateTime.UtcNow.AddHours(-1));
+            Compiled("two", DateTime.UtcNow.AddHours(-1));
+
+            Source("base_inc", "int Base() { return 1; }", DateTime.UtcNow);
+
+            var graph = ScriptIncludeGraph.Build(_nss);
+            var plan = ScriptIncludeRebuildPlanner.Create(_nss, "base_inc");
+
+            plan.Dependents.Should().BeEquivalentTo(graph.TransitiveDependents("base_inc"));
+
+            var stale = Scan();
+            stale.Select(s => s.ResRef).Should().BeEquivalentTo(new[] { "one", "two" });
+            stale.Select(s => s.ResRef).Should().OnlyContain(resRef => plan.Dependents.Contains(resRef));
+
+            foreach (var entry in stale)
+                Compiled(entry.ResRef, DateTime.UtcNow.AddMinutes(1));
+
+            Scan().Should().BeEmpty();
+        }
     }
 
     /// <summary>Project-wide script search.</summary>

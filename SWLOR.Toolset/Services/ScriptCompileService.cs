@@ -289,6 +289,40 @@ namespace SWLOR.Toolset.Services
             return (compiled, failed);
         }
 
+        /// <summary>Every script that transitively depends on an include.</summary>
+        public IReadOnlyList<string> DependentsOf(string resRef)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<string>();
+
+            return ScriptIncludeRebuildPlanner
+                .Create(Path.Combine(workspace.ModuleRoot, "nss"), resRef)
+                .Dependents;
+        }
+
+        /// <summary>Compiles/checks the supplied dependent scripts, preserving the usual include behaviour.</summary>
+        public async Task<(int Compiled, int Failed)> BuildDependentsAsync(
+            IEnumerable<string> resRefs,
+            CancellationToken cancellationToken = default)
+        {
+            var compiled = 0;
+            var failed = 0;
+
+            foreach (var resRef in resRefs.Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var outcome = await CompileAsync(resRef, cancellationToken).ConfigureAwait(false);
+                if (outcome.Succeeded)
+                    compiled++;
+                else
+                    failed++;
+            }
+
+            _log.AppendLine($"Build Dependent Scripts: {compiled} compiled or checked, {failed} failed.");
+            return (compiled, failed);
+        }
+
         /// <summary>Every compiled script that would ship stale.</summary>
         public IReadOnlyList<StaleScript> ScanStale()
         {

@@ -111,6 +111,8 @@ namespace SWLOR.Toolset.Editors
         [ObservableProperty]
         private bool _lastCompileFailed;
 
+        private Func<Task<(int Compiled, int Failed)>>? _compileStatusAction;
+
         public bool HasCompileStatus => CompileStatus.Length > 0;
 
         partial void OnCompileStatusChanged(string value) => OnPropertyChanged(nameof(HasCompileStatus));
@@ -136,6 +138,7 @@ namespace SWLOR.Toolset.Editors
             }
 
             IsCompiling = true;
+            _compileStatusAction = null;
             CompileStatus = "Compiling...";
             LastCompileFailed = false;
 
@@ -157,8 +160,49 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>Brings the Problems panel forward; the status strip is clickable.</summary>
+        public void OfferDependentRebuild(
+            IReadOnlyList<string> dependents,
+            Func<Task<(int Compiled, int Failed)>> rebuild)
+        {
+            if (dependents.Count == 0)
+                return;
+
+            _compileStatusAction = rebuild;
+            LastCompileFailed = false;
+            CompileStatus = $"{dependents.Count} dependent script(s) need rebuilding - click to build";
+        }
+
         [RelayCommand]
-        private void ShowProblems() => ShowProblemsRequested?.Invoke();
+        private async Task ShowProblems()
+        {
+            if (_compileStatusAction == null)
+            {
+                ShowProblemsRequested?.Invoke();
+                return;
+            }
+
+            var rebuild = _compileStatusAction;
+            _compileStatusAction = null;
+            IsCompiling = true;
+            CompileStatus = "Building dependent scripts...";
+            LastCompileFailed = false;
+
+            try
+            {
+                var (compiled, failed) = await rebuild().ConfigureAwait(true);
+                LastCompileFailed = failed > 0;
+                CompileStatus = failed == 0
+                    ? $"Built {compiled} dependent script(s) at {DateTime.Now:HH:mm:ss}"
+                    : $"Built {compiled} dependent script(s); {failed} failed - see Problems";
+
+                if (failed > 0)
+                    ShowProblemsRequested?.Invoke();
+            }
+            finally
+            {
+                IsCompiling = false;
+            }
+        }
 
         /// <summary>
         /// Opens the community Lexicon page for the symbol under the caret (F1). Linked rather than

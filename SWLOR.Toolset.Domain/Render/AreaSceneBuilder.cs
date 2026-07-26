@@ -34,7 +34,8 @@ namespace SWLOR.Toolset.Domain.Render
             PlaceableAppearanceService? placeableAppearances = null,
             DoorTypeService? doorTypes = null,
             TileWalkmeshCache? walkmeshes = null,
-            WaypointAppearanceService? waypointAppearances = null)
+            WaypointAppearanceService? waypointAppearances = null,
+            Func<string, RenderModel?>? resolveCreatureModel = null)
         {
             ArgumentNullException.ThrowIfNull(are);
             ArgumentNullException.ThrowIfNull(git);
@@ -58,7 +59,8 @@ namespace SWLOR.Toolset.Domain.Render
             }
 
             var tiles = BuildTiles(are, tileset, tilesetResRef, width, modelCache, diagnostics, walkmeshes);
-            var instances = BuildInstances(git, modelCache, placeableAppearances, doorTypes, waypointAppearances);
+            var instances = BuildInstances(
+                git, modelCache, placeableAppearances, doorTypes, waypointAppearances, resolveCreatureModel);
             var doorAnchors = BuildDoorAnchors(tiles, tileset);
 
             return new AreaScene
@@ -215,11 +217,18 @@ namespace SWLOR.Toolset.Domain.Render
             TileModelCache modelCache,
             PlaceableAppearanceService? placeableAppearances,
             DoorTypeService? doorTypes,
-            WaypointAppearanceService? waypointAppearances)
+            WaypointAppearanceService? waypointAppearances,
+            Func<string, RenderModel?>? resolveCreatureModel)
         {
             var markers = new List<InstanceMarker>();
 
-            AddMarkers(markers, git.Creatures, InstanceMarkerKind.Creature, ResourceType.Utc);
+            // A creature's model cannot be resolved here: a humanoid body is assembled from a skeleton
+            // and a dozen part models, which needs the composer that lives in the app layer. The caller
+            // supplies it, and without one a creature falls back to its marker as before.
+            AddMarkers(markers, git.Creatures, InstanceMarkerKind.Creature, ResourceType.Utc,
+                resolveModel: resolveCreatureModel == null
+                    ? null
+                    : instance => resolveCreatureModel(InstanceFieldMap.GetTemplateResRef(ResourceType.Utc, instance)));
             AddMarkers(markers, git.Doors, InstanceMarkerKind.Door, ResourceType.Utd,
                 resolveModel: instance => ResolveDoorModel(instance, doorTypes, modelCache));
             AddMarkers(markers, git.Items, InstanceMarkerKind.Item, ResourceType.Uti);

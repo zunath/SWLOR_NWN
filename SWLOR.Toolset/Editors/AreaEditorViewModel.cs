@@ -849,6 +849,53 @@ namespace SWLOR.Toolset.Editors
         /// A blueprint whose model cannot be resolved still gets a ghost - it just draws as the
         /// kind's marker, the same fallback the placed instance itself would use.
         /// </summary>
+        /// <summary>
+        /// A creature's composed geometry, one build per distinct blueprint.
+        /// </summary>
+        /// <remarks>
+        /// Cached because composing a segmented body is not cheap and an area holds many instances of
+        /// the same creature - the cache is keyed by template resref, so the cost is the number of
+        /// distinct creatures in the area rather than the number placed. That distinction matters:
+        /// <see cref="Workspace.BlueprintPreviewRenderer"/> deliberately caches nothing itself, because
+        /// retaining every blueprint's expanded meshes at once is what once drove the preview build to a
+        /// 37 GB working set. Bounding it per area keeps that from coming back.
+        /// <para>
+        /// Runs on the scene-build worker thread, so the dictionary is locked rather than left to luck.
+        /// </para>
+        /// </remarks>
+        private RenderModel? ResolveCreatureModel(string resRef)
+        {
+            if (string.IsNullOrWhiteSpace(resRef) || _resolveBlueprintModel == null)
+                return null;
+
+            lock (_creatureModelGate)
+            {
+                if (_creatureModels.TryGetValue(resRef, out var cached))
+                    return cached;
+            }
+
+            RenderModel? model = null;
+            try
+            {
+                model = _resolveBlueprintModel(ResourceType.Utc, resRef);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Creature '{resRef}' could not be drawn and falls back to a marker: {ex.Message}");
+            }
+
+            lock (_creatureModelGate)
+            {
+                _creatureModels[resRef] = model;
+            }
+
+            return model;
+        }
+
+        private readonly Dictionary<string, RenderModel?> _creatureModels = new(StringComparer.OrdinalIgnoreCase);
+
+        private readonly object _creatureModelGate = new();
+
         private InstanceMarker? BuildPlacementGhost(ResourceType type, string resRef)
         {
             var kind = MapSectionTypeToKind(type);
@@ -1207,7 +1254,7 @@ namespace SWLOR.Toolset.Editors
                     return AreaSceneBuilder.Build(
                         AreDocument.Parse(snapshots[0]), GitDocument.Parse(snapshots[1]),
                         tilesetCatalog, tileModelCache, _placeableAppearances, _doorTypes, _tileWalkmeshCache,
-                        _waypointAppearances);
+                        _waypointAppearances, ResolveCreatureModel);
                 });
 
                 if (generation != Volatile.Read(ref _sceneBuildGeneration))

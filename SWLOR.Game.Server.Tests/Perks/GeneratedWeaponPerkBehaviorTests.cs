@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Katar;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Pistol;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Spear;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Throwing;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife;
@@ -18,11 +19,26 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class GeneratedWeaponPerkBehaviorTests
 {
     [Test]
+    public void SaberCyclone_IsASelfBuffWithoutHostileAreaTargeting()
+    {
+        var ability = new SaberCycloneAbilityDefinition().BuildAbilities()[FeatType.SaberCyclone1];
+
+        ability.IsHostileAbility.Should().BeFalse();
+        ability.IsAreaAbility.Should().BeFalse();
+        ability.RequiresTarget.Should().BeFalse();
+        ability.Targeting.Should().BeNull();
+    }
+
+    [Test]
     public void GeneratedWeaponTraitPerks_EmitRepresentativeStatBonuses()
     {
         AssertSourceStat("VibrobladePerkDefinition.cs", StatType.AutoAttackDamageBonusChance, "15");
         AssertSourceStat("VibrobladePerkDefinition.cs", StatType.AutoAttackDamageBonus, "10");
-        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.RepeatedTargetDamageAutoAttackOnly, "1");
+        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.MeleeRepeatedTargetDamageBonusPerHit, "3");
+        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.MeleeRepeatedTargetDamageBonusMax, "15");
+        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.MeleeRepeatedTargetDamageStatusEffectIcon, "(int)EffectIconType.RundownStatusEffect");
+        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.MeleeAutoAttackCycleRequiredCount, "3");
+        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.MeleeAutoAttackCycleDamage, "10");
         AssertSourceContains("VibrobladePerkDefinition.cs", "EquipmentPredicates.HasOffHandShield(creature) ? 35 : 0");
 
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusHealingReceivedRequiredCategory, "(int)StatusEffectCategory.Venom");

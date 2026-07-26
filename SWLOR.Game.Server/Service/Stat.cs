@@ -2292,11 +2292,24 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Set to 1 on an NPC to disable natural regeneration: the out-of-combat
+        /// 10%-per-tick HP heal and the 1-per-tick FP/STM restore. Engine-test fixtures
+        /// wound casters to observe an ability's own healing and verify EXACT resource
+        /// costs; a natural regen tick inside the assertion window would otherwise satisfy
+        /// a healing assertion for a broken impact, or drift a pool off the exact
+        /// post-deduction value.
+        /// </summary>
+        public const string SuppressNaturalRegenVariable = "ENGINE_TEST_SUPPRESS_NATURAL_REGEN";
+
+        /// <summary>
         /// Restores an NPC's STM and FP.
         /// </summary>
         public static void RestoreNPCStats(bool outOfCombatRegen)
         {
             var self = OBJECT_SELF;
+            if (GetLocalInt(self, SuppressNaturalRegenVariable) != 0)
+                return;
+
             var maxFP = GetMaxFP(self);
             var maxSTM = GetMaxStamina(self);
             var fp = GetLocalInt(self, "FP") + 1;

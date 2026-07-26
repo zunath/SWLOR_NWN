@@ -143,7 +143,34 @@ namespace SWLOR.Game.Server.Service
 
             _trackedAbilityImpacts.Remove(activator);
             impact.FlushDamageEffects(activator);
+            _lastCompletedImpactSummaries[activator] = impact.Summary;
             return impact.Summary;
+        }
+
+        private static readonly Dictionary<uint, AbilityImpactSummary> _lastCompletedImpactSummaries = new();
+
+        /// <summary>
+        /// The summary of the activator's most recently COMPLETED ability impact, or null if
+        /// none completed since the last clear. Observability seam for the engine test
+        /// harness: a queued weapon ability's damage rides the same landed hit as the weapon
+        /// swing, so an HP drop alone cannot attribute damage to the ability - a completed
+        /// summary with impacted targets can.
+        /// </summary>
+        public static AbilityImpactSummary GetLastCompletedAbilityImpactSummary(uint activator)
+        {
+            return _lastCompletedImpactSummaries.TryGetValue(activator, out var summary)
+                ? summary
+                : null;
+        }
+
+        /// <summary>
+        /// Clears the activator's last completed impact summary so a subsequent
+        /// <see cref="GetLastCompletedAbilityImpactSummary"/> observation cannot match an
+        /// earlier ability's impact.
+        /// </summary>
+        public static void ClearLastCompletedAbilityImpactSummary(uint activator)
+        {
+            _lastCompletedImpactSummaries.Remove(activator);
         }
 
         /// <summary>
@@ -305,6 +332,19 @@ namespace SWLOR.Game.Server.Service
         /// <param name="effectivePerkLevel">The activator's effective perk level.</param>
         /// <param name="targetLocation">The target location of the perk feat.</param>
         /// <returns>true if successful, false otherwise</returns>
+        private static string _lastActivationDenial = string.Empty;
+
+        /// <summary>
+        /// The reason the most recent CanUseAbility call returned false. Player-facing feedback
+        /// goes through SendMessageToPC, which is invisible for NPC activators - the in-engine
+        /// test harness reads this to report WHY an activation was rejected. Cleared at the
+        /// start of every check.
+        /// </summary>
+        public static string GetLastActivationDenialReason()
+        {
+            return _lastActivationDenial;
+        }
+
         public static bool CanUseAbility(
             uint activator,
             uint target,
@@ -314,40 +354,44 @@ namespace SWLOR.Game.Server.Service
         {
             var ability = GetAbilityDetail(abilityType);
 
+            _lastActivationDenial = string.Empty;
+
+            bool Deny(string reason)
+            {
+                _lastActivationDenial = reason;
+                SendMessageToPC(activator, reason);
+                return false;
+            }
+
             // Cannot use this ability in space.
             if (Space.IsPlayerInSpaceMode(activator) &&
                 !ability.CanBeUsedInSpace)
             {
-                SendMessageToPC(activator, "This ability cannot be used in space.");
-                return false;
+                return Deny("This ability cannot be used in space.");
             }
 
             // Must have appropriate levels in the perk to use the ability.
             if (effectivePerkLevel <= 0 || ability.AbilityLevel > effectivePerkLevel)
             {
-                SendMessageToPC(activator, "You do not meet the prerequisites to use this ability.");
-                return false;
+                return Deny("You do not meet the prerequisites to use this ability.");
             }
 
             if (Perk.ShouldEnforceActiveAbilityFeatReplacement(activator, ability.EffectiveLevelPerkType) &&
                 !Perk.IsCurrentActiveAbilityFeat(abilityType, ability.EffectiveLevelPerkType, effectivePerkLevel))
             {
-                SendMessageToPC(activator, "A newer rank has replaced this ability.");
-                return false;
+                return Deny("A newer rank has replaced this ability.");
             }
 
             // Activator is dead.
             if (GetCurrentHitPoints(activator) <= 0)
             {
-                SendMessageToPC(activator, "You are dead.");
-                return false;
+                return Deny("You are dead.");
             }
 
             // Not commandable
             if (!GetCommandable(activator))
             {
-                SendMessageToPC(activator, "You cannot take actions at this time.");
-                return false;
+                return Deny("You cannot take actions at this time.");
             }
 
             // Must be within line of sight.
@@ -355,29 +399,25 @@ namespace SWLOR.Game.Server.Service
                 GetIsObjectValid(target) &&
                 !HasAbilityLineOfSight(activator, target))
             {
-                SendMessageToPC(activator, "You cannot see your target.");
-                return false;
+                return Deny("You cannot see your target.");
             }
 
             // Must not be busy
             if (Activity.IsBusy(activator))
             {
-                SendMessageToPC(activator, "You are busy.");
-                return false;
+                return Deny("You are busy.");
             }
 
             if (Combat.GetAbilitySkillType(activator, ability) == SkillType.Force &&
                 Stat.GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)
             {
-                SendMessageToPC(activator, "You cannot use Force abilities right now.");
-                return false;
+                return Deny("You cannot use Force abilities right now.");
             }
 
             // Target check.
             if (ability.RequiresTarget && !GetIsObjectValid(target))
             {
-                SendMessageToPC(activator, "A target is required.");
-                return false;
+                return Deny("A target is required.");
             }
 
             // Aimed areas use the feat's location cursor. They must not use RequiresTarget,
@@ -388,15 +428,13 @@ namespace SWLOR.Game.Server.Service
                 var targetArea = GetAreaFromLocation(targetLocation);
                 if (!GetIsObjectValid(targetArea) || targetArea != GetArea(activator))
                 {
-                    SendMessageToPC(activator, "A target location in your current area is required.");
-                    return false;
+                    return Deny("A target location in your current area is required.");
                 }
 
                 if (ability.HasExplicitMaxRange &&
                     GetDistanceBetweenLocations(GetLocation(activator), targetLocation) > ability.MaxRange)
                 {
-                    SendMessageToPC(activator, "You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");
-                    return false;
+                    return Deny("You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");
                 }
             }
 
@@ -405,8 +443,7 @@ namespace SWLOR.Game.Server.Service
                 GetIsObjectValid(target) &&
                 GetDistanceBetween(activator, target) > ability.MaxRange)
             {
-                SendMessageToPC(activator, "You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");
-                return false;
+                return Deny("You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");
             }
 
             // Hostility check
@@ -415,8 +452,7 @@ namespace SWLOR.Game.Server.Service
                 !GetIsReactionTypeHostile(target, activator) &&
                 ability.IsHostileAbility)
             {
-                SendMessageToPC(activator, "You may only use this ability on enemies.");
-                return false;
+                return Deny("You may only use this ability on enemies.");
             }
 
             // Perk-specific requirement checks
@@ -425,8 +461,7 @@ namespace SWLOR.Game.Server.Service
                 var requirementError = req.CheckRequirements(activator, ability);
                 if (!string.IsNullOrWhiteSpace(requirementError))
                 {
-                    SendMessageToPC(activator, requirementError);
-                    return false;
+                    return Deny(requirementError);
                 }
             }
 
@@ -434,23 +469,20 @@ namespace SWLOR.Game.Server.Service
             var customValidationResult = ability.CustomValidation == null ? string.Empty : ability.CustomValidation(activator, target, effectivePerkLevel, targetLocation);
             if (!string.IsNullOrWhiteSpace(customValidationResult))
             {
-                SendMessageToPC(activator, customValidationResult);
-                return false;
+                return Deny(customValidationResult);
             }
 
             var areaLineOfSightError = ValidateHostileAreaLineOfSight(activator, target, targetLocation, ability);
             if (!string.IsNullOrWhiteSpace(areaLineOfSightError))
             {
-                SendMessageToPC(activator, areaLineOfSightError);
-                return false;
+                return Deny(areaLineOfSightError);
             }
 
             // Check if ability is on a recast timer still.
             var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(activator, ability.RecastGroup);
             if (isOnRecast)
             {
-                SendMessageToPC(activator, $"This ability can be used in {timeToWait}.");
-                return false;
+                return Deny($"This ability can be used in {timeToWait}.");
             }
 
             return true;
@@ -2984,6 +3016,7 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(target) || damage <= 0)
                     return;
 
+                Summary.AttributedDamage += damage;
                 _pendingDamageEffects.Add(new PendingDamageEffect(target, damage, damageType));
             }
 

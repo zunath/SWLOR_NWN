@@ -318,16 +318,18 @@ namespace SWLOR.Toolset.Domain.Placeables
                         new PlaceableBehaviorField
                         {
                             VariableName = "CONVERSATION",
-                            Label = "Dialog",
+                            Label = "C# dynamic dialog",
                             Kind = PlaceableFieldKind.Choice,
                             Source = PlaceableValueSource.Dialogs,
-                            IsRequired = true
+                            IsRequired = true,
+                            Description = "Select the C# dynamic dialog class to start. This does not use an NWN .dlg conversation."
                         },
                         new PlaceableBehaviorField
                         {
                             VariableName = "TARGET_PC",
-                            Label = "Talk to the player, not the placeable",
-                            Kind = PlaceableFieldKind.Toggle
+                            Label = "Player talks to self",
+                            Kind = PlaceableFieldKind.Toggle,
+                            Description = "Use the player as the conversation target instead of the placeable."
                         }
                     }
                 },

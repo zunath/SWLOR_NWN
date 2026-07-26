@@ -139,6 +139,13 @@ namespace SWLOR.Toolset.Tests
 
             Field("quest_activator", "QUEST_ENCOUNTER_COOLDOWN_MINUTES").DefaultIntValue.Should().Be(60);
             Field("quest_activator", "QUEST_ENCOUNTER_IDLE_MINUTES").DefaultIntValue.Should().Be(10);
+
+            var conversation = Field("conversation", "CONVERSATION");
+            conversation.Label.Should().Be("C# dynamic dialog");
+            conversation.Description.Should().ContainAll("C# dynamic dialog", "NWN .dlg");
+            var talksToSelf = Field("conversation", "TARGET_PC");
+            talksToSelf.Label.Should().Be("Player talks to self");
+            talksToSelf.Description.Should().Contain("conversation target");
         }
 
         [Test]

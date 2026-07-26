@@ -37,11 +37,48 @@ namespace SWLOR.Toolset.Services
             }
         }
 
-        public static void WriteAtomic(string path, byte[] bytes)
+        public static void WriteAtomic(string path, byte[] bytes) => Commit(Stage(path, bytes));
+
+        /// <summary>A serialized document written to its temporary file, waiting to replace the real one.</summary>
+        public readonly record struct StagedWrite(string TargetPath, string TemporaryPath);
+
+        /// <summary>
+        /// Writes <paramref name="bytes"/> to the temporary file beside <paramref name="path"/> without
+        /// touching the real one yet.
+        /// </summary>
+        /// <remarks>
+        /// Split out from <see cref="WriteAtomic"/> so a caller saving more than one file - an area is a
+        /// .are and a .git, and they are one logical document - can get every serialization and every
+        /// full write out of the way before any existing file is replaced. All the ways a save fails in
+        /// practice (a locked file, a full disk, a document that will not serialize) then happen while
+        /// nothing on disk has changed.
+        /// </remarks>
+        public static StagedWrite Stage(string path, byte[] bytes)
         {
             var temporaryPath = path + ".tmp";
             File.WriteAllBytes(temporaryPath, bytes);
-            File.Move(temporaryPath, path, overwrite: true);
+            return new StagedWrite(path, temporaryPath);
+        }
+
+        /// <summary>Replaces the real file with its staged content.</summary>
+        public static void Commit(StagedWrite staged) =>
+            File.Move(staged.TemporaryPath, staged.TargetPath, overwrite: true);
+
+        /// <summary>Throws away a staged write, leaving the real file untouched. Never throws.</summary>
+        public static void Discard(StagedWrite staged)
+        {
+            try
+            {
+                File.Delete(staged.TemporaryPath);
+            }
+            catch (IOException)
+            {
+                // A leaked .tmp is untidy, not harmful - and never at the cost of masking the real
+                // failure that got us here.
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
         }
     }
 }

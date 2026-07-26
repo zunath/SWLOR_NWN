@@ -1439,9 +1439,17 @@ namespace SWLOR.Toolset.Editors
                 session.Execute(description, mutation);
 
                 // A fresh edit invalidates the redo side of both histories, exactly as each
-                // session's own undo stack does.
+                // session's own undo stack does. Clearing _undoneOrder only drops the shell's ordering;
+                // the other session's stack kept its redo entries, and IEditorDocument.CanRedo let
+                // Ctrl+Y replay an abandoned edit on top of this newer one.
                 _editOrder.Add(session);
                 _undoneOrder.Clear();
+                foreach (var other in new[] { _areSession, _gitSession })
+                {
+                    if (!ReferenceEquals(other, session))
+                        other.UndoStack.DiscardRedo();
+                }
+
                 Interlocked.Increment(ref _sceneInputRevision);
                 RequestSceneRefresh();
                 AfterHistoryChange();
@@ -1478,6 +1486,16 @@ namespace SWLOR.Toolset.Editors
 
             var gitPlan = await PlanSaveAsync(_gitSession).ConfigureAwait(true);
             if (gitPlan == SavePlan.Cancel)
+                return false;
+
+            // Both halves are staged before either replaces its file. An area is one logical document
+            // split across two files, and writing them in sequence meant a locked or unwritable .git
+            // left the .are already replaced on disk and its history marked clean - a half-saved area
+            // that no later Discard or Close could take back.
+            if (!TryStageWrites(arePlan, gitPlan, out var staged))
+                return false;
+
+            if (!CommitStagedWrites(staged))
                 return false;
 
             var areResult = ApplySavePlan(_areSession, arePlan);
@@ -1545,6 +1563,78 @@ namespace SWLOR.Toolset.Editors
             };
         }
 
+        /// <summary>
+        /// Serializes and writes every session that is being saved to its temporary file, touching no
+        /// real file. Returns false - having thrown away anything it had already staged - if any of them
+        /// could not be written, so a failure leaves the area exactly as it was.
+        /// </summary>
+        private bool TryStageWrites(
+            SavePlan arePlan, SavePlan gitPlan, out List<Services.SaveService.StagedWrite> staged)
+        {
+            staged = new List<Services.SaveService.StagedWrite>(2);
+
+            foreach (var (session, plan) in new[] { (_areSession, arePlan), (_gitSession, gitPlan) })
+            {
+                if (plan != SavePlan.Write)
+                    continue;
+
+                try
+                {
+                    staged.Add(Services.SaveService.Stage(session.FilePath, session.ToBytes()));
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine($"Save failed for {session.FilePath}: {ex.Message}");
+                    foreach (var done in staged)
+                        Services.SaveService.Discard(done);
+
+                    staged.Clear();
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Replaces each staged file with its new content. Only the renames happen here, so the window
+        /// in which the two halves can disagree is as small as the filesystem allows.
+        /// </summary>
+        /// <remarks>
+        /// A rename that fails after an earlier one succeeded cannot be undone from here - the previous
+        /// content is gone. That is reported loudly rather than swallowed, because the area on disk is
+        /// then genuinely mixed and the builder needs to know before they close it.
+        /// </remarks>
+        private bool CommitStagedWrites(List<Services.SaveService.StagedWrite> staged)
+        {
+            for (var i = 0; i < staged.Count; i++)
+            {
+                try
+                {
+                    Services.SaveService.Commit(staged[i]);
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine($"Save failed for {staged[i].TargetPath}: {ex.Message}");
+
+                    for (var remaining = i; remaining < staged.Count; remaining++)
+                        Services.SaveService.Discard(staged[remaining]);
+
+                    if (i > 0)
+                    {
+                        _log.AppendLine(
+                            "This area is now part-saved on disk: " +
+                            string.Join(", ", staged.Take(i).Select(s => Path.GetFileName(s.TargetPath))) +
+                            " were replaced before the failure. Re-save once the problem is fixed.");
+                    }
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private (bool Success, bool Reloaded) ApplySavePlan(DocumentSession session, SavePlan plan)
         {
             try
@@ -1560,7 +1650,8 @@ namespace SWLOR.Toolset.Editors
                         return (true, true);
 
                     default:
-                        Services.SaveService.WriteAtomic(session.FilePath, session.ToBytes());
+                        // The bytes are already on disk - TryStageWrites/CommitStagedWrites put them
+                        // there before this ran. All that is left is to agree that they are.
                         session.UndoStack.MarkSaved();
                         session.RecordCurrentFileState();
                         _log.AppendLine($"Saved {session.FilePath}.");

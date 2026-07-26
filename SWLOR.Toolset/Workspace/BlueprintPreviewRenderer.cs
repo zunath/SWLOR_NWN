@@ -280,7 +280,7 @@ namespace SWLOR.Toolset.Workspace
 
             try
             {
-                return MdlMeshBuilder.Build(model, IdlePose(model));
+                return MdlMeshBuilder.Build(model, IdleFrames(model));
             }
             catch (Exception)
             {
@@ -316,7 +316,7 @@ namespace SWLOR.Toolset.Workspace
 
             // The idle comes off the skeleton, which is why the composer loads it with its supermodel
             // animations - a body part carries geometry, never keyframes.
-            return MdlMeshBuilder.Build(composed, IdlePose(composed));
+            return MdlMeshBuilder.Build(composed, IdleFrames(composed));
         }
 
         /// <summary>
@@ -329,13 +329,11 @@ namespace SWLOR.Toolset.Workspace
         /// body each frame, which is a different piece of work - the sampler already takes a time, so
         /// that is a matter of driving it rather than rewriting it.
         /// </remarks>
-        private IReadOnlyDictionary<string, PosedNode>? IdlePose(MdlModel model)
-        {
-            var posed = MdlAnimationPose.SampleIdle(
-                model, superModel => LoadMdl(superModel, withSupermodelAnims: true));
-
-            return posed.Count == 0 ? null : posed;
-        }
+        private IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> IdleFrames(MdlModel model) =>
+            MdlAnimationPose
+                .SampleIdleFrames(model, superModel => LoadMdl(superModel, withSupermodelAnims: true))
+                .Select(frame => frame.Pose)
+                .ToList();
 
         /// <summary>Whether a texture name resolves to a real resource, in any of NWN's texture formats.</summary>
         private bool TextureExists(string name)

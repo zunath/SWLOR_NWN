@@ -7,10 +7,18 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
     /// </summary>
     public sealed class TileConstraint
     {
+        /// <summary>The placed cell's Tile_Height; candidate corner heights are relative to it.</summary>
+        public int HeightLevel { get; init; }
+
         public string? NorthWest { get; init; }
         public string? NorthEast { get; init; }
         public string? SouthWest { get; init; }
         public string? SouthEast { get; init; }
+
+        public int? NorthWestHeight { get; init; }
+        public int? NorthEastHeight { get; init; }
+        public int? SouthWestHeight { get; init; }
+        public int? SouthEastHeight { get; init; }
 
         public string? NorthEdge { get; init; }
         public string? EastEdge { get; init; }
@@ -35,13 +43,27 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
             _ => null
         };
 
+        public int? CornerHeight(TileCorner corner) => corner switch
+        {
+            TileCorner.NorthWest => NorthWestHeight,
+            TileCorner.NorthEast => NorthEastHeight,
+            TileCorner.SouthWest => SouthWestHeight,
+            TileCorner.SouthEast => SouthEastHeight,
+            _ => null
+        };
+
         /// <summary>A copy of this constraint with one corner set (used while gathering constraints from placed neighbours).</summary>
         public TileConstraint WithCorner(TileCorner corner, string? value) => new()
         {
+            HeightLevel = HeightLevel,
             NorthWest = corner == TileCorner.NorthWest ? value : NorthWest,
             NorthEast = corner == TileCorner.NorthEast ? value : NorthEast,
             SouthWest = corner == TileCorner.SouthWest ? value : SouthWest,
             SouthEast = corner == TileCorner.SouthEast ? value : SouthEast,
+            NorthWestHeight = NorthWestHeight,
+            NorthEastHeight = NorthEastHeight,
+            SouthWestHeight = SouthWestHeight,
+            SouthEastHeight = SouthEastHeight,
             NorthEdge = NorthEdge,
             EastEdge = EastEdge,
             SouthEdge = SouthEdge,
@@ -51,6 +73,16 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
 
     /// <summary>One tile placement option: a tile index into the tileset and a 0-3 orientation.</summary>
     public readonly record struct TileCandidate(int TileId, int Orientation);
+
+    /// <summary>
+    /// A placed area tile including its base elevation. A candidate alone is sufficient for palette
+    /// selection, but adjacency is only valid when Tile_Height and the .set tile's corner heights are
+    /// considered together.
+    /// </summary>
+    public readonly record struct PlacedTileState(int TileId, int Orientation, int HeightLevel)
+    {
+        public TileCandidate Candidate => new(TileId, Orientation);
+    }
 
     /// <summary>
     /// Solves which tiles can legally occupy a cell given corner/edge requirements, using the
@@ -102,24 +134,58 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         public static TileConstraint ConstraintFromNeighbours(
             TilesetDefinition tileset, int col, int row, Func<int, int, TileCandidate?> placedAt)
         {
+            ArgumentNullException.ThrowIfNull(placedAt);
+            return ConstraintFromNeighbours(
+                tileset,
+                col,
+                row,
+                (c, r) => placedAt(c, r) is { } tile
+                    ? new PlacedTileState(tile.TileId, tile.Orientation, 0)
+                    : null);
+        }
+
+        /// <summary>
+        /// Height-aware neighbour constraint. Each required corner height is absolute in area height
+        /// levels: the neighbour's Tile_Height plus its oriented .set corner height.
+        /// </summary>
+        public static TileConstraint ConstraintFromNeighbours(
+            TilesetDefinition tileset, int col, int row, Func<int, int, PlacedTileState?> placedAt)
+        {
             ArgumentNullException.ThrowIfNull(tileset);
             ArgumentNullException.ThrowIfNull(placedAt);
 
-            string? Shared(int nc, int nr, TileCorner theirCorner)
+            (string Terrain, int Height)? Shared(int nc, int nr, TileCorner theirCorner)
             {
                 if (placedAt(nc, nr) is not { } t || t.TileId < 0 || t.TileId >= tileset.Tiles.Count)
                     return null;
-                return TileAdjacency.WorldCornerTerrain(tileset.Tiles[t.TileId], t.Orientation, theirCorner);
+                var tile = tileset.Tiles[t.TileId];
+                return (
+                    TileAdjacency.WorldCornerTerrain(tile, t.Orientation, theirCorner),
+                    t.HeightLevel + TileAdjacency.WorldCornerHeight(tile, t.Orientation, theirCorner));
             }
+
+            var northWest = Shared(col - 1, row, TileCorner.NorthEast) ??
+                            Shared(col, row + 1, TileCorner.SouthWest);
+            var northEast = Shared(col + 1, row, TileCorner.NorthWest) ??
+                            Shared(col, row + 1, TileCorner.SouthEast);
+            var southWest = Shared(col - 1, row, TileCorner.SouthEast) ??
+                            Shared(col, row - 1, TileCorner.NorthWest);
+            var southEast = Shared(col + 1, row, TileCorner.SouthWest) ??
+                            Shared(col, row - 1, TileCorner.NorthEast);
 
             return new TileConstraint
             {
+                HeightLevel = placedAt(col, row)?.HeightLevel ?? 0,
                 // Each corner is shared with the tile to its side and the tile above/below; take
                 // whichever is present (they agree in consistent data).
-                NorthWest = Shared(col - 1, row, TileCorner.NorthEast) ?? Shared(col, row + 1, TileCorner.SouthWest),
-                NorthEast = Shared(col + 1, row, TileCorner.NorthWest) ?? Shared(col, row + 1, TileCorner.SouthEast),
-                SouthWest = Shared(col - 1, row, TileCorner.SouthEast) ?? Shared(col, row - 1, TileCorner.NorthWest),
-                SouthEast = Shared(col + 1, row, TileCorner.SouthWest) ?? Shared(col, row - 1, TileCorner.NorthEast)
+                NorthWest = northWest?.Terrain,
+                NorthEast = northEast?.Terrain,
+                SouthWest = southWest?.Terrain,
+                SouthEast = southEast?.Terrain,
+                NorthWestHeight = northWest?.Height,
+                NorthEastHeight = northEast?.Height,
+                SouthWestHeight = southWest?.Height,
+                SouthEastHeight = southEast?.Height
             };
         }
 
@@ -132,6 +198,21 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         /// </summary>
         public static IReadOnlyList<TileCandidate> SolveCell(
             TilesetDefinition tileset, int col, int row, Func<int, int, TileCandidate?> placedAt,
+            IReadOnlyDictionary<TileCorner, string>? paintedCorners = null)
+        {
+            ArgumentNullException.ThrowIfNull(placedAt);
+            return SolveCell(
+                tileset,
+                col,
+                row,
+                (c, r) => placedAt(c, r) is { } tile
+                    ? new PlacedTileState(tile.TileId, tile.Orientation, 0)
+                    : null,
+                paintedCorners);
+        }
+
+        public static IReadOnlyList<TileCandidate> SolveCell(
+            TilesetDefinition tileset, int col, int row, Func<int, int, PlacedTileState?> placedAt,
             IReadOnlyDictionary<TileCorner, string>? paintedCorners = null)
         {
             var constraint = ConstraintFromNeighbours(tileset, col, row, placedAt);
@@ -152,6 +233,11 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 var required = constraint.Corner(corner);
                 if (required != null &&
                     !TileAdjacency.CornerTerrainsMatch(TileAdjacency.WorldCornerTerrain(tile, orientation, corner), required))
+                    return false;
+
+                var requiredHeight = constraint.CornerHeight(corner);
+                if (requiredHeight != null &&
+                    constraint.HeightLevel + TileAdjacency.WorldCornerHeight(tile, orientation, corner) != requiredHeight)
                     return false;
             }
 

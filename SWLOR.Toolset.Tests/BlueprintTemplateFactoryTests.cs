@@ -21,12 +21,12 @@ namespace SWLOR.Toolset.Tests
         private static readonly ResourceType[] SupportedTypes =
         {
             ResourceType.Utc, ResourceType.Uti, ResourceType.Utp, ResourceType.Utd,
-            ResourceType.Utm, ResourceType.Utt, ResourceType.Uts, ResourceType.Utw
+            ResourceType.Utt, ResourceType.Uts, ResourceType.Utw
         };
 
         private static readonly ResourceType[] UnsupportedTypes =
         {
-            ResourceType.Area, ResourceType.Dlg, ResourceType.Nss
+            ResourceType.Area, ResourceType.Dlg, ResourceType.Nss, ResourceType.Utm
         };
 
         /// <summary>Per type: the resref field, then the localized-name field the display name lands in.</summary>
@@ -130,16 +130,10 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void CreateFileContent_Store_HasAllFivePanels()
+        public void Supports_DoesNotOfferMerchantsUntilTheirInventoryCanBeEdited()
         {
-            var root = Parse(ResourceType.Utm,
-                BlueprintTemplateFactory.CreateFileContent(ResourceType.Utm, "probe_resref", "Probe")).Fields;
-
-            var panels = root.Get("StoreList").Elements!;
-            // The panel a store page fills is its __struct_id.
-            panels.Select(panel => Encoding.ASCII.GetString(panel.RawStructId!))
-                .Should().Equal(new[] { "0", "1", "2", "3", "4" });
-            panels.Should().AllSatisfy(panel => panel.Count.Should().Be(0, "a new store sells nothing"));
+            BlueprintTemplateFactory.Supports(ResourceType.Utm).Should().BeFalse(
+                "an empty merchant cannot be made usable while StoreList has no editor");
         }
 
         /// <summary>

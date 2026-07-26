@@ -765,7 +765,7 @@ namespace SWLOR.Toolset.Editors
             }
 
             return TilePainter.PaintTerrain(
-                tileset, width, height, AreaTiles.Reader(are), column, row, entry.Terrain).Count > 0;
+                tileset, width, height, AreaTiles.StateReader(are), column, row, entry.Terrain).Count > 0;
         }
 
         /// <summary>
@@ -799,7 +799,7 @@ namespace SWLOR.Toolset.Editors
                 tileset,
                 AreaTiles.Width(are),
                 AreaTiles.Height(are),
-                AreaTiles.Reader(are),
+                AreaTiles.StateReader(are),
                 column,
                 row,
                 terrain);

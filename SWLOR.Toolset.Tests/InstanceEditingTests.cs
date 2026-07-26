@@ -146,6 +146,24 @@ namespace SWLOR.Toolset.Tests
             geometry.Elements.Should().OnlyContain(point =>
                 Encoding.ASCII.GetString(point.RawStructId!) == "3" &&
                 Math.Abs(point.Get("PointZ").GetSingle() - 0.025f) < 0.0001f);
+            InstanceFieldMap.GetTriggerGeometrySize(instance).Should().Be((2f, 2f));
+        }
+
+        [Test]
+        public void SetTriggerGeometrySize_ResizesThePolygonAroundItsCentre()
+        {
+            var blueprintPath = Directory.EnumerateFiles(
+                Path.Combine(CorpusLocator.ModuleDirectory, "utt"), "*.utt.json").First();
+            var blueprint = JsonGffDocument.Parse(File.ReadAllBytes(blueprintPath));
+            var instance = InstanceFieldMap.CreateInstance(
+                ResourceType.Utt, blueprint, "test_trigger", 10, 20, 3);
+
+            InstanceFieldMap.SetTriggerGeometrySize(instance, 6f, 4f);
+
+            InstanceFieldMap.GetTriggerGeometrySize(instance).Should().Be((6f, 4f));
+            var geometry = instance.Get("Geometry").Elements!;
+            geometry.Select(point => point.Get("PointX").GetSingle()).Should().Equal(-3f, 3f, 3f, -3f);
+            geometry.Select(point => point.Get("PointY").GetSingle()).Should().Equal(-2f, -2f, 2f, 2f);
         }
 
         [Test]

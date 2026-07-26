@@ -954,3 +954,31 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   corners and requires them to match the cell exactly, over 40 corpus areas; it asserts all four
   orientations are exercised so it cannot pass vacuously. Verified to have teeth - restoring the old
   transform makes it fail immediately on real corpus areas.
+
+## Comprehensive toolset audit — 2026-07-25
+
+- Audited the implemented browse, category, blueprint, area-instance, viewport, tile-paint, preview,
+  game-data startup, validation, and workspace-lifecycle paths against their tests and persistence
+  invariants.
+- Terrain matching now compares absolute corner elevation (`Tile_Height` plus the oriented `.set`
+  corner height), not terrain names alone. Painting and rotation therefore reject invisible height
+  seams. The real-area matcher corpus gate was upgraded to include height and still admits every
+  actually placed tile.
+- Category recovery no longer hides understood sections from a newer read-only sidecar. Folder names
+  reject the `/` pin-path separator, external sidecar deletion is detected, and a missing/malformed
+  palette is retried instead of being permanently marked seeded. Failed seed saves roll back the
+  imported roots and seed marker.
+- Placed triggers expose width/height editing. Resizing scales an existing polygon around its centre;
+  malformed or degenerate geometry is repaired to a usable rectangle.
+- Preview requests now version in-flight work. Saving a blueprint, changing workspace, or clearing the
+  cache invalidates both memory and disk state and prevents an older render from repopulating either.
+  Late waiters also receive the blueprint type fallback when the cached result is "no artwork".
+- Area and Output views detach from global display/collection notifications when removed from the
+  visual tree. Catalog completion logs capture the catalog that actually started the build and report
+  faults instead of announcing success against a later workspace.
+- New merchant creation is withheld until `StoreList` inventory can be edited; existing merchants
+  remain browsable and editable. Optional base `dialog.tlk` corruption now degrades to custom TLK
+  content instead of aborting startup. Malformed creature instances no longer pass a null resref into
+  the model resolver.
+- Production Toolset projects build without nullable warnings; focused regression and full-suite
+  results are recorded in the PR handoff.

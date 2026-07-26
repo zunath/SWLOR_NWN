@@ -72,7 +72,7 @@ namespace SWLOR.Toolset.Viewport
 
         public string? Get2DAValue(string twoDAName, int rowIndex, string columnName)
         {
-            if (_twoDaService == null || !_twoDaService.TryGetTable(twoDAName, out var table))
+            if (_twoDaService == null || !_twoDaService.TryGetTable(twoDAName, out var table) || table == null)
                 return null;
 
             return rowIndex >= 0 && rowIndex < table.RowCount ? table.GetString(rowIndex, columnName) : null;

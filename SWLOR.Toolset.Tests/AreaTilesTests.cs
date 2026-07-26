@@ -54,6 +54,14 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void StateAt_IncludesThePlacedTileHeight()
+        {
+            var are = BuildArea(1, 1, (7, 2));
+
+            AreaTiles.StateAt(are, 0, 0).Should().Be(new PlacedTileState(7, 2, 100));
+        }
+
+        [Test]
         public void At_OutOfRange_ReturnsNull()
         {
             var are = BuildArea(2, 2, (1, 0), (2, 0), (3, 0), (4, 0));

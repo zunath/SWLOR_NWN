@@ -113,6 +113,14 @@ namespace SWLOR.Toolset.Editors
         private double _detailYOrientation;
 
         [ObservableProperty]
+        private double _detailTriggerWidth;
+
+        [ObservableProperty]
+        private double _detailTriggerHeight;
+
+        public bool HasTriggerGeometry => _blueprintType == ResourceType.Utt;
+
+        [ObservableProperty]
         private VarTableSectionViewModel? _varTableSection;
 
         [ObservableProperty]
@@ -210,6 +218,8 @@ namespace SWLOR.Toolset.Editors
         partial void OnDetailZChanged(double value) => ApplyPositionEdit();
         partial void OnDetailXOrientationChanged(double value) => ApplyOrientationEdit();
         partial void OnDetailYOrientationChanged(double value) => ApplyOrientationEdit();
+        partial void OnDetailTriggerWidthChanged(double value) => ApplyTriggerGeometryEdit();
+        partial void OnDetailTriggerHeightChanged(double value) => ApplyTriggerGeometryEdit();
 
         private void ApplyPositionEdit()
         {
@@ -256,6 +266,25 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
+        private void ApplyTriggerGeometryEdit()
+        {
+            if (_isLoadingDetail || !HasTriggerGeometry || SelectedRow is not { } row ||
+                DetailTriggerWidth <= 0 || DetailTriggerHeight <= 0)
+                return;
+
+            var element = GetElement(row.Index);
+            if (element == null)
+                return;
+
+            if (!_runEdit(
+                    $"Resize {Title} geometry",
+                    () => InstanceFieldMap.SetTriggerGeometrySize(
+                        element, (float)DetailTriggerWidth, (float)DetailTriggerHeight)))
+            {
+                LoadDetailFromElement(element);
+            }
+        }
+
         private void LoadDetailFromElement(JsonGffStruct element)
         {
             _isLoadingDetail = true;
@@ -269,6 +298,12 @@ namespace SWLOR.Toolset.Editors
                 var (xOrientation, yOrientation) = InstanceFieldMap.GetOrientation(_blueprintType, element);
                 DetailXOrientation = xOrientation;
                 DetailYOrientation = yOrientation;
+                if (HasTriggerGeometry)
+                {
+                    var (width, height) = InstanceFieldMap.GetTriggerGeometrySize(element);
+                    DetailTriggerWidth = width;
+                    DetailTriggerHeight = height;
+                }
             }
             finally
             {

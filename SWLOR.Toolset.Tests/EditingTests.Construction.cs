@@ -22,7 +22,7 @@ namespace SWLOR.Toolset.Tests
         private static readonly ResourceType[] BlueprintTypes =
         {
             ResourceType.Utc, ResourceType.Uti, ResourceType.Utp, ResourceType.Utd,
-            ResourceType.Utm, ResourceType.Utt, ResourceType.Uts, ResourceType.Utw
+            ResourceType.Utt, ResourceType.Uts, ResourceType.Utw
         };
 
         /// <summary>A session over a real document, standing in for "an editor tab is open".</summary>

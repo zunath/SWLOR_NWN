@@ -344,6 +344,31 @@ namespace SWLOR.Toolset.Tests
             scene.Diagnostics.MissingModels.Should().NotBeEmpty();
         }
 
+        [Test]
+        public void Build_CreatureWithoutTemplateResRef_DoesNotCallTheModelResolverWithNull()
+        {
+            var (are, git) = LoadArea("coxxian_hq");
+            git.Creatures.Should().NotBeEmpty("the fixture needs a creature to corrupt");
+            git.Creatures[0].Remove("TemplateResRef");
+
+            var index = BuildHakOnlyIndex();
+            var calls = new List<string>();
+
+            var act = () => AreaSceneBuilder.Build(
+                are,
+                git,
+                new TilesetCatalog(index),
+                new TileModelCache(index),
+                resolveCreatureModel: resRef =>
+                {
+                    calls.Add(resRef);
+                    return null;
+                });
+
+            act.Should().NotThrow();
+            calls.Should().OnlyContain(resRef => !string.IsNullOrWhiteSpace(resRef));
+        }
+
         /// <summary>
         /// THE ACCEPTANCE GATE: assemble every one of the 438 real areas with one shared
         /// ResourceIndex (hak layers + base-game KeyBifCatalog, per WP2.3's established pattern)

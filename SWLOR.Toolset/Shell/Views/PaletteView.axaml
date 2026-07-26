@@ -109,8 +109,8 @@
                     <ContextMenu>
                       <MenuItem Header="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).NewBlueprintLabel}"
                                 Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).NewBlueprintCommand}"
-                                IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).CanWrite}" />
-                      <Separator IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).CanWrite}" />
+                                IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).CanCreateBlueprint}" />
+                      <Separator IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).CanCreateBlueprint}" />
                       <MenuItem Header="New category..."
                                 Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).NewCategoryCommand}"
                                 IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).CanWrite}" />

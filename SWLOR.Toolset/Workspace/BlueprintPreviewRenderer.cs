@@ -32,8 +32,9 @@ namespace SWLOR.Toolset.Workspace
     /// </list>
     /// <para>
     /// Returning null means "this blueprint genuinely has no artwork", which the caller answers with a
-    /// type symbol. That happens for merchants, triggers, sound sets and waypoints (NWN gives them no
-    /// model at all) and for the placeables and doors whose appearance row in the 2DA is blank.
+    /// type symbol. That happens for merchants, triggers and sound sets (NWN gives them no model at
+    /// all) and for the placeables and doors whose appearance row in the 2DA is blank. Waypoints use
+    /// the model declared by waypoint.2da.
     /// </para>
     /// </remarks>
     public sealed class BlueprintPreviewRenderer

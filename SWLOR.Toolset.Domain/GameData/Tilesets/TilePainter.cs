@@ -37,6 +37,21 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
             int row,
             int orientation)
         {
+            ArgumentNullException.ThrowIfNull(currentAt);
+            PlacedTileState? StateAt(int c, int r) =>
+                currentAt(c, r) is { } tile
+                    ? new PlacedTileState(tile.TileId, tile.Orientation, 0)
+                    : null;
+            return CanRotateTile(tileset, StateAt, col, row, orientation);
+        }
+
+        public static bool CanRotateTile(
+            TilesetDefinition tileset,
+            Func<int, int, PlacedTileState?> currentAt,
+            int col,
+            int row,
+            int orientation)
+        {
             ArgumentNullException.ThrowIfNull(tileset);
             ArgumentNullException.ThrowIfNull(currentAt);
 
@@ -70,9 +85,17 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 if (!TileAdjacency.CornerTerrainsMatch(
                         TileAdjacency.WorldCornerTerrain(candidateDefinition, candidate.Orientation, nearCorner),
                         TileAdjacency.WorldCornerTerrain(neighbourDefinition, neighbour.Orientation, oppositeNearCorner)) ||
+                    placed.HeightLevel + TileAdjacency.WorldCornerHeight(
+                        candidateDefinition, candidate.Orientation, nearCorner) !=
+                    neighbour.HeightLevel + TileAdjacency.WorldCornerHeight(
+                        neighbourDefinition, neighbour.Orientation, oppositeNearCorner) ||
                     !TileAdjacency.CornerTerrainsMatch(
                         TileAdjacency.WorldCornerTerrain(candidateDefinition, candidate.Orientation, farCorner),
                         TileAdjacency.WorldCornerTerrain(neighbourDefinition, neighbour.Orientation, oppositeFarCorner)) ||
+                    placed.HeightLevel + TileAdjacency.WorldCornerHeight(
+                        candidateDefinition, candidate.Orientation, farCorner) !=
+                    neighbour.HeightLevel + TileAdjacency.WorldCornerHeight(
+                        neighbourDefinition, neighbour.Orientation, oppositeFarCorner) ||
                     !TileAdjacency.EdgeCrossersMatch(
                         TileAdjacency.WorldEdgeCrosser(candidateDefinition, candidate.Orientation, edge),
                         TileAdjacency.WorldEdgeCrosser(neighbourDefinition, neighbour.Orientation, opposite)))
@@ -98,6 +121,20 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
             int col, int row, string terrain,
             Func<int, int>? tileRank = null)
         {
+            ArgumentNullException.ThrowIfNull(currentAt);
+            PlacedTileState? StateAt(int c, int r) =>
+                currentAt(c, r) is { } tile
+                    ? new PlacedTileState(tile.TileId, tile.Orientation, 0)
+                    : null;
+            return PaintTerrain(tileset, width, height, StateAt, col, row, terrain, tileRank);
+        }
+
+        public static IReadOnlyList<TilePaintChange> PaintTerrain(
+            TilesetDefinition tileset, int width, int height,
+            Func<int, int, PlacedTileState?> currentAt,
+            int col, int row, string terrain,
+            Func<int, int>? tileRank = null)
+        {
             ArgumentNullException.ThrowIfNull(tileset);
             ArgumentNullException.ThrowIfNull(currentAt);
 
@@ -107,8 +144,8 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
 
             // A working overlay so each neighbour re-solve sees the freshly painted centre (and any
             // neighbour already re-blended this pass) rather than the stale on-disk grid.
-            var overlay = new Dictionary<(int, int), TileCandidate>();
-            TileCandidate? WorkingAt(int c, int r) =>
+            var overlay = new Dictionary<(int, int), PlacedTileState>();
+            PlacedTileState? WorkingAt(int c, int r) =>
                 overlay.TryGetValue((c, r), out var v) ? v : currentAt(c, r);
 
             var changes = new List<TilePaintChange>();
@@ -116,21 +153,24 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
             void Place(int c, int r, TileCandidate chosen)
             {
                 var before = WorkingAt(c, r);
-                overlay[(c, r)] = chosen;
-                if (before is not { } prev || prev != chosen)
+                var placed = new PlacedTileState(chosen.TileId, chosen.Orientation, before?.HeightLevel ?? 0);
+                overlay[(c, r)] = placed;
+                if (before is not { } prev || prev.Candidate != chosen)
                     changes.Add(new TilePaintChange(c, r, chosen.TileId, chosen.Orientation));
             }
 
             // 1) Centre cell: force every corner to the painted terrain, preferring a crosser-free
             //    (solid) tile so a plain terrain dab never drops a wall/doorway into the fill.
-            var centreConstraint = new TileConstraint
-            {
-                NorthWest = terrain, NorthEast = terrain, SouthWest = terrain, SouthEast = terrain
-            };
+            var centreConstraint = ConstraintFromVertices(tileset, col, row, currentAt, overlay)
+                .WithCorner(TileCorner.NorthWest, terrain)
+                .WithCorner(TileCorner.NorthEast, terrain)
+                .WithCorner(TileCorner.SouthWest, terrain)
+                .WithCorner(TileCorner.SouthEast, terrain);
             var centreCandidates = WithMatchingCrossers(
                 tileset, SetRuleMatcher.FindMatchingTiles(tileset, centreConstraint),
                 col, row, currentAt, overlay);
-            var centre = SelectCandidate(tileset, centreCandidates, WorkingAt(col, row), tileRank, preferBlankEdges: true);
+            var centre = SelectCandidate(
+                tileset, centreCandidates, WorkingAt(col, row)?.Candidate, tileRank, preferBlankEdges: true);
             if (centre is not { } centreChoice)
                 return Array.Empty<TilePaintChange>(); // terrain not presentable as a full tile here
 
@@ -156,7 +196,8 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                     tileset,
                     SetRuleMatcher.FindMatchingTiles(tileset, ConstraintFromVertices(tileset, nc, nr, currentAt, overlay)),
                     nc, nr, currentAt, overlay);
-                var choice = SelectCandidate(tileset, candidates, WorkingAt(nc, nr), tileRank, preferBlankEdges: false);
+                var choice = SelectCandidate(
+                    tileset, candidates, WorkingAt(nc, nr)?.Candidate, tileRank, preferBlankEdges: false);
                 if (choice is { } chosen)
                     Place(nc, nr, chosen);
                 else
@@ -260,36 +301,51 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         /// </summary>
         private static TileConstraint ConstraintFromVertices(
             TilesetDefinition tileset, int col, int row,
-            Func<int, int, TileCandidate?> currentAt,
-            IReadOnlyDictionary<(int, int), TileCandidate> overlay)
+            Func<int, int, PlacedTileState?> currentAt,
+            IReadOnlyDictionary<(int, int), PlacedTileState> overlay)
         {
-            string? TerrainAt(TileCandidate tile, TileCorner theirCorner) =>
-                tile.TileId >= 0 && tile.TileId < tileset.Tiles.Count
-                    ? TileAdjacency.WorldCornerTerrain(tileset.Tiles[tile.TileId], tile.Orientation, theirCorner)
-                    : null;
-
-            string? Corner(TileCorner corner)
+            (string Terrain, int Height)? CornerAt(PlacedTileState tile, TileCorner theirCorner)
             {
-                string? stale = null;
+                if (tile.TileId < 0 || tile.TileId >= tileset.Tiles.Count)
+                    return null;
+
+                var definition = tileset.Tiles[tile.TileId];
+                return (
+                    TileAdjacency.WorldCornerTerrain(definition, tile.Orientation, theirCorner),
+                    tile.HeightLevel + TileAdjacency.WorldCornerHeight(definition, tile.Orientation, theirCorner));
+            }
+
+            (string Terrain, int Height)? Corner(TileCorner corner)
+            {
+                (string Terrain, int Height)? stale = null;
                 foreach (var (dc, dr, theirCorner) in VertexNeighbours(corner))
                 {
                     var key = (col + dc, row + dr);
                     if (overlay.TryGetValue(key, out var fresh))
-                        return TerrainAt(fresh, theirCorner);
+                        return CornerAt(fresh, theirCorner);
 
                     if (stale == null && currentAt(key.Item1, key.Item2) is { } placed)
-                        stale = TerrainAt(placed, theirCorner);
+                        stale = CornerAt(placed, theirCorner);
                 }
 
                 return stale;
             }
 
+            var northWest = Corner(TileCorner.NorthWest);
+            var northEast = Corner(TileCorner.NorthEast);
+            var southWest = Corner(TileCorner.SouthWest);
+            var southEast = Corner(TileCorner.SouthEast);
             return new TileConstraint
             {
-                NorthWest = Corner(TileCorner.NorthWest),
-                NorthEast = Corner(TileCorner.NorthEast),
-                SouthWest = Corner(TileCorner.SouthWest),
-                SouthEast = Corner(TileCorner.SouthEast)
+                HeightLevel = currentAt(col, row)?.HeightLevel ?? 0,
+                NorthWest = northWest?.Terrain,
+                NorthEast = northEast?.Terrain,
+                SouthWest = southWest?.Terrain,
+                SouthEast = southEast?.Terrain,
+                NorthWestHeight = northWest?.Height,
+                NorthEastHeight = northEast?.Height,
+                SouthWestHeight = southWest?.Height,
+                SouthEastHeight = southEast?.Height
             };
         }
 
@@ -312,8 +368,8 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         private static IReadOnlyList<TileCandidate> WithMatchingCrossers(
             TilesetDefinition tileset, IReadOnlyList<TileCandidate> candidates,
             int col, int row,
-            Func<int, int, TileCandidate?> currentAt,
-            IReadOnlyDictionary<(int, int), TileCandidate> overlay)
+            Func<int, int, PlacedTileState?> currentAt,
+            IReadOnlyDictionary<(int, int), PlacedTileState> overlay)
         {
             string? Required(TileEdge edge, int dc, int dr)
             {

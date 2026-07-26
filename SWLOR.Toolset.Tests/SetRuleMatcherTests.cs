@@ -25,6 +25,19 @@ namespace SWLOR.Toolset.Tests
             BottomRight = se
         };
 
+        private static TileDefinition Tile(
+            string terrain, int nwHeight, int neHeight, int swHeight, int seHeight) => new()
+        {
+            TopLeft = terrain,
+            TopRight = terrain,
+            BottomLeft = terrain,
+            BottomRight = terrain,
+            TopLeftHeight = nwHeight,
+            TopRightHeight = neHeight,
+            BottomLeftHeight = swHeight,
+            BottomRightHeight = seHeight
+        };
+
         private static TilesetDefinition Tileset(params TileDefinition[] tiles) => new() { Tiles = tiles };
 
         [Test]
@@ -137,6 +150,28 @@ namespace SWLOR.Toolset.Tests
             matches.Should().OnlyContain(c => c.TileId == 1, "the painted Dirt corner excludes the all-grass tile");
         }
 
+        [Test]
+        public void SolveCell_UsesAbsoluteCornerElevationToRejectAVisualSeam()
+        {
+            var ts = Tileset(
+                Tile("Grass", 0, 0, 0, 0),
+                Tile("Grass", 1, 0, 1, 0));
+
+            PlacedTileState? PlacedAt(int c, int r) => (c, r) switch
+            {
+                (0, 0) => new PlacedTileState(0, 0, 1),
+                (1, 0) => new PlacedTileState(0, 0, 0),
+                _ => null
+            };
+
+            var matches = SetRuleMatcher.SolveCell(ts, 1, 0, PlacedAt);
+
+            matches.Should().Contain(new TileCandidate(1, 0),
+                "its west corners rise to the neighbour's absolute height");
+            matches.Should().NotContain(new TileCandidate(0, 0),
+                "equal terrain names do not make mismatched corner elevations continuous");
+        }
+
         // ---- Corpus soundness gate ---------------------------------------------------------
 
         private static string RepoRoot
@@ -195,12 +230,13 @@ namespace SWLOR.Toolset.Tests
                 bool Valid(int idx) { var id = Field(idx, "Tile_ID"); return id >= 0 && id < ts.Tiles.Count; }
                 int Id(int idx) => Field(idx, "Tile_ID");
                 int Or(int idx) { var o = Field(idx, "Tile_Orientation"); return o < 0 ? 0 : o; }
+                int Elevation(int idx) { var value = Field(idx, "Tile_Height"); return value < 0 ? 0 : value; }
 
-                TileCandidate? PlacedAt(int c, int r)
+                PlacedTileState? PlacedAt(int c, int r)
                 {
                     if (c < 0 || r < 0 || c >= w || r >= h) return null;
                     var idx = r * w + c;
-                    return Valid(idx) ? new TileCandidate(Id(idx), Or(idx)) : null;
+                    return Valid(idx) ? new PlacedTileState(Id(idx), Or(idx), Elevation(idx)) : null;
                 }
 
                 // Every cell: solve it from its placed neighbours alone (the cell's own tile is never

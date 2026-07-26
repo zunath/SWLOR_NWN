@@ -337,8 +337,110 @@ namespace SWLOR.Toolset.Domain.Documents
 
         private static JsonGffField CreateDefaultTriggerGeometry()
         {
+            return CreateTriggerRectangle(2f, 2f);
+        }
+
+        /// <summary>
+        /// The axis-aligned size of a placed trigger's local polygon. Returns zeroes for missing or
+        /// malformed geometry so an editor can distinguish it from a usable shape.
+        /// </summary>
+        public static (float Width, float Height) GetTriggerGeometrySize(JsonGffStruct instance)
+        {
+            ArgumentNullException.ThrowIfNull(instance);
+            var points = TriggerPoints(instance).ToList();
+            if (points.Count < 3 || points.Count != TriggerGeometryElementCount(instance))
+                return (0f, 0f);
+
+            return (
+                points.Max(point => point.X) - points.Min(point => point.X),
+                points.Max(point => point.Y) - points.Min(point => point.Y));
+        }
+
+        /// <summary>
+        /// Resizes a placed trigger's local polygon around its existing centre. Arbitrary polygons
+        /// retain their shape; missing or degenerate geometry is repaired to a centred rectangle.
+        /// </summary>
+        public static void SetTriggerGeometrySize(JsonGffStruct instance, float width, float height)
+        {
+            ArgumentNullException.ThrowIfNull(instance);
+            if (!float.IsFinite(width) || width <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(width), "Trigger width must be positive.");
+            if (!float.IsFinite(height) || height <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(height), "Trigger height must be positive.");
+
+            var points = TriggerPoints(instance).ToList();
+            if (points.Count < 3 || points.Count != TriggerGeometryElementCount(instance))
+            {
+                ReplaceTriggerGeometry(instance, CreateTriggerRectangle(width, height));
+                return;
+            }
+
+            var minX = points.Min(point => point.X);
+            var maxX = points.Max(point => point.X);
+            var minY = points.Min(point => point.Y);
+            var maxY = points.Max(point => point.Y);
+            var oldWidth = maxX - minX;
+            var oldHeight = maxY - minY;
+            if (oldWidth <= float.Epsilon || oldHeight <= float.Epsilon)
+            {
+                ReplaceTriggerGeometry(instance, CreateTriggerRectangle(width, height));
+                return;
+            }
+
+            var centerX = (minX + maxX) / 2f;
+            var centerY = (minY + maxY) / 2f;
+            var scaleX = width / oldWidth;
+            var scaleY = height / oldHeight;
+            foreach (var point in points)
+            {
+                point.Struct.SetSingle("PointX", centerX + (point.X - centerX) * scaleX);
+                point.Struct.SetSingle("PointY", centerY + (point.Y - centerY) * scaleY);
+            }
+        }
+
+        private static int TriggerGeometryElementCount(JsonGffStruct instance)
+        {
+            var geometry = instance.GetOrNull("Geometry");
+            return geometry?.Type == GffFieldType.List ? geometry.Elements?.Count ?? 0 : 0;
+        }
+
+        private static IEnumerable<(JsonGffStruct Struct, float X, float Y)> TriggerPoints(JsonGffStruct instance)
+        {
+            var geometry = instance.GetOrNull("Geometry");
+            if (geometry?.Type != GffFieldType.List || geometry.Elements == null)
+                yield break;
+
+            foreach (var point in geometry.Elements)
+            {
+                if (!point.TryGet("PointX", out var xField) ||
+                    !point.TryGet("PointY", out var yField) ||
+                    xField.Type != GffFieldType.Float ||
+                    yField.Type != GffFieldType.Float)
+                    continue;
+
+                var x = xField.GetSingle();
+                var y = yField.GetSingle();
+                if (float.IsFinite(x) && float.IsFinite(y))
+                    yield return (point, x, y);
+            }
+        }
+
+        private static void ReplaceTriggerGeometry(JsonGffStruct instance, JsonGffField geometry)
+        {
+            instance.Remove("Geometry");
+            instance.Add("Geometry", geometry);
+        }
+
+        private static JsonGffField CreateTriggerRectangle(float width, float height)
+        {
             var geometry = JsonGffField.CreateList();
-            foreach (var (x, y) in new[] { (-1f, -1f), (1f, -1f), (1f, 1f), (-1f, 1f) })
+            var halfWidth = width / 2f;
+            var halfHeight = height / 2f;
+            foreach (var (x, y) in new[]
+                     {
+                         (-halfWidth, -halfHeight), (halfWidth, -halfHeight),
+                         (halfWidth, halfHeight), (-halfWidth, halfHeight)
+                     })
             {
                 var point = JsonGffField.CreateStruct(3).Struct!;
                 point.SetSingle("PointX", x);

@@ -48,7 +48,7 @@ namespace SWLOR.Toolset.Workspace
             var catalogStopwatch = Stopwatch.StartNew();
             var lastLoggedPercent = -1;
 
-            Catalog = new BlueprintCatalog(
+            var catalog = new BlueprintCatalog(
                 Workspace,
                 (processed, total) =>
                 {
@@ -63,13 +63,23 @@ namespace SWLOR.Toolset.Workspace
                     _log.AppendLine($"Catalog build: {processed}/{total} ({percent}%).");
                 },
                 _tlkService == null ? null : _tlkService.GetString);
+            Catalog = catalog;
 
-            Catalog.BuildTask.ContinueWith(_ =>
+            _ = catalog.BuildTask.ContinueWith(task =>
             {
                 catalogStopwatch.Stop();
-                _log.AppendLine(
-                    $"Catalog build complete: {Catalog.Entries.Count} entries in {catalogStopwatch.ElapsedMilliseconds}ms.");
-            });
+                if (task.IsCompletedSuccessfully)
+                {
+                    _log.AppendLine(
+                        $"Catalog build complete: {catalog.Entries.Count} entries in {catalogStopwatch.ElapsedMilliseconds}ms.");
+                }
+                else if (task.Exception != null)
+                {
+                    _log.AppendLine(
+                        $"Catalog build failed after {catalogStopwatch.ElapsedMilliseconds}ms: " +
+                        task.Exception.GetBaseException().Message);
+                }
+            }, TaskScheduler.Default);
 
             WorkspaceOpened?.Invoke();
         }

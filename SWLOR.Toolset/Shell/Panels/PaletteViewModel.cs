@@ -211,6 +211,7 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(IsCustomSource));
             OnPropertyChanged(nameof(IsStandardSource));
             OnPropertyChanged(nameof(CanWrite));
+            OnPropertyChanged(nameof(CanCreateBlueprint));
             OnPropertyChanged(nameof(ReadOnlyNotice));
             OnPropertyChanged(nameof(HasReadOnlyNotice));
 
@@ -252,6 +253,13 @@ namespace SWLOR.Toolset.Shell.Panels
 
         /// <summary>Re-reads <see cref="CanWrite"/>, for when the module-wide lock has flipped.</summary>
         public void NotifyWriteAvailabilityChanged() => OnPropertyChanged(nameof(CanWrite));
+
+        /// <summary>
+        /// Creation is narrower than editing: types whose editor cannot finish a usable resource
+        /// (currently merchants, whose StoreList inventory is not exposed) remain browsable/editable
+        /// but do not offer a misleading "New" action.
+        /// </summary>
+        public bool CanCreateBlueprint => CanWrite && BlueprintTemplateFactory.Supports(SelectedType);
 
         /// <summary>
         /// Why a context menu is empty, so it never opens as a blank popup. Null when there is nothing to
@@ -387,7 +395,8 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            if (_tilesets == null || !_tilesets.TryGetTileset(tilesetResRef, out var tileset))
+            var activeTilesetResRef = tilesetResRef!;
+            if (_tilesets == null || !_tilesets.TryGetTileset(activeTilesetResRef, out var tileset) || tileset == null)
             {
                 StatusMessage = $"Tileset '{tilesetResRef}' could not be loaded.";
                 return;
@@ -406,8 +415,8 @@ namespace SWLOR.Toolset.Shell.Panels
             if (offered.Count == 0)
             {
                 StatusMessage = IsAutoTilePaint
-                    ? $"'{_tilesets.GetDisplayName(tilesetResRef)}' declares no terrain to paint - switch to Manual."
-                    : $"'{_tilesets.GetDisplayName(tilesetResRef)}' lists no individual tiles.";
+                    ? $"'{_tilesets.GetDisplayName(activeTilesetResRef)}' declares no terrain to paint - switch to Manual."
+                    : $"'{_tilesets.GetDisplayName(activeTilesetResRef)}' lists no individual tiles.";
                 return;
             }
 
@@ -422,8 +431,8 @@ namespace SWLOR.Toolset.Shell.Panels
             SelectedRow = _allRows[0];
             RebuildTileGrid();
             StatusMessage = IsAutoTilePaint
-                ? $"{_tilesets.GetDisplayName(tilesetResRef)} - pick a terrain, then click a cell to paint it."
-                : $"{_tilesets.GetDisplayName(tilesetResRef)} - pick a tile, then click a cell to stamp it.";
+                ? $"{_tilesets.GetDisplayName(activeTilesetResRef)} - pick a terrain, then click a cell to paint it."
+                : $"{_tilesets.GetDisplayName(activeTilesetResRef)} - pick a tile, then click a cell to stamp it.";
         }
 
         /// <summary>
@@ -526,6 +535,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
             SyncChipSelection();
             OnPropertyChanged(nameof(NewBlueprintLabel));
+            OnPropertyChanged(nameof(CanCreateBlueprint));
             SelectedRow = null;
             Refresh();
         }
@@ -543,6 +553,7 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(ShowsSourceSwitch));
             OnPropertyChanged(nameof(ShowsTilePaintSwitch));
             OnPropertyChanged(nameof(CanWrite));
+            OnPropertyChanged(nameof(CanCreateBlueprint));
             OnPropertyChanged(nameof(ReadOnlyNotice));
             OnPropertyChanged(nameof(HasReadOnlyNotice));
             SelectedRow = null;
@@ -797,14 +808,8 @@ namespace SWLOR.Toolset.Shell.Panels
         private async Task NewBlueprintAsync()
         {
             var workspace = _workspaceContext.Workspace;
-            if (workspace == null || _prompts == null || !CanWrite)
+            if (workspace == null || _prompts == null || !CanCreateBlueprint)
                 return;
-
-            if (!BlueprintTemplateFactory.Supports(SelectedType))
-            {
-                StatusMessage = $"{SelectedType.DisplayName()} cannot be created here yet.";
-                return;
-            }
 
             var kind = SelectedType.SingularDisplayName();
             var name = await _prompts.PromptForTextAsync(

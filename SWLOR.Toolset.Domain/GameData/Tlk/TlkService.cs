@@ -34,6 +34,34 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         }
 
         /// <summary>
+        /// Loads the required custom TLK and treats an unreadable optional base TLK as a degraded
+        /// feature rather than a startup failure. The custom file is still allowed to throw because
+        /// it is repository data the toolset itself requires.
+        /// </summary>
+        public static TlkService LoadWithOptionalBase(
+            string customTlkJsonPath,
+            string? baseTlkPath,
+            out string? warning)
+        {
+            var customTlk = TlkJsonFile.Load(customTlkJsonPath);
+            warning = null;
+            if (baseTlkPath == null)
+                return new TlkService(customTlk);
+
+            try
+            {
+                return new TlkService(customTlk, TlkReader.Read(baseTlkPath));
+            }
+            catch (Exception ex)
+            {
+                warning =
+                    $"Could not load optional base-game dialog.tlk '{baseTlkPath}': {ex.Message}. " +
+                    "Custom SWLOR text remains available.";
+                return new TlkService(customTlk);
+            }
+        }
+
+        /// <summary>
         /// Resolves a strref to text. Strrefs >= <see cref="CustomTlkBase"/> resolve against the
         /// custom TLK (id = strref - CustomTlkBase); lower strrefs resolve against the base
         /// dialog.tlk, returning null if no base TLK was supplied.

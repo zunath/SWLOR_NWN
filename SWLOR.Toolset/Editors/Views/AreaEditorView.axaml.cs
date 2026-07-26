@@ -1,6 +1,7 @@
 using Avalonia.Interactivity;
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Numerics;
+using Avalonia;
 using Avalonia.Controls;
 using SWLOR.Toolset.Domain.Render;
 
@@ -30,29 +31,34 @@ namespace SWLOR.Toolset.Editors
             // view model - two open areas disagreeing about fog would only be confusing.
             _display = Avalonia.Application.Current is App app ? app.Services?.GetService(
                 typeof(Viewport.ViewportDisplayOptions)) as Viewport.ViewportDisplayOptions : null;
-            if (_display != null)
-            {
-                // Named rather than anonymous so it can be taken off again. The options object is a
-                // singleton that outlives every area tab, so an anonymous handler kept each closed view -
-                // and its GlAreaControl, with all the GPU state that hangs off it - alive for the rest of
-                // the session, and every remaining subscriber re-ran on each toggle.
-                _display.PropertyChanged += OnDisplayOptionsChanged;
-                ApplyDisplayOptions();
-            }
+            ApplyDisplayOptions();
         }
 
-        private void OnDisplayOptionsChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) =>
-            ApplyDisplayOptions();
+        private readonly Viewport.ViewportDisplayOptions? _display;
 
-        protected override void OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            if (_display != null)
+                _display.PropertyChanged += OnDisplayPropertyChanged;
+
+            ApplyDisplayOptions();
+            AttachViewModel();
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
         {
             if (_display != null)
-                _display.PropertyChanged -= OnDisplayOptionsChanged;
+                _display.PropertyChanged -= OnDisplayPropertyChanged;
+            if (_viewModel != null)
+                _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+            _viewModel = null;
 
             base.OnDetachedFromVisualTree(e);
         }
 
-        private readonly Viewport.ViewportDisplayOptions? _display;
+        private void OnDisplayPropertyChanged(object? sender, PropertyChangedEventArgs e) =>
+            ApplyDisplayOptions();
 
         private void ApplyDisplayOptions()
         {

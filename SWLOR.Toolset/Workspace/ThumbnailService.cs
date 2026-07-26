@@ -57,8 +57,35 @@ namespace SWLOR.Toolset.Workspace
         /// fci01_b01_01 at once used to leave three of them permanently blank - the second request saw the
         /// first in flight and returned without ever being called back.
         /// </remarks>
-        private readonly ConcurrentDictionary<string, List<Action<Bitmap>>> _inFlight =
+        private readonly ConcurrentDictionary<string, InFlightRender> _inFlight =
             new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, long> _versions =
+            new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, object> _keyGates =
+            new(StringComparer.OrdinalIgnoreCase);
+        private readonly ReaderWriterLockSlim _cacheGate = new();
+        private long _cacheEpoch;
+
+        private sealed class InFlightRender
+        {
+            public InFlightRender(long version, long epoch, Action<Bitmap> firstWaiter)
+            {
+                Version = version;
+                Epoch = epoch;
+                Waiters.Add(firstWaiter);
+            }
+
+            public long Version { get; }
+            public long Epoch { get; }
+            public List<Action<Bitmap>> Waiters { get; } = new();
+        }
+
+        private readonly record struct PreviewResolution(
+            Bitmap? Bitmap,
+            ThumbnailDiskCache Disk,
+            ResourceType Type,
+            string ResRef,
+            bool Persist);
         private readonly ConcurrentDictionary<ResourceType, Bitmap> _typeIcons = new();
         private readonly ConcurrentDictionary<ResourceType, Bitmap> _typeChipIcons = new();
 
@@ -75,19 +102,8 @@ namespace SWLOR.Toolset.Workspace
             // cache's timestamp check, so without this an edited appearance or icon kept showing the old
             // picture - including a cached "no artwork" symbol - for the rest of the session.
             _workspaceContext.CatalogEntryRefreshed += Invalidate;
+            _workspaceContext.WorkspaceOpened += ResetForWorkspace;
         }
-
-        /// <summary>
-        /// How many times each key has been invalidated. A render carries the count it started under, so
-        /// one that began before an edit can be recognised as stale when it finishes.
-        /// </summary>
-        /// <remarks>
-        /// Removing the memory entry was not enough. A render already under way when the blueprint was
-        /// saved went on to repopulate memory with the pre-save image and write its PNG - now with an
-        /// mtime newer than the edited blueprint, so the disk cache's freshness check believed it across
-        /// restarts. The stale picture outlived the session that caused it.
-        /// </remarks>
-        private readonly ConcurrentDictionary<string, long> _invalidations = new();
 
         /// <summary>Forgets a blueprint's cached preview, so the next request re-renders it.</summary>
         public void Invalidate(ResourceType type, string resRef)
@@ -96,12 +112,37 @@ namespace SWLOR.Toolset.Workspace
                 return;
 
             var key = Key(type, resRef);
-            _memory.Remove(key);
-            _invalidations.AddOrUpdate(key, 1, (_, count) => count + 1);
+            _cacheGate.EnterReadLock();
+            try
+            {
+                lock (GateFor(key))
+                {
+                    _versions.AddOrUpdate(key, 1, (_, version) => version + 1);
+                    _inFlight.TryRemove(key, out _);
+                    _memory.Remove(key);
+                    Disk.Remove(type, resRef);
+                }
+            }
+            finally
+            {
+                _cacheGate.ExitReadLock();
+            }
         }
 
-        /// <summary>The invalidation count a render starting now should carry.</summary>
-        private long CurrentGeneration(string key) => _invalidations.TryGetValue(key, out var count) ? count : 0;
+        private void ResetForWorkspace()
+        {
+            _cacheGate.EnterWriteLock();
+            try
+            {
+                Interlocked.Increment(ref _cacheEpoch);
+                _inFlight.Clear();
+                _memory.Clear();
+            }
+            finally
+            {
+                _cacheGate.ExitWriteLock();
+            }
+        }
 
         /// <summary>True when game data is loaded well enough to produce any preview at all.</summary>
         public bool IsAvailable => _renderer.IsAvailable;
@@ -144,26 +185,23 @@ namespace SWLOR.Toolset.Workspace
                 return;
             }
 
-            if (!TryStartRender(key, onReady, TypeIcon(type)))
+            var fallback = TypeIcon(type);
+            if (!TryStartRender(key, onReady, fallback, out var operation))
                 return;
-
-            // Captured before the render starts, so an Invalidate that lands while it runs is visible
-            // as a mismatch when it finishes.
-            var generation = CurrentGeneration(key);
 
             Task.Run(() =>
             {
-                Bitmap? bitmap = null;
+                PreviewResolution? result = null;
                 try
                 {
-                    bitmap = Resolve(type, resRef, key, generation);
+                    result = Resolve(type, resRef);
                 }
                 catch (Exception)
                 {
                     // One bad blueprint must not stop the rest of the grid from filling in.
                 }
 
-                CompleteRender(key, bitmap, bitmap ?? TypeIcon(type), generation);
+                CompleteRender(key, operation, result, result?.Bitmap ?? fallback);
             });
         }
 
@@ -193,12 +231,8 @@ namespace SWLOR.Toolset.Workspace
                 return;
             }
 
-            // A tile has no blueprint behind it and is never invalidated, so it renders under
-            // generation 0 and no fallback: "no artwork" for a tile means there is nothing to show.
-            if (!TryStartRender(key, onReady, noArtwork: null))
+            if (!TryStartRender(key, onReady, null, out var operation))
                 return;
-
-            var generation = CurrentGeneration(key);
 
             Task.Run(() =>
             {
@@ -214,7 +248,9 @@ namespace SWLOR.Toolset.Workspace
                     // One unparseable tile model must not stop the rest of the grid filling in.
                 }
 
-                CompleteRender(key, bitmap, bitmap, generation);
+                var result = new PreviewResolution(
+                    bitmap, new ThumbnailDiskCache(null), ResourceType.Area, modelResRef, Persist: false);
+                CompleteRender(key, operation, result, bitmap);
             });
         }
 
@@ -222,38 +258,32 @@ namespace SWLOR.Toolset.Workspace
         /// Registers <paramref name="onReady"/> as a waiter on <paramref name="key"/>, and reports whether
         /// this caller is the one that has to do the render.
         /// </summary>
-        /// <param name="noArtwork">
-        /// What to hand a late caller when the finished render turned out to have no artwork - the type
-        /// icon for a blueprint, nothing for a tile. A cached null is a real answer, not a miss.
-        /// </param>
-        private bool TryStartRender(string key, Action<Bitmap> onReady, Bitmap? noArtwork)
+        private bool TryStartRender(
+            string key,
+            Action<Bitmap> onReady,
+            Bitmap? fallback,
+            out InFlightRender operation)
         {
-            var mine = new List<Action<Bitmap>> { onReady };
-            var waiters = _inFlight.GetOrAdd(key, mine);
-            if (ReferenceEquals(waiters, mine))
+            var mine = new InFlightRender(VersionOf(key), Volatile.Read(ref _cacheEpoch), onReady);
+            operation = _inFlight.GetOrAdd(key, mine);
+            if (ReferenceEquals(operation, mine))
                 return true;
 
             // Someone else is already rendering this. Join their list - but a render that finished between
             // the GetOrAdd and this lock has already published its result and cleared its own waiters, so
             // that case has to be answered from the cache instead of by waiting forever.
-            lock (waiters)
+            lock (operation.Waiters)
             {
-                if (!_inFlight.ContainsKey(key))
+                if (!_inFlight.TryGetValue(key, out var active) || !ReferenceEquals(active, operation))
                 {
-                    // TryGet succeeding with a null is "rendered, and there is nothing to draw". Treating
-                    // that as nothing to say left the tile blank until some later refresh happened to ask
-                    // again, instead of showing the type icon RequestAsync promises.
-                    if (_memory.TryGet(key, out var done))
-                    {
-                        var resolved = done ?? noArtwork;
-                        if (resolved != null)
-                            Dispatcher.UIThread.Post(() => onReady(resolved));
-                    }
+                    var resolved = _memory.TryGet(key, out var done) ? done ?? fallback : fallback;
+                    if (resolved != null)
+                        Dispatcher.UIThread.Post(() => onReady(resolved));
 
                     return false;
                 }
 
-                waiters.Add(onReady);
+                operation.Waiters.Add(onReady);
             }
 
             return false;
@@ -262,26 +292,50 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>
         /// Publishes a finished render to the cache and to every caller that asked for it.
         /// </summary>
-        /// <param name="cached">What to store - null records "no artwork", which is a real answer.</param>
+        /// <param name="result">What to cache; null means rendering failed and must be retried later.</param>
         /// <param name="delivered">What to hand the waiters, or null to tell them nothing.</param>
-        /// <param name="generation">
-        /// The invalidation count this render started under. When it no longer matches, the blueprint was
-        /// edited while this was rendering: the result describes content that no longer exists, so it is
-        /// not cached - but the waiters are still released, because they are waiting on a picture and the
-        /// stale one is closer to right than leaving them blank forever. The next request re-renders.
-        /// </param>
-        private void CompleteRender(string key, Bitmap? cached, Bitmap? delivered, long generation)
+        private void CompleteRender(
+            string key,
+            InFlightRender operation,
+            PreviewResolution? result,
+            Bitmap? delivered)
         {
-            if (CurrentGeneration(key) == generation)
-                _memory.Set(key, cached);
-
-            List<Action<Bitmap>>? waiters;
-            if (!_inFlight.TryRemove(key, out waiters) || waiters == null)
-                return;
-
             Action<Bitmap>[] callbacks;
-            lock (waiters)
-                callbacks = waiters.ToArray();
+            _cacheGate.EnterReadLock();
+            try
+            {
+                lock (GateFor(key))
+                {
+                    if (!IsCurrent(key, operation))
+                    {
+                        result?.Bitmap?.Dispose();
+                        return;
+                    }
+
+                    if (result is { } resolved)
+                    {
+                        if (resolved.Persist)
+                        {
+                            if (resolved.Bitmap == null)
+                                resolved.Disk.StoreNoArtwork(resolved.Type, resolved.ResRef);
+                            else
+                                resolved.Disk.Store(resolved.Type, resolved.ResRef, resolved.Bitmap);
+                        }
+
+                        _memory.Set(key, resolved.Bitmap);
+                    }
+
+                    if (!_inFlight.TryRemove(key, out var removed) || !ReferenceEquals(removed, operation))
+                        return;
+
+                    lock (operation.Waiters)
+                        callbacks = operation.Waiters.ToArray();
+                }
+            }
+            finally
+            {
+                _cacheGate.ExitReadLock();
+            }
 
             if (delivered == null)
                 return;
@@ -291,6 +345,18 @@ namespace SWLOR.Toolset.Workspace
                 foreach (var callback in callbacks)
                     callback(delivered);
             });
+        }
+
+        private object GateFor(string key) => _keyGates.GetOrAdd(key, _ => new object());
+
+        private long VersionOf(string key) => _versions.TryGetValue(key, out var version) ? version : 0;
+
+        private bool IsCurrent(string key, InFlightRender operation)
+        {
+            return operation.Epoch == Volatile.Read(ref _cacheEpoch) &&
+                   operation.Version == VersionOf(key) &&
+                   _inFlight.TryGetValue(key, out var active) &&
+                   ReferenceEquals(active, operation);
         }
 
         /// <summary>The cached tile thumbnail if it is already decoded, else null.</summary>
@@ -384,6 +450,9 @@ namespace SWLOR.Toolset.Workspace
 
             await Parallel.ForEachAsync(work, options, (item, _) =>
             {
+                var key = Key(item.Type, item.ResRef);
+                var version = VersionOf(key);
+                var epoch = Volatile.Read(ref _cacheEpoch);
                 try
                 {
                     if (disk.Contains(item.Type, item.ResRef, workspace.GetResourcePath(item.Type, item.ResRef)))
@@ -395,16 +464,20 @@ namespace SWLOR.Toolset.Workspace
                         var image = _renderer.Render(item.Type, item.ResRef);
                         if (image == null)
                         {
-                            disk.StoreNoArtwork(item.Type, item.ResRef);
-                            Interlocked.Increment(ref withoutArtwork);
+                            if (TryPersistWarmResult(
+                                    key, version, epoch,
+                                    () => disk.StoreNoArtwork(item.Type, item.ResRef)))
+                                Interlocked.Increment(ref withoutArtwork);
                         }
                         else
                         {
                             // Disposed immediately: it exists only to be encoded, and 17,000 live
                             // bitmaps is exactly what this cache is designed to avoid.
                             using var bitmap = ToBitmap(image);
-                            disk.Store(item.Type, item.ResRef, bitmap);
-                            Interlocked.Increment(ref rendered);
+                            if (TryPersistWarmResult(
+                                    key, version, epoch,
+                                    () => disk.Store(item.Type, item.ResRef, bitmap)))
+                                Interlocked.Increment(ref rendered);
                         }
                     }
                 }
@@ -435,18 +508,52 @@ namespace SWLOR.Toolset.Workspace
             return new PreviewCacheProgress(processed, total, rendered, reused, withoutArtwork, failed);
         }
 
+        private bool TryPersistWarmResult(
+            string key,
+            long version,
+            long epoch,
+            Action persist)
+        {
+            _cacheGate.EnterReadLock();
+            try
+            {
+                lock (GateFor(key))
+                {
+                    if (epoch != Volatile.Read(ref _cacheEpoch) || version != VersionOf(key))
+                        return false;
+
+                    persist();
+                    return true;
+                }
+            }
+            finally
+            {
+                _cacheGate.ExitReadLock();
+            }
+        }
+
         /// <summary>Drops every cached preview, in memory and on disk, so the next build redoes them.</summary>
         public int ClearCache()
         {
-            _memory.Clear();
-            return Disk.Clear();
+            _cacheGate.EnterWriteLock();
+            try
+            {
+                Interlocked.Increment(ref _cacheEpoch);
+                _inFlight.Clear();
+                _memory.Clear();
+                return Disk.Clear();
+            }
+            finally
+            {
+                _cacheGate.ExitWriteLock();
+            }
         }
 
         /// <summary>Deletes cache folders left by an older render pipeline. Returns the number removed.</summary>
         public int PruneSupersededCaches() => Disk.PruneSupersededVersions();
 
         /// <summary>Disk hit, then render. Null means "no artwork" - the caller substitutes a type symbol.</summary>
-        private Bitmap? Resolve(ResourceType type, string resRef, string key, long generation)
+        private PreviewResolution Resolve(ResourceType type, string resRef)
         {
             var workspace = _workspaceContext.Workspace;
             var blueprintPath = workspace?.GetResourcePath(type, resRef);
@@ -455,29 +562,17 @@ namespace SWLOR.Toolset.Workspace
             switch (disk.TryLoad(type, resRef, blueprintPath, out var cached))
             {
                 case ThumbnailDiskCache.Lookup.Image:
-                    return cached;
+                    return new PreviewResolution(cached, disk, type, resRef, Persist: false);
                 case ThumbnailDiskCache.Lookup.NoArtwork:
-                    return null;
+                    return new PreviewResolution(null, disk, type, resRef, Persist: false);
             }
 
             var image = _renderer.Render(type, resRef);
             if (image == null)
-            {
-                // The disk write has to be guarded as well as the memory one, and separately: this
-                // happens inside the render task, so a blueprint saved while it ran would otherwise get
-                // a PNG of its old content stamped with an mtime newer than the file it no longer
-                // matches - which is exactly what the freshness check trusts, across restarts.
-                if (CurrentGeneration(key) == generation)
-                    disk.StoreNoArtwork(type, resRef);
-
-                return null;
-            }
+                return new PreviewResolution(null, disk, type, resRef, Persist: true);
 
             var bitmap = ToBitmap(image);
-            if (CurrentGeneration(key) == generation)
-                disk.Store(type, resRef, bitmap);
-
-            return bitmap;
+            return new PreviewResolution(bitmap, disk, type, resRef, Persist: true);
         }
 
         /// <summary>

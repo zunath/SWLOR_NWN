@@ -228,7 +228,11 @@ namespace SWLOR.Toolset.Domain.Render
             AddMarkers(markers, git.Creatures, InstanceMarkerKind.Creature, ResourceType.Utc,
                 resolveModel: resolveCreatureModel == null
                     ? null
-                    : instance => resolveCreatureModel(InstanceFieldMap.GetTemplateResRef(ResourceType.Utc, instance)));
+                    : instance =>
+                    {
+                        var resRef = InstanceFieldMap.GetTemplateResRef(ResourceType.Utc, instance);
+                        return string.IsNullOrWhiteSpace(resRef) ? null : resolveCreatureModel(resRef);
+                    });
             AddMarkers(markers, git.Doors, InstanceMarkerKind.Door, ResourceType.Utd,
                 resolveModel: instance => ResolveDoorModel(instance, doorTypes, modelCache));
             AddMarkers(markers, git.Items, InstanceMarkerKind.Item, ResourceType.Uti);

@@ -214,6 +214,26 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
+        /// Removes both possible forms of one entry. Used when a saved blueprint changes so an
+        /// in-flight or timestamp-equal result cannot survive as stale artwork.
+        /// </summary>
+        public void Remove(ResourceType type, string resRef)
+        {
+            if (_root == null)
+                return;
+
+            try
+            {
+                Delete(PathFor(type, resRef, ".png"));
+                Delete(PathFor(type, resRef, MissingArtworkExtension));
+            }
+            catch (Exception)
+            {
+                // A cache is an optimisation; a locked entry will fail freshness on a later save.
+            }
+        }
+
+        /// <summary>
         /// Deletes cache folders written by an older render pipeline, for every module. Returns the number
         /// of folders removed. Those previews can never be served again - the version in their path no
         /// longer matches - so keeping them only costs disk.

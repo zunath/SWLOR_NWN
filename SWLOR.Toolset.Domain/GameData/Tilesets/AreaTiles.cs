@@ -33,6 +33,12 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         /// <summary>The tile placed at (col,row) as a (TileId, Orientation) pair, or null when the cell is out of range or has no tile struct.</summary>
         public static TileCandidate? At(AreDocument are, int col, int row)
         {
+            return StateAt(are, col, row)?.Candidate;
+        }
+
+        /// <summary>The tile placement and base elevation at (col,row), or null outside the grid.</summary>
+        public static PlacedTileState? StateAt(AreDocument are, int col, int row)
+        {
             var idx = IndexOf(are, col, row);
             var tiles = are.Tiles;
             if (idx < 0 || idx >= tiles.Count)
@@ -43,11 +49,17 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
             if (id == null)
                 return null;
 
-            return new TileCandidate(id.Value, tile.GetIntOrNull("Tile_Orientation") ?? 0);
+            return new PlacedTileState(
+                id.Value,
+                tile.GetIntOrNull("Tile_Orientation") ?? 0,
+                tile.GetIntOrNull("Tile_Height") ?? 0);
         }
 
         /// <summary>A neighbour-lookup closure over this area for <see cref="SetRuleMatcher.SolveCell"/> / <see cref="TilePainter"/>.</summary>
         public static Func<int, int, TileCandidate?> Reader(AreDocument are) => (c, r) => At(are, c, r);
+
+        /// <summary>A height-aware neighbour lookup for terrain solving and rotation validation.</summary>
+        public static Func<int, int, PlacedTileState?> StateReader(AreDocument are) => (c, r) => StateAt(are, c, r);
 
         /// <summary>The height level (Tile_Height) of (col,row), or 0 when out of range.</summary>
         public static int HeightLevelOf(AreDocument are, int col, int row)

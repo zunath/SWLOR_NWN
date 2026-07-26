@@ -252,6 +252,15 @@
                       <TextBlock Grid.Column="2" Text="Facing Y" VerticalAlignment="Center" />
                       <NumericUpDown Grid.Column="3" Value="{Binding DetailYOrientation, Mode=TwoWay}" Increment="0.1" />
                     </Grid>
+                    <Grid ColumnDefinitions="60,*,60,*" ColumnSpacing="6"
+                          IsVisible="{Binding HasTriggerGeometry}">
+                      <TextBlock Grid.Column="0" Text="Width" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="1" Value="{Binding DetailTriggerWidth, Mode=TwoWay}"
+                                     Minimum="0.1" Increment="0.5" />
+                      <TextBlock Grid.Column="2" Text="Height" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="3" Value="{Binding DetailTriggerHeight, Mode=TwoWay}"
+                                     Minimum="0.1" Increment="0.5" />
+                    </Grid>
                     <Expander Header="Local Variables"
                               IsVisible="{Binding VarTableSection, Converter={x:Static ObjectConverters.IsNotNull}}"
                               HorizontalAlignment="Stretch" IsExpanded="False">

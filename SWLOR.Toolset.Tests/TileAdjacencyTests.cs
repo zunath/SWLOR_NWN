@@ -15,9 +15,13 @@ namespace SWLOR.Toolset.Tests
         private static TileDefinition LabeledTile() => new()
         {
             TopLeft = "NW",
+            TopLeftHeight = 1,
             TopRight = "NE",
+            TopRightHeight = 2,
             BottomLeft = "SW",
+            BottomLeftHeight = 3,
             BottomRight = "SE",
+            BottomRightHeight = 4,
             Top = "T",
             Right = "R",
             Bottom = "B",
@@ -57,6 +61,9 @@ namespace SWLOR.Toolset.Tests
             TileAdjacency.WorldEdgeCrosser(t, 1, TileEdge.West).Should().Be("T");
             TileAdjacency.WorldEdgeCrosser(t, 1, TileEdge.South).Should().Be("L");
             TileAdjacency.WorldEdgeCrosser(t, 1, TileEdge.East).Should().Be("B");
+
+            TileAdjacency.WorldCornerHeight(t, 1, TileCorner.NorthWest).Should().Be(2);
+            TileAdjacency.WorldCornerHeight(t, 1, TileCorner.NorthEast).Should().Be(4);
         }
 
         [Test]

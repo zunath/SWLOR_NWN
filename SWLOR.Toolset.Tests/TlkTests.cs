@@ -86,5 +86,18 @@ namespace SWLOR.Toolset.Tests
             service.GetString(0).Should().BeNull();
             service.GetString(TlkService.CustomTlkBase - 1).Should().BeNull();
         }
+
+        [Test]
+        public void TlkService_UnreadableOptionalBase_DoesNotHideCustomText()
+        {
+            var service = TlkService.LoadWithOptionalBase(
+                SwTlkJsonPath,
+                Path.Combine(Path.GetTempPath(), "missing-dialog-" + Guid.NewGuid().ToString("N") + ".tlk"),
+                out var warning);
+
+            service.GetString(TlkService.CustomTlkBase + 1).Should().Be("Tough");
+            service.GetString(1).Should().BeNull();
+            warning.Should().Contain("optional base-game dialog.tlk");
+        }
     }
 }

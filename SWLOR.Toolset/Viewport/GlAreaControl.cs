@@ -1836,7 +1836,11 @@ void main()
             if (_uniformLocations.TryGetValue(name, out var location))
                 return location;
 
-            location = _gl!.GetUniformLocation(_shaderProgram, name);
+            var gl = _gl;
+            if (gl == null)
+                return -1;
+
+            location = gl.GetUniformLocation(_shaderProgram, name);
             _uniformLocations[name] = location;
             return location;
         }
@@ -1844,7 +1848,8 @@ void main()
         private void SetUniformMatrix4(string name, Matrix4x4 matrix)
         {
             var location = GetUniformLocationCached(name);
-            if (location < 0)
+            var gl = _gl;
+            if (location < 0 || gl == null)
                 return;
 
             // System.Numerics uses row-vector convention (v * M); GLSL uses column-vector (M * v).
@@ -1857,35 +1862,39 @@ void main()
                 matrix.M31, matrix.M32, matrix.M33, matrix.M34,
                 matrix.M41, matrix.M42, matrix.M43, matrix.M44
             };
-            _gl.UniformMatrix4(location, 1, false, values);
+            gl.UniformMatrix4(location, 1, false, values);
         }
 
         private void SetUniformVec3(string name, Vector3 value)
         {
             var location = GetUniformLocationCached(name);
-            if (location >= 0)
-                _gl.Uniform3(location, value.X, value.Y, value.Z);
+            var gl = _gl;
+            if (location >= 0 && gl != null)
+                gl.Uniform3(location, value.X, value.Y, value.Z);
         }
 
         private void SetUniformBool(string name, bool value)
         {
             var location = GetUniformLocationCached(name);
-            if (location >= 0)
-                _gl.Uniform1(location, value ? 1 : 0);
+            var gl = _gl;
+            if (location >= 0 && gl != null)
+                gl.Uniform1(location, value ? 1 : 0);
         }
 
         private void SetUniformFloat(string name, float value)
         {
             var location = GetUniformLocationCached(name);
-            if (location >= 0)
-                _gl.Uniform1(location, value);
+            var gl = _gl;
+            if (location >= 0 && gl != null)
+                gl.Uniform1(location, value);
         }
 
         private void SetUniformInt(string name, int value)
         {
             var location = GetUniformLocationCached(name);
-            if (location >= 0)
-                _gl.Uniform1(location, value);
+            var gl = _gl;
+            if (location >= 0 && gl != null)
+                gl.Uniform1(location, value);
         }
 
         private void SetVertexAttribPointers()

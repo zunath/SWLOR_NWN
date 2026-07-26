@@ -40,6 +40,13 @@ public class CrossSkillPerkInteractionSafetyTests
                 "an area control ability must consume the old proc before it can grant the next one");
         ability.Should().Contain("_statusAppliedNextAttackDamageBonusConsumed",
             "an area ability must not consume a newly granted proc on each additional target");
+        ability.Should().Contain("public int NextAbilityDamageBonus { get; private set; }");
+        var consumeStatusBonus = ExtractMethod(
+            ability,
+            "public void ConsumeStatusAppliedNextAttackDamageBonus(uint activator)");
+        consumeStatusBonus.Should().Contain(
+            "NextAbilityDamageBonus -= StatusAppliedNextAttackDamageBonus;",
+            "the consumed Charged Blows value must be removed from the tracked aggregate before another hit or area target calculates damage");
 
         var nativeDamage = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
         var nextAttackBonusIndex = nativeDamage.IndexOf(

@@ -118,6 +118,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         public int MinimumTargetHitPointsAfterRevive { get; set; }
 
         /// <summary>
+        /// Healing percentage promised after revival. The executor derives the exact minimum
+        /// from the target's maximum HP and the caster's Willpower scaling, then requires that
+        /// full heal on top of the native resurrection's 1 HP.
+        /// Requires <see cref="ExpectsTargetRevived"/>.
+        /// </summary>
+        public float? ExpectedTargetHealingPercentAfterRevive { get; set; }
+
+        /// <summary>
         /// Distance at which a distinct target is spawned. The default preserves the close-range
         /// fixture used by most abilities; movement abilities can start farther away.
         /// </summary>

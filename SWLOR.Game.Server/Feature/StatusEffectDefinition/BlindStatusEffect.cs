@@ -15,6 +15,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override string CanApply(uint creature)
         {
+            if (StatusEffect.HasStatusEffect(creature, GetType()))
+                return "Target is already blind.";
+
             return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Blindness)
                 ? "Target is temporarily immune to blindness."
                 : string.Empty;

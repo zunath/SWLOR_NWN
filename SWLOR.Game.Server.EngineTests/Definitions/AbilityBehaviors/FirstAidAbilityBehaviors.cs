@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     MinimumTargetHitPointsAfterRevive = 1,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Revival cast on a dead spawned ally (requireDead:true friendly target). Applies EffectResurrection + a token EffectHeal(1) to the target.",
+                    Notes = "Revival cast on a dead spawned ally (requireDead:true friendly target). Native EffectResurrection returns the target with 1 HP.",
                 },
                 new()
                 {
@@ -221,10 +221,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Target = AbilityTargetKind.FriendlyCreature,
                     TargetStartsDead = true,
                     ExpectsTargetRevived = true,
-                    MinimumTargetHitPointsAfterRevive = 2,
+                    ExpectedTargetHealingPercentAfterRevive = 20f,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Same requireDead:true friendly-target requirement as Resuscitation1; also heals the revived target for 20% via ApplyActivatedScaledHeal.",
+                    Notes = "Derives the minimum post-revive HP from 20% of the target's maximum HP plus the caster's Willpower scaling, proving the full delayed heal rather than a token HP increase.",
                 },
 
                 // ShieldingAbilityDefinition - friendly self buff.

@@ -16,6 +16,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override string CanApply(uint creature)
         {
+            if (StatusEffect.HasStatusEffect(creature, GetType()))
+                return "Target is already tranquilized.";
+
             return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Sleep)
                 ? "Target is temporarily immune to tranquilization."
                 : string.Empty;

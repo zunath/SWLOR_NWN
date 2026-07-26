@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core.Async;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -616,6 +617,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                               behaviorCase.MinimumTargetHitPointsAfterRevive,
                         EffectWaitSeconds,
                         $"the revived target to have at least {behaviorCase.MinimumTargetHitPointsAfterRevive} hit points");
+                }
+
+                if (behaviorCase.ExpectedTargetHealingPercentAfterRevive.HasValue)
+                {
+                    var healingPercent = behaviorCase.ExpectedTargetHealingPercentAfterRevive.Value;
+                    var expectedHealing = AbilityEffectScaling.CalculateScaledPercentOfMaxHP(
+                        caster,
+                        impactTarget,
+                        healingPercent);
+                    var minimumHitPoints = 1 + expectedHealing;
+                    await ctx.WaitUntilAsync(
+                        () => GetCurrentHitPoints(impactTarget) >= minimumHitPoints,
+                        EffectWaitSeconds,
+                        $"the revived target to receive its full {healingPercent:0.##}% plus Willpower-scaled heal and reach at least {minimumHitPoints} hit points");
                 }
             }
 

@@ -30,6 +30,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override string CanApply(uint creature)
         {
+            if (StatusEffect.HasStatusEffect(creature, GetType()))
+                return "Target is already dazed.";
+
             return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Dazed)
                 ? "Target is temporarily immune to daze."
                 : string.Empty;

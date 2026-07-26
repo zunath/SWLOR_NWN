@@ -229,6 +229,14 @@ namespace SWLOR.Game.Server.Tests.Feature
                     problems.Add($"{behaviorCase.Feat}: minimum revived HP requires ExpectsTargetRevived");
                 }
 
+                if (behaviorCase.ExpectedTargetHealingPercentAfterRevive.HasValue)
+                {
+                    if (!behaviorCase.ExpectsTargetRevived)
+                        problems.Add($"{behaviorCase.Feat}: post-revive healing percentage requires ExpectsTargetRevived");
+                    if (behaviorCase.ExpectedTargetHealingPercentAfterRevive.Value <= 0f)
+                        problems.Add($"{behaviorCase.Feat}: post-revive healing percentage must be positive");
+                }
+
                 if (behaviorCase.ExpectsTargetRevived && !behaviorCase.TargetStartsDead)
                     problems.Add($"{behaviorCase.Feat}: revival assertion requires TargetStartsDead");
 

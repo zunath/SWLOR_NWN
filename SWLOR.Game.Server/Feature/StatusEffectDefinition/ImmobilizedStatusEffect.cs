@@ -21,6 +21,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override string CanApply(uint creature)
         {
+            if (StatusEffect.HasStatusEffect(creature, GetType()))
+                return "Target is already immobilized.";
+
             return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Immobilized)
                 ? "Target is temporarily immune to immobilization."
                 : string.Empty;

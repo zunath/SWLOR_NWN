@@ -91,6 +91,36 @@ public class NativeControlStatusEffectTests
         actualRemoval.WasReplacement.Should().BeFalse();
     }
 
+    [TestCase("BlindStatusEffect.cs")]
+    [TestCase("ConfusionStatusEffect.cs")]
+    [TestCase("DazedStatusEffect.cs")]
+    [TestCase("ImmobilizedStatusEffect.cs")]
+    [TestCase("KnockdownStatusEffect.cs")]
+    [TestCase("StunnedStatusEffect.cs")]
+    [TestCase("TranquilizedStatusEffect.cs")]
+    public void HardControlStatusEffects_RejectSameTypeRefreshBeforeReplacement(string fileName)
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            fileName));
+        var canApply = ExtractMethod(source, "public override string CanApply(uint creature)");
+
+        var activeCheck = canApply.IndexOf(
+            "StatusEffect.HasStatusEffect(creature, GetType())",
+            StringComparison.Ordinal);
+        var immunityCheck = canApply.IndexOf(
+            "Ability.HasHardCrowdControlImmunity(",
+            StringComparison.Ordinal);
+        activeCheck.Should().BeGreaterThanOrEqualTo(0);
+        activeCheck.Should().BeLessThan(
+            immunityCheck,
+            "an active hard-control instance must reject refresh before the non-stacking replacement path can remove it");
+    }
+
     [Test]
     public void RepeatedHardControlRemovals_RestartTheSharedImmunityWindow()
     {

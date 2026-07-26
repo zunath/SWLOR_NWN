@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override string CanApply(uint creature)
         {
+            if (StatusEffect.HasStatusEffect(creature, GetType()))
+                return "Target is already stunned.";
+
             return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Stun)
                 ? "Target is temporarily immune to stun."
                 : string.Empty;

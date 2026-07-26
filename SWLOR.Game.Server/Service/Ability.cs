@@ -3015,7 +3015,7 @@ namespace SWLOR.Game.Server.Service
 
             public AbilityDetail Ability { get; }
             public AbilityImpactSummary Summary { get; }
-            public int NextAbilityDamageBonus { get; }
+            public int NextAbilityDamageBonus { get; private set; }
             public int NextAbilityCriticalRatePercentAdjustment { get; }
             public int NextAbilityDefenseIgnorePercentAdjustment { get; }
             public int NextAttackEnmityBonus { get; }
@@ -3054,6 +3054,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 Combat.ConsumeStatusAppliedNextAttackDamageBonus(activator);
+                NextAbilityDamageBonus -= StatusAppliedNextAttackDamageBonus;
                 _statusAppliedNextAttackDamageBonusConsumed = true;
             }
 

@@ -66,8 +66,12 @@ namespace SWLOR.Toolset.Editors.Views
             _bound.UndoRequested = () => _editor.TextArea.Document.UndoStack.Undo();
             _bound.RedoRequested = () => _editor.TextArea.Document.UndoStack.Redo();
             _bound.InsertAtCursorRequested = InsertAtCursor;
+            _bound.GoToOffsetRequested = GoToOffset;
+            _bound.GoToLineRequested = GoToLine;
+            _bound.ReplaceAllRequested = ReplaceAllAsOneEdit;
             _bound.DiagnosticsChanged += OnDiagnosticsChanged;
             _bound.AnalyzeNow();
+            RefreshFolding();
         }
 
         private void ReplaceText(string text)
@@ -108,12 +112,95 @@ namespace SWLOR.Toolset.Editors.Views
 
         private void OnEditorKeyDown(object? sender, KeyEventArgs e)
         {
+            if (_editor == null || _bound == null)
+                return;
+
+            var caret = _editor.TextArea.Caret.Offset;
+
             // Ctrl+Space forces the list open even mid-word, which is the one way to get at it
             // without typing a character first.
             if (e.Key == Key.Space && e.KeyModifiers.HasFlag(KeyModifiers.Control))
             {
                 ShowCompletion();
                 e.Handled = true;
+                return;
+            }
+
+            switch (e.Key)
+            {
+                // Shift+F12 must be tested before the bare F12 case, which would otherwise match first.
+                case Key.F12 when e.KeyModifiers.HasFlag(KeyModifiers.Shift):
+                    _bound.FindReferences(caret);
+                    e.Handled = true;
+                    break;
+
+                case Key.F12:
+                    _bound.GoToDefinition(caret);
+                    e.Handled = true;
+                    break;
+
+                case Key.F2:
+                    _ = _bound.RenameAsync(caret);
+                    e.Handled = true;
+                    break;
+
+                // Ctrl+/ toggles comments, the one editing command that is tedious enough by hand
+                // to be worth a binding.
+                case Key.OemQuestion when e.KeyModifiers.HasFlag(KeyModifiers.Control):
+                    ToggleComment();
+                    e.Handled = true;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Comments the selected lines, or uncomments them when every one is already commented.
+        /// Applied as a single undo step so one Ctrl+Z takes the whole block back.
+        /// </summary>
+        private void ToggleComment()
+        {
+            if (_editor?.Document == null)
+                return;
+
+            var document = _editor.Document;
+            var selection = _editor.TextArea.Selection;
+            var startLine = selection.IsEmpty
+                ? _editor.TextArea.Caret.Line
+                : document.GetLineByOffset(selection.SurroundingSegment.Offset).LineNumber;
+            var endLine = selection.IsEmpty
+                ? startLine
+                : document.GetLineByOffset(selection.SurroundingSegment.EndOffset).LineNumber;
+
+            var lines = Enumerable.Range(startLine, endLine - startLine + 1)
+                .Select(document.GetLineByNumber)
+                .ToList();
+
+            var allCommented = lines
+                .Select(l => document.GetText(l).TrimStart())
+                .Where(t => t.Length > 0)
+                .All(t => t.StartsWith("//", StringComparison.Ordinal));
+
+            using (document.RunUpdate())
+            {
+                foreach (var line in lines)
+                {
+                    var text = document.GetText(line);
+                    var trimmed = text.TrimStart();
+                    if (trimmed.Length == 0)
+                        continue;
+
+                    var indent = text.Length - trimmed.Length;
+
+                    if (allCommented)
+                    {
+                        var after = trimmed.StartsWith("// ", StringComparison.Ordinal) ? 3 : 2;
+                        document.Remove(line.Offset + indent, after);
+                    }
+                    else
+                    {
+                        document.Insert(line.Offset + indent, "// ");
+                    }
+                }
             }
         }
 
@@ -171,6 +258,50 @@ namespace SWLOR.Toolset.Editors.Views
             _completionWindow.Show();
         }
 
+        /// <summary>
+        /// Rebuilds brace folds. Driven off the lexer's token stream rather than raw text so a brace
+        /// inside a string literal or a comment cannot open a phantom fold — legacy scripts contain
+        /// plenty of both.
+        /// </summary>
+        private void RefreshFolding()
+        {
+            if (_editor?.Document == null)
+                return;
+
+            _foldingManager ??= AvaloniaEdit.Folding.FoldingManager.Install(_editor.TextArea);
+
+            var text = _editor.Text;
+            var stack = new Stack<int>();
+            var foldings = new List<AvaloniaEdit.Folding.NewFolding>();
+
+            foreach (var token in Domain.Script.Syntax.ScriptLexer.Tokenize(text))
+            {
+                if (token.Kind == Domain.Script.Syntax.ScriptTokenKind.BlockComment && token.Length > 60)
+                {
+                    foldings.Add(new AvaloniaEdit.Folding.NewFolding(token.Start, token.End) { Name = "/* ... */" });
+                    continue;
+                }
+
+                if (token.Kind != Domain.Script.Syntax.ScriptTokenKind.Operator)
+                    continue;
+
+                var c = text[token.Start];
+                if (c == '{')
+                    stack.Push(token.Start);
+                else if (c == '}' && stack.Count > 0)
+                {
+                    var start = stack.Pop();
+                    if (token.End - start > 40)
+                        foldings.Add(new AvaloniaEdit.Folding.NewFolding(start, token.End));
+                }
+            }
+
+            foldings.Sort((a, b) => a.StartOffset.CompareTo(b.StartOffset));
+            _foldingManager.UpdateFoldings(foldings, -1);
+        }
+
+        private AvaloniaEdit.Folding.FoldingManager? _foldingManager;
+
         private void OnDiagnosticsChanged(IReadOnlyList<Domain.Script.Syntax.ScriptAnalysisDiagnostic> diagnostics)
         {
             // Analysis runs on a background thread; the renderer touches visual state.
@@ -178,7 +309,32 @@ namespace SWLOR.Toolset.Editors.Views
             {
                 _squiggles.SetDiagnostics(diagnostics);
                 _editor?.TextArea.TextView.InvalidateLayer(AvaloniaEdit.Rendering.KnownLayer.Selection);
+                RefreshFolding();
             });
+        }
+
+        private void GoToOffset(int offset)
+        {
+            if (_editor?.Document == null || offset < 0)
+                return;
+
+            _editor.TextArea.Caret.Offset = Math.Clamp(offset, 0, _editor.Document.TextLength);
+            _editor.TextArea.Caret.BringCaretToView();
+            _editor.Focus();
+        }
+
+        /// <summary>
+        /// Replaces the whole buffer as one undoable edit, so a rename is a single Ctrl+Z rather than
+        /// one per occurrence. The caret is restored because Replace collapses it to the start.
+        /// </summary>
+        private void ReplaceAllAsOneEdit(string text)
+        {
+            if (_editor?.Document == null)
+                return;
+
+            var caret = _editor.TextArea.Caret.Offset;
+            _editor.Document.Replace(0, _editor.Document.TextLength, text);
+            _editor.TextArea.Caret.Offset = Math.Clamp(caret, 0, _editor.Document.TextLength);
         }
 
         /// <summary>Moves the caret to a 1-based line, for click-to-navigate from Problems.</summary>

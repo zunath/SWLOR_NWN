@@ -4,20 +4,53 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:edit="using:AvaloniaEdit"
              xmlns:editors="using:SWLOR.Toolset.Editors"
+             xmlns:script="using:SWLOR.Toolset.Domain.Script"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
              x:Class="SWLOR.Toolset.Editors.Views.ScriptEditorView"
              x:DataType="editors:ScriptEditorViewModel">
 
-  <!-- The buffer is not bound. AvaloniaEdit owns the text, its own undo stack and the caret, so a
-       two-way binding would fight it: re-setting Text on every keystroke resets the caret to 0.
-       The code-behind seeds the document once and pushes changes out to the view model instead. -->
-  <edit:TextEditor Name="Editor"
-                   FontFamily="{DynamicResource MonoFont}"
-                   FontSize="13"
-                   Background="{DynamicResource ShellBackgroundBrush}"
-                   Foreground="{DynamicResource InkBrush}"
-                   ShowLineNumbers="True"
-                   WordWrap="False"
-                   HorizontalScrollBarVisibility="Auto"
-                   VerticalScrollBarVisibility="Auto" />
+  <Grid RowDefinitions="*,Auto,Auto">
+    <!-- The buffer is not bound. AvaloniaEdit owns the text, its own undo stack and the caret, so a
+         two-way binding would fight it: re-setting Text on every keystroke resets the caret to 0.
+         The code-behind seeds the document once and pushes changes out to the view model instead. -->
+    <edit:TextEditor Grid.Row="0" Name="Editor"
+                     FontFamily="{DynamicResource MonoFont}"
+                     FontSize="13"
+                     Background="{DynamicResource ShellBackgroundBrush}"
+                     Foreground="{DynamicResource InkBrush}"
+                     ShowLineNumbers="True"
+                     WordWrap="False"
+                     HorizontalScrollBarVisibility="Auto"
+                     VerticalScrollBarVisibility="Auto" />
+
+    <!-- Outline sits under the code rather than in a side rail: the shipped layout has no room for a
+         fourth column, and NWScript files are short and function-dense, so a horizontal strip costs
+         less width than a column would. -->
+    <Border Grid.Row="1" Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,1" Padding="14,6">
+      <TextBlock Classes="title" Text="OUTLINE" />
+    </Border>
+
+    <ScrollViewer Grid.Row="2" MaxHeight="110" VerticalScrollBarVisibility="Auto"
+                  Background="{DynamicResource PanelBrush}">
+      <ItemsControl ItemsSource="{Binding OutlineFunctions}" Margin="0,3">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="script:ScriptFunctionDeclaration">
+            <Button Background="Transparent" BorderThickness="0" Padding="14,2"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                    Command="{Binding $parent[ItemsControl].((editors:ScriptEditorViewModel)DataContext).GoToOutlineEntryCommand}"
+                    CommandParameter="{Binding}">
+              <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                <TextBlock Grid.Column="0" Text="&#402;" VerticalAlignment="Center"
+                           Foreground="{DynamicResource GoldBrush}" />
+                <TextBlock Grid.Column="1" Classes="name" Text="{Binding Display}"
+                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                <TextBlock Grid.Column="2" Classes="count" Text="{Binding Line}" VerticalAlignment="Center" />
+              </Grid>
+            </Button>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+  </Grid>
 </UserControl>

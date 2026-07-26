@@ -42,6 +42,9 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Where script diagnostics land; null in a shell without the panel.</summary>
         private readonly Shell.Panels.ProblemsViewModel? _problems;
 
+        /// <summary>Rebuilds a script's .ncs on save; null when no compiler is vendored.</summary>
+        private readonly Services.ScriptCompileService? _compileService;
+
         /// <summary>
         /// Built once, in the background, on first use. Scanning every blueprint and area for script
         /// slots is expensive, and the picker is the only thing that needs it — so it must not be
@@ -73,7 +76,8 @@ namespace SWLOR.Toolset.Editors
             WaypointAppearanceService? waypointAppearances = null,
             Workspace.BlueprintPreviewRenderer? previewRenderer = null,
             Workspace.ScriptLanguageService? scriptLanguage = null,
-            Shell.Panels.ProblemsViewModel? problems = null)
+            Shell.Panels.ProblemsViewModel? problems = null,
+            Services.ScriptCompileService? compileService = null)
         {
             _workspaceContext = workspaceContext;
             _lookups = lookups;
@@ -92,6 +96,7 @@ namespace SWLOR.Toolset.Editors
             _previewRenderer = previewRenderer;
             _scriptLanguage = scriptLanguage;
             _problems = problems;
+            _compileService = compileService;
             _scriptUsageIndex = new Lazy<Task<Domain.Script.ScriptUsageIndex?>>(() => Task.Run(() =>
             {
                 var workspace = _workspaceContext.Workspace;
@@ -108,6 +113,21 @@ namespace SWLOR.Toolset.Editors
                     return null;
                 }
             }));
+        }
+
+        /// <summary>
+        /// Focuses the script named by a Problems row and puts the caret on the reported line.
+        /// </summary>
+        public void NavigateToScriptLine(string resRef, int line)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return;
+
+            TryOpenEditor(ResourceType.Nss, resRef);
+
+            if (_openScriptEditors.TryGetValue(workspace.GetResourcePath(ResourceType.Nss, resRef), out var editor))
+                Avalonia.Threading.Dispatcher.UIThread.Post(() => editor.GoToLineRequested?.Invoke(line));
         }
 
         /// <summary>Backs the script slots on one editor, describing its owner for the picker title.</summary>
@@ -141,8 +161,24 @@ namespace SWLOR.Toolset.Editors
                     Avalonia.Threading.Dispatcher.UIThread.Post(() => _problems?.Clear(resRef));
                 };
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                editor.CompileOnSave = _compileService != null && _compileService.IsAvailable
+                    ? name => _compileService.CompileAsync(name)
+                    : null;
                 editor.DiagnosticsChanged += diagnostics =>
                     Avalonia.Threading.Dispatcher.UIThread.Post(() => _problems?.SetDiagnostics(resRef, diagnostics));
+
+                // Go-to-definition across an include opens that script and lands on the symbol.
+                editor.OpenIncludeRequested += (includeResRef, offset) =>
+                {
+                    OpenScriptEditor(workspace, includeResRef);
+                    if (_openScriptEditors.TryGetValue(
+                            workspace.GetResourcePath(ResourceType.Nss, includeResRef), out var opened))
+                    {
+                        // Posted so the tab's view has attached and wired GoToOffsetRequested first.
+                        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                            opened.GoToOffsetRequested?.Invoke(offset));
+                    }
+                };
                 _openScriptEditors[filePath] = editor;
                 _factory.OpenDocument(editor);
             }

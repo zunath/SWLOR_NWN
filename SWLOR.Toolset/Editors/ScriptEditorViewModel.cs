@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Script;
@@ -69,6 +70,12 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Inserts text at the caret. Set by the view; used by the Script Reference panel.</summary>
         public Action<string>? InsertAtCursorRequested { get; set; }
+
+        /// <summary>
+        /// Rebuilds this script's .ncs after a successful save. Set by EditorService; null when no
+        /// compiler is vendored, in which case saving still works and simply changes nothing in game.
+        /// </summary>
+        public Func<string, Task>? CompileOnSave { get; set; }
 
         /// <summary>
         /// The ranked completion list for a caret position, plus the offset the partial word starts
@@ -191,8 +198,123 @@ namespace SWLOR.Toolset.Editors
             if (_analyzer == null)
                 return;
 
-            Diagnostics = _analyzer.Analyze(_text).Diagnostics;
+            var analysis = _analyzer.Analyze(_text);
+            Diagnostics = analysis.Diagnostics;
             DiagnosticsChanged?.Invoke(Diagnostics);
+            RefreshOutline(analysis.Outline);
+        }
+
+        // ----- navigation -----
+
+        /// <summary>Functions declared in this file, for the outline strip.</summary>
+        public ObservableCollection<ScriptFunctionDeclaration> OutlineFunctions { get; } = new();
+
+        private void RefreshOutline(ScriptOutline outline)
+        {
+            OutlineFunctions.Clear();
+            foreach (var fn in outline.Functions.Where(f => f.IsDefinition))
+                OutlineFunctions.Add(fn);
+        }
+
+        /// <summary>Moves the caret to an offset. Set by the view.</summary>
+        public Action<int>? GoToOffsetRequested { get; set; }
+
+        /// <summary>Moves the caret to a 1-based line. Set by the view.</summary>
+        public Action<int>? GoToLineRequested { get; set; }
+
+        /// <summary>Replaces the whole buffer as one undoable edit. Set by the view.</summary>
+        public Action<string>? ReplaceAllRequested { get; set; }
+
+        [RelayCommand]
+        private void GoToOutlineEntry(ScriptFunctionDeclaration? entry)
+        {
+            if (entry != null)
+                GoToOffsetRequested?.Invoke(entry.Offset);
+        }
+
+        /// <summary>
+        /// Go-to-definition (F12). Resolves in this file first, then its direct includes, then the
+        /// engine header — where there is nothing to open, so it reports the signature instead.
+        /// </summary>
+        public void GoToDefinition(int caretOffset)
+        {
+            if (_language == null)
+                return;
+
+            var definition = ScriptNavigation.FindDefinition(
+                _text, caretOffset, _language.Engine, _language.ReadScriptSource);
+
+            if (definition == null)
+            {
+                _log.AppendLine("No definition found for the symbol under the caret.");
+                return;
+            }
+
+            if (definition.IsEngineSymbol)
+            {
+                var fn = _language.Engine.FindFunction(definition.Name);
+                _log.AppendLine(fn != null
+                    ? $"{definition.Name} is an engine function: {fn.Signature}"
+                    : $"{definition.Name} is an engine constant.");
+                return;
+            }
+
+            if (definition.ResRef == null)
+            {
+                GoToOffsetRequested?.Invoke(definition.Offset);
+                return;
+            }
+
+            OpenIncludeRequested?.Invoke(definition.ResRef, definition.Offset);
+        }
+
+        /// <summary>Asks the shell to open another script and place the caret. Set by EditorService.</summary>
+        public Action<string, int>? OpenIncludeRequested { get; set; }
+
+        /// <summary>Lists every occurrence of the identifier under the caret in the Output panel.</summary>
+        public void FindReferences(int caretOffset)
+        {
+            var name = ScriptNavigation.IdentifierAt(_text, caretOffset);
+            if (name == null)
+                return;
+
+            var references = ScriptNavigation.FindReferences(_text, name);
+            _log.AppendLine($"{references.Count} reference(s) to '{name}' in {_resRef}.nss:");
+            foreach (var reference in references)
+                _log.AppendLine($"  {_resRef}.nss({reference.Line})");
+        }
+
+        /// <summary>
+        /// Renames the identifier under the caret throughout this file. Comments and string literals
+        /// are untouched, which is what makes this safe on legacy scripts that use the same word as a
+        /// local variable and as a string key.
+        /// </summary>
+        public async Task RenameAsync(int caretOffset)
+        {
+            var name = ScriptNavigation.IdentifierAt(_text, caretOffset);
+            if (name == null)
+            {
+                _log.AppendLine("Place the caret on an identifier to rename it.");
+                return;
+            }
+
+            var replacement = await _prompts.PromptForTextAsync(
+                "Rename symbol", $"New name for '{name}'.", name, "Rename").ConfigureAwait(true);
+
+            if (string.IsNullOrWhiteSpace(replacement) || replacement == name)
+                return;
+
+            if (!ScriptNavigation.IsValidIdentifier(replacement))
+            {
+                _log.AppendLine($"'{replacement}' is not a valid NWScript identifier.");
+                return;
+            }
+
+            var renamed = ScriptNavigation.Rename(_text, name, replacement);
+            var count = ScriptNavigation.FindReferences(_text, name).Count;
+
+            ReplaceAllRequested?.Invoke(renamed);
+            _log.AppendLine($"Renamed {count} occurrence(s) of '{name}' to '{replacement}'.");
         }
 
         /// <summary>Called by the view when the caret moves.</summary>
@@ -238,6 +360,13 @@ namespace SWLOR.Toolset.Editors
                 _session.MarkSaved(_text);
                 AfterHistoryChange();
                 _log.AppendLine($"Saved {_session.FilePath}.");
+
+                // Compile-on-save, per the locked decision. Fire-and-forget so the save returns
+                // immediately: NWN runs the .ncs, not the .nss, so a save that did not rebuild
+                // bytecode would look effective and change nothing in game.
+                if (CompileOnSave != null)
+                    _ = CompileOnSave(_resRef);
+
                 return true;
             }
             catch (Exception ex)

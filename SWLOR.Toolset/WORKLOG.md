@@ -1116,3 +1116,60 @@ The language core and the editor intelligence built on it. Everything analytical
 - **WPS3.1-3.3** — Script Reference panel, script-slot pickers, reverse references.
 - **WPS4.2** — compile-on-save, Build All Scripts, the stale-`.ncs` validation rule. The Domain half
   (the compiler wrapper) is done; the menu/toolbar commands and staleness rule are not.
+
+## WPS1.2 / 1.4 / 1.5 / 2.4 / 2.5 / 3.1 / 3.2 / 3.3 / 4.2 — done — 2026-07-26 — PHASE S COMPLETE
+
+The analysis layer, the navigation UI, the Aurora-parity browser, and compilation wired to the shell.
+
+- **WPS1.4 include graph** (`Script/ScriptIncludeGraph`) — both directions, cycle-tolerant with the
+  compiler's own depth cap (16). Cycles terminate rather than throw: NWScript guards with a depth cap
+  instead of forbidding them, and a graph that threw would be useless on the file being fixed.
+- **WPS1.2/1.5 analysis** (`Script/ScriptAnalyzer`) — bracket balance, unterminated literals,
+  duplicate definitions, too-many-arguments against the engine header. **Conservative by
+  construction**; the gate is zero findings across all 87 known-good scripts. Deliberately *not*
+  implemented: unknown-identifier reporting. An identifier can come from any include and this pass
+  does not resolve include contents, so flagging them would light up every legacy file. Too-few
+  arguments is likewise silent — a short call is usually a half-typed one.
+  - **Bug the gate caught, not reasoning:** the lexer treated `\"` as a C-style escape. **NWScript has
+    no escape sequences at all** — `return "/\/\\";` in `dmfi_plychat_exe.nss` is ASCII art, and the
+    escape handling ran past its closing quote, swallowing the rest of the file as one string. Fixed,
+    and pinned by a test plus a corpus check that no string token spans a line.
+- **WPS2.4 squiggles + Problems** — `DiagnosticSquiggleRenderer` draws wavy underlines; a new
+  Problems tool joins Output and Validation in the bottom dock. Every row carries an
+  `editor`/`compiler` tag — the visible half of the two-tier rule; without it a disagreement between
+  the two reads as a compiler bug. Analysis is debounced 250 ms: squiggles that appear mid-word while
+  the author is still typing the name are worse than squiggles a moment later.
+- **WPS2.5 navigation** — outline strip under the code (no room for a fourth column, and NWScript
+  files are short and function-dense), F12 go-to-definition following includes, Shift+F12 references,
+  F2 rename, Ctrl+/ comment toggle, and brace/comment folding. **Folding and rename both run off the
+  token stream, not raw text**: a brace inside a string cannot open a phantom fold, and rename cannot
+  corrupt `GetLocalInt(oPC, "nCount")` — legacy scripts are full of names that are both a local and a
+  string key. Rename applies as one document replace so it is a single Ctrl+Z.
+- **WPS3.1 Script Reference** — categorised browser tabbed beside the Palette in `PaletteDock`,
+  auto-activated when a script tab takes focus via the existing `ActiveDocumentChanged` hook. Search
+  filters *within* categories rather than flattening, keeping Aurora's mental model. Insert at cursor
+  writes a call skeleton with required parameters, not a bare name.
+- **WPS3.2 slot picker** — redeems `EditorKind.ScriptSlot`'s "picker in a later package". Every script
+  field gains `...` and `Open`, and **warns when the slot names a script that does not exist** — live
+  and otherwise invisible across the 2,250 module resources that name one. Includes are labelled, not
+  hidden. A slot naming a sourceless `.ncs` is still valid: 154 committed artifacts have no `.nss`.
+- **WPS3.3 reverse references** (`Script/ScriptUsageIndex`) — which blueprints/areas name each script,
+  found by field-name convention (`Script*`/`On*` resref fields) rather than a hardcoded per-type
+  list that would silently miss new slots. Built once in the background on first picker use.
+- **WPS4.2 compile** — Compile Script (F7), Build All Scripts and Check Script Staleness join the
+  **Build** menu beside Pack Module; one Compile button in the quick-access bar's left group, which
+  that toolbar reserves for what changes the module. Compile-on-save per the locked decision, async
+  and non-blocking. Staleness reports to **Validation**, not Problems: the code is fine, the artifact
+  is not.
+- Tests (+34): `ScriptAnalyzerTests` (11), `ScriptIncludeGraphTests` (5), `ScriptStalenessScannerTests`
+  (6), `ScriptNavigationTests` (12 incl. the rename-ignores-strings case).
+- Verified: build clean; **full suite 1031/1032 green** (1 pre-existing skip), 3m06s; launch-and-kill
+  smoke passed; `Module/` untouched throughout.
+
+### Phase S is complete. Deliberately not built
+- A full recursive-descent parser and type-checking binder. `ScriptOutline` token-scans for
+  declarations, which is enough for completion, outline, navigation and the checks above. A real
+  binder would enable unknown-identifier and type-mismatch diagnostics — the one thing tier 1 still
+  cannot do — and is the obvious next package if that is wanted.
+- Debugging/breakpoints, `.dlg` editing, and decompiling the 154 sourceless `.ncs`. All out of scope
+  by the plan's own Scope section.

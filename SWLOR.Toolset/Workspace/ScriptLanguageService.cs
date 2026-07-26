@@ -45,6 +45,31 @@ namespace SWLOR.Toolset.Workspace
 
         public bool IsEngineConstant(string name) => Engine.FindConstant(name) != null;
 
+        /// <summary>
+        /// Reads a module script's source, or null when it has none. Go-to-definition follows
+        /// includes through this; a missing include resolves to nothing rather than throwing,
+        /// because plenty of legacy scripts include headers that only exist in the base game.
+        /// </summary>
+        public string? ReadScriptSource(string resRef)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return null;
+
+            var path = workspace.GetResourcePath(ResourceType.Nss, resRef);
+            if (!File.Exists(path))
+                return null;
+
+            try
+            {
+                return Domain.Script.ScriptTextDocument.Load(path).Text;
+            }
+            catch (IOException)
+            {
+                return null;
+            }
+        }
+
         private IReadOnlyList<string> ModuleScriptResRefs()
         {
             var workspace = _workspaceContext.Workspace;

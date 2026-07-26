@@ -70,6 +70,7 @@ namespace SWLOR.Toolset.Shell
         private readonly PackService _packService;
         private readonly ScriptCompileService? _compileService;
         private readonly ScriptReferenceViewModel? _scriptReference;
+        private readonly ProblemsViewModel? _problems;
 
         public ShellViewModel(
             ToolsetSettings settings,
@@ -88,11 +89,13 @@ namespace SWLOR.Toolset.Shell
             ThumbnailService thumbnails,
             ScriptCompileService? compileService = null,
             ScriptReferenceViewModel? scriptReference = null,
+            ProblemsViewModel? problems = null,
             StartupNotice? startupNotice = null)
         {
             _startupNotice = startupNotice;
             _compileService = compileService;
             _scriptReference = scriptReference;
+            _problems = problems;
             _thumbnails = thumbnails ?? throw new ArgumentNullException(nameof(thumbnails));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
@@ -119,6 +122,11 @@ namespace SWLOR.Toolset.Shell
 
             factory.ActiveDocumentChanged += SetActiveEditor;
             factory.ProportionsChanged += QueueLayoutSave;
+
+            // Clicking a Problems row focuses that script on that line.
+            if (_problems != null)
+                _problems.NavigateRequested += row =>
+                    _editorService.NavigateToScriptLine(row.ResRef, row.Diagnostic.Line);
 
             Layout = factory.CreateLayout();
             if (Layout != null)

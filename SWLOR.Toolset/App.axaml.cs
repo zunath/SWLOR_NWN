@@ -96,7 +96,8 @@ namespace SWLOR.Toolset
                 sp.GetService<WaypointAppearanceService>(),
                 sp.GetRequiredService<Workspace.BlueprintPreviewRenderer>(),
                 sp.GetRequiredService<Workspace.ScriptLanguageService>(),
-                sp.GetRequiredService<ProblemsViewModel>()));
+                sp.GetRequiredService<ProblemsViewModel>(),
+                sp.GetRequiredService<Services.ScriptCompileService>()));
 
             // One parsed engine header shared by every script tab, built lazily on first use: the
             // header is 13,870 lines, so parsing it per tab would be wasteful and parsing it at

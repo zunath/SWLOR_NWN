@@ -100,6 +100,37 @@ namespace SWLOR.Toolset.Tests
             vm.CanInsert.Should().BeFalse("there is nowhere to insert into");
         }
 
+        [Test]
+        public void SearchExpansionDoesNotChangeManualExpansionState()
+        {
+            var category = new ReferenceNodeViewModel("Effects", 42);
+            category.IsExpanded.Should().BeFalse();
+
+            category.IsAutoExpanded = true;
+            category.IsEffectivelyExpanded.Should().BeTrue();
+            category.IsExpanded.Should().BeFalse();
+
+            category.IsAutoExpanded = false;
+            category.IsEffectivelyExpanded.Should().BeFalse();
+            category.IsExpanded.Should().BeFalse(
+                "clearing a search must restore the category's prior collapsed state");
+        }
+
+        [Test]
+        public void ClearingSearchPreservesAManuallyExpandedCategory()
+        {
+            var category = new ReferenceNodeViewModel("Effects", 42)
+            {
+                IsExpanded = true,
+                IsAutoExpanded = true
+            };
+
+            category.IsAutoExpanded = false;
+
+            category.IsEffectivelyExpanded.Should().BeTrue();
+            category.IsExpanded.Should().BeTrue();
+        }
+
         /// <summary>Records opened URLs instead of launching a browser.</summary>
         private sealed class RecordingLinks : IExternalLinkService
         {

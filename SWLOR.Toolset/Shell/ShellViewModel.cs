@@ -314,6 +314,12 @@ namespace SWLOR.Toolset.Shell
             if (_compileService == null)
                 return;
 
+            if (!await _editorService.SaveScriptsAsync(compileOnSave: false).ConfigureAwait(true))
+            {
+                StatusText = "Build cancelled: an open script could not be saved.";
+                return;
+            }
+
             StatusText = "Building all scripts...";
             _factory.Focus(_output);
 

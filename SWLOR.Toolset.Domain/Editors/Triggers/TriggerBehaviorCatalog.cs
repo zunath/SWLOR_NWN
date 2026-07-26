@@ -354,6 +354,16 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                         },
                         new TriggerFieldDefinition
                         {
+                            Label = "OnDisarm", Name = "OnDisarm", Kind = TriggerFieldKind.Script,
+                            FieldType = GffFieldType.ResRef
+                        },
+                        new TriggerFieldDefinition
+                        {
+                            Label = "OnTrapTriggered", Name = "OnTrapTriggered", Kind = TriggerFieldKind.Script,
+                            FieldType = GffFieldType.ResRef
+                        },
+                        new TriggerFieldDefinition
+                        {
                             Label = "OnEnter", Name = "ScriptOnEnter", Kind = TriggerFieldKind.Script,
                             FieldType = GffFieldType.ResRef
                         },

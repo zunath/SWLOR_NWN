@@ -35,7 +35,25 @@ namespace SWLOR.Toolset.Editors
 
         public ObservableCollection<EditorGroup> Groups { get; } = new();
 
+        /// <summary>
+        /// The editor's tabs. A schema that names no tab produces one page holding every group,
+        /// which is what every type but the placeable does; the view hides the strip in that case.
+        /// </summary>
+        public ObservableCollection<EditorTabViewModel> Tabs { get; } = new();
+
+        /// <summary>
+        /// False for a schema that declares no tabs, where a tab strip over a single page would be
+        /// chrome around nothing.
+        /// </summary>
+        public bool HasMultipleTabs => Tabs.Count > 1;
+
+        /// <summary>The only tab's content, for the single-page case.</summary>
+        public object? SingleTabContent => Tabs.Count > 0 ? Tabs[0].Content : null;
+
         public VarTableSectionViewModel? VarTableSection { get; private set; }
+
+        /// <summary>The placeable's Appearance and Behavior tabs, or null for every other type.</summary>
+        public Placeables.PlaceableEditorSections? PlaceableSections { get; }
 
         public bool IsDirty => _session.UndoStack.IsDirty;
 
@@ -57,7 +75,8 @@ namespace SWLOR.Toolset.Editors
             OutputLogService log,
             IEditorPromptService prompts,
             Func<uint, string?>? resolveStrRef = null,
-            IScriptSlotHost? scriptSlotHost = null)
+            IScriptSlotHost? scriptSlotHost = null,
+            Func<EditorFieldContext, Func<string, Action, bool>, Placeables.PlaceableEditorSections?>? placeableSections = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _log = log;
@@ -69,12 +88,15 @@ namespace SWLOR.Toolset.Editors
             _session = DocumentSession.Open(filePath);
             _context = new EditorFieldContext(_session.Document, RunEdit, resolveStrRef);
 
+            var tabbedGroups = new List<(string Tab, EditorGroup Group)>();
             foreach (var group in schema.Groups)
             {
                 var fields = group.Fields
                     .Select(descriptor => FieldViewModelFactory.Create(descriptor, _context, lookups, scriptSlotHost))
                     .ToList();
-                Groups.Add(new EditorGroup(group.Title, fields));
+                var editorGroup = new EditorGroup(group.Title, fields);
+                Groups.Add(editorGroup);
+                tabbedGroups.Add((group.Tab, editorGroup));
             }
 
             if (schema.HasVarTable)
@@ -83,7 +105,114 @@ namespace SWLOR.Toolset.Editors
                     _context.RunEdit, new VarTable(_session.Document.Root), gameCodeIndex);
             }
 
+            PlaceableSections = placeableSections?.Invoke(_context, RunEdit);
+            if (PlaceableSections != null)
+            {
+                PlaceableSections.Appearance.AppearanceChanged += AfterHistoryChange;
+                PlaceableSections.Behavior.BehaviorChanged += OnBehaviorChanged;
+            }
+
+            BuildTabs(tabbedGroups);
             UpdateTitle();
+        }
+
+        /// <summary>
+        /// Lays the tabs out: schema tabs in declared order, then the placeable's own two, then
+        /// Variables - which is present only when it has something to hold.
+        /// </summary>
+        private void BuildTabs(IReadOnlyList<(string Tab, EditorGroup Group)> tabbedGroups)
+        {
+            Tabs.Clear();
+
+            foreach (var tabTitle in tabbedGroups.Select(entry => entry.Tab).Distinct())
+            {
+                var groups = tabbedGroups
+                    .Where(entry => entry.Tab == tabTitle)
+                    .Select(entry => entry.Group);
+
+                var title = string.IsNullOrEmpty(tabTitle) ? "Properties" : tabTitle;
+                Tabs.Add(new EditorTabViewModel(title, new FieldGroupsViewModel(groups)));
+            }
+
+            if (PlaceableSections != null)
+            {
+                // Appearance and Behavior belong beside Basic rather than after Advanced: they are
+                // the two things a placeable is, and Advanced is the escape hatch.
+                Tabs.Insert(Math.Min(1, Tabs.Count),
+                    new EditorTabViewModel("Behavior", PlaceableSections.Behavior));
+                Tabs.Insert(Math.Min(1, Tabs.Count),
+                    new EditorTabViewModel("Appearance", PlaceableSections.Appearance));
+            }
+
+            if (VarTableSection != null && ShouldShowVariablesTab())
+                Tabs.Add(new EditorTabViewModel("Variables", VarTableSection));
+
+            NotifyTabsChanged();
+        }
+
+        private void NotifyTabsChanged()
+        {
+            OnPropertyChanged(nameof(HasMultipleTabs));
+            OnPropertyChanged(nameof(SingleTabContent));
+        }
+
+        /// <summary>
+        /// Whether the raw variable grid gets a tab. For a placeable that is the Custom behavior, or
+        /// any behavior sitting on variables it does not own - hiding stored data would be worse
+        /// than an extra tab. Every other blueprint type keeps the grid it has always had.
+        /// </summary>
+        private bool ShouldShowVariablesTab()
+        {
+            if (PlaceableSections == null)
+                return true;
+
+            if (PlaceableSections.Behavior.AllowsRawEditing)
+                return true;
+
+            return Domain.Placeables.PlaceableBehaviorDetector
+                .UnmanagedVariables(_session.Document.Root, PlaceableSections.Behavior.Current)
+                .Count > 0;
+        }
+
+        /// <summary>
+        /// A behavior switch can add or remove the Variables tab and rewrites script slots, so the
+        /// tab strip and the Advanced fields both have to catch up.
+        /// </summary>
+        private void OnBehaviorChanged()
+        {
+            RefreshAllFields();
+            RebuildVariablesTab();
+            AfterHistoryChange();
+        }
+
+        private void RebuildVariablesTab()
+        {
+            var existing = Tabs.FirstOrDefault(tab => ReferenceEquals(tab.Content, VarTableSection));
+            var wanted = VarTableSection != null && ShouldShowVariablesTab();
+
+            if (wanted && existing == null)
+                Tabs.Add(new EditorTabViewModel("Variables", VarTableSection!));
+            else if (!wanted && existing != null)
+                Tabs.Remove(existing);
+            else
+                return;
+
+            NotifyTabsChanged();
+        }
+
+        private FieldViewModel CreateFieldViewModel(FieldDescriptor descriptor, LookupOptionProvider lookups)
+        {
+            return descriptor.Kind switch
+            {
+                EditorKind.Integer => new IntegerFieldViewModel(descriptor, _context),
+                EditorKind.Float => new FloatFieldViewModel(descriptor, _context),
+                EditorKind.Check => new CheckFieldViewModel(descriptor, _context),
+                EditorKind.LocString => new LocStringFieldViewModel(descriptor, _context),
+                EditorKind.TwoDaDropdown => new DropdownFieldViewModel(
+                    descriptor, _context, lookups.GetOptions(descriptor.LookupKey)),
+                EditorKind.ScriptSlot => new ScriptFieldViewModel(descriptor, _context),
+                _ => new TextFieldViewModel(descriptor, _context)
+            };
         }
 
         private bool RunEdit(string description, Action mutation)
@@ -236,6 +365,15 @@ namespace SWLOR.Toolset.Editors
                 field.RefreshFromDocument();
 
             VarTableSection?.RefreshFromDocument();
+
+            if (PlaceableSections == null)
+                return;
+
+            // Undo can move a placeable back across a behavior switch, so the behavior section
+            // re-detects rather than trusting what it last showed.
+            PlaceableSections.Behavior.RefreshFromDocument();
+            PlaceableSections.Appearance.RefreshFromDocument();
+            RebuildVariablesTab();
         }
 
         private void AfterHistoryChange()

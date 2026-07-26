@@ -28,6 +28,28 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         /// <summary>Spawn table IDs declared via <c>SpawnTableBuilder.Create(id, ...)</c> calls.</summary>
         IReadOnlyCollection<string> SpawnTableIds { get; }
 
+        /// <summary>
+        /// Loot table IDs declared via <c>LootTableBuilder.Create(id)</c> calls in
+        /// <c>Feature/LootTableDefinition</c>. These back the loot-table pickers on gathering
+        /// behaviors; a name that is not here reaches the player as a "this site is broken" message.
+        /// </summary>
+        IReadOnlyCollection<string> LootTableIds { get; }
+
+        /// <summary>Conversation class names a <c>CONVERSATION</c> local can name.</summary>
+        IReadOnlyCollection<string> DialogNames { get; }
+
+        /// <summary>Crafting skill enum value to display name, read from <c>SkillType</c>.</summary>
+        IReadOnlyDictionary<int, string> SkillTypes { get; }
+
+        /// <summary>Visual effect id to enum name, read from <c>VisualEffect</c>.</summary>
+        IReadOnlyDictionary<int, string> VisualEffects { get; }
+
+        /// <summary>True if <paramref name="lootTableId"/> matches a declared loot table.</summary>
+        bool IsValidLootTableId(string lootTableId);
+
+        /// <summary>True if <paramref name="dialogName"/> matches a real conversation class.</summary>
+        bool IsValidDialogName(string dialogName);
+
         /// <summary>True if <paramref name="npcGroupValue"/> is a known <c>NPCGroupType</c> value.</summary>
         bool IsValidNpcGroup(int npcGroupValue);
 

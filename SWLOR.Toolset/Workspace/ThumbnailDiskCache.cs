@@ -117,7 +117,8 @@ namespace SWLOR.Toolset.Workspace
             string resRef,
             string? blueprintPath,
             bool useIndexedBlueprint,
-            out Bitmap? bitmap)
+            out Bitmap? bitmap,
+            IReadOnlyList<string>? dependencyPaths = null)
         {
             bitmap = null;
             if (_root == null)
@@ -128,7 +129,8 @@ namespace SWLOR.Toolset.Workspace
 
             try
             {
-                var blueprintWrittenAt = FreshnessThreshold(blueprintPath, _contentVersionUtc);
+                var blueprintWrittenAt = FreshnessThreshold(
+                    blueprintPath, _contentVersionUtc, dependencyPaths);
 
                 if (File.Exists(markerPath))
                 {
@@ -157,14 +159,16 @@ namespace SWLOR.Toolset.Workspace
             ResourceType type,
             string resRef,
             string? blueprintPath,
-            bool useIndexedBlueprint)
+            bool useIndexedBlueprint,
+            IReadOnlyList<string>? dependencyPaths = null)
         {
             if (_root == null)
                 return false;
 
             try
             {
-                var threshold = FreshnessThreshold(blueprintPath, _contentVersionUtc);
+                var threshold = FreshnessThreshold(
+                    blueprintPath, _contentVersionUtc, dependencyPaths);
                 foreach (var extension in new[] { ".png", MissingArtworkExtension })
                 {
                     var path = PathFor(type, resRef, useIndexedBlueprint, extension);
@@ -313,14 +317,32 @@ namespace SWLOR.Toolset.Workspace
         /// The timestamp a cache entry must beat to count as current. The indexed-content version
         /// remains authoritative when a standard/HAK blueprint has no loose module path.
         /// </summary>
-        private static DateTime FreshnessThreshold(string? blueprintPath, DateTime contentVersionUtc)
+        private static DateTime FreshnessThreshold(
+            string? blueprintPath,
+            DateTime contentVersionUtc,
+            IReadOnlyList<string>? dependencyPaths)
         {
-            if (blueprintPath == null || !File.Exists(blueprintPath))
-                return contentVersionUtc;
+            var threshold = blueprintPath == null || !File.Exists(blueprintPath)
+                ? contentVersionUtc
+                : Max(contentVersionUtc, File.GetLastWriteTimeUtc(blueprintPath));
 
-            var blueprintVersionUtc = File.GetLastWriteTimeUtc(blueprintPath);
-            return blueprintVersionUtc >= contentVersionUtc ? blueprintVersionUtc : contentVersionUtc;
+            if (dependencyPaths == null)
+                return threshold;
+
+            foreach (var dependencyPath in dependencyPaths)
+            {
+                // The UTC still names this dependency. If it has disappeared, no cache entry can
+                // prove it was rendered after the deletion, so force a miss.
+                if (!File.Exists(dependencyPath))
+                    return DateTime.MaxValue;
+
+                threshold = Max(threshold, File.GetLastWriteTimeUtc(dependencyPath));
+            }
+
+            return threshold;
         }
+
+        private static DateTime Max(DateTime left, DateTime right) => left >= right ? left : right;
 
         private static void Delete(string path)
         {

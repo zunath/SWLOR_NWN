@@ -17,6 +17,9 @@ namespace SWLOR.Toolset.Domain.Validation
 
         private static IEnumerable<PaletteNode> EnumerateLeaves(PaletteNode node)
         {
+            if (node.DeleteMe == true)
+                yield break;
+
             if (!string.IsNullOrEmpty(node.ResRef))
                 yield return node;
 

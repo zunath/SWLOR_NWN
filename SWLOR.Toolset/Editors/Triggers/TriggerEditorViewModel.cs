@@ -116,7 +116,7 @@ namespace SWLOR.Toolset.Editors.Triggers
 
             Behavior = behavior;
             RebuildBehaviorSection();
-            ReloadFromDocument();
+            ReloadRowsFromDocument();
         }
 
         /// <summary>
@@ -128,13 +128,18 @@ namespace SWLOR.Toolset.Editors.Triggers
         /// </summary>
         public void ReloadFromDocument()
         {
-            var stored = TriggerBehaviorCatalog.Classify(_store.Trigger);
-            if (stored.Id != Behavior.Id)
+            var classified = TriggerBehaviorCatalog.Classify(_store.Trigger);
+            if (classified.Id != Behavior.Id)
             {
-                Behavior = stored;
+                Behavior = classified;
                 RebuildBehaviorSection();
             }
 
+            ReloadRowsFromDocument();
+        }
+
+        private void ReloadRowsFromDocument()
+        {
             foreach (var row in BasicRows.Concat(BehaviorRows).Concat(AdvancedRows))
                 row.Reload();
 

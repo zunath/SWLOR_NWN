@@ -35,7 +35,7 @@ namespace SWLOR.Toolset.Domain.Render
             DoorTypeService? doorTypes = null,
             TileWalkmeshCache? walkmeshes = null,
             WaypointAppearanceService? waypointAppearances = null,
-            Func<string, RenderModel?>? resolveCreatureModel = null)
+            Func<JsonGffStruct, RenderModel?>? resolveCreatureModel = null)
         {
             ArgumentNullException.ThrowIfNull(are);
             ArgumentNullException.ThrowIfNull(git);
@@ -218,7 +218,7 @@ namespace SWLOR.Toolset.Domain.Render
             PlaceableAppearanceService? placeableAppearances,
             DoorTypeService? doorTypes,
             WaypointAppearanceService? waypointAppearances,
-            Func<string, RenderModel?>? resolveCreatureModel)
+            Func<JsonGffStruct, RenderModel?>? resolveCreatureModel)
         {
             var markers = new List<InstanceMarker>();
 
@@ -226,13 +226,7 @@ namespace SWLOR.Toolset.Domain.Render
             // and a dozen part models, which needs the composer that lives in the app layer. The caller
             // supplies it, and without one a creature falls back to its marker as before.
             AddMarkers(markers, git.Creatures, InstanceMarkerKind.Creature, ResourceType.Utc,
-                resolveModel: resolveCreatureModel == null
-                    ? null
-                    : instance =>
-                    {
-                        var resRef = InstanceFieldMap.GetTemplateResRef(ResourceType.Utc, instance);
-                        return string.IsNullOrWhiteSpace(resRef) ? null : resolveCreatureModel(resRef);
-                    });
+                resolveModel: resolveCreatureModel);
             AddMarkers(markers, git.Doors, InstanceMarkerKind.Door, ResourceType.Utd,
                 resolveModel: instance => ResolveDoorModel(instance, doorTypes, modelCache));
             AddMarkers(markers, git.Items, InstanceMarkerKind.Item, ResourceType.Uti);

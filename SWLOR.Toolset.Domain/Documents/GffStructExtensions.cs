@@ -47,12 +47,38 @@ namespace SWLOR.Toolset.Domain.Documents
                 Encoding.ASCII.GetBytes(value.ToString(CultureInfo.InvariantCulture))));
         }
 
+        public static void SetLong(this JsonGffStruct target, string name, GffFieldType type, long value)
+        {
+            JsonGffField.ValidateIntegerValue(type, value);
+            if (target.TryGet(name, out var field))
+            {
+                field.SetInteger(value);
+                return;
+            }
+
+            target.Add(name, JsonGffField.CreateScalar(type,
+                Encoding.ASCII.GetBytes(value.ToString(CultureInfo.InvariantCulture))));
+        }
+
         public static uint? GetUIntOrNull(this JsonGffStruct target, string name)
         {
             return target.TryGet(name, out var field) ? (uint)field.GetUnsignedInteger() : null;
         }
 
         public static void SetUInt(this JsonGffStruct target, string name, GffFieldType type, uint value)
+        {
+            JsonGffField.ValidateUnsignedIntegerValue(type, value);
+            if (target.TryGet(name, out var field))
+            {
+                field.SetUnsignedInteger(value);
+                return;
+            }
+
+            target.Add(name, JsonGffField.CreateScalar(type,
+                Encoding.ASCII.GetBytes(value.ToString(CultureInfo.InvariantCulture))));
+        }
+
+        public static void SetULong(this JsonGffStruct target, string name, GffFieldType type, ulong value)
         {
             JsonGffField.ValidateUnsignedIntegerValue(type, value);
             if (target.TryGet(name, out var field))

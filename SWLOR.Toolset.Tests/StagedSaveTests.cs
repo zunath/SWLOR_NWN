@@ -127,6 +127,21 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void WriteNewAtomicCreatesACompleteFileAndNeverOverwritesARacingDestination()
+        {
+            var path = Path.Combine(_directory, "new.utc.json");
+
+            SaveService.WriteNewAtomic(path, Encoding.UTF8.GetBytes("complete"));
+            var overwrite = () => SaveService.WriteNewAtomic(path, Encoding.UTF8.GetBytes("replacement"));
+
+            File.ReadAllText(path).Should().Be("complete");
+            overwrite.Should().Throw<IOException>();
+            File.ReadAllText(path).Should().Be("complete");
+            Directory.EnumerateFiles(_directory, "*.tmp").Should().BeEmpty(
+                "a lost creation race must clean up its fully staged temporary");
+        }
+
+        [Test]
         public void ACommittedWriteLeavesNoTemporaryBehind()
         {
             // Stray .tmp files beside module resources are their own problem - they sit in the folders

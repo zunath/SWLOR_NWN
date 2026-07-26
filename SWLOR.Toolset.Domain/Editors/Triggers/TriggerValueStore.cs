@@ -52,19 +52,34 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
 
         public long? GetInteger(TriggerFieldStorage storage, string name)
         {
-            return storage == TriggerFieldStorage.Local
-                ? _locals.GetInt(name)
-                : _trigger.GetIntOrNull(name);
+            if (storage == TriggerFieldStorage.Local)
+                return _locals.GetInt(name);
+
+            if (!_trigger.TryGet(name, out var field))
+                return null;
+
+            return field.Type is GffFieldType.Dword or GffFieldType.Dword64
+                ? checked((long)field.GetUnsignedInteger())
+                : field.GetInteger();
         }
 
         public void SetInteger(TriggerFieldStorage storage, string name, GffFieldType type, long value)
         {
             if (storage == TriggerFieldStorage.Local)
-                _locals.SetInt(name, (int)value);
-            else if (type == GffFieldType.Dword || type == GffFieldType.Dword64)
-                _trigger.SetUInt(name, type, (uint)value);
+            {
+                JsonGffField.ValidateIntegerValue(GffFieldType.Int, value);
+                _locals.SetInt(name, checked((int)value));
+            }
+            else if (type is GffFieldType.Dword or GffFieldType.Dword64)
+            {
+                JsonGffField.ValidateIntegerValue(type, value);
+                _trigger.SetULong(name, type, checked((ulong)value));
+            }
             else
-                _trigger.SetInt(name, type, (int)value);
+            {
+                JsonGffField.ValidateIntegerValue(type, value);
+                _trigger.SetLong(name, type, value);
+            }
         }
 
         public double? GetFloat(TriggerFieldStorage storage, string name)

@@ -104,7 +104,8 @@ namespace SWLOR.Toolset.Services
                 // where it was made rather than only in whichever dependent is rebuilt next.
                 var checkResult = await compiler.CompileAsync(source, checkOnly: true, cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
-                var checkDiagnostics = ToAnalysisDiagnostics(checkResult, ScriptTextDocument.Load(source).Text);
+                var checkDiagnostics = ToAnalysisDiagnostics(
+                    checkResult, ScriptTextDocument.Load(source).Text, resRef);
                 DiagnosticsProduced?.Invoke(resRef, checkDiagnostics);
                 return new CompileOutcome(true, checkDiagnostics);
             }
@@ -116,7 +117,8 @@ namespace SWLOR.Toolset.Services
             var result = await compiler.CompileAsync(source, output, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
 
-            var diagnostics = ToAnalysisDiagnostics(result, ScriptTextDocument.Load(source).Text);
+            var diagnostics = ToAnalysisDiagnostics(
+                result, ScriptTextDocument.Load(source).Text, resRef);
             DiagnosticsProduced?.Invoke(resRef, diagnostics);
 
             if (result.Succeeded)
@@ -151,7 +153,7 @@ namespace SWLOR.Toolset.Services
             var result = await compiler.CompileAsync(source, checkOnly: true, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
 
-            return ToAnalysisDiagnostics(result, ScriptTextDocument.Load(source).Text);
+            return ToAnalysisDiagnostics(result, ScriptTextDocument.Load(source).Text, resRef);
         }
 
         /// <summary>
@@ -166,18 +168,26 @@ namespace SWLOR.Toolset.Services
         /// visible and the position is meaningful.
         /// </remarks>
         public static IReadOnlyList<ScriptAnalysisDiagnostic> ToAnalysisDiagnostics(
-            ScriptCompileResult result, string source)
+            ScriptCompileResult result, string source, string sourceResRef)
         {
             var lineStarts = BuildLineIndex(source);
 
             return result.Diagnostics.Select(d =>
             {
-                var (start, length) = SpanForLine(source, lineStarts, d.Line);
+                var diagnosticResRef = string.IsNullOrWhiteSpace(d.File)
+                    ? sourceResRef
+                    : Path.GetFileNameWithoutExtension(d.File);
+                var belongsToSource = string.Equals(
+                    diagnosticResRef, sourceResRef, StringComparison.OrdinalIgnoreCase);
+                var (start, length) = belongsToSource
+                    ? SpanForLine(source, lineStarts, d.Line)
+                    : (0, 0);
                 return new ScriptAnalysisDiagnostic(
                     d.Message, start, length,
                     d.IsError ? ScriptDiagnosticSeverity.Error : ScriptDiagnosticSeverity.Warning,
                     ScriptDiagnosticSource.Compiler,
-                    d.Line);
+                    d.Line,
+                    belongsToSource ? null : diagnosticResRef);
             }).ToList();
         }
 

@@ -17,15 +17,22 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
     {
         private const string QuestDefinitionRelativePath = "Feature/QuestDefinition";
         private const string SpawnDefinitionRelativePath = "Feature/SpawnDefinition";
+        private const string LootTableDefinitionRelativePath = "Feature/LootTableDefinition";
 
         private readonly HashSet<string> _questIds;
         private readonly HashSet<string> _spawnTableIds;
+        private readonly HashSet<string> _lootTableIds;
+        private readonly HashSet<string> _dialogNames;
 
         public bool IsSourceScanAvailable { get; }
         public IReadOnlyDictionary<int, string> NpcGroups { get; }
         public IReadOnlyDictionary<int, string> KeyItems { get; }
         public IReadOnlyCollection<string> QuestIds => _questIds;
         public IReadOnlyCollection<string> SpawnTableIds => _spawnTableIds;
+        public IReadOnlyCollection<string> LootTableIds => _lootTableIds;
+        public IReadOnlyCollection<string> DialogNames => _dialogNames;
+        public IReadOnlyDictionary<int, string> SkillTypes { get; }
+        public IReadOnlyDictionary<int, string> VisualEffects { get; }
 
         /// <summary>
         /// Builds the index. <paramref name="gameServerSourceRoot"/> should point at the
@@ -40,6 +47,9 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         {
             NpcGroups = ReflectionEnumReader.ReadNpcGroups();
             KeyItems = ReflectionEnumReader.ReadKeyItems();
+            SkillTypes = ReflectionGameplayEnumReader.ReadSkillTypes();
+            VisualEffects = ReflectionGameplayEnumReader.ReadVisualEffects();
+            _dialogNames = new HashSet<string>(ReflectionDialogReader.ReadDialogNames(), StringComparer.Ordinal);
 
             var questDirectory = CombineIfUsable(gameServerSourceRoot, QuestDefinitionRelativePath);
             var spawnDirectory = CombineIfUsable(gameServerSourceRoot, SpawnDefinitionRelativePath);
@@ -53,6 +63,15 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
 
             _spawnTableIds = spawnDirectory != null
                 ? SourceIdScanner.ScanBuilderCreateIds(spawnDirectory, out spawnComplete)
+                : new HashSet<string>(StringComparer.Ordinal);
+
+            // Loot table ids are declared with exactly the same _builder.Create("ID") shape, so the
+            // existing scanner reads them unchanged. Their completeness is not folded into
+            // IsSourceScanAvailable: an incomplete loot scan degrades a picker to free text, which
+            // is a lesser failure than reporting real quest ids as unknown.
+            var lootDirectory = CombineIfUsable(gameServerSourceRoot, LootTableDefinitionRelativePath);
+            _lootTableIds = lootDirectory != null
+                ? SourceIdScanner.ScanBuilderCreateIds(lootDirectory)
                 : new HashSet<string>(StringComparer.Ordinal);
 
             // "Available" has to mean the scan actually read everything, not merely that the directories
@@ -70,6 +89,12 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
 
         public bool IsValidSpawnTableId(string spawnTableId) =>
             !string.IsNullOrEmpty(spawnTableId) && _spawnTableIds.Contains(spawnTableId);
+
+        public bool IsValidLootTableId(string lootTableId) =>
+            !string.IsNullOrEmpty(lootTableId) && _lootTableIds.Contains(lootTableId);
+
+        public bool IsValidDialogName(string dialogName) =>
+            !string.IsNullOrEmpty(dialogName) && _dialogNames.Contains(dialogName);
 
         /// <summary>
         /// Combines <paramref name="root"/> with <paramref name="relative"/> and returns the result

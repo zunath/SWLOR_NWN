@@ -4,6 +4,7 @@
              xmlns:core="using:Dock.Model.Core"
              xmlns:editors="using:SWLOR.Toolset.Editors"
              xmlns:triggers="using:SWLOR.Toolset.Editors.Triggers"
+             xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
              x:Class="SWLOR.Toolset.App"
              RequestedThemeVariant="Dark">
 
@@ -138,6 +139,40 @@
 
         <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Note}" Classes="label"
                    TextWrapping="Wrap" Margin="0,0,0,7" IsVisible="{Binding HasNote}" />
+      </Grid>
+    </DataTemplate>
+
+    <!-- One behavior field. Five shapes over the same row so the label column stays aligned with
+         the schema fields above: toggle, number, name-valued picker, id-valued picker, free text.
+         A name picker is an AutoCompleteBox rather than a combo because the tag source alone offers
+         five figures of options and a stored value the source does not know must stay visible. -->
+    <DataTemplate DataType="placeables:BehaviorFieldViewModel">
+      <Grid ColumnDefinitions="180,*,Auto" Margin="0,2">
+        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+          <TextBlock Text="{Binding Label}" Classes="dim" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="required" Classes="count" IsVisible="{Binding IsRequired}" />
+        </StackPanel>
+
+        <CheckBox Grid.Column="1" IsVisible="{Binding IsToggle}" IsChecked="{Binding Flag, Mode=TwoWay}" />
+
+        <NumericUpDown Grid.Column="1" IsVisible="{Binding IsInteger}" FormatString="0" Increment="1"
+                       Value="{Binding Number, Mode=TwoWay}" />
+
+        <AutoCompleteBox Grid.Column="1" IsVisible="{Binding IsNameChoice}"
+                         ItemsSource="{Binding Options}"
+                         ValueMemberBinding="{Binding Value}"
+                         FilterMode="Contains" MaxDropDownHeight="360"
+                         Text="{Binding Text, Mode=TwoWay}" />
+
+        <ComboBox Grid.Column="1" IsVisible="{Binding IsIdChoice}"
+                  ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                  MaxDropDownHeight="400" HorizontalAlignment="Stretch" />
+
+        <TextBox Grid.Column="1" IsVisible="{Binding IsText}" Text="{Binding Text, Mode=TwoWay}" />
+
+        <TextBlock Grid.Column="2" Margin="8,0,0,0" VerticalAlignment="Center" Classes="count"
+                   Text="{Binding StatusText}"
+                   IsVisible="{Binding StatusText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       </Grid>
     </DataTemplate>
 

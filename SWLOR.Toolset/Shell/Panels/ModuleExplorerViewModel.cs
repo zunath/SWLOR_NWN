@@ -6,6 +6,7 @@ using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Shell.Panels
@@ -297,7 +298,7 @@ namespace SWLOR.Toolset.Shell.Panels
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                File.WriteAllBytes(
+                SaveService.WriteNewAtomic(
                     path, ModuleResourceTemplateFactory.CreateFileContent(SelectedType, resRef, name.Trim()));
             }
             catch (Exception ex)

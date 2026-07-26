@@ -35,6 +35,11 @@ namespace SWLOR.Toolset.Editors
         private readonly Domain.GameData.TwoDa.TwoDaService? _twoDaService;
         private Triggers.ChoicePreviewService? _choicePreviews;
 
+        /// <summary>Backs the placeable Appearance tab's model grid; null degrades it to an empty grid.</summary>
+        private readonly PlaceableModelCatalog? _placeableModels;
+        private readonly ThumbnailService? _thumbnails;
+        private readonly PlaceableIndexService? _placeableIndexes;
+
         /// <summary>Supplies the area editor its placement-ghost geometry; null degrades the ghost to a marker.</summary>
         private readonly Workspace.BlueprintPreviewRenderer? _previewRenderer;
 
@@ -85,8 +90,14 @@ namespace SWLOR.Toolset.Editors
             Shell.Panels.ProblemsViewModel? problems = null,
             Services.ScriptCompileService? compileService = null,
             Services.IExternalLinkService? links = null,
+            PlaceableModelCatalog? placeableModels = null,
+            ThumbnailService? thumbnails = null,
+            PlaceableIndexService? placeableIndexes = null,
             Domain.GameData.TwoDa.TwoDaService? twoDaService = null)
         {
+            _placeableModels = placeableModels;
+            _thumbnails = thumbnails;
+            _placeableIndexes = placeableIndexes;
             _workspaceContext = workspaceContext;
             _lookups = lookups;
             _log = log;
@@ -208,7 +219,7 @@ namespace SWLOR.Toolset.Editors
                 };
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CompileOnSave = _compileService != null && _compileService.IsAvailable
-                    ? name => _compileService.CompileAsync(name)
+                    ? async name => (await _compileService.CompileAsync(name).ConfigureAwait(true)).Succeeded
                     : null;
 
                 // Compile belongs to the document, not to a module-wide menu. The tab owns the button
@@ -310,7 +321,8 @@ namespace SWLOR.Toolset.Editors
                     // So a localized field that carries a strref but no language-0 override can show what
                     // that strref says, instead of a blank the builder reads as missing data.
                     _tlkService == null ? null : _tlkService.GetString,
-                    CreateScriptSlotHost($"{type.SingularDisplayName()} '{resRef}'"));
+                    CreateScriptSlotHost($"{type.SingularDisplayName()} '{resRef}'"),
+                    type == ResourceType.Utp ? CreatePlaceableSections : null);
                 editor.Closed += _ => _openEditors.Remove(filePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
@@ -322,6 +334,42 @@ namespace SWLOR.Toolset.Editors
             {
                 _log.AppendLine($"Failed to open editor for {resRef}: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Builds the placeable's Appearance and Behavior tabs. The module-wide scans they validate
+        /// against are kicked off here rather than at startup, so a session that never opens a
+        /// placeable never pays for them.
+        /// </summary>
+        private Placeables.PlaceableEditorSections? CreatePlaceableSections(
+            EditorFieldContext context, Func<string, Action, bool> runEdit)
+        {
+            // No 2DA layer means no model grid, so the placeable opens with the plain tabs rather
+            // than an Appearance tab that could only ever be empty.
+            if (_placeableModels == null)
+                return null;
+
+            _placeableIndexes?.EnsureBuilt();
+
+            var values = new Placeables.BehaviorValueSourceProvider(
+                _gameCodeIndex,
+                () => _placeableIndexes?.Tags);
+
+            var appearance = new Placeables.AppearanceSectionViewModel(
+                context,
+                _placeableModels,
+                _thumbnails,
+                () => _placeableIndexes?.Usage ?? Domain.Workspace.PlaceableAppearanceUsageIndex.Empty,
+                runEdit,
+                _resourceIndex,
+                // The same cache the area viewport builds its models through, so a model a builder
+                // has already seen in an area costs nothing to preview here.
+                modelResRef => _tileModelCache?.GetOrBuild(modelResRef));
+
+            var behavior = new Placeables.PlaceableBehaviorSectionViewModel(
+                context, values, _prompts, runEdit);
+
+            return new Placeables.PlaceableEditorSections(appearance, behavior);
         }
 
         /// <summary>
@@ -370,6 +418,21 @@ namespace SWLOR.Toolset.Editors
                     return false;
             }
 
+            return await SaveScriptsAsync().ConfigureAwait(true);
+        }
+
+        /// <summary>
+        /// Saves every open script buffer. Explicit bulk compilation suppresses per-file
+        /// compile-on-save so each entry point is written exactly once by the subsequent build.
+        /// </summary>
+        public async Task<bool> SaveScriptsAsync(bool compileOnSave = true)
+        {
+            foreach (var editor in _openScriptEditors.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync(compileOnSave).ConfigureAwait(true))
+                    return false;
+            }
+
             return true;
         }
 
@@ -382,7 +445,8 @@ namespace SWLOR.Toolset.Editors
         {
             if (!_openEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
-                !_openAreaEditors.Values.Any(editor => editor.IsDirty))
+                !_openAreaEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openScriptEditors.Values.Any(editor => editor.IsDirty))
                 return true;
 
             var choice = await _prompts.ConfirmCloseAsync("all open editors").ConfigureAwait(true);
@@ -397,6 +461,8 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openTriggerEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openAreaEditors.Values)
+                editor.ApproveApplicationClose();
+            foreach (var editor in _openScriptEditors.Values)
                 editor.ApproveApplicationClose();
 
             return true;
@@ -502,7 +568,10 @@ namespace SWLOR.Toolset.Editors
                         ? (type, blueprintResRef, useIndexed) =>
                             _previewRenderer.BuildModel(type, blueprintResRef, useIndexed)
                         : null,
-                    CreateScriptSlotHost($"Area '{resRef}'"));
+                    CreateScriptSlotHost($"Area '{resRef}'"),
+                    _previewRenderer != null
+                        ? instance => _previewRenderer.BuildModel(ResourceType.Utc, instance)
+                        : null);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);

@@ -3,6 +3,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Render.Icons;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -112,24 +113,58 @@ namespace SWLOR.Toolset.Workspace
             if (string.IsNullOrWhiteSpace(resRef))
                 return;
 
+            if (type == ResourceType.Uti)
+                InvalidateCreaturesUsingItem(resRef);
+
+            foreach (var useIndexedBlueprint in new[] { false, true })
+                InvalidateOne(type, resRef, useIndexedBlueprint);
+        }
+
+        private void InvalidateOne(ResourceType type, string resRef, bool useIndexedBlueprint)
+        {
             _cacheGate.EnterReadLock();
             try
             {
-                foreach (var useIndexedBlueprint in new[] { false, true })
+                var key = Key(type, resRef, useIndexedBlueprint);
+                lock (GateFor(key))
                 {
-                    var key = Key(type, resRef, useIndexedBlueprint);
-                    lock (GateFor(key))
-                    {
-                        _versions.AddOrUpdate(key, 1, (_, version) => version + 1);
-                        _inFlight.TryRemove(key, out _);
-                        _memory.Remove(key);
-                        Disk.Remove(type, resRef, useIndexedBlueprint);
-                    }
+                    _versions.AddOrUpdate(key, 1, (_, version) => version + 1);
+                    _inFlight.TryRemove(key, out _);
+                    _memory.Remove(key);
+                    Disk.Remove(type, resRef, useIndexedBlueprint);
                 }
             }
             finally
             {
                 _cacheGate.ExitReadLock();
+            }
+        }
+
+        private void InvalidateCreaturesUsingItem(string itemResRef)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return;
+
+            foreach (var creatureResRef in workspace.EnumerateResRefs(ResourceType.Utc))
+            {
+                try
+                {
+                    var creature = workspace.LoadBlueprint(ResourceType.Utc, creatureResRef).Fields;
+                    if (string.Equals(
+                            BlueprintModelResolver.GetEquippedChestArmorResRef(creature),
+                            itemResRef,
+                            StringComparison.OrdinalIgnoreCase))
+                    {
+                        // A loose module UTI cannot affect the independent Standard-content preview.
+                        InvalidateOne(ResourceType.Utc, creatureResRef, useIndexedBlueprint: false);
+                    }
+                }
+                catch (Exception)
+                {
+                    // A malformed creature is independently unrenderable and must not prevent the
+                    // remaining dependency invalidations.
+                }
             }
         }
 
@@ -472,8 +507,11 @@ namespace SWLOR.Toolset.Workspace
                     var blueprintPath = item.UseIndexedBlueprint
                         ? null
                         : workspace.GetResourcePath(item.Type, item.ResRef);
+                    var dependencyPaths = DependencyPaths(
+                        item.Type, item.ResRef, item.UseIndexedBlueprint);
                     if (disk.Contains(
-                            item.Type, item.ResRef, blueprintPath, item.UseIndexedBlueprint))
+                            item.Type, item.ResRef, blueprintPath, item.UseIndexedBlueprint,
+                            dependencyPaths))
                     {
                         Interlocked.Increment(ref reused);
                     }
@@ -584,9 +622,11 @@ namespace SWLOR.Toolset.Workspace
                 ? null
                 : workspace?.GetResourcePath(type, resRef);
             var disk = Disk;
+            var dependencyPaths = DependencyPaths(type, resRef, useIndexedBlueprint);
 
             switch (disk.TryLoad(
-                        type, resRef, blueprintPath, useIndexedBlueprint, out var cached))
+                        type, resRef, blueprintPath, useIndexedBlueprint, out var cached,
+                        dependencyPaths))
             {
                 case ThumbnailDiskCache.Lookup.Image:
                     return new PreviewResolution(
@@ -604,6 +644,29 @@ namespace SWLOR.Toolset.Workspace
             var bitmap = ToBitmap(image);
             return new PreviewResolution(
                 bitmap, disk, type, resRef, useIndexedBlueprint, Persist: true);
+        }
+
+        private IReadOnlyList<string> DependencyPaths(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null || useIndexedBlueprint || type != ResourceType.Utc)
+                return Array.Empty<string>();
+
+            try
+            {
+                var creature = workspace.LoadBlueprint(type, resRef).Fields;
+                var itemResRef = BlueprintModelResolver.GetEquippedChestArmorResRef(creature);
+                return string.IsNullOrWhiteSpace(itemResRef)
+                    ? Array.Empty<string>()
+                    : new[] { workspace.GetResourcePath(ResourceType.Uti, itemResRef) };
+            }
+            catch (Exception)
+            {
+                return Array.Empty<string>();
+            }
         }
 
         /// <summary>

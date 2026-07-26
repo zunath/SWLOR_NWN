@@ -68,6 +68,7 @@ namespace SWLOR.Toolset
                 path => new ModuleWorkspace(path, sp.GetService<ResourceIndex>()));
             services.AddSingleton<WorkspaceContext>();
             services.AddSingleton<ModuleFileWatcher>();
+            services.AddSingleton<Workspace.PlaceableIndexService>();
 
             var repoRoot = AutoDetectRepoRoot();
             RegisterGameDataServices(services, repoRoot, settings);
@@ -101,6 +102,9 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<ProblemsViewModel>(),
                 sp.GetRequiredService<Services.ScriptCompileService>(),
                 sp.GetRequiredService<Services.IExternalLinkService>(),
+                sp.GetService<PlaceableModelCatalog>(),
+                sp.GetService<ThumbnailService>(),
+                sp.GetRequiredService<Workspace.PlaceableIndexService>(),
                 sp.GetService<TwoDaService>()));
 
             // One parsed engine header shared by every script tab, built lazily on first use: the
@@ -306,6 +310,10 @@ namespace SWLOR.Toolset
                     new AppearanceService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
                 services.AddSingleton(sp =>
                     new PlaceableAppearanceService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
+                // The placeable editor's model grid, which keeps the rows the dropdown service drops
+                // for having no label - two thirds of the table.
+                services.AddSingleton(sp =>
+                    new PlaceableModelCatalog(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
                 services.AddSingleton(sp =>
                     new DoorTypeService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
                 services.AddSingleton(sp =>

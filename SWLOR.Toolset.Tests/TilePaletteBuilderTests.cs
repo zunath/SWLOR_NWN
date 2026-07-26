@@ -39,16 +39,39 @@ namespace SWLOR.Toolset.Tests
         private static TilePaletteCategory CategoryNamed(TilePalette palette, string name) =>
             palette.Categories.Single(category => category.Name == name);
 
+        /// <summary>
+        /// Every named arrangement the tileset declares, whichever heading it was filed under.
+        /// </summary>
+        /// <remarks>
+        /// Single-row arrangements are filed as Features and the rest as Groups, matching Aurora. Both
+        /// come from the same [GROUPn] blocks, so the tests below - which are about labelling and
+        /// validation, not about presentation - ask for both rather than naming a heading.
+        /// </remarks>
+        private static IReadOnlyList<TilePaletteEntry> NamedArrangements(TilePalette palette) =>
+            palette.Categories
+                .Where(category => category.Name is TilePaletteBuilder.FeaturesCategoryName
+                    or TilePaletteBuilder.GroupsCategoryName)
+                .SelectMany(category => category.Entries)
+                .ToList();
+
         [Test]
-        public void A_Tileset_With_Groups_And_Tiles_Yields_Groups_Then_All_Tiles()
+        public void A_Tileset_With_Groups_And_Tiles_Yields_Its_Arrangements_Then_All_Tiles()
         {
-            var palette = TilePaletteBuilder.Build(
+            // 1x2, so it is a feature rather than a group - see TilePaletteBuilder.IsFeature.
+            var singleRow = TilePaletteBuilder.Build(
                 FourTiles(new TileGroupDefinition("Hut", 1, 2, null, new[] { 0, 1 })));
 
-            palette.IsEmpty.Should().BeFalse();
-            palette.Categories.Select(category => category.Name)
+            singleRow.IsEmpty.Should().BeFalse();
+            singleRow.Categories.Select(category => category.Name)
+                .Should().Equal(new[] { "Features", "All tiles" },
+                    "a single-row arrangement is a feature, and named arrangements lead the palette");
+
+            var block = TilePaletteBuilder.Build(
+                FourTiles(new TileGroupDefinition("Hall", 2, 2, null, new[] { 0, 1, 2, 3 })));
+
+            block.Categories.Select(category => category.Name)
                 .Should().Equal(new[] { "Groups", "All tiles" },
-                    "the tileset's own named groups are the meaningful axis and lead the palette");
+                    "an arrangement spanning rows is a group");
         }
 
         /// <summary>
@@ -64,7 +87,7 @@ namespace SWLOR.Toolset.Tests
                 FourTiles(new TileGroupDefinition("AverageFrontDoor", 1, 1, 1, new[] { 0 })),
                 strRef => strRef == 1 ? "Barbarians" : null);
 
-            CategoryNamed(palette, "Groups").Entries.Single().Label.Should().Be("AverageFrontDoor");
+            NamedArrangements(palette).Single().Label.Should().Be("AverageFrontDoor");
         }
 
         /// <summary>
@@ -83,7 +106,7 @@ namespace SWLOR.Toolset.Tests
 
             var palette = TilePaletteBuilder.Build(FourTiles(groups), _ => "Bath");
 
-            CategoryNamed(palette, "Groups").Entries.Select(entry => entry.Label)
+            NamedArrangements(palette).Select(entry => entry.Label)
                 .Should().Equal("AverageTwoWide", "PoorTwoWide", "RichTwoWide");
         }
 
@@ -105,7 +128,7 @@ namespace SWLOR.Toolset.Tests
 
             // The counter is shared case-insensitively, but each label keeps the casing its author used -
             // renaming someone's "ROOM2X1" to lower case would be a second, unasked-for change.
-            CategoryNamed(palette, "Groups").Entries.Select(entry => entry.Label)
+            NamedArrangements(palette).Select(entry => entry.Label)
                 .Should().Equal("room2x1", "room2x1 (2)", "ROOM2X1 (3)");
         }
 
@@ -132,7 +155,7 @@ namespace SWLOR.Toolset.Tests
                     _ => throw new InvalidOperationException("no tlk")
                 });
 
-            CategoryNamed(palette, "Groups").Entries.Select(entry => entry.Label)
+            NamedArrangements(palette).Select(entry => entry.Label)
                 .Should().Equal("Ruined Building", "Group 1", "Group 2");
         }
 
@@ -144,7 +167,7 @@ namespace SWLOR.Toolset.Tests
                     new TileGroupDefinition("First", 1, 1, null, new[] { 0 }),
                     new TileGroupDefinition("", 1, 1, null, new[] { 1 })));
 
-            CategoryNamed(palette, "Groups").Entries.Last().Label.Should().Be("Group 1");
+            NamedArrangements(palette).Last().Label.Should().Be("Group 1");
         }
 
         [Test]
@@ -156,7 +179,7 @@ namespace SWLOR.Toolset.Tests
             var palette = TilePaletteBuilder.Build(
                 FourTiles(new TileGroupDefinition("Stairs", 2, 2, null, new[] { 3, 2, 1, 0 })));
 
-            var entry = CategoryNamed(palette, "Groups").Entries.Single();
+            var entry = NamedArrangements(palette).Single();
             entry.TileIds.Should().Equal(3, 2, 1, 0);
             entry.Rows.Should().Be(2);
             entry.Columns.Should().Be(2);
@@ -187,7 +210,7 @@ namespace SWLOR.Toolset.Tests
                     new TileGroupDefinition("Negative", 1, 2, null, new[] { 1, -7 })),
                 reportProblem: problems.Add);
 
-            CategoryNamed(palette, "Groups").Entries.Select(entry => entry.Label).Should().Equal("Good");
+            NamedArrangements(palette).Select(entry => entry.Label).Should().Equal("Good");
             problems.Should().HaveCount(2);
             problems[0].Should().Contain("PastTheEnd").And.Contain("4").And.Contain("skipped");
             problems[1].Should().Contain("Negative").And.Contain("-7");
@@ -219,7 +242,7 @@ namespace SWLOR.Toolset.Tests
                 FourTiles(new TileGroupDefinition("Docked", 2, 2, null, new[] { 0, 1, 2, -1 })),
                 reportProblem: problems.Add);
 
-            var entry = CategoryNamed(palette, "Groups").Entries.Single();
+            var entry = NamedArrangements(palette).Single();
             entry.TileIds.Should().Equal(0, 1, 2, -1);
             entry.PreviewModelResRef.Should().Be("tst01_a01_01");
             problems.Should().BeEmpty();
@@ -244,7 +267,7 @@ namespace SWLOR.Toolset.Tests
             var palette = TilePaletteBuilder.Build(
                 FourTiles(new TileGroupDefinition("Leading Hole", 1, 3, null, new[] { -1, 2, 3 })));
 
-            CategoryNamed(palette, "Groups").Entries.Single()
+            NamedArrangements(palette).Single()
                 .PreviewModelResRef.Should().Be("tst01_a03_01");
         }
 
@@ -317,7 +340,7 @@ namespace SWLOR.Toolset.Tests
                     new TileGroupDefinition("Broken", 1, 1, null, new[] { 99 })));
 
             act.Should().NotThrow();
-            CategoryNamed(act(), "Groups").Entries.Single().Label.Should().Be("Ok");
+            NamedArrangements(act()).Single().Label.Should().Be("Ok");
         }
     }
 }

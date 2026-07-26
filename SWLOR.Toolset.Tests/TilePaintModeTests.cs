@@ -61,12 +61,16 @@ namespace SWLOR.Toolset.Tests
         {
             var palette = BuildPalette(
                 TilePaletteBuilder.TerrainCategoryName,
+                TilePaletteBuilder.FeaturesCategoryName,
                 TilePaletteBuilder.GroupsCategoryName,
                 TilePaletteBuilder.AllTilesCategoryName);
 
             var offered = TilePaintModes.CategoriesFor(palette, TilePaintMode.Auto).Select(c => c.Name);
 
-            offered.Should().Equal(TilePaletteBuilder.TerrainCategoryName, TilePaletteBuilder.GroupsCategoryName);
+            offered.Should().Equal(
+                TilePaletteBuilder.TerrainCategoryName,
+                TilePaletteBuilder.FeaturesCategoryName,
+                TilePaletteBuilder.GroupsCategoryName);
         }
 
         [Test]
@@ -74,12 +78,16 @@ namespace SWLOR.Toolset.Tests
         {
             var palette = BuildPalette(
                 TilePaletteBuilder.TerrainCategoryName,
+                TilePaletteBuilder.FeaturesCategoryName,
                 TilePaletteBuilder.GroupsCategoryName,
                 TilePaletteBuilder.AllTilesCategoryName);
 
             var offered = TilePaintModes.CategoriesFor(palette, TilePaintMode.Manual).Select(c => c.Name);
 
-            offered.Should().Equal(TilePaletteBuilder.GroupsCategoryName, TilePaletteBuilder.AllTilesCategoryName);
+            offered.Should().Equal(
+                TilePaletteBuilder.FeaturesCategoryName,
+                TilePaletteBuilder.GroupsCategoryName,
+                TilePaletteBuilder.AllTilesCategoryName);
         }
 
         /// <summary>
@@ -89,8 +97,9 @@ namespace SWLOR.Toolset.Tests
         /// </summary>
         [TestCase(TilePaintMode.Auto)]
         [TestCase(TilePaintMode.Manual)]
-        public void Groups_AreOfferedInBothModes(TilePaintMode mode)
+        public void FeaturesAndGroups_AreOfferedInBothModes(TilePaintMode mode)
         {
+            TilePaintModes.Offers(TilePaletteBuilder.FeaturesCategoryName, mode).Should().BeTrue();
             TilePaintModes.Offers(TilePaletteBuilder.GroupsCategoryName, mode).Should().BeTrue();
         }
 
@@ -117,6 +126,43 @@ namespace SWLOR.Toolset.Tests
                 .Should().NotBeEmpty("Auto needs terrain to paint");
             TilePaintModes.CategoriesFor(palette, TilePaintMode.Manual)
                 .Should().NotBeEmpty("Manual needs individual tiles to stamp");
+        }
+
+        /// <summary>
+        /// Features are split from Groups the way Aurora splits them.
+        /// </summary>
+        /// <remarks>
+        /// tmi is the tileset the two toolsets can be compared on directly - it is what
+        /// zomb_abanstatio3 is built from, and Aurora shows its elevators and double-wide entries
+        /// under Features with Subway left as the only Group. Asserted against the real .set rather
+        /// than a stand-in, because the split is a reading of that file's Rows/Columns and nothing
+        /// else declares it.
+        /// </remarks>
+        [Test]
+        public void Features_AreTheSingleRowPieces_AndGroupsAreTheRest()
+        {
+            var index = ResourceIndex.FromHakBuilderConfig(
+                Path.Combine(RepoRoot, "Build", "hakbuilder.json"), Path.Combine(RepoRoot, "SWLOR_Haks"));
+            var catalog = new TilesetCatalog(index);
+
+            if (!catalog.TryGetTileset("tmi", out var tileset))
+            {
+                Assert.Ignore("The modern interior tileset did not resolve; skipping.");
+                return;
+            }
+
+            var palette = TilePaletteBuilder.Build(tileset, resolveStrRef: null, reportProblem: null);
+
+            var features = palette.Categories.FirstOrDefault(c => c.Name == TilePaletteBuilder.FeaturesCategoryName);
+            var groups = palette.Categories.FirstOrDefault(c => c.Name == TilePaletteBuilder.GroupsCategoryName);
+
+            features.Should().NotBeNull("tmi declares elevators, front doors and double-wide entries");
+            features!.Entries.Should().OnlyContain(entry => entry.Rows == 1);
+            features.Entries.Should().Contain(entry => entry.Columns == 2,
+                "the double-wide entries are two cells across and Aurora still files them as features");
+
+            groups.Should().NotBeNull("tmi declares the 3x4 subway station");
+            groups!.Entries.Should().OnlyContain(entry => entry.Rows > 1);
         }
 
         /// <summary>

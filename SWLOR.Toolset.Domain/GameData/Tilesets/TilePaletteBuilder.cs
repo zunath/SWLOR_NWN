@@ -19,6 +19,14 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
     public static class TilePaletteBuilder
     {
         public const string TerrainCategoryName = "Terrain";
+
+        /// <summary>
+        /// Named pieces that sit in a single row - an elevator, a front door, a double-wide entry.
+        /// Aurora files these apart from Groups, and the distinction is one a builder feels: a feature
+        /// goes against a wall, while a group claims a block of the map and has to be aimed.
+        /// </summary>
+        public const string FeaturesCategoryName = "Features";
+
         public const string GroupsCategoryName = "Groups";
         public const string AllTilesCategoryName = "All tiles";
 
@@ -54,7 +62,12 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 if (terrains.Count > 0)
                     categories.Add(new TilePaletteCategory(TerrainCategoryName, terrains));
 
-                var groups = BuildGroupEntries(tileset, resolveStrRef, reportProblem);
+                var allGroups = BuildGroupEntries(tileset, resolveStrRef, reportProblem);
+                var features = allGroups.Where(IsFeature).ToList();
+                var groups = allGroups.Where(entry => !IsFeature(entry)).ToList();
+
+                if (features.Count > 0)
+                    categories.Add(new TilePaletteCategory(FeaturesCategoryName, features));
                 if (groups.Count > 0)
                     categories.Add(new TilePaletteCategory(GroupsCategoryName, groups));
 
@@ -136,6 +149,24 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
 
             return terrain.Name;
         }
+
+        /// <summary>
+        /// Whether a group is really a feature: one that occupies a single row of the grid.
+        /// </summary>
+        /// <remarks>
+        /// Split by footprint, because the .set has no flag saying which is which - Aurora is reading
+        /// the same Rows/Columns that this does. The rule is inferred from the one tileset the two
+        /// toolsets can be compared on: in tmi, Aurora files the elevators (1x1) AND the double-wide
+        /// entries (1x2) under Features, and leaves Subway (3x4) as the only Group. A single row is
+        /// the narrowest rule that separates those, and it matches what the pieces are - a feature
+        /// goes against a wall, a group is a room.
+        /// <para>
+        /// A tileset with a wide single-row group would file it as a feature under this rule. None in
+        /// the corpus does, and the cost if one appears is that it is listed under the wrong heading,
+        /// not that it cannot be placed.
+        /// </para>
+        /// </remarks>
+        private static bool IsFeature(TilePaletteEntry entry) => entry.Rows == 1;
 
         private static List<TilePaletteEntry> BuildGroupEntries(
             TilesetDefinition tileset,

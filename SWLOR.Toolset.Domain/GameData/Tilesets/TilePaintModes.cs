@@ -16,10 +16,10 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         /// The categories <paramref name="mode"/> shows, in palette order.
         /// </summary>
         /// <remarks>
-        /// Groups appear in both. A group is a fixed arrangement of several tiles - a stairwell, a
-        /// subway station - so it is neither solved nor a single tile, and hiding it in either mode
-        /// would only mean switching modes to reach it. Aurora lists Groups alongside Terrain for the
-        /// same reason.
+        /// Features and Groups appear in both. Each is a fixed arrangement the tileset author named -
+        /// an elevator, a subway station - so neither is solved from terrain nor chosen as a bare tile,
+        /// and hiding them in either mode would only mean switching modes to reach them. Aurora lists
+        /// both alongside Terrain for the same reason.
         /// </remarks>
         public static IReadOnlyList<TilePaletteCategory> CategoriesFor(TilePalette palette, TilePaintMode mode)
         {
@@ -31,8 +31,11 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         /// <summary>Whether <paramref name="mode"/> offers the category called <paramref name="categoryName"/>.</summary>
         public static bool Offers(string categoryName, TilePaintMode mode)
         {
-            if (string.Equals(categoryName, TilePaletteBuilder.GroupsCategoryName, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(categoryName, TilePaletteBuilder.FeaturesCategoryName, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(categoryName, TilePaletteBuilder.GroupsCategoryName, StringComparison.OrdinalIgnoreCase))
+            {
                 return true;
+            }
 
             return mode == TilePaintMode.Auto
                 ? string.Equals(categoryName, TilePaletteBuilder.TerrainCategoryName, StringComparison.OrdinalIgnoreCase)

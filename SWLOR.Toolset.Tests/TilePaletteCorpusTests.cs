@@ -93,6 +93,19 @@ namespace SWLOR.Toolset.Tests
             ?? Array.Empty<TilePaletteEntry>();
 
         /// <summary>
+        /// Every named arrangement the .set declares, whichever heading it was filed under.
+        /// </summary>
+        /// <remarks>
+        /// The palette files single-row arrangements as Features and the rest as Groups, the way
+        /// Aurora does. That is a decision about presentation - both come from the same [GROUPn]
+        /// blocks - so the tests that ask "did every group survive the build" have to ask about both.
+        /// </remarks>
+        private static IReadOnlyList<TilePaletteEntry> NamedArrangementsOf(TilePalette palette) =>
+            CategoryOf(palette, TilePaletteBuilder.FeaturesCategoryName)
+                .Concat(CategoryOf(palette, TilePaletteBuilder.GroupsCategoryName))
+                .ToList();
+
+        /// <summary>
         /// Measured floors, rounded down: shp02 44 groups / 579 tiles, ttd01 53 / 388.
         /// </summary>
         [Test]
@@ -104,9 +117,9 @@ namespace SWLOR.Toolset.Tests
 
             palette.IsEmpty.Should().BeFalse();
             palette.Categories.Select(category => category.Name)
-                .Should().Equal("Terrain", "Groups", "All tiles");
+                .Should().Equal("Terrain", "Features", "Groups", "All tiles");
 
-            var groups = CategoryOf(palette, TilePaletteBuilder.GroupsCategoryName);
+            var groups = NamedArrangementsOf(palette);
             var tiles = CategoryOf(palette, TilePaletteBuilder.AllTilesCategoryName);
 
             groups.Count.Should().BeGreaterThanOrEqualTo(minimumGroups);
@@ -227,10 +240,8 @@ namespace SWLOR.Toolset.Tests
             Data.Tilesets.TryGetTileset("tmi", out var tileset).Should().BeTrue();
             var withoutTlk = TilePaletteBuilder.Build(tileset);
 
-            var a = CategoryOf(withTlk, TilePaletteBuilder.GroupsCategoryName)
-                .Select(entry => entry.Label).ToList();
-            var b = CategoryOf(withoutTlk, TilePaletteBuilder.GroupsCategoryName)
-                .Select(entry => entry.Label).ToList();
+            var a = NamedArrangementsOf(withTlk).Select(entry => entry.Label).ToList();
+            var b = NamedArrangementsOf(withoutTlk).Select(entry => entry.Label).ToList();
 
             a.Should().Equal(b, "the .set's own names decide the label, with or without a TLK");
             a.Should().Contain("AverageFrontDoor").And.NotContain("Barbarians");
@@ -251,13 +262,12 @@ namespace SWLOR.Toolset.Tests
                 if (!Data.Tilesets.TryGetTileset(name, out var tileset))
                     continue;
 
-                var groups = TilePaletteBuilder.Build(tileset).Categories
-                    .FirstOrDefault(category => category.Name == TilePaletteBuilder.GroupsCategoryName);
+                var groups = NamedArrangementsOf(TilePaletteBuilder.Build(tileset));
 
-                if (groups == null)
+                if (groups.Count == 0)
                     continue;
 
-                var duplicated = groups.Entries
+                var duplicated = groups
                     .GroupBy(entry => entry.Label, StringComparer.OrdinalIgnoreCase)
                     .Where(group => group.Count() > 1)
                     .Select(group => $"{name}: '{group.Key}' x{group.Count()}")
@@ -294,7 +304,7 @@ namespace SWLOR.Toolset.Tests
                 palette.IsEmpty.Should().BeFalse(because: $"'{resref}' declares {tileset.TileCount} tiles");
                 if (tileset.Groups.Count > 0)
                 {
-                    CategoryOf(palette, TilePaletteBuilder.GroupsCategoryName).Count.Should().Be(
+                    NamedArrangementsOf(palette).Count.Should().Be(
                         tileset.Groups.Count - perTileset.Count,
                         because: $"every '{resref}' group is either emitted or explained");
                 }

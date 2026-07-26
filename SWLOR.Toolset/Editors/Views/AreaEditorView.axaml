@@ -125,6 +125,13 @@
               <Button Classes="pad" Content="&#x21AF;" ToolTip.Tip="Turn the selection to a random angle"
                       Command="{Binding RotateSelectionRandomlyCommand}"
                       IsEnabled="{Binding CanRotateSelection}" />
+
+              <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
+
+              <Button Classes="pad" Content="&#x21E7;" Command="{Binding RaiseTileCommand}"
+                      ToolTip.Tip="Raise a tile - then click a grid cell" />
+              <Button Classes="pad" Content="&#x21E9;" Command="{Binding LowerTileCommand}"
+                      ToolTip.Tip="Lower a tile - then click a grid cell (minimum level 0)" />
             </StackPanel>
           </Border>
 

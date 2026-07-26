@@ -132,5 +132,18 @@ namespace SWLOR.Toolset.Tests
             AreaTiles.At(reloaded, 0, 0)!.Value.Orientation.Should().Be(2);
             AreaTiles.HeightLevelOf(reloaded, 0, 0).Should().Be(4);
         }
+
+        [Test]
+        public void TryAdjustHeightLevel_RefusesToLowerBelowZero()
+        {
+            var are = BuildArea(1, 1, (5, 0));
+
+            AreaTiles.SetHeightLevel(are, 0, 0, 0);
+            AreaTiles.TryAdjustHeightLevel(are, 0, 0, -1).Should().BeFalse();
+            AreaTiles.HeightLevelOf(are, 0, 0).Should().Be(0);
+
+            AreaTiles.TryAdjustHeightLevel(are, 0, 0, 1).Should().BeTrue();
+            AreaTiles.HeightLevelOf(are, 0, 0).Should().Be(1);
+        }
     }
 }

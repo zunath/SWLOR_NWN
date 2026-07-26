@@ -52,14 +52,17 @@ namespace SWLOR.Toolset.Domain.Render
         /// The decoded diffuse texture for a mesh's bitmap or material name, or null when it does not
         /// resolve. Safe to call from several render threads at once; never throws.
         /// </summary>
-        public TextureImage? Get(string? textureOrMaterialName)
+        public TextureImage? Get(
+            string? textureOrMaterialName,
+            IReadOnlyDictionary<int, int>? layerColorIndices = null)
         {
             if (string.IsNullOrWhiteSpace(textureOrMaterialName))
                 return null;
 
+            var key = CacheKey(textureOrMaterialName, layerColorIndices);
             lock (_gate)
             {
-                if (_entries.TryGetValue(textureOrMaterialName, out var node))
+                if (_entries.TryGetValue(key, out var node))
                 {
                     _order.Remove(node);
                     _order.AddFirst(node);
@@ -67,15 +70,15 @@ namespace SWLOR.Toolset.Domain.Render
                 }
             }
 
-            var decoded = Decode(textureOrMaterialName);
+            var decoded = Decode(textureOrMaterialName, layerColorIndices);
 
             lock (_gate)
             {
-                if (_entries.TryGetValue(textureOrMaterialName, out var existing))
+                if (_entries.TryGetValue(key, out var existing))
                     return existing.Value.Texture; // Another thread decoded it first; keep one copy.
 
                 var size = decoded?.Pixels.LongLength ?? 0;
-                _entries[textureOrMaterialName] = _order.AddFirst(new Entry(textureOrMaterialName, decoded, size));
+                _entries[key] = _order.AddFirst(new Entry(key, decoded, size));
                 _heldBytes += size;
 
                 while (_heldBytes > _budgetBytes && _order.Count > 1)
@@ -107,18 +110,32 @@ namespace SWLOR.Toolset.Domain.Render
         /// Resolves through any .mtr material override first - a mesh's "texture" is sometimes a material
         /// name whose real diffuse map is declared inside it - then decodes TGA, DDS or PLT.
         /// </summary>
-        private TextureImage? Decode(string textureOrMaterialName)
+        private TextureImage? Decode(
+            string textureOrMaterialName,
+            IReadOnlyDictionary<int, int>? layerColorIndices)
         {
             try
             {
                 var diffuse = MaterialResolver.ResolveDiffuseTextureName(_resourceIndex, textureOrMaterialName);
-                return TextureLoader.Load(_resourceIndex, diffuse);
+                return TextureLoader.Load(_resourceIndex, diffuse, layerColorIndices);
             }
             catch (Exception)
             {
                 // A malformed texture is a flat-shaded mesh, not a failed thumbnail.
                 return null;
             }
+        }
+
+        internal static string CacheKey(
+            string textureOrMaterialName,
+            IReadOnlyDictionary<int, int>? layerColorIndices)
+        {
+            if (layerColorIndices == null || layerColorIndices.Count == 0)
+                return textureOrMaterialName;
+
+            return textureOrMaterialName + "|" +
+                   string.Join(",", layerColorIndices.OrderBy(pair => pair.Key)
+                       .Select(pair => $"{pair.Key}:{pair.Value}"));
         }
 
         private readonly record struct Entry(string Key, TextureImage? Texture, long SizeBytes);

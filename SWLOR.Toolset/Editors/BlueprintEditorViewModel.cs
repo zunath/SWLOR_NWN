@@ -42,10 +42,6 @@ namespace SWLOR.Toolset.Editors
         public ResourceType BlueprintType { get; }
 
         /// <summary>The live (possibly unsaved) document root, for appearance-driven model preview.</summary>
-        public JsonGffStruct DocumentRoot => _session.Document.Root;
-
-        /// <summary>Raised after every edit/undo/redo/save so the preview can re-resolve the model.</summary>
-        public event Action? DocumentChanged;
 
         /// <summary>Raised after this resource is saved or reloaded so catalog views can re-index it.</summary>
         public event Action? CatalogEntryChanged;
@@ -261,7 +257,6 @@ namespace SWLOR.Toolset.Editors
             // The shell's Edit menu mirrors this tab's history, so it needs the change too.
             OnPropertyChanged(nameof(CanUndo));
             OnPropertyChanged(nameof(CanRedo));
-            DocumentChanged?.Invoke();
         }
 
         private void UpdateTitle()

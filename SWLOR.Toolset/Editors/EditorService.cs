@@ -219,7 +219,10 @@ namespace SWLOR.Toolset.Editors
                     _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts,
                     ResolveBlueprintName, TryOpenEditor,
                     _tlkService != null ? _tlkService.GetString : null, _waypointAppearances,
-                    _previewRenderer != null ? _previewRenderer.BuildModel : null);
+                    _previewRenderer != null
+                        ? (type, blueprintResRef, useIndexed) =>
+                            _previewRenderer.BuildModel(type, blueprintResRef, useIndexed)
+                        : null);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);

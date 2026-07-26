@@ -45,9 +45,13 @@ namespace SWLOR.Toolset.Domain.Render
     public static class TextureLoader
     {
         /// <summary>Try TGA, then DDS, then PLT (with default/neutral palette colors) for <paramref name="resRef"/>.</summary>
-        public static TextureImage? Load(ResourceIndex index, string resRef)
+        public static TextureImage? Load(
+            ResourceIndex index,
+            string resRef,
+            IReadOnlyDictionary<int, int>? layerColorIndices = null)
         {
-            return LoadTga(index, resRef) ?? LoadDds(index, resRef) ?? LoadPlt(index, resRef);
+            return LoadTga(index, resRef) ?? LoadDds(index, resRef) ??
+                   LoadPlt(index, resRef, layerColorIndices);
         }
 
         public static TextureImage? LoadTga(ResourceIndex index, string resRef)

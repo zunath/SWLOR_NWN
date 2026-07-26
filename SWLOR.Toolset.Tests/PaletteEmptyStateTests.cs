@@ -19,7 +19,7 @@ namespace SWLOR.Toolset.Tests
         {
             public string? TilesetResRef { get; } = tilesetResRef;
 
-            public bool ArmPlacement(ResourceType type, string resRef) => false;
+            public bool ArmPlacement(ResourceType type, string resRef, PaletteSource source) => false;
 
             public bool ArmTilePlacement(TilePaletteEntry entry) => false;
         }

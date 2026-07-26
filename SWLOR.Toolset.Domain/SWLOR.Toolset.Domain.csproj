@@ -10,7 +10,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\External\Radoub\Radoub.Formats\Radoub.Formats\Radoub.Formats.csproj" />
-    <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
+    <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj"
+                      AdditionalProperties="RunPostBuildEvent=Never" />
   </ItemGroup>
 
   <ItemGroup>

@@ -15,6 +15,9 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
     /// </summary>
     public static class AreaTiles
     {
+        /// <summary>Aurora's lowest editable tile level; lowering never creates negative terrain.</summary>
+        public const int MinimumHeightLevel = 0;
+
         public static int Width(AreDocument are) => are.Width ?? 0;
 
         public static int Height(AreDocument are) => are.Height ?? 0;
@@ -104,6 +107,23 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
             var tile = TileStructAt(are, col, row);
             if (tile != null && (tile.GetIntOrNull("Tile_Height") ?? int.MinValue) != heightLevel)
                 tile.SetInt("Tile_Height", GffFieldType.Int, heightLevel);
+        }
+
+        /// <summary>
+        /// Raises or lowers one cell by whole tile levels. Returns false outside the grid or when
+        /// lowering would cross <see cref="MinimumHeightLevel"/>.
+        /// </summary>
+        public static bool TryAdjustHeightLevel(AreDocument are, int col, int row, int delta)
+        {
+            if (delta == 0 || StateAt(are, col, row) is not { } state)
+                return false;
+
+            var adjusted = state.HeightLevel + delta;
+            if (adjusted < MinimumHeightLevel)
+                return false;
+
+            SetHeightLevel(are, col, row, adjusted);
+            return true;
         }
 
         private static JsonGffStruct? TileStructAt(AreDocument are, int col, int row)

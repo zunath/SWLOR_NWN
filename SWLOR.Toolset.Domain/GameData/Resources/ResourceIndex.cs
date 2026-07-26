@@ -45,12 +45,12 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
     ///
     /// <list type="bullet">
     /// <item>Hak layers always override the base game.</item>
-    /// <item>Among haks, later entries win over earlier ones. This mirrors <c>hakbuilder.json</c>'s
+    /// <item>Among haks, earlier entries win over later ones. This mirrors <c>hakbuilder.json</c>'s
     /// own <c>HakList</c> order, which in turn was authored to match a module's
     /// <c>module.ifo</c> <c>Mod_HakList</c> precedence (the actual, authoritative source of
-    /// per-module hak precedence at runtime - later entries in <c>Mod_HakList</c> win). This
+    /// per-module hak precedence at runtime - the first matching entry in <c>Mod_HakList</c> wins). This
     /// index does not parse <c>module.ifo</c> itself; replaying <c>hakbuilder.json</c>'s order as
-    /// "later wins" is a close approximation that holds for the SWLOR module as currently built.</item>
+    /// "first wins" is a close approximation that holds for the SWLOR module as currently built.</item>
     /// </list>
     ///
     /// Index construction is two-phase: the constructor records the layer list synchronously and
@@ -75,9 +75,25 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
 
         /// <summary>
         /// The hak layers this index was configured with, in hakbuilder.json order
-        /// (index 0 = lowest precedence, last = highest precedence among haks).
+        /// (index 0 = highest precedence among haks).
         /// </summary>
         public IReadOnlyList<HakLayer> HakLayers => _hakLayerSpecs;
+
+        /// <summary>
+        /// Conservative version for all indexed game data. It is the newest write time among the base
+        /// archives and loose hak resources and is suitable for invalidating derived caches.
+        /// </summary>
+        public DateTime ContentVersionUtc
+        {
+            get
+            {
+                EnsureInitialized();
+                var latest = _baseLayer?.ContentVersionUtc ?? DateTime.MinValue;
+                foreach (var (_, catalog) in _hakLayers)
+                    latest = latest >= catalog.ContentVersionUtc ? latest : catalog.ContentVersionUtc;
+                return latest;
+            }
+        }
 
         public ResourceIndex(KeyBifCatalog? baseLayer, IReadOnlyList<HakLayer> hakLayersInOrder)
         {
@@ -109,14 +125,14 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
 
         /// <summary>
         /// Look up a resource across every layer, applying hak-over-base-game and
-        /// later-hak-wins precedence. Blocks on <see cref="EnsureInitialized"/> if the background
+        /// first-hak-wins precedence. Blocks on <see cref="EnsureInitialized"/> if the background
         /// scan hasn't finished yet.
         /// </summary>
         public bool TryLookup(ResourceIdentity identity, out ResourceHandle handle)
         {
             EnsureInitialized();
 
-            for (var i = _hakLayers.Count - 1; i >= 0; i--)
+            for (var i = 0; i < _hakLayers.Count; i++)
             {
                 var (name, catalog) = _hakLayers[i];
                 if (!catalog.TryGetPath(identity, out var path))

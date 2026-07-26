@@ -589,7 +589,7 @@ namespace SWLOR.Toolset.Workspace
                     if (!string.Equals(moduleRoot, _diskModuleRoot, StringComparison.OrdinalIgnoreCase))
                     {
                         _diskModuleRoot = moduleRoot;
-                        _disk = new ThumbnailDiskCache(moduleRoot);
+                        _disk = new ThumbnailDiskCache(moduleRoot, _renderer.ContentVersionUtc);
                     }
 
                     return _disk;

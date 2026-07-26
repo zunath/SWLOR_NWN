@@ -41,7 +41,7 @@ namespace SWLOR.Toolset.Tests
         private static string HaksDirectory => Path.Combine(RepoRoot, "SWLOR_Haks");
 
         [Test]
-        public void TryLookup_WhenSameResourceExistsInTwoHakLayers_LaterLayerWinsAndProvenanceReflectsIt()
+        public void TryLookup_WhenSameResourceExistsInTwoHakLayers_FirstLayerWinsAndProvenanceReflectsIt()
         {
             var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
             var layerADirectory = Path.Combine(tempRoot, "layer_a");
@@ -54,8 +54,7 @@ namespace SWLOR.Toolset.Tests
                 File.WriteAllText(Path.Combine(layerADirectory, "duplicate.uti"), "from layer A");
                 File.WriteAllText(Path.Combine(layerBDirectory, "duplicate.uti"), "from layer B");
 
-                // hakbuilder.json order: A is listed first (lowest precedence), B last (highest -
-                // "later wins"), matching how HakList/module.ifo precedence works.
+                // hakbuilder.json/module.ifo order: the first matching HAK has precedence.
                 var layers = new List<ResourceIndex.HakLayer>
                 {
                     new("layer_a", layerADirectory),
@@ -69,11 +68,11 @@ namespace SWLOR.Toolset.Tests
 
                 found.Should().BeTrue();
                 handle.Provenance.Kind.Should().Be(ResourceLayerKind.Hak);
-                handle.Provenance.LayerName.Should().Be("layer_b", "the later hak layer in precedence order must win");
-                handle.Provenance.SourcePath.Should().Be(Path.Combine(layerBDirectory, "duplicate.uti"));
+                handle.Provenance.LayerName.Should().Be("layer_a", "the first hak layer in precedence order must win");
+                handle.Provenance.SourcePath.Should().Be(Path.Combine(layerADirectory, "duplicate.uti"));
 
                 var bytes = handle.GetBytes();
-                System.Text.Encoding.UTF8.GetString(bytes).Should().Be("from layer B");
+                System.Text.Encoding.UTF8.GetString(bytes).Should().Be("from layer A");
             }
             finally
             {

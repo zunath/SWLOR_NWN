@@ -20,9 +20,11 @@ namespace SWLOR.Toolset.Workspace
     /// included - every time a builder opened their category, only to conclude "nothing" again.
     /// </para>
     /// <para>
-    /// Entries are invalidated by timestamp: an entry older than the blueprint it was rendered from is
-    /// stale and re-rendered, so editing a creature's appearance updates its tile. The cache is keyed by
-    /// module root as well, because two checkouts have different blueprints under the same resrefs.
+    /// Entries are invalidated by timestamp: an entry older than either the blueprint or the indexed
+    /// game-data content it was rendered from is stale and re-rendered. The latter covers standard
+    /// blueprints and transitive model/texture dependencies in HAK or base-game layers. The cache is
+    /// keyed by module root as well, because two checkouts have different blueprints under the same
+    /// resrefs.
     /// </para>
     /// </remarks>
     public sealed class ThumbnailDiskCache
@@ -69,13 +71,15 @@ namespace SWLOR.Toolset.Workspace
 
         private readonly string? _root;
         private readonly string? _versionsRoot;
+        private readonly DateTime _contentVersionUtc;
 
         /// <param name="moduleRoot">
         /// The module the cached previews belong to. Null disables the cache entirely (previews still
         /// render, they just are not persisted).
         /// </param>
-        public ThumbnailDiskCache(string? moduleRoot)
+        public ThumbnailDiskCache(string? moduleRoot, DateTime contentVersionUtc = default)
         {
+            _contentVersionUtc = contentVersionUtc;
             if (moduleRoot == null)
                 return;
 
@@ -119,7 +123,7 @@ namespace SWLOR.Toolset.Workspace
 
             try
             {
-                var blueprintWrittenAt = FreshnessThreshold(blueprintPath);
+                var blueprintWrittenAt = FreshnessThreshold(blueprintPath, _contentVersionUtc);
 
                 if (File.Exists(markerPath))
                 {
@@ -151,7 +155,7 @@ namespace SWLOR.Toolset.Workspace
 
             try
             {
-                var threshold = FreshnessThreshold(blueprintPath);
+                var threshold = FreshnessThreshold(blueprintPath, _contentVersionUtc);
                 foreach (var extension in new[] { ".png", MissingArtworkExtension })
                 {
                     var path = PathFor(type, resRef, extension);
@@ -287,15 +291,16 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
-        /// The timestamp a cache entry must beat to count as current. Blueprints with no known path
-        /// (or an unreadable one) fall back to <see cref="DateTime.MinValue"/>, which keeps the entry.
+        /// The timestamp a cache entry must beat to count as current. The indexed-content version
+        /// remains authoritative when a standard/HAK blueprint has no loose module path.
         /// </summary>
-        private static DateTime FreshnessThreshold(string? blueprintPath)
+        private static DateTime FreshnessThreshold(string? blueprintPath, DateTime contentVersionUtc)
         {
             if (blueprintPath == null || !File.Exists(blueprintPath))
-                return DateTime.MinValue;
+                return contentVersionUtc;
 
-            return File.GetLastWriteTimeUtc(blueprintPath);
+            var blueprintVersionUtc = File.GetLastWriteTimeUtc(blueprintPath);
+            return blueprintVersionUtc >= contentVersionUtc ? blueprintVersionUtc : contentVersionUtc;
         }
 
         private static void Delete(string path)

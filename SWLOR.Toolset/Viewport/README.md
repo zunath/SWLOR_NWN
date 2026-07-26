@@ -21,8 +21,6 @@ v0.11.0's working implementation (Quartermaster/Reliquary previews).
 
 ## What SWLOR reuses directly
 
-- `ModelPreviewGLControl` itself for blueprint preview panes (WP4.3) — it is public API in
-  Radoub.UI, which this app already references. Fed by:
 - `SwlorGameDataService` (this folder): a minimal `IGameDataService` adapter over our
   layered `ResourceIndex` (hak sources + base-game KEY/BIF). Only the resource-access
   members are implemented; 2DA/TLK members delegate to our own services where cheap, and
@@ -42,18 +40,16 @@ The AREA renderer is our own `OpenGlControlBase` subclass following the same ske
 - Instanced/batched tile meshes; texture cache keyed per GL context, PLT irrelevant for
   tiles (plain TGA/DDS + TXI hints).
 
-## Proof of the spike
+## Current preview surface
 
-The **Model Preview** dock panel (`Shell\Panels\ModelPreviewViewModel` +
-`Shell\Views\ModelPreviewView.axaml`) embeds `ModelPreviewGLControl`, resolves a selected
-creature's appearance (appearance.2da MODELTYPE=S → RACE model resref) through
-`SwlorGameDataService`, parses it with `MdlReader`, and renders it with textures.
-Segmented (MODELTYPE=P) creatures report "not yet supported" — part composition via
-`MdlPartComposer` arrives with WP4.3.
+The spike's standalone Model Preview dock was removed. Blueprint and tile artwork is rendered into
+the Palette by `BlueprintPreviewRenderer`; the area editor uses the same model resolver and composer
+for placement ghosts. This keeps previews next to the builder's actual selection and avoids a dock
+whose only update path depended on an Explorer selection that no longer lists blueprints.
 
 ## Known constraints
 
 - GPU/driver differences: `OpenGlControlBase` uses Avalonia's shared GL context; if a
-  machine falls back to software rendering the panel degrades but must not crash.
+  machine falls back to software rendering the area view degrades but must not crash.
 - Emitters/particles are not rendered (Radoub explicitly reports `PreviewState.Incomplete`).
 - Animations exist in the control (play/pause API) but are out of scope until WP4.3+.

@@ -19,6 +19,14 @@ namespace SWLOR.Toolset.Domain.Documents
         /// <summary>The palette's top-level category nodes ("MAIN").</summary>
         public IReadOnlyList<PaletteNode> Nodes =>
             Root.GetListOrEmpty("MAIN").Select(s => new PaletteNode(s)).ToList();
+
+        /// <summary>Whether any leaf in the recursive palette tree references this blueprint.</summary>
+        public bool ContainsResRef(string resRef) =>
+            Nodes.Any(node => ContainsResRef(node, resRef));
+
+        private static bool ContainsResRef(PaletteNode node, string resRef) =>
+            string.Equals(node.ResRef, resRef, StringComparison.OrdinalIgnoreCase) ||
+            node.Children.Any(child => ContainsResRef(child, resRef));
     }
 
     /// <summary>

@@ -45,7 +45,8 @@
     <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="8,8,8,6" ColumnSpacing="6">
       <TextBox Grid.Column="0" Text="{Binding Filter}" Watermark="Search contents..." />
       <!-- The button names what it makes, which is why it is bound rather than labelled. -->
-      <Button Grid.Column="1" Content="{Binding NewItemLabel}" Command="{Binding NewItemCommand}" />
+      <Button Grid.Column="1" Content="{Binding NewItemLabel}" Command="{Binding NewItemCommand}"
+              IsVisible="{Binding CanCreateSelectedType}" />
     </Grid>
 
     <Grid Grid.Row="3">

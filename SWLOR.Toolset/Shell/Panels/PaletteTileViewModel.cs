@@ -14,11 +14,16 @@ namespace SWLOR.Toolset.Shell.Panels
     /// </remarks>
     public partial class PaletteTileViewModel : ObservableObject
     {
-        public PaletteTileViewModel(string resRef, string name, string? categoryPath)
+        public PaletteTileViewModel(
+            string resRef,
+            string name,
+            string? categoryPath,
+            PaletteSource source = PaletteSource.Custom)
         {
             ResRef = resRef;
             Name = name;
             CategoryPath = categoryPath;
+            Source = source;
         }
 
         /// <summary>
@@ -35,6 +40,9 @@ namespace SWLOR.Toolset.Shell.Panels
         public TilePaletteEntry? Tile { get; }
 
         public bool IsTile => Tile != null;
+
+        /// <summary>The palette half this blueprint came from; placement must preserve it.</summary>
+        public PaletteSource Source { get; }
 
         /// <summary>
         /// For a blueprint, its resref. For a tile, the model resref its preview is rendered from - the

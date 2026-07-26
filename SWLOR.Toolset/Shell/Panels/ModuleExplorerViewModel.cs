@@ -130,6 +130,12 @@ namespace SWLOR.Toolset.Shell.Panels
         /// <summary>What the New button says, which follows the tab - "New Area...", "New Script...".</summary>
         public string NewItemLabel => $"New {SelectedType.SingularDisplayName()}...";
 
+        /// <summary>
+        /// Dialog creation stays unavailable until dialogs have an editor. Producing a blank DLG that
+        /// this toolset cannot populate or even open leaves the builder with an unusable resource.
+        /// </summary>
+        public bool CanCreateSelectedType => SelectedType != ResourceType.Dlg;
+
         /// <summary>Builds the tree for the selected tab.</summary>
         public void Initialize()
         {
@@ -231,6 +237,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
             OnPropertyChanged(nameof(NewItemLabel));
             OnPropertyChanged(nameof(CanOpenSelectedType));
+            OnPropertyChanged(nameof(CanCreateSelectedType));
             SelectedRow = null;
             StatusMessage = null;
             Refresh();
@@ -247,6 +254,12 @@ namespace SWLOR.Toolset.Shell.Panels
         [RelayCommand]
         private async Task NewItemAsync()
         {
+            if (!CanCreateSelectedType)
+            {
+                StatusMessage = "Dialog creation will be available with the dialog editor.";
+                return;
+            }
+
             if (SelectedType == ResourceType.Area)
             {
                 NewArea();

@@ -98,6 +98,9 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>True when the game data needed to resolve any artwork at all is present.</summary>
         public bool IsAvailable => _resourceIndex != null;
 
+        /// <summary>Coarse version of every game-data dependency used by rendered previews.</summary>
+        public DateTime ContentVersionUtc => _resourceIndex?.ContentVersionUtc ?? DateTime.MinValue;
+
         /// <summary>The blueprint types the palette offers previews for.</summary>
         public static bool IsSupported(ResourceType type) =>
             type is ResourceType.Utc or ResourceType.Uti or ResourceType.Utp
@@ -148,7 +151,10 @@ namespace SWLOR.Toolset.Workspace
         /// <see cref="RenderModel(ResourceType, Domain.Gff.JsonGffStruct)"/>, nothing here is cached:
         /// caching every blueprint's expanded meshes is what once reached a 37 GB working set.
         /// </remarks>
-        public RenderModel? BuildModel(ResourceType type, string resRef)
+        public RenderModel? BuildModel(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint = false)
         {
             if (!IsAvailable || string.IsNullOrWhiteSpace(resRef))
                 return null;
@@ -157,8 +163,11 @@ namespace SWLOR.Toolset.Workspace
             if (workspace == null)
                 return null;
 
+            var blueprint = useIndexedBlueprint
+                ? workspace.LoadIndexedBlueprint(type, resRef)
+                : workspace.LoadBlueprint(type, resRef);
             var reference = BlueprintModelResolver.Resolve(
-                type, workspace.LoadBlueprint(type, resRef).Fields, _appearances, _placeables, _doors,
+                type, blueprint.Fields, _appearances, _placeables, _doors,
                 LoadItemBlueprintRoot, PartModelExists, _waypoints);
 
             return reference.Kind switch
@@ -251,8 +260,11 @@ namespace SWLOR.Toolset.Workspace
                 _ => null
             };
 
+            Func<string, TextureImage?>? resolveTexture = _textures == null
+                ? null
+                : texture => _textures.Get(texture, reference.LayerColorIndices);
             var pixels = ThumbnailRenderer.Render(
-                model, ModelRenderSize, palette: null, resolveTexture: _textures == null ? null : _textures.Get);
+                model, ModelRenderSize, palette: null, resolveTexture: resolveTexture);
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
 
@@ -268,7 +280,8 @@ namespace SWLOR.Toolset.Workspace
 
             var pixels = ThumbnailRenderer.Render(
                 BuildRenderModel(modelResRef), ModelRenderSize,
-                palette: null, resolveTexture: _textures == null ? null : _textures.Get);
+                palette: null,
+                resolveTexture: _textures == null ? null : texture => _textures.Get(texture));
 
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }

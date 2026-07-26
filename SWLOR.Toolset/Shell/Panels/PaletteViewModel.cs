@@ -695,7 +695,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            if (target.ArmPlacement(SelectedType, tile.ResRef))
+            if (target.ArmPlacement(SelectedType, tile.ResRef, tile.Source))
                 StatusMessage = $"Click the map to place {tile.Name}.";
             else
                 StatusMessage = $"{SelectedType.DisplayName()} cannot be placed in this area.";
@@ -751,6 +751,27 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
+            var palettePath = CustomPalettePath(workspace.ModuleRoot, SelectedType);
+            if (palettePath != null && File.Exists(palettePath))
+            {
+                try
+                {
+                    if (ItpDocument.Load(palettePath).ContainsResRef(tile.ResRef))
+                    {
+                        StatusMessage =
+                            $"'{tile.Name}' is still referenced by {Path.GetFileName(palettePath)}. " +
+                            "Remove that palette entry before deleting the blueprint.";
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    StatusMessage =
+                        $"Could not verify {Path.GetFileName(palettePath)} before deletion: {ex.Message}";
+                    return;
+                }
+            }
+
             var confirmed = await _prompts.ConfirmDestructiveAsync(
                 $"Delete the {kind} '{tile.Name}'?",
                 $"This deletes {Path.GetFileName(path)} from the module. Any area that already placed " +
@@ -790,6 +811,24 @@ namespace SWLOR.Toolset.Shell.Panels
             Refresh();
             StatusMessage = $"Deleted {tile.Name}.";
             _log.AppendLine($"Deleted blueprint '{tile.ResRef}' ({path}).");
+        }
+
+        private static string? CustomPalettePath(string moduleRoot, ResourceType type)
+        {
+            var stem = type switch
+            {
+                ResourceType.Utc => "creaturepalcus",
+                ResourceType.Utd => "doorpalcus",
+                ResourceType.Uti => "itempalcus",
+                ResourceType.Utp => "placeablepalcus",
+                ResourceType.Uts => "soundpalcus",
+                ResourceType.Utm => "storepalcus",
+                ResourceType.Utt => "triggerpalcus",
+                ResourceType.Utw => "waypointpalcus",
+                _ => null
+            };
+
+            return stem == null ? null : Path.Combine(moduleRoot, "itp", stem + ".itp.json");
         }
 
         /// <summary>The label for the type-specific create action, e.g. "New Placeable...".</summary>
@@ -1228,7 +1267,7 @@ namespace SWLOR.Toolset.Shell.Panels
             Breadcrumb = BreadcrumbFor(section);
 
             foreach (var resRef in resRefs.OrderBy(NameFor, StringComparer.CurrentCultureIgnoreCase))
-                AddTile(new PaletteTileViewModel(resRef, NameFor(resRef), null));
+                AddTile(new PaletteTileViewModel(resRef, NameFor(resRef), null, Source));
         }
 
         private void RebuildSearchTiles(CategorySection section)
@@ -1245,7 +1284,7 @@ namespace SWLOR.Toolset.Shell.Panels
             foreach (var resRef in matches)
             {
                 var folder = section.FoldersContaining(resRef).FirstOrDefault();
-                AddTile(new PaletteTileViewModel(resRef, NameFor(resRef), folder?.Name));
+                AddTile(new PaletteTileViewModel(resRef, NameFor(resRef), folder?.Name, Source));
             }
 
             Breadcrumb = matches.Count >= MaxSearchResults

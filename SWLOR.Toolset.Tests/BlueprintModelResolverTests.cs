@@ -1,11 +1,13 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
+using Radoub.Formats.Plt;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -141,6 +143,19 @@ namespace SWLOR.Toolset.Tests
             parts["footr"].Should().Be("pmh0_footr052");
             parts.Should().NotContainKey("belt", "creature belt 0 wins over armor belt 25");
             parts.Should().NotContainKey("shol");
+
+            result.LayerColorIndices[PltLayers.Skin]
+                .Should().Be((int)root.Get("Color_Skin").GetInteger());
+            result.LayerColorIndices[PltLayers.Hair]
+                .Should().Be((int)root.Get("Color_Hair").GetInteger());
+
+            var armor = BlueprintRoot(ResourceType.Uti, "noble_gr");
+            result.LayerColorIndices[PltLayers.Metal1]
+                .Should().Be((int)armor.Get("Metal1Color").GetInteger());
+            result.LayerColorIndices[PltLayers.Cloth2]
+                .Should().Be((int)armor.Get("Cloth2Color").GetInteger());
+            result.LayerColorIndices[PltLayers.Leather1]
+                .Should().Be((int)armor.Get("Leather1Color").GetInteger());
         }
 
         [Test]

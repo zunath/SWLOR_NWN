@@ -27,7 +27,10 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                             new FieldDescriptor { Label = "Tag", FieldName = "Tag", Kind = EditorKind.Text, FieldType = GffFieldType.CExoString },
                             new FieldDescriptor { Label = "ResRef", FieldName = "TemplateResRef", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, IsReadOnly = true, Description = "Blueprint resref; matches the file name." },
                             new FieldDescriptor { Label = "Description", FieldName = "Description", Kind = EditorKind.LocString, FieldType = GffFieldType.CExoLocString },
-                            new FieldDescriptor { Label = "Conversation", FieldName = "Conversation", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, Description = "Legacy .dlg resref; SWLOR dialogs are C# classes." },
+                            // Not "legacy": 352 of the module's conversations are hand-authored .dlg
+                            // files and only 19 are C# classes. The C# route is the local CONVERSATION
+                            // variable, not this field.
+                            new FieldDescriptor { Label = "Conversation", FieldName = "Conversation", Kind = EditorKind.ResourcePicker, LookupKey = "dlg", FieldType = GffFieldType.ResRef, Description = "The .dlg this creature talks from. For a C# dialog class, leave this blank and set the CONVERSATION local variable instead." },
                             new FieldDescriptor { Label = "Comment", FieldName = "Comment", Kind = EditorKind.Text, FieldType = GffFieldType.CExoString }
                         }
                     },

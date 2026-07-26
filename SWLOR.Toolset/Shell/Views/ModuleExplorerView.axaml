@@ -42,11 +42,20 @@
       </ItemsControl.ItemTemplate>
     </ItemsControl>
 
-    <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="8,8,8,6" ColumnSpacing="6">
-      <TextBox Grid.Column="0" Text="{Binding Filter}" Watermark="Search contents..." />
+    <Grid Grid.Row="2" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto"
+          Margin="8,8,8,6" ColumnSpacing="6">
+      <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Filter}" Watermark="Search contents..." />
       <!-- The button names what it makes, which is why it is bound rather than labelled. -->
-      <Button Grid.Column="1" Content="{Binding NewItemLabel}" Command="{Binding NewItemCommand}"
-              IsVisible="{Binding CanCreateSelectedType}" />
+      <Button Grid.Row="0" Grid.Column="1" Content="{Binding NewItemLabel}"
+              Command="{Binding NewItemCommand}" IsVisible="{Binding CanCreateSelectedType}" />
+      <!-- Two options that only mean anything for conversations, so they only appear there. -->
+      <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal"
+                  Spacing="12" Margin="2,6,0,0" IsVisible="{Binding HasDialogOptions}">
+        <CheckBox Content="Search what people say" IsChecked="{Binding SearchDialogueText, Mode=TwoWay}"
+                  ToolTip.Tip="Search the dialogue itself rather than resrefs and names. Reads every conversation, so it is a little slower." />
+        <CheckBox Content="Show generated" IsChecked="{Binding ShowGeneratedDialogs, Mode=TwoWay}"
+                  ToolTip.Tip="Include the 255 numbered shells the C# Dialog service generates. They cannot be edited here." />
+      </StackPanel>
     </Grid>
 
     <Grid Grid.Row="3">

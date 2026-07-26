@@ -549,7 +549,8 @@ namespace SWLOR.Toolset.Tests
                 // need, so without it a resource that will not read at all was reported by nobody.
                 "GffParse",
                 "ResRefLength", "DanglingInstanceTemplate", "VarTableEnum",
-                "QuestActivatorNotInPalette", "SpawnWaypointPalette", "PaletteOrphan"
+                "QuestActivatorNotInPalette", "SpawnWaypointPalette", "PaletteOrphan",
+                "DanglingConversation", "UnreferencedConversation"
             });
         }
 
@@ -820,15 +821,26 @@ namespace SWLOR.Toolset.Tests
     {
         private readonly HashSet<int> _validNpcGroups;
         private readonly HashSet<string> _validSpawnTableIds;
+        private readonly Dictionary<string, QuestDefinitionInfo> _quests;
 
         public FakeGameCodeIndex(
             IEnumerable<int>? validNpcGroups = null,
             IEnumerable<string>? validSpawnTableIds = null,
-            bool isSourceScanAvailable = true)
+            bool isSourceScanAvailable = true,
+            IEnumerable<QuestDefinitionInfo>? quests = null,
+            IReadOnlyDictionary<int, string>? keyItems = null,
+            IReadOnlyDictionary<int, string>? factions = null,
+            IReadOnlyDictionary<int, string>? skills = null)
         {
             _validNpcGroups = new HashSet<int>(validNpcGroups ?? Array.Empty<int>());
             _validSpawnTableIds = new HashSet<string>(validSpawnTableIds ?? Array.Empty<string>(), StringComparer.Ordinal);
+            _quests = (quests ?? Array.Empty<QuestDefinitionInfo>())
+                .ToDictionary(quest => quest.Id, quest => quest, StringComparer.Ordinal);
             IsSourceScanAvailable = isSourceScanAvailable;
+            KeyItems = keyItems ?? new Dictionary<int, string>();
+            Factions = factions ?? new Dictionary<int, string>();
+            Skills = skills ?? new Dictionary<int, string>();
+            SkillEnumNames = Skills;
         }
 
         public bool IsSourceScanAvailable { get; }
@@ -836,9 +848,17 @@ namespace SWLOR.Toolset.Tests
         public IReadOnlyDictionary<int, string> NpcGroups =>
             _validNpcGroups.ToDictionary(value => value, value => $"Group{value}");
 
-        public IReadOnlyDictionary<int, string> KeyItems => new Dictionary<int, string>();
+        public IReadOnlyDictionary<int, string> KeyItems { get; }
 
-        public IReadOnlyCollection<string> QuestIds => Array.Empty<string>();
+        public IReadOnlyDictionary<int, string> Factions { get; }
+
+        public IReadOnlyDictionary<int, string> Skills { get; }
+
+        public IReadOnlyDictionary<int, string> SkillEnumNames { get; }
+
+        public IReadOnlyCollection<string> QuestIds => _quests.Keys;
+
+        public IReadOnlyDictionary<string, QuestDefinitionInfo> Quests => _quests;
 
         public IReadOnlyCollection<string> SpawnTableIds => _validSpawnTableIds;
 
@@ -852,7 +872,10 @@ namespace SWLOR.Toolset.Tests
 
         public bool IsValidNpcGroup(int npcGroupValue) => _validNpcGroups.Contains(npcGroupValue);
 
-        public bool IsValidQuestId(string questId) => false;
+        public bool IsValidQuestId(string questId) => _quests.ContainsKey(questId);
+
+        public QuestDefinitionInfo? FindQuest(string questId) =>
+            _quests.TryGetValue(questId, out var quest) ? quest : null;
 
         public bool IsValidSpawnTableId(string spawnTableId) => _validSpawnTableIds.Contains(spawnTableId);
 

@@ -3,11 +3,32 @@ using NUnit.Framework;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Services;
 
 namespace SWLOR.Toolset.Tests
 {
     public class ScriptUsageIndexTests
     {
+        [Test]
+        public async Task InvalidatingTheCacheBuildsANewLazyGeneration()
+        {
+            var builds = 0;
+            var cache = new ScriptUsageIndexCache(() =>
+            {
+                Interlocked.Increment(ref builds);
+                return null;
+            });
+
+            await cache.GetAsync();
+            await cache.GetAsync();
+            builds.Should().Be(1);
+
+            cache.Invalidate();
+            await cache.GetAsync();
+
+            builds.Should().Be(2);
+        }
+
         [Test]
         public void BuildFindsNestedDialogScriptsAndPlacedInstanceOverrides()
         {

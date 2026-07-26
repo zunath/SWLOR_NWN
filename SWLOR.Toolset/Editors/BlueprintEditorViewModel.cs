@@ -28,6 +28,9 @@ namespace SWLOR.Toolset.Editors
         private readonly IEditorPromptService _prompts;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly IScriptSlotHost? _scriptSlotHost;
+
+        /// <summary>Supplies the module workspace to resource pickers; null leaves them free-text.</summary>
+        private readonly Func<Domain.Workspace.ModuleWorkspace?>? _resourceLister;
         private readonly string _resRef;
         private bool _closeApproved;
         private bool _closePromptOpen;
@@ -76,9 +79,11 @@ namespace SWLOR.Toolset.Editors
             IEditorPromptService prompts,
             Func<uint, string?>? resolveStrRef = null,
             IScriptSlotHost? scriptSlotHost = null,
-            Func<EditorFieldContext, Func<string, Action, bool>, Placeables.PlaceableEditorSections?>? placeableSections = null)
+            Func<EditorFieldContext, Func<string, Action, bool>, Placeables.PlaceableEditorSections?>? placeableSections = null,
+            Func<Domain.Workspace.ModuleWorkspace?>? resourceLister = null)
         {
             _scriptSlotHost = scriptSlotHost;
+            _resourceLister = resourceLister;
             _log = log;
             _prompts = prompts;
             _gameCodeIndex = gameCodeIndex;
@@ -92,7 +97,8 @@ namespace SWLOR.Toolset.Editors
             foreach (var group in schema.Groups)
             {
                 var fields = group.Fields
-                    .Select(descriptor => FieldViewModelFactory.Create(descriptor, _context, lookups, scriptSlotHost))
+                    .Select(descriptor => FieldViewModelFactory.Create(
+                        descriptor, _context, lookups, scriptSlotHost, ResourceChoices))
                     .ToList();
                 var editorGroup = new EditorGroup(group.Title, fields);
                 Groups.Add(editorGroup);
@@ -187,11 +193,13 @@ namespace SWLOR.Toolset.Editors
 
         private void RebuildVariablesTab()
         {
-            var existing = Tabs.FirstOrDefault(tab => ReferenceEquals(tab.Content, VarTableSection));
+            var existing = Tabs.FirstOrDefault(tab => tab.Title == "Variables");
             var wanted = VarTableSection != null && ShouldShowVariablesTab();
 
             if (wanted && existing == null)
                 Tabs.Add(new EditorTabViewModel("Variables", VarTableSection!));
+            else if (wanted && !ReferenceEquals(existing!.Content, VarTableSection))
+                Tabs[Tabs.IndexOf(existing)] = new EditorTabViewModel("Variables", VarTableSection!);
             else if (!wanted && existing != null)
                 Tabs.Remove(existing);
             else
@@ -213,6 +221,28 @@ namespace SWLOR.Toolset.Editors
                 EditorKind.ScriptSlot => new ScriptFieldViewModel(descriptor, _context),
                 _ => new TextFieldViewModel(descriptor, _context)
             };
+        }
+
+        /// <summary>
+        /// Every resource of one kind in the module, for a picker. Generated conversation shells are
+        /// left out: they are assigned by the C# Dialog service at runtime, so pointing a blueprint
+        /// at one by hand does nothing.
+        /// </summary>
+        private IReadOnlyList<string> ResourceChoices(string? lookupKey)
+        {
+            var workspace = _resourceLister?.Invoke();
+            if (workspace == null || !ResourceTypeExtensions.TryFromExtension(lookupKey, out var type))
+                return Array.Empty<string>();
+
+            var resRefs = workspace.EnumerateResRefs(type);
+            if (type == ResourceType.Dlg)
+            {
+                resRefs = resRefs
+                    .Where(resRef => !Domain.Validation.UnreferencedConversationRule.IsGeneratedShell(resRef))
+                    .ToList();
+            }
+
+            return resRefs.OrderBy(resRef => resRef, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
         private bool RunEdit(string description, Action mutation)
@@ -356,6 +386,7 @@ namespace SWLOR.Toolset.Editors
             VarTableSection = new VarTableSectionViewModel(
                 _context.RunEdit, new VarTable(_session.Document.Root), _gameCodeIndex);
             OnPropertyChanged(nameof(VarTableSection));
+            RebuildVariablesTab();
         }
 
         private void RefreshAllFields()

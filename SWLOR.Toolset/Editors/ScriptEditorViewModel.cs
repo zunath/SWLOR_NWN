@@ -296,14 +296,18 @@ namespace SWLOR.Toolset.Editors
                     await Task.Delay(250, cts.Token).ConfigureAwait(false);
                     var analysis = _analyzer.Analyze(source);
 
-                    lock (_analysisGate)
+                    await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
                     {
-                        if (_isClosed || cts.IsCancellationRequested || !ReferenceEquals(_analysisCts, cts))
-                            return;
+                        lock (_analysisGate)
+                        {
+                            if (_isClosed || cts.IsCancellationRequested || !ReferenceEquals(_analysisCts, cts))
+                                return;
 
-                        Diagnostics = analysis.Diagnostics;
-                        DiagnosticsChanged?.Invoke(Diagnostics);
-                    }
+                            Diagnostics = analysis.Diagnostics;
+                            RefreshOutline(analysis.Outline);
+                            DiagnosticsChanged?.Invoke(Diagnostics);
+                        }
+                    });
                 }
                 catch (OperationCanceledException)
                 {

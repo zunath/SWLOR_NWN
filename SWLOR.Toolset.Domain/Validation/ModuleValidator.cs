@@ -44,7 +44,9 @@ namespace SWLOR.Toolset.Domain.Validation
             new VarTableEnumRule(),
             new QuestActivatorNotInPaletteRule(),
             new SpawnWaypointPaletteRule(),
-            new PaletteOrphanRule()
+            new PaletteOrphanRule(),
+            new DanglingConversationRule(),
+            new UnreferencedConversationRule()
         };
 
         /// <summary>Runs every rule synchronously on the calling thread. Prefer <see cref="RunAsync"/> from UI code.</summary>

@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text;
 using SWLOR.Toolset.Domain.Editing;
 
 namespace SWLOR.Toolset.Domain.Gff
@@ -17,6 +19,23 @@ namespace SWLOR.Toolset.Domain.Gff
         public byte[]? RawStructId { get; internal set; }
 
         public int Count => _entries.Count;
+
+        /// <summary>This struct's "__struct_id" as a number, or null when the source omitted it.</summary>
+        public uint? StructId => RawStructId == null
+            ? null
+            : uint.Parse(Encoding.ASCII.GetString(RawStructId), NumberStyles.Integer, CultureInfo.InvariantCulture);
+
+        /// <summary>
+        /// Rewrites this struct's "__struct_id". Needed because every list in the corpus numbers its
+        /// elements by position, so removing one from the middle renumbers the elements after it.
+        /// </summary>
+        public void SetStructId(uint value)
+        {
+            EditScope.EnsureMutationAllowed();
+            var old = RawStructId;
+            RawStructId = Encoding.ASCII.GetBytes(value.ToString(CultureInfo.InvariantCulture));
+            EditScope.Capture(new StructIdEdit(this, old, RawStructId));
+        }
 
         public IReadOnlyList<KeyValuePair<string, JsonGffField>> Entries => _entries;
 

@@ -31,6 +31,10 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("condition-has-faction-standing")
                 .Description("Checks whether a player has standing greater than or equal to an amount with a particular faction.")
+                .Phrase("the player has at least {amount} standing with {factionId}")
+                .NegatedPhrase("the player has less than {amount} standing with {factionId}")
+                .Argument("factionId", SnippetArgumentType.FactionId)
+                .Argument("amount", SnippetArgumentType.Amount)
                 .AppearsWhenAction((player, args) =>
                 {
                     if(args.Length < 2)
@@ -75,6 +79,10 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("condition-has-faction-points")
                 .Description("Checks whether a player has faction points greater than or equal with a particular faction.")
+                .Phrase("the player has at least {amount} faction points with {factionId}")
+                .NegatedPhrase("the player has fewer than {amount} faction points with {factionId}")
+                .Argument("factionId", SnippetArgumentType.FactionId)
+                .Argument("amount", SnippetArgumentType.Amount)
                 .AppearsWhenAction((player, args) =>
                 {
                     if (args.Length < 2)
@@ -120,6 +128,9 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-give-faction-points")
                 .Description("Gives faction points toward a particular faction to a player.")
+                .Phrase("gives the player {amount} faction points with {factionId}")
+                .Argument("factionId", SnippetArgumentType.FactionId)
+                .Argument("amount", SnippetArgumentType.Amount)
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length < 2)
@@ -159,6 +170,9 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-take-faction-points")
                 .Description("Takes faction points toward a particular faction from a player.")
+                .Phrase("takes {amount} faction points from the player with {factionId}")
+                .Argument("factionId", SnippetArgumentType.FactionId)
+                .Argument("amount", SnippetArgumentType.Amount)
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length < 2)
@@ -197,6 +211,9 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-give-faction-standing")
                 .Description("Gives faction standing toward a particular faction to a player.")
+                .Phrase("gives the player {amount} standing with {factionId}")
+                .Argument("factionId", SnippetArgumentType.FactionId)
+                .Argument("amount", SnippetArgumentType.Amount)
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length < 2)
@@ -235,6 +252,9 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-take-faction-standing")
                 .Description("Takes faction standing toward a particular faction from a player.")
+                .Phrase("takes {amount} standing from the player with {factionId}")
+                .Argument("factionId", SnippetArgumentType.FactionId)
+                .Argument("amount", SnippetArgumentType.Amount)
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length < 2)

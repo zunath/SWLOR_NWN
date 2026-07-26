@@ -1,5 +1,6 @@
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
@@ -56,11 +57,11 @@ namespace SWLOR.Toolset.Editors
         private readonly Services.IExternalLinkService? _links;
 
         /// <summary>
-        /// Built once, in the background, on first use. Scanning every blueprint and area for script
-        /// slots is expensive, and the picker is the only thing that needs it — so it must not be
-        /// paid for at startup by builders who never open one.
+        /// Built in the background on first use, then invalidated when a scripted resource changes.
+        /// Scanning all script slots is expensive; builders who never request usages still pay
+        /// nothing at startup.
         /// </summary>
-        private readonly Lazy<Task<Domain.Script.ScriptUsageIndex?>> _scriptUsageIndex;
+        private readonly ScriptUsageIndexCache _scriptUsageIndex;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -69,6 +70,15 @@ namespace SWLOR.Toolset.Editors
         // Keyed by path like the blueprint map rather than by resref like the area map: a script is
         // one file, so the path is its identity and there is no are/git/gic triplet to name.
         private readonly Dictionary<string, ScriptEditorViewModel> _openScriptEditors = new(StringComparer.OrdinalIgnoreCase);
+
+        private readonly Dictionary<string, ConversationEditorViewModel> _openConversations = new(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// The conversation snippet registry, read once from the game code. Built lazily because
+        /// reflecting over every <c>ISnippetListDefinition</c> is wasted work in a session that
+        /// never opens a dialog.
+        /// </summary>
+        private SnippetCatalog? _snippets;
 
         public EditorService(
             WorkspaceContext workspaceContext,
@@ -118,7 +128,7 @@ namespace SWLOR.Toolset.Editors
             _problems = problems;
             _compileService = compileService;
             _links = links;
-            _scriptUsageIndex = new Lazy<Task<Domain.Script.ScriptUsageIndex?>>(() => Task.Run(() =>
+            _scriptUsageIndex = new ScriptUsageIndexCache(() =>
             {
                 var workspace = _workspaceContext.Workspace;
                 if (workspace == null)
@@ -133,7 +143,8 @@ namespace SWLOR.Toolset.Editors
                     _log.AppendLine($"Could not index script usages: {ex.Message}");
                     return null;
                 }
-            }));
+            });
+            _workspaceContext.ScriptUsagesInvalidated += _scriptUsageIndex.Invalidate;
         }
 
         /// <summary>
@@ -189,7 +200,62 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Backs the script slots on one editor, describing its owner for the picker title.</summary>
         private ScriptSlotHost CreateScriptSlotHost(string ownerDescription) =>
-            new(_workspaceContext, () => this, _log, ownerDescription, _scriptUsageIndex);
+            new(
+                _workspaceContext,
+                () => this,
+                _log,
+                ownerDescription,
+                _scriptUsageIndex.GetAsync,
+                CreateNewScriptAsync);
+
+        /// <summary>
+        /// Creates an NSS resource for the script picker's "New script..." action and returns the
+        /// resref the picker should place in the slot.
+        /// </summary>
+        private async Task<string?> CreateNewScriptAsync()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return null;
+
+            var name = await _prompts.PromptForTextAsync(
+                "New script",
+                "Name for the new script. Its resref is derived from this.",
+                string.Empty,
+                "Create").ConfigureAwait(true);
+            if (string.IsNullOrWhiteSpace(name))
+                return null;
+
+            var resRef = ModuleResourceTemplateFactory.ToResRef(name);
+            if (resRef.Length == 0)
+            {
+                _log.AppendLine("Could not create script: that name has no letters or digits.");
+                return null;
+            }
+
+            var path = workspace.GetResourcePath(ResourceType.Nss, resRef);
+            if (File.Exists(path))
+            {
+                _log.AppendLine($"Could not create script: '{resRef}' already exists.");
+                return null;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                SaveService.WriteNewAtomic(
+                    path,
+                    ModuleResourceTemplateFactory.CreateFileContent(ResourceType.Nss, resRef, name.Trim()));
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Nss, resRef);
+                _log.AppendLine($"Created script '{resRef}' from the script-slot picker.");
+                return resRef;
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not create script '{resRef}': {ex.Message}");
+                return null;
+            }
+        }
 
         /// <summary>Opens a NWScript source file as a text editor tab, or activates its open tab.</summary>
         private void OpenScriptEditor(ModuleWorkspace workspace, string resRef)
@@ -231,7 +297,7 @@ namespace SWLOR.Toolset.Editors
                 editor.OpenLexiconRequested = OpenLexiconPage;
                 editor.FindUsages = async name =>
                 {
-                    var index = await _scriptUsageIndex.Value.ConfigureAwait(true);
+                    var index = await _scriptUsageIndex.GetAsync().ConfigureAwait(true);
                     return index?.UsagesOf(name) ?? Array.Empty<Domain.Script.ScriptUsage>();
                 };
                 editor.DiagnosticsChanged += diagnostics =>
@@ -274,6 +340,12 @@ namespace SWLOR.Toolset.Editors
             if (type == ResourceType.Nss)
             {
                 OpenScriptEditor(workspace, resRef);
+                return;
+            }
+
+            if (type == ResourceType.Dlg)
+            {
+                OpenConversationEditor(workspace, resRef);
                 return;
             }
 
@@ -322,7 +394,8 @@ namespace SWLOR.Toolset.Editors
                     // that strref says, instead of a blank the builder reads as missing data.
                     _tlkService == null ? null : _tlkService.GetString,
                     CreateScriptSlotHost($"{type.SingularDisplayName()} '{resRef}'"),
-                    type == ResourceType.Utp ? CreatePlaceableSections : null);
+                    type == ResourceType.Utp ? CreatePlaceableSections : null,
+                    () => _workspaceContext.Workspace);
                 editor.Closed += _ => _openEditors.Remove(filePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
@@ -391,7 +464,9 @@ namespace SWLOR.Toolset.Editors
                 return false;
 
             var path = workspace.GetResourcePath(type, resRef);
-            return _openEditors.ContainsKey(path) || _openTriggerEditors.ContainsKey(path);
+            return _openEditors.ContainsKey(path)
+                   || _openTriggerEditors.ContainsKey(path)
+                   || _openConversations.ContainsKey(path);
         }
 
         /// <summary>
@@ -413,6 +488,12 @@ namespace SWLOR.Toolset.Editors
             }
 
             foreach (var editor in _openAreaEditors.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
+            foreach (var editor in _openConversations.Values.ToList())
             {
                 if (!await editor.TrySaveAsync().ConfigureAwait(true))
                     return false;
@@ -446,7 +527,8 @@ namespace SWLOR.Toolset.Editors
             if (!_openEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openAreaEditors.Values.Any(editor => editor.IsDirty) &&
-                !_openScriptEditors.Values.Any(editor => editor.IsDirty))
+                !_openScriptEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openConversations.Values.Any(editor => editor.IsDirty))
                 return true;
 
             var choice = await _prompts.ConfirmCloseAsync("all open editors").ConfigureAwait(true);
@@ -463,6 +545,8 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openAreaEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openScriptEditors.Values)
+                editor.ApproveApplicationClose();
+            foreach (var editor in _openConversations.Values)
                 editor.ApproveApplicationClose();
 
             return true;
@@ -541,6 +625,83 @@ namespace SWLOR.Toolset.Editors
             _workspaceContext.Workspace == null || string.IsNullOrWhiteSpace(tag)
                 ? null
                 : _workspaceContext.Workspace.TagIndex.FindAreaDefiningTag(tag);
+        /// <summary>
+        /// Conversations open in the Play-it editor. The 255 <c>dialogN</c> shells are refused: they
+        /// are generated for the C# <c>Dialog</c> service's runtime menus and editing one by hand
+        /// would be edited back over on the next generation.
+        /// </summary>
+        private void OpenConversationEditor(Domain.Workspace.ModuleWorkspace workspace, string resRef)
+        {
+            if (Domain.Validation.UnreferencedConversationRule.IsGeneratedShell(resRef))
+            {
+                _log.AppendLine(
+                    $"'{resRef}' is one of the 255 conversation shells the C# Dialog service generates, "
+                    + "not hand-authored content. Open the C# dialog class instead.");
+                return;
+            }
+
+            var filePath = workspace.GetResourcePath(ResourceType.Dlg, resRef);
+            if (!File.Exists(filePath))
+            {
+                _log.AppendLine($"File not found: {filePath}");
+                return;
+            }
+
+            if (_openConversations.TryGetValue(filePath, out var existing))
+            {
+                _factory.ActivateDocument(existing);
+                return;
+            }
+
+            try
+            {
+                // Refused rather than half-shown. See ConversationCompatibility for why that is the
+                // safer failure; the file is left untouched either way.
+                var support = Domain.Conversations.ConversationCompatibility.Check(
+                    Domain.Documents.DlgDocument.Load(filePath));
+                if (!support.IsSupported)
+                {
+                    _log.AppendLine($"{resRef}: {support.Reason}");
+                    Shell.Views.ErrorDialog.Show($"Cannot open '{resRef}'", support.Reason, null);
+                    return;
+                }
+
+                _snippets ??= SnippetCatalog.Build();
+                var editor = new ConversationEditorViewModel(
+                    filePath, resRef, _snippets, _gameCodeIndex, _log, _prompts,
+                    extension => TagsFor(extension));
+                editor.Closed += _ => _openConversations.Remove(filePath);
+                editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                editor.CatalogEntryChanged += () =>
+                    _workspaceContext.RefreshCatalogEntry(ResourceType.Dlg, resRef);
+                _openConversations[filePath] = editor;
+                _factory.OpenDocument(editor);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Failed to open conversation {resRef}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Tags of every blueprint of one kind, so a store or waypoint argument is a list rather than
+        /// a remembered string. Read from the background catalog, which already parsed them.
+        /// </summary>
+        private IReadOnlyList<string> TagsFor(string extension)
+        {
+            if (!ResourceTypeExtensions.TryFromExtension(extension, out var type))
+                return Array.Empty<string>();
+
+            var entries = _workspaceContext.Catalog?.Entries;
+            if (entries == null)
+                return Array.Empty<string>();
+
+            return entries
+                .Where(entry => entry.ResourceType == type && !string.IsNullOrWhiteSpace(entry.Tag))
+                .Select(entry => entry.Tag!)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
 
         /// <summary>Areas open in the composite editor (.are properties + .git instance lists).</summary>
         private void OpenAreaEditor(Domain.Workspace.ModuleWorkspace workspace, string resRef)

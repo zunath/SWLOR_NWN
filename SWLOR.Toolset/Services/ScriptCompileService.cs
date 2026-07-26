@@ -28,16 +28,19 @@ namespace SWLOR.Toolset.Services
         private readonly WorkspaceContext _workspaceContext;
         private readonly OutputLogService _log;
         private readonly ToolsetSettings? _settings;
+        private readonly string? _compilerPathOverride;
         private string? _stagedHeaderDirectory;
 
         public ScriptCompileService(
             WorkspaceContext workspaceContext,
             OutputLogService log,
-            ToolsetSettings? settings = null)
+            ToolsetSettings? settings = null,
+            string? compilerPathOverride = null)
         {
             _workspaceContext = workspaceContext;
             _log = log;
             _settings = settings;
+            _compilerPathOverride = compilerPathOverride;
         }
 
         /// <summary>Where the vendored compiler lives, beside nwn_gff.exe and nwn_erf.exe.</summary>
@@ -45,6 +48,9 @@ namespace SWLOR.Toolset.Services
         {
             get
             {
+                if (_compilerPathOverride != null)
+                    return File.Exists(_compilerPathOverride) ? _compilerPathOverride : null;
+
                 var root = RepositoryRoot();
                 if (root == null)
                     return null;
@@ -92,13 +98,18 @@ namespace SWLOR.Toolset.Services
             }
 
             // Includes declare no main() and produce no artifact; compiling one is not a failure but
-            // there is nothing to write, so skip straight to reporting what it invalidated.
+            // every entry point that depends on one must be rebuilt before a save or pack can report
+            // success. ModulePacker copies existing .ncs files verbatim and never compiles them.
             if (!ScriptStalenessScanner.IsEntryPoint(ScriptTextDocument.Load(source).Text))
             {
                 var dependents = IncludeGraph()?.TransitiveDependents(resRef) ?? Array.Empty<string>();
-                _log.AppendLine(dependents.Count == 0
+                var entryPoints = dependents
+                    .Where(dependent => IsEntryPoint(workspace, dependent))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+                _log.AppendLine(entryPoints.Count == 0
                     ? $"{resRef} is an include and has no compiled output."
-                    : $"{resRef} is an include; {dependents.Count} dependent script(s) now need recompiling.");
+                    : $"{resRef} is an include; rebuilding {entryPoints.Count} dependent script(s).");
 
                 // An include still gets compile-checked, so a syntax error in a header is reported
                 // where it was made rather than only in whichever dependent is rebuilt next.
@@ -107,6 +118,30 @@ namespace SWLOR.Toolset.Services
                 var checkDiagnostics = ToAnalysisDiagnostics(
                     checkResult, ScriptTextDocument.Load(source).Text, resRef);
                 DiagnosticsProduced?.Invoke(resRef, checkDiagnostics);
+                if (!checkResult.Succeeded)
+                {
+                    _log.AppendLine($"Could not compile-check include {resRef}; dependent scripts were not rebuilt.");
+                    return new CompileOutcome(false, checkDiagnostics);
+                }
+
+                var failed = 0;
+                foreach (var dependent in entryPoints)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (!(await CompileAsync(dependent, cancellationToken).ConfigureAwait(false)).Succeeded)
+                        failed++;
+                }
+
+                if (failed > 0)
+                {
+                    _log.AppendLine(
+                        $"Include {resRef} was valid, but {failed} dependent script(s) failed to rebuild.");
+                    return new CompileOutcome(false, checkDiagnostics);
+                }
+
+                if (entryPoints.Count > 0)
+                    _log.AppendLine($"Rebuilt all {entryPoints.Count} script(s) affected by include {resRef}.");
+
                 return new CompileOutcome(true, checkDiagnostics);
             }
 
@@ -270,6 +305,22 @@ namespace SWLOR.Toolset.Services
         {
             var workspace = _workspaceContext.Workspace;
             return workspace == null ? null : ScriptIncludeGraph.Build(Path.Combine(workspace.ModuleRoot, "nss"));
+        }
+
+        private static bool IsEntryPoint(ModuleWorkspace workspace, string resRef)
+        {
+            var path = workspace.GetResourcePath(ResourceType.Nss, resRef);
+            if (!File.Exists(path))
+                return false;
+
+            try
+            {
+                return ScriptStalenessScanner.IsEntryPoint(ScriptTextDocument.Load(path).Text);
+            }
+            catch (IOException)
+            {
+                return false;
+            }
         }
 
         private ScriptCompiler? CreateCompiler()

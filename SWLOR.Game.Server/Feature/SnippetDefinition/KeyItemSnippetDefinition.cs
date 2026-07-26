@@ -25,6 +25,10 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("condition-all-key-items")
                 .Description("Checks whether a player has all of the specified key items.")
+                .Phrase("the player has {keyItemId}")
+                .NegatedPhrase("the player does not have {keyItemId}")
+                .Argument("keyItemId", SnippetArgumentType.KeyItemId)
+                .Repeats()
                 .AppearsWhenAction((player, args) =>
                 {
                     if (args.Length <= 0)
@@ -73,6 +77,9 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-give-key-items")
                 .Description("Gives a one or more key items to the player.")
+                .Phrase("gives the player {keyItemId}")
+                .Argument("keyItemId", SnippetArgumentType.KeyItemId)
+                .Repeats()
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length <= 0)

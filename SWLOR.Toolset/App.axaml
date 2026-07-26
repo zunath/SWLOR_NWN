@@ -82,6 +82,21 @@
       </StackPanel>
     </DataTemplate>
 
+    <!-- A resref that names another module resource. Editable text with the real list attached, so
+         a value from a hak stays typeable and an unknown one says so rather than being rejected. -->
+    <DataTemplate DataType="editors:ResourcePickerFieldViewModel">
+      <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto" Margin="0,2">
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
+                   Classes="dim" TextTrimming="CharacterEllipsis" />
+        <AutoCompleteBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}"
+                         ItemsSource="{Binding Choices}" FilterMode="Contains"
+                         FontFamily="Consolas,monospace" />
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding UnknownHint}" Classes="label"
+                   Foreground="{DynamicResource AmberBrush}" Margin="0,3,0,0"
+                   IsVisible="{Binding IsUnknown}" TextWrapping="Wrap" />
+      </Grid>
+    </DataTemplate>
+
     <DataTemplate DataType="editors:TextFieldViewModel">
       <Grid ColumnDefinitions="180,*" Margin="0,2">
         <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"

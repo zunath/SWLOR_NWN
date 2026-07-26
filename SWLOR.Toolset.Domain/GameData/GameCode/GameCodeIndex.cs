@@ -23,11 +23,16 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         private readonly HashSet<string> _spawnTableIds;
         private readonly HashSet<string> _lootTableIds;
         private readonly HashSet<string> _dialogNames;
+        private readonly Dictionary<string, QuestDefinitionInfo> _quests;
 
         public bool IsSourceScanAvailable { get; }
         public IReadOnlyDictionary<int, string> NpcGroups { get; }
         public IReadOnlyDictionary<int, string> KeyItems { get; }
+        public IReadOnlyDictionary<int, string> Factions { get; }
+        public IReadOnlyDictionary<int, string> Skills { get; }
+        public IReadOnlyDictionary<int, string> SkillEnumNames { get; }
         public IReadOnlyCollection<string> QuestIds => _questIds;
+        public IReadOnlyDictionary<string, QuestDefinitionInfo> Quests => _quests;
         public IReadOnlyCollection<string> SpawnTableIds => _spawnTableIds;
         public IReadOnlyCollection<string> LootTableIds => _lootTableIds;
         public IReadOnlyCollection<string> DialogNames => _dialogNames;
@@ -50,6 +55,9 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             SkillTypes = ReflectionGameplayEnumReader.ReadSkillTypes();
             VisualEffects = ReflectionGameplayEnumReader.ReadVisualEffects();
             _dialogNames = new HashSet<string>(ReflectionDialogReader.ReadDialogNames(), StringComparer.Ordinal);
+            Factions = ReflectionEnumReader.ReadFactions();
+            Skills = ReflectionEnumReader.ReadSkills();
+            SkillEnumNames = ReflectionEnumReader.ReadSkillEnumNames();
 
             var questDirectory = CombineIfUsable(gameServerSourceRoot, QuestDefinitionRelativePath);
             var spawnDirectory = CombineIfUsable(gameServerSourceRoot, SpawnDefinitionRelativePath);
@@ -60,6 +68,13 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             _questIds = questDirectory != null
                 ? SourceIdScanner.ScanBuilderCreateIds(questDirectory, out questComplete)
                 : new HashSet<string>(StringComparer.Ordinal);
+
+            // The detail scan is a superset of the id scan in intent but not in reach: a quest whose
+            // id resolves through a const still yields details, while one built by a helper method
+            // yields neither. Kept separate so the id set stays exactly as authoritative as it was.
+            _quests = questDirectory != null
+                ? QuestSourceScanner.Scan(questDirectory, out _)
+                : new Dictionary<string, QuestDefinitionInfo>(StringComparer.Ordinal);
 
             _spawnTableIds = spawnDirectory != null
                 ? SourceIdScanner.ScanBuilderCreateIds(spawnDirectory, out spawnComplete)
@@ -86,6 +101,9 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
 
         public bool IsValidQuestId(string questId) =>
             !string.IsNullOrEmpty(questId) && _questIds.Contains(questId);
+
+        public QuestDefinitionInfo? FindQuest(string questId) =>
+            !string.IsNullOrEmpty(questId) && _quests.TryGetValue(questId, out var quest) ? quest : null;
 
         public bool IsValidSpawnTableId(string spawnTableId) =>
             !string.IsNullOrEmpty(spawnTableId) && _spawnTableIds.Contains(spawnTableId);

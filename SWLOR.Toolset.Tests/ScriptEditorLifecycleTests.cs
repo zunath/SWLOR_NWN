@@ -1,3 +1,4 @@
+using Avalonia.Headless.NUnit;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Editors;
@@ -87,6 +88,28 @@ namespace SWLOR.Toolset.Tests
             await Task.Delay(400);
 
             callbacks.Should().Be(0);
+        }
+
+        [AvaloniaTest]
+        public async Task DebouncedAnalysisRefreshesTheScriptOutline()
+        {
+            var log = new OutputLogService();
+            var context = new WorkspaceContext(_ => throw new InvalidOperationException(), log);
+            var language = new ScriptLanguageService(context, log);
+            var editor = new ScriptEditorViewModel(
+                _path, "test_script", log, new StubPrompts(), language);
+            editor.AnalyzeNow();
+            editor.OutlineFunctions.Should().Contain(function => function.Name == "main");
+
+            var published = new TaskCompletionSource(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            editor.DiagnosticsChanged += _ => published.TrySetResult();
+            editor.OnTextChanged("void RenamedFunction() {}\n");
+
+            await published.Task.WaitAsync(TimeSpan.FromSeconds(3));
+
+            editor.OutlineFunctions.Should().ContainSingle()
+                .Which.Name.Should().Be("RenamedFunction");
         }
 
         private ScriptEditorViewModel Editor() =>

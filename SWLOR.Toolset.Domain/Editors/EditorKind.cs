@@ -31,6 +31,13 @@ namespace SWLOR.Toolset.Domain.Editors
         ScriptSlot,
 
         /// <summary>The local-variable table grid.</summary>
-        VarTableGrid
+        VarTableGrid,
+
+        /// <summary>
+        /// A resref naming another module resource, offered as a list of what exists. Still
+        /// free-text underneath: the value may legitimately name hak or base-game content.
+        /// <see cref="FieldDescriptor.LookupKey"/> carries the resource extension ("dlg").
+        /// </summary>
+        ResourcePicker
     }
 }

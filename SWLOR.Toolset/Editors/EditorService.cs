@@ -70,6 +70,15 @@ namespace SWLOR.Toolset.Editors
         // one file, so the path is its identity and there is no are/git/gic triplet to name.
         private readonly Dictionary<string, ScriptEditorViewModel> _openScriptEditors = new(StringComparer.OrdinalIgnoreCase);
 
+        private readonly Dictionary<string, ConversationEditorViewModel> _openConversations = new(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// The conversation snippet registry, read once from the game code. Built lazily because
+        /// reflecting over every <c>ISnippetListDefinition</c> is wasted work in a session that
+        /// never opens a dialog.
+        /// </summary>
+        private SnippetCatalog? _snippets;
+
         public EditorService(
             WorkspaceContext workspaceContext,
             LookupOptionProvider lookups,
@@ -277,6 +286,12 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            if (type == ResourceType.Dlg)
+            {
+                OpenConversationEditor(workspace, resRef);
+                return;
+            }
+
             var schema = GetSchema(type);
             if (schema == null)
             {
@@ -322,7 +337,8 @@ namespace SWLOR.Toolset.Editors
                     // that strref says, instead of a blank the builder reads as missing data.
                     _tlkService == null ? null : _tlkService.GetString,
                     CreateScriptSlotHost($"{type.SingularDisplayName()} '{resRef}'"),
-                    type == ResourceType.Utp ? CreatePlaceableSections : null);
+                    type == ResourceType.Utp ? CreatePlaceableSections : null,
+                    () => _workspaceContext.Workspace);
                 editor.Closed += _ => _openEditors.Remove(filePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
@@ -391,7 +407,9 @@ namespace SWLOR.Toolset.Editors
                 return false;
 
             var path = workspace.GetResourcePath(type, resRef);
-            return _openEditors.ContainsKey(path) || _openTriggerEditors.ContainsKey(path);
+            return _openEditors.ContainsKey(path)
+                   || _openTriggerEditors.ContainsKey(path)
+                   || _openConversations.ContainsKey(path);
         }
 
         /// <summary>
@@ -413,6 +431,12 @@ namespace SWLOR.Toolset.Editors
             }
 
             foreach (var editor in _openAreaEditors.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
+            foreach (var editor in _openConversations.Values.ToList())
             {
                 if (!await editor.TrySaveAsync().ConfigureAwait(true))
                     return false;
@@ -446,7 +470,8 @@ namespace SWLOR.Toolset.Editors
             if (!_openEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openAreaEditors.Values.Any(editor => editor.IsDirty) &&
-                !_openScriptEditors.Values.Any(editor => editor.IsDirty))
+                !_openScriptEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openConversations.Values.Any(editor => editor.IsDirty))
                 return true;
 
             var choice = await _prompts.ConfirmCloseAsync("all open editors").ConfigureAwait(true);
@@ -463,6 +488,8 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openAreaEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openScriptEditors.Values)
+                editor.ApproveApplicationClose();
+            foreach (var editor in _openConversations.Values)
                 editor.ApproveApplicationClose();
 
             return true;
@@ -538,6 +565,83 @@ namespace SWLOR.Toolset.Editors
             _workspaceContext.Workspace == null || string.IsNullOrWhiteSpace(tag)
                 ? null
                 : _workspaceContext.Workspace.TagIndex.FindAreaDefiningTag(tag);
+        /// <summary>
+        /// Conversations open in the Play-it editor. The 255 <c>dialogN</c> shells are refused: they
+        /// are generated for the C# <c>Dialog</c> service's runtime menus and editing one by hand
+        /// would be edited back over on the next generation.
+        /// </summary>
+        private void OpenConversationEditor(Domain.Workspace.ModuleWorkspace workspace, string resRef)
+        {
+            if (Domain.Validation.UnreferencedConversationRule.IsGeneratedShell(resRef))
+            {
+                _log.AppendLine(
+                    $"'{resRef}' is one of the 255 conversation shells the C# Dialog service generates, "
+                    + "not hand-authored content. Open the C# dialog class instead.");
+                return;
+            }
+
+            var filePath = workspace.GetResourcePath(ResourceType.Dlg, resRef);
+            if (!File.Exists(filePath))
+            {
+                _log.AppendLine($"File not found: {filePath}");
+                return;
+            }
+
+            if (_openConversations.TryGetValue(filePath, out var existing))
+            {
+                _factory.ActivateDocument(existing);
+                return;
+            }
+
+            try
+            {
+                // Refused rather than half-shown. See ConversationCompatibility for why that is the
+                // safer failure; the file is left untouched either way.
+                var support = Domain.Conversations.ConversationCompatibility.Check(
+                    Domain.Documents.DlgDocument.Load(filePath));
+                if (!support.IsSupported)
+                {
+                    _log.AppendLine($"{resRef}: {support.Reason}");
+                    Shell.Views.ErrorDialog.Show($"Cannot open '{resRef}'", support.Reason, null);
+                    return;
+                }
+
+                _snippets ??= SnippetCatalog.Build();
+                var editor = new ConversationEditorViewModel(
+                    filePath, resRef, _snippets, _gameCodeIndex, _log, _prompts,
+                    extension => TagsFor(extension));
+                editor.Closed += _ => _openConversations.Remove(filePath);
+                editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                editor.CatalogEntryChanged += () =>
+                    _workspaceContext.RefreshCatalogEntry(ResourceType.Dlg, resRef);
+                _openConversations[filePath] = editor;
+                _factory.OpenDocument(editor);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Failed to open conversation {resRef}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Tags of every blueprint of one kind, so a store or waypoint argument is a list rather than
+        /// a remembered string. Read from the background catalog, which already parsed them.
+        /// </summary>
+        private IReadOnlyList<string> TagsFor(string extension)
+        {
+            if (!ResourceTypeExtensions.TryFromExtension(extension, out var type))
+                return Array.Empty<string>();
+
+            var entries = _workspaceContext.Catalog?.Entries;
+            if (entries == null)
+                return Array.Empty<string>();
+
+            return entries
+                .Where(entry => entry.ResourceType == type && !string.IsNullOrWhiteSpace(entry.Tag))
+                .Select(entry => entry.Tag!)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
 
         /// <summary>Areas open in the composite editor (.are properties + .git instance lists).</summary>
         private void OpenAreaEditor(Domain.Workspace.ModuleWorkspace workspace, string resRef)

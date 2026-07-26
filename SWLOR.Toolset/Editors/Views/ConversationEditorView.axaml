@@ -1,0 +1,517 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:editors="using:SWLOR.Toolset.Editors"
+             xmlns:gamecode="using:SWLOR.Toolset.Domain.GameData.GameCode"
+             xmlns:conversations="using:SWLOR.Toolset.Domain.Conversations"
+             x:Class="SWLOR.Toolset.Editors.ConversationEditorView"
+             x:DataType="editors:ConversationEditorViewModel">
+
+  <!--
+    The conversation as the player hears it. Two devices carry the whole design: the rail on the
+    left, which lists every circumstance this NPC answers and is how you move around, and the
+    coverage strip under it, which is the only thing that can tell you about a line you never wrote.
+    Everything to the right is just dialogue.
+  -->
+
+  <UserControl.Styles>
+    <!-- A choice sits opposite the NPC bubble, so the corner radii mirror each other. -->
+    <Style Selector="Border.bubble">
+      <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource RuleStrongBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="4,12,12,12" />
+      <Setter Property="Padding" Value="13,10" />
+    </Style>
+    <Style Selector="Border.choice">
+      <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource RuleStrongBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="12,4,12,12" />
+      <Setter Property="Padding" Value="12,8" />
+    </Style>
+    <Style Selector="Border.cell">
+      <Setter Property="BorderBrush" Value="{DynamicResource RuleStrongBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="2" />
+      <Setter Property="Padding" Value="0,3" />
+      <Setter Property="MinWidth" Value="34" />
+    </Style>
+  </UserControl.Styles>
+
+  <DockPanel>
+
+    <!-- Pretend player. Changing a pill redraws the conversation, which is the whole navigation
+         model for anyone who does not want to think in situations. -->
+    <Border DockPanel.Dock="Top" Background="{DynamicResource ShellBackgroundBrush}"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="12,7">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <TextBlock Text="PRETEND THE PLAYER" Classes="label" VerticalAlignment="Center" />
+        <ItemsControl ItemsSource="{Binding QuestPills}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Orientation="Horizontal" Spacing="6" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="editors:QuestPillViewModel">
+              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                <ComboBox ItemsSource="{Binding Options}"
+                          SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                          MinWidth="120" />
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <!-- The non-quest facts this conversation reads. Absent entirely when it reads none. -->
+        <ItemsControl ItemsSource="{Binding FactPills}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Orientation="Horizontal" Spacing="8" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="editors:PlayerFactPillViewModel">
+              <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                <CheckBox Content="{Binding Label}" IsChecked="{Binding IsOn, Mode=TwoWay}"
+                          IsVisible="{Binding IsToggle}" />
+                <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                           IsVisible="{Binding IsAmount}" />
+                <NumericUpDown Value="{Binding Amount, Mode=TwoWay}" Minimum="0" Increment="1"
+                               FormatString="0" Width="88" IsVisible="{Binding IsAmount}" />
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Button Content="Reset" Command="{Binding ResetPlayerCommand}" />
+      </StackPanel>
+    </Border>
+
+    <!-- Findings. Anchored under the conversation rather than in a separate panel, because a
+         problem you have to go looking for is one nobody reads. -->
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource PanelBrush}"
+            BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="0,1,0,0"
+            MaxHeight="150" IsVisible="{Binding HasProblems}">
+      <ScrollViewer>
+        <ItemsControl ItemsSource="{Binding Problems}" Margin="12,7">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="editors:ProblemRowViewModel">
+              <Grid ColumnDefinitions="62,*,Auto" Margin="0,2">
+                <Border Grid.Column="0" CornerRadius="3" Padding="5,1" Margin="0,0,10,0"
+                        VerticalAlignment="Center" HorizontalAlignment="Left">
+                  <Border.Styles>
+                    <Style Selector="Border">
+                      <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+                      <Setter Property="BorderBrush" Value="{DynamicResource RuleStrongBrush}" />
+                      <Setter Property="BorderThickness" Value="1" />
+                    </Style>
+                  </Border.Styles>
+                  <TextBlock Text="{Binding Severity}" FontFamily="{DynamicResource MonoFont}"
+                             FontSize="9.5" Foreground="{DynamicResource InkTertiaryBrush}" />
+                </Border>
+                <TextBlock Grid.Column="1" Text="{Binding Message}" TextWrapping="Wrap"
+                           VerticalAlignment="Center" />
+                <TextBlock Grid.Column="2" Text="{Binding Where}" Classes="label"
+                           VerticalAlignment="Center" Margin="12,0,0,0" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </Border>
+
+    <Grid ColumnDefinitions="248,*">
+
+      <!-- ===================== the rail ===================== -->
+      <Border Grid.Column="0" Background="{DynamicResource PanelBrush}"
+              BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0">
+        <DockPanel>
+          <StackPanel DockPanel.Dock="Top" Margin="10,10,10,6">
+            <TextBlock Text="SITUATIONS" Classes="title" />
+            <TextBlock Text="Checked top down. The first that fits is what they get."
+                       Classes="label" TextWrapping="Wrap" Margin="0,5,0,0" />
+          </StackPanel>
+
+          <!-- Setting up a quest. A conversation never has to be assembled by hand: pick the quest
+               and the situations arrive already in working order, each with a blank line in it. -->
+          <StackPanel DockPanel.Dock="Bottom" Margin="10,8,10,10" Spacing="7">
+            <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0" Padding="0,9,0,0">
+              <StackPanel Spacing="7">
+                <TextBlock Text="SET UP A QUEST" Classes="title" />
+                <ComboBox ItemsSource="{Binding ScaffoldableQuests}" HorizontalAlignment="Stretch"
+                          SelectedItem="{Binding QuestToScaffold, Mode=TwoWay}"
+                          PlaceholderText="This NPC gives…">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="conversations:ArgumentOption">
+                      <TextBlock Text="{Binding Label}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <ItemsControl ItemsSource="{Binding ScaffoldPreview}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="conversations:ScaffoldBeat">
+                      <StackPanel Margin="0,0,0,5">
+                        <TextBlock Text="{Binding Title}" FontSize="11.5" />
+                        <TextBlock Text="{Binding Explanation}" Classes="dim" FontSize="10.5"
+                                   TextWrapping="Wrap" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Content="Set it up" Classes="primary" HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Command="{Binding ScaffoldQuestCommand}"
+                        IsVisible="{Binding CanScaffold}" />
+              </StackPanel>
+            </Border>
+          </StackPanel>
+
+          <!-- Coverage. Hollow cells are the answer to "what have I not written?". -->
+          <StackPanel DockPanel.Dock="Bottom" Margin="10,8,10,0"
+                      IsVisible="{Binding HasCoverage}">
+            <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0" Padding="0,9,0,0">
+              <StackPanel Spacing="9">
+                <TextBlock Text="COVERAGE" Classes="title" />
+                <ItemsControl ItemsSource="{Binding Coverage}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="editors:CoverageRowViewModel">
+                      <StackPanel Spacing="4" Margin="0,0,0,6">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                          <TextBlock Text="{Binding Name}" />
+                          <TextBlock Text="REPEATABLE" Classes="label" VerticalAlignment="Center"
+                                     IsVisible="{Binding IsRepeatable}" />
+                        </StackPanel>
+                        <ItemsControl ItemsSource="{Binding Cells}">
+                          <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                              <UniformGrid Rows="1" />
+                            </ItemsPanelTemplate>
+                          </ItemsControl.ItemsPanel>
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="editors:CoverageCellViewModel">
+                              <!-- Two borders rather than one with a bound brush: covered and
+                                   hollow differ in fill, edge and ink at once, and swapping the
+                                   whole cell says that in one place. -->
+                              <Panel Margin="0,0,3,0" ToolTip.Tip="{Binding ToolTip}">
+                                <Border Classes="cell" IsVisible="{Binding IsCovered}"
+                                        Background="{DynamicResource AccentDimBrush}"
+                                        BorderBrush="{DynamicResource AccentBorderBrush}">
+                                  <TextBlock Text="{Binding Label}" HorizontalAlignment="Center"
+                                             FontFamily="{DynamicResource MonoFont}" FontSize="9"
+                                             Foreground="{DynamicResource AccentInkBrush}" />
+                                </Border>
+                                <Border Classes="cell" IsVisible="{Binding !IsCovered}"
+                                        Background="Transparent">
+                                  <TextBlock Text="{Binding Label}" HorizontalAlignment="Center"
+                                             FontFamily="{DynamicResource MonoFont}" FontSize="9"
+                                             Foreground="{DynamicResource InkTertiaryBrush}" />
+                                </Border>
+                              </Panel>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+
+          <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Situations}" Margin="8,0,8,8">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="editors:SituationRowViewModel">
+                  <Button Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).SelectSituationCommand}"
+                          CommandParameter="{Binding}"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                          Padding="9,7" Margin="0,0,0,5" CornerRadius="4">
+                    <Grid ColumnDefinitions="16,*">
+                      <TextBlock Grid.Column="0" Text="{Binding Marker}" FontSize="11"
+                                 VerticalAlignment="Top" Margin="0,1,0,0" />
+                      <StackPanel Grid.Column="1" Spacing="2">
+                        <TextBlock Text="{Binding Title}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding When}" Classes="dim" FontSize="11"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding Summary}" Classes="label" />
+
+                        <!-- Order is meaning here, so reordering is the fix for a dead situation
+                             and belongs on the row rather than in a menu. -->
+                        <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,3,0,0">
+                          <Button Content="Move up" Classes="link"
+                                  Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).MoveSituationUpCommand}"
+                                  CommandParameter="{Binding}" />
+                          <Button Content="Move down" Classes="link"
+                                  Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).MoveSituationDownCommand}"
+                                  CommandParameter="{Binding}" />
+                        </StackPanel>
+                      </StackPanel>
+                    </Grid>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </DockPanel>
+      </Border>
+
+      <!-- ===================== the conversation ===================== -->
+      <DockPanel Grid.Column="1">
+
+        <Border DockPanel.Dock="Top" Background="{DynamicResource ShellBackgroundBrush}"
+                BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="16,7">
+          <Grid ColumnDefinitions="*,Auto">
+            <ItemsControl Grid.Column="0" ItemsSource="{Binding Breadcrumb}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Orientation="Horizontal" Spacing="7" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel Orientation="Horizontal" Spacing="7">
+                    <TextBlock Text="{Binding}" Classes="mono" FontSize="10.5" />
+                    <TextBlock Text="›" Classes="dim" FontSize="10.5" />
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+              <Button Content="Back" Command="{Binding BackCommand}" />
+              <Button Content="Start over" Command="{Binding StartOverCommand}" />
+            </StackPanel>
+          </Grid>
+        </Border>
+
+        <ScrollViewer>
+          <StackPanel Margin="20,18" Spacing="4">
+
+            <TextBlock Text="{Binding WalkStatus}" Classes="mono" FontSize="11"
+                       Foreground="{DynamicResource AmberBrush}" TextWrapping="Wrap"
+                       IsVisible="{Binding WalkStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Margin="0,0,0,10" />
+
+            <StackPanel IsVisible="{Binding HasLine}" Spacing="4">
+              <TextBlock Text="WHAT THEY HEAR" Classes="label" Margin="4,0,0,4" />
+
+              <!-- Reading and writing are the same surface: this is the line, and it is the box you
+                   type in. -->
+              <Border Classes="bubble" MaxWidth="620" HorizontalAlignment="Left">
+                <TextBox Text="{Binding LineText, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap"
+                         Background="Transparent" BorderThickness="0" Padding="0"
+                         LostFocus="OnLineLostFocus" FontSize="14" />
+              </Border>
+
+              <StackPanel Orientation="Horizontal" Spacing="10" Margin="4,6,0,0"
+                          VerticalAlignment="Center" IsVisible="{Binding HasReuseWarning}">
+                <TextBlock Text="{Binding ReuseWarning}" Classes="mono" FontSize="10.5"
+                           Foreground="{DynamicResource GoldBrush}" TextWrapping="Wrap" MaxWidth="440"
+                           VerticalAlignment="Center" />
+                <Button Content="Make a separate copy" Classes="link"
+                        Command="{Binding MakeSeparateCopyCommand}" VerticalAlignment="Center" />
+              </StackPanel>
+
+              <ItemsControl ItemsSource="{Binding Choices}" Margin="0,16,0,0" MaxWidth="620"
+                            HorizontalAlignment="Left">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="editors:ChoiceRowViewModel">
+                    <Border Classes="choice" Margin="0,0,0,6" IsVisible="{Binding IsVisible}">
+                      <Grid ColumnDefinitions="24,*,Auto,Auto">
+                        <TextBlock Grid.Column="0" Text="{Binding Number}" Classes="mono"
+                                   Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                        <Button Grid.Column="1" Content="{Binding Text}" Background="Transparent"
+                                BorderThickness="0" Padding="0" HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).PickChoiceCommand}"
+                                CommandParameter="{Binding}" />
+                        <!-- The consequence is the button that edits it: clicking what a choice
+                             does is how you change what it does. -->
+                        <Button Grid.Column="2" Classes="link" Margin="12,0,0,0"
+                                Content="{Binding Consequence}"
+                                Foreground="{DynamicResource AmberBrush}"
+                                ToolTip.Tip="Change what this choice does, and when it shows"
+                                Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).EditChoiceCommand}"
+                                CommandParameter="{Binding}" />
+                        <Button Grid.Column="3" Content="✕" Classes="link" Margin="10,0,0,0"
+                                ToolTip.Tip="Remove this choice"
+                                Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).RemoveChoiceCommand}"
+                                CommandParameter="{Binding}" />
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+
+              <!-- Hidden choices, drawn only when asked for, with the reason they are hidden. -->
+              <ItemsControl ItemsSource="{Binding Choices}" MaxWidth="620" HorizontalAlignment="Left"
+                            IsVisible="{Binding ShowHiddenChoices}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="editors:ChoiceRowViewModel">
+                    <Border Classes="choice" Margin="0,0,0,6" Opacity="0.62"
+                            IsVisible="{Binding IsHidden}">
+                      <Grid ColumnDefinitions="24,*">
+                        <TextBlock Grid.Column="0" Text="—" Classes="mono" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource InkTertiaryBrush}" />
+                        <StackPanel Grid.Column="1" Spacing="3">
+                          <TextBlock Text="{Binding Text}" TextWrapping="Wrap" />
+                          <TextBlock Text="{Binding HiddenBecause}" Classes="dim" FontSize="11"
+                                     TextWrapping="Wrap" />
+                        </StackPanel>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+
+              <Button Content="＋ Add another choice here" Classes="link"
+                      Command="{Binding AddChoiceCommand}" HorizontalAlignment="Left"
+                      Margin="4,4,0,0" />
+
+              <!-- ===================== what a choice does, and when it shows =====================
+                   Everything here is sentences and pickers. The snippet key, the '!' prefix and the
+                   dispatcher resref are the editor's business, not the writer's. -->
+              <Border IsVisible="{Binding IsEditingChoice}" Margin="0,16,0,0" MaxWidth="620"
+                      HorizontalAlignment="Left" CornerRadius="4" Padding="14,12"
+                      Background="{DynamicResource PanelBrush}"
+                      BorderBrush="{DynamicResource AccentBorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="14">
+
+                  <StackPanel Spacing="7">
+                    <TextBlock Text="WHEN THIS CHOICE SHOWS" Classes="label" />
+                    <TextBlock Text="It shows unless something here says otherwise. Every line must pass."
+                               Classes="dim" FontSize="11" TextWrapping="Wrap" />
+                    <ItemsControl ItemsSource="{Binding Guards}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="editors:SnippetEditorViewModel">
+                          <Border Margin="0,0,0,6" Padding="9,7" CornerRadius="3"
+                                  Background="{DynamicResource PanelRaisedBrush}"
+                                  BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
+                            <StackPanel Spacing="6">
+                              <Grid ColumnDefinitions="*,Auto,Auto">
+                                <TextBlock Grid.Column="0" Text="{Binding Sentence}" TextWrapping="Wrap"
+                                           VerticalAlignment="Center" />
+                                <CheckBox Grid.Column="1" Content="Not" Margin="10,0,0,0"
+                                          IsChecked="{Binding IsNegated, Mode=TwoWay}"
+                                          ToolTip.Tip="Flip this condition around" />
+                                <Button Grid.Column="2" Content="✕" Classes="link" Margin="8,0,0,0"
+                                        Command="{Binding RemoveCommand}" />
+                              </Grid>
+                              <ItemsControl ItemsSource="{Binding Arguments}">
+                                <ItemsControl.ItemsPanel>
+                                  <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="8" />
+                                  </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                  <DataTemplate DataType="editors:ArgumentEditorViewModel">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                      <TextBlock Text="{Binding Name}" Classes="label"
+                                                 VerticalAlignment="Center" />
+                                      <ComboBox ItemsSource="{Binding Options}" MinWidth="160"
+                                                SelectedItem="{Binding Selected, Mode=TwoWay}"
+                                                IsVisible="{Binding HasOptions}" />
+                                      <TextBox Text="{Binding FreeText, Mode=TwoWay}" MinWidth="130"
+                                               IsVisible="{Binding IsFreeText}" />
+                                    </StackPanel>
+                                  </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                              </ItemsControl>
+                            </StackPanel>
+                          </Border>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                      <ComboBox ItemsSource="{Binding AvailableGuards}" MinWidth="230"
+                                SelectedItem="{Binding GuardToAdd, Mode=TwoWay}"
+                                PlaceholderText="Only show it when…">
+                        <ComboBox.ItemTemplate>
+                          <DataTemplate x:DataType="gamecode:SnippetDescriptor">
+                            <TextBlock Text="{Binding Phrase}" />
+                          </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                      </ComboBox>
+                      <Button Content="Add" Command="{Binding AddGuardCommand}" />
+                    </StackPanel>
+                  </StackPanel>
+
+                  <StackPanel Spacing="7">
+                    <TextBlock Text="WHAT PICKING IT DOES" Classes="label" />
+                    <ItemsControl ItemsSource="{Binding Consequences}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="editors:SnippetEditorViewModel">
+                          <Border Margin="0,0,0,6" Padding="9,7" CornerRadius="3"
+                                  Background="{DynamicResource PanelRaisedBrush}"
+                                  BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
+                            <StackPanel Spacing="6">
+                              <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="{Binding Sentence}" TextWrapping="Wrap"
+                                           Foreground="{DynamicResource AmberBrush}"
+                                           VerticalAlignment="Center" />
+                                <Button Grid.Column="1" Content="✕" Classes="link" Margin="8,0,0,0"
+                                        Command="{Binding RemoveCommand}" />
+                              </Grid>
+                              <ItemsControl ItemsSource="{Binding Arguments}">
+                                <ItemsControl.ItemsPanel>
+                                  <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="8" />
+                                  </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                  <DataTemplate DataType="editors:ArgumentEditorViewModel">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                      <TextBlock Text="{Binding Name}" Classes="label"
+                                                 VerticalAlignment="Center" />
+                                      <ComboBox ItemsSource="{Binding Options}" MinWidth="160"
+                                                SelectedItem="{Binding Selected, Mode=TwoWay}"
+                                                IsVisible="{Binding HasOptions}" />
+                                      <TextBox Text="{Binding FreeText, Mode=TwoWay}" MinWidth="130"
+                                               IsVisible="{Binding IsFreeText}" />
+                                    </StackPanel>
+                                  </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                              </ItemsControl>
+                            </StackPanel>
+                          </Border>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                      <ComboBox ItemsSource="{Binding AvailableConsequences}" MinWidth="230"
+                                SelectedItem="{Binding ConsequenceToAdd, Mode=TwoWay}"
+                                PlaceholderText="Also make it…">
+                        <ComboBox.ItemTemplate>
+                          <DataTemplate x:DataType="gamecode:SnippetDescriptor">
+                            <TextBlock Text="{Binding Phrase}" />
+                          </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                      </ComboBox>
+                      <Button Content="Add" Command="{Binding AddConsequenceCommand}" />
+                    </StackPanel>
+                  </StackPanel>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+
+            <Border Margin="0,20,0,0" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0"
+                    Padding="4,12,0,0">
+              <StackPanel Spacing="5">
+                <TextBlock Text="PREDICTED FROM THE CONVERSATION'S OWN RULES — NOT A SERVER RUN"
+                           Classes="label" />
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                  <TextBlock Text="{Binding HiddenChoiceSummary}" Classes="mono" FontSize="10.5" />
+                  <Button Content="Show them" Classes="link"
+                          Command="{Binding ToggleHiddenChoicesCommand}"
+                          IsVisible="{Binding HasHiddenChoices}" />
+                  <Button Content="Go to the next thing to write" Classes="link"
+                          Command="{Binding GoToFirstUnwrittenCommand}" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </DockPanel>
+    </Grid>
+  </DockPanel>
+</UserControl>

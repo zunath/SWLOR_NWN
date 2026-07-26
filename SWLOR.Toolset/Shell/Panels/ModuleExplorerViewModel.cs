@@ -4,7 +4,9 @@ using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.Validation;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
@@ -240,6 +242,7 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(CanOpenSelectedType));
             OnPropertyChanged(nameof(CanCompileSelectedType));
             OnPropertyChanged(nameof(CanCreateSelectedType));
+            OnPropertyChanged(nameof(HasDialogOptions));
             SelectedRow = null;
             StatusMessage = null;
             Refresh();
@@ -574,12 +577,11 @@ namespace SWLOR.Toolset.Shell.Panels
         // ----- browsing -----
 
         /// <summary>
-        /// Whether the selected tab's resources can actually be opened. Areas and scripts can;
-        /// dialogs still cannot, and would only ever log "No editor available yet". An action that
-        /// cannot succeed should not be offered.
+        /// Whether the selected tab's resources can actually be opened. All three kinds can now:
+        /// areas in the area editor, scripts in the script editor, and conversations in Play-it.
         /// </summary>
         public bool CanOpenSelectedType =>
-            SelectedType is ResourceType.Area or ResourceType.Nss;
+            SelectedType is ResourceType.Area or ResourceType.Nss or ResourceType.Dlg;
 
         /// <summary>
         /// Scripts are the one resource kind with a build step, so they are the only one that offers
@@ -640,6 +642,21 @@ namespace SWLOR.Toolset.Shell.Panels
 
         partial void OnFilterChanged(string value) => Refresh();
 
+        /// <summary>Whether the filter box searches what people say rather than resrefs and names.</summary>
+        [ObservableProperty]
+        private bool _searchDialogueText;
+
+        /// <summary>Whether the generated <c>dialogN</c> shells are listed at all.</summary>
+        [ObservableProperty]
+        private bool _showGeneratedDialogs;
+
+        /// <summary>True only for Dialogs, which is where the two options above mean anything.</summary>
+        public bool HasDialogOptions => SelectedType == ResourceType.Dlg;
+
+        partial void OnSearchDialogueTextChanged(bool value) => Refresh();
+
+        partial void OnShowGeneratedDialogsChanged(bool value) => Refresh();
+
         partial void OnSelectedRowChanged(ExplorerNodeViewModel? value)
         {
             OnPropertyChanged(nameof(HasFolderSelected));
@@ -659,15 +676,50 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private IReadOnlyList<ExplorerItem> Filtered(IReadOnlyList<ExplorerItem> items)
         {
+            // The 255 numbered shells are generated for the C# Dialog service's runtime menus. They
+            // are two thirds of the folder and none of them is editable, so they are out of the way
+            // unless asked for.
+            if (SelectedType == ResourceType.Dlg && !ShowGeneratedDialogs)
+            {
+                items = items
+                    .Where(item => !UnreferencedConversationRule.IsGeneratedShell(item.ResRef))
+                    .ToList();
+            }
+
             if (string.IsNullOrWhiteSpace(Filter))
                 return items;
 
             var needle = Filter.Trim();
+            if (SearchDialogueText && SelectedType == ResourceType.Dlg)
+                return DialogueMatches(items, needle);
+
             return items
                 .Where(item =>
                     item.ResRef.Contains(needle, StringComparison.OrdinalIgnoreCase) ||
                     (item.Name?.Contains(needle, StringComparison.OrdinalIgnoreCase) ?? false))
                 .ToList();
+        }
+
+        /// <summary>
+        /// Conversations containing the query in something somebody says — "who says
+        /// <em>Veldite</em>?", which the resref/name filter cannot answer.
+        /// </summary>
+        /// <remarks>
+        /// Opt-in rather than always-on because it reads all 609 files, which is about a second: fine
+        /// for a deliberate search, miserable on every keystroke of an ordinary one.
+        /// </remarks>
+        private IReadOnlyList<ExplorerItem> DialogueMatches(IReadOnlyList<ExplorerItem> items, string needle)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return items;
+
+            var matching = DialogueSearch
+                .Search(Path.Combine(workspace.ModuleRoot, "dlg"), needle)
+                .Select(hit => hit.ResRef)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            return items.Where(item => matching.Contains(item.ResRef)).ToList();
         }
 
         private ExplorerNodeViewModel BuildFolderNode(

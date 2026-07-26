@@ -954,3 +954,102 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   corners and requires them to match the cell exactly, over 40 corpus areas; it asserts all four
   orientations are exercised so it cannot pass vacuously. Verified to have teeth - restoring the old
   transform makes it fail immediately on real corpus areas.
+
+## WPS4.1-spike — done (gate PASSED with a documented exception) — 2026-07-26 — NCS byte-identity
+
+Pulled forward ahead of WPS0.1 by design (see `SCRIPT-EDITOR-PLAN.md`): the one finding that could
+reshape Phase S4 is whether a vendored compiler reproduces the committed `.ncs` artifacts. It does.
+
+- **Tool:** `nwn_script_comp.exe` from neverwinter.nim release **2.1.2** (x86_64-windows,
+  sha256 `B00501CC…AED1`, 25,290,706 bytes — matched the advertised size). Reports
+  `neverwinter 2.1.2 (/07a475, nim 2.2.4)`. **Vendoring needs two files**, not one:
+  `nwn_script_comp.exe` + `libnwnscriptcomp.dll` (the official Beamdog compiler library it wraps —
+  which confirms the plan's central assumption). Not yet copied into `tools/SWLOR.CLI/`; it sits in
+  the session scratchpad pending a decision to commit a binary.
+- Note the existing `nwn_gff.exe`/`nwn_erf.exe` report `master (651de4)`, an **untagged** build, so
+  the vendored set would not be version-uniform. Did not matter for the result below.
+- **Result: 68 compiled, 0 errors, 19 skipped (no `main()`), and 65 of 68 byte-identical to the
+  committed `.ncs`.**
+- **The 3 that differ each differ by exactly ONE byte**, and it is the same root cause in all three:
+  the float literal `1.9` is emitted as `3F F3 33 34` (= 1.9000001) where the committed artifact has
+  `3F F3 33 33` (= 1.9). `[float]1.9` in .NET is `3FF33333`, so **the committed artifacts carry the
+  correctly-rounded value and the modern compiler is the one that is one ULP high.** Source is
+  `Module/nss/dmfi_x_emote.nss:42` — `case RACIAL_TYPE_HALFORC: fHeight = 1.9; fDistance = 0.2;`
+  (the adjacent `0.2` round-trips exactly, which is why only one byte moves).
+  Affected files: `dmfi_execute`, `dmfi_plychat_exe`, `dmfi_x_emote`.
+- **Scope of the rounding quirk, measured not assumed:** swept every literal `0.1`–`9.9`. 88 of 90
+  real float literals are emitted correctly rounded; **exactly two are one ULP high — `0.9` and
+  `1.9`** (confirmed in isolation: `0.9` → `3F666667` vs correct `3F666666`). ~2%, magnitude ~1.2e-7
+  relative. Functionally irrelevant, but it means a full recompile would produce a **3-file, 3-byte
+  git diff**. Nothing was recompiled into `Module/ncs/` — the repo is untouched.
+- **Correction to the plan — an NWN install is NOT optional for all scripts.** With `--no-keys` plus
+  `nwscript-8193.37.nss` staged as `nwscript.nss`, 55 of 87 compile; **16 fail** because
+  `nw_i0_generic` and friends reach base-game includes that live only in the install's KEY/BIF and
+  are absent from `Module/nss`: `x0_i0_anims, x0_i0_assoc, x0_i0_behavior, x0_i0_combat,
+  x0_i0_spawncond, x0_i0_stringlib, x0_i0_talent, x0_inc_generic, x0_inc_henai, x2_inc_compon,
+  x2_inc_switches, x2_inc_toollib, x3_inc_horse, x3_inc_string` (14 headers). With `--root <install>`
+  all 87 resolve and 0 error. So: the *editor* still needs no install (the in-repo header covers
+  completion), but *compilation* of the base-AI-derived scripts does. WPS4.1/WPS4.2 must surface a
+  clear "NWN install required to compile these" state rather than failing opaquely.
+- **Also corrected:** 19 files have no `main()`, not the 18 inferred from "has no committed `.ncs`".
+  `dmfi_dmw_inc` is an include that nonetheless has a committed 184-byte `.ncs`, so "no `.ncs`" is not
+  a reliable test for "is an include" — the parser's own `main()` detection is.
+- **Verdict:** the vendored compiler is the right one. WPS4.1's acceptance is amended from
+  "byte-identical" to **"byte-identical except for documented float-literal ULP differences"**, with
+  the 3 known files listed above as the permitted exception set. Anything beyond those 3 is a
+  regression.
+
+## WPS0.1 — done — 2026-07-26 — Script editor tab (no language smarts yet)
+
+Phase S's foundation: `.nss` files open, edit, save and undo inside the toolset. No highlighting,
+completion or compilation yet — those are WPS1.x/2.x/4.x. Ships useful on its own.
+
+- **Dependency:** `Avalonia.AvaloniaEdit` 11.3.0 (MIT), pinned to the 11.3 line to match the
+  Avalonia 11.3.17 already in the csproj. Its theme must be registered in `App.axaml`
+  (`avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml`) or the control renders as a blank box;
+  placed before `ToolsetTheme.axaml` so our overrides still win.
+- **`MonoFont` was already in the theme** (`ToolsetTheme.axaml:46`), so the editor just consumes it.
+  The plan's "embed a monospace face" item was wrong and is dropped.
+- Domain (`Domain/Script/`, so it is testable — the test project references Domain only):
+  - `ScriptTextDocument.cs` — the byte-fidelity model. Captures EOL style, trailing newline, BOM and
+    encoding; normalises the buffer to `\n` (AvaloniaEdit works in `\n`, and mixed endings inside the
+    buffer would leak into every edit) and reapplies the file's own style on save.
+  - `ScriptSession.cs` — path binding, mtime-based external-change detection mirroring
+    `DocumentSession.HasExternalChange`, and **derived** dirty state (compare against the saved text)
+    so typing and then undoing correctly reports clean. Deliberately carries **no undo stack**:
+    `DocumentSession`'s models GFF field transactions, and AvaloniaEdit's `TextDocument.UndoStack`
+    already does the right thing for a character buffer.
+- App: `Editors/ScriptEditorViewModel.cs` (`Document, IEditorDocument, IDocumentStatusSource`) +
+  `Editors/Views/ScriptEditorView.axaml(.cs)`. The buffer is **not** data-bound — AvaloniaEdit owns
+  the text, its undo stack and the caret, so a two-way binding re-sets `Text` on every keystroke and
+  resets the caret to 0. The code-behind seeds the document once, clears the undo stack (otherwise
+  Ctrl+Z on a freshly opened tab wipes the file to empty), and pushes changes outward.
+  `StatusDetail` contributes `Ln/Col` + EOL style to the shell status bar.
+- Wiring: `EditorService` gained an `Nss` branch + `_openScriptEditors` map keyed by path;
+  `ModuleExplorerViewModel.CanOpenSelectedType` now admits `Nss` as well as `Area` (Dlg still
+  cannot open, and its comment was corrected to say so).
+- **Bug found by the corpus gate, not by reasoning:** the first draft read scripts as strict UTF-8 on
+  the assumption the corpus was all ASCII. `EveryModuleScript_RoundTripsByteForByte` threw on
+  **`colors_inc.nss` and `nbde_inc.nss`**, which embed raw high bytes (`0x80-0x83`, `0xA5`, `0xC6`,
+  `0xF8`) *inside string literals* as NWScript colour codes — data, not text. This is the same trap
+  PLAN.md records for GFF `void` fields. Fixed by detecting encoding: BOM ⇒ UTF-8, else strict UTF-8
+  attempted with **Latin-1 as the fallback**, which maps 0x00-0xFF bijectively and so cannot lose a
+  byte. Windows-1252 (the game's own encoding, and the compiler's default) was **rejected**: it
+  leaves five byte values undefined so it cannot promise a round trip, and the high bytes here are
+  colour codes rather than letters. Both encoders throw rather than substitute, so an unrepresentable
+  character fails the save loudly instead of writing `?` into a real file.
+- Tests (21 new): `ScriptTextDocumentTests` (13) — **byte-for-byte round trip over all 87 module
+  scripts** (the gate that found the above), CRLF/LF preservation, no-trailing-newline, BOM, edited
+  text written in the file's own EOL style, the two colour-code files pinned by name, a sweep proving
+  every byte 0x80-0xFF survives the Latin-1 path, and empty file. `ScriptSessionTests` (8) — dirty
+  derived not flagged, save-unchanged leaves the file byte-identical, MarkSaved resets the baseline,
+  external write and deletion detected, reload clears dirty, CRLF input does not read as permanently
+  dirty. All against a throwaway temp dir; the repo module is never written to.
+- Verified: `dotnet build` clean; **full suite 941/942 green** (920 prior + 21 new, 1 pre-existing
+  skip), 3m34s — including the permanent GFF round-trip corpus gate. Launch-and-kill smoke: window
+  came up titled "SWLOR Toolset - SWLOR_NWN", ran 12s stably, stopped cleanly.
+- **Environment note for the next session:** this worktree had neither submodule checked out.
+  `External/Radoub` is required to build at all, and `SWLOR_Haks` is required for ~82 2DA/TLK/tileset
+  tests that otherwise fail as false negatives. Git here has no CA bundle, so plain
+  `git submodule update --init` fails on SSL; use
+  `git -c http.sslBackend=schannel submodule update --init` to clone via the Windows cert store.

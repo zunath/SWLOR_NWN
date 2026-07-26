@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:edit="using:AvaloniaEdit"
+             xmlns:editors="using:SWLOR.Toolset.Editors"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+             x:Class="SWLOR.Toolset.Editors.Views.ScriptEditorView"
+             x:DataType="editors:ScriptEditorViewModel">
+
+  <!-- The buffer is not bound. AvaloniaEdit owns the text, its own undo stack and the caret, so a
+       two-way binding would fight it: re-setting Text on every keystroke resets the caret to 0.
+       The code-behind seeds the document once and pushes changes out to the view model instead. -->
+  <edit:TextEditor Name="Editor"
+                   FontFamily="{DynamicResource MonoFont}"
+                   FontSize="13"
+                   Background="{DynamicResource ShellBackgroundBrush}"
+                   Foreground="{DynamicResource InkBrush}"
+                   ShowLineNumbers="True"
+                   WordWrap="False"
+                   HorizontalScrollBarVisibility="Auto"
+                   VerticalScrollBarVisibility="Auto" />
+</UserControl>

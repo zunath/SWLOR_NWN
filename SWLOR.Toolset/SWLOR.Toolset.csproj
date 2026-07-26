@@ -31,6 +31,9 @@
          Radoub.UI, so dropping that reference broke the XAML compile until it was named here.
          11.3.13 is the newest published build - DataGrid trails the rest of Avalonia. -->
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.13" />
+    <!-- The NWScript editor's text surface. Pinned to the 11.3 line to match the Avalonia pin above;
+         AvaloniaEdit tracks Avalonia's minor versions, so the two must move together. MIT. -->
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
     <PackageReference Include="Dock.Avalonia" Version="11.3.12.1" />

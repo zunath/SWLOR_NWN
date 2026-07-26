@@ -39,6 +39,10 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
 
+        // Keyed by path like the blueprint map rather than by resref like the area map: a script is
+        // one file, so the path is its identity and there is no are/git/gic triplet to name.
+        private readonly Dictionary<string, ScriptEditorViewModel> _openScriptEditors = new(StringComparer.OrdinalIgnoreCase);
+
         public EditorService(
             WorkspaceContext workspaceContext,
             LookupOptionProvider lookups,
@@ -73,6 +77,36 @@ namespace SWLOR.Toolset.Editors
             _previewRenderer = previewRenderer;
         }
 
+        /// <summary>Opens a NWScript source file as a text editor tab, or activates its open tab.</summary>
+        private void OpenScriptEditor(ModuleWorkspace workspace, string resRef)
+        {
+            var filePath = workspace.GetResourcePath(ResourceType.Nss, resRef);
+            if (!File.Exists(filePath))
+            {
+                _log.AppendLine($"File not found: {filePath}");
+                return;
+            }
+
+            if (_openScriptEditors.TryGetValue(filePath, out var existing))
+            {
+                _factory.ActivateDocument(existing);
+                return;
+            }
+
+            try
+            {
+                var editor = new ScriptEditorViewModel(filePath, resRef, _log, _prompts);
+                editor.Closed += _ => _openScriptEditors.Remove(filePath);
+                editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                _openScriptEditors[filePath] = editor;
+                _factory.OpenDocument(editor);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not open {filePath}: {ex.Message}");
+            }
+        }
+
         public void TryOpenEditor(ResourceType type, string resRef)
         {
             var workspace = _workspaceContext.Workspace;
@@ -82,6 +116,12 @@ namespace SWLOR.Toolset.Editors
             if (type == ResourceType.Area)
             {
                 OpenAreaEditor(workspace, resRef);
+                return;
+            }
+
+            if (type == ResourceType.Nss)
+            {
+                OpenScriptEditor(workspace, resRef);
                 return;
             }
 

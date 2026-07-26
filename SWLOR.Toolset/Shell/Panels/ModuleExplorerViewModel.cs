@@ -524,11 +524,12 @@ namespace SWLOR.Toolset.Shell.Panels
         // ----- browsing -----
 
         /// <summary>
-        /// Whether the selected tab's resources can actually be opened. Only areas can: EditorService
-        /// has schemas for the blueprint types and a special path for areas, so a dialog or script would
-        /// only ever log "No editor available yet". An action that cannot succeed should not be offered.
+        /// Whether the selected tab's resources can actually be opened. Areas and scripts can;
+        /// dialogs still cannot, and would only ever log "No editor available yet". An action that
+        /// cannot succeed should not be offered.
         /// </summary>
-        public bool CanOpenSelectedType => SelectedType == ResourceType.Area;
+        public bool CanOpenSelectedType =>
+            SelectedType is ResourceType.Area or ResourceType.Nss;
 
         /// <summary>The context menu's Open, which is the double-click by another route.</summary>
         [RelayCommand]

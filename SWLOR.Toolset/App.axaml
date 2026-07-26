@@ -88,6 +88,9 @@
   <Application.Styles>
     <FluentTheme />
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+    <!-- AvaloniaEdit ships no default style: without this the script editor's TextEditor renders
+         as an unstyled blank control. Must precede ToolsetTheme so our overrides still win. -->
+    <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
     <DockFluentTheme DensityStyle="Compact" />
 
     <Style Selector="ToolControl">

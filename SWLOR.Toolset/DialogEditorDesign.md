@@ -345,6 +345,14 @@ Five things in this design were wrong and were corrected by the work:
 5. **The guard and consequence panel showed raw ids.** It rendered its sentences without the
    name resolver the rest of the editor uses, so it said `field_tinctures` where everything else
    said "Field Tinctures" — the one place the raw data leaked back to the writer.
+6. **The placeable editor's conversation slot was removed, and then put back.** The placeable
+   editor dropped it on the grounds that "SWLOR dialogs are C# classes"; merging that branch, this
+   work initially deferred to it because only 5 of 5,461 placeable blueprints set the field. That
+   was the wrong test. The premise is false — 352 of the module's 371 conversations are `.dlg`
+   files — and the Behavior tab's Conversation behavior writes `CONVERSATION`, which can only name
+   one of the 19 C# classes. So the majority route was unreachable, and the **32 placed placeables
+   already using a `.dlg`** could not be edited at all. The slot is back on the Advanced tab.
+   Rarity of use is a reason to move a field, never a reason to keep a wrong explanation.
 
 The reachability evaluator also caught a bug in its own supporting scan: quest prerequisites
 declared through `private const string` fields were being dropped, which made every capstone quest

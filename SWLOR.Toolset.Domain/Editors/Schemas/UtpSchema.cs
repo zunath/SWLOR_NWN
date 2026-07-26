@@ -20,9 +20,16 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
     /// no saving throws (8,353 of 8,355 blueprints carry Aurora's untouched 16/0/0), no hardness
     /// (8,199 carry the default 5), no portrait (6,295 have none, and a portrait is the wrong
     /// artwork for a placeable anyway), no body bag (0 on all 98,856 instances), no faction (two
-    /// values cover 8,329 blueprints), no lock fields (2 locked blueprints, 63 locked instances,
-    /// key-required on two objects), and no legacy .dlg conversation slot - SWLOR dialogs are C#
-    /// classes, reached through the Conversation behavior instead.
+    /// values cover 8,329 blueprints), and no lock fields (2 locked blueprints, 63 locked instances,
+    /// key-required on two objects).
+    /// </para>
+    /// <para>
+    /// The .dlg conversation slot is NOT one of those omissions, and an earlier version of this
+    /// schema dropped it on the grounds that "SWLOR dialogs are C# classes". That is not true: the
+    /// module ships 352 hand-authored .dlg conversations against 19 C# DialogBase classes. The
+    /// Behavior tab's Conversation behavior writes the CONVERSATION variable, which can only name
+    /// one of those 19 - so without the slot on the Advanced tab, the majority route is
+    /// unreachable and the 32 placed placeables already using it cannot be edited here.
     /// </para>
     /// <para>
     /// Absent from the UI is not absent from the file: every one of those fields is written back
@@ -78,6 +85,21 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                         Fields = new[]
                         {
                             new FieldDescriptor { Label = "Description", FieldName = "Description", Kind = EditorKind.LocString, FieldType = GffFieldType.CExoLocString, Description = "Shown when a player examines it." }
+                        }
+                    },
+                    new FieldGroup
+                    {
+                        // The Behavior tab's Conversation behavior covers the C# route, which writes
+                        // the CONVERSATION variable and can only name one of the 19 DialogBase
+                        // classes. This is the other route, and it is the one most of the module
+                        // uses: 352 of the 371 conversations SWLOR ships are hand-authored .dlg
+                        // files. Without this field a placeable that talks from one cannot be
+                        // expressed here at all - and 32 placed placeables already do.
+                        Title = "Conversation",
+                        Tab = AdvancedTab,
+                        Fields = new[]
+                        {
+                            new FieldDescriptor { Label = "Conversation", FieldName = "Conversation", Kind = EditorKind.ResourcePicker, LookupKey = "dlg", FieldType = GffFieldType.ResRef, Description = "The .dlg this placeable talks from. For a C# dialog class, use the Conversation behavior on the Behavior tab instead." }
                         }
                     },
                     new FieldGroup

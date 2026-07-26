@@ -66,6 +66,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Triggers.TriggerDocumentViewModel> _openTriggerEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Waypoints.WaypointDocumentViewModel> _openWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> _openingWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Doors.DoorDocumentViewModel> _openDoorEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice>? _doorAppearances;
         private readonly Dictionary<string, Sounds.SoundDocumentViewModel> _openSoundEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -672,26 +673,53 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>Waypoint blueprints open in the behavior editor, as a document tab.</summary>
-        private void OpenWaypointEditor(string filePath, string resRef)
+        private async void OpenWaypointEditor(string filePath, string resRef)
         {
             var workspace = _workspaceContext.Workspace;
-            var catalog = new Domain.Editors.Waypoints.WaypointBehaviorCatalog(
-                _gameCodeIndex,
-                workspace?.TagIndex.TransitionDestinationTags);
-            var editor = new Waypoints.WaypointDocumentViewModel(
-                filePath,
-                resRef,
-                _gameCodeIndex,
-                _log,
-                _prompts,
-                catalog,
-                ResolveWaypointChoices);
-            editor.Closed += _ => _openWaypointEditors.Remove(filePath);
-            editor.CloseRequested += _ => _factory.CloseDocument(editor);
-            editor.CatalogEntryChanged += () =>
-                _workspaceContext.RefreshCatalogEntry(ResourceType.Utw, resRef);
-            _openWaypointEditors[filePath] = editor;
-            _factory.OpenDocument(editor);
+            if (workspace == null || !_openingWaypointEditors.Add(filePath))
+                return;
+
+            try
+            {
+                // The transition classifier needs a module-wide GIT scan. Await its background
+                // warm-up instead of parsing hundreds of area files on Avalonia's UI thread.
+                var transitionDestinationTags =
+                    await workspace.TagIndex.GetTransitionDestinationTagsAsync().ConfigureAwait(true);
+                if (!ReferenceEquals(workspace, _workspaceContext.Workspace))
+                    return;
+
+                if (_openWaypointEditors.TryGetValue(filePath, out var existing))
+                {
+                    _factory.ActivateDocument(existing);
+                    return;
+                }
+
+                var catalog = new Domain.Editors.Waypoints.WaypointBehaviorCatalog(
+                    _gameCodeIndex,
+                    transitionDestinationTags);
+                var editor = new Waypoints.WaypointDocumentViewModel(
+                    filePath,
+                    resRef,
+                    _gameCodeIndex,
+                    _log,
+                    _prompts,
+                    catalog,
+                    ResolveWaypointChoices);
+                editor.Closed += _ => _openWaypointEditors.Remove(filePath);
+                editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                editor.CatalogEntryChanged += () =>
+                    _workspaceContext.RefreshCatalogEntry(ResourceType.Utw, resRef);
+                _openWaypointEditors[filePath] = editor;
+                _factory.OpenDocument(editor);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Failed to open waypoint editor for {resRef}: {ex.Message}");
+            }
+            finally
+            {
+                _openingWaypointEditors.Remove(filePath);
+            }
         }
 
         /// <summary>Door blueprints open in the same behavior editor used by door placements.</summary>

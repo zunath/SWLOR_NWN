@@ -63,9 +63,9 @@ namespace SWLOR.Toolset.Workspace
 
                 try
                 {
-                    // Shares the trigger editor's index rather than scanning the module twice for
+                    // Shares the workspace's tag index rather than scanning the module twice for
                     // the same answer; touching Tags is what warms its cache off the UI thread.
-                    tags = new ModuleTagIndex(workspace);
+                    tags = workspace.TagIndex;
                     _ = tags.Tags;
                     usage = PlaceableAppearanceUsageIndex.Build(workspace);
                 }

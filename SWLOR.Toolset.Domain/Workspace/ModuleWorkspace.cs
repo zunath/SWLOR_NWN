@@ -48,6 +48,7 @@ namespace SWLOR.Toolset.Domain.Workspace
 
             ModuleRoot = fullPath;
             ResourceIndex = resourceIndex;
+            _tagIndex = new Lazy<ModuleTagIndex>(() => new ModuleTagIndex(this));
         }
 
         /// <summary>
@@ -65,9 +66,9 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// Resolves placed waypoint/door tags and module item-blueprint tags. Built lazily on first
         /// use; behavior editors consume it to validate transition destinations and door keys.
         /// </summary>
-        public ModuleTagIndex TagIndex => _tagIndex ??= new ModuleTagIndex(this);
+        public ModuleTagIndex TagIndex => _tagIndex.Value;
 
-        private ModuleTagIndex? _tagIndex;
+        private readonly Lazy<ModuleTagIndex> _tagIndex;
 
         public string GetResourceFolder(ResourceType type) => Path.Combine(ModuleRoot, type.Extension());
 
@@ -110,6 +111,18 @@ namespace SWLOR.Toolset.Domain.Workspace
         public IReadOnlyList<string> EnumerateAreaResRefs() => EnumerateResRefs(ResourceType.Area);
 
         /// <summary>
+        /// Loads only the placed-object document for an area. Module-wide instance indexes use this
+        /// instead of <see cref="LoadArea"/> so they do not parse the unrelated ARE and GIC files.
+        /// </summary>
+        public GitDocument LoadGit(string resRef)
+        {
+            if (string.IsNullOrWhiteSpace(resRef))
+                throw new ArgumentException("ResRef must be provided.", nameof(resRef));
+
+            return GitDocument.Load(Path.Combine(ModuleRoot, "git", resRef + ".git.json"));
+        }
+
+        /// <summary>
         /// Loads the three files that make up one area instance: the .are (static area properties),
         /// .git (placed object instances), and .gic (toolset-only comments) documents for the same
         /// resref.
@@ -120,7 +133,7 @@ namespace SWLOR.Toolset.Domain.Workspace
                 throw new ArgumentException("ResRef must be provided.", nameof(resRef));
 
             var are = AreDocument.Load(GetResourcePath(ResourceType.Area, resRef));
-            var git = GitDocument.Load(Path.Combine(ModuleRoot, "git", resRef + ".git.json"));
+            var git = LoadGit(resRef);
             var gic = GicDocument.Load(Path.Combine(ModuleRoot, "gic", resRef + ".gic.json"));
 
             return (are, git, gic);

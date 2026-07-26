@@ -96,6 +96,52 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void LoadGit_OverRealModule_ReturnsOnlyTheRequestedPlacedObjectDocument()
+        {
+            var workspace = new ModuleWorkspace(ModuleDirectory);
+            var resRef = workspace.EnumerateAreaResRefs().First();
+
+            var git = workspace.LoadGit(resRef);
+
+            git.ToBytes().Should().Equal(
+                File.ReadAllBytes(Path.Combine(workspace.ModuleRoot, "git", resRef + ".git.json")));
+        }
+
+        [Test]
+        public void TagIndex_DoesNotParseUnrelatedAreaAndCommentDocuments()
+        {
+            const string resRef = "anchor_entreesud";
+            var root = Path.Combine(
+                Path.GetTempPath(), "SWLOR.Toolset.Tests", "git_only_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(Path.Combine(root, "are"));
+            Directory.CreateDirectory(Path.Combine(root, "utc"));
+            Directory.CreateDirectory(Path.Combine(root, "git"));
+            Directory.CreateDirectory(Path.Combine(root, "gic"));
+
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(root, "are", resRef + ".are.json"),
+                    "This ARE must not be parsed by the tag index.");
+                File.WriteAllText(
+                    Path.Combine(root, "gic", resRef + ".gic.json"),
+                    "This GIC must not be parsed by the tag index.");
+                File.Copy(
+                    Path.Combine(ModuleDirectory, "git", resRef + ".git.json"),
+                    Path.Combine(root, "git", resRef + ".git.json"));
+
+                var workspace = new ModuleWorkspace(root);
+
+                workspace.TagIndex.TransitionDestinationTags.Should()
+                    .Contain("WP_anchor_desert_est_2");
+            }
+            finally
+            {
+                Directory.Delete(root, recursive: true);
+            }
+        }
+
+        [Test]
         public void LoadBlueprint_Utc_ReturnsTypedDocumentMatchingTheFileOnDisk()
         {
             var workspace = new ModuleWorkspace(ModuleDirectory);

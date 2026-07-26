@@ -58,8 +58,12 @@ namespace SWLOR.Toolset.Workspace
         /// v13: DDS rows were upside down relative to TGA, so any DDS texture whose top and bottom
         /// differ was sampled inverted. Every preview drawn from one has to be drawn again.
         /// </para>
+        /// <para>
+        /// v14: creatures stand in their idle pose instead of the bind pose their geometry is stored
+        /// in, so every creature thumbnail is a different picture.
+        /// </para>
         /// </remarks>
-        private const string FormatVersion = "v13";
+        private const string FormatVersion = "v14";
 
         private const string MissingArtworkExtension = ".none";
 

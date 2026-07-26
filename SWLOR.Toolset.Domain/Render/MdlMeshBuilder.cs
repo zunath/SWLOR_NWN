@@ -109,7 +109,19 @@ namespace SWLOR.Toolset.Domain.Render
         private static bool IsPlaceholderNode(MdlTrimeshNode trimesh) =>
             PlaceholderNodeNames.Contains(trimesh.Name ?? string.Empty);
 
-        public static RenderModel Build(MdlModel model)
+        public static RenderModel Build(MdlModel model) => Build(model, pose: null);
+
+        /// <summary>
+        /// As <see cref="Build(MdlModel)"/>, but standing the model in <paramref name="pose"/> - the
+        /// per-node local transforms sampled from an animation by <see cref="MdlAnimationPose"/>.
+        /// </summary>
+        /// <remarks>
+        /// The pose replaces a node's own local transform wherever it names one; everything else keeps
+        /// what the geometry declares. That is what lets one skeleton's idle pose carry a whole
+        /// composed body: the parts hang off bones by name, so posing the bones moves the parts with
+        /// them without the parts needing keyframes of their own.
+        /// </remarks>
+        public static RenderModel Build(MdlModel model, IReadOnlyDictionary<string, PosedNode>? pose)
         {
             ArgumentNullException.ThrowIfNull(model);
 
@@ -131,14 +143,14 @@ namespace SWLOR.Toolset.Domain.Render
                     if (trimesh.Vertices.Length == 0 || trimesh.Faces.Length == 0)
                         continue;
 
-                    meshes.Add(BuildMesh(trimesh));
+                    meshes.Add(BuildMesh(trimesh, pose));
                 }
             }
 
             return new RenderModel { Name = model.Name, Meshes = meshes };
         }
 
-        private static RenderMesh BuildMesh(MdlTrimeshNode trimesh)
+        private static RenderMesh BuildMesh(MdlTrimeshNode trimesh, IReadOnlyDictionary<string, PosedNode>? pose)
         {
             var vertexCount = trimesh.Vertices.Length;
 
@@ -198,7 +210,7 @@ namespace SWLOR.Toolset.Domain.Render
                 Normals = normals,
                 TexCoords = texCoords,
                 Indices = indices,
-                Transform = ComposeNodeTransform(trimesh)
+                Transform = ComposeNodeTransform(trimesh, pose)
             };
         }
 
@@ -209,19 +221,29 @@ namespace SWLOR.Toolset.Domain.Render
         /// Mirrors Radoub.UI's <c>ModelViewController.GetWorldTransform</c> (the App-layer GL
         /// renderer reused by the model preview) so both consumers place nodes identically.
         /// </summary>
-        public static Matrix4x4 ComposeNodeTransform(MdlNode? node)
+        public static Matrix4x4 ComposeNodeTransform(MdlNode? node) => ComposeNodeTransform(node, pose: null);
+
+        /// <summary>
+        /// As <see cref="ComposeNodeTransform(MdlNode)"/>, taking each ancestor's local transform from
+        /// <paramref name="pose"/> where it names one. Posing has to happen here rather than on the
+        /// finished mesh, because a bone's animation moves everything below it in the hierarchy.
+        /// </summary>
+        public static Matrix4x4 ComposeNodeTransform(MdlNode? node, IReadOnlyDictionary<string, PosedNode>? pose)
         {
             var transform = Matrix4x4.Identity;
             var current = node;
 
             while (current != null)
             {
-                var scale = Matrix4x4.CreateScale(current.Scale);
-                var rotation = Matrix4x4.CreateFromQuaternion(current.Orientation);
-                var translation = Matrix4x4.CreateTranslation(current.Position);
+                var local = pose != null && current.Name.Length > 0 && pose.TryGetValue(current.Name, out var posed)
+                    ? posed
+                    : new PosedNode(current.Position, current.Orientation, current.Scale);
 
-                var local = scale * rotation * translation;
-                transform *= local;
+                var scale = Matrix4x4.CreateScale(local.Scale);
+                var rotation = Matrix4x4.CreateFromQuaternion(local.Orientation);
+                var translation = Matrix4x4.CreateTranslation(local.Position);
+
+                transform *= scale * rotation * translation;
 
                 current = current.Parent;
             }

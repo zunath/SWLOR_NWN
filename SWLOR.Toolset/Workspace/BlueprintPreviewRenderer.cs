@@ -281,7 +281,7 @@ namespace SWLOR.Toolset.Workspace
 
             try
             {
-                return MdlMeshBuilder.Build(model);
+                return MdlMeshBuilder.Build(model, IdlePose(model));
             }
             catch (Exception)
             {
@@ -312,7 +312,30 @@ namespace SWLOR.Toolset.Workspace
                     _partTextures.Restore(composed, TextureExists);
             }
 
-            return composed == null ? null : MdlMeshBuilder.Build(composed);
+            if (composed == null)
+                return null;
+
+            // The idle comes off the skeleton, which is why the composer loads it with its supermodel
+            // animations - a body part carries geometry, never keyframes.
+            return MdlMeshBuilder.Build(composed, IdlePose(composed));
+        }
+
+        /// <summary>
+        /// The model's standing pose, or null when it has no idle to stand in.
+        /// </summary>
+        /// <remarks>
+        /// Sampled at the first frame rather than played: the pose is what makes a creature read as a
+        /// creature instead of the arms-out bind pose its geometry is stored in, and it costs one
+        /// evaluation at build time. Animating it would mean re-posing and re-uploading every composed
+        /// body each frame, which is a different piece of work - the sampler already takes a time, so
+        /// that is a matter of driving it rather than rewriting it.
+        /// </remarks>
+        private IReadOnlyDictionary<string, PosedNode>? IdlePose(MdlModel model)
+        {
+            var posed = MdlAnimationPose.SampleIdle(
+                model, superModel => LoadMdl(superModel, withSupermodelAnims: true));
+
+            return posed.Count == 0 ? null : posed;
         }
 
         /// <summary>Whether a texture name resolves to a real resource, in any of NWN's texture formats.</summary>

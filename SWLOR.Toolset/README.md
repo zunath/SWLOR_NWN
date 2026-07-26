@@ -1,8 +1,14 @@
 # SWLOR Toolset
 
 A SWLOR-only replacement for the parts of the Aurora Toolset the team still uses: **area editing,
-instance placement, blueprint editing, and tile painting**. Everything else — dialogs, quests,
-spawns, scripts, stores — already lives in C# and is not in scope here.
+instance placement, blueprint editing, tile painting, and NWScript editing**. Everything else —
+dialogs, quests, spawns, stores — already lives in C# and is not in scope here.
+
+The script editor covers the module's 87 `.nss` sources: syntax highlighting, context-aware
+completion over the 1,187 engine functions and 6,201 constants, signature help, go-to-definition,
+rename, an Aurora-style function browser, and compilation via the vendored `nwn_script_comp`.
+It exists because `ModulePacker` copies `.nss`/`.ncs` verbatim and never compiles, so the committed
+bytecode is what the game runs — see `SCRIPT-EDITOR-PLAN.md`.
 
 It is an Avalonia desktop app that reads and writes the module's per-resource JSON directly
 (`Module/{are,git,gic,utc,uti,utp,…}/<resref>.<ext>.json`, neverwinter.nim `nwn_gff` format) and

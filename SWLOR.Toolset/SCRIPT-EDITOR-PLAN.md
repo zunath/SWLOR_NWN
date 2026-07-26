@@ -1,8 +1,18 @@
 # SWLOR Toolset — NWScript Editor
 
-> Design proposal. Companion to `PLAN.md` (the area/blueprint editor plan, Phases 0–7, complete).
+> Companion to `PLAN.md` (the area/blueprint editor plan, Phases 0–7, complete).
 > This is **Phase S** — a self-contained addition, sequenced after WP7.3's human gate.
-> Nothing here is implemented yet; this document is for review, not a record of work done.
+
+> **STATUS: Phase S is complete (2026-07-26).** Every work package below is implemented and tested;
+> per-package detail, corrections and findings live in `WORKLOG.md`. Two things were deliberately
+> left out and are recorded there: a full recursive-descent parser with a type-checking binder (which
+> would enable unknown-identifier and type-mismatch diagnostics — the one thing tier 1 still cannot
+> do), and the out-of-scope items named under Scope below.
+>
+> Three figures in this document were measured wrong when it was written and are corrected in
+> `WORKLOG.md`: the header declares **1,187** functions, not 1,164 (the original grep excluded digits
+> and missed `d2`/`d6`/`d20`/`d100`); `MonoFont` already existed, so no font work was needed; and an
+> NWN install **is** required to compile 16 of the 87 scripts.
 
 > **Revision 2 — corrected against the shipped shell.** The first draft described an older layout.
 > Corrected throughout: Module Contents is a **three-tab panel** (Areas / Dialogs / Scripts) with the

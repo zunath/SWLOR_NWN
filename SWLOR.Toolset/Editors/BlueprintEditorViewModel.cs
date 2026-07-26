@@ -338,6 +338,7 @@ namespace SWLOR.Toolset.Editors
                 _session.Undo();
 
             RefreshAllFields(reclassifyAmbiguousBehavior: true);
+            PlaceableSections?.Behavior.MarkSavedBaseline();
             AfterHistoryChange();
         }
 
@@ -360,6 +361,7 @@ namespace SWLOR.Toolset.Editors
                         _session.ReloadFromDisk();
                         RecreateVarTableSection();
                         RefreshAllFields(reclassifyAmbiguousBehavior: true);
+                        PlaceableSections?.Behavior.MarkSavedBaseline();
                         AfterHistoryChange();
                         CatalogEntryChanged?.Invoke();
                         _log.AppendLine($"Reloaded externally changed file {_session.FilePath}.");
@@ -376,6 +378,7 @@ namespace SWLOR.Toolset.Editors
                 Services.SaveService.WriteAtomic(_session.FilePath, _session.ToBytes());
                 _session.UndoStack.MarkSaved();
                 _session.RecordCurrentFileState();
+                PlaceableSections?.Behavior.MarkSavedBaseline();
                 AfterHistoryChange();
                 CatalogEntryChanged?.Invoke();
                 _log.AppendLine($"Saved {_session.FilePath}.");

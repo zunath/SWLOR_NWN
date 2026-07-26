@@ -1025,24 +1025,105 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void BehaviorSelection_WarnsOnlyForChangedValuesAndUsesPlainLabels()
+        public void UnsavedValuesLostBySwitching_ComparesAgainstTheFormBaseline()
         {
-            var document = BuildDocument();
             var quest = PlaceableBehaviorCatalog.FindById("quest_activator")!;
+            var document = BuildDocument();
             PlaceableBehaviorApplier.Apply(
                 document.Root,
                 PlaceableBehaviorCatalog.None,
                 quest);
-            var context = new EditorFieldContext(
-                document,
+            new VarTable(document.Root).SetInt("QUEST_ENCOUNTER_COOLDOWN_MINUTES", 30);
+            var baseline = JsonGffDocument.Parse(document.ToBytes());
+
+            PlaceableBehaviorApplier
+                .UnsavedValuesLostBySwitching(
+                    document.Root,
+                    baseline.Root,
+                    quest,
+                    PlaceableBehaviorCatalog.None)
+                .Should().BeEmpty("the loaded configuration has not changed");
+
+            new VarTable(document.Root).SetInt("QUEST_ENCOUNTER_COOLDOWN_MINUTES", 60);
+
+            PlaceableBehaviorApplier
+                .UnsavedValuesLostBySwitching(
+                    document.Root,
+                    baseline.Root,
+                    quest,
+                    PlaceableBehaviorCatalog.None)
+                .Should().BeEquivalentTo(new[] { "QUEST_ENCOUNTER_COOLDOWN_MINUTES" },
+                    "changing an authored value to the catalog default is still an unsaved edit");
+        }
+
+        [Test]
+        public void BehaviorSelection_WarnsOnlyForUnsavedFormEditsAndUsesPlainLabels()
+        {
+            var untouchedDocument = BuildDocument(("OnUsed", "generic_convo"));
+            new VarTable(untouchedDocument.Root).SetString("CONVERSATION", "ExistingDialog");
+            new VarTable(untouchedDocument.Root).SetInt("TARGET_PC", 1);
+            var untouchedPrompts = new RecordingPrompts();
+            var untouched = new PlaceableBehaviorSectionViewModel(
+                new EditorFieldContext(
+                    untouchedDocument,
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    }),
+                new BehaviorValueSourceProvider(gameCode: null, tags: () => null),
+                untouchedPrompts,
                 (_, mutation) =>
                 {
                     mutation();
                     return true;
                 });
+
+            untouched.Current.Id.Should().Be("conversation");
+            untouched.SelectedItem = untouched.Items.Single(item =>
+                item.Behavior?.Id == "workbench");
+            untouchedPrompts.DestructivePrompts.Should().BeEmpty(
+                "existing saved configuration was not entered during this form session");
+
+            var savedDocument = BuildDocument(("OnUsed", "generic_convo"));
+            new VarTable(savedDocument.Root).SetString("CONVERSATION", "ExistingDialog");
+            new VarTable(savedDocument.Root).SetInt("TARGET_PC", 1);
+            var savedPrompts = new RecordingPrompts();
+            var saved = new PlaceableBehaviorSectionViewModel(
+                new EditorFieldContext(
+                    savedDocument,
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    }),
+                new BehaviorValueSourceProvider(gameCode: null, tags: () => null),
+                savedPrompts,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+
+            saved.Fields.Single(field => field.VariableName == "CONVERSATION")
+                .Text = "SavedDialog";
+            saved.MarkSavedBaseline();
+            saved.SelectedItem = saved.Items.Single(item => item.Behavior?.Id == "workbench");
+            savedPrompts.DestructivePrompts.Should().BeEmpty(
+                "a successfully saved field value is no longer an unsaved form edit");
+
+            var changedDocument = BuildDocument(("OnUsed", "generic_convo"));
+            new VarTable(changedDocument.Root).SetString("CONVERSATION", "ExistingDialog");
+            new VarTable(changedDocument.Root).SetInt("TARGET_PC", 1);
             var prompts = new RecordingPrompts();
-            var section = new PlaceableBehaviorSectionViewModel(
-                context,
+            var changed = new PlaceableBehaviorSectionViewModel(
+                new EditorFieldContext(
+                    changedDocument,
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    }),
                 new BehaviorValueSourceProvider(gameCode: null, tags: () => null),
                 prompts,
                 (_, mutation) =>
@@ -1051,19 +1132,15 @@ namespace SWLOR.Toolset.Tests
                     return true;
                 });
 
-            section.SelectedItem = section.Items.Single(item => item.Behavior?.Id == "teleporter");
-            prompts.DestructivePrompts.Should().BeEmpty(
-                "selecting Quest Activator only wrote its normal defaults");
-
-            PlaceableBehaviorApplier.Apply(document.Root, section.Current, quest);
-            new VarTable(document.Root).SetInt("QUEST_ENCOUNTER_IDLE_MINUTES", 25);
-            section.RefreshFromDocument(reclassifyAmbiguousSelection: true);
-            section.SelectedItem = section.Items.Single(item => item.Behavior?.Id == "teleporter");
+            changed.Fields.Single(field => field.VariableName == "CONVERSATION")
+                .Text = "ChangedDialog";
+            changed.SelectedItem = changed.Items.Single(item =>
+                item.Behavior?.Id == "workbench");
 
             prompts.DestructivePrompts.Should().ContainSingle();
-            prompts.DestructivePrompts[0].Headline.Should().Be("Change behavior to Teleporter?");
-            prompts.DestructivePrompts[0].Message.Should().Contain("Idle despawn (minutes)");
-            prompts.DestructivePrompts[0].Message.Should().NotContain("QUEST_ENCOUNTER_IDLE_MINUTES");
+            prompts.DestructivePrompts[0].Headline.Should().Be("Change behavior to Workbench?");
+            prompts.DestructivePrompts[0].Message.Should().Contain("C# dynamic dialog");
+            prompts.DestructivePrompts[0].Message.Should().NotContain("CONVERSATION");
             prompts.DestructivePrompts[0].ConfirmLabel.Should().Be("Change behavior");
         }
 

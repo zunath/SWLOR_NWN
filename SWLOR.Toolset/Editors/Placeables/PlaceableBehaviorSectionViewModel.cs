@@ -26,6 +26,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// <summary>Applies a behavior switch as one undoable step; false when the edit was refused.</summary>
         private readonly Func<string, Action, bool> _runEdit;
 
+        private JsonGffDocument _behaviorBaseline;
         private bool _switching;
 
         [ObservableProperty]
@@ -42,6 +43,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             _sources = sources;
             _prompts = prompts;
             _runEdit = runEdit;
+            _behaviorBaseline = CloneDocument();
 
             foreach (var descriptor in UtpSchema.CustomBehaviorFlagFields)
             {
@@ -128,6 +130,7 @@ namespace SWLOR.Toolset.Editors.Placeables
                 _switching = false;
                 BuildFields();
                 NotifyBehaviorProperties();
+                CaptureBehaviorBaseline();
                 return;
             }
 
@@ -163,8 +166,11 @@ namespace SWLOR.Toolset.Editors.Placeables
 
         private async Task SwitchToAsync(PlaceableBehavior target)
         {
-            var losses = PlaceableBehaviorApplier.ValuesLostBySwitching(
-                _context.Document.Root, Current, target);
+            var losses = PlaceableBehaviorApplier.UnsavedValuesLostBySwitching(
+                _context.Document.Root,
+                _behaviorBaseline.Root,
+                Current,
+                target);
 
             if (losses.Count > 0)
             {
@@ -202,6 +208,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             Current = target;
             BuildFields();
             NotifyBehaviorProperties();
+            CaptureBehaviorBaseline();
             BehaviorChanged?.Invoke();
         }
 
@@ -220,6 +227,12 @@ namespace SWLOR.Toolset.Editors.Placeables
 
             return applied;
         }
+
+        /// <summary>
+        /// Records the successfully saved or reloaded form state. Later behavior changes warn only
+        /// for edits made after this point.
+        /// </summary>
+        public void MarkSavedBaseline() => CaptureBehaviorBaseline();
 
         private void BuildFields()
         {
@@ -312,5 +325,13 @@ namespace SWLOR.Toolset.Editors.Placeables
             2 => $"{values[0]} and {values[1]}",
             _ => $"{string.Join(", ", values.Take(values.Count - 1))}, and {values[^1]}"
         };
+
+        private JsonGffDocument CloneDocument() =>
+            JsonGffDocument.Parse(_context.Document.ToBytes());
+
+        private void CaptureBehaviorBaseline()
+        {
+            _behaviorBaseline = CloneDocument();
+        }
     }
 }

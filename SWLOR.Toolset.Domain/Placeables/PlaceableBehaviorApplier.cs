@@ -63,6 +63,63 @@ namespace SWLOR.Toolset.Domain.Placeables
             return losses;
         }
 
+        /// <summary>
+        /// Values that would be lost and differ from the form's baseline. Existing saved
+        /// configuration is not an unsaved entry, so merely opening a placeable and choosing a
+        /// different behavior must not raise a discard warning.
+        /// </summary>
+        public static IReadOnlyList<string> UnsavedValuesLostBySwitching(
+            JsonGffStruct root,
+            JsonGffStruct baseline,
+            PlaceableBehavior from,
+            PlaceableBehavior to)
+        {
+            ArgumentNullException.ThrowIfNull(baseline);
+
+            var currentVariables = new VarTable(root);
+            var baselineVariables = new VarTable(baseline);
+            var kept = new HashSet<string>(
+                to.Fields
+                    .Where(field => field.IsVisible || AlreadyHasFixedValue(currentVariables, field))
+                    .Select(field => field.VariableName),
+                StringComparer.Ordinal);
+            var losses = new List<string>();
+
+            if (ReferenceEquals(from, PlaceableBehaviorCatalog.Custom))
+            {
+                foreach (var slot in PlaceableBehaviorDetector.ReadScripts(root))
+                {
+                    var targetKeepsValue = to.Scripts.TryGetValue(slot.Key, out var targetScript) &&
+                                           string.Equals(
+                                               slot.Value,
+                                               targetScript,
+                                               StringComparison.OrdinalIgnoreCase);
+                    var changed = !string.Equals(
+                        slot.Value,
+                        baseline.GetStringOrNull(slot.Key),
+                        StringComparison.Ordinal);
+                    if (!targetKeepsValue && changed)
+                        losses.Add($"{slot.Key} script");
+                }
+
+                losses.AddRange(currentVariables
+                    .Select(entry => entry.Name)
+                    .Where(name => !kept.Contains(name))
+                    .Where(name => !SameLocalValue(currentVariables, baselineVariables, name)));
+                return losses;
+            }
+
+            losses.AddRange(from.Fields
+                .Where(field => !kept.Contains(field.VariableName))
+                .Where(field => HasEntry(currentVariables, field.VariableName))
+                .Where(field => !SameLocalValue(
+                    currentVariables,
+                    baselineVariables,
+                    field.VariableName))
+                .Select(field => field.VariableName));
+            return losses;
+        }
+
         /// <summary>Applies <paramref name="to"/>, having previously been <paramref name="from"/>.</summary>
         public static void Apply(JsonGffStruct root, PlaceableBehavior from, PlaceableBehavior to)
         {
@@ -221,6 +278,33 @@ namespace SWLOR.Toolset.Domain.Placeables
                 _ => true
             };
         }
+
+        private static bool SameLocalValue(VarTable current, VarTable baseline, string name)
+        {
+            var currentEntry = current.FirstOrDefault(candidate =>
+                string.Equals(candidate.Name, name, StringComparison.Ordinal));
+            var baselineEntry = baseline.FirstOrDefault(candidate =>
+                string.Equals(candidate.Name, name, StringComparison.Ordinal));
+
+            if (currentEntry == null || baselineEntry == null)
+                return currentEntry == null && baselineEntry == null;
+            if (currentEntry.Type != baselineEntry.Type)
+                return false;
+
+            return currentEntry.Type switch
+            {
+                VarTable.TypeInt => currentEntry.IntValue == baselineEntry.IntValue,
+                VarTable.TypeFloat => currentEntry.FloatValue == baselineEntry.FloatValue,
+                VarTable.TypeString => string.Equals(
+                    currentEntry.StringValue,
+                    baselineEntry.StringValue,
+                    StringComparison.Ordinal),
+                _ => true
+            };
+        }
+
+        private static bool HasEntry(VarTable table, string name) =>
+            table.Any(candidate => string.Equals(candidate.Name, name, StringComparison.Ordinal));
 
         /// <summary>
         /// A value that differs from the behavior's initial value is authored configuration worth

@@ -317,8 +317,14 @@ public class CrossSkillPerkInteractionSafetyTests
         delayedImpact.Should().Contain("int nextAttackEnmityBonus");
         delayedImpact.Should().Contain("nextAttackEnmityBonus,",
             "the reconstructed tracked impact must retain the guarded-hit Enmity bonus");
-        delayedImpact.Should().Contain("statusAppliedNextAttackDamageBonus);",
-            "a delayed damaging impact must retain the pending Charged Blows bonus");
+        delayedImpact.Should().Contain("Combat.GetStatusAppliedNextAttackDamageBonus(creator)",
+            "a delayed impact must resolve the live Charged Blows proc when it lands");
+        telegraphedImpact.Should().Contain("deferredNextAbilityDamageBonus");
+        telegraphedImpact.Should().Contain(
+            "(trackedImpact?.StatusAppliedNextAttackDamageBonus ?? 0)",
+            "the cast-time Charged Blows snapshot must not be captured by a delayed impact");
+        delayedImpact.Should().NotContain("int statusAppliedNextAttackDamageBonus",
+            "the delayed callback must not carry a stale Charged Blows reservation");
 
         var nativeAttackSource = Read(root, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
         nativeAttackSource.Should().Contain("ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf)",

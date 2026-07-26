@@ -52,7 +52,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             if (_grantsTemporaryImmunity)
             {
-                Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Dazed);
+                Ability.ApplyPostControlImmunity(
+                    creature,
+                    SecondsSinceNaturalExpiration,
+                    ImmunityType.Dazed);
             }
         }
 

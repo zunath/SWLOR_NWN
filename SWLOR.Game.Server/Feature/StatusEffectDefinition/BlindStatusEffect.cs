@@ -35,7 +35,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (IsBeingReplaced)
                 return;
 
-            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Blindness);
+            Ability.ApplyPostControlImmunity(
+                creature,
+                SecondsSinceNaturalExpiration,
+                ImmunityType.Blindness);
         }
 
         private void ApplyBlindness(uint creature, float duration)

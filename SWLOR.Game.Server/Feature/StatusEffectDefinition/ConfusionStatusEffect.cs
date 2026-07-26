@@ -35,7 +35,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (IsBeingReplaced)
                 return;
 
-            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Confused);
+            Ability.ApplyPostControlImmunity(
+                creature,
+                SecondsSinceNaturalExpiration,
+                ImmunityType.Confused);
         }
 
         private void ApplyConfusion(uint creature, float duration)

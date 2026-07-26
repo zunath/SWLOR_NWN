@@ -36,7 +36,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 Enmity.AttackHighestEnmityTarget(creature);
             }
 
-            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Immobilized);
+            Ability.ApplyPostControlImmunity(
+                creature,
+                SecondsSinceNaturalExpiration,
+                ImmunityType.Immobilized);
         }
     }
 }

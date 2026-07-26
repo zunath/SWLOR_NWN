@@ -71,8 +71,9 @@ public class NativeControlStatusEffectTests
 
         source.Should().Contain("protected override void Remove(uint creature)");
         source.Should().Contain("if (IsBeingReplaced)");
-        source.Should().Contain(
-            $"Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.{immunityType});");
+        source.Should().Contain("Ability.ApplyPostControlImmunity(");
+        source.Should().Contain("SecondsSinceNaturalExpiration");
+        source.Should().Contain($"ImmunityType.{immunityType});");
         source.Should().NotContain(
             $"Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.{immunityType});",
             "hard-control immunity begins after the status ends, not while it is active");
@@ -120,6 +121,36 @@ public class NativeControlStatusEffectTests
     }
 
     [Test]
+    public void OfflineExpiration_TracksElapsedTimeAfterTheControlEnded()
+    {
+        var effect = new RemovalProbeStatusEffect();
+        effect.ApplyEffect(0u, 0u, 2);
+
+        effect.ReconcileElapsedTime(DateTime.UtcNow.AddSeconds(5));
+
+        effect.IsFlaggedForRemoval.Should().BeTrue();
+        effect.WasNaturallyExpired.Should().BeTrue();
+        effect.SecondsSinceNaturalExpiration.Should().BeInRange(2.5f, 3.5f);
+    }
+
+    [Test]
+    public void PostControlImmunity_AgesTheWindowDuringOfflineReconciliation()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs"));
+        var method = ExtractMethod(abilitySource, "public static void ApplyPostControlImmunity(");
+
+        method.Should().Contain(
+            "TemporaryImmunityBaseDurationSeconds - Math.Max(0f, secondsSinceControlEnded)");
+        method.Should().Contain("if (duration <= 0f)");
+        method.Should().Contain("ApplyTemporaryImmunityForDuration(target, duration, immunity);");
+    }
+
+    [Test]
     public void StatusEffectDefinitions_DoNotTagNativeEffectsWithTrackerIds()
     {
         var root = FindRepositoryRoot();
@@ -152,6 +183,26 @@ public class NativeControlStatusEffectTests
         }
 
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
+    private static string ExtractMethod(string source, string signature)
+    {
+        var start = source.IndexOf(signature, StringComparison.Ordinal);
+        start.Should().BeGreaterThanOrEqualTo(0);
+
+        var braceStart = source.IndexOf('{', start);
+        braceStart.Should().BeGreaterThan(start);
+
+        var depth = 0;
+        for (var index = braceStart; index < source.Length; index++)
+        {
+            if (source[index] == '{')
+                depth++;
+            else if (source[index] == '}' && --depth == 0)
+                return source[start..(index + 1)];
+        }
+
+        throw new InvalidOperationException($"Could not extract method '{signature}'.");
     }
 
     private sealed class RemovalProbeStatusEffect : StatusEffectBase

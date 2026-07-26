@@ -1313,6 +1313,9 @@ namespace SWLOR.Game.Server.Service
                 0f);
             var impactRotation = GetImpactRotationRadians(activator, target, targetLocation);
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            var deferredNextAbilityDamageBonus =
+                (trackedImpact?.NextAbilityDamageBonus ?? 0) -
+                (trackedImpact?.StatusAppliedNextAttackDamageBonus ?? 0);
             var action = BuildTelegraphedCombatImpactAction(
                 skillType,
                 baseDamage,
@@ -1323,8 +1326,7 @@ namespace SWLOR.Game.Server.Service
                 shape,
                 areaVisualLocation,
                 trackedImpact?.Ability,
-                trackedImpact?.NextAbilityDamageBonus ?? 0,
-                trackedImpact?.StatusAppliedNextAttackDamageBonus ?? 0,
+                deferredNextAbilityDamageBonus,
                 trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0,
                 trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0,
                 trackedImpact?.NextAttackEnmityBonus ?? 0,
@@ -1551,7 +1553,6 @@ namespace SWLOR.Game.Server.Service
             Location areaVisualLocation,
             AbilityDetail ability,
             int nextAbilityDamageBonus,
-            int statusAppliedNextAttackDamageBonus,
             int nextAbilityCriticalRatePercentAdjustment,
             int nextAbilityDefenseIgnorePercentAdjustment,
             int nextAttackEnmityBonus,
@@ -1617,10 +1618,13 @@ namespace SWLOR.Game.Server.Service
 
                     if (ability != null)
                     {
+                        var statusAppliedNextAttackDamageBonus = ability.IsHostileAbility
+                            ? Combat.GetStatusAppliedNextAttackDamageBonus(creator)
+                            : 0;
                         BeginAbilityImpact(
                             creator,
                             ability,
-                            nextAbilityDamageBonus,
+                            nextAbilityDamageBonus + statusAppliedNextAttackDamageBonus,
                             nextAbilityCriticalRatePercentAdjustment,
                             nextAbilityDefenseIgnorePercentAdjustment,
                             nextAttackEnmityBonus,
@@ -2913,21 +2917,53 @@ namespace SWLOR.Game.Server.Service
         /// <param name="immunity">The type of immunity to apply.</param>
         public static void ApplyTemporaryImmunity(uint target, float abilityDuration, ImmunityType immunity)
         {
-            ApplyTemporaryImmunitySingle(target, abilityDuration, immunity);
+            ApplyTemporaryImmunityForDuration(
+                target,
+                TemporaryImmunityBaseDurationSeconds + abilityDuration,
+                immunity);
+        }
+
+        /// <summary>
+        /// Applies the remaining post-control immunity after accounting for time that elapsed
+        /// while the affected creature was logged out.
+        /// </summary>
+        public static void ApplyPostControlImmunity(
+            uint target,
+            float secondsSinceControlEnded,
+            ImmunityType immunity)
+        {
+            var duration = Math.Max(
+                0f,
+                TemporaryImmunityBaseDurationSeconds - Math.Max(0f, secondsSinceControlEnded));
+            if (duration <= 0f)
+                return;
+
+            ApplyTemporaryImmunityForDuration(target, duration, immunity);
+        }
+
+        private const float TemporaryImmunityBaseDurationSeconds = 20f;
+
+        private static void ApplyTemporaryImmunityForDuration(
+            uint target,
+            float duration,
+            ImmunityType immunity)
+        {
+            ApplyTemporaryImmunitySingle(target, duration, immunity);
 
             if (HardCrowdControlImmunityTypes.Contains(immunity))
             {
-                ApplyTemporaryImmunitySingle(target, abilityDuration, ImmunityType.HardCrowdControl);
+                ApplyTemporaryImmunitySingle(target, duration, ImmunityType.HardCrowdControl);
             }
         }
 
-        private static void ApplyTemporaryImmunitySingle(uint target, float abilityDuration, ImmunityType immunity)
+        private static void ApplyTemporaryImmunitySingle(uint target, float requestedDuration, ImmunityType immunity)
         {
-            const float BaseDuration = 20f;
             var effectTag = GetTemporaryImmunityEffectTag(immunity);
             var duration = Math.Max(
-                BaseDuration + abilityDuration,
+                requestedDuration,
                 GetTemporaryImmunityDurationRemaining(target, effectTag));
+            if (duration <= 0f)
+                return;
 
             RemoveEffectByTag(target, effectTag);
             var effect = EffectImmunity(immunity);

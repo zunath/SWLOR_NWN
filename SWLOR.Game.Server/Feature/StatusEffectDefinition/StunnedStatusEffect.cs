@@ -37,7 +37,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (IsBeingReplaced)
                 return;
 
-            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Stun);
+            Ability.ApplyPostControlImmunity(
+                creature,
+                SecondsSinceNaturalExpiration,
+                ImmunityType.Stun);
         }
 
         private void ApplyStun(uint creature, float duration)

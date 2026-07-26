@@ -41,7 +41,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (IsBeingReplaced)
                 return;
 
-            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Knockdown);
+            Ability.ApplyPostControlImmunity(
+                creature,
+                SecondsSinceNaturalExpiration,
+                ImmunityType.Knockdown);
         }
 
         private void ApplyKnockdown(uint creature, float duration)

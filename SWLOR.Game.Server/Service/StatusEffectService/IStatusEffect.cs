@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         StatusEffectStackType StackingType { get; }
         bool IsFlaggedForRemoval { get; }
         bool WasNaturallyExpired { get; }
+        float SecondsSinceNaturalExpiration { get; }
         bool SendsApplicationMessage { get; }
         bool SendsWornOffMessage { get; }
         StatusEffectCleanseType CleanseTypes { get; }

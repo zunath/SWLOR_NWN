@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public virtual StatusEffectStackType StackingType => StatusEffectStackType.Disabled;
         public bool IsFlaggedForRemoval { get; protected set; }
         public bool WasNaturallyExpired { get; private set; }
+        public float SecondsSinceNaturalExpiration { get; private set; }
         public virtual bool SendsApplicationMessage => true;
         public virtual bool SendsWornOffMessage => true;
         public virtual StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.None;
@@ -140,6 +141,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             {
                 IsFlaggedForRemoval = true;
                 WasNaturallyExpired = true;
+                SecondsSinceNaturalExpiration = 0f;
             }
 
             Tick(creature);
@@ -156,6 +158,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             var frequency = Math.Max(1f, Frequency);
             var elapsedSeconds = (currentTime - _lastRun).TotalSeconds;
             var elapsedTicks = (int)Math.Floor(elapsedSeconds / frequency);
+            var secondsUntilExpiration = _durationTicks * frequency;
 
             if (elapsedTicks <= 0)
                 return;
@@ -166,6 +169,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             if (_durationTicks > 0)
                 return;
 
+            SecondsSinceNaturalExpiration = (float)Math.Max(0d, elapsedSeconds - secondsUntilExpiration);
             _durationTicks = 0;
             _lastRun = currentTime;
             IsFlaggedForRemoval = true;

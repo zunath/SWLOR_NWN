@@ -44,10 +44,16 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (IsBeingReplaced)
                 return;
 
-            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Sleep);
+            Ability.ApplyPostControlImmunity(
+                creature,
+                SecondsSinceNaturalExpiration,
+                ImmunityType.Sleep);
 
             var attackPenalty = Stat.GetStatAdjustment(Source, StatType.TranquilizeExpiredAttackPercentAdjustment);
-            var duration = Stat.GetStatAdjustment(Source, StatType.TranquilizeExpiredAttackDurationSeconds);
+            var duration = Math.Max(
+                0f,
+                Stat.GetStatAdjustment(Source, StatType.TranquilizeExpiredAttackDurationSeconds) -
+                SecondsSinceNaturalExpiration);
             if (attackPenalty == 0 || duration <= 0)
                 return;
 

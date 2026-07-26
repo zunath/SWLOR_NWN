@@ -3,6 +3,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:panels="using:SWLOR.Toolset.Shell.Panels"
+             xmlns:controls="using:SWLOR.Toolset.Shell.Controls"
              mc:Ignorable="d" d:DesignWidth="340" d:DesignHeight="700"
              x:Class="SWLOR.Toolset.Shell.Views.PaletteView"
              x:DataType="panels:PaletteViewModel">
@@ -227,9 +228,11 @@
     <ListBox Grid.Row="1" ItemsSource="{Binding Tiles}" SelectedItem="{Binding SelectedTile}"
              IsVisible="{Binding !NeedsOpenArea}"
              Background="Transparent" BorderThickness="0" Padding="6">
+      <!-- Virtualizing, because a category can hold thousands of tiles and a plain WrapPanel builds a
+           control for every one of them before showing the forty that fit. -->
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
-          <WrapPanel />
+          <controls:VirtualizingWrapPanel />
         </ItemsPanelTemplate>
       </ListBox.ItemsPanel>
       <ListBox.Styles>
@@ -243,10 +246,14 @@
           <!-- Placing is the default action: clicking a tile arms placement, which is what a builder
                does with a palette nine times in ten. Editing lives behind the ellipsis and the right-click
                menu, so the common action needs no aim and the rare one is still one click away. -->
+          <!-- Loaded/Unloaded is where the preview request is wired up: a cell fetches its image when it
+               comes within reach of the viewport rather than when the category opens. See
+               OnTileLoaded. -->
           <Border Width="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).TileSize}"
                   CornerRadius="4" Background="{DynamicResource PanelRaisedBrush}"
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
-                  Tapped="OnTileTapped" ContextRequested="OnTileContextRequested">
+                  Tapped="OnTileTapped" ContextRequested="OnTileContextRequested"
+                  Loaded="OnTileLoaded" Unloaded="OnTileUnloaded">
             <Border.ContextMenu>
               <!-- Only this object's own actions. Creating things belongs to the category menu, and
                    placing is what a plain click already does - repeating it here would be the one item

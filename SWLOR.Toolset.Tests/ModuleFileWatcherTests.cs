@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -44,6 +45,37 @@ namespace SWLOR.Toolset.Tests
         public void UnrelatedResourcesDoNotInvalidateTheTagIndex(string path)
         {
             ModuleFileWatcher.AffectsTagIndex(path).Should().BeFalse();
+        }
+
+        [TestCase(@"C:\module\git\area.git.json")]
+        [TestCase(@"C:\module\utc\creature.utc.json")]
+        [TestCase(@"C:\module\dlg\conversation.dlg.json")]
+        [TestCase(@"C:\module\are\area.are.json")]
+        public void ScriptBearingResourcesInvalidateUsageIndex(string path)
+        {
+            ModuleFileWatcher.AffectsScriptUsages(path).Should().BeTrue();
+        }
+
+        [TestCase(@"C:\module\nss\script.nss")]
+        [TestCase(@"C:\module\config.json")]
+        public void ResourcesWithoutScriptSlotsDoNotInvalidateUsageIndex(string path)
+        {
+            ModuleFileWatcher.AffectsScriptUsages(path).Should().BeFalse();
+        }
+
+        [Test]
+        public void WorkspaceCatalogRefreshInvalidatesScriptUsagesOnlyForScriptedResources()
+        {
+            var context = new WorkspaceContext(
+                _ => throw new NotSupportedException(),
+                new OutputLogService());
+            var invalidations = 0;
+            context.ScriptUsagesInvalidated += () => invalidations++;
+
+            context.RefreshCatalogEntry(ResourceType.Utc, "creature");
+            context.RefreshCatalogEntry(ResourceType.Nss, "script");
+
+            invalidations.Should().Be(1);
         }
     }
 }

@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Workspace
 
         public event Action? WorkspaceOpened;
         public event Action<ResourceType, string>? CatalogEntryRefreshed;
+        public event Action? ScriptUsagesInvalidated;
 
         public WorkspaceContext(
             Func<string, ModuleWorkspace> workspaceFactory,
@@ -82,6 +83,7 @@ namespace SWLOR.Toolset.Workspace
             }, TaskScheduler.Default);
 
             WorkspaceOpened?.Invoke();
+            InvalidateScriptUsages();
         }
 
         /// <summary>
@@ -90,6 +92,7 @@ namespace SWLOR.Toolset.Workspace
         public void RefreshCatalogEntry(ResourceType type, string resRef)
         {
             InvalidateTagIndexWhenRelevant(type);
+            InvalidateScriptUsagesWhenRelevant(type);
             Catalog?.RefreshEntry(type, resRef);
             CatalogEntryRefreshed?.Invoke(type, resRef);
         }
@@ -102,6 +105,7 @@ namespace SWLOR.Toolset.Workspace
         public void RemoveCatalogEntry(ResourceType type, string resRef)
         {
             InvalidateTagIndexWhenRelevant(type);
+            InvalidateScriptUsagesWhenRelevant(type);
             Catalog?.RemoveEntry(type, resRef);
             CatalogEntryRefreshed?.Invoke(type, resRef);
         }
@@ -112,10 +116,22 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public void InvalidateTagIndex() => Workspace?.TagIndex.Invalidate();
 
+        /// <summary>
+        /// Drops the lazy script-usage snapshot. Paired GIT files are not first-class resource types,
+        /// so the file watcher calls this directly when a placed-instance script slot changes.
+        /// </summary>
+        public void InvalidateScriptUsages() => ScriptUsagesInvalidated?.Invoke();
+
         private void InvalidateTagIndexWhenRelevant(ResourceType type)
         {
             if (type is ResourceType.Area or ResourceType.Utd or ResourceType.Utw)
                 InvalidateTagIndex();
+        }
+
+        private void InvalidateScriptUsagesWhenRelevant(ResourceType type)
+        {
+            if (Domain.Script.ScriptUsageIndex.ScriptedTypes.Contains(type))
+                InvalidateScriptUsages();
         }
     }
 }

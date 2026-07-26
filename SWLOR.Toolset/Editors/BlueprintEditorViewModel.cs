@@ -193,11 +193,13 @@ namespace SWLOR.Toolset.Editors
 
         private void RebuildVariablesTab()
         {
-            var existing = Tabs.FirstOrDefault(tab => ReferenceEquals(tab.Content, VarTableSection));
+            var existing = Tabs.FirstOrDefault(tab => tab.Title == "Variables");
             var wanted = VarTableSection != null && ShouldShowVariablesTab();
 
             if (wanted && existing == null)
                 Tabs.Add(new EditorTabViewModel("Variables", VarTableSection!));
+            else if (wanted && !ReferenceEquals(existing!.Content, VarTableSection))
+                Tabs[Tabs.IndexOf(existing)] = new EditorTabViewModel("Variables", VarTableSection!);
             else if (!wanted && existing != null)
                 Tabs.Remove(existing);
             else
@@ -384,6 +386,7 @@ namespace SWLOR.Toolset.Editors
             VarTableSection = new VarTableSectionViewModel(
                 _context.RunEdit, new VarTable(_session.Document.Root), _gameCodeIndex);
             OnPropertyChanged(nameof(VarTableSection));
+            RebuildVariablesTab();
         }
 
         private void RefreshAllFields()

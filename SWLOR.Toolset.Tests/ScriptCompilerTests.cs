@@ -1,7 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Script.Compile;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -107,6 +109,48 @@ namespace SWLOR.Toolset.Tests
             // 19 of the module's 87 scripts are includes; treating them as failures would make the
             // Build All command permanently red.
             result.HasErrors.Should().BeFalse(result.Output);
+        }
+
+        [Test]
+        public async Task CompilingAnIncludeRebuildsItsTransitiveEntryPointDependents()
+        {
+            if (!File.Exists(CompilerPath))
+                Assert.Ignore("vendored compiler not present");
+
+            var module = Path.Combine(_staging, "Module");
+            foreach (var folder in new[] { "are", "utc", "nss", "ncs" })
+                Directory.CreateDirectory(Path.Combine(module, folder));
+
+            var nss = Path.Combine(module, "nss");
+            await File.WriteAllTextAsync(
+                Path.Combine(nss, "shared_inc.nss"),
+                "int SharedValue() { return 1; }\r\n");
+            await File.WriteAllTextAsync(
+                Path.Combine(nss, "middle_inc.nss"),
+                "#include \"shared_inc\"\r\nint MiddleValue() { return SharedValue(); }\r\n");
+            await File.WriteAllTextAsync(
+                Path.Combine(nss, "entry_script.nss"),
+                "#include \"middle_inc\"\r\nvoid main() { int value = MiddleValue(); }\r\n");
+
+            var log = new OutputLogService();
+            var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
+            context.Open(module);
+            var service = new ScriptCompileService(
+                context, log, compilerPathOverride: CompilerPath);
+
+            (await service.CompileAsync("entry_script")).Succeeded.Should().BeTrue();
+            var output = Path.Combine(module, "ncs", "entry_script.ncs");
+            var before = await File.ReadAllBytesAsync(output);
+
+            await File.WriteAllTextAsync(
+                Path.Combine(nss, "shared_inc.nss"),
+                "int SharedValue() { return 2; }\r\n");
+
+            var includeOutcome = await service.CompileAsync("shared_inc");
+
+            includeOutcome.Succeeded.Should().BeTrue();
+            (await File.ReadAllBytesAsync(output)).Should().NotEqual(before,
+                "saving the transitive include must replace the dependent entry point's bytecode");
         }
 
         /// <summary>

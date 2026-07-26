@@ -24,6 +24,26 @@ namespace SWLOR.Toolset.Domain.Documents
         public static bool Supports(ResourceType type) => type is ResourceType.Dlg or ResourceType.Nss;
 
         /// <summary>
+        /// Converts a display name into an NWN resref: lowercase ASCII alphanumeric/underscore,
+        /// trimmed and capped at the engine's 16-character resource-name limit.
+        /// </summary>
+        public static string ToResRef(string name)
+        {
+            ArgumentNullException.ThrowIfNull(name);
+
+            var characters = name.Trim().ToLowerInvariant()
+                .Select(character => char.IsAsciiLetterOrDigit(character) ? character : '_')
+                .ToArray();
+
+            var cleaned = string.Join(
+                '_',
+                new string(characters).Split('_', StringSplitOptions.RemoveEmptyEntries));
+            return cleaned.Length > 0
+                ? cleaned[..Math.Min(16, cleaned.Length)]
+                : string.Empty;
+        }
+
+        /// <summary>
         /// The new file's bytes: GFF-JSON for a dialog, plain text for a script - see
         /// <see cref="ResourceTypeExtensions.IsJsonEncoded"/>, which .nss is the sole exception to.
         /// </summary>

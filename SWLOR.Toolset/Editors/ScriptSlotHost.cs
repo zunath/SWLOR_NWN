@@ -12,8 +12,9 @@ namespace SWLOR.Toolset.Editors
     /// opening the script in its own tab.
     /// </summary>
     /// <remarks>
-    /// The usage counts shown in the picker come from <see cref="ScriptUsageIndex"/>, built once in
-    /// the background. That index is what makes "used by 41" possible, and with 2,250 module
+    /// The usage counts shown in the picker come from <see cref="ScriptUsageIndex"/>, built lazily in
+    /// the background and invalidated as resources change. That index is what makes "used by 41"
+    /// possible, and with 2,250 module
     /// resources naming scripts it is the difference between editing a legacy script confidently and
     /// guessing.
     /// </remarks>
@@ -23,20 +24,23 @@ namespace SWLOR.Toolset.Editors
         private readonly Func<EditorService> _editorService;
         private readonly OutputLogService _log;
         private readonly string _ownerDescription;
-        private readonly Lazy<Task<ScriptUsageIndex?>> _usageIndex;
+        private readonly Func<Task<ScriptUsageIndex?>> _usageIndex;
+        private readonly Func<Task<string?>> _newScriptFactory;
 
         public ScriptSlotHost(
             WorkspaceContext workspaceContext,
             Func<EditorService> editorService,
             OutputLogService log,
             string ownerDescription,
-            Lazy<Task<ScriptUsageIndex?>> usageIndex)
+            Func<Task<ScriptUsageIndex?>> usageIndex,
+            Func<Task<string?>> newScriptFactory)
         {
             _workspaceContext = workspaceContext;
             _editorService = editorService;
             _log = log;
             _ownerDescription = ownerDescription;
             _usageIndex = usageIndex;
+            _newScriptFactory = newScriptFactory;
         }
 
         public bool ScriptExists(string resRef)
@@ -79,7 +83,7 @@ namespace SWLOR.Toolset.Editors
             if (owner == null)
                 return null;
 
-            var usage = await _usageIndex.Value.ConfigureAwait(true);
+            var usage = await _usageIndex().ConfigureAwait(true);
             var counts = usage?.UsageCounts();
 
             var rows = new List<ScriptPickerRow>();
@@ -104,6 +108,7 @@ namespace SWLOR.Toolset.Editors
             }
 
             var dialog = new ScriptPickerDialog();
+            dialog.NewScriptFactory = _newScriptFactory;
             dialog.Configure("Script slot", _ownerDescription, current, rows);
             return await dialog.ShowDialog<string?>(owner).ConfigureAwait(true);
         }

@@ -37,7 +37,9 @@
           <Button Name="ReplaceButton" Content="Replace" Padding="8,3" Click="OnReplaceClick" />
           <Button Name="ReplaceAllButton" Content="All" Padding="8,3" Click="OnReplaceAllClick" />
           <CheckBox Name="MatchCaseBox" Content="Case" VerticalAlignment="Center" />
-          <Button Content="X" Padding="8,3" Click="OnCloseSearchClick" />
+          <Button Classes="close" Click="OnCloseSearchClick" ToolTip.Tip="Close search">
+            <Path Data="{DynamicResource ToolsetCloseIconGeometry}" />
+          </Button>
         </StackPanel>
       </Border>
     </Grid>

@@ -239,6 +239,8 @@
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="avares://Dock.Avalonia.Themes.Fluent/Presets/Ide/Default.axaml" />
+        <!-- Last so the Toolset's icon aliases replace every close geometry consumed by Dock. -->
+        <ResourceInclude Source="avares://SWLOR.Toolset/Assets/Icons.axaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>

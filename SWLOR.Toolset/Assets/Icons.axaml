@@ -1,0 +1,37 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!--
+    One font-independent close mark for every Toolset surface. Its 16px drawing has the same
+    roughly 1.5px optical weight as the toolbar's stroked icons, with softened ends so it does not
+    read as a harsh delete symbol in the compact docking chrome.
+
+    Dock's templates consume two differently named geometry resources. Both aliases deliberately
+    point at this asset so document tabs, tool/MDI chrome and drawn window decorations cannot drift
+    back to Dock's mismatched defaults.
+  -->
+  <StreamGeometry x:Key="ToolsetCloseIconGeometry">
+    M4.22,3.16
+    C3.93,2.87 3.46,2.87 3.16,3.16
+    C2.87,3.46 2.87,3.93 3.16,4.22
+    L6.94,8
+    L3.16,11.78
+    C2.87,12.07 2.87,12.54 3.16,12.84
+    C3.46,13.13 3.93,13.13 4.22,12.84
+    L8,9.06
+    L11.78,12.84
+    C12.07,13.13 12.54,13.13 12.84,12.84
+    C13.13,12.54 13.13,12.07 12.84,11.78
+    L9.06,8
+    L12.84,4.22
+    C13.13,3.93 13.13,3.46 12.84,3.16
+    C12.54,2.87 12.07,2.87 11.78,3.16
+    L8,6.94
+    Z
+  </StreamGeometry>
+
+  <StaticResource x:Key="DockIconCloseGeometry"
+                  ResourceKey="ToolsetCloseIconGeometry" />
+  <StaticResource x:Key="DockToolIconCloseGeometry"
+                  ResourceKey="ToolsetCloseIconGeometry" />
+</ResourceDictionary>

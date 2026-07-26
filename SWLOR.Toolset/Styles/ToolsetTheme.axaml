@@ -385,22 +385,27 @@
     <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
   </Style>
-  <!-- Tab close button. Dock's Fluent theme draws this with a glyph from an icon font that is not
-       installed here, so it rendered as an empty box - the "missing glyph" square. Drawn as a vector
-       instead, which depends on no font at all. The same style covers document tabs, tool tabs and any
-       other PART_CloseButton the docking chrome creates. -->
-  <Style Selector="Button#PART_CloseButton">
-    <Setter Property="ContentTemplate">
-      <DataTemplate>
-        <Path Width="8" Height="8" Stretch="None"
-              Stroke="{DynamicResource InkSecondaryBrush}" StrokeThickness="1.2"
-              Data="M 0,0 L 8,8 M 8,0 L 0,8" />
-      </DataTemplate>
-    </Setter>
+
+  <!-- Compact icon-only dismiss action, used outside Dock's own close templates. -->
+  <Style Selector="Button.close">
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Padding" Value="6" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
 
-  <Style Selector="Button#PART_CloseButton:pointerover /template/ ContentPresenter Path">
-    <Setter Property="Stroke" Value="{DynamicResource InkBrush}" />
+  <Style Selector="Button.close Path">
+    <Setter Property="Width" Value="10" />
+    <Setter Property="Height" Value="10" />
+    <Setter Property="Stretch" Value="Uniform" />
+    <Setter Property="Fill" Value="{DynamicResource InkSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="Button.close:pointerover Path">
+    <Setter Property="Fill" Value="{DynamicResource AccentInkBrush}" />
   </Style>
 
   <!-- ===================== scrollbars ===================== -->

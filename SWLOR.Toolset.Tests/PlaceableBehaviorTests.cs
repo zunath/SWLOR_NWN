@@ -326,12 +326,23 @@ namespace SWLOR.Toolset.Tests
                         return new PlaceableEditorSections(appearance, behavior);
                     });
 
+                editor.IsPlaceableEditor.Should().BeTrue();
                 editor.PlaceableSections!.Behavior.Current.Id.Should().Be("light_torch");
-                editor.Groups
+                var name = editor.Groups
                     .SelectMany(group => group.Fields)
                     .OfType<LocStringFieldViewModel>()
-                    .Single(field => field.Descriptor.FieldName == "LocName")
-                    .Text = "Saved Behavior";
+                    .Single(field => field.Descriptor.FieldName == "LocName");
+
+                name.Text = "Discard this name";
+                editor.IsDirty.Should().BeTrue();
+                editor.RevertCommand.CanExecute(null).Should().BeTrue();
+                editor.RevertCommand.Execute(null);
+                editor.IsDirty.Should().BeFalse();
+                editor.RevertCommand.CanExecute(null).Should().BeFalse();
+                name.Text.Should().Be("Behavior Save");
+                editor.PlaceableSections.Behavior.Current.Id.Should().Be("light_torch");
+
+                name.Text = "Saved Behavior";
 
                 (await editor.TrySaveAsync()).Should().BeTrue();
                 editor.IsDirty.Should().BeFalse();
@@ -489,6 +500,9 @@ namespace SWLOR.Toolset.Tests
             view.Should().NotContain("WHAT THIS BEHAVIOR MANAGES");
             view.Should().Contain("ItemsSource=\"{Binding CustomScriptFields}\"");
             view.Should().Contain("ItemsSource=\"{Binding EditableFlagFields}\"");
+            view.Should().Contain("IsVisible=\"{Binding IsPlaceableEditor}\"");
+            view.Should().Contain("Content=\"Revert\" MinWidth=\"86\" Command=\"{Binding RevertCommand}\"");
+            view.Should().Contain("Content=\"Save\" MinWidth=\"86\" Classes=\"primary\" Command=\"{Binding SaveCommand}\"");
 
             var appPath = Path.Combine(
                 CorpusLocator.RepositoryRoot,

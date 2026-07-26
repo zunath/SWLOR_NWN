@@ -8,8 +8,6 @@
   <!-- Field editor DataTemplates (LocString/Check/Integer/Float/Dropdown/Script/Text/Behavior) are
        shared app-wide from App.axaml's Application.DataTemplates. The four templates below are tab
        CONTENTS, which only this editor hosts. -->
-  <!-- No per-document toolbar: File > Save (Ctrl+S) and Edit > Undo/Redo (Ctrl+Z/Ctrl+Y) act on the
-       active document tab. -->
   <UserControl.DataTemplates>
 
     <!-- A schema-driven tab: its groups, as expanders. -->
@@ -217,22 +215,35 @@
     </DataTemplate>
   </UserControl.DataTemplates>
 
-  <Panel>
-    <!-- One page for the types whose fields fit one; a strip only when there is somewhere to go. -->
-    <ContentControl Content="{Binding SingleTabContent}" IsVisible="{Binding !HasMultipleTabs}" />
+  <DockPanel>
+    <!-- Placeables use the same explicit document actions as the Waypoint editor. Other schema
+         blueprints keep the compact single-page editor and the application-level Save command. -->
+    <Border DockPanel.Dock="Bottom" Padding="16,11"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0"
+            IsVisible="{Binding IsPlaceableEditor}">
+      <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+        <Button Content="Revert" MinWidth="86" Command="{Binding RevertCommand}" />
+        <Button Content="Save" MinWidth="86" Classes="primary" Command="{Binding SaveCommand}" />
+      </StackPanel>
+    </Border>
 
-    <TabControl ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
-                IsVisible="{Binding HasMultipleTabs}">
-      <TabControl.ItemTemplate>
-        <DataTemplate DataType="editors:EditorTabViewModel">
-          <TextBlock Text="{Binding Title}" />
-        </DataTemplate>
-      </TabControl.ItemTemplate>
-      <TabControl.ContentTemplate>
-        <DataTemplate DataType="editors:EditorTabViewModel">
-          <ContentControl Content="{Binding Content}" />
-        </DataTemplate>
-      </TabControl.ContentTemplate>
-    </TabControl>
-  </Panel>
+    <Panel>
+      <!-- One page for the types whose fields fit one; a strip only when there is somewhere to go. -->
+      <ContentControl Content="{Binding SingleTabContent}" IsVisible="{Binding !HasMultipleTabs}" />
+
+      <TabControl ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
+                  IsVisible="{Binding HasMultipleTabs}">
+        <TabControl.ItemTemplate>
+          <DataTemplate DataType="editors:EditorTabViewModel">
+            <TextBlock Text="{Binding Title}" />
+          </DataTemplate>
+        </TabControl.ItemTemplate>
+        <TabControl.ContentTemplate>
+          <DataTemplate DataType="editors:EditorTabViewModel">
+            <ContentControl Content="{Binding Content}" />
+          </DataTemplate>
+        </TabControl.ContentTemplate>
+      </TabControl>
+    </Panel>
+  </DockPanel>
 </UserControl>

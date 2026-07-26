@@ -54,6 +54,7 @@ namespace SWLOR.Toolset.Tests
                 gameCodeIndex: null,
                 log,
                 new ReloadPrompts());
+            editor.IsPlaceableEditor.Should().BeFalse();
             var oldSection = editor.VarTableSection!;
             oldSection.NewName = "LOCAL_TEST";
             oldSection.NewType = "int";

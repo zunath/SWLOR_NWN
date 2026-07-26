@@ -89,6 +89,12 @@ namespace SWLOR.Toolset.Editors
         /// <summary>The placeable's Appearance and Behavior tabs, or null for every other type.</summary>
         public Placeables.PlaceableEditorSections? PlaceableSections { get; }
 
+        /// <summary>
+        /// The generic blueprint view hosts the placeable editor too; only that editor shows the
+        /// Waypoint-style Save/Revert footer requested for its multi-tab authoring workflow.
+        /// </summary>
+        public bool IsPlaceableEditor => PlaceableSections != null;
+
         public bool IsDirty => _session.UndoStack.IsDirty;
 
         /// <summary>This blueprint's resource type — lets the model preview resolve its appearance.</summary>
@@ -324,6 +330,17 @@ namespace SWLOR.Toolset.Editors
             await TrySaveAsync().ConfigureAwait(true);
         }
 
+        /// <summary>Unwinds every unsaved edit - the placeable footer's Revert action.</summary>
+        [RelayCommand(CanExecute = nameof(IsDirty))]
+        private void Revert()
+        {
+            while (_session.UndoStack.CanUndo)
+                _session.Undo();
+
+            RefreshAllFields(reclassifyAmbiguousBehavior: true);
+            AfterHistoryChange();
+        }
+
         /// <summary>Saves this editor, returning false when the user cancels or the write fails.</summary>
         public async Task<bool> TrySaveAsync()
         {
@@ -476,6 +493,7 @@ namespace SWLOR.Toolset.Editors
             UpdateTitle();
             UndoCommand.NotifyCanExecuteChanged();
             RedoCommand.NotifyCanExecuteChanged();
+            RevertCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(IsDirty));
             // The shell's Edit menu mirrors this tab's history, so it needs the change too.
             OnPropertyChanged(nameof(CanUndo));

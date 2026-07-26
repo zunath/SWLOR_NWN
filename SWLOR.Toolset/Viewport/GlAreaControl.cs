@@ -1385,6 +1385,12 @@ void main()
         private long _lastPadTicks;
 
         /// <summary>
+        /// The offscreen target the scene is actually drawn into, for its 24-bit depth buffer.
+        /// See <see cref="DepthPrecisionFramebuffer"/> for why Avalonia's own is not good enough.
+        /// </summary>
+        private readonly DepthPrecisionFramebuffer _depthPrecisionTarget = new();
+
+        /// <summary>
         /// How long a creature's idle runs for before it settles, in seconds.
         /// </summary>
         /// <remarks>
@@ -1672,6 +1678,8 @@ void main()
                         _hasHighlightBuffer = false;
                     }
 
+                    _depthPrecisionTarget.Dispose(_gl);
+
                     if (_shaderProgram != 0)
                         _gl.DeleteProgram(_shaderProgram);
                     _shaderProgram = 0;
@@ -1713,21 +1721,27 @@ void main()
             var pixelWidth = (uint)Math.Max(1, (int)Math.Ceiling(width * scaling));
             var pixelHeight = (uint)Math.Max(1, (int)Math.Ceiling(height * scaling));
 
-            _gl.ClearColor(0.12f, 0.14f, 0.18f, 1f);
-            _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
-            _gl.Enable(EnableCap.DepthTest);
-            _gl.DepthFunc(DepthFunction.Less);
-            // NWN tile/prop meshes have inconsistent winding - culling would drop real faces.
-            _gl.Disable(EnableCap.CullFace);
-            _gl.Viewport(0, 0, pixelWidth, pixelHeight);
-
-            var sceneState = Volatile.Read(ref _sceneState);
-            var scene = sceneState.Scene;
-            if (scene == null)
-                return;
+            // Everything below draws into our own framebuffer rather than Avalonia's, purely to get a
+            // 24-bit depth buffer instead of its 16-bit one, and is blitted back in the finally. When
+            // that target is unavailable this is a no-op and the scene renders straight to Avalonia's
+            // framebuffer, flicker and all.
+            _depthPrecisionTarget.BeginFrame(_gl, pixelWidth, pixelHeight);
 
             try
             {
+                _gl.ClearColor(0.12f, 0.14f, 0.18f, 1f);
+                _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
+                _gl.Enable(EnableCap.DepthTest);
+                _gl.DepthFunc(DepthFunction.Less);
+                // NWN tile/prop meshes have inconsistent winding - culling would drop real faces.
+                _gl.Disable(EnableCap.CullFace);
+                _gl.Viewport(0, 0, pixelWidth, pixelHeight);
+
+                var sceneState = Volatile.Read(ref _sceneState);
+                var scene = sceneState.Scene;
+                if (scene == null)
+                    return;
+
                 if (sceneState.Version != _renderedSceneVersion)
                 {
                     // Trigger volumes live on the instances, so this follows any scene change.
@@ -1756,6 +1770,12 @@ void main()
             catch (Exception ex)
             {
                 RaiseStatus($"Area render error: {ex.Message}");
+            }
+            finally
+            {
+                // Composite onto Avalonia's framebuffer whatever happened above - including the
+                // early return for a null scene, which still owes it the cleared background.
+                _depthPrecisionTarget.EndFrame(_gl, fb);
             }
         }
 

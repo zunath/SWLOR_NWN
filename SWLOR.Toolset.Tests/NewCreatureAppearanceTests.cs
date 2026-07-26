@@ -28,6 +28,27 @@ namespace SWLOR.Toolset.Tests
         private static int Value(JsonElement root, string field) =>
             root.GetProperty(field).GetProperty("value").GetInt32();
 
+        /// <summary>
+        /// Base item 0 is the short sword, a <c>ModelType=2</c> composite weapon assembled from three
+        /// parts. They were never written, so they read back as part 0, which has no model - and
+        /// <c>UtiSchema</c> exposes only the base-item selector, so the appearance could not be repaired
+        /// in the toolset either. Same failure as the creature above, different blueprint type.
+        /// </summary>
+        [Test]
+        public void ANewItemGetsItsThreeWeaponModelParts()
+        {
+            var content = BlueprintTemplateFactory.CreateFileContent(ResourceType.Uti, "probe_item", "Probe");
+            var root = JsonDocument.Parse(Encoding.UTF8.GetString(content)).RootElement;
+
+            root.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be(0, "the template picks the short sword");
+
+            foreach (var part in new[] { "ModelPart1", "ModelPart2", "ModelPart3" })
+            {
+                root.GetProperty(part).GetProperty("value").GetInt32()
+                    .Should().Be(1, $"{part} 0 has no model at all");
+            }
+        }
+
         [Test]
         public void ItStillUsesTheDynamicHumanAppearance()
         {

@@ -229,6 +229,16 @@ namespace SWLOR.Toolset.Domain.Documents
             AddEmptyLists(root, "PropertiesList");
 
             root.SetInt("BaseItem", GffFieldType.Int, 0);
+
+            // Base item 0 is the short sword, whose baseitems.2da ModelType is 2 - a composite weapon
+            // built from a bottom, middle and top part. Those fields were never written, so they read
+            // back as part 0, which has no model at all, and UtiSchema exposes only the base-item
+            // selector - so a new item had no appearance and no way to be given one. 1 is the first
+            // real variant of each part, the same reasoning as the dynamic-human default above.
+            root.SetInt("ModelPart1", GffFieldType.Byte, 1);
+            root.SetInt("ModelPart2", GffFieldType.Byte, 1);
+            root.SetInt("ModelPart3", GffFieldType.Byte, 1);
+
             root.SetInt("StackSize", GffFieldType.Word, 1); // a 0-size stack is not a thing
             root.SetInt("Charges", GffFieldType.Byte, 0);
             root.SetUInt("Cost", GffFieldType.Dword, 0);

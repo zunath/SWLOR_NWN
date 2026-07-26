@@ -1,5 +1,6 @@
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
@@ -56,11 +57,11 @@ namespace SWLOR.Toolset.Editors
         private readonly Services.IExternalLinkService? _links;
 
         /// <summary>
-        /// Built once, in the background, on first use. Scanning every blueprint and area for script
-        /// slots is expensive, and the picker is the only thing that needs it — so it must not be
-        /// paid for at startup by builders who never open one.
+        /// Built in the background on first use, then invalidated when a scripted resource changes.
+        /// Scanning all script slots is expensive; builders who never request usages still pay
+        /// nothing at startup.
         /// </summary>
-        private readonly Lazy<Task<Domain.Script.ScriptUsageIndex?>> _scriptUsageIndex;
+        private readonly ScriptUsageIndexCache _scriptUsageIndex;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -127,7 +128,7 @@ namespace SWLOR.Toolset.Editors
             _problems = problems;
             _compileService = compileService;
             _links = links;
-            _scriptUsageIndex = new Lazy<Task<Domain.Script.ScriptUsageIndex?>>(() => Task.Run(() =>
+            _scriptUsageIndex = new ScriptUsageIndexCache(() =>
             {
                 var workspace = _workspaceContext.Workspace;
                 if (workspace == null)
@@ -142,7 +143,8 @@ namespace SWLOR.Toolset.Editors
                     _log.AppendLine($"Could not index script usages: {ex.Message}");
                     return null;
                 }
-            }));
+            });
+            _workspaceContext.ScriptUsagesInvalidated += _scriptUsageIndex.Invalidate;
         }
 
         /// <summary>
@@ -198,7 +200,62 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Backs the script slots on one editor, describing its owner for the picker title.</summary>
         private ScriptSlotHost CreateScriptSlotHost(string ownerDescription) =>
-            new(_workspaceContext, () => this, _log, ownerDescription, _scriptUsageIndex);
+            new(
+                _workspaceContext,
+                () => this,
+                _log,
+                ownerDescription,
+                _scriptUsageIndex.GetAsync,
+                CreateNewScriptAsync);
+
+        /// <summary>
+        /// Creates an NSS resource for the script picker's "New script..." action and returns the
+        /// resref the picker should place in the slot.
+        /// </summary>
+        private async Task<string?> CreateNewScriptAsync()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return null;
+
+            var name = await _prompts.PromptForTextAsync(
+                "New script",
+                "Name for the new script. Its resref is derived from this.",
+                string.Empty,
+                "Create").ConfigureAwait(true);
+            if (string.IsNullOrWhiteSpace(name))
+                return null;
+
+            var resRef = ModuleResourceTemplateFactory.ToResRef(name);
+            if (resRef.Length == 0)
+            {
+                _log.AppendLine("Could not create script: that name has no letters or digits.");
+                return null;
+            }
+
+            var path = workspace.GetResourcePath(ResourceType.Nss, resRef);
+            if (File.Exists(path))
+            {
+                _log.AppendLine($"Could not create script: '{resRef}' already exists.");
+                return null;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                SaveService.WriteNewAtomic(
+                    path,
+                    ModuleResourceTemplateFactory.CreateFileContent(ResourceType.Nss, resRef, name.Trim()));
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Nss, resRef);
+                _log.AppendLine($"Created script '{resRef}' from the script-slot picker.");
+                return resRef;
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not create script '{resRef}': {ex.Message}");
+                return null;
+            }
+        }
 
         /// <summary>Opens a NWScript source file as a text editor tab, or activates its open tab.</summary>
         private void OpenScriptEditor(ModuleWorkspace workspace, string resRef)
@@ -240,7 +297,7 @@ namespace SWLOR.Toolset.Editors
                 editor.OpenLexiconRequested = OpenLexiconPage;
                 editor.FindUsages = async name =>
                 {
-                    var index = await _scriptUsageIndex.Value.ConfigureAwait(true);
+                    var index = await _scriptUsageIndex.GetAsync().ConfigureAwait(true);
                     return index?.UsagesOf(name) ?? Array.Empty<Domain.Script.ScriptUsage>();
                 };
                 editor.DiagnosticsChanged += diagnostics =>

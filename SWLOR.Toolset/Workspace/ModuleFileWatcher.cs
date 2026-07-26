@@ -43,14 +43,23 @@ namespace SWLOR.Toolset.Workspace
                 return;
 
             var affectsTagIndex = AffectsTagIndex(path);
+            var affectsScriptUsages = AffectsScriptUsages(path);
             var resolved = TryResolveResource(path, out var type, out var resRef);
-            if (!affectsTagIndex && !resolved)
+            if (!affectsTagIndex && !affectsScriptUsages && !resolved)
                 return;
 
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
                 if (affectsTagIndex)
                     _workspaceContext.InvalidateTagIndex();
+
+                // Resolved scripted resources invalidate through Refresh/Remove below. GIT has no
+                // ResourceType, so its placed-instance script slots need the direct path.
+                if (affectsScriptUsages &&
+                    (!resolved || !Domain.Script.ScriptUsageIndex.ScriptedTypes.Contains(type)))
+                {
+                    _workspaceContext.InvalidateScriptUsages();
+                }
 
                 if (resolved)
                 {
@@ -73,6 +82,19 @@ namespace SWLOR.Toolset.Workspace
                    fileName.EndsWith(".are.json", StringComparison.OrdinalIgnoreCase) ||
                    fileName.EndsWith(".utd.json", StringComparison.OrdinalIgnoreCase) ||
                    fileName.EndsWith(".utw.json", StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// True when changing this file can alter Find Usages or the script picker's usage counts.
+        /// Includes paired GIT files, which carry placed-instance overrides but have no ResourceType.
+        /// </summary>
+        public static bool AffectsScriptUsages(string path)
+        {
+            if (Path.GetFileName(path).EndsWith(".git.json", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return TryResolveResource(path, out var type, out _) &&
+                   Domain.Script.ScriptUsageIndex.ScriptedTypes.Contains(type);
         }
 
         /// <summary>

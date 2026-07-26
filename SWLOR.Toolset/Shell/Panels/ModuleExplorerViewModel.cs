@@ -285,7 +285,7 @@ namespace SWLOR.Toolset.Shell.Panels
             if (string.IsNullOrWhiteSpace(name))
                 return;
 
-            var resRef = ToResRef(name);
+            var resRef = ModuleResourceTemplateFactory.ToResRef(name);
             if (resRef.Length == 0)
             {
                 StatusMessage = "That name has no letters or digits to make a resref from.";
@@ -358,23 +358,6 @@ namespace SWLOR.Toolset.Shell.Panels
                     _editorService?.Invoke().TryOpenEditor(ResourceType.Area, resRef);
                 },
                 () => ActiveNewArea = null);
-        }
-
-        /// <summary>
-        /// A resref from a display name: lowercase, alphanumeric and underscore, 16 characters. Same
-        /// rule the Palette's New-blueprint action uses, so the two never disagree about a name.
-        /// </summary>
-        private static string ToResRef(string name)
-        {
-            // ASCII only: a resref is a NWN resource identifier, and char.IsLetterOrDigit would happily
-            // keep the accented letter in "Café" and write a filename the game cannot address.
-            var characters = name.Trim().ToLowerInvariant()
-                .Select(character => char.IsAsciiLetterOrDigit(character) ? character : '_')
-                .ToArray();
-
-            return new string(characters).Trim('_').Replace("__", "_") is { Length: > 0 } cleaned
-                ? cleaned[..Math.Min(16, cleaned.Length)]
-                : string.Empty;
         }
 
         // ----- folders -----

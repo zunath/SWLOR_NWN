@@ -47,7 +47,10 @@ namespace SWLOR.Toolset.Shell
         [ObservableProperty]
         private bool _isValidationRunning;
 
-        public bool IsModuleMutationLocked => IsPacking || IsValidationRunning;
+        [ObservableProperty]
+        private bool _isBuildingScripts;
+
+        public bool IsModuleMutationLocked => IsPacking || IsValidationRunning || IsBuildingScripts;
 
         /// <summary>
         /// The editor tab the File/Edit menus act on, or null when no document is open. Tracked
@@ -308,25 +311,33 @@ namespace SWLOR.Toolset.Shell
         // Everything below is genuinely module-scoped, which is what the Build menu is for.
 
         /// <summary>Compiles every entry-point script in the module.</summary>
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanMutateModule))]
         private async Task BuildAllScripts()
         {
             if (_compileService == null)
                 return;
 
-            if (!await _editorService.SaveScriptsAsync(compileOnSave: false).ConfigureAwait(true))
+            IsBuildingScripts = true;
+            try
             {
-                StatusText = "Build cancelled: an open script could not be saved.";
-                return;
+                if (!await _editorService.SaveScriptsAsync(compileOnSave: false).ConfigureAwait(true))
+                {
+                    StatusText = "Build cancelled: an open script could not be saved.";
+                    return;
+                }
+
+                StatusText = "Building all scripts...";
+                _factory.Focus(_output);
+
+                var (compiled, failed) = await _compileService.BuildAllAsync().ConfigureAwait(true);
+                StatusText = failed == 0
+                    ? $"Built {compiled} script(s)."
+                    : $"Built {compiled} script(s); {failed} failed - see Output.";
             }
-
-            StatusText = "Building all scripts...";
-            _factory.Focus(_output);
-
-            var (compiled, failed) = await _compileService.BuildAllAsync().ConfigureAwait(true);
-            StatusText = failed == 0
-                ? $"Built {compiled} script(s)."
-                : $"Built {compiled} script(s); {failed} failed - see Output.";
+            finally
+            {
+                IsBuildingScripts = false;
+            }
         }
 
         /// <summary>
@@ -495,6 +506,11 @@ namespace SWLOR.Toolset.Shell
             NotifyMutationStateChanged();
         }
 
+        partial void OnIsBuildingScriptsChanged(bool value)
+        {
+            NotifyMutationStateChanged();
+        }
+
         private void NotifyMutationStateChanged()
         {
             OnPropertyChanged(nameof(IsModuleMutationLocked));
@@ -502,6 +518,7 @@ namespace SWLOR.Toolset.Shell
             _palette.NotifyWriteAvailabilityChanged();
             SaveAllCommand.NotifyCanExecuteChanged();
             PackModuleCommand.NotifyCanExecuteChanged();
+            BuildAllScriptsCommand.NotifyCanExecuteChanged();
             NotifyActiveEditorCommandsChanged();
         }
 

@@ -134,6 +134,14 @@ namespace SWLOR.Toolset.Tests
             source.Should().Contain("probe_script");
         }
 
+        [TestCase("My New Script", "my_new_script")]
+        [TestCase(" Café -- Script ", "caf_script")]
+        [TestCase("This name is much too long", "this_name_is_muc")]
+        public void ToResRefUsesTheSharedNwnResourceNamingRules(string name, string expected)
+        {
+            ModuleResourceTemplateFactory.ToResRef(name).Should().Be(expected);
+        }
+
         private static JsonGffDocument ParseDialog() =>
             JsonGffDocument.Parse(
                 ModuleResourceTemplateFactory.CreateFileContent(ResourceType.Dlg, "probe_talk", "Probe Talk"));

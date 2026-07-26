@@ -101,7 +101,14 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 using var stream = new MemoryStream(decodableData);
                 using var image = Pfimage.FromStream(stream);
-                var pixels = ConvertPfimToRgba(image);
+                // Rows reversed so a DDS ends up in the same vertical convention as a TGA, which is
+                // what the rest of the pipeline assumes. NWN's DDS files are stored top-down while its
+                // TGAs are bottom-up, and both are sampled with the same bottom-up UVs, so leaving the
+                // two in their own conventions makes one of them upside down. It hid because it only
+                // shows on a texture whose top and bottom differ: PLC_JR1's chewyrug carries a black
+                // strip near one edge, and sampling it inverted put that strip on the wookiee rug's
+                // head - 15% of the mesh's area landed on near-black texels instead of 4%.
+                var pixels = TextureOrientation.FlipRows(image.Width, image.Height, ConvertPfimToRgba(image));
 
                 return new TextureImage
                 {

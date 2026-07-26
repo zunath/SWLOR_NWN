@@ -54,8 +54,12 @@ namespace SWLOR.Toolset.Workspace
         /// real hue was cached the wrong colour - a brown pelt as a blue one. Every thumbnail drawn
         /// from a standard DDS is wrong on disk and has to be drawn again.
         /// </para>
+        /// <para>
+        /// v13: DDS rows were upside down relative to TGA, so any DDS texture whose top and bottom
+        /// differ was sampled inverted. Every preview drawn from one has to be drawn again.
+        /// </para>
         /// </remarks>
-        private const string FormatVersion = "v12";
+        private const string FormatVersion = "v13";
 
         private const string MissingArtworkExtension = ".none";
 

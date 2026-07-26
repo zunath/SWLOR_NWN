@@ -223,6 +223,93 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BehaviorSelection_EveryCatalogBehaviorCanBeSelectedAndSurviveRefresh()
+        {
+            foreach (var behavior in PlaceableBehaviorCatalog.Behaviors)
+            {
+                var document = BuildDocument();
+                var context = new EditorFieldContext(
+                    document,
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    });
+                var section = new PlaceableBehaviorSectionViewModel(
+                    context,
+                    new BehaviorValueSourceProvider(gameCode: null, tags: () => null),
+                    new AcceptingPrompts(),
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    });
+
+                // This is the same refresh the blueprint editor performs after a switch.
+                section.BehaviorChanged += () => section.RefreshFromDocument();
+
+                var item = section.Items.Single(candidate => candidate.Behavior?.Id == behavior.Id);
+                section.SelectedItem = item;
+
+                section.Current.Should().BeSameAs(behavior, $"{behavior.Name} must be selectable");
+                section.SelectedItem.Should().BeSameAs(item);
+            }
+        }
+
+        [Test]
+        public void BehaviorSelection_CategoryHeadingsAreDisabledInTheList()
+        {
+            var section = BuildBehaviorSection();
+            var headings = section.Items.Where(item => item.IsHeader).ToList();
+
+            headings.Should().NotBeEmpty();
+            headings.Should().OnlyContain(item => !item.IsSelectable && item.Behavior == null);
+
+            var viewPath = Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset",
+                "Editors",
+                "Views",
+                "BlueprintEditorView.axaml");
+            var view = File.ReadAllText(viewPath);
+
+            view.Should().Contain(
+                "<Setter Property=\"IsEnabled\" Value=\"{ReflectionBinding IsSelectable}\" />",
+                "the ListBox container must reject both mouse and keyboard selection of headings");
+        }
+
+        [Test]
+        public void BehaviorSelection_ReclassifiesWhenTheSelectedBehaviorNoLongerMatchesTheDocument()
+        {
+            var document = BuildDocument();
+            var context = new EditorFieldContext(
+                document,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+            var section = new PlaceableBehaviorSectionViewModel(
+                context,
+                new BehaviorValueSourceProvider(gameCode: null, tags: () => null),
+                new AcceptingPrompts(),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+            var scavenge = PlaceableBehaviorCatalog.FindById("scavenge_point")!;
+            var teleporter = PlaceableBehaviorCatalog.FindById("teleporter")!;
+
+            section.SelectedItem = section.Items.Single(item => ReferenceEquals(item.Behavior, scavenge));
+            PlaceableBehaviorApplier.Apply(document.Root, scavenge, teleporter);
+            section.RefreshFromDocument();
+
+            section.Current.Should().BeSameAs(teleporter,
+                "undo or changed wiring must not leave a stale explicit selection");
+        }
+
+        [Test]
         public void Apply_LeavesAHandEditedSlotAlone()
         {
             var document = BuildDocument(("OnOpen", "my_own_script"));
@@ -336,6 +423,28 @@ namespace SWLOR.Toolset.Tests
 
         private static JsonGffStruct BuildPlaceable(params (string Slot, string Script)[] scripts) =>
             BuildDocument(scripts).Root;
+
+        private static PlaceableBehaviorSectionViewModel BuildBehaviorSection()
+        {
+            var document = BuildDocument();
+            var context = new EditorFieldContext(
+                document,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+
+            return new PlaceableBehaviorSectionViewModel(
+                context,
+                new BehaviorValueSourceProvider(gameCode: null, tags: () => null),
+                new AcceptingPrompts(),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+        }
 
         private static string? FindGameServerSource()
         {

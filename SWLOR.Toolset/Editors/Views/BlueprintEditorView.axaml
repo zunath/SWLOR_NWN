@@ -146,11 +146,21 @@
           <ListBox.Styles>
             <Style Selector="ListBoxItem">
               <Setter Property="Padding" Value="8,3" />
+              <!-- Category headings share the flat item source so the list stays compact, but
+                   they are labels rather than behavior choices. Bind the container—not merely
+                   its text—so mouse and keyboard selection both skip every heading. -->
+              <Setter Property="IsEnabled" Value="{ReflectionBinding IsSelectable}" />
+              <Setter Property="Focusable" Value="{ReflectionBinding IsSelectable}" />
             </Style>
           </ListBox.Styles>
           <ListBox.ItemTemplate>
             <DataTemplate DataType="placeables:BehaviorListItemViewModel">
-              <TextBlock Text="{Binding Text}" FontSize="12.5" TextTrimming="CharacterEllipsis" />
+              <Grid>
+                <TextBlock Text="{Binding Text}" Classes="label" FontSize="10.5"
+                           Margin="0,5,0,1" IsVisible="{Binding IsHeader}" />
+                <TextBlock Text="{Binding Text}" FontSize="12.5"
+                           TextTrimming="CharacterEllipsis" IsVisible="{Binding IsSelectable}" />
+              </Grid>
             </DataTemplate>
           </ListBox.ItemTemplate>
         </ListBox>

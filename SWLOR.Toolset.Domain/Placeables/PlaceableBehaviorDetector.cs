@@ -72,6 +72,38 @@ namespace SWLOR.Toolset.Domain.Placeables
             return ReadVariableNames(root).Where(name => !owned.Contains(name)).ToList();
         }
 
+        /// <summary>
+        /// Whether the document still carries evidence for a specifically chosen named behavior.
+        /// Script-backed choices must still carry every script that behavior manages; variable-only
+        /// choices need any one of their fields. This lets the editor retain an explicit choice when
+        /// multiple behaviors share a script while still allowing undo or changed wiring to
+        /// reclassify the placeable.
+        /// </summary>
+        public static bool MatchesStoredSignature(JsonGffStruct root, PlaceableBehavior behavior)
+        {
+            ArgumentNullException.ThrowIfNull(root);
+            ArgumentNullException.ThrowIfNull(behavior);
+
+            if (behavior.IsSentinel)
+                return false;
+
+            if (behavior.Scripts.Count == 0)
+            {
+                var variables = new HashSet<string>(ReadVariableNames(root), StringComparer.Ordinal);
+                return behavior.Fields.Any(field => variables.Contains(field.VariableName));
+            }
+
+            var scripts = ReadScripts(root);
+            var alternates = new HashSet<string>(
+                behavior.AlternateScripts,
+                StringComparer.OrdinalIgnoreCase);
+
+            return behavior.Scripts.All(slot =>
+                scripts.TryGetValue(slot.Key, out var value) &&
+                (string.Equals(value, slot.Value, StringComparison.OrdinalIgnoreCase) ||
+                 alternates.Contains(value)));
+        }
+
         /// <summary>Non-empty script slots on this placeable, keyed by slot field name.</summary>
         public static IReadOnlyDictionary<string, string> ReadScripts(JsonGffStruct root)
         {

@@ -106,16 +106,15 @@ namespace SWLOR.Toolset.Editors.Placeables
         public event Action? BehaviorChanged;
 
         /// <summary>
-        /// Re-reads the document after an edit, undo or redo. A newly chosen Custom or variable-only
-        /// behavior has no stored signature until the builder fills it in, so an otherwise blank
-        /// document must not immediately snap the selection back to Decor.
+        /// Re-reads the document after an edit, undo or redo. An explicit choice wins while the
+        /// document still matches it: some behaviors share scripts, and variable-only behaviors
+        /// have no stored signature until the builder fills in their first setting.
         /// </summary>
         public void RefreshFromDocument(bool reclassifyAmbiguousSelection = false)
         {
             var detected = PlaceableBehaviorDetector.Detect(_context.Document.Root);
             if (!reclassifyAmbiguousSelection &&
-                ReferenceEquals(detected, PlaceableBehaviorCatalog.None) &&
-                IsAmbiguousWithoutConfiguredValues(Current))
+                ShouldRetainExplicitSelection(detected))
             {
                 detected = Current;
             }
@@ -221,8 +220,27 @@ namespace SWLOR.Toolset.Editors.Placeables
             OnPropertyChanged(nameof(HasSettings));
         }
 
-        private static bool IsAmbiguousWithoutConfiguredValues(PlaceableBehavior behavior) =>
-            ReferenceEquals(behavior, PlaceableBehaviorCatalog.Custom) ||
-            !behavior.IsSentinel && behavior.Scripts.Count == 0;
+        private bool ShouldRetainExplicitSelection(PlaceableBehavior detected)
+        {
+            if (ReferenceEquals(detected, Current))
+                return false;
+
+            if (ReferenceEquals(Current, PlaceableBehaviorCatalog.Custom))
+            {
+                return ReferenceEquals(detected, PlaceableBehaviorCatalog.None) ||
+                       ReferenceEquals(detected, PlaceableBehaviorCatalog.Custom);
+            }
+
+            if (ReferenceEquals(detected, PlaceableBehaviorCatalog.None) &&
+                !Current.IsSentinel &&
+                Current.Scripts.Count == 0)
+            {
+                return true;
+            }
+
+            return PlaceableBehaviorDetector.MatchesStoredSignature(
+                _context.Document.Root,
+                Current);
+        }
     }
 }

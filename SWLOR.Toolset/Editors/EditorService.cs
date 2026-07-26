@@ -435,9 +435,9 @@ namespace SWLOR.Toolset.Editors
                 () => _placeableIndexes?.Usage ?? Domain.Workspace.PlaceableAppearanceUsageIndex.Empty,
                 runEdit,
                 _resourceIndex,
-                // The same cache the area viewport builds its models through, so a model a builder
-                // has already seen in an area costs nothing to preview here.
-                modelResRef => _tileModelCache?.GetOrBuild(modelResRef));
+                // The same resource/cache layer the area viewport builds through, with the preview's
+                // transform tracks and emitter metadata added in its separate one-model cache.
+                modelResRef => _tileModelCache?.GetOrBuildPlaceablePreview(modelResRef));
 
             var behavior = new Placeables.PlaceableBehaviorSectionViewModel(
                 context, values, _prompts, runEdit);

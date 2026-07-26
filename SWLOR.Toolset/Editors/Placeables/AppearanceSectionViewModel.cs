@@ -11,6 +11,16 @@ using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors.Placeables
 {
+    /// <summary>One model-declared state as it appears in the preview picker.</summary>
+    public sealed record PlaceableAnimationOption(Domain.Render.RenderAnimation Animation)
+    {
+        public string Name => Animation.Name;
+
+        public string Label => string.IsNullOrEmpty(Name)
+            ? "Default"
+            : char.ToUpperInvariant(Name[0]) + Name[1..];
+    }
+
     /// <summary>
     /// The Appearance tab: search the placeable models, look at one, use it.
     /// </summary>
@@ -29,7 +39,7 @@ namespace SWLOR.Toolset.Editors.Placeables
     /// browsing never dirties the document.
     /// </para>
     /// </remarks>
-    public partial class AppearanceSectionViewModel : ObservableObject
+    public partial class AppearanceSectionViewModel : ObservableObject, IDisposable
     {
         /// <summary>
         /// Tiles added per page. Small on purpose: every tile published is a control realized and a
@@ -75,6 +85,15 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// <summary>True while the model catalog is still being read in the background.</summary>
         [ObservableProperty]
         private bool _isLoading;
+
+        [ObservableProperty]
+        private PlaceableAnimationOption? _selectedAnimation;
+
+        [ObservableProperty]
+        private bool _isAnimationPlaying = true;
+
+        private bool _isTabVisible;
+        private bool _disposed;
 
         public AppearanceSectionViewModel(
             EditorFieldContext context,
@@ -135,6 +154,9 @@ namespace SWLOR.Toolset.Editors.Placeables
 
                 Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
+                    if (_disposed)
+                        return;
+
                     _loaded = true;
                     Rebuild();
                     UpdatePreviewScene();
@@ -167,8 +189,18 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// makes that a re-parent instead of a rebuild. Created on first use, so an editor whose
         /// Appearance tab is never opened never makes one.
         /// </remarks>
-        public Avalonia.Controls.Control PreviewView =>
-            _previewView ??= new Viewport.ModelPreviewControl { DataContext = this };
+        public Avalonia.Controls.Control PreviewView
+        {
+            get
+            {
+                if (_previewView != null)
+                    return _previewView;
+
+                _previewView = new Viewport.ModelPreviewControl { DataContext = this };
+                _previewView.SetHostVisible(_isTabVisible);
+                return _previewView;
+            }
+        }
 
         /// <summary>
         /// A one-model scene for the interactive 3D view: whatever tile is highlighted, or the
@@ -181,6 +213,20 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// marker at the origin, which the control's own framing then centres on.
         /// </remarks>
         public Domain.Render.AreaScene? PreviewScene { get; private set; }
+
+        /// <summary>States declared by the highlighted model, in file order.</summary>
+        public ObservableCollection<PlaceableAnimationOption> AnimationStates { get; } = new();
+
+        public bool HasAnimationControls =>
+            AnimationStates.Count > 1 || AnimationStates.Any(option => option.Animation.IsPlayable);
+
+        public bool HasAnimationStatePicker => AnimationStates.Count > 1;
+
+        public bool CanAnimateSelected => SelectedAnimation?.Animation.IsPlayable == true;
+
+        public string AnimationToggleText => IsAnimationPlaying ? "Pause" : "Play";
+
+        public string? PreviewAnimationName => SelectedAnimation?.Name;
 
         /// <summary>The published page of matching models.</summary>
         public ObservableCollection<AppearanceTileViewModel> Tiles { get; } = new();
@@ -225,6 +271,13 @@ namespace SWLOR.Toolset.Editors.Placeables
 
         [RelayCommand]
         private void LoadMore() => PublishPage();
+
+        [RelayCommand]
+        private void ToggleAnimation()
+        {
+            if (CanAnimateSelected)
+                IsAnimationPlaying = !IsAnimationPlaying;
+        }
 
         /// <summary>Re-reads the stored appearance after an undo, redo or reload.</summary>
         public void RefreshFromDocument()
@@ -292,6 +345,16 @@ namespace SWLOR.Toolset.Editors.Placeables
             Apply(value);
         }
 
+        partial void OnSelectedAnimationChanged(PlaceableAnimationOption? value)
+        {
+            IsAnimationPlaying = value?.Animation.IsPlayable == true;
+            OnPropertyChanged(nameof(CanAnimateSelected));
+            OnPropertyChanged(nameof(PreviewAnimationName));
+        }
+
+        partial void OnIsAnimationPlayingChanged(bool value) =>
+            OnPropertyChanged(nameof(AnimationToggleText));
+
         private void Apply(AppearanceTileViewModel? tile)
         {
             if (tile == null || tile.Id == CurrentId)
@@ -310,11 +373,15 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// <summary>Rebuilds the single-model scene for whatever should be on screen right now.</summary>
         private void UpdatePreviewScene()
         {
+            if (_disposed)
+                return;
+
             var modelName = Highlighted?.ModelName;
             if (modelName == null && _catalog.TryGet(CurrentId, out var currentRow))
                 modelName = currentRow.ModelName;
 
             var model = modelName != null ? _resolveModel?.Invoke(modelName) : null;
+            PublishAnimationStates(model);
 
             PreviewScene = model == null
                 ? null
@@ -345,8 +412,54 @@ namespace SWLOR.Toolset.Editors.Placeables
             OnPropertyChanged(nameof(PreviewScene));
         }
 
+        private void PublishAnimationStates(Domain.Render.RenderModel? model)
+        {
+            AnimationStates.Clear();
+            if (model != null)
+            {
+                foreach (var animation in model.Animations)
+                    AnimationStates.Add(new PlaceableAnimationOption(animation));
+            }
+
+            SelectedAnimation = model?.DefaultAnimationName is { } preferred
+                ? AnimationStates.FirstOrDefault(
+                    option => string.Equals(option.Name, preferred, StringComparison.OrdinalIgnoreCase))
+                : AnimationStates.FirstOrDefault();
+
+            OnPropertyChanged(nameof(HasAnimationControls));
+            OnPropertyChanged(nameof(HasAnimationStatePicker));
+            OnPropertyChanged(nameof(CanAnimateSelected));
+        }
+
+        /// <summary>
+        /// Called by the owning editor when its Appearance tab is selected. The view is held by this
+        /// view model across document switches, so visibility has to be forwarded explicitly instead
+        /// of inferred from construction.
+        /// </summary>
+        public void SetTabVisible(bool visible)
+        {
+            _isTabVisible = visible && !_disposed;
+            _previewView?.SetHostVisible(_isTabVisible);
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            _disposed = true;
+            _searchDebounce?.Cancel();
+            _searchDebounce?.Dispose();
+            _searchDebounce = null;
+            _previewView?.Dispose();
+            _previewView = null;
+        }
+
         private void Rebuild()
         {
+            if (_disposed)
+                return;
+
             var usage = _usage();
             var matches = _catalog.Search(Query ?? string.Empty);
 

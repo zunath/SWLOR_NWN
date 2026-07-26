@@ -71,17 +71,21 @@
             </ListBox.Styles>
             <ListBox.ItemTemplate>
               <DataTemplate DataType="placeables:AppearanceTileViewModel">
-                <Border Width="92" Padding="4" CornerRadius="3"
+                <Border Width="92" Padding="3" CornerRadius="3"
+                        Classes.current="{Binding IsCurrent}"
                         Background="{DynamicResource PanelRaisedBrush}"
-                        BorderThickness="1" BorderBrush="{DynamicResource RuleBrush}">
+                        BorderThickness="2" BorderBrush="{DynamicResource RuleBrush}">
+                  <Border.Styles>
+                    <Style Selector="Border.current">
+                      <Setter Property="BorderBrush" Value="{DynamicResource GoldBrush}" />
+                    </Style>
+                  </Border.Styles>
                   <StackPanel Spacing="3">
                     <Panel Height="66">
                       <Image Source="{Binding Preview}" Stretch="Uniform" />
                     </Panel>
                     <TextBlock Text="{Binding Caption}" FontSize="10.5" TextTrimming="CharacterEllipsis"
                                HorizontalAlignment="Center" />
-                    <TextBlock Text="current" Classes="count" HorizontalAlignment="Center"
-                               IsVisible="{Binding IsCurrent}" />
                   </StackPanel>
                 </Border>
               </DataTemplate>
@@ -105,6 +109,22 @@
           <Border Height="190" Background="{DynamicResource PanelRaisedBrush}" CornerRadius="3">
             <ContentControl Content="{Binding PreviewView}" />
           </Border>
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6"
+                IsVisible="{Binding HasAnimationControls}">
+            <ComboBox Grid.Column="0"
+                      ItemsSource="{Binding AnimationStates}"
+                      SelectedItem="{Binding SelectedAnimation, Mode=TwoWay}"
+                      IsVisible="{Binding HasAnimationStatePicker}">
+              <ComboBox.ItemTemplate>
+                <DataTemplate DataType="placeables:PlaceableAnimationOption">
+                  <TextBlock Text="{Binding Label}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button Grid.Column="1" Content="{Binding AnimationToggleText}"
+                    Command="{Binding ToggleAnimationCommand}"
+                    IsEnabled="{Binding CanAnimateSelected}" MinWidth="62" />
+          </Grid>
           <TextBlock Text="Left-drag to turn &#x00B7; right-drag to move &#x00B7; wheel to zoom" Classes="dim" FontSize="10.5" />
 
           <StackPanel Spacing="4" IsVisible="{Binding HasHighlight}">

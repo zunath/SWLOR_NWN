@@ -148,11 +148,13 @@ out vec3 WorldPos;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec2 uvScale;
+uniform vec2 uvOffset;
 
 void main()
 {
     Normal = mat3(model) * aNormal;
-    TexCoord = aTexCoord;
+    TexCoord = aTexCoord * uvScale + uvOffset;
     vec4 world = model * vec4(aPosition, 1.0);
     WorldPos = world.xyz;
     gl_Position = projection * view * world;
@@ -172,6 +174,7 @@ uniform vec3 flatColor;
 uniform bool unlit;
 uniform float alphaCutoff;
 uniform float flatAlpha;
+uniform bool useTextureAlpha;
 uniform float ceilingClipZ;
 uniform vec3 lightDir;
 uniform vec3 lightColor;
@@ -197,7 +200,7 @@ void main()
     {
         // flatAlpha defaults to 1.0 for every opaque unlit draw (markers, outlines, selection box);
         // the translucent walkmesh overlay is the only pass that lowers it.
-        FragColor = vec4(texColor.rgb, flatAlpha);
+        FragColor = vec4(texColor.rgb, flatAlpha * (useTextureAlpha ? texColor.a : 1.0));
         return;
     }
 
@@ -230,6 +233,9 @@ void main()
             /// </summary>
             public IReadOnlyList<Matrix4x4> PoseFrames { get; init; } = Array.Empty<Matrix4x4>();
 
+            public IReadOnlyDictionary<string, IReadOnlyList<Matrix4x4>> AnimationFrames { get; init; } =
+                new Dictionary<string, IReadOnlyList<Matrix4x4>>(StringComparer.OrdinalIgnoreCase);
+
             public string? TextureName { get; init; }
         }
 
@@ -239,6 +245,8 @@ void main()
             public required uint Vbo { get; init; }
             public required uint Ebo { get; init; }
             public required IReadOnlyList<MeshRange> MeshRanges { get; init; }
+            public IReadOnlyList<RenderAnimation> Animations { get; init; } = Array.Empty<RenderAnimation>();
+            public IReadOnlyList<RenderEmitter> Emitters { get; init; } = Array.Empty<RenderEmitter>();
         }
 
         private readonly struct StaticMeshBuffer
@@ -272,6 +280,7 @@ void main()
 
         private StaticMeshBuffer? _fallbackCubeBuffer;
         private StaticMeshBuffer? _markerMeshBuffer;
+        private StaticMeshBuffer? _particleQuadBuffer;
 
         private uint _polygonVao;
         private uint _polygonVbo;
@@ -320,6 +329,7 @@ void main()
         private float _elevation = AreaCameraMath.DefaultElevationRadians;
         private float _distance = 50f;
         private float _initialDistance = 50f;
+        private Vector3 _cameraEye;
 
         /// <summary>Whether this control has ever framed a scene - see the <c>Scene</c> setter.</summary>
         private bool _cameraFramed;
@@ -632,6 +642,92 @@ void main()
         /// <summary>Layered resource index used to resolve tile/mesh textures and MTR materials. Null degrades every mesh to a flat gray fallback.</summary>
         public ResourceIndex? ResourceIndex { get; set; }
 
+        private readonly object _previewAnimationGate = new();
+        private string? _previewAnimationName;
+        private bool _previewAnimationPlaying;
+        private bool _previewAnimationActive;
+        private float _previewAnimationElapsed;
+        private long _previewAnimationStartedTicks;
+
+        /// <summary>
+        /// The model-declared state continuously previewed by the one-model host. Null leaves the
+        /// area viewport on its existing one-shot creature idle path.
+        /// </summary>
+        public string? PreviewAnimationName
+        {
+            get
+            {
+                lock (_previewAnimationGate)
+                    return _previewAnimationName;
+            }
+            set
+            {
+                lock (_previewAnimationGate)
+                {
+                    if (string.Equals(_previewAnimationName, value, StringComparison.OrdinalIgnoreCase))
+                        return;
+
+                    UpdatePreviewClockLocked();
+                    _previewAnimationName = value;
+                    _previewAnimationElapsed = 0f;
+                    StartPreviewClockIfNeededLocked();
+                }
+
+                RequestNextFrameRendering();
+            }
+        }
+
+        public bool PreviewAnimationPlaying
+        {
+            get
+            {
+                lock (_previewAnimationGate)
+                    return _previewAnimationPlaying;
+            }
+            set
+            {
+                lock (_previewAnimationGate)
+                {
+                    if (_previewAnimationPlaying == value)
+                        return;
+
+                    UpdatePreviewClockLocked();
+                    _previewAnimationPlaying = value;
+                    StartPreviewClockIfNeededLocked();
+                }
+
+                RequestNextFrameRendering();
+            }
+        }
+
+        /// <summary>
+        /// False while the Appearance tab is hidden or the retained preview control is detached.
+        /// This is the lifecycle gate that prevents any continuous frame requests off-screen.
+        /// </summary>
+        public bool PreviewAnimationActive
+        {
+            get
+            {
+                lock (_previewAnimationGate)
+                    return _previewAnimationActive;
+            }
+            set
+            {
+                lock (_previewAnimationGate)
+                {
+                    if (_previewAnimationActive == value)
+                        return;
+
+                    UpdatePreviewClockLocked();
+                    _previewAnimationActive = value;
+                    StartPreviewClockIfNeededLocked();
+                }
+
+                if (value)
+                    RequestNextFrameRendering();
+            }
+        }
+
         /// <summary>
         /// The scene to render, or null to show an empty viewport. The camera is framed to the
         /// area only on the FIRST non-null scene (initial load). Later assignments are edit-driven
@@ -646,6 +742,16 @@ void main()
             {
                 var version = Interlocked.Increment(ref _nextSceneVersion);
                 Volatile.Write(ref _sceneState, new SceneState(value, version));
+
+                // A retained preview control commonly swaps between models whose selected state has
+                // the same name ("default"). Restart on the scene boundary rather than carrying the
+                // previous model's effect phase into the replacement.
+                lock (_previewAnimationGate)
+                {
+                    _previewAnimationElapsed = 0f;
+                    _previewAnimationStartedTicks = 0;
+                    StartPreviewClockIfNeededLocked();
+                }
 
                 // Framed once per control, not once per non-null scene. The host clears the scene
                 // while it rebuilds, so keying off "there was no scene a moment ago" re-framed the
@@ -1375,6 +1481,49 @@ void main()
         /// </remarks>
         private const float IdlePlaybackSeconds = 2.5f;
 
+        private readonly record struct PreviewAnimationSnapshot(string? Name, float Seconds, bool Running);
+
+        private void UpdatePreviewClockLocked()
+        {
+            if (_previewAnimationStartedTicks == 0)
+                return;
+
+            var now = System.Diagnostics.Stopwatch.GetTimestamp();
+            _previewAnimationElapsed += (float)((now - _previewAnimationStartedTicks) /
+                                                (double)System.Diagnostics.Stopwatch.Frequency);
+            _previewAnimationStartedTicks = 0;
+        }
+
+        private void StartPreviewClockIfNeededLocked()
+        {
+            if (_previewAnimationActive &&
+                _previewAnimationPlaying &&
+                !string.IsNullOrWhiteSpace(_previewAnimationName) &&
+                _previewAnimationStartedTicks == 0)
+            {
+                _previewAnimationStartedTicks = System.Diagnostics.Stopwatch.GetTimestamp();
+            }
+        }
+
+        private PreviewAnimationSnapshot PreviewAnimation()
+        {
+            lock (_previewAnimationGate)
+            {
+                var elapsed = _previewAnimationElapsed;
+                if (_previewAnimationStartedTicks != 0)
+                {
+                    elapsed += (float)((System.Diagnostics.Stopwatch.GetTimestamp() -
+                                        _previewAnimationStartedTicks) /
+                                       (double)System.Diagnostics.Stopwatch.Frequency);
+                }
+
+                return new PreviewAnimationSnapshot(
+                    _previewAnimationName,
+                    elapsed,
+                    _previewAnimationActive && _previewAnimationPlaying);
+            }
+        }
+
         /// <summary>When the current scene appeared, or null once its idle has finished playing.</summary>
         private long? _idlePlaybackStartedTicks;
 
@@ -1411,6 +1560,51 @@ void main()
             var through = Math.Clamp(seconds / IdlePlaybackSeconds, 0f, 1f);
             var frame = Math.Clamp((int)(through * (mesh.PoseFrames.Count - 1)), 0, mesh.PoseFrames.Count - 1);
             return mesh.PoseFrames[frame];
+        }
+
+        private static Matrix4x4 PreviewMeshTransform(
+            MeshRange mesh,
+            ModelBuffer model,
+            PreviewAnimationSnapshot preview,
+            float? idleElapsed)
+        {
+            if (preview.Name is not { } name ||
+                !mesh.AnimationFrames.TryGetValue(name, out var frames) ||
+                frames.Count == 0)
+            {
+                return PosedMeshTransform(mesh, idleElapsed);
+            }
+
+            var length = model.Animations.FirstOrDefault(
+                animation => string.Equals(animation.Name, name, StringComparison.OrdinalIgnoreCase))?.Length ?? 0f;
+            if (length <= 0f || frames.Count == 1)
+                return frames[0];
+
+            var through = (preview.Seconds % length) / length;
+            var frame = Math.Clamp((int)(through * frames.Count), 0, frames.Count - 1);
+            return frames[frame];
+        }
+
+        private static Matrix4x4 PreviewEmitterTransform(
+            RenderEmitter emitter,
+            ModelBuffer model,
+            PreviewAnimationSnapshot preview)
+        {
+            if (preview.Name is not { } name ||
+                !emitter.AnimationFrames.TryGetValue(name, out var frames) ||
+                frames.Count == 0)
+            {
+                return emitter.Transform;
+            }
+
+            var length = model.Animations.FirstOrDefault(
+                animation => string.Equals(animation.Name, name, StringComparison.OrdinalIgnoreCase))?.Length ?? 0f;
+            if (length <= 0f || frames.Count == 1)
+                return frames[0];
+
+            var through = (preview.Seconds % length) / length;
+            var frame = Math.Clamp((int)(through * frames.Count), 0, frames.Count - 1);
+            return frames[frame];
         }
 
         /// <summary>
@@ -1640,6 +1834,9 @@ void main()
                         DeleteBuffer(cube.Vao, cube.Vbo, cube.Ebo);
                     if (_markerMeshBuffer is { } marker)
                         DeleteBuffer(marker.Vao, marker.Vbo, marker.Ebo);
+                    if (_particleQuadBuffer is { } particle)
+                        DeleteBuffer(particle.Vao, particle.Vbo, particle.Ebo);
+                    _particleQuadBuffer = null;
 
                     DeletePolygonBuffer();
                     DeleteWalkmeshBuffer();
@@ -1866,6 +2063,14 @@ void main()
                 gl.Uniform3(location, value.X, value.Y, value.Z);
         }
 
+        private void SetUniformVec2(string name, Vector2 value)
+        {
+            var location = GetUniformLocationCached(name);
+            var gl = _gl;
+            if (location >= 0 && gl != null)
+                gl.Uniform2(location, value.X, value.Y);
+        }
+
         private void SetUniformBool(string name, bool value)
         {
             var location = GetUniformLocationCached(name);
@@ -1934,6 +2139,7 @@ void main()
                 VerticalFovRadians, aspect, AreaCameraMath.NearPlaneFor(_distance), farPlane);
 
             var eye = _target + AreaCameraMath.OrbitEyeOffset(_azimuth, _elevation, _distance);
+            _cameraEye = eye;
             var view = Matrix4x4.CreateLookAt(eye, _target, Vector3.UnitZ);
 
             // Kept for picking (RaiseInstancePicked runs on a click, not every frame, so it needs
@@ -1957,6 +2163,9 @@ void main()
             SetUniformFloat("fogDensity", _showFog ? scene.Lighting.FogDensity : 0f);
             SetUniformInt("diffuseTexture", 0);
             SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
+            SetUniformVec2("uvScale", Vector2.One);
+            SetUniformVec2("uvOffset", Vector2.Zero);
+            SetUniformBool("useTextureAlpha", false);
 
             DrawTileBatches();
 
@@ -2117,6 +2326,8 @@ void main()
             var idleElapsed = IdlePlaybackSeconds_Elapsed();
             if (idleElapsed != null)
                 RequestNextFrameRendering();
+            var preview = PreviewAnimation();
+            var previewNeedsFrames = false;
 
             foreach (var raw in scene.Instances)
             {
@@ -2134,12 +2345,21 @@ void main()
                 var instanceTransform = AreaPicking.ComputeInstanceTransform(instance);
 
                 var buffer = GetOrBuildModelBuffer(raw.Model!);
+                previewNeedsFrames |= preview.Running &&
+                                      buffer.Animations.Any(animation =>
+                                          string.Equals(
+                                              animation.Name,
+                                              preview.Name,
+                                              StringComparison.OrdinalIgnoreCase) &&
+                                          animation.IsPlayable);
                 _gl!.BindVertexArray(buffer.Vao);
                 SetUniformBool("unlit", false);
 
                 foreach (var meshRange in buffer.MeshRanges)
                 {
-                    SetUniformMatrix4("model", PosedMeshTransform(meshRange, idleElapsed) * instanceTransform);
+                    SetUniformMatrix4(
+                        "model",
+                        PreviewMeshTransform(meshRange, buffer, preview, idleElapsed) * instanceTransform);
                     BindMeshTexture(meshRange.TextureName);
 
                     unsafe
@@ -2149,6 +2369,10 @@ void main()
                     }
                 }
             }
+
+            DrawPreviewEmitters(scene, preview);
+            if (previewNeedsFrames)
+                RequestNextFrameRendering();
 
             // Pass 2: everything without resolved geometry draws its kind-colored pyramid marker.
             if (_markerMeshBuffer is not { } marker)
@@ -2176,6 +2400,151 @@ void main()
                         DrawElementsType.UnsignedInt, (void*)0);
                 }
             }
+        }
+
+        /// <summary>
+        /// Draws a deliberately bounded particle cue for emitter-based placeables. The Radoub model
+        /// reader currently exposes emitter placement, texture, sprite grid and blend mode rather
+        /// than NWN's full particle controller set, so this is not an engine simulation. It is enough
+        /// to make authored portal/fire effects visibly alive in the one-model design preview, and
+        /// it is never entered by the area viewport because that host has no preview animation name.
+        /// </summary>
+        private void DrawPreviewEmitters(AreaScene scene, PreviewAnimationSnapshot preview)
+        {
+            if (preview.Name == null || _particleQuadBuffer is not { } quad || _gl == null)
+                return;
+
+            _gl.Enable(EnableCap.Blend);
+            _gl.DepthMask(false);
+            try
+            {
+                _gl.BindVertexArray(quad.Vao);
+                SetUniformBool("unlit", true);
+                SetUniformBool("useTextureAlpha", true);
+                SetUniformFloat("alphaCutoff", 0.01f);
+                SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
+
+                var cameraDirection = _target - _cameraEye;
+                var cameraForward = cameraDirection.LengthSquared() > 0.000001f
+                    ? Vector3.Normalize(cameraDirection)
+                    : Vector3.UnitY;
+
+                foreach (var raw in scene.Instances)
+                {
+                    if (!DrawsAsModel(raw) || !IsInstanceVisible(Displayed(raw)))
+                        continue;
+
+                    var buffer = GetOrBuildModelBuffer(raw.Model!);
+                    var animation = buffer.Animations.FirstOrDefault(
+                        candidate => string.Equals(
+                            candidate.Name,
+                            preview.Name,
+                            StringComparison.OrdinalIgnoreCase));
+                    if (animation?.ShowsEmitters != true)
+                        continue;
+
+                    var instanceTransform = AreaPicking.ComputeInstanceTransform(Displayed(raw));
+                    foreach (var emitter in buffer.Emitters)
+                    {
+                        if (!BindParticleTexture(emitter.TextureName))
+                            continue;
+
+                        var additive =
+                            emitter.Blend.Contains("light", StringComparison.OrdinalIgnoreCase) ||
+                            emitter.Blend.Contains("add", StringComparison.OrdinalIgnoreCase);
+                        _gl.BlendFunc(
+                            BlendingFactor.SrcAlpha,
+                            additive ? BlendingFactor.One : BlendingFactor.OneMinusSrcAlpha);
+
+                        var emitterTransform = PreviewEmitterTransform(emitter, buffer, preview) * instanceTransform;
+                        var seed = StableParticleSeed(emitter.NodeName);
+                        var spriteCount = Math.Max(1, emitter.XGrid * emitter.YGrid);
+
+                        const int particles = 8;
+                        for (var index = 0; index < particles; index++)
+                        {
+                            var phase = Fraction(
+                                preview.Seconds * (0.45f + seed * 0.2f) +
+                                index / (float)particles +
+                                seed);
+                            var angle = preview.Seconds * (0.8f + seed) +
+                                        index * MathF.Tau / particles +
+                                        seed * MathF.Tau;
+                            var radius = 0.08f + phase * 0.55f;
+                            var offset = new Vector3(
+                                MathF.Cos(angle) * radius,
+                                MathF.Sin(angle) * radius,
+                                (phase - 0.35f) * 0.7f);
+                            var worldPosition = Vector3.Transform(offset, emitterTransform);
+                            var billboard = Matrix4x4.CreateBillboard(
+                                worldPosition,
+                                _cameraEye,
+                                Vector3.UnitZ,
+                                cameraForward);
+                            var size = 0.18f + (1f - phase) * 0.34f;
+
+                            SetUniformMatrix4("model", Matrix4x4.CreateScale(size) * billboard);
+                            SetUniformFloat("flatAlpha", 0.2f + (1f - phase) * 0.8f);
+
+                            var sprite = ((int)(preview.Seconds * 15f) + index) % spriteCount;
+                            var spriteX = sprite % emitter.XGrid;
+                            var spriteY = sprite / emitter.XGrid;
+                            SetUniformVec2(
+                                "uvScale",
+                                new Vector2(1f / emitter.XGrid, 1f / emitter.YGrid));
+                            SetUniformVec2(
+                                "uvOffset",
+                                new Vector2(
+                                    spriteX / (float)emitter.XGrid,
+                                    spriteY / (float)emitter.YGrid));
+
+                            unsafe
+                            {
+                                _gl.DrawElements(
+                                    PrimitiveType.Triangles,
+                                    (uint)quad.IndexCount,
+                                    DrawElementsType.UnsignedInt,
+                                    (void*)0);
+                            }
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                _gl.DepthMask(true);
+                _gl.Disable(EnableCap.Blend);
+                SetUniformBool("useTextureAlpha", false);
+                SetUniformVec2("uvScale", Vector2.One);
+                SetUniformVec2("uvOffset", Vector2.Zero);
+                SetUniformFloat("flatAlpha", 1f);
+            }
+        }
+
+        private bool BindParticleTexture(string textureName)
+        {
+            if (string.IsNullOrWhiteSpace(textureName))
+                return false;
+
+            var (texId, _) = ResolveTexture(textureName);
+            if (texId == 0)
+                return false;
+
+            SetUniformBool("hasTexture", true);
+            _gl!.ActiveTexture(TextureUnit.Texture0);
+            _gl.BindTexture(TextureTarget.Texture2D, texId);
+            return true;
+        }
+
+        private static float Fraction(float value) => value - MathF.Floor(value);
+
+        private static float StableParticleSeed(string value)
+        {
+            uint hash = 2166136261;
+            foreach (var character in value)
+                hash = (hash ^ char.ToLowerInvariant(character)) * 16777619;
+
+            return (hash & 0xffff) / 65535f;
         }
 
         /// <summary>
@@ -2925,6 +3294,7 @@ void main()
                     IndexCount = mesh.Indices.Length,
                     MeshTransform = mesh.Transform,
                     PoseFrames = mesh.PoseFrames,
+                    AnimationFrames = mesh.AnimationFrames,
                     TextureName = string.IsNullOrEmpty(mesh.TextureName) ? null : mesh.TextureName
                 });
 
@@ -2950,7 +3320,15 @@ void main()
             SetVertexAttribPointers();
             _gl.BindVertexArray(0);
 
-            return new ModelBuffer { Vao = vao, Vbo = vbo, Ebo = ebo, MeshRanges = meshRanges };
+            return new ModelBuffer
+            {
+                Vao = vao,
+                Vbo = vbo,
+                Ebo = ebo,
+                MeshRanges = meshRanges,
+                Animations = model.Animations,
+                Emitters = model.Emitters
+            };
         }
 
         // ----- Textures -----
@@ -3096,6 +3474,9 @@ void main()
 
             var (markerVertices, markerIndices) = BuildMarkerPyramidMesh();
             _markerMeshBuffer = UploadStaticMesh(markerVertices, markerIndices);
+
+            var (particleVertices, particleIndices) = BuildParticleQuadMesh();
+            _particleQuadBuffer = UploadStaticMesh(particleVertices, particleIndices);
         }
 
         private StaticMeshBuffer UploadStaticMesh(float[] vertices, uint[] indices)
@@ -3115,6 +3496,20 @@ void main()
             _gl.BindVertexArray(0);
 
             return new StaticMeshBuffer(vao, vbo, ebo, indices.Length);
+        }
+
+        private static (float[] Vertices, uint[] Indices) BuildParticleQuadMesh()
+        {
+            // Unit square in local XY. Matrix4x4.CreateBillboard supplies the camera-facing world
+            // transform; the shared vertex layout still carries a normal for the common shader.
+            var vertices = new[]
+            {
+                -0.5f, -0.5f, 0f, 0f, 0f, 1f, 0f, 0f,
+                 0.5f, -0.5f, 0f, 0f, 0f, 1f, 1f, 0f,
+                 0.5f,  0.5f, 0f, 0f, 0f, 1f, 1f, 1f,
+                -0.5f,  0.5f, 0f, 0f, 0f, 1f, 0f, 1f
+            };
+            return (vertices, new uint[] { 0, 1, 2, 0, 2, 3 });
         }
 
         /// <summary>

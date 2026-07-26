@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using SWLOR.Toolset.Editors.Placeables;
@@ -23,7 +24,7 @@ namespace SWLOR.Toolset.Viewport
     /// was opened.
     /// </para>
     /// </remarks>
-    public partial class ModelPreviewControl : UserControl
+    public partial class ModelPreviewControl : UserControl, IDisposable
     {
         private readonly GlAreaControl? _modelView;
         private readonly Control? _viewportInput;
@@ -36,6 +37,9 @@ namespace SWLOR.Toolset.Viewport
         private const float OrbitPerPixel = 0.16f;
 
         private AppearanceSectionViewModel? _viewModel;
+        private bool _isAttached;
+        private bool _hostVisible;
+        private bool _disposed;
 
         /// <summary>How far a pixel of right-drag slides the camera, in metres.</summary>
         private const float PanPerPixel = 0.02f;
@@ -60,6 +64,20 @@ namespace SWLOR.Toolset.Viewport
 
         private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            _isAttached = true;
+            ApplyAnimation();
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            _isAttached = false;
+            ApplyAnimation();
+            base.OnDetachedFromVisualTree(e);
+        }
+
         private void AttachViewModel()
         {
             if (_viewModel != null)
@@ -70,16 +88,24 @@ namespace SWLOR.Toolset.Viewport
             if (_viewModel != null)
                 _viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
-            Apply();
+            ApplyScene();
+            ApplyAnimation();
         }
 
         private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName is null or nameof(AppearanceSectionViewModel.PreviewScene))
-                Apply();
+                ApplyScene();
+
+            if (e.PropertyName is null or
+                nameof(AppearanceSectionViewModel.PreviewAnimationName) or
+                nameof(AppearanceSectionViewModel.IsAnimationPlaying))
+            {
+                ApplyAnimation();
+            }
         }
 
-        private void Apply()
+        private void ApplyScene()
         {
             if (_modelView == null)
                 return;
@@ -97,6 +123,45 @@ namespace SWLOR.Toolset.Viewport
 
             if (_emptyNotice != null)
                 _emptyNotice.IsVisible = !hasScene;
+        }
+
+        private void ApplyAnimation()
+        {
+            if (_modelView == null)
+                return;
+
+            _modelView.PreviewAnimationName = _viewModel?.PreviewAnimationName;
+            _modelView.PreviewAnimationPlaying = _viewModel?.IsAnimationPlaying == true;
+            _modelView.PreviewAnimationActive = !_disposed && _hostVisible && _isAttached;
+        }
+
+        /// <summary>
+        /// The owning view model calls this when the Appearance tab is selected or hidden. The
+        /// control instance survives re-parenting, so visual attachment alone cannot distinguish a
+        /// hidden tab from a document switch in progress.
+        /// </summary>
+        public void SetHostVisible(bool visible)
+        {
+            _hostVisible = visible;
+            ApplyAnimation();
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            _disposed = true;
+            if (_viewModel != null)
+                _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+            _viewModel = null;
+            DataContext = null;
+
+            if (_modelView != null)
+            {
+                _modelView.PreviewAnimationActive = false;
+                _modelView.Scene = null;
+            }
         }
 
         /// <summary>

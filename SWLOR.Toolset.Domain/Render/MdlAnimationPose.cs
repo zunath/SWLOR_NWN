@@ -31,6 +31,14 @@ namespace SWLOR.Toolset.Domain.Render
         private static readonly string[] IdleNames = { "pause1", "pause2", "pause3", "pausesh", "cpause1" };
 
         /// <summary>
+        /// Placeables use a different animation vocabulary from creatures. <c>default</c> is the
+        /// authored ambient loop; <c>on</c> is the next-best active state for older effects that do
+        /// not declare one. The remaining states stay selectable, but are never guessed as the
+        /// initial preview while an active state exists.
+        /// </summary>
+        private static readonly string[] PlaceableDefaultNames = { "default", "on" };
+
+        /// <summary>
         /// The animation to stand a model in, or null when it carries none. Prefers a plain idle by
         /// name, then anything whose name begins "pause", then gives up rather than guessing - an
         /// arbitrary animation is worse than the bind pose, because a walk or an attack frame reads as
@@ -51,6 +59,43 @@ namespace SWLOR.Toolset.Domain.Render
 
             return model.Animations.FirstOrDefault(
                 a => a.Name.StartsWith("pause", StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Every distinct animation a placeable declares, preserving file order. Blank and duplicate
+        /// names are ignored because a state picker cannot address them unambiguously.
+        /// </summary>
+        public static IReadOnlyList<MdlAnimation> PlaceableAnimations(MdlModel? model)
+        {
+            if (model == null || model.Animations.Count == 0)
+                return Array.Empty<MdlAnimation>();
+
+            var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            return model.Animations
+                .Where(animation =>
+                    !string.IsNullOrWhiteSpace(animation.Name) &&
+                    names.Add(animation.Name.Trim()))
+                .ToList();
+        }
+
+        /// <summary>
+        /// The state a placeable preview starts in. This rule is deliberately placeable-specific:
+        /// exact <c>default</c>, then exact <c>on</c>, then the first state that actually has time to
+        /// play, and finally the first declaration. Creature pause names are not considered here.
+        /// </summary>
+        public static MdlAnimation? FindPlaceableDefault(MdlModel? model)
+        {
+            var animations = PlaceableAnimations(model);
+            foreach (var name in PlaceableDefaultNames)
+            {
+                var exact = animations.FirstOrDefault(
+                    animation => string.Equals(animation.Name, name, StringComparison.OrdinalIgnoreCase));
+                if (exact != null)
+                    return exact;
+            }
+
+            return animations.FirstOrDefault(animation => animation.Length > 0f) ??
+                   animations.FirstOrDefault();
         }
 
         /// <summary>
@@ -104,6 +149,41 @@ namespace SWLOR.Toolset.Domain.Render
         /// <summary>One sampled frame of an idle: the pose, and how far into the animation it is.</summary>
         public readonly record struct IdleFrame(IReadOnlyDictionary<string, PosedNode> Pose, float Seconds);
 
+        /// <summary>One sampled frame of any named animation.</summary>
+        public readonly record struct AnimationFrame(IReadOnlyDictionary<string, PosedNode> Pose, float Seconds);
+
+        /// <summary>
+        /// Samples an animation from beginning to end. The frame count is bounded because placeable
+        /// models are retained by the shared render cache, while the matrices are interpolated
+        /// densely enough for the preview to read as motion.
+        /// </summary>
+        public static IReadOnlyList<AnimationFrame> SampleFrames(
+            MdlAnimation? animation,
+            int framesPerSecond = 20,
+            int maxFrames = 60)
+        {
+            if (animation == null)
+                return Array.Empty<AnimationFrame>();
+
+            var length = animation.Length;
+            if (length <= 0f || framesPerSecond <= 0)
+                return new[] { new AnimationFrame(Sample(animation, 0f), 0f) };
+
+            var count = Math.Clamp(
+                (int)MathF.Ceiling(length * framesPerSecond) + 1,
+                2,
+                Math.Max(2, maxFrames));
+            var frames = new List<AnimationFrame>(count);
+
+            for (var i = 0; i < count; i++)
+            {
+                var seconds = length * i / (count - 1);
+                frames.Add(new AnimationFrame(Sample(animation, seconds), seconds));
+            }
+
+            return frames;
+        }
+
         /// <summary>
         /// The idle sampled across its whole length, for playing it through once.
         /// </summary>
@@ -131,20 +211,9 @@ namespace SWLOR.Toolset.Domain.Render
             if (animation == null || owner == null)
                 return Array.Empty<IdleFrame>();
 
-            var length = animation.Length;
-            if (length <= 0f || framesPerSecond <= 0)
-                return new[] { new IdleFrame(Sample(animation, 0f), 0f) };
-
-            var count = Math.Clamp((int)MathF.Ceiling(length * framesPerSecond) + 1, 2, Math.Max(2, maxFrames));
-            var frames = new List<IdleFrame>(count);
-
-            for (var i = 0; i < count; i++)
-            {
-                var seconds = length * i / (count - 1);
-                frames.Add(new IdleFrame(Sample(animation, seconds), seconds));
-            }
-
-            return frames;
+            return SampleFrames(animation, framesPerSecond, maxFrames)
+                .Select(frame => new IdleFrame(frame.Pose, frame.Seconds))
+                .ToList();
         }
 
         /// <summary>The first idle in the supermodel chain that actually poses something, with the model it came from.</summary>

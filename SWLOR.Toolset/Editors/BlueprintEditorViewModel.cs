@@ -65,6 +65,9 @@ namespace SWLOR.Toolset.Editors
                 _selectedTab = value;
                 OnPropertyChanged();
 
+                PlaceableSections?.Appearance.SetTabVisible(
+                    ReferenceEquals(value?.Content, PlaceableSections.Appearance));
+
                 // The model grid and its 3D preview are built on first sight rather than on open,
                 // so opening a placeable to rename it never pays for them.
                 if (PlaceableSections != null && ReferenceEquals(value?.Content, PlaceableSections.Appearance))
@@ -408,6 +411,7 @@ namespace SWLOR.Toolset.Editors
                 return base.OnClose();
 
             _disposed = true;
+            PlaceableSections?.Appearance.Dispose();
             _session.Dispose();
             Closed?.Invoke(this);
             return base.OnClose();

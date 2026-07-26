@@ -60,11 +60,47 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         public IReadOnlyList<Matrix4x4> PoseFrames { get; init; } = Array.Empty<Matrix4x4>();
 
+        /// <summary>
+        /// Per-state transforms for the placeable preview. Geometry remains shared; changing a state
+        /// only changes which matrix is supplied for this mesh.
+        /// </summary>
+        public IReadOnlyDictionary<string, IReadOnlyList<Matrix4x4>> AnimationFrames { get; init; } =
+            new Dictionary<string, IReadOnlyList<Matrix4x4>>(StringComparer.OrdinalIgnoreCase);
+
         /// <summary>Vertex count, derived from <see cref="Positions"/>.</summary>
         public int VertexCount => Positions.Length / 3;
 
         /// <summary>Triangle count, derived from <see cref="Indices"/>.</summary>
         public int TriangleCount => Indices.Length / 3;
+    }
+
+    /// <summary>A model-declared placeable state exposed by the preview.</summary>
+    public sealed record RenderAnimation(
+        string Name,
+        float Length,
+        bool HasPosedNodes,
+        bool ShowsEmitters)
+    {
+        /// <summary>Whether continuing to render this state can visibly change the preview.</summary>
+        public bool IsPlayable => (Length > 0f && HasPosedNodes) || ShowsEmitters;
+    }
+
+    /// <summary>
+    /// The subset of an MDL particle emitter needed for a lightweight editor preview. The game has a
+    /// much richer particle simulation; this keeps the authored texture, sprite grid and node
+    /// transform so effects such as portals and fires visibly move without changing area rendering.
+    /// </summary>
+    public sealed class RenderEmitter
+    {
+        public required string NodeName { get; init; }
+        public required string TextureName { get; init; }
+        public required Matrix4x4 Transform { get; init; }
+        public required int XGrid { get; init; }
+        public required int YGrid { get; init; }
+        public required string Blend { get; init; }
+
+        public IReadOnlyDictionary<string, IReadOnlyList<Matrix4x4>> AnimationFrames { get; init; } =
+            new Dictionary<string, IReadOnlyList<Matrix4x4>>(StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -78,6 +114,15 @@ namespace SWLOR.Toolset.Domain.Render
 
         /// <summary>Visible trimesh nodes, in the order they were encountered during traversal.</summary>
         public required IReadOnlyList<RenderMesh> Meshes { get; init; }
+
+        /// <summary>Placeable animation states carried as transform-only tracks.</summary>
+        public IReadOnlyList<RenderAnimation> Animations { get; init; } = Array.Empty<RenderAnimation>();
+
+        /// <summary>The explicit state selected by the placeable preview rule.</summary>
+        public string? DefaultAnimationName { get; init; }
+
+        /// <summary>Particle emitters used only by the opt-in single-model preview.</summary>
+        public IReadOnlyList<RenderEmitter> Emitters { get; init; } = Array.Empty<RenderEmitter>();
     }
 
     /// <summary>
@@ -116,6 +161,21 @@ namespace SWLOR.Toolset.Domain.Render
         private static bool IsPlaceholderNode(MdlTrimeshNode trimesh) =>
             PlaceholderNodeNames.Contains(trimesh.Name ?? string.Empty);
 
+        private static readonly HashSet<string> EmitterOffStates =
+            new(StringComparer.OrdinalIgnoreCase)
+            {
+                "off", "close", "closed", "deactivate", "deactivated", "dead", "die", "destroyed"
+            };
+
+        /// <summary>
+        /// The lightweight preview can represent a persistent fountain loop, but not a one-shot
+        /// explosion's birth-rate/lifespan controllers. Treating every emitter node as ambient made
+        /// damage debris on the replacement model look like portal VFX that survived the scene swap.
+        /// </summary>
+        private static bool IsContinuousPreviewEmitter(MdlEmitterNode emitter) =>
+            emitter.Loop &&
+            emitter.Update.Equals("Fountain", StringComparison.OrdinalIgnoreCase);
+
         public static RenderModel Build(MdlModel model) => Build(model, pose: null);
 
         /// <summary>
@@ -142,19 +202,96 @@ namespace SWLOR.Toolset.Domain.Render
         /// </remarks>
         public static RenderModel Build(
             MdlModel model, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> poseFrames)
+            => Build(
+                model,
+                poseFrames,
+                new Dictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>>(
+                    StringComparer.OrdinalIgnoreCase),
+                Array.Empty<RenderAnimation>(),
+                defaultAnimationName: null,
+                includeEmitters: false);
+
+        /// <summary>
+        /// Builds a placeable for the interactive preview: every declared state is sampled once into
+        /// mesh transforms, and particle emitters are retained for the preview's lightweight effect
+        /// pass. The ordinary area renderer never opts into these continuous tracks.
+        /// </summary>
+        public static RenderModel BuildPlaceablePreview(MdlModel model)
+        {
+            ArgumentNullException.ThrowIfNull(model);
+
+            var animationFrames =
+                new Dictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>>(
+                    StringComparer.OrdinalIgnoreCase);
+            var animations = new List<RenderAnimation>();
+            var hasEmitters = model
+                .EnumerateAllNodes()
+                .OfType<MdlEmitterNode>()
+                .Any(IsContinuousPreviewEmitter);
+
+            foreach (var animation in MdlAnimationPose.PlaceableAnimations(model))
+            {
+                var frames = MdlAnimationPose.SampleFrames(animation);
+                var poses = frames.Select(frame => frame.Pose).ToList();
+                var hasPosedNodes = poses.Any(pose => pose.Count > 0);
+
+                if (hasPosedNodes)
+                    animationFrames[animation.Name] = poses;
+
+                animations.Add(new RenderAnimation(
+                    animation.Name,
+                    MathF.Max(0f, animation.Length),
+                    hasPosedNodes,
+                    hasEmitters && !EmitterOffStates.Contains(animation.Name)));
+            }
+
+            // The SWLOR portal is emitter-driven and declares no MdlAnimation at all. A synthetic
+            // default state gives that real authored loop the same play/pause surface as machinery.
+            if (hasEmitters && animations.Count == 0)
+                animations.Add(new RenderAnimation("default", 0f, false, true));
+
+            var defaultAnimationName = MdlAnimationPose.FindPlaceableDefault(model)?.Name ??
+                                       animations.FirstOrDefault()?.Name;
+
+            return Build(
+                model,
+                Array.Empty<IReadOnlyDictionary<string, PosedNode>>(),
+                animationFrames,
+                animations,
+                defaultAnimationName,
+                includeEmitters: true);
+        }
+
+        private static RenderModel Build(
+            MdlModel model,
+            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> poseFrames,
+            IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationFrames,
+            IReadOnlyList<RenderAnimation> animations,
+            string? defaultAnimationName,
+            bool includeEmitters)
         {
             ArgumentNullException.ThrowIfNull(model);
             ArgumentNullException.ThrowIfNull(poseFrames);
+            ArgumentNullException.ThrowIfNull(animationFrames);
 
             var pose = poseFrames.Count > 0 ? poseFrames[^1] : null;
             var meshes = new List<RenderMesh>();
+            var emitters = new List<RenderEmitter>();
 
             if (model.GeometryRoot != null)
             {
                 foreach (var node in model.EnumerateAllNodes())
                 {
+                    if (includeEmitters &&
+                        node is MdlEmitterNode emitter &&
+                        IsContinuousPreviewEmitter(emitter))
+                    {
+                        emitters.Add(BuildEmitter(emitter, animationFrames));
+                        continue;
+                    }
+
                     if (node is not MdlTrimeshNode trimesh)
-                        continue; // Non-trimesh nodes (dummy, light, emitter, reference, ...) contribute no geometry.
+                        continue; // Non-trimesh nodes (dummy, light, reference, ...) contribute no geometry.
 
                     if (!trimesh.Render)
                         continue;
@@ -165,17 +302,25 @@ namespace SWLOR.Toolset.Domain.Render
                     if (trimesh.Vertices.Length == 0 || trimesh.Faces.Length == 0)
                         continue;
 
-                    meshes.Add(BuildMesh(trimesh, pose, poseFrames));
+                    meshes.Add(BuildMesh(trimesh, pose, poseFrames, animationFrames));
                 }
             }
 
-            return new RenderModel { Name = model.Name, Meshes = meshes };
+            return new RenderModel
+            {
+                Name = model.Name,
+                Meshes = meshes,
+                Animations = animations,
+                DefaultAnimationName = defaultAnimationName,
+                Emitters = emitters
+            };
         }
 
         private static RenderMesh BuildMesh(
             MdlTrimeshNode trimesh,
             IReadOnlyDictionary<string, PosedNode>? pose,
-            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> poseFrames)
+            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> poseFrames,
+            IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationFrames)
         {
             var vertexCount = trimesh.Vertices.Length;
 
@@ -238,8 +383,36 @@ namespace SWLOR.Toolset.Domain.Render
                 Transform = ComposeNodeTransform(trimesh, pose),
                 PoseFrames = poseFrames.Count == 0
                     ? Array.Empty<Matrix4x4>()
-                    : poseFrames.Select(frame => ComposeNodeTransform(trimesh, frame)).ToArray()
+                    : poseFrames.Select(frame => ComposeNodeTransform(trimesh, frame)).ToArray(),
+                AnimationFrames = BuildAnimationTransforms(trimesh, animationFrames)
             };
+        }
+
+        private static RenderEmitter BuildEmitter(
+            MdlEmitterNode emitter,
+            IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationFrames) =>
+            new()
+            {
+                NodeName = emitter.Name,
+                TextureName = emitter.Texture.Equals("null", StringComparison.OrdinalIgnoreCase)
+                    ? string.Empty
+                    : emitter.Texture.ToLowerInvariant(),
+                Transform = ComposeNodeTransform(emitter),
+                XGrid = Math.Max(1, emitter.XGrid),
+                YGrid = Math.Max(1, emitter.YGrid),
+                Blend = emitter.Blend,
+                AnimationFrames = BuildAnimationTransforms(emitter, animationFrames)
+            };
+
+        private static IReadOnlyDictionary<string, IReadOnlyList<Matrix4x4>> BuildAnimationTransforms(
+            MdlNode node,
+            IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationFrames)
+        {
+            var transforms = new Dictionary<string, IReadOnlyList<Matrix4x4>>(StringComparer.OrdinalIgnoreCase);
+            foreach (var (name, frames) in animationFrames)
+                transforms[name] = frames.Select(frame => ComposeNodeTransform(node, frame)).ToArray();
+
+            return transforms;
         }
 
         /// <summary>

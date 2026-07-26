@@ -20,6 +20,8 @@ namespace SWLOR.Toolset.Domain.Render
         private readonly MdlReader _reader = new();
         private readonly ConcurrentDictionary<string, RenderModel?> _cache =
             new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, RenderModel?> _placeablePreviewCache =
+            new(StringComparer.OrdinalIgnoreCase);
 
         public TileModelCache(ResourceIndex resourceIndex)
         {
@@ -40,7 +42,32 @@ namespace SWLOR.Toolset.Domain.Render
             return _cache.GetOrAdd(modelResRef, Build);
         }
 
+        /// <summary>
+        /// Resolves the same geometry as <see cref="GetOrBuild"/>, plus transform-only placeable
+        /// animation tracks and emitter metadata for the single-model preview. Kept in a separate
+        /// cache so tile and area models do not pay for animation states they never continuously play.
+        /// </summary>
+        public RenderModel? GetOrBuildPlaceablePreview(string? modelResRef)
+        {
+            if (string.IsNullOrWhiteSpace(modelResRef))
+                return null;
+
+            return _placeablePreviewCache.GetOrAdd(modelResRef, BuildPlaceablePreview);
+        }
+
         private RenderModel? Build(string modelResRef)
+        {
+            var model = Load(modelResRef);
+            return model == null ? null : MdlMeshBuilder.Build(model);
+        }
+
+        private RenderModel? BuildPlaceablePreview(string modelResRef)
+        {
+            var model = Load(modelResRef);
+            return model == null ? null : MdlMeshBuilder.BuildPlaceablePreview(model);
+        }
+
+        private MdlModel? Load(string modelResRef)
         {
             try
             {
@@ -53,7 +80,7 @@ namespace SWLOR.Toolset.Domain.Render
                     return null;
 
                 var model = _reader.Parse(bytes);
-                return MdlMeshBuilder.Build(model);
+                return model;
             }
             catch (Exception)
             {

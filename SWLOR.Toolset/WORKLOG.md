@@ -1802,3 +1802,25 @@ constant-like symbol and the action is less surprising.
   `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
   "FullyQualifiedName~ScriptEditorLifecycleTests|FullyQualifiedName~ScriptEditorViewRenderTests|FullyQualifiedName~ScriptReferenceViewModelTests"` -
   24 passed.
+
+## Script reference follow-up - 2026-07-26 - Constants prefer documented families
+
+The Constants tab now treats `FOO_*` families documented in the engine header as the display authority.
+Structural prefix grouping is still used, but only for constants the header never names as part of a
+family.
+
+- **Why.** The previous refinement removed singleton buckets, but it still let longer structural
+  prefixes override useful broad groups. That left categories such as appearance constants split by
+  naming details, when the header already tells us the family builders expect: `APPEARANCE_TYPE_*`.
+- **Decision.** `EngineSymbolDatabase.ConstantFamilyOf` now picks the longest documented matching
+  header family before considering structural prefixes. The singleton-collapse pass remains as a guard
+  against documented one-offs, but broad documented families such as `APPEARANCE_TYPE_*` and
+  `IP_CONST_CASTSPELL_*` stay intact.
+- **Deliberately not done.** This still does not create a nested tree. The panel remains flat and
+  searchable; the change is about choosing better two-level headings.
+- **Verification.** `EngineSymbolDatabaseTests` now pins `APPEARANCE_TYPE_DWARF` under
+  `APPEARANCE_TYPE_*`, keeps every `APPEARANCE_TYPE_` constant in that family, and verifies a cast
+  spell constant stays under `IP_CONST_CASTSPELL_*`. Focused run:
+  `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
+  "FullyQualifiedName~EngineSymbolDatabaseTests|FullyQualifiedName~ScriptReferenceViewModelTests"` -
+  23 passed.

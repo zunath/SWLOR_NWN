@@ -85,6 +85,8 @@ namespace SWLOR.Toolset.Tests
         public void ConstantsReferenceFamilies_UseDocumentedFamiliesBeforeStructuralPrefixes()
         {
             Db.ConstantFamilyOf(Db.FindConstant("ABILITY_CHARISMA")!).Should().Be("ABILITY_*");
+            Db.ConstantFamilyOf(Db.FindConstant("APPEARANCE_TYPE_DWARF")!).Should().Be("APPEARANCE_TYPE_*");
+            Db.ConstantFamilyOf(Db.FindConstant("IP_CONST_CASTSPELL_FIREBALL_5")!).Should().Be("IP_CONST_CASTSPELL_*");
 
             Db.Constants
                 .Where(c => Db.ConstantFamilyOf(c) == "ABILITY_*")
@@ -101,6 +103,10 @@ namespace SWLOR.Toolset.Tests
 
             Db.ConstantFamilyOf(Db.FindConstant("IP_CONST_ABILITY_STR")!).Should().Be("IP_CONST_ABILITY_*");
             Db.ConstantFamilyOf(Db.FindConstant("DISEASE_BLINDING_SICKNESS")!).Should().Be("DISEASE_*");
+
+            Db.Constants
+                .Where(c => c.Name.StartsWith("APPEARANCE_TYPE_", StringComparison.Ordinal))
+                .Should().OnlyContain(c => Db.ConstantFamilyOf(c) == "APPEARANCE_TYPE_*");
         }
 
         [Test]

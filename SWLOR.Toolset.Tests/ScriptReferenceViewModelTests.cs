@@ -73,6 +73,18 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ConstantsTabGroupsAbilityConstantsUnderAbilityFamily()
+        {
+            var vm = Build(out _);
+            vm.SelectTabCommand.Execute(vm.Tabs[1]);
+            vm.Filter = "ABILITY_CHARISMA";
+
+            vm.Rows.Should().Contain(r => r.IsCategory && r.Label == "ABILITY_*");
+            vm.Rows.Should().NotContain(r => r.IsCategory && r.Label == "ABILITY_CHARISMA_*");
+            vm.Rows.Should().Contain(r => r.IsSymbol && r.Label == "ABILITY_CHARISMA");
+        }
+
+        [Test]
         public void LexiconIsUnavailableWithNothingSelected()
         {
             var vm = Build(out _);

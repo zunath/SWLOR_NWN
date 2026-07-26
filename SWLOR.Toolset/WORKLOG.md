@@ -1757,3 +1757,26 @@ authority.
   module scripts. Focused run:
   `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
   "FullyQualifiedName~ScriptAnalyzerTests|FullyQualifiedName~ScriptBinderTests"` - 29 passed.
+
+## Script reference follow-up - 2026-07-26 - Constants use useful families
+
+The Constants tab no longer builds category labels by taking the first two underscore-separated
+segments of a constant name. Family selection now lives in the engine symbol database, using the
+families documented by the NWScript header first and then falling back to shared structural prefixes.
+
+- **Why.** The old heuristic produced misleading singleton buckets such as `ABILITY_CHARISMA_*`,
+  even though the useful category is `ABILITY_*` with all six ability constants. Those headings looked
+  deliberate but forced builders to search one constant at a time.
+- **Decision.** `NwScriptHeaderParser` now carries every `FOO_*` family mentioned in the header, not
+  just the one attached to a function parameter. `EngineSymbolDatabase.ConstantFamilyOf` is the single
+  source for reference-browser grouping, and it folds one-item wildcard buckets upward until they join
+  siblings or become a plain constant label.
+- **Deliberately not done.** The panel remains a two-level list. This keeps the current UI behavior
+  intact while removing misleading categories; a deeper tree can still be designed later if builders
+  want nested families like `IP_CONST_*` -> `IP_CONST_ABILITY_*`.
+- **Verification.** `EngineSymbolDatabaseTests` now pins `ABILITY_*`, `IP_CONST_ABILITY_*`, structural
+  `SPELLABILITY_*` families, and the absence of singleton wildcard groups. `ScriptReferenceViewModel`
+  tests cover the Constants tab showing `ABILITY_CHARISMA` under `ABILITY_*`. Focused run:
+  `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
+  "FullyQualifiedName~EngineSymbolDatabaseTests|FullyQualifiedName~ScriptReferenceViewModelTests"` -
+  23 passed.

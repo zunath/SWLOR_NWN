@@ -82,6 +82,47 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ConstantsReferenceFamilies_UseDocumentedFamiliesBeforeStructuralPrefixes()
+        {
+            Db.ConstantFamilyOf(Db.FindConstant("ABILITY_CHARISMA")!).Should().Be("ABILITY_*");
+
+            Db.Constants
+                .Where(c => Db.ConstantFamilyOf(c) == "ABILITY_*")
+                .Select(c => c.Name)
+                .Should().BeEquivalentTo(new[]
+                {
+                    "ABILITY_STRENGTH",
+                    "ABILITY_DEXTERITY",
+                    "ABILITY_CONSTITUTION",
+                    "ABILITY_INTELLIGENCE",
+                    "ABILITY_WISDOM",
+                    "ABILITY_CHARISMA"
+                });
+
+            Db.ConstantFamilyOf(Db.FindConstant("IP_CONST_ABILITY_STR")!).Should().Be("IP_CONST_ABILITY_*");
+            Db.ConstantFamilyOf(Db.FindConstant("DISEASE_BLINDING_SICKNESS")!).Should().Be("DISEASE_*");
+        }
+
+        [Test]
+        public void ConstantsReferenceFamilies_FallBackToReadablePrefixesWhenTheHeaderHasNoFamily()
+        {
+            Db.ConstantFamilyOf(Db.FindConstant("SPELLABILITY_AURA_BLINDING")!).Should().Be("SPELLABILITY_AURA_*");
+            Db.ConstantFamilyOf(Db.FindConstant("SPELLABILITY_DRAGON_BREATH_ACID")!).Should().Be("SPELLABILITY_DRAGON_BREATH_*");
+        }
+
+        [Test]
+        public void ConstantsReferenceFamilies_DoNotInventSingletonWildcardGroups()
+        {
+            var singletonWildcards = Db.Constants
+                .GroupBy(Db.ConstantFamilyOf, StringComparer.Ordinal)
+                .Where(g => g.Key.EndsWith("*", StringComparison.Ordinal) && g.Count() == 1)
+                .Select(g => $"{g.Key}: {g.Single().Name}")
+                .ToList();
+
+            singletonWildcards.Should().BeEmpty();
+        }
+
+        [Test]
         public void AtLeast150ParametersCarryAConstantFamily()
         {
             var withFamily = Db.Functions.SelectMany(f => f.Parameters).Count(p => p.ConstantFamily != null);

@@ -196,7 +196,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 .ToList();
 
             _constantsByFamily = engine.Constants
-                .GroupBy(FamilyOf, StringComparer.Ordinal)
+                .GroupBy(engine.ConstantFamilyOf, StringComparer.Ordinal)
                 .OrderBy(g => g.Key, StringComparer.Ordinal)
                 .ToDictionary(g => g.Key, g => (IReadOnlyList<ScriptConstant>)g.ToList(), StringComparer.Ordinal);
 
@@ -343,11 +343,5 @@ namespace SWLOR.Toolset.Shell.Panels
                 .ToList();
         }
 
-        /// <summary>"CREATURE_TYPE_PLAYER_CHAR" → "CREATURE_TYPE_*" by its leading two segments.</summary>
-        private static string FamilyOf(ScriptConstant constant)
-        {
-            var parts = constant.Name.Split('_');
-            return parts.Length >= 2 ? $"{parts[0]}_{parts[1]}_*" : constant.Name;
-        }
     }
 }

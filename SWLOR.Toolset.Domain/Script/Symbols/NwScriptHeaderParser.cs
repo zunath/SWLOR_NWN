@@ -46,7 +46,10 @@ namespace SWLOR.Toolset.Domain.Script.Symbols
         private static readonly Regex ParamDocPattern = new(@"^-\s*(?<name>[A-Za-z_][A-Za-z0-9_]*)\s*:\s*(?<text>.*)$", RegexOptions.Compiled);
 
         /// <summary>Everything parsed out of one header file.</summary>
-        public sealed record Result(IReadOnlyList<ScriptFunction> Functions, IReadOnlyList<ScriptConstant> Constants);
+        public sealed record Result(
+            IReadOnlyList<ScriptFunction> Functions,
+            IReadOnlyList<ScriptConstant> Constants,
+            IReadOnlyList<string> ConstantFamilies);
 
         /// <summary>Parses a header from disk.</summary>
         public static Result ParseFile(string path, IReadOnlyDictionary<string, string>? categories = null) =>
@@ -57,6 +60,12 @@ namespace SWLOR.Toolset.Domain.Script.Symbols
         {
             var functions = new List<ScriptFunction>();
             var constants = new List<ScriptConstant>();
+            var constantFamilies = FamilyPattern.Matches(source)
+                .Select(m => m.Groups[1].Value + "*")
+                .Distinct(StringComparer.Ordinal)
+                .OrderByDescending(FamilyPrefixLength)
+                .ThenBy(f => f, StringComparer.Ordinal)
+                .ToList();
 
             // Comment lines accumulate until a declaration consumes them; anything else clears them,
             // so a stray comment far above a function never gets attached to it.
@@ -103,8 +112,11 @@ namespace SWLOR.Toolset.Domain.Script.Symbols
                 comment.Clear();
             }
 
-            return new Result(functions, constants);
+            return new Result(functions, constants, constantFamilies);
         }
+
+        private static int FamilyPrefixLength(string family) =>
+            family.EndsWith("*", StringComparison.Ordinal) ? family.Length - 1 : family.Length;
 
         // "int ITEM_PROPERTY_X = 1 ;" would otherwise match the function pattern's shape if it
         // contained parentheses; keep the two disjoint explicitly.

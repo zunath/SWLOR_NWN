@@ -1,4 +1,6 @@
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Gff;
 
@@ -19,6 +21,8 @@ namespace SWLOR.Toolset.Editors.Triggers
         private readonly TriggerValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<string, string?>? _resolveTag;
+        private readonly ChoicePreviewService? _previews;
+        private bool _galleryLoaded;
         private bool _loading;
 
         public TriggerFieldDefinition Definition { get; }
@@ -39,8 +43,18 @@ namespace SWLOR.Toolset.Editors.Triggers
         /// <summary>Resolved at construction, so a game-data choice set and a fixed one read alike.</summary>
         public IReadOnlyList<TriggerChoiceViewModel> Choices { get; }
 
-        /// <summary>True when the choices carry artwork, which the picker lays out as a gallery.</summary>
-        public bool HasPreviews => Choices.Any(choice => choice.HasPreview);
+        /// <summary>
+        /// True when the choices carry artwork, which the picker shows as a large preview plus a
+        /// gallery rather than as a list of names.
+        /// </summary>
+        public bool IsGallery => IsChoice && Choices.Any(choice => choice.HasArtwork);
+
+        /// <summary>A plain list: every choice row that is not a gallery.</summary>
+        public bool IsPlainChoice => IsChoice && !IsGallery;
+
+        /// <summary>The selected screen, larger than a thumbnail so it can actually be judged.</summary>
+        [ObservableProperty]
+        private Bitmap? _selectedPreview;
 
         public bool IsText => Definition.Kind is TriggerFieldKind.Text or TriggerFieldKind.Script;
         public bool IsLocalizedText => Definition.Kind == TriggerFieldKind.LocalizedText;
@@ -85,9 +99,13 @@ namespace SWLOR.Toolset.Editors.Triggers
             _store = store;
             _runEdit = runEdit;
             _resolveTag = resolveTag;
+            // No artwork is decoded here. Building the rows used to decode every load screen -
+            // around thirty megabytes of DDS - before the tab could draw, which is what made
+            // switching to Area Transition stall.
             Choices = (choices ?? definition.Choices)
-                .Select(choice => new TriggerChoiceViewModel(choice, previews?.Resolve(choice.ImageResRef)))
+                .Select(choice => new TriggerChoiceViewModel(choice))
                 .ToList();
+            _previews = previews;
             Reload();
         }
 
@@ -115,6 +133,7 @@ namespace SWLOR.Toolset.Editors.Triggers
                         var current = _store.GetInteger(Definition.Storage, Definition.Name) ?? 0;
                         Choice = Choices.FirstOrDefault(option => option.Value == current)
                                  ?? Choices.FirstOrDefault();
+                        _ = LoadSelectedPreviewAsync(Choice);
                         break;
                     case TriggerFieldKind.LocalizedText:
                         Text = _store.GetLocalizedText(Definition.Name);
@@ -175,6 +194,10 @@ namespace SWLOR.Toolset.Editors.Triggers
 
         partial void OnChoiceChanged(TriggerChoiceViewModel? value)
         {
+            // One image, not the whole set: the selected screen is the only one on screen until the
+            // gallery is opened.
+            _ = LoadSelectedPreviewAsync(value);
+
             if (_loading || value == null)
                 return;
 
@@ -183,6 +206,47 @@ namespace SWLOR.Toolset.Editors.Triggers
                 Reload();
             else
                 UpdateStatus();
+        }
+
+        /// <summary>
+        /// Decodes the gallery's thumbnails, once, when the picker is first opened. Until then the
+        /// editor has paid for exactly one image.
+        /// </summary>
+        [RelayCommand]
+        private async Task LoadGallery()
+        {
+            if (_galleryLoaded || _previews == null)
+                return;
+
+            _galleryLoaded = true;
+            foreach (var choice in Choices.Where(candidate => candidate.HasArtwork))
+            {
+                choice.Thumbnail = await _previews
+                    .ResolveAsync(choice.Choice.ImageResRef, ChoicePreviewService.ThumbnailWidth)
+                    .ConfigureAwait(true);
+            }
+        }
+
+        private async Task LoadSelectedPreviewAsync(TriggerChoiceViewModel? choice)
+        {
+            if (_previews == null || choice == null || !choice.HasArtwork)
+            {
+                SelectedPreview = null;
+                return;
+            }
+
+            SelectedPreview = _previews.Cached(choice.Choice.ImageResRef, ChoicePreviewService.PreviewWidth)
+                ?? await _previews
+                    .ResolveAsync(choice.Choice.ImageResRef, ChoicePreviewService.PreviewWidth)
+                    .ConfigureAwait(true);
+        }
+
+        /// <summary>Picking from the gallery, which closes the flyout through the view.</summary>
+        [RelayCommand]
+        private void PickChoice(TriggerChoiceViewModel? choice)
+        {
+            if (choice != null)
+                Choice = choice;
         }
 
         /// <summary>

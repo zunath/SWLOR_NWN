@@ -11,6 +11,7 @@ namespace SWLOR.Toolset.Shell
     {
         private bool _closeApproved;
         private bool _closePromptOpen;
+        private ShellViewModel? _viewModel;
         private ToolsetSettings? _settings;
 
         /// <summary>
@@ -31,9 +32,12 @@ namespace SWLOR.Toolset.Shell
             InitializeComponent();
         }
 
-        public MainWindow(ShellViewModel viewModel, ToolsetSettings? settings = null) : this()
+        /// <summary>
+        /// Creates the lightweight first-paint window. Its menus and workspace remain disabled until
+        /// <see cref="AttachViewModel"/> replaces the startup panel with the fully composed shell.
+        /// </summary>
+        public MainWindow(ToolsetSettings? settings) : this()
         {
-            DataContext = viewModel;
             _settings = settings;
             RestorePlacement();
 
@@ -45,6 +49,42 @@ namespace SWLOR.Toolset.Shell
                 if (e.Property == ClientSizeProperty || e.Property == WindowStateProperty)
                     TrackPlacement();
             };
+
+            Opened += (_, _) =>
+            {
+                // Nothing before this point is a placement worth recording: a window that has not been
+                // shown reports a size that has been set but a position that has not, and saving that
+                // pair would trade the remembered position for the origin.
+                _isOpen = true;
+                TrackPlacement();
+            };
+
+            Closing += OnClosing;
+        }
+
+        /// <summary>
+        /// Compatibility constructor for callers that already have a composed shell. Normal app
+        /// startup uses the settings-only constructor so the window can paint before composition.
+        /// </summary>
+        public MainWindow(ShellViewModel viewModel, ToolsetSettings? settings = null) : this(settings)
+        {
+            AttachViewModel(viewModel);
+            Opened += async (_, _) => await viewModel.InitializeAsync();
+        }
+
+        /// <summary>
+        /// Activates the fully loaded shell and its shortcuts. Called on the UI thread after the
+        /// background bootstrap finishes.
+        /// </summary>
+        public void AttachViewModel(ShellViewModel viewModel)
+        {
+            ArgumentNullException.ThrowIfNull(viewModel);
+            if (_viewModel != null)
+                throw new InvalidOperationException("The main window already has an attached shell.");
+
+            _viewModel = viewModel;
+            DataContext = viewModel;
+            StartupPanel.IsVisible = false;
 
             // File > Exit goes through Close() so it hits the same unsaved-changes prompt below
             // rather than dropping edits on the floor.
@@ -65,51 +105,52 @@ namespace SWLOR.Toolset.Shell
             // handled, so it never runs twice.
             Bind(Key.B, KeyModifiers.Control, viewModel.CompileActiveScriptCommand);
             Bind(Key.B, KeyModifiers.Control | KeyModifiers.Shift, viewModel.BuildAllScriptsCommand);
+        }
 
-            Opened += async (_, _) =>
+        /// <summary>Leaves the responsive startup surface visible and replaces its progress text.</summary>
+        public void ShowStartupError(string message)
+        {
+            StartupPanel.IsVisible = true;
+            StartupProgress.IsIndeterminate = false;
+            StartupStatus.Text = message;
+        }
+
+        private async void OnClosing(object? sender, WindowClosingEventArgs args)
+        {
+            // Recorded on the first close attempt, before the unsaved-changes prompt can cancel
+            // it: the prompt is a window of its own, and by the time a cancelled attempt comes
+            // back around this window may have been moved by it.
+            SavePlacement();
+
+            // Closing during background bootstrap is always safe: no module or editor has been
+            // attached yet, and App will dispose the completed service graph instead of attaching it.
+            if (_viewModel == null)
+                return;
+
+            _viewModel.SaveLayout();
+
+            if (_closeApproved)
+                return;
+
+            // Avalonia cannot await a Closing handler, so cancel this attempt first and issue
+            // a second Close() only after the save/discard/cancel decision completes.
+            args.Cancel = true;
+            if (_closePromptOpen)
+                return;
+
+            _closePromptOpen = true;
+            try
             {
-                // Nothing before this point is a placement worth recording: a window that has not been
-                // shown reports a size that has been set but a position that has not, and saving that
-                // pair would trade the remembered position for the origin.
-                _isOpen = true;
-                TrackPlacement();
-
-                // Startup work (module open + background catalog build) runs after the window is
-                // already showing, so the UI never blocks waiting on it.
-                await viewModel.InitializeAsync();
-            };
-
-            Closing += async (_, args) =>
+                if (await _viewModel.TryCloseAsync().ConfigureAwait(true))
+                {
+                    _closeApproved = true;
+                    Close();
+                }
+            }
+            finally
             {
-                // Recorded on the first close attempt, before the unsaved-changes prompt can cancel
-                // it: the prompt is a window of its own, and by the time a cancelled attempt comes
-                // back around this window may have been moved by it.
-                SavePlacement();
-                viewModel.SaveLayout();
-
-                if (_closeApproved)
-                    return;
-
-                // Avalonia cannot await a Closing handler, so cancel this attempt first and issue
-                // a second Close() only after the save/discard/cancel decision completes.
-                args.Cancel = true;
-                if (_closePromptOpen)
-                    return;
-
-                _closePromptOpen = true;
-                try
-                {
-                    if (await viewModel.TryCloseAsync().ConfigureAwait(true))
-                    {
-                        _closeApproved = true;
-                        Close();
-                    }
-                }
-                finally
-                {
-                    _closePromptOpen = false;
-                }
-            };
+                _closePromptOpen = false;
+            }
         }
 
         /// <summary>

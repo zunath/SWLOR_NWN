@@ -621,8 +621,6 @@ namespace SWLOR.Toolset.Shell
 
             _settings.AddRecentModule(moduleRoot);
             WindowTitle = $"SWLOR Toolset - {Path.GetFileName(Path.GetDirectoryName(moduleRoot)) ?? "Module"}";
-            _explorer.Initialize();
-            _palette.Refresh();
             _fileWatcher.Watch(moduleRoot);
 
             var catalog = _workspaceContext.Catalog;
@@ -651,14 +649,20 @@ namespace SWLOR.Toolset.Shell
                     if (task.IsFaulted)
                     {
                         var reason = task.Exception?.GetBaseException().Message ?? "unknown error";
+                        // The catalog supplies friendly names, not the only route to the module.
+                        // Fall back to direct directory enumeration so a partial indexing failure
+                        // does not leave both navigation panels permanently empty.
+                        _explorer.Initialize();
+                        _palette.Refresh();
                         StatusText = $"Catalog build failed: {reason}. Search and Module Contents may be incomplete.";
                         _log.AppendLine($"Catalog build failed: {reason}");
                         return;
                     }
                     _explorer.RefreshFromCatalog(catalog);
                     _search.Refresh();
-                    // Names for the palette tiles come from the catalog, so it only reads properly
-                    // once the background build has published them.
+                    // Explorer and Palette intentionally receive their first population here. Building
+                    // provisional trees above and rebuilding them once names arrived doubled the startup
+                    // work and could make the just-opened window stutter on large modules.
                     _palette.Refresh();
                     StatusText = $"Catalog ready: {catalog.Entries.Count} entries indexed.";
 

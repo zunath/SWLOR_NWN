@@ -2,6 +2,7 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -34,16 +35,105 @@ namespace SWLOR.Toolset
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                var services = new ServiceCollection();
-                ConfigureServices(services);
-                _serviceProvider = services.BuildServiceProvider();
+                // Settings are the only disk-backed dependency needed to size and place the first
+                // window. Everything else includes game archives, TLKs, source indexes, and ~130 hak
+                // folders, so composing it before assigning MainWindow made the process look hung.
+                var settings = ToolsetSettings.Load();
+                var window = new MainWindow(settings);
+                desktop.MainWindow = window;
 
-                desktop.MainWindow = new MainWindow(
-                    _serviceProvider.GetRequiredService<ShellViewModel>(),
-                    _serviceProvider.GetRequiredService<ToolsetSettings>());
+                window.Opened += async (_, _) => await BootstrapAsync(window, settings);
+                desktop.Exit += (_, _) =>
+                {
+                    _serviceProvider?.Dispose();
+                    _serviceProvider = null;
+                };
             }
 
             base.OnFrameworkInitializationCompleted();
+        }
+
+        /// <summary>
+        /// Builds every game-data-backed service after the first window has painted. The bootstrap
+        /// panel keeps the shell visibly alive but non-interactive until the immutable service graph
+        /// is complete; this avoids injecting permanent null dependencies merely to make startup fast.
+        /// </summary>
+        private async Task BootstrapAsync(MainWindow window, ToolsetSettings settings)
+        {
+            var stopwatch = Stopwatch.StartNew();
+
+            try
+            {
+                var result = await Task.Run(() =>
+                {
+                    var services = new ServiceCollection();
+                    ConfigureServices(services, settings);
+                    var provider = services.BuildServiceProvider();
+
+                    try
+                    {
+                        // ResourceIndex deliberately scans hak folders on its own worker. Finish that
+                        // scan here so the first palette/viewport action cannot inherit the wait and
+                        // synchronously block the UI thread.
+                        provider.GetService<ResourceIndex>()?.EnsureInitialized();
+
+                        // Some remaining indexes (notably GameCodeIndex and the 2DA lookups) are built
+                        // when first resolved. Warm only those data services here. Shell resolution
+                        // stays on the UI thread because the Palette creates Avalonia bitmap resources
+                        // for its type chips as part of its otherwise-light constructor.
+                        WarmGameDataServices(provider);
+                        return provider;
+                    }
+                    catch
+                    {
+                        provider.Dispose();
+                        throw;
+                    }
+                }).ConfigureAwait(true);
+
+                // The user may close the lightweight window while game data is still loading.
+                if (!window.IsVisible)
+                {
+                    result.Dispose();
+                    return;
+                }
+
+                _serviceProvider = result;
+                var shell = result.GetRequiredService<ShellViewModel>();
+                stopwatch.Stop();
+                result.GetRequiredService<OutputLogService>().AppendLine(
+                    $"Startup services and game-data indexes loaded in {stopwatch.ElapsedMilliseconds}ms.");
+
+                window.AttachViewModel(shell);
+                await shell.InitializeAsync().ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                stopwatch.Stop();
+                window.ShowStartupError(
+                    $"Toolset startup failed after {stopwatch.ElapsedMilliseconds}ms: {ex.GetBaseException().Message}");
+            }
+        }
+
+        /// <summary>
+        /// Forces every immutable service that scans or parses game data to initialize on the bootstrap
+        /// worker. Services not present because the repository layout is unavailable are simply skipped.
+        /// </summary>
+        private static void WarmGameDataServices(IServiceProvider provider)
+        {
+            _ = provider.GetService<IGameCodeIndex>();
+            _ = provider.GetService<AppearanceService>();
+            _ = provider.GetService<PortraitService>();
+            _ = provider.GetService<PlaceableAppearanceService>();
+            _ = provider.GetService<PlaceableModelCatalog>();
+            _ = provider.GetService<DoorTypeService>();
+            _ = provider.GetService<SoundService>();
+            _ = provider.GetService<TwoDaLookupService>();
+            _ = provider.GetService<WaypointAppearanceService>();
+            _ = provider.GetService<BaseItemIconService>();
+            _ = provider.GetService<Domain.GameData.Lookups.TilesetCatalog>();
+            _ = provider.GetService<Domain.Render.TileModelCache>();
+            _ = provider.GetService<Domain.Render.TileWalkmeshCache>();
         }
 
         /// <summary>
@@ -54,9 +144,8 @@ namespace SWLOR.Toolset
         /// consumers declare them as optional constructor parameters and get null instead of a
         /// missing-service exception.
         /// </summary>
-        private static void ConfigureServices(IServiceCollection services)
+        private static void ConfigureServices(IServiceCollection services, ToolsetSettings settings)
         {
-            var settings = ToolsetSettings.Load();
             services.AddSingleton(settings);
 
             services.AddSingleton<OutputLogService>();

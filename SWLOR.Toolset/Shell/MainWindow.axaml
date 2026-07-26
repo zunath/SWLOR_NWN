@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         x:Class="SWLOR.Toolset.Shell.MainWindow"
         x:DataType="shell:ShellViewModel"
-        Title="{Binding WindowTitle}"
+        Title="{Binding WindowTitle, FallbackValue='SWLOR Toolset'}"
         Icon="/Assets/swlor-logo.png"
         Width="1280" Height="800"
         WindowStartupLocation="CenterScreen">
@@ -96,7 +96,32 @@
         </ToggleButton>
       </StackPanel>
     </Border>
-    <DockControl Grid.Row="2" Layout="{Binding Layout}" Margin="4" IsEnabled="{Binding !IsModuleMutationLocked}" />
+    <Grid Grid.Row="2">
+      <DockControl Layout="{Binding Layout}" Margin="4" IsEnabled="{Binding !IsModuleMutationLocked}" />
+      <!-- First-paint surface. App composes game-data services on a worker and hides this only when
+           the real shell is ready, so startup stays responsive without exposing half-loaded tools. -->
+      <Border x:Name="StartupPanel"
+              Margin="4"
+              Background="{DynamicResource ChromeBrush}">
+        <StackPanel Width="420"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="12">
+          <TextBlock Text="Loading toolset data..."
+                     HorizontalAlignment="Center"
+                     FontSize="18"
+                     FontWeight="SemiBold" />
+          <ProgressBar x:Name="StartupProgress"
+                       Height="4"
+                       IsIndeterminate="True" />
+          <TextBlock x:Name="StartupStatus"
+                     Text="Palettes, game resources, and source indexes will become available together."
+                     TextAlignment="Center"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource InkSecondaryBrush}" />
+        </StackPanel>
+      </Border>
+    </Grid>
     <!-- Status bar: monospace, because everything that lands here is a count, a path or a coordinate. -->
     <Border Grid.Row="3"
             Padding="12,5"
@@ -106,7 +131,9 @@
       <StackPanel Orientation="Horizontal" Spacing="10">
         <TextBlock Text="&#x25CF;" FontSize="9" VerticalAlignment="Center"
                    Foreground="{DynamicResource GreenBrush}" />
-        <TextBlock Text="{Binding StatusText}" Classes="mono" TextTrimming="CharacterEllipsis" />
+        <TextBlock Text="{Binding StatusText, FallbackValue='Loading toolset data...'}"
+                   Classes="mono"
+                   TextTrimming="CharacterEllipsis" />
         <TextBlock Text="{Binding StatusDetail}" Classes="mono"
                    Foreground="{DynamicResource InkSecondaryBrush}"
                    IsVisible="{Binding StatusDetail, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />

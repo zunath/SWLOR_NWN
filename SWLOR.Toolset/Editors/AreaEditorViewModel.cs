@@ -6,6 +6,7 @@ using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
@@ -1277,7 +1278,9 @@ namespace SWLOR.Toolset.Editors
             Func<ResourceType, string, bool, RenderModel?>? resolveBlueprintModel = null,
             IScriptSlotHost? scriptSlotHost = null,
             Func<JsonGffStruct, RenderModel?>? resolvePlacedCreatureModel = null,
-            Doors.DoorEditorServices? doorEditorServices = null)
+            Doors.DoorEditorServices? doorEditorServices = null,
+            Func<string, IReadOnlyList<BehaviorChoice>>? resolveSoundChoices = null,
+            IReadOnlyList<string>? audioResources = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resolveBlueprintModel = resolveBlueprintModel;
@@ -1318,7 +1321,10 @@ namespace SWLOR.Toolset.Editors
                 Sections.Add(new InstanceListSectionViewModel(
                     config.Title, config.ListFieldName, config.BlueprintType,
                     _gitSession, _gicSession, workspace, RunGitEdit, gameCodeIndex, log, _prompts, resolveStrRef,
-                    config.BlueprintType == ResourceType.Utd ? doorEditorServices : null));
+                    config.BlueprintType == ResourceType.Utd ? doorEditorServices : null,
+                    areResRef,
+                    resolveSoundChoices,
+                    audioResources));
             }
 
             // A row click in any section should update the 3D-view highlight

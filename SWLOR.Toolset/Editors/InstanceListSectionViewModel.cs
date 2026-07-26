@@ -3,9 +3,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
+using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Editors.Sounds;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
@@ -84,6 +87,9 @@ namespace SWLOR.Toolset.Editors
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
         private readonly Doors.DoorEditorServices? _doorEditorServices;
+        private readonly string _soundHeaderOwner;
+        private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveSoundChoices;
+        private readonly IReadOnlyList<string> _audioResources;
 
         /// <summary>Resolves the STRREF labels the module's palettes use instead of inline names.</summary>
         private readonly Func<uint, string?>? _resolveStrRef;
@@ -130,10 +136,17 @@ namespace SWLOR.Toolset.Editors
 
         public bool UsesDoorEditor => _blueprintType == ResourceType.Utd;
 
-        public bool UsesGenericDetailEditor => !UsesDoorEditor;
+        public bool UsesGenericDetailEditor => !UsesDoorEditor && !HasSoundBehaviorEditor;
 
         [ObservableProperty]
         private Doors.DoorEditorViewModel? _doorEditor;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasSoundBehaviorEditor))]
+        [NotifyPropertyChangedFor(nameof(UsesGenericDetailEditor))]
+        private SoundEditorViewModel? _soundEditor;
+
+        public bool HasSoundBehaviorEditor => SoundEditor != null;
 
         [ObservableProperty]
         private VarTableSectionViewModel? _varTableSection;
@@ -153,7 +166,10 @@ namespace SWLOR.Toolset.Editors
             OutputLogService log,
             IEditorPromptService prompts,
             Func<uint, string?>? resolveStrRef = null,
-            Doors.DoorEditorServices? doorEditorServices = null)
+            Doors.DoorEditorServices? doorEditorServices = null,
+            string? soundHeaderOwner = null,
+            Func<string, IReadOnlyList<BehaviorChoice>>? resolveSoundChoices = null,
+            IReadOnlyList<string>? audioResources = null)
         {
             Title = title;
             _listFieldName = listFieldName;
@@ -167,6 +183,9 @@ namespace SWLOR.Toolset.Editors
             _prompts = prompts;
             _resolveStrRef = resolveStrRef;
             _doorEditorServices = doorEditorServices;
+            _soundHeaderOwner = soundHeaderOwner ?? string.Empty;
+            _resolveSoundChoices = resolveSoundChoices;
+            _audioResources = audioResources ?? Array.Empty<string>();
 
             RefreshFromDocument();
         }
@@ -208,14 +227,18 @@ namespace SWLOR.Toolset.Editors
                 DoorEditor?.Dispose();
                 DoorEditor = null;
                 VarTableSection = null;
+                SoundEditor = null;
                 return;
             }
 
             LoadDetailFromElement(element);
 
+            DoorEditor?.Dispose();
+            DoorEditor = null;
+            SoundEditor = null;
+
             if (UsesDoorEditor)
             {
-                DoorEditor?.Dispose();
                 DoorEditor = new Doors.DoorEditorViewModel(
                     element,
                     _doorEditorServices?.HeaderOwner ?? "area",
@@ -230,10 +253,25 @@ namespace SWLOR.Toolset.Editors
                     _gitSession.UndoStack.IsDirty);
                 VarTableSection = null;
             }
+            else if (_blueprintType == ResourceType.Uts)
+            {
+                VarTableSection = null;
+                SoundEditor = new SoundEditorViewModel(
+                    element,
+                    _soundHeaderOwner,
+                    isInstance: true,
+                    _runEdit,
+                    _gameCodeIndex,
+                    _resolveSoundChoices,
+                    _audioResources);
+                SoundEditor.ValueChanged += () =>
+                {
+                    if (SelectedRow is { } row)
+                        row.Tag = InstanceFieldMap.GetTag(element) ?? string.Empty;
+                };
+            }
             else
             {
-                DoorEditor?.Dispose();
-                DoorEditor = null;
                 VarTableSection = new VarTableSectionViewModel(
                     (description, mutation) => _runEdit(description, mutation),
                     new VarTable(element),

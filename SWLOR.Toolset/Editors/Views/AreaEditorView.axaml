@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:editors="using:SWLOR.Toolset.Editors"
              xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
+             xmlns:sounds="using:SWLOR.Toolset.Editors.Sounds"
              xmlns:viewport="using:SWLOR.Toolset.Viewport"
              x:Class="SWLOR.Toolset.Editors.AreaEditorView"
              x:DataType="editors:AreaEditorViewModel">
@@ -247,6 +248,8 @@
                     <Border IsVisible="{Binding UsesDoorEditor}">
                       <doors:DoorEditorView DataContext="{Binding DoorEditor}" MinHeight="520" />
                     </Border>
+                    <!-- Every non-sound instance keeps the existing generic detail form. -->
+                    <StackPanel IsVisible="{Binding !HasSoundBehaviorEditor}" Spacing="4">
                     <Grid ColumnDefinitions="60,*" ColumnSpacing="6"
                           IsVisible="{Binding UsesGenericDetailEditor}">
                       <TextBlock Grid.Column="0" Text="Tag" VerticalAlignment="Center" />
@@ -305,6 +308,21 @@
                                    IsVisible="{Binding ValidationHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                       </StackPanel>
                     </Expander>
+                    </StackPanel>
+
+                    <!-- A placed sound owns all UTS behavior fields itself. World position remains
+                         an area concern; Elevation is a sound falloff value inside the editor. -->
+                    <StackPanel IsVisible="{Binding HasSoundBehaviorEditor}" Spacing="8">
+                      <Grid ColumnDefinitions="24,*,24,*,24,*" ColumnSpacing="6">
+                        <TextBlock Grid.Column="0" Text="X" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Column="1" Value="{Binding DetailX, Mode=TwoWay}" Increment="0.5" />
+                        <TextBlock Grid.Column="2" Text="Y" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Column="3" Value="{Binding DetailY, Mode=TwoWay}" Increment="0.5" />
+                        <TextBlock Grid.Column="4" Text="Z" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Column="5" Value="{Binding DetailZ, Mode=TwoWay}" Increment="0.5" />
+                      </Grid>
+                      <sounds:SoundEditorView DataContext="{Binding SoundEditor}" Height="620" />
+                    </StackPanel>
                   </StackPanel>
                 </StackPanel>
               </Expander>

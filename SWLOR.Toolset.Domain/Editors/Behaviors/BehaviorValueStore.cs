@@ -98,6 +98,60 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
                 _valueStruct.SetSingle(name, (float)value);
         }
 
+        public IReadOnlyList<string> GetResRefList(string listName, string valueName)
+        {
+            return _valueStruct.GetListOrEmpty(listName)
+                .Select(entry => entry.GetStringOrNull(valueName) ?? string.Empty)
+                .ToList();
+        }
+
+        public void AddResRefListEntry(string listName, string valueName, string resRef)
+        {
+            JsonGffField.ValidateStringValue(GffFieldType.ResRef, resRef);
+            var list = GetOrAddListField(listName);
+            var entry = JsonGffField.CreateStruct(0).Struct!;
+            entry.SetString(valueName, GffFieldType.ResRef, resRef);
+            list.InsertElement(list.Elements!.Count, entry);
+        }
+
+        public void RemoveListEntry(string listName, int index)
+        {
+            var list = _valueStruct.GetOrNull(listName);
+            if (list?.Elements == null || index < 0 || index >= list.Elements.Count)
+                return;
+
+            list.RemoveElementAt(index);
+        }
+
+        public void MoveListEntry(string listName, int fromIndex, int toIndex)
+        {
+            var list = _valueStruct.GetOrNull(listName);
+            if (list?.Elements == null)
+                return;
+
+            list.MoveElement(fromIndex, toIndex);
+        }
+
+        public void ReplaceResRefList(string listName, string valueName, IEnumerable<string> resRefs)
+        {
+            var list = GetOrAddListField(listName);
+            while (list.Elements!.Count > 0)
+                list.RemoveElementAt(list.Elements.Count - 1);
+
+            foreach (var resRef in resRefs)
+                AddResRefListEntry(listName, valueName, resRef);
+        }
+
+        private JsonGffField GetOrAddListField(string name)
+        {
+            if (_valueStruct.GetOrNull(name) is { } existing)
+                return existing;
+
+            var list = JsonGffField.CreateList();
+            _valueStruct.Add(name, list);
+            return list;
+        }
+
         /// <summary>Applies one managed value, skipping what only a placement can carry.</summary>
         public void Apply(BehaviorManagedValue value, bool isInstance = true)
         {
@@ -187,6 +241,11 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
                 case GffFieldType.Dword:
                 case GffFieldType.Dword64:
                     _valueStruct.SetUInt(name, type, 0);
+                    break;
+                case GffFieldType.List:
+                    var list = _valueStruct.GetOrNull(name);
+                    while (list?.Elements is { Count: > 0 })
+                        list.RemoveElementAt(list.Elements.Count - 1);
                     break;
                 default:
                     _valueStruct.SetInt(name, type, 0);

@@ -33,6 +33,9 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         MultiChoice,
 
         /// <summary>A choice whose selection writes more than one backing field.</summary>
-        CompositeChoice
+        CompositeChoice,
+
+        /// <summary>An ordered GFF list of structs, each carrying one sound ResRef.</summary>
+        SoundList
     }
 }

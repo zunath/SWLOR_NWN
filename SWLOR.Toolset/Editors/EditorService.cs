@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.Editors;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Gff;
@@ -67,6 +68,8 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, Waypoints.WaypointDocumentViewModel> _openWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Doors.DoorDocumentViewModel> _openDoorEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice>? _doorAppearances;
+        private readonly Dictionary<string, Sounds.SoundDocumentViewModel> _openSoundEditors = new(StringComparer.OrdinalIgnoreCase);
+        private IReadOnlyList<string>? _soundResources;
 
         // Keyed by path like the blueprint map rather than by resref like the area map: a script is
         // one file, so the path is its identity and there is no are/git/gic triplet to name.
@@ -365,6 +368,12 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            if (_openSoundEditors.TryGetValue(filePath, out var existingSound))
+            {
+                _factory.ActivateDocument(existingSound);
+                return;
+            }
+
             try
             {
                 if (!CanRepresentEveryValue(filePath, resRef, schema))
@@ -374,6 +383,13 @@ namespace SWLOR.Toolset.Editors
                 if (type == ResourceType.Utd)
                 {
                     OpenDoorEditor(filePath, resRef);
+                    return;
+                }
+
+                // Sounds use the behavior editor and its dedicated ordered Sounds-list control.
+                if (type == ResourceType.Uts)
+                {
+                    OpenSoundEditor(filePath, resRef);
                     return;
                 }
 
@@ -526,6 +542,7 @@ namespace SWLOR.Toolset.Editors
                    || _openTriggerEditors.ContainsKey(path)
                    || _openWaypointEditors.ContainsKey(path)
                    || _openDoorEditors.ContainsKey(path)
+                   || _openSoundEditors.ContainsKey(path)
                    || _openConversations.ContainsKey(path);
         }
 
@@ -554,6 +571,12 @@ namespace SWLOR.Toolset.Editors
             }
 
             foreach (var editor in _openDoorEditors.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
+            foreach (var editor in _openSoundEditors.Values.ToList())
             {
                 if (!await editor.TrySaveAsync().ConfigureAwait(true))
                     return false;
@@ -600,6 +623,7 @@ namespace SWLOR.Toolset.Editors
                 !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openWaypointEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openDoorEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openSoundEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openAreaEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openScriptEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openConversations.Values.Any(editor => editor.IsDirty))
@@ -619,6 +643,8 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openWaypointEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openDoorEditors.Values)
+                editor.ApproveApplicationClose();
+            foreach (var editor in _openSoundEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openAreaEditors.Values)
                 editor.ApproveApplicationClose();
@@ -767,6 +793,54 @@ namespace SWLOR.Toolset.Editors
 
             var waypointArea = workspace.TagIndex.FindAreaDefiningTag(tag, ResourceType.Utw);
             return waypointArea == null ? null : $"waypoint in {waypointArea}";
+        }
+
+        /// <summary>Ambient-sound blueprints open in the behavior editor.</summary>
+        private void OpenSoundEditor(string filePath, string resRef)
+        {
+            var editor = new Sounds.SoundDocumentViewModel(
+                filePath,
+                resRef,
+                _gameCodeIndex,
+                _log,
+                _prompts,
+                ResolveSoundChoices,
+                SoundResources());
+            editor.Closed += _ => _openSoundEditors.Remove(filePath);
+            editor.CloseRequested += _ => _factory.CloseDocument(editor);
+            editor.CatalogEntryChanged += () =>
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Uts, resRef);
+            _openSoundEditors[filePath] = editor;
+            _factory.OpenDocument(editor);
+        }
+
+        private IReadOnlyList<string> SoundResources() =>
+            _soundResources ??= Domain.Editors.Sounds.SoundResourceCatalog.Read(_resourceIndex);
+
+        private IReadOnlyList<BehaviorChoice> ResolveSoundChoices(string key)
+        {
+            if (key != Domain.Editors.Sounds.SoundChoiceKeys.PaletteCategories)
+                return Array.Empty<BehaviorChoice>();
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<BehaviorChoice>();
+
+            try
+            {
+                var path = Path.Combine(workspace.ModuleRoot, "itp", "soundpalcus.itp.json");
+                if (!File.Exists(path))
+                    return Array.Empty<BehaviorChoice>();
+
+                return Domain.Editors.Sounds.SoundPaletteCategoryReader.Read(
+                    Domain.Documents.ItpDocument.Load(path),
+                    _tlkService != null ? _tlkService.GetString : null);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not read the sound palette categories: {ex.Message}");
+                return Array.Empty<BehaviorChoice>();
+            }
         }
 
         /// <summary>
@@ -984,7 +1058,9 @@ namespace SWLOR.Toolset.Editors
                         _resourceIndex,
                         _previewRenderer != null
                             ? door => _previewRenderer.BuildModel(ResourceType.Utd, door)
-                            : null));
+                            : null),
+                    ResolveSoundChoices,
+                    SoundResources());
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);

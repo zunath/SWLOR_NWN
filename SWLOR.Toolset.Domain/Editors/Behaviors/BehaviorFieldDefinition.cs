@@ -23,6 +23,8 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         /// <summary>Marked "required" in the editor, and reported when left empty.</summary>
         public bool IsRequired { get; init; }
 
+        public bool IsReadOnly { get; init; }
+
         /// <summary>
         /// Characters a text row accepts, or 0 for no limit. Enforced by the box itself, so an
         /// over-long value cannot be typed rather than being truncated behind the builder's back.
@@ -56,5 +58,8 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
 
         /// <summary>Which tag index a TagReference row resolves against.</summary>
         public BehaviorTagScope TagScope { get; init; } = BehaviorTagScope.None;
+
+        /// <summary>Maximum entries accepted by a list row, or zero for no limit.</summary>
+        public int MaxItems { get; init; }
     }
 }

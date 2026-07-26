@@ -47,6 +47,31 @@ namespace SWLOR.Toolset.Editors
         /// <summary>The Advanced tab, held so it can come and go with the Custom behavior.</summary>
         private EditorTabViewModel? _advancedTab;
 
+        private EditorTabViewModel? _selectedTab;
+
+        /// <summary>
+        /// Which tab is showing. Held here rather than left to the TabControl because the docking
+        /// host rebuilds the view when you switch documents - so a selection kept in the control is
+        /// lost the moment you look at something else and come back.
+        /// </summary>
+        public EditorTabViewModel? SelectedTab
+        {
+            get => _selectedTab;
+            set
+            {
+                if (ReferenceEquals(_selectedTab, value))
+                    return;
+
+                _selectedTab = value;
+                OnPropertyChanged();
+
+                // The model grid and its 3D preview are built on first sight rather than on open,
+                // so opening a placeable to rename it never pays for them.
+                if (PlaceableSections != null && ReferenceEquals(value?.Content, PlaceableSections.Appearance))
+                    PlaceableSections.Appearance.EnsureLoaded();
+            }
+        }
+
         /// <summary>
         /// False for a schema that declares no tabs, where a tab strip over a single page would be
         /// chrome around nothing.
@@ -173,6 +198,9 @@ namespace SWLOR.Toolset.Editors
 
         private void NotifyTabsChanged()
         {
+            if (SelectedTab == null || !Tabs.Contains(SelectedTab))
+                SelectedTab = Tabs.FirstOrDefault();
+
             OnPropertyChanged(nameof(HasMultipleTabs));
             OnPropertyChanged(nameof(SingleTabContent));
         }

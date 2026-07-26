@@ -189,7 +189,8 @@
     <!-- One page for the types whose fields fit one; a strip only when there is somewhere to go. -->
     <ContentControl Content="{Binding SingleTabContent}" IsVisible="{Binding !HasMultipleTabs}" />
 
-    <TabControl ItemsSource="{Binding Tabs}" IsVisible="{Binding HasMultipleTabs}">
+    <TabControl ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
+                IsVisible="{Binding HasMultipleTabs}">
       <TabControl.ItemTemplate>
         <DataTemplate DataType="editors:EditorTabViewModel">
           <TextBlock Text="{Binding Title}" />

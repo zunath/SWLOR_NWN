@@ -46,6 +46,9 @@ namespace SWLOR.Toolset.Editors.Placeables
         private List<PlaceableModelRow> _matches = new();
         private int _published;
 
+        /// <summary>False until the tab has been shown once; see EnsureLoaded.</summary>
+        private bool _loaded;
+
         [ObservableProperty]
         private string _query = string.Empty;
 
@@ -75,6 +78,21 @@ namespace SWLOR.Toolset.Editors.Placeables
             _resolveModel = resolveModel;
             ResourceIndex = resourceIndex;
 
+            // Nothing heavy here on purpose. Building the grid parses all 32,090 placeables.2da rows,
+            // publishes a page of tiles and resolves a model for the 3D view - none of which a
+            // builder who opened this placeable to rename it ever asked for. EnsureLoaded does it
+            // the first time the tab is actually shown.
+        }
+
+        /// <summary>
+        /// Builds the grid and the preview, once, when the tab is first opened.
+        /// </summary>
+        public void EnsureLoaded()
+        {
+            if (_loaded)
+                return;
+
+            _loaded = true;
             Rebuild();
             UpdatePreviewScene();
         }
@@ -166,11 +184,23 @@ namespace SWLOR.Toolset.Editors.Placeables
             NotifyCurrentChanged();
         }
 
-        partial void OnQueryChanged(string value) => Rebuild();
+        partial void OnQueryChanged(string value)
+        {
+            if (_loaded)
+                Rebuild();
+        }
 
-        partial void OnUsedInModuleOnlyChanged(bool value) => Rebuild();
+        partial void OnUsedInModuleOnlyChanged(bool value)
+        {
+            if (_loaded)
+                Rebuild();
+        }
 
-        partial void OnNamedOnlyChanged(bool value) => Rebuild();
+        partial void OnNamedOnlyChanged(bool value)
+        {
+            if (_loaded)
+                Rebuild();
+        }
 
         partial void OnHighlightedChanged(AppearanceTileViewModel? value)
         {

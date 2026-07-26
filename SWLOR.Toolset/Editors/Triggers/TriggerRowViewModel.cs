@@ -35,10 +35,16 @@ namespace SWLOR.Toolset.Editors.Triggers
 
         public bool HasNote => !string.IsNullOrEmpty(Definition.Note);
 
-        public bool IsPerPlacement => Definition.IsPerPlacement;
-
         /// <summary>Characters the box accepts; 0 lets Avalonia treat it as unlimited.</summary>
         public int MaxLength => Definition.MaxLength;
+
+        /// <summary>
+        /// "12/32", shown for as long as the row has a limit rather than only near it. A cap a
+        /// builder cannot see until they hit it reads as the box breaking.
+        /// </summary>
+        public string? Counter => MaxLength > 0 ? $"{Text.Length}/{MaxLength}" : null;
+
+        public bool HasCounter => MaxLength > 0;
 
         /// <summary>Resolved at construction, so a game-data choice set and a fixed one read alike.</summary>
         public IReadOnlyList<TriggerChoiceViewModel> Choices { get; }
@@ -149,6 +155,7 @@ namespace SWLOR.Toolset.Editors.Triggers
             }
 
             UpdateStatus();
+            OnPropertyChanged(nameof(Counter));
         }
 
         partial void OnTextChanged(string value)
@@ -165,6 +172,8 @@ namespace SWLOR.Toolset.Editors.Triggers
                 Reload();
             else
                 UpdateStatus();
+
+            OnPropertyChanged(nameof(Counter));
         }
 
         partial void OnNumberChanged(decimal value)
@@ -269,22 +278,8 @@ namespace SWLOR.Toolset.Editors.Triggers
                 return;
             }
 
-            if (IsRequired && IsTextEntry && Text.Length == 0)
-            {
-                IsStatusGood = false;
-                Status = "required";
-                return;
-            }
-
-            // Silent truncation is the failure mode a length cap invites, so the row starts counting
-            // down before the box stops accepting characters rather than after.
-            if (MaxLength > 0 && Text.Length >= MaxLength - 4)
-            {
-                IsStatusGood = Text.Length < MaxLength;
-                Status = $"{Text.Length}/{MaxLength}";
-                return;
-            }
-
+            // No "required" here: the label already carries that badge, and having both put two
+            // pieces of text in the same row from opposite ends, which is what collided.
             Status = null;
         }
     }

@@ -39,6 +39,13 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         /// </summary>
         public const int MaxTagLength = 32;
 
+        /// <summary>
+        /// A house limit, not an engine one: a name is a CExoString and the engine caps nothing. It
+        /// sits well clear of real content — the longest trigger name in the module is 45 characters
+        /// — so it bounds the field for the counter's sake without standing in anyone's way.
+        /// </summary>
+        public const int MaxNameLength = 64;
+
         private static readonly IReadOnlyList<TriggerChoice> TriggerTypeChoices = new[]
         {
             new TriggerChoice(0, "Generic"),
@@ -51,7 +58,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             new TriggerFieldDefinition
             {
                 Label = "Name", Name = "LocalizedName", Kind = TriggerFieldKind.LocalizedText,
-                FieldType = GffFieldType.CExoLocString
+                FieldType = GffFieldType.CExoLocString, MaxLength = MaxNameLength
             },
             new TriggerFieldDefinition
             {

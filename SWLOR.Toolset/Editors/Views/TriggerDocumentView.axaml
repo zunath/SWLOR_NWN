@@ -90,7 +90,11 @@
 
               <Border Classes="card">
                 <StackPanel>
-                  <TextBlock Text="{Binding HeaderName}" Classes="section" Margin="16,12,16,4" />
+                  <TextBlock Text="{Binding HeaderName}" Classes="section" Margin="16,12,16,2" />
+                  <!-- What the behavior does, where the reader starts rather than after the fields. -->
+                  <TextBlock Text="{Binding Behavior.Summary}" Classes="dim" Margin="16,0,16,8"
+                             TextWrapping="Wrap"
+                             IsVisible="{Binding Behavior.Summary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                   <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="0,2,0,8" />
                 </StackPanel>
               </Border>

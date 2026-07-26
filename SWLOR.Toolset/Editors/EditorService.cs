@@ -498,6 +498,9 @@ namespace SWLOR.Toolset.Editors
             if (key == Domain.Editors.Triggers.TriggerChoiceKeys.LoadScreens)
                 return Domain.Editors.Triggers.LoadScreenCatalog.Read(_twoDaService);
 
+            if (key == Domain.Editors.Triggers.TriggerChoiceKeys.TrapTypes)
+                return Domain.Editors.Triggers.TrapTypeCatalog.Read(_twoDaService);
+
             return _lookups.GetOptions(key)
                 .Select(option => new Domain.Editors.Triggers.TriggerChoice(option.Id, option.Display))
                 .ToList();

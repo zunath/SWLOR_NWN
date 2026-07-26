@@ -18,8 +18,14 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         /// <summary>Heading this behavior sits under in the list; null sits it above the groups.</summary>
         public string? Group { get; init; }
 
-        /// <summary>Trailing clause on the list row, as in "None — plain trigger".</summary>
+        /// <summary>Trailing clause on the list row.</summary>
         public string? Tagline { get; init; }
+
+        /// <summary>
+        /// One line under the panel's title saying what this behavior does. A sub-header, not a
+        /// field: it belongs where the reader starts, not at the bottom of the form.
+        /// </summary>
+        public string? Summary { get; init; }
 
         public IReadOnlyList<TriggerFieldDefinition> Fields { get; init; } = Array.Empty<TriggerFieldDefinition>();
 

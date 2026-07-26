@@ -123,7 +123,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("KatarPerkDefinition.cs", StatType.DamageTakenNextSkillAbilityDamageBonus, "20");
 
         AssertSourceStat("StaffPerkDefinition.cs", StatType.CriticalDamageTargetStatusCategory, "(int)StatusEffectCategory.Control");
-        AssertSourceStat("StaffPerkDefinition.cs", StatType.StatusAppliedNextSkillAbilityDamageBonus, "26");
+        AssertSourceStat("StaffPerkDefinition.cs", StatType.StatusAppliedNextAttackDamageBonus, "26");
         AssertSourceStat("StaffPerkDefinition.cs", StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionCategoryId, "(int)PerkCategoryType.StaffSentinel");
         AssertSourceStat("StaffPerkDefinition.cs", StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflection, "8");
         AssertSourceStat("StaffPerkDefinition.cs", StatType.AbilityUsedPerkCategorySelfDefenseCategoryId, "(int)PerkCategoryType.StaffSentinel");

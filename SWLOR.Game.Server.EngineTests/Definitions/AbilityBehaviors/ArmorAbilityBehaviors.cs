@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Feat = FeatType.Provoke1,
                     Target = AbilityTargetKind.HostileCreature,
                     ExpectsRecast = true,
+                    OutcomeAssertionWaiverReason = "The impact only changes the private enmity table and plays a VFX; the harness has no read-only enmity observation seam.",
                     Notes = "Impact only calls Enmity.ModifyEnmity and plays a visual effect; enmity is not observable via these case fields, and no FP/Stamina cost is declared.",
                 },
                 new()
@@ -32,6 +33,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Feat = FeatType.Provoke2,
                     Target = AbilityTargetKind.HostileCreature,
                     ExpectsRecast = true,
+                    OutcomeAssertionWaiverReason = "The area impact only changes private enmity entries; the harness has no read-only enmity observation seam.",
                     Notes = "Area variant of Provoke1 with the same enmity-only impact on each hostile in range.",
                 },
             };

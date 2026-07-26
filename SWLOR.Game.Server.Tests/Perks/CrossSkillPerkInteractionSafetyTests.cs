@@ -10,6 +10,57 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class CrossSkillPerkInteractionSafetyTests
 {
     [Test]
+    public void ChargedBlows_NextAttackBonusSupportsAbilitiesAndAutoAttacks()
+    {
+        var root = FindRepositoryRoot();
+        var staff = Read(root, "SWLOR.Game.Server", "Feature", "PerkDefinition", "StaffPerkDefinition.cs");
+        staff.Should().Contain("StatType.StatusAppliedNextAttackDamageBonus");
+        staff.Should().Contain("StatType.StatusAppliedNextAttackWindowSeconds");
+        staff.Should().NotContain("StatType.StatusAppliedNextSkillAbilitySkillType",
+            "Charged Blows says next attack, not next Staff ability");
+
+        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var statusApplied = ExtractMethod(combat, "private static void ApplyStatusAppliedEffects(");
+        statusApplied.Should().Contain("GrantStatusAppliedNextAttackDamageBonus");
+
+        var ability = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
+        var beginAbilityImpact = ExtractMethod(ability, "public static void BeginAbilityImpact(");
+        beginAbilityImpact.Should().Contain("GetStatusAppliedNextAttackDamageBonus");
+        beginAbilityImpact.Should().NotContain("ConsumeStatusAppliedNextAttackDamageBonus",
+            "a miss or zero-damage hostile ability must preserve Charged Blows");
+        beginAbilityImpact.Should().Contain("ability.IsHostileAbility");
+        var hostileImpact = ExtractMethod(ability, "public static int ApplyHostileCombatImpact(");
+        hostileImpact.Should().Contain("if (damage > 0)");
+        hostileImpact.Should().Contain("trackedImpact?.ConsumeStatusAppliedNextAttackDamageBonus(activator);");
+        hostileImpact.IndexOf(
+                "trackedImpact?.ConsumeStatusAppliedNextAttackDamageBonus(activator);",
+                StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(hostileImpact.IndexOf("ApplyCombatImpactStatusEffect(", StringComparison.Ordinal),
+                "an area control ability must consume the old proc before it can grant the next one");
+        ability.Should().Contain("_statusAppliedNextAttackDamageBonusConsumed",
+            "an area ability must not consume a newly granted proc on each additional target");
+        ability.Should().Contain("public int NextAbilityDamageBonus { get; private set; }");
+        var consumeStatusBonus = ExtractMethod(
+            ability,
+            "public void ConsumeStatusAppliedNextAttackDamageBonus(uint activator)");
+        consumeStatusBonus.Should().Contain(
+            "NextAbilityDamageBonus -= StatusAppliedNextAttackDamageBonus;",
+            "the consumed Charged Blows value must be removed from the tracked aggregate before another hit or area target calculates damage");
+
+        var nativeDamage = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
+        var nextAttackBonusIndex = nativeDamage.IndexOf(
+            "Combat.ConsumeStatusAppliedNextAttackDamageBonus(attacker.m_idSelf)",
+            StringComparison.Ordinal);
+        var formulaIndex = nativeDamage.IndexOf("CalculateDamageWithCriticalMitigation", StringComparison.Ordinal);
+        nextAttackBonusIndex.Should().BeGreaterThanOrEqualTo(0);
+        nextAttackBonusIndex.Should().BeLessThan(formulaIndex,
+            "Charged Blows DMG must enter the attack-versus-defense formula");
+        nativeDamage.Should().Contain("isLandedAttack",
+            "a missed auto attack must not consume Charged Blows");
+    }
+
+    [Test]
     public void SecondaryDamage_CannotReenterDirectDamageProcOrReflectionChains()
     {
         var root = FindRepositoryRoot();
@@ -271,8 +322,16 @@ public class CrossSkillPerkInteractionSafetyTests
             abilitySource,
             "private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(");
         delayedImpact.Should().Contain("int nextAttackEnmityBonus");
-        delayedImpact.Should().Contain("nextAttackEnmityBonus);",
+        delayedImpact.Should().Contain("nextAttackEnmityBonus,",
             "the reconstructed tracked impact must retain the guarded-hit Enmity bonus");
+        delayedImpact.Should().Contain("Combat.GetStatusAppliedNextAttackDamageBonus(creator)",
+            "a delayed impact must resolve the live Charged Blows proc when it lands");
+        telegraphedImpact.Should().Contain("deferredNextAbilityDamageBonus");
+        telegraphedImpact.Should().Contain(
+            "(trackedImpact?.StatusAppliedNextAttackDamageBonus ?? 0)",
+            "the cast-time Charged Blows snapshot must not be captured by a delayed impact");
+        delayedImpact.Should().NotContain("int statusAppliedNextAttackDamageBonus",
+            "the delayed callback must not carry a stale Charged Blows reservation");
 
         var nativeAttackSource = Read(root, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
         nativeAttackSource.Should().Contain("ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf)",

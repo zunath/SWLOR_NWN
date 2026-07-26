@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core.Async;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         // which silently breaks every weapon-gated tree (ActionEquipItem never completes).
         private const string CasterResref = "nw_bandit001";
         private const string TargetResref = "nw_rat001";
+        private const string FriendlyTargetResref = "nw_bandit001";
 
         // Equipped for Weapon-activation cases that declare no weapon of their own: queued
         // abilities consume through the weapon's item_on_hit event, so the caster must be
@@ -165,7 +167,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     // 2m separation: a +/-1.5 split put the pair at exactly 3.0m, the outer
                     // boundary of short-range melee abilities, which then failed range checks.
-                    target = ctx.SpawnCreature(TargetResref, 1.0f, 0f);
+                    target = ctx.SpawnCreature(TargetResref, -0.5f + behaviorCase.TargetDistanceMeters, 0f);
                     ctx.MakeHostile(target);
                     ApplyEffectToObject(
                         DurationType.Temporary,
@@ -176,8 +178,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 else if (behaviorCase.Target == AbilityTargetKind.FriendlyCreature)
                 {
                     // Same faction as the caster (SpawnCreature normalizes to Defender), so
-                    // friendly-target validation accepts it without allowing self.
-                    target = ctx.SpawnCreature(TargetResref, 1.0f, 0f);
+                    // friendly-target validation accepts it without allowing self. The stock
+                    // rat has only 1 HP, so a durable humanoid is required for ally-healing cases
+                    // that deliberately wound the target before activation.
+                    target = ctx.SpawnCreature(FriendlyTargetResref, -0.5f + behaviorCase.TargetDistanceMeters, 0f);
                 }
 
                 if (behaviorCase.TargetStartsDead)
@@ -218,6 +222,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     StatusEffect.ApplyStatusEffect(caster, target, setupEffect, 60f);
                 }
 
+                foreach (var setupEffectType in behaviorCase.TargetSetupStatusEffects)
+                {
+                    StatusEffect.ApplyStatusEffect(caster, target, setupEffectType, 60f);
+                }
+
                 // Let spawn initialization scripts run before configuring resources - they
                 // reset the FP/STAMINA locals to the (unraised) max and would overwrite us.
                 await NwTask.NextFrame();
@@ -229,6 +238,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 // drift resource pools off the exact post-deduction values the cost
                 // assertions verify.
                 ctx.SuppressNPCNaturalRegen(caster);
+                if (target != caster)
+                    ctx.SuppressNPCNaturalRegen(target);
+
+                foreach (var setupEffectType in behaviorCase.TargetSetupStatusEffects)
+                {
+                    await ctx.WaitUntilAsync(
+                        () => StatusEffect.HasStatusEffect(target, setupEffectType),
+                        5f,
+                        $"setup target status effect {setupEffectType.Name} before activation");
+                }
 
                 foreach (var (setupPerk, setupLevel) in behaviorCase.SetupNPCPerkLevels)
                 {
@@ -266,12 +285,52 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         caster);
                 }
 
+                if (behaviorCase.ExpectsTargetHealing)
+                {
+                    ctx.Assert(
+                        target != caster && behaviorCase.Target == AbilityTargetKind.FriendlyCreature,
+                        "target-healing assertions require a distinct FriendlyCreature target");
+                    ApplyEffectToObject(
+                        DurationType.Instant,
+                        EffectDamage(Math.Max(1, GetCurrentHitPoints(target) / 2)),
+                        target);
+                }
+
+                if (behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.HasValue)
+                {
+                    ctx.Assert(
+                        target != caster,
+                        "post-impact distance assertions require a distinct target");
+                    ctx.Assert(
+                        GetDistanceBetween(caster, target) >
+                        behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.Value,
+                        "the target must start outside the asserted post-impact distance or the movement assertion is vacuous");
+                }
+
+                foreach (var effectType in behaviorCase.ExpectedActivatorStatusEffects)
+                {
+                    ctx.Assert(
+                        !StatusEffect.HasStatusEffect(caster, effectType),
+                        $"activator status effect {effectType.Name} was already present before activation");
+                }
+
+                foreach (var effectType in behaviorCase.ExpectedTargetStatusEffects)
+                {
+                    ctx.Assert(
+                        !StatusEffect.HasStatusEffect(target, effectType),
+                        $"target status effect {effectType.Name} was already present before activation");
+                }
+
                 var fpBefore = Stat.GetCurrentFP(caster);
                 var stmBefore = Stat.GetCurrentStamina(caster);
                 var casterHPBefore = GetCurrentHitPoints(caster);
                 var targetHPBefore = GetCurrentHitPoints(target);
                 var activatorStatAdjustmentsBefore = behaviorCase.ExpectedActivatorStatAdjustments
                     .ToDictionary(pair => pair.Key, pair => Stat.GetStatAdjustment(caster, pair.Key));
+                var targetStatAdjustmentsBefore = behaviorCase.ExpectedTargetStatAdjustments
+                    .ToDictionary(pair => pair.Key, pair => Stat.GetStatAdjustment(target, pair.Key));
+                var activatorTemporaryHPBefore = CountEffectsOfType(caster, EffectTypeScript.TemporaryHitpoints);
+                var targetTemporaryHPBefore = CountEffectsOfType(target, EffectTypeScript.TemporaryHitpoints);
 
                 // The activation must run in the CASTER's script context, exactly like the real
                 // feat-use event: DelayCommand(activationDelay, CompleteActivation) schedules
@@ -371,6 +430,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     try
                     {
                         var hitTargetHPBefore = GetCurrentHitPoints(hitTarget);
+                        var hitTargetStatAdjustmentsBefore = behaviorCase.ExpectedTargetStatAdjustments
+                            .ToDictionary(pair => pair.Key, pair => Stat.GetStatAdjustment(hitTarget, pair.Key));
+                        var hitTargetTemporaryHPBefore =
+                            CountEffectsOfType(hitTarget, EffectTypeScript.TemporaryHitpoints);
 
                         // Cleared so a post-consumption observation can only match THIS
                         // ability's completed impact, never an earlier case's.
@@ -416,7 +479,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                             hitTarget,
                             hitTargetHPBefore,
                             casterHPBefore,
-                            activatorStatAdjustmentsBefore);
+                            activatorStatAdjustmentsBefore,
+                            hitTargetStatAdjustmentsBefore,
+                            activatorTemporaryHPBefore,
+                            hitTargetTemporaryHPBefore);
                     }
                     finally
                     {
@@ -440,7 +506,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         target,
                         targetHPBefore,
                         casterHPBefore,
-                        activatorStatAdjustmentsBefore);
+                        activatorStatAdjustmentsBefore,
+                        targetStatAdjustmentsBefore,
+                        activatorTemporaryHPBefore,
+                        targetTemporaryHPBefore);
                 }
 
                 if (behaviorCase.ExpectsRecast)
@@ -474,7 +543,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             uint impactTarget,
             int impactTargetHPBefore,
             int casterHPBefore,
-            Dictionary<StatType, int> activatorStatAdjustmentsBefore)
+            Dictionary<StatType, int> activatorStatAdjustmentsBefore,
+            Dictionary<StatType, int> targetStatAdjustmentsBefore,
+            int activatorTemporaryHPBefore,
+            int targetTemporaryHPBefore)
         {
             foreach (var effectType in behaviorCase.ExpectedActivatorStatusEffects)
             {
@@ -501,6 +573,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     $"activator stat {statType} to change by {expectedAdjustment} after impact");
             }
 
+            foreach (var (statType, expectedAdjustment) in behaviorCase.ExpectedTargetStatAdjustments)
+            {
+                var expectedValue = targetStatAdjustmentsBefore[statType] + expectedAdjustment;
+                await ctx.WaitUntilAsync(
+                    () => Stat.GetStatAdjustment(impactTarget, statType) == expectedValue,
+                    EffectWaitSeconds,
+                    $"target stat {statType} to change by {expectedAdjustment} after impact");
+            }
+
+            foreach (var effectType in behaviorCase.ExpectedRemovedTargetStatusEffects)
+            {
+                await ctx.WaitUntilAsync(
+                    () => !StatusEffect.HasStatusEffect(impactTarget, effectType),
+                    EffectWaitSeconds,
+                    $"pre-applied target status effect {effectType.Name} to be removed by impact");
+            }
+
             if (behaviorCase.ExpectsTargetDamage)
             {
                 // Requiring the caster as last damager proves the damage came from this
@@ -520,22 +609,47 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     () => !GetIsDead(impactTarget),
                     EffectWaitSeconds,
                     "the dead target to be revived by the impact");
+
+                if (behaviorCase.MinimumTargetHitPointsAfterRevive > 0)
+                {
+                    await ctx.WaitUntilAsync(
+                        () => GetCurrentHitPoints(impactTarget) >=
+                              behaviorCase.MinimumTargetHitPointsAfterRevive,
+                        EffectWaitSeconds,
+                        $"the revived target to have at least {behaviorCase.MinimumTargetHitPointsAfterRevive} hit points");
+                }
+
+                if (behaviorCase.ExpectedTargetHealingPercentAfterRevive.HasValue)
+                {
+                    var healingPercent = behaviorCase.ExpectedTargetHealingPercentAfterRevive.Value;
+                    var expectedHealing = AbilityEffectScaling.CalculateScaledPercentOfMaxHP(
+                        caster,
+                        impactTarget,
+                        healingPercent);
+                    var minimumHitPoints = 1 + expectedHealing;
+                    await ctx.WaitUntilAsync(
+                        () => GetCurrentHitPoints(impactTarget) >= minimumHitPoints,
+                        EffectWaitSeconds,
+                        $"the revived target to receive its full {healingPercent:0.##}% plus Willpower-scaled heal and reach at least {minimumHitPoints} hit points");
+                }
             }
 
             if (behaviorCase.ExpectsActivatorTemporaryHP)
             {
                 await ctx.WaitUntilAsync(
-                    () => HasEffectOfType(caster, EffectTypeScript.TemporaryHitpoints),
+                    () => CountEffectsOfType(caster, EffectTypeScript.TemporaryHitpoints) >
+                          activatorTemporaryHPBefore,
                     EffectWaitSeconds,
-                    "a temporary-HP effect to be present on the activator after impact");
+                    "the impact to add a new temporary-HP effect to the activator");
             }
 
             if (behaviorCase.ExpectsTargetTemporaryHP)
             {
                 await ctx.WaitUntilAsync(
-                    () => HasEffectOfType(impactTarget, EffectTypeScript.TemporaryHitpoints),
+                    () => CountEffectsOfType(impactTarget, EffectTypeScript.TemporaryHitpoints) >
+                          targetTemporaryHPBefore,
                     EffectWaitSeconds,
-                    "a temporary-HP effect to be present on the target after impact");
+                    "the impact to add a new temporary-HP effect to the target");
             }
 
             if (behaviorCase.ExpectsActivatorHealing)
@@ -544,6 +658,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     () => GetCurrentHitPoints(caster) > casterHPBefore,
                     EffectWaitSeconds,
                     "the activator's hit points to rise above their pre-activation value");
+            }
+
+            if (behaviorCase.ExpectsTargetHealing)
+            {
+                await ctx.WaitUntilAsync(
+                    () => GetCurrentHitPoints(impactTarget) > impactTargetHPBefore,
+                    EffectWaitSeconds,
+                    "the friendly target's hit points to rise above their pre-activation value");
+            }
+
+            if (behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.HasValue)
+            {
+                await ctx.WaitUntilAsync(
+                    () => GetDistanceBetween(caster, impactTarget) <=
+                          behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.Value,
+                    EffectWaitSeconds,
+                    $"the activator to move within {behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.Value:0.##}m of the target");
             }
         }
 
@@ -734,15 +865,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// that apply raw engine effects (e.g. EffectTemporaryHitpoints) with no status
         /// effect wrapper to query.
         /// </summary>
-        private static bool HasEffectOfType(uint creature, EffectTypeScript effectType)
+        private static int CountEffectsOfType(uint creature, EffectTypeScript effectType)
         {
+            var count = 0;
             for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
             {
                 if (GetEffectType(effect) == effectType)
-                    return true;
+                    count++;
             }
 
-            return false;
+            return count;
         }
     }
 }

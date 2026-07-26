@@ -66,14 +66,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.CleanseOrder1,
                     Target = AbilityTargetKind.Self,
+                    TargetSetupStatusEffects = new[] { typeof(PoisonStatusEffect) },
+                    ExpectedRemovedTargetStatusEffects = new[] { typeof(PoisonStatusEffect) },
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Grants raw temporary HP and cleanses a status; TriageProtocol/BolsterResolve riders are gated on stat adjustments the NPC doesn't have.",
+                    Notes = "Asserts both unconditional outcomes: one TreatmentKit2 cleanse and a newly added raw temporary-HP effect.",
                 },
                 new()
                 {
                     Feat = FeatType.CleanseOrder2,
                     Target = AbilityTargetKind.Self,
+                    TargetSetupStatusEffects = new[] { typeof(PoisonStatusEffect) },
+                    ExpectedRemovedTargetStatusEffects = new[] { typeof(PoisonStatusEffect) },
                     ExpectedActivatorStatusEffects = new[] { typeof(CleanseOrder2StatusEffect) },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
@@ -200,6 +205,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.RousingShout1,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                     Notes = "Grants raw temporary HP unconditionally; the low-HP status rider requires the target at or below 35% HP, which a fresh full-health spawn never is. TriageProtocol/BolsterResolve riders are also stat-gated to 0.",
@@ -208,6 +214,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.RousingShout2,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
@@ -215,6 +222,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.RousingShout3,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },

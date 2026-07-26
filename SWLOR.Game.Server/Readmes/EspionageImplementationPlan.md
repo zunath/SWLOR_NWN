@@ -40,7 +40,7 @@ Perk-only adjustments such as flat Stealth rating, stealthed movement speed, ste
 - Stealth drains 2 STM every 6 seconds. Silent Stride reduces the drain rate by 20%, producing 2 STM every 7.5 seconds, and grants +30% Movement Speed while stealthed without removing stealth's running restriction.
 - Reaching zero STM exits stealth. Activating a hostile ability or landing a damaging hit also exits stealth.
 - Stealth is calculated as `(AGI x 2) + equipment + perk/status bonuses`; Stealth I-IV grant +5/+10/+15/+20 Stealth while active.
-- Detection is calculated as `PER + WIL + equipment + perk/status bonuses`; Detect mode adds +5.
+- Detection is calculated as `PER + WIL + equipment + perk/status bonuses`; Detect mode adds +5. NPC Detection keeps scaling with those stats but is capped at 50. Players, DMs, and DM-possessed creatures are not capped, so ratings above 50 require player or staff investment.
 - Alertness I-III remains on the General tab as the universal Detection counter and grants +10/+15/+20 Detection.
 - Stealth and Detection equipment already exists and contributes directly to the opposed ratings.
 

@@ -541,10 +541,14 @@ namespace SWLOR.Game.Server.Native
                     Stat.GetDefenseNative(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             defense = Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType);
             var guardedHitBonuses = Combat.ConsumeNextAttackGuardedHitAutoAttackBonuses(attacker.m_idSelf);
+            var statusAppliedNextAttackDamageBonus = isLandedAttack
+                ? Combat.ConsumeStatusAppliedNextAttackDamageBonus(attacker.m_idSelf)
+                : 0;
             var attackDamage = damageProfile.Damage +
                                Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType) +
                                Combat.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType) +
-                               guardedHitBonuses.DMGBonus;
+                               guardedHitBonuses.DMGBonus +
+                               statusAppliedNextAttackDamageBonus;
 
             Log.Write(LogGroup.Attack, $"DAMAGE: attacker damage attribute: {damageProfile.Damage} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 

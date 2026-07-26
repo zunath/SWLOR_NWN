@@ -45,7 +45,8 @@ namespace SWLOR.Toolset.Editors.Triggers
             IGameCodeIndex? gameCodeIndex,
             OutputLogService log,
             IEditorPromptService prompts,
-            Func<string, string?>? resolveTag = null)
+            Func<string, string?>? resolveTag = null,
+            Func<string, IReadOnlyList<Domain.Editors.Triggers.TriggerChoice>>? resolveChoices = null)
         {
             _log = log;
             _prompts = prompts;
@@ -54,7 +55,8 @@ namespace SWLOR.Toolset.Editors.Triggers
             _session = DocumentSession.Open(filePath);
 
             Editor = new TriggerEditorViewModel(
-                _session.Document.Root, resRef, isInstance: false, RunEdit, gameCodeIndex, resolveTag);
+                _session.Document.Root, resRef, isInstance: false, RunEdit, gameCodeIndex, resolveTag,
+                resolveChoices);
 
             UpdateTitle();
         }

@@ -225,7 +225,7 @@ namespace SWLOR.Toolset.Editors
         private void OpenTriggerEditor(string filePath, string resRef)
         {
             var editor = new Triggers.TriggerDocumentViewModel(
-                filePath, resRef, _gameCodeIndex, _log, _prompts, ResolveTagArea);
+                filePath, resRef, _gameCodeIndex, _log, _prompts, ResolveTagArea, ResolveTriggerChoices);
             editor.Closed += _ => _openTriggerEditors.Remove(filePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -233,6 +233,12 @@ namespace SWLOR.Toolset.Editors
             _openTriggerEditors[filePath] = editor;
             _factory.OpenDocument(editor);
         }
+
+        /// <summary>Game-data choice sets a trigger behavior asks for, such as the load screens.</summary>
+        private IReadOnlyList<Domain.Editors.Triggers.TriggerChoice> ResolveTriggerChoices(string key) =>
+            _lookups.GetOptions(key)
+                .Select(option => new Domain.Editors.Triggers.TriggerChoice(option.Id, option.Display))
+                .ToList();
 
         /// <summary>
         /// Names the area a waypoint or door tag lives in, or null when nothing defines it — what

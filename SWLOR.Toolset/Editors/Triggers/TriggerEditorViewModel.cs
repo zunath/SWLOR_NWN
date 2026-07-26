@@ -30,6 +30,7 @@ namespace SWLOR.Toolset.Editors.Triggers
         private readonly TriggerValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<string, string?>? _resolveTag;
+        private readonly Func<string, IReadOnlyList<TriggerChoice>>? _resolveChoices;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly bool _isInstance;
 
@@ -40,8 +41,6 @@ namespace SWLOR.Toolset.Editors.Triggers
         public ObservableCollection<TriggerRowViewModel> BehaviorRows { get; } = new();
 
         public ObservableCollection<TriggerRowViewModel> AdvancedRows { get; } = new();
-
-        public ObservableCollection<TriggerManagedRowViewModel> ManagedRows { get; } = new();
 
         /// <summary>The raw local-variable grid. Present only while the behavior is Custom.</summary>
         [ObservableProperty]
@@ -61,8 +60,6 @@ namespace SWLOR.Toolset.Editors.Triggers
 
         public bool ShowsVariablesTab => Behavior.AllowsVariables;
 
-        public bool HasManagedRows => ManagedRows.Count > 0;
-
         /// <summary>Everything the behavior needs but has not been given, for the footer warning.</summary>
         public string? Incomplete { get; private set; }
 
@@ -74,7 +71,8 @@ namespace SWLOR.Toolset.Editors.Triggers
             bool isInstance,
             Func<string, Action, bool> runEdit,
             IGameCodeIndex? gameCodeIndex = null,
-            Func<string, string?>? resolveTag = null)
+            Func<string, string?>? resolveTag = null,
+            Func<string, IReadOnlyList<TriggerChoice>>? resolveChoices = null)
         {
             ArgumentNullException.ThrowIfNull(trigger);
 
@@ -82,6 +80,7 @@ namespace SWLOR.Toolset.Editors.Triggers
             _runEdit = runEdit;
             _gameCodeIndex = gameCodeIndex;
             _resolveTag = resolveTag;
+            _resolveChoices = resolveChoices;
             _isInstance = isInstance;
             HeaderOwner = headerOwner;
 
@@ -124,16 +123,23 @@ namespace SWLOR.Toolset.Editors.Triggers
                 row.Reload();
 
             Variables?.RefreshFromDocument();
-            RefreshManagedRows();
             RefreshCompleteness();
         }
 
         private void BuildBehaviorList()
         {
+            // An ungrouped behavior ends the run it follows rather than joining it. Custom has no
+            // group, and without this it rendered under whichever heading happened to come last -
+            // which is how it ended up filed as a hazard.
             string? group = null;
             foreach (var behavior in TriggerBehaviorCatalog.All)
             {
-                if (behavior.Group != null && behavior.Group != group)
+                if (behavior.Group == null && group != null)
+                {
+                    BehaviorList.Add(TriggerBehaviorListItemViewModel.Rule());
+                    group = null;
+                }
+                else if (behavior.Group != null && behavior.Group != group)
                 {
                     BehaviorList.Add(TriggerBehaviorListItemViewModel.Header(behavior.Group));
                     group = behavior.Group;
@@ -153,15 +159,25 @@ namespace SWLOR.Toolset.Editors.Triggers
         }
 
         private TriggerRowViewModel CreateRow(TriggerFieldDefinition definition) =>
-            new(definition, _store, _runEdit, _resolveTag);
+            new(definition, _store, _runEdit, _resolveTag, ResolveChoices(definition));
+
+        /// <summary>
+        /// A row's choices, from game data when it names a key. An unresolvable key yields an empty
+        /// list, which the row shows as an empty picker rather than as invented values.
+        /// </summary>
+        private IReadOnlyList<TriggerChoice> ResolveChoices(TriggerFieldDefinition definition)
+        {
+            if (definition.ChoicesKey == null)
+                return definition.Choices;
+
+            return _resolveChoices?.Invoke(definition.ChoicesKey) ?? Array.Empty<TriggerChoice>();
+        }
 
         private void RebuildBehaviorSection()
         {
             BehaviorRows.Clear();
             foreach (var definition in Behavior.Fields)
                 BehaviorRows.Add(CreateRow(definition));
-
-            RefreshManagedRows();
 
             Variables = Behavior.AllowsVariables
                 ? new VarTableSectionViewModel(_runEdit, _store.Locals, _gameCodeIndex)
@@ -173,15 +189,6 @@ namespace SWLOR.Toolset.Editors.Triggers
             OnPropertyChanged(nameof(HeaderName));
             OnPropertyChanged(nameof(ShowsVariablesTab));
             RefreshCompleteness();
-        }
-
-        private void RefreshManagedRows()
-        {
-            ManagedRows.Clear();
-            foreach (var value in Behavior.Manages)
-                ManagedRows.Add(new TriggerManagedRowViewModel(value, _store.Matches(value)));
-
-            OnPropertyChanged(nameof(HasManagedRows));
         }
 
         /// <summary>

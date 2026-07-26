@@ -103,6 +103,8 @@ namespace SWLOR.Toolset.Editors
                         return FromTable(TwoDaLookupTables.SoundSet);
                     case LookupKeys.BaseItems:
                         return FromTable(TwoDaLookupTables.BaseItem);
+                    case LookupKeys.LoadScreens:
+                        return FromTable(TwoDaLookupTables.LoadScreen);
                     case LookupKeys.TriggerTypes:
                         return TriggerTypeOptions;
                     case LookupKeys.WaypointAppearances when _waypointAppearances != null:

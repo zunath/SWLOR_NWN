@@ -17,7 +17,6 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
     {
         public const string NoneId = "none";
         public const string AreaTransitionId = "area_transition";
-        public const string CutsceneId = "cutscene";
         public const string NoSpawnZoneId = "no_spawn_zone";
         public const string ExplorationNoteId = "exploration_note";
         public const string RestZoneId = "rest_zone";
@@ -32,9 +31,6 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         private const string RestEnterHandler = "rest_trg_enter";
         private const string RestExitHandler = "rest_trg_exit";
         private const string QuestHandler = "quest_trigger";
-
-        /// <summary>The cutscene naming convention in the module: cuts_speeder, cuts_jump, cuts_end.</summary>
-        private const string CutscenePrefix = "cuts_";
 
         private static readonly IReadOnlyList<TriggerChoice> LinkTargetChoices = new[]
         {
@@ -72,8 +68,6 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                 return Get(RestZoneId);
             if (string.Equals(onEnter, QuestHandler, StringComparison.OrdinalIgnoreCase))
                 return Get(QuestId);
-            if (onEnter.StartsWith(CutscenePrefix, StringComparison.OrdinalIgnoreCase))
-                return Get(CutsceneId);
 
             var type = trigger.GetIntOrNull("Type") ?? 0;
             var trapFlag = trigger.GetIntOrNull("TrapFlag") ?? 0;
@@ -127,7 +121,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     {
                         new TriggerFieldDefinition
                         {
-                            Label = "Destination", Name = "LinkedTo", Kind = TriggerFieldKind.TagReference,
+                            Label = "Destination Tag", Name = "LinkedTo", Kind = TriggerFieldKind.TagReference,
                             FieldType = GffFieldType.CExoString, IsRequired = true,
                             TagScope = TriggerTagScope.WaypointOrDoor, IsPerPlacement = true
                         },
@@ -138,8 +132,9 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                         },
                         new TriggerFieldDefinition
                         {
-                            Label = "Load screen", Name = "LoadScreenID", Kind = TriggerFieldKind.Integer,
-                            FieldType = GffFieldType.Word, Note = "0 uses the destination area's default."
+                            Label = "Load screen", Name = "LoadScreenID", Kind = TriggerFieldKind.Choice,
+                            FieldType = GffFieldType.Word, ChoicesKey = TriggerChoiceKeys.LoadScreens,
+                            Note = "Leave on Random to use the destination area's own default."
                         }
                     },
                     Manages = new[]
@@ -153,35 +148,6 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                         {
                             Label = "Cursor", Name = "Cursor", FieldType = GffFieldType.Byte,
                             IntValue = 1, Display = "Transition"
-                        }
-                    }
-                },
-
-                // ~20 placements, all following the cuts_ naming convention.
-                new TriggerBehavior
-                {
-                    Id = CutsceneId,
-                    DisplayName = "Cutscene Trigger",
-                    Group = "Movement",
-                    Fields = new[]
-                    {
-                        new TriggerFieldDefinition
-                        {
-                            Label = "Cutscene script", Name = "ScriptOnEnter", Kind = TriggerFieldKind.Script,
-                            FieldType = GffFieldType.ResRef, IsRequired = true
-                        },
-                        new TriggerFieldDefinition
-                        {
-                            Label = "On leaving", Name = "ScriptOnExit", Kind = TriggerFieldKind.Script,
-                            FieldType = GffFieldType.ResRef
-                        }
-                    },
-                    Manages = new[]
-                    {
-                        new TriggerManagedValue
-                        {
-                            Label = "Trigger Type", Name = "Type", FieldType = GffFieldType.Int,
-                            IntValue = 0, Display = "Generic"
                         }
                     }
                 },

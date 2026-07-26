@@ -33,7 +33,8 @@ namespace SWLOR.Toolset.Editors.Triggers
 
         public bool IsPerPlacement => Definition.IsPerPlacement;
 
-        public IReadOnlyList<TriggerChoice> Choices => Definition.Choices;
+        /// <summary>Resolved at construction, so a game-data choice set and a fixed one read alike.</summary>
+        public IReadOnlyList<TriggerChoice> Choices { get; }
 
         public bool IsText => Definition.Kind is TriggerFieldKind.Text or TriggerFieldKind.Script;
         public bool IsLocalizedText => Definition.Kind == TriggerFieldKind.LocalizedText;
@@ -70,12 +71,14 @@ namespace SWLOR.Toolset.Editors.Triggers
             TriggerFieldDefinition definition,
             TriggerValueStore store,
             Func<string, Action, bool> runEdit,
-            Func<string, string?>? resolveTag)
+            Func<string, string?>? resolveTag,
+            IReadOnlyList<TriggerChoice>? choices = null)
         {
             Definition = definition;
             _store = store;
             _runEdit = runEdit;
             _resolveTag = resolveTag;
+            Choices = choices ?? definition.Choices;
             Reload();
         }
 
@@ -101,8 +104,8 @@ namespace SWLOR.Toolset.Editors.Triggers
                         break;
                     case TriggerFieldKind.Choice:
                         var current = _store.GetInteger(Definition.Storage, Definition.Name) ?? 0;
-                        Choice = Definition.Choices.FirstOrDefault(option => option.Value == current)
-                                 ?? Definition.Choices.FirstOrDefault();
+                        Choice = Choices.FirstOrDefault(option => option.Value == current)
+                                 ?? Choices.FirstOrDefault();
                         break;
                     case TriggerFieldKind.LocalizedText:
                         Text = _store.GetLocalizedText(Definition.Name);

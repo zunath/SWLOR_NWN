@@ -23,8 +23,15 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         /// <summary>Marked "required" in the editor, and reported when left empty.</summary>
         public bool IsRequired { get; init; }
 
-        /// <summary>Named values for a Choice row.</summary>
+        /// <summary>Named values for a Choice row, when the set is fixed.</summary>
         public IReadOnlyList<TriggerChoice> Choices { get; init; } = Array.Empty<TriggerChoice>();
+
+        /// <summary>
+        /// Lookup key for a Choice row whose values come from game data rather than from this file -
+        /// the load screens, say. The app layer resolves it; an unresolved key leaves the row empty
+        /// rather than inventing values.
+        /// </summary>
+        public string? ChoicesKey { get; init; }
 
         /// <summary>What a Statement row says; also the sub-label under an editable row.</summary>
         public string? Note { get; init; }

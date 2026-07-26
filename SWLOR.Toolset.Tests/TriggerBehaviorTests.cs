@@ -142,6 +142,34 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void CustomBelongsToNoGroup()
+        {
+            // It rendered under HAZARD because the list builder let an ungrouped entry inherit the
+            // previous heading. Custom is not a hazard, and neither is None.
+            TriggerBehaviorCatalog.Custom.Group.Should().BeNull();
+            TriggerBehaviorCatalog.None.Group.Should().BeNull();
+        }
+
+        [Test]
+        public void AChoiceRendersAsItsNameAlone()
+        {
+            // A combo box falls back to ToString with no item template, and the record default
+            // printed the whole shape - which is what "Destination is a" was showing.
+            new TriggerChoice(2, "Waypoint").ToString().Should().Be("Waypoint");
+        }
+
+        [Test]
+        public void TheLoadScreenRowTakesItsValuesFromGameData()
+        {
+            var loadScreen = TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.AreaTransitionId)
+                .Fields.Single(field => field.Name == "LoadScreenID");
+
+            loadScreen.Kind.Should().Be(TriggerFieldKind.Choice);
+            loadScreen.ChoicesKey.Should().Be(TriggerChoiceKeys.LoadScreens);
+            loadScreen.Choices.Should().BeEmpty("the screens come from loadscreens.2da, not from this file");
+        }
+
+        [Test]
         public void ATriggerWithNothingSetIsNoneRatherThanCustom()
         {
             TriggerBehaviorCatalog.Classify(NewTrigger()).Id

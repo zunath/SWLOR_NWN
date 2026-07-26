@@ -65,6 +65,8 @@
                   <Panel>
                     <TextBlock Text="{Binding Text}" IsVisible="{Binding IsHeader}"
                                Classes="section" Margin="12,14,0,5" />
+                    <Border IsVisible="{Binding IsRule}" Height="1" Margin="12,12"
+                            Background="{DynamicResource RuleBrush}" />
                     <Button IsVisible="{Binding IsSelectable}" Classes="behavior"
                             Classes.on="{Binding IsSelected}"
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
@@ -90,31 +92,6 @@
                 <StackPanel>
                   <TextBlock Text="{Binding HeaderName}" Classes="section" Margin="16,12,16,4" />
                   <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="0,2,0,8" />
-                </StackPanel>
-              </Border>
-
-              <Border Classes="card" IsVisible="{Binding HasManagedRows}">
-                <StackPanel>
-                  <TextBlock Text="What this behavior manages" Classes="section" Margin="16,12,16,4" />
-                  <ItemsControl ItemsSource="{Binding ManagedRows}" Margin="0,2,0,8">
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate DataType="triggers:TriggerManagedRowViewModel">
-                        <Grid ColumnDefinitions="*,Auto" Margin="16,0" Height="30" ColumnSpacing="16">
-                          <TextBlock Grid.Column="0" Text="{Binding Label}" Classes="dim"
-                                     VerticalAlignment="Center" />
-                          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"
-                                      VerticalAlignment="Center">
-                            <TextBlock Text="{Binding Value}" Classes="mono" />
-                            <TextBlock Text="&#x2713;" Foreground="{DynamicResource GreenBrush}"
-                                       IsVisible="{Binding IsApplied}" />
-                            <TextBlock Text="&#x2717;" Foreground="{DynamicResource AmberBrush}"
-                                       IsVisible="{Binding !IsApplied}"
-                                       ToolTip.Tip="The document does not currently hold this value." />
-                          </StackPanel>
-                        </Grid>
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                  </ItemsControl>
                 </StackPanel>
               </Border>
 

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -49,6 +50,30 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 () => !StatusEffect.HasStatusEffect<RegenerativeHealingStatusEffect>(npc),
                 5f,
                 "the status effect to be cleared immediately after RemoveStatusEffect");
+        }
+
+        [EngineTest("An active hard-control status rejects same-type refresh", Category = "StatusEffect")]
+        public static Task ActiveHardControlRejectsSameTypeRefresh(EngineTestContext ctx)
+        {
+            var npc = ctx.SpawnCreature("nw_rat001");
+
+            var firstApplied = StatusEffect.ApplyStatusEffect<StunnedStatusEffect>(npc, npc, 30f);
+            ctx.Assert(firstApplied, "the initial Stunned status should apply");
+            var original = StatusEffect.GetCreatureStatusEffects(npc)
+                .GetAllEffects()
+                .Single(effect => effect is StunnedStatusEffect);
+
+            var refreshApplied = StatusEffect.ApplyStatusEffect<StunnedStatusEffect>(npc, npc, 30f);
+            ctx.Assert(!refreshApplied, "an active hard-control status must reject a same-type refresh");
+
+            var activeStuns = StatusEffect.GetCreatureStatusEffects(npc)
+                .GetAllEffects()
+                .Where(effect => effect is StunnedStatusEffect)
+                .ToList();
+            ctx.Assert(activeStuns.Count == 1, "the rejected refresh must leave exactly one Stunned status");
+            ctx.Assert(activeStuns[0].Id == original.Id, "the rejected refresh must preserve the original status instance");
+
+            return Task.CompletedTask;
         }
     }
 }

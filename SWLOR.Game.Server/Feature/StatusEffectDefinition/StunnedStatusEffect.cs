@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override string CanApply(uint creature)
         {
+            if (StatusEffect.HasStatusEffect(creature, GetType()))
+                return "Target is already stunned.";
+
             return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Stun)
                 ? "Target is temporarily immune to stun."
                 : string.Empty;
@@ -32,11 +35,21 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             ApplyStun(creature, GetDurationSeconds(DurationTicks));
         }
 
+        protected override void Remove(uint creature)
+        {
+            if (IsBeingReplaced)
+                return;
+
+            Ability.ApplyPostControlImmunity(
+                creature,
+                SecondsSinceNaturalExpiration,
+                ImmunityType.Stun);
+        }
+
         private void ApplyStun(uint creature, float duration)
         {
             var effect = TagNativeEffect(EffectStunned());
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
-            Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Stun);
         }
     }
 }

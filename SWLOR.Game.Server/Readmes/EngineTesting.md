@@ -259,8 +259,9 @@ public static class AbilityActivationEngineTests
 Beyond hand-written suites, per-ability coverage is data-driven. Each ability tree has an
 `IAbilityBehaviorSource` in `Definitions/AbilityBehaviors/` declaring one
 `AbilityBehaviorCase` per registered `FeatType`: who the ability targets, what weapon (if any) must
-be equipped, and which observable outcomes to assert (status effects on activator/target, target
-damage, FP/Stamina cost, recast). The shared `AbilityBehaviorExecutor` turns every case into a live
+be equipped, and which observable outcomes to assert (status effects and stat adjustments on the
+activator/target, status removal, healing, revival health, temporary HP, movement, target damage,
+FP/Stamina cost, and recast). The shared `AbilityBehaviorExecutor` turns every case into a live
 activation through `UsePerkFeat.TryUseAbility`:
 
 - **Casted** abilities assert declared status effects/damage after the activation delay, plus costs
@@ -304,14 +305,15 @@ pool does not need it - an FP refund cannot mask a stamina deduction. Conditiona
 (crit-gated, all-hits-gated) matter most: they fire only sometimes, so an unflagged case fails
 intermittently rather than every run.
 
-Beyond status effects/damage, cases can assert revival of a dead target (`ExpectsTargetRevived`),
-raw temporary-HP effects on the activator (`ExpectsActivatorTemporaryHP` - for shield abilities
-that apply `EffectTemporaryHitpoints` with no status-effect wrapper), and activator healing
-(`ExpectsActivatorHealing` - the executor wounds the caster to ~50% HP before activation so a
-raw `EffectHeal` is observable). `SetupNPCPerkLevels` seeds `PERK_LEVEL_` locals on the caster
-before activation, pinning perk-investment-gated branches (e.g. Leadership toggle auras read
-their aura level through `Perk.GetStatBonus`, which resolves NPC perk levels from those locals
-with no max-level fallback) so the asserted branch is deterministic.
+Beyond status effects/damage, cases can assert exact activator or target stat adjustments,
+removal of pre-applied ailments, healing on either actor, revival plus a minimum post-revival HP
+floor, movement to a maximum target distance, and new raw temporary-HP effects. Healing fixtures
+are deliberately wounded and have natural regeneration suppressed. Temporary HP compares effect
+counts before and after impact, so a hostile target's fixture damage buffer cannot create a false
+pass. `SetupNPCPerkLevels` seeds `PERK_LEVEL_` locals on the caster before activation, pinning
+perk-investment-gated branches (e.g. Leadership toggle auras read their aura level through
+`Perk.GetStatBonus`, which resolves NPC perk levels from those locals with no max-level fallback)
+so the asserted branch is deterministic.
 
 When a tree sweep accumulates 25 case failures it aborts and reports the remaining cases as not
 run: that volume signals a systemic problem (broken fixture, dead arena, stale build) rather
@@ -323,6 +325,12 @@ every feat registered by an `IAbilityListDefinition` must have exactly one behav
 tree is on the ratchet's explicit not-yet-covered list. **Adding a new ability without adding a
 behavior case fails the unit test suite.** Cases that genuinely can't run in-engine yet carry a
 `SkipReason` (they count as declared, execute as skipped, and should be burned down over time).
+The same ratchet requires each executable case to assert every FP/STM cost declared by the
+definition and each executable impact to declare at least one observable gameplay outcome.
+Focused waiver fields exist for same-tick resource refunds and effects the harness genuinely
+cannot observe (currently enmity-only impacts); generic notes do not bypass either check. Contract
+checks also reject vacuous movement thresholds, revival without a dead target, cleanse assertions
+without pre-applied ailments, and stale waivers after a real assertion is added.
 
 Batch status:
 
@@ -336,8 +344,10 @@ server (37/37 tests; 688 cases: 677 passed, 0 failed, 11 skipped). Ally-target a
 covered via `AbilityTargetKind.FriendlyCreature` (same-faction spawned ally), with fixture flags
 for dead targets (`TargetStartsDead`), party membership (`TargetJoinsCasterParty`, formed through
 the real associate-add pipeline), and pre-applied source-tracked status effects
-(`TargetSetupStatusEffectFactory`, source reassigned to the caster - Guarded tracking registers by
-the instance's source). The 11 remaining skips are the beast-management flows hard-gated on
+(`TargetSetupStatusEffects` or `TargetSetupStatusEffectFactory`, source reassigned to the caster -
+Guarded tracking registers by the instance's source). Use `ExpectedRemovedTargetStatusEffects` to
+prove a cleanse actually removes the named setup effects. The 11 remaining skips are the
+beast-management flows hard-gated on
 `GetIsPC` plus live player DB records; they genuinely require a connected client and each carries
 a precise `SkipReason`.
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
@@ -41,40 +42,41 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Feat = FeatType.DisarmingShot1,
                     Target = AbilityTargetKind.HostileCreature,
                     EquipMainHandResref = PistolResref,
+                    ExpectedTargetStatAdjustments = new() { [StatType.AttackPercentAdjustment] = -10 },
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Target attack-percent debuff is a temporary stat modifier, not a status effect class; not asserted."
+                    Notes = "Asserts the unconditional -10 attack-percent temporary modifier as well as damage."
                 },
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.DisarmingShot2,
                     Target = AbilityTargetKind.HostileCreature,
                     EquipMainHandResref = PistolResref,
+                    ExpectedTargetStatAdjustments = new() { [StatType.AttackPercentAdjustment] = -12 },
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Target attack-percent debuff is a temporary stat modifier, not a status effect class; not asserted."
                 },
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.DisarmingShot3,
                     Target = AbilityTargetKind.HostileCreature,
                     EquipMainHandResref = PistolResref,
+                    ExpectedTargetStatAdjustments = new() { [StatType.AttackPercentAdjustment] = -15 },
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Target attack-percent debuff is a temporary stat modifier, not a status effect class; not asserted."
                 },
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.DisarmingShot4,
                     Target = AbilityTargetKind.HostileCreature,
                     EquipMainHandResref = PistolResref,
+                    ExpectedTargetStatAdjustments = new() { [StatType.AttackPercentAdjustment] = -18 },
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Target attack-percent debuff is a temporary stat modifier, not a status effect class; not asserted."
                 },
 
                 // DoubleShotAbilityDefinition - hostile 2-hit casted damage; crit-hit stamina restore

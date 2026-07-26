@@ -76,7 +76,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 return;
 
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(1), target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(target));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
@@ -89,9 +88,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 return;
 
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-            AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
-            DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(target));
+            // Resurrection is not settled until after the current engine command finishes.
+            // Healing in the same tick is silently discarded because the target is still dead.
+            DelayCommand(0.1f, () =>
+            {
+                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);
+                Ability.ReapplyAuraEffectsForCreature(target);
+            });
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
             FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
         }

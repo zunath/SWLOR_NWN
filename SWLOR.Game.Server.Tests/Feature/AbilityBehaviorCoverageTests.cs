@@ -63,6 +63,39 @@ namespace SWLOR.Game.Server.Tests.Feature
                 .ToList();
         }
 
+        private static Dictionary<FeatType, AbilityDetail> BuildFeatToAbilityMap()
+        {
+            var map = new Dictionary<FeatType, AbilityDetail>();
+            var definitionTypes = typeof(IAbilityListDefinition).Assembly
+                .GetTypes()
+                .Where(t => typeof(IAbilityListDefinition).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+
+            foreach (var type in definitionTypes)
+            {
+                var instance = (IAbilityListDefinition)Activator.CreateInstance(type);
+                foreach (var (feat, detail) in instance.BuildAbilities())
+                    map.TryAdd(feat, detail);
+            }
+
+            return map;
+        }
+
+        private static bool HasObservableOutcome(AbilityBehaviorCase behaviorCase)
+        {
+            return behaviorCase.ExpectedActivatorStatusEffects.Length > 0 ||
+                   behaviorCase.ExpectedTargetStatusEffects.Length > 0 ||
+                   behaviorCase.ExpectedActivatorStatAdjustments.Count > 0 ||
+                   behaviorCase.ExpectedTargetStatAdjustments.Count > 0 ||
+                   behaviorCase.ExpectedRemovedTargetStatusEffects.Length > 0 ||
+                   behaviorCase.ExpectsTargetDamage ||
+                   behaviorCase.ExpectsTargetRevived ||
+                   behaviorCase.ExpectsActivatorTemporaryHP ||
+                   behaviorCase.ExpectsTargetTemporaryHP ||
+                   behaviorCase.ExpectsActivatorHealing ||
+                   behaviorCase.ExpectsTargetHealing ||
+                   behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.HasValue;
+        }
+
         private static bool IsExempt(List<Type> definers)
         {
             // A feat is exempt only if every definition that registers it lives in a
@@ -125,6 +158,118 @@ namespace SWLOR.Game.Server.Tests.Feature
                 .ToList();
 
             badSkips.Should().BeEmpty("a skipped behavior case must say why it cannot run in-engine yet");
+        }
+
+        [Test]
+        public void ExecutableBehaviorCasesCoverEveryDefinitionDeclaredResourceCost()
+        {
+            var abilities = BuildFeatToAbilityMap();
+            var problems = new List<string>();
+
+            foreach (var behaviorCase in BuildAllCases().Where(c => string.IsNullOrWhiteSpace(c.SkipReason)))
+            {
+                var ability = abilities[behaviorCase.Feat];
+                var requiresFP = ability.Requirements.OfType<AbilityRequirementFP>().Any(r => r.RequiredFP > 0);
+                var requiresSTM = ability.Requirements.OfType<AbilityRequirementStamina>().Any(r => r.RequiredSTM > 0);
+                var omittedDeclaredCost =
+                    (requiresFP && !behaviorCase.ExpectsFPCost) ||
+                    (requiresSTM && !behaviorCase.ExpectsSTMCost);
+                var assertsUndefinedCost =
+                    (!requiresFP && behaviorCase.ExpectsFPCost) ||
+                    (!requiresSTM && behaviorCase.ExpectsSTMCost);
+                var hasWaiver = !string.IsNullOrWhiteSpace(behaviorCase.CostAssertionWaiverReason);
+
+                if (assertsUndefinedCost)
+                    problems.Add($"{behaviorCase.Feat}: asserts a resource cost the definition does not declare");
+                if (omittedDeclaredCost && !hasWaiver)
+                    problems.Add($"{behaviorCase.Feat}: omits a definition-declared resource cost without CostAssertionWaiverReason");
+                if (!omittedDeclaredCost && behaviorCase.CostAssertionWaiverReason != null)
+                    problems.Add($"{behaviorCase.Feat}: has a stale CostAssertionWaiverReason even though no declared cost is omitted");
+            }
+
+            problems.Should().BeEmpty(
+                "engine cases must exercise every FP/STM requirement, or explicitly document why same-tick impact behavior makes the deduction unobservable. Problems: {0}",
+                string.Join(" | ", problems));
+        }
+
+        [Test]
+        public void ExecutableImpactsDeclareAnObservableOutcomeOrFocusedWaiver()
+        {
+            var abilities = BuildFeatToAbilityMap();
+            var problems = BuildAllCases()
+                .Where(c => string.IsNullOrWhiteSpace(c.SkipReason))
+                .Where(c => abilities[c.Feat].ImpactAction != null)
+                .Where(c => !HasObservableOutcome(c))
+                .Where(c => string.IsNullOrWhiteSpace(c.OutcomeAssertionWaiverReason))
+                .Select(c => $"{c.Feat}: executable impact has no observable outcome assertion")
+                .OrderBy(x => x)
+                .ToList();
+
+            problems.Should().BeEmpty(
+                "activation, cost, and recast alone can all pass while the defining impact is broken; assert an outcome or record a focused harness limitation. Problems: {0}",
+                string.Join(" | ", problems));
+        }
+
+        [Test]
+        public void BehaviorCaseContractsAreInternallyConsistent()
+        {
+            var problems = new List<string>();
+
+            foreach (var behaviorCase in BuildAllCases())
+            {
+                if (behaviorCase.ExpectsTargetHealing &&
+                    behaviorCase.Target != AbilityTargetKind.FriendlyCreature)
+                {
+                    problems.Add($"{behaviorCase.Feat}: target healing requires a distinct FriendlyCreature target");
+                }
+
+                if (behaviorCase.MinimumTargetHitPointsAfterRevive > 0 &&
+                    !behaviorCase.ExpectsTargetRevived)
+                {
+                    problems.Add($"{behaviorCase.Feat}: minimum revived HP requires ExpectsTargetRevived");
+                }
+
+                if (behaviorCase.ExpectedTargetHealingPercentAfterRevive.HasValue)
+                {
+                    if (!behaviorCase.ExpectsTargetRevived)
+                        problems.Add($"{behaviorCase.Feat}: post-revive healing percentage requires ExpectsTargetRevived");
+                    if (behaviorCase.ExpectedTargetHealingPercentAfterRevive.Value <= 0f)
+                        problems.Add($"{behaviorCase.Feat}: post-revive healing percentage must be positive");
+                }
+
+                if (behaviorCase.ExpectsTargetRevived && !behaviorCase.TargetStartsDead)
+                    problems.Add($"{behaviorCase.Feat}: revival assertion requires TargetStartsDead");
+
+                if (behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.HasValue)
+                {
+                    if (behaviorCase.Target == AbilityTargetKind.Self)
+                        problems.Add($"{behaviorCase.Feat}: distance assertion requires a distinct target");
+                    else if (behaviorCase.TargetDistanceMeters <=
+                             behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.Value)
+                        problems.Add($"{behaviorCase.Feat}: target starts inside its post-impact distance threshold");
+                }
+
+                var setupTypes = behaviorCase.TargetSetupStatusEffects.ToHashSet();
+                foreach (var removedType in behaviorCase.ExpectedRemovedTargetStatusEffects)
+                {
+                    if (!setupTypes.Contains(removedType))
+                        problems.Add($"{behaviorCase.Feat}: expects removal of {removedType.Name} but does not pre-apply it");
+                }
+
+                if (behaviorCase.OutcomeAssertionWaiverReason != null &&
+                    string.IsNullOrWhiteSpace(behaviorCase.OutcomeAssertionWaiverReason))
+                {
+                    problems.Add($"{behaviorCase.Feat}: OutcomeAssertionWaiverReason is blank");
+                }
+
+                if (HasObservableOutcome(behaviorCase) &&
+                    behaviorCase.OutcomeAssertionWaiverReason != null)
+                {
+                    problems.Add($"{behaviorCase.Feat}: has a stale OutcomeAssertionWaiverReason despite declaring an observable outcome");
+                }
+            }
+
+            problems.Should().BeEmpty("declarative cases must create the preconditions needed for every outcome assertion");
         }
     }
 }

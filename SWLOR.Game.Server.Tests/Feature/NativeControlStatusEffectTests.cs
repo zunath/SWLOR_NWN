@@ -1,5 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -48,6 +50,136 @@ public class NativeControlStatusEffectTests
         source.Should().NotContain($"TagEffect({nativeEffect}, Id)");
     }
 
+    [TestCase("BlindStatusEffect.cs", "Blindness")]
+    [TestCase("ConfusionStatusEffect.cs", "Confused")]
+    [TestCase("DazedStatusEffect.cs", "Dazed")]
+    [TestCase("ImmobilizedStatusEffect.cs", "Immobilized")]
+    [TestCase("KnockdownStatusEffect.cs", "Knockdown")]
+    [TestCase("StunnedStatusEffect.cs", "Stun")]
+    [TestCase("TranquilizedStatusEffect.cs", "Sleep")]
+    public void HardControlStatusEffects_StartSharedImmunityWhenRemoved(
+        string fileName,
+        string immunityType)
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            fileName));
+
+        source.Should().Contain("protected override void Remove(uint creature)");
+        source.Should().Contain("if (IsBeingReplaced)");
+        source.Should().Contain("Ability.ApplyPostControlImmunity(");
+        source.Should().Contain("SecondsSinceNaturalExpiration");
+        source.Should().Contain($"ImmunityType.{immunityType});");
+        source.Should().NotContain(
+            $"Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.{immunityType});",
+            "hard-control immunity begins after the status ends, not while it is active");
+    }
+
+    [Test]
+    public void StatusEffectReplacement_IsDistinguishedFromAnActualRemoval()
+    {
+        var replacement = new RemovalProbeStatusEffect();
+        replacement.RemoveEffect(0u, true);
+        replacement.WasReplacement.Should().BeTrue();
+
+        var actualRemoval = new RemovalProbeStatusEffect();
+        actualRemoval.RemoveEffect(0u);
+        actualRemoval.WasReplacement.Should().BeFalse();
+    }
+
+    [TestCase("BlindStatusEffect.cs")]
+    [TestCase("ConfusionStatusEffect.cs")]
+    [TestCase("DazedStatusEffect.cs")]
+    [TestCase("ImmobilizedStatusEffect.cs")]
+    [TestCase("KnockdownStatusEffect.cs")]
+    [TestCase("StunnedStatusEffect.cs")]
+    [TestCase("TranquilizedStatusEffect.cs")]
+    public void HardControlStatusEffects_RejectSameTypeRefreshBeforeReplacement(string fileName)
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            fileName));
+        var canApply = ExtractMethod(source, "public override string CanApply(uint creature)");
+
+        var activeCheck = canApply.IndexOf(
+            "StatusEffect.HasStatusEffect(creature, GetType())",
+            StringComparison.Ordinal);
+        var immunityCheck = canApply.IndexOf(
+            "Ability.HasHardCrowdControlImmunity(",
+            StringComparison.Ordinal);
+        activeCheck.Should().BeGreaterThanOrEqualTo(0);
+        activeCheck.Should().BeLessThan(
+            immunityCheck,
+            "an active hard-control instance must reject refresh before the non-stacking replacement path can remove it");
+    }
+
+    [Test]
+    public void RepeatedHardControlRemovals_RestartTheSharedImmunityWindow()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs"));
+        var methodStart = abilitySource.IndexOf(
+            "private static void ApplyTemporaryImmunitySingle(",
+            StringComparison.Ordinal);
+        var methodEnd = abilitySource.IndexOf(
+            "public static bool HasTemporaryImmunity(",
+            methodStart,
+            StringComparison.Ordinal);
+        methodStart.Should().BeGreaterThanOrEqualTo(0);
+        methodEnd.Should().BeGreaterThan(methodStart);
+
+        var method = abilitySource[methodStart..methodEnd];
+        method.Should().Contain("GetTemporaryImmunityDurationRemaining(target, effectTag)");
+        method.Should().Contain("RemoveEffectByTag(target, effectTag);");
+        method.Should().NotContain("if (HasTemporaryImmunity(target, immunity))",
+            "each actual hard-control removal must restart the 20-second shared immunity");
+        method.IndexOf("RemoveEffectByTag(target, effectTag);", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(method.IndexOf("ApplyEffectToObject(", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void OfflineExpiration_TracksElapsedTimeAfterTheControlEnded()
+    {
+        var effect = new RemovalProbeStatusEffect();
+        effect.ApplyEffect(0u, 0u, 2);
+
+        effect.ReconcileElapsedTime(DateTime.UtcNow.AddSeconds(5));
+
+        effect.IsFlaggedForRemoval.Should().BeTrue();
+        effect.WasNaturallyExpired.Should().BeTrue();
+        effect.SecondsSinceNaturalExpiration.Should().BeInRange(2.5f, 3.5f);
+    }
+
+    [Test]
+    public void PostControlImmunity_AgesTheWindowDuringOfflineReconciliation()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs"));
+        var method = ExtractMethod(abilitySource, "public static void ApplyPostControlImmunity(");
+
+        method.Should().Contain(
+            "TemporaryImmunityBaseDurationSeconds - Math.Max(0f, secondsSinceControlEnded)");
+        method.Should().Contain("if (duration <= 0f)");
+        method.Should().Contain("ApplyTemporaryImmunityForDuration(target, duration, immunity);");
+    }
+
     [Test]
     public void StatusEffectDefinitions_DoNotTagNativeEffectsWithTrackerIds()
     {
@@ -81,5 +213,37 @@ public class NativeControlStatusEffectTests
         }
 
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
+    private static string ExtractMethod(string source, string signature)
+    {
+        var start = source.IndexOf(signature, StringComparison.Ordinal);
+        start.Should().BeGreaterThanOrEqualTo(0);
+
+        var braceStart = source.IndexOf('{', start);
+        braceStart.Should().BeGreaterThan(start);
+
+        var depth = 0;
+        for (var index = braceStart; index < source.Length; index++)
+        {
+            if (source[index] == '{')
+                depth++;
+            else if (source[index] == '}' && --depth == 0)
+                return source[start..(index + 1)];
+        }
+
+        throw new InvalidOperationException($"Could not extract method '{signature}'.");
+    }
+
+    private sealed class RemovalProbeStatusEffect : StatusEffectBase
+    {
+        public override string Name => "Removal Probe";
+        public override EffectIconType Icon => EffectIconType.Invalid;
+        public bool WasReplacement { get; private set; }
+
+        protected override void Remove(uint creature)
+        {
+            WasReplacement = IsBeingReplaced;
+        }
     }
 }

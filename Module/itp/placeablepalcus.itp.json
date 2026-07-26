@@ -623,6 +623,17 @@
                             "type": "dword",
                             "value": 16812220
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "zep_doors006"
+                          },
+                          "STRREF": {
+                            "type": "dword",
+                            "value": 16812212
+                          }
                         }
                       ]
                     },
@@ -10664,6 +10675,17 @@
                       "type": "resref",
                       "value": "_mdrn_pl_walkerl"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Landspeeder AV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_lands01"
+                    }
                   }
                 ]
               },
@@ -13592,6 +13614,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_workbc3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloning Tank (Smashed)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_clntnks"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloning Tank (with Body)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_clntnkw"
                     }
                   }
                 ]
@@ -27955,6 +27999,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_armoir2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chair, Metal Frame (Black)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_chrblkm"
                     }
                   }
                 ]

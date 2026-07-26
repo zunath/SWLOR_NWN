@@ -1,3 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
+// The transform composition order below follows Radoub.UI's ModelViewController.GetWorldTransform,
+// and the flattening assumes the part origins Radoub's MdlPartComposer establishes
+// (https://github.com/LordOfMyatar/Radoub), which is GPL-3.0. That makes this file a derivative
+// work: it is GPL-3.0 even though the rest of the SWLOR Toolset's own source is MIT. Dropping the
+// Radoub reference would not change that - the composition would have to be clean-roomed from the
+// MDL format spec instead. See SWLOR.Toolset/LICENSE-NOTICE.md.
 using System.Numerics;
 using Radoub.Formats.Mdl;
 

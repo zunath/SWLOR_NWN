@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Script;
+using SWLOR.Toolset.Domain.Script.Symbols;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
@@ -36,19 +37,47 @@ namespace SWLOR.Toolset.Editors
         private int _line = 1;
         private int _column = 1;
 
+        private readonly ScriptLanguageService? _language;
+        private readonly ScriptCompletionEngine? _completion;
+
         public ScriptEditorViewModel(
             string filePath,
             string resRef,
             OutputLogService log,
-            IEditorPromptService prompts)
+            IEditorPromptService prompts,
+            ScriptLanguageService? language = null)
         {
             _log = log;
             _prompts = prompts;
             _resRef = resRef;
+            _language = language;
+            _completion = language?.CreateCompletionEngine();
             Id = $"editor:{filePath}";
             _session = ScriptSession.Open(filePath);
             _text = _session.Document.Text;
             UpdateTitle();
+        }
+
+        /// <summary>Tells the colorizer which identifiers are engine functions. Null when unavailable.</summary>
+        public Func<string, bool>? IsEngineFunction => _language != null ? _language.IsEngineFunction : null;
+
+        /// <summary>Tells the colorizer which identifiers are engine constants.</summary>
+        public Func<string, bool>? IsEngineConstant => _language != null ? _language.IsEngineConstant : null;
+
+        /// <summary>Inserts text at the caret. Set by the view; used by the Script Reference panel.</summary>
+        public Action<string>? InsertAtCursorRequested { get; set; }
+
+        /// <summary>
+        /// The ranked completion list for a caret position, plus the offset the partial word starts
+        /// at so the insertion replaces what was typed. Ranking happens in Domain.
+        /// </summary>
+        public (IReadOnlyList<CompletionItem> Items, int ReplaceFrom) GetCompletions(string source, int caret)
+        {
+            if (_completion == null)
+                return (Array.Empty<CompletionItem>(), caret);
+
+            var context = ScriptCompletionEngine.DescribeContext(source, caret);
+            return (_completion.GetCompletions(source, caret), context.PrefixStart);
         }
 
         /// <summary>The initial buffer contents. Read once by the view when it attaches.</summary>

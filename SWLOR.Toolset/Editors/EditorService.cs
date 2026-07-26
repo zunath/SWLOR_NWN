@@ -35,6 +35,9 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Supplies the area editor its placement-ghost geometry; null degrades the ghost to a marker.</summary>
         private readonly Workspace.BlueprintPreviewRenderer? _previewRenderer;
+
+        /// <summary>Shared engine-symbol database driving script completion; null disables it.</summary>
+        private readonly Workspace.ScriptLanguageService? _scriptLanguage;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -58,7 +61,8 @@ namespace SWLOR.Toolset.Editors
             TileWalkmeshCache? tileWalkmeshCache = null,
             Domain.GameData.Tlk.TlkService? tlkService = null,
             WaypointAppearanceService? waypointAppearances = null,
-            Workspace.BlueprintPreviewRenderer? previewRenderer = null)
+            Workspace.BlueprintPreviewRenderer? previewRenderer = null,
+            Workspace.ScriptLanguageService? scriptLanguage = null)
         {
             _workspaceContext = workspaceContext;
             _lookups = lookups;
@@ -75,6 +79,7 @@ namespace SWLOR.Toolset.Editors
             _tlkService = tlkService;
             _waypointAppearances = waypointAppearances;
             _previewRenderer = previewRenderer;
+            _scriptLanguage = scriptLanguage;
         }
 
         /// <summary>Opens a NWScript source file as a text editor tab, or activates its open tab.</summary>
@@ -95,7 +100,7 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                var editor = new ScriptEditorViewModel(filePath, resRef, _log, _prompts);
+                var editor = new ScriptEditorViewModel(filePath, resRef, _log, _prompts, _scriptLanguage);
                 editor.Closed += _ => _openScriptEditors.Remove(filePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 _openScriptEditors[filePath] = editor;

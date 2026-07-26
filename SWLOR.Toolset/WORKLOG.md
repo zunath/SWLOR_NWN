@@ -1053,3 +1053,66 @@ completion or compilation yet — those are WPS1.x/2.x/4.x. Ships useful on its 
   tests that otherwise fail as false negatives. Git here has no CA bundle, so plain
   `git submodule update --init` fails on SSL; use
   `git -c http.sslBackend=schannel submodule update --init` to clone via the Windows cert store.
+
+## WPS1.1 / 1.3 / 2.1 / 2.2 / 2.3 / 4.1 — done — 2026-07-26 — Language service, highlighting, completion, compiler
+
+The language core and the editor intelligence built on it. Everything analytical lives in
+`Domain/Script/` because the test project references Domain only.
+
+- **WPS1.1 lexer** (`Script/Syntax/`). Total and lossless: every character lands in exactly one
+  token, including whitespace, comments and unrecognised characters. Nothing throws — an
+  unterminated string or block comment runs to EOF — because the editor lexes half-typed lines
+  constantly and a throwing lexer would leave the buffer unhighlightable exactly while being written.
+  Gate: concatenating every token's text reproduces the input byte for byte, over **all 87 module
+  scripts and the 13,870-line engine header**, plus a truncation suite that cuts one file at every
+  offset. Strings stop at end-of-line so one stray quote cannot colour the rest of the file.
+- **WPS1.3 symbol database** (`Script/Symbols/`). Parses the engine header into functions and
+  constants with per-parameter docs, and lifts the `FOO_*` constant family out of each parameter's
+  documentation — the thing that makes argument-aware completion possible.
+  - **Correction: the header declares 1,187 functions, not the 1,164 in the design doc.** That figure
+    came from a grep whose name pattern was `[A-Za-z_]+`, which excludes digits and so missed `d2`,
+    `d3`, `d6`, `d20`, `d100` and the rest of the dice helpers. Constants (6,201) were right.
+  - **Bug found by the test, not by reasoning:** the family regex demanded two underscore-separated
+    segments, so it matched `CREATURE_TYPE_*` but silently missed every single-segment family —
+    `ABILITY_*`, `ACTION_*`, `ANIMATION_*` — leaving only 103 of the expected 150+ parameter hints.
+    A third of the feature was quietly absent and everything still "worked".
+  - Categories come from the `SWLOR.NWN.API/NWScript/*Functions.cs` filenames, reproducing Aurora's
+    category tree and keeping it current for free (precedent: `GameCode/SourceIdScanner`).
+- **WPS2.1 highlighting** (`Editors/Script/NwScriptColorizer`). Driven by the *same lexer*, not a
+  separate `.xshd` grammar, so highlighting can never drift from completion. Token list is memoised
+  per text — colorizing per line would otherwise be quadratic on a 13,000-line file. Palette is
+  7 existing theme tokens + 2 new analogous hues; engine functions read gold against plain-ink
+  locals, which is the contrast that matters when reading unfamiliar legacy NWScript.
+- **WPS2.2 completion** (`Script/ScriptCompletionEngine`). Ranking lives in Domain and is tested as
+  *caret position + source → expected ordered items*. Two rules carry it: an argument position whose
+  parameter documents a family offers that family first (12 constants, not 6,201), and locals always
+  outrank engine constants. Matching is prefix → substring → subsequence (`gnc` →
+  `GetNearestCreature`). Context detection distinguishes `#include "` paths, ordinary string literals
+  (**which offer nothing** — an identifier list while typing prose is pure noise), and argument
+  positions, counting commas at depth 1 and resolving nested calls to the innermost. An `if (`
+  condition is correctly *not* a call, because `if` lexes as a keyword rather than an identifier.
+- **WPS2.3 signature help** (`Script/ScriptSignatureHelp`). Reuses the same enclosing-call walk.
+- **WPS4.1 compiler wrapper** (`Script/Compile/ScriptCompiler`). Wraps the vendored
+  `nwn_script_comp`; `-s` for check-without-writing, `--root` vs `--no-keys`, output parsed into
+  positioned diagnostics. `RequiresGameInstall` distinguishes the 16 base-AI-derived scripts that
+  cannot resolve their includes without an install from an ordinary syntax error. **The spike's
+  byte-identity gate is now a permanent test**: recompiling `dmfi_unact_nam03` must reproduce its
+  committed `.ncs` exactly.
+- App wiring: `Workspace/ScriptLanguageService` is a singleton that parses the header **lazily on
+  first use** — 13,870 lines is too much to pay per tab, and too much to pay at startup for a window
+  that may never open a script. It degrades to an empty database if the header is missing, so the
+  editor still opens, highlights and saves without completion. Ctrl+Space forces the list; typing an
+  identifier character, `"`, `(` or `,` opens it.
+- Tests (+54, 75 total for Phase S): `ScriptLexerTests` (13), `EngineSymbolDatabaseTests` (10),
+  `ScriptCompletionEngineTests` (16), `ScriptSignatureHelpTests` (3), `ScriptCompilerTests` (8).
+- Verified: build clean; **full suite 995/996 green** (941 prior + 54, 1 pre-existing skip), 3m11s.
+  Launch-and-kill smoke passed.
+
+### Still open in Phase S
+- **WPS1.2 / 1.5** — full recursive-descent parser and binder. `ScriptOutline` currently scans the
+  token stream for functions/includes/variables, which is enough for completion and an outline but
+  produces no semantic diagnostics. Tier-1 squiggles (WPS2.4) depend on this.
+- **WPS2.5** — go-to-definition, find-references, rename, outline pane UI.
+- **WPS3.1-3.3** — Script Reference panel, script-slot pickers, reverse references.
+- **WPS4.2** — compile-on-save, Build All Scripts, the stale-`.ncs` validation rule. The Domain half
+  (the compiler wrapper) is done; the menu/toolbar commands and staleness rule are not.

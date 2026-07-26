@@ -12,6 +12,10 @@ namespace SWLOR.Toolset.Tests
             "utc", "utd", "uti", "utm", "utp", "uts", "utt", "utw"
         };
 
+        /// <summary>The repository root, found by walking up to the folder that contains Module/are.</summary>
+        public static string RepositoryRoot =>
+            Path.GetFullPath(Path.Combine(ModuleDirectory, ".."));
+
         public static string ModuleDirectory
         {
             get

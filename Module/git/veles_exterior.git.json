@@ -393913,6 +393913,2776 @@
           "type": "float",
           "value": 15.20000839233398
         }
+      },
+      {
+          "__struct_id":  9,
+          "AnimationState":  {
+                                 "type":  "byte",
+                                 "value":  0
+                             },
+          "Appearance":  {
+                             "type":  "dword",
+                             "value":  20627
+                         },
+          "AutoRemoveKey":  {
+                                "type":  "byte",
+                                "value":  0
+                            },
+          "Bearing":  {
+                          "type":  "float",
+                          "value":  1.5707962512969971
+                      },
+          "BodyBag":  {
+                          "type":  "byte",
+                          "value":  0
+                      },
+          "CloseLockDC":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Conversation":  {
+                               "type":  "resref",
+                               "value":  ""
+                           },
+          "CurrentHP":  {
+                            "type":  "short",
+                            "value":  10
+                        },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+                                            "0":  ""
+                                        }
+                          },
+          "DisarmDC":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Faction":  {
+                          "type":  "dword",
+                          "value":  1
+                      },
+          "Fort":  {
+                       "type":  "byte",
+                       "value":  5
+                   },
+          "Hardness":  {
+                           "type":  "byte",
+                           "value":  5
+                       },
+          "HasInventory":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "HP":  {
+                     "type":  "short",
+                     "value":  10
+                 },
+          "Interruptable":  {
+                                "type":  "byte",
+                                "value":  1
+                            },
+          "KeyName":  {
+                          "type":  "cexostring",
+                          "value":  ""
+                      },
+          "KeyRequired":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Lockable":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Locked":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "LocName":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+                                        "0":  "Taxi Terminal"
+                                    }
+                      },
+          "OnClick":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnClosed":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnDamaged":  {
+                            "type":  "resref",
+                            "value":  ""
+                        },
+          "OnDeath":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnDisarm":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnHeartbeat":  {
+                              "type":  "resref",
+                              "value":  ""
+                          },
+          "OnInvDisturbed":  {
+                                 "type":  "resref",
+                                 "value":  ""
+                             },
+          "OnLock":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnMeleeAttacked":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnOpen":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnSpellCastAt":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OnTrapTriggered":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnUnlock":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnUsed":  {
+                         "type":  "resref",
+                         "value":  "dialog_start"
+                     },
+          "OnUserDefined":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OpenLockDC":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "Plot":  {
+                       "type":  "byte",
+                       "value":  1
+                   },
+          "PortraitId":  {
+                             "type":  "word",
+                             "value":  0
+                         },
+          "Ref":  {
+                      "type":  "byte",
+                      "value":  0
+                  },
+          "Static":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "taxi_terminal"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "taxi_terminal"
+                             },
+          "TrapDetectable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapDetectDC":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "TrapDisarmable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapFlag":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "TrapOneShot":  {
+                              "type":  "byte",
+                              "value":  1
+                          },
+          "TrapType":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Type":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "Useable":  {
+                          "type":  "byte",
+                          "value":  1
+                      },
+          "VarTable":  {
+                           "type":  "list",
+                           "value":  [
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_REGION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  1
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "CONVERSATION"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  3
+                                                      },
+                                             "Value":  {
+                                                           "type":  "cexostring",
+                                                           "value":  "TaxiTerminalDialog"
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_DESTINATION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  1
+                                                       }
+                                         }
+                                     ]
+                       },
+          "Will":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "X":  {
+                    "type":  "float",
+                    "value":  96.9102249145508
+                },
+          "Y":  {
+                    "type":  "float",
+                    "value":  4.16548839409883
+                },
+          "Z":  {
+                    "type":  "float",
+                    "value":  0.19999885559082031
+                }
+      },
+      {
+          "__struct_id":  9,
+          "AnimationState":  {
+                                 "type":  "byte",
+                                 "value":  0
+                             },
+          "Appearance":  {
+                             "type":  "dword",
+                             "value":  20627
+                         },
+          "AutoRemoveKey":  {
+                                "type":  "byte",
+                                "value":  0
+                            },
+          "Bearing":  {
+                          "type":  "float",
+                          "value":  0
+                      },
+          "BodyBag":  {
+                          "type":  "byte",
+                          "value":  0
+                      },
+          "CloseLockDC":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Conversation":  {
+                               "type":  "resref",
+                               "value":  ""
+                           },
+          "CurrentHP":  {
+                            "type":  "short",
+                            "value":  10
+                        },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+                                            "0":  ""
+                                        }
+                          },
+          "DisarmDC":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Faction":  {
+                          "type":  "dword",
+                          "value":  1
+                      },
+          "Fort":  {
+                       "type":  "byte",
+                       "value":  5
+                   },
+          "Hardness":  {
+                           "type":  "byte",
+                           "value":  5
+                       },
+          "HasInventory":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "HP":  {
+                     "type":  "short",
+                     "value":  10
+                 },
+          "Interruptable":  {
+                                "type":  "byte",
+                                "value":  1
+                            },
+          "KeyName":  {
+                          "type":  "cexostring",
+                          "value":  ""
+                      },
+          "KeyRequired":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Lockable":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Locked":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "LocName":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+                                        "0":  "Taxi Terminal"
+                                    }
+                      },
+          "OnClick":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnClosed":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnDamaged":  {
+                            "type":  "resref",
+                            "value":  ""
+                        },
+          "OnDeath":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnDisarm":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnHeartbeat":  {
+                              "type":  "resref",
+                              "value":  ""
+                          },
+          "OnInvDisturbed":  {
+                                 "type":  "resref",
+                                 "value":  ""
+                             },
+          "OnLock":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnMeleeAttacked":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnOpen":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnSpellCastAt":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OnTrapTriggered":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnUnlock":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnUsed":  {
+                         "type":  "resref",
+                         "value":  "dialog_start"
+                     },
+          "OnUserDefined":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OpenLockDC":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "Plot":  {
+                       "type":  "byte",
+                       "value":  1
+                   },
+          "PortraitId":  {
+                             "type":  "word",
+                             "value":  0
+                         },
+          "Ref":  {
+                      "type":  "byte",
+                      "value":  0
+                  },
+          "Static":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "taxi_terminal"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "taxi_terminal"
+                             },
+          "TrapDetectable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapDetectDC":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "TrapDisarmable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapFlag":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "TrapOneShot":  {
+                              "type":  "byte",
+                              "value":  1
+                          },
+          "TrapType":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Type":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "Useable":  {
+                          "type":  "byte",
+                          "value":  1
+                      },
+          "VarTable":  {
+                           "type":  "list",
+                           "value":  [
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_REGION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  1
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "CONVERSATION"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  3
+                                                      },
+                                             "Value":  {
+                                                           "type":  "cexostring",
+                                                           "value":  "TaxiTerminalDialog"
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_DESTINATION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  2
+                                                       }
+                                         }
+                                     ]
+                       },
+          "Will":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "X":  {
+                    "type":  "float",
+                    "value":  145.961059570313
+                },
+          "Y":  {
+                    "type":  "float",
+                    "value":  169.506713867188
+                },
+          "Z":  {
+                    "type":  "float",
+                    "value":  0.19999885559082031
+                }
+      },
+      {
+          "__struct_id":  9,
+          "AnimationState":  {
+                                 "type":  "byte",
+                                 "value":  0
+                             },
+          "Appearance":  {
+                             "type":  "dword",
+                             "value":  20627
+                         },
+          "AutoRemoveKey":  {
+                                "type":  "byte",
+                                "value":  0
+                            },
+          "Bearing":  {
+                          "type":  "float",
+                          "value":  1.5707942247390749
+                      },
+          "BodyBag":  {
+                          "type":  "byte",
+                          "value":  0
+                      },
+          "CloseLockDC":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Conversation":  {
+                               "type":  "resref",
+                               "value":  ""
+                           },
+          "CurrentHP":  {
+                            "type":  "short",
+                            "value":  10
+                        },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+                                            "0":  ""
+                                        }
+                          },
+          "DisarmDC":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Faction":  {
+                          "type":  "dword",
+                          "value":  1
+                      },
+          "Fort":  {
+                       "type":  "byte",
+                       "value":  5
+                   },
+          "Hardness":  {
+                           "type":  "byte",
+                           "value":  5
+                       },
+          "HasInventory":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "HP":  {
+                     "type":  "short",
+                     "value":  10
+                 },
+          "Interruptable":  {
+                                "type":  "byte",
+                                "value":  1
+                            },
+          "KeyName":  {
+                          "type":  "cexostring",
+                          "value":  ""
+                      },
+          "KeyRequired":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Lockable":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Locked":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "LocName":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+                                        "0":  "Taxi Terminal"
+                                    }
+                      },
+          "OnClick":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnClosed":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnDamaged":  {
+                            "type":  "resref",
+                            "value":  ""
+                        },
+          "OnDeath":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnDisarm":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnHeartbeat":  {
+                              "type":  "resref",
+                              "value":  ""
+                          },
+          "OnInvDisturbed":  {
+                                 "type":  "resref",
+                                 "value":  ""
+                             },
+          "OnLock":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnMeleeAttacked":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnOpen":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnSpellCastAt":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OnTrapTriggered":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnUnlock":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnUsed":  {
+                         "type":  "resref",
+                         "value":  "dialog_start"
+                     },
+          "OnUserDefined":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OpenLockDC":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "Plot":  {
+                       "type":  "byte",
+                       "value":  1
+                   },
+          "PortraitId":  {
+                             "type":  "word",
+                             "value":  0
+                         },
+          "Ref":  {
+                      "type":  "byte",
+                      "value":  0
+                  },
+          "Static":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "taxi_terminal"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "taxi_terminal"
+                             },
+          "TrapDetectable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapDetectDC":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "TrapDisarmable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapFlag":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "TrapOneShot":  {
+                              "type":  "byte",
+                              "value":  1
+                          },
+          "TrapType":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Type":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "Useable":  {
+                          "type":  "byte",
+                          "value":  1
+                      },
+          "VarTable":  {
+                           "type":  "list",
+                           "value":  [
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_REGION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  1
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "CONVERSATION"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  3
+                                                      },
+                                             "Value":  {
+                                                           "type":  "cexostring",
+                                                           "value":  "TaxiTerminalDialog"
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_DESTINATION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  3
+                                                       }
+                                         }
+                                     ]
+                       },
+          "Will":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "X":  {
+                    "type":  "float",
+                    "value":  115.003784179688
+                },
+          "Y":  {
+                    "type":  "float",
+                    "value":  183.210739135742
+                },
+          "Z":  {
+                    "type":  "float",
+                    "value":  0.19999885559082031
+                }
+      },
+      {
+          "__struct_id":  9,
+          "AnimationState":  {
+                                 "type":  "byte",
+                                 "value":  0
+                             },
+          "Appearance":  {
+                             "type":  "dword",
+                             "value":  20627
+                         },
+          "AutoRemoveKey":  {
+                                "type":  "byte",
+                                "value":  0
+                            },
+          "Bearing":  {
+                          "type":  "float",
+                          "value":  0
+                      },
+          "BodyBag":  {
+                          "type":  "byte",
+                          "value":  0
+                      },
+          "CloseLockDC":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Conversation":  {
+                               "type":  "resref",
+                               "value":  ""
+                           },
+          "CurrentHP":  {
+                            "type":  "short",
+                            "value":  10
+                        },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+                                            "0":  ""
+                                        }
+                          },
+          "DisarmDC":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Faction":  {
+                          "type":  "dword",
+                          "value":  1
+                      },
+          "Fort":  {
+                       "type":  "byte",
+                       "value":  5
+                   },
+          "Hardness":  {
+                           "type":  "byte",
+                           "value":  5
+                       },
+          "HasInventory":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "HP":  {
+                     "type":  "short",
+                     "value":  10
+                 },
+          "Interruptable":  {
+                                "type":  "byte",
+                                "value":  1
+                            },
+          "KeyName":  {
+                          "type":  "cexostring",
+                          "value":  ""
+                      },
+          "KeyRequired":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Lockable":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Locked":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "LocName":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+                                        "0":  "Taxi Terminal"
+                                    }
+                      },
+          "OnClick":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnClosed":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnDamaged":  {
+                            "type":  "resref",
+                            "value":  ""
+                        },
+          "OnDeath":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnDisarm":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnHeartbeat":  {
+                              "type":  "resref",
+                              "value":  ""
+                          },
+          "OnInvDisturbed":  {
+                                 "type":  "resref",
+                                 "value":  ""
+                             },
+          "OnLock":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnMeleeAttacked":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnOpen":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnSpellCastAt":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OnTrapTriggered":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnUnlock":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnUsed":  {
+                         "type":  "resref",
+                         "value":  "dialog_start"
+                     },
+          "OnUserDefined":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OpenLockDC":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "Plot":  {
+                       "type":  "byte",
+                       "value":  1
+                   },
+          "PortraitId":  {
+                             "type":  "word",
+                             "value":  0
+                         },
+          "Ref":  {
+                      "type":  "byte",
+                      "value":  0
+                  },
+          "Static":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "taxi_terminal"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "taxi_terminal"
+                             },
+          "TrapDetectable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapDetectDC":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "TrapDisarmable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapFlag":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "TrapOneShot":  {
+                              "type":  "byte",
+                              "value":  1
+                          },
+          "TrapType":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Type":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "Useable":  {
+                          "type":  "byte",
+                          "value":  1
+                      },
+          "VarTable":  {
+                           "type":  "list",
+                           "value":  [
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_REGION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  1
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "CONVERSATION"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  3
+                                                      },
+                                             "Value":  {
+                                                           "type":  "cexostring",
+                                                           "value":  "TaxiTerminalDialog"
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_DESTINATION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  4
+                                                       }
+                                         }
+                                     ]
+                       },
+          "Will":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "X":  {
+                    "type":  "float",
+                    "value":  190.382614135742
+                },
+          "Y":  {
+                    "type":  "float",
+                    "value":  148.731964262324
+                },
+          "Z":  {
+                    "type":  "float",
+                    "value":  0.19999885559082031
+                }
+      },
+      {
+          "__struct_id":  9,
+          "AnimationState":  {
+                                 "type":  "byte",
+                                 "value":  0
+                             },
+          "Appearance":  {
+                             "type":  "dword",
+                             "value":  20627
+                         },
+          "AutoRemoveKey":  {
+                                "type":  "byte",
+                                "value":  0
+                            },
+          "Bearing":  {
+                          "type":  "float",
+                          "value":  0
+                      },
+          "BodyBag":  {
+                          "type":  "byte",
+                          "value":  0
+                      },
+          "CloseLockDC":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Conversation":  {
+                               "type":  "resref",
+                               "value":  ""
+                           },
+          "CurrentHP":  {
+                            "type":  "short",
+                            "value":  10
+                        },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+                                            "0":  ""
+                                        }
+                          },
+          "DisarmDC":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Faction":  {
+                          "type":  "dword",
+                          "value":  1
+                      },
+          "Fort":  {
+                       "type":  "byte",
+                       "value":  5
+                   },
+          "Hardness":  {
+                           "type":  "byte",
+                           "value":  5
+                       },
+          "HasInventory":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "HP":  {
+                     "type":  "short",
+                     "value":  10
+                 },
+          "Interruptable":  {
+                                "type":  "byte",
+                                "value":  1
+                            },
+          "KeyName":  {
+                          "type":  "cexostring",
+                          "value":  ""
+                      },
+          "KeyRequired":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Lockable":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Locked":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "LocName":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+                                        "0":  "Taxi Terminal"
+                                    }
+                      },
+          "OnClick":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnClosed":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnDamaged":  {
+                            "type":  "resref",
+                            "value":  ""
+                        },
+          "OnDeath":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnDisarm":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnHeartbeat":  {
+                              "type":  "resref",
+                              "value":  ""
+                          },
+          "OnInvDisturbed":  {
+                                 "type":  "resref",
+                                 "value":  ""
+                             },
+          "OnLock":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnMeleeAttacked":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnOpen":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnSpellCastAt":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OnTrapTriggered":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnUnlock":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnUsed":  {
+                         "type":  "resref",
+                         "value":  "dialog_start"
+                     },
+          "OnUserDefined":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OpenLockDC":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "Plot":  {
+                       "type":  "byte",
+                       "value":  1
+                   },
+          "PortraitId":  {
+                             "type":  "word",
+                             "value":  0
+                         },
+          "Ref":  {
+                      "type":  "byte",
+                      "value":  0
+                  },
+          "Static":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "taxi_terminal"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "taxi_terminal"
+                             },
+          "TrapDetectable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapDetectDC":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "TrapDisarmable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapFlag":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "TrapOneShot":  {
+                              "type":  "byte",
+                              "value":  1
+                          },
+          "TrapType":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Type":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "Useable":  {
+                          "type":  "byte",
+                          "value":  1
+                      },
+          "VarTable":  {
+                           "type":  "list",
+                           "value":  [
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_REGION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  1
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "CONVERSATION"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  3
+                                                      },
+                                             "Value":  {
+                                                           "type":  "cexostring",
+                                                           "value":  "TaxiTerminalDialog"
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_DESTINATION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  5
+                                                       }
+                                         }
+                                     ]
+                       },
+          "Will":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "X":  {
+                    "type":  "float",
+                    "value":  186.592620849609
+                },
+          "Y":  {
+                    "type":  "float",
+                    "value":  42.4022561629587
+                },
+          "Z":  {
+                    "type":  "float",
+                    "value":  0.19999885559082031
+                }
+      },
+      {
+          "__struct_id":  9,
+          "AnimationState":  {
+                                 "type":  "byte",
+                                 "value":  0
+                             },
+          "Appearance":  {
+                             "type":  "dword",
+                             "value":  20627
+                         },
+          "AutoRemoveKey":  {
+                                "type":  "byte",
+                                "value":  0
+                            },
+          "Bearing":  {
+                          "type":  "float",
+                          "value":  0
+                      },
+          "BodyBag":  {
+                          "type":  "byte",
+                          "value":  0
+                      },
+          "CloseLockDC":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Conversation":  {
+                               "type":  "resref",
+                               "value":  ""
+                           },
+          "CurrentHP":  {
+                            "type":  "short",
+                            "value":  10
+                        },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+                                            "0":  ""
+                                        }
+                          },
+          "DisarmDC":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Faction":  {
+                          "type":  "dword",
+                          "value":  1
+                      },
+          "Fort":  {
+                       "type":  "byte",
+                       "value":  5
+                   },
+          "Hardness":  {
+                           "type":  "byte",
+                           "value":  5
+                       },
+          "HasInventory":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "HP":  {
+                     "type":  "short",
+                     "value":  10
+                 },
+          "Interruptable":  {
+                                "type":  "byte",
+                                "value":  1
+                            },
+          "KeyName":  {
+                          "type":  "cexostring",
+                          "value":  ""
+                      },
+          "KeyRequired":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Lockable":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Locked":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "LocName":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+                                        "0":  "Taxi Terminal"
+                                    }
+                      },
+          "OnClick":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnClosed":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnDamaged":  {
+                            "type":  "resref",
+                            "value":  ""
+                        },
+          "OnDeath":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnDisarm":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnHeartbeat":  {
+                              "type":  "resref",
+                              "value":  ""
+                          },
+          "OnInvDisturbed":  {
+                                 "type":  "resref",
+                                 "value":  ""
+                             },
+          "OnLock":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnMeleeAttacked":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnOpen":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnSpellCastAt":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OnTrapTriggered":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnUnlock":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnUsed":  {
+                         "type":  "resref",
+                         "value":  "dialog_start"
+                     },
+          "OnUserDefined":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OpenLockDC":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "Plot":  {
+                       "type":  "byte",
+                       "value":  1
+                   },
+          "PortraitId":  {
+                             "type":  "word",
+                             "value":  0
+                         },
+          "Ref":  {
+                      "type":  "byte",
+                      "value":  0
+                  },
+          "Static":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "taxi_terminal"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "taxi_terminal"
+                             },
+          "TrapDetectable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapDetectDC":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "TrapDisarmable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapFlag":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "TrapOneShot":  {
+                              "type":  "byte",
+                              "value":  1
+                          },
+          "TrapType":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Type":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "Useable":  {
+                          "type":  "byte",
+                          "value":  1
+                      },
+          "VarTable":  {
+                           "type":  "list",
+                           "value":  [
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_REGION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  1
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "CONVERSATION"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  3
+                                                      },
+                                             "Value":  {
+                                                           "type":  "cexostring",
+                                                           "value":  "TaxiTerminalDialog"
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_DESTINATION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  6
+                                                       }
+                                         }
+                                     ]
+                       },
+          "Will":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "X":  {
+                    "type":  "float",
+                    "value":  157.672409057617
+                },
+          "Y":  {
+                    "type":  "float",
+                    "value":  101.410179138184
+                },
+          "Z":  {
+                    "type":  "float",
+                    "value":  0.29999160766601563
+                }
+      },
+      {
+          "__struct_id":  9,
+          "AnimationState":  {
+                                 "type":  "byte",
+                                 "value":  0
+                             },
+          "Appearance":  {
+                             "type":  "dword",
+                             "value":  20627
+                         },
+          "AutoRemoveKey":  {
+                                "type":  "byte",
+                                "value":  0
+                            },
+          "Bearing":  {
+                          "type":  "float",
+                          "value":  0
+                      },
+          "BodyBag":  {
+                          "type":  "byte",
+                          "value":  0
+                      },
+          "CloseLockDC":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Conversation":  {
+                               "type":  "resref",
+                               "value":  ""
+                           },
+          "CurrentHP":  {
+                            "type":  "short",
+                            "value":  10
+                        },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+                                            "0":  ""
+                                        }
+                          },
+          "DisarmDC":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Faction":  {
+                          "type":  "dword",
+                          "value":  1
+                      },
+          "Fort":  {
+                       "type":  "byte",
+                       "value":  5
+                   },
+          "Hardness":  {
+                           "type":  "byte",
+                           "value":  5
+                       },
+          "HasInventory":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "HP":  {
+                     "type":  "short",
+                     "value":  10
+                 },
+          "Interruptable":  {
+                                "type":  "byte",
+                                "value":  1
+                            },
+          "KeyName":  {
+                          "type":  "cexostring",
+                          "value":  ""
+                      },
+          "KeyRequired":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Lockable":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Locked":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "LocName":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+                                        "0":  "Taxi Terminal"
+                                    }
+                      },
+          "OnClick":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnClosed":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnDamaged":  {
+                            "type":  "resref",
+                            "value":  ""
+                        },
+          "OnDeath":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnDisarm":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnHeartbeat":  {
+                              "type":  "resref",
+                              "value":  ""
+                          },
+          "OnInvDisturbed":  {
+                                 "type":  "resref",
+                                 "value":  ""
+                             },
+          "OnLock":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnMeleeAttacked":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnOpen":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnSpellCastAt":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OnTrapTriggered":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnUnlock":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnUsed":  {
+                         "type":  "resref",
+                         "value":  "dialog_start"
+                     },
+          "OnUserDefined":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OpenLockDC":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "Plot":  {
+                       "type":  "byte",
+                       "value":  1
+                   },
+          "PortraitId":  {
+                             "type":  "word",
+                             "value":  0
+                         },
+          "Ref":  {
+                      "type":  "byte",
+                      "value":  0
+                  },
+          "Static":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "taxi_terminal"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "taxi_terminal"
+                             },
+          "TrapDetectable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapDetectDC":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "TrapDisarmable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapFlag":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "TrapOneShot":  {
+                              "type":  "byte",
+                              "value":  1
+                          },
+          "TrapType":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Type":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "Useable":  {
+                          "type":  "byte",
+                          "value":  1
+                      },
+          "VarTable":  {
+                           "type":  "list",
+                           "value":  [
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_REGION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  1
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "CONVERSATION"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  3
+                                                      },
+                                             "Value":  {
+                                                           "type":  "cexostring",
+                                                           "value":  "TaxiTerminalDialog"
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_DESTINATION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  7
+                                                       }
+                                         }
+                                     ]
+                       },
+          "Will":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "X":  {
+                    "type":  "float",
+                    "value":  36.0421028137207
+                },
+          "Y":  {
+                    "type":  "float",
+                    "value":  177.244781645136
+                },
+          "Z":  {
+                    "type":  "float",
+                    "value":  0.29999199509620672
+                }
+      },
+      {
+          "__struct_id":  9,
+          "AnimationState":  {
+                                 "type":  "byte",
+                                 "value":  0
+                             },
+          "Appearance":  {
+                             "type":  "dword",
+                             "value":  20627
+                         },
+          "AutoRemoveKey":  {
+                                "type":  "byte",
+                                "value":  0
+                            },
+          "Bearing":  {
+                          "type":  "float",
+                          "value":  0
+                      },
+          "BodyBag":  {
+                          "type":  "byte",
+                          "value":  0
+                      },
+          "CloseLockDC":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Conversation":  {
+                               "type":  "resref",
+                               "value":  ""
+                           },
+          "CurrentHP":  {
+                            "type":  "short",
+                            "value":  10
+                        },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+                                            "0":  ""
+                                        }
+                          },
+          "DisarmDC":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Faction":  {
+                          "type":  "dword",
+                          "value":  1
+                      },
+          "Fort":  {
+                       "type":  "byte",
+                       "value":  5
+                   },
+          "Hardness":  {
+                           "type":  "byte",
+                           "value":  5
+                       },
+          "HasInventory":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "HP":  {
+                     "type":  "short",
+                     "value":  10
+                 },
+          "Interruptable":  {
+                                "type":  "byte",
+                                "value":  1
+                            },
+          "KeyName":  {
+                          "type":  "cexostring",
+                          "value":  ""
+                      },
+          "KeyRequired":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Lockable":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Locked":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "LocName":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+                                        "0":  "Taxi Terminal"
+                                    }
+                      },
+          "OnClick":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnClosed":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnDamaged":  {
+                            "type":  "resref",
+                            "value":  ""
+                        },
+          "OnDeath":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnDisarm":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnHeartbeat":  {
+                              "type":  "resref",
+                              "value":  ""
+                          },
+          "OnInvDisturbed":  {
+                                 "type":  "resref",
+                                 "value":  ""
+                             },
+          "OnLock":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnMeleeAttacked":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnOpen":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnSpellCastAt":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OnTrapTriggered":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnUnlock":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnUsed":  {
+                         "type":  "resref",
+                         "value":  "dialog_start"
+                     },
+          "OnUserDefined":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OpenLockDC":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "Plot":  {
+                       "type":  "byte",
+                       "value":  1
+                   },
+          "PortraitId":  {
+                             "type":  "word",
+                             "value":  0
+                         },
+          "Ref":  {
+                      "type":  "byte",
+                      "value":  0
+                  },
+          "Static":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "taxi_terminal"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "taxi_terminal"
+                             },
+          "TrapDetectable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapDetectDC":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "TrapDisarmable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapFlag":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "TrapOneShot":  {
+                              "type":  "byte",
+                              "value":  1
+                          },
+          "TrapType":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Type":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "Useable":  {
+                          "type":  "byte",
+                          "value":  1
+                      },
+          "VarTable":  {
+                           "type":  "list",
+                           "value":  [
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_REGION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  1
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "CONVERSATION"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  3
+                                                      },
+                                             "Value":  {
+                                                           "type":  "cexostring",
+                                                           "value":  "TaxiTerminalDialog"
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_DESTINATION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  8
+                                                       }
+                                         }
+                                     ]
+                       },
+          "Will":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "X":  {
+                    "type":  "float",
+                    "value":  76.0391693115234
+                },
+          "Y":  {
+                    "type":  "float",
+                    "value":  91.3700942993164
+                },
+          "Z":  {
+                    "type":  "float",
+                    "value":  0.19999885559082031
+                }
+      },
+      {
+          "__struct_id":  9,
+          "AnimationState":  {
+                                 "type":  "byte",
+                                 "value":  0
+                             },
+          "Appearance":  {
+                             "type":  "dword",
+                             "value":  20627
+                         },
+          "AutoRemoveKey":  {
+                                "type":  "byte",
+                                "value":  0
+                            },
+          "Bearing":  {
+                          "type":  "float",
+                          "value":  0
+                      },
+          "BodyBag":  {
+                          "type":  "byte",
+                          "value":  0
+                      },
+          "CloseLockDC":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Conversation":  {
+                               "type":  "resref",
+                               "value":  ""
+                           },
+          "CurrentHP":  {
+                            "type":  "short",
+                            "value":  10
+                        },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+                                            "0":  ""
+                                        }
+                          },
+          "DisarmDC":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Faction":  {
+                          "type":  "dword",
+                          "value":  1
+                      },
+          "Fort":  {
+                       "type":  "byte",
+                       "value":  5
+                   },
+          "Hardness":  {
+                           "type":  "byte",
+                           "value":  5
+                       },
+          "HasInventory":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "HP":  {
+                     "type":  "short",
+                     "value":  10
+                 },
+          "Interruptable":  {
+                                "type":  "byte",
+                                "value":  1
+                            },
+          "KeyName":  {
+                          "type":  "cexostring",
+                          "value":  ""
+                      },
+          "KeyRequired":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Lockable":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Locked":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "LocName":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+                                        "0":  "Taxi Terminal"
+                                    }
+                      },
+          "OnClick":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnClosed":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnDamaged":  {
+                            "type":  "resref",
+                            "value":  ""
+                        },
+          "OnDeath":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnDisarm":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnHeartbeat":  {
+                              "type":  "resref",
+                              "value":  ""
+                          },
+          "OnInvDisturbed":  {
+                                 "type":  "resref",
+                                 "value":  ""
+                             },
+          "OnLock":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnMeleeAttacked":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnOpen":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnSpellCastAt":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OnTrapTriggered":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnUnlock":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnUsed":  {
+                         "type":  "resref",
+                         "value":  "dialog_start"
+                     },
+          "OnUserDefined":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OpenLockDC":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "Plot":  {
+                       "type":  "byte",
+                       "value":  1
+                   },
+          "PortraitId":  {
+                             "type":  "word",
+                             "value":  0
+                         },
+          "Ref":  {
+                      "type":  "byte",
+                      "value":  0
+                  },
+          "Static":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "taxi_terminal"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "taxi_terminal"
+                             },
+          "TrapDetectable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapDetectDC":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "TrapDisarmable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapFlag":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "TrapOneShot":  {
+                              "type":  "byte",
+                              "value":  1
+                          },
+          "TrapType":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Type":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "Useable":  {
+                          "type":  "byte",
+                          "value":  1
+                      },
+          "VarTable":  {
+                           "type":  "list",
+                           "value":  [
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_REGION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  1
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "CONVERSATION"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  3
+                                                      },
+                                             "Value":  {
+                                                           "type":  "cexostring",
+                                                           "value":  "TaxiTerminalDialog"
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_DESTINATION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  9
+                                                       }
+                                         }
+                                     ]
+                       },
+          "Will":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "X":  {
+                    "type":  "float",
+                    "value":  160.581620041524
+                },
+          "Y":  {
+                    "type":  "float",
+                    "value":  213.276611328125
+                },
+          "Z":  {
+                    "type":  "float",
+                    "value":  0.19999885559082031
+                }
+      },
+      {
+          "__struct_id":  9,
+          "AnimationState":  {
+                                 "type":  "byte",
+                                 "value":  0
+                             },
+          "Appearance":  {
+                             "type":  "dword",
+                             "value":  20627
+                         },
+          "AutoRemoveKey":  {
+                                "type":  "byte",
+                                "value":  0
+                            },
+          "Bearing":  {
+                          "type":  "float",
+                          "value":  0
+                      },
+          "BodyBag":  {
+                          "type":  "byte",
+                          "value":  0
+                      },
+          "CloseLockDC":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Conversation":  {
+                               "type":  "resref",
+                               "value":  ""
+                           },
+          "CurrentHP":  {
+                            "type":  "short",
+                            "value":  10
+                        },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+                                            "0":  ""
+                                        }
+                          },
+          "DisarmDC":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Faction":  {
+                          "type":  "dword",
+                          "value":  1
+                      },
+          "Fort":  {
+                       "type":  "byte",
+                       "value":  5
+                   },
+          "Hardness":  {
+                           "type":  "byte",
+                           "value":  5
+                       },
+          "HasInventory":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "HP":  {
+                     "type":  "short",
+                     "value":  10
+                 },
+          "Interruptable":  {
+                                "type":  "byte",
+                                "value":  1
+                            },
+          "KeyName":  {
+                          "type":  "cexostring",
+                          "value":  ""
+                      },
+          "KeyRequired":  {
+                              "type":  "byte",
+                              "value":  0
+                          },
+          "Lockable":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Locked":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "LocName":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+                                        "0":  "Taxi Terminal"
+                                    }
+                      },
+          "OnClick":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnClosed":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnDamaged":  {
+                            "type":  "resref",
+                            "value":  ""
+                        },
+          "OnDeath":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+          "OnDisarm":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnHeartbeat":  {
+                              "type":  "resref",
+                              "value":  ""
+                          },
+          "OnInvDisturbed":  {
+                                 "type":  "resref",
+                                 "value":  ""
+                             },
+          "OnLock":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnMeleeAttacked":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnOpen":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+          "OnSpellCastAt":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OnTrapTriggered":  {
+                                  "type":  "resref",
+                                  "value":  ""
+                              },
+          "OnUnlock":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+          "OnUsed":  {
+                         "type":  "resref",
+                         "value":  "dialog_start"
+                     },
+          "OnUserDefined":  {
+                                "type":  "resref",
+                                "value":  ""
+                            },
+          "OpenLockDC":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "Plot":  {
+                       "type":  "byte",
+                       "value":  1
+                   },
+          "PortraitId":  {
+                             "type":  "word",
+                             "value":  0
+                         },
+          "Ref":  {
+                      "type":  "byte",
+                      "value":  0
+                  },
+          "Static":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "taxi_terminal"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "taxi_terminal"
+                             },
+          "TrapDetectable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapDetectDC":  {
+                               "type":  "byte",
+                               "value":  0
+                           },
+          "TrapDisarmable":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "TrapFlag":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "TrapOneShot":  {
+                              "type":  "byte",
+                              "value":  1
+                          },
+          "TrapType":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+          "Type":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "Useable":  {
+                          "type":  "byte",
+                          "value":  1
+                      },
+          "VarTable":  {
+                           "type":  "list",
+                           "value":  [
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_REGION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  1
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "CONVERSATION"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  3
+                                                      },
+                                             "Value":  {
+                                                           "type":  "cexostring",
+                                                           "value":  "TaxiTerminalDialog"
+                                                       }
+                                         },
+                                         {
+                                             "__struct_id":  0,
+                                             "Name":  {
+                                                          "type":  "cexostring",
+                                                          "value":  "TAXI_DESTINATION_ID"
+                                                      },
+                                             "Type":  {
+                                                          "type":  "dword",
+                                                          "value":  1
+                                                      },
+                                             "Value":  {
+                                                           "type":  "int",
+                                                           "value":  10
+                                                       }
+                                         }
+                                     ]
+                       },
+          "Will":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+          "X":  {
+                    "type":  "float",
+                    "value":  14.0738897323608
+                },
+          "Y":  {
+                    "type":  "float",
+                    "value":  92.8228227217966
+                },
+          "Z":  {
+                    "type":  "float",
+                    "value":  0.19999885559082031
+                }
       }
     ]
   },
@@ -399718,6 +402488,666 @@
           "type": "float",
           "value": 0.1999988555908203
         }
+      },
+      {
+          "__struct_id":  5,
+          "Appearance":  {
+                             "type":  "byte",
+                             "value":  1
+                         },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+
+                                        }
+                          },
+          "HasMapNote":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "LinkedTo":  {
+                           "type":  "cexostring",
+                           "value":  ""
+                       },
+          "LocalizedName":  {
+                                "id":  14817,
+                                "type":  "cexolocstring",
+                                "value":  {
+
+                                          }
+                            },
+          "MapNote":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+
+                                    }
+                      },
+          "MapNoteEnabled":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "TAXI_VELES_ENTRANCE"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "nw_waypoint001"
+                             },
+          "XOrientation":  {
+                               "type":  "float",
+                               "value":  1
+                           },
+          "XPosition":  {
+                            "type":  "float",
+                            "value":  94.910224914550781
+                        },
+          "YOrientation":  {
+                               "type":  "float",
+                               "value":  7.54979012640433E-08
+                           },
+          "YPosition":  {
+                            "type":  "float",
+                            "value":  4.1654882431030273
+                        },
+          "ZPosition":  {
+                            "type":  "float",
+                            "value":  0.19999885559082031
+                        }
+      },
+      {
+          "__struct_id":  5,
+          "Appearance":  {
+                             "type":  "byte",
+                             "value":  1
+                         },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+
+                                        }
+                          },
+          "HasMapNote":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "LinkedTo":  {
+                           "type":  "cexostring",
+                           "value":  ""
+                       },
+          "LocalizedName":  {
+                                "id":  14817,
+                                "type":  "cexolocstring",
+                                "value":  {
+
+                                          }
+                            },
+          "MapNote":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+
+                                    }
+                      },
+          "MapNoteEnabled":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "TAXI_VELES_MARKET"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "nw_waypoint001"
+                             },
+          "XOrientation":  {
+                               "type":  "float",
+                               "value":  1.40129846432482E-45
+                           },
+          "XPosition":  {
+                            "type":  "float",
+                            "value":  145.9610595703125
+                        },
+          "YOrientation":  {
+                               "type":  "float",
+                               "value":  -1
+                           },
+          "YPosition":  {
+                            "type":  "float",
+                            "value":  171.5067138671875
+                        },
+          "ZPosition":  {
+                            "type":  "float",
+                            "value":  0.19999885559082031
+                        }
+      },
+      {
+          "__struct_id":  5,
+          "Appearance":  {
+                             "type":  "byte",
+                             "value":  1
+                         },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+
+                                        }
+                          },
+          "HasMapNote":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "LinkedTo":  {
+                           "type":  "cexostring",
+                           "value":  ""
+                       },
+          "LocalizedName":  {
+                                "id":  14817,
+                                "type":  "cexolocstring",
+                                "value":  {
+
+                                          }
+                            },
+          "MapNote":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+
+                                    }
+                      },
+          "MapNoteEnabled":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "TAXI_VELES_CZERKATOWER"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "nw_waypoint001"
+                             },
+          "XOrientation":  {
+                               "type":  "float",
+                               "value":  1.63531530786706E-42
+                           },
+          "XPosition":  {
+                            "type":  "float",
+                            "value":  115.0037841796875
+                        },
+          "YOrientation":  {
+                               "type":  "float",
+                               "value":  -1
+                           },
+          "YPosition":  {
+                            "type":  "float",
+                            "value":  185.21073913574219
+                        },
+          "ZPosition":  {
+                            "type":  "float",
+                            "value":  0.19999885559082031
+                        }
+      },
+      {
+          "__struct_id":  5,
+          "Appearance":  {
+                             "type":  "byte",
+                             "value":  1
+                         },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+
+                                        }
+                          },
+          "HasMapNote":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "LinkedTo":  {
+                           "type":  "cexostring",
+                           "value":  ""
+                       },
+          "LocalizedName":  {
+                                "id":  14817,
+                                "type":  "cexolocstring",
+                                "value":  {
+
+                                          }
+                            },
+          "MapNote":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+
+                                    }
+                      },
+          "MapNoteEnabled":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "TAXI_VELES_COUNCIL"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "nw_waypoint001"
+                             },
+          "XOrientation":  {
+                               "type":  "float",
+                               "value":  -1
+                           },
+          "XPosition":  {
+                            "type":  "float",
+                            "value":  192.38261413574219
+                        },
+          "YOrientation":  {
+                               "type":  "float",
+                               "value":  7.54979012640433E-08
+                           },
+          "YPosition":  {
+                            "type":  "float",
+                            "value":  148.7319641113281
+                        },
+          "ZPosition":  {
+                            "type":  "float",
+                            "value":  0.19999885559082031
+                        }
+      },
+      {
+          "__struct_id":  5,
+          "Appearance":  {
+                             "type":  "byte",
+                             "value":  1
+                         },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+
+                                        }
+                          },
+          "HasMapNote":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "LinkedTo":  {
+                           "type":  "cexostring",
+                           "value":  ""
+                       },
+          "LocalizedName":  {
+                                "id":  14817,
+                                "type":  "cexolocstring",
+                                "value":  {
+
+                                          }
+                            },
+          "MapNote":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+
+                                    }
+                      },
+          "MapNoteEnabled":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "TAXI_VELES_MEDICAL"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "nw_waypoint001"
+                             },
+          "XOrientation":  {
+                               "type":  "float",
+                               "value":  -1
+                           },
+          "XPosition":  {
+                            "type":  "float",
+                            "value":  188.5926208496094
+                        },
+          "YOrientation":  {
+                               "type":  "float",
+                               "value":  7.54979012640433E-08
+                           },
+          "YPosition":  {
+                            "type":  "float",
+                            "value":  42.402256011962891
+                        },
+          "ZPosition":  {
+                            "type":  "float",
+                            "value":  0.19999885559082031
+                        }
+      },
+      {
+          "__struct_id":  5,
+          "Appearance":  {
+                             "type":  "byte",
+                             "value":  1
+                         },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+
+                                        }
+                          },
+          "HasMapNote":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "LinkedTo":  {
+                           "type":  "cexostring",
+                           "value":  ""
+                       },
+          "LocalizedName":  {
+                                "id":  14817,
+                                "type":  "cexolocstring",
+                                "value":  {
+
+                                          }
+                            },
+          "MapNote":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+
+                                    }
+                      },
+          "MapNoteEnabled":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "TAXI_VELES_STARPORT"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "nw_waypoint001"
+                             },
+          "XOrientation":  {
+                               "type":  "float",
+                               "value":  -1
+                           },
+          "XPosition":  {
+                            "type":  "float",
+                            "value":  159.67240905761719
+                        },
+          "YOrientation":  {
+                               "type":  "float",
+                               "value":  7.07276583790539E-35
+                           },
+          "YPosition":  {
+                            "type":  "float",
+                            "value":  101.41017913818359
+                        },
+          "ZPosition":  {
+                            "type":  "float",
+                            "value":  0.29999160766601563
+                        }
+      },
+      {
+          "__struct_id":  5,
+          "Appearance":  {
+                             "type":  "byte",
+                             "value":  1
+                         },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+
+                                        }
+                          },
+          "HasMapNote":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "LinkedTo":  {
+                           "type":  "cexostring",
+                           "value":  ""
+                       },
+          "LocalizedName":  {
+                                "id":  14817,
+                                "type":  "cexolocstring",
+                                "value":  {
+
+                                          }
+                            },
+          "MapNote":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+
+                                    }
+                      },
+          "MapNoteEnabled":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "TAXI_VELES_INDUSTRIAL"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "nw_waypoint001"
+                             },
+          "XOrientation":  {
+                               "type":  "float",
+                               "value":  1
+                           },
+          "XPosition":  {
+                            "type":  "float",
+                            "value":  34.0421028137207
+                        },
+          "YOrientation":  {
+                               "type":  "float",
+                               "value":  7.54979012640433E-08
+                           },
+          "YPosition":  {
+                            "type":  "float",
+                            "value":  177.2447814941406
+                        },
+          "ZPosition":  {
+                            "type":  "float",
+                            "value":  0.29999199509620672
+                        }
+      },
+      {
+          "__struct_id":  5,
+          "Appearance":  {
+                             "type":  "byte",
+                             "value":  1
+                         },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+
+                                        }
+                          },
+          "HasMapNote":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "LinkedTo":  {
+                           "type":  "cexostring",
+                           "value":  ""
+                       },
+          "LocalizedName":  {
+                                "id":  14817,
+                                "type":  "cexolocstring",
+                                "value":  {
+
+                                          }
+                            },
+          "MapNote":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+
+                                    }
+                      },
+          "MapNoteEnabled":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "TAXI_VELES_CANTINA"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "nw_waypoint001"
+                             },
+          "XOrientation":  {
+                               "type":  "float",
+                               "value":  1.40129846432482E-45
+                           },
+          "XPosition":  {
+                            "type":  "float",
+                            "value":  76.039169311523438
+                        },
+          "YOrientation":  {
+                               "type":  "float",
+                               "value":  1
+                           },
+          "YPosition":  {
+                            "type":  "float",
+                            "value":  89.3700942993164
+                        },
+          "ZPosition":  {
+                            "type":  "float",
+                            "value":  0.19999885559082031
+                        }
+      },
+      {
+          "__struct_id":  5,
+          "Appearance":  {
+                             "type":  "byte",
+                             "value":  1
+                         },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+
+                                        }
+                          },
+          "HasMapNote":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "LinkedTo":  {
+                           "type":  "cexostring",
+                           "value":  ""
+                       },
+          "LocalizedName":  {
+                                "id":  14817,
+                                "type":  "cexolocstring",
+                                "value":  {
+
+                                          }
+                            },
+          "MapNote":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+
+                                    }
+                      },
+          "MapNoteEnabled":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "TAXI_VELES_RESIDENTIAL"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "nw_waypoint001"
+                             },
+          "XOrientation":  {
+                               "type":  "float",
+                               "value":  3.89414367418794E-07
+                           },
+          "XPosition":  {
+                            "type":  "float",
+                            "value":  160.58161926269531
+                        },
+          "YOrientation":  {
+                               "type":  "float",
+                               "value":  -1
+                           },
+          "YPosition":  {
+                            "type":  "float",
+                            "value":  215.276611328125
+                        },
+          "ZPosition":  {
+                            "type":  "float",
+                            "value":  0.19999885559082031
+                        }
+      },
+      {
+          "__struct_id":  5,
+          "Appearance":  {
+                             "type":  "byte",
+                             "value":  1
+                         },
+          "Description":  {
+                              "type":  "cexolocstring",
+                              "value":  {
+
+                                        }
+                          },
+          "HasMapNote":  {
+                             "type":  "byte",
+                             "value":  0
+                         },
+          "LinkedTo":  {
+                           "type":  "cexostring",
+                           "value":  ""
+                       },
+          "LocalizedName":  {
+                                "id":  14817,
+                                "type":  "cexolocstring",
+                                "value":  {
+
+                                          }
+                            },
+          "MapNote":  {
+                          "type":  "cexolocstring",
+                          "value":  {
+
+                                    }
+                      },
+          "MapNoteEnabled":  {
+                                 "type":  "byte",
+                                 "value":  1
+                             },
+          "Tag":  {
+                      "type":  "cexostring",
+                      "value":  "TAXI_VELES_APARTMENT"
+                  },
+          "TemplateResRef":  {
+                                 "type":  "resref",
+                                 "value":  "nw_waypoint001"
+                             },
+          "XOrientation":  {
+                               "type":  "float",
+                               "value":  1
+                           },
+          "XPosition":  {
+                            "type":  "float",
+                            "value":  12.07388973236084
+                        },
+          "YOrientation":  {
+                               "type":  "float",
+                               "value":  7.54979012640433E-08
+                           },
+          "YPosition":  {
+                            "type":  "float",
+                            "value":  92.822822570800781
+                        },
+          "ZPosition":  {
+                            "type":  "float",
+                            "value":  0.19999885559082031
+                        }
       }
     ]
   }

@@ -1600,17 +1600,26 @@ kept as an alias, since two shortcuts for one action is just something else to d
   A third failure was a design smell rather than a bug: opening a finished conversation landed on
   situation 1 ("Finished Field Tinctures"), the last thing anyone hears. It now opens on what a
   brand-new player hears.
-- **Bindings are compile-checked.** `AvaloniaUseCompiledBindingsByDefault` is on, so every binding
-  path in the new views is validated against its `x:DataType` at build time — including the
-  `$parent[ItemsControl]` command bindings. The app itself has still not been launched, and no human
-  visual gate has been run.
+- **Bindings are compile-checked and the view is render-tested.**
+  `AvaloniaUseCompiledBindingsByDefault` is on, so every binding path is validated against its
+  `x:DataType` at build time, including the `$parent[ItemsControl]` command bindings.
+  `ConversationEditorViewRenderTests` then boots the real `App` headlessly, resolves the view
+  through the real `ViewLocator`, binds a real view model and asserts the rail, a situation title,
+  the editable line and the dead-opening finding all reach the screen — following the rule this
+  branch established after the script editor shipped as a "Not Found" placeholder.
+  `EveryDockableViewActuallyConstructs` covers the new view for free. The app has still not been
+  launched by a person, and that human visual gate has not been run.
 - Also corrected: the creature editor called `Conversation` a "legacy" field and said SWLOR dialogs
   are C# classes. It is how 352 of the 371 conversations are wired; the C# route is the
   `CONVERSATION` local variable.
-- Tests: **+107** (1097 total, 1001 passing). The 82 failures are the absent 27 GB `SWLOR_Haks`
-  submodule — every message names a missing hak path, and the count is unchanged from before this
-  work. Game server suite: 1585 passing, 32 failing, all the same missing haks. Round-trip,
-  edit-locality and float-conformance gates all green.
+- Tests: **+113**. Rebased onto pr/2124 (script editor + trigger editor); after that, toolset
+  1231 passing / 83 failing, server 1612 passing / 34 failing. Every one of the 117 failures names
+  a missing path under the absent 27 GB `SWLOR_Haks` submodule, and none is dialog-related — the
+  server suite has no snippet tests at all. Round-trip, edit-locality and float-conformance gates
+  all green.
+- Rebase notes: `pr/2124` had independently added the same `OnTextCommitted` hook to
+  `TextFieldViewModel`, with a better shape (it fires once, because the failure path refreshes and
+  that refresh fires it) — theirs was kept. Field construction had moved into
+  `FieldViewModelFactory`, so the resource picker went in there rather than in a switch of its own.
 - Left for a human: launch the toolset, open a conversation, and confirm it reads the way the
-  mockups do. That is the gate this repo runs for every visual work package and it has not been run
-  for this one.
+  mockups do. The render tests prove it draws; they do not prove it reads well.

@@ -34,7 +34,7 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                         Title = "Behavior",
                         Fields = new[]
                         {
-                            new FieldDescriptor { Label = "Type", FieldName = "Type", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Int, LookupKey = LookupKeys.TriggerTypes, Description = "0 = generic, 1 = trap, 2 = area transition." },
+                            new FieldDescriptor { Label = "Type", FieldName = "Type", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Int, LookupKey = LookupKeys.TriggerTypes, IsRequired = true, Description = "0 = generic, 1 = area transition, 2 = trap." },
                             new FieldDescriptor { Label = "Faction", FieldName = "Faction", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Dword, LookupKey = LookupKeys.Factions },
                             new FieldDescriptor { Label = "Cursor", FieldName = "Cursor", Kind = EditorKind.Integer, FieldType = GffFieldType.Byte }
                         }

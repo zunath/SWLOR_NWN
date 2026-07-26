@@ -32,9 +32,24 @@ namespace SWLOR.Toolset.Editors
                 typeof(Viewport.ViewportDisplayOptions)) as Viewport.ViewportDisplayOptions : null;
             if (_display != null)
             {
-                _display.PropertyChanged += (_, _) => ApplyDisplayOptions();
+                // Named rather than anonymous so it can be taken off again. The options object is a
+                // singleton that outlives every area tab, so an anonymous handler kept each closed view -
+                // and its GlAreaControl, with all the GPU state that hangs off it - alive for the rest of
+                // the session, and every remaining subscriber re-ran on each toggle.
+                _display.PropertyChanged += OnDisplayOptionsChanged;
                 ApplyDisplayOptions();
             }
+        }
+
+        private void OnDisplayOptionsChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) =>
+            ApplyDisplayOptions();
+
+        protected override void OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
+        {
+            if (_display != null)
+                _display.PropertyChanged -= OnDisplayOptionsChanged;
+
+            base.OnDetachedFromVisualTree(e);
         }
 
         private readonly Viewport.ViewportDisplayOptions? _display;

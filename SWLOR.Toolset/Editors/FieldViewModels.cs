@@ -219,7 +219,7 @@ namespace SWLOR.Toolset.Editors
             : base(descriptor, context)
         {
             var unset = DropdownValueValidator.GetUnsetSentinel(descriptor.FieldType);
-            Options = options.Count == 0 || options.Any(option => option.Id == unset)
+            Options = options.Count == 0 || descriptor.IsRequired || options.Any(option => option.Id == unset)
                 ? options
                 : new[] { new LookupOption(unset, "(None)") }.Concat(options).ToList();
             RefreshFromDocument();

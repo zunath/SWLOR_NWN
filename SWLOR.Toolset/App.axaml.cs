@@ -237,7 +237,27 @@ namespace SWLOR.Toolset
                 // their categories by strref into it - without this the Standard palette's folders read
                 // as "Category 6782" instead of "Containers & Switches". It lives under lang/<code>/data,
                 // not the data folder the resource index uses.
-                services.AddSingleton(TlkService.Load(swTlkJsonPath, FindBaseTlk(nwnInstallPath)));
+                // Every other probe around here degrades rather than throws, and this one did not: an
+                // unreadable or unsupported dialog.tlk threw during service registration, so the toolset
+                // would not open at all over a problem whose whole consequence is that some category
+                // folders read as "Category 6782".
+                try
+                {
+                    services.AddSingleton(TlkService.Load(swTlkJsonPath, FindBaseTlk(nwnInstallPath)));
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        // SWLOR's own TLK alone still names this module's content; only the base game's
+                        // category names are lost.
+                        services.AddSingleton(TlkService.Load(swTlkJsonPath, null));
+                    }
+                    catch (Exception)
+                    {
+                        // No TLK at all: consumers take it as optional and show raw strrefs.
+                    }
+                }
             }
 
             if (File.Exists(hakBuilderConfigPath) && Directory.Exists(swlorHaksRoot))

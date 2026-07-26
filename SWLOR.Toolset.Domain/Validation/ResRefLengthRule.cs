@@ -66,6 +66,12 @@ namespace SWLOR.Toolset.Domain.Validation
 
             foreach (var type in ModuleWorkspace.BlueprintTypes)
                 yield return type;
+
+            // Dialogs and scripts are resources with resrefs and the same 16-character, lowercase limit,
+            // but they are not blueprints, so they fell outside this list and an overlength or uppercase
+            // name imported or renamed outside the toolset was reported as no issue at all.
+            yield return ResourceType.Dlg;
+            yield return ResourceType.Nss;
         }
     }
 }

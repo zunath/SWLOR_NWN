@@ -408,6 +408,39 @@
     <Setter Property="Fill" Value="{DynamicResource AccentInkBrush}" />
   </Style>
 
+  <!-- Dock's close controls are real Buttons, so the broad Button style above otherwise gives their
+       16px chrome 20px of horizontal padding. Dock still creates the Path and resolves its geometry,
+       but layout collapses it to 0x0 - the result is the empty rounded square seen on document tabs.
+       Keep the reset scoped to Dock's tab close host and named chrome buttons. -->
+  <Style Selector="DocumentTabStripItem Button, Button#PART_CloseButton">
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="MinWidth" Value="0" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <!-- Name-based because Dock uses the same template-part contract for document tabs, tool chrome,
+       MDI documents and docked windows. This bypasses the package-local geometry lookup and gives
+       every live close mark a visible Toolset brush. -->
+  <Style Selector="Path#PART_ClosePath">
+    <Setter Property="Width" Value="10" />
+    <Setter Property="Height" Value="10" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Stretch" Value="Uniform" />
+    <Setter Property="UseLayoutRounding" Value="False" />
+    <Setter Property="Data" Value="{StaticResource ToolsetCloseIconGeometry}" />
+    <Setter Property="Fill" Value="{DynamicResource InkSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="Button:pointerover Path#PART_ClosePath">
+    <Setter Property="Fill" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
   <!-- ===================== scrollbars ===================== -->
   <!--
     Always on. Fluent's default is a scrollbar that hides itself and comes back only once the pointer

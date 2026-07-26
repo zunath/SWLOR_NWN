@@ -18,18 +18,79 @@
         <StackPanel Grid.Row="0" Grid.Column="1" Spacing="5" Margin="0,3">
           <TextBox Text="{Binding Text, Mode=TwoWay}" MinWidth="210"
                    MaxLength="{Binding MaxLength}" IsVisible="{Binding IsTextEntry}" />
-          <TextBox Text="{Binding Text, Mode=TwoWay}" MinWidth="210" AcceptsReturn="True"
-                   TextWrapping="Wrap" MaxHeight="100" MaxLength="{Binding MaxLength}"
+          <TextBox Text="{Binding Text, Mode=TwoWay}" MinWidth="210" MinHeight="110"
+                   MaxHeight="240" AcceptsReturn="True" TextWrapping="Wrap"
+                   ScrollViewer.VerticalScrollBarVisibility="Auto" MaxLength="{Binding MaxLength}"
                    IsVisible="{Binding IsParagraph}" />
           <NumericUpDown Value="{Binding Number, Mode=TwoWay}" MinWidth="150"
                          HorizontalAlignment="Left" IsVisible="{Binding IsNumber}" />
           <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsVisible="{Binding IsCheck}" />
           <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice, Mode=TwoWay}"
-                    MinWidth="220" HorizontalAlignment="Stretch" IsVisible="{Binding IsChoice}" />
-          <ComboBox ItemsSource="{Binding AppearanceChoices}"
-                    SelectedItem="{Binding Appearance, Mode=TwoWay}"
-                    MinWidth="260" HorizontalAlignment="Stretch"
-                    IsVisible="{Binding IsAppearance}" />
+                    MinWidth="220" HorizontalAlignment="Stretch"
+                    IsVisible="{Binding IsPlainChoice}" />
+
+          <!-- Load screens and portraits share the Trigger editor's lazy image gallery. Only the
+               selected image is decoded until Choose is opened; the gallery is searchable and
+               publishes one page at a time so portraits never realize the complete 2DA at once. -->
+          <StackPanel IsVisible="{Binding IsGallery}" Spacing="6" HorizontalAlignment="Stretch">
+            <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3"
+                    Background="{DynamicResource FieldBrush}" ClipToBounds="True"
+                    Width="256" Height="192" HorizontalAlignment="Right">
+              <Panel>
+                <TextBlock Text="{Binding Choice.Display}" FontSize="15"
+                           Foreground="{DynamicResource InkBrush}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           TextWrapping="Wrap" TextAlignment="Center" Margin="10" />
+                <Image Source="{Binding SelectedPreview}" Stretch="Uniform" />
+              </Panel>
+            </Border>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <TextBlock Grid.Column="0" Text="{Binding Choice.Display}" Classes="mono"
+                         VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+              <Button Grid.Column="1" x:Name="ChooseArtworkButton" Content="Choose&#x2026;"
+                      Padding="10,4" Command="{Binding OpenGalleryCommand}" />
+              <Popup Grid.Column="1" IsOpen="{Binding IsGalleryOpen, Mode=TwoWay}"
+                     PlacementTarget="{Binding #ChooseArtworkButton}" Placement="Left"
+                     IsLightDismissEnabled="True">
+                <Border Background="{DynamicResource PanelBrush}" CornerRadius="4" Padding="8"
+                        BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
+                  <Grid RowDefinitions="Auto,Auto,*" Width="680">
+                    <TextBox Grid.Row="0" Text="{Binding GalleryQuery, Mode=TwoWay}"
+                             Watermark="Search by name or resource" />
+                    <TextBlock Grid.Row="1" Text="{Binding GallerySummary}" Classes="count"
+                               Margin="2,6" />
+                    <ScrollViewer Grid.Row="2" MaxHeight="520"
+                                  ScrollChanged="OnChoiceGalleryScrollChanged">
+                      <ItemsControl ItemsSource="{Binding GalleryChoices}" Margin="1">
+                        <ItemsControl.ItemsPanel>
+                          <ItemsPanelTemplate>
+                            <WrapPanel MaxWidth="640" />
+                          </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate DataType="doors:DoorChoiceViewModel">
+                            <Button Classes="behavior" Margin="3" Padding="4"
+                                    Command="{Binding $parent[ItemsControl].((doors:DoorRowViewModel)DataContext).PickChoiceCommand}"
+                                    CommandParameter="{Binding}">
+                              <StackPanel Width="145" Spacing="4">
+                                <Border Height="126" ClipToBounds="True" CornerRadius="2"
+                                        Background="{DynamicResource FieldBrush}"
+                                        BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
+                                  <Image Source="{Binding Thumbnail}" Stretch="Uniform" />
+                                </Border>
+                                <TextBlock Text="{Binding Display}" FontSize="11"
+                                           TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                    </ScrollViewer>
+                  </Grid>
+                </Border>
+              </Popup>
+            </Grid>
+          </StackPanel>
 
           <StackPanel IsVisible="{Binding IsMultiChoice}" Spacing="6">
             <ItemsControl ItemsSource="{Binding SelectedKeyItems}">
@@ -125,6 +186,58 @@
           </ScrollViewer>
         </TabItem>
 
+        <TabItem Header="Appearance">
+          <Grid RowDefinitions="Auto,Auto,*" Margin="14,10"
+                DataContext="{Binding Appearance}"
+                x:DataType="doors:DoorAppearanceSectionViewModel">
+            <TextBox Grid.Row="0" Text="{Binding Query, Mode=TwoWay}"
+                     Watermark="Search models by name or resref" />
+            <TextBlock Grid.Row="1" Text="{Binding MatchSummary}" Classes="count"
+                       Margin="2,7" />
+            <ListBox Grid.Row="2" ItemsSource="{Binding Tiles}"
+                     SelectedItem="{Binding Highlighted, Mode=TwoWay}"
+                     ScrollViewer.ScrollChanged="OnAppearanceScrollChanged"
+                     Background="Transparent" BorderThickness="0" Padding="2">
+              <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel />
+                </ItemsPanelTemplate>
+              </ListBox.ItemsPanel>
+              <ListBox.Styles>
+                <Style Selector="ListBoxItem">
+                  <Setter Property="Padding" Value="0" />
+                  <Setter Property="Margin" Value="3" />
+                </Style>
+              </ListBox.Styles>
+              <ListBox.ItemTemplate>
+                <DataTemplate DataType="doors:DoorAppearanceTileViewModel">
+                  <Border Width="112" Padding="4" CornerRadius="3"
+                          Classes.current="{Binding IsCurrent}"
+                          Background="{DynamicResource PanelRaisedBrush}"
+                          BorderThickness="2" BorderBrush="{DynamicResource RuleBrush}">
+                    <Border.Styles>
+                      <Style Selector="Border.current">
+                        <Setter Property="BorderBrush" Value="{DynamicResource GoldBrush}" />
+                      </Style>
+                    </Border.Styles>
+                    <StackPanel Spacing="3">
+                      <Panel Height="82">
+                        <Image Source="{Binding Preview}" Stretch="Uniform" />
+                      </Panel>
+                      <TextBlock Text="{Binding Caption}" FontSize="10.5"
+                                 TextTrimming="CharacterEllipsis"
+                                 HorizontalAlignment="Center" />
+                      <TextBlock Text="{Binding ModelName}" Classes="mono" FontSize="9.5"
+                                 TextTrimming="CharacterEllipsis"
+                                 HorizontalAlignment="Center" />
+                    </StackPanel>
+                  </Border>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Grid>
+        </TabItem>
+
         <TabItem Header="Behavior">
           <Grid ColumnDefinitions="250,*">
             <ScrollViewer Grid.Column="0">
@@ -191,11 +304,6 @@
           </StackPanel>
         </TabItem>
 
-        <TabItem Header="Advanced">
-          <ScrollViewer>
-            <ItemsControl ItemsSource="{Binding AdvancedRows}" Margin="14,10" />
-          </ScrollViewer>
-        </TabItem>
       </TabControl>
     </Grid>
   </DockPanel>

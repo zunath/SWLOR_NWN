@@ -9,7 +9,9 @@ using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Viewport;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors.Doors
 {
@@ -23,6 +25,7 @@ namespace SWLOR.Toolset.Editors.Doors
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly IReadOnlyList<DoorAppearanceChoice> _appearances;
         private readonly Func<JsonGffStruct, RenderModel?>? _resolveModel;
+        private readonly ChoicePreviewService? _choicePreviews;
         private readonly bool _isInstance;
         private ModelPreviewControl? _previewView;
         private bool _disposed;
@@ -33,7 +36,7 @@ namespace SWLOR.Toolset.Editors.Doors
 
         public ObservableCollection<DoorRowViewModel> BehaviorRows { get; } = new();
 
-        public ObservableCollection<DoorRowViewModel> AdvancedRows { get; } = new();
+        public DoorAppearanceSectionViewModel Appearance { get; }
 
         [ObservableProperty]
         private VarTableSectionViewModel? _variables;
@@ -64,8 +67,7 @@ namespace SWLOR.Toolset.Editors.Doors
 
         public bool IsAnimationPlaying => false;
 
-        public string AppearanceDescription =>
-            BasicRows.FirstOrDefault(row => row.IsAppearance)?.Appearance?.Display ?? "Unknown appearance";
+        public string AppearanceDescription => Appearance.CurrentDescription;
 
         public string DoorTag => _store.GetString(BehaviorFieldStorage.Field, "Tag");
 
@@ -95,7 +97,9 @@ namespace SWLOR.Toolset.Editors.Doors
             IReadOnlyList<DoorAppearanceChoice>? appearances = null,
             ResourceIndex? resourceIndex = null,
             Func<JsonGffStruct, RenderModel?>? resolveModel = null,
-            bool isDirty = false)
+            bool isDirty = false,
+            ThumbnailService? thumbnails = null,
+            ChoicePreviewService? choicePreviews = null)
         {
             ArgumentNullException.ThrowIfNull(door);
 
@@ -106,10 +110,17 @@ namespace SWLOR.Toolset.Editors.Doors
             _resolveChoices = resolveChoices;
             _appearances = appearances ?? Array.Empty<DoorAppearanceChoice>();
             _resolveModel = resolveModel;
+            _choicePreviews = choicePreviews;
             _isInstance = isInstance;
             HeaderOwner = headerOwner;
             ResourceIndex = resourceIndex;
             IsDirty = isDirty;
+            Appearance = new DoorAppearanceSectionViewModel(
+                _store,
+                _appearances,
+                thumbnails,
+                RunEdit,
+                OnAppearanceChanged);
 
             BuildBehaviorList();
             Behavior = DoorBehaviorCatalog.Classify(door);
@@ -190,11 +201,13 @@ namespace SWLOR.Toolset.Editors.Doors
 
         private void RebuildBehaviorSection()
         {
+            foreach (var row in BehaviorRows)
+                row.Dispose();
+
             BehaviorRows.Clear();
             foreach (var definition in Behavior.Fields)
                 BehaviorRows.Add(CreateRow(definition));
 
-            RebuildAdvancedRows();
             Variables = Behavior.AllowsVariables
                 ? new VarTableSectionViewModel(RunEdit, _store.Locals, _gameCodeIndex)
                 : null;
@@ -208,19 +221,6 @@ namespace SWLOR.Toolset.Editors.Doors
             RefreshCompleteness();
         }
 
-        private void RebuildAdvancedRows()
-        {
-            AdvancedRows.Clear();
-            var custom = Behavior.Id == DoorBehaviorCatalog.CustomId;
-            foreach (var definition in DoorEditorLayout.Advanced)
-            {
-                if (definition.CustomOnly && !custom)
-                    continue;
-
-                AdvancedRows.Add(CreateRow(definition));
-            }
-        }
-
         private DoorRowViewModel CreateRow(DoorFieldDefinition definition)
         {
             return new DoorRowViewModel(
@@ -231,8 +231,8 @@ namespace SWLOR.Toolset.Editors.Doors
                 ApplyDerivedMutation,
                 OnRowChanged,
                 ResolveChoices(definition),
-                _appearances,
-                _gameCodeIndex?.KeyItems);
+                _gameCodeIndex?.KeyItems,
+                _choicePreviews);
         }
 
         private IReadOnlyList<BehaviorChoice> ResolveChoices(DoorFieldDefinition definition)
@@ -267,11 +267,8 @@ namespace SWLOR.Toolset.Editors.Doors
                 }
             }
 
-            foreach (var candidate in BasicRows.Concat(BehaviorRows).Concat(AdvancedRows))
+            foreach (var candidate in BasicRows.Concat(BehaviorRows))
                 candidate.RefreshStatus();
-
-            if (row.IsAppearance)
-                UpdatePreviewScene();
 
             OnPropertyChanged(nameof(AppearanceDescription));
             OnPropertyChanged(nameof(DoorTag));
@@ -291,18 +288,25 @@ namespace SWLOR.Toolset.Editors.Doors
 
         private void ReloadRowsFromDocument()
         {
-            foreach (var row in BasicRows.Concat(BehaviorRows).Concat(AdvancedRows))
+            foreach (var row in BasicRows.Concat(BehaviorRows))
                 row.Reload();
 
+            Appearance.ReloadFromDocument();
             UpdateConditionalRows();
             Variables?.RefreshFromDocument();
-            foreach (var row in BasicRows.Concat(BehaviorRows).Concat(AdvancedRows))
+            foreach (var row in BasicRows.Concat(BehaviorRows))
                 row.RefreshStatus();
 
             OnPropertyChanged(nameof(AppearanceDescription));
             OnPropertyChanged(nameof(DoorTag));
             OnPropertyChanged(nameof(TemplateResRef));
             RefreshCompleteness();
+        }
+
+        private void OnAppearanceChanged()
+        {
+            UpdatePreviewScene();
+            OnPropertyChanged(nameof(AppearanceDescription));
         }
 
         private void RefreshCompleteness()
@@ -360,6 +364,9 @@ namespace SWLOR.Toolset.Editors.Doors
                 return;
 
             _disposed = true;
+            foreach (var row in BasicRows.Concat(BehaviorRows))
+                row.Dispose();
+            Appearance.Dispose();
             _previewView?.Dispose();
             _previewView = null;
             PreviewScene = null;

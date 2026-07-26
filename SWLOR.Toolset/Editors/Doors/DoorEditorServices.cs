@@ -3,6 +3,8 @@ using SWLOR.Toolset.Domain.Editors.Doors;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Toolset.Editors.Triggers;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors.Doors
 {
@@ -13,5 +15,7 @@ namespace SWLOR.Toolset.Editors.Doors
         Func<string, IReadOnlyList<BehaviorChoice>>? ResolveChoices,
         IReadOnlyList<DoorAppearanceChoice> Appearances,
         ResourceIndex? ResourceIndex,
-        Func<JsonGffStruct, RenderModel?>? ResolveModel);
+        Func<JsonGffStruct, RenderModel?>? ResolveModel,
+        ThumbnailService? Thumbnails = null,
+        ChoicePreviewService? ChoicePreviews = null);
 }

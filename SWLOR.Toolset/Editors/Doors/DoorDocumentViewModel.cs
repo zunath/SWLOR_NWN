@@ -9,6 +9,7 @@ using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
+using SWLOR.Toolset.Editors.Triggers;
 
 namespace SWLOR.Toolset.Editors.Doors
 {
@@ -47,7 +48,9 @@ namespace SWLOR.Toolset.Editors.Doors
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             IReadOnlyList<DoorAppearanceChoice>? appearances = null,
             ResourceIndex? resourceIndex = null,
-            Func<JsonGffStruct, RenderModel?>? resolveModel = null)
+            Func<JsonGffStruct, RenderModel?>? resolveModel = null,
+            ThumbnailService? thumbnails = null,
+            ChoicePreviewService? choicePreviews = null)
         {
             _log = log;
             _prompts = prompts;
@@ -65,7 +68,9 @@ namespace SWLOR.Toolset.Editors.Doors
                 resolveChoices,
                 appearances,
                 resourceIndex,
-                resolveModel);
+                resolveModel,
+                thumbnails: thumbnails,
+                choicePreviews: choicePreviews);
             UpdateTitle();
         }
 

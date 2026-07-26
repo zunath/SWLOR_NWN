@@ -432,9 +432,9 @@ namespace SWLOR.Toolset.Editors.Placeables
         }
 
         /// <summary>
-        /// Called by the owning editor when its Appearance tab is selected. The view is held by this
-        /// view model across document switches, so visibility has to be forwarded explicitly instead
-        /// of inferred from construction.
+        /// Called by the owning editor while its retained left-rail preview is hosted. The view is
+        /// held by this view model across document switches, so visibility has to be forwarded
+        /// explicitly instead of inferred from construction.
         /// </summary>
         public void SetTabVisible(bool visible)
         {

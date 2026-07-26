@@ -153,10 +153,6 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
 
             if (behavior.Id == DoorBehaviorCatalog.CustomId)
             {
-                foreach (var field in DoorEditorLayout.Advanced.Where(field => field.CustomOnly))
-                    ClearOne(field.Storage, field.Name, field.FieldType);
-
-                ClearOne(BehaviorFieldStorage.Field, "Conversation", GffFieldType.ResRef);
                 foreach (var name in Locals.Select(entry => entry.Name).ToList())
                     Locals.Remove(name);
             }

@@ -11,7 +11,6 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
         public const string LockedDoorId = "locked_door";
         public const string KeyItemDoorId = "key_item_door";
         public const string SealedDoorId = "sealed_door";
-        public const string PlainDoorId = "plain_door";
         public const string TrappedDoorId = "trapped_door";
         public const string CustomId = "custom";
 
@@ -77,7 +76,7 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
             if (door.GetIntOrNull("Plot") == 1)
                 return Get(SealedDoorId);
 
-            return Get(PlainDoorId);
+            return Custom;
         }
 
         private static bool HasCustomScript(JsonGffStruct door)
@@ -224,27 +223,6 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
                 },
                 new DoorBehavior
                 {
-                    Id = PlainDoorId,
-                    DisplayName = "Plain Door",
-                    Group = "World",
-                    Summary = "An ordinary door that opens, closes, and can be smashed.",
-                    Fields = new[]
-                    {
-                        Integer("Hardness", "Hardness", GffFieldType.Byte),
-                        Integer("Hit points", "HP", GffFieldType.Short),
-                        Integer("Fortitude save", "Fort", GffFieldType.Byte),
-                        Integer("Reflex save", "Ref", GffFieldType.Byte),
-                        Integer("Will save", "Will", GffFieldType.Byte)
-                    },
-                    Manages = new[]
-                    {
-                        Pinned("Plot", "Plot", GffFieldType.Byte, 0),
-                        Pinned("Locked", "Locked", GffFieldType.Byte, 0),
-                        PinnedText("Linked to", "LinkedTo", GffFieldType.CExoString, string.Empty)
-                    }
-                },
-                new DoorBehavior
-                {
                     Id = TrappedDoorId,
                     DisplayName = "Trapped Door",
                     Group = "Hazard",
@@ -323,6 +301,27 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
         {
             var fields = new List<DoorFieldDefinition>
             {
+                new DoorFieldDefinition
+                {
+                    Label = "Conversation", Name = "Conversation", Kind = BehaviorFieldKind.Text,
+                    FieldType = GffFieldType.ResRef, MaxLength = DoorEditorLayout.MaxResRefLength
+                },
+                Check("Plot", "Plot"),
+                Check("Locked", "Locked"),
+                Check("Key Required", "KeyRequired"),
+                new DoorFieldDefinition
+                {
+                    Label = "Linked To", Name = "LinkedTo", Kind = BehaviorFieldKind.Text,
+                    FieldType = GffFieldType.CExoString
+                },
+                Integer("Linked To Flags", "LinkedToFlags", GffFieldType.Byte),
+                Check("Trap Flag", "TrapFlag"),
+                Integer("Trap Type", "TrapType", GffFieldType.Byte),
+                Check("Trap Detectable", "TrapDetectable"),
+                Integer("Trap Detect DC", "TrapDetectDC", GffFieldType.Byte),
+                Check("Trap Disarmable", "TrapDisarmable"),
+                Integer("Trap Disarm DC", "DisarmDC", GffFieldType.Byte),
+                Check("Trap One Shot", "TrapOneShot"),
                 Check("Auto Remove Key", "AutoRemoveKey"),
                 Integer("Relock DC", "CloseLockDC", GffFieldType.Byte),
                 Integer("Current hit points", "CurrentHP", GffFieldType.Short),

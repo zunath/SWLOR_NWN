@@ -30,8 +30,7 @@
          paged rather than virtualized, matching the palette: a WrapPanel in a ListBox holds
          everything it is given, so it is only ever given a page. -->
     <DataTemplate DataType="placeables:AppearanceSectionViewModel">
-      <Grid ColumnDefinitions="*,270" Margin="8">
-        <Grid Grid.Column="0" RowDefinitions="Auto,Auto,*,Auto" Margin="0,0,8,0">
+      <Grid RowDefinitions="Auto,Auto,*" Margin="8">
           <TextBox Grid.Row="0" Text="{Binding Query, Mode=TwoWay}"
                    Watermark="Search models by name or resref" />
 
@@ -89,49 +88,6 @@
               </DataTemplate>
             </ListBox.ItemTemplate>
           </ListBox>
-
-        </Grid>
-
-        <StackPanel Grid.Column="1" Spacing="8">
-          <TextBlock Text="CURRENT" Classes="label" />
-          <TextBlock Text="{Binding CurrentDescription}" TextWrapping="Wrap" FontSize="11.5" />
-          <TextBlock TextWrapping="Wrap" FontSize="11.5" Foreground="Orange"
-                     IsVisible="{Binding CurrentIsUnknown}"
-                     Text="This row has no model in placeables.2da. The stored value is kept as it is." />
-
-          <Border Height="1" Background="{DynamicResource RuleBrush}" Margin="0,4" />
-
-          <TextBlock Text="MODEL" Classes="label" />
-          <!-- The live 3D: drag to orbit, wheel to zoom. Shows the highlighted model while
-               browsing, and the placeable's own model when nothing is highlighted. -->
-          <Border Height="190" Background="{DynamicResource PanelRaisedBrush}" CornerRadius="3">
-            <ContentControl Content="{Binding PreviewView}" />
-          </Border>
-          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6"
-                IsVisible="{Binding HasAnimationControls}">
-            <ComboBox Grid.Column="0"
-                      ItemsSource="{Binding AnimationStates}"
-                      SelectedItem="{Binding SelectedAnimation, Mode=TwoWay}"
-                      IsVisible="{Binding HasAnimationStatePicker}">
-              <ComboBox.ItemTemplate>
-                <DataTemplate DataType="placeables:PlaceableAnimationOption">
-                  <TextBlock Text="{Binding Label}" />
-                </DataTemplate>
-              </ComboBox.ItemTemplate>
-            </ComboBox>
-            <Button Grid.Column="1" Content="{Binding AnimationToggleText}"
-                    Command="{Binding ToggleAnimationCommand}"
-                    IsEnabled="{Binding CanAnimateSelected}" MinWidth="62" />
-          </Grid>
-          <TextBlock Text="Left-drag to turn &#x00B7; right-drag to move &#x00B7; wheel to zoom" Classes="dim" FontSize="10.5" />
-
-          <StackPanel Spacing="4" IsVisible="{Binding HasHighlight}">
-            <TextBlock Text="{Binding Highlighted.Caption}" TextWrapping="Wrap" />
-            <TextBlock Text="{Binding Highlighted.ModelName}" Classes="mono" FontSize="11" />
-            <TextBlock Text="{Binding Highlighted.UsageText}" Classes="count" />
-          </StackPanel>
-
-        </StackPanel>
       </Grid>
     </DataTemplate>
 
@@ -227,23 +183,69 @@
       </StackPanel>
     </Border>
 
-    <Panel>
-      <!-- One page for the types whose fields fit one; a strip only when there is somewhere to go. -->
-      <ContentControl Content="{Binding SingleTabContent}" IsVisible="{Binding !HasMultipleTabs}" />
+    <Grid ColumnDefinitions="Auto,*">
+      <!-- Keep one retained 3D control visible while moving between a placeable's tabs, matching the
+           Door editor. The Appearance tab now concentrates on searching and comparing thumbnails. -->
+      <Border Grid.Column="0" Width="220"
+              BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0"
+              Padding="12" IsVisible="{Binding IsPlaceableEditor}">
+        <Grid RowDefinitions="*,Auto"
+              DataContext="{Binding PlaceableSections.Appearance}"
+              x:DataType="placeables:AppearanceSectionViewModel">
+          <Border Grid.Row="0" MinHeight="250" Background="{DynamicResource PanelRaisedBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
+            <ContentControl Content="{Binding PreviewView}" />
+          </Border>
+          <StackPanel Grid.Row="1" Margin="0,9,0,0" Spacing="5">
+            <TextBlock Text="{Binding CurrentDescription}" TextWrapping="Wrap" FontSize="10.5" />
+            <TextBlock Text="This row has no model in placeables.2da. The stored value is kept as it is."
+                       TextWrapping="Wrap" FontSize="10.5" Foreground="Orange"
+                       IsVisible="{Binding CurrentIsUnknown}" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6"
+                  IsVisible="{Binding HasAnimationControls}">
+              <ComboBox Grid.Column="0"
+                        ItemsSource="{Binding AnimationStates}"
+                        SelectedItem="{Binding SelectedAnimation, Mode=TwoWay}"
+                        IsVisible="{Binding HasAnimationStatePicker}">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate DataType="placeables:PlaceableAnimationOption">
+                    <TextBlock Text="{Binding Label}" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+              <Button Grid.Column="1" Content="{Binding AnimationToggleText}"
+                      Command="{Binding ToggleAnimationCommand}"
+                      IsEnabled="{Binding CanAnimateSelected}" MinWidth="62" />
+            </Grid>
+            <TextBlock Text="Left-drag to turn &#x00B7; right-drag to move &#x00B7; wheel to zoom"
+                       Classes="dim" FontSize="10" TextWrapping="Wrap" />
+            <StackPanel Spacing="3" IsVisible="{Binding HasHighlight}">
+              <TextBlock Text="{Binding Highlighted.Caption}" TextWrapping="Wrap" FontSize="10.5" />
+              <TextBlock Text="{Binding Highlighted.ModelName}" Classes="mono" FontSize="10" />
+              <TextBlock Text="{Binding Highlighted.UsageText}" Classes="count" />
+            </StackPanel>
+          </StackPanel>
+        </Grid>
+      </Border>
 
-      <TabControl ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
-                  IsVisible="{Binding HasMultipleTabs}">
-        <TabControl.ItemTemplate>
-          <DataTemplate DataType="editors:EditorTabViewModel">
-            <TextBlock Text="{Binding Title}" />
-          </DataTemplate>
-        </TabControl.ItemTemplate>
-        <TabControl.ContentTemplate>
-          <DataTemplate DataType="editors:EditorTabViewModel">
-            <ContentControl Content="{Binding Content}" />
-          </DataTemplate>
-        </TabControl.ContentTemplate>
-      </TabControl>
-    </Panel>
+      <Panel Grid.Column="1">
+        <!-- One page for the types whose fields fit one; a strip only when there is somewhere to go. -->
+        <ContentControl Content="{Binding SingleTabContent}" IsVisible="{Binding !HasMultipleTabs}" />
+
+        <TabControl ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
+                    IsVisible="{Binding HasMultipleTabs}">
+          <TabControl.ItemTemplate>
+            <DataTemplate DataType="editors:EditorTabViewModel">
+              <TextBlock Text="{Binding Title}" />
+            </DataTemplate>
+          </TabControl.ItemTemplate>
+          <TabControl.ContentTemplate>
+            <DataTemplate DataType="editors:EditorTabViewModel">
+              <ContentControl Content="{Binding Content}" />
+            </DataTemplate>
+          </TabControl.ContentTemplate>
+        </TabControl>
+      </Panel>
+    </Grid>
   </DockPanel>
 </UserControl>

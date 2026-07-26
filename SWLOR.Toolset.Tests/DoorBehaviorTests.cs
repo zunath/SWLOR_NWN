@@ -60,7 +60,7 @@ namespace SWLOR.Toolset.Tests
             Store(sealedDoor).SetInteger(BehaviorFieldStorage.Field, "Plot", GffFieldType.Byte, 1);
             DoorBehaviorCatalog.Classify(sealedDoor).Id.Should().Be(DoorBehaviorCatalog.SealedDoorId);
 
-            DoorBehaviorCatalog.Classify(NewDoor()).Id.Should().Be(DoorBehaviorCatalog.PlainDoorId);
+            DoorBehaviorCatalog.Classify(NewDoor()).Id.Should().Be(DoorBehaviorCatalog.CustomId);
 
             var conversation = NewDoor();
             Store(conversation).SetString(
@@ -79,12 +79,15 @@ namespace SWLOR.Toolset.Tests
         [TestCase("OnOpen", "gy_2minlockclose")]
         [TestCase("OnOpen", "gy_2minclosedoor")]
         [TestCase("OnOpen", "relock")]
-        public void EngineDeathAndKnownCloserScriptsDoNotMakeADoorCustom(string field, string script)
+        public void EngineDeathAndKnownCloserScriptsDoNotOverrideARecognizedBehavior(
+            string field,
+            string script)
         {
             var door = NewDoor();
             Store(door).SetString(BehaviorFieldStorage.Field, field, GffFieldType.ResRef, script);
+            Store(door).SetInteger(BehaviorFieldStorage.Field, "Plot", GffFieldType.Byte, 1);
 
-            DoorBehaviorCatalog.Classify(door).Id.Should().Be(DoorBehaviorCatalog.PlainDoorId);
+            DoorBehaviorCatalog.Classify(door).Id.Should().Be(DoorBehaviorCatalog.SealedDoorId);
         }
 
         [Test]
@@ -120,7 +123,6 @@ namespace SWLOR.Toolset.Tests
                 DoorBehaviorCatalog.LockedDoorId,
                 DoorBehaviorCatalog.KeyItemDoorId,
                 DoorBehaviorCatalog.SealedDoorId,
-                DoorBehaviorCatalog.PlainDoorId,
                 DoorBehaviorCatalog.TrappedDoorId,
                 DoorBehaviorCatalog.CustomId
             });
@@ -147,12 +149,6 @@ namespace SWLOR.Toolset.Tests
             sealedDoor.GetInteger(BehaviorFieldStorage.Field, "Locked").Should().Be(0);
             sealedDoor.GetInteger(BehaviorFieldStorage.Field, "KeyRequired").Should().Be(0);
             sealedDoor.GetString(BehaviorFieldStorage.Field, "LinkedTo").Should().BeEmpty();
-
-            var plain = Store(NewDoor());
-            plain.Apply(DoorBehaviorCatalog.Get(DoorBehaviorCatalog.PlainDoorId), isInstance: true);
-            plain.GetInteger(BehaviorFieldStorage.Field, "Plot").Should().Be(0);
-            plain.GetInteger(BehaviorFieldStorage.Field, "Locked").Should().Be(0);
-            plain.GetString(BehaviorFieldStorage.Field, "LinkedTo").Should().BeEmpty();
 
             var trapped = Store(NewDoor());
             trapped.Apply(DoorBehaviorCatalog.Get(DoorBehaviorCatalog.TrappedDoorId), isInstance: true);
@@ -193,7 +189,7 @@ namespace SWLOR.Toolset.Tests
                     mutation();
                     return true;
                 });
-            editor.ChooseBehavior(DoorBehaviorCatalog.Get(DoorBehaviorCatalog.PlainDoorId));
+            editor.ChooseBehavior(DoorBehaviorCatalog.Custom);
 
             edits.Should().Be(1, "a behavior swap is one undoable edit");
             store.HasRequiredKeyItemLocals.Should().BeFalse();
@@ -203,7 +199,7 @@ namespace SWLOR.Toolset.Tests
             store.GetInteger(BehaviorFieldStorage.Field, "Locked").Should().Be(0);
             store.GetString(BehaviorFieldStorage.Field, "TemplateResRef")
                 .Should().Be("door_template");
-            DoorBehaviorCatalog.Classify(door).Id.Should().Be(DoorBehaviorCatalog.PlainDoorId);
+            DoorBehaviorCatalog.Classify(door).Id.Should().Be(DoorBehaviorCatalog.CustomId);
         }
 
         [Test]
@@ -225,7 +221,7 @@ namespace SWLOR.Toolset.Tests
             editor.Behavior.Id.Should().Be(DoorBehaviorCatalog.TrappedDoorId,
                 "trap classification precedes Custom");
             editor.ChooseBehavior(DoorBehaviorCatalog.Custom);
-            editor.ChooseBehavior(DoorBehaviorCatalog.Get(DoorBehaviorCatalog.PlainDoorId));
+            editor.ChooseBehavior(DoorBehaviorCatalog.Get(DoorBehaviorCatalog.SealedDoorId));
 
             store.GetString(BehaviorFieldStorage.Field, "Conversation").Should().BeEmpty();
             store.GetString(BehaviorFieldStorage.Field, "OnClick").Should().BeEmpty();
@@ -233,7 +229,7 @@ namespace SWLOR.Toolset.Tests
             store.Locals.Any().Should().BeFalse();
             store.GetString(BehaviorFieldStorage.Field, "Tag").Should().Be("test_door");
             store.GetString(BehaviorFieldStorage.Field, "TemplateResRef").Should().Be("door_template");
-            DoorBehaviorCatalog.Classify(door).Id.Should().Be(DoorBehaviorCatalog.PlainDoorId);
+            DoorBehaviorCatalog.Classify(door).Id.Should().Be(DoorBehaviorCatalog.SealedDoorId);
         }
 
         [Test]
@@ -243,7 +239,9 @@ namespace SWLOR.Toolset.Tests
                 .Should().ContainSingle()
                 .Which.Id.Should().Be(DoorBehaviorCatalog.CustomId);
 
-            var editor = Editor(NewDoor(), isInstance: false);
+            var door = NewDoor();
+            Store(door).SetInteger(BehaviorFieldStorage.Field, "Plot", GffFieldType.Byte, 1);
+            var editor = Editor(door, isInstance: false);
             editor.ShowsVariablesTab.Should().BeFalse();
             editor.Variables.Should().BeNull();
 
@@ -408,23 +406,70 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void DescriptionPreservesLineBreaks()
+        {
+            var door = NewDoor();
+            var editor = Editor(door, isInstance: false);
+            var description = editor.BasicRows.Single(row => row.Definition.Name == "Description");
+
+            description.Text = "First paragraph.\n\nSecond paragraph.";
+
+            Store(door).GetLocalizedText("Description")
+                .Should().Be("First paragraph.\n\nSecond paragraph.");
+        }
+
+        [Test]
+        public void ArtworkChoicesAreLazyAndPaged()
+        {
+            var choices = Enumerable.Range(0, 60)
+                .Select(index => new BehaviorChoice(index, $"Portrait {index}", $"portrait_{index}"))
+                .ToList();
+            using var row = new DoorRowViewModel(
+                new DoorFieldDefinition
+                {
+                    Label = "Portrait",
+                    Name = "PortraitId",
+                    Kind = BehaviorFieldKind.Choice,
+                    FieldType = GffFieldType.Word
+                },
+                Store(NewDoor()),
+                Run,
+                null,
+                _ => { },
+                _ => { },
+                choices);
+
+            row.IsGallery.Should().BeTrue();
+            row.GalleryChoices.Should().BeEmpty("opening the editor must not realize portrait tiles");
+
+            row.OpenGalleryCommand.Execute(null);
+            row.GalleryChoices.Should().HaveCount(48);
+            row.LoadMoreGalleryCommand.Execute(null);
+            row.GalleryChoices.Should().HaveCount(60);
+        }
+
+        [Test]
         public void TheLayoutKeepsEngineNoiseOutAndRawBehaviorFlagsUnderCustom()
         {
-            var all = DoorEditorLayout.Basic.Concat(DoorEditorLayout.Advanced).ToList();
-            all.Any(row => row.Name == "Comment" ||
-                           row.Name == "Interruptable" ||
-                           row.Name == "GenericType")
+            DoorEditorLayout.Basic.Any(row => row.Name == "Comment" ||
+                                              row.Name == "Interruptable" ||
+                                              row.Name == "GenericType")
                 .Should().BeFalse();
             DoorEditorLayout.Basic.Should().ContainSingle(row =>
                 row.Special == DoorFieldSpecial.SelfClosing);
-            DoorEditorLayout.Basic.Should().ContainSingle(row =>
+            DoorEditorLayout.Basic.Should().NotContain(row =>
                 row.Special == DoorFieldSpecial.Appearance);
+            DoorEditorLayout.Basic.Should().Contain(row => row.Name == "PortraitId");
+            DoorEditorLayout.Basic.Should().Contain(row => row.Name == "AnimationState");
+            DoorEditorLayout.Basic.Should().Contain(row =>
+                row.Name == "Description" && row.Kind == BehaviorFieldKind.Paragraph);
 
-            var raw = DoorEditorLayout.Advanced.Where(row => row.CustomOnly)
+            var raw = DoorBehaviorCatalog.Custom.Fields
                 .Select(row => row.Name)
                 .ToHashSet(StringComparer.Ordinal);
             raw.Should().Contain(new[]
             {
+                "Conversation",
                 "Plot", "Locked", "KeyRequired", "LinkedTo", "LinkedToFlags",
                 "TrapFlag", "TrapType", "TrapDetectable", "TrapDetectDC",
                 "TrapDisarmable", "DisarmDC", "TrapOneShot"

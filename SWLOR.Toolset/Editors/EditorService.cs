@@ -33,6 +33,7 @@ namespace SWLOR.Toolset.Editors
         private readonly ResourceIndex? _resourceIndex;
         private readonly PlaceableAppearanceService? _placeableAppearances;
         private readonly DoorTypeService? _doorTypes;
+        private readonly PortraitService? _portraits;
         private readonly WaypointAppearanceService? _waypointAppearances;
         private readonly Domain.GameData.TwoDa.TwoDaService? _twoDaService;
         private Triggers.ChoicePreviewService? _choicePreviews;
@@ -108,7 +109,8 @@ namespace SWLOR.Toolset.Editors
             ThumbnailService? thumbnails = null,
             PlaceableIndexService? placeableIndexes = null,
             Domain.GameData.TwoDa.TwoDaService? twoDaService = null,
-            Placeables.VfxPreviewService? vfxPreviews = null)
+            Placeables.VfxPreviewService? vfxPreviews = null,
+            PortraitService? portraits = null)
         {
             _placeableModels = placeableModels;
             _thumbnails = thumbnails;
@@ -125,6 +127,7 @@ namespace SWLOR.Toolset.Editors
             _resourceIndex = resourceIndex;
             _placeableAppearances = placeableAppearances;
             _doorTypes = doorTypes;
+            _portraits = portraits;
             _tileWalkmeshCache = tileWalkmeshCache;
             _tlkService = tlkService;
             _waypointAppearances = waypointAppearances;
@@ -660,10 +663,9 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Trigger blueprints open in the behavior editor, as a document tab.</summary>
         private void OpenTriggerEditor(string filePath, string resRef)
         {
-            _choicePreviews ??= new Triggers.ChoicePreviewService(_resourceIndex);
             var editor = new Triggers.TriggerDocumentViewModel(
                 filePath, resRef, _gameCodeIndex, _log, _prompts, ResolveTagArea, ResolveTriggerChoices,
-                _choicePreviews);
+                ChoicePreviews());
             editor.Closed += _ => _openTriggerEditors.Remove(filePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -737,7 +739,9 @@ namespace SWLOR.Toolset.Editors
                 _resourceIndex,
                 _previewRenderer != null
                     ? door => _previewRenderer.BuildModel(ResourceType.Utd, door)
-                    : null);
+                    : null,
+                _thumbnails,
+                ChoicePreviews());
             editor.Closed += _ => _openDoorEditors.Remove(filePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -749,6 +753,9 @@ namespace SWLOR.Toolset.Editors
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice> DoorAppearances() =>
             _doorAppearances ??= Domain.Editors.Doors.DoorAppearanceCatalog.Read(_doorTypes);
 
+        private Triggers.ChoicePreviewService ChoicePreviews() =>
+            _choicePreviews ??= new Triggers.ChoicePreviewService(_resourceIndex);
+
         private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ResolveDoorChoices(string key)
         {
             if (key == Domain.Editors.Doors.DoorChoiceKeys.DoorPaletteCategories)
@@ -759,6 +766,16 @@ namespace SWLOR.Toolset.Editors
 
             if (key == Domain.Editors.Doors.DoorChoiceKeys.TrapTypes)
                 return Domain.Editors.Triggers.TrapTypeCatalog.Read(_twoDaService);
+
+            if (key == Domain.Editors.Doors.DoorChoiceKeys.Portraits && _portraits != null)
+            {
+                return _portraits.GetAll()
+                    .Select(row => new Domain.Editors.Behaviors.BehaviorChoice(
+                        row.Id,
+                        row.BaseResRef,
+                        PortraitService.GetTgaVariants(row.BaseResRef).Medium))
+                    .ToList();
+            }
 
             return _lookups.GetOptions(key)
                 .Select(option => new Domain.Editors.Behaviors.BehaviorChoice(option.Id, option.Display))
@@ -1086,7 +1103,9 @@ namespace SWLOR.Toolset.Editors
                         _resourceIndex,
                         _previewRenderer != null
                             ? door => _previewRenderer.BuildModel(ResourceType.Utd, door)
-                            : null),
+                            : null,
+                        _thumbnails,
+                        ChoicePreviews()),
                     ResolveSoundChoices,
                     SoundResources());
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);

@@ -65,11 +65,12 @@ namespace SWLOR.Toolset.Editors
                 _selectedTab = value;
                 OnPropertyChanged();
 
-                PlaceableSections?.Appearance.SetTabVisible(
-                    ReferenceEquals(value?.Content, PlaceableSections.Appearance));
+                // The retained 3D preview now stays in the editor's left rail across every
+                // placeable tab, matching the Door editor.
+                PlaceableSections?.Appearance.SetTabVisible(true);
 
-                // The model grid and its 3D preview are built on first sight rather than on open,
-                // so opening a placeable to rename it never pays for them.
+                // The model grid continues loading independently; selecting Appearance is still
+                // the natural point to ensure that work has started.
                 if (PlaceableSections != null && ReferenceEquals(value?.Content, PlaceableSections.Appearance))
                     PlaceableSections.Appearance.EnsureLoaded();
             }

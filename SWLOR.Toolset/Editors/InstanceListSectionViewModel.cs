@@ -250,7 +250,9 @@ namespace SWLOR.Toolset.Editors
                     _doorEditorServices?.Appearances,
                     _doorEditorServices?.ResourceIndex,
                     _doorEditorServices?.ResolveModel,
-                    _gitSession.UndoStack.IsDirty);
+                    _gitSession.UndoStack.IsDirty,
+                    _doorEditorServices?.Thumbnails,
+                    _doorEditorServices?.ChoicePreviews);
                 VarTableSection = null;
             }
             else if (_blueprintType == ResourceType.Uts)

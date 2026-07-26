@@ -982,3 +982,78 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   the model resolver.
 - Production Toolset projects build without nullable warnings; focused regression and full-suite
   results are recorded in the PR handoff.
+## Trigger Properties dialog — 2026-07-26 — the .utt editor
+- User direction: build the base NWN Trigger Properties dialog. A trigger blueprint is REUSABLE;
+  its dimensions (`Geometry`) are drawn per placement in the area editor and are not a blueprint
+  concern, and neither is the per-placement transition target (`LinkedTo`/`LinkedToFlags`). No
+  Comments tab - `Comment` is written as an empty string on every trigger the editor saves.
+- Chose Design A of four (see `TriggerEditorDesigns.md`): faithful modal, tab for tab, plus
+  Variables promoted from the base dialog's `...` button to a tab of its own.
+- Files: `Domain\Editors\Schemas\UttSchema.cs` (regrouped into the dialog's tabs in the base
+  dialog's own field order; Comment dropped), app `Editors\TriggerPropertiesViewModel.cs`,
+  `Editors\TriggerPropertiesTab.cs`, `Editors\FieldViewModelFactory.cs` (extracted from
+  BlueprintEditorViewModel so both editors build field VMs one way),
+  `Shell\Views\TriggerPropertiesDialog.axaml(.cs)`, `Editors\EditorService.cs` (routes Utt to the
+  dialog after the existing lookup-representability check).
+- **Commit model:** the modal owns commit, unlike every other blueprint. Field edits still run as
+  one-step transactions on the session's undo stack; OK writes atomically, Cancel unwinds the whole
+  stack (empty at open, so it restores the document exactly as loaded), and closing the window by
+  any route goes through the same discard. Nothing reaches disk until OK. This is the cost of A
+  that the study flagged: `.utt` no longer participates in Ctrl+S or shell undo.
+- **Deliberately NOT built - "Update Instances".** Measured first: 46 of 188 placements of the five
+  placed trigger blueprints differ from their blueprint, and 42 of those differ in `VarTable` -
+  every one of the 41 exploration triggers carries its own `DISPLAY_TEXT`. A blanket push would
+  erase all of them. The button ships only when it is field-scoped and previewed (Design C).
+  Load/Save Script Set is also out: SWLOR script sets are C# handlers, not builder-assembled files.
+- **Trap tab** exists only while `Type` is Trap (2), re-read from the document on any change to the
+  Type field, because a dropdown reports through `SelectedOption` and a bare numeric box through
+  `RawValue`.
+- Known gaps, both flagged rather than faked: **Category** is the raw `PaletteID` byte, since the
+  toolset's own category tree is a sidecar that does not use PaletteID; **Cursor** is a numeric box,
+  because a partial hand-written cursor list would trip `DropdownValueValidator` and refuse to open
+  any trigger holding an id the list omitted.
+- Tests: `SWLOR.Toolset.Tests\TriggerPropertiesTests.cs` (9). Teeth verified - removing
+  `BlankComment()` and emptying `CancelEdits()` fails exactly the two tests that guard them.
+  Suite 929 passed / 1 skip / 0 failed.
+- Worktree note: both submodules were uninitialized here, which alone produced 82 haks/2DA/tileset
+  test failures before `git -c http.sslBackend=schannel -c protocol.file.allow=always submodule
+  update --init` against the local clones.
+
+## Trigger behavior editor — 2026-07-26 — replaces the modal shipped earlier today
+- User direction: model the trigger editor on the placeable editor (tabbed instance editor whose
+  Behavior tab is a picker on the left, that behavior's fields on the right, and a "what this
+  behavior manages" block). Serve BOTH blueprints and placements. **Local variables are reachable
+  only under Custom** - every other behavior owns its locals and exposes them as named fields.
+- The modal Trigger Properties dialog from earlier today was removed wholesale
+  (`TriggerPropertiesViewModel/Tab/Dialog` + its tests), per "disregard what you came up with".
+- Domain, new `Editors\Triggers\`: `TriggerBehavior`, `TriggerBehaviorCatalog` (9 behaviors +
+  classifier), `TriggerFieldDefinition/Kind/Storage`, `TriggerChoice`, `TriggerTagScope`,
+  `TriggerManagedValue`, `TriggerValueStore`, `TriggerEditorLayout` (Basic/Advanced rows).
+  Plus `Workspace\ModuleTagIndex` (tag -> area, lazy, blueprint-tag fallback) so a transition's
+  destination can say which area it resolves in.
+- App, new `Editors\Triggers\`: `TriggerEditorViewModel` (shared by blueprint and placement),
+  `TriggerDocumentViewModel` (the .utt document tab, Revert/Save), `TriggerRowViewModel`,
+  `TriggerBehaviorListItemViewModel`, `TriggerManagedRowViewModel`; view
+  `Editors\Views\TriggerDocumentView.axaml` (namespace must be `Editors.Triggers` - ViewLocator
+  maps by name, not by folder). New theme classes `Border.card`, `TextBlock.section`,
+  `Button.behavior`.
+- **One editor, two shapes.** A blueprint root and one entry of an area's TriggerList are both a
+  `JsonGffStruct` with the same fields and the same VarTable, which is what lets the same view model
+  serve both; the host supplies the struct and its session's edit runner.
+- **Behavior swap is one undo step**: clear what the previous behavior owned, then apply the new
+  one's managed values. Without the clear, a swapped-away OnEnter keeps firing in game.
+- `VarTableSectionViewModel` now takes the edit runner rather than an `EditorFieldContext` - it only
+  ever used `RunEdit`, and the context's document half is unreachable for a trigger placement whose
+  locals live on an instance struct rather than a document root. Call sites updated.
+- Tests: `TriggerBehaviorTests` (10). Two carry the design - every trigger in the corpus must
+  classify as something, and a behavior swap must leave nothing of the previous one behind. Suite
+  930 passed / 1 skip / 0 failed.
+- **Not verified visually.** The app builds and launches, but synthetic double-clicks do not reach
+  the palette tiles, so the editor was never rendered on screen. Confirmed this is the input method
+  and not a regression: the same double-click fails identically on an item blueprint, which goes
+  through the untouched `BlueprintEditorViewModel` path. Needs a human open of a .utt.
+- **Not wired yet:** placements. The view model takes `isInstance` and a struct, so the instance
+  half is built, but the area editor's trigger rows still use the generic instance detail form.
+- Known gaps kept honest rather than faked: Faction and Cursor are numeric rows (a partial
+  hand-written cursor list would trip `DropdownValueValidator` and refuse to open any trigger
+  holding an id it omitted); Category is the raw PaletteID byte.

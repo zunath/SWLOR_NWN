@@ -32,6 +32,8 @@ namespace SWLOR.Toolset.Editors
         private readonly PlaceableAppearanceService? _placeableAppearances;
         private readonly DoorTypeService? _doorTypes;
         private readonly WaypointAppearanceService? _waypointAppearances;
+        private readonly Domain.GameData.TwoDa.TwoDaService? _twoDaService;
+        private Triggers.ChoicePreviewService? _choicePreviews;
 
         /// <summary>Supplies the area editor its placement-ghost geometry; null degrades the ghost to a marker.</summary>
         private readonly Workspace.BlueprintPreviewRenderer? _previewRenderer;
@@ -82,7 +84,8 @@ namespace SWLOR.Toolset.Editors
             Workspace.ScriptLanguageService? scriptLanguage = null,
             Shell.Panels.ProblemsViewModel? problems = null,
             Services.ScriptCompileService? compileService = null,
-            Services.IExternalLinkService? links = null)
+            Services.IExternalLinkService? links = null,
+            Domain.GameData.TwoDa.TwoDaService? twoDaService = null)
         {
             _workspaceContext = workspaceContext;
             _lookups = lookups;
@@ -99,6 +102,7 @@ namespace SWLOR.Toolset.Editors
             _tlkService = tlkService;
             _waypointAppearances = waypointAppearances;
             _previewRenderer = previewRenderer;
+            _twoDaService = twoDaService;
             _scriptLanguage = scriptLanguage;
             _problems = problems;
             _compileService = compileService;
@@ -401,8 +405,10 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Trigger blueprints open in the behavior editor, as a document tab.</summary>
         private void OpenTriggerEditor(string filePath, string resRef)
         {
+            _choicePreviews ??= new Triggers.ChoicePreviewService(_resourceIndex);
             var editor = new Triggers.TriggerDocumentViewModel(
-                filePath, resRef, _gameCodeIndex, _log, _prompts, ResolveTagArea, ResolveTriggerChoices);
+                filePath, resRef, _gameCodeIndex, _log, _prompts, ResolveTagArea, ResolveTriggerChoices,
+                _choicePreviews);
             editor.Closed += _ => _openTriggerEditors.Remove(filePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -420,6 +426,11 @@ namespace SWLOR.Toolset.Editors
         {
             if (key == Domain.Editors.Triggers.TriggerChoiceKeys.PaletteCategories)
                 return ResolveTriggerCategories();
+
+            // Not routed through the shared lookup: the picker shows each screen's artwork, and the
+            // generic 2DA lookup returns labels only.
+            if (key == Domain.Editors.Triggers.TriggerChoiceKeys.LoadScreens)
+                return Domain.Editors.Triggers.LoadScreenCatalog.Read(_twoDaService);
 
             return _lookups.GetOptions(key)
                 .Select(option => new Domain.Editors.Triggers.TriggerChoice(option.Id, option.Display))

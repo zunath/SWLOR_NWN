@@ -82,10 +82,13 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                 _trigger.SetSingle(name, (float)value);
         }
 
-        /// <summary>Applies one managed value.</summary>
-        public void Apply(TriggerManagedValue value)
+        /// <summary>Applies one managed value, skipping what only a placement can carry.</summary>
+        public void Apply(TriggerManagedValue value, bool isInstance = true)
         {
             ArgumentNullException.ThrowIfNull(value);
+
+            if (value.IsInstanceOnly && !isInstance)
+                return;
 
             if (value.StringValue != null)
                 SetString(value.Storage, value.Name, value.FieldType, value.StringValue);
@@ -99,9 +102,12 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         /// Whether a managed value currently holds what its behavior says it should — what the
         /// editor's tick beside each managed row means.
         /// </summary>
-        public bool Matches(TriggerManagedValue value)
+        public bool Matches(TriggerManagedValue value, bool isInstance = true)
         {
             ArgumentNullException.ThrowIfNull(value);
+
+            if (value.IsInstanceOnly && !isInstance)
+                return true;
 
             if (value.StringValue != null)
                 return string.Equals(
@@ -125,7 +131,10 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             ArgumentNullException.ThrowIfNull(behavior);
 
             foreach (var value in behavior.Manages)
-                ClearOne(value.Storage, value.Name, value.FieldType);
+            {
+                if (value.ClearOnSwap)
+                    ClearOne(value.Storage, value.Name, value.FieldType);
+            }
 
             foreach (var field in behavior.Fields)
             {

@@ -118,7 +118,22 @@
                          IsVisible="{Binding IsNumber}" />
           <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsVisible="{Binding IsCheck}" />
           <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice, Mode=TwoWay}"
-                    MinWidth="180" IsVisible="{Binding IsChoice}" />
+                    MinWidth="180" MaxDropDownHeight="460"
+                    IsVisible="{Binding IsChoice}">
+            <ComboBox.ItemTemplate>
+              <DataTemplate DataType="triggers:TriggerChoiceViewModel">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <!-- A load screen is a picture; picking one by name means guessing what it looks
+                       like. Choices without artwork keep the plain name. -->
+                  <Border IsVisible="{Binding HasPreview}" ClipToBounds="True" CornerRadius="2"
+                          BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
+                    <Image Source="{Binding Preview}" Width="128" Height="96" Stretch="UniformToFill" />
+                  </Border>
+                  <TextBlock Text="{Binding Display}" VerticalAlignment="Center" />
+                </StackPanel>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
         </StackPanel>
 
         <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Note}" Classes="label"

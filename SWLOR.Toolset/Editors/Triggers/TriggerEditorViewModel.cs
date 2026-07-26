@@ -31,6 +31,7 @@ namespace SWLOR.Toolset.Editors.Triggers
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<string, string?>? _resolveTag;
         private readonly Func<string, IReadOnlyList<TriggerChoice>>? _resolveChoices;
+        private readonly ChoicePreviewService? _previews;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly bool _isInstance;
 
@@ -72,7 +73,8 @@ namespace SWLOR.Toolset.Editors.Triggers
             Func<string, Action, bool> runEdit,
             IGameCodeIndex? gameCodeIndex = null,
             Func<string, string?>? resolveTag = null,
-            Func<string, IReadOnlyList<TriggerChoice>>? resolveChoices = null)
+            Func<string, IReadOnlyList<TriggerChoice>>? resolveChoices = null,
+            ChoicePreviewService? previews = null)
         {
             ArgumentNullException.ThrowIfNull(trigger);
 
@@ -81,6 +83,7 @@ namespace SWLOR.Toolset.Editors.Triggers
             _gameCodeIndex = gameCodeIndex;
             _resolveTag = resolveTag;
             _resolveChoices = resolveChoices;
+            _previews = previews;
             _isInstance = isInstance;
             HeaderOwner = headerOwner;
 
@@ -105,7 +108,7 @@ namespace SWLOR.Toolset.Editors.Triggers
             {
                 _store.Clear(previous);
                 foreach (var value in behavior.Manages)
-                    _store.Apply(value);
+                    _store.Apply(value, _isInstance);
             });
 
             if (!applied)
@@ -116,9 +119,22 @@ namespace SWLOR.Toolset.Editors.Triggers
             ReloadFromDocument();
         }
 
-        /// <summary>Re-reads every row, after an undo/redo or an external reload.</summary>
+        /// <summary>
+        /// Re-reads everything from the document, after a revert, an undo/redo or an external
+        /// reload — including which behavior the document now describes. Reverting a behavior swap
+        /// puts the fields back, so the editor has to follow them; otherwise Revert left the old
+        /// behavior's form on screen over the restored document, claiming a behavior the trigger no
+        /// longer had.
+        /// </summary>
         public void ReloadFromDocument()
         {
+            var stored = TriggerBehaviorCatalog.Classify(_store.Trigger);
+            if (stored.Id != Behavior.Id)
+            {
+                Behavior = stored;
+                RebuildBehaviorSection();
+            }
+
             foreach (var row in BasicRows.Concat(BehaviorRows).Concat(AdvancedRows))
                 row.Reload();
 
@@ -175,7 +191,7 @@ namespace SWLOR.Toolset.Editors.Triggers
         }
 
         private TriggerRowViewModel CreateRow(TriggerFieldDefinition definition) =>
-            new(definition, _store, _runEdit, _resolveTag, ResolveChoices(definition));
+            new(definition, _store, _runEdit, _resolveTag, ResolveChoices(definition), _previews);
 
         /// <summary>
         /// A row's choices, from game data when it names a key. An unresolvable key yields an empty

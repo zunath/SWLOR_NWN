@@ -4,6 +4,9 @@ using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Editors.Triggers;
+using SWLOR.Toolset.Services;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -19,6 +22,190 @@ namespace SWLOR.Toolset.Tests
     [TestFixture]
     public class TriggerBehaviorTests
     {
+        /// <summary>
+        /// What each behavior writes, spelled out here rather than read back out of the catalog, so
+        /// the catalog cannot drift away from what the server listens for without this failing. Every
+        /// handler named below is a real <c>ScriptName</c> constant in SWLOR.Game.Server.
+        /// </summary>
+        private static readonly Dictionary<string, (string Field, string Value)[]> ExpectedWrites = new()
+        {
+            [TriggerBehaviorCatalog.AreaTransitionId] = new[] { ("Type", "1"), ("Cursor", "1") },
+            [TriggerBehaviorCatalog.NoSpawnZoneId] = new[] { ("TemplateResRef", "anti_spawn_trigg"), ("Type", "0") },
+            [TriggerBehaviorCatalog.ExplorationNoteId] = new[] { ("Type", "0"), ("ScriptOnEnter", "explore_trigger") },
+            [TriggerBehaviorCatalog.RestZoneId] = new[] { ("Type", "0"), ("ScriptOnEnter", "rest_trg_enter"), ("ScriptOnExit", "rest_trg_exit") },
+            [TriggerBehaviorCatalog.QuestId] = new[] { ("Type", "0"), ("ScriptOnEnter", "quest_trigger") },
+            [TriggerBehaviorCatalog.TrapId] = new[] { ("Type", "2"), ("TrapFlag", "1") },
+            [TriggerBehaviorCatalog.CustomId] = Array.Empty<(string, string)>()
+        };
+
+        [Test]
+        public void EveryBehaviorWritesTheEngineFieldsItsRuntimeReads()
+        {
+            TriggerBehaviorCatalog.All.Select(behavior => behavior.Id)
+                .Should().BeEquivalentTo(ExpectedWrites.Keys,
+                    "a behavior with no stated writes has never been checked against the server");
+
+            foreach (var behavior in TriggerBehaviorCatalog.All)
+            {
+                var store = new TriggerValueStore(NewTrigger());
+                foreach (var value in behavior.Manages)
+                    store.Apply(value, isInstance: true);
+
+                foreach (var (field, expected) in ExpectedWrites[behavior.Id])
+                {
+                    // The expected value's own shape says how to read the field back: a GFF field
+                    // refuses to hand an int out as a string, and vice versa.
+                    var actual = long.TryParse(expected, out _)
+                        ? store.GetInteger(TriggerFieldStorage.Field, field)?.ToString() ?? string.Empty
+                        : store.GetString(TriggerFieldStorage.Field, field);
+
+                    actual.Should().Be(expected,
+                        $"{behavior.DisplayName} must set {field} for the server to act on it");
+                }
+            }
+        }
+
+        [Test]
+        public void ABehaviorSurvivesBeingSavedAndReopened()
+        {
+            // The point of the whole thing: choosing a behavior has to reach the file, not just the
+            // screen, and reopening the file has to recognise what was chosen.
+            var path = CopyToTemp("badge_trigger");
+            var document = new TriggerDocumentViewModel(
+                path, "badge_trigger", null, new OutputLogService(), new StubPrompts());
+            try
+            {
+                document.Editor.ChooseBehavior(
+                    TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.ExplorationNoteId));
+                document.Editor.BehaviorRows.Single(row => row.Definition.Name == "DISPLAY_TEXT")
+                    .Text = "A crashed shuttle lies half-buried in the dune.";
+
+                document.IsDirty.Should().BeTrue();
+                document.TrySaveAsync().GetAwaiter().GetResult().Should().BeTrue();
+                document.IsDirty.Should().BeFalse();
+            }
+            finally
+            {
+                // Closing releases the session's edit-scope guard; leaving it open would leak into
+                // whatever test ran next.
+                document.OnClose();
+            }
+
+            var saved = new TriggerValueStore(JsonGffDocument.Load(path).Root);
+            saved.GetString(TriggerFieldStorage.Field, "ScriptOnEnter").Should().Be("explore_trigger");
+            saved.GetFloat(TriggerFieldStorage.Field, "HighlightHeight").Should().BeApproximately(3.0, 1e-4);
+            saved.GetString(TriggerFieldStorage.Local, "DISPLAY_TEXT")
+                .Should().Be("A crashed shuttle lies half-buried in the dune.");
+            TriggerBehaviorCatalog.Classify(JsonGffDocument.Load(path).Root).Id
+                .Should().Be(TriggerBehaviorCatalog.ExplorationNoteId);
+        }
+
+        [Test]
+        public void RevertPutsTheStoredBehaviorBackOnScreen()
+        {
+            var path = CopyToTemp("badge_trigger");
+            var document = new TriggerDocumentViewModel(
+                path, "badge_trigger", null, new OutputLogService(), new StubPrompts());
+            try
+            {
+                var stored = document.Editor.Behavior.Id;
+
+                document.Editor.ChooseBehavior(TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.TrapId));
+                document.Editor.Behavior.Id.Should().Be(TriggerBehaviorCatalog.TrapId);
+
+                document.RevertCommand.Execute(null);
+
+                // Reverting restores the fields, so the editor has to follow them rather than keep
+                // showing a behavior the trigger no longer has.
+                document.Editor.Behavior.Id.Should().Be(stored);
+                document.IsDirty.Should().BeFalse();
+            }
+            finally
+            {
+                document.OnClose();
+            }
+        }
+
+        [Test]
+        public void ANoSpawnZoneIsNotStampedOntoABlueprintsOwnResRef()
+        {
+            // The runtime matches no-spawn volumes by resref, so a placement gets it written; a
+            // blueprint's resref is its file name and must not be rewritten underneath it.
+            var behavior = TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.NoSpawnZoneId);
+            var resRef = behavior.Manages.Single(value => value.Name == "TemplateResRef");
+
+            var blueprint = new TriggerValueStore(NewTrigger());
+            blueprint.Apply(resRef, isInstance: false);
+            blueprint.GetString(TriggerFieldStorage.Field, "TemplateResRef").Should().BeEmpty();
+
+            var placement = new TriggerValueStore(NewTrigger());
+            placement.Apply(resRef, isInstance: true);
+            placement.GetString(TriggerFieldStorage.Field, "TemplateResRef").Should().Be("anti_spawn_trigg");
+
+            placement.Clear(behavior);
+            placement.GetString(TriggerFieldStorage.Field, "TemplateResRef")
+                .Should().Be("anti_spawn_trigg", "swapping behavior must not orphan a placement");
+        }
+
+        [Test]
+        public void LoadScreensOfferPicturesRatherThanNames()
+        {
+            var sw2Da = Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks", "sw_2da");
+            if (!Directory.Exists(sw2Da))
+                Assert.Ignore("The haks submodule is not initialised in this checkout.");
+
+            var screens = LoadScreenCatalog.Read(new Domain.GameData.TwoDa.TwoDaService(sw2Da));
+
+            screens.Should().NotBeEmpty();
+            screens.Should().Contain(screen => !string.IsNullOrWhiteSpace(screen.ImageResRef),
+                "the picker shows each screen's artwork, so the rows must carry a BMPResRef");
+            screens.Should().OnlyContain(screen => !screen.Display.Contains('_'),
+                "2DA labels are identifiers; the picker shows names");
+        }
+
+        private string _tempDirectory = string.Empty;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _tempDirectory = Path.Combine(Path.GetTempPath(), "swlor-trigger-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(_tempDirectory);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (Directory.Exists(_tempDirectory))
+                Directory.Delete(_tempDirectory, recursive: true);
+        }
+
+        private string CopyToTemp(string resRef)
+        {
+            var source = Path.Combine(CorpusLocator.ModuleDirectory, "utt", resRef + ".utt.json");
+            if (!File.Exists(source))
+                Assert.Ignore($"{resRef}.utt.json is not present in this checkout.");
+
+            var destination = Path.Combine(_tempDirectory, resRef + ".utt.json");
+            File.Copy(source, destination);
+            return destination;
+        }
+
+        /// <summary>No test here reaches a prompt; a call means the test wandered off its path.</summary>
+        private sealed class StubPrompts : IEditorPromptService
+        {
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) =>
+                throw new InvalidOperationException("Nothing changed the file underneath the editor.");
+
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) =>
+                throw new InvalidOperationException("No close prompt is expected.");
+
+            public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) =>
+                throw new InvalidOperationException("The editor destroys nothing.");
+
+            public Task<string?> PromptForTextAsync(string headline, string message, string initialValue, string confirmLabel) =>
+                throw new InvalidOperationException("The editor asks for no text.");
+        }
+
         [Test]
         public void OnlyCustomOffersRawVariables()
         {

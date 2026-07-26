@@ -30,6 +30,20 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         /// <summary>What the manages block shows; falls back to the pinned value.</summary>
         public string? Display { get; init; }
 
+        /// <summary>
+        /// Only written to a placement. A blueprint's TemplateResRef is its own file name, so a
+        /// behavior the runtime identifies by resref can set it on an instance but must not try on
+        /// the blueprint.
+        /// </summary>
+        public bool IsInstanceOnly { get; init; }
+
+        /// <summary>
+        /// Whether swapping behavior clears this value. False for anything a trigger cannot be left
+        /// without: blanking an instance's TemplateResRef would orphan it, so choosing a different
+        /// behavior leaves the blueprint reference alone.
+        /// </summary>
+        public bool ClearOnSwap { get; init; } = true;
+
         public string DisplayText =>
             Display
             ?? StringValue

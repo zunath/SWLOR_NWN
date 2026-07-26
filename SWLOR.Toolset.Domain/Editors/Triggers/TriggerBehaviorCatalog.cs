@@ -147,6 +147,15 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     },
                     Manages = new[]
                     {
+                        // The runtime finds these by resref, so on a placement that is the field
+                        // that actually makes it a no-spawn zone. A blueprint's resref is its own
+                        // file name and cannot be rewritten here, hence instance-only - and it is
+                        // never cleared, because a placement without a blueprint is orphaned.
+                        new TriggerManagedValue
+                        {
+                            Label = "Blueprint", Name = "TemplateResRef", FieldType = GffFieldType.ResRef,
+                            StringValue = NoSpawnResRef, IsInstanceOnly = true, ClearOnSwap = false
+                        },
                         new TriggerManagedValue
                         {
                             Label = "Trigger Type", Name = "Type", FieldType = GffFieldType.Int,
@@ -334,8 +343,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                 new TriggerBehavior
                 {
                     Id = CustomId,
-                    DisplayName = "Custom…",
-                    Tagline = "raw scripts and variables",
+                    DisplayName = "Custom",
                     AllowsVariables = true,
                     Fields = new[]
                     {

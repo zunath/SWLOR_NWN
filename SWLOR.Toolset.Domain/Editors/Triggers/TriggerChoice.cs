@@ -6,7 +6,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
     /// no item template, and the record default rendered the whole shape - "TriggerChoice { Value =
     /// 2, Display = Waypoint }" - which is what a builder actually saw in the list.
     /// </remarks>
-    public sealed record TriggerChoice(long Value, string Display)
+    public sealed record TriggerChoice(long Value, string Display, string? ImageResRef = null)
     {
         public override string ToString() => Display;
     }

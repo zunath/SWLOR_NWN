@@ -37,7 +37,10 @@ namespace SWLOR.Toolset.Editors.Triggers
         public int MaxLength => Definition.MaxLength;
 
         /// <summary>Resolved at construction, so a game-data choice set and a fixed one read alike.</summary>
-        public IReadOnlyList<TriggerChoice> Choices { get; }
+        public IReadOnlyList<TriggerChoiceViewModel> Choices { get; }
+
+        /// <summary>True when the choices carry artwork, which the picker lays out as a gallery.</summary>
+        public bool HasPreviews => Choices.Any(choice => choice.HasPreview);
 
         public bool IsText => Definition.Kind is TriggerFieldKind.Text or TriggerFieldKind.Script;
         public bool IsLocalizedText => Definition.Kind == TriggerFieldKind.LocalizedText;
@@ -61,7 +64,7 @@ namespace SWLOR.Toolset.Editors.Triggers
         private bool _isChecked;
 
         [ObservableProperty]
-        private TriggerChoice? _choice;
+        private TriggerChoiceViewModel? _choice;
 
         /// <summary>Live feedback beside the value: where a tag resolved, or why it did not.</summary>
         [ObservableProperty]
@@ -75,13 +78,16 @@ namespace SWLOR.Toolset.Editors.Triggers
             TriggerValueStore store,
             Func<string, Action, bool> runEdit,
             Func<string, string?>? resolveTag,
-            IReadOnlyList<TriggerChoice>? choices = null)
+            IReadOnlyList<TriggerChoice>? choices = null,
+            ChoicePreviewService? previews = null)
         {
             Definition = definition;
             _store = store;
             _runEdit = runEdit;
             _resolveTag = resolveTag;
-            Choices = choices ?? definition.Choices;
+            Choices = (choices ?? definition.Choices)
+                .Select(choice => new TriggerChoiceViewModel(choice, previews?.Resolve(choice.ImageResRef)))
+                .ToList();
             Reload();
         }
 
@@ -167,7 +173,7 @@ namespace SWLOR.Toolset.Editors.Triggers
                 Reload();
         }
 
-        partial void OnChoiceChanged(TriggerChoice? value)
+        partial void OnChoiceChanged(TriggerChoiceViewModel? value)
         {
             if (_loading || value == null)
                 return;

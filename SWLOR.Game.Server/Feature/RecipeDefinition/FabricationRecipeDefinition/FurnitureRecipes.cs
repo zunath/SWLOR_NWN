@@ -2525,7 +2525,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("aracia_wood", 6)
                 .Component("ref_keromber", 3);
 
-            // Washbasin, Lever Faucet
+            // Washbasin
             _builder.Create(RecipeType.WashbasinLeverFaucet, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0214")

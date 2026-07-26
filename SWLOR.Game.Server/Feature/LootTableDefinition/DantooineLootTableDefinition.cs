@@ -354,8 +354,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("DANTOOINE_HAY")
                 .AddItem("haybundle", 50);
-
         }
+
         private void DantooineHerb()
         {
             _builder.Create("DANTOOINE_HERB")

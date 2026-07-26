@@ -54,6 +54,12 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// <summary>False until the tab has been shown once; see EnsureLoaded.</summary>
         private bool _loaded;
 
+        /// <summary>How long typing has to pause before the grid re-filters.</summary>
+        private static readonly TimeSpan SearchDebounce = TimeSpan.FromMilliseconds(220);
+
+        /// <summary>Cancels the pending re-filter when another keystroke arrives.</summary>
+        private CancellationTokenSource? _searchDebounce;
+
         [ObservableProperty]
         private string _query = string.Empty;
 
@@ -102,6 +108,16 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// </remarks>
         private void BeginLoading()
         {
+            // The catalog is a singleton shared by every open editor, so once one of them has read
+            // the table the rest have nothing to wait for.
+            if (_catalog.IsBuilt)
+            {
+                _loaded = true;
+                Rebuild();
+                UpdatePreviewScene();
+                return;
+            }
+
             IsLoading = true;
 
             Task.Run(() =>
@@ -204,10 +220,27 @@ namespace SWLOR.Toolset.Editors.Placeables
             NotifyCurrentChanged();
         }
 
+        /// <summary>
+        /// Rebuilds after typing stops rather than on every keystroke. Each rebuild filters ~24,000
+        /// rows, throws away every published tile and realizes a fresh page with its renders - once
+        /// per letter that is a visible stall, and the intermediate results are ones nobody reads.
+        /// </summary>
         partial void OnQueryChanged(string value)
         {
-            if (_loaded)
-                Rebuild();
+            if (!_loaded)
+                return;
+
+            _searchDebounce?.Cancel();
+            var pending = new CancellationTokenSource();
+            _searchDebounce = pending;
+
+            Task.Delay(SearchDebounce, pending.Token).ContinueWith(
+                task =>
+                {
+                    if (!task.IsCanceled)
+                        Avalonia.Threading.Dispatcher.UIThread.Post(Rebuild);
+                },
+                TaskScheduler.Default);
         }
 
         partial void OnUsedInModuleOnlyChanged(bool value)

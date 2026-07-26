@@ -36,6 +36,12 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                 () => _rows.Value.ToDictionary(row => row.Id));
         }
 
+        /// <summary>
+        /// True once the table has actually been read. The parse is shared by every editor, so
+        /// the second placeable opened has nothing to wait for and should not be told it does.
+        /// </summary>
+        public bool IsBuilt => _rows.IsValueCreated;
+
         /// <summary>Every pickable row, in 2DA row order.</summary>
         public IReadOnlyList<PlaceableModelRow> GetAll() => _rows.Value;
 

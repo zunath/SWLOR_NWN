@@ -221,6 +221,13 @@ void main()
             public required int IndexOffset { get; init; }
             public required int IndexCount { get; init; }
             public required Matrix4x4 MeshTransform { get; init; }
+
+            /// <summary>
+            /// This mesh's transform at each frame of its model's idle, empty when it has none.
+            /// <see cref="MeshTransform"/> is the resting pose - the frame the idle ends on.
+            /// </summary>
+            public IReadOnlyList<Matrix4x4> PoseFrames { get; init; } = Array.Empty<Matrix4x4>();
+
             public string? TextureName { get; init; }
         }
 
@@ -1378,6 +1385,54 @@ void main()
         private long _lastPadTicks;
 
         /// <summary>
+        /// How long a creature's idle runs for before it settles, in seconds.
+        /// </summary>
+        /// <remarks>
+        /// Matches Aurora, which plays a creature's idle briefly when the area opens and then leaves it
+        /// standing in the pose it finished on. Long enough to see what the thing is; short enough that
+        /// the viewport is not permanently animating behind someone trying to place objects.
+        /// </remarks>
+        private const float IdlePlaybackSeconds = 2.5f;
+
+        /// <summary>When the current scene appeared, or null once its idle has finished playing.</summary>
+        private long? _idlePlaybackStartedTicks;
+
+        /// <summary>
+        /// How far through the idle the scene is, or null when it has settled. Drives which pose frame
+        /// each animated mesh draws with, and keeps asking for another frame until it is done.
+        /// </summary>
+        private float? IdlePlaybackSeconds_Elapsed()
+        {
+            if (_idlePlaybackStartedTicks is not { } started)
+                return null;
+
+            var elapsed = (float)((System.Diagnostics.Stopwatch.GetTimestamp() - started)
+                / (double)System.Diagnostics.Stopwatch.Frequency);
+
+            if (elapsed >= IdlePlaybackSeconds)
+            {
+                _idlePlaybackStartedTicks = null;
+                return null;
+            }
+
+            return elapsed;
+        }
+
+        /// <summary>
+        /// The transform an animated mesh draws with right now: its frame partway through the idle
+        /// while that is playing, and its resting transform once it has settled.
+        /// </summary>
+        private static Matrix4x4 PosedMeshTransform(MeshRange mesh, float? elapsed)
+        {
+            if (elapsed is not { } seconds || mesh.PoseFrames.Count == 0)
+                return mesh.MeshTransform;
+
+            var through = Math.Clamp(seconds / IdlePlaybackSeconds, 0f, 1f);
+            var frame = Math.Clamp((int)(through * (mesh.PoseFrames.Count - 1)), 0, mesh.PoseFrames.Count - 1);
+            return mesh.PoseFrames[frame];
+        }
+
+        /// <summary>
         /// Seconds since the previous pad step. A first step, or one after a gap, counts as a single
         /// 60Hz frame so a lone click still does something; a stall cannot bank up into a jump.
         /// </summary>
@@ -1685,7 +1740,11 @@ void main()
                     if (!ReferenceEquals(scene.Tiles, _batchedTiles))
                     {
                         RebuildWalkmeshBuffer(scene);
-                        _tileBatches = AreaDrawBatcher.GroupByModel(scene.Tiles);
+                        _tileBatches = AreaDrawBatcher.GroupByModel(scene.Tiles);
+
+                        // A new scene starts the idle again, so opening an area - or rebuilding it
+                        // after an edit - shows its creatures move and then settle.
+                        _idlePlaybackStartedTicks = System.Diagnostics.Stopwatch.GetTimestamp();
                         _batchedTiles = scene.Tiles;
                     }
 
@@ -2048,6 +2107,13 @@ void main()
             // Pass 1: instances with resolved render geometry (placeables, doors) draw their
             // actual model, textured and lit, at the instance's position/heading (or its live
             // manipulation preview, while a move/rotate drag is in progress on it).
+            // One clock for the whole scene, so everything plays its idle together when the area opens
+            // and settles together - which is what Aurora does, and what makes it read as the area
+            // waking up rather than as objects twitching independently.
+            var idleElapsed = IdlePlaybackSeconds_Elapsed();
+            if (idleElapsed != null)
+                RequestNextFrameRendering();
+
             foreach (var raw in scene.Instances)
             {
                 if (!DrawsAsModel(raw))
@@ -2069,7 +2135,7 @@ void main()
 
                 foreach (var meshRange in buffer.MeshRanges)
                 {
-                    SetUniformMatrix4("model", meshRange.MeshTransform * instanceTransform);
+                    SetUniformMatrix4("model", PosedMeshTransform(meshRange, idleElapsed) * instanceTransform);
                     BindMeshTexture(meshRange.TextureName);
 
                     unsafe
@@ -2827,6 +2893,7 @@ void main()
                     IndexOffset = indexOffset,
                     IndexCount = mesh.Indices.Length,
                     MeshTransform = mesh.Transform,
+                    PoseFrames = mesh.PoseFrames,
                     TextureName = string.IsNullOrEmpty(mesh.TextureName) ? null : mesh.TextureName
                 });
 

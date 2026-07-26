@@ -101,6 +101,79 @@ namespace SWLOR.Toolset.Domain.Render
             return new Dictionary<string, PosedNode>(StringComparer.OrdinalIgnoreCase);
         }
 
+        /// <summary>One sampled frame of an idle: the pose, and how far into the animation it is.</summary>
+        public readonly record struct IdleFrame(IReadOnlyDictionary<string, PosedNode> Pose, float Seconds);
+
+        /// <summary>
+        /// The idle sampled across its whole length, for playing it through once.
+        /// </summary>
+        /// <remarks>
+        /// Aurora plays a creature's idle briefly when it appears and then leaves it standing in the
+        /// pose it finished on - so the frames are what gets played, and the last of them is the
+        /// resting pose everything else (picking, bounds, a still thumbnail) should use.
+        /// <para>
+        /// Pre-sampled rather than evaluated per frame because NWN's bodies are rigid parts bolted to
+        /// bones, not skinned meshes: a pose changes each mesh's transform and never touches a vertex.
+        /// So a frame costs one matrix per mesh, the geometry is uploaded once, and playing it back is
+        /// swapping which matrix is bound. <paramref name="maxFrames"/> bounds the memory for a very
+        /// long idle; the sampler interpolates, so a coarse set still plays smoothly.
+        /// </para>
+        /// </remarks>
+        public static IReadOnlyList<IdleFrame> SampleIdleFrames(
+            MdlModel? model,
+            Func<string, MdlModel?> loadSuperModel,
+            int framesPerSecond = 20,
+            int maxFrames = 60)
+        {
+            ArgumentNullException.ThrowIfNull(loadSuperModel);
+
+            var (animation, owner) = FindIdleInChain(model, loadSuperModel);
+            if (animation == null || owner == null)
+                return Array.Empty<IdleFrame>();
+
+            var length = animation.Length;
+            if (length <= 0f || framesPerSecond <= 0)
+                return new[] { new IdleFrame(Sample(animation, 0f), 0f) };
+
+            var count = Math.Clamp((int)MathF.Ceiling(length * framesPerSecond) + 1, 2, Math.Max(2, maxFrames));
+            var frames = new List<IdleFrame>(count);
+
+            for (var i = 0; i < count; i++)
+            {
+                var seconds = length * i / (count - 1);
+                frames.Add(new IdleFrame(Sample(animation, seconds), seconds));
+            }
+
+            return frames;
+        }
+
+        /// <summary>The first idle in the supermodel chain that actually poses something, with the model it came from.</summary>
+        private static (MdlAnimation? Animation, MdlModel? Owner) FindIdleInChain(
+            MdlModel? model, Func<string, MdlModel?> loadSuperModel, int maxDepth = 8)
+        {
+            var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var current = model;
+
+            for (var depth = 0; current != null && depth < maxDepth; depth++)
+            {
+                var idle = FindIdle(current);
+                if (idle != null && Sample(idle, 0f).Count > 0)
+                    return (idle, current);
+
+                var superModel = current.SuperModel;
+                if (string.IsNullOrWhiteSpace(superModel) ||
+                    string.Equals(superModel, "NULL", StringComparison.OrdinalIgnoreCase) ||
+                    !visited.Add(superModel))
+                {
+                    break;
+                }
+
+                current = loadSuperModel(superModel);
+            }
+
+            return (null, null);
+        }
+
         /// <summary>
         /// Every animated node's local transform at <paramref name="seconds"/>, keyed by node name.
         /// Nodes the animation does not touch are absent, and the caller keeps their static values.

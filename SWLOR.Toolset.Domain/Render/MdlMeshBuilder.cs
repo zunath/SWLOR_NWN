@@ -53,6 +53,13 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         public required Matrix4x4 Transform { get; init; }
 
+        /// <summary>
+        /// This mesh's node-to-model transform at each frame of the idle, or empty when the model has
+        /// no idle to play. <see cref="Transform"/> is the last of them - where the animation comes to
+        /// rest - so anything that wants the settled model rather than the playback uses that.
+        /// </summary>
+        public IReadOnlyList<Matrix4x4> PoseFrames { get; init; } = Array.Empty<Matrix4x4>();
+
         /// <summary>Vertex count, derived from <see cref="Positions"/>.</summary>
         public int VertexCount => Positions.Length / 3;
 
@@ -121,10 +128,25 @@ namespace SWLOR.Toolset.Domain.Render
         /// composed body: the parts hang off bones by name, so posing the bones moves the parts with
         /// them without the parts needing keyframes of their own.
         /// </remarks>
-        public static RenderModel Build(MdlModel model, IReadOnlyDictionary<string, PosedNode>? pose)
+        public static RenderModel Build(MdlModel model, IReadOnlyDictionary<string, PosedNode>? pose) =>
+            Build(model, pose == null ? Array.Empty<IReadOnlyDictionary<string, PosedNode>>() : new[] { pose });
+
+        /// <summary>
+        /// As <see cref="Build(MdlModel)"/>, carrying a transform per frame of an idle animation.
+        /// </summary>
+        /// <remarks>
+        /// The mesh is built once and posed many times: NWN's bodies are rigid parts attached to bones,
+        /// so a frame changes each mesh's transform and never a vertex. The geometry uploads once and
+        /// playback swaps which matrix is bound. The last frame becomes <see cref="RenderMesh.Transform"/>,
+        /// because that is where the animation stops and stays.
+        /// </remarks>
+        public static RenderModel Build(
+            MdlModel model, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> poseFrames)
         {
             ArgumentNullException.ThrowIfNull(model);
+            ArgumentNullException.ThrowIfNull(poseFrames);
 
+            var pose = poseFrames.Count > 0 ? poseFrames[^1] : null;
             var meshes = new List<RenderMesh>();
 
             if (model.GeometryRoot != null)
@@ -143,14 +165,17 @@ namespace SWLOR.Toolset.Domain.Render
                     if (trimesh.Vertices.Length == 0 || trimesh.Faces.Length == 0)
                         continue;
 
-                    meshes.Add(BuildMesh(trimesh, pose));
+                    meshes.Add(BuildMesh(trimesh, pose, poseFrames));
                 }
             }
 
             return new RenderModel { Name = model.Name, Meshes = meshes };
         }
 
-        private static RenderMesh BuildMesh(MdlTrimeshNode trimesh, IReadOnlyDictionary<string, PosedNode>? pose)
+        private static RenderMesh BuildMesh(
+            MdlTrimeshNode trimesh,
+            IReadOnlyDictionary<string, PosedNode>? pose,
+            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> poseFrames)
         {
             var vertexCount = trimesh.Vertices.Length;
 
@@ -210,7 +235,10 @@ namespace SWLOR.Toolset.Domain.Render
                 Normals = normals,
                 TexCoords = texCoords,
                 Indices = indices,
-                Transform = ComposeNodeTransform(trimesh, pose)
+                Transform = ComposeNodeTransform(trimesh, pose),
+                PoseFrames = poseFrames.Count == 0
+                    ? Array.Empty<Matrix4x4>()
+                    : poseFrames.Select(frame => ComposeNodeTransform(trimesh, frame)).ToArray()
             };
         }
 

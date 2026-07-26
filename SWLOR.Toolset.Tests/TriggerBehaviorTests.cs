@@ -368,7 +368,9 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void NeitherCursorNorGeometryIsAskedFor()
         {
-            var rows = TriggerEditorLayout.Basic.Concat(TriggerEditorLayout.Advanced).ToList();
+            var rows = TriggerEditorLayout.Basic
+                .Concat(TriggerBehaviorCatalog.All.SelectMany(behavior => behavior.Fields))
+                .ToList();
 
             rows.Should().NotContain(row => row.Name == "Cursor",
                 "the cursor follows from what the trigger is; the transition behavior sets it");
@@ -381,16 +383,21 @@ namespace SWLOR.Toolset.Tests
         {
             // Every other behavior writes Type itself, so offering it beside them would let a builder
             // set something the behavior contradicts - and the behavior wins on the next swap.
-            var type = TriggerEditorLayout.Advanced.Single(row => row.Name == "Type");
-            type.CustomOnly.Should().BeTrue();
+            TriggerBehaviorCatalog.Custom.Fields.Should().ContainSingle(row => row.Name == "Type");
+            TriggerEditorLayout.Basic.Should().NotContain(row => row.Name == "Type");
 
             foreach (var behavior in TriggerBehaviorCatalog.All)
             {
                 var writesType = behavior.Manages.Any(value => value.Name == "Type");
                 if (behavior.Id == TriggerBehaviorCatalog.CustomId)
+                {
                     writesType.Should().BeFalse("Custom manages nothing, so the raw row is the only way to set it");
+                }
                 else
+                {
                     writesType.Should().BeTrue($"{behavior.DisplayName} hides the raw row, so it must set Type itself");
+                    behavior.Fields.Should().NotContain(row => row.Name == "Type");
+                }
             }
         }
 
@@ -398,7 +405,7 @@ namespace SWLOR.Toolset.Tests
         public void CategoryAndFactionArePickedRatherThanTyped()
         {
             var category = TriggerEditorLayout.Basic.Single(row => row.Name == "PaletteID");
-            var faction = TriggerEditorLayout.Advanced.Single(row => row.Name == "Faction");
+            var faction = TriggerEditorLayout.Basic.Single(row => row.Name == "Faction");
 
             category.Kind.Should().Be(BehaviorFieldKind.Choice);
             category.ChoicesKey.Should().Be(TriggerChoiceKeys.PaletteCategories);

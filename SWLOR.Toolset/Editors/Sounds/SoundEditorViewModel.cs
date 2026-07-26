@@ -6,6 +6,7 @@ using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Editors.Behaviors;
 
 namespace SWLOR.Toolset.Editors.Sounds
 {
@@ -19,13 +20,11 @@ namespace SWLOR.Toolset.Editors.Sounds
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly bool _isInstance;
 
-        public ObservableCollection<SoundBehaviorListItemViewModel> BehaviorList { get; } = new();
+        public ObservableCollection<BehaviorListItemViewModel> BehaviorList { get; } = new();
 
         public ObservableCollection<SoundRowViewModel> BasicRows { get; } = new();
 
         public ObservableCollection<SoundRowViewModel> BehaviorRows { get; } = new();
-
-        public ObservableCollection<SoundRowViewModel> AdvancedRows { get; } = new();
 
         [ObservableProperty]
         private VarTableSectionViewModel? _variables;
@@ -69,16 +68,16 @@ namespace SWLOR.Toolset.Editors.Sounds
             _isInstance = isInstance;
             HeaderOwner = headerOwner;
 
-            BuildBehaviorList();
+            BehaviorListItemViewModel.Build(BehaviorList, SoundBehaviorCatalog.All);
             Behavior = SoundBehaviorCatalog.Classify(sound);
             BuildBasicRows();
             RebuildBehaviorSection();
         }
 
         [RelayCommand]
-        public void ChooseBehavior(SoundBehavior? behavior)
+        public void ChooseBehavior(IBehaviorDescriptor? descriptor)
         {
-            if (behavior == null || behavior.Id == Behavior.Id)
+            if (descriptor is not SoundBehavior behavior || behavior.Id == Behavior.Id)
                 return;
 
             var previous = Behavior;
@@ -125,26 +124,6 @@ namespace SWLOR.Toolset.Editors.Sounds
             return applied;
         }
 
-        private void BuildBehaviorList()
-        {
-            string? group = null;
-            foreach (var behavior in SoundBehaviorCatalog.All)
-            {
-                if (behavior.Group == null && group != null)
-                {
-                    BehaviorList.Add(SoundBehaviorListItemViewModel.Rule());
-                    group = null;
-                }
-                else if (behavior.Group != null && behavior.Group != group)
-                {
-                    BehaviorList.Add(SoundBehaviorListItemViewModel.Header(behavior.Group));
-                    group = behavior.Group;
-                }
-
-                BehaviorList.Add(SoundBehaviorListItemViewModel.For(behavior));
-            }
-        }
-
         private void BuildBasicRows()
         {
             foreach (var definition in SoundEditorLayout.Basic)
@@ -157,20 +136,11 @@ namespace SWLOR.Toolset.Editors.Sounds
             foreach (var definition in Behavior.Fields)
                 BehaviorRows.Add(CreateRow(definition));
 
-            AdvancedRows.Clear();
-            var isCustom = Behavior.Id == SoundBehaviorCatalog.CustomId;
-            foreach (var definition in SoundEditorLayout.Advanced)
-            {
-                if (!definition.CustomOnly || isCustom)
-                    AdvancedRows.Add(CreateRow(definition));
-            }
-
             Variables = Behavior.AllowsVariables
                 ? new VarTableSectionViewModel(RunEdit, _store.Locals, _gameCodeIndex)
                 : null;
 
-            foreach (var item in BehaviorList)
-                item.IsSelected = item.Behavior?.Id == Behavior.Id;
+            BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);
 
             OnPropertyChanged(nameof(HeaderName));
             OnPropertyChanged(nameof(ShowsVariablesTab));
@@ -196,7 +166,7 @@ namespace SWLOR.Toolset.Editors.Sounds
 
         private void ReloadRowsFromDocument()
         {
-            foreach (var row in BasicRows.Concat(BehaviorRows).Concat(AdvancedRows))
+            foreach (var row in BasicRows.Concat(BehaviorRows))
                 row.Reload();
 
             Variables?.RefreshFromDocument();

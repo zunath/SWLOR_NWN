@@ -339,6 +339,16 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     AllowsVariables = true,
                     Fields = new[]
                     {
+                        // The raw engine Type. Only Custom offers it: every named behavior writes it
+                        // itself, so showing it beside one would invite a builder to contradict the
+                        // behavior they just chose.
+                        new BehaviorFieldDefinition
+                        {
+                            Label = "Trigger Type", Name = "Type", Kind = BehaviorFieldKind.Choice,
+                            FieldType = GffFieldType.Int,
+                            Choices = TriggerEditorLayout.TriggerTypeChoices,
+                            Note = "Every other behavior sets this itself."
+                        },
                         new BehaviorFieldDefinition
                         {
                             Label = "OnClick", Name = "OnClick", Kind = BehaviorFieldKind.Script,

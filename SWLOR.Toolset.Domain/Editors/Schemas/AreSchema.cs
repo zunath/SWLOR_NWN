@@ -26,7 +26,7 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                         {
                             new FieldDescriptor { Label = "Name", FieldName = "Name", Kind = EditorKind.LocString, FieldType = GffFieldType.CExoLocString },
                             new FieldDescriptor { Label = "Tag", FieldName = "Tag", Kind = EditorKind.Text, FieldType = GffFieldType.CExoString },
-                            new FieldDescriptor { Label = "ResRef", FieldName = "ResRef", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, IsReadOnly = true, Description = "Blueprint resref; matches the file name." },
+                            new FieldDescriptor { Label = "ResRef", FieldName = "ResRef", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, IsReadOnly = true, Description = "The ResRef. Matches the file name." },
                             new FieldDescriptor { Label = "Tileset", FieldName = "Tileset", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, IsReadOnly = true },
                             new FieldDescriptor { Label = "Width", FieldName = "Width", Kind = EditorKind.Integer, FieldType = GffFieldType.Int, IsReadOnly = true },
                             new FieldDescriptor { Label = "Height", FieldName = "Height", Kind = EditorKind.Integer, FieldType = GffFieldType.Int, IsReadOnly = true },

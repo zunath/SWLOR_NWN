@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
@@ -278,7 +278,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
             var name = await _prompts.PromptForTextAsync(
                 NewItemLabel.TrimEnd('.'),
-                $"Name for the new {SelectedType.SingularDisplayName().ToLowerInvariant()}. Its resref is derived from this.",
+                $"Name for the new {SelectedType.SingularDisplayName().ToLowerInvariant()}. Its ResRef is derived from this.",
                 string.Empty,
                 "Create");
 
@@ -288,7 +288,7 @@ namespace SWLOR.Toolset.Shell.Panels
             var resRef = ModuleResourceTemplateFactory.ToResRef(name);
             if (resRef.Length == 0)
             {
-                StatusMessage = "That name has no letters or digits to make a resref from.";
+                StatusMessage = "That name has no letters or digits to make a ResRef from.";
                 return;
             }
 

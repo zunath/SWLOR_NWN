@@ -10,6 +10,7 @@ using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Editors.Triggers;
+using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Viewport;
 using SWLOR.Toolset.Workspace;
 
@@ -30,7 +31,7 @@ namespace SWLOR.Toolset.Editors.Doors
         private ModelPreviewControl? _previewView;
         private bool _disposed;
 
-        public ObservableCollection<DoorBehaviorListItemViewModel> BehaviorList { get; } = new();
+        public ObservableCollection<BehaviorListItemViewModel> BehaviorList { get; } = new();
 
         public ObservableCollection<DoorRowViewModel> BasicRows { get; } = new();
 
@@ -122,7 +123,7 @@ namespace SWLOR.Toolset.Editors.Doors
                 RunEdit,
                 OnAppearanceChanged);
 
-            BuildBehaviorList();
+            BehaviorListItemViewModel.Build(BehaviorList, DoorBehaviorCatalog.All);
             Behavior = DoorBehaviorCatalog.Classify(door);
             BuildBasicRows();
             RebuildBehaviorSection();
@@ -130,9 +131,9 @@ namespace SWLOR.Toolset.Editors.Doors
         }
 
         [RelayCommand]
-        public void ChooseBehavior(DoorBehavior? behavior)
+        public void ChooseBehavior(IBehaviorDescriptor? descriptor)
         {
-            if (behavior == null || behavior.Id == Behavior.Id)
+            if (descriptor is not DoorBehavior behavior || behavior.Id == Behavior.Id)
                 return;
 
             var previous = Behavior;
@@ -173,26 +174,6 @@ namespace SWLOR.Toolset.Editors.Doors
             return applied;
         }
 
-        private void BuildBehaviorList()
-        {
-            string? group = null;
-            foreach (var behavior in DoorBehaviorCatalog.All)
-            {
-                if (behavior.Group == null && group != null)
-                {
-                    BehaviorList.Add(DoorBehaviorListItemViewModel.Rule());
-                    group = null;
-                }
-                else if (behavior.Group != null && !string.Equals(behavior.Group, group, StringComparison.Ordinal))
-                {
-                    BehaviorList.Add(DoorBehaviorListItemViewModel.Header(behavior.Group));
-                    group = behavior.Group;
-                }
-
-                BehaviorList.Add(DoorBehaviorListItemViewModel.For(behavior));
-            }
-        }
-
         private void BuildBasicRows()
         {
             foreach (var definition in DoorEditorLayout.Basic)
@@ -212,8 +193,7 @@ namespace SWLOR.Toolset.Editors.Doors
                 ? new VarTableSectionViewModel(RunEdit, _store.Locals, _gameCodeIndex)
                 : null;
 
-            foreach (var item in BehaviorList)
-                item.IsSelected = item.Behavior?.Id == Behavior.Id;
+            BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);
 
             UpdateConditionalRows();
             OnPropertyChanged(nameof(HeaderName));

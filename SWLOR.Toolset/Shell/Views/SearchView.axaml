@@ -9,7 +9,7 @@
              x:DataType="panels:SearchViewModel">
   <DockPanel>
     <TextBox DockPanel.Dock="Top"
-             Watermark="Search resref / name / tag..."
+             Watermark="Search ResRef / name / tag..."
              Text="{Binding Query}"
              Margin="4" />
     <!-- Name first and widest; the type and resref sit beside it as supporting detail. -->

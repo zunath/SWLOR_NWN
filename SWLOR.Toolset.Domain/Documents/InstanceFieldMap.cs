@@ -54,7 +54,7 @@ namespace SWLOR.Toolset.Domain.Documents
             if (blueprint == null)
                 throw new ArgumentNullException(nameof(blueprint));
             if (string.IsNullOrWhiteSpace(templateResRef))
-                throw new ArgumentException("A selected blueprint resref is required.", nameof(templateResRef));
+                throw new ArgumentException("A selected ResRef is required.", nameof(templateResRef));
 
             var structId = GetListStructId(type);
             var excluded = GetExcludedBlueprintFields(type);

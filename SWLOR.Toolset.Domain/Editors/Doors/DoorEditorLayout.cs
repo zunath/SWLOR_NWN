@@ -32,7 +32,8 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
             new DoorFieldDefinition
             {
                 Label = "Category", Name = "PaletteID", Kind = BehaviorFieldKind.Choice,
-                FieldType = GffFieldType.Byte, ChoicesKey = DoorChoiceKeys.DoorPaletteCategories
+                FieldType = GffFieldType.Byte, ChoicesKey = DoorChoiceKeys.DoorPaletteCategories,
+                IsSearchable = true
             },
             new DoorFieldDefinition
             {
@@ -46,7 +47,7 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
             },
             new DoorFieldDefinition
             {
-                Label = "Blueprint ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
+                Label = "ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
                 FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength
             },
             new DoorFieldDefinition
@@ -57,7 +58,8 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
             new DoorFieldDefinition
             {
                 Label = "Faction", Name = "Faction", Kind = BehaviorFieldKind.Choice,
-                FieldType = GffFieldType.Dword, ChoicesKey = DoorChoiceKeys.Factions
+                FieldType = GffFieldType.Dword, ChoicesKey = DoorChoiceKeys.Factions,
+                IsSearchable = true
             },
             new DoorFieldDefinition
             {

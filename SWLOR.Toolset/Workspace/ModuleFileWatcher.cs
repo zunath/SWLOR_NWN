@@ -119,7 +119,7 @@ namespace SWLOR.Toolset.Workspace
             if (!fileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            // "foo.utc.json" -> "foo.utc" -> extension "utc", resref "foo".
+            // "foo.utc.json" -> "foo.utc" -> extension "utc", ResRef "foo".
             var withoutJson = Path.GetFileNameWithoutExtension(fileName);
             var extension = Path.GetExtension(withoutJson).TrimStart('.');
             if (string.IsNullOrEmpty(extension) ||

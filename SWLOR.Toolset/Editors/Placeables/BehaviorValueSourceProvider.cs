@@ -11,19 +11,41 @@ namespace SWLOR.Toolset.Editors.Placeables
     /// code and the module rather than a list kept by hand.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Every source degrades to an empty list when its backing index is unavailable, and an empty
     /// list means the field falls back to free text holding whatever is stored. A missing index must
     /// never stop a builder editing a placeable, and it must never let the editor conclude that a
     /// real value is wrong - which is why <see cref="IsKnown"/> answers true when it cannot tell.
+    /// </para>
+    /// <para>
+    /// One instance for the session rather than one per editor. These lists are large - five figures
+    /// of object tags, 524 visual effects, every placeable and creature blueprint in the module -
+    /// and building a private copy for each open editor cost both the scan and the memory to hold
+    /// the result, multiplied by however many tabs a builder had open.
+    /// </para>
+    /// <para>
+    /// Game-code sources never change while the toolset runs, so they are cached for the process.
+    /// Module-backed ones are dropped by <see cref="InvalidateModuleSources"/> whenever the module's
+    /// content does, which is what keeps a newly created blueprint from being reported as unknown.
+    /// </para>
     /// </remarks>
     public sealed class BehaviorValueSourceProvider
     {
+        /// <summary>The sources read out of the open module rather than out of the game code.</summary>
+        private static readonly PlaceableValueSource[] ModuleBackedSources =
+        {
+            PlaceableValueSource.ObjectTags,
+            PlaceableValueSource.PlaceableBlueprints,
+            PlaceableValueSource.CreatureBlueprints
+        };
+
         private readonly IGameCodeIndex? _gameCode;
         private readonly Func<ModuleTagIndex?> _tags;
         private readonly Func<ResourceType, IReadOnlyList<CatalogEntry>>? _blueprints;
         private readonly ThumbnailService? _thumbnails;
         private readonly VfxPreviewService? _vfxPreviews;
         private readonly Dictionary<PlaceableValueSource, IReadOnlyList<BehaviorChoiceOption>> _cache = new();
+        private readonly object _cacheGate = new();
 
         public BehaviorValueSourceProvider(
             IGameCodeIndex? gameCode,
@@ -39,18 +61,38 @@ namespace SWLOR.Toolset.Editors.Placeables
             _vfxPreviews = vfxPreviews;
         }
 
-        /// <summary>Options for a source, built once per editor session.</summary>
+        /// <summary>Options for a source, built once and shared by every editor that asks.</summary>
         public IReadOnlyList<BehaviorChoiceOption> GetOptions(PlaceableValueSource source)
         {
             if (source == PlaceableValueSource.None)
                 return Array.Empty<BehaviorChoiceOption>();
 
-            if (_cache.TryGetValue(source, out var cached))
-                return cached;
+            lock (_cacheGate)
+            {
+                if (_cache.TryGetValue(source, out var cached))
+                    return cached;
+            }
 
             var options = Build(source);
-            _cache[source] = options;
+
+            lock (_cacheGate)
+                _cache[source] = options;
+
             return options;
+        }
+
+        /// <summary>
+        /// Drops the cached options that came out of the module, so a blueprint created or renamed
+        /// since the last build is offered rather than reported as unknown. Game-code sources are
+        /// left alone: nothing can change them while the process runs.
+        /// </summary>
+        public void InvalidateModuleSources()
+        {
+            lock (_cacheGate)
+            {
+                foreach (var source in ModuleBackedSources)
+                    _cache.Remove(source);
+            }
         }
 
         /// <summary>

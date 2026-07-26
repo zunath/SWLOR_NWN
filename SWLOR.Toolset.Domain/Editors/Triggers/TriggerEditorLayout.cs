@@ -4,10 +4,18 @@ using SWLOR.Toolset.Domain.Editors.Behaviors;
 namespace SWLOR.Toolset.Domain.Editors.Triggers
 {
     /// <summary>
-    /// The rows of the trigger editor's fixed tabs. Behavior owns everything a builder normally
-    /// touches; Basic is identity and Advanced is the raw sheet behind it.
+    /// The rows of the trigger editor's Basic tab: what the trigger is, plus the handful of engine
+    /// properties that belong to every behavior rather than to one of them.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// There is no Advanced tab. A second tab of raw fields is a place a builder has to know to
+    /// look, and everything that used to sit there is either an ordinary property of the object
+    /// (which belongs on Basic) or a value a named behavior owns (which belongs under Custom, beside
+    /// the rest of the raw sheet). Trigger Type is the second kind: every other behavior writes it,
+    /// so offering it beside them would invite a builder to disagree with the behavior they just
+    /// chose - and the behavior would win on the next swap.
+    /// </para>
     /// <para>
     /// Geometry is absent by design and no longer even mentioned: a trigger's dimensions are drawn
     /// per placement in the area editor. So are the per-placement transition fields, which belong to
@@ -17,11 +25,6 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
     /// Cursor is absent too. It is not a choice a builder makes - it follows from what the trigger
     /// is, which is why the Area Transition behavior sets it and everything else leaves it at the
     /// engine default of 0.
-    /// </para>
-    /// <para>
-    /// Trigger Type is only offered under Custom. Every other behavior writes it, so showing it
-    /// beside them would be offering a builder the chance to disagree with the behavior they just
-    /// chose - and the behavior would win on the next swap.
     /// </para>
     /// </remarks>
     public static class TriggerEditorLayout
@@ -47,7 +50,11 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         /// </summary>
         public const int MaxNameLength = 64;
 
-        private static readonly IReadOnlyList<BehaviorChoice> TriggerTypeChoices = new[]
+        /// <summary>
+        /// The raw engine Type. Offered by the Custom behavior alone, which is why it lives here
+        /// rather than on a tab of its own.
+        /// </summary>
+        public static IReadOnlyList<BehaviorChoice> TriggerTypeChoices { get; } = new[]
         {
             new BehaviorChoice(0, "Generic"),
             new BehaviorChoice(1, "Area Transition"),
@@ -74,17 +81,8 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             new BehaviorFieldDefinition
             {
                 Label = "Category", Name = "PaletteID", Kind = BehaviorFieldKind.Choice,
-                FieldType = GffFieldType.Byte, ChoicesKey = TriggerChoiceKeys.PaletteCategories
-            }
-        };
-
-        public static IReadOnlyList<BehaviorFieldDefinition> Advanced { get; } = new[]
-        {
-            new BehaviorFieldDefinition
-            {
-                Label = "Trigger Type", Name = "Type", Kind = BehaviorFieldKind.Choice,
-                FieldType = GffFieldType.Int, Choices = TriggerTypeChoices, CustomOnly = true,
-                Note = "Every other behavior sets this itself."
+                FieldType = GffFieldType.Byte, ChoicesKey = TriggerChoiceKeys.PaletteCategories,
+                IsSearchable = true
             },
             new BehaviorFieldDefinition
             {

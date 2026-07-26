@@ -42,6 +42,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         private readonly ConcurrentDictionary<string, CatalogEntry> _indexedEntries =
             new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<CatalogEntry> _entries = Array.Empty<CatalogEntry>();
+        private bool _snapshotStale;
         private int _processedCount;
 
         /// <summary>Completes once every area/blueprint has been parsed (or attempted) and <see cref="Entries"/> is final.</summary>
@@ -57,9 +58,61 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// A thread-safe snapshot of the entries indexed so far. Empty until directory enumeration
         /// completes; grows to the full set once <see cref="BuildTask"/> completes.
         /// </summary>
+        /// <remarks>
+        /// Sorted when it is read rather than when it changes. The production corpus is ~17,900
+        /// records, and the build used to re-sort all of them every 128 parsed files - 140 full
+        /// sorts nobody looked at - while every blueprint save did one more.
+        /// </remarks>
         public IReadOnlyList<CatalogEntry> Entries
         {
-            get { lock (_snapshotLock) return _entries; }
+            get
+            {
+                lock (_snapshotLock)
+                {
+                    if (_snapshotStale)
+                    {
+                        _entries = _indexedEntries.Values
+                            .OrderBy(entry => entry.ResourceType)
+                            .ThenBy(entry => entry.ResRef, StringComparer.OrdinalIgnoreCase)
+                            .ToList();
+                        _snapshotStale = false;
+                    }
+
+                    return _entries;
+                }
+            }
+        }
+
+        /// <summary>
+        /// One entry by type and resref, without walking the snapshot.
+        /// </summary>
+        /// <remarks>
+        /// The dictionary the build fills is already keyed this way, so callers that only want one
+        /// name never had to scan ~17,900 records for it - and the area editor's selection bar did,
+        /// on every click.
+        /// </remarks>
+        public bool TryGetEntry(ResourceType type, string resRef, out CatalogEntry entry)
+        {
+            if (string.IsNullOrWhiteSpace(resRef))
+            {
+                entry = null!;
+                return false;
+            }
+
+            return _indexedEntries.TryGetValue(IdentityKey(type, resRef), out entry!);
+        }
+
+        /// <summary>Every indexed entry of one type, without filtering the whole snapshot.</summary>
+        public IReadOnlyList<CatalogEntry> EntriesOfType(ResourceType type)
+        {
+            var matches = new List<CatalogEntry>();
+            foreach (var entry in _indexedEntries.Values)
+            {
+                if (entry.ResourceType == type)
+                    matches.Add(entry);
+            }
+
+            return matches;
         }
 
         /// <param name="workspace">The workspace to index.</param>
@@ -163,17 +216,14 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// </summary>
         private readonly ConcurrentDictionary<string, bool> _removed = new(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Marks the ordered snapshot out of date. Serialized so a slower, older publication can
+        /// never replace a newer snapshot with fewer entries.
+        /// </summary>
         private void PublishSnapshot()
         {
-            // Serialize snapshot publication so a slower, older publication can never replace a
-            // newer snapshot with fewer entries.
             lock (_snapshotLock)
-            {
-                _entries = _indexedEntries.Values
-                    .OrderBy(entry => entry.ResourceType)
-                    .ThenBy(entry => entry.ResRef, StringComparer.OrdinalIgnoreCase)
-                    .ToList();
-            }
+                _snapshotStale = true;
         }
 
         private static string IdentityKey(ResourceType type, string resRef) => $"{(int)type}:{resRef}";

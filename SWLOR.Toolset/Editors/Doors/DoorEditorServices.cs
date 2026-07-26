@@ -5,6 +5,7 @@ using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Workspace;
+using SWLOR.Toolset.Editors.Behaviors;
 
 namespace SWLOR.Toolset.Editors.Doors
 {

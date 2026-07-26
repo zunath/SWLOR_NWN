@@ -117,7 +117,8 @@ namespace SWLOR.Toolset.Editors
             IEditorPromptService prompts,
             Func<uint, string?>? resolveStrRef = null,
             IScriptSlotHost? scriptSlotHost = null,
-            Func<EditorFieldContext, Func<string, Action, bool>, IScriptSlotHost?, Placeables.PlaceableEditorSections?>? placeableSections = null,
+            Func<EditorFieldContext, Func<string, Action, bool>, IScriptSlotHost?,
+                Func<string?, IReadOnlyList<string>>, Placeables.PlaceableEditorSections?>? placeableSections = null,
             Func<Domain.Workspace.ModuleWorkspace?>? resourceLister = null)
         {
             _scriptSlotHost = scriptSlotHost;
@@ -149,7 +150,8 @@ namespace SWLOR.Toolset.Editors
                     _context.RunEdit, new VarTable(_session.Document.Root), gameCodeIndex);
             }
 
-            PlaceableSections = placeableSections?.Invoke(_context, RunEdit, _scriptSlotHost);
+            PlaceableSections = placeableSections?.Invoke(
+                _context, RunEdit, _scriptSlotHost, ResourceChoices);
             if (PlaceableSections != null)
             {
                 PlaceableSections.Appearance.AppearanceChanged += AfterHistoryChange;
@@ -170,31 +172,24 @@ namespace SWLOR.Toolset.Editors
 
             foreach (var tabTitle in tabbedGroups.Select(entry => entry.Tab).Distinct())
             {
+                // A placeable's raw conversation slot and event scripts belong to the Custom
+                // behavior, so a fully initialized editor shows them there rather than on a second
+                // page of fields. Without game data there is no Behavior tab, and they stay here.
                 var groups = tabbedGroups
                     .Where(entry => entry.Tab == tabTitle)
                     .Where(entry => PlaceableSections == null ||
-                                    entry.Group.Title != "Script slots")
+                                    !Domain.Editors.Schemas.UtpSchema.CustomBehaviorGroupTitles
+                                        .Contains(entry.Group.Title, StringComparer.Ordinal))
                     .Select(entry => entry.Group);
 
                 var title = string.IsNullOrEmpty(tabTitle) ? "Properties" : tabTitle;
-                var tab = new EditorTabViewModel(title, new FieldGroupsViewModel(groups));
-
-                // Advanced holds the raw .dlg conversation slot. Custom event scripts live directly
-                // under Custom on the Behavior tab, while named behaviors own their own scripts.
-                if (PlaceableSections != null && title == Domain.Editors.Schemas.UtpSchema.AdvancedTab)
-                {
-                    _advancedTab = tab;
-                    if (!PlaceableSections.Behavior.AllowsRawEditing)
-                        continue;
-                }
-
-                Tabs.Add(tab);
+                Tabs.Add(new EditorTabViewModel(title, new FieldGroupsViewModel(groups)));
             }
 
             if (PlaceableSections != null)
             {
-                // Appearance and Behavior belong beside Basic rather than after Advanced: they are
-                // the two things a placeable is, and Advanced is the escape hatch.
+                // Appearance and Behavior belong right beside Basic: they are the two things a
+                // placeable is.
                 Tabs.Insert(Math.Min(1, Tabs.Count),
                     new EditorTabViewModel("Behavior", PlaceableSections.Behavior));
                 Tabs.Insert(Math.Min(1, Tabs.Count),
@@ -236,7 +231,7 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>
         /// A behavior switch can add or remove the Variables tab and rewrites script slots, so the
-        /// tab strip and the Advanced fields both have to catch up.
+        /// tab strip has to catch up.
         /// </summary>
         private void OnBehaviorChanged()
         {
@@ -256,18 +251,6 @@ namespace SWLOR.Toolset.Editors
                 Tabs[Tabs.IndexOf(existing)] = new EditorTabViewModel("Variables", VarTableSection!);
             else if (!wanted && existing != null)
                 Tabs.Remove(existing);
-
-            // Advanced holds the raw .dlg conversation slot and appears only for Custom.
-            if (_advancedTab != null && PlaceableSections != null)
-            {
-                var wantAdvanced = PlaceableSections.Behavior.AllowsRawEditing;
-                var hasAdvanced = Tabs.Contains(_advancedTab);
-
-                if (wantAdvanced && !hasAdvanced)
-                    Tabs.Add(_advancedTab);
-                else if (!wantAdvanced && hasAdvanced)
-                    Tabs.Remove(_advancedTab);
-            }
 
             NotifyTabsChanged();
         }

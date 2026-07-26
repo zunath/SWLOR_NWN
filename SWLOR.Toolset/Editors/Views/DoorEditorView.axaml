@@ -1,98 +1,21 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
              xmlns:editors="using:SWLOR.Toolset.Editors"
              x:Class="SWLOR.Toolset.Editors.Doors.DoorEditorView"
              x:DataType="doors:DoorEditorViewModel">
 
   <UserControl.DataTemplates>
+    <!-- The shared row, plus the one control only a door has: a searchable set of required key
+         items. The picture gallery the appearance and portrait rows use belongs to the shared row,
+         because the trigger editor needs exactly the same thing for its load screens. -->
     <DataTemplate DataType="doors:DoorRowViewModel">
-      <Grid IsVisible="{Binding IsVisible}" ColumnDefinitions="170,*"
-            RowDefinitions="Auto,Auto,Auto" Margin="16,1" MinHeight="32">
-        <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" ClipToBounds="True">
-          <TextBlock Text="{Binding Label}" Classes="dim" TextTrimming="CharacterEllipsis" />
-          <TextBlock Text="required" FontSize="10" Margin="0,1,0,0"
-                     Foreground="{DynamicResource AmberBrush}" IsVisible="{Binding IsRequired}" />
-        </StackPanel>
+      <StackPanel Margin="16,1" IsVisible="{Binding IsVisible}">
+        <behaviors:BehaviorRowView />
 
-        <StackPanel Grid.Row="0" Grid.Column="1" Spacing="5" Margin="0,3">
-          <TextBox Text="{Binding Text, Mode=TwoWay}" MinWidth="210"
-                   MaxLength="{Binding MaxLength}" IsVisible="{Binding IsTextEntry}" />
-          <TextBox Text="{Binding Text, Mode=TwoWay}" MinWidth="210" MinHeight="110"
-                   MaxHeight="240" AcceptsReturn="True" TextWrapping="Wrap"
-                   ScrollViewer.VerticalScrollBarVisibility="Auto" MaxLength="{Binding MaxLength}"
-                   IsVisible="{Binding IsParagraph}" />
-          <NumericUpDown Value="{Binding Number, Mode=TwoWay}" MinWidth="150"
-                         HorizontalAlignment="Left" IsVisible="{Binding IsNumber}" />
-          <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsVisible="{Binding IsCheck}" />
-          <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice, Mode=TwoWay}"
-                    MinWidth="220" HorizontalAlignment="Stretch"
-                    IsVisible="{Binding IsPlainChoice}" />
-
-          <!-- Load screens and portraits share the Trigger editor's lazy image gallery. Only the
-               selected image is decoded until Choose is opened; the gallery is searchable and
-               publishes one page at a time so portraits never realize the complete 2DA at once. -->
-          <StackPanel IsVisible="{Binding IsGallery}" Spacing="6" HorizontalAlignment="Stretch">
-            <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3"
-                    Background="{DynamicResource FieldBrush}" ClipToBounds="True"
-                    Width="256" Height="192" HorizontalAlignment="Right">
-              <Panel>
-                <TextBlock Text="{Binding Choice.Display}" FontSize="15"
-                           Foreground="{DynamicResource InkBrush}"
-                           HorizontalAlignment="Center" VerticalAlignment="Center"
-                           TextWrapping="Wrap" TextAlignment="Center" Margin="10" />
-                <Image Source="{Binding SelectedPreview}" Stretch="Uniform" />
-              </Panel>
-            </Border>
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-              <TextBlock Grid.Column="0" Text="{Binding Choice.Display}" Classes="mono"
-                         VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-              <Button Grid.Column="1" x:Name="ChooseArtworkButton" Content="Choose&#x2026;"
-                      Padding="10,4" Command="{Binding OpenGalleryCommand}" />
-              <Popup Grid.Column="1" IsOpen="{Binding IsGalleryOpen, Mode=TwoWay}"
-                     PlacementTarget="{Binding #ChooseArtworkButton}" Placement="Left"
-                     IsLightDismissEnabled="True">
-                <Border Background="{DynamicResource PanelBrush}" CornerRadius="4" Padding="8"
-                        BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
-                  <Grid RowDefinitions="Auto,Auto,*" Width="680">
-                    <TextBox Grid.Row="0" Text="{Binding GalleryQuery, Mode=TwoWay}"
-                             Watermark="Search by name or resource" />
-                    <TextBlock Grid.Row="1" Text="{Binding GallerySummary}" Classes="count"
-                               Margin="2,6" />
-                    <ScrollViewer Grid.Row="2" MaxHeight="520"
-                                  ScrollChanged="OnChoiceGalleryScrollChanged">
-                      <ItemsControl ItemsSource="{Binding GalleryChoices}" Margin="1">
-                        <ItemsControl.ItemsPanel>
-                          <ItemsPanelTemplate>
-                            <WrapPanel MaxWidth="640" />
-                          </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                          <DataTemplate DataType="doors:DoorChoiceViewModel">
-                            <Button Classes="behavior" Margin="3" Padding="4"
-                                    Command="{Binding $parent[ItemsControl].((doors:DoorRowViewModel)DataContext).PickChoiceCommand}"
-                                    CommandParameter="{Binding}">
-                              <StackPanel Width="145" Spacing="4">
-                                <Border Height="126" ClipToBounds="True" CornerRadius="2"
-                                        Background="{DynamicResource FieldBrush}"
-                                        BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
-                                  <Image Source="{Binding Thumbnail}" Stretch="Uniform" />
-                                </Border>
-                                <TextBlock Text="{Binding Display}" FontSize="11"
-                                           TextTrimming="CharacterEllipsis" />
-                              </StackPanel>
-                            </Button>
-                          </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                      </ItemsControl>
-                    </ScrollViewer>
-                  </Grid>
-                </Border>
-              </Popup>
-            </Grid>
-          </StackPanel>
-
-          <StackPanel IsVisible="{Binding IsMultiChoice}" Spacing="6">
+        <Grid ColumnDefinitions="220,*" IsVisible="{Binding IsMultiChoice}">
+          <StackPanel Grid.Column="1" Spacing="6">
             <ItemsControl ItemsSource="{Binding SelectedKeyItems}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -114,51 +37,39 @@
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-              <ComboBox Grid.Column="0" ItemsSource="{Binding AvailableKeyItems}"
-                        SelectedItem="{Binding KeyItemToAdd, Mode=TwoWay}"
-                        MaxDropDownHeight="400" />
-              <Button Grid.Column="1" Content="Add" Command="{Binding AddKeyItemCommand}" />
-            </Grid>
+
+            <!-- Every declared key item, searched rather than scrolled: 415 of them is a set a
+                 builder cannot pick from a drop-down without knowing the name first. -->
+            <TextBox Text="{Binding KeyItemSearchText, Mode=TwoWay}"
+                     Watermark="Search key items by name" />
+            <TextBlock Text="{Binding KeyItemSearchSummary}" Classes="count" />
+            <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
+                    ClipToBounds="True">
+              <ScrollViewer Height="200" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding MatchingKeyItems}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="doors:DoorKeyItemViewModel">
+                      <Button Classes="behavior" Content="{Binding Display}" Margin="2" Padding="8,5"
+                              HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                              Command="{Binding $parent[ItemsControl].((doors:DoorRowViewModel)DataContext).AddKeyItemCommand}"
+                              CommandParameter="{Binding}" />
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+            </Border>
           </StackPanel>
-
-          <TextBlock Text="{Binding Note}" Classes="mono" TextWrapping="Wrap"
-                     IsVisible="{Binding IsStatement}" />
-        </StackPanel>
-
-        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="8">
-          <TextBlock Grid.Column="0" Text="{Binding Status}" FontSize="11.5"
-                     Foreground="{DynamicResource AmberBrush}" TextWrapping="Wrap"
-                     IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-          <TextBlock Grid.Column="1" Text="{Binding Counter}" Classes="label"
-                     IsVisible="{Binding HasCounter}" />
         </Grid>
-
-        <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding Note}" Classes="label"
-                   TextWrapping="Wrap" Margin="0,0,0,7"
-                   IsVisible="{Binding HasNote}" />
-      </Grid>
+      </StackPanel>
     </DataTemplate>
   </UserControl.DataTemplates>
 
   <DockPanel>
-    <Border DockPanel.Dock="Top" Padding="16,12"
-            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1">
-      <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnSpacing="8">
-        <TextBlock Grid.Column="0" Text="{Binding HeaderName}" FontSize="15.5"
-                   FontWeight="SemiBold" VerticalAlignment="Center" />
-        <TextBlock Grid.Column="1" Text="{Binding HeaderKind}" Classes="dim" FontSize="13"
-                   VerticalAlignment="Center" />
-        <TextBlock Grid.Column="2" Text="&#x00B7;" Classes="dim" VerticalAlignment="Center" />
-        <TextBlock Grid.Column="3" Text="{Binding HeaderOwner}" Classes="resref" FontSize="13.5"
-                   VerticalAlignment="Center" />
-        <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="7" VerticalAlignment="Center"
-                    IsVisible="{Binding IsDirty}">
-          <Ellipse Width="6" Height="6" Fill="{DynamicResource AccentBrush}" />
-          <TextBlock Text="unsaved" Classes="dim" FontSize="12.5" />
-        </StackPanel>
-      </Grid>
-    </Border>
+    <behaviors:BehaviorEditorHeader DockPanel.Dock="Top"
+                                    BehaviorName="{Binding HeaderName}"
+                                    Kind="{Binding HeaderKind}"
+                                    Owner="{Binding HeaderOwner}"
+                                    IsDirty="{Binding IsDirty}" />
 
     <Grid ColumnDefinitions="220,*">
       <Border Grid.Column="0" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0"
@@ -191,7 +102,7 @@
                 DataContext="{Binding Appearance}"
                 x:DataType="doors:DoorAppearanceSectionViewModel">
             <TextBox Grid.Row="0" Text="{Binding Query, Mode=TwoWay}"
-                     Watermark="Search models by name or resref" />
+                     Watermark="Search models by name or ResRef" />
             <TextBlock Grid.Row="1" Text="{Binding MatchSummary}" Classes="count"
                        Margin="2,7" />
             <ListBox Grid.Row="2" ItemsSource="{Binding Tiles}"
@@ -240,27 +151,8 @@
 
         <TabItem Header="Behavior">
           <Grid ColumnDefinitions="250,*">
-            <ScrollViewer Grid.Column="0">
-              <ItemsControl ItemsSource="{Binding BehaviorList}" Margin="10">
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate DataType="doors:DoorBehaviorListItemViewModel">
-                    <Panel>
-                      <TextBlock Text="{Binding Text}" IsVisible="{Binding IsHeader}"
-                                 Classes="section" Margin="12,14,0,5" />
-                      <Border IsVisible="{Binding IsRule}" Height="1" Margin="12,12"
-                              Background="{DynamicResource RuleBrush}" />
-                      <Button IsVisible="{Binding IsSelectable}" Classes="behavior"
-                              Classes.on="{Binding IsSelected}"
-                              HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                              Command="{Binding $parent[TabControl].((doors:DoorEditorViewModel)DataContext).ChooseBehaviorCommand}"
-                              CommandParameter="{Binding Behavior}">
-                        <TextBlock Text="{Binding Text}" />
-                      </Button>
-                    </Panel>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </ScrollViewer>
+            <behaviors:BehaviorRailView Grid.Column="0" Items="{Binding BehaviorList}"
+                                        ChooseCommand="{Binding ChooseBehaviorCommand}" />
 
             <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}"
                           BorderThickness="1,0,0,0">
@@ -270,7 +162,7 @@
                   <TextBlock Text="{Binding Behavior.Summary}" Classes="dim" Margin="16,0,16,8"
                              TextWrapping="Wrap"
                              IsVisible="{Binding Behavior.Summary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                  <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="0,2,0,8" />
+                  <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="14,2,14,8" />
                 </StackPanel>
               </Border>
             </ScrollViewer>
@@ -278,30 +170,7 @@
         </TabItem>
 
         <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
-          <StackPanel Margin="14,12" Spacing="8" DataContext="{Binding Variables}"
-                      x:DataType="editors:VarTableSectionViewModel">
-            <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
-                      AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="320"
-                      GridLinesVisibility="Horizontal">
-              <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
-                <DataGridTextColumn Header="Type" Binding="{Binding TypeLabel}" Width="*" />
-                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="2*" />
-              </DataGrid.Columns>
-            </DataGrid>
-            <Grid ColumnDefinitions="2*,Auto,Auto,2*,Auto,Auto" ColumnSpacing="6">
-              <AutoCompleteBox Grid.Column="0" Text="{Binding NewName, Mode=TwoWay}"
-                               ItemsSource="{Binding KnownKeys}" Watermark="Variable name" />
-              <TextBlock Grid.Column="1" Text="=" VerticalAlignment="Center" />
-              <ComboBox Grid.Column="2" MinWidth="96" ItemsSource="{Binding TypeChoices}"
-                        SelectedItem="{Binding NewType, Mode=TwoWay}" />
-              <TextBox Grid.Column="3" Text="{Binding NewValue, Mode=TwoWay}" Watermark="Value" />
-              <Button Grid.Column="4" Content="Set" Command="{Binding SetVariableCommand}" />
-              <Button Grid.Column="5" Content="Remove" Command="{Binding RemoveSelectedCommand}" />
-            </Grid>
-            <TextBlock Text="{Binding ValidationHint}" Foreground="Orange" TextWrapping="Wrap"
-                       IsVisible="{Binding ValidationHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-          </StackPanel>
+          <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
         </TabItem>
 
       </TabControl>

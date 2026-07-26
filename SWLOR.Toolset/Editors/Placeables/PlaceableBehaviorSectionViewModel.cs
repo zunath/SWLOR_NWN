@@ -37,7 +37,8 @@ namespace SWLOR.Toolset.Editors.Placeables
             BehaviorValueSourceProvider sources,
             IEditorPromptService prompts,
             Func<string, Action, bool> runEdit,
-            IScriptSlotHost? scriptSlotHost = null)
+            IScriptSlotHost? scriptSlotHost = null,
+            Func<string?, IReadOnlyList<string>>? resourceChoices = null)
         {
             _context = context;
             _sources = sources;
@@ -57,6 +58,17 @@ namespace SWLOR.Toolset.Editors.Placeables
 
             foreach (var descriptor in UtpSchema.CustomBehaviorScriptFields)
                 CustomScriptFields.Add(new ScriptFieldViewModel(descriptor, _context, scriptSlotHost));
+
+            // The raw .dlg slot. It used to be the only thing on an Advanced tab that appeared for
+            // Custom and vanished for everything else - a tab existing to hold one field belonging
+            // to one behavior.
+            foreach (var descriptor in UtpSchema.CustomBehaviorConversationFields)
+            {
+                CustomConversationFields.Add(new ResourcePickerFieldViewModel(
+                    descriptor,
+                    _context,
+                    resourceChoices?.Invoke(descriptor.LookupKey) ?? Array.Empty<string>()));
+            }
 
             foreach (var behavior in PlaceableBehaviorCatalog.Behaviors)
             {
@@ -91,6 +103,9 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// <summary>Raw event script slots shown only for the Custom behavior.</summary>
         public ObservableCollection<ScriptFieldViewModel> CustomScriptFields { get; } = new();
 
+        /// <summary>The raw .dlg conversation slot, shown only for the Custom behavior.</summary>
+        public ObservableCollection<FieldViewModel> CustomConversationFields { get; } = new();
+
         /// <summary>What the placeable is wired as right now.</summary>
         public PlaceableBehavior Current { get; private set; }
 
@@ -103,6 +118,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         public bool HasEditableFlags => EditableFlagFields.Count > 0;
         public bool ShowsCustomFlags => ReferenceEquals(Current, PlaceableBehaviorCatalog.Custom);
         public bool ShowsCustomScripts => ReferenceEquals(Current, PlaceableBehaviorCatalog.Custom);
+        public bool ShowsCustomConversation => ReferenceEquals(Current, PlaceableBehaviorCatalog.Custom);
         public bool HasSettings => HasFields || HasEditableFlags || ShowsCustomFlags || ShowsCustomScripts;
 
         /// <summary>Raised when a behavior switch lands, so the editor can refresh its other tabs.</summary>
@@ -141,6 +157,8 @@ namespace SWLOR.Toolset.Editors.Placeables
             foreach (var field in CustomFlagFields)
                 field.RefreshFromDocument();
             foreach (var field in CustomScriptFields)
+                field.RefreshFromDocument();
+            foreach (var field in CustomConversationFields)
                 field.RefreshFromDocument();
         }
 
@@ -259,6 +277,8 @@ namespace SWLOR.Toolset.Editors.Placeables
                 field.RefreshFromDocument();
             foreach (var field in CustomScriptFields)
                 field.RefreshFromDocument();
+            foreach (var field in CustomConversationFields)
+                field.RefreshFromDocument();
 
             OnPropertyChanged(nameof(HasFields));
             OnPropertyChanged(nameof(HasEditableFlags));
@@ -272,6 +292,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             OnPropertyChanged(nameof(HasEditableFlags));
             OnPropertyChanged(nameof(ShowsCustomFlags));
             OnPropertyChanged(nameof(ShowsCustomScripts));
+            OnPropertyChanged(nameof(ShowsCustomConversation));
             OnPropertyChanged(nameof(HasSettings));
         }
 

@@ -246,7 +246,7 @@ namespace SWLOR.Toolset.Tests
             editor.ChooseBehavior(SoundBehaviorCatalog.Get(SoundBehaviorCatalog.AreaLoopId));
 
             store.GetInteger(BehaviorFieldStorage.Field, "Hours").Should().Be(0x1234);
-            SoundEditorLayout.Basic.Concat(SoundEditorLayout.Advanced)
+            SoundEditorLayout.Basic.Concat(SoundEditorLayout.RawPlaybackFields)
                 .Concat(SoundBehaviorCatalog.All.SelectMany(behavior => behavior.Fields))
                 .Should().NotContain(field => field.Name == "Hours");
         }
@@ -286,7 +286,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void CommentIsDroppedAndTemplateResRefIsNeverBehaviorOwned()
         {
-            SoundEditorLayout.Basic.Concat(SoundEditorLayout.Advanced)
+            SoundEditorLayout.Basic.Concat(SoundEditorLayout.RawPlaybackFields)
                 .Concat(SoundBehaviorCatalog.All.SelectMany(behavior => behavior.Fields))
                 .Should().NotContain(field => field.Name == "Comment");
 

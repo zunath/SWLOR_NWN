@@ -36,7 +36,21 @@ namespace SWLOR.Toolset.Editors
         private readonly PortraitService? _portraits;
         private readonly WaypointAppearanceService? _waypointAppearances;
         private readonly Domain.GameData.TwoDa.TwoDaService? _twoDaService;
-        private Triggers.ChoicePreviewService? _choicePreviews;
+        private Behaviors.ChoicePreviewService? _choicePreviews;
+
+        /// <summary>
+        /// The picker option sets, shared by every editor rather than rebuilt per tab. Each one is a
+        /// module scan or a 2DA read, and opening a second door used to redo all of them.
+        /// </summary>
+        private readonly Dictionary<string, IReadOnlyList<BehaviorChoice>> _choiceSets =
+            new(StringComparer.Ordinal);
+
+        /// <summary>
+        /// The placeable behavior pickers' option sets. One provider for the session: the tag source
+        /// alone offers five figures of options, and a per-editor copy multiplied both the scan and
+        /// the memory by however many tabs were open.
+        /// </summary>
+        private Placeables.BehaviorValueSourceProvider? _behaviorValues;
 
         /// <summary>Backs the placeable Appearance tab's model grid; null degrades it to an empty grid.</summary>
         private readonly PlaceableModelCatalog? _placeableModels;
@@ -153,6 +167,17 @@ namespace SWLOR.Toolset.Editors
                 }
             });
             _workspaceContext.ScriptUsagesInvalidated += _scriptUsageIndex.Invalidate;
+
+            // Opening another module invalidates every module-derived picker; saving a blueprint
+            // invalidates only the ones built out of the module's own content.
+            _workspaceContext.WorkspaceOpened += () =>
+            {
+                _choiceSets.Clear();
+                _doorAppearances = null;
+                _behaviorValues?.InvalidateModuleSources();
+            };
+            _workspaceContext.CatalogEntryRefreshed += (_, _) =>
+                _behaviorValues?.InvalidateModuleSources();
         }
 
         /// <summary>
@@ -468,7 +493,8 @@ namespace SWLOR.Toolset.Editors
         private Placeables.PlaceableEditorSections? CreatePlaceableSections(
             EditorFieldContext context,
             Func<string, Action, bool> runEdit,
-            IScriptSlotHost? scriptSlotHost)
+            IScriptSlotHost? scriptSlotHost,
+            Func<string?, IReadOnlyList<string>> resourceChoices)
         {
             // No 2DA layer means no model grid, so the placeable opens with the plain tabs rather
             // than an Appearance tab that could only ever be empty.
@@ -477,7 +503,7 @@ namespace SWLOR.Toolset.Editors
 
             _placeableIndexes?.EnsureBuilt();
 
-            var values = new Placeables.BehaviorValueSourceProvider(
+            var values = _behaviorValues ??= new Placeables.BehaviorValueSourceProvider(
                 _gameCodeIndex,
                 () => _placeableIndexes?.Tags,
                 BlueprintChoices,
@@ -496,7 +522,7 @@ namespace SWLOR.Toolset.Editors
                 modelResRef => _tileModelCache?.GetOrBuildPlaceablePreview(modelResRef));
 
             var behavior = new Placeables.PlaceableBehaviorSectionViewModel(
-                context, values, _prompts, runEdit, scriptSlotHost);
+                context, values, _prompts, runEdit, scriptSlotHost, resourceChoices);
 
             return new Placeables.PlaceableEditorSections(appearance, behavior);
         }
@@ -507,20 +533,19 @@ namespace SWLOR.Toolset.Editors
             if (workspace == null)
                 return Array.Empty<CatalogEntry>();
 
-            var indexed = (_workspaceContext.Catalog?.Entries ?? Array.Empty<CatalogEntry>())
-                .Where(entry => entry.ResourceType == type)
-                .ToDictionary(entry => entry.ResRef, StringComparer.OrdinalIgnoreCase);
-
-            return workspace.EnumerateResRefs(type)
-                .Select(resRef => indexed.TryGetValue(resRef, out var entry)
+            var catalog = _workspaceContext.Catalog;
+            var choices = new List<CatalogEntry>();
+            foreach (var resRef in workspace.EnumerateResRefs(type))
+            {
+                // The catalog is keyed by type and resref, so this is a lookup rather than a scan of
+                // every indexed blueprint per requested type.
+                choices.Add(catalog != null && catalog.TryGetEntry(type, resRef, out var entry)
                     ? entry
                     : new CatalogEntry(
-                        type,
-                        resRef,
-                        null,
-                        null,
-                        workspace.GetResourcePath(type, resRef)))
-                .ToList();
+                        type, resRef, null, null, workspace.GetResourcePath(type, resRef)));
+            }
+
+            return choices;
         }
 
         /// <summary>
@@ -753,10 +778,32 @@ namespace SWLOR.Toolset.Editors
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice> DoorAppearances() =>
             _doorAppearances ??= Domain.Editors.Doors.DoorAppearanceCatalog.Read(_doorTypes);
 
-        private Triggers.ChoicePreviewService ChoicePreviews() =>
-            _choicePreviews ??= new Triggers.ChoicePreviewService(_resourceIndex);
+        private Behaviors.ChoicePreviewService ChoicePreviews() =>
+            _choicePreviews ??= new Behaviors.ChoicePreviewService(_resourceIndex);
 
-        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ResolveDoorChoices(string key)
+        /// <summary>
+        /// One option set, built on first use and kept. Every one of these is a 2DA read, a palette
+        /// file parse, or a module scan; before this, opening a second door of the same kind redid
+        /// all of them.
+        /// </summary>
+        private IReadOnlyList<BehaviorChoice> Cached(
+            string scope,
+            string key,
+            Func<string, IReadOnlyList<BehaviorChoice>> build)
+        {
+            var cacheKey = scope + ":" + key;
+            if (_choiceSets.TryGetValue(cacheKey, out var cached))
+                return cached;
+
+            var built = build(key);
+            _choiceSets[cacheKey] = built;
+            return built;
+        }
+
+        private IReadOnlyList<BehaviorChoice> ResolveDoorChoices(string key) =>
+            Cached("door", key, BuildDoorChoices);
+
+        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> BuildDoorChoices(string key)
         {
             if (key == Domain.Editors.Doors.DoorChoiceKeys.DoorPaletteCategories)
                 return ResolveDoorCategories();
@@ -862,7 +909,10 @@ namespace SWLOR.Toolset.Editors
         private IReadOnlyList<string> SoundResources() =>
             _soundResources ??= Domain.Editors.Sounds.SoundResourceCatalog.Read(_resourceIndex);
 
-        private IReadOnlyList<BehaviorChoice> ResolveSoundChoices(string key)
+        private IReadOnlyList<BehaviorChoice> ResolveSoundChoices(string key) =>
+            Cached("sound", key, BuildSoundChoices);
+
+        private IReadOnlyList<BehaviorChoice> BuildSoundChoices(string key)
         {
             if (key != Domain.Editors.Sounds.SoundChoiceKeys.PaletteCategories)
                 return Array.Empty<BehaviorChoice>();
@@ -893,7 +943,10 @@ namespace SWLOR.Toolset.Editors
         /// whose keys these deliberately match; the palette categories come from the module's own
         /// .itp, which no 2DA lookup covers.
         /// </summary>
-        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ResolveTriggerChoices(string key)
+        private IReadOnlyList<BehaviorChoice> ResolveTriggerChoices(string key) =>
+            Cached("trigger", key, BuildTriggerChoices);
+
+        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> BuildTriggerChoices(string key)
         {
             if (key == Domain.Editors.Triggers.TriggerChoiceKeys.PaletteCategories)
                 return ResolveTriggerCategories();
@@ -938,7 +991,10 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
-        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ResolveWaypointChoices(string key)
+        private IReadOnlyList<BehaviorChoice> ResolveWaypointChoices(string key) =>
+            Cached("waypoint", key, BuildWaypointChoices);
+
+        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> BuildWaypointChoices(string key)
         {
             if (key == Domain.Editors.Waypoints.WaypointChoiceKeys.PaletteCategories)
                 return ResolveWaypointCategories();
@@ -1051,12 +1107,12 @@ namespace SWLOR.Toolset.Editors
             if (!ResourceTypeExtensions.TryFromExtension(extension, out var type))
                 return Array.Empty<string>();
 
-            var entries = _workspaceContext.Catalog?.Entries;
-            if (entries == null)
+            var catalog = _workspaceContext.Catalog;
+            if (catalog == null)
                 return Array.Empty<string>();
 
-            return entries
-                .Where(entry => entry.ResourceType == type && !string.IsNullOrWhiteSpace(entry.Tag))
+            return catalog.EntriesOfType(type)
+                .Where(entry => !string.IsNullOrWhiteSpace(entry.Tag))
                 .Select(entry => entry.Tag!)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
@@ -1132,12 +1188,12 @@ namespace SWLOR.Toolset.Editors
             if (type == null || string.IsNullOrWhiteSpace(resRef))
                 return null;
 
-            var entry = _workspaceContext.Catalog?.Entries
-                .FirstOrDefault(candidate =>
-                    candidate.ResourceType == type &&
-                    string.Equals(candidate.ResRef, resRef, StringComparison.OrdinalIgnoreCase));
+            // A lookup, not a scan: this answers the area editor's selection bar, which asks on
+            // every click, and the snapshot holds ~17,900 records.
+            if (_workspaceContext.Catalog?.TryGetEntry(type.Value, resRef, out var entry) != true)
+                return null;
 
-            return string.IsNullOrWhiteSpace(entry?.Name) ? null : entry.Name;
+            return string.IsNullOrWhiteSpace(entry!.Name) ? null : entry.Name;
         }
 
         /// <summary>

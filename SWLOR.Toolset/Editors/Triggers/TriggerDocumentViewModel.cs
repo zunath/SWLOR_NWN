@@ -5,6 +5,7 @@ using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
+using SWLOR.Toolset.Editors.Behaviors;
 
 namespace SWLOR.Toolset.Editors.Triggers
 {

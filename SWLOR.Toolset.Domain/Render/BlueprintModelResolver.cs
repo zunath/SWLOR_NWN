@@ -169,7 +169,7 @@ namespace SWLOR.Toolset.Domain.Render
 
             var modelResRef = row.Race;
             if (string.IsNullOrWhiteSpace(modelResRef))
-                return BlueprintModelReference.NoneWith($"{row.DisplayName}: no model resref in appearance.2da.");
+                return BlueprintModelReference.NoneWith($"{row.DisplayName}: no model ResRef in appearance.2da.");
 
             return new BlueprintModelReference
             {

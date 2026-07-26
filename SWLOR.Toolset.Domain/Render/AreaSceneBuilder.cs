@@ -168,7 +168,7 @@ namespace SWLOR.Toolset.Domain.Render
                     {
                         isFallback = true;
                         diagnostics.AddMissingModel(
-                            $"tile #{i} (col {col}, row {row}): Tile_ID {tileId} in tileset '{tilesetResRef}' has no Model resref.");
+                            $"tile #{i} (col {col}, row {row}): Tile_ID {tileId} in tileset '{tilesetResRef}' has no Model ResRef.");
                     }
                     else
                     {

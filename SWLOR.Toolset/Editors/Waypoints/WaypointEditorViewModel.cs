@@ -5,6 +5,7 @@ using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Editors.Behaviors;
 
 namespace SWLOR.Toolset.Editors.Waypoints
 {
@@ -17,7 +18,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly bool _isInstance;
 
-        public ObservableCollection<WaypointBehaviorListItemViewModel> BehaviorList { get; } = new();
+        public ObservableCollection<BehaviorListItemViewModel> BehaviorList { get; } = new();
         public ObservableCollection<WaypointRowViewModel> BasicRows { get; } = new();
         public ObservableCollection<WaypointRowViewModel> BehaviorRows { get; } = new();
 
@@ -56,15 +57,15 @@ namespace SWLOR.Toolset.Editors.Waypoints
             HeaderOwner = headerOwner;
             _behavior = _catalog.Classify(waypoint);
 
-            BuildBehaviorList();
+            BehaviorListItemViewModel.Build(BehaviorList, _catalog.All);
             BuildBasicRows();
             RebuildBehaviorSection();
         }
 
         [RelayCommand]
-        public void ChooseBehavior(WaypointBehavior? behavior)
+        public void ChooseBehavior(IBehaviorDescriptor? descriptor)
         {
-            if (behavior == null || behavior.Id == Behavior.Id)
+            if (descriptor is not WaypointBehavior behavior || behavior.Id == Behavior.Id)
                 return;
 
             var previous = Behavior;
@@ -123,26 +124,6 @@ namespace SWLOR.Toolset.Editors.Waypoints
             RefreshCompleteness();
         }
 
-        private void BuildBehaviorList()
-        {
-            string? group = null;
-            foreach (var behavior in _catalog.All)
-            {
-                if (behavior.Group == null && group != null)
-                {
-                    BehaviorList.Add(WaypointBehaviorListItemViewModel.Rule());
-                    group = null;
-                }
-                else if (behavior.Group != null && behavior.Group != group)
-                {
-                    BehaviorList.Add(WaypointBehaviorListItemViewModel.Header(behavior.Group));
-                    group = behavior.Group;
-                }
-
-                BehaviorList.Add(WaypointBehaviorListItemViewModel.For(behavior));
-            }
-        }
-
         private void BuildBasicRows()
         {
             foreach (var definition in WaypointEditorLayout.Basic)
@@ -170,8 +151,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
                 ? new VarTableSectionViewModel(_runEdit, _store.Locals, _gameCodeIndex)
                 : null;
 
-            foreach (var item in BehaviorList)
-                item.IsSelected = item.Behavior?.Id == Behavior.Id;
+            BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);
 
             OnPropertyChanged(nameof(HeaderName));
             OnPropertyChanged(nameof(ShowsVariablesTab));

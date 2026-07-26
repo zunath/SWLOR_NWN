@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -854,7 +854,7 @@ namespace SWLOR.Toolset.Shell.Panels
             var kind = SelectedType.SingularDisplayName();
             var name = await _prompts.PromptForTextAsync(
                 $"New {kind}",
-                "The resref is derived from this name: lowercase, no spaces, 16 characters at most - " +
+                "The ResRef is derived from this name: lowercase, no spaces, 16 characters at most - " +
                 "NWN's own limit.",
                 string.Empty,
                 "Create").ConfigureAwait(true);
@@ -865,7 +865,7 @@ namespace SWLOR.Toolset.Shell.Panels
             var resRef = ToResRef(name);
             if (resRef.Length == 0)
             {
-                StatusMessage = "That name has no letters or digits to build a resref from.";
+                StatusMessage = "That name has no letters or digits to build a ResRef from.";
                 return;
             }
 

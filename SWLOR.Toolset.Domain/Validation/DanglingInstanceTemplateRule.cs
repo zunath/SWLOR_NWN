@@ -34,7 +34,7 @@ namespace SWLOR.Toolset.Domain.Validation
             new("Door List", ResourceType.Utd, "TemplateResRef", git => git.Doors),
             new("Placeable List", ResourceType.Utp, "TemplateResRef", git => git.Placeables),
             new("SoundList", ResourceType.Uts, "TemplateResRef", git => git.Sounds),
-            // .utm blueprints use "ResRef" for their own template resref, not "TemplateResRef" -
+            // .utm blueprints use "ResRef" for their own template ResRef, not "TemplateResRef" -
             // git store instances follow the same naming.
             new("StoreList", ResourceType.Utm, "ResRef", git => git.Stores),
             new("TriggerList", ResourceType.Utt, "TemplateResRef", git => git.Triggers),

@@ -31,10 +31,7 @@ namespace SWLOR.Toolset.Domain.Editors.Sounds
         public void Clear(SoundBehavior behavior)
         {
             ArgumentNullException.ThrowIfNull(behavior);
-            var fields = behavior.Id == SoundBehaviorCatalog.CustomId
-                ? behavior.Fields.Concat(SoundEditorLayout.Advanced.Where(field => field.CustomOnly))
-                : behavior.Fields;
-            Clear(behavior.Manages, fields);
+            Clear(behavior.Manages, behavior.Fields);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -52,7 +52,7 @@
       <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal"
                   Spacing="12" Margin="2,6,0,0" IsVisible="{Binding HasDialogOptions}">
         <CheckBox Content="Search what people say" IsChecked="{Binding SearchDialogueText, Mode=TwoWay}"
-                  ToolTip.Tip="Search the dialogue itself rather than resrefs and names. Reads every conversation, so it is a little slower." />
+                  ToolTip.Tip="Search the dialogue itself rather than ResRefs and names. Reads every conversation, so it is a little slower." />
         <CheckBox Content="Show generated" IsChecked="{Binding ShowGeneratedDialogs, Mode=TwoWay}"
                   ToolTip.Tip="Include the 255 numbered shells the C# Dialog service generates. They cannot be edited here." />
       </StackPanel>
@@ -156,7 +156,7 @@
         <StackPanel Spacing="7" DataContext="{Binding ActiveNewArea}"
                     x:DataType="panels:NewAreaViewModel">
           <TextBlock Text="New Area" FontWeight="SemiBold" />
-          <TextBox Text="{Binding ResRef, Mode=TwoWay}" Watermark="Resref (lowercase, max 16)" />
+          <TextBox Text="{Binding ResRef, Mode=TwoWay}" Watermark="ResRef (lowercase, max 16)" />
           <TextBox Text="{Binding DisplayName, Mode=TwoWay}" Watermark="Display name" />
           <ComboBox ItemsSource="{Binding Tilesets}" SelectedItem="{Binding SelectedTileset, Mode=TwoWay}"
                     HorizontalAlignment="Stretch" />

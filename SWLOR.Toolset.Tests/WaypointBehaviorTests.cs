@@ -335,21 +335,52 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void PlainChoiceTemplateWrapsLongWaypointLabels()
         {
-            var appPath = Path.Combine(
+            // The row markup is shared by every behavior editor now, so the wrapping rule lives in
+            // one place rather than in a waypoint-only template.
+            var view = File.ReadAllText(Path.Combine(
                 CorpusLocator.RepositoryRoot,
                 "SWLOR.Toolset",
-                "App.axaml");
-            var app = File.ReadAllText(appPath);
-            var template = app[
-                app.IndexOf(
-                    "<DataTemplate DataType=\"waypoints:WaypointRowViewModel\">",
-                    StringComparison.Ordinal)..app.IndexOf(
-                    "<DataTemplate DataType=\"editors:CheckFieldViewModel\">",
-                    StringComparison.Ordinal)];
+                "Editors",
+                "Behaviors",
+                "BehaviorRowView.axaml"));
 
-            template.Should().Contain("MinWidth=\"320\"");
-            template.Should().Contain(
-                "<TextBlock Text=\"{Binding Display}\" TextWrapping=\"Wrap\" MaxWidth=\"292\" />");
+            view.Should().Contain(
+                "<TextBlock Text=\"{Binding Display}\" TextWrapping=\"Wrap\" MaxWidth=\"420\" />");
+        }
+
+        [Test]
+        public void EveryBehaviorEditorDrawsItsRowsFromTheSharedControl()
+        {
+            // One row control, not four. The trigger, waypoint, door, and sound editors each used to
+            // carry their own copy, which is how three different label-column widths shipped.
+            var app = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "App.axaml"));
+            app.Should().Contain("<DataTemplate DataType=\"behaviors:BehaviorRowViewModel\">");
+            app.Should().NotContain("DataType=\"waypoints:WaypointRowViewModel\"");
+
+            foreach (var view in new[] { "DoorEditorView.axaml", "SoundEditorView.axaml" })
+            {
+                var markup = File.ReadAllText(Path.Combine(
+                    CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view));
+                markup.Should().Contain("<behaviors:BehaviorRowView />", $"{view} reuses the shared row");
+            }
+        }
+
+        [Test]
+        public void NoBehaviorEditorShowsAnAdvancedTab()
+        {
+            foreach (var view in new[]
+                     {
+                         "WaypointDocumentView.axaml", "TriggerDocumentView.axaml",
+                         "DoorEditorView.axaml", "SoundEditorView.axaml"
+                     })
+            {
+                var markup = File.ReadAllText(Path.Combine(
+                    CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view));
+                markup.Should().NotContain(
+                    "Header=\"Advanced\"",
+                    $"{view} folds its raw fields into Basic and Custom");
+            }
         }
 
         [Test]

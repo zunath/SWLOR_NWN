@@ -32,7 +32,7 @@
     <DataTemplate DataType="placeables:AppearanceSectionViewModel">
       <Grid RowDefinitions="Auto,Auto,*" Margin="8">
           <TextBox Grid.Row="0" Text="{Binding Query, Mode=TwoWay}"
-                   Watermark="Search models by name or resref" />
+                   Watermark="Search models by name or ResRef" />
 
           <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="12" Margin="2,7">
             <CheckBox Content="Used in module" IsChecked="{Binding UsedInModuleOnly, Mode=TwoWay}" />
@@ -133,6 +133,10 @@
             <StackPanel Spacing="6" IsVisible="{Binding ShowsCustomScripts}">
               <TextBlock Text="SCRIPTS" Classes="label" />
               <ItemsControl ItemsSource="{Binding CustomScriptFields}" />
+            </StackPanel>
+            <StackPanel Spacing="6" IsVisible="{Binding ShowsCustomConversation}">
+              <TextBlock Text="CONVERSATION" Classes="label" />
+              <ItemsControl ItemsSource="{Binding CustomConversationFields}" />
             </StackPanel>
             <TextBlock Text="This behavior has no settings of its own." Classes="dim" FontSize="11.5"
                        IsVisible="{Binding !HasSettings}" />

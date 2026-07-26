@@ -11,7 +11,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
     /// Custom alone. Every other behavior owns whichever locals it needs and exposes them as named
     /// fields, so there is never a second place to set the same thing.
     /// </remarks>
-    public sealed class TriggerBehavior
+    public sealed class TriggerBehavior : IBehaviorDescriptor
     {
         public required string Id { get; init; }
 

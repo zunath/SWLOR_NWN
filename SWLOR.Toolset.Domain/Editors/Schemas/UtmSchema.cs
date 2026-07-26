@@ -6,7 +6,7 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
     /// <summary>
     /// Editor schema for store blueprints (.utm). Field names and GFF types verified against the
     /// module corpus (e.g. Module\utm\bartender.utm.json). Corpus verification note: stores use
-    /// "ResRef" for the blueprint resref field, not "TemplateResRef" like every other blueprint
+    /// "ResRef" for the blueprint ResRef field, not "TemplateResRef" like every other blueprint
     /// type in this package. StoreList/WillNotBuy/WillOnlyBuy (the item lists)
     /// are intentionally not exposed here; they need their own dedicated list editor. No corpus
     /// .utm file carries a VarTable, so this schema does not offer the var-table grid.
@@ -27,7 +27,7 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                         {
                             new FieldDescriptor { Label = "Name", FieldName = "LocName", Kind = EditorKind.LocString, FieldType = GffFieldType.CExoLocString },
                             new FieldDescriptor { Label = "Tag", FieldName = "Tag", Kind = EditorKind.Text, FieldType = GffFieldType.CExoString },
-                            new FieldDescriptor { Label = "ResRef", FieldName = "ResRef", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, IsReadOnly = true, Description = "Blueprint resref; matches the file name. Stores use 'ResRef', not 'TemplateResRef'." },
+                            new FieldDescriptor { Label = "ResRef", FieldName = "ResRef", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, IsReadOnly = true, Description = "The ResRef. Matches the file name; stores keep it in a field called 'ResRef' rather than 'TemplateResRef'." },
                             new FieldDescriptor { Label = "Comment", FieldName = "Comment", Kind = EditorKind.Text, FieldType = GffFieldType.CExoString }
                         }
                     },

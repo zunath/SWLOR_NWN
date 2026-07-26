@@ -202,7 +202,7 @@ namespace SWLOR.Toolset.Domain.Editors.Sounds
                         Float("W-E scatter range", "RandomRangeX"),
                         Float("N-S scatter range", "RandomRangeY"),
                         Times()
-                    },
+                    }.Concat(SoundEditorLayout.RawPlaybackFields).ToList(),
                     AllowsVariables = true
                 }
             };

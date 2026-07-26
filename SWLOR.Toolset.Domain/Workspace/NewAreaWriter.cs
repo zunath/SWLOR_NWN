@@ -56,7 +56,7 @@ namespace SWLOR.Toolset.Domain.Workspace
             resRef = (resRef ?? string.Empty).Trim().ToLowerInvariant();
             if (!ResRefPattern.IsMatch(resRef))
             {
-                error = "Resref must be 1-16 characters, lowercase letters/digits/underscore only.";
+                error = "ResRef must be 1-16 characters, lowercase letters/digits/underscore only.";
                 return false;
             }
 

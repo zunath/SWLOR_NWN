@@ -4,11 +4,11 @@ using Avalonia.Threading;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 
-namespace SWLOR.Toolset.Editors.Triggers
+namespace SWLOR.Toolset.Editors.Behaviors
 {
     /// <summary>
-    /// Decodes a choice's artwork into a bitmap the picker can show — the load screens being the
-    /// reason it exists.
+    /// Decodes a choice's artwork into a bitmap a picker can show: the load screens, the door
+    /// appearances, the portraits.
     /// </summary>
     /// <remarks>
     /// <para>

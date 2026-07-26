@@ -1,30 +1,16 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:waypoints="using:SWLOR.Toolset.Editors.Waypoints"
-             xmlns:editors="using:SWLOR.Toolset.Editors"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
              x:Class="SWLOR.Toolset.Editors.Waypoints.WaypointDocumentView"
              x:DataType="waypoints:WaypointDocumentViewModel">
 
   <DockPanel>
-    <Border DockPanel.Dock="Top" Padding="16,12" DataContext="{Binding Editor}"
-            x:DataType="waypoints:WaypointEditorViewModel"
-            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1">
-      <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnSpacing="8">
-        <TextBlock Grid.Column="0" Text="{Binding HeaderName}" FontSize="15.5" FontWeight="SemiBold"
-                   VerticalAlignment="Center" />
-        <TextBlock Grid.Column="1" Text="{Binding HeaderKind}" Classes="dim" FontSize="13"
-                   VerticalAlignment="Center" />
-        <TextBlock Grid.Column="2" Text="&#x00B7;" Classes="dim" VerticalAlignment="Center" />
-        <TextBlock Grid.Column="3" Text="{Binding HeaderOwner}" Classes="resref" FontSize="13.5"
-                   VerticalAlignment="Center" />
-        <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
-          <Ellipse Width="6" Height="6" Fill="{DynamicResource AccentBrush}"
-                   IsVisible="{Binding $parent[UserControl].((waypoints:WaypointDocumentViewModel)DataContext).IsDirty}" />
-          <TextBlock Text="unsaved" Classes="dim" FontSize="12.5"
-                     IsVisible="{Binding $parent[UserControl].((waypoints:WaypointDocumentViewModel)DataContext).IsDirty}" />
-        </StackPanel>
-      </Grid>
-    </Border>
+    <behaviors:BehaviorEditorHeader DockPanel.Dock="Top"
+                                    BehaviorName="{Binding Editor.HeaderName}"
+                                    Kind="{Binding Editor.HeaderKind}"
+                                    Owner="{Binding Editor.HeaderOwner}"
+                                    IsDirty="{Binding IsDirty}" />
 
     <Border DockPanel.Dock="Bottom" Padding="16,11"
             BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0">
@@ -49,69 +35,25 @@
 
       <TabItem Header="Behavior">
         <Grid ColumnDefinitions="290,*">
-          <ScrollViewer Grid.Column="0">
-            <ItemsControl ItemsSource="{Binding BehaviorList}" Margin="10,10">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="waypoints:WaypointBehaviorListItemViewModel">
-                  <Panel>
-                    <TextBlock Text="{Binding Text}" IsVisible="{Binding IsHeader}"
-                               Classes="section" Margin="12,14,0,5" />
-                    <Border IsVisible="{Binding IsRule}" Height="1" Margin="12,12"
-                            Background="{DynamicResource RuleBrush}" />
-                    <Button IsVisible="{Binding IsSelectable}" Classes="behavior"
-                            Classes.on="{Binding IsSelected}"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                            Command="{Binding $parent[TabControl].((waypoints:WaypointEditorViewModel)DataContext).ChooseBehaviorCommand}"
-                            CommandParameter="{Binding Behavior}">
-                      <TextBlock Text="{Binding Text}" />
-                    </Button>
-                  </Panel>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </ScrollViewer>
+          <behaviors:BehaviorRailView Grid.Column="0" Items="{Binding BehaviorList}"
+                                      ChooseCommand="{Binding ChooseBehaviorCommand}" />
 
           <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1,0,0,0">
-            <StackPanel Margin="14,12" Spacing="14">
-              <Border Classes="card">
-                <StackPanel>
-                  <TextBlock Text="{Binding HeaderName}" Classes="section" Margin="16,12,16,2" />
-                  <TextBlock Text="{Binding Behavior.Summary}" Classes="dim" Margin="16,0,16,8"
-                             TextWrapping="Wrap"
-                             IsVisible="{Binding Behavior.Summary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                  <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="0,2,0,8" />
-                </StackPanel>
-              </Border>
-            </StackPanel>
+            <Border Classes="card" Margin="14,12">
+              <StackPanel>
+                <TextBlock Text="{Binding HeaderName}" Classes="section" Margin="16,12,16,2" />
+                <TextBlock Text="{Binding Behavior.Summary}" Classes="dim" Margin="16,0,16,8"
+                           TextWrapping="Wrap"
+                           IsVisible="{Binding Behavior.Summary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="14,2,14,8" />
+              </StackPanel>
+            </Border>
           </ScrollViewer>
         </Grid>
       </TabItem>
 
       <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
-        <StackPanel Margin="14,12" Spacing="8"
-                    DataContext="{Binding Variables}" x:DataType="editors:VarTableSectionViewModel">
-          <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
-                    AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="320"
-                    GridLinesVisibility="Horizontal">
-            <DataGrid.Columns>
-              <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
-              <DataGridTextColumn Header="Type" Binding="{Binding TypeLabel}" Width="*" />
-              <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="2*" />
-            </DataGrid.Columns>
-          </DataGrid>
-          <Grid ColumnDefinitions="2*,Auto,Auto,2*,Auto,Auto" ColumnSpacing="6">
-            <AutoCompleteBox Grid.Column="0" Text="{Binding NewName, Mode=TwoWay}"
-                             ItemsSource="{Binding KnownKeys}" Watermark="Variable name" />
-            <TextBlock Grid.Column="1" Text="=" VerticalAlignment="Center" />
-            <ComboBox Grid.Column="2" MinWidth="96" ItemsSource="{Binding TypeChoices}"
-                      SelectedItem="{Binding NewType, Mode=TwoWay}" />
-            <TextBox Grid.Column="3" Text="{Binding NewValue, Mode=TwoWay}" Watermark="Value" />
-            <Button Grid.Column="4" Content="Set" Command="{Binding SetVariableCommand}" />
-            <Button Grid.Column="5" Content="Remove" Command="{Binding RemoveSelectedCommand}" />
-          </Grid>
-          <TextBlock Text="{Binding ValidationHint}" Foreground="Orange" TextWrapping="Wrap"
-                     IsVisible="{Binding ValidationHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-        </StackPanel>
+        <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
       </TabItem>
     </TabControl>
   </DockPanel>

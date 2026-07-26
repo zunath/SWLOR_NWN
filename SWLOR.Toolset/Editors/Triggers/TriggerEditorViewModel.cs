@@ -6,6 +6,7 @@ using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Editors.Behaviors;
 
 namespace SWLOR.Toolset.Editors.Triggers
 {
@@ -36,13 +37,11 @@ namespace SWLOR.Toolset.Editors.Triggers
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly bool _isInstance;
 
-        public ObservableCollection<TriggerBehaviorListItemViewModel> BehaviorList { get; } = new();
+        public ObservableCollection<BehaviorListItemViewModel> BehaviorList { get; } = new();
 
         public ObservableCollection<TriggerRowViewModel> BasicRows { get; } = new();
 
         public ObservableCollection<TriggerRowViewModel> BehaviorRows { get; } = new();
-
-        public ObservableCollection<TriggerRowViewModel> AdvancedRows { get; } = new();
 
         /// <summary>The raw local-variable grid. Present only while the behavior is Custom.</summary>
         [ObservableProperty]
@@ -88,7 +87,7 @@ namespace SWLOR.Toolset.Editors.Triggers
             _isInstance = isInstance;
             HeaderOwner = headerOwner;
 
-            BuildBehaviorList();
+            BehaviorListItemViewModel.Build(BehaviorList, TriggerBehaviorCatalog.All);
             Behavior = TriggerBehaviorCatalog.Classify(trigger);
             BuildBasicRows();
             RebuildBehaviorSection();
@@ -99,9 +98,9 @@ namespace SWLOR.Toolset.Editors.Triggers
         /// one undo step so a mis-click is one Ctrl+Z rather than several.
         /// </summary>
         [RelayCommand]
-        public void ChooseBehavior(TriggerBehavior? behavior)
+        public void ChooseBehavior(IBehaviorDescriptor? descriptor)
         {
-            if (behavior == null || behavior.Id == Behavior.Id)
+            if (descriptor is not TriggerBehavior behavior || behavior.Id == Behavior.Id)
                 return;
 
             var previous = Behavior;
@@ -141,59 +140,17 @@ namespace SWLOR.Toolset.Editors.Triggers
 
         private void ReloadRowsFromDocument()
         {
-            foreach (var row in BasicRows.Concat(BehaviorRows).Concat(AdvancedRows))
+            foreach (var row in BasicRows.Concat(BehaviorRows))
                 row.Reload();
 
             Variables?.RefreshFromDocument();
             RefreshCompleteness();
         }
 
-        private void BuildBehaviorList()
-        {
-            // An ungrouped behavior ends the run it follows rather than joining it. Custom has no
-            // group, and without this it rendered under whichever heading happened to come last -
-            // which is how it ended up filed as a hazard.
-            string? group = null;
-            foreach (var behavior in TriggerBehaviorCatalog.All)
-            {
-                if (behavior.Group == null && group != null)
-                {
-                    BehaviorList.Add(TriggerBehaviorListItemViewModel.Rule());
-                    group = null;
-                }
-                else if (behavior.Group != null && behavior.Group != group)
-                {
-                    BehaviorList.Add(TriggerBehaviorListItemViewModel.Header(behavior.Group));
-                    group = behavior.Group;
-                }
-
-                BehaviorList.Add(TriggerBehaviorListItemViewModel.For(behavior));
-            }
-        }
-
         private void BuildBasicRows()
         {
             foreach (var definition in TriggerEditorLayout.Basic)
                 BasicRows.Add(CreateRow(definition));
-        }
-
-        /// <summary>
-        /// Advanced depends on the behavior, so it is rebuilt alongside it: a raw field the current
-        /// behavior owns is not offered, because setting it there would only be overwritten the next
-        /// time the behavior applied itself.
-        /// </summary>
-        private void RebuildAdvancedRows()
-        {
-            AdvancedRows.Clear();
-
-            var isCustom = Behavior.Id == TriggerBehaviorCatalog.CustomId;
-            foreach (var definition in TriggerEditorLayout.Advanced)
-            {
-                if (definition.CustomOnly && !isCustom)
-                    continue;
-
-                AdvancedRows.Add(CreateRow(definition));
-            }
         }
 
         private TriggerRowViewModel CreateRow(BehaviorFieldDefinition definition) =>
@@ -217,14 +174,11 @@ namespace SWLOR.Toolset.Editors.Triggers
             foreach (var definition in Behavior.Fields)
                 BehaviorRows.Add(CreateRow(definition));
 
-            RebuildAdvancedRows();
-
             Variables = Behavior.AllowsVariables
                 ? new VarTableSectionViewModel(_runEdit, _store.Locals, _gameCodeIndex)
                 : null;
 
-            foreach (var item in BehaviorList)
-                item.IsSelected = item.Behavior?.Id == Behavior.Id;
+            BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);
 
             OnPropertyChanged(nameof(HeaderName));
             OnPropertyChanged(nameof(ShowsVariablesTab));
@@ -238,7 +192,7 @@ namespace SWLOR.Toolset.Editors.Triggers
         private void RefreshCompleteness()
         {
             var missing = BehaviorRows
-                .Where(row => row.IsRequired && string.IsNullOrWhiteSpace(row.Text))
+                .Where(row => row.IsRequired && !row.HasValue)
                 .Select(row => row.Label)
                 .ToList();
 

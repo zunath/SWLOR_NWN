@@ -155,8 +155,8 @@ namespace SWLOR.Toolset.Editors.Placeables
                                       _hasStoredValue;
         public string GallerySearchWatermark =>
             _field.Source == PlaceableValueSource.VisualEffects
-                ? "Search by name, resref, group, color, or location"
-                : "Search by name or resref";
+                ? "Search by name, ResRef, group, color, or location"
+                : "Search by name or ResRef";
         public string GallerySummary => _galleryMatches.Count == 0
             ? "No matches"
             : _galleryPublished >= _galleryMatches.Count
@@ -434,8 +434,8 @@ namespace SWLOR.Toolset.Editors.Placeables
                 PlaceableValueSource.Dialogs => "no conversation class with this name",
                 PlaceableValueSource.Quests => "no quest with this id",
                 PlaceableValueSource.SpawnTables => "no spawn table with this id",
-                PlaceableValueSource.PlaceableBlueprints => "no placeable blueprint with this resref",
-                PlaceableValueSource.CreatureBlueprints => "no creature blueprint with this resref",
+                PlaceableValueSource.PlaceableBlueprints => "no placeable blueprint with this ResRef",
+                PlaceableValueSource.CreatureBlueprints => "no creature blueprint with this ResRef",
                 _ => "not a known value"
             };
         }

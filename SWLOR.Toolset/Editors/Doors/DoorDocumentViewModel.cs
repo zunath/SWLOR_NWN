@@ -10,6 +10,7 @@ using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 using SWLOR.Toolset.Editors.Triggers;
+using SWLOR.Toolset.Editors.Behaviors;
 
 namespace SWLOR.Toolset.Editors.Doors
 {

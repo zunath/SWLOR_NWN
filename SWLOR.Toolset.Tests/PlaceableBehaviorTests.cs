@@ -316,7 +316,7 @@ namespace SWLOR.Toolset.Tests
                     gameCodeIndex: null,
                     log,
                     new AcceptingPrompts(),
-                    placeableSections: (context, runEdit, scriptHost) =>
+                    placeableSections: (context, runEdit, scriptHost, _) =>
                     {
                         var appearance = new AppearanceSectionViewModel(
                             context,
@@ -636,7 +636,7 @@ namespace SWLOR.Toolset.Tests
             gallery.SelectedDisplay.Should().Be("No prop");
             gallery.ClearChoiceLabel.Should().Be("Remove prop");
             gallery.CanClearChoice.Should().BeFalse();
-            gallery.GallerySearchWatermark.Should().Be("Search by name or resref");
+            gallery.GallerySearchWatermark.Should().Be("Search by name or ResRef");
             gallery.GalleryTiles.Should().ContainSingle();
             gallery.PickChoiceCommand.Execute(gallery.GalleryTiles.Single());
             new VarTable(document.Root).Single(entry => entry.Name == "RESOURCE_PROP")
@@ -656,7 +656,7 @@ namespace SWLOR.Toolset.Tests
                     context,
                     new BehaviorValueSourceProvider(gameCode: null, tags: () => null))
                 .GallerySearchWatermark.Should().Be(
-                    "Search by name, resref, group, color, or location");
+                    "Search by name, ResRef, group, color, or location");
         }
 
         [Test]

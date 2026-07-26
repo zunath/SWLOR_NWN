@@ -57,8 +57,36 @@ namespace SWLOR.Toolset.Workspace
         /// fci01_b01_01 at once used to leave three of them permanently blank - the second request saw the
         /// first in flight and returned without ever being called back.
         /// </remarks>
-        private readonly ConcurrentDictionary<string, List<Action<Bitmap>>> _inFlight =
+        private readonly ConcurrentDictionary<string, InFlightRender> _inFlight =
             new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, long> _versions =
+            new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, object> _keyGates =
+            new(StringComparer.OrdinalIgnoreCase);
+        private readonly ReaderWriterLockSlim _cacheGate = new();
+        private long _cacheEpoch;
+
+        private sealed class InFlightRender
+        {
+            public InFlightRender(long version, long epoch, Action<Bitmap> firstWaiter)
+            {
+                Version = version;
+                Epoch = epoch;
+                Waiters.Add(firstWaiter);
+            }
+
+            public long Version { get; }
+            public long Epoch { get; }
+            public List<Action<Bitmap>> Waiters { get; } = new();
+        }
+
+        private readonly record struct PreviewResolution(
+            Bitmap? Bitmap,
+            ThumbnailDiskCache Disk,
+            ResourceType Type,
+            string ResRef,
+            bool UseIndexedBlueprint,
+            bool Persist);
         private readonly ConcurrentDictionary<ResourceType, Bitmap> _typeIcons = new();
         private readonly ConcurrentDictionary<ResourceType, Bitmap> _typeChipIcons = new();
 
@@ -75,6 +103,7 @@ namespace SWLOR.Toolset.Workspace
             // cache's timestamp check, so without this an edited appearance or icon kept showing the old
             // picture - including a cached "no artwork" symbol - for the rest of the session.
             _workspaceContext.CatalogEntryRefreshed += Invalidate;
+            _workspaceContext.WorkspaceOpened += ResetForWorkspace;
         }
 
         /// <summary>Forgets a blueprint's cached preview, so the next request re-renders it.</summary>
@@ -83,7 +112,40 @@ namespace SWLOR.Toolset.Workspace
             if (string.IsNullOrWhiteSpace(resRef))
                 return;
 
-            _memory.Remove(Key(type, resRef));
+            _cacheGate.EnterReadLock();
+            try
+            {
+                foreach (var useIndexedBlueprint in new[] { false, true })
+                {
+                    var key = Key(type, resRef, useIndexedBlueprint);
+                    lock (GateFor(key))
+                    {
+                        _versions.AddOrUpdate(key, 1, (_, version) => version + 1);
+                        _inFlight.TryRemove(key, out _);
+                        _memory.Remove(key);
+                        Disk.Remove(type, resRef, useIndexedBlueprint);
+                    }
+                }
+            }
+            finally
+            {
+                _cacheGate.ExitReadLock();
+            }
+        }
+
+        private void ResetForWorkspace()
+        {
+            _cacheGate.EnterWriteLock();
+            try
+            {
+                Interlocked.Increment(ref _cacheEpoch);
+                _inFlight.Clear();
+                _memory.Clear();
+            }
+            finally
+            {
+                _cacheGate.ExitWriteLock();
+            }
         }
 
         /// <summary>True when game data is loaded well enough to produce any preview at all.</summary>
@@ -96,12 +158,15 @@ namespace SWLOR.Toolset.Workspace
         /// The preview for a blueprint if it is already decoded in memory, else null. Callers use this to
         /// fill a tile without a round trip through the thread pool.
         /// </summary>
-        public Bitmap? Cached(ResourceType type, string resRef)
+        public Bitmap? Cached(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint = false)
         {
             if (!IsAvailable)
                 return null;
 
-            return _memory.TryGet(Key(type, resRef), out var bitmap)
+            return _memory.TryGet(Key(type, resRef, useIndexedBlueprint), out var bitmap)
                 ? bitmap ?? TypeIcon(type)
                 : null;
         }
@@ -112,14 +177,24 @@ namespace SWLOR.Toolset.Workspace
         /// something already rendering joins it rather than queueing a second render, so a palette that
         /// republishes its tiles on every keystroke does not repeat the work.
         /// </summary>
-        public void RequestAsync(ResourceType type, string resRef, Action<Bitmap> onReady)
+        public void RequestAsync(
+            ResourceType type,
+            string resRef,
+            Action<Bitmap> onReady) =>
+            RequestAsync(type, resRef, useIndexedBlueprint: false, onReady: onReady);
+
+        public void RequestAsync(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint,
+            Action<Bitmap> onReady)
         {
             ArgumentNullException.ThrowIfNull(onReady);
 
             if (!IsAvailable || string.IsNullOrWhiteSpace(resRef))
                 return;
 
-            var key = Key(type, resRef);
+            var key = Key(type, resRef, useIndexedBlueprint);
             if (_memory.TryGet(key, out var known))
             {
                 var resolved = known ?? TypeIcon(type);
@@ -127,22 +202,23 @@ namespace SWLOR.Toolset.Workspace
                 return;
             }
 
-            if (!TryStartRender(key, onReady))
+            var fallback = TypeIcon(type);
+            if (!TryStartRender(key, onReady, fallback, out var operation))
                 return;
 
             Task.Run(() =>
             {
-                Bitmap? bitmap = null;
+                PreviewResolution? result = null;
                 try
                 {
-                    bitmap = Resolve(type, resRef);
+                    result = Resolve(type, resRef, useIndexedBlueprint);
                 }
                 catch (Exception)
                 {
                     // One bad blueprint must not stop the rest of the grid from filling in.
                 }
 
-                CompleteRender(key, bitmap, bitmap ?? TypeIcon(type));
+                CompleteRender(key, operation, result, result?.Bitmap ?? fallback);
             });
         }
 
@@ -172,7 +248,7 @@ namespace SWLOR.Toolset.Workspace
                 return;
             }
 
-            if (!TryStartRender(key, onReady))
+            if (!TryStartRender(key, onReady, null, out var operation))
                 return;
 
             Task.Run(() =>
@@ -189,7 +265,10 @@ namespace SWLOR.Toolset.Workspace
                     // One unparseable tile model must not stop the rest of the grid filling in.
                 }
 
-                CompleteRender(key, bitmap, bitmap);
+                var result = new PreviewResolution(
+                    bitmap, new ThumbnailDiskCache(null), ResourceType.Area, modelResRef,
+                    UseIndexedBlueprint: false, Persist: false);
+                CompleteRender(key, operation, result, bitmap);
             });
         }
 
@@ -197,27 +276,32 @@ namespace SWLOR.Toolset.Workspace
         /// Registers <paramref name="onReady"/> as a waiter on <paramref name="key"/>, and reports whether
         /// this caller is the one that has to do the render.
         /// </summary>
-        private bool TryStartRender(string key, Action<Bitmap> onReady)
+        private bool TryStartRender(
+            string key,
+            Action<Bitmap> onReady,
+            Bitmap? fallback,
+            out InFlightRender operation)
         {
-            var mine = new List<Action<Bitmap>> { onReady };
-            var waiters = _inFlight.GetOrAdd(key, mine);
-            if (ReferenceEquals(waiters, mine))
+            var mine = new InFlightRender(VersionOf(key), Volatile.Read(ref _cacheEpoch), onReady);
+            operation = _inFlight.GetOrAdd(key, mine);
+            if (ReferenceEquals(operation, mine))
                 return true;
 
             // Someone else is already rendering this. Join their list - but a render that finished between
             // the GetOrAdd and this lock has already published its result and cleared its own waiters, so
             // that case has to be answered from the cache instead of by waiting forever.
-            lock (waiters)
+            lock (operation.Waiters)
             {
-                if (!_inFlight.ContainsKey(key))
+                if (!_inFlight.TryGetValue(key, out var active) || !ReferenceEquals(active, operation))
                 {
-                    if (_memory.TryGet(key, out var done) && done != null)
-                        Dispatcher.UIThread.Post(() => onReady(done));
+                    var resolved = _memory.TryGet(key, out var done) ? done ?? fallback : fallback;
+                    if (resolved != null)
+                        Dispatcher.UIThread.Post(() => onReady(resolved));
 
                     return false;
                 }
 
-                waiters.Add(onReady);
+                operation.Waiters.Add(onReady);
             }
 
             return false;
@@ -226,19 +310,53 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>
         /// Publishes a finished render to the cache and to every caller that asked for it.
         /// </summary>
-        /// <param name="cached">What to store - null records "no artwork", which is a real answer.</param>
+        /// <param name="result">What to cache; null means rendering failed and must be retried later.</param>
         /// <param name="delivered">What to hand the waiters, or null to tell them nothing.</param>
-        private void CompleteRender(string key, Bitmap? cached, Bitmap? delivered)
+        private void CompleteRender(
+            string key,
+            InFlightRender operation,
+            PreviewResolution? result,
+            Bitmap? delivered)
         {
-            _memory.Set(key, cached);
-
-            List<Action<Bitmap>>? waiters;
-            if (!_inFlight.TryRemove(key, out waiters) || waiters == null)
-                return;
-
             Action<Bitmap>[] callbacks;
-            lock (waiters)
-                callbacks = waiters.ToArray();
+            _cacheGate.EnterReadLock();
+            try
+            {
+                lock (GateFor(key))
+                {
+                    if (!IsCurrent(key, operation))
+                    {
+                        result?.Bitmap?.Dispose();
+                        return;
+                    }
+
+                    if (result is { } resolved)
+                    {
+                        if (resolved.Persist)
+                        {
+                            if (resolved.Bitmap == null)
+                                resolved.Disk.StoreNoArtwork(
+                                    resolved.Type, resolved.ResRef, resolved.UseIndexedBlueprint);
+                            else
+                                resolved.Disk.Store(
+                                    resolved.Type, resolved.ResRef,
+                                    resolved.UseIndexedBlueprint, resolved.Bitmap);
+                        }
+
+                        _memory.Set(key, resolved.Bitmap);
+                    }
+
+                    if (!_inFlight.TryRemove(key, out var removed) || !ReferenceEquals(removed, operation))
+                        return;
+
+                    lock (operation.Waiters)
+                        callbacks = operation.Waiters.ToArray();
+                }
+            }
+            finally
+            {
+                _cacheGate.ExitReadLock();
+            }
 
             if (delivered == null)
                 return;
@@ -248,6 +366,18 @@ namespace SWLOR.Toolset.Workspace
                 foreach (var callback in callbacks)
                     callback(delivered);
             });
+        }
+
+        private object GateFor(string key) => _keyGates.GetOrAdd(key, _ => new object());
+
+        private long VersionOf(string key) => _versions.TryGetValue(key, out var version) ? version : 0;
+
+        private bool IsCurrent(string key, InFlightRender operation)
+        {
+            return operation.Epoch == Volatile.Read(ref _cacheEpoch) &&
+                   operation.Version == VersionOf(key) &&
+                   _inFlight.TryGetValue(key, out var active) &&
+                   ReferenceEquals(active, operation);
         }
 
         /// <summary>The cached tile thumbnail if it is already decoded, else null.</summary>
@@ -297,27 +427,20 @@ namespace SWLOR.Toolset.Workspace
             if (workspace == null || !IsAvailable)
                 return new PreviewCacheProgress(0, 0, 0, 0, 0);
 
-            var work = new List<(ResourceType Type, string ResRef)>();
+            var work = new List<(ResourceType Type, string ResRef, bool UseIndexedBlueprint)>();
             foreach (var type in ModuleWorkspace.BlueprintTypes.Where(BlueprintPreviewRenderer.IsSupported))
             {
-                var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var resRef in workspace.EnumerateResRefs(type))
-                {
-                    if (seen.Add(resRef))
-                        work.Add((type, resRef));
-                }
+                    work.Add((type, resRef, UseIndexedBlueprint: false));
 
-                // The base game and the haks, minus anything the module overrides - LoadBlueprint
-                // prefers the module's copy, so those are already queued above.
+                // Standard content is a separate cache identity. A same-resref module override must not
+                // suppress it: the Palette offers both sources and they can render differently.
                 if (workspace.ResourceIndex is not { } index)
                     continue;
 
                 foreach (var identity in index.EnumerateResources(
                              ResourceIdentity.TypeFromExtension(type.Extension())))
-                {
-                    if (seen.Add(identity.ResRef))
-                        work.Add((type, identity.ResRef));
-                }
+                    work.Add((type, identity.ResRef, UseIndexedBlueprint: true));
             }
 
             var disk = Disk;
@@ -341,27 +464,41 @@ namespace SWLOR.Toolset.Workspace
 
             await Parallel.ForEachAsync(work, options, (item, _) =>
             {
+                var key = Key(item.Type, item.ResRef, item.UseIndexedBlueprint);
+                var version = VersionOf(key);
+                var epoch = Volatile.Read(ref _cacheEpoch);
                 try
                 {
-                    if (disk.Contains(item.Type, item.ResRef, workspace.GetResourcePath(item.Type, item.ResRef)))
+                    var blueprintPath = item.UseIndexedBlueprint
+                        ? null
+                        : workspace.GetResourcePath(item.Type, item.ResRef);
+                    if (disk.Contains(
+                            item.Type, item.ResRef, blueprintPath, item.UseIndexedBlueprint))
                     {
                         Interlocked.Increment(ref reused);
                     }
                     else
                     {
-                        var image = _renderer.Render(item.Type, item.ResRef);
+                        var image = _renderer.Render(
+                            item.Type, item.ResRef, item.UseIndexedBlueprint);
                         if (image == null)
                         {
-                            disk.StoreNoArtwork(item.Type, item.ResRef);
-                            Interlocked.Increment(ref withoutArtwork);
+                            if (TryPersistWarmResult(
+                                    key, version, epoch,
+                                    () => disk.StoreNoArtwork(
+                                        item.Type, item.ResRef, item.UseIndexedBlueprint)))
+                                Interlocked.Increment(ref withoutArtwork);
                         }
                         else
                         {
                             // Disposed immediately: it exists only to be encoded, and 17,000 live
                             // bitmaps is exactly what this cache is designed to avoid.
                             using var bitmap = ToBitmap(image);
-                            disk.Store(item.Type, item.ResRef, bitmap);
-                            Interlocked.Increment(ref rendered);
+                            if (TryPersistWarmResult(
+                                    key, version, epoch,
+                                    () => disk.Store(
+                                        item.Type, item.ResRef, item.UseIndexedBlueprint, bitmap)))
+                                Interlocked.Increment(ref rendered);
                         }
                     }
                 }
@@ -392,41 +529,81 @@ namespace SWLOR.Toolset.Workspace
             return new PreviewCacheProgress(processed, total, rendered, reused, withoutArtwork, failed);
         }
 
+        private bool TryPersistWarmResult(
+            string key,
+            long version,
+            long epoch,
+            Action persist)
+        {
+            _cacheGate.EnterReadLock();
+            try
+            {
+                lock (GateFor(key))
+                {
+                    if (epoch != Volatile.Read(ref _cacheEpoch) || version != VersionOf(key))
+                        return false;
+
+                    persist();
+                    return true;
+                }
+            }
+            finally
+            {
+                _cacheGate.ExitReadLock();
+            }
+        }
+
         /// <summary>Drops every cached preview, in memory and on disk, so the next build redoes them.</summary>
         public int ClearCache()
         {
-            _memory.Clear();
-            return Disk.Clear();
+            _cacheGate.EnterWriteLock();
+            try
+            {
+                Interlocked.Increment(ref _cacheEpoch);
+                _inFlight.Clear();
+                _memory.Clear();
+                return Disk.Clear();
+            }
+            finally
+            {
+                _cacheGate.ExitWriteLock();
+            }
         }
 
         /// <summary>Deletes cache folders left by an older render pipeline. Returns the number removed.</summary>
         public int PruneSupersededCaches() => Disk.PruneSupersededVersions();
 
         /// <summary>Disk hit, then render. Null means "no artwork" - the caller substitutes a type symbol.</summary>
-        private Bitmap? Resolve(ResourceType type, string resRef)
+        private PreviewResolution Resolve(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint)
         {
             var workspace = _workspaceContext.Workspace;
-            var blueprintPath = workspace?.GetResourcePath(type, resRef);
+            var blueprintPath = useIndexedBlueprint
+                ? null
+                : workspace?.GetResourcePath(type, resRef);
             var disk = Disk;
 
-            switch (disk.TryLoad(type, resRef, blueprintPath, out var cached))
+            switch (disk.TryLoad(
+                        type, resRef, blueprintPath, useIndexedBlueprint, out var cached))
             {
                 case ThumbnailDiskCache.Lookup.Image:
-                    return cached;
+                    return new PreviewResolution(
+                        cached, disk, type, resRef, useIndexedBlueprint, Persist: false);
                 case ThumbnailDiskCache.Lookup.NoArtwork:
-                    return null;
+                    return new PreviewResolution(
+                        null, disk, type, resRef, useIndexedBlueprint, Persist: false);
             }
 
-            var image = _renderer.Render(type, resRef);
+            var image = _renderer.Render(type, resRef, useIndexedBlueprint);
             if (image == null)
-            {
-                disk.StoreNoArtwork(type, resRef);
-                return null;
-            }
+                return new PreviewResolution(
+                    null, disk, type, resRef, useIndexedBlueprint, Persist: true);
 
             var bitmap = ToBitmap(image);
-            disk.Store(type, resRef, bitmap);
-            return bitmap;
+            return new PreviewResolution(
+                bitmap, disk, type, resRef, useIndexedBlueprint, Persist: true);
         }
 
         /// <summary>
@@ -443,7 +620,7 @@ namespace SWLOR.Toolset.Workspace
                     if (!string.Equals(moduleRoot, _diskModuleRoot, StringComparison.OrdinalIgnoreCase))
                     {
                         _diskModuleRoot = moduleRoot;
-                        _disk = new ThumbnailDiskCache(moduleRoot);
+                        _disk = new ThumbnailDiskCache(moduleRoot, _renderer.ContentVersionUtc);
                     }
 
                     return _disk;
@@ -476,6 +653,10 @@ namespace SWLOR.Toolset.Workspace
             return bitmap;
         }
 
-        private static string Key(ResourceType type, string resRef) => $"{type}:{resRef}";
+        private static string Key(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint) =>
+            $"{(useIndexedBlueprint ? "standard" : "custom")}:{type}:{resRef}";
     }
 }

@@ -29,6 +29,18 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                     },
                     new FieldGroup
                     {
+                        Title = "Appearance",
+                        Fields = new[]
+                        {
+                            // Every checked-in waypoint carries this byte, the template factory writes it,
+                            // and AreaSceneBuilder resolves it through WaypointAppearanceService to choose
+                            // the marker drawn in the area view - so it was the one thing about a waypoint
+                            // the editor could not change.
+                            new FieldDescriptor { Label = "Appearance", FieldName = "Appearance", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Byte, LookupKey = LookupKeys.WaypointAppearances, IsRequired = true, Description = "Row index into waypoint.2da - the marker drawn in the area view." }
+                        }
+                    },
+                    new FieldGroup
+                    {
                         Title = "Map Note",
                         Fields = new[]
                         {

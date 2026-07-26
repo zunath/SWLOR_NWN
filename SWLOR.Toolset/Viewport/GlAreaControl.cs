@@ -107,6 +107,8 @@ namespace SWLOR.Toolset.Viewport
 
         private const float AmbientLightFloor = 0.25f;
         private const float DiffuseLightFloor = 0.20f;
+        /// <summary>The empty-space colour behind the scene.</summary>
+        private static readonly Vector3 ViewportBackground = new(0.12f, 0.14f, 0.18f);
         private static readonly Vector3 UntexturedTileColor = new(0.6f, 0.6f, 0.6f);
         private static readonly Vector3 FallbackTileColor = new(0.95f, 0.15f, 0.55f);
         private static readonly Vector3 PolygonOverlayColor = new(1f, 0.65f, 0.15f);
@@ -1188,16 +1190,12 @@ void main()
             if (point is not { } hit)
                 return;
 
-            if (SnapsToDoorAnchors)
-            {
-                _snappedDoorAnchor = NearestDoorAnchor(hit);
-                _ghostPosition = _snappedDoorAnchor?.Position;
-            }
-            else
-            {
-                _snappedDoorAnchor = null;
-                _ghostPosition = hit;
-            }
+            // A door still rides the cursor when it is nowhere near a doorway - it just drops into one
+            // as soon as it reaches one, and cannot be put down until it has. Showing it at the pointer
+            // is what makes "this one, not that one" readable while choosing; snapping from any distance
+            // put the preview off where the builder was not looking.
+            _snappedDoorAnchor = SnapsToDoorAnchors ? NearestDoorAnchor(hit) : null;
+            _ghostPosition = _snappedDoorAnchor?.Position ?? hit;
 
             RequestNextFrameRendering();
         }
@@ -1209,36 +1207,12 @@ void main()
         private bool SnapsToDoorAnchors => _placementGhost?.Kind == InstanceMarkerKind.Door;
 
         /// <summary>
-        /// The doorway nearest a ground point, measured on the floor plane so a doorway is not
-        /// preferred merely for being on a lower storey. Null when the scene declares none.
+        /// The empty doorway the cursor is close enough to hang a door in, or null when it is near none
+        /// or when the ones in reach are already filled. See
+        /// <see cref="AreaScene.NearestEmptyDoorway"/> for both rules.
         /// </summary>
-        /// <remarks>
-        /// Deliberately unbounded: there is no radius past which the click is refused instead. A door
-        /// has to go somewhere, the set of somewheres is small and drawn on screen, and "nothing
-        /// happened" is a worse answer to a click than "it went to the doorway you were nearest".
-        /// </remarks>
-        private TileDoorAnchor? NearestDoorAnchor(Vector3 groundPoint)
-        {
-            if (Volatile.Read(ref _sceneState).Scene is not { } scene)
-                return null;
-
-            TileDoorAnchor? best = null;
-            var bestDistance = float.MaxValue;
-
-            foreach (var anchor in scene.DoorAnchors)
-            {
-                var dx = anchor.Position.X - groundPoint.X;
-                var dy = anchor.Position.Y - groundPoint.Y;
-                var distance = dx * dx + dy * dy;
-                if (distance >= bestDistance)
-                    continue;
-
-                bestDistance = distance;
-                best = anchor;
-            }
-
-            return best;
-        }
+        private TileDoorAnchor? NearestDoorAnchor(Vector3 groundPoint) =>
+            Volatile.Read(ref _sceneState).Scene?.NearestEmptyDoorway(groundPoint);
 
         private void RaisePlacementPointPicked(Point screenPos)
         {
@@ -1257,8 +1231,9 @@ void main()
 
             if (SnapsToDoorAnchors)
             {
-                // A door that has not found a doorway has nowhere to go, so the click is ignored and the
-                // placement stays armed rather than dropping the door on open floor.
+                // A door that is not standing in an empty doorway has nowhere to go, so the click is
+                // ignored and the placement stays armed rather than dropping the door on open floor -
+                // or hanging a second leaf in a doorway that already has one.
                 if (NearestDoorAnchor(hit) is not { } anchor)
                     return;
 
@@ -1383,6 +1358,12 @@ void main()
 
         /// <summary>Clock for the pad, so a held button moves by time rather than by repeat count.</summary>
         private long _lastPadTicks;
+
+        /// <summary>
+        /// The offscreen target the scene is actually drawn into, for its 24-bit depth buffer.
+        /// See <see cref="DepthPrecisionFramebuffer"/> for why Avalonia's own is not good enough.
+        /// </summary>
+        private readonly DepthPrecisionFramebuffer _depthPrecisionTarget = new();
 
         /// <summary>
         /// How long a creature's idle runs for before it settles, in seconds.
@@ -1672,6 +1653,8 @@ void main()
                         _hasHighlightBuffer = false;
                     }
 
+                    _depthPrecisionTarget.Dispose(_gl);
+
                     if (_shaderProgram != 0)
                         _gl.DeleteProgram(_shaderProgram);
                     _shaderProgram = 0;
@@ -1713,21 +1696,27 @@ void main()
             var pixelWidth = (uint)Math.Max(1, (int)Math.Ceiling(width * scaling));
             var pixelHeight = (uint)Math.Max(1, (int)Math.Ceiling(height * scaling));
 
-            _gl.ClearColor(0.12f, 0.14f, 0.18f, 1f);
-            _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
-            _gl.Enable(EnableCap.DepthTest);
-            _gl.DepthFunc(DepthFunction.Less);
-            // NWN tile/prop meshes have inconsistent winding - culling would drop real faces.
-            _gl.Disable(EnableCap.CullFace);
-            _gl.Viewport(0, 0, pixelWidth, pixelHeight);
-
-            var sceneState = Volatile.Read(ref _sceneState);
-            var scene = sceneState.Scene;
-            if (scene == null)
-                return;
+            // Everything below draws into our own framebuffer rather than Avalonia's, purely to get a
+            // 24-bit depth buffer instead of its 16-bit one, and is blitted back in the finally. When
+            // that target is unavailable this is a no-op and the scene renders straight to Avalonia's
+            // framebuffer, flicker and all.
+            _depthPrecisionTarget.BeginFrame(_gl, pixelWidth, pixelHeight);
 
             try
             {
+                _gl.ClearColor(ViewportBackground.X, ViewportBackground.Y, ViewportBackground.Z, 1f);
+                _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
+                _gl.Enable(EnableCap.DepthTest);
+                _gl.DepthFunc(DepthFunction.Less);
+                // NWN tile/prop meshes have inconsistent winding - culling would drop real faces.
+                _gl.Disable(EnableCap.CullFace);
+                _gl.Viewport(0, 0, pixelWidth, pixelHeight);
+
+                var sceneState = Volatile.Read(ref _sceneState);
+                var scene = sceneState.Scene;
+                if (scene == null)
+                    return;
+
                 if (sceneState.Version != _renderedSceneVersion)
                 {
                     // Trigger volumes live on the instances, so this follows any scene change.
@@ -1740,10 +1729,10 @@ void main()
                     if (!ReferenceEquals(scene.Tiles, _batchedTiles))
                     {
                         RebuildWalkmeshBuffer(scene);
-                        _tileBatches = AreaDrawBatcher.GroupByModel(scene.Tiles);
-
-                        // A new scene starts the idle again, so opening an area - or rebuilding it
-                        // after an edit - shows its creatures move and then settle.
+                        _tileBatches = AreaDrawBatcher.GroupByModel(scene.Tiles);
+
+                        // A new scene starts the idle again, so opening an area - or rebuilding it
+                        // after an edit - shows its creatures move and then settle.
                         _idlePlaybackStartedTicks = System.Diagnostics.Stopwatch.GetTimestamp();
                         _batchedTiles = scene.Tiles;
                     }
@@ -1756,6 +1745,12 @@ void main()
             catch (Exception ex)
             {
                 RaiseStatus($"Area render error: {ex.Message}");
+            }
+            finally
+            {
+                // Composite onto Avalonia's framebuffer whatever happened above - including the
+                // early return for a null scene, which still owes it the cleared background.
+                _depthPrecisionTarget.EndFrame(_gl, fb, ViewportBackground);
             }
         }
 
@@ -1834,7 +1829,11 @@ void main()
             if (_uniformLocations.TryGetValue(name, out var location))
                 return location;
 
-            location = _gl!.GetUniformLocation(_shaderProgram, name);
+            var gl = _gl;
+            if (gl == null)
+                return -1;
+
+            location = gl.GetUniformLocation(_shaderProgram, name);
             _uniformLocations[name] = location;
             return location;
         }
@@ -1842,7 +1841,8 @@ void main()
         private void SetUniformMatrix4(string name, Matrix4x4 matrix)
         {
             var location = GetUniformLocationCached(name);
-            if (location < 0)
+            var gl = _gl;
+            if (location < 0 || gl == null)
                 return;
 
             // System.Numerics uses row-vector convention (v * M); GLSL uses column-vector (M * v).
@@ -1855,35 +1855,39 @@ void main()
                 matrix.M31, matrix.M32, matrix.M33, matrix.M34,
                 matrix.M41, matrix.M42, matrix.M43, matrix.M44
             };
-            _gl.UniformMatrix4(location, 1, false, values);
+            gl.UniformMatrix4(location, 1, false, values);
         }
 
         private void SetUniformVec3(string name, Vector3 value)
         {
             var location = GetUniformLocationCached(name);
-            if (location >= 0)
-                _gl.Uniform3(location, value.X, value.Y, value.Z);
+            var gl = _gl;
+            if (location >= 0 && gl != null)
+                gl.Uniform3(location, value.X, value.Y, value.Z);
         }
 
         private void SetUniformBool(string name, bool value)
         {
             var location = GetUniformLocationCached(name);
-            if (location >= 0)
-                _gl.Uniform1(location, value ? 1 : 0);
+            var gl = _gl;
+            if (location >= 0 && gl != null)
+                gl.Uniform1(location, value ? 1 : 0);
         }
 
         private void SetUniformFloat(string name, float value)
         {
             var location = GetUniformLocationCached(name);
-            if (location >= 0)
-                _gl.Uniform1(location, value);
+            var gl = _gl;
+            if (location >= 0 && gl != null)
+                gl.Uniform1(location, value);
         }
 
         private void SetUniformInt(string name, int value)
         {
             var location = GetUniformLocationCached(name);
-            if (location >= 0)
-                _gl.Uniform1(location, value);
+            var gl = _gl;
+            if (location >= 0 && gl != null)
+                gl.Uniform1(location, value);
         }
 
         private void SetVertexAttribPointers()
@@ -2278,6 +2282,16 @@ void main()
         private static readonly Vector3 PlacementGhostColor = new(0.36f, 0.61f, 0.96f);
 
         /// <summary>
+        /// Tint for a ghost the next click will refuse: a door away from any empty doorway.
+        /// </summary>
+        /// <remarks>
+        /// Same red as the tile-stamp highlight uses for a footprint that will not fit, and for the same
+        /// reason - a preview that follows the cursor everywhere has to say where it can actually land,
+        /// or a click that does nothing reads as the editor having stopped responding.
+        /// </remarks>
+        private static readonly Vector3 PlacementRefusedColor = new(0.90f, 0.30f, 0.30f);
+
+        /// <summary>
         /// Fainter than the object ghost. A tile fills a whole 10m cell, so at the object ghost's
         /// opacity it blots out the area underneath it rather than previewing against it.
         /// </summary>
@@ -2332,15 +2346,28 @@ void main()
             SetUniformFloat("flatAlpha", PlacementGhostAlpha);
             SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
 
+            // A door away from any empty doorway draws as a red silhouette of itself: still the object
+            // being placed, visibly not placeable here.
+            var refused = SnapsToDoorAnchors && _snappedDoorAnchor == null;
+
             if (DrawsAsModel(placed))
             {
                 var buffer = GetOrBuildModelBuffer(placed.Model!);
                 _gl.BindVertexArray(buffer.Vao);
 
+                if (refused)
+                {
+                    SetUniformBool("hasTexture", false);
+                    SetUniformBool("unlit", true);
+                    SetUniformFloat("alphaCutoff", 0f);
+                    SetUniformVec3("flatColor", PlacementRefusedColor);
+                }
+
                 foreach (var meshRange in buffer.MeshRanges)
                 {
                     SetUniformMatrix4("model", meshRange.MeshTransform * transform);
-                    BindMeshTexture(meshRange.TextureName);
+                    if (!refused)
+                        BindMeshTexture(meshRange.TextureName);
 
                     unsafe
                     {
@@ -2354,7 +2381,7 @@ void main()
                 SetUniformBool("hasTexture", false);
                 SetUniformBool("unlit", true);
                 SetUniformFloat("alphaCutoff", 0f);
-                SetUniformVec3("flatColor", PlacementGhostColor);
+                SetUniformVec3("flatColor", refused ? PlacementRefusedColor : PlacementGhostColor);
                 _gl.BindVertexArray(marker.Vao);
                 SetUniformMatrix4("model",
                     Matrix4x4.CreateScale(PlacementGhostMarkerScale) * transform);
@@ -2383,14 +2410,15 @@ void main()
         private const float DoorAnchorAlpha = 0.65f;
 
         /// <summary>
-        /// While a door is armed, marks every doorway the area's tiles declare.
+        /// While a door is armed, marks every doorway that is still empty.
         /// </summary>
         /// <remarks>
         /// A door cannot be placed anywhere else, so the builder needs to see where "anywhere else" is
-        /// not - otherwise a click that snaps several metres away looks like a bug rather than the rule
-        /// it is. Only drawn during a door placement: the rest of the time these are noise, and there
-        /// can be dozens of them in a corridor tileset. The snapped one is left to the ghost, which is
-        /// standing in it.
+        /// not - otherwise a ghost that refuses to go down looks like a bug rather than the rule it is.
+        /// Only drawn during a door placement: the rest of the time these are noise, and there can be
+        /// dozens of them in a corridor tileset. A doorway that already holds a door is left out, since
+        /// it is not somewhere the next click can land either; so is the snapped one, which the ghost is
+        /// already standing in.
         /// </remarks>
         private void DrawDoorAnchors()
         {
@@ -2422,6 +2450,9 @@ void main()
                 {
                     continue;
                 }
+
+                if (scene.IsDoorwayFilled(anchor))
+                    continue;
 
                 SetUniformMatrix4("model",
                     Matrix4x4.CreateScale(DoorAnchorMarkerScale) *

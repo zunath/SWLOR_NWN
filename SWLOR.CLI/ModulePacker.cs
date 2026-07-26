@@ -494,7 +494,12 @@ namespace SWLOR.CLI
             var results = new List<string>();
             foreach (var folder in GetModuleFolders())
             {
-                results.AddRange(Directory.GetFiles(folder));
+                // Only the real resources. An atomic save writes "<resource>.<ext>.json.tmp" beside its
+                // target and renames it, so a save interrupted by a locked file or by the process exiting
+                // can leave one behind - and GetFileNameWithoutExtension strips just the ".tmp", so it
+                // would be converted and packed under the real resource's name.
+                results.AddRange(Directory.GetFiles(folder)
+                    .Where(file => !file.EndsWith(".tmp", StringComparison.OrdinalIgnoreCase)));
             }
 
             return results;

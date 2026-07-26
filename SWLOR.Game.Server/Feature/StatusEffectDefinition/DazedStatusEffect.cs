@@ -30,6 +30,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override string CanApply(uint creature)
         {
+            if (StatusEffect.HasStatusEffect(creature, GetType()))
+                return "Target is already dazed.";
+
             return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Dazed)
                 ? "Target is temporarily immune to daze."
                 : string.Empty;
@@ -45,15 +48,24 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             ApplyDaze(creature, GetDurationSeconds(DurationTicks));
         }
 
+        protected override void Remove(uint creature)
+        {
+            if (IsBeingReplaced)
+                return;
+
+            if (_grantsTemporaryImmunity)
+            {
+                Ability.ApplyPostControlImmunity(
+                    creature,
+                    SecondsSinceNaturalExpiration,
+                    ImmunityType.Dazed);
+            }
+        }
+
         private void ApplyDaze(uint creature, float duration)
         {
             var effect = TagNativeEffect(EffectDazed());
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
-
-            if (_grantsTemporaryImmunity)
-            {
-                Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Dazed);
-            }
         }
 
         public override IStatusEffect Clone()

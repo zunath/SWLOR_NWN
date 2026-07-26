@@ -23,7 +23,7 @@ namespace SWLOR.Toolset.Tests
             {
                 Name = name,
                 Render = true,
-                Bitmap = bitmap,
+                Bitmap = bitmap!,
                 Vertices = new[]
                 {
                     new Vector3(0, 0, 0),

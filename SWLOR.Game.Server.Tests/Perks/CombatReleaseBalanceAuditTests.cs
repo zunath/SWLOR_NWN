@@ -158,6 +158,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.HighFPAndStaminaAbilityDamageBonus,
         StatType.AbilityDamageToBleedingTargetBonus,
         StatType.StatusAppliedNextSkillAbilityDamageBonus,
+        StatType.StatusAppliedNextAttackDamageBonus,
         StatType.AvoidedAttackNextSkillAbilityDamageBonus,
         StatType.DamageTakenNextSkillAbilityDamageBonus,
         StatType.CostlyAbilityDamageBonus,

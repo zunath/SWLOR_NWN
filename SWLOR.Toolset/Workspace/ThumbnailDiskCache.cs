@@ -20,9 +20,11 @@ namespace SWLOR.Toolset.Workspace
     /// included - every time a builder opened their category, only to conclude "nothing" again.
     /// </para>
     /// <para>
-    /// Entries are invalidated by timestamp: an entry older than the blueprint it was rendered from is
-    /// stale and re-rendered, so editing a creature's appearance updates its tile. The cache is keyed by
-    /// module root as well, because two checkouts have different blueprints under the same resrefs.
+    /// Entries are invalidated by timestamp: an entry older than either the blueprint or the indexed
+    /// game-data content it was rendered from is stale and re-rendered. The latter covers standard
+    /// blueprints and transitive model/texture dependencies in HAK or base-game layers. The cache is
+    /// keyed by module root as well, because two checkouts have different blueprints under the same
+    /// resrefs.
     /// </para>
     /// </remarks>
     public sealed class ThumbnailDiskCache
@@ -69,13 +71,15 @@ namespace SWLOR.Toolset.Workspace
 
         private readonly string? _root;
         private readonly string? _versionsRoot;
+        private readonly DateTime _contentVersionUtc;
 
         /// <param name="moduleRoot">
         /// The module the cached previews belong to. Null disables the cache entirely (previews still
         /// render, they just are not persisted).
         /// </param>
-        public ThumbnailDiskCache(string? moduleRoot)
+        public ThumbnailDiskCache(string? moduleRoot, DateTime contentVersionUtc = default)
         {
+            _contentVersionUtc = contentVersionUtc;
             if (moduleRoot == null)
                 return;
 
@@ -108,18 +112,23 @@ namespace SWLOR.Toolset.Workspace
         /// Reads a cached preview. Returns <see cref="Lookup.Miss"/> on any I/O or decode failure - a
         /// damaged cache file must cost a re-render, never an error.
         /// </summary>
-        public Lookup TryLoad(ResourceType type, string resRef, string? blueprintPath, out Bitmap? bitmap)
+        public Lookup TryLoad(
+            ResourceType type,
+            string resRef,
+            string? blueprintPath,
+            bool useIndexedBlueprint,
+            out Bitmap? bitmap)
         {
             bitmap = null;
             if (_root == null)
                 return Lookup.Miss;
 
-            var imagePath = PathFor(type, resRef, ".png");
-            var markerPath = PathFor(type, resRef, MissingArtworkExtension);
+            var imagePath = PathFor(type, resRef, useIndexedBlueprint, ".png");
+            var markerPath = PathFor(type, resRef, useIndexedBlueprint, MissingArtworkExtension);
 
             try
             {
-                var blueprintWrittenAt = FreshnessThreshold(blueprintPath);
+                var blueprintWrittenAt = FreshnessThreshold(blueprintPath, _contentVersionUtc);
 
                 if (File.Exists(markerPath))
                 {
@@ -144,17 +153,21 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>True when a usable entry exists, without paying to decode the image.</summary>
-        public bool Contains(ResourceType type, string resRef, string? blueprintPath)
+        public bool Contains(
+            ResourceType type,
+            string resRef,
+            string? blueprintPath,
+            bool useIndexedBlueprint)
         {
             if (_root == null)
                 return false;
 
             try
             {
-                var threshold = FreshnessThreshold(blueprintPath);
+                var threshold = FreshnessThreshold(blueprintPath, _contentVersionUtc);
                 foreach (var extension in new[] { ".png", MissingArtworkExtension })
                 {
-                    var path = PathFor(type, resRef, extension);
+                    var path = PathFor(type, resRef, useIndexedBlueprint, extension);
                     if (File.Exists(path) && File.GetLastWriteTimeUtc(path) >= threshold)
                         return true;
                 }
@@ -168,16 +181,20 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>Writes a rendered preview. Failures are swallowed: a cache is an optimisation.</summary>
-        public void Store(ResourceType type, string resRef, Bitmap bitmap)
+        public void Store(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint,
+            Bitmap bitmap)
         {
             if (_root == null)
                 return;
 
-            var path = PathFor(type, resRef, ".png");
+            var path = PathFor(type, resRef, useIndexedBlueprint, ".png");
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                Delete(PathFor(type, resRef, MissingArtworkExtension));
+                Delete(PathFor(type, resRef, useIndexedBlueprint, MissingArtworkExtension));
 
                 // Written aside and moved so a crash mid-write cannot leave a truncated PNG behind. The
                 // name is unique per write because the background cache build and a palette browsing
@@ -195,21 +212,47 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>Records that a blueprint has no artwork, so the next session does not look again.</summary>
-        public void StoreNoArtwork(ResourceType type, string resRef)
+        public void StoreNoArtwork(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint)
         {
             if (_root == null)
                 return;
 
-            var path = PathFor(type, resRef, MissingArtworkExtension);
+            var path = PathFor(type, resRef, useIndexedBlueprint, MissingArtworkExtension);
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                Delete(PathFor(type, resRef, ".png"));
+                Delete(PathFor(type, resRef, useIndexedBlueprint, ".png"));
                 File.WriteAllBytes(path, Array.Empty<byte>());
             }
             catch (Exception)
             {
                 // Same as Store: losing a marker only costs a repeated lookup.
+            }
+        }
+
+        /// <summary>
+        /// Removes both possible forms of one entry. Used when a saved blueprint changes so an
+        /// in-flight or timestamp-equal result cannot survive as stale artwork.
+        /// </summary>
+        public void Remove(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint)
+        {
+            if (_root == null)
+                return;
+
+            try
+            {
+                Delete(PathFor(type, resRef, useIndexedBlueprint, ".png"));
+                Delete(PathFor(type, resRef, useIndexedBlueprint, MissingArtworkExtension));
+            }
+            catch (Exception)
+            {
+                // A cache is an optimisation; a locked entry will fail freshness on a later save.
             }
         }
 
@@ -267,15 +310,16 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
-        /// The timestamp a cache entry must beat to count as current. Blueprints with no known path
-        /// (or an unreadable one) fall back to <see cref="DateTime.MinValue"/>, which keeps the entry.
+        /// The timestamp a cache entry must beat to count as current. The indexed-content version
+        /// remains authoritative when a standard/HAK blueprint has no loose module path.
         /// </summary>
-        private static DateTime FreshnessThreshold(string? blueprintPath)
+        private static DateTime FreshnessThreshold(string? blueprintPath, DateTime contentVersionUtc)
         {
             if (blueprintPath == null || !File.Exists(blueprintPath))
-                return DateTime.MinValue;
+                return contentVersionUtc;
 
-            return File.GetLastWriteTimeUtc(blueprintPath);
+            var blueprintVersionUtc = File.GetLastWriteTimeUtc(blueprintPath);
+            return blueprintVersionUtc >= contentVersionUtc ? blueprintVersionUtc : contentVersionUtc;
         }
 
         private static void Delete(string path)
@@ -284,8 +328,14 @@ namespace SWLOR.Toolset.Workspace
                 File.Delete(path);
         }
 
-        private string PathFor(ResourceType type, string resRef, string extension) =>
-            Path.Combine(_root!, type.Extension(), Sanitize(resRef) + extension);
+        private string PathFor(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint,
+            string extension) =>
+            useIndexedBlueprint
+                ? Path.Combine(_root!, "standard", type.Extension(), Sanitize(resRef) + extension)
+                : Path.Combine(_root!, type.Extension(), Sanitize(resRef) + extension);
 
         /// <summary>
         /// Resrefs are lowercase alphanumerics and underscores by NWN's own rules, but a hand-edited

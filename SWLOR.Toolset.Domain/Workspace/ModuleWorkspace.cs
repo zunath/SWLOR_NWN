@@ -156,6 +156,26 @@ namespace SWLOR.Toolset.Domain.Workspace
         }
 
         /// <summary>
+        /// Loads a blueprint specifically from the indexed Standard/HAK layers, bypassing any
+        /// same-resref module override. This preserves the Palette's source choice through placement.
+        /// </summary>
+        public GffDocumentBase LoadIndexedBlueprint(ResourceType type, string resRef)
+        {
+            if (string.IsNullOrWhiteSpace(resRef))
+                throw new ArgumentException("ResRef must be provided.", nameof(resRef));
+            if (type == ResourceType.Area)
+                throw new ArgumentException("Use LoadArea for area resources.", nameof(type));
+            if (!BlueprintTypes.Contains(type))
+                throw new ArgumentOutOfRangeException(nameof(type), type, "Not a blueprint resource type.");
+
+            if (TryLoadFromResourceIndex(type, resRef, out var indexed))
+                return Wrap(type, indexed);
+
+            throw new FileNotFoundException(
+                $"Standard blueprint '{resRef}.{type.Extension()}' was not found in the base game / hak resource index.");
+        }
+
+        /// <summary>
         /// Resolves a blueprint through the layered resource index and bridges the binary GFF the game
         /// ships into the same JSON document model the module's files parse to, so everything downstream
         /// (editors, previews, placement) cannot tell the two apart.

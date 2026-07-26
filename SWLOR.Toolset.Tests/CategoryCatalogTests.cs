@@ -147,5 +147,70 @@ namespace SWLOR.Toolset.Tests
 
             catalog.Section(ResourceType.Utp).Folders.Should().HaveCount(1);
         }
+
+        /// <summary>
+        /// A name holding the path separator became illegal after these sidecars had already been written
+        /// with two of them - "Skin/Hide" and "Crafting/Tradeskill Material", both straight out of the
+        /// base-game item palette. Throwing at them took the whole toolset down on startup, since the
+        /// catalog loads before anything is on screen.
+        /// </summary>
+        [Test]
+        public void A_Name_Holding_The_Path_Separator_Is_Repaired_Rather_Than_Thrown_At()
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(SidecarPath)!);
+            File.WriteAllText(SidecarPath, """
+                { "version": 1, "sections": { "uti": { "folders": [
+                    { "name": "Skin/Hide", "members": [ "leather_hide" ] } ] } } }
+                """);
+
+            var catalog = CategoryCatalog.Load(SidecarPath, out var warning);
+
+            var folder = catalog.Section(ResourceType.Uti).Folders.Should().ContainSingle().Subject;
+            folder.Name.Should().Be("Skin-Hide");
+            folder.Members.Should().Equal(new[] { "leather_hide" },
+                because: "repairing the name must not lose the contents");
+            warning.Should().Contain("Repaired 1 category name").And.Contain("Skin-Hide");
+            catalog.IsReadOnly.Should().BeFalse(because: "the sidecar is fine - it just predates the rule");
+        }
+
+        [Test]
+        public void A_Repaired_Name_Is_Repaired_At_Any_Depth()
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(SidecarPath)!);
+            File.WriteAllText(SidecarPath, """
+                { "version": 1, "sections": { "uti": { "folders": [
+                    { "name": "Miscellaneous", "children": [
+                        { "name": "Crafting/Tradeskill Material", "members": [ "ore" ] } ] } ] } } }
+                """);
+
+            var catalog = CategoryCatalog.Load(SidecarPath);
+
+            var section = catalog.Section(ResourceType.Uti);
+            var child = section.Find("Miscellaneous")!.Children.Should().ContainSingle().Subject;
+            child.Name.Should().Be("Crafting-Tradeskill Material");
+            section.PathKey(child).Should().Be("Miscellaneous/Crafting-Tradeskill Material");
+        }
+
+        /// <summary>
+        /// A pin is stored as a path key built from names, so a pin that named the folder by its old
+        /// spelling has to move with it or the folder quietly loses its pin on the next load.
+        /// </summary>
+        [Test]
+        public void Pins_Follow_A_Name_That_Had_To_Be_Repaired()
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(SidecarPath)!);
+            File.WriteAllText(SidecarPath, """
+                { "version": 1, "sections": { "uti": {
+                    "pinned": [ "Skin/Hide", "Skin/Hide/Tanned" ],
+                    "folders": [ { "name": "Skin/Hide", "children": [ { "name": "Tanned" } ] } ] } } }
+                """);
+
+            var section = CategoryCatalog.Load(SidecarPath).Section(ResourceType.Uti);
+
+            section.Pinned.Should().Equal("Skin-Hide", "Skin-Hide/Tanned");
+            section.FindByPathKey("Skin-Hide").Should().NotBeNull();
+            section.FindByPathKey("Skin-Hide/Tanned").Should().NotBeNull();
+        }
+
     }
 }

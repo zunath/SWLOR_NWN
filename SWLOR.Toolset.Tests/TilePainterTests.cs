@@ -121,6 +121,35 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void CanRotateTile_RejectsAHeightSeamEvenWhenTerrainNamesMatch()
+        {
+            var tileset = new TilesetDefinition
+            {
+                Tiles = new[]
+                {
+                    new TileDefinition
+                    {
+                        TopLeft = "Grass", TopRight = "Grass",
+                        BottomLeft = "Grass", BottomRight = "Grass",
+                        TopLeftHeight = 1, BottomLeftHeight = 1
+                    },
+                    Tile("Grass", "Grass", "Grass", "Grass")
+                }
+            };
+            var cells = new Dictionary<(int, int), PlacedTileState>
+            {
+                [(-1, 0)] = new(1, 0, 1),
+                [(0, 0)] = new(0, 0, 0),
+                [(1, 0)] = new(1, 0, 0)
+            };
+            PlacedTileState? At(int c, int r) =>
+                cells.TryGetValue((c, r), out var state) ? state : null;
+
+            TilePainter.CanRotateTile(tileset, At, 0, 0, 2).Should().BeFalse(
+                "the rotation would swap the high and low edges and tear the ground");
+        }
+
+        [Test]
         public void PaintTerrain_FillsCentreWithSolidTerrain()
         {
             var ts = Synthetic();

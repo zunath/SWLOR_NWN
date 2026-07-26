@@ -41,7 +41,8 @@ namespace SWLOR.Toolset.Editors
             PlaceableAppearanceService? placeables = null,
             DoorTypeService? doorTypes = null,
             SoundService? sounds = null,
-            TwoDaLookupService? twoDaLookups = null)
+            TwoDaLookupService? twoDaLookups = null,
+            WaypointAppearanceService? waypointAppearances = null)
         {
             _workspaceContext = workspaceContext;
             _appearances = appearances;
@@ -50,7 +51,10 @@ namespace SWLOR.Toolset.Editors
             _doorTypes = doorTypes;
             _sounds = sounds;
             _twoDaLookups = twoDaLookups;
+            _waypointAppearances = waypointAppearances;
         }
+
+        private readonly WaypointAppearanceService? _waypointAppearances;
 
         public IReadOnlyList<LookupOption> GetOptions(string? lookupKey)
         {
@@ -101,6 +105,10 @@ namespace SWLOR.Toolset.Editors
                         return FromTable(TwoDaLookupTables.BaseItem);
                     case LookupKeys.TriggerTypes:
                         return TriggerTypeOptions;
+                    case LookupKeys.WaypointAppearances when _waypointAppearances != null:
+                        return _waypointAppearances.GetAll()
+                            .Select(row => new LookupOption(row.Id, row.DisplayName))
+                            .ToList();
                     case LookupKeys.Factions:
                         return BuildFactions();
                     default:

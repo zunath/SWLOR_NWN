@@ -9,7 +9,7 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     /// <see cref="Resources.ResourceIndex"/> rather than a fixed directory: tileset names are
     /// discovered through <see cref="ResourceIndex.EnumerateResources"/>, which merges base-game
     /// KEY/BIF identities with every hak layer. Resolution of a specific tileset's bytes still
-    /// goes through <see cref="ResourceIndex.TryLookup"/> so hak-precedence "later wins" is
+    /// goes through <see cref="ResourceIndex.TryLookup"/> so hak-precedence "first wins" is
     /// honored the same way every other resource lookup gets it.
     /// Each named tileset is parsed via <see cref="SetFileParser"/> at most once and cached for
     /// the lifetime of the catalog. An area document's Tileset field (e.g. "tde01") is the resref

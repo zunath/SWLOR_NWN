@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
+using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -89,6 +91,29 @@ namespace SWLOR.Toolset.Tests
 
             var reparsed = GicDocument.Parse(written);
             GicDocument.GetComment(reparsed.Placeables[0]).Should().Be("Test comment");
+        }
+
+        [Test]
+        public void StructuralCommentEdits_StayParallelAndUndoTogether()
+        {
+            var original = File.ReadAllBytes(BankGicPath);
+            var document = GicDocument.Parse(original);
+            using var session = new DocumentSession(BankGicPath, document.Document);
+            var startingCount = document.Placeables.Count;
+
+            session.Execute("add paired placeable", () =>
+                document.InsertBlankComment(
+                    "Placeable List",
+                    ResourceType.Utp,
+                    startingCount,
+                    startingCount + 1));
+
+            document.Placeables.Should().HaveCount(startingCount + 1);
+            GicDocument.GetComment(document.Placeables[^1]).Should().BeEmpty();
+
+            session.Undo();
+            document.Placeables.Should().HaveCount(startingCount);
+            document.ToBytes().Should().Equal(original);
         }
     }
 }

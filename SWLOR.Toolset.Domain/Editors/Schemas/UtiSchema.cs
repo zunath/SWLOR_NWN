@@ -35,7 +35,7 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                         Title = "Item Type",
                         Fields = new[]
                         {
-                            new FieldDescriptor { Label = "Base Item", FieldName = "BaseItem", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Int, LookupKey = LookupKeys.BaseItems, Description = "Row index into baseitems.2da." },
+                            new FieldDescriptor { Label = "Base Item", FieldName = "BaseItem", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Int, LookupKey = LookupKeys.BaseItems, IsRequired = true, Description = "Row index into baseitems.2da." },
                             new FieldDescriptor { Label = "Stack Size", FieldName = "StackSize", Kind = EditorKind.Integer, FieldType = GffFieldType.Word },
                             new FieldDescriptor { Label = "Charges", FieldName = "Charges", Kind = EditorKind.Integer, FieldType = GffFieldType.Byte }
                         }

@@ -25,13 +25,14 @@ namespace SWLOR.Toolset.Editors
     /// Stores/Sounds/Triggers).
     /// </summary>
     /// <remarks>
-    /// Owns two independent DocumentSessions - one per file - because the .are and .git files
-    /// are separate nwn_gff documents with separate undo histories. Undo/Redo is deliberately
+    /// Owns three DocumentSessions - one per file - because the .are, .git and .gic files
+    /// are separate nwn_gff documents. GIC structural edits are captured in the paired GIT
+    /// transaction so one undo keeps their parallel lists aligned. ARE/GIT Undo/Redo is deliberately
     /// split rather than merged into one combined stack: the area-properties group gets its own
     /// small Undo/Redo pair (mirroring BlueprintEditorViewModel), while the toolbar's primary
     /// Undo/Redo acts on the .git session, since instance placement/deletion is the editing this
     /// screen is mostly used for. Save writes whichever session(s) are dirty; the title's dirty
-    /// marker reflects either session being dirty.
+    /// marker reflects any session being dirty.
     /// </remarks>
     public partial class AreaEditorViewModel
         : Document, IEditorDocument, IDocumentStatusSource, Shell.Panels.IAreaPlacementTarget
@@ -51,6 +52,9 @@ namespace SWLOR.Toolset.Editors
 
         private readonly DocumentSession _areSession;
         private readonly DocumentSession _gitSession;
+        private readonly DocumentSession _gicSession;
+        private byte[] _savedGicBytes = Array.Empty<byte>();
+        private bool _gicDirty;
         private readonly OutputLogService _log;
         private readonly ModuleWorkspace _workspace;
         private readonly string _areResRef;
@@ -61,7 +65,7 @@ namespace SWLOR.Toolset.Editors
         private readonly WaypointAppearanceService? _waypointAppearances;
 
         /// <summary>Builds an armed blueprint's geometry for the placement ghost. Null degrades the ghost to a marker.</summary>
-        private readonly Func<ResourceType, string, RenderModel?>? _resolveBlueprintModel;
+        private readonly Func<ResourceType, string, bool, RenderModel?>? _resolveBlueprintModel;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly IEditorPromptService _prompts;
         private readonly IScriptSlotHost? _scriptSlotHost;
@@ -102,7 +106,8 @@ namespace SWLOR.Toolset.Editors
 
         public bool IsDirty =>
             _areSession.UndoStack.IsDirty ||
-            _gitSession.UndoStack.IsDirty;
+            _gitSession.UndoStack.IsDirty ||
+            _gicDirty;
 
         /// <summary>Resource index used by the 3D View tab to resolve mesh/tile textures; null when game data services aren't loaded.</summary>
         public ResourceIndex? ResourceIndex { get; }
@@ -489,27 +494,39 @@ namespace SWLOR.Toolset.Editors
 
         private InstanceListSectionViewModel? _pendingPlacementSection;
         private string? _pendingPlacementResRef;
+        private bool _pendingPlacementUsesIndexedBlueprint;
 
         /// <summary>True from the moment a palette blueprint is chosen for placement until the next viewport click (or Esc/right-click cancel) resolves it - drives GlAreaControl.IsPlacementActive.</summary>
         public bool IsPlacementPending => _pendingPlacementResRef != null;
 
-        /// <summary>3D-view status line while a placement is pending, or empty otherwise.</summary>
+        /// <summary>
+        /// 3D-view status line while a placement is pending, or empty otherwise. A door names the
+        /// doorway rule, since it is the one placement a click on open floor will not resolve.
+        /// </summary>
         public string PlacementStatus =>
-            IsPlacementPending ? $"Click to place {_pendingPlacementResRef}... (Esc or right-click to cancel)"
+            IsPlacementPending
+                ? _pendingPlacementSection?.BlueprintType == ResourceType.Utd
+                    ? $"Click an empty doorway to hang {_pendingPlacementResRef}... (Esc or right-click to cancel)"
+                    : $"Click to place {_pendingPlacementResRef}... (Esc or right-click to cancel)"
             : _pendingTile is { } tile
                 ? CanRotatePendingTile
                     ? $"Click a cell to place {tile.Label} facing {PendingTileFacing}... " +
                       "(R to rotate, Esc or right-click to cancel)"
                     : $"Click a cell to place {tile.Label}... (Esc or right-click to cancel)"
+            : _pendingTileElevationDelta > 0
+                ? "Click a cell to raise it one level... (Esc or right-click to cancel)"
+            : _pendingTileElevationDelta < 0
+                ? "Click a cell to lower it one level... (Esc or right-click to cancel)"
             : string.Empty;
 
         /// <summary>This area's tileset resref, which is what the Tiles palette lists tiles from.</summary>
         public string? TilesetResRef => new AreDocument(_areSession.Document).Tileset;
 
         private TilePaletteEntry? _pendingTile;
+        private int _pendingTileElevationDelta;
 
         /// <summary>True while a tile or group is armed - drives GlAreaControl.IsTilePlacementActive.</summary>
-        public bool IsTilePlacementPending => _pendingTile != null;
+        public bool IsTilePlacementPending => _pendingTile != null || _pendingTileElevationDelta != 0;
 
         /// <summary>The armed stamp's footprint in cells, for the viewport's cell highlight.</summary>
         public (int Columns, int Rows) TilePlacementFootprint =>
@@ -612,6 +629,7 @@ namespace SWLOR.Toolset.Editors
             CancelPlacement();
 
             _pendingTile = entry;
+            _pendingTileElevationDelta = 0;
             _pendingTileOrientation = 0;
             InvalidateTilePlacementValidity();
             _tilePlacementModels = ResolveTileModels(entry);
@@ -628,10 +646,11 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Called by the view when a tile placement is cancelled from inside the viewport.</summary>
         public void CancelTilePlacement()
         {
-            if (_pendingTile == null)
+            if (_pendingTile == null && _pendingTileElevationDelta == 0)
                 return;
 
             _pendingTile = null;
+            _pendingTileElevationDelta = 0;
             _tilePlacementModels = Array.Empty<RenderModel?>();
             InvalidateTilePlacementValidity();
             OnPropertyChanged(nameof(IsTilePlacementPending));
@@ -653,10 +672,18 @@ namespace SWLOR.Toolset.Editors
         public void CommitTilePlacement(int anchorColumn, int anchorRow)
         {
             var entry = _pendingTile;
+            var elevationDelta = _pendingTileElevationDelta;
             _pendingTile = null;
+            _pendingTileElevationDelta = 0;
             OnPropertyChanged(nameof(IsTilePlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
             OnPropertyChanged(nameof(HasViewportHud));
+
+            if (elevationDelta != 0)
+            {
+                CommitTileElevation(anchorColumn, anchorRow, elevationDelta);
+                return;
+            }
 
             if (entry == null)
                 return;
@@ -727,6 +754,9 @@ namespace SWLOR.Toolset.Editors
         /// </remarks>
         public bool CanPlaceArmedTileAt(int column, int row)
         {
+            if (_pendingTileElevationDelta != 0)
+                return AreaTiles.IndexOf(new AreDocument(_areSession.Document), column, row) >= 0;
+
             if (_pendingTile is not { } entry)
                 return false;
 
@@ -739,6 +769,46 @@ namespace SWLOR.Toolset.Editors
         }
 
         private readonly Dictionary<(int Column, int Row), bool> _tileValidity = new();
+
+        [RelayCommand]
+        private void RaiseTile() => ArmTileElevation(1);
+
+        [RelayCommand]
+        private void LowerTile() => ArmTileElevation(-1);
+
+        private void ArmTileElevation(int delta)
+        {
+            CancelPlacement();
+            CancelTilePlacement();
+            _pendingTileElevationDelta = Math.Sign(delta);
+            _tilePlacementModels = Array.Empty<RenderModel?>();
+            OnPropertyChanged(nameof(IsTilePlacementPending));
+            OnPropertyChanged(nameof(TilePlacementFootprint));
+            OnPropertyChanged(nameof(TilePlacementModels));
+            OnPropertyChanged(nameof(PlacementStatus));
+            OnPropertyChanged(nameof(HasViewportHud));
+        }
+
+        private void CommitTileElevation(int column, int row, int delta)
+        {
+            var are = new AreDocument(_areSession.Document);
+            var current = AreaTiles.StateAt(are, column, row);
+            if (current == null)
+                return;
+
+            if (current.Value.HeightLevel + delta < AreaTiles.MinimumHeightLevel)
+            {
+                SceneStatus =
+                    $"Tile ({column},{row}) is already at the minimum height " +
+                    $"{AreaTiles.MinimumHeightLevel}.";
+                return;
+            }
+
+            var verb = delta > 0 ? "Raise" : "Lower";
+            RunAreEdit(
+                $"{verb} tile at ({column},{row})",
+                () => AreaTiles.TryAdjustHeightLevel(are, column, row, delta));
+        }
 
         /// <summary>Drops the memoised answers - the grid they were computed against has changed.</summary>
         private void InvalidateTilePlacementValidity() => _tileValidity.Clear();
@@ -766,7 +836,7 @@ namespace SWLOR.Toolset.Editors
             }
 
             return TilePainter.PaintTerrain(
-                tileset, width, height, AreaTiles.Reader(are), column, row, entry.Terrain).Count > 0;
+                tileset, width, height, AreaTiles.StateReader(are), column, row, entry.Terrain).Count > 0;
         }
 
         /// <summary>
@@ -800,7 +870,7 @@ namespace SWLOR.Toolset.Editors
                 tileset,
                 AreaTiles.Width(are),
                 AreaTiles.Height(are),
-                AreaTiles.Reader(are),
+                AreaTiles.StateReader(are),
                 column,
                 row,
                 terrain);
@@ -823,19 +893,24 @@ namespace SWLOR.Toolset.Editors
         /// right-click cancels). This is the only way to place an instance - the editor no longer
         /// carries its own blueprint picker, because the Palette panel is already one.
         /// </summary>
-        public bool ArmPlacement(ResourceType type, string resRef)
+        public bool ArmPlacement(
+            ResourceType type,
+            string resRef,
+            Shell.Panels.PaletteSource source)
         {
             var section = Sections.FirstOrDefault(candidate => candidate.BlueprintType == type);
             if (section == null || string.IsNullOrWhiteSpace(resRef))
                 return false;
 
-            // A door is hung in a doorway the tile declares, never on open floor, so an area laid
-            // entirely with doorless tiles has nowhere to put one - and arming a placement that can
+            // A door is hung in an empty doorway the tile declares, never on open floor and never in a
+            // doorway that already holds one, so an area laid entirely with doorless tiles - or one
+            // whose every doorway is filled - has nowhere to put another. Arming a placement that can
             // never resolve would leave the builder clicking at a map that refuses every click.
-            if (type == ResourceType.Utd && AreaScene is { } scene && scene.DoorAnchors.Count == 0)
+            if (type == ResourceType.Utd && AreaScene is { } scene && !scene.HasEmptyDoorway())
             {
-                _log.AppendLine(
-                    $"'{resRef}' cannot be placed: no tile in this area declares a doorway to hang a door in.");
+                _log.AppendLine(scene.DoorAnchors.Count == 0
+                    ? $"'{resRef}' cannot be placed: no tile in this area declares a doorway to hang a door in."
+                    : $"'{resRef}' cannot be placed: every doorway in this area already has a door in it.");
                 return false;
             }
 
@@ -845,7 +920,8 @@ namespace SWLOR.Toolset.Editors
 
             _pendingPlacementSection = section;
             _pendingPlacementResRef = resRef;
-            PlacementGhost = BuildPlacementGhost(type, resRef);
+            _pendingPlacementUsesIndexedBlueprint = source == Shell.Panels.PaletteSource.Standard;
+            PlacementGhost = BuildPlacementGhost(type, resRef, _pendingPlacementUsesIndexedBlueprint);
             OnPropertyChanged(nameof(IsPlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
             OnPropertyChanged(nameof(HasViewportHud));
@@ -905,7 +981,7 @@ namespace SWLOR.Toolset.Editors
             RenderModel? model = null;
             try
             {
-                model = _resolveBlueprintModel(ResourceType.Utc, resRef);
+                model = _resolveBlueprintModel(ResourceType.Utc, resRef, false);
             }
             catch (Exception ex)
             {
@@ -924,7 +1000,10 @@ namespace SWLOR.Toolset.Editors
 
         private readonly object _creatureModelGate = new();
 
-        private InstanceMarker? BuildPlacementGhost(ResourceType type, string resRef)
+        private InstanceMarker? BuildPlacementGhost(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint)
         {
             var kind = MapSectionTypeToKind(type);
             if (kind == null)
@@ -938,7 +1017,7 @@ namespace SWLOR.Toolset.Editors
                 // composed and which an earlier local resolve could not produce at all (it passed no
                 // appearance service and handled only the single-resref case, so every creature
                 // ghosted as a bare marker).
-                model = _resolveBlueprintModel?.Invoke(type, resRef);
+                model = _resolveBlueprintModel?.Invoke(type, resRef, useIndexedBlueprint);
             }
             catch (Exception ex)
             {
@@ -975,8 +1054,10 @@ namespace SWLOR.Toolset.Editors
         {
             var section = _pendingPlacementSection;
             var resRef = _pendingPlacementResRef;
+            var useIndexedBlueprint = _pendingPlacementUsesIndexedBlueprint;
             _pendingPlacementSection = null;
             _pendingPlacementResRef = null;
+            _pendingPlacementUsesIndexedBlueprint = false;
             PlacementGhost = null;
             OnPropertyChanged(nameof(IsPlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
@@ -988,7 +1069,14 @@ namespace SWLOR.Toolset.Editors
             // Orientation goes in with the add rather than as a follow-up edit, so hanging a door in a
             // doorway is one undo step and not two.
             var facing = orientation ?? new Vector2(1f, 0f);
-            if (!section.AddInstanceAt(resRef, position.X, position.Y, position.Z, facing.X, facing.Y))
+            if (!section.AddInstanceAt(
+                    resRef,
+                    position.X,
+                    position.Y,
+                    position.Z,
+                    facing.X,
+                    facing.Y,
+                    useIndexedBlueprint))
                 return;
 
             var kind = MapSectionTypeToKind(section.BlueprintType);
@@ -1004,6 +1092,7 @@ namespace SWLOR.Toolset.Editors
 
             _pendingPlacementSection = null;
             _pendingPlacementResRef = null;
+            _pendingPlacementUsesIndexedBlueprint = false;
             PlacementGhost = null;
             OnPropertyChanged(nameof(IsPlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
@@ -1023,11 +1112,51 @@ namespace SWLOR.Toolset.Editors
             if (section == null || index < 0)
                 return;
 
+            // A door is not free-standing scenery: it belongs in a tile's doorway, which is what the
+            // placement path already enforces. Dragging one used to write the raw position and detach it
+            // from the tile frame and its walkmesh opening, so a move snaps to the doorway it was
+            // dropped in and takes that doorway's heading with it.
+            //
+            // A drop that reaches no empty doorway is refused outright rather than falling through to
+            // the raw write below - that fall-through is the detachment bug itself. The door being
+            // dragged is excluded from "empty", or a nudge inside its own doorway would find the
+            // doorway filled by the very door being moved and jump it to a different one.
+            if (instance.Kind == InstanceMarkerKind.Door)
+            {
+                if (AreaScene?.NearestEmptyDoorway(newPosition, instance) is not { } anchor)
+                {
+                    SceneStatus = $"\"{instance.Tag}\" can only be moved into an empty doorway.";
+                    return;
+                }
+
+                MoveDoorToAnchor(instance, section, index, anchor);
+                return;
+            }
+
             if (!section.SetInstancePosition(index, newPosition.X, newPosition.Y, newPosition.Z,
                     $"Move {instance.Kind} \"{instance.Tag}\""))
                 return;
 
             if (!ApplyTransformInPlace(instance, newPosition, instance.Orientation))
+                _ = BuildSceneAsync((instance.Kind, index));
+        }
+
+        /// <summary>
+        /// Puts a door in <paramref name="anchor"/>'s doorway, position and heading together, as one edit.
+        /// </summary>
+        private void MoveDoorToAnchor(
+            InstanceMarker instance, InstanceListSectionViewModel section, int index, TileDoorAnchor anchor)
+        {
+            var description = $"Move {instance.Kind} \"{instance.Tag}\"";
+            if (!section.SetInstancePosition(
+                    index, anchor.Position.X, anchor.Position.Y, anchor.Position.Z, description))
+            {
+                return;
+            }
+
+            section.SetInstanceOrientation(index, anchor.Orientation.X, anchor.Orientation.Y, description);
+
+            if (!ApplyTransformInPlace(instance, anchor.Position, anchor.Orientation))
                 _ = BuildSceneAsync((instance.Kind, index));
         }
 
@@ -1037,6 +1166,11 @@ namespace SWLOR.Toolset.Editors
             // Guarded here as well as on CanRotateSelection: the gizmo reaches this directly, and a
             // sound has no heading to write - the edit would report success having changed nothing.
             if (instance.Kind == InstanceMarkerKind.Sound)
+                return;
+
+            // A door's heading comes from the doorway it hangs in, not from the builder. Turning one
+            // freely left it facing across its own frame.
+            if (instance.Kind == InstanceMarkerKind.Door)
                 return;
 
             var section = SectionForKind(instance.Kind);
@@ -1103,6 +1237,7 @@ namespace SWLOR.Toolset.Editors
         public bool CanRotateSelection =>
             SelectedSceneInstance is { } instance &&
             instance.Kind != InstanceMarkerKind.Sound &&
+            instance.Kind != InstanceMarkerKind.Door &&
             SectionForKind(instance.Kind) != null;
 
         [RelayCommand]
@@ -1158,7 +1293,7 @@ namespace SWLOR.Toolset.Editors
             Action<ResourceType, string>? openBlueprint = null,
             Func<uint, string?>? resolveStrRef = null,
             WaypointAppearanceService? waypointAppearances = null,
-            Func<ResourceType, string, RenderModel?>? resolveBlueprintModel = null,
+            Func<ResourceType, string, bool, RenderModel?>? resolveBlueprintModel = null,
             IScriptSlotHost? scriptSlotHost = null)
         {
             _scriptSlotHost = scriptSlotHost;
@@ -1180,9 +1315,12 @@ namespace SWLOR.Toolset.Editors
 
             var arePath = workspace.GetResourcePath(ResourceType.Area, areResRef);
             var gitPath = Path.Combine(workspace.ModuleRoot, "git", areResRef + ".git.json");
+            var gicPath = Path.Combine(workspace.ModuleRoot, "gic", areResRef + ".gic.json");
 
             _areSession = DocumentSession.Open(arePath);
             _gitSession = DocumentSession.Open(gitPath);
+            _gicSession = DocumentSession.Open(gicPath);
+            _savedGicBytes = _gicSession.ToBytes();
 
             var areContext = new EditorFieldContext(_areSession.Document, RunAreEdit);
             foreach (var group in AreSchema.Build().Groups)
@@ -1195,7 +1333,7 @@ namespace SWLOR.Toolset.Editors
             {
                 Sections.Add(new InstanceListSectionViewModel(
                     config.Title, config.ListFieldName, config.BlueprintType,
-                    _gitSession, workspace, RunGitEdit, gameCodeIndex, log, _prompts, resolveStrRef));
+                    _gitSession, _gicSession, workspace, RunGitEdit, gameCodeIndex, log, _prompts, resolveStrRef));
             }
 
             // A row click in any section should update the 3D-view highlight
@@ -1434,7 +1572,12 @@ namespace SWLOR.Toolset.Editors
 
         private bool RunAreEdit(string description, Action mutation) => RunEdit(_areSession, description, mutation);
 
-        private bool RunGitEdit(string description, Action mutation) => RunEdit(_gitSession, description, mutation);
+        private bool RunGitEdit(string description, Action mutation)
+        {
+            var result = RunEdit(_gitSession, description, mutation);
+            RefreshGicDirty();
+            return result;
+        }
 
         private bool RunEdit(DocumentSession session, string description, Action mutation)
         {
@@ -1443,9 +1586,17 @@ namespace SWLOR.Toolset.Editors
                 session.Execute(description, mutation);
 
                 // A fresh edit invalidates the redo side of both histories, exactly as each
-                // session's own undo stack does.
+                // session's own undo stack does. Clearing _undoneOrder only drops the shell's ordering;
+                // the other session's stack kept its redo entries, and IEditorDocument.CanRedo let
+                // Ctrl+Y replay an abandoned edit on top of this newer one.
                 _editOrder.Add(session);
                 _undoneOrder.Clear();
+                foreach (var other in new[] { _areSession, _gitSession })
+                {
+                    if (!ReferenceEquals(other, session))
+                        other.UndoStack.DiscardRedo();
+                }
+
                 Interlocked.Increment(ref _sceneInputRevision);
                 RequestSceneRefresh();
                 AfterHistoryChange();
@@ -1464,9 +1615,9 @@ namespace SWLOR.Toolset.Editors
             await TrySaveAsync().ConfigureAwait(true);
         }
 
-        /// <summary>Saves both area documents, returning false if any prompt is cancelled or write fails.</summary>
+        /// <summary>Saves all area documents, returning false if any prompt is cancelled or write fails.</summary>
         /// <remarks>
-        /// An area is one thing to the builder but two files on disk, so every external-change prompt is
+        /// An area is one thing to the builder but three files on disk, so every external-change prompt is
         /// answered before anything is written. Prompting between the two writes meant that cancelling
         /// the second prompt still left the first file saved and its history marked clean, and no later
         /// Discard could take that back.
@@ -1484,6 +1635,35 @@ namespace SWLOR.Toolset.Editors
             if (gitPlan == SavePlan.Cancel)
                 return false;
 
+            if (gitPlan == SavePlan.Reload)
+            {
+                if (!ReloadInstancePair())
+                    return false;
+                gitPlan = SavePlan.Nothing;
+            }
+
+            var gicPlan = await PlanSaveAsync(_gicSession, _gicDirty).ConfigureAwait(true);
+            if (gicPlan == SavePlan.Cancel)
+                return false;
+
+            if (gicPlan == SavePlan.Reload)
+            {
+                if (!ReloadInstancePair())
+                    return false;
+                gitPlan = SavePlan.Nothing;
+                gicPlan = SavePlan.Nothing;
+            }
+
+            // All files are staged before any replaces its file. An area is one logical document
+            // split across three files, and writing them in sequence meant a locked or unwritable .git
+            // left the .are already replaced on disk and its history marked clean - a half-saved area
+            // that no later Discard or Close could take back.
+            if (!TryStageWrites(arePlan, gitPlan, gicPlan, out var staged))
+                return false;
+
+            if (!CommitStagedWrites(staged))
+                return false;
+
             var areResult = ApplySavePlan(_areSession, arePlan);
             if (!areResult.Success)
                 return false;
@@ -1492,11 +1672,20 @@ namespace SWLOR.Toolset.Editors
             if (!gitResult.Success)
                 return false;
 
+            var gicResult = ApplySavePlan(_gicSession, gicPlan);
+            if (!gicResult.Success)
+                return false;
+            if (gicPlan == SavePlan.Write)
+            {
+                _savedGicBytes = _gicSession.ToBytes();
+                _gicDirty = false;
+            }
+
             if (areResult.Reloaded)
                 RefreshAreaPropertyFields();
-            if (gitResult.Reloaded)
+            if (gitResult.Reloaded || gicResult.Reloaded)
                 RefreshInstanceSections();
-            if ((areResult.Reloaded || gitResult.Reloaded) && _sceneBuildRequested)
+            if ((areResult.Reloaded || gitResult.Reloaded || gicResult.Reloaded) && _sceneBuildRequested)
                 _ = BuildSceneAsync(CaptureReselectKey());
 
             // Reloading the .are can bring in a different tileset, and the Tiles palette lists the
@@ -1524,9 +1713,11 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>Answers a session's external-change prompt without writing anything yet.</summary>
-        private async Task<SavePlan> PlanSaveAsync(DocumentSession session)
+        private async Task<SavePlan> PlanSaveAsync(
+            DocumentSession session,
+            bool? dirtyOverride = null)
         {
-            if (!session.UndoStack.IsDirty)
+            if (!(dirtyOverride ?? session.UndoStack.IsDirty))
                 return SavePlan.Nothing;
 
             try
@@ -1549,6 +1740,65 @@ namespace SWLOR.Toolset.Editors
             };
         }
 
+        /// <summary>
+        /// Serializes and writes every session that is being saved to its temporary file, touching no
+        /// real file. Returns false - having thrown away anything it had already staged - if any of them
+        /// could not be written, so a failure leaves the area exactly as it was.
+        /// </summary>
+        private bool TryStageWrites(
+            SavePlan arePlan,
+            SavePlan gitPlan,
+            SavePlan gicPlan,
+            out List<Services.SaveService.StagedWrite> staged)
+        {
+            staged = new List<Services.SaveService.StagedWrite>(3);
+
+            foreach (var (session, plan) in new[]
+                     {
+                         (_areSession, arePlan),
+                         (_gitSession, gitPlan),
+                         (_gicSession, gicPlan)
+                     })
+            {
+                if (plan != SavePlan.Write)
+                    continue;
+
+                try
+                {
+                    staged.Add(Services.SaveService.Stage(session.FilePath, session.ToBytes()));
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine($"Save failed for {session.FilePath}: {ex.Message}");
+                    foreach (var done in staged)
+                        Services.SaveService.Discard(done);
+
+                    staged.Clear();
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Replaces every staged file as one logical save, rolling all earlier replacements back if a
+        /// later destination cannot be replaced.
+        /// </summary>
+        private bool CommitStagedWrites(List<Services.SaveService.StagedWrite> staged)
+        {
+            try
+            {
+                Services.SaveService.CommitAll(staged);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Area save failed; the original files were restored: {ex.Message}");
+                return false;
+            }
+        }
+
         private (bool Success, bool Reloaded) ApplySavePlan(DocumentSession session, SavePlan plan)
         {
             try
@@ -1564,7 +1814,8 @@ namespace SWLOR.Toolset.Editors
                         return (true, true);
 
                     default:
-                        Services.SaveService.WriteAtomic(session.FilePath, session.ToBytes());
+                        // The bytes are already on disk - TryStageWrites/CommitStagedWrites put them
+                        // there before this ran. All that is left is to agree that they are.
                         session.UndoStack.MarkSaved();
                         session.RecordCurrentFileState();
                         _log.AppendLine($"Saved {session.FilePath}.");
@@ -1629,6 +1880,7 @@ namespace SWLOR.Toolset.Editors
             RecordUndo(_gitSession);
             _gitSession.Undo();
             RefreshInstanceSections();
+            RefreshGicDirty();
 
             if (_sceneBuildRequested)
                 _ = BuildSceneAsync(reselect);
@@ -1646,6 +1898,7 @@ namespace SWLOR.Toolset.Editors
             RecordRedo(_gitSession);
             _gitSession.Redo();
             RefreshInstanceSections();
+            RefreshGicDirty();
 
             if (_sceneBuildRequested)
                 _ = BuildSceneAsync(reselect);
@@ -1784,6 +2037,7 @@ namespace SWLOR.Toolset.Editors
                 section.ClosePalette();
             _areSession.Dispose();
             _gitSession.Dispose();
+            _gicSession.Dispose();
             Closed?.Invoke(this);
             return base.OnClose();
         }
@@ -1818,6 +2072,37 @@ namespace SWLOR.Toolset.Editors
         {
             foreach (var section in Sections)
                 section.RefreshFromDocument();
+        }
+
+        private void RefreshGicDirty()
+        {
+            _gicDirty = !_savedGicBytes.AsSpan().SequenceEqual(_gicSession.ToBytes());
+            OnPropertyChanged(nameof(IsDirty));
+        }
+
+        /// <summary>
+        /// GIT instances and GIC comments are parallel lists, so choosing Reload for either file
+        /// discards the pair together. Reloading only one side would immediately corrupt their
+        /// index correspondence.
+        /// </summary>
+        private bool ReloadInstancePair()
+        {
+            try
+            {
+                _gitSession.ReloadFromDisk();
+                _gicSession.ReloadFromDisk();
+                _savedGicBytes = _gicSession.ToBytes();
+                _gicDirty = false;
+                RefreshInstanceSections();
+                _log.AppendLine(
+                    $"Reloaded externally changed instance pair {_gitSession.FilePath} and {_gicSession.FilePath}.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not reload the area's GIT/GIC pair: {ex.Message}");
+                return false;
+            }
         }
 
         private void AfterHistoryChange()

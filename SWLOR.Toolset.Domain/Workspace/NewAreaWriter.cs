@@ -25,6 +25,7 @@ namespace SWLOR.Toolset.Domain.Workspace
 
         /// <summary>NWN resource names are at most 16 characters, lowercase, alphanumeric/underscore.</summary>
         private static readonly Regex ResRefPattern = new("^[a-z0-9_]{1,16}$", RegexOptions.Compiled);
+        private const string PendingMarkerPrefix = ".swlor-toolset-new-area-";
 
         /// <summary>
         /// Resolves a tileset by resref. The app passes its TilesetCatalog's lookup; tests pass a
@@ -68,11 +69,20 @@ namespace SWLOR.Toolset.Domain.Workspace
             var arePath = workspace.GetResourcePath(ResourceType.Area, resRef);
             var gitPath = GitPath(workspace, resRef);
             var gicPath = GicPath(workspace, resRef);
-            var existingDestination = new[] { arePath, gitPath, gicPath }.FirstOrDefault(File.Exists);
-            if (existingDestination != null)
+            var markerPath = PendingMarkerPath(workspace, resRef);
+
+            // Ordinary duplicates are rejected before any expensive tileset/template work. A pending
+            // marker is the one exception: it identifies writer-owned remnants that recovery below
+            // may safely remove after the rest of the request is validated.
+            if (!File.Exists(markerPath))
             {
-                error = $"An area named '{resRef}' already exists ({Path.GetFileName(existingDestination)} is present).";
-                return false;
+                var existing = new[] { arePath, gitPath, gicPath }.FirstOrDefault(File.Exists);
+                if (existing != null)
+                {
+                    error =
+                        $"An area named '{resRef}' already exists ({Path.GetFileName(existing)} is present).";
+                    return false;
+                }
             }
 
             TilesetDefinition? tileset = null;
@@ -117,7 +127,42 @@ namespace SWLOR.Toolset.Domain.Workspace
                 return false;
             }
 
+            try
+            {
+                if (File.Exists(markerPath))
+                {
+                    var registered = IfoDocument.Load(ifoPath).AreaResRefs
+                        .Contains(resRef, StringComparer.OrdinalIgnoreCase);
+
+                    if (!registered)
+                    {
+                        // A marker means this writer owned the incomplete triplet. Removing only
+                        // those exact destinations makes a power-loss retry safe.
+                        foreach (var path in new[] { arePath, gitPath, gicPath })
+                        {
+                            if (File.Exists(path))
+                                File.Delete(path);
+                        }
+                    }
+
+                    File.Delete(markerPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                error = $"Could not recover interrupted area creation for '{resRef}': {ex.Message}";
+                return false;
+            }
+
+            var existingDestination = new[] { arePath, gitPath, gicPath }.FirstOrDefault(File.Exists);
+            if (existingDestination != null)
+            {
+                error = $"An area named '{resRef}' already exists ({Path.GetFileName(existingDestination)} is present).";
+                return false;
+            }
+
             var createdPaths = new List<string>();
+            var markerCreated = false;
             try
             {
                 var are = AreDocument.Load(templateAre);
@@ -137,9 +182,15 @@ namespace SWLOR.Toolset.Domain.Workspace
                 using (ifoSession.Begin($"Register area '{resRef}'"))
                     AreaTemplateFactory.AddAreaToModule(ifo, resRef);
 
-                // Write the area triplet first, then the module index: an orphaned area file is
-                // harmless and the create is re-runnable, whereas an index entry pointing at a
-                // missing area would break module load.
+                // Persist intent before the first destination write. If the process or machine stops
+                // before module.ifo is committed, the next retry recognizes and removes only this
+                // writer's partial triplet.
+                WriteAtomic(markerPath, System.Text.Encoding.UTF8.GetBytes(resRef), overwrite: true);
+                markerCreated = true;
+
+                // Write the area triplet first, then the module index: the marker makes an orphaned
+                // partial triplet recoverable, while an index entry pointing at missing files would
+                // break module load.
                 WriteAtomic(arePath, are.ToBytes(), overwrite: false);
                 createdPaths.Add(arePath);
                 File.Copy(templateGit, gitPath, overwrite: false);
@@ -147,10 +198,21 @@ namespace SWLOR.Toolset.Domain.Workspace
                 File.Copy(templateGic, gicPath, overwrite: false);
                 createdPaths.Add(gicPath);
                 WriteAtomic(ifoPath, ifo.ToBytes(), overwrite: true);
+                try
+                {
+                    File.Delete(markerPath);
+                }
+                catch
+                {
+                    // The area and its registration are committed. A stale marker is harmless:
+                    // the next attempt sees the IFO entry and removes the marker without touching
+                    // the completed triplet.
+                }
                 return true;
             }
             catch (Exception ex)
             {
+                var cleanupComplete = true;
                 for (var index = createdPaths.Count - 1; index >= 0; index--)
                 {
                     try
@@ -159,9 +221,22 @@ namespace SWLOR.Toolset.Domain.Workspace
                     }
                     catch
                     {
+                        cleanupComplete = false;
                         // Preserve the original failure. The error below still identifies the
                         // create as failed, and a later retry's destination preflight will name
                         // any path that could not be rolled back.
+                    }
+                }
+
+                if (markerCreated && cleanupComplete)
+                {
+                    try
+                    {
+                        File.Delete(markerPath);
+                    }
+                    catch
+                    {
+                        // Keeping the marker is safe: the next retry performs the same exact cleanup.
                     }
                 }
 
@@ -175,6 +250,9 @@ namespace SWLOR.Toolset.Domain.Workspace
 
         private static string GicPath(ModuleWorkspace workspace, string resRef) =>
             Path.Combine(workspace.ModuleRoot, "gic", resRef + ".gic.json");
+
+        private static string PendingMarkerPath(ModuleWorkspace workspace, string resRef) =>
+            Path.Combine(workspace.ModuleRoot, PendingMarkerPrefix + resRef + ".pending");
 
         private static void WriteAtomic(string path, byte[] bytes, bool overwrite)
         {

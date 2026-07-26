@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using SWLOR.Toolset.Shell.Panels;
@@ -13,6 +14,20 @@ namespace SWLOR.Toolset.Shell.Views
         {
             InitializeComponent();
             DataContextChanged += (_, _) => HookLines();
+        }
+
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            HookLines();
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            if (_lines != null)
+                _lines.CollectionChanged -= OnLinesChanged;
+            _lines = null;
+            base.OnDetachedFromVisualTree(e);
         }
 
         private void HookLines()

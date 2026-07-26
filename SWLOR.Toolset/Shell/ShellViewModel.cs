@@ -494,6 +494,8 @@ namespace SWLOR.Toolset.Shell
         private void NotifyMutationStateChanged()
         {
             OnPropertyChanged(nameof(IsModuleMutationLocked));
+            // The palette writes directly to the module, so its own write controls follow this lock.
+            _palette.NotifyWriteAvailabilityChanged();
             SaveAllCommand.NotifyCanExecuteChanged();
             PackModuleCommand.NotifyCanExecuteChanged();
             NotifyActiveEditorCommandsChanged();

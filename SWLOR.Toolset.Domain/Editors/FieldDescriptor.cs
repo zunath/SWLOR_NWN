@@ -31,6 +31,17 @@ namespace SWLOR.Toolset.Domain.Editors
         public string? Description { get; init; }
 
         public bool IsReadOnly { get; init; }
+
+        /// <summary>
+        /// True when this field must name a real row or enum value, so its editor offers no "(None)".
+        /// </summary>
+        /// <remarks>
+        /// A dropdown gets a synthetic "(None)" so an optional lookup can be cleared. On a field that has
+        /// no such state - an item's Base Item, a trigger's Type - picking it wrote the unset sentinel
+        /// (-1) into an int the engine expects to be a valid row, which is not a value the editor should
+        /// be able to produce at all.
+        /// </remarks>
+        public bool IsRequired { get; init; }
     }
 
     /// <summary>A titled group of fields rendered as a section.</summary>

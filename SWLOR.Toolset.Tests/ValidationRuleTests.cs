@@ -528,10 +528,13 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void DefaultRules_IncludesAllSixShippedRules()
+        public void DefaultRules_IncludesEveryShippedRule()
         {
             ModuleValidator.DefaultRules().Select(r => r.RuleId).Should().BeEquivalentTo(new[]
             {
+                // GffParse is the floor beneath the conventions: the others parse only the files they
+                // need, so without it a resource that will not read at all was reported by nobody.
+                "GffParse",
                 "ResRefLength", "DanglingInstanceTemplate", "VarTableEnum",
                 "QuestActivatorNotInPalette", "SpawnWaypointPalette", "PaletteOrphan"
             });

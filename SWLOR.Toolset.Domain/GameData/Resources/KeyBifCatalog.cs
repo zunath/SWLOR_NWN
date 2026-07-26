@@ -47,6 +47,31 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         public IEnumerable<ResourceIdentity> Resources => _index.Keys;
 
         /// <summary>
+        /// Latest write time among the install's KEY/BIF archives. This is intentionally a coarse
+        /// content version: changing any base-game archive invalidates derived previews.
+        /// </summary>
+        public DateTime ContentVersionUtc
+        {
+            get
+            {
+                try
+                {
+                    return Directory.EnumerateFiles(_dataDirectory, "*", SearchOption.TopDirectoryOnly)
+                        .Where(path =>
+                            Path.GetExtension(path).Equals(".key", StringComparison.OrdinalIgnoreCase) ||
+                            Path.GetExtension(path).Equals(".bif", StringComparison.OrdinalIgnoreCase))
+                        .Select(File.GetLastWriteTimeUtc)
+                        .DefaultIfEmpty(DateTime.MinValue)
+                        .Max();
+                }
+                catch (Exception)
+                {
+                    return DateTime.MinValue;
+                }
+            }
+        }
+
+        /// <summary>
         /// The KEY archives NWN:EE ships, in the order the game layers them - later overrides earlier.
         /// Any that is absent is skipped.
         /// </summary>

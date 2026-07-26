@@ -133,6 +133,72 @@ namespace SWLOR.Toolset.Tests
             session.UndoStack.IsDirty.Should().BeFalse();
         }
 
+        /// <summary>
+        /// An area is two documents with two stacks. An edit to one has to invalidate the other's redo
+        /// side, which <see cref="UndoStack.Push"/> cannot do because it only sees its own stack - so
+        /// undoing an .are edit and then making a .git edit left the .are's redo entry live, and Ctrl+Y
+        /// replayed the abandoned edit on top of the newer one.
+        /// </summary>
+        [Test]
+        public void DiscardRedo_DropsTheRedoTailButKeepsUndoHistory()
+        {
+            var (document, session) = OpenSample();
+            using var _ = session;
+            var field = CorpusFiles.FindFirstMutableInteger(document.Root)!;
+
+            using (session.Begin("edit A"))
+                field.SetInteger(field.GetInteger() + 1);
+            using (session.Begin("edit B"))
+                field.SetInteger(field.GetInteger() + 1);
+            session.UndoStack.Undo();
+
+            session.UndoStack.CanRedo.Should().BeTrue("precondition: there is something to redo");
+
+            session.UndoStack.DiscardRedo();
+
+            session.UndoStack.CanRedo.Should().BeFalse();
+            session.UndoStack.CanUndo.Should().BeTrue("the undo history must survive");
+            session.UndoStack.Position.Should().Be(1);
+        }
+
+        [Test]
+        public void DiscardRedo_WithNothingAhead_ChangesNothing()
+        {
+            var (document, session) = OpenSample();
+            using var _ = session;
+            var field = CorpusFiles.FindFirstMutableInteger(document.Root)!;
+
+            using (session.Begin("edit A"))
+                field.SetInteger(field.GetInteger() + 1);
+            session.UndoStack.MarkSaved();
+
+            session.UndoStack.DiscardRedo();
+
+            session.UndoStack.Position.Should().Be(1);
+            session.UndoStack.IsDirty.Should().BeFalse("a no-op must not disturb the saved baseline");
+        }
+
+        [Test]
+        public void DiscardRedo_InvalidatesASavedBaselineInsideTheDiscardedTail()
+        {
+            // Matches what Push does: a baseline that lived in the tail can no longer be returned to.
+            var (document, session) = OpenSample();
+            using var _ = session;
+            var field = CorpusFiles.FindFirstMutableInteger(document.Root)!;
+
+            using (session.Begin("edit A"))
+                field.SetInteger(field.GetInteger() + 1);
+            using (session.Begin("edit B"))
+                field.SetInteger(field.GetInteger() + 1);
+            session.UndoStack.MarkSaved();
+            session.UndoStack.Undo();
+
+            session.UndoStack.DiscardRedo();
+
+            session.UndoStack.IsDirty.Should().BeTrue(
+                "the saved position was in the tail that has just been thrown away");
+        }
+
         private static (JsonGffDocument document, DocumentSession session) OpenSample()
         {
             var path = CorpusFiles.FindFileWithMutableInteger("utc");

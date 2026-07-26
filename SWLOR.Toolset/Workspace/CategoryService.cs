@@ -41,6 +41,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly Dictionary<ResourceType, StandardPalette> _standardPalettes = new();
 
         private CategoryCatalog? _catalog;
+        private CategoryCatalog? _persistedCatalog;
         private string? _loadedForModuleRoot;
 
         public CategoryService(
@@ -75,7 +76,10 @@ namespace SWLOR.Toolset.Workspace
 
                 var path = CategoryCatalog.DefaultPathFor(moduleRoot);
                 _catalog = CategoryCatalog.Load(path, out var warning);
+                _persistedCatalog = _catalog.DeepClone();
                 _loadedForModuleRoot = moduleRoot;
+                _sidecarStateKnown = true;
+                _sidecarExistedWhenLoaded = File.Exists(path);
                 _sidecarWrittenUtc = LastWriteUtc(path);
                 _seeded.Clear();
 
@@ -100,15 +104,31 @@ namespace SWLOR.Toolset.Workspace
 
             // IsSeeded, not "has folders". A builder who deliberately empties a section and restarts was
             // otherwise handed the imported hierarchy straight back, with no way to keep it empty.
-            if (!_seeded.Add(type) || section.IsSeeded)
+            if (_seeded.Contains(type) || section.IsSeeded)
             {
+                _seeded.Add(type);
                 RepairPlaceholderNames(section);
+                return _catalog?.Section(type) ?? section;
+            }
+
+            var importedFolders = ReadPaletteSeed(type);
+            if (importedFolders == null)
+                return section;
+
+            foreach (var folder in importedFolders)
+                section.AddFolder(folder);
+
+            section.IsSeeded = true;
+            var save = SaveChanges();
+            if (!save.Saved)
+            {
+                foreach (var folder in importedFolders)
+                    section.RemoveFolder(folder);
+                section.IsSeeded = false;
                 return section;
             }
 
-            SeedFromPalette(type, section);
-            section.IsSeeded = true;
-            SaveChanges();
+            _seeded.Add(type);
             return section;
         }
 
@@ -145,8 +165,10 @@ namespace SWLOR.Toolset.Workspace
                 if (string.IsNullOrWhiteSpace(resolved))
                     continue;
 
-                folder.Rename(resolved.Trim());
-                repaired++;
+                // A pin is stored by path, and a path is built from names. Renaming a folder therefore
+                // moves every pin at or below it and the stored keys need to move with the folder.
+                if (section.TryRenameFolder(folder, resolved.Trim()))
+                    repaired++;
             }
 
             if (repaired == 0)
@@ -219,6 +241,7 @@ namespace SWLOR.Toolset.Workspace
                 var refusal = catalog.ReadOnlyReason
                     ?? "These categories will not be overwritten.";
                 _log.AppendLine(refusal);
+                RestorePersistedCatalog();
                 return CategorySaveResult.Failed(refusal);
             }
 
@@ -228,6 +251,7 @@ namespace SWLOR.Toolset.Workspace
                     $"'{catalog.FilePath}' changed outside the toolset; the change was not saved. " +
                     "Reopen the module to pick up the external version.";
                 _log.AppendLine(conflict);
+                RestorePersistedCatalog();
                 return CategorySaveResult.Failed(conflict);
             }
 
@@ -235,25 +259,53 @@ namespace SWLOR.Toolset.Workspace
             {
                 catalog.MarkDirty();
                 catalog.Save();
+                _sidecarStateKnown = true;
+                _sidecarExistedWhenLoaded = true;
                 _sidecarWrittenUtc = LastWriteUtc(catalog.FilePath);
+                _persistedCatalog = catalog.DeepClone();
                 Changed?.Invoke();
                 return CategorySaveResult.Ok();
             }
             catch (Exception ex)
             {
                 _log.AppendLine($"Could not save categories: {ex.Message}");
+                RestorePersistedCatalog();
                 return CategorySaveResult.Failed($"Could not save categories: {ex.Message}");
             }
         }
 
+        /// <summary>
+        /// Discards mutations made since the last successful load or save.
+        /// </summary>
+        /// <remarks>
+        /// Commands mutate the live folder tree before calling <see cref="SaveChanges"/>. Replacing it
+        /// with a fresh clone keeps a refused rename, move, pin, or folder edit from leaking into a later
+        /// successful save. Views already refresh after a failed save and therefore bind to this restored
+        /// tree rather than retaining references to the rejected one.
+        /// </remarks>
+        private void RestorePersistedCatalog()
+        {
+            if (_persistedCatalog != null)
+                _catalog = _persistedCatalog.DeepClone();
+        }
+
         /// <summary>When this session last read or wrote the sidecar; null when it has never existed.</summary>
         private DateTime? _sidecarWrittenUtc;
+        private bool _sidecarStateKnown;
+        private bool _sidecarExistedWhenLoaded;
 
         private bool HasExternalChange(CategoryCatalog catalog)
         {
+            var exists = File.Exists(catalog.FilePath);
+            if (_sidecarStateKnown && exists != _sidecarExistedWhenLoaded)
+                return true;
+
+            if (!exists)
+                return false;
+
             var current = LastWriteUtc(catalog.FilePath);
 
-            // Never seen before (first save of a new file) is not a conflict.
+            // An unreadable timestamp is not evidence of a conflict.
             if (_sidecarWrittenUtc == null || current == null)
                 return false;
 
@@ -292,30 +344,36 @@ namespace SWLOR.Toolset.Workspace
             return palette;
         }
 
-        private void SeedFromPalette(ResourceType type, CategorySection section)
+        /// <summary>
+        /// Reads the initial category roots for a type. An empty list is a successful seed (the type
+        /// deliberately has no palette, or the palette has no folders); null means a mapped palette
+        /// was missing or unreadable and must be retried rather than permanently marked complete.
+        /// </summary>
+        private IReadOnlyList<CategoryFolder>? ReadPaletteSeed(ResourceType type)
         {
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
-                return;
+                return null;
 
             var itpPath = PalettePathFor(workspace.ModuleRoot, type);
-            if (itpPath == null || !File.Exists(itpPath))
-                return;
+            if (itpPath == null)
+                return Array.Empty<CategoryFolder>();
+            if (!File.Exists(itpPath))
+                return null;
 
             try
             {
                 var imported = ItpCategoryImporter.Import(ItpDocument.Load(itpPath), ResolveCategoryName);
-                foreach (var folder in imported.Folders)
-                    section.AddFolder(folder);
-
                 var count = imported.AllFolders().Count();
                 if (count > 0)
                     _log.AppendLine(
                         $"Seeded {count} {type.DisplayName().ToLowerInvariant()} categories from '{Path.GetFileName(itpPath)}'.");
+                return imported.Folders.ToList();
             }
             catch (Exception ex)
             {
                 _log.AppendLine($"Could not read categories from '{Path.GetFileName(itpPath)}': {ex.Message}");
+                return null;
             }
         }
 

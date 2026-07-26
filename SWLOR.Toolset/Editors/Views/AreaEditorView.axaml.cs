@@ -1,6 +1,7 @@
 using Avalonia.Interactivity;
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Numerics;
+using Avalonia;
 using Avalonia.Controls;
 using SWLOR.Toolset.Domain.Render;
 
@@ -30,14 +31,34 @@ namespace SWLOR.Toolset.Editors
             // view model - two open areas disagreeing about fog would only be confusing.
             _display = Avalonia.Application.Current is App app ? app.Services?.GetService(
                 typeof(Viewport.ViewportDisplayOptions)) as Viewport.ViewportDisplayOptions : null;
-            if (_display != null)
-            {
-                _display.PropertyChanged += (_, _) => ApplyDisplayOptions();
-                ApplyDisplayOptions();
-            }
+            ApplyDisplayOptions();
         }
 
         private readonly Viewport.ViewportDisplayOptions? _display;
+
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            if (_display != null)
+                _display.PropertyChanged += OnDisplayPropertyChanged;
+
+            ApplyDisplayOptions();
+            AttachViewModel();
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            if (_display != null)
+                _display.PropertyChanged -= OnDisplayPropertyChanged;
+            if (_viewModel != null)
+                _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+            _viewModel = null;
+
+            base.OnDetachedFromVisualTree(e);
+        }
+
+        private void OnDisplayPropertyChanged(object? sender, PropertyChangedEventArgs e) =>
+            ApplyDisplayOptions();
 
         private void ApplyDisplayOptions()
         {

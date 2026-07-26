@@ -16,7 +16,7 @@ namespace SWLOR.Toolset.Shell.Panels
         /// Arms placement for a blueprint. The next click in the map resolves it. Returns false when this
         /// area has no list for that type - loose items have none.
         /// </summary>
-        bool ArmPlacement(ResourceType type, string resRef);
+        bool ArmPlacement(ResourceType type, string resRef, PaletteSource source);
 
         /// <summary>
         /// The tileset this area is built from, or null when it cannot be resolved.

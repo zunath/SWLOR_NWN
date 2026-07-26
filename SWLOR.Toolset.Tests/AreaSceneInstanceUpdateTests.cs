@@ -52,6 +52,108 @@ namespace SWLOR.Toolset.Tests
                 Diagnostics = new AreaSceneDiagnostics()
             };
 
+        /// <summary>
+        /// Doors belong in a tile's doorway. The placement ghost always snapped; moving an already
+        /// placed door did not, so it could be dragged off its tile frame and walkmesh opening. Both
+        /// paths now share this one rule.
+        /// </summary>
+        [Test]
+        public void TheNearestDoorwayIsChosenOnTheFloorPlane()
+        {
+            var scene = new AreaScene
+            {
+                Tileset = "tde01", Width = 4, Height = 4,
+                Tiles = Array.Empty<TilePlacement>(),
+                Instances = Array.Empty<InstanceMarker>(),
+                Diagnostics = new AreaSceneDiagnostics(),
+                DoorAnchors = new[]
+                {
+                    new TileDoorAnchor
+                    {
+                        TileIndex = 0, DoorIndex = 0, Type = 0,
+                        Position = new Vector3(5, 5, 0), Orientation = new Vector2(1, 0)
+                    },
+                    new TileDoorAnchor
+                    {
+                        TileIndex = 1, DoorIndex = 0, Type = 0,
+                        // Far away across the floor, so the ground-floor doorway wins despite the click
+                        // being level with this one.
+                        Position = new Vector3(60, 5, 40), Orientation = new Vector2(0, 1)
+                    }
+                }
+            };
+
+            scene.NearestEmptyDoorway(new Vector3(7, 5, 0))!.Position.Should().Be(new Vector3(5, 5, 0));
+        }
+
+        /// <summary>
+        /// Doorways in a multi-storey area stack almost exactly above one another, so ignoring Z meant a
+        /// click upstairs took whichever lower-floor anchor was marginally nearer across the floor.
+        /// </summary>
+        [Test]
+        public void AClickUpstairsTakesTheUpstairsDoorway()
+        {
+            var scene = new AreaScene
+            {
+                Tileset = "tde01", Width = 4, Height = 4,
+                Tiles = Array.Empty<TilePlacement>(),
+                Instances = Array.Empty<InstanceMarker>(),
+                Diagnostics = new AreaSceneDiagnostics(),
+                DoorAnchors = new[]
+                {
+                    new TileDoorAnchor
+                    {
+                        TileIndex = 0, DoorIndex = 0, Type = 0,
+                        // Marginally nearer across the floor, but a storey down.
+                        Position = new Vector3(5, 5, 0), Orientation = new Vector2(1, 0)
+                    },
+                    new TileDoorAnchor
+                    {
+                        TileIndex = 1, DoorIndex = 0, Type = 0,
+                        Position = new Vector3(7, 5, 10), Orientation = new Vector2(0, 1)
+                    }
+                }
+            };
+
+            scene.NearestEmptyDoorway(new Vector3(6, 5, 10))!.Position.Should().Be(new Vector3(7, 5, 10));
+        }
+
+        [Test]
+        public void OnTheSameStoreyTheNearerDoorwayStillWins()
+        {
+            // Height must separate floors without dominating: two doorways on one floor are chosen
+            // between by where the builder actually clicked. Both are inside the snap radius, so it is
+            // the choice between them that is under test rather than which one is in reach.
+            var scene = new AreaScene
+            {
+                Tileset = "tde01", Width = 4, Height = 4,
+                Tiles = Array.Empty<TilePlacement>(),
+                Instances = Array.Empty<InstanceMarker>(),
+                Diagnostics = new AreaSceneDiagnostics(),
+                DoorAnchors = new[]
+                {
+                    new TileDoorAnchor
+                    {
+                        TileIndex = 0, DoorIndex = 0, Type = 0,
+                        Position = new Vector3(28, 5, 10), Orientation = new Vector2(1, 0)
+                    },
+                    new TileDoorAnchor
+                    {
+                        TileIndex = 1, DoorIndex = 0, Type = 0,
+                        Position = new Vector3(33, 5, 10), Orientation = new Vector2(0, 1)
+                    }
+                }
+            };
+
+            scene.NearestEmptyDoorway(new Vector3(32, 5, 10))!.Position.Should().Be(new Vector3(33, 5, 10));
+        }
+
+        [Test]
+        public void AnAreaWithNoDoorwaysOffersNone()
+        {
+            SceneWith(Marker()).NearestEmptyDoorway(Vector3.Zero).Should().BeNull();
+        }
+
         [Test]
         public void RotatingAnInstanceKeepsEverythingElseAboutIt()
         {

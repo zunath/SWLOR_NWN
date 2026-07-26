@@ -69,6 +69,7 @@ namespace SWLOR.Toolset.Editors
     public partial class InstanceListSectionViewModel : ObservableObject
     {
         private readonly DocumentSession _gitSession;
+        private readonly DocumentSession _gicSession;
         private readonly ModuleWorkspace _workspace;
         private readonly ResourceType _blueprintType;
         private readonly string _listFieldName;
@@ -113,6 +114,14 @@ namespace SWLOR.Toolset.Editors
         private double _detailYOrientation;
 
         [ObservableProperty]
+        private double _detailTriggerWidth;
+
+        [ObservableProperty]
+        private double _detailTriggerHeight;
+
+        public bool HasTriggerGeometry => _blueprintType == ResourceType.Utt;
+
+        [ObservableProperty]
         private VarTableSectionViewModel? _varTableSection;
 
         [ObservableProperty]
@@ -123,6 +132,7 @@ namespace SWLOR.Toolset.Editors
             string listFieldName,
             ResourceType blueprintType,
             DocumentSession gitSession,
+            DocumentSession gicSession,
             ModuleWorkspace workspace,
             Func<string, Action, bool> runEdit,
             IGameCodeIndex? gameCodeIndex,
@@ -134,6 +144,7 @@ namespace SWLOR.Toolset.Editors
             _listFieldName = listFieldName;
             _blueprintType = blueprintType;
             _gitSession = gitSession;
+            _gicSession = gicSession;
             _workspace = workspace;
             _runEdit = runEdit;
             _gameCodeIndex = gameCodeIndex;
@@ -210,6 +221,8 @@ namespace SWLOR.Toolset.Editors
         partial void OnDetailZChanged(double value) => ApplyPositionEdit();
         partial void OnDetailXOrientationChanged(double value) => ApplyOrientationEdit();
         partial void OnDetailYOrientationChanged(double value) => ApplyOrientationEdit();
+        partial void OnDetailTriggerWidthChanged(double value) => ApplyTriggerGeometryEdit();
+        partial void OnDetailTriggerHeightChanged(double value) => ApplyTriggerGeometryEdit();
 
         private void ApplyPositionEdit()
         {
@@ -256,6 +269,25 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
+        private void ApplyTriggerGeometryEdit()
+        {
+            if (_isLoadingDetail || !HasTriggerGeometry || SelectedRow is not { } row ||
+                DetailTriggerWidth <= 0 || DetailTriggerHeight <= 0)
+                return;
+
+            var element = GetElement(row.Index);
+            if (element == null)
+                return;
+
+            if (!_runEdit(
+                    $"Resize {Title} geometry",
+                    () => InstanceFieldMap.SetTriggerGeometrySize(
+                        element, (float)DetailTriggerWidth, (float)DetailTriggerHeight)))
+            {
+                LoadDetailFromElement(element);
+            }
+        }
+
         private void LoadDetailFromElement(JsonGffStruct element)
         {
             _isLoadingDetail = true;
@@ -269,6 +301,12 @@ namespace SWLOR.Toolset.Editors
                 var (xOrientation, yOrientation) = InstanceFieldMap.GetOrientation(_blueprintType, element);
                 DetailXOrientation = xOrientation;
                 DetailYOrientation = yOrientation;
+                if (HasTriggerGeometry)
+                {
+                    var (width, height) = InstanceFieldMap.GetTriggerGeometrySize(element);
+                    DetailTriggerWidth = width;
+                    DetailTriggerHeight = height;
+                }
             }
             finally
             {
@@ -333,11 +371,19 @@ namespace SWLOR.Toolset.Editors
         /// the 3D-view "Place..." flow (at the clicked ground position) both use.
         /// </summary>
         public bool AddInstanceAt(
-            string resRef, float x, float y, float z, float xOrientation = 1f, float yOrientation = 0f)
+            string resRef,
+            float x,
+            float y,
+            float z,
+            float xOrientation = 1f,
+            float yOrientation = 0f,
+            bool useIndexedBlueprint = false)
         {
             try
             {
-                var blueprint = _workspace.LoadBlueprint(_blueprintType, resRef);
+                var blueprint = useIndexedBlueprint
+                    ? _workspace.LoadIndexedBlueprint(_blueprintType, resRef)
+                    : _workspace.LoadBlueprint(_blueprintType, resRef);
                 var ok = _runEdit($"Add {Title} instance", () =>
                 {
                     var listField = _gitSession.Document.Root.GetOrNull(_listFieldName);
@@ -350,7 +396,14 @@ namespace SWLOR.Toolset.Editors
                     var instance = InstanceFieldMap.CreateInstance(
                         _blueprintType, blueprint.Document, resRef,
                         x, y, z, xOrientation, yOrientation);
-                    listField.InsertElement(listField.Elements!.Count, instance);
+                    var insertAt = listField.Elements!.Count;
+                    listField.InsertElement(insertAt, instance);
+                    new GicDocument(_gicSession.Document)
+                        .InsertBlankComment(
+                            _listFieldName,
+                            _blueprintType,
+                            insertAt,
+                            listField.Elements.Count);
                 });
 
                 if (ok)
@@ -418,6 +471,11 @@ namespace SWLOR.Toolset.Editors
                 var listField = _gitSession.Document.Root.Get(_listFieldName);
                 var clone = InstanceFieldMap.Duplicate(element);
                 listField.InsertElement(row.Index + 1, clone);
+                new GicDocument(_gicSession.Document).DuplicateComment(
+                    _listFieldName,
+                    _blueprintType,
+                    row.Index,
+                    listField.Elements!.Count);
             });
 
             RefreshFromDocument();
@@ -433,6 +491,11 @@ namespace SWLOR.Toolset.Editors
             {
                 var listField = _gitSession.Document.Root.Get(_listFieldName);
                 listField.RemoveElementAt(row.Index);
+                new GicDocument(_gicSession.Document).RemoveComment(
+                    _listFieldName,
+                    _blueprintType,
+                    row.Index,
+                    listField.Elements!.Count);
             });
 
             SelectedRow = null;

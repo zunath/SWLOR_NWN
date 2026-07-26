@@ -122,5 +122,14 @@ namespace SWLOR.Toolset.Tests
 
             act.Should().Throw<ArgumentException>();
         }
+
+        [Test]
+        public void A_Folder_Name_Cannot_Contain_The_Pin_Path_Separator()
+        {
+            var act = () => new CategoryFolder("Interiors/Consoles");
+
+            act.Should().Throw<ArgumentException>()
+                .WithMessage("*cannot contain*/*");
+        }
     }
 }

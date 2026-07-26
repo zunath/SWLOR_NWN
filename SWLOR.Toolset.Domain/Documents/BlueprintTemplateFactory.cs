@@ -30,10 +30,15 @@ namespace SWLOR.Toolset.Domain.Documents
         /// <summary>How many panels a store's StoreList always has; the panel is its __struct_id.</summary>
         private const int StorePanelCount = 5;
 
+        /// <remarks>
+        /// Merchants are intentionally excluded even though their scalar fields can be templated:
+        /// the editor does not yet expose StoreList inventory, so creating an empty merchant would
+        /// strand the builder with a store that cannot be stocked.
+        /// </remarks>
         public static bool Supports(ResourceType type)
         {
             return type is ResourceType.Utc or ResourceType.Uti or ResourceType.Utp or ResourceType.Utd
-                or ResourceType.Utm or ResourceType.Utt or ResourceType.Uts or ResourceType.Utw;
+                or ResourceType.Utt or ResourceType.Uts or ResourceType.Utw;
         }
 
         public static byte[] CreateFileContent(ResourceType type, string resRef, string displayName)

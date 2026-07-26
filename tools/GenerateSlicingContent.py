@@ -231,11 +231,11 @@ CONCENTRATES = [
 
 
 STRUCTURES = [
-    (431, "Rustline Data Terminal", "slc_rustterm", 6031),
-    (432, "Cipherfile Cabinet", "slc_ciphcab", 30935),
-    (433, "Listening Post Monitor", "slc_listmon", 7201),
+    (431, "Rustline Data Terminal", "slc_rustterm", 6030),
+    (432, "Cipherfile Cabinet", "slc_ciphcab", 30702),
+    (433, "Listening Post Monitor", "slc_listmon", 7351),
     (434, "Ghost-Channel Console", "slc_ghostcon", 21450),
-    (435, "Blacksite Analysis Station", "slc_blackstat", 30611),
+    (435, "Blacksite Analysis Station", "slc_blackstat", 30612),
 ]
 
 

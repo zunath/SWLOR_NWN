@@ -38,6 +38,19 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
             };
         }
 
+        /// <summary>The .set corner height presented at one world corner after placement rotation.</summary>
+        public static int WorldCornerHeight(TileDefinition tile, int orientation, TileCorner corner)
+        {
+            return Normalize(CornerAngle(corner) - orientation * 90) switch
+            {
+                45 => tile.TopRightHeight,
+                135 => tile.TopLeftHeight,
+                225 => tile.BottomLeftHeight,
+                315 => tile.BottomRightHeight,
+                _ => 0
+            };
+        }
+
         /// <summary>The world-orientation crosser on one edge of a tile placed with the given orientation (0-3).</summary>
         public static string WorldEdgeCrosser(TileDefinition tile, int orientation, TileEdge edge)
         {

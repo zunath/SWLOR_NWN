@@ -2,6 +2,7 @@ using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
+using Radoub.Formats.Plt;
 
 namespace SWLOR.Toolset.Domain.Render
 {
@@ -44,6 +45,13 @@ namespace SWLOR.Toolset.Domain.Render
 
         /// <summary>The body parts (MdlPartComposer part type → resref) for <see cref="BlueprintModelKind.Segmented"/>.</summary>
         public IReadOnlyList<BlueprintModelPart> Parts { get; init; } = Array.Empty<BlueprintModelPart>();
+
+        /// <summary>
+        /// PLT layer id to palette-row index for segmented creature textures. Empty for models that
+        /// do not carry creature/armor palette choices.
+        /// </summary>
+        public IReadOnlyDictionary<int, int> LayerColorIndices { get; init; } =
+            new Dictionary<int, int>();
 
         public static BlueprintModelReference NoneWith(string status) =>
             new() { Kind = BlueprintModelKind.None, Status = status };
@@ -221,8 +229,33 @@ namespace SWLOR.Toolset.Domain.Render
                 Kind = BlueprintModelKind.Segmented,
                 Status = $"{row.DisplayName} (segmented {prefix}, {parts.Count} parts)",
                 SkeletonResRef = prefix,
-                Parts = parts
+                Parts = parts,
+                LayerColorIndices = ResolveLayerColors(root, armor)
             };
+        }
+
+        private static IReadOnlyDictionary<int, int> ResolveLayerColors(
+            JsonGffStruct creature,
+            JsonGffStruct? armor)
+        {
+            var colors = Enumerable.Range(0, 10).ToDictionary(layer => layer, _ => 0);
+
+            colors[PltLayers.Skin] = creature.GetIntOrNull("Color_Skin") ?? 0;
+            colors[PltLayers.Hair] = creature.GetIntOrNull("Color_Hair") ?? 0;
+            colors[PltLayers.Tattoo1] = creature.GetIntOrNull("Color_Tattoo1") ?? 0;
+            colors[PltLayers.Tattoo2] = creature.GetIntOrNull("Color_Tattoo2") ?? 0;
+
+            if (armor != null)
+            {
+                colors[PltLayers.Metal1] = armor.GetIntOrNull("Metal1Color") ?? 0;
+                colors[PltLayers.Metal2] = armor.GetIntOrNull("Metal2Color") ?? 0;
+                colors[PltLayers.Cloth1] = armor.GetIntOrNull("Cloth1Color") ?? 0;
+                colors[PltLayers.Cloth2] = armor.GetIntOrNull("Cloth2Color") ?? 0;
+                colors[PltLayers.Leather1] = armor.GetIntOrNull("Leather1Color") ?? 0;
+                colors[PltLayers.Leather2] = armor.GetIntOrNull("Leather2Color") ?? 0;
+            }
+
+            return colors;
         }
 
         /// <summary>

@@ -78,7 +78,8 @@ namespace SWLOR.Toolset
                 sp.GetService<PlaceableAppearanceService>(),
                 sp.GetService<DoorTypeService>(),
                 sp.GetService<SoundService>(),
-                sp.GetService<TwoDaLookupService>()));
+                sp.GetService<TwoDaLookupService>(),
+                sp.GetService<WaypointAppearanceService>()));
             services.AddSingleton(sp => new Editors.EditorService(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<Editors.LookupOptionProvider>(),
@@ -162,7 +163,26 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<Services.IEditorPromptService>(),
                 sp.GetService<Domain.GameData.Lookups.TilesetCatalog>(),
                 sp.GetService<TlkService>(),
-                sp.GetRequiredService<ToolsetSettings>()));
+                sp.GetRequiredService<ToolsetSettings>(),
+                // Deferred: the shell is built from this panel, so it cannot be injected - but it can be
+                // asked later. The palette writes straight to the module, so its create/delete controls
+                // have to follow the same lock that packing and validation raise.
+                //
+                // The catch is for reentrancy, not for hiding faults: this panel is constructed as part
+                // of building the shell, so anything that read CanWrite during that window would ask the
+                // container for a ShellViewModel it is still constructing. Nothing does today, and the
+                // honest answer in that window is "nothing is packing yet" - which is what false says.
+                () =>
+                {
+                    try
+                    {
+                        return sp.GetRequiredService<ShellViewModel>().IsModuleMutationLocked;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        return false;
+                    }
+                }));
             services.AddSingleton<SearchViewModel>();
             services.AddSingleton<OutputViewModel>();
             services.AddSingleton(sp => new ValidationViewModel(
@@ -229,16 +249,18 @@ namespace SWLOR.Toolset
             // Reported rather than left silent. Without the base game the Standard palette is empty and
             // base-game models and category names are missing - all of which look like bugs in this
             // toolset unless it says so, which is exactly how it read before this line existed.
-            ReportNwnInstall(services, nwnInstallPath, settings.NwnInstallOverride);
-
+            string? tlkWarning = null;
             if (hasTlk)
             {
                 // The base game's dialog.tlk as well as SWLOR's own, because the base-game palettes name
                 // their categories by strref into it - without this the Standard palette's folders read
                 // as "Category 6782" instead of "Containers & Switches". It lives under lang/<code>/data,
                 // not the data folder the resource index uses.
-                services.AddSingleton(TlkService.Load(swTlkJsonPath, FindBaseTlk(nwnInstallPath)));
+                services.AddSingleton(TlkService.LoadWithOptionalBase(
+                    swTlkJsonPath, FindBaseTlk(nwnInstallPath), out tlkWarning));
             }
+
+            ReportNwnInstall(services, nwnInstallPath, settings.NwnInstallOverride, tlkWarning);
 
             if (File.Exists(hakBuilderConfigPath) && Directory.Exists(swlorHaksRoot))
             {
@@ -361,13 +383,16 @@ namespace SWLOR.Toolset
         /// service that does not exist yet while services are still being registered.
         /// </summary>
         private static void ReportNwnInstall(
-            IServiceCollection services, string? resolvedPath, string? overridePath)
+            IServiceCollection services, string? resolvedPath, string? overridePath, string? tlkWarning)
         {
             var message = resolvedPath != null
                 ? $"NWN:EE install: {resolvedPath}"
                 : "No NWN:EE install found - base-game blueprints, models and the Standard palette will be " +
                   "unavailable. Checked: " + string.Join("; ", NwnInstallLocator.ProbedPaths(overridePath)) +
                   ". Set an explicit path in settings.json (nwnInstallOverride) to override.";
+
+            if (!string.IsNullOrWhiteSpace(tlkWarning))
+                message += Environment.NewLine + tlkWarning;
 
             services.AddSingleton(new StartupNotice(message));
         }

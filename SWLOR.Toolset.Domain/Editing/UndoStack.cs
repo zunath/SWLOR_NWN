@@ -84,6 +84,30 @@ namespace SWLOR.Toolset.Domain.Editing
             _position++;
         }
 
+        /// <summary>
+        /// Drops everything ahead of the current position, so nothing can be redone, while leaving the
+        /// undo history intact.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="Push"/> already does this for the stack being edited. This exists for the case
+        /// Push cannot see: an area is two documents with two stacks, and an edit to one of them has to
+        /// invalidate the other's redo side as well. Without it, undoing an .are edit and then making a
+        /// .git edit left the .are's redo entry live, and Ctrl+Y replayed the abandoned edit on top of
+        /// the newer one - restoring content the builder had already discarded.
+        /// </remarks>
+        public void DiscardRedo()
+        {
+            if (_position >= _entries.Count)
+                return;
+
+            // Matches Push: a saved baseline that lives in the discarded tail can no longer be returned
+            // to, so the document is dirty against a baseline that no longer exists.
+            if (_savedPosition.HasValue && _savedPosition.Value > _position)
+                _savedPosition = null;
+
+            _entries.RemoveRange(_position, _entries.Count - _position);
+        }
+
         /// <summary>Marks the current position as the clean/saved baseline.</summary>
         public void MarkSaved()
         {

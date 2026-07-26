@@ -211,6 +211,7 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(IsCustomSource));
             OnPropertyChanged(nameof(IsStandardSource));
             OnPropertyChanged(nameof(CanWrite));
+            OnPropertyChanged(nameof(CanCreateBlueprint));
             OnPropertyChanged(nameof(ReadOnlyNotice));
             OnPropertyChanged(nameof(HasReadOnlyNotice));
 
@@ -232,7 +233,33 @@ namespace SWLOR.Toolset.Shell.Panels
         /// Base-game blueprints are not ours, and a tile is a row in a .set file rather than a resource
         /// at all, so neither offers anything to create, rename, refile or delete.
         /// </summary>
-        public bool CanWrite => IsCustomSource && IsBlueprintMode;
+        /// <summary>
+        /// Whether the module is mid-pack or mid-validation, or null in a test with no shell. A
+        /// <see cref="Func{TResult}"/> because the shell is constructed after this panel - asking it a
+        /// question later avoids the construction cycle a direct reference would create.
+        /// </summary>
+        private readonly Func<bool>? _isModuleLocked;
+
+        /// <summary>
+        /// True when this panel may write to the module: the Custom side of a blueprint type, and no
+        /// module-wide operation in flight.
+        /// </summary>
+        /// <remarks>
+        /// The lock was missing. Creating or deleting a blueprint writes straight to the module, and
+        /// those controls stayed enabled through a pack - which reads the very files being written - so
+        /// a click at the wrong moment could put a half-written resource into the .mod being built.
+        /// </remarks>
+        public bool CanWrite => IsCustomSource && IsBlueprintMode && _isModuleLocked?.Invoke() != true;
+
+        /// <summary>Re-reads <see cref="CanWrite"/>, for when the module-wide lock has flipped.</summary>
+        public void NotifyWriteAvailabilityChanged() => OnPropertyChanged(nameof(CanWrite));
+
+        /// <summary>
+        /// Creation is narrower than editing: types whose editor cannot finish a usable resource
+        /// (currently merchants, whose StoreList inventory is not exposed) remain browsable/editable
+        /// but do not offer a misleading "New" action.
+        /// </summary>
+        public bool CanCreateBlueprint => CanWrite && BlueprintTemplateFactory.Supports(SelectedType);
 
         /// <summary>
         /// Why a context menu is empty, so it never opens as a blank popup. Null when there is nothing to
@@ -265,8 +292,10 @@ namespace SWLOR.Toolset.Shell.Panels
             Services.IEditorPromptService? prompts = null,
             TilesetCatalog? tilesets = null,
             Domain.GameData.Tlk.TlkService? tlk = null,
-            ToolsetSettings? settings = null)
+            ToolsetSettings? settings = null,
+            Func<bool>? isModuleLocked = null)
         {
+            _isModuleLocked = isModuleLocked;
             _thumbnails = thumbnails;
             _prompts = prompts;
             _tilesets = tilesets;
@@ -366,7 +395,8 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            if (_tilesets == null || !_tilesets.TryGetTileset(tilesetResRef, out var tileset))
+            var activeTilesetResRef = tilesetResRef!;
+            if (_tilesets == null || !_tilesets.TryGetTileset(activeTilesetResRef, out var tileset) || tileset == null)
             {
                 StatusMessage = $"Tileset '{tilesetResRef}' could not be loaded.";
                 return;
@@ -385,8 +415,8 @@ namespace SWLOR.Toolset.Shell.Panels
             if (offered.Count == 0)
             {
                 StatusMessage = IsAutoTilePaint
-                    ? $"'{_tilesets.GetDisplayName(tilesetResRef)}' declares no terrain to paint - switch to Manual."
-                    : $"'{_tilesets.GetDisplayName(tilesetResRef)}' lists no individual tiles.";
+                    ? $"'{_tilesets.GetDisplayName(activeTilesetResRef)}' declares no terrain to paint - switch to Manual."
+                    : $"'{_tilesets.GetDisplayName(activeTilesetResRef)}' lists no individual tiles.";
                 return;
             }
 
@@ -401,8 +431,8 @@ namespace SWLOR.Toolset.Shell.Panels
             SelectedRow = _allRows[0];
             RebuildTileGrid();
             StatusMessage = IsAutoTilePaint
-                ? $"{_tilesets.GetDisplayName(tilesetResRef)} - pick a terrain, then click a cell to paint it."
-                : $"{_tilesets.GetDisplayName(tilesetResRef)} - pick a tile, then click a cell to stamp it.";
+                ? $"{_tilesets.GetDisplayName(activeTilesetResRef)} - pick a terrain, then click a cell to paint it."
+                : $"{_tilesets.GetDisplayName(activeTilesetResRef)} - pick a tile, then click a cell to stamp it.";
         }
 
         /// <summary>
@@ -505,6 +535,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
             SyncChipSelection();
             OnPropertyChanged(nameof(NewBlueprintLabel));
+            OnPropertyChanged(nameof(CanCreateBlueprint));
             SelectedRow = null;
             Refresh();
         }
@@ -522,6 +553,7 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(ShowsSourceSwitch));
             OnPropertyChanged(nameof(ShowsTilePaintSwitch));
             OnPropertyChanged(nameof(CanWrite));
+            OnPropertyChanged(nameof(CanCreateBlueprint));
             OnPropertyChanged(nameof(ReadOnlyNotice));
             OnPropertyChanged(nameof(HasReadOnlyNotice));
             SelectedRow = null;
@@ -663,7 +695,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            if (target.ArmPlacement(SelectedType, tile.ResRef))
+            if (target.ArmPlacement(SelectedType, tile.ResRef, tile.Source))
                 StatusMessage = $"Click the map to place {tile.Name}.";
             else
                 StatusMessage = $"{SelectedType.DisplayName()} cannot be placed in this area.";
@@ -719,6 +751,27 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
+            var palettePath = CustomPalettePath(workspace.ModuleRoot, SelectedType);
+            if (palettePath != null && File.Exists(palettePath))
+            {
+                try
+                {
+                    if (ItpDocument.Load(palettePath).ContainsResRef(tile.ResRef))
+                    {
+                        StatusMessage =
+                            $"'{tile.Name}' is still referenced by {Path.GetFileName(palettePath)}. " +
+                            "Remove that palette entry before deleting the blueprint.";
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    StatusMessage =
+                        $"Could not verify {Path.GetFileName(palettePath)} before deletion: {ex.Message}";
+                    return;
+                }
+            }
+
             var confirmed = await _prompts.ConfirmDestructiveAsync(
                 $"Delete the {kind} '{tile.Name}'?",
                 $"This deletes {Path.GetFileName(path)} from the module. Any area that already placed " +
@@ -760,6 +813,24 @@ namespace SWLOR.Toolset.Shell.Panels
             _log.AppendLine($"Deleted blueprint '{tile.ResRef}' ({path}).");
         }
 
+        private static string? CustomPalettePath(string moduleRoot, ResourceType type)
+        {
+            var stem = type switch
+            {
+                ResourceType.Utc => "creaturepalcus",
+                ResourceType.Utd => "doorpalcus",
+                ResourceType.Uti => "itempalcus",
+                ResourceType.Utp => "placeablepalcus",
+                ResourceType.Uts => "soundpalcus",
+                ResourceType.Utm => "storepalcus",
+                ResourceType.Utt => "triggerpalcus",
+                ResourceType.Utw => "waypointpalcus",
+                _ => null
+            };
+
+            return stem == null ? null : Path.Combine(moduleRoot, "itp", stem + ".itp.json");
+        }
+
         /// <summary>The label for the type-specific create action, e.g. "New Placeable...".</summary>
         public string NewBlueprintLabel => $"New {SelectedType.SingularDisplayName()}...";
 
@@ -776,14 +847,8 @@ namespace SWLOR.Toolset.Shell.Panels
         private async Task NewBlueprintAsync()
         {
             var workspace = _workspaceContext.Workspace;
-            if (workspace == null || _prompts == null || !CanWrite)
+            if (workspace == null || _prompts == null || !CanCreateBlueprint)
                 return;
-
-            if (!BlueprintTemplateFactory.Supports(SelectedType))
-            {
-                StatusMessage = $"{SelectedType.DisplayName()} cannot be created here yet.";
-                return;
-            }
 
             var kind = SelectedType.SingularDisplayName();
             var name = await _prompts.PromptForTextAsync(
@@ -880,6 +945,15 @@ namespace SWLOR.Toolset.Shell.Panels
             if (name == null)
                 return;
 
+            var nameAvailable = parent == null
+                ? section.IsNameAvailable(name)
+                : parent.IsNameAvailable(name);
+            if (!nameAvailable)
+            {
+                StatusMessage = $"A category named '{name.Trim()}' already exists here.";
+                return;
+            }
+
             if (parent != null)
                 parent.AddChild(name);
             else
@@ -917,13 +991,12 @@ namespace SWLOR.Toolset.Shell.Panels
 
             var previous = folder.Name;
 
-            // A rename changes this folder's path and every descendant's, so any pin naming them has to
-            // move with it or it silently stops resolving.
             var section = CurrentSection();
-            var oldPathKey = section?.PathKey(folder);
-            folder.Rename(name);
-            if (section != null && oldPathKey != null)
-                section.RepathPins(oldPathKey, section.PathKey(folder));
+            if (section == null || !section.TryRenameFolder(folder, name))
+            {
+                StatusMessage = $"A category named '{name.Trim()}' already exists here.";
+                return;
+            }
 
             if (!SaveCategories())
             {
@@ -1202,7 +1275,7 @@ namespace SWLOR.Toolset.Shell.Panels
             Breadcrumb = BreadcrumbFor(section);
 
             foreach (var resRef in resRefs.OrderBy(NameFor, StringComparer.CurrentCultureIgnoreCase))
-                AddTile(new PaletteTileViewModel(resRef, NameFor(resRef), null));
+                AddTile(new PaletteTileViewModel(resRef, NameFor(resRef), null, Source));
         }
 
         private void RebuildSearchTiles(CategorySection section)
@@ -1219,7 +1292,7 @@ namespace SWLOR.Toolset.Shell.Panels
             foreach (var resRef in matches)
             {
                 var folder = section.FoldersContaining(resRef).FirstOrDefault();
-                AddTile(new PaletteTileViewModel(resRef, NameFor(resRef), folder?.Name));
+                AddTile(new PaletteTileViewModel(resRef, NameFor(resRef), folder?.Name, Source));
             }
 
             Breadcrumb = matches.Count >= MaxSearchResults
@@ -1244,14 +1317,20 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            var cached = _thumbnails?.Cached(SelectedType, tile.ResRef);
+            var useIndexedBlueprint = tile.Source == PaletteSource.Standard;
+            var cached = _thumbnails?.Cached(
+                SelectedType, tile.ResRef, useIndexedBlueprint);
             if (cached != null)
             {
                 tile.Preview = cached;
                 return;
             }
 
-            _thumbnails?.RequestAsync(SelectedType, tile.ResRef, bitmap => tile.Preview = bitmap);
+            _thumbnails?.RequestAsync(
+                SelectedType,
+                tile.ResRef,
+                useIndexedBlueprint,
+                bitmap => tile.Preview = bitmap);
         }
 
         /// <summary>

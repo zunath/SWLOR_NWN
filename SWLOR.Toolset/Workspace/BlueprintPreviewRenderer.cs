@@ -32,8 +32,9 @@ namespace SWLOR.Toolset.Workspace
     /// </list>
     /// <para>
     /// Returning null means "this blueprint genuinely has no artwork", which the caller answers with a
-    /// type symbol. That happens for merchants, triggers, sound sets and waypoints (NWN gives them no
-    /// model at all) and for the placeables and doors whose appearance row in the 2DA is blank.
+    /// type symbol. That happens for merchants, triggers and sound sets (NWN gives them no model at
+    /// all) and for the placeables and doors whose appearance row in the 2DA is blank. Waypoints use
+    /// the model declared by waypoint.2da.
     /// </para>
     /// </remarks>
     public sealed class BlueprintPreviewRenderer
@@ -97,6 +98,9 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>True when the game data needed to resolve any artwork at all is present.</summary>
         public bool IsAvailable => _resourceIndex != null;
 
+        /// <summary>Coarse version of every game-data dependency used by rendered previews.</summary>
+        public DateTime ContentVersionUtc => _resourceIndex?.ContentVersionUtc ?? DateTime.MinValue;
+
         /// <summary>The blueprint types the palette offers previews for.</summary>
         public static bool IsSupported(ResourceType type) =>
             type is ResourceType.Utc or ResourceType.Uti or ResourceType.Utp
@@ -115,7 +119,10 @@ namespace SWLOR.Toolset.Workspace
         /// "no artwork" - an unparseable model, an undecodable texture - are still handled at the point
         /// where that is the honest answer.
         /// </remarks>
-        public IconImage? Render(ResourceType type, string resRef)
+        public IconImage? Render(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint = false)
         {
             if (!IsAvailable || string.IsNullOrWhiteSpace(resRef))
                 return null;
@@ -124,13 +131,16 @@ namespace SWLOR.Toolset.Workspace
             if (workspace == null)
                 return null;
 
-            var root = workspace.LoadBlueprint(type, resRef).Fields;
+            var root = (useIndexedBlueprint
+                ? workspace.LoadIndexedBlueprint(type, resRef)
+                : workspace.LoadBlueprint(type, resRef)).Fields;
 
             return type switch
             {
                 ResourceType.Uti => RenderItemIcon(root),
-                ResourceType.Utc => RenderModel(type, root) ?? RenderPortrait(root),
-                ResourceType.Utp or ResourceType.Utd or ResourceType.Utw => RenderModel(type, root),
+                ResourceType.Utc => RenderModel(type, root, useIndexedBlueprint) ?? RenderPortrait(root),
+                ResourceType.Utp or ResourceType.Utd or ResourceType.Utw =>
+                    RenderModel(type, root, useIndexedBlueprint),
                 _ => null
             };
         }
@@ -147,7 +157,10 @@ namespace SWLOR.Toolset.Workspace
         /// <see cref="RenderModel(ResourceType, Domain.Gff.JsonGffStruct)"/>, nothing here is cached:
         /// caching every blueprint's expanded meshes is what once reached a 37 GB working set.
         /// </remarks>
-        public RenderModel? BuildModel(ResourceType type, string resRef)
+        public RenderModel? BuildModel(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint = false)
         {
             if (!IsAvailable || string.IsNullOrWhiteSpace(resRef))
                 return null;
@@ -156,9 +169,13 @@ namespace SWLOR.Toolset.Workspace
             if (workspace == null)
                 return null;
 
+            var blueprint = useIndexedBlueprint
+                ? workspace.LoadIndexedBlueprint(type, resRef)
+                : workspace.LoadBlueprint(type, resRef);
             var reference = BlueprintModelResolver.Resolve(
-                type, workspace.LoadBlueprint(type, resRef).Fields, _appearances, _placeables, _doors,
-                LoadItemBlueprintRoot, PartModelExists, _waypoints);
+                type, blueprint.Fields, _appearances, _placeables, _doors,
+                itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
+                PartModelExists, _waypoints);
 
             return reference.Kind switch
             {
@@ -237,11 +254,15 @@ namespace SWLOR.Toolset.Workspace
         /// several thousand fully expanded meshes at once. Parsing again costs milliseconds and the
         /// result is written to the disk cache anyway, so nothing is parsed twice across sessions.
         /// </remarks>
-        private IconImage? RenderModel(ResourceType type, Domain.Gff.JsonGffStruct root)
+        private IconImage? RenderModel(
+            ResourceType type,
+            Domain.Gff.JsonGffStruct root,
+            bool useIndexedBlueprint)
         {
             var reference = BlueprintModelResolver.Resolve(
-                type, root, _appearances, _placeables, _doors, LoadItemBlueprintRoot, PartModelExists,
-                _waypoints);
+                type, root, _appearances, _placeables, _doors,
+                itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
+                PartModelExists, _waypoints);
 
             var model = reference.Kind switch
             {
@@ -250,8 +271,11 @@ namespace SWLOR.Toolset.Workspace
                 _ => null
             };
 
+            Func<string, TextureImage?>? resolveTexture = _textures == null
+                ? null
+                : texture => _textures.Get(texture, reference.LayerColorIndices);
             var pixels = ThumbnailRenderer.Render(
-                model, ModelRenderSize, palette: null, resolveTexture: _textures == null ? null : _textures.Get);
+                model, ModelRenderSize, palette: null, resolveTexture: resolveTexture);
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
 
@@ -267,7 +291,8 @@ namespace SWLOR.Toolset.Workspace
 
             var pixels = ThumbnailRenderer.Render(
                 BuildRenderModel(modelResRef), ModelRenderSize,
-                palette: null, resolveTexture: _textures == null ? null : _textures.Get);
+                palette: null,
+                resolveTexture: _textures == null ? null : texture => _textures.Get(texture));
 
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
@@ -422,7 +447,9 @@ namespace SWLOR.Toolset.Workspace
             _resourceIndex.TryLookup(ResourceIdentity.FromFileName(resRef + ".mdl"), out _);
 
         /// <summary>Loads an equipped item's root struct so armor can override a creature's body parts.</summary>
-        private Domain.Gff.JsonGffStruct? LoadItemBlueprintRoot(string resRef)
+        private Domain.Gff.JsonGffStruct? LoadItemBlueprintRoot(
+            string resRef,
+            bool useIndexedBlueprint)
         {
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
@@ -430,7 +457,9 @@ namespace SWLOR.Toolset.Workspace
 
             try
             {
-                return workspace.LoadBlueprint(ResourceType.Uti, resRef).Fields;
+                return (useIndexedBlueprint
+                    ? workspace.LoadIndexedBlueprint(ResourceType.Uti, resRef)
+                    : workspace.LoadBlueprint(ResourceType.Uti, resRef)).Fields;
             }
             catch (Exception)
             {

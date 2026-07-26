@@ -130,6 +130,12 @@ namespace SWLOR.Toolset.Shell.Panels
         /// <summary>What the New button says, which follows the tab - "New Area...", "New Script...".</summary>
         public string NewItemLabel => $"New {SelectedType.SingularDisplayName()}...";
 
+        /// <summary>
+        /// Dialog creation stays unavailable until dialogs have an editor. Producing a blank DLG that
+        /// this toolset cannot populate or even open leaves the builder with an unusable resource.
+        /// </summary>
+        public bool CanCreateSelectedType => SelectedType != ResourceType.Dlg;
+
         /// <summary>Builds the tree for the selected tab.</summary>
         public void Initialize()
         {
@@ -231,6 +237,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
             OnPropertyChanged(nameof(NewItemLabel));
             OnPropertyChanged(nameof(CanOpenSelectedType));
+            OnPropertyChanged(nameof(CanCreateSelectedType));
             SelectedRow = null;
             StatusMessage = null;
             Refresh();
@@ -247,6 +254,12 @@ namespace SWLOR.Toolset.Shell.Panels
         [RelayCommand]
         private async Task NewItemAsync()
         {
+            if (!CanCreateSelectedType)
+            {
+                StatusMessage = "Dialog creation will be available with the dialog editor.";
+                return;
+            }
+
             if (SelectedType == ResourceType.Area)
             {
                 NewArea();
@@ -380,10 +393,20 @@ namespace SWLOR.Toolset.Shell.Panels
             if (string.IsNullOrWhiteSpace(name))
                 return;
 
+            var trimmed = name.Trim();
+            var nameAvailable = parent == null
+                ? section.IsNameAvailable(trimmed)
+                : parent.IsNameAvailable(trimmed);
+            if (!nameAvailable)
+            {
+                StatusMessage = $"A folder named '{trimmed}' already exists here.";
+                return;
+            }
+
             if (parent == null)
-                section.AddFolder(name.Trim());
+                section.AddFolder(trimmed);
             else
-                parent.AddChild(name.Trim());
+                parent.AddChild(trimmed);
 
             SaveCategories();
             Refresh();
@@ -400,7 +423,14 @@ namespace SWLOR.Toolset.Shell.Panels
             if (string.IsNullOrWhiteSpace(name) || name.Trim() == folder.Name)
                 return;
 
-            folder.Rename(name.Trim());
+            var section = _categories.Section(SelectedType);
+            var trimmed = name.Trim();
+            if (section == null || !section.TryRenameFolder(folder, trimmed))
+            {
+                StatusMessage = $"A folder named '{trimmed}' already exists here.";
+                return;
+            }
+
             SaveCategories();
             Refresh();
         }
@@ -678,7 +708,12 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </remarks>
         private void SeedIfNeeded(CategorySection section, IReadOnlyList<ExplorerItem> items)
         {
-            if (!_seeded.Add(SelectedType) || section.Folders.Count > 0 || items.Count == 0)
+            // IsSeeded, not just "has folders". A builder who deliberately empties Areas, Dialogs or
+            // Scripts keeps that flag in the sidecar precisely so the empty arrangement survives a
+            // restart; reading only Folders.Count meant the next launch recreated the default hierarchy
+            // and refiled everything, so a flat section could not be kept. The palette's own seeding
+            // already reads the marker this way.
+            if (!_seeded.Add(SelectedType) || section.IsSeeded || section.Folders.Count > 0 || items.Count == 0)
                 return;
 
             // Areas are filed by display name, which arrives with the background catalog. Seeding off
@@ -695,6 +730,9 @@ namespace SWLOR.Toolset.Shell.Panels
             if (seeded == 0)
                 return;
 
+            // Recorded in the sidecar, so emptying the section later is respected on the next launch
+            // rather than re-seeded. Without this the marker the guard above now reads would never be set.
+            section.IsSeeded = true;
             SaveCategories();
             _log.AppendLine(
                 $"Organised {SelectedType.DisplayName().ToLowerInvariant()} into {seeded} folder(s). " +

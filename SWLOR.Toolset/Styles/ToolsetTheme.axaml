@@ -50,6 +50,10 @@
       <x:Double x:Key="FontSizeMono">11.5</x:Double>
       <x:Double x:Key="FontSizeLabel">10</x:Double>
 
+      <!-- The lane an always-visible scrollbar occupies, kept out of the content. Matches Fluent's own
+           expanded ScrollBar width; see the scrollbar styles at the end of this file. -->
+      <Thickness x:Key="ScrollGutter">0,0,16,0</Thickness>
+
       <!-- Dock's IDE preset reads these; overriding them keeps the docking chrome in the same world
            as everything below rather than leaving two competing greys on screen. -->
       <SolidColorBrush x:Key="DockThemeBackgroundBrush" Color="#14181E" />
@@ -361,6 +365,32 @@
 
   <Style Selector="Button#PART_CloseButton:pointerover /template/ ContentPresenter Path">
     <Setter Property="Stroke" Value="{DynamicResource InkBrush}" />
+  </Style>
+
+  <!-- ===================== scrollbars ===================== -->
+  <!--
+    Always on. Fluent's default is a scrollbar that hides itself and comes back only once the pointer
+    has been over its edge for a moment, which is fine on a phone and wrong in an editor: a builder
+    reaching for the bar has to first hover to find out whether there is one, and half these panels
+    (the palette's categories, an area's instance lists, the field editors) are lists whose whole
+    point is that they are longer than the space they sit in. Set on both, because the ScrollViewer
+    inside a list owns its bars while a bar dropped into a template on its own does not.
+  -->
+  <!--
+    A bar that is always there needs a lane of its own. Fluent draws scrollbars over the content rather
+    than beside it, which is survivable while they hide themselves and is not once they do not: the
+    permanent bar sat on top of the right-hand column of every list, clipping the area counts and
+    resrefs in Module Contents and covering the right edge of the field editors. The padding reserves
+    the bar's width inside the viewport, so content stops where the bar begins. It is charged whether or
+    not a bar is showing, which is the price of the lane being in the same place in every panel.
+  -->
+  <Style Selector="ScrollViewer">
+    <Setter Property="AllowAutoHide" Value="False" />
+    <Setter Property="Padding" Value="{DynamicResource ScrollGutter}" />
+  </Style>
+
+  <Style Selector="ScrollBar">
+    <Setter Property="AllowAutoHide" Value="False" />
   </Style>
 
 </Styles>

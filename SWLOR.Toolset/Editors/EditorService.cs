@@ -239,6 +239,9 @@ namespace SWLOR.Toolset.Editors
 
                 var editor = new BlueprintEditorViewModel(
                     filePath, resRef, type, schema, _lookups, _gameCodeIndex, _log, _prompts,
+                    // So a localized field that carries a strref but no language-0 override can show what
+                    // that strref says, instead of a blank the builder reads as missing data.
+                    _tlkService == null ? null : _tlkService.GetString,
                     CreateScriptSlotHost($"{type.SingularDisplayName()} '{resRef}'"));
                 editor.Closed += _ => _openEditors.Remove(filePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
@@ -344,7 +347,10 @@ namespace SWLOR.Toolset.Editors
                     _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts,
                     ResolveBlueprintName, TryOpenEditor,
                     _tlkService != null ? _tlkService.GetString : null, _waypointAppearances,
-                    _previewRenderer != null ? _previewRenderer.BuildModel : null,
+                    _previewRenderer != null
+                        ? (type, blueprintResRef, useIndexed) =>
+                            _previewRenderer.BuildModel(type, blueprintResRef, useIndexed)
+                        : null,
                     CreateScriptSlotHost($"Area '{resRef}'"));
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();

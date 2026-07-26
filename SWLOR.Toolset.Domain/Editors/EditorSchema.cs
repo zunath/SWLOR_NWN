@@ -36,5 +36,8 @@ namespace SWLOR.Toolset.Domain.Editors
 
         /// <summary>Trigger "Type" - a small fixed engine enum, not a 2DA table.</summary>
         public const string TriggerTypes = "triggertypes";
+
+        /// <summary>waypoint.2da - the marker a waypoint draws in the area view.</summary>
+        public const string WaypointAppearances = "waypointappearances";
     }
 }

@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.Documents
 {
@@ -39,5 +40,92 @@ namespace SWLOR.Toolset.Domain.Documents
         /// <summary>Sets the "Comment" field of one comment-list entry.</summary>
         public static void SetComment(JsonGffStruct entry, string value) =>
             entry.SetString("Comment", GffFieldType.CExoString, value);
+
+        /// <summary>
+        /// Inserts an empty comment row at the same index as a newly placed GIT instance.
+        /// </summary>
+        public void InsertBlankComment(
+            string listFieldName,
+            ResourceType type,
+            int index,
+            int expectedCount)
+        {
+            var list = GetOrCreateList(listFieldName);
+            while (list.Elements!.Count < index)
+                list.InsertElement(list.Elements.Count, CreateBlankComment(type));
+
+            var entry = CreateBlankComment(type);
+            list.InsertElement(index, entry);
+            AlignCount(list, type, expectedCount);
+        }
+
+        /// <summary>Duplicates the comment row paired with a duplicated GIT instance.</summary>
+        public void DuplicateComment(
+            string listFieldName,
+            ResourceType type,
+            int index,
+            int expectedCount)
+        {
+            var list = GetOrCreateList(listFieldName);
+            while (list.Elements!.Count <= index)
+                list.InsertElement(list.Elements.Count, CreateBlankComment(type));
+
+            list.InsertElement(index + 1, InstanceFieldMap.Duplicate(list.Elements[index]));
+            AlignCount(list, type, expectedCount);
+        }
+
+        /// <summary>Removes the comment row paired with a deleted GIT instance.</summary>
+        public void RemoveComment(
+            string listFieldName,
+            ResourceType type,
+            int index,
+            int expectedCount)
+        {
+            var list = GetOrCreateList(listFieldName);
+            if (index >= 0 && index < list.Elements!.Count)
+                list.RemoveElementAt(index);
+
+            AlignCount(list, type, expectedCount);
+        }
+
+        private JsonGffField GetOrCreateList(string listFieldName)
+        {
+            var list = Root.GetOrNull(listFieldName);
+            if (list != null)
+                return list;
+
+            list = JsonGffField.CreateList();
+            Root.Add(listFieldName, list);
+            return list;
+        }
+
+        private static JsonGffStruct CreateBlankComment(ResourceType type)
+        {
+            var entry = JsonGffField.CreateStruct(CommentStructId(type)).Struct!;
+            entry.SetString("Comment", GffFieldType.CExoString, string.Empty);
+            return entry;
+        }
+
+        private static void AlignCount(JsonGffField list, ResourceType type, int expectedCount)
+        {
+            while (list.Elements!.Count < expectedCount)
+                list.InsertElement(list.Elements.Count, CreateBlankComment(type));
+            while (list.Elements.Count > expectedCount)
+                list.RemoveElementAt(list.Elements.Count - 1);
+        }
+
+        private static uint CommentStructId(ResourceType type) => type switch
+        {
+            ResourceType.Uti => 0,
+            ResourceType.Utt => 1,
+            ResourceType.Utc => 4,
+            ResourceType.Utw => 5,
+            ResourceType.Uts => 6,
+            ResourceType.Utd => 8,
+            ResourceType.Utp => 9,
+            ResourceType.Utm => 11,
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(type), type, "No GIC comment struct id exists for this resource type.")
+        };
     }
 }

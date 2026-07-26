@@ -201,5 +201,51 @@ namespace SWLOR.Toolset.Tests
 
             section.Folders.Should().BeEmpty();
         }
+
+        /// <summary>
+        /// The base game's own item palette ships categories called "Skin/Hide" and
+        /// "Crafting/Tradeskill Material", and a folder name may not hold the path separator. Importing
+        /// them verbatim threw, so seeding a module from that palette wrote a name the reader then refused.
+        /// </summary>
+        [Test]
+        public void A_Palette_Category_Holding_The_Path_Separator_Is_Repaired_On_Import()
+        {
+            var section = ItpCategoryImporter.Import(Parse("""
+            {
+              "__data_type": "ITP ",
+              "MAIN": { "type": "list", "value": [
+                { "__struct_id": 0, "NAME": { "type": "cexostring", "value": "Skin/Hide" },
+                  "LIST": { "type": "list", "value": [
+                    { "__struct_id": 0, "RESREF": { "type": "resref", "value": "leather_hide" } }
+                  ] } }
+              ] }
+            }
+            """));
+
+            var folder = section.Folders.Should().ContainSingle().Subject;
+            folder.Name.Should().Be("Skin-Hide");
+            folder.Members.Should().Equal("leather_hide");
+        }
+
+        [Test]
+        public void A_Category_Named_By_StrRef_Is_Repaired_Too()
+        {
+            var section = ItpCategoryImporter.Import(
+                Parse("""
+                {
+                  "__data_type": "ITP ",
+                  "MAIN": { "type": "list", "value": [
+                    { "__struct_id": 0, "STRREF": { "type": "dword", "value": 6782 },
+                      "LIST": { "type": "list", "value": [
+                        { "__struct_id": 0, "RESREF": { "type": "resref", "value": "ore" } }
+                      ] } }
+                  ] }
+                }
+                """),
+                strRef => strRef == 6782 ? "Crafting/Tradeskill Material" : null);
+
+            section.Folders.Should().ContainSingle()
+                .Which.Name.Should().Be("Crafting-Tradeskill Material");
+        }
     }
 }

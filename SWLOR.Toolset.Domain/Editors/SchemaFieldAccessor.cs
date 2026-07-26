@@ -13,15 +13,33 @@ namespace SWLOR.Toolset.Domain.Editors
     /// </summary>
     public static class SchemaFieldAccessor
     {
-        public static string GetText(JsonGffDocument document, FieldDescriptor descriptor)
+        /// <param name="resolveStrRef">
+        /// Resolves a TLK strref, or null when no TLK is loaded. A localized field can carry a strref
+        /// with no language-0 override - <c>zep_throwrug056.utp.json</c> stores its <c>LocName</c> that
+        /// way - and reading only the override showed those blueprints with a blank Name, which looks
+        /// like missing data rather than text that lives in the TLK.
+        /// </param>
+        public static string GetText(
+            JsonGffDocument document, FieldDescriptor descriptor, Func<uint, string?>? resolveStrRef = null)
         {
             var field = document.Root.GetOrNull(descriptor.FieldName);
             if (field == null)
                 return string.Empty;
 
-            return descriptor.Kind == EditorKind.LocString
-                ? new LocString(field).Text ?? string.Empty
-                : field.GetString();
+            if (descriptor.Kind != EditorKind.LocString)
+                return field.GetString();
+
+            var locString = new LocString(field);
+            var text = locString.Text;
+            if (!string.IsNullOrEmpty(text))
+                return text;
+
+            // Only when there is no override to show. An empty override that a builder typed
+            // deliberately still wins over the strref, because that is the value in this file.
+            if (resolveStrRef != null && locString.StrRef is { } strRef)
+                return resolveStrRef(strRef) ?? string.Empty;
+
+            return text ?? string.Empty;
         }
 
         public static long GetInteger(JsonGffDocument document, FieldDescriptor descriptor)

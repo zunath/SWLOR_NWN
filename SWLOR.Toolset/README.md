@@ -2,7 +2,8 @@
 
 A SWLOR-only replacement for the parts of the Aurora Toolset the team still uses: **area editing,
 instance placement, blueprint editing, tile painting, and NWScript editing**. Everything else —
-dialogs, quests, spawns, stores — already lives in C# and is not in scope here.
+dialogs, quests, spawns, and merchant inventory authoring — already lives elsewhere and is not in
+scope here.
 
 The script editor covers the module's 87 `.nss` sources: syntax highlighting, context-aware
 completion over the 1,187 engine functions and 6,201 constants, signature help, go-to-definition,
@@ -51,7 +52,7 @@ dotnet build SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:RunPostBuildEvent
 dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-build
 ```
 
-~410 tests, about two minutes. A handful of corpus gates need a local NWN:EE install for base-game
+900+ tests, about three minutes. A handful of corpus gates need a local NWN:EE install for base-game
 data and call `Assert.Ignore` without one, so a skip is expected rather than a failure.
 
 ```bash
@@ -152,9 +153,9 @@ terrain there (`tms01` Grass); interior ones declare solid rock (`tib01` Wall, w
 is `Room`). A new interior area is *meant* to start solid and have its rooms painted out of it, which
 is how Aurora behaves too.
 
-**Base-game strrefs do not resolve.** Only the SWLOR custom TLK is loaded, so 2DA-backed dropdowns
-fall back to each table's label column. Tables wired to dropdowns were chosen for having readable
-labels. Loading a binary `dialog.tlk` would upgrade these to true in-game names.
+**Base-game names depend on an optional `dialog.tlk`.** When an NWN:EE install is available the
+toolset loads its localized base TLK as well as SWLOR's custom TLK. An unreadable base TLK now
+degrades to custom text and readable 2DA labels instead of preventing startup.
 
 ---
 
@@ -164,10 +165,12 @@ Phases 0–7 of [PLAN.md](PLAN.md) are complete. In practice:
 
 - **Browse** the module by resource type, with parsed names/tags and full-text search.
 - **Edit blueprints** through schema-driven forms — creatures, items, placeables, doors, stores,
-  triggers, sounds, waypoints — with undo/redo and local-variable tables.
+  triggers, sounds, waypoints — with undo/redo and local-variable tables. New merchants are not
+  offered until their `StoreList` inventory can be authored in the toolset.
 - **Edit areas**: properties, placed-instance lists, and a 3D viewport with orbit/pan/zoom, picking,
-  selection sync, move/rotate gizmos, and place-from-palette.
-- **Paint terrain** with automatic neighbour blending, plus rotate and raise/lower brushes.
+  selection sync, move/rotate gizmos, place-from-palette, and trigger footprint sizing.
+- **Paint terrain** with automatic neighbour blending that respects terrain, crossers, and absolute
+  corner elevation, plus rotate and raise/lower brushes.
 - **Create areas** from a template, registered in `module.ifo`.
 - **Validate and pack** without leaving the app.
 

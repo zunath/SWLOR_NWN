@@ -6,7 +6,7 @@ using AvaloniaEdit.CodeCompletion;
 using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Editors.Script;
 
-namespace SWLOR.Toolset.Editors.Views
+namespace SWLOR.Toolset.Editors
 {
     public partial class ScriptEditorView : UserControl
     {

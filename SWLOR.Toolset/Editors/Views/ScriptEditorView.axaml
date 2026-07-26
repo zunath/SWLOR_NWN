@@ -6,7 +6,7 @@
              xmlns:editors="using:SWLOR.Toolset.Editors"
              xmlns:script="using:SWLOR.Toolset.Domain.Script"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
-             x:Class="SWLOR.Toolset.Editors.Views.ScriptEditorView"
+             x:Class="SWLOR.Toolset.Editors.ScriptEditorView"
              x:DataType="editors:ScriptEditorViewModel">
 
   <Grid RowDefinitions="*,Auto,Auto">

@@ -14,6 +14,11 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="NUnit" Version="4.5.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+    <!-- Renders controls without a display, so a view that fails to load its XAML is a test failure
+         rather than a blank tab someone finds later. Added after the script editor shipped showing a
+         "Not Found" placeholder: a launch-and-kill smoke test proves the window appeared, not that
+         any given tab renders. Version-matched to the Avalonia pin in SWLOR.Toolset.csproj. -->
+    <PackageReference Include="Avalonia.Headless.NUnit" Version="11.3.17" />
   </ItemGroup>
 
   <ItemGroup>

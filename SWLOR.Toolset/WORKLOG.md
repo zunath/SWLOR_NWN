@@ -1223,3 +1223,35 @@ checking** (argument type mismatches beyond arity, assignment compatibility). It
 expression tree and type inference, and its false-positive risk on legacy code is exactly what the
 conservatism rule exists to avoid — a binder that resolves *names* is the safe 80%. Also out of scope
 throughout: debugging/breakpoints, `.dlg` editing, and decompiling the 154 sourceless `.ncs`.
+
+## Fix — 2026-07-28 — The script editor rendered a "Not Found" placeholder
+
+**Reported by the user: opening a script showed nothing.** It was a real shipping defect, and the
+verification used throughout Phase S could not have caught it.
+
+- **Cause.** `ScriptEditorView` declared namespace `SWLOR.Toolset.Editors.Views`, matching the folder
+  it lives in. The existing editor views live in that *same folder* but deliberately declare the
+  parent namespace `SWLOR.Toolset.Editors` — which is what `ViewLocator`'s convention expects, since
+  it only rewrites `.ViewModels`/`.Panels` → `.Views` and never *appends* `.Views`. So the locator
+  looked for `SWLOR.Toolset.Editors.ScriptEditorView`, found nothing, and returned its
+  `"Not Found: …"` TextBlock. Fixed by moving the view to the parent namespace.
+- **Why nothing caught it.** The build was clean — this is a runtime reflection lookup, not a
+  compile-time reference. Every Phase S check passed: 1052 unit tests (none construct a control) and
+  a launch-and-kill smoke test, which proves *a window appeared*, not that any particular tab
+  renders. I had never once opened a script in the running app.
+- **Guards added, both verified to have teeth:**
+  - `ViewLocatorTests` — reflects over every `IDockable` view model and asserts the convention
+    resolves a real `Control` with a parameterless constructor. Confirmed by restoring the old
+    namespace: build stays at 0 errors and the test fails immediately, naming the exact missing type.
+  - `ScriptEditorViewRenderTests` — new `Avalonia.Headless.NUnit` harness (version-matched to the
+    Avalonia 11.3.17 pin) that boots the real `App` and renders controls without a display. Asserts
+    the locator builds a `ScriptEditorView` rather than a TextBlock, that the XAML loads and the
+    `TextEditor` exists, that binding a real module script puts its text in the buffer with `\n`
+    endings, that a fresh tab has nothing to undo, and that **every** dockable view constructs
+    without throwing.
+  - `ViewLocator.ResolveViewType`/`ResolveViewTypeName` extracted as public statics so the convention
+    is assertable without instantiating controls, with the "never appends .Views" trap documented on
+    the method itself.
+- Verified: build clean; **full suite 1060/1061 green** (1 pre-existing skip), 3m33s.
+- **Lesson for later packages:** a launch-and-kill smoke test is not evidence that a feature works.
+  Any new docked view needs a headless render test; the harness is now in place for it.

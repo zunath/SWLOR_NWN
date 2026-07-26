@@ -66,6 +66,10 @@ namespace SWLOR.Toolset.Editors.Placeables
         [ObservableProperty]
         private bool _namedOnly;
 
+        /// <summary>True while the model catalog is still being read in the background.</summary>
+        [ObservableProperty]
+        private bool _isLoading;
+
         public AppearanceSectionViewModel(
             EditorFieldContext context,
             PlaceableModelCatalog catalog,
@@ -83,23 +87,52 @@ namespace SWLOR.Toolset.Editors.Placeables
             _resolveModel = resolveModel;
             ResourceIndex = resourceIndex;
 
-            // Nothing heavy here on purpose. Building the grid parses all 32,090 placeables.2da rows,
-            // publishes a page of tiles and resolves a model for the 3D view - none of which a
-            // builder who opened this placeable to rename it ever asked for. EnsureLoaded does it
-            // the first time the tab is actually shown.
+            BeginLoading();
         }
 
         /// <summary>
-        /// Builds the grid and the preview, once, when the tab is first opened.
+        /// Starts building the grid off the UI thread as soon as the editor opens, so the tab is
+        /// usually ready before anyone clicks it and the window never waits on it.
+        /// </summary>
+        /// <remarks>
+        /// The expensive half is parsing all 32,090 placeables.2da rows, which is pure work over
+        /// game data and safe to do on a pool thread. Only the cheap half - filtering to the first
+        /// 48 tiles and resolving the preview model - runs back on the UI thread, where it has to,
+        /// because it touches the observable collection the grid is bound to.
+        /// </remarks>
+        private void BeginLoading()
+        {
+            IsLoading = true;
+
+            Task.Run(() =>
+            {
+                try
+                {
+                    // Forces the catalog's lazy parse here rather than on the first keystroke.
+                    _ = _catalog.GetAll();
+                }
+                catch (Exception)
+                {
+                    // A catalog that will not build leaves an empty grid, which the tab already
+                    // reads as "no models match" - not a reason to take the editor down.
+                }
+
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    _loaded = true;
+                    Rebuild();
+                    UpdatePreviewScene();
+                    IsLoading = false;
+                });
+            });
+        }
+
+        /// <summary>
+        /// Nothing to do while the background build is in flight - the tab shows its loading state
+        /// and fills in when the scan lands. Kept as the hook the tab selection calls.
         /// </summary>
         public void EnsureLoaded()
         {
-            if (_loaded)
-                return;
-
-            _loaded = true;
-            Rebuild();
-            UpdatePreviewScene();
         }
 
         /// <summary>Texture/material layer the 3D preview resolves through; null renders untextured.</summary>

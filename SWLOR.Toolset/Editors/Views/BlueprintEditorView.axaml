@@ -47,8 +47,17 @@
           <!-- Paging is driven by the scroll position rather than a button: a builder looking for a
                model scrolls, and stopping to ask for more is an interruption in the middle of the one
                thing this tab is for. The handler loads the next page as the end comes into view. -->
+          <!-- Shown until the background catalog read lands, so a builder who opens this tab early
+               sees it filling in rather than an empty grid that looks like no models exist. -->
+          <StackPanel Grid.Row="2" IsVisible="{Binding IsLoading}" Spacing="8"
+                      HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="Loading models..." HorizontalAlignment="Center" />
+            <ProgressBar IsIndeterminate="True" Width="180" />
+          </StackPanel>
+
           <ListBox Grid.Row="2" ItemsSource="{Binding Tiles}" SelectedItem="{Binding Highlighted, Mode=TwoWay}"
                    ScrollViewer.ScrollChanged="OnAppearanceScrollChanged"
+                   IsVisible="{Binding !IsLoading}"
                    Background="Transparent" BorderThickness="0" Padding="2">
             <ListBox.ItemsPanel>
               <ItemsPanelTemplate>

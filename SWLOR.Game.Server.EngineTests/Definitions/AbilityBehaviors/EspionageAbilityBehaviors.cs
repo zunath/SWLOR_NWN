@@ -99,14 +99,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.TacticalEscape1,
                     Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatAdjustments = new() { [StatType.EvasionPercentAdjustment] = 8 },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Evasion buff is a TemporaryStatModifier, not a tracked status effect; enmity reduction is likewise not observable via these fields.",
+                    Notes = "Asserts the +8 temporary evasion modifier; enmity reduction remains private state.",
                 },
                 new()
                 {
                     Feat = FeatType.TacticalEscape2,
                     Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatAdjustments = new() { [StatType.EvasionPercentAdjustment] = 12 },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },

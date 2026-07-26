@@ -6268,6 +6268,14 @@ namespace SWLOR.Game.Server.Service
             var window = Stat.GetStatAdjustment(activator, StatType.StatusAppliedNextSkillAbilityWindowSeconds);
             GrantNextSkillAbilityBonuses(activator, skillType, damageBonus, criticalRate, window);
 
+            var nextAttackDamage = Stat.GetStatAdjustment(
+                activator,
+                StatType.StatusAppliedNextAttackDamageBonus);
+            var nextAttackWindow = Stat.GetStatAdjustment(
+                activator,
+                StatType.StatusAppliedNextAttackWindowSeconds);
+            GrantStatusAppliedNextAttackDamageBonus(activator, nextAttackDamage, nextAttackWindow);
+
             ApplyStatusAppliedSelfEffects(activator);
             ApplyStatusAppliedTargetEffects(activator, target);
             ApplyStatusAppliedTargetStaminaDrain(
@@ -7812,6 +7820,22 @@ namespace SWLOR.Game.Server.Service
                 StatType.NextAttackGuardedHitDMGBonus);
         }
 
+        public static int ConsumeStatusAppliedNextAttackDamageBonus(uint creature)
+        {
+            return TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextAttackStatusAppliedDMGBonus,
+                StatType.NextAttackStatusAppliedDMGBonus);
+        }
+
+        public static int GetStatusAppliedNextAttackDamageBonus(uint creature)
+        {
+            return TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.NextAttackStatusAppliedDMGBonus,
+                StatType.NextAttackStatusAppliedDMGBonus);
+        }
+
         public static void ApplyNextAttackGuardedHitEnmityBonus(
             uint attacker,
             uint defender,
@@ -9258,6 +9282,22 @@ namespace SWLOR.Game.Server.Service
                     durationSeconds,
                     StatType.NextSkillAbilitySkillType);
             }
+        }
+
+        private static void GrantStatusAppliedNextAttackDamageBonus(
+            uint creature,
+            int damageBonus,
+            int durationSeconds)
+        {
+            if (!GetIsObjectValid(creature) || damageBonus == 0 || durationSeconds <= 0)
+                return;
+
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextAttackStatusAppliedDMGBonus,
+                damageBonus,
+                durationSeconds,
+                StatType.NextAttackStatusAppliedDMGBonus);
         }
 
         public static void GrantNextSkillAbilityStaminaCostAdjustment(

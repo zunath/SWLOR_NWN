@@ -404,18 +404,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.PowerCell1,
-                    Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(PowerCell1StatusEffect) },
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    ExpectedTargetStatusEffects = new[] { typeof(PowerCell1StatusEffect) },
+                    ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Declares RequirementStamina(4), but the self-cast stamina-battery effect restores the pool in the same tick, so no net dip is observable (live-run verified: before=current=max)."
+                    Notes = "Uses a distinct ally so its stamina restore cannot mask the caster's 4 STM activation cost."
                 },
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.PowerCell2,
-                    Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(PowerCell2StatusEffect) },
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    ExpectedTargetStatusEffects = new[] { typeof(PowerCell2StatusEffect) },
+                    ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Cost masked by the ability's own stamina restore on a self-cast; see PowerCell1."
+                    Notes = "Uses a distinct ally so its stamina restore cannot mask the caster's activation cost."
                 },
                 new AbilityBehaviorCase
                 {
@@ -423,7 +425,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(PowerCell3StatusEffect) },
                     ExpectsRecast = true,
-                    Notes = "Cost masked by the ability's own stamina restore on a self-cast; see PowerCell1."
+                    CostAssertionWaiverReason = "The self-centered area always restores the caster's stamina by more than its 7 STM cost in the same engine tick.",
+                    Notes = "Unlike ranks I-II, the area rank always includes the caster, so its same-tick stamina restore masks the declared cost."
                 },
 
                 // RailDartAbilityDefinition - hostile single-target damage + unconditional Bleed.

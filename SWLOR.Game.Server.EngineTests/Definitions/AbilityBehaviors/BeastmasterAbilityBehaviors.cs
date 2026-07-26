@@ -60,15 +60,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Target = AbilityTargetKind.HostileCreature,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
+                    OutcomeAssertionWaiverReason = "The impact only changes the private enmity table and plays a VFX; the harness has no read-only enmity observation seam.",
                     Notes = "ApplyGoad only modifies enmity + plays a VFX; no trackable status effect or damage.",
                 },
                 new()
                 {
                     Feat = FeatType.Anger2,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Also grants raw EffectTemporaryHitpoints to self; not a tracked status effect.",
+                    Notes = "Asserts the rank-II raw EffectTemporaryHitpoints grant; its goad remains enmity-only.",
                 },
 
                 // ApexBiteAbilityDefinition - hostile direct damage, no status.
@@ -256,14 +258,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.DistractingFeint1,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedTargetStatusEffects = new[] { typeof(DistractingFeint1StatusEffect) },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Weapon-queued; DistractingFeint1StatusEffect(15s) rider and extra enmity land on the next hit, not asserted here.",
+                    Notes = "Weapon-queued; the shared executor lands the consuming hit and asserts its status rider.",
                 },
                 new()
                 {
                     Feat = FeatType.DistractingFeint2,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedTargetStatusEffects = new[] { typeof(DistractingFeint2StatusEffect) },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
@@ -271,6 +275,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.DistractingFeint3,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedTargetStatusEffects = new[] { typeof(DistractingFeint3StatusEffect) },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },

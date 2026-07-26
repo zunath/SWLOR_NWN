@@ -21,6 +21,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override string CanApply(uint creature)
         {
+            if (StatusEffect.HasStatusEffect(creature, GetType()))
+                return "Target is already immobilized.";
+
             return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Immobilized)
                 ? "Target is temporarily immune to immobilization."
                 : string.Empty;
@@ -28,12 +31,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Remove(uint creature)
         {
+            if (IsBeingReplaced)
+                return;
+
             if (GetIsObjectValid(creature) && !GetIsDead(creature))
             {
                 Enmity.AttackHighestEnmityTarget(creature);
             }
 
-            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Immobilized);
+            Ability.ApplyPostControlImmunity(
+                creature,
+                SecondsSinceNaturalExpiration,
+                ImmunityType.Immobilized);
         }
     }
 }

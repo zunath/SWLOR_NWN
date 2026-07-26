@@ -38,6 +38,31 @@ public class EspionageSystemTests
     }
 
     [Test]
+    public void NPCDetection_IsCappedWithoutLimitingCommittedPlayers()
+    {
+        Stat.MaximumNPCDetection.Should().Be(50);
+        Stat.ApplyNPCDetectionCap(127, true).Should().Be(50);
+        Stat.ApplyNPCDetectionCap(35, true).Should().Be(35);
+        Stat.ApplyNPCDetectionCap(74, false).Should().Be(74);
+        Stat.ApplyNPCDetectionCap(-10, true).Should().Be(0);
+
+        var maximumRankFourStealth = Stat.CalculateStealthRating(27, 0, 20);
+        CalculateDetectionChance(
+                Stat.ApplyNPCDetectionCap(127, true),
+                maximumRankFourStealth)
+            .Should()
+            .Be(0m, "even the strongest NPC must not automatically pierce maximum committed Stealth");
+
+        var statSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(),
+            "SWLOR.Game.Server",
+            "Service",
+            "Stat.cs"));
+        statSource.Should().Contain("!GetIsDMPossessed(creature)",
+            "DM-possessed creatures must retain uncapped staff Detection");
+    }
+
+    [Test]
     public void StealthPerks_GrantFlatRankBonusesAndSilentStrideOnlyBoostsMovementWhileHidden()
     {
         var stealth = BuildPerkWithout2daLookup(
@@ -149,6 +174,8 @@ public class EspionageSystemTests
         stealthSource.Should().Contain("GetIsDM(target) ||");
         stealthSource.Should().Contain("!GetActionMode(target, ActionMode.Stealth)");
         stealthSource.Should().Contain("SetActionMode(target, ActionMode.Stealth, false);");
+        stealthSource.Should().Contain("DelayCommand(0f, () =>");
+        stealthSource.Should().Contain("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(target);");
     }
 
     [Test]

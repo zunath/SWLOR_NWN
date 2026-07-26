@@ -38,7 +38,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Remove(uint creature)
         {
-            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Knockdown);
+            if (IsBeingReplaced)
+                return;
+
+            Ability.ApplyPostControlImmunity(
+                creature,
+                SecondsSinceNaturalExpiration,
+                ImmunityType.Knockdown);
         }
 
         private void ApplyKnockdown(uint creature, float duration)

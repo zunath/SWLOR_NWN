@@ -999,7 +999,8 @@ namespace SWLOR.Toolset.Editors
                     $"Move {instance.Kind} \"{instance.Tag}\""))
                 return;
 
-            _ = BuildSceneAsync((instance.Kind, index));
+            if (!ApplyTransformInPlace(instance, newPosition, instance.Orientation))
+                _ = BuildSceneAsync((instance.Kind, index));
         }
 
         /// <summary>Called by the view when the 3D-view rotate gizmo releases (GlAreaControl.InstanceRotated): mirrors <see cref="MoveSelectedInstance"/> for heading.</summary>
@@ -1014,7 +1015,42 @@ namespace SWLOR.Toolset.Editors
                     $"Rotate {instance.Kind} \"{instance.Tag}\""))
                 return;
 
-            _ = BuildSceneAsync((instance.Kind, index));
+            if (!ApplyTransformInPlace(instance, instance.Position, newOrientation))
+                _ = BuildSceneAsync((instance.Kind, index));
+        }
+
+        /// <summary>
+        /// Publishes a moved/turned instance straight into the current scene, returning false when
+        /// that is not possible and the caller should fall back to a full rebuild.
+        /// </summary>
+        /// <remarks>
+        /// A move or a rotate changes one marker's transform and nothing else: no tile changed, no
+        /// other instance changed, and no model needs re-resolving. Rebuilding for it meant
+        /// reserialising both documents, reparsing them, and reassembling every tile and instance -
+        /// per repeat tick of a held rotate button, with the "Building scene..." banner flashing over
+        /// the viewport throughout. That is what made rotating an object unusable.
+        /// <para>
+        /// The scene's revision is marked current afterwards so the debounced refresh that every edit
+        /// also queues sees the view as up to date and drops its rebuild, rather than undoing the
+        /// saving 220ms later.
+        /// </para>
+        /// </remarks>
+        private bool ApplyTransformInPlace(InstanceMarker instance, Vector3 position, Vector2 orientation)
+        {
+            if (AreaScene is not { } scene)
+                return false;
+
+            var replacement = instance.WithTransform(position, orientation);
+            if (scene.WithInstanceReplaced(instance, replacement) is not { } updated)
+                return false;
+
+            // Claim the revision this edit produced before publishing, so a refresh queued by the
+            // edit itself sees the scene as current.
+            Volatile.Write(ref _builtSceneInputRevision, Volatile.Read(ref _sceneInputRevision));
+
+            AreaScene = updated;
+            ApplySelection(replacement);
+            return true;
         }
 
         /// <summary>
@@ -1238,8 +1274,24 @@ namespace SWLOR.Toolset.Editors
             var generation = Interlocked.Increment(ref _sceneBuildGeneration);
             var inputRevision = Volatile.Read(ref _sceneInputRevision);
             Volatile.Write(ref _buildingSceneInputRevision, inputRevision);
-            IsBuildingScene = true;
-            SceneStatus = "Building scene...";
+
+            // The banner is deferred rather than shown outright: a build that finishes inside the
+            // grace period never raises it. Showing it immediately meant a dark panel blinking over
+            // the middle of the viewport on every edit, which read as the app fighting the builder
+            // even when the rebuild itself was quick.
+            var finished = false;
+            _ = RevealBuildingBannerAsync();
+
+            async Task RevealBuildingBannerAsync()
+            {
+                await Task.Delay(SceneBuildBannerDelay).ConfigureAwait(true);
+
+                if (finished || generation != Volatile.Read(ref _sceneBuildGeneration))
+                    return;
+
+                SceneStatus = "Building scene...";
+                IsBuildingScene = true;
+            }
 
             var tilesetCatalog = _tilesetCatalog;
             var tileModelCache = _tileModelCache;
@@ -1306,10 +1358,18 @@ namespace SWLOR.Toolset.Editors
             }
             finally
             {
+                finished = true;
                 if (generation == Volatile.Read(ref _sceneBuildGeneration))
                     IsBuildingScene = false;
             }
         }
+
+        /// <summary>
+        /// How long a scene build may run before it admits to it. Below this a build is faster than
+        /// the eye reads as a wait, and announcing it is pure flicker; above it, silence would look
+        /// like the viewport had frozen.
+        /// </summary>
+        private static readonly TimeSpan SceneBuildBannerDelay = TimeSpan.FromMilliseconds(250);
 
         private static FieldViewModel CreateFieldViewModel(
             FieldDescriptor descriptor, EditorFieldContext context, LookupOptionProvider lookups)

@@ -117,6 +117,47 @@ namespace SWLOR.Toolset.Domain.Render
         /// supplied — the renderer draws the kind marker instead.
         /// </summary>
         public RenderModel? Model { get; init; }
+
+        /// <summary>
+        /// This marker moved and/or turned, with everything else - kind, tag, resolved model, EE
+        /// visual transform - carried across unchanged.
+        /// </summary>
+        /// <remarks>
+        /// Exists so a drag or a rotate can update the scene in place instead of reparsing both
+        /// documents and rebuilding every tile and instance to move one object. Nothing about a
+        /// placement's own geometry depends on where a different instance sits, so a transform is the
+        /// one edit that can be applied this cheaply.
+        /// <para>
+        /// <see cref="Geometry"/> is world-space here but authored as offsets from the instance's
+        /// position, so it travels with a move. It does <b>not</b> turn with
+        /// <see cref="Orientation"/> - a trigger's volume is stored unrotated, and rotating one in
+        /// the toolset leaves its polygon where it was, which is what the engine does too.
+        /// </para>
+        /// </remarks>
+        public InstanceMarker WithTransform(Vector3 position, Vector2 orientation)
+        {
+            var delta = position - Position;
+            var geometry = Geometry;
+            if (geometry != null && delta != Vector3.Zero)
+            {
+                var moved = new Vector3[geometry.Count];
+                for (var i = 0; i < geometry.Count; i++)
+                    moved[i] = geometry[i] + delta;
+                geometry = moved;
+            }
+
+            return new InstanceMarker
+            {
+                Kind = Kind,
+                TemplateResRef = TemplateResRef,
+                Tag = Tag,
+                Position = position,
+                Orientation = orientation,
+                VisualTransform = VisualTransform,
+                Geometry = geometry,
+                Model = Model
+            };
+        }
     }
 
     /// <summary>Diagnostics collected while assembling one <see cref="AreaScene"/>.</summary>
@@ -154,6 +195,46 @@ namespace SWLOR.Toolset.Domain.Render
         /// tiles that carry no door nodes.
         /// </summary>
         public IReadOnlyList<TileDoorAnchor> DoorAnchors { get; init; } = Array.Empty<TileDoorAnchor>();
+
+        /// <summary>
+        /// This scene with <paramref name="existing"/> swapped for <paramref name="replacement"/>, or
+        /// null when that marker is not in this scene (a stale selection from a superseded build).
+        /// </summary>
+        /// <remarks>
+        /// The tile list is carried across <b>by reference</b>, not copied - that is what lets the
+        /// renderer notice the grid did not change and keep its uploaded tile batches and walkmesh
+        /// buffers rather than rebuilding them to move one object.
+        /// </remarks>
+        public AreaScene? WithInstanceReplaced(InstanceMarker existing, InstanceMarker replacement)
+        {
+            var index = -1;
+            for (var i = 0; i < Instances.Count; i++)
+            {
+                if (ReferenceEquals(Instances[i], existing))
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index < 0)
+                return null;
+
+            var instances = Instances.ToArray();
+            instances[index] = replacement;
+
+            return new AreaScene
+            {
+                Tileset = Tileset,
+                Width = Width,
+                Height = Height,
+                Tiles = Tiles,
+                Instances = instances,
+                Diagnostics = Diagnostics,
+                DoorAnchors = DoorAnchors,
+                Lighting = Lighting
+            };
+        }
 
         /// <summary>
         /// The area's decoded ambient/diffuse lighting, from its .are sun colors by day or

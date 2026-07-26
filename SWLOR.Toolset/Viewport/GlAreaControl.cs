@@ -288,6 +288,13 @@ void main()
         private long _renderedSceneVersion = -1;
         private IReadOnlyList<AreaDrawBatcher.TileBatch>? _tileBatches;
 
+        /// <summary>
+        /// The tile list <see cref="_tileBatches"/> and the walkmesh buffer were built from, so a
+        /// scene that carries the same list forward keeps both instead of re-uploading them. Cleared
+        /// whenever that GPU state is torn down, so a rebuilt context never matches on a stale list.
+        /// </summary>
+        private IReadOnlyList<TilePlacement>? _batchedTiles;
+
         private int _viewportWidth;
         private int _viewportHeight;
 
@@ -1564,6 +1571,7 @@ void main()
                 _uniformLocations.Clear(); // Locations are per-program; a fresh program invalidates any cached ones.
                 BuildStaticMeshes();
                 _renderedSceneVersion = -1;
+                _batchedTiles = null;
 
                 RaiseStatus(IsLikelySoftwareRenderer(renderer)
                     ? $"3D view running on software rendering ({renderer}); performance may be degraded."
@@ -1599,6 +1607,8 @@ void main()
 
                     DeletePolygonBuffer();
                     DeleteWalkmeshBuffer();
+                    _tileBatches = null;
+                    _batchedTiles = null;
 
                     if (_hasHighlightBuffer)
                     {
@@ -1665,9 +1675,20 @@ void main()
             {
                 if (sceneState.Version != _renderedSceneVersion)
                 {
+                    // Trigger volumes live on the instances, so this follows any scene change.
                     RebuildPolygonBuffer(scene);
-                    RebuildWalkmeshBuffer(scene);
-                    _tileBatches = AreaDrawBatcher.GroupByModel(scene.Tiles);
+
+                    // The tile-derived GPU state does not. An edit that only moved or turned an
+                    // instance hands back the very same tile list, and re-uploading every tile's
+                    // walkmesh and regrouping every draw batch for that was the bulk of what made an
+                    // edit stutter on a large area.
+                    if (!ReferenceEquals(scene.Tiles, _batchedTiles))
+                    {
+                        RebuildWalkmeshBuffer(scene);
+                        _tileBatches = AreaDrawBatcher.GroupByModel(scene.Tiles);
+                        _batchedTiles = scene.Tiles;
+                    }
+
                     _renderedSceneVersion = sceneState.Version;
                 }
 

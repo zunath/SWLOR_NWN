@@ -1,0 +1,202 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
+             xmlns:editors="using:SWLOR.Toolset.Editors"
+             x:Class="SWLOR.Toolset.Editors.Doors.DoorEditorView"
+             x:DataType="doors:DoorEditorViewModel">
+
+  <UserControl.DataTemplates>
+    <DataTemplate DataType="doors:DoorRowViewModel">
+      <Grid IsVisible="{Binding IsVisible}" ColumnDefinitions="170,*"
+            RowDefinitions="Auto,Auto,Auto" Margin="16,1" MinHeight="32">
+        <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" ClipToBounds="True">
+          <TextBlock Text="{Binding Label}" Classes="dim" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="required" FontSize="10" Margin="0,1,0,0"
+                     Foreground="{DynamicResource AmberBrush}" IsVisible="{Binding IsRequired}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="1" Spacing="5" Margin="0,3">
+          <TextBox Text="{Binding Text, Mode=TwoWay}" MinWidth="210"
+                   MaxLength="{Binding MaxLength}" IsVisible="{Binding IsTextEntry}" />
+          <TextBox Text="{Binding Text, Mode=TwoWay}" MinWidth="210" AcceptsReturn="True"
+                   TextWrapping="Wrap" MaxHeight="100" MaxLength="{Binding MaxLength}"
+                   IsVisible="{Binding IsParagraph}" />
+          <NumericUpDown Value="{Binding Number, Mode=TwoWay}" MinWidth="150"
+                         HorizontalAlignment="Left" IsVisible="{Binding IsNumber}" />
+          <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsVisible="{Binding IsCheck}" />
+          <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice, Mode=TwoWay}"
+                    MinWidth="220" HorizontalAlignment="Stretch" IsVisible="{Binding IsChoice}" />
+          <ComboBox ItemsSource="{Binding AppearanceChoices}"
+                    SelectedItem="{Binding Appearance, Mode=TwoWay}"
+                    MinWidth="260" HorizontalAlignment="Stretch"
+                    IsVisible="{Binding IsAppearance}" />
+
+          <StackPanel IsVisible="{Binding IsMultiChoice}" Spacing="6">
+            <ItemsControl ItemsSource="{Binding SelectedKeyItems}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="doors:DoorKeyItemViewModel">
+                  <Border Background="{DynamicResource FieldBrush}"
+                          BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                          CornerRadius="3" Padding="7,3" Margin="0,0,6,5">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <TextBlock Text="{Binding Display}" Classes="mono" VerticalAlignment="Center" />
+                      <Button Content="&#x00D7;" Padding="3,0"
+                              Command="{Binding $parent[ItemsControl].((doors:DoorRowViewModel)DataContext).RemoveKeyItemCommand}"
+                              CommandParameter="{Binding}" />
+                    </StackPanel>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+              <ComboBox Grid.Column="0" ItemsSource="{Binding AvailableKeyItems}"
+                        SelectedItem="{Binding KeyItemToAdd, Mode=TwoWay}"
+                        MaxDropDownHeight="400" />
+              <Button Grid.Column="1" Content="Add" Command="{Binding AddKeyItemCommand}" />
+            </Grid>
+          </StackPanel>
+
+          <TextBlock Text="{Binding Note}" Classes="mono" TextWrapping="Wrap"
+                     IsVisible="{Binding IsStatement}" />
+        </StackPanel>
+
+        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+          <TextBlock Grid.Column="0" Text="{Binding Status}" FontSize="11.5"
+                     Foreground="{DynamicResource AmberBrush}" TextWrapping="Wrap"
+                     IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+          <TextBlock Grid.Column="1" Text="{Binding Counter}" Classes="label"
+                     IsVisible="{Binding HasCounter}" />
+        </Grid>
+
+        <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding Note}" Classes="label"
+                   TextWrapping="Wrap" Margin="0,0,0,7"
+                   IsVisible="{Binding HasNote}" />
+      </Grid>
+    </DataTemplate>
+  </UserControl.DataTemplates>
+
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Padding="16,12"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnSpacing="8">
+        <TextBlock Grid.Column="0" Text="{Binding HeaderName}" FontSize="15.5"
+                   FontWeight="SemiBold" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="1" Text="{Binding HeaderKind}" Classes="dim" FontSize="13"
+                   VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2" Text="&#x00B7;" Classes="dim" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="3" Text="{Binding HeaderOwner}" Classes="resref" FontSize="13.5"
+                   VerticalAlignment="Center" />
+        <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="7" VerticalAlignment="Center"
+                    IsVisible="{Binding IsDirty}">
+          <Ellipse Width="6" Height="6" Fill="{DynamicResource AccentBrush}" />
+          <TextBlock Text="unsaved" Classes="dim" FontSize="12.5" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid ColumnDefinitions="220,*">
+      <Border Grid.Column="0" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0"
+              Padding="12">
+        <Grid RowDefinitions="*,Auto">
+          <Border Grid.Row="0" MinHeight="250" Background="{DynamicResource PanelRaisedBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
+            <ContentControl Content="{Binding PreviewView}" />
+          </Border>
+          <StackPanel Grid.Row="1" Margin="0,9,0,0" Spacing="3">
+            <TextBlock Text="{Binding AppearanceDescription}" Classes="mono" FontSize="10.5"
+                       TextWrapping="Wrap" />
+            <TextBlock Text="{Binding TemplateResRef}" Classes="resref" FontSize="10.5" />
+            <TextBlock Text="{Binding DoorTag}" Classes="dim" FontSize="10.5" />
+            <TextBlock Text="Left-drag to turn &#x00B7; right-drag to move &#x00B7; wheel to zoom"
+                       Classes="dim" FontSize="10" TextWrapping="Wrap" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <TabControl Grid.Column="1">
+        <TabItem Header="Basic">
+          <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding BasicRows}" Margin="14,10" />
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Behavior">
+          <Grid ColumnDefinitions="250,*">
+            <ScrollViewer Grid.Column="0">
+              <ItemsControl ItemsSource="{Binding BehaviorList}" Margin="10">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="doors:DoorBehaviorListItemViewModel">
+                    <Panel>
+                      <TextBlock Text="{Binding Text}" IsVisible="{Binding IsHeader}"
+                                 Classes="section" Margin="12,14,0,5" />
+                      <Border IsVisible="{Binding IsRule}" Height="1" Margin="12,12"
+                              Background="{DynamicResource RuleBrush}" />
+                      <Button IsVisible="{Binding IsSelectable}" Classes="behavior"
+                              Classes.on="{Binding IsSelected}"
+                              HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                              Command="{Binding $parent[TabControl].((doors:DoorEditorViewModel)DataContext).ChooseBehaviorCommand}"
+                              CommandParameter="{Binding Behavior}">
+                        <TextBlock Text="{Binding Text}" />
+                      </Button>
+                    </Panel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+
+            <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}"
+                          BorderThickness="1,0,0,0">
+              <Border Classes="card" Margin="14,12">
+                <StackPanel>
+                  <TextBlock Text="{Binding HeaderName}" Classes="section" Margin="16,12,16,2" />
+                  <TextBlock Text="{Binding Behavior.Summary}" Classes="dim" Margin="16,0,16,8"
+                             TextWrapping="Wrap"
+                             IsVisible="{Binding Behavior.Summary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="0,2,0,8" />
+                </StackPanel>
+              </Border>
+            </ScrollViewer>
+          </Grid>
+        </TabItem>
+
+        <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
+          <StackPanel Margin="14,12" Spacing="8" DataContext="{Binding Variables}"
+                      x:DataType="editors:VarTableSectionViewModel">
+            <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                      AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="320"
+                      GridLinesVisibility="Horizontal">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
+                <DataGridTextColumn Header="Type" Binding="{Binding TypeLabel}" Width="*" />
+                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="2*" />
+              </DataGrid.Columns>
+            </DataGrid>
+            <Grid ColumnDefinitions="2*,Auto,Auto,2*,Auto,Auto" ColumnSpacing="6">
+              <AutoCompleteBox Grid.Column="0" Text="{Binding NewName, Mode=TwoWay}"
+                               ItemsSource="{Binding KnownKeys}" Watermark="Variable name" />
+              <TextBlock Grid.Column="1" Text="=" VerticalAlignment="Center" />
+              <ComboBox Grid.Column="2" MinWidth="96" ItemsSource="{Binding TypeChoices}"
+                        SelectedItem="{Binding NewType, Mode=TwoWay}" />
+              <TextBox Grid.Column="3" Text="{Binding NewValue, Mode=TwoWay}" Watermark="Value" />
+              <Button Grid.Column="4" Content="Set" Command="{Binding SetVariableCommand}" />
+              <Button Grid.Column="5" Content="Remove" Command="{Binding RemoveSelectedCommand}" />
+            </Grid>
+            <TextBlock Text="{Binding ValidationHint}" Foreground="Orange" TextWrapping="Wrap"
+                       IsVisible="{Binding ValidationHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+          </StackPanel>
+        </TabItem>
+
+        <TabItem Header="Advanced">
+          <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding AdvancedRows}" Margin="14,10" />
+          </ScrollViewer>
+        </TabItem>
+      </TabControl>
+    </Grid>
+  </DockPanel>
+</UserControl>

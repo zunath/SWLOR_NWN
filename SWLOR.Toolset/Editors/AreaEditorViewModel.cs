@@ -1276,7 +1276,8 @@ namespace SWLOR.Toolset.Editors
             WaypointAppearanceService? waypointAppearances = null,
             Func<ResourceType, string, bool, RenderModel?>? resolveBlueprintModel = null,
             IScriptSlotHost? scriptSlotHost = null,
-            Func<JsonGffStruct, RenderModel?>? resolvePlacedCreatureModel = null)
+            Func<JsonGffStruct, RenderModel?>? resolvePlacedCreatureModel = null,
+            Doors.DoorEditorServices? doorEditorServices = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resolveBlueprintModel = resolveBlueprintModel;
@@ -1316,7 +1317,8 @@ namespace SWLOR.Toolset.Editors
             {
                 Sections.Add(new InstanceListSectionViewModel(
                     config.Title, config.ListFieldName, config.BlueprintType,
-                    _gitSession, _gicSession, workspace, RunGitEdit, gameCodeIndex, log, _prompts, resolveStrRef));
+                    _gitSession, _gicSession, workspace, RunGitEdit, gameCodeIndex, log, _prompts, resolveStrRef,
+                    config.BlueprintType == ResourceType.Utd ? doorEditorServices : null));
             }
 
             // A row click in any section should update the 3D-view highlight
@@ -2017,7 +2019,7 @@ namespace SWLOR.Toolset.Editors
 
             _disposed = true;
             foreach (var section in Sections)
-                section.ClosePalette();
+                section.Dispose();
             _areSession.Dispose();
             _gitSession.Dispose();
             _gicSession.Dispose();

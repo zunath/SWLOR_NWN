@@ -371,10 +371,8 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         /// <summary>
-        /// Door instances carry three candidate doortypes.2da indices — Appearance, GenericType_New
-        /// and GenericType — and the corpus uses any of them (e.g. GenericType_New=0 with
-        /// Appearance=24, or a base-game door with only the older byte-sized GenericType). Take the
-        /// first whose row yields a real model.
+        /// A non-zero Appearance indexes doortypes.2da. Otherwise GenericType_New, with legacy
+        /// GenericType as fallback, indexes genericdoors.2da.
         /// </summary>
         private static RenderModel? ResolveDoorModel(
             JsonGffStruct instance, DoorTypeService? doorTypes, TileModelCache modelCache)
@@ -382,26 +380,17 @@ namespace SWLOR.Toolset.Domain.Render
             if (doorTypes == null)
                 return null;
 
-            // Appearance first. It records what was actually placed, while GenericType_New comes from
-            // the template - and the corpus diverges: nashadaa_czlabin's NS_CZLAB_FLOOR1 door is generic
-            // type 113 (TCN_UDoor_03) but appearance 146 (tmx_door_01), so leading with the template
-            // rendered the wrong door.
-            foreach (var field in new[] { "Appearance", "GenericType_New", "GenericType" })
-            {
-                var id = instance.GetIntOrNull(field) ?? -1;
-                if (id <= 0)
-                    continue;
+            var appearance = instance.GetIntOrNull("Appearance") ?? 0;
+            var modelResRef = appearance > 0
+                ? doorTypes.GetAll().FirstOrDefault(row => row.Id == appearance)?.Model
+                : doorTypes.GetGenericAll().FirstOrDefault(row =>
+                    row.Id == (instance.GetIntOrNull("GenericType_New")
+                               ?? instance.GetIntOrNull("GenericType")
+                               ?? 0))?.Model;
 
-                var row = doorTypes.GetAll().FirstOrDefault(r => r.Id == id);
-                if (string.IsNullOrWhiteSpace(row?.Model))
-                    continue;
-
-                var model = modelCache.GetOrBuild(row.Model);
-                if (model != null)
-                    return model;
-            }
-
-            return null;
+            return string.IsNullOrWhiteSpace(modelResRef)
+                ? null
+                : modelCache.GetOrBuild(modelResRef);
         }
 
         private static IReadOnlyList<Vector3>? ReadGeometry(JsonGffStruct instance)

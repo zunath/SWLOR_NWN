@@ -1,6 +1,7 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:editors="using:SWLOR.Toolset.Editors"
+             xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
              xmlns:viewport="using:SWLOR.Toolset.Viewport"
              x:Class="SWLOR.Toolset.Editors.AreaEditorView"
              x:DataType="editors:AreaEditorViewModel">
@@ -243,15 +244,21 @@
                   </DataGrid>
 
                   <StackPanel IsVisible="{Binding HasSelection}" Spacing="4">
-                    <Grid ColumnDefinitions="60,*,60,*,60,*" ColumnSpacing="6" RowDefinitions="Auto,Auto" RowSpacing="4">
-                      <TextBlock Grid.Row="0" Grid.Column="0" Text="Tag" VerticalAlignment="Center" />
-                      <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="5" Text="{Binding DetailTag, Mode=TwoWay}" />
-                      <TextBlock Grid.Row="1" Grid.Column="0" Text="X" VerticalAlignment="Center" />
-                      <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding DetailX, Mode=TwoWay}" Increment="0.5" />
-                      <TextBlock Grid.Row="1" Grid.Column="2" Text="Y" VerticalAlignment="Center" />
-                      <NumericUpDown Grid.Row="1" Grid.Column="3" Value="{Binding DetailY, Mode=TwoWay}" Increment="0.5" />
-                      <TextBlock Grid.Row="1" Grid.Column="4" Text="Z" VerticalAlignment="Center" />
-                      <NumericUpDown Grid.Row="1" Grid.Column="5" Value="{Binding DetailZ, Mode=TwoWay}" Increment="0.5" />
+                    <Border IsVisible="{Binding UsesDoorEditor}">
+                      <doors:DoorEditorView DataContext="{Binding DoorEditor}" MinHeight="520" />
+                    </Border>
+                    <Grid ColumnDefinitions="60,*" ColumnSpacing="6"
+                          IsVisible="{Binding UsesGenericDetailEditor}">
+                      <TextBlock Grid.Column="0" Text="Tag" VerticalAlignment="Center" />
+                      <TextBox Grid.Column="1" Text="{Binding DetailTag, Mode=TwoWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="60,*,60,*,60,*" ColumnSpacing="6">
+                      <TextBlock Grid.Column="0" Text="X" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="1" Value="{Binding DetailX, Mode=TwoWay}" Increment="0.5" />
+                      <TextBlock Grid.Column="2" Text="Y" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="3" Value="{Binding DetailY, Mode=TwoWay}" Increment="0.5" />
+                      <TextBlock Grid.Column="4" Text="Z" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="5" Value="{Binding DetailZ, Mode=TwoWay}" Increment="0.5" />
                     </Grid>
                     <Grid ColumnDefinitions="60,*,60,*" ColumnSpacing="6">
                       <TextBlock Grid.Column="0" Text="Facing X" VerticalAlignment="Center" />

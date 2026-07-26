@@ -23,6 +23,9 @@ namespace SWLOR.Toolset.Domain.Workspace
         private readonly object _syncRoot = new();
         private Dictionary<string, string>? _areasByTag;
         private HashSet<string>? _transitionDestinationTags;
+        private Dictionary<string, string>? _waypointAreasByTag;
+        private Dictionary<string, string>? _doorAreasByTag;
+        private Dictionary<string, string>? _itemResRefsByTag;
 
         public ModuleTagIndex(ModuleWorkspace workspace)
         {
@@ -36,6 +39,34 @@ namespace SWLOR.Toolset.Domain.Workspace
                 return null;
 
             return Index().GetValueOrDefault(tag);
+        }
+
+        /// <summary>The area defining a tag on one specific supported instance kind.</summary>
+        public string? FindAreaDefiningTag(string tag, ResourceType type)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+                return null;
+
+            _ = Index();
+            return type switch
+            {
+                ResourceType.Utw => _waypointAreasByTag!.GetValueOrDefault(tag),
+                ResourceType.Utd => _doorAreasByTag!.GetValueOrDefault(tag),
+                _ => null
+            };
+        }
+
+        /// <summary>The module item blueprint carrying this tag, or null when none does.</summary>
+        public string? FindItemBlueprintDefiningTag(string tag)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+                return null;
+
+            lock (_syncRoot)
+            {
+                _itemResRefsByTag ??= IndexItemBlueprints();
+                return _itemResRefsByTag.GetValueOrDefault(tag);
+            }
         }
 
         /// <summary>
@@ -68,6 +99,9 @@ namespace SWLOR.Toolset.Domain.Workspace
             {
                 _areasByTag = null;
                 _transitionDestinationTags = null;
+                _waypointAreasByTag = null;
+                _doorAreasByTag = null;
+                _itemResRefsByTag = null;
             }
         }
 
@@ -80,6 +114,8 @@ namespace SWLOR.Toolset.Domain.Workspace
 
                 var index = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 var transitionDestinations = new HashSet<string>(StringComparer.Ordinal);
+                var waypoints = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                var doors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var areaResRef in _workspace.EnumerateAreaResRefs())
                 {
                     GitDocument git;
@@ -93,12 +129,14 @@ namespace SWLOR.Toolset.Domain.Workspace
                         continue;
                     }
 
-                    AddTags(index, areaResRef, git.Waypoints, ResourceType.Utw);
-                    AddTags(index, areaResRef, git.Doors, ResourceType.Utd);
+                    AddTags(index, waypoints, areaResRef, git.Waypoints, ResourceType.Utw);
+                    AddTags(index, doors, areaResRef, git.Doors, ResourceType.Utd);
                     AddTransitionDestinations(transitionDestinations, git.Triggers);
                     AddTransitionDestinations(transitionDestinations, git.Doors);
                 }
 
+                _waypointAreasByTag = waypoints;
+                _doorAreasByTag = doors;
                 _areasByTag = index;
                 _transitionDestinationTags = transitionDestinations;
                 return index;
@@ -119,6 +157,7 @@ namespace SWLOR.Toolset.Domain.Workspace
 
         private void AddTags(
             Dictionary<string, string> index,
+            Dictionary<string, string> typedIndex,
             string areaResRef,
             IReadOnlyList<Gff.JsonGffStruct> instances,
             ResourceType blueprintType)
@@ -130,7 +169,10 @@ namespace SWLOR.Toolset.Domain.Workspace
                     tag = BlueprintTag(blueprintType, instance.GetStringOrNull("TemplateResRef"));
 
                 if (!string.IsNullOrEmpty(tag))
+                {
                     index.TryAdd(tag, areaResRef);
+                    typedIndex.TryAdd(tag, areaResRef);
+                }
             }
         }
 
@@ -150,6 +192,19 @@ namespace SWLOR.Toolset.Domain.Workspace
             {
                 return null;
             }
+        }
+
+        private Dictionary<string, string> IndexItemBlueprints()
+        {
+            var items = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var resRef in _workspace.EnumerateResRefs(ResourceType.Uti))
+            {
+                var tag = BlueprintTag(ResourceType.Uti, resRef);
+                if (!string.IsNullOrWhiteSpace(tag))
+                    items.TryAdd(tag, resRef);
+            }
+
+            return items;
         }
     }
 }

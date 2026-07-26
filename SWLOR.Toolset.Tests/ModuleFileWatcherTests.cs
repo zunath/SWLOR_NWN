@@ -34,6 +34,7 @@ namespace SWLOR.Toolset.Tests
         [TestCase(@"C:\module\git\area.git.json")]
         [TestCase(@"C:\module\are\area.are.json")]
         [TestCase(@"C:\module\utd\door.utd.json")]
+        [TestCase(@"C:\module\uti\door_key.uti.json")]
         [TestCase(@"C:\module\utw\waypoint.utw.json")]
         public void TransitionTagResourcesInvalidateTheTagIndex(string path)
         {

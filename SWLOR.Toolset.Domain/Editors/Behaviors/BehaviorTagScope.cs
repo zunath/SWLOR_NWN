@@ -8,6 +8,9 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         Door,
 
         /// <summary>Either kind of transition destination.</summary>
-        WaypointOrDoor
+        WaypointOrDoor,
+
+        /// <summary>An item blueprint carrying the referenced tag.</summary>
+        Item
     }
 }

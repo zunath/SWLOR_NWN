@@ -65,6 +65,8 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Triggers.TriggerDocumentViewModel> _openTriggerEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Waypoints.WaypointDocumentViewModel> _openWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Doors.DoorDocumentViewModel> _openDoorEditors = new(StringComparer.OrdinalIgnoreCase);
+        private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice>? _doorAppearances;
 
         // Keyed by path like the blueprint map rather than by resref like the area map: a script is
         // one file, so the path is its identity and there is no are/git/gic triplet to name.
@@ -357,10 +359,23 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            if (_openDoorEditors.TryGetValue(filePath, out var existingDoor))
+            {
+                _factory.ActivateDocument(existingDoor);
+                return;
+            }
+
             try
             {
                 if (!CanRepresentEveryValue(filePath, resRef, schema))
                     return;
+
+                // Doors use the behavior editor for both blueprints and area placements.
+                if (type == ResourceType.Utd)
+                {
+                    OpenDoorEditor(filePath, resRef);
+                    return;
+                }
 
                 // Triggers get the behavior editor rather than the generic schema form: what a
                 // trigger is for drives which fields it even has.
@@ -510,6 +525,7 @@ namespace SWLOR.Toolset.Editors
             return _openEditors.ContainsKey(path)
                    || _openTriggerEditors.ContainsKey(path)
                    || _openWaypointEditors.ContainsKey(path)
+                   || _openDoorEditors.ContainsKey(path)
                    || _openConversations.ContainsKey(path);
         }
 
@@ -532,6 +548,12 @@ namespace SWLOR.Toolset.Editors
             }
 
             foreach (var editor in _openWaypointEditors.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
+            foreach (var editor in _openDoorEditors.Values.ToList())
             {
                 if (!await editor.TrySaveAsync().ConfigureAwait(true))
                     return false;
@@ -577,6 +599,7 @@ namespace SWLOR.Toolset.Editors
             if (!_openEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openWaypointEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openDoorEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openAreaEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openScriptEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openConversations.Values.Any(editor => editor.IsDirty))
@@ -594,6 +617,8 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openTriggerEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openWaypointEditors.Values)
+                editor.ApproveApplicationClose();
+            foreach (var editor in _openDoorEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openAreaEditors.Values)
                 editor.ApproveApplicationClose();
@@ -641,6 +666,107 @@ namespace SWLOR.Toolset.Editors
                 _workspaceContext.RefreshCatalogEntry(ResourceType.Utw, resRef);
             _openWaypointEditors[filePath] = editor;
             _factory.OpenDocument(editor);
+        }
+
+        /// <summary>Door blueprints open in the same behavior editor used by door placements.</summary>
+        private void OpenDoorEditor(string filePath, string resRef)
+        {
+            var editor = new Doors.DoorDocumentViewModel(
+                filePath,
+                resRef,
+                _gameCodeIndex,
+                _log,
+                _prompts,
+                ResolveDoorTag,
+                ResolveDoorChoices,
+                DoorAppearances(),
+                _resourceIndex,
+                _previewRenderer != null
+                    ? door => _previewRenderer.BuildModel(ResourceType.Utd, door)
+                    : null);
+            editor.Closed += _ => _openDoorEditors.Remove(filePath);
+            editor.CloseRequested += _ => _factory.CloseDocument(editor);
+            editor.CatalogEntryChanged += () =>
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Utd, resRef);
+            _openDoorEditors[filePath] = editor;
+            _factory.OpenDocument(editor);
+        }
+
+        private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice> DoorAppearances() =>
+            _doorAppearances ??= Domain.Editors.Doors.DoorAppearanceCatalog.Read(_doorTypes);
+
+        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ResolveDoorChoices(string key)
+        {
+            if (key == Domain.Editors.Doors.DoorChoiceKeys.DoorPaletteCategories)
+                return ResolveDoorCategories();
+
+            if (key == Domain.Editors.Doors.DoorChoiceKeys.LoadScreens)
+                return Domain.Editors.Triggers.LoadScreenCatalog.Read(_twoDaService);
+
+            if (key == Domain.Editors.Doors.DoorChoiceKeys.TrapTypes)
+                return Domain.Editors.Triggers.TrapTypeCatalog.Read(_twoDaService);
+
+            return _lookups.GetOptions(key)
+                .Select(option => new Domain.Editors.Behaviors.BehaviorChoice(option.Id, option.Display))
+                .ToList();
+        }
+
+        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ResolveDoorCategories()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+
+            try
+            {
+                var path = Path.Combine(workspace.ModuleRoot, "itp", "doorpalcus.itp.json");
+                if (!File.Exists(path))
+                    return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+
+                return Domain.Editors.Behaviors.PaletteCategoryReader.Read(
+                    Domain.Documents.ItpDocument.Load(path),
+                    _tlkService != null ? _tlkService.GetString : null);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not read the door palette categories: {ex.Message}");
+                return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+            }
+        }
+
+        private string? ResolveDoorTag(Domain.Editors.Behaviors.BehaviorTagScope scope, string tag)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+                return null;
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return null;
+
+            if (scope == Domain.Editors.Behaviors.BehaviorTagScope.Item)
+            {
+                var itemResRef = workspace.TagIndex.FindItemBlueprintDefiningTag(tag);
+                return itemResRef == null ? null : $"item blueprint {itemResRef}";
+            }
+
+            if (scope == Domain.Editors.Behaviors.BehaviorTagScope.Waypoint)
+            {
+                var area = workspace.TagIndex.FindAreaDefiningTag(tag, ResourceType.Utw);
+                return area == null ? null : $"waypoint in {area}";
+            }
+
+            if (scope == Domain.Editors.Behaviors.BehaviorTagScope.Door)
+            {
+                var area = workspace.TagIndex.FindAreaDefiningTag(tag, ResourceType.Utd);
+                return area == null ? null : $"door in {area}";
+            }
+
+            var doorArea = workspace.TagIndex.FindAreaDefiningTag(tag, ResourceType.Utd);
+            if (doorArea != null)
+                return $"door in {doorArea}";
+
+            var waypointArea = workspace.TagIndex.FindAreaDefiningTag(tag, ResourceType.Utw);
+            return waypointArea == null ? null : $"waypoint in {waypointArea}";
         }
 
         /// <summary>
@@ -849,7 +975,16 @@ namespace SWLOR.Toolset.Editors
                     CreateScriptSlotHost($"Area '{resRef}'"),
                     _previewRenderer != null
                         ? instance => _previewRenderer.BuildModel(ResourceType.Utc, instance)
-                        : null);
+                        : null,
+                    new Doors.DoorEditorServices(
+                        resRef,
+                        ResolveDoorTag,
+                        ResolveDoorChoices,
+                        DoorAppearances(),
+                        _resourceIndex,
+                        _previewRenderer != null
+                            ? door => _previewRenderer.BuildModel(ResourceType.Utd, door)
+                            : null));
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);

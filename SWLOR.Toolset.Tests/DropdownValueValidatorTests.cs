@@ -230,13 +230,13 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void RealCorpusDoor_WithAnUnresolvableTypeRow_IsStillBlocked()
+        public void RealCorpusDoor_WithAnUnresolvableGenericAppearanceRow_IsStillBlocked()
         {
             // The mechanism the placeable case used to cover, on a type that still has a dropdown.
             var unresolved = DropdownValueValidator.FindUnresolved(
                 Document(("GenericType_New", 9999)),
                 UtdSchema.Build(),
-                key => key == "doortypes" ? new long[] { 0, 1, 2 } : Array.Empty<long>());
+                key => key == "genericdoors" ? new long[] { 0, 1, 2 } : Array.Empty<long>());
 
             unresolved.Should().ContainSingle().Which.Value.Should().Be(9999);
         }

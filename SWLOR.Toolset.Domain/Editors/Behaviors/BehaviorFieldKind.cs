@@ -27,6 +27,12 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         TagReference,
 
         /// <summary>Not editable: something true about the behavior that the editor can state.</summary>
-        Statement
+        Statement,
+
+        /// <summary>A set of choices stored as a contiguous local-variable sequence.</summary>
+        MultiChoice,
+
+        /// <summary>A choice whose selection writes more than one backing field.</summary>
+        CompositeChoice
     }
 }

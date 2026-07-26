@@ -201,10 +201,22 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void Resolve_Door_YieldsModelFromDoortypes2daGenericTypeNew()
+        public void Resolve_Door_YieldsModelFromGenericdoors2daGenericTypeNew()
         {
-            // _mdrn_dt_bars.utd: GenericType_New 47 -> doortypes.2da Model TCN_UDoor_10.
+            // _mdrn_dt_bars.utd: Appearance 0 and GenericType_New 47 select genericdoors.2da.
             var root = BlueprintRoot(ResourceType.Utd, "_mdrn_dt_bars");
+
+            var result = BlueprintModelResolver.Resolve(ResourceType.Utd, root, null, null, Doors());
+
+            result.Kind.Should().Be(BlueprintModelKind.Simple);
+            result.ModelResRef.Should().Be("tn_gdoor_07");
+        }
+
+        [Test]
+        public void Resolve_Door_PrefersSpecificAppearanceFromDoortypes2da()
+        {
+            var root = BlueprintRoot(ResourceType.Utd, "_mdrn_dt_bars");
+            root.Get("Appearance").SetUnsignedInteger(47);
 
             var result = BlueprintModelResolver.Resolve(ResourceType.Utd, root, null, null, Doors());
 

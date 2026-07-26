@@ -1,13 +1,12 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using SWLOR.Toolset.Editors.Placeables;
 
 namespace SWLOR.Toolset.Viewport
 {
     /// <summary>
     /// An interactive 3D view of a single model, driven by an
-    /// <see cref="AppearanceSectionViewModel"/>'s one-model scene.
+    /// <see cref="IModelPreviewSource"/>'s one-model scene.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -36,7 +35,7 @@ namespace SWLOR.Toolset.Viewport
         /// </summary>
         private const float OrbitPerPixel = 0.16f;
 
-        private AppearanceSectionViewModel? _viewModel;
+        private IModelPreviewSource? _viewModel;
         private bool _isAttached;
         private bool _hostVisible;
         private bool _disposed;
@@ -83,7 +82,7 @@ namespace SWLOR.Toolset.Viewport
             if (_viewModel != null)
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
 
-            _viewModel = DataContext as AppearanceSectionViewModel;
+            _viewModel = DataContext as IModelPreviewSource;
 
             if (_viewModel != null)
                 _viewModel.PropertyChanged += OnViewModelPropertyChanged;
@@ -94,12 +93,12 @@ namespace SWLOR.Toolset.Viewport
 
         private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName is null or nameof(AppearanceSectionViewModel.PreviewScene))
+            if (e.PropertyName is null or nameof(IModelPreviewSource.PreviewScene))
                 ApplyScene();
 
             if (e.PropertyName is null or
-                nameof(AppearanceSectionViewModel.PreviewAnimationName) or
-                nameof(AppearanceSectionViewModel.IsAnimationPlaying))
+                nameof(IModelPreviewSource.PreviewAnimationName) or
+                nameof(IModelPreviewSource.IsAnimationPlaying))
             {
                 ApplyAnimation();
             }

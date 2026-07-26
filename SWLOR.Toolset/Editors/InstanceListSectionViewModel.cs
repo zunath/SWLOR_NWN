@@ -19,9 +19,15 @@ namespace SWLOR.Toolset.Editors
         private float _x;
         private float _y;
         private float _z;
+        private string _templateResRef;
 
         public int Index { get; }
-        public string TemplateResRef { get; }
+
+        public string TemplateResRef
+        {
+            get => _templateResRef;
+            set => SetProperty(ref _templateResRef, value);
+        }
 
         public string Tag
         {
@@ -51,7 +57,7 @@ namespace SWLOR.Toolset.Editors
         {
             Index = index;
             _tag = tag;
-            TemplateResRef = templateResRef;
+            _templateResRef = templateResRef;
             _x = x;
             _y = y;
             _z = z;
@@ -66,7 +72,7 @@ namespace SWLOR.Toolset.Editors
     /// Duplicate, and Delete - all through DocumentTransactions on the shared .git
     /// DocumentSession supplied by the owning AreaEditorViewModel.
     /// </summary>
-    public partial class InstanceListSectionViewModel : ObservableObject
+    public partial class InstanceListSectionViewModel : ObservableObject, IDisposable
     {
         private readonly DocumentSession _gitSession;
         private readonly DocumentSession _gicSession;
@@ -77,6 +83,7 @@ namespace SWLOR.Toolset.Editors
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
+        private readonly Doors.DoorEditorServices? _doorEditorServices;
 
         /// <summary>Resolves the STRREF labels the module's palettes use instead of inline names.</summary>
         private readonly Func<uint, string?>? _resolveStrRef;
@@ -121,6 +128,13 @@ namespace SWLOR.Toolset.Editors
 
         public bool HasTriggerGeometry => _blueprintType == ResourceType.Utt;
 
+        public bool UsesDoorEditor => _blueprintType == ResourceType.Utd;
+
+        public bool UsesGenericDetailEditor => !UsesDoorEditor;
+
+        [ObservableProperty]
+        private Doors.DoorEditorViewModel? _doorEditor;
+
         [ObservableProperty]
         private VarTableSectionViewModel? _varTableSection;
 
@@ -138,7 +152,8 @@ namespace SWLOR.Toolset.Editors
             IGameCodeIndex? gameCodeIndex,
             OutputLogService log,
             IEditorPromptService prompts,
-            Func<uint, string?>? resolveStrRef = null)
+            Func<uint, string?>? resolveStrRef = null,
+            Doors.DoorEditorServices? doorEditorServices = null)
         {
             Title = title;
             _listFieldName = listFieldName;
@@ -151,6 +166,7 @@ namespace SWLOR.Toolset.Editors
             _log = log;
             _prompts = prompts;
             _resolveStrRef = resolveStrRef;
+            _doorEditorServices = doorEditorServices;
 
             RefreshFromDocument();
         }
@@ -189,16 +205,56 @@ namespace SWLOR.Toolset.Editors
             var element = value != null ? GetElement(value.Index) : null;
             if (element == null)
             {
+                DoorEditor?.Dispose();
+                DoorEditor = null;
                 VarTableSection = null;
                 return;
             }
 
             LoadDetailFromElement(element);
 
-            VarTableSection = new VarTableSectionViewModel(
-                (description, mutation) => _runEdit(description, mutation),
-                new VarTable(element),
-                _gameCodeIndex);
+            if (UsesDoorEditor)
+            {
+                DoorEditor?.Dispose();
+                DoorEditor = new Doors.DoorEditorViewModel(
+                    element,
+                    _doorEditorServices?.HeaderOwner ?? "area",
+                    isInstance: true,
+                    RunDoorEdit,
+                    _gameCodeIndex,
+                    _doorEditorServices?.ResolveTag,
+                    _doorEditorServices?.ResolveChoices,
+                    _doorEditorServices?.Appearances,
+                    _doorEditorServices?.ResourceIndex,
+                    _doorEditorServices?.ResolveModel,
+                    _gitSession.UndoStack.IsDirty);
+                VarTableSection = null;
+            }
+            else
+            {
+                DoorEditor?.Dispose();
+                DoorEditor = null;
+                VarTableSection = new VarTableSectionViewModel(
+                    (description, mutation) => _runEdit(description, mutation),
+                    new VarTable(element),
+                    _gameCodeIndex);
+            }
+        }
+
+        private bool RunDoorEdit(string description, Action mutation)
+        {
+            if (!_runEdit(description, mutation))
+                return false;
+
+            if (SelectedRow is { } row && GetElement(row.Index) is { } element)
+            {
+                row.Tag = InstanceFieldMap.GetTag(element) ?? string.Empty;
+                row.TemplateResRef =
+                    InstanceFieldMap.GetTemplateResRef(_blueprintType, element) ?? string.Empty;
+                LoadDetailFromElement(element);
+            }
+
+            return true;
         }
 
         partial void OnDetailTagChanged(string value)
@@ -361,6 +417,13 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Dismisses the palette picker, if one is open.</summary>
         internal void ClosePalette() => ActivePaletteBrowser = null;
+
+        public void Dispose()
+        {
+            DoorEditor?.Dispose();
+            DoorEditor = null;
+            ActivePaletteBrowser = null;
+        }
 
         private void AddFromPalette(string resRef) => AddInstanceAt(resRef, 0f, 0f, 0f);
 

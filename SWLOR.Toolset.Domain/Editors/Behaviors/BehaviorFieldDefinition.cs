@@ -6,7 +6,7 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
     /// One row a behavior asks the builder to fill in: where the value lives, how it is presented,
     /// and whether the behavior is incomplete without it.
     /// </summary>
-    public sealed class BehaviorFieldDefinition
+    public class BehaviorFieldDefinition
     {
         public required string Label { get; init; }
 

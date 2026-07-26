@@ -124,7 +124,7 @@ namespace SWLOR.Toolset.Workspace
 
         private void InvalidateTagIndexWhenRelevant(ResourceType type)
         {
-            if (type is ResourceType.Area or ResourceType.Utd or ResourceType.Utw)
+            if (type is ResourceType.Area or ResourceType.Utd or ResourceType.Utw or ResourceType.Uti)
                 InvalidateTagIndex();
         }
 

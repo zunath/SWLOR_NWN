@@ -72,8 +72,8 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
-        /// True when changing this file can alter the area associated with a transition target tag.
-        /// Paired GITs carry placed door/waypoint tags; UTD/UTW blueprints supply their fallbacks.
+        /// True when changing this file can alter a resolved behavior tag. Paired GITs carry placed
+        /// door/waypoint tags; UTD/UTW blueprints supply their fallbacks; UTI supplies door-key tags.
         /// </summary>
         public static bool AffectsTagIndex(string path)
         {
@@ -81,6 +81,7 @@ namespace SWLOR.Toolset.Workspace
             return fileName.EndsWith(".git.json", StringComparison.OrdinalIgnoreCase) ||
                    fileName.EndsWith(".are.json", StringComparison.OrdinalIgnoreCase) ||
                    fileName.EndsWith(".utd.json", StringComparison.OrdinalIgnoreCase) ||
+                   fileName.EndsWith(".uti.json", StringComparison.OrdinalIgnoreCase) ||
                    fileName.EndsWith(".utw.json", StringComparison.OrdinalIgnoreCase);
         }
 

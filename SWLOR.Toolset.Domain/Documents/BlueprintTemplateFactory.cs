@@ -299,7 +299,7 @@ namespace SWLOR.Toolset.Domain.Documents
             AddEmptyLocString(root, "Description");
 
             // Doors carry both fields: Appearance is unused (0 everywhere in the corpus) and
-            // GenericType_New is the doortypes.2da row.
+            // GenericType_New is the genericdoors.2da row; Appearance selects doortypes.2da.
             root.SetUInt("Appearance", GffFieldType.Dword, 0);
             root.SetUInt("GenericType_New", GffFieldType.Dword, 0);
             root.SetUInt("Faction", GffFieldType.Dword, 1);

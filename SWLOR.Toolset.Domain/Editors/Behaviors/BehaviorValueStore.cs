@@ -12,7 +12,7 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
     /// Every write here mutates the document directly and must therefore run inside the owning
     /// session's transaction — the view model is what supplies that.
     /// </remarks>
-    public sealed class BehaviorValueStore
+    public class BehaviorValueStore
     {
         private readonly JsonGffStruct _valueStruct;
         private readonly VarTable _locals;
@@ -24,6 +24,8 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         }
 
         public JsonGffStruct ValueStruct => _valueStruct;
+
+        public JsonGffStruct Owner => _valueStruct;
 
         public VarTable Locals => _locals;
 
@@ -162,7 +164,7 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
             }
         }
 
-        private void ClearOne(BehaviorFieldStorage storage, string name, GffFieldType type)
+        public void ClearOne(BehaviorFieldStorage storage, string name, GffFieldType type)
         {
             if (storage == BehaviorFieldStorage.Local)
             {

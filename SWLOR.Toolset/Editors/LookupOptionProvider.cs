@@ -91,6 +91,10 @@ namespace SWLOR.Toolset.Editors
                         return _doorTypes.GetAll()
                             .Select(row => new LookupOption(row.Id, row.DisplayName))
                             .ToList();
+                    case LookupKeys.GenericDoors when _doorTypes != null:
+                        return _doorTypes.GetGenericAll()
+                            .Select(row => new LookupOption(row.Id, row.DisplayName))
+                            .ToList();
                     case LookupKeys.AmbientSounds when _sounds != null:
                         return _sounds.GetAll()
                             .Select(row => new LookupOption(row.Id, row.DisplayName))

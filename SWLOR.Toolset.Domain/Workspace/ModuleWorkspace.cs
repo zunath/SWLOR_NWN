@@ -62,9 +62,8 @@ namespace SWLOR.Toolset.Domain.Workspace
 
         /// <summary>The subfolder for a resource type (e.g. ".../Module/utc").</summary>
         /// <summary>
-        /// Which area defines each waypoint/door tag. Built lazily on first use — see
-        /// <see cref="ModuleTagIndex"/> — and consumed by the trigger editor to resolve a
-        /// transition's destination.
+        /// Resolves placed waypoint/door tags and module item-blueprint tags. Built lazily on first
+        /// use; behavior editors consume it to validate transition destinations and door keys.
         /// </summary>
         public ModuleTagIndex TagIndex => _tagIndex ??= new ModuleTagIndex(this);
 

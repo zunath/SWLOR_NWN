@@ -5,10 +5,9 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
 {
     /// <summary>
     /// Editor schema for door blueprints (.utd). Field names and GFF types verified against the
-    /// module corpus (e.g. Module\utd\_mdrn_dt_alien1.utd.json). Corpus verification note: doors
-    /// carry both an "Appearance" field (a dword that is always 0 across the corpus, unused) and
-    /// a "GenericType_New" field (a dword that holds the doortypes.2da row index, e.g. 124, 125,
-    /// 126, ...). The doortypes dropdown must bind to GenericType_New, not Appearance.
+    /// module corpus (e.g. Module\utd\_mdrn_dt_alien1.utd.json). GenericType_New indexes
+    /// genericdoors.2da; when Appearance is non-zero it selects a specific model from
+    /// doortypes.2da instead.
     /// </summary>
     public static class UtdSchema
     {
@@ -35,7 +34,8 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                         Title = "Appearance & Behavior",
                         Fields = new[]
                         {
-                            new FieldDescriptor { Label = "Door Type", FieldName = "GenericType_New", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Dword, LookupKey = LookupKeys.DoorTypes, Description = "Row index into doortypes.2da. Note: the corpus 'Appearance' field is unused (always 0) for doors." },
+                            new FieldDescriptor { Label = "Generic Appearance", FieldName = "GenericType_New", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Dword, LookupKey = LookupKeys.GenericDoors, Description = "Row index into genericdoors.2da when no specific model is selected." },
+                            new FieldDescriptor { Label = "Specific Model", FieldName = "Appearance", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Dword, LookupKey = LookupKeys.DoorTypes, Description = "A non-zero row index into doortypes.2da overrides the generic appearance." },
                             new FieldDescriptor { Label = "Faction", FieldName = "Faction", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Dword, LookupKey = LookupKeys.Factions }
                         }
                     },

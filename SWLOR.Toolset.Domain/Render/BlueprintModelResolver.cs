@@ -63,7 +63,8 @@ namespace SWLOR.Toolset.Domain.Render
     /// appearance.2da RACE column holds the literal model resref) resolve to a single resref; segmented
     /// player-body creatures (MODELTYPE P) resolve to a skeleton + body-part list following NWN's
     /// <c>p{gender}{race}{phenotype}</c> naming so the app can compose them with Radoub's MdlPartComposer.
-    /// Placeables resolve through placeables.2da ModelName; doors through doortypes.2da Model.
+    /// Placeables resolve through placeables.2da ModelName. Doors use genericdoors.2da for their
+    /// generic appearance, or doortypes.2da when the specific Appearance field is non-zero.
     /// </summary>
     public static class BlueprintModelResolver
     {
@@ -358,25 +359,35 @@ namespace SWLOR.Toolset.Domain.Render
             if (doors == null)
                 return BlueprintModelReference.NoneWith("Door preview unavailable (door-type data not loaded).");
 
-            // 'Appearance' is always 0 for doors. The door type lives in GenericType_New (word) on
-            // anything the module authored, and in GenericType (byte) on the base game's own doors -
-            // BioWare added the wider field once the byte ran out of door types, and old blueprints kept
-            // the old one. Reading only GenericType_New left all 86 base-game doors resolving nothing.
-            var genericType = root.GetIntOrNull("GenericType_New")
-                              ?? root.GetIntOrNull("GenericType")
-                              ?? -1;
-            var row = doors.GetAll().FirstOrDefault(r => r.Id == genericType);
-            if (row == null)
-                return BlueprintModelReference.NoneWith($"Unknown door type {genericType}.");
+            // Appearance names a specific doortypes.2da model when non-zero. Otherwise
+            // GenericType_New (or legacy GenericType) indexes genericdoors.2da.
+            var specificId = root.GetIntOrNull("Appearance") ?? 0;
+            var specific = specificId > 0
+                ? doors.GetAll().FirstOrDefault(row => row.Id == specificId)
+                : null;
+            var genericId = root.GetIntOrNull("GenericType_New")
+                            ?? root.GetIntOrNull("GenericType")
+                            ?? 0;
+            var generic = specificId == 0
+                ? doors.GetGenericAll().FirstOrDefault(row => row.Id == genericId)
+                : null;
+            var displayName = specific?.DisplayName ?? generic?.DisplayName;
+            var model = specific?.Model ?? generic?.Model;
+            var table = specific != null ? "doortypes.2da" : "genericdoors.2da";
 
-            if (string.IsNullOrWhiteSpace(row.Model))
-                return BlueprintModelReference.NoneWith($"{row.DisplayName}: no model in doortypes.2da.");
+            if (displayName == null)
+                return BlueprintModelReference.NoneWith(
+                    $"Unknown {(specificId > 0 ? "specific" : "generic")} door type " +
+                    $"{(specificId > 0 ? specificId : genericId)}.");
+
+            if (string.IsNullOrWhiteSpace(model))
+                return BlueprintModelReference.NoneWith($"{displayName}: no model in {table}.");
 
             return new BlueprintModelReference
             {
                 Kind = BlueprintModelKind.Simple,
-                Status = $"{row.DisplayName} ({row.Model}.mdl)",
-                ModelResRef = row.Model
+                Status = $"{displayName} ({model}.mdl)",
+                ModelResRef = model
             };
         }
 

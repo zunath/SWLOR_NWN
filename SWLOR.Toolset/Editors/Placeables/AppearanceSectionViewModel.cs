@@ -39,7 +39,7 @@ namespace SWLOR.Toolset.Editors.Placeables
     /// browsing never dirties the document.
     /// </para>
     /// </remarks>
-    public partial class AppearanceSectionViewModel : ObservableObject, IDisposable
+    public partial class AppearanceSectionViewModel : ObservableObject, IDisposable, Viewport.IModelPreviewSource
     {
         /// <summary>
         /// Tiles added per page. Small on purpose: every tile published is a control realized and a

@@ -27,6 +27,7 @@ namespace SWLOR.Toolset.Domain.Editors
         public const string Portraits = "portraits";
         public const string Placeables = "placeables";
         public const string DoorTypes = "doortypes";
+        public const string GenericDoors = "genericdoors";
         public const string AmbientSounds = "ambientsounds";
         public const string Factions = "factions";
         public const string Gender = "gender";

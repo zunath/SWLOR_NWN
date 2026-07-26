@@ -81,7 +81,8 @@ namespace SWLOR.Toolset.Tests
                 (nameof(UtcSchema), "Phenotype", LookupKeys.Phenotype),
                 (nameof(UtcSchema), "SoundSetFile", LookupKeys.SoundSets),
                 (nameof(UtiSchema), "BaseItem", LookupKeys.BaseItems),
-                (nameof(UtdSchema), "GenericType_New", LookupKeys.DoorTypes),
+                (nameof(UtdSchema), "GenericType_New", LookupKeys.GenericDoors),
+                (nameof(UtdSchema), "Appearance", LookupKeys.DoorTypes),
                 (nameof(UttSchema), "Type", LookupKeys.TriggerTypes)
             };
 

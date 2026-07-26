@@ -204,20 +204,22 @@
       </Grid>
     </DataTemplate>
 
-    <!-- One behavior field. Five shapes over the same row so the label column stays aligned with
-         the schema fields above: toggle, number, name-valued picker, id-valued picker, free text.
+    <!-- One behavior field. Six shapes over the same row so the label column stays aligned with
+         the schema fields above: toggle, number, name-valued picker, id-valued picker, preview
+         gallery, and free text.
          A name picker is an AutoCompleteBox rather than a combo because the tag source alone offers
          five figures of options and a stored value the source does not know must stay visible. -->
     <DataTemplate DataType="placeables:BehaviorFieldViewModel">
-      <Grid ColumnDefinitions="180,*,Auto" Margin="0,2">
+      <Grid ColumnDefinitions="220,*,Auto" RowDefinitions="Auto,Auto" Margin="0,2">
         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-          <TextBlock Text="{Binding Label}" Classes="dim" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="{Binding Label}" Classes="dim" TextWrapping="Wrap" />
           <TextBlock Text="required" Classes="count" IsVisible="{Binding IsRequired}" />
         </StackPanel>
 
         <CheckBox Grid.Column="1" IsVisible="{Binding IsToggle}" IsChecked="{Binding Flag, Mode=TwoWay}" />
 
         <NumericUpDown Grid.Column="1" IsVisible="{Binding IsInteger}" FormatString="0" Increment="1"
+                       Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
                        Value="{Binding Number, Mode=TwoWay}" />
 
         <AutoCompleteBox Grid.Column="1" IsVisible="{Binding IsNameChoice}"
@@ -232,9 +234,90 @@
 
         <TextBox Grid.Column="1" IsVisible="{Binding IsText}" Text="{Binding Text, Mode=TwoWay}" />
 
+        <StackPanel Grid.Column="1" IsVisible="{Binding IsGalleryChoice}" Spacing="6"
+                    HorizontalAlignment="Stretch">
+          <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3"
+                  Background="{DynamicResource FieldBrush}" Height="150" ClipToBounds="True">
+            <Panel>
+              <TextBlock Text="{Binding SelectedGlyph}" FontSize="38" Classes="dim"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+              <Image Source="{Binding SelectedPreview}" Stretch="Uniform" />
+            </Panel>
+          </Border>
+          <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+              <TextBlock Text="{Binding SelectedDisplay}" TextTrimming="CharacterEllipsis" />
+              <TextBlock Text="{Binding SelectedDetails}" Classes="dim" FontSize="11"
+                         TextWrapping="Wrap" MaxLines="2" IsVisible="{Binding HasSelectedDetails}" />
+            </StackPanel>
+            <Button Grid.Column="1" x:Name="ChooseBehaviorValueButton"
+                    Content="Choose&#x2026;" Padding="10,4"
+                    Command="{Binding OpenGalleryCommand}" />
+            <Button Grid.Column="2" Content="Clear" Padding="10,4"
+                    Command="{Binding ClearChoiceCommand}"
+                    IsVisible="{Binding CanClearChoice}" />
+            <Popup Grid.Column="1" IsOpen="{Binding IsGalleryOpen, Mode=TwoWay}"
+                   PlacementTarget="{Binding #ChooseBehaviorValueButton}" Placement="Left"
+                   IsLightDismissEnabled="True">
+              <Border Background="{DynamicResource PanelBrush}" CornerRadius="4" Padding="8"
+                      BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
+                <Grid RowDefinitions="Auto,Auto,*" Width="700" MaxHeight="650" RowSpacing="7">
+                  <TextBox Grid.Row="0" Text="{Binding GalleryQuery, Mode=TwoWay}"
+                           Watermark="Search by name, resref, group, color, or location" />
+                  <TextBlock Grid.Row="1" Text="{Binding GallerySummary}" Classes="count" />
+                  <ScrollViewer Grid.Row="2" MaxHeight="560">
+                    <StackPanel>
+                      <ItemsControl ItemsSource="{Binding GalleryTiles}">
+                        <ItemsControl.ItemsPanel>
+                          <ItemsPanelTemplate>
+                            <WrapPanel MaxWidth="680" />
+                          </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate DataType="placeables:BehaviorGalleryTileViewModel">
+                            <Button Classes="behavior" Margin="3" Padding="4"
+                                    Command="{Binding $parent[ItemsControl].((placeables:BehaviorFieldViewModel)DataContext).PickChoiceCommand}"
+                                    CommandParameter="{Binding}">
+                              <StackPanel Width="158" Spacing="3">
+                                <Border Height="112" ClipToBounds="True" CornerRadius="2"
+                                        Background="{DynamicResource FieldBrush}"
+                                        BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
+                                  <Panel>
+                                    <TextBlock Text="{Binding Glyph}" FontSize="28" Classes="dim"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    <Image Source="{Binding Preview}" Stretch="Uniform" />
+                                  </Panel>
+                                </Border>
+                                <TextBlock Text="{Binding Display}" FontSize="11"
+                                           TextTrimming="CharacterEllipsis" />
+                                <Grid ColumnDefinitions="*,Auto">
+                                  <TextBlock Grid.Column="0" Text="{Binding Details}" Classes="mono"
+                                             FontSize="10" TextTrimming="CharacterEllipsis" />
+                                  <TextBlock Grid.Column="1" Text="{Binding Group}" Classes="count"
+                                             FontSize="10" IsVisible="{Binding HasGroup}" />
+                                </Grid>
+                              </StackPanel>
+                            </Button>
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                      <Button Content="Load more" Margin="3,8" HorizontalAlignment="Center"
+                              Command="{Binding LoadMoreGalleryCommand}"
+                              IsVisible="{Binding CanLoadMore}" />
+                    </StackPanel>
+                  </ScrollViewer>
+                </Grid>
+              </Border>
+            </Popup>
+          </Grid>
+        </StackPanel>
+
         <TextBlock Grid.Column="2" Margin="8,0,0,0" VerticalAlignment="Center" Classes="count"
                    Text="{Binding StatusText}"
                    IsVisible="{Binding StatusText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}" Classes="dim"
+                   FontSize="11" TextWrapping="Wrap" Margin="0,3,0,3"
+                   IsVisible="{Binding HasDescription}" />
       </Grid>
     </DataTemplate>
 

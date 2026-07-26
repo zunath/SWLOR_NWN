@@ -63,8 +63,14 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         /// <summary>Crafting skill enum value to display name, read from <c>SkillType</c>.</summary>
         IReadOnlyDictionary<int, string> SkillTypes { get; }
 
+        /// <summary>Active player-market region value to display name.</summary>
+        IReadOnlyDictionary<int, string> MarketRegions { get; }
+
         /// <summary>Visual effect id to enum name, read from <c>VisualEffect</c>.</summary>
         IReadOnlyDictionary<int, string> VisualEffects { get; }
+
+        /// <summary>Screenshot and selection metadata for visual effects documented by the project.</summary>
+        IReadOnlyDictionary<int, VisualEffectReferenceInfo> VisualEffectReferences { get; }
 
         /// <summary>True if <paramref name="lootTableId"/> matches a declared loot table.</summary>
         bool IsValidLootTableId(string lootTableId);

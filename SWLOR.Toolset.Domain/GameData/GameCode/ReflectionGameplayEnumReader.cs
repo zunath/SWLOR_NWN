@@ -1,4 +1,5 @@
 using System.Reflection;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -28,9 +29,30 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
 
                 var field = typeof(SkillType).GetField(value.ToString());
                 var attribute = field?.GetCustomAttribute<SkillAttribute>();
+                if (attribute?.IsActive != true || !attribute.IsShownInCraftMenu)
+                    continue;
+
                 var name = attribute?.Name;
 
                 result[(int)value] = string.IsNullOrWhiteSpace(name) ? value.ToString() : name;
+            }
+
+            return result;
+        }
+
+        /// <summary>Active market-region ids with their player-facing names.</summary>
+        public static IReadOnlyDictionary<int, string> ReadMarketRegions()
+        {
+            var result = new Dictionary<int, string>();
+
+            foreach (MarketRegionType value in System.Enum.GetValues<MarketRegionType>())
+            {
+                var field = typeof(MarketRegionType).GetField(value.ToString());
+                var attribute = field?.GetCustomAttribute<MarketRegionAttribute>();
+                if (attribute?.IsActive != true)
+                    continue;
+
+                result[(int)value] = attribute.Name;
             }
 
             return result;

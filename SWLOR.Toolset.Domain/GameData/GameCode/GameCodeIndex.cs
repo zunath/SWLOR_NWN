@@ -37,7 +37,9 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         public IReadOnlyCollection<string> LootTableIds => _lootTableIds;
         public IReadOnlyCollection<string> DialogNames => _dialogNames;
         public IReadOnlyDictionary<int, string> SkillTypes { get; }
+        public IReadOnlyDictionary<int, string> MarketRegions { get; }
         public IReadOnlyDictionary<int, string> VisualEffects { get; }
+        public IReadOnlyDictionary<int, VisualEffectReferenceInfo> VisualEffectReferences { get; }
 
         /// <summary>
         /// Builds the index. <paramref name="gameServerSourceRoot"/> should point at the
@@ -53,7 +55,9 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             NpcGroups = ReflectionEnumReader.ReadNpcGroups();
             KeyItems = ReflectionEnumReader.ReadKeyItems();
             SkillTypes = ReflectionGameplayEnumReader.ReadSkillTypes();
+            MarketRegions = ReflectionGameplayEnumReader.ReadMarketRegions();
             VisualEffects = ReflectionGameplayEnumReader.ReadVisualEffects();
+            VisualEffectReferences = VisualEffectReferenceReader.Read(gameServerSourceRoot);
             _dialogNames = new HashSet<string>(ReflectionDialogReader.ReadDialogNames(), StringComparer.Ordinal);
             Factions = ReflectionEnumReader.ReadFactions();
             Skills = ReflectionEnumReader.ReadSkills();

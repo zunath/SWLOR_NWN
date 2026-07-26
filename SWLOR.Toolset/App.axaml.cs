@@ -193,6 +193,7 @@ namespace SWLOR.Toolset
                 sp.GetService<SoundService>(),
                 sp.GetService<TwoDaLookupService>(),
                 sp.GetService<WaypointAppearanceService>()));
+            services.AddSingleton<Editors.Placeables.VfxPreviewService>();
             services.AddSingleton(sp => new Editors.EditorService(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<Editors.LookupOptionProvider>(),
@@ -215,7 +216,8 @@ namespace SWLOR.Toolset
                 sp.GetService<PlaceableModelCatalog>(),
                 sp.GetService<ThumbnailService>(),
                 sp.GetRequiredService<Workspace.PlaceableIndexService>(),
-                sp.GetService<TwoDaService>()));
+                sp.GetService<TwoDaService>(),
+                sp.GetRequiredService<Editors.Placeables.VfxPreviewService>()));
 
             // One parsed engine header shared by every script tab, built lazily on first use: the
             // header is 13,870 lines, so parsing it per tab would be wasteful and parsing it at

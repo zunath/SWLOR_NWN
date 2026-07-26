@@ -1,6 +1,8 @@
+using Avalonia.Media.Imaging;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.Placeables;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors.Placeables
 {
@@ -18,12 +20,23 @@ namespace SWLOR.Toolset.Editors.Placeables
     {
         private readonly IGameCodeIndex? _gameCode;
         private readonly Func<ModuleTagIndex?> _tags;
+        private readonly Func<ResourceType, IReadOnlyList<CatalogEntry>>? _blueprints;
+        private readonly ThumbnailService? _thumbnails;
+        private readonly VfxPreviewService? _vfxPreviews;
         private readonly Dictionary<PlaceableValueSource, IReadOnlyList<BehaviorChoiceOption>> _cache = new();
 
-        public BehaviorValueSourceProvider(IGameCodeIndex? gameCode, Func<ModuleTagIndex?> tags)
+        public BehaviorValueSourceProvider(
+            IGameCodeIndex? gameCode,
+            Func<ModuleTagIndex?> tags,
+            Func<ResourceType, IReadOnlyList<CatalogEntry>>? blueprints = null,
+            ThumbnailService? thumbnails = null,
+            VfxPreviewService? vfxPreviews = null)
         {
             _gameCode = gameCode;
             _tags = tags;
+            _blueprints = blueprints;
+            _thumbnails = thumbnails;
+            _vfxPreviews = vfxPreviews;
         }
 
         /// <summary>Options for a source, built once per editor session.</summary>
@@ -57,6 +70,31 @@ namespace SWLOR.Toolset.Editors.Placeables
             return options.Any(option => string.Equals(option.Value, value, StringComparison.OrdinalIgnoreCase));
         }
 
+        public Bitmap? CachedPreview(PlaceableValueSource source, BehaviorChoiceOption option)
+        {
+            if (source == PlaceableValueSource.VisualEffects)
+                return _vfxPreviews?.Cached(option.ImageUrl);
+
+            var resourceType = BlueprintType(source);
+            return resourceType == null ? null : _thumbnails?.Cached(resourceType.Value, option.Value);
+        }
+
+        public void RequestPreview(
+            PlaceableValueSource source,
+            BehaviorChoiceOption option,
+            Action<Bitmap> onReady)
+        {
+            if (source == PlaceableValueSource.VisualEffects)
+            {
+                _vfxPreviews?.RequestAsync(option.ImageUrl, onReady);
+                return;
+            }
+
+            var resourceType = BlueprintType(source);
+            if (resourceType != null)
+                _thumbnails?.RequestAsync(resourceType.Value, option.Value, onReady);
+        }
+
         private IReadOnlyList<BehaviorChoiceOption> Build(PlaceableValueSource source)
         {
             try
@@ -70,7 +108,10 @@ namespace SWLOR.Toolset.Editors.Placeables
                     PlaceableValueSource.ObjectTags => FromNames(_tags()?.Tags),
                     PlaceableValueSource.KeyItems => FromIds(_gameCode?.KeyItems),
                     PlaceableValueSource.SkillTypes => FromIds(_gameCode?.SkillTypes),
-                    PlaceableValueSource.VisualEffects => FromIds(_gameCode?.VisualEffects),
+                    PlaceableValueSource.MarketRegions => FromIds(_gameCode?.MarketRegions),
+                    PlaceableValueSource.VisualEffects => FromVisualEffects(),
+                    PlaceableValueSource.PlaceableBlueprints => FromBlueprints(ResourceType.Utp),
+                    PlaceableValueSource.CreatureBlueprints => FromBlueprints(ResourceType.Utc),
                     _ => Array.Empty<BehaviorChoiceOption>()
                 };
             }
@@ -104,5 +145,74 @@ namespace SWLOR.Toolset.Editors.Placeables
                     $"{entry.Value} ({entry.Key})"))
                 .ToList();
         }
+
+        private IReadOnlyList<BehaviorChoiceOption> FromVisualEffects()
+        {
+            if (_gameCode == null)
+                return Array.Empty<BehaviorChoiceOption>();
+
+            return _gameCode.VisualEffects
+                .Select(entry =>
+                {
+                    if (_gameCode.VisualEffectReferences.TryGetValue(entry.Key, out var reference))
+                    {
+                        return new BehaviorChoiceOption(
+                            entry.Key.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                            $"{HumanizeVfxName(entry.Value)} ({entry.Key})",
+                            reference.Group,
+                            VfxDetails(reference),
+                            reference.ImageUrl);
+                    }
+
+                    return new BehaviorChoiceOption(
+                        entry.Key.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                        $"{HumanizeVfxName(entry.Value)} ({entry.Key})");
+                })
+                .OrderBy(option => option.Group ?? "ZZZ", StringComparer.Ordinal)
+                .ThenBy(option => option.Display, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        private IReadOnlyList<BehaviorChoiceOption> FromBlueprints(ResourceType resourceType)
+        {
+            var entries = _blueprints?.Invoke(resourceType);
+            if (entries == null)
+                return Array.Empty<BehaviorChoiceOption>();
+
+            return entries
+                .OrderBy(entry => entry.Name ?? entry.ResRef, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(entry => entry.ResRef, StringComparer.OrdinalIgnoreCase)
+                .Select(entry => new BehaviorChoiceOption(
+                    entry.ResRef,
+                    string.IsNullOrWhiteSpace(entry.Name) ? entry.ResRef : entry.Name,
+                    Details: entry.ResRef))
+                .ToList();
+        }
+
+        private static ResourceType? BlueprintType(PlaceableValueSource source) => source switch
+        {
+            PlaceableValueSource.PlaceableBlueprints => ResourceType.Utp,
+            PlaceableValueSource.CreatureBlueprints => ResourceType.Utc,
+            _ => null
+        };
+
+        private static string HumanizeVfxName(string name)
+        {
+            var value = name.StartsWith("Vfx_", StringComparison.OrdinalIgnoreCase)
+                ? name[4..]
+                : name;
+            return value.Replace('_', ' ');
+        }
+
+        private static string VfxDetails(VisualEffectReferenceInfo reference) =>
+            string.Join(
+                " · ",
+                new[]
+                {
+                    reference.SelectionHint,
+                    reference.VisualTags,
+                    reference.Location,
+                    reference.Colors
+                }.Where(value => !string.IsNullOrWhiteSpace(value)));
     }
 }

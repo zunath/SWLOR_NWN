@@ -37,7 +37,16 @@ namespace SWLOR.Toolset.Domain.Placeables
         /// <summary>Crafting skill enum values (<c>SkillType</c>).</summary>
         SkillTypes,
 
+        /// <summary>Active player-market regions (<c>MarketRegionType</c>).</summary>
+        MarketRegions,
+
         /// <summary>Visual effect ids (<c>VisualEffect</c>).</summary>
-        VisualEffects
+        VisualEffects,
+
+        /// <summary>Placeable blueprints already available in the open module.</summary>
+        PlaceableBlueprints,
+
+        /// <summary>Creature blueprints already available in the open module.</summary>
+        CreatureBlueprints
     }
 }

@@ -57,7 +57,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "scavenge_point",
                     Name = "Scavenge Point",
                     Group = "Gathering",
-                    OwnerFile = "Feature/ScavengePoint.cs",
                     Scripts = new Dictionary<string, string>(StringComparer.Ordinal)
                     {
                         ["OnOpen"] = "scav_opened",
@@ -84,7 +83,10 @@ namespace SWLOR.Toolset.Domain.Placeables
                             VariableName = "SCAVENGE_POINT_LEVEL",
                             Label = "Scavenging level required",
                             Kind = PlaceableFieldKind.Integer,
-                            IsRequired = true
+                            IsRequired = true,
+                            Minimum = 1,
+                            Maximum = 5,
+                            DefaultIntValue = 1
                         }
                     }
                 },
@@ -93,7 +95,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "harvest_node",
                     Name = "Harvest Node",
                     Group = "Gathering",
-                    OwnerFile = "Feature/ItemDefinition/HarvesterItemDefinition.cs",
                     Fields = new[]
                     {
                         new PlaceableBehaviorField
@@ -109,14 +110,19 @@ namespace SWLOR.Toolset.Domain.Placeables
                             VariableName = "HARVESTER_REQUIRED_LEVEL",
                             Label = "Harvesting level required",
                             Kind = PlaceableFieldKind.Integer,
-                            IsRequired = true
+                            IsRequired = true,
+                            Minimum = 1,
+                            Maximum = 5,
+                            DefaultIntValue = 1
                         },
                         new PlaceableBehaviorField
                         {
                             VariableName = "RESOURCE_COUNT",
                             Label = "Charges",
                             Kind = PlaceableFieldKind.Integer,
-                            Description = "How many times it can be harvested before it is used up."
+                            Description = "How many times it can be harvested before it is used up.",
+                            Minimum = 1,
+                            DefaultIntValue = 4
                         }
                     }
                 },
@@ -125,7 +131,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "resource_node",
                     Name = "Resource Node",
                     Group = "Gathering",
-                    OwnerFile = "Feature/Resource.cs",
                     Scripts = new Dictionary<string, string>(StringComparer.Ordinal)
                     {
                         ["OnUsed"] = "res_used",
@@ -137,9 +142,10 @@ namespace SWLOR.Toolset.Domain.Placeables
                         new PlaceableBehaviorField
                         {
                             VariableName = "RESOURCE_PROP",
-                            Label = "Prop resref",
-                            Kind = PlaceableFieldKind.Text,
-                            Description = "Placeable spawned on top of the node as its visible prop."
+                            Label = "Visible placeable",
+                            Kind = PlaceableFieldKind.Choice,
+                            Source = PlaceableValueSource.PlaceableBlueprints,
+                            Description = "Existing placeable blueprint spawned on top of the node."
                         },
                         new PlaceableBehaviorField
                         {
@@ -151,8 +157,10 @@ namespace SWLOR.Toolset.Domain.Placeables
                         new PlaceableBehaviorField
                         {
                             VariableName = "RESOURCE_SPAWN_COUNT",
-                            Label = "Spawn count",
-                            Kind = PlaceableFieldKind.Integer
+                            Label = "Charges",
+                            Kind = PlaceableFieldKind.Integer,
+                            Minimum = 1,
+                            DefaultIntValue = 4
                         }
                     }
                 },
@@ -161,7 +169,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "asteroid",
                     Name = "Asteroid",
                     Group = "Gathering",
-                    OwnerFile = "Service/Space.cs",
                     Fields = new[]
                     {
                         new PlaceableBehaviorField
@@ -184,7 +191,10 @@ namespace SWLOR.Toolset.Domain.Placeables
                             VariableName = "ASTEROID_TIER",
                             Label = "Tier",
                             Kind = PlaceableFieldKind.Integer,
-                            IsRequired = true
+                            IsRequired = true,
+                            Minimum = 1,
+                            Maximum = 5,
+                            DefaultIntValue = 1
                         }
                     }
                 },
@@ -195,7 +205,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "slicing_terminal",
                     Name = "Slicing Terminal",
                     Group = "Terminals",
-                    OwnerFile = "Service/SlicingService/SlicingSession.cs",
                     Scripts = new Dictionary<string, string>(StringComparer.Ordinal)
                     {
                         ["OnUsed"] = "slice_terminal"
@@ -208,14 +217,21 @@ namespace SWLOR.Toolset.Domain.Placeables
                             VariableName = "SLICING_TIER",
                             Label = "Tier",
                             Kind = PlaceableFieldKind.Integer,
-                            IsRequired = true
+                            IsRequired = true,
+                            Minimum = 1,
+                            Maximum = 5,
+                            DefaultIntValue = 1
                         },
                         new PlaceableBehaviorField
                         {
                             VariableName = "SLICING_INTEGRITY",
                             Label = "Integrity",
                             Kind = PlaceableFieldKind.Integer,
-                            IsRequired = true
+                            IsRequired = true,
+                            Minimum = 1,
+                            Maximum = 100,
+                            DefaultIntValue = 100,
+                            Description = "Starting structural integrity (1–100). Failed slicing attempts reduce it; at 0 the terminal is destroyed or respawned."
                         },
                         new PlaceableBehaviorField
                         {
@@ -231,7 +247,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "market_terminal",
                     Name = "Market Terminal",
                     Group = "Terminals",
-                    OwnerFile = "Feature/DialogDefinition/MarketDialog.cs",
                     Scripts = new Dictionary<string, string>(StringComparer.Ordinal)
                     {
                         ["OnUsed"] = "generic_convo"
@@ -243,16 +258,19 @@ namespace SWLOR.Toolset.Domain.Placeables
                         {
                             VariableName = "CONVERSATION",
                             Label = "Dialog",
-                            Kind = PlaceableFieldKind.Choice,
-                            Source = PlaceableValueSource.Dialogs,
-                            IsRequired = true
+                            Kind = PlaceableFieldKind.Text,
+                            IsRequired = true,
+                            DefaultStringValue = "MarketDialog",
+                            IsVisible = false
                         },
                         new PlaceableBehaviorField
                         {
                             VariableName = "MARKET_ID",
                             Label = "Market region",
-                            Kind = PlaceableFieldKind.Integer,
-                            IsRequired = true
+                            Kind = PlaceableFieldKind.Choice,
+                            Source = PlaceableValueSource.MarketRegions,
+                            IsRequired = true,
+                            DefaultIntValue = 1
                         }
                     }
                 },
@@ -261,7 +279,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "workbench",
                     Name = "Workbench",
                     Group = "Terminals",
-                    OwnerFile = "Service/Craft.cs",
                     Scripts = new Dictionary<string, string>(StringComparer.Ordinal)
                     {
                         ["OnUsed"] = "craft_on_used"
@@ -284,7 +301,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "conversation",
                     Name = "Conversation",
                     Group = "Terminals",
-                    OwnerFile = "Feature/PlaceableScripts.cs",
                     Scripts = new Dictionary<string, string>(StringComparer.Ordinal)
                     {
                         ["OnUsed"] = "generic_convo"
@@ -315,7 +331,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "teleporter",
                     Name = "Teleporter",
                     Group = "World",
-                    OwnerFile = "Feature/PlaceableScripts.cs",
                     Scripts = new Dictionary<string, string>(StringComparer.Ordinal)
                     {
                         ["OnUsed"] = "teleport"
@@ -365,7 +380,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "quest_activator",
                     Name = "Quest Activator",
                     Group = "World",
-                    OwnerFile = "Service/QuestService/QuestEncounter.cs",
                     Scripts = new Dictionary<string, string>(StringComparer.Ordinal)
                     {
                         ["OnUsed"] = "quest_enc"
@@ -383,8 +397,9 @@ namespace SWLOR.Toolset.Domain.Placeables
                         new PlaceableBehaviorField
                         {
                             VariableName = "QUEST_ENCOUNTER_RESREF",
-                            Label = "Creature resref",
-                            Kind = PlaceableFieldKind.Text,
+                            Label = "Creature",
+                            Kind = PlaceableFieldKind.Choice,
+                            Source = PlaceableValueSource.CreatureBlueprints,
                             IsRequired = true
                         },
                         new PlaceableBehaviorField
@@ -411,13 +426,19 @@ namespace SWLOR.Toolset.Domain.Placeables
                         {
                             VariableName = "QUEST_ENCOUNTER_COOLDOWN_MINUTES",
                             Label = "Cooldown (minutes)",
-                            Kind = PlaceableFieldKind.Integer
+                            Kind = PlaceableFieldKind.Integer,
+                            Minimum = 1,
+                            DefaultIntValue = 60,
+                            Description = "How long a player must wait before starting this encounter again."
                         },
                         new PlaceableBehaviorField
                         {
                             VariableName = "QUEST_ENCOUNTER_IDLE_MINUTES",
                             Label = "Idle despawn (minutes)",
-                            Kind = PlaceableFieldKind.Integer
+                            Kind = PlaceableFieldKind.Integer,
+                            Minimum = 1,
+                            DefaultIntValue = 10,
+                            Description = "How long the spawned creature may remain uncontested before it despawns."
                         }
                     }
                 },
@@ -426,7 +447,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "visibility_gated",
                     Name = "Visibility-gated",
                     Group = "World",
-                    OwnerFile = "Service/ObjectVisibility.cs",
                     Fields = new[]
                     {
                         new PlaceableBehaviorField
@@ -449,7 +469,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "permanent_vfx",
                     Name = "Permanent VFX",
                     Group = "World",
-                    OwnerFile = "Feature/PlaceableScripts.cs",
                     Scripts = new Dictionary<string, string>(StringComparer.Ordinal)
                     {
                         ["OnHeartbeat"] = "permanent_vfx"
@@ -471,7 +490,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "space_target",
                     Name = "Space Dock",
                     Group = "World",
-                    OwnerFile = "Service/Space.cs",
                     Scripts = new Dictionary<string, string>(StringComparer.Ordinal)
                     {
                         ["OnClick"] = "spc_target"
@@ -485,7 +503,6 @@ namespace SWLOR.Toolset.Domain.Placeables
                     Id = "chair",
                     Name = "Chair",
                     Group = "Props",
-                    OwnerFile = "Feature/PlaceableScripts.cs",
                     Scripts = new Dictionary<string, string>(StringComparer.Ordinal)
                     {
                         ["OnUsed"] = "sit"

@@ -4,6 +4,7 @@ using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Schemas;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.Placeables;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Editors.Placeables;
@@ -50,6 +51,194 @@ namespace SWLOR.Toolset.Tests
                 .IsMultiline.Should().BeTrue();
             schemaFields.Single(field => field.FieldName == "LocName")
                 .IsMultiline.Should().BeFalse();
+
+            UtpSchema.CustomBehaviorScriptFields
+                .Select(field => field.FieldName)
+                .Should().BeEquivalentTo(PlaceableBehaviorDetector.ScriptSlots);
+        }
+
+        [Test]
+        public void Catalog_ConstrainsEngineTiersAndUsesPreviewPickersAndRuntimeDefaults()
+        {
+            Field("scavenge_point", "SCAVENGE_POINT_LEVEL").Maximum.Should().Be(5);
+            Field("harvest_node", "HARVESTER_REQUIRED_LEVEL").Maximum.Should().Be(5);
+            Field("asteroid", "ASTEROID_TIER").Maximum.Should().Be(5);
+            Field("slicing_terminal", "SLICING_TIER").Maximum.Should().Be(5);
+
+            var integrity = Field("slicing_terminal", "SLICING_INTEGRITY");
+            integrity.Minimum.Should().Be(1);
+            integrity.Maximum.Should().Be(100);
+            integrity.DefaultIntValue.Should().Be(100);
+            integrity.Description.Should().Contain("Failed slicing attempts");
+
+            Field("harvest_node", "RESOURCE_COUNT").Label.Should().Be("Charges");
+            Field("resource_node", "RESOURCE_SPAWN_COUNT").Label.Should().Be("Charges");
+            Field("harvest_node", "RESOURCE_COUNT").DefaultIntValue.Should().Be(4);
+            Field("resource_node", "RESOURCE_SPAWN_COUNT").DefaultIntValue.Should().Be(4);
+
+            Field("resource_node", "RESOURCE_PROP").Source
+                .Should().Be(PlaceableValueSource.PlaceableBlueprints);
+            Field("quest_activator", "QUEST_ENCOUNTER_RESREF").Source
+                .Should().Be(PlaceableValueSource.CreatureBlueprints);
+            Field("teleporter", "VISUAL_EFFECT").Source
+                .Should().Be(PlaceableValueSource.VisualEffects);
+            Field("permanent_vfx", "PERMANENT_VFX_ID").Source
+                .Should().Be(PlaceableValueSource.VisualEffects);
+
+            var marketDialog = Field("market_terminal", "CONVERSATION");
+            marketDialog.IsVisible.Should().BeFalse();
+            marketDialog.DefaultStringValue.Should().Be("MarketDialog");
+            Field("market_terminal", "MARKET_ID").Source.Should().Be(PlaceableValueSource.MarketRegions);
+            Field("market_terminal", "MARKET_ID").DefaultIntValue.Should().Be(1);
+
+            Field("quest_activator", "QUEST_ENCOUNTER_COOLDOWN_MINUTES").DefaultIntValue.Should().Be(60);
+            Field("quest_activator", "QUEST_ENCOUNTER_IDLE_MINUTES").DefaultIntValue.Should().Be(10);
+        }
+
+        [Test]
+        public void Apply_WritesSensibleDefaultsWithoutReplacingExistingValues()
+        {
+            var slicingDocument = BuildDocument();
+            var slicing = PlaceableBehaviorCatalog.FindById("slicing_terminal")!;
+            PlaceableBehaviorApplier.Apply(
+                slicingDocument.Root,
+                PlaceableBehaviorCatalog.None,
+                slicing);
+
+            var slicingVariables = new VarTable(slicingDocument.Root);
+            slicingVariables.Single(entry => entry.Name == "SLICING_TIER").IntValue.Should().Be(1);
+            slicingVariables.Single(entry => entry.Name == "SLICING_INTEGRITY").IntValue.Should().Be(100);
+
+            var marketDocument = BuildDocument();
+            var market = PlaceableBehaviorCatalog.FindById("market_terminal")!;
+            var conversation = PlaceableBehaviorCatalog.FindById("conversation")!;
+            new VarTable(marketDocument.Root).SetString("CONVERSATION", "SomeOtherDialog");
+            PlaceableBehaviorApplier
+                .ValuesLostBySwitching(marketDocument.Root, conversation, market)
+                .Should().Contain("CONVERSATION");
+            PlaceableBehaviorApplier.Apply(
+                marketDocument.Root,
+                conversation,
+                market);
+
+            var marketVariables = new VarTable(marketDocument.Root);
+            marketVariables.Single(entry => entry.Name == "CONVERSATION").StringValue.Should().Be("MarketDialog");
+            marketVariables.Single(entry => entry.Name == "MARKET_ID").IntValue.Should().Be(1);
+
+            var questDocument = BuildDocument();
+            var quest = PlaceableBehaviorCatalog.FindById("quest_activator")!;
+            var questVariables = new VarTable(questDocument.Root);
+            questVariables.SetInt("QUEST_ENCOUNTER_COOLDOWN_MINUTES", 15);
+            PlaceableBehaviorApplier.Apply(
+                questDocument.Root,
+                PlaceableBehaviorCatalog.None,
+                quest);
+
+            questVariables.Single(entry => entry.Name == "QUEST_ENCOUNTER_COOLDOWN_MINUTES")
+                .IntValue.Should().Be(15, "an authored value must win over the default");
+            questVariables.Single(entry => entry.Name == "QUEST_ENCOUNTER_IDLE_MINUTES")
+                .IntValue.Should().Be(10);
+        }
+
+        [Test]
+        public void GameCodePickerData_UsesOnlyCraftMenuSkillsAndDocumentsEveryVfxGroup()
+        {
+            var sourceRoot = FindGameServerSource();
+            if (sourceRoot == null)
+                Assert.Ignore("SWLOR.Game.Server source not found from the test context.");
+
+            var index = new GameCodeIndex(sourceRoot);
+            index.SkillTypes.Keys.Should().BeEquivalentTo(new[] { 9, 10, 31, 32, 49 });
+            index.MarketRegions.Should().ContainSingle(entry =>
+                entry.Key == 1 && entry.Value == "Global");
+            index.VisualEffectReferences.Values
+                .Select(reference => reference.Group)
+                .Distinct()
+                .Should().BeEquivalentTo("BEAM", "COM", "DUR", "EYES", "FNF", "IMP");
+            index.VisualEffectReferences.Should().HaveCountGreaterThan(500);
+            index.VisualEffectReferences.Values
+                .Where(reference => !string.IsNullOrWhiteSpace(reference.ImageUrl))
+                .Should().OnlyContain(reference => Uri.IsWellFormedUriString(
+                    reference.ImageUrl,
+                    UriKind.Absolute));
+        }
+
+        [Test]
+        public void BehaviorView_DoesNotShowTheRemovedManagementSummary()
+        {
+            var viewPath = Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset",
+                "Editors",
+                "Views",
+                "BlueprintEditorView.axaml");
+            var view = File.ReadAllText(viewPath);
+
+            view.Should().NotContain("WHAT THIS BEHAVIOR MANAGES");
+            view.Should().Contain("ItemsSource=\"{Binding CustomScriptFields}\"");
+        }
+
+        [Test]
+        public void BehaviorFields_ClampNumbersAndGalleryChoicesWriteAndClearResrefs()
+        {
+            var document = BuildDocument();
+            var context = new EditorFieldContext(
+                document,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+
+            var number = new BehaviorFieldViewModel(
+                new PlaceableBehaviorField
+                {
+                    VariableName = "LEVEL",
+                    Label = "Level",
+                    Kind = PlaceableFieldKind.Integer,
+                    Minimum = 1,
+                    Maximum = 5
+                },
+                context,
+                new BehaviorValueSourceProvider(gameCode: null, tags: () => null));
+            number.Number = 12;
+            number.Number.Should().Be(5);
+            new VarTable(document.Root).Single(entry => entry.Name == "LEVEL").IntValue.Should().Be(5);
+
+            var gallerySource = new BehaviorValueSourceProvider(
+                gameCode: null,
+                tags: () => null,
+                blueprints: type => type == Domain.Workspace.ResourceType.Utp
+                    ? new[]
+                    {
+                        new Domain.Workspace.CatalogEntry(
+                            type,
+                            "visible_prop",
+                            "Visible Prop",
+                            null,
+                            "visible_prop.utp.json")
+                    }
+                    : Array.Empty<Domain.Workspace.CatalogEntry>());
+            var gallery = new BehaviorFieldViewModel(
+                new PlaceableBehaviorField
+                {
+                    VariableName = "RESOURCE_PROP",
+                    Label = "Visible placeable",
+                    Kind = PlaceableFieldKind.Choice,
+                    Source = PlaceableValueSource.PlaceableBlueprints
+                },
+                context,
+                gallerySource);
+
+            gallery.IsGalleryChoice.Should().BeTrue();
+            gallery.GalleryTiles.Should().ContainSingle();
+            gallery.PickChoiceCommand.Execute(gallery.GalleryTiles.Single());
+            new VarTable(document.Root).Single(entry => entry.Name == "RESOURCE_PROP")
+                .StringValue.Should().Be("visible_prop");
+
+            gallery.CanClearChoice.Should().BeTrue();
+            gallery.ClearChoiceCommand.Execute(null);
+            new VarTable(document.Root).Should().NotContain(entry => entry.Name == "RESOURCE_PROP");
         }
 
         [Test]
@@ -423,6 +612,10 @@ namespace SWLOR.Toolset.Tests
 
         private static JsonGffStruct BuildPlaceable(params (string Slot, string Script)[] scripts) =>
             BuildDocument(scripts).Root;
+
+        private static PlaceableBehaviorField Field(string behaviorId, string variableName) =>
+            PlaceableBehaviorCatalog.FindById(behaviorId)!.Fields
+                .Single(field => field.VariableName == variableName);
 
         private static PlaceableBehaviorSectionViewModel BuildBehaviorSection()
         {

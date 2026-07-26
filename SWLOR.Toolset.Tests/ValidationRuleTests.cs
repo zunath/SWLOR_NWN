@@ -868,7 +868,12 @@ namespace SWLOR.Toolset.Tests
 
         public IReadOnlyDictionary<int, string> SkillTypes => new Dictionary<int, string>();
 
+        public IReadOnlyDictionary<int, string> MarketRegions => new Dictionary<int, string>();
+
         public IReadOnlyDictionary<int, string> VisualEffects => new Dictionary<int, string>();
+
+        public IReadOnlyDictionary<int, VisualEffectReferenceInfo> VisualEffectReferences =>
+            new Dictionary<int, VisualEffectReferenceInfo>();
 
         public bool IsValidNpcGroup(int npcGroupValue) => _validNpcGroups.Contains(npcGroupValue);
 

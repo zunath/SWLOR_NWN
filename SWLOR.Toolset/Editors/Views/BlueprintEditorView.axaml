@@ -174,20 +174,12 @@
               <TextBlock Text="FLAGS" Classes="label" />
               <ItemsControl ItemsSource="{Binding CustomFlagFields}" />
             </StackPanel>
+            <StackPanel Spacing="6" IsVisible="{Binding ShowsCustomScripts}">
+              <TextBlock Text="SCRIPTS" Classes="label" />
+              <ItemsControl ItemsSource="{Binding CustomScriptFields}" />
+            </StackPanel>
             <TextBlock Text="This behavior has no settings of its own." Classes="dim" FontSize="11.5"
                        IsVisible="{Binding !HasSettings}" />
-
-            <Border Height="1" Background="{DynamicResource RuleBrush}" Margin="0,2" />
-
-            <TextBlock Text="WHAT THIS BEHAVIOR MANAGES" Classes="label" />
-            <TextBlock Text="{Binding ManagedScripts}" Classes="mono" FontSize="11" TextWrapping="Wrap"
-                       IsVisible="{Binding ManagedScripts, Converter={x:Static ObjectConverters.IsNotNull}}" />
-            <TextBlock Text="{Binding ManagedFlags}" Classes="mono" FontSize="11" TextWrapping="Wrap"
-                       IsVisible="{Binding ManagedFlags, Converter={x:Static ObjectConverters.IsNotNull}}" />
-            <TextBlock Text="Nothing - no scripts and no flags." Classes="dim" FontSize="11.5"
-                       IsVisible="{Binding ManagedScripts, Converter={x:Static ObjectConverters.IsNull}}" />
-            <TextBlock Text="{Binding OwnerFile}" Classes="mono" FontSize="11"
-                       IsVisible="{Binding OwnerFile, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
           </StackPanel>
         </ScrollViewer>
       </Grid>

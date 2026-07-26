@@ -27,8 +27,12 @@ namespace SWLOR.Toolset.Domain.Placeables
             ArgumentNullException.ThrowIfNull(from);
             ArgumentNullException.ThrowIfNull(to);
 
-            var kept = new HashSet<string>(to.VariableNames, StringComparer.Ordinal);
             var table = new VarTable(root);
+            var kept = new HashSet<string>(
+                to.Fields
+                    .Where(field => field.IsVisible || AlreadyHasFixedValue(table, field))
+                    .Select(field => field.VariableName),
+                StringComparer.Ordinal);
             var losses = new List<string>();
 
             if (ReferenceEquals(from, PlaceableBehaviorCatalog.Custom))
@@ -77,11 +81,13 @@ namespace SWLOR.Toolset.Domain.Placeables
 
             foreach (var flag in to.Flags)
                 SetInteger(root, flag.FieldName, flag.Value ? 1 : 0, GffFieldType.Byte);
+
+            WriteDefaults(root, to);
         }
 
         /// <summary>
-        /// Whether a script slot is written by the behavior rather than by hand. The Advanced tab
-        /// locks these, and unlocking is what the module's 53 one-off script sets need.
+        /// Whether a script slot is written by a named behavior rather than by hand. Custom exposes
+        /// the raw slot beneath its flags; named behaviors keep their own wiring authoritative.
         /// </summary>
         public static bool OwnsScriptSlot(PlaceableBehavior behavior, string slot) =>
             behavior.Scripts.ContainsKey(slot);
@@ -163,6 +169,25 @@ namespace SWLOR.Toolset.Domain.Placeables
             }
         }
 
+        private static void WriteDefaults(JsonGffStruct root, PlaceableBehavior behavior)
+        {
+            var table = new VarTable(root);
+            foreach (var field in behavior.Fields)
+            {
+                var hasExisting = table.Any(entry =>
+                    string.Equals(entry.Name, field.VariableName, StringComparison.Ordinal));
+                if (hasExisting && field.IsVisible)
+                {
+                    continue;
+                }
+
+                if (field.DefaultIntValue is { } intValue)
+                    table.SetInt(field.VariableName, intValue);
+                else if (!string.IsNullOrWhiteSpace(field.DefaultStringValue))
+                    table.SetString(field.VariableName, field.DefaultStringValue);
+            }
+        }
+
         private static bool HasValue(VarTable table, string name)
         {
             var entry = table.FirstOrDefault(candidate =>
@@ -178,6 +203,26 @@ namespace SWLOR.Toolset.Domain.Placeables
                 VarTable.TypeFloat => entry.FloatValue is not (null or 0f),
                 _ => true
             };
+        }
+
+        private static bool AlreadyHasFixedValue(VarTable table, PlaceableBehaviorField field)
+        {
+            if (field.IsVisible)
+                return true;
+
+            var entry = table.FirstOrDefault(candidate =>
+                string.Equals(candidate.Name, field.VariableName, StringComparison.Ordinal));
+            if (entry == null)
+                return false;
+
+            if (field.DefaultIntValue is { } intValue)
+                return entry.IntValue == intValue;
+
+            return !string.IsNullOrWhiteSpace(field.DefaultStringValue) &&
+                   string.Equals(
+                       entry.StringValue,
+                       field.DefaultStringValue,
+                       StringComparison.Ordinal);
         }
 
         private static void SetString(JsonGffStruct root, string fieldName, string value, GffFieldType type)

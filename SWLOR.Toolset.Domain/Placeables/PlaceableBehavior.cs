@@ -50,9 +50,6 @@ namespace SWLOR.Toolset.Domain.Placeables
         /// <summary>The local variables that configure this behavior, in the order shown.</summary>
         public IReadOnlyList<PlaceableBehaviorField> Fields { get; init; } = Array.Empty<PlaceableBehaviorField>();
 
-        /// <summary>The game-code file that consumes this behavior, shown as a jump target.</summary>
-        public string? OwnerFile { get; init; }
-
         /// <summary>
         /// True for the two behaviors that describe an absence rather than a system: "None" (a
         /// decor prop) and "Custom" (wiring no declaration covers). Neither writes anything.

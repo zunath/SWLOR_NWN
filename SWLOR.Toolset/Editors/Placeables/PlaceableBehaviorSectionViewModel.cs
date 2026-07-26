@@ -8,8 +8,8 @@ using SWLOR.Toolset.Services;
 namespace SWLOR.Toolset.Editors.Placeables
 {
     /// <summary>
-    /// The Behavior tab: every behavior listed down the left, the selected one's typed fields on the
-    /// right, and a note of the script slots and flags it manages.
+    /// The Behavior tab: every behavior listed down the left and the selected one's typed fields on
+    /// the right. Custom exposes its raw flags and event scripts in the same place.
     /// </summary>
     /// <remarks>
     /// The list is deliberately all on screen rather than behind a picker. Choosing what a placeable
@@ -34,7 +34,8 @@ namespace SWLOR.Toolset.Editors.Placeables
             EditorFieldContext context,
             BehaviorValueSourceProvider sources,
             IEditorPromptService prompts,
-            Func<string, Action, bool> runEdit)
+            Func<string, Action, bool> runEdit,
+            IScriptSlotHost? scriptSlotHost = null)
         {
             _context = context;
             _sources = sources;
@@ -50,6 +51,9 @@ namespace SWLOR.Toolset.Editors.Placeables
                         $"Custom placeable flag '{descriptor.FieldName}' must be a checkbox.")
                 });
             }
+
+            foreach (var descriptor in UtpSchema.CustomBehaviorScriptFields)
+                CustomScriptFields.Add(new ScriptFieldViewModel(descriptor, _context, scriptSlotHost));
 
             foreach (var behavior in PlaceableBehaviorCatalog.Behaviors)
             {
@@ -78,6 +82,9 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// <summary>Raw root flags shown only for the Custom behavior.</summary>
         public ObservableCollection<FieldViewModel> CustomFlagFields { get; } = new();
 
+        /// <summary>Raw event script slots shown only for the Custom behavior.</summary>
+        public ObservableCollection<ScriptFieldViewModel> CustomScriptFields { get; } = new();
+
         /// <summary>What the placeable is wired as right now.</summary>
         public PlaceableBehavior Current { get; private set; }
 
@@ -86,21 +93,10 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// <summary>True while the raw variable grid should be available; see the Variables tab.</summary>
         public bool AllowsRawEditing => Current.AllowsRawEditing;
 
-        /// <summary>One line naming the script slots this behavior writes, or null when it writes none.</summary>
-        public string? ManagedScripts => Current.Scripts.Count == 0
-            ? null
-            : string.Join("  ·  ", Current.Scripts.Select(slot => $"{slot.Key} = {slot.Value}"));
-
-        /// <summary>One line naming the flags this behavior requires, or null when it requires none.</summary>
-        public string? ManagedFlags => Current.Flags.Count == 0
-            ? null
-            : string.Join("  ·  ", Current.Flags.Select(flag => flag.Value ? flag.FieldName : $"not {flag.FieldName}"));
-
-        public string? OwnerFile => Current.OwnerFile;
-
         public bool HasFields => Fields.Count > 0;
         public bool ShowsCustomFlags => ReferenceEquals(Current, PlaceableBehaviorCatalog.Custom);
-        public bool HasSettings => HasFields || ShowsCustomFlags;
+        public bool ShowsCustomScripts => ReferenceEquals(Current, PlaceableBehaviorCatalog.Custom);
+        public bool HasSettings => HasFields || ShowsCustomFlags || ShowsCustomScripts;
 
         /// <summary>Raised when a behavior switch lands, so the editor can refresh its other tabs.</summary>
         public event Action? BehaviorChanged;
@@ -133,6 +129,8 @@ namespace SWLOR.Toolset.Editors.Placeables
             foreach (var field in Fields)
                 field.RefreshFromDocument();
             foreach (var field in CustomFlagFields)
+                field.RefreshFromDocument();
+            foreach (var field in CustomScriptFields)
                 field.RefreshFromDocument();
         }
 
@@ -200,9 +198,11 @@ namespace SWLOR.Toolset.Editors.Placeables
         private void BuildFields()
         {
             Fields.Clear();
-            foreach (var field in Current.Fields)
+            foreach (var field in Current.Fields.Where(field => field.IsVisible))
                 Fields.Add(new BehaviorFieldViewModel(field, _context, _sources));
             foreach (var field in CustomFlagFields)
+                field.RefreshFromDocument();
+            foreach (var field in CustomScriptFields)
                 field.RefreshFromDocument();
 
             OnPropertyChanged(nameof(HasFields));
@@ -212,11 +212,9 @@ namespace SWLOR.Toolset.Editors.Placeables
         private void NotifyBehaviorProperties()
         {
             OnPropertyChanged(nameof(CurrentName));
-            OnPropertyChanged(nameof(ManagedScripts));
-            OnPropertyChanged(nameof(ManagedFlags));
-            OnPropertyChanged(nameof(OwnerFile));
             OnPropertyChanged(nameof(AllowsRawEditing));
             OnPropertyChanged(nameof(ShowsCustomFlags));
+            OnPropertyChanged(nameof(ShowsCustomScripts));
             OnPropertyChanged(nameof(HasSettings));
         }
 

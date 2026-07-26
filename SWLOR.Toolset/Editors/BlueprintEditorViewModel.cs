@@ -44,7 +44,7 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public ObservableCollection<EditorTabViewModel> Tabs { get; } = new();
 
-        /// <summary>The Advanced tab, held so it can come and go with the Custom behavior.</summary>
+        /// <summary>The raw Conversation tab content, held so Advanced follows Custom.</summary>
         private EditorTabViewModel? _advancedTab;
 
         private EditorTabViewModel? _selectedTab;
@@ -110,7 +110,7 @@ namespace SWLOR.Toolset.Editors
             IEditorPromptService prompts,
             Func<uint, string?>? resolveStrRef = null,
             IScriptSlotHost? scriptSlotHost = null,
-            Func<EditorFieldContext, Func<string, Action, bool>, Placeables.PlaceableEditorSections?>? placeableSections = null,
+            Func<EditorFieldContext, Func<string, Action, bool>, IScriptSlotHost?, Placeables.PlaceableEditorSections?>? placeableSections = null,
             Func<Domain.Workspace.ModuleWorkspace?>? resourceLister = null)
         {
             _scriptSlotHost = scriptSlotHost;
@@ -142,7 +142,7 @@ namespace SWLOR.Toolset.Editors
                     _context.RunEdit, new VarTable(_session.Document.Root), gameCodeIndex);
             }
 
-            PlaceableSections = placeableSections?.Invoke(_context, RunEdit);
+            PlaceableSections = placeableSections?.Invoke(_context, RunEdit, _scriptSlotHost);
             if (PlaceableSections != null)
             {
                 PlaceableSections.Appearance.AppearanceChanged += AfterHistoryChange;
@@ -165,14 +165,15 @@ namespace SWLOR.Toolset.Editors
             {
                 var groups = tabbedGroups
                     .Where(entry => entry.Tab == tabTitle)
+                    .Where(entry => PlaceableSections == null ||
+                                    entry.Group.Title != "Script slots")
                     .Select(entry => entry.Group);
 
                 var title = string.IsNullOrEmpty(tabTitle) ? "Properties" : tabTitle;
                 var tab = new EditorTabViewModel(title, new FieldGroupsViewModel(groups));
 
-                // Advanced exists to hand-edit script slots, and a named behavior writes those
-                // itself - so offering the tab would only invite someone to fight it. It appears
-                // for Custom, which is the wiring no behavior describes.
+                // Advanced holds the raw .dlg conversation slot. Custom event scripts live directly
+                // under Custom on the Behavior tab, while named behaviors own their own scripts.
                 if (PlaceableSections != null && title == Domain.Editors.Schemas.UtpSchema.AdvancedTab)
                 {
                     _advancedTab = tab;
@@ -249,8 +250,7 @@ namespace SWLOR.Toolset.Editors
             else if (!wanted && existing != null)
                 Tabs.Remove(existing);
 
-            // Advanced exists to hand-edit script slots, and a named behavior writes those itself,
-            // so the tab appears only for Custom - the wiring no behavior describes.
+            // Advanced holds the raw .dlg conversation slot and appears only for Custom.
             if (_advancedTab != null && PlaceableSections != null)
             {
                 var wantAdvanced = PlaceableSections.Behavior.AllowsRawEditing;

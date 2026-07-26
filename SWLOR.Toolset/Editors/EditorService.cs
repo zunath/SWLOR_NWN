@@ -40,6 +40,7 @@ namespace SWLOR.Toolset.Editors
         private readonly PlaceableModelCatalog? _placeableModels;
         private readonly ThumbnailService? _thumbnails;
         private readonly PlaceableIndexService? _placeableIndexes;
+        private readonly Placeables.VfxPreviewService? _vfxPreviews;
 
         /// <summary>Supplies the area editor its placement-ghost geometry; null degrades the ghost to a marker.</summary>
         private readonly Workspace.BlueprintPreviewRenderer? _previewRenderer;
@@ -99,11 +100,13 @@ namespace SWLOR.Toolset.Editors
             PlaceableModelCatalog? placeableModels = null,
             ThumbnailService? thumbnails = null,
             PlaceableIndexService? placeableIndexes = null,
-            Domain.GameData.TwoDa.TwoDaService? twoDaService = null)
+            Domain.GameData.TwoDa.TwoDaService? twoDaService = null,
+            Placeables.VfxPreviewService? vfxPreviews = null)
         {
             _placeableModels = placeableModels;
             _thumbnails = thumbnails;
             _placeableIndexes = placeableIndexes;
+            _vfxPreviews = vfxPreviews;
             _workspaceContext = workspaceContext;
             _lookups = lookups;
             _log = log;
@@ -415,7 +418,9 @@ namespace SWLOR.Toolset.Editors
         /// placeable never pays for them.
         /// </summary>
         private Placeables.PlaceableEditorSections? CreatePlaceableSections(
-            EditorFieldContext context, Func<string, Action, bool> runEdit)
+            EditorFieldContext context,
+            Func<string, Action, bool> runEdit,
+            IScriptSlotHost? scriptSlotHost)
         {
             // No 2DA layer means no model grid, so the placeable opens with the plain tabs rather
             // than an Appearance tab that could only ever be empty.
@@ -426,7 +431,10 @@ namespace SWLOR.Toolset.Editors
 
             var values = new Placeables.BehaviorValueSourceProvider(
                 _gameCodeIndex,
-                () => _placeableIndexes?.Tags);
+                () => _placeableIndexes?.Tags,
+                BlueprintChoices,
+                _thumbnails,
+                _vfxPreviews);
 
             var appearance = new Placeables.AppearanceSectionViewModel(
                 context,
@@ -440,9 +448,31 @@ namespace SWLOR.Toolset.Editors
                 modelResRef => _tileModelCache?.GetOrBuildPlaceablePreview(modelResRef));
 
             var behavior = new Placeables.PlaceableBehaviorSectionViewModel(
-                context, values, _prompts, runEdit);
+                context, values, _prompts, runEdit, scriptSlotHost);
 
             return new Placeables.PlaceableEditorSections(appearance, behavior);
+        }
+
+        private IReadOnlyList<CatalogEntry> BlueprintChoices(ResourceType type)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<CatalogEntry>();
+
+            var indexed = (_workspaceContext.Catalog?.Entries ?? Array.Empty<CatalogEntry>())
+                .Where(entry => entry.ResourceType == type)
+                .ToDictionary(entry => entry.ResRef, StringComparer.OrdinalIgnoreCase);
+
+            return workspace.EnumerateResRefs(type)
+                .Select(resRef => indexed.TryGetValue(resRef, out var entry)
+                    ? entry
+                    : new CatalogEntry(
+                        type,
+                        resRef,
+                        null,
+                        null,
+                        workspace.GetResourcePath(type, resRef)))
+                .ToList();
         }
 
         /// <summary>

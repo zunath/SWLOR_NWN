@@ -28,6 +28,30 @@ namespace SWLOR.Toolset.Domain.Placeables
         /// <summary>Optional help text shown under the control.</summary>
         public string? Description { get; init; }
 
+        /// <summary>Smallest value the numeric editor accepts, when the game has a real lower bound.</summary>
+        public int? Minimum { get; init; }
+
+        /// <summary>Largest value the numeric editor accepts, when the game has a real upper bound.</summary>
+        public int? Maximum { get; init; }
+
+        /// <summary>
+        /// Initial integer value written when this behavior is selected and the variable is absent.
+        /// Existing authored values are never replaced.
+        /// </summary>
+        public int? DefaultIntValue { get; init; }
+
+        /// <summary>
+        /// Initial string value written when this behavior is selected and the variable is absent.
+        /// Existing authored values are never replaced.
+        /// </summary>
+        public string? DefaultStringValue { get; init; }
+
+        /// <summary>
+        /// False for a fixed implementation detail the behavior owns but the builder should not
+        /// have to choose, such as the market terminal's conversation class.
+        /// </summary>
+        public bool IsVisible { get; init; } = true;
+
         /// <summary>
         /// The VarTable type this field is stored as: <see cref="VarTable.TypeInt"/> for numbers
         /// and toggles, <see cref="VarTable.TypeString"/> for text. Choice fields follow their
@@ -39,6 +63,7 @@ namespace SWLOR.Toolset.Domain.Placeables
             PlaceableFieldKind.Toggle => VarTable.TypeInt,
             PlaceableFieldKind.Choice => Source is PlaceableValueSource.KeyItems
                 or PlaceableValueSource.SkillTypes
+                or PlaceableValueSource.MarketRegions
                 or PlaceableValueSource.VisualEffects
                 ? VarTable.TypeInt
                 : VarTable.TypeString,

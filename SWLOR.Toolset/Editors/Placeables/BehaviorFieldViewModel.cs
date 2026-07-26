@@ -1,5 +1,8 @@
 using System.Globalization;
+using System.Collections.ObjectModel;
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Placeables;
 
@@ -16,9 +19,13 @@ namespace SWLOR.Toolset.Editors.Placeables
     /// </remarks>
     public partial class BehaviorFieldViewModel : ObservableObject
     {
+        private const int GalleryPageSize = 48;
         private readonly EditorFieldContext _context;
         private readonly PlaceableBehaviorField _field;
         private readonly BehaviorValueSourceProvider _sources;
+        private List<BehaviorChoiceOption> _galleryMatches = new();
+        private int _galleryPublished;
+        private bool _hasStoredValue;
 
         [ObservableProperty]
         private string _text = string.Empty;
@@ -38,6 +45,15 @@ namespace SWLOR.Toolset.Editors.Placeables
         [ObservableProperty]
         private string? _statusText;
 
+        [ObservableProperty]
+        private string _galleryQuery = string.Empty;
+
+        [ObservableProperty]
+        private bool _isGalleryOpen;
+
+        [ObservableProperty]
+        private Bitmap? _selectedPreview;
+
         public BehaviorFieldViewModel(
             PlaceableBehaviorField field,
             EditorFieldContext context,
@@ -49,17 +65,31 @@ namespace SWLOR.Toolset.Editors.Placeables
             Options = sources.GetOptions(field.Source);
 
             RefreshFromDocument();
+            RebuildGallery();
         }
 
         public string Label => _field.Label;
         public string VariableName => _field.VariableName;
         public string? Description => _field.Description;
+        public bool HasDescription => !string.IsNullOrWhiteSpace(Description);
         public bool IsRequired => _field.IsRequired;
+        public decimal Minimum => _field.Minimum ?? int.MinValue;
+        public decimal Maximum => _field.Maximum ?? int.MaxValue;
 
         public IReadOnlyList<BehaviorChoiceOption> Options { get; }
+        public ObservableCollection<BehaviorGalleryTileViewModel> GalleryTiles { get; } = new();
 
         public bool IsToggle => _field.Kind == PlaceableFieldKind.Toggle;
-        public bool IsInteger => _field.Kind == PlaceableFieldKind.Integer;
+        public bool IsInteger => _field.Kind == PlaceableFieldKind.Integer ||
+                                 (_field.Kind == PlaceableFieldKind.Choice &&
+                                  _field.VarType == VarTable.TypeInt &&
+                                  Options.Count == 0);
+        public bool IsGalleryChoice =>
+            _field.Kind == PlaceableFieldKind.Choice &&
+            _field.Source is PlaceableValueSource.PlaceableBlueprints
+                or PlaceableValueSource.CreatureBlueprints
+                or PlaceableValueSource.VisualEffects &&
+            Options.Count > 0;
 
         /// <summary>
         /// A name-valued choice (loot table, quest, tag). Rendered as a suggestion box rather than a
@@ -68,15 +98,31 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// </summary>
         public bool IsNameChoice => _field.Kind == PlaceableFieldKind.Choice &&
                                     _field.VarType == VarTable.TypeString &&
+                                    !IsGalleryChoice &&
                                     Options.Count > 0;
 
         /// <summary>An id-valued choice (key item, skill, visual effect), rendered as a combo box.</summary>
         public bool IsIdChoice => _field.Kind == PlaceableFieldKind.Choice &&
                                   _field.VarType == VarTable.TypeInt &&
+                                  !IsGalleryChoice &&
                                   Options.Count > 0;
 
         /// <summary>Free text, and the fallback whenever a choice source produced no options.</summary>
-        public bool IsText => !IsToggle && !IsInteger && !IsNameChoice && !IsIdChoice;
+        public bool IsText => !IsToggle && !IsInteger && !IsNameChoice && !IsIdChoice && !IsGalleryChoice;
+        public string SelectedDisplay => SelectedOption?.Display ??
+                                         (string.IsNullOrWhiteSpace(Text) ? "Not selected" : Text);
+        public string? SelectedDetails => SelectedOption?.Details;
+        public bool HasSelectedDetails => !string.IsNullOrWhiteSpace(SelectedDetails);
+        public string SelectedGlyph => string.IsNullOrWhiteSpace(SelectedDisplay)
+            ? "?"
+            : SelectedDisplay.Trim()[..1].ToUpperInvariant();
+        public bool CanLoadMore => _galleryPublished < _galleryMatches.Count;
+        public bool CanClearChoice => IsGalleryChoice && !IsRequired && _hasStoredValue;
+        public string GallerySummary => _galleryMatches.Count == 0
+            ? "No matches"
+            : _galleryPublished >= _galleryMatches.Count
+                ? $"{_galleryMatches.Count} choice{(_galleryMatches.Count == 1 ? string.Empty : "s")}"
+                : $"{_galleryPublished} of {_galleryMatches.Count} choices";
 
         public void RefreshFromDocument()
         {
@@ -88,13 +134,14 @@ namespace SWLOR.Toolset.Editors.Placeables
                 var table = new VarTable(_context.Document.Root);
                 var entry = table.FirstOrDefault(candidate =>
                     string.Equals(candidate.Name, _field.VariableName, StringComparison.Ordinal));
+                _hasStoredValue = entry != null;
 
                 if (_field.VarType == VarTable.TypeInt)
                 {
                     var value = entry?.IntValue ?? 0;
                     Number = value;
                     Flag = value != 0;
-                    Text = entry == null ? string.Empty : value.ToString(CultureInfo.InvariantCulture);
+                    Text = _hasStoredValue ? value.ToString(CultureInfo.InvariantCulture) : string.Empty;
                     SelectedOption = Options.FirstOrDefault(option =>
                         string.Equals(option.Value, Text, StringComparison.Ordinal));
                 }
@@ -105,7 +152,9 @@ namespace SWLOR.Toolset.Editors.Placeables
                         string.Equals(option.Value, Text, StringComparison.OrdinalIgnoreCase));
                 }
 
+                UpdateSelectedChoice(SelectedOption);
                 UpdateStatus();
+                OnPropertyChanged(nameof(CanClearChoice));
             }
             finally
             {
@@ -121,18 +170,38 @@ namespace SWLOR.Toolset.Editors.Placeables
             Write(table =>
             {
                 if (string.IsNullOrWhiteSpace(value))
+                {
                     table.Remove(_field.VariableName);
+                    _hasStoredValue = false;
+                }
                 else
+                {
                     table.SetString(_field.VariableName, value);
+                    _hasStoredValue = true;
+                }
             });
         }
 
         partial void OnNumberChanged(long value)
         {
-            if (_context.IsRefreshing || _field.Kind != PlaceableFieldKind.Integer)
+            if (_context.IsRefreshing || !IsInteger)
                 return;
 
-            Write(table => table.SetInt(_field.VariableName, (int)value));
+            var clamped = Math.Clamp(
+                value,
+                _field.Minimum ?? int.MinValue,
+                _field.Maximum ?? int.MaxValue);
+            if (clamped != value)
+            {
+                Number = clamped;
+                return;
+            }
+
+            Write(table =>
+            {
+                table.SetInt(_field.VariableName, (int)value);
+                _hasStoredValue = true;
+            });
         }
 
         partial void OnFlagChanged(bool value)
@@ -151,18 +220,85 @@ namespace SWLOR.Toolset.Editors.Placeables
 
         partial void OnSelectedOptionChanged(BehaviorChoiceOption? value)
         {
+            UpdateSelectedChoice(value);
             if (_context.IsRefreshing || value == null)
                 return;
 
             if (_field.VarType == VarTable.TypeInt)
             {
                 if (int.TryParse(value.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed))
-                    Write(table => table.SetInt(_field.VariableName, parsed));
+                {
+                    Write(table =>
+                    {
+                        table.SetInt(_field.VariableName, parsed);
+                        _hasStoredValue = true;
+                    });
+                }
 
                 return;
             }
 
             Text = value.Value;
+        }
+
+        partial void OnGalleryQueryChanged(string value) => RebuildGallery();
+
+        [RelayCommand]
+        private void OpenGallery()
+        {
+            RebuildGallery();
+            IsGalleryOpen = true;
+        }
+
+        [RelayCommand]
+        private void PickChoice(BehaviorGalleryTileViewModel? tile)
+        {
+            if (tile == null)
+                return;
+
+            SelectedOption = tile.Choice;
+            IsGalleryOpen = false;
+        }
+
+        [RelayCommand]
+        private void LoadMoreGallery()
+        {
+            PublishGalleryPage();
+        }
+
+        [RelayCommand]
+        private void ClearChoice()
+        {
+            if (!CanClearChoice)
+                return;
+
+            var applied = _context.RunEdit(
+                $"Clear {Label}",
+                () => new VarTable(_context.Document.Root).Remove(_field.VariableName));
+            if (!applied)
+            {
+                RefreshFromDocument();
+                return;
+            }
+
+            var wasRefreshing = _context.IsRefreshing;
+            _context.IsRefreshing = true;
+            try
+            {
+                _hasStoredValue = false;
+                SelectedOption = null;
+                Text = string.Empty;
+                Number = 0;
+                SelectedPreview = null;
+            }
+            finally
+            {
+                _context.IsRefreshing = wasRefreshing;
+            }
+
+            UpdateSelectedChoice(null);
+            UpdateStatus();
+            OnPropertyChanged(nameof(CanClearChoice));
         }
 
         private void Write(Action<VarTable> mutation)
@@ -171,7 +307,10 @@ namespace SWLOR.Toolset.Editors.Placeables
                 () => mutation(new VarTable(_context.Document.Root)));
 
             if (applied)
+            {
                 UpdateStatus();
+                OnPropertyChanged(nameof(CanClearChoice));
+            }
             else
                 RefreshFromDocument();
         }
@@ -179,7 +318,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         private void UpdateStatus()
         {
             var stored = _field.VarType == VarTable.TypeInt
-                ? (SelectedOption?.Value ?? Text)
+                ? (_hasStoredValue ? (SelectedOption?.Value ?? Number.ToString(CultureInfo.InvariantCulture)) : string.Empty)
                 : Text;
 
             if (string.IsNullOrWhiteSpace(stored))
@@ -211,8 +350,59 @@ namespace SWLOR.Toolset.Editors.Placeables
                 PlaceableValueSource.Dialogs => "no conversation class with this name",
                 PlaceableValueSource.Quests => "no quest with this id",
                 PlaceableValueSource.SpawnTables => "no spawn table with this id",
+                PlaceableValueSource.PlaceableBlueprints => "no placeable blueprint with this resref",
+                PlaceableValueSource.CreatureBlueprints => "no creature blueprint with this resref",
                 _ => "not a known value"
             };
+        }
+
+        private void RebuildGallery()
+        {
+            if (!IsGalleryChoice)
+                return;
+
+            var query = GalleryQuery.Trim();
+            _galleryMatches = Options
+                .Where(option => query.Length == 0 ||
+                                 option.Display.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                                 option.Value.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                                 (option.Group?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                                 (option.Details?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false))
+                .ToList();
+
+            GalleryTiles.Clear();
+            _galleryPublished = 0;
+            PublishGalleryPage();
+        }
+
+        private void PublishGalleryPage()
+        {
+            foreach (var option in _galleryMatches
+                         .Skip(_galleryPublished)
+                         .Take(GalleryPageSize))
+            {
+                var tile = new BehaviorGalleryTileViewModel(option, _field.Source, _sources);
+                GalleryTiles.Add(tile);
+                tile.EnsurePreview();
+            }
+
+            _galleryPublished = GalleryTiles.Count;
+            OnPropertyChanged(nameof(CanLoadMore));
+            OnPropertyChanged(nameof(GallerySummary));
+        }
+
+        private void UpdateSelectedChoice(BehaviorChoiceOption? value)
+        {
+            SelectedPreview = value == null ? null : _sources.CachedPreview(_field.Source, value);
+            if (value != null && SelectedPreview == null)
+            {
+                _sources.RequestPreview(_field.Source, value, bitmap => SelectedPreview = bitmap);
+            }
+
+            OnPropertyChanged(nameof(SelectedDisplay));
+            OnPropertyChanged(nameof(SelectedDetails));
+            OnPropertyChanged(nameof(HasSelectedDetails));
+            OnPropertyChanged(nameof(SelectedGlyph));
         }
     }
 }

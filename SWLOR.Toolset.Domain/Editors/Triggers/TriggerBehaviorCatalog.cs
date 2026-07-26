@@ -238,7 +238,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     {
                         new TriggerFieldDefinition
                         {
-                            Label = "Quest", Name = "QUEST_ID", Kind = TriggerFieldKind.Text,
+                            Label = "Quest ID", Name = "QUEST_ID", Kind = TriggerFieldKind.Text,
                             Storage = TriggerFieldStorage.Local, IsRequired = true
                         },
                         new TriggerFieldDefinition

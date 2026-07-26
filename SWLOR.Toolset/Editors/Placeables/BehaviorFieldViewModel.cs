@@ -19,6 +19,13 @@ namespace SWLOR.Toolset.Editors.Placeables
     public partial class BehaviorFieldViewModel : ObservableObject
     {
         private const int GalleryPageSize = 48;
+
+        /// <summary>
+        /// How many filtered options a searchable row publishes before it stops. Every published
+        /// option is a control realized; a builder narrows the search rather than scrolling past the
+        /// two hundredth result.
+        /// </summary>
+        public const int MaxSearchResults = 200;
         private readonly EditorFieldContext _context;
         private readonly PlaceableBehaviorField _field;
         private readonly BehaviorValueSourceProvider _sources;
@@ -97,19 +104,9 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// </summary>
         public bool IsNameChoice => _field.Kind == PlaceableFieldKind.Choice &&
                                     _field.VarType == VarTable.TypeString &&
-                                    !IsTableChoice &&
                                     !IsSearchableTableChoice &&
                                     !IsGalleryChoice &&
                                     Options.Count > 0;
-
-        /// <summary>
-        /// Loot tables are finite server declarations, so they use a true dropdown rather than the
-        /// free-typing autocomplete needed by the module's five-figure tag collection.
-        /// </summary>
-        public bool IsTableChoice => _field.Kind == PlaceableFieldKind.Choice &&
-                                     _field.VarType == VarTable.TypeString &&
-                                     _field.Source == PlaceableValueSource.LootTables &&
-                                     Options.Count > 0;
 
         /// <summary>
         /// Key items are numerous enough to need a searchable selector. The text filters choices,
@@ -121,12 +118,17 @@ namespace SWLOR.Toolset.Editors.Placeables
                                             Options.Count > 0;
 
         /// <summary>
-        /// Spawn tables use a visible, searchable select list. Builders can browse every valid
-        /// option without knowing part of its name first, while selection still writes the exact
-        /// server table id.
+        /// A server-declared table: spawn or loot. Both use a visible, searchable select list, so a
+        /// builder can browse every valid option without knowing part of its name first, while
+        /// selection still writes the exact declared id.
         /// </summary>
+        /// <remarks>
+        /// Loot tables used to be a drop-down on the grounds that they were a finite set. There are
+        /// 490 of them, which is a set a builder scrolls rather than reads.
+        /// </remarks>
         public bool IsSearchableTableChoice => _field.Kind == PlaceableFieldKind.Choice &&
-                                               _field.Source == PlaceableValueSource.SpawnTables &&
+                                               _field.Source is PlaceableValueSource.SpawnTables
+                                                   or PlaceableValueSource.LootTables &&
                                                _field.VarType == VarTable.TypeString &&
                                                Options.Count > 0;
 
@@ -140,7 +142,7 @@ namespace SWLOR.Toolset.Editors.Placeables
                                   Options.Count > 0;
 
         /// <summary>Free text, and the fallback whenever a choice source produced no options.</summary>
-        public bool IsText => !IsToggle && !IsInteger && !IsNameChoice && !IsTableChoice &&
+        public bool IsText => !IsToggle && !IsInteger && !IsNameChoice &&
                               !IsSearchableChoice && !IsIdChoice && !IsGalleryChoice;
         public string SelectedDisplay => SelectedOption?.Display ??
                                          (string.IsNullOrWhiteSpace(Text)
@@ -162,14 +164,21 @@ namespace SWLOR.Toolset.Editors.Placeables
             : _galleryPublished >= _galleryMatches.Count
                 ? $"{_galleryMatches.Count} choice{(_galleryMatches.Count == 1 ? string.Empty : "s")}"
                 : $"{_galleryPublished} of {_galleryMatches.Count} choices";
-        public string ChoiceSearchWatermark => IsSearchableTableChoice
-            ? "Search spawn tables by name"
-            : "Search key items by name";
+        public string ChoiceSearchWatermark => $"Search {SearchableChoiceNoun}s by name";
+
+        /// <summary>What the searchable list is a list of, for its watermark and count line.</summary>
+        private string SearchableChoiceNoun => _field.Source switch
+        {
+            PlaceableValueSource.SpawnTables => "spawn table",
+            PlaceableValueSource.LootTables => "loot table",
+            _ => "key item"
+        };
+
         public string SearchableChoiceSummary
         {
             get
             {
-                var noun = IsSearchableTableChoice ? "spawn table" : "key item";
+                var noun = SearchableChoiceNoun;
                 if (SearchableOptions.Count == 0)
                     return $"No matching {noun}s";
 
@@ -209,7 +218,7 @@ namespace SWLOR.Toolset.Editors.Placeables
                     // Keep a legacy or misspelled stored table visible in the selector so opening
                     // the editor never hides data. It remains marked dangling until replaced.
                     if (SelectedOption == null &&
-                        (IsTableChoice || IsSearchableTableChoice) &&
+                        IsSearchableTableChoice &&
                         !string.IsNullOrWhiteSpace(Text))
                     {
                         var missing = new BehaviorChoiceOption(Text, $"{Text} (missing)");
@@ -379,7 +388,7 @@ namespace SWLOR.Toolset.Editors.Placeables
                 (option.Details?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false));
 
             SearchableOptions.Clear();
-            foreach (var option in matches)
+            foreach (var option in matches.Take(MaxSearchResults))
                 SearchableOptions.Add(option);
 
             OnPropertyChanged(nameof(SearchableChoiceSummary));

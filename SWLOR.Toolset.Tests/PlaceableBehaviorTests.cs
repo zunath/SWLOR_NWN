@@ -453,13 +453,18 @@ namespace SWLOR.Toolset.Tests
             foreach (var field in fields.Where(field =>
                          field.Source == PlaceableValueSource.LootTables))
             {
+                // 490 loot tables. That is a set a builder scrolls rather than reads, so it gets
+                // the same searchable select list the spawn tables use.
                 var picker = new BehaviorFieldViewModel(field, context, sources);
-                picker.IsTableChoice.Should().BeTrue(
-                    $"{field.Label} should render as a loot-table dropdown");
-                picker.IsSearchableTableChoice.Should().BeFalse();
+                picker.IsSearchableTableChoice.Should().BeTrue(
+                    $"{field.Label} should render as a searchable select list");
+                picker.IsSearchableChoice.Should().BeTrue();
                 picker.IsNameChoice.Should().BeFalse();
                 picker.IsText.Should().BeFalse();
                 picker.Options.Should().NotBeEmpty();
+                picker.ChoiceSearchWatermark.Should().Be("Search loot tables by name");
+                picker.SearchableOptions.Count
+                    .Should().BeLessThanOrEqualTo(BehaviorFieldViewModel.MaxSearchResults);
 
                 picker.SelectedOption = picker.Options.First();
 
@@ -475,10 +480,10 @@ namespace SWLOR.Toolset.Tests
                 picker.IsSearchableTableChoice.Should().BeTrue(
                     $"{field.Label} should render as a searchable select list");
                 picker.IsSearchableChoice.Should().BeTrue();
-                picker.IsTableChoice.Should().BeFalse();
                 picker.IsNameChoice.Should().BeFalse();
                 picker.IsText.Should().BeFalse();
-                picker.SearchableOptions.Should().BeEquivalentTo(picker.Options);
+                picker.SearchableOptions.Should().BeEquivalentTo(
+                    picker.Options.Take(BehaviorFieldViewModel.MaxSearchResults));
                 picker.ChoiceSearchWatermark.Should().Be("Search spawn tables by name");
 
                 picker.ChoiceSearchText = "capstone";
@@ -575,7 +580,6 @@ namespace SWLOR.Toolset.Tests
                     StringComparison.Ordinal)..app.IndexOf("<local:ViewLocator", StringComparison.Ordinal)];
 
             behaviorTemplate.Should().Contain("IsSearchableChoice");
-            behaviorTemplate.Should().Contain("IsTableChoice");
             behaviorTemplate.Should().Contain("Watermark=\"{Binding ChoiceSearchWatermark}\"");
             behaviorTemplate.Should().Contain("ItemsSource=\"{Binding SearchableOptions}\"");
             behaviorTemplate.Should().Contain("PickSearchableChoiceCommand");

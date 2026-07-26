@@ -154,7 +154,8 @@ namespace SWLOR.Toolset.Editors.Triggers
         }
 
         private TriggerRowViewModel CreateRow(BehaviorFieldDefinition definition) =>
-            new(definition, _store, _runEdit, _resolveTag, ResolveChoices(definition), _previews);
+            new(definition, _store, _runEdit, _resolveTag, ResolveChoices(definition), _previews,
+                RefreshCompleteness);
 
         /// <summary>
         /// A row's choices, from game data when it names a key. An unresolvable key yields an empty

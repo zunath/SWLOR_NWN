@@ -145,17 +145,6 @@
                          FilterMode="Contains" MaxDropDownHeight="360"
                          Text="{Binding Text, Mode=TwoWay}" />
 
-        <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="8"
-              IsVisible="{Binding IsTableChoice}">
-          <ComboBox Grid.Column="0"
-                    ItemsSource="{Binding Options}"
-                    SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
-                    MaxDropDownHeight="400" HorizontalAlignment="Stretch" />
-          <Button Grid.Column="1" Content="{Binding ClearChoiceLabel}" Padding="10,4"
-                  Command="{Binding ClearChoiceCommand}"
-                  IsVisible="{Binding CanClearChoice}" />
-        </Grid>
-
         <StackPanel Grid.Column="1" IsVisible="{Binding IsSearchableChoice}" Spacing="6">
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
             <TextBlock Grid.Column="0" Text="{Binding SelectedDisplay}"

@@ -1219,28 +1219,8 @@ void main()
         /// has to go somewhere, the set of somewheres is small and drawn on screen, and "nothing
         /// happened" is a worse answer to a click than "it went to the doorway you were nearest".
         /// </remarks>
-        private TileDoorAnchor? NearestDoorAnchor(Vector3 groundPoint)
-        {
-            if (Volatile.Read(ref _sceneState).Scene is not { } scene)
-                return null;
-
-            TileDoorAnchor? best = null;
-            var bestDistance = float.MaxValue;
-
-            foreach (var anchor in scene.DoorAnchors)
-            {
-                var dx = anchor.Position.X - groundPoint.X;
-                var dy = anchor.Position.Y - groundPoint.Y;
-                var distance = dx * dx + dy * dy;
-                if (distance >= bestDistance)
-                    continue;
-
-                bestDistance = distance;
-                best = anchor;
-            }
-
-            return best;
-        }
+        private TileDoorAnchor? NearestDoorAnchor(Vector3 groundPoint) =>
+            Volatile.Read(ref _sceneState).Scene?.NearestDoorAnchor(groundPoint);
 
         private void RaisePlacementPointPicked(Point screenPos)
         {
@@ -1756,10 +1736,10 @@ void main()
                     if (!ReferenceEquals(scene.Tiles, _batchedTiles))
                     {
                         RebuildWalkmeshBuffer(scene);
-                        _tileBatches = AreaDrawBatcher.GroupByModel(scene.Tiles);
-
-                        // A new scene starts the idle again, so opening an area - or rebuilding it
-                        // after an edit - shows its creatures move and then settle.
+                        _tileBatches = AreaDrawBatcher.GroupByModel(scene.Tiles);
+
+                        // A new scene starts the idle again, so opening an area - or rebuilding it
+                        // after an edit - shows its creatures move and then settle.
                         _idlePlaybackStartedTicks = System.Diagnostics.Stopwatch.GetTimestamp();
                         _batchedTiles = scene.Tiles;
                     }

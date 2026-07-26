@@ -1022,11 +1022,41 @@ namespace SWLOR.Toolset.Editors
             if (section == null || index < 0)
                 return;
 
+            // A door is not free-standing scenery: it belongs in a tile's doorway, which is what the
+            // placement path already enforces. Dragging one used to write the raw position and detach it
+            // from the tile frame and its walkmesh opening, so a move snaps to the nearest doorway and
+            // takes that doorway's heading with it.
+            if (instance.Kind == InstanceMarkerKind.Door &&
+                AreaScene?.NearestDoorAnchor(newPosition) is { } anchor)
+            {
+                MoveDoorToAnchor(instance, section, index, anchor);
+                return;
+            }
+
             if (!section.SetInstancePosition(index, newPosition.X, newPosition.Y, newPosition.Z,
                     $"Move {instance.Kind} \"{instance.Tag}\""))
                 return;
 
             if (!ApplyTransformInPlace(instance, newPosition, instance.Orientation))
+                _ = BuildSceneAsync((instance.Kind, index));
+        }
+
+        /// <summary>
+        /// Puts a door in <paramref name="anchor"/>'s doorway, position and heading together, as one edit.
+        /// </summary>
+        private void MoveDoorToAnchor(
+            InstanceMarker instance, InstanceListSectionViewModel section, int index, TileDoorAnchor anchor)
+        {
+            var description = $"Move {instance.Kind} \"{instance.Tag}\"";
+            if (!section.SetInstancePosition(
+                    index, anchor.Position.X, anchor.Position.Y, anchor.Position.Z, description))
+            {
+                return;
+            }
+
+            section.SetInstanceOrientation(index, anchor.Orientation.X, anchor.Orientation.Y, description);
+
+            if (!ApplyTransformInPlace(instance, anchor.Position, anchor.Orientation))
                 _ = BuildSceneAsync((instance.Kind, index));
         }
 
@@ -1036,6 +1066,11 @@ namespace SWLOR.Toolset.Editors
             // Guarded here as well as on CanRotateSelection: the gizmo reaches this directly, and a
             // sound has no heading to write - the edit would report success having changed nothing.
             if (instance.Kind == InstanceMarkerKind.Sound)
+                return;
+
+            // A door's heading comes from the doorway it hangs in, not from the builder. Turning one
+            // freely left it facing across its own frame.
+            if (instance.Kind == InstanceMarkerKind.Door)
                 return;
 
             var section = SectionForKind(instance.Kind);
@@ -1102,6 +1137,7 @@ namespace SWLOR.Toolset.Editors
         public bool CanRotateSelection =>
             SelectedSceneInstance is { } instance &&
             instance.Kind != InstanceMarkerKind.Sound &&
+            instance.Kind != InstanceMarkerKind.Door &&
             SectionForKind(instance.Kind) != null;
 
         [RelayCommand]

@@ -205,6 +205,40 @@ namespace SWLOR.Toolset.Domain.Render
         /// renderer notice the grid did not change and keep its uploaded tile batches and walkmesh
         /// buffers rather than rebuilding them to move one object.
         /// </remarks>
+        /// <summary>
+        /// The doorway nearest a ground point, measured on the floor plane so a doorway is not preferred
+        /// merely for being on a lower storey. Null when this area declares none.
+        /// </summary>
+        /// <remarks>
+        /// Deliberately unbounded: there is no radius past which a door is refused instead. A door has to
+        /// go somewhere, the set of somewheres is small and drawn on screen, and "nothing happened" is a
+        /// worse answer than "it went to the doorway you were nearest".
+        /// <para>
+        /// Lives here rather than in the viewport because two paths need the same answer - the placement
+        /// ghost, which always snapped, and moving or turning a door that is already placed, which did
+        /// not and so could detach a door from its tile frame and walkmesh opening.
+        /// </para>
+        /// </remarks>
+        public TileDoorAnchor? NearestDoorAnchor(Vector3 groundPoint)
+        {
+            TileDoorAnchor? best = null;
+            var bestDistance = float.MaxValue;
+
+            foreach (var anchor in DoorAnchors)
+            {
+                var dx = anchor.Position.X - groundPoint.X;
+                var dy = anchor.Position.Y - groundPoint.Y;
+                var distance = dx * dx + dy * dy;
+                if (distance >= bestDistance)
+                    continue;
+
+                bestDistance = distance;
+                best = anchor;
+            }
+
+            return best;
+        }
+
         public AreaScene? WithInstanceReplaced(InstanceMarker existing, InstanceMarker replacement)
         {
             var index = -1;

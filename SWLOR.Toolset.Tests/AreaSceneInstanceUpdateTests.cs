@@ -52,6 +52,46 @@ namespace SWLOR.Toolset.Tests
                 Diagnostics = new AreaSceneDiagnostics()
             };
 
+        /// <summary>
+        /// Doors belong in a tile's doorway. The placement ghost always snapped; moving an already
+        /// placed door did not, so it could be dragged off its tile frame and walkmesh opening. Both
+        /// paths now share this one rule.
+        /// </summary>
+        [Test]
+        public void TheNearestDoorwayIsChosenOnTheFloorPlane()
+        {
+            var scene = new AreaScene
+            {
+                Tileset = "tde01", Width = 4, Height = 4,
+                Tiles = Array.Empty<TilePlacement>(),
+                Instances = Array.Empty<InstanceMarker>(),
+                Diagnostics = new AreaSceneDiagnostics(),
+                DoorAnchors = new[]
+                {
+                    new TileDoorAnchor
+                    {
+                        TileIndex = 0, DoorIndex = 0, Type = 0,
+                        Position = new Vector3(5, 5, 0), Orientation = new Vector2(1, 0)
+                    },
+                    new TileDoorAnchor
+                    {
+                        TileIndex = 1, DoorIndex = 0, Type = 0,
+                        // Directly above the first, and much closer in 3D - but a doorway must not win
+                        // for being on a lower or higher storey.
+                        Position = new Vector3(25, 5, 40), Orientation = new Vector2(0, 1)
+                    }
+                }
+            };
+
+            scene.NearestDoorAnchor(new Vector3(7, 5, 39))!.Position.Should().Be(new Vector3(5, 5, 0));
+        }
+
+        [Test]
+        public void AnAreaWithNoDoorwaysOffersNone()
+        {
+            SceneWith(Marker()).NearestDoorAnchor(Vector3.Zero).Should().BeNull();
+        }
+
         [Test]
         public void RotatingAnInstanceKeepsEverythingElseAboutIt()
         {

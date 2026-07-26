@@ -363,4 +363,21 @@
     <Setter Property="Stroke" Value="{DynamicResource InkBrush}" />
   </Style>
 
+  <!-- ===================== scrollbars ===================== -->
+  <!--
+    Always on. Fluent's default is a scrollbar that hides itself and comes back only once the pointer
+    has been over its edge for a moment, which is fine on a phone and wrong in an editor: a builder
+    reaching for the bar has to first hover to find out whether there is one, and half these panels
+    (the palette's categories, an area's instance lists, the field editors) are lists whose whole
+    point is that they are longer than the space they sit in. Set on both, because the ScrollViewer
+    inside a list owns its bars while a bar dropped into a template on its own does not.
+  -->
+  <Style Selector="ScrollViewer">
+    <Setter Property="AllowAutoHide" Value="False" />
+  </Style>
+
+  <Style Selector="ScrollBar">
+    <Setter Property="AllowAutoHide" Value="False" />
+  </Style>
+
 </Styles>

@@ -492,9 +492,15 @@ namespace SWLOR.Toolset.Editors
         /// <summary>True from the moment a palette blueprint is chosen for placement until the next viewport click (or Esc/right-click cancel) resolves it - drives GlAreaControl.IsPlacementActive.</summary>
         public bool IsPlacementPending => _pendingPlacementResRef != null;
 
-        /// <summary>3D-view status line while a placement is pending, or empty otherwise.</summary>
+        /// <summary>
+        /// 3D-view status line while a placement is pending, or empty otherwise. A door names the
+        /// doorway rule, since it is the one placement a click on open floor will not resolve.
+        /// </summary>
         public string PlacementStatus =>
-            IsPlacementPending ? $"Click to place {_pendingPlacementResRef}... (Esc or right-click to cancel)"
+            IsPlacementPending
+                ? _pendingPlacementSection?.BlueprintType == ResourceType.Utd
+                    ? $"Click an empty doorway to hang {_pendingPlacementResRef}... (Esc or right-click to cancel)"
+                    : $"Click to place {_pendingPlacementResRef}... (Esc or right-click to cancel)"
             : _pendingTile is { } tile
                 ? CanRotatePendingTile
                     ? $"Click a cell to place {tile.Label} facing {PendingTileFacing}... " +
@@ -828,13 +834,15 @@ namespace SWLOR.Toolset.Editors
             if (section == null || string.IsNullOrWhiteSpace(resRef))
                 return false;
 
-            // A door is hung in a doorway the tile declares, never on open floor, so an area laid
-            // entirely with doorless tiles has nowhere to put one - and arming a placement that can
+            // A door is hung in an empty doorway the tile declares, never on open floor and never in a
+            // doorway that already holds one, so an area laid entirely with doorless tiles - or one
+            // whose every doorway is filled - has nowhere to put another. Arming a placement that can
             // never resolve would leave the builder clicking at a map that refuses every click.
-            if (type == ResourceType.Utd && AreaScene is { } scene && scene.DoorAnchors.Count == 0)
+            if (type == ResourceType.Utd && AreaScene is { } scene && !scene.HasEmptyDoorway())
             {
-                _log.AppendLine(
-                    $"'{resRef}' cannot be placed: no tile in this area declares a doorway to hang a door in.");
+                _log.AppendLine(scene.DoorAnchors.Count == 0
+                    ? $"'{resRef}' cannot be placed: no tile in this area declares a doorway to hang a door in."
+                    : $"'{resRef}' cannot be placed: every doorway in this area already has a door in it.");
                 return false;
             }
 
@@ -1024,11 +1032,21 @@ namespace SWLOR.Toolset.Editors
 
             // A door is not free-standing scenery: it belongs in a tile's doorway, which is what the
             // placement path already enforces. Dragging one used to write the raw position and detach it
-            // from the tile frame and its walkmesh opening, so a move snaps to the nearest doorway and
-            // takes that doorway's heading with it.
-            if (instance.Kind == InstanceMarkerKind.Door &&
-                AreaScene?.NearestDoorAnchor(newPosition) is { } anchor)
+            // from the tile frame and its walkmesh opening, so a move snaps to the doorway it was
+            // dropped in and takes that doorway's heading with it.
+            //
+            // A drop that reaches no empty doorway is refused outright rather than falling through to
+            // the raw write below - that fall-through is the detachment bug itself. The door being
+            // dragged is excluded from "empty", or a nudge inside its own doorway would find the
+            // doorway filled by the very door being moved and jump it to a different one.
+            if (instance.Kind == InstanceMarkerKind.Door)
             {
+                if (AreaScene?.NearestEmptyDoorway(newPosition, instance) is not { } anchor)
+                {
+                    SceneStatus = $"\"{instance.Tag}\" can only be moved into an empty doorway.";
+                    return;
+                }
+
                 MoveDoorToAnchor(instance, section, index, anchor);
                 return;
             }

@@ -1190,16 +1190,12 @@ void main()
             if (point is not { } hit)
                 return;
 
-            if (SnapsToDoorAnchors)
-            {
-                _snappedDoorAnchor = NearestDoorAnchor(hit);
-                _ghostPosition = _snappedDoorAnchor?.Position;
-            }
-            else
-            {
-                _snappedDoorAnchor = null;
-                _ghostPosition = hit;
-            }
+            // A door still rides the cursor when it is nowhere near a doorway - it just drops into one
+            // as soon as it reaches one, and cannot be put down until it has. Showing it at the pointer
+            // is what makes "this one, not that one" readable while choosing; snapping from any distance
+            // put the preview off where the builder was not looking.
+            _snappedDoorAnchor = SnapsToDoorAnchors ? NearestDoorAnchor(hit) : null;
+            _ghostPosition = _snappedDoorAnchor?.Position ?? hit;
 
             RequestNextFrameRendering();
         }
@@ -1211,16 +1207,12 @@ void main()
         private bool SnapsToDoorAnchors => _placementGhost?.Kind == InstanceMarkerKind.Door;
 
         /// <summary>
-        /// The doorway nearest a ground point, measured on the floor plane so a doorway is not
-        /// preferred merely for being on a lower storey. Null when the scene declares none.
+        /// The empty doorway the cursor is close enough to hang a door in, or null when it is near none
+        /// or when the ones in reach are already filled. See
+        /// <see cref="AreaScene.NearestEmptyDoorway"/> for both rules.
         /// </summary>
-        /// <remarks>
-        /// Deliberately unbounded: there is no radius past which the click is refused instead. A door
-        /// has to go somewhere, the set of somewheres is small and drawn on screen, and "nothing
-        /// happened" is a worse answer to a click than "it went to the doorway you were nearest".
-        /// </remarks>
         private TileDoorAnchor? NearestDoorAnchor(Vector3 groundPoint) =>
-            Volatile.Read(ref _sceneState).Scene?.NearestDoorAnchor(groundPoint);
+            Volatile.Read(ref _sceneState).Scene?.NearestEmptyDoorway(groundPoint);
 
         private void RaisePlacementPointPicked(Point screenPos)
         {
@@ -1239,8 +1231,9 @@ void main()
 
             if (SnapsToDoorAnchors)
             {
-                // A door that has not found a doorway has nowhere to go, so the click is ignored and the
-                // placement stays armed rather than dropping the door on open floor.
+                // A door that is not standing in an empty doorway has nowhere to go, so the click is
+                // ignored and the placement stays armed rather than dropping the door on open floor -
+                // or hanging a second leaf in a doorway that already has one.
                 if (NearestDoorAnchor(hit) is not { } anchor)
                     return;
 
@@ -2289,6 +2282,16 @@ void main()
         private static readonly Vector3 PlacementGhostColor = new(0.36f, 0.61f, 0.96f);
 
         /// <summary>
+        /// Tint for a ghost the next click will refuse: a door away from any empty doorway.
+        /// </summary>
+        /// <remarks>
+        /// Same red as the tile-stamp highlight uses for a footprint that will not fit, and for the same
+        /// reason - a preview that follows the cursor everywhere has to say where it can actually land,
+        /// or a click that does nothing reads as the editor having stopped responding.
+        /// </remarks>
+        private static readonly Vector3 PlacementRefusedColor = new(0.90f, 0.30f, 0.30f);
+
+        /// <summary>
         /// Fainter than the object ghost. A tile fills a whole 10m cell, so at the object ghost's
         /// opacity it blots out the area underneath it rather than previewing against it.
         /// </summary>
@@ -2343,15 +2346,28 @@ void main()
             SetUniformFloat("flatAlpha", PlacementGhostAlpha);
             SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
 
+            // A door away from any empty doorway draws as a red silhouette of itself: still the object
+            // being placed, visibly not placeable here.
+            var refused = SnapsToDoorAnchors && _snappedDoorAnchor == null;
+
             if (DrawsAsModel(placed))
             {
                 var buffer = GetOrBuildModelBuffer(placed.Model!);
                 _gl.BindVertexArray(buffer.Vao);
 
+                if (refused)
+                {
+                    SetUniformBool("hasTexture", false);
+                    SetUniformBool("unlit", true);
+                    SetUniformFloat("alphaCutoff", 0f);
+                    SetUniformVec3("flatColor", PlacementRefusedColor);
+                }
+
                 foreach (var meshRange in buffer.MeshRanges)
                 {
                     SetUniformMatrix4("model", meshRange.MeshTransform * transform);
-                    BindMeshTexture(meshRange.TextureName);
+                    if (!refused)
+                        BindMeshTexture(meshRange.TextureName);
 
                     unsafe
                     {
@@ -2365,7 +2381,7 @@ void main()
                 SetUniformBool("hasTexture", false);
                 SetUniformBool("unlit", true);
                 SetUniformFloat("alphaCutoff", 0f);
-                SetUniformVec3("flatColor", PlacementGhostColor);
+                SetUniformVec3("flatColor", refused ? PlacementRefusedColor : PlacementGhostColor);
                 _gl.BindVertexArray(marker.Vao);
                 SetUniformMatrix4("model",
                     Matrix4x4.CreateScale(PlacementGhostMarkerScale) * transform);
@@ -2394,14 +2410,15 @@ void main()
         private const float DoorAnchorAlpha = 0.65f;
 
         /// <summary>
-        /// While a door is armed, marks every doorway the area's tiles declare.
+        /// While a door is armed, marks every doorway that is still empty.
         /// </summary>
         /// <remarks>
         /// A door cannot be placed anywhere else, so the builder needs to see where "anywhere else" is
-        /// not - otherwise a click that snaps several metres away looks like a bug rather than the rule
-        /// it is. Only drawn during a door placement: the rest of the time these are noise, and there
-        /// can be dozens of them in a corridor tileset. The snapped one is left to the ghost, which is
-        /// standing in it.
+        /// not - otherwise a ghost that refuses to go down looks like a bug rather than the rule it is.
+        /// Only drawn during a door placement: the rest of the time these are noise, and there can be
+        /// dozens of them in a corridor tileset. A doorway that already holds a door is left out, since
+        /// it is not somewhere the next click can land either; so is the snapped one, which the ghost is
+        /// already standing in.
         /// </remarks>
         private void DrawDoorAnchors()
         {
@@ -2433,6 +2450,9 @@ void main()
                 {
                     continue;
                 }
+
+                if (scene.IsDoorwayFilled(anchor))
+                    continue;
 
                 SetUniformMatrix4("model",
                     Matrix4x4.CreateScale(DoorAnchorMarkerScale) *

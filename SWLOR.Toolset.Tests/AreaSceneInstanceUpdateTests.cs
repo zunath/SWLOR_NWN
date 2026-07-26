@@ -83,7 +83,7 @@ namespace SWLOR.Toolset.Tests
                 }
             };
 
-            scene.NearestDoorAnchor(new Vector3(7, 5, 0))!.Position.Should().Be(new Vector3(5, 5, 0));
+            scene.NearestEmptyDoorway(new Vector3(7, 5, 0))!.Position.Should().Be(new Vector3(5, 5, 0));
         }
 
         /// <summary>
@@ -115,14 +115,15 @@ namespace SWLOR.Toolset.Tests
                 }
             };
 
-            scene.NearestDoorAnchor(new Vector3(6, 5, 10))!.Position.Should().Be(new Vector3(7, 5, 10));
+            scene.NearestEmptyDoorway(new Vector3(6, 5, 10))!.Position.Should().Be(new Vector3(7, 5, 10));
         }
 
         [Test]
         public void OnTheSameStoreyTheNearerDoorwayStillWins()
         {
             // Height must separate floors without dominating: two doorways on one floor are chosen
-            // between by where the builder actually clicked.
+            // between by where the builder actually clicked. Both are inside the snap radius, so it is
+            // the choice between them that is under test rather than which one is in reach.
             var scene = new AreaScene
             {
                 Tileset = "tde01", Width = 4, Height = 4,
@@ -134,23 +135,23 @@ namespace SWLOR.Toolset.Tests
                     new TileDoorAnchor
                     {
                         TileIndex = 0, DoorIndex = 0, Type = 0,
-                        Position = new Vector3(5, 5, 10), Orientation = new Vector2(1, 0)
+                        Position = new Vector3(28, 5, 10), Orientation = new Vector2(1, 0)
                     },
                     new TileDoorAnchor
                     {
                         TileIndex = 1, DoorIndex = 0, Type = 0,
-                        Position = new Vector3(35, 5, 10), Orientation = new Vector2(0, 1)
+                        Position = new Vector3(33, 5, 10), Orientation = new Vector2(0, 1)
                     }
                 }
             };
 
-            scene.NearestDoorAnchor(new Vector3(30, 5, 10))!.Position.Should().Be(new Vector3(35, 5, 10));
+            scene.NearestEmptyDoorway(new Vector3(32, 5, 10))!.Position.Should().Be(new Vector3(33, 5, 10));
         }
 
         [Test]
         public void AnAreaWithNoDoorwaysOffersNone()
         {
-            SceneWith(Marker()).NearestDoorAnchor(Vector3.Zero).Should().BeNull();
+            SceneWith(Marker()).NearestEmptyDoorway(Vector3.Zero).Should().BeNull();
         }
 
         [Test]

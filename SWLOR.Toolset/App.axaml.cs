@@ -153,7 +153,26 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<Services.IEditorPromptService>(),
                 sp.GetService<Domain.GameData.Lookups.TilesetCatalog>(),
                 sp.GetService<TlkService>(),
-                sp.GetRequiredService<ToolsetSettings>()));
+                sp.GetRequiredService<ToolsetSettings>(),
+                // Deferred: the shell is built from this panel, so it cannot be injected - but it can be
+                // asked later. The palette writes straight to the module, so its create/delete controls
+                // have to follow the same lock that packing and validation raise.
+                //
+                // The catch is for reentrancy, not for hiding faults: this panel is constructed as part
+                // of building the shell, so anything that read CanWrite during that window would ask the
+                // container for a ShellViewModel it is still constructing. Nothing does today, and the
+                // honest answer in that window is "nothing is packing yet" - which is what false says.
+                () =>
+                {
+                    try
+                    {
+                        return sp.GetRequiredService<ShellViewModel>().IsModuleMutationLocked;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        return false;
+                    }
+                }));
             services.AddSingleton<SearchViewModel>();
             services.AddSingleton<OutputViewModel>();
             services.AddSingleton(sp => new ValidationViewModel(

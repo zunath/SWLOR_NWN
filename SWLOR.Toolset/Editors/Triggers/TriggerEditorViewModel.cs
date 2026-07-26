@@ -86,7 +86,7 @@ namespace SWLOR.Toolset.Editors.Triggers
 
             BuildBehaviorList();
             Behavior = TriggerBehaviorCatalog.Classify(trigger);
-            BuildFixedRows();
+            BuildBasicRows();
             RebuildBehaviorSection();
         }
 
@@ -149,13 +149,29 @@ namespace SWLOR.Toolset.Editors.Triggers
             }
         }
 
-        private void BuildFixedRows()
+        private void BuildBasicRows()
         {
             foreach (var definition in TriggerEditorLayout.Basic)
                 BasicRows.Add(CreateRow(definition));
+        }
 
+        /// <summary>
+        /// Advanced depends on the behavior, so it is rebuilt alongside it: a raw field the current
+        /// behavior owns is not offered, because setting it there would only be overwritten the next
+        /// time the behavior applied itself.
+        /// </summary>
+        private void RebuildAdvancedRows()
+        {
+            AdvancedRows.Clear();
+
+            var isCustom = Behavior.Id == TriggerBehaviorCatalog.CustomId;
             foreach (var definition in TriggerEditorLayout.Advanced)
+            {
+                if (definition.CustomOnly && !isCustom)
+                    continue;
+
                 AdvancedRows.Add(CreateRow(definition));
+            }
         }
 
         private TriggerRowViewModel CreateRow(TriggerFieldDefinition definition) =>
@@ -178,6 +194,8 @@ namespace SWLOR.Toolset.Editors.Triggers
             BehaviorRows.Clear();
             foreach (var definition in Behavior.Fields)
                 BehaviorRows.Add(CreateRow(definition));
+
+            RebuildAdvancedRows();
 
             Variables = Behavior.AllowsVariables
                 ? new VarTableSectionViewModel(_runEdit, _store.Locals, _gameCodeIndex)

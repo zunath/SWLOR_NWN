@@ -49,6 +49,12 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         /// </summary>
         public bool IsPerPlacement { get; init; }
 
+        /// <summary>
+        /// Shown only under Custom. For a raw field that a behavior would otherwise own, offering it
+        /// alongside that behavior invites a builder to set it to something the behavior contradicts.
+        /// </summary>
+        public bool CustomOnly { get; init; }
+
         /// <summary>Which tag index a TagReference row resolves against.</summary>
         public TriggerTagScope TagScope { get; init; } = TriggerTagScope.None;
     }

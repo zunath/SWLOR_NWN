@@ -17,6 +17,11 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
     /// is, which is why the Area Transition behavior sets it and everything else leaves it at the
     /// engine default of 0.
     /// </para>
+    /// <para>
+    /// Trigger Type is only offered under Custom. Every other behavior writes it, so showing it
+    /// beside them would be offering a builder the chance to disagree with the behavior they just
+    /// chose - and the behavior would win on the next swap.
+    /// </para>
     /// </remarks>
     public static class TriggerEditorLayout
     {
@@ -70,8 +75,8 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             new TriggerFieldDefinition
             {
                 Label = "Trigger Type", Name = "Type", Kind = TriggerFieldKind.Choice,
-                FieldType = GffFieldType.Int, Choices = TriggerTypeChoices,
-                Note = "Most behaviors set this for you."
+                FieldType = GffFieldType.Int, Choices = TriggerTypeChoices, CustomOnly = true,
+                Note = "Every other behavior sets this itself."
             },
             new TriggerFieldDefinition
             {

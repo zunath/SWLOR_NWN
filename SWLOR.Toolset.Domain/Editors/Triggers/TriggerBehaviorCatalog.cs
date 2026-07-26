@@ -178,6 +178,11 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     {
                         new TriggerManagedValue
                         {
+                            Label = "Trigger Type", Name = "Type", FieldType = GffFieldType.Int,
+                            IntValue = 0, Display = "Generic"
+                        },
+                        new TriggerManagedValue
+                        {
                             Label = "OnEnter", Name = "ScriptOnEnter", FieldType = GffFieldType.ResRef,
                             StringValue = ExploreHandler
                         },
@@ -206,6 +211,11 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     },
                     Manages = new[]
                     {
+                        new TriggerManagedValue
+                        {
+                            Label = "Trigger Type", Name = "Type", FieldType = GffFieldType.Int,
+                            IntValue = 0, Display = "Generic"
+                        },
                         new TriggerManagedValue
                         {
                             Label = "OnEnter", Name = "ScriptOnEnter", FieldType = GffFieldType.ResRef,
@@ -244,6 +254,11 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     },
                     Manages = new[]
                     {
+                        new TriggerManagedValue
+                        {
+                            Label = "Trigger Type", Name = "Type", FieldType = GffFieldType.Int,
+                            IntValue = 0, Display = "Generic"
+                        },
                         new TriggerManagedValue
                         {
                             Label = "OnEnter", Name = "ScriptOnEnter", FieldType = GffFieldType.ResRef,

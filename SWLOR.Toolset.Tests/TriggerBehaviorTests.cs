@@ -186,6 +186,24 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TriggerTypeIsOnlyOfferedUnderCustom()
+        {
+            // Every other behavior writes Type itself, so offering it beside them would let a builder
+            // set something the behavior contradicts - and the behavior wins on the next swap.
+            var type = TriggerEditorLayout.Advanced.Single(row => row.Name == "Type");
+            type.CustomOnly.Should().BeTrue();
+
+            foreach (var behavior in TriggerBehaviorCatalog.All)
+            {
+                var writesType = behavior.Manages.Any(value => value.Name == "Type");
+                if (behavior.Id == TriggerBehaviorCatalog.CustomId)
+                    writesType.Should().BeFalse("Custom manages nothing, so the raw row is the only way to set it");
+                else
+                    writesType.Should().BeTrue($"{behavior.DisplayName} hides the raw row, so it must set Type itself");
+            }
+        }
+
+        [Test]
         public void CategoryAndFactionArePickedRatherThanTyped()
         {
             var category = TriggerEditorLayout.Basic.Single(row => row.Name == "PaletteID");

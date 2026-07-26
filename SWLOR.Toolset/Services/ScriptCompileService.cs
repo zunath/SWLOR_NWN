@@ -56,22 +56,39 @@ namespace SWLOR.Toolset.Services
 
         public bool IsAvailable => CompilerPath != null;
 
-        /// <summary>Compiles one script to Module/ncs. Returns true when the artifact was written.</summary>
-        public async Task<bool> CompileAsync(string resRef, CancellationToken cancellationToken = default)
+        /// <summary>What a compile produced: whether it wrote, and what the compiler said.</summary>
+        /// <param name="Succeeded">True when the artifact was written (or the file is an include).</param>
+        /// <param name="Diagnostics">Compiler findings, mapped onto buffer offsets.</param>
+        public sealed record CompileOutcome(bool Succeeded, IReadOnlyList<ScriptAnalysisDiagnostic> Diagnostics)
+        {
+            public static CompileOutcome Failed(string _) =>
+                new(false, Array.Empty<ScriptAnalysisDiagnostic>());
+
+            public static CompileOutcome Ok() => new(true, Array.Empty<ScriptAnalysisDiagnostic>());
+        }
+
+        /// <summary>
+        /// Raised after any compile, so the Problems panel can show the authoritative tier's findings
+        /// alongside the editor's advisory ones.
+        /// </summary>
+        public event Action<string, IReadOnlyList<ScriptAnalysisDiagnostic>>? DiagnosticsProduced;
+
+        /// <summary>Compiles one script to Module/ncs.</summary>
+        public async Task<CompileOutcome> CompileAsync(string resRef, CancellationToken cancellationToken = default)
         {
             var workspace = _workspaceContext.Workspace;
             var compiler = CreateCompiler();
             if (workspace == null || compiler == null)
             {
                 _log.AppendLine("Cannot compile: no module open, or nwn_script_comp.exe is missing from tools/SWLOR.CLI.");
-                return false;
+                return CompileOutcome.Failed(resRef);
             }
 
             var source = workspace.GetResourcePath(ResourceType.Nss, resRef);
             if (!File.Exists(source))
             {
                 _log.AppendLine($"Cannot compile {resRef}: source not found.");
-                return false;
+                return CompileOutcome.Failed(resRef);
             }
 
             // Includes declare no main() and produce no artifact; compiling one is not a failure but
@@ -82,7 +99,14 @@ namespace SWLOR.Toolset.Services
                 _log.AppendLine(dependents.Count == 0
                     ? $"{resRef} is an include and has no compiled output."
                     : $"{resRef} is an include; {dependents.Count} dependent script(s) now need recompiling.");
-                return true;
+
+                // An include still gets compile-checked, so a syntax error in a header is reported
+                // where it was made rather than only in whichever dependent is rebuilt next.
+                var checkResult = await compiler.CompileAsync(source, checkOnly: true, cancellationToken: cancellationToken)
+                    .ConfigureAwait(false);
+                var checkDiagnostics = ToAnalysisDiagnostics(checkResult, ScriptTextDocument.Load(source).Text);
+                DiagnosticsProduced?.Invoke(resRef, checkDiagnostics);
+                return new CompileOutcome(true, checkDiagnostics);
             }
 
             var ncsDirectory = Path.Combine(workspace.ModuleRoot, "ncs");
@@ -92,10 +116,13 @@ namespace SWLOR.Toolset.Services
             var result = await compiler.CompileAsync(source, output, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
 
+            var diagnostics = ToAnalysisDiagnostics(result, ScriptTextDocument.Load(source).Text);
+            DiagnosticsProduced?.Invoke(resRef, diagnostics);
+
             if (result.Succeeded)
             {
                 _log.AppendLine($"Compiled {resRef}.nss -> ncs/{resRef}.ncs");
-                return true;
+                return new CompileOutcome(true, diagnostics);
             }
 
             _log.AppendLine(ScriptCompiler.RequiresGameInstall(result)
@@ -105,7 +132,7 @@ namespace SWLOR.Toolset.Services
             foreach (var diagnostic in result.Diagnostics)
                 _log.AppendLine($"  {diagnostic.File}({diagnostic.Line}): {diagnostic.Message}");
 
-            return false;
+            return new CompileOutcome(false, diagnostics);
         }
 
         /// <summary>Compile-checks one script without writing, for diagnostics.</summary>
@@ -124,13 +151,66 @@ namespace SWLOR.Toolset.Services
             var result = await compiler.CompileAsync(source, checkOnly: true, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
 
-            return result.Diagnostics
-                .Select(d => new ScriptAnalysisDiagnostic(
-                    d.Message, 0, 0,
+            return ToAnalysisDiagnostics(result, ScriptTextDocument.Load(source).Text);
+        }
+
+        /// <summary>
+        /// Maps compiler output onto buffer offsets so its findings can be squiggled like the
+        /// editor's own.
+        /// </summary>
+        /// <remarks>
+        /// The compiler reports a line but no column, so the whole line's trimmed extent is
+        /// underlined rather than a guessed word. A finding naming a <i>different</i> file — the
+        /// compiler reports errors inside includes against the include's own name — gets zero length,
+        /// which the squiggle renderer skips; it still lists in Problems, where the filename is
+        /// visible and the position is meaningful.
+        /// </remarks>
+        public static IReadOnlyList<ScriptAnalysisDiagnostic> ToAnalysisDiagnostics(
+            ScriptCompileResult result, string source)
+        {
+            var lineStarts = BuildLineIndex(source);
+
+            return result.Diagnostics.Select(d =>
+            {
+                var (start, length) = SpanForLine(source, lineStarts, d.Line);
+                return new ScriptAnalysisDiagnostic(
+                    d.Message, start, length,
                     d.IsError ? ScriptDiagnosticSeverity.Error : ScriptDiagnosticSeverity.Warning,
                     ScriptDiagnosticSource.Compiler,
-                    d.Line))
-                .ToList();
+                    d.Line);
+            }).ToList();
+        }
+
+        private static List<int> BuildLineIndex(string source)
+        {
+            var starts = new List<int> { 0 };
+            for (var i = 0; i < source.Length; i++)
+            {
+                if (source[i] == '\n')
+                    starts.Add(i + 1);
+            }
+
+            return starts;
+        }
+
+        private static (int Start, int Length) SpanForLine(string source, List<int> lineStarts, int line)
+        {
+            if (line < 1 || line > lineStarts.Count)
+                return (0, 0);
+
+            var start = lineStarts[line - 1];
+            var end = line < lineStarts.Count ? lineStarts[line] - 1 : source.Length;
+            if (end < start)
+                return (start, 0);
+
+            // Trim the indent so the underline starts at the code, not at column 1.
+            while (start < end && char.IsWhiteSpace(source[start]))
+                start++;
+
+            while (end > start && char.IsWhiteSpace(source[end - 1]))
+                end--;
+
+            return (start, end - start);
         }
 
         /// <summary>Compiles every entry-point script in the module.</summary>
@@ -154,7 +234,7 @@ namespace SWLOR.Toolset.Services
                 if (!File.Exists(source) || !ScriptStalenessScanner.IsEntryPoint(ScriptTextDocument.Load(source).Text))
                     continue;
 
-                if (await CompileAsync(resRef, cancellationToken).ConfigureAwait(false))
+                if ((await CompileAsync(resRef, cancellationToken).ConfigureAwait(false)).Succeeded)
                     compiled++;
                 else
                     failed++;

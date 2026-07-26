@@ -4,6 +4,7 @@ using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Domain.Script.Symbols;
 using SWLOR.Toolset.Domain.Script.Syntax;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
@@ -55,7 +56,7 @@ namespace SWLOR.Toolset.Editors
             _resRef = resRef;
             _language = language;
             _completion = language?.CreateCompletionEngine();
-            _analyzer = language != null ? new ScriptAnalyzer(language.Engine) : null;
+            _analyzer = language != null ? new ScriptAnalyzer(language.Engine, language.ReadScriptSource) : null;
             Id = $"editor:{filePath}";
             _session = ScriptSession.Open(filePath);
             _text = _session.Document.Text;
@@ -270,6 +271,63 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Asks the shell to open another script and place the caret. Set by EditorService.</summary>
         public Action<string, int>? OpenIncludeRequested { get; set; }
+
+        /// <summary>
+        /// Lists every blueprint, area and instance whose script slots name this script.
+        /// </summary>
+        /// <remarks>
+        /// The question Aurora could not answer. 2,250 module resources name a script by resref, and
+        /// nothing else in the pipeline can tell you which — so editing a legacy script has always
+        /// been guesswork about what it is attached to.
+        /// </remarks>
+        [RelayCommand]
+        private async Task ShowUsages()
+        {
+            if (FindUsages == null)
+            {
+                _log.AppendLine("Script usage index is unavailable.");
+                return;
+            }
+
+            _log.AppendLine($"Finding what uses {_resRef}...");
+            var usages = await FindUsages(_resRef).ConfigureAwait(true);
+
+            if (usages.Count == 0)
+            {
+                _log.AppendLine($"Nothing references {_resRef}. It may be called from C#, or be dead.");
+                UsageSummary = "not referenced";
+                return;
+            }
+
+            _log.AppendLine($"{usages.Count} resource(s) reference {_resRef}:");
+            foreach (var group in usages.GroupBy(u => u.ResourceType).OrderBy(g => g.Key.ToString()))
+            {
+                _log.AppendLine($"  {group.Key.DisplayName()} ({group.Count()}):");
+                foreach (var usage in group.OrderBy(u => u.ResRef, StringComparer.OrdinalIgnoreCase))
+                    _log.AppendLine($"    {usage.ResRef} · {usage.FieldName}");
+            }
+
+            UsageSummary = $"used by {usages.Count}";
+        }
+
+        /// <summary>Resolves what references this script. Set by EditorService; null disables the command.</summary>
+        public Func<string, Task<IReadOnlyList<ScriptUsage>>>? FindUsages { get; set; }
+
+        /// <summary>Shown beside the outline once usages have been looked up.</summary>
+        public string UsageSummary
+        {
+            get => _usageSummary;
+            private set
+            {
+                _usageSummary = value;
+                OnPropertyChanged(nameof(UsageSummary));
+                OnPropertyChanged(nameof(HasUsageSummary));
+            }
+        }
+
+        private string _usageSummary = string.Empty;
+
+        public bool HasUsageSummary => UsageSummary.Length > 0;
 
         /// <summary>Lists every occurrence of the identifier under the caret in the Output panel.</summary>
         public void FindReferences(int caretOffset)

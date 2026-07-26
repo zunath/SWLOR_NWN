@@ -1173,3 +1173,53 @@ The analysis layer, the navigation UI, the Aurora-parity browser, and compilatio
   cannot do — and is the obvious next package if that is wanted.
 - Debugging/breakpoints, `.dlg` editing, and decompiling the 154 sourceless `.ncs`. All out of scope
   by the plan's own Scope section.
+
+## WPS1.5-binder + gap closure — done — 2026-07-26 — Unknown identifiers, compiler tier, reverse refs
+
+Closes the three items left open when Phase S was first marked complete. Two of them were seams the
+previous entry **overstated as done**; that is corrected here.
+
+- **Compiler diagnostics now reach Problems.** `ScriptCompileService.CheckAsync` existed but had no
+  callers, so `ScriptDiagnosticSource.Compiler` and the `[compiler]` tag rendered in the Problems UI
+  could never appear — compiler errors only ever went to Output. Now `CompileAsync` returns a
+  `CompileOutcome` carrying positioned diagnostics and raises `DiagnosticsProduced`, and the shell
+  routes it to the panel, focusing Problems when a compile errors.
+  - `ProblemsViewModel.SetDiagnostics` is now **per-tier**. The two arrive on completely different
+    schedules — the editor re-analyses on every idle keystroke, the compiler only on save or F7 — so
+    a single replace-all would have wiped the compiler's findings a quarter-second after they
+    appeared. `ProblemsViewModelTests` pins exactly that regression.
+  - Compiler findings underline the reported line's trimmed extent, since the compiler gives a line
+    but no column. Findings naming a *different* file (an error inside an include) get zero length,
+    which the squiggle renderer skips; they still list in Problems where the filename is visible.
+  - An include is now compile-*checked* on save even though it produces no artifact, so a syntax
+    error in a header is reported where it was made rather than only in whichever dependent is
+    rebuilt next.
+- **Reverse references have a UI.** `ScriptUsageIndex.UsagesOf` was built and tested but only its
+  *counts* were surfaced (in the slot picker). WPS3.3 was written up as done on that basis, which
+  overclaimed. The script editor now has a **Used by...** action listing every blueprint/area and the
+  slot that names it, grouped by resource type, with a count beside the outline header.
+- **WPS1.5 binder — unknown-identifier reporting** (`Script/ScriptBinder`). The earlier analyzer
+  deliberately never reported unknown names because nothing resolved include contents. With the
+  include graph in place the scope is knowable, so the check is now possible — and is gated on the
+  one condition that makes it safe: **if any include fails to resolve, the scope is marked incomplete
+  and nothing is reported at all.** 16 of the 87 scripts include base-game headers that live only in
+  an NWN install, so an incomplete scope is the normal case for a builder without one; reporting
+  there would mean hundreds of false errors. Also skipped: struct member access (needs a type model),
+  and unknown SCREAMING_CASE (module includes define their own constants, and casing is the only
+  signal). One report per name — a variable used ten times is one mistake, not ten.
+  - Runs only when the structural checks found nothing: past an unbalanced bracket the token stream
+    is not trustworthy, and one structural error should not spray name errors after it.
+  - **Bug the corpus gate caught, not reasoning:** `int i, iBegin, iEnd;` in `dmfi_arrays_inc.nss`.
+    `ScriptOutline` recorded only the first declarator, so the other two looked undefined. Multi-name
+    declarations (with and without initialisers) are common in these legacy scripts. Fixed and pinned.
+- Tests (+21): `ScriptBinderTests` (13, incl. a corpus gate that **no module script produces a false
+  unknown-identifier** — either everything resolves or the binder stays quiet), `ProblemsViewModelTests` (8).
+- Verified: build clean; **full suite 1052/1053 green** (1 pre-existing skip), 3m27s; launch-and-kill
+  smoke passed; `Module/` untouched.
+
+### Remaining, and genuinely so
+Nothing outstanding from the plan. Not built, and not planned: full expression-level **type
+checking** (argument type mismatches beyond arity, assignment compatibility). It needs a real
+expression tree and type inference, and its false-positive risk on legacy code is exactly what the
+conservatism rule exists to avoid — a binder that resolves *names* is the safe 80%. Also out of scope
+throughout: debugging/breakpoints, `.dlg` editing, and decompiling the 154 sourceless `.ncs`.

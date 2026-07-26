@@ -125,8 +125,23 @@ namespace SWLOR.Toolset.Shell
 
             // Clicking a Problems row focuses that script on that line.
             if (_problems != null)
+            {
                 _problems.NavigateRequested += row =>
                     _editorService.NavigateToScriptLine(row.ResRef, row.Diagnostic.Line);
+
+                // The authoritative tier. Compiler findings replace only the compiler's own rows, so
+                // they survive the editor's quarter-second idle re-analysis instead of being wiped by it.
+                if (_compileService != null)
+                    _compileService.DiagnosticsProduced += (resRef, diagnostics) =>
+                        Dispatcher.UIThread.Post(() =>
+                        {
+                            _problems.SetDiagnostics(
+                                resRef, Domain.Script.Syntax.ScriptDiagnosticSource.Compiler, diagnostics);
+
+                            if (diagnostics.Any(d => d.Severity == Domain.Script.Syntax.ScriptDiagnosticSeverity.Error))
+                                _factory.ShowProblems();
+                        });
+            }
 
             Layout = factory.CreateLayout();
             if (Layout != null)
@@ -288,8 +303,10 @@ namespace SWLOR.Toolset.Shell
             StatusText = $"Compiling {resRef}...";
             _factory.Focus(_output);
 
-            var ok = await _compileService.CompileAsync(resRef).ConfigureAwait(true);
-            StatusText = ok ? $"Compiled {resRef}." : $"Could not compile {resRef} - see Output.";
+            var outcome = await _compileService.CompileAsync(resRef).ConfigureAwait(true);
+            StatusText = outcome.Succeeded
+                ? $"Compiled {resRef}."
+                : $"Could not compile {resRef} - see Problems.";
         }
 
         /// <summary>Compiles every entry-point script in the module.</summary>

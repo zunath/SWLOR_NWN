@@ -28,7 +28,16 @@
          less width than a column would. -->
     <Border Grid.Row="1" Background="{DynamicResource PanelHeaderBrush}"
             BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,1" Padding="14,6">
-      <TextBlock Classes="title" Text="OUTLINE" />
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
+        <TextBlock Grid.Column="0" Classes="title" Text="OUTLINE" VerticalAlignment="Center" />
+        <!-- The answer to "what is this script attached to?", which nothing else in the pipeline
+             can give: 2,250 module resources name a script by resref. -->
+        <TextBlock Grid.Column="2" Classes="count" VerticalAlignment="Center"
+                   Foreground="{DynamicResource GreenBrush}"
+                   IsVisible="{Binding HasUsageSummary}" Text="{Binding UsageSummary}" />
+        <Button Grid.Column="3" Classes="link" Content="Used by..." Padding="0"
+                Command="{Binding ShowUsagesCommand}" VerticalAlignment="Center" />
+      </Grid>
     </Border>
 
     <ScrollViewer Grid.Row="2" MaxHeight="110" VerticalScrollBarVisibility="Auto"

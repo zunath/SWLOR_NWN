@@ -108,7 +108,58 @@ namespace SWLOR.Toolset.Domain.Script
                 }
 
                 if (i + 2 < tokens.Count && tokens[i + 2].ToText(source) is ";" or "=" or ",")
+                {
                     variables.Add(name);
+
+                    // One declaration can introduce several names: "int i, iBegin, iEnd;" is common in
+                    // this module's legacy scripts, and recording only the first left the rest looking
+                    // undefined to the binder. Walk the declarator list to its semicolon, taking the
+                    // identifier after each top-level comma and skipping any initialiser expression.
+                    var depth = 0;
+                    var expectName = false;
+                    for (var j = i + 2; j < tokens.Count; j++)
+                    {
+                        var text = tokens[j].ToText(source);
+
+                        if (text is "(" or "[")
+                        {
+                            depth++;
+                            continue;
+                        }
+
+                        if (text is ")" or "]")
+                        {
+                            depth--;
+                            continue;
+                        }
+
+                        if (depth > 0)
+                            continue;
+
+                        if (text == ";")
+                        {
+                            i = j;
+                            break;
+                        }
+
+                        if (text == ",")
+                        {
+                            expectName = true;
+                            continue;
+                        }
+
+                        if (expectName && tokens[j].Kind == ScriptTokenKind.Identifier)
+                        {
+                            variables.Add(text);
+                            expectName = false;
+                        }
+                        else if (text != "=")
+                        {
+                            // Inside an initialiser; the next comma still starts a new declarator.
+                            expectName = false;
+                        }
+                    }
+                }
             }
 
             return new ScriptOutline(functions, includes, variables.Distinct(StringComparer.Ordinal).ToList());

@@ -164,8 +164,14 @@ namespace SWLOR.Toolset.Editors
                 editor.CompileOnSave = _compileService != null && _compileService.IsAvailable
                     ? name => _compileService.CompileAsync(name)
                     : null;
+                editor.FindUsages = async name =>
+                {
+                    var index = await _scriptUsageIndex.Value.ConfigureAwait(true);
+                    return index?.UsagesOf(name) ?? Array.Empty<Domain.Script.ScriptUsage>();
+                };
                 editor.DiagnosticsChanged += diagnostics =>
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() => _problems?.SetDiagnostics(resRef, diagnostics));
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                        _problems?.SetDiagnostics(resRef, Domain.Script.Syntax.ScriptDiagnosticSource.Editor, diagnostics));
 
                 // Go-to-definition across an include opens that script and lands on the symbol.
                 editor.OpenIncludeRequested += (includeResRef, offset) =>

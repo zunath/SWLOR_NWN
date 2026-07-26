@@ -68,23 +68,51 @@ namespace SWLOR.Toolset.Shell.Panels
             ? "No problems"
             : $"{ErrorCount} error(s), {WarningCount} warning(s)";
 
-        /// <summary>Replaces the findings for one script, leaving other scripts' rows in place.</summary>
-        public void SetDiagnostics(string resRef, IReadOnlyList<ScriptAnalysisDiagnostic> diagnostics)
+        /// <summary>
+        /// Replaces one script's findings <b>from one tier</b>, leaving the other tier's rows and
+        /// every other script's rows in place.
+        /// </summary>
+        /// <remarks>
+        /// The two tiers arrive on completely different schedules — the editor re-analyses on every
+        /// idle keystroke, the compiler only on save or F7 — so they must not overwrite each other.
+        /// Replacing all of a script's rows from the idle pass would wipe the compiler's findings a
+        /// quarter-second after they appeared.
+        /// </remarks>
+        public void SetDiagnostics(
+            string resRef,
+            ScriptDiagnosticSource source,
+            IReadOnlyList<ScriptAnalysisDiagnostic> diagnostics)
         {
             for (var i = Rows.Count - 1; i >= 0; i--)
             {
-                if (string.Equals(Rows[i].ResRef, resRef, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(Rows[i].ResRef, resRef, StringComparison.OrdinalIgnoreCase) &&
+                    Rows[i].Diagnostic.Source == source)
                     Rows.RemoveAt(i);
             }
 
             foreach (var diagnostic in diagnostics)
                 Rows.Add(new ProblemRow(resRef, diagnostic));
 
+            // Errors first, then by line: the Problems list is scanned, not read in arrival order.
+            var ordered = Rows
+                .OrderByDescending(r => r.IsError)
+                .ThenBy(r => r.ResRef, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(r => r.Diagnostic.Line)
+                .ToList();
+
+            Rows.Clear();
+            foreach (var row in ordered)
+                Rows.Add(row);
+
             RaiseCounts();
         }
 
         /// <summary>Drops every row for a script, e.g. when its tab closes.</summary>
-        public void Clear(string resRef) => SetDiagnostics(resRef, Array.Empty<ScriptAnalysisDiagnostic>());
+        public void Clear(string resRef)
+        {
+            SetDiagnostics(resRef, ScriptDiagnosticSource.Editor, Array.Empty<ScriptAnalysisDiagnostic>());
+            SetDiagnostics(resRef, ScriptDiagnosticSource.Compiler, Array.Empty<ScriptAnalysisDiagnostic>());
+        }
 
         public void ClearAll()
         {

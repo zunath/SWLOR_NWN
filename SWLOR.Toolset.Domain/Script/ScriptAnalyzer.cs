@@ -31,8 +31,19 @@ namespace SWLOR.Toolset.Domain.Script
     public sealed class ScriptAnalyzer
     {
         private readonly EngineSymbolDatabase _engine;
+        private readonly ScriptBinder? _binder;
 
-        public ScriptAnalyzer(EngineSymbolDatabase engine) => _engine = engine;
+        /// <param name="engine">The engine header's symbols.</param>
+        /// <param name="readInclude">
+        /// Resolves an include to its source. When supplied, unknown-identifier checking is enabled —
+        /// but only for files whose entire include set resolves. Without it that check stays off, which
+        /// is the behaviour this analyzer shipped with.
+        /// </param>
+        public ScriptAnalyzer(EngineSymbolDatabase engine, Func<string, string?>? readInclude = null)
+        {
+            _engine = engine;
+            _binder = readInclude != null ? new ScriptBinder(engine, readInclude) : null;
+        }
 
         public ScriptAnalysis Analyze(string source)
         {
@@ -44,6 +55,12 @@ namespace SWLOR.Toolset.Domain.Script
             CheckBalanced(source, tokens, diagnostics);
             CheckKnownCallArity(source, tokens, diagnostics);
             CheckDuplicateDefinitions(source, outline, diagnostics);
+
+            // Only meaningful once every include resolves; the binder returns nothing otherwise. A
+            // file with unbalanced brackets is skipped too — the token stream past the mismatch is
+            // not trustworthy, and one structural error should not spray name errors after it.
+            if (_binder != null && diagnostics.Count == 0)
+                diagnostics.AddRange(_binder.FindUnknownIdentifiers(source));
 
             return new ScriptAnalysis(outline, diagnostics
                 .OrderBy(d => d.Start)

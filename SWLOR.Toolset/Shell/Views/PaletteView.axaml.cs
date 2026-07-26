@@ -1,6 +1,8 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using SWLOR.Toolset.Shell.Panels;
 
 namespace SWLOR.Toolset.Shell.Views
@@ -58,6 +60,56 @@ namespace SWLOR.Toolset.Shell.Views
                 return;
 
             viewModel.CategoryProportion = category / total;
+        }
+
+        // ----- preview loading -----
+        //
+        // A cell asks for its image when it comes within reach of the viewport, not when its category
+        // opens. Opening a 2,000-object category and fetching every image up front cost seconds, nearly
+        // all of it for cells that were thousands of pixels below the fold.
+        //
+        // Belt and braces with the grid's virtualization rather than a duplicate of it: the panel decides
+        // which cells exist, this decides which of them are worth an image. The two use the same buffer,
+        // so in practice a realized cell asks immediately - but a cell realized for any other reason (a
+        // selection scrolled to off-screen, say) still waits until it is actually somewhere near the eye.
+
+        /// <summary>
+        /// How far beyond the visible area, in viewport heights, a cell still counts as worth fetching.
+        /// One screenful either way: enough that an ordinary scroll lands on images that are already
+        /// there, without pulling in a whole category the builder only passed through.
+        /// </summary>
+        private const double PreviewReachInViewports = 1;
+
+        private void OnTileLoaded(object? sender, RoutedEventArgs e)
+        {
+            if (sender is Control control)
+                control.EffectiveViewportChanged += OnTileViewportChanged;
+        }
+
+        private void OnTileUnloaded(object? sender, RoutedEventArgs e)
+        {
+            if (sender is Control control)
+                control.EffectiveViewportChanged -= OnTileViewportChanged;
+        }
+
+        private void OnTileViewportChanged(object? sender, EffectiveViewportChangedEventArgs e)
+        {
+            if (sender is not Control { DataContext: PaletteTileViewModel tile } control ||
+                DataContext is not PaletteViewModel viewModel)
+            {
+                return;
+            }
+
+            // The viewport arrives in the cell's own coordinate space, so the cell is the rectangle at
+            // that space's origin.
+            var reach = e.EffectiveViewport.Inflate(e.EffectiveViewport.Height * PreviewReachInViewports);
+            if (!reach.Intersects(new Rect(control.Bounds.Size)))
+                return;
+
+            // Once asked for, there is nothing left to watch this cell for: the image either arrives or
+            // is known not to exist, and either way the answer does not change with scrolling.
+            control.EffectiveViewportChanged -= OnTileViewportChanged;
+            viewModel.EnsurePreview(tile);
         }
 
         /// <summary>

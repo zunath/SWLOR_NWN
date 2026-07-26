@@ -145,9 +145,81 @@ namespace SWLOR.Toolset.Tests
         public void CustomBelongsToNoGroup()
         {
             // It rendered under HAZARD because the list builder let an ungrouped entry inherit the
-            // previous heading. Custom is not a hazard, and neither is None.
+            // previous heading. Custom is not a hazard.
             TriggerBehaviorCatalog.Custom.Group.Should().BeNull();
-            TriggerBehaviorCatalog.None.Group.Should().BeNull();
+        }
+
+        [Test]
+        public void ATriggerThatMatchesNothingIsCustom()
+        {
+            // There is no longer a separate "None": a volume with nothing set is a Custom trigger
+            // that has not been given any scripts yet, which is the same thing with one less concept.
+            TriggerBehaviorCatalog.All.Should().NotContain(behavior => behavior.DisplayName == "None");
+            TriggerBehaviorCatalog.Classify(NewTrigger()).Id.Should().Be(TriggerBehaviorCatalog.CustomId);
+        }
+
+        [Test]
+        public void TheIdentityRowsCapWhatTheEngineCaps()
+        {
+            var resRef = TriggerEditorLayout.Basic.Single(row => row.Name == "TemplateResRef");
+            var tag = TriggerEditorLayout.Basic.Single(row => row.Name == "Tag");
+
+            // 16 is the engine's own limit - the GFF ResRef field is a fixed 16 bytes.
+            resRef.MaxLength.Should().Be(16);
+            resRef.MaxLength.Should().Be(TriggerEditorLayout.MaxResRefLength);
+
+            // A tag is a CExoString with no engine maximum; this is the base toolset's editor limit,
+            // and it has to stay clear of the longest tag the module actually ships.
+            tag.MaxLength.Should().Be(32);
+            LongestTriggerTagLength().Should().BeLessThan(tag.MaxLength);
+        }
+
+        [Test]
+        public void NeitherCursorNorGeometryIsAskedFor()
+        {
+            var rows = TriggerEditorLayout.Basic.Concat(TriggerEditorLayout.Advanced).ToList();
+
+            rows.Should().NotContain(row => row.Name == "Cursor",
+                "the cursor follows from what the trigger is; the transition behavior sets it");
+            rows.Should().NotContain(row => row.Label.Contains("Geometry", StringComparison.OrdinalIgnoreCase),
+                "dimensions are drawn per placement in the area editor");
+        }
+
+        [Test]
+        public void CategoryAndFactionArePickedRatherThanTyped()
+        {
+            var category = TriggerEditorLayout.Basic.Single(row => row.Name == "PaletteID");
+            var faction = TriggerEditorLayout.Advanced.Single(row => row.Name == "Faction");
+
+            category.Kind.Should().Be(TriggerFieldKind.Choice);
+            category.ChoicesKey.Should().Be(TriggerChoiceKeys.PaletteCategories);
+            faction.Kind.Should().Be(TriggerFieldKind.Choice);
+            faction.ChoicesKey.Should().Be(TriggerChoiceKeys.Factions);
+        }
+
+        [Test]
+        public void ThePaletteYieldsNamedCategoriesRatherThanNumbers()
+        {
+            var path = Path.Combine(CorpusLocator.ModuleDirectory, "itp", "triggerpalcus.itp.json");
+            if (!File.Exists(path))
+                Assert.Ignore("triggerpalcus.itp.json is not present in this checkout.");
+
+            var categories = PaletteCategoryReader.Read(
+                SWLOR.Toolset.Domain.Documents.ItpDocument.Load(path));
+
+            categories.Should().NotBeEmpty();
+            categories.Select(category => category.Value).Should().OnlyHaveUniqueItems();
+            categories.Should().OnlyContain(category => category.Display.Length > 0);
+        }
+
+        private static int LongestTriggerTagLength()
+        {
+            var longest = 0;
+            foreach (var trigger in CorpusTriggers())
+                longest = Math.Max(longest, new TriggerValueStore(trigger)
+                    .GetString(TriggerFieldStorage.Field, "Tag").Length);
+
+            return longest;
         }
 
         [Test]
@@ -167,13 +239,6 @@ namespace SWLOR.Toolset.Tests
             loadScreen.Kind.Should().Be(TriggerFieldKind.Choice);
             loadScreen.ChoicesKey.Should().Be(TriggerChoiceKeys.LoadScreens);
             loadScreen.Choices.Should().BeEmpty("the screens come from loadscreens.2da, not from this file");
-        }
-
-        [Test]
-        public void ATriggerWithNothingSetIsNoneRatherThanCustom()
-        {
-            TriggerBehaviorCatalog.Classify(NewTrigger()).Id
-                .Should().Be(TriggerBehaviorCatalog.NoneId);
         }
 
         /// <summary>A bare trigger struct, standing in for a freshly created blueprint.</summary>

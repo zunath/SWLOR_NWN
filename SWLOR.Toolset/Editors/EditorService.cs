@@ -409,11 +409,47 @@ namespace SWLOR.Toolset.Editors
             _factory.OpenDocument(editor);
         }
 
-        /// <summary>Game-data choice sets a trigger behavior asks for, such as the load screens.</summary>
-        private IReadOnlyList<Domain.Editors.Triggers.TriggerChoice> ResolveTriggerChoices(string key) =>
-            _lookups.GetOptions(key)
+        /// <summary>
+        /// Game-data choice sets a trigger row asks for. Most forward to the shared lookup provider,
+        /// whose keys these deliberately match; the palette categories come from the module's own
+        /// .itp, which no 2DA lookup covers.
+        /// </summary>
+        private IReadOnlyList<Domain.Editors.Triggers.TriggerChoice> ResolveTriggerChoices(string key)
+        {
+            if (key == Domain.Editors.Triggers.TriggerChoiceKeys.PaletteCategories)
+                return ResolveTriggerCategories();
+
+            return _lookups.GetOptions(key)
                 .Select(option => new Domain.Editors.Triggers.TriggerChoice(option.Id, option.Display))
                 .ToList();
+        }
+
+        /// <summary>
+        /// The trigger palette's categories, named rather than numbered. A missing or unreadable
+        /// palette yields an empty list, which shows as an empty picker instead of a bare id.
+        /// </summary>
+        private IReadOnlyList<Domain.Editors.Triggers.TriggerChoice> ResolveTriggerCategories()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<Domain.Editors.Triggers.TriggerChoice>();
+
+            try
+            {
+                var path = Path.Combine(workspace.ModuleRoot, "itp", "triggerpalcus.itp.json");
+                if (!File.Exists(path))
+                    return Array.Empty<Domain.Editors.Triggers.TriggerChoice>();
+
+                return Domain.Editors.Triggers.PaletteCategoryReader.Read(
+                    Domain.Documents.ItpDocument.Load(path),
+                    _tlkService != null ? _tlkService.GetString : null);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not read the trigger palette categories: {ex.Message}");
+                return Array.Empty<Domain.Editors.Triggers.TriggerChoice>();
+            }
+        }
 
         /// <summary>
         /// Names the area a waypoint or door tag lives in, or null when nothing defines it — what

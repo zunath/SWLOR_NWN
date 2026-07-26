@@ -1318,35 +1318,48 @@ namespace SWLOR.Toolset.Shell.Panels
         }
 
         /// <summary>
-        /// Publishes a tile and asks for its thumbnail. The grid appears immediately and fills in as
-        /// renders complete, rather than the panel stalling while thousands of models load.
+        /// Publishes a tile, with its preview if that is already decoded and waiting.
         /// </summary>
+        /// <remarks>
+        /// Only the free half of the work. A cell whose image is not already in memory is left to
+        /// <see cref="EnsurePreview"/>, which the view calls as the cell comes within reach of the
+        /// viewport - a category can hold a couple of thousand blueprints against the forty or so cells on
+        /// screen, and fetching every one of them the moment the category opens made opening it cost
+        /// seconds of work for images nobody had scrolled to yet.
+        /// </remarks>
         private void AddTile(PaletteTileViewModel tile)
         {
             Tiles.Add(tile);
 
+            tile.Preview = tile.IsTile
+                ? _thumbnails?.CachedTile(tile.ResRef)
+                : _thumbnails?.Cached(SelectedType, tile.ResRef, tile.Source == PaletteSource.Standard);
+
+            if (tile.Preview != null)
+                tile.PreviewRequested = true;
+        }
+
+        /// <summary>
+        /// Fetches a cell's preview unless it already has one or has already asked. Called by the view
+        /// when the cell comes within reach of the viewport; safe to call as often as it likes.
+        /// </summary>
+        public void EnsurePreview(PaletteTileViewModel? tile)
+        {
+            if (tile == null || tile.PreviewRequested)
+                return;
+
+            tile.PreviewRequested = true;
+
             if (tile.IsTile)
             {
-                tile.Preview = _thumbnails?.CachedTile(tile.ResRef);
-                if (tile.Preview == null)
-                    _thumbnails?.RequestTileAsync(tile.ResRef, bitmap => tile.Preview = bitmap);
-
-                return;
-            }
-
-            var useIndexedBlueprint = tile.Source == PaletteSource.Standard;
-            var cached = _thumbnails?.Cached(
-                SelectedType, tile.ResRef, useIndexedBlueprint);
-            if (cached != null)
-            {
-                tile.Preview = cached;
+                _thumbnails?.RequestTileAsync(tile.ResRef, bitmap => tile.Preview = bitmap);
                 return;
             }
 
             _thumbnails?.RequestAsync(
                 SelectedType,
                 tile.ResRef,
-                useIndexedBlueprint,
+                tile.Source == PaletteSource.Standard,
                 bitmap => tile.Preview = bitmap);
         }
 

@@ -23,6 +23,12 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         /// <summary>Marked "required" in the editor, and reported when left empty.</summary>
         public bool IsRequired { get; init; }
 
+        /// <summary>
+        /// Characters a text row accepts, or 0 for no limit. Enforced by the box itself, so an
+        /// over-long value cannot be typed rather than being truncated behind the builder's back.
+        /// </summary>
+        public int MaxLength { get; init; }
+
         /// <summary>Named values for a Choice row, when the set is fixed.</summary>
         public IReadOnlyList<TriggerChoice> Choices { get; init; } = Array.Empty<TriggerChoice>();
 

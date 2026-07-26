@@ -9,5 +9,11 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
     {
         /// <summary>loadscreens.2da — the named screens a transition can show while it loads.</summary>
         public const string LoadScreens = "loadscreens";
+
+        /// <summary>The module's repute.fac.</summary>
+        public const string Factions = "factions";
+
+        /// <summary>The trigger palette's own categories, by PaletteID.</summary>
+        public const string PaletteCategories = "palettecategories";
     }
 }

@@ -110,9 +110,10 @@
                      Foreground="{DynamicResource AmberBrush}"
                      IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
           <TextBox Text="{Binding Text, Mode=TwoWay}" MinWidth="210"
-                   IsVisible="{Binding IsTextEntry}" />
+                   MaxLength="{Binding MaxLength}" IsVisible="{Binding IsTextEntry}" />
           <TextBox Text="{Binding Text, Mode=TwoWay}" MinWidth="210" AcceptsReturn="True"
-                   TextWrapping="Wrap" MaxHeight="90" IsVisible="{Binding IsParagraph}" />
+                   TextWrapping="Wrap" MaxHeight="90" MaxLength="{Binding MaxLength}"
+                   IsVisible="{Binding IsParagraph}" />
           <NumericUpDown Value="{Binding Number, Mode=TwoWay}" MinWidth="150"
                          IsVisible="{Binding IsNumber}" />
           <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsVisible="{Binding IsCheck}" />

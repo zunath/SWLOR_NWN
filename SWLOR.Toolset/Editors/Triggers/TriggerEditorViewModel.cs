@@ -47,7 +47,7 @@ namespace SWLOR.Toolset.Editors.Triggers
         private VarTableSectionViewModel? _variables;
 
         [ObservableProperty]
-        private TriggerBehavior _behavior = TriggerBehaviorCatalog.None;
+        private TriggerBehavior _behavior = TriggerBehaviorCatalog.Custom;
 
         /// <summary>Header: the behavior's name, which is what the trigger actually is.</summary>
         public string HeaderName => Behavior.DisplayName;

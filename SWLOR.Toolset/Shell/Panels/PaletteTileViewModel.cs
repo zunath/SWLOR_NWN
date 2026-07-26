@@ -74,6 +74,13 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private Bitmap? _preview;
 
+        /// <summary>
+        /// Whether this cell's preview has been asked for yet. Set by
+        /// <see cref="PaletteViewModel.EnsurePreview"/> the first time the cell comes within reach of the
+        /// viewport, so scrolling back over it does not queue the same work again.
+        /// </summary>
+        public bool PreviewRequested { get; set; }
+
         public bool HasPreview => Preview != null;
 
         partial void OnPreviewChanged(Bitmap? value) => OnPropertyChanged(nameof(HasPreview));

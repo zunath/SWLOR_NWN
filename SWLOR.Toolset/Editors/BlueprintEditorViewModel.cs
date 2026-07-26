@@ -44,6 +44,9 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public ObservableCollection<EditorTabViewModel> Tabs { get; } = new();
 
+        /// <summary>The Advanced tab, held so it can come and go with the Custom behavior.</summary>
+        private EditorTabViewModel? _advancedTab;
+
         /// <summary>
         /// False for a schema that declares no tabs, where a tab strip over a single page would be
         /// chrome around nothing.
@@ -137,7 +140,19 @@ namespace SWLOR.Toolset.Editors
                     .Select(entry => entry.Group);
 
                 var title = string.IsNullOrEmpty(tabTitle) ? "Properties" : tabTitle;
-                Tabs.Add(new EditorTabViewModel(title, new FieldGroupsViewModel(groups)));
+                var tab = new EditorTabViewModel(title, new FieldGroupsViewModel(groups));
+
+                // Advanced exists to hand-edit script slots, and a named behavior writes those
+                // itself - so offering the tab would only invite someone to fight it. It appears
+                // for Custom, which is the wiring no behavior describes.
+                if (PlaceableSections != null && title == Domain.Editors.Schemas.UtpSchema.AdvancedTab)
+                {
+                    _advancedTab = tab;
+                    if (!PlaceableSections.Behavior.AllowsRawEditing)
+                        continue;
+                }
+
+                Tabs.Add(tab);
             }
 
             if (PlaceableSections != null)
@@ -202,8 +217,19 @@ namespace SWLOR.Toolset.Editors
                 Tabs[Tabs.IndexOf(existing)] = new EditorTabViewModel("Variables", VarTableSection!);
             else if (!wanted && existing != null)
                 Tabs.Remove(existing);
-            else
-                return;
+
+            // Advanced exists to hand-edit script slots, and a named behavior writes those itself,
+            // so the tab appears only for Custom - the wiring no behavior describes.
+            if (_advancedTab != null && PlaceableSections != null)
+            {
+                var wantAdvanced = PlaceableSections.Behavior.AllowsRawEditing;
+                var hasAdvanced = Tabs.Contains(_advancedTab);
+
+                if (wantAdvanced && !hasAdvanced)
+                    Tabs.Add(_advancedTab);
+                else if (!wantAdvanced && hasAdvanced)
+                    Tabs.Remove(_advancedTab);
+            }
 
             NotifyTabsChanged();
         }

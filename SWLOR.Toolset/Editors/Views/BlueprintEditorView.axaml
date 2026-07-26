@@ -44,7 +44,11 @@
             <TextBlock Text="{Binding MatchSummary}" Classes="count" VerticalAlignment="Center" />
           </StackPanel>
 
+          <!-- Paging is driven by the scroll position rather than a button: a builder looking for a
+               model scrolls, and stopping to ask for more is an interruption in the middle of the one
+               thing this tab is for. The handler loads the next page as the end comes into view. -->
           <ListBox Grid.Row="2" ItemsSource="{Binding Tiles}" SelectedItem="{Binding Highlighted, Mode=TwoWay}"
+                   ScrollViewer.ScrollChanged="OnAppearanceScrollChanged"
                    Background="Transparent" BorderThickness="0" Padding="2">
             <ListBox.ItemsPanel>
               <ItemsPanelTemplate>
@@ -76,6 +80,8 @@
             </ListBox.ItemTemplate>
           </ListBox>
 
+          <!-- Kept as a fallback for anyone driving the grid from the keyboard, where there may be
+               no scroll gesture to trigger the load. -->
           <Button Grid.Row="3" Content="Load more" Margin="0,6,0,0"
                   Command="{Binding LoadMoreCommand}" IsVisible="{Binding CanLoadMore}" />
         </Grid>

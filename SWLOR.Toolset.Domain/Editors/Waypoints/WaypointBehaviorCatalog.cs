@@ -116,7 +116,8 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                         StringChoice(
                             "Spawn table",
                             SpawnChoices(_spawnTableIds, gameCodeIndex?.SpawnTables),
-                            "Tag"),
+                            "Tag",
+                            searchable: true),
                         Statement("Marker", "Red")
                     },
                     Manages = new[] { red }
@@ -132,7 +133,8 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                         StringChoice(
                             "Fishing location",
                             SpawnChoices(_fishingSpawnTableIds, gameCodeIndex?.FishingSpawnTables),
-                            "Tag"),
+                            "Tag",
+                            searchable: true),
                         Statement("Marker", "Green")
                     },
                     Manages = new[] { green }
@@ -354,7 +356,8 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
         private static BehaviorFieldDefinition StringChoice(
             string label,
             IReadOnlyList<BehaviorChoice> choices,
-            string name) =>
+            string name,
+            bool searchable = false) =>
             new()
             {
                 Label = label,
@@ -362,7 +365,8 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                 Kind = BehaviorFieldKind.Choice,
                 FieldType = GffFieldType.CExoString,
                 IsRequired = true,
-                Choices = choices
+                Choices = choices,
+                IsSearchable = searchable
             };
 
         private static BehaviorFieldDefinition Statement(string label, string note) =>

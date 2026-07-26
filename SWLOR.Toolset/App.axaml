@@ -50,8 +50,16 @@
           <NumericUpDown Value="{Binding Number, Mode=TwoWay}" MinWidth="150"
                          IsVisible="{Binding IsNumber}" />
           <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsVisible="{Binding IsCheck}" />
+          <AutoCompleteBox ItemsSource="{Binding Choices}"
+                           ValueMemberBinding="{Binding Display}"
+                           SelectedItem="{Binding Choice, Mode=TwoWay}"
+                           Text="{Binding ChoiceSearchText, Mode=TwoWay}"
+                           FilterMode="Contains" MinimumPrefixLength="0"
+                           Watermark="Search spawn tables"
+                           MinWidth="240" MaxDropDownHeight="400"
+                           IsVisible="{Binding IsSearchableChoice}" />
           <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice, Mode=TwoWay}"
-                    MinWidth="240" MaxDropDownHeight="400" IsVisible="{Binding IsChoice}" />
+                    MinWidth="240" MaxDropDownHeight="400" IsVisible="{Binding IsPlainChoice}" />
         </StackPanel>
 
         <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Note}" Classes="label"

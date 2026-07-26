@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 
 namespace SWLOR.Toolset.Tests
@@ -97,6 +98,25 @@ namespace SWLOR.Toolset.Tests
 
             // 20 spawn definition files contributing well over 150 IDs; 50 is a conservative floor.
             index.SpawnTableIds.Count.Should().BeGreaterThan(50);
+        }
+
+        [Test]
+        public void SpawnTableIds_ContainEveryTableBuiltAtRuntime()
+        {
+            var index = CreateIndex();
+            var runtimeIds = typeof(ISpawnListDefinition).Assembly
+                .GetTypes()
+                .Where(type =>
+                    !type.IsAbstract &&
+                    typeof(ISpawnListDefinition).IsAssignableFrom(type))
+                .Select(type => (ISpawnListDefinition)Activator.CreateInstance(type)!)
+                .SelectMany(definition => definition.BuildSpawnTables().Keys)
+                .ToHashSet(StringComparer.Ordinal);
+
+            index.SpawnTableIds.Should().BeEquivalentTo(runtimeIds);
+            index.SpawnTableIds.Should().Contain(
+                "SLICING_TERMINAL_T1",
+                "SLICING_TERMINAL_T5");
         }
 
         [Test]

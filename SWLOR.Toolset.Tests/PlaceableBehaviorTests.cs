@@ -444,6 +444,9 @@ namespace SWLOR.Toolset.Tests
             var spawnOptions = sources.GetOptions(PlaceableValueSource.SpawnTables);
             spawnOptions.Single(option => option.Value == "CAPSTONE_ANCHORHEAD_CANYON_RANGE")
                 .Display.Should().Be("Capstone - Anchorhead Canyon Range");
+            spawnOptions.Should().Contain(option => option.Value == "SLICING_TERMINAL_T5");
+            spawnOptions.Select(option => option.Value).Should().BeEquivalentTo(
+                new GameCodeIndex(sourceRoot).SpawnTableIds);
             spawnOptions.Select(option => option.Display).Should().OnlyHaveUniqueItems(
                 "every saved table id must remain distinguishable in the friendly list");
 

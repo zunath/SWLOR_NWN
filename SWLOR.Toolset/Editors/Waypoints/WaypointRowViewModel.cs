@@ -34,6 +34,8 @@ namespace SWLOR.Toolset.Editors.Waypoints
         public bool IsNumber => Definition.Kind is BehaviorFieldKind.Integer or BehaviorFieldKind.Float;
         public bool IsCheck => Definition.Kind == BehaviorFieldKind.Check;
         public bool IsChoice => Definition.Kind == BehaviorFieldKind.Choice;
+        public bool IsSearchableChoice => IsChoice && Definition.IsSearchable;
+        public bool IsPlainChoice => IsChoice && !Definition.IsSearchable;
         public bool IsStatement => Definition.Kind == BehaviorFieldKind.Statement;
         public bool IsTextEntry => IsText || IsLocalizedText;
 
@@ -52,6 +54,9 @@ namespace SWLOR.Toolset.Editors.Waypoints
 
         [ObservableProperty]
         private WaypointChoiceViewModel? _choice;
+
+        [ObservableProperty]
+        private string _choiceSearchText = string.Empty;
 
         public WaypointRowViewModel(
             BehaviorFieldDefinition definition,
@@ -113,6 +118,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
                 _loading = false;
             }
 
+            ChoiceSearchText = IsSearchableChoice ? Choice?.Display ?? string.Empty : string.Empty;
             OnPropertyChanged(nameof(Counter));
             OnPropertyChanged(nameof(IsEmpty));
         }
@@ -177,6 +183,9 @@ namespace SWLOR.Toolset.Editors.Waypoints
         {
             if (_loading || value == null)
                 return;
+
+            if (IsSearchableChoice)
+                ChoiceSearchText = value.Display;
 
             var applied = value.Choice.IsStringValue
                 ? _runEdit(

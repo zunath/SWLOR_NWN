@@ -33,6 +33,12 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         public IReadOnlyList<BehaviorChoice> Choices { get; init; } = Array.Empty<BehaviorChoice>();
 
         /// <summary>
+        /// Whether a Choice row uses a searchable selection list. The typed text filters the
+        /// declared choices; only selecting one of them writes a value.
+        /// </summary>
+        public bool IsSearchable { get; init; }
+
+        /// <summary>
         /// Lookup key for a Choice row whose values come from game data rather than from this file -
         /// the load screens, say. The app layer resolves it; an unresolved key leaves the row empty
         /// rather than inventing values.

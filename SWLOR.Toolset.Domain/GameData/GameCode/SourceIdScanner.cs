@@ -21,6 +21,10 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
     /// Also resolves the one-level helper shape used by fishing spawn tables: a private helper takes
     /// an ID as its first string parameter, passes that parameter directly to
     /// <c>builder.Create</c>, and is called with a literal in the same file.
+    ///
+    /// Finally, it expands simple inclusive integer loops whose Create ID interpolates the loop
+    /// variable, such as <c>for (var tier = 1; tier &lt;= 5; tier++)</c> creating
+    /// <c>$"SLICING_TERMINAL_T{tier}"</c>.
     /// </summary>
     internal static class SourceIdScanner
     {
@@ -36,6 +40,12 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             @"(?:(?:private|public|protected|internal)\s+)?(?:static\s+)?(?:void|[A-Za-z_][\w<>,.? ]*)\s+" +
             @"(?<method>[A-Za-z_]\w*)\s*\(\s*string\s+(?<parameter>[A-Za-z_]\w*)[^)]*\)\s*\{" +
             @"(?:(?!\n\s*\}).)*?(?:builder|_builder)\.Create\(\s*\k<parameter>\b",
+            RegexOptions.Compiled | RegexOptions.Singleline);
+
+        private static readonly Regex IntegerRangeLoopRegex = new(
+            @"for\s*\(\s*var\s+(?<variable>[A-Za-z_]\w*)\s*=\s*(?<start>\d+)\s*;\s*" +
+            @"\k<variable>\s*<=\s*(?<end>\d+)\s*;\s*\k<variable>\+\+\s*\)\s*\{" +
+            @"(?<body>(?:(?!\r?\n\s*\}).)*)\r?\n\s*\}",
             RegexOptions.Compiled | RegexOptions.Singleline);
 
         /// <summary>
@@ -122,6 +132,30 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
 
                 foreach (Match callMatch in callRegex.Matches(text))
                     ids.Add(callMatch.Groups["literal"].Value);
+            }
+
+            foreach (Match loopMatch in IntegerRangeLoopRegex.Matches(text))
+            {
+                var start = int.Parse(loopMatch.Groups["start"].Value);
+                var end = int.Parse(loopMatch.Groups["end"].Value);
+                if (end < start || end - start > 10_000)
+                    continue;
+
+                var variable = Regex.Escape(loopMatch.Groups["variable"].Value);
+                var interpolatedCreateRegex = new Regex(
+                    @"(?:builder|_builder)\.Create\(\s*\$""(?<prefix>(?:[^""\\]|\\.)*)\{" +
+                    variable +
+                    @"\}(?<suffix>(?:[^""\\]|\\.)*)""",
+                    RegexOptions.Compiled);
+
+                foreach (Match createMatch in interpolatedCreateRegex.Matches(
+                             loopMatch.Groups["body"].Value))
+                {
+                    var prefix = createMatch.Groups["prefix"].Value;
+                    var suffix = createMatch.Groups["suffix"].Value;
+                    for (var value = start; value <= end; value++)
+                        ids.Add($"{prefix}{value}{suffix}");
+                }
             }
 
             return true;

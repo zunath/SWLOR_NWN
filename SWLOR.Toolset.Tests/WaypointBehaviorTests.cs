@@ -335,15 +335,25 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void SpawnPickersShowFriendlyNamesAlongsideStoredIds()
         {
-            var creatureChoice = Catalog().Get(WaypointBehaviorCatalog.CreatureSpawnPointId).Fields
-                .Single(row => row.Name == "Tag").Choices
+            var creatureField = Catalog().Get(WaypointBehaviorCatalog.CreatureSpawnPointId).Fields
+                .Single(row => row.Name == "Tag");
+            var fishingField = Catalog().Get(WaypointBehaviorCatalog.FishingPointId).Fields
+                .Single(row => row.Name == "Tag");
+            var creatureChoice = creatureField.Choices
                 .Single(choice => choice.StringValue == "CZ220_DROIDS");
-            var fishingChoice = Catalog().Get(WaypointBehaviorCatalog.FishingPointId).Fields
-                .Single(row => row.Name == "Tag").Choices
+            var fishingChoice = fishingField.Choices
                 .Single(choice => choice.StringValue == "FP_VISC_CAVERN");
 
+            creatureField.IsSearchable.Should().BeTrue();
+            fishingField.IsSearchable.Should().BeTrue();
             creatureChoice.Display.Should().Be("CZ-220 Droids (CZ220_DROIDS)");
             fishingChoice.Display.Should().Be("Viscara Cavern (FP_VISC_CAVERN)");
+
+            creatureField.Choices
+                .Concat(fishingField.Choices)
+                .Select(choice => choice.StringValue)
+                .Should().BeEquivalentTo(GameCode.SpawnTableIds,
+                    "every declared spawn table belongs in one searchable waypoint list");
         }
 
         [Test]

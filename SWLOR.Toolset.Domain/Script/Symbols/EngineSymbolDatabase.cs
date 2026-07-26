@@ -74,8 +74,8 @@ namespace SWLOR.Toolset.Domain.Script.Symbols
 
         /// <summary>
         /// Display family for the Constants reference tree. Header-documented families win over
-        /// structural guesses, so <c>ABILITY_CHARISMA</c> sits under <c>ABILITY_*</c>, not the
-        /// useless singleton <c>ABILITY_CHARISMA_*</c>.
+        /// structural guesses, so <c>APPEARANCE_TYPE_DWARF</c> sits under <c>APPEARANCE_TYPE_*</c>,
+        /// not a naming-accident subgroup such as <c>APPEARANCE_TYPE_DWARF_*</c>.
         /// </summary>
         public string ConstantFamilyOf(ScriptConstant constant) =>
             _constantFamiliesByName.TryGetValue(constant.Name, out var family) ? family : constant.Name;
@@ -146,13 +146,7 @@ namespace SWLOR.Toolset.Domain.Script.Symbols
             structuralFamilies.TryGetValue(constant.Name, out var structural);
             structural ??= constant.Name;
 
-            var documented = documentedFamilies.FirstOrDefault(constant.IsInFamily);
-            if (documented == null)
-                return structural;
-
-            return FamilyPrefixLength(documented) >= FamilyPrefixLength(structural)
-                ? documented
-                : structural;
+            return documentedFamilies.FirstOrDefault(constant.IsInFamily) ?? structural;
         }
 
         private static int FamilyPrefixLength(string family) =>

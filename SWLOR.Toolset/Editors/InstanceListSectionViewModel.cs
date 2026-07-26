@@ -185,7 +185,7 @@ namespace SWLOR.Toolset.Editors
             LoadDetailFromElement(element);
 
             VarTableSection = new VarTableSectionViewModel(
-                new EditorFieldContext(_gitSession.Document, (description, mutation) => _runEdit(description, mutation)),
+                (description, mutation) => _runEdit(description, mutation),
                 new VarTable(element),
                 _gameCodeIndex);
         }

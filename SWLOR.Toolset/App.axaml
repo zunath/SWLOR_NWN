@@ -3,6 +3,7 @@
              xmlns:local="using:SWLOR.Toolset"
              xmlns:core="using:Dock.Model.Core"
              xmlns:editors="using:SWLOR.Toolset.Editors"
+             xmlns:triggers="using:SWLOR.Toolset.Editors.Triggers"
              x:Class="SWLOR.Toolset.App"
              RequestedThemeVariant="Dark">
 
@@ -71,6 +72,42 @@
         <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
                    Classes="dim" TextTrimming="CharacterEllipsis" />
         <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}" />
+      </Grid>
+    </DataTemplate>
+
+    <!-- Trigger editor rows. One template for every kind: each row is a label and a value, and only
+         the control in the value cell changes, so the alternative was nine near-identical copies. -->
+    <DataTemplate DataType="triggers:TriggerRowViewModel">
+      <Grid ColumnDefinitions="*,340" Margin="16,0" MinHeight="32" RowDefinitions="Auto,Auto">
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="6"
+                    VerticalAlignment="Center">
+          <TextBlock Text="{Binding Label}" Classes="dim" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="required" FontWeight="Bold" FontSize="11"
+                     Foreground="{DynamicResource InkBrush}" VerticalAlignment="Center"
+                     IsVisible="{Binding IsRequired}" />
+          <TextBlock Text="per placement" Classes="label"
+                     Foreground="{DynamicResource AmberBrush}" VerticalAlignment="Center"
+                     IsVisible="{Binding IsPerPlacement}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="8"
+                    HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,3">
+          <TextBlock Text="{Binding Status}" Classes="label" VerticalAlignment="Center"
+                     Foreground="{DynamicResource AmberBrush}"
+                     IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+          <TextBox Text="{Binding Text, Mode=TwoWay}" MinWidth="210"
+                   IsVisible="{Binding IsTextEntry}" />
+          <TextBox Text="{Binding Text, Mode=TwoWay}" MinWidth="210" AcceptsReturn="True"
+                   TextWrapping="Wrap" MaxHeight="90" IsVisible="{Binding IsParagraph}" />
+          <NumericUpDown Value="{Binding Number, Mode=TwoWay}" MinWidth="150"
+                         IsVisible="{Binding IsNumber}" />
+          <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsVisible="{Binding IsCheck}" />
+          <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice, Mode=TwoWay}"
+                    MinWidth="180" IsVisible="{Binding IsChoice}" />
+        </StackPanel>
+
+        <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Note}" Classes="label"
+                   TextWrapping="Wrap" Margin="0,0,0,7" IsVisible="{Binding HasNote}" />
       </Grid>
     </DataTemplate>
 

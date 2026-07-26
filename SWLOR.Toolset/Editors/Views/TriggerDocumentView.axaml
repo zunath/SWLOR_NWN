@@ -1,0 +1,162 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:triggers="using:SWLOR.Toolset.Editors.Triggers"
+             xmlns:editors="using:SWLOR.Toolset.Editors"
+             x:Class="SWLOR.Toolset.Editors.Triggers.TriggerDocumentView"
+             x:DataType="triggers:TriggerDocumentViewModel">
+
+  <!-- A trigger blueprint, in the placeable editor's shape: header, tabs, and a Behavior tab whose
+       left rail picks what the trigger is for. Variables appear only under Custom - every other
+       behavior owns its locals and exposes them as named fields. -->
+  <DockPanel>
+
+    <!-- header -->
+    <Border DockPanel.Dock="Top" Padding="16,12" DataContext="{Binding Editor}"
+            x:DataType="triggers:TriggerEditorViewModel"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnSpacing="8">
+        <TextBlock Grid.Column="0" Text="{Binding HeaderName}" FontSize="15.5" FontWeight="SemiBold"
+                   VerticalAlignment="Center" />
+        <TextBlock Grid.Column="1" Text="{Binding HeaderKind}" Classes="dim" FontSize="13"
+                   VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2" Text="&#x00B7;" Classes="dim" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="3" Text="{Binding HeaderOwner}" Classes="resref" FontSize="13.5"
+                   VerticalAlignment="Center" />
+        <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+          <Ellipse Width="6" Height="6" Fill="{DynamicResource AccentBrush}"
+                   IsVisible="{Binding $parent[UserControl].((triggers:TriggerDocumentViewModel)DataContext).IsDirty}" />
+          <TextBlock Text="unsaved" Classes="dim" FontSize="12.5"
+                     IsVisible="{Binding $parent[UserControl].((triggers:TriggerDocumentViewModel)DataContext).IsDirty}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- footer -->
+    <Border DockPanel.Dock="Bottom" Padding="16,11"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+        <TextBlock Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource AmberBrush}"
+                   FontSize="12" TextTrimming="CharacterEllipsis"
+                   DataContext="{Binding Editor}" x:DataType="triggers:TriggerEditorViewModel"
+                   Text="{Binding Incomplete}" IsVisible="{Binding IsIncomplete}" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+          <Button Content="Revert" MinWidth="86" Command="{Binding RevertCommand}" />
+          <Button Content="Save" MinWidth="86" Classes="primary" Command="{Binding SaveCommand}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <TabControl DataContext="{Binding Editor}" x:DataType="triggers:TriggerEditorViewModel">
+
+      <TabItem Header="Basic">
+        <ScrollViewer>
+          <ItemsControl ItemsSource="{Binding BasicRows}" Margin="14,10" />
+        </ScrollViewer>
+      </TabItem>
+
+      <TabItem Header="Behavior">
+        <Grid ColumnDefinitions="290,*">
+
+          <!-- behavior list -->
+          <ScrollViewer Grid.Column="0">
+            <ItemsControl ItemsSource="{Binding BehaviorList}" Margin="10,10">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="triggers:TriggerBehaviorListItemViewModel">
+                  <Panel>
+                    <TextBlock Text="{Binding Text}" IsVisible="{Binding IsHeader}"
+                               Classes="section" Margin="12,14,0,5" />
+                    <Button IsVisible="{Binding IsSelectable}" Classes="behavior"
+                            Classes.on="{Binding IsSelected}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Command="{Binding $parent[TabControl].((triggers:TriggerEditorViewModel)DataContext).ChooseBehaviorCommand}"
+                            CommandParameter="{Binding Behavior}">
+                      <StackPanel Orientation="Horizontal" Spacing="7">
+                        <TextBlock Text="{Binding Text}" />
+                        <TextBlock Text="&#x2014;" Classes="dim" IsVisible="{Binding HasTagline}" />
+                        <TextBlock Text="{Binding Tagline}" Classes="dim" IsVisible="{Binding HasTagline}" />
+                      </StackPanel>
+                    </Button>
+                  </Panel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+
+          <!-- behavior fields + what it manages -->
+          <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1,0,0,0">
+            <StackPanel Margin="14,12" Spacing="14">
+
+              <Border Classes="card">
+                <StackPanel>
+                  <TextBlock Text="{Binding HeaderName}" Classes="section" Margin="16,12,16,4" />
+                  <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="0,2,0,8" />
+                </StackPanel>
+              </Border>
+
+              <Border Classes="card" IsVisible="{Binding HasManagedRows}">
+                <StackPanel>
+                  <TextBlock Text="What this behavior manages" Classes="section" Margin="16,12,16,4" />
+                  <ItemsControl ItemsSource="{Binding ManagedRows}" Margin="0,2,0,8">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="triggers:TriggerManagedRowViewModel">
+                        <Grid ColumnDefinitions="*,Auto" Margin="16,0" Height="30" ColumnSpacing="16">
+                          <TextBlock Grid.Column="0" Text="{Binding Label}" Classes="dim"
+                                     VerticalAlignment="Center" />
+                          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"
+                                      VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Value}" Classes="mono" />
+                            <TextBlock Text="&#x2713;" Foreground="{DynamicResource GreenBrush}"
+                                       IsVisible="{Binding IsApplied}" />
+                            <TextBlock Text="&#x2717;" Foreground="{DynamicResource AmberBrush}"
+                                       IsVisible="{Binding !IsApplied}"
+                                       ToolTip.Tip="The document does not currently hold this value." />
+                          </StackPanel>
+                        </Grid>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </Border>
+
+            </StackPanel>
+          </ScrollViewer>
+        </Grid>
+      </TabItem>
+
+      <!-- Variables exist only under Custom. -->
+      <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
+        <StackPanel Margin="14,12" Spacing="8"
+                    DataContext="{Binding Variables}" x:DataType="editors:VarTableSectionViewModel">
+          <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                    AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="320"
+                    GridLinesVisibility="Horizontal">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
+              <DataGridTextColumn Header="Type" Binding="{Binding TypeLabel}" Width="*" />
+              <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="2*" />
+            </DataGrid.Columns>
+          </DataGrid>
+          <Grid ColumnDefinitions="2*,Auto,*,2*,Auto,Auto" ColumnSpacing="6">
+            <AutoCompleteBox Grid.Column="0" Text="{Binding NewName, Mode=TwoWay}"
+                             ItemsSource="{Binding KnownKeys}" Watermark="Variable name" />
+            <TextBlock Grid.Column="1" Text="=" VerticalAlignment="Center" />
+            <ComboBox Grid.Column="2" ItemsSource="{Binding TypeChoices}"
+                      SelectedItem="{Binding NewType, Mode=TwoWay}" />
+            <TextBox Grid.Column="3" Text="{Binding NewValue, Mode=TwoWay}" Watermark="Value" />
+            <Button Grid.Column="4" Content="Set" Command="{Binding SetVariableCommand}" />
+            <Button Grid.Column="5" Content="Remove" Command="{Binding RemoveSelectedCommand}" />
+          </Grid>
+          <TextBlock Text="{Binding ValidationHint}" Foreground="Orange" TextWrapping="Wrap"
+                     IsVisible="{Binding ValidationHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+      </TabItem>
+
+      <TabItem Header="Advanced">
+        <ScrollViewer>
+          <ItemsControl ItemsSource="{Binding AdvancedRows}" Margin="14,10" />
+        </ScrollViewer>
+      </TabItem>
+
+    </TabControl>
+  </DockPanel>
+</UserControl>

@@ -1,0 +1,37 @@
+namespace SWLOR.Toolset.Domain.Editors.Triggers
+{
+    /// <summary>
+    /// One entry of the trigger editor's behavior list: what the trigger is for, the fields that
+    /// configure it, and the raw values it writes on the builder's behalf.
+    /// </summary>
+    /// <remarks>
+    /// Local variables are reachable only under <see cref="AllowsVariables"/>, which is true for
+    /// Custom alone. Every other behavior owns whichever locals it needs and exposes them as named
+    /// fields, so there is never a second place to set the same thing.
+    /// </remarks>
+    public sealed class TriggerBehavior
+    {
+        public required string Id { get; init; }
+
+        public required string DisplayName { get; init; }
+
+        /// <summary>Heading this behavior sits under in the list; null sits it above the groups.</summary>
+        public string? Group { get; init; }
+
+        /// <summary>Trailing clause on the list row, as in "None — plain trigger".</summary>
+        public string? Tagline { get; init; }
+
+        public IReadOnlyList<TriggerFieldDefinition> Fields { get; init; } = Array.Empty<TriggerFieldDefinition>();
+
+        public IReadOnlyList<TriggerManagedValue> Manages { get; init; } = Array.Empty<TriggerManagedValue>();
+
+        /// <summary>True only for Custom: the raw VarTable is the builder's to edit.</summary>
+        public bool AllowsVariables { get; init; }
+
+        /// <summary>Every local this behavior owns, whether as a row or as a managed value.</summary>
+        public IEnumerable<string> OwnedLocals =>
+            Fields.Where(row => row.Storage == TriggerFieldStorage.Local).Select(row => row.Name)
+                .Concat(Manages.Where(value => value.Storage == TriggerFieldStorage.Local).Select(value => value.Name))
+                .Distinct(StringComparer.Ordinal);
+    }
+}

@@ -25,7 +25,7 @@ namespace SWLOR.Toolset.Editors
             "CREATURE_SPAWN_COUNT"
         };
 
-        private readonly EditorFieldContext _context;
+        private readonly Func<string, Action, bool> _runEdit;
         private readonly VarTable _varTable;
 
         public ObservableCollection<VarTableRow> Rows { get; } = new();
@@ -49,10 +49,16 @@ namespace SWLOR.Toolset.Editors
         [ObservableProperty]
         private string? _validationHint;
 
+        /// <summary>
+        /// Takes the owning editor's edit runner rather than an <c>EditorFieldContext</c>: the grid
+        /// addresses its rows through <see cref="VarTable"/> and never through a document field, so
+        /// the context's document half was only ever dead weight - and unreachable for the trigger
+        /// editor, whose locals may live on an area's instance struct rather than a document root.
+        /// </summary>
         public VarTableSectionViewModel(
-            EditorFieldContext context, VarTable varTable, IGameCodeIndex? gameCodeIndex)
+            Func<string, Action, bool> runEdit, VarTable varTable, IGameCodeIndex? gameCodeIndex)
         {
-            _context = context;
+            _runEdit = runEdit;
             _varTable = varTable;
             KnownKeys = WellKnownKeys;
             GameCodeIndex = gameCodeIndex;
@@ -99,11 +105,11 @@ namespace SWLOR.Toolset.Editors
             var applied = NewType switch
             {
                 "int" when int.TryParse(NewValue, out var intValue) =>
-                    _context.RunEdit($"Set local {name}", () => _varTable.SetInt(name, intValue)),
+                    _runEdit($"Set local {name}", () => _varTable.SetInt(name, intValue)),
                 "float" when float.TryParse(NewValue, out var floatValue) && float.IsFinite(floatValue) =>
-                    _context.RunEdit($"Set local {name}", () => _varTable.SetFloat(name, floatValue)),
+                    _runEdit($"Set local {name}", () => _varTable.SetFloat(name, floatValue)),
                 "string" =>
-                    _context.RunEdit($"Set local {name}", () => _varTable.SetString(name, NewValue)),
+                    _runEdit($"Set local {name}", () => _varTable.SetString(name, NewValue)),
                 _ => false
             };
 
@@ -139,7 +145,7 @@ namespace SWLOR.Toolset.Editors
                 return;
 
             var name = SelectedRow.Name;
-            _context.RunEdit($"Remove local {name}", () => _varTable.Remove(name));
+            _runEdit($"Remove local {name}", () => _varTable.Remove(name));
             RefreshFromDocument();
         }
 

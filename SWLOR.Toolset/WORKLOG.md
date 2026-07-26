@@ -1844,3 +1844,24 @@ two-part constants such as `ABILITY_CHARISMA`, and two segments for longer const
   `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
   "FullyQualifiedName~EngineSymbolDatabaseTests|FullyQualifiedName~ScriptReferenceViewModelTests"` -
   24 passed.
+
+## Script reference follow-up - 2026-07-26 - Functions all have categories
+
+The Functions tab no longer shows `Uncategorized`, and the generated wrapper category formerly shown
+as `Data2 DA` now appears as `2DA`.
+
+- **Why.** Function categories should help builders browse the engine surface, not expose wrapper
+  naming quirks or missing generated C# wrappers. The header contains functions newer than the wrapper
+  catalog, so relying only on wrapper filenames left 67 functions in an orphan bucket.
+- **Decision.** Wrapper filenames remain the primary category source. `EngineSymbolDatabase` now adds
+  exact fallback categories only for header functions the wrappers do not declare, reusing existing
+  categories where they fit and adding `Cassowary` and `NWNX` for distinct engine surfaces.
+- **Deliberately not done.** No fuzzy category inference runs over arbitrary function names. The
+  explicit fallback list is guarded by tests, so future header additions fail loudly instead of
+  quietly inventing odd categories.
+- **Verification.** `EngineSymbolDatabaseTests` now rejects any `Uncategorized` function/category,
+  pins `Get2DAString` under `2DA`, and samples unwrapped Cassowary, NWNX, Json, Scripting, Area,
+  Audio, Spell, and Effect functions. Focused run:
+  `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
+  "FullyQualifiedName~EngineSymbolDatabaseTests|FullyQualifiedName~ScriptReferenceViewModelTests"` -
+  27 passed.

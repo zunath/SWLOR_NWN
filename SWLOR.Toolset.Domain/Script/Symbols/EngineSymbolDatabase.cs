@@ -20,6 +20,84 @@ namespace SWLOR.Toolset.Domain.Script.Symbols
             @"public\s+static\s+[A-Za-z_][A-Za-z0-9_<>,\.\[\]\?\s]*?\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(",
             RegexOptions.Compiled);
 
+        private static readonly IReadOnlyDictionary<string, string> CategoryNameOverrides =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["Data2DA"] = "2DA"
+            };
+
+        private static readonly IReadOnlyDictionary<string, string> UnwrappedFunctionCategories =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["DestroyObject"] = "Object",
+                ["ExecuteScript"] = "Scripting",
+                ["GetAreaNoRestFlag"] = "Area",
+                ["GetAttacksPerRound"] = "Combat",
+                ["GetIsDestroyable"] = "Object",
+                ["GetIsRaiseable"] = "Object",
+                ["GetIsSelectableWhenDead"] = "Object",
+                ["JsonArrayDelInplace"] = "Json",
+                ["JsonArrayInsertInplace"] = "Json",
+                ["JsonArraySetInplace"] = "Json",
+                ["JsonObjectDelInplace"] = "Json",
+                ["JsonObjectSetInplace"] = "Json",
+                ["JsonToTemplate"] = "Json",
+                ["RemoveAreaGrassOverride"] = "Area",
+                ["SetAge"] = "Creature",
+                ["SetAreaDefaultGrassDisabled"] = "Area",
+                ["SetAreaGrassOverride"] = "Area",
+                ["SetAreaNoRestFlag"] = "Area",
+                ["SetAreaTileBorderDisabled"] = "Area",
+                ["StartAudioStream"] = "Audio",
+                ["StopAudioStream"] = "Audio",
+                ["Vector"] = "Math",
+                ["CassowaryConstrain"] = "Cassowary",
+                ["CassowaryDebug"] = "Cassowary",
+                ["CassowaryGetValue"] = "Cassowary",
+                ["CassowaryReset"] = "Cassowary",
+                ["CassowarySuggestValue"] = "Cassowary",
+                ["DeleteLocalCassowary"] = "Cassowary",
+                ["EffectAttackDecrease"] = "Effect",
+                ["EffectAttackIncrease"] = "Effect",
+                ["EffectEnemyAttackBonus"] = "Effect",
+                ["GetLocalCassowary"] = "Cassowary",
+                ["GetSpellAbilityCasterLevel"] = "Spell",
+                ["GetSpellAbilityCount"] = "Spell",
+                ["GetSpellAbilityReady"] = "Spell",
+                ["GetSpellAbilitySpell"] = "Spell",
+                ["NWNXCall"] = "NWNX",
+                ["NWNXGetIsAvailable"] = "NWNX",
+                ["NWNXPopCassowary"] = "NWNX",
+                ["NWNXPopEffect"] = "NWNX",
+                ["NWNXPopEvent"] = "NWNX",
+                ["NWNXPopFloat"] = "NWNX",
+                ["NWNXPopInt"] = "NWNX",
+                ["NWNXPopItemProperty"] = "NWNX",
+                ["NWNXPopJson"] = "NWNX",
+                ["NWNXPopLocation"] = "NWNX",
+                ["NWNXPopObject"] = "NWNX",
+                ["NWNXPopSqlquery"] = "NWNX",
+                ["NWNXPopString"] = "NWNX",
+                ["NWNXPopTalent"] = "NWNX",
+                ["NWNXPopVector"] = "NWNX",
+                ["NWNXPushAction"] = "NWNX",
+                ["NWNXPushCassowary"] = "NWNX",
+                ["NWNXPushEffect"] = "NWNX",
+                ["NWNXPushEvent"] = "NWNX",
+                ["NWNXPushFloat"] = "NWNX",
+                ["NWNXPushInt"] = "NWNX",
+                ["NWNXPushItemProperty"] = "NWNX",
+                ["NWNXPushJson"] = "NWNX",
+                ["NWNXPushLocation"] = "NWNX",
+                ["NWNXPushObject"] = "NWNX",
+                ["NWNXPushSqlquery"] = "NWNX",
+                ["NWNXPushString"] = "NWNX",
+                ["NWNXPushTalent"] = "NWNX",
+                ["NWNXPushVector"] = "NWNX",
+                ["SetLocalCassowary"] = "Cassowary",
+                ["SetSpellAbilityReady"] = "Spell"
+            };
+
         private readonly Dictionary<string, ScriptFunction> _functionsByName;
         private readonly Dictionary<string, ScriptConstant> _constantsByName;
         private readonly Dictionary<string, string> _constantFamiliesByName;
@@ -114,14 +192,25 @@ namespace SWLOR.Toolset.Domain.Script.Symbols
                 }
             }
 
+            AddUnwrappedFunctionCategories(map);
+
             return map;
         }
 
         /// <summary>"LocalVariable" → "Local Variable", so the tree reads as labels not identifiers.</summary>
         private static string Humanize(string pascal)
         {
+            if (CategoryNameOverrides.TryGetValue(pascal, out var label))
+                return label;
+
             var spaced = Regex.Replace(pascal, "(?<=[a-z0-9])(?=[A-Z])", " ");
             return spaced;
+        }
+
+        private static void AddUnwrappedFunctionCategories(Dictionary<string, string> map)
+        {
+            foreach (var pair in UnwrappedFunctionCategories)
+                map.TryAdd(pair.Key, pair.Value);
         }
 
         private static Dictionary<string, string> BuildConstantFamilyMap(

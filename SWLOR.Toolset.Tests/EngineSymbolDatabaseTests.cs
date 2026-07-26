@@ -184,6 +184,37 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void FunctionCategories_HaveNoUncategorizedBucket()
+        {
+            if (!Directory.Exists(ApiDirectory))
+                Assert.Ignore("SWLOR.NWN.API/NWScript not present");
+
+            Db.Functions.Should().OnlyContain(f => f.Category != "Uncategorized");
+            Db.CategoryCounts().Should().NotContain(c => c.Category == "Uncategorized");
+        }
+
+        [Test]
+        public void FunctionCategories_UseReadableCategoryNames()
+        {
+            Db.FindFunction("Get2DAString")!.Category.Should().Be("2DA");
+            Db.CategoryCounts().Should().Contain(c => c.Category == "2DA");
+            Db.CategoryCounts().Should().NotContain(c => c.Category == "Data2 DA");
+        }
+
+        [Test]
+        public void FunctionCategories_CoverHeaderFunctionsWithoutWrappers()
+        {
+            Db.FindFunction("CassowaryConstrain")!.Category.Should().Be("Cassowary");
+            Db.FindFunction("NWNXCall")!.Category.Should().Be("NWNX");
+            Db.FindFunction("JsonArraySetInplace")!.Category.Should().Be("Json");
+            Db.FindFunction("ExecuteScript")!.Category.Should().Be("Scripting");
+            Db.FindFunction("SetAreaNoRestFlag")!.Category.Should().Be("Area");
+            Db.FindFunction("StartAudioStream")!.Category.Should().Be("Audio");
+            Db.FindFunction("GetSpellAbilityReady")!.Category.Should().Be("Spell");
+            Db.FindFunction("EffectAttackIncrease")!.Category.Should().Be("Effect");
+        }
+
+        [Test]
         public void CallSkeleton_OmitsOptionalParameters()
         {
             var fn = Db.FindFunction("GetNearestCreature")!;

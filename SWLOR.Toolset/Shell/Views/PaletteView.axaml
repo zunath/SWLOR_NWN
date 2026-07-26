@@ -246,14 +246,14 @@
           <!-- Placing is the default action: clicking a tile arms placement, which is what a builder
                does with a palette nine times in ten. Editing lives behind the ellipsis and the right-click
                menu, so the common action needs no aim and the rare one is still one click away. -->
-          <!-- Loaded/Unloaded is where the preview request is wired up: a cell fetches its image when it
-               comes within reach of the viewport rather than when the category opens. See
-               OnTileLoaded. -->
+          <!-- Loaded is where the preview request is wired up. The virtualizing panel only creates
+               cells within one screen of the viewport, so realization is the reliable signal that an
+               image is worth fetching. See OnTileLoaded. -->
           <Border Width="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).TileSize}"
                   CornerRadius="4" Background="{DynamicResource PanelRaisedBrush}"
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
                   Tapped="OnTileTapped" ContextRequested="OnTileContextRequested"
-                  Loaded="OnTileLoaded" Unloaded="OnTileUnloaded">
+                  Loaded="OnTileLoaded">
             <Border.ContextMenu>
               <!-- Only this object's own actions. Creating things belongs to the category menu, and
                    placing is what a plain click already does - repeating it here would be the one item

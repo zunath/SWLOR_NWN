@@ -77,14 +77,31 @@ namespace SWLOR.Toolset.Workspace
             _workspaceContext.CatalogEntryRefreshed += Invalidate;
         }
 
+        /// <summary>
+        /// How many times each key has been invalidated. A render carries the count it started under, so
+        /// one that began before an edit can be recognised as stale when it finishes.
+        /// </summary>
+        /// <remarks>
+        /// Removing the memory entry was not enough. A render already under way when the blueprint was
+        /// saved went on to repopulate memory with the pre-save image and write its PNG - now with an
+        /// mtime newer than the edited blueprint, so the disk cache's freshness check believed it across
+        /// restarts. The stale picture outlived the session that caused it.
+        /// </remarks>
+        private readonly ConcurrentDictionary<string, long> _invalidations = new();
+
         /// <summary>Forgets a blueprint's cached preview, so the next request re-renders it.</summary>
         public void Invalidate(ResourceType type, string resRef)
         {
             if (string.IsNullOrWhiteSpace(resRef))
                 return;
 
-            _memory.Remove(Key(type, resRef));
+            var key = Key(type, resRef);
+            _memory.Remove(key);
+            _invalidations.AddOrUpdate(key, 1, (_, count) => count + 1);
         }
+
+        /// <summary>The invalidation count a render starting now should carry.</summary>
+        private long CurrentGeneration(string key) => _invalidations.TryGetValue(key, out var count) ? count : 0;
 
         /// <summary>True when game data is loaded well enough to produce any preview at all.</summary>
         public bool IsAvailable => _renderer.IsAvailable;
@@ -127,22 +144,26 @@ namespace SWLOR.Toolset.Workspace
                 return;
             }
 
-            if (!TryStartRender(key, onReady))
+            if (!TryStartRender(key, onReady, TypeIcon(type)))
                 return;
+
+            // Captured before the render starts, so an Invalidate that lands while it runs is visible
+            // as a mismatch when it finishes.
+            var generation = CurrentGeneration(key);
 
             Task.Run(() =>
             {
                 Bitmap? bitmap = null;
                 try
                 {
-                    bitmap = Resolve(type, resRef);
+                    bitmap = Resolve(type, resRef, key, generation);
                 }
                 catch (Exception)
                 {
                     // One bad blueprint must not stop the rest of the grid from filling in.
                 }
 
-                CompleteRender(key, bitmap, bitmap ?? TypeIcon(type));
+                CompleteRender(key, bitmap, bitmap ?? TypeIcon(type), generation);
             });
         }
 
@@ -172,8 +193,12 @@ namespace SWLOR.Toolset.Workspace
                 return;
             }
 
-            if (!TryStartRender(key, onReady))
+            // A tile has no blueprint behind it and is never invalidated, so it renders under
+            // generation 0 and no fallback: "no artwork" for a tile means there is nothing to show.
+            if (!TryStartRender(key, onReady, noArtwork: null))
                 return;
+
+            var generation = CurrentGeneration(key);
 
             Task.Run(() =>
             {
@@ -189,7 +214,7 @@ namespace SWLOR.Toolset.Workspace
                     // One unparseable tile model must not stop the rest of the grid filling in.
                 }
 
-                CompleteRender(key, bitmap, bitmap);
+                CompleteRender(key, bitmap, bitmap, generation);
             });
         }
 
@@ -197,7 +222,11 @@ namespace SWLOR.Toolset.Workspace
         /// Registers <paramref name="onReady"/> as a waiter on <paramref name="key"/>, and reports whether
         /// this caller is the one that has to do the render.
         /// </summary>
-        private bool TryStartRender(string key, Action<Bitmap> onReady)
+        /// <param name="noArtwork">
+        /// What to hand a late caller when the finished render turned out to have no artwork - the type
+        /// icon for a blueprint, nothing for a tile. A cached null is a real answer, not a miss.
+        /// </param>
+        private bool TryStartRender(string key, Action<Bitmap> onReady, Bitmap? noArtwork)
         {
             var mine = new List<Action<Bitmap>> { onReady };
             var waiters = _inFlight.GetOrAdd(key, mine);
@@ -211,8 +240,15 @@ namespace SWLOR.Toolset.Workspace
             {
                 if (!_inFlight.ContainsKey(key))
                 {
-                    if (_memory.TryGet(key, out var done) && done != null)
-                        Dispatcher.UIThread.Post(() => onReady(done));
+                    // TryGet succeeding with a null is "rendered, and there is nothing to draw". Treating
+                    // that as nothing to say left the tile blank until some later refresh happened to ask
+                    // again, instead of showing the type icon RequestAsync promises.
+                    if (_memory.TryGet(key, out var done))
+                    {
+                        var resolved = done ?? noArtwork;
+                        if (resolved != null)
+                            Dispatcher.UIThread.Post(() => onReady(resolved));
+                    }
 
                     return false;
                 }
@@ -228,9 +264,16 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         /// <param name="cached">What to store - null records "no artwork", which is a real answer.</param>
         /// <param name="delivered">What to hand the waiters, or null to tell them nothing.</param>
-        private void CompleteRender(string key, Bitmap? cached, Bitmap? delivered)
+        /// <param name="generation">
+        /// The invalidation count this render started under. When it no longer matches, the blueprint was
+        /// edited while this was rendering: the result describes content that no longer exists, so it is
+        /// not cached - but the waiters are still released, because they are waiting on a picture and the
+        /// stale one is closer to right than leaving them blank forever. The next request re-renders.
+        /// </param>
+        private void CompleteRender(string key, Bitmap? cached, Bitmap? delivered, long generation)
         {
-            _memory.Set(key, cached);
+            if (CurrentGeneration(key) == generation)
+                _memory.Set(key, cached);
 
             List<Action<Bitmap>>? waiters;
             if (!_inFlight.TryRemove(key, out waiters) || waiters == null)
@@ -403,7 +446,7 @@ namespace SWLOR.Toolset.Workspace
         public int PruneSupersededCaches() => Disk.PruneSupersededVersions();
 
         /// <summary>Disk hit, then render. Null means "no artwork" - the caller substitutes a type symbol.</summary>
-        private Bitmap? Resolve(ResourceType type, string resRef)
+        private Bitmap? Resolve(ResourceType type, string resRef, string key, long generation)
         {
             var workspace = _workspaceContext.Workspace;
             var blueprintPath = workspace?.GetResourcePath(type, resRef);
@@ -420,12 +463,20 @@ namespace SWLOR.Toolset.Workspace
             var image = _renderer.Render(type, resRef);
             if (image == null)
             {
-                disk.StoreNoArtwork(type, resRef);
+                // The disk write has to be guarded as well as the memory one, and separately: this
+                // happens inside the render task, so a blueprint saved while it ran would otherwise get
+                // a PNG of its old content stamped with an mtime newer than the file it no longer
+                // matches - which is exactly what the freshness check trusts, across restarts.
+                if (CurrentGeneration(key) == generation)
+                    disk.StoreNoArtwork(type, resRef);
+
                 return null;
             }
 
             var bitmap = ToBitmap(image);
-            disk.Store(type, resRef, bitmap);
+            if (CurrentGeneration(key) == generation)
+                disk.Store(type, resRef, bitmap);
+
             return bitmap;
         }
 

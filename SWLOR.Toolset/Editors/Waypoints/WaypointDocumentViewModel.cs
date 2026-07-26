@@ -86,7 +86,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
 
         public async Task<bool> TrySaveAsync()
         {
-            if (!IsDirty)
+            if (!IsDirty && !Editor.NeedsSaveNormalization)
                 return true;
 
             try
@@ -107,6 +107,9 @@ namespace SWLOR.Toolset.Editors.Waypoints
                         return true;
                     }
                 }
+
+                if (!Editor.PrepareForSave())
+                    return false;
 
                 SaveService.WriteAtomic(_session.FilePath, _session.ToBytes());
                 _session.UndoStack.MarkSaved();

@@ -113,12 +113,6 @@
                      IsVisible="{Binding ValidationHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
         </StackPanel>
       </TabItem>
-
-      <TabItem Header="Advanced">
-        <ScrollViewer>
-          <ItemsControl ItemsSource="{Binding AdvancedRows}" Margin="14,10" />
-        </ScrollViewer>
-      </TabItem>
     </TabControl>
   </DockPanel>
 </UserControl>

@@ -148,7 +148,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                         // never cleared, because a placement without a blueprint is orphaned.
                         new BehaviorManagedValue
                         {
-                            Label = "Blueprint", Name = "TemplateResRef", FieldType = GffFieldType.ResRef,
+                            Label = "ResRef", Name = "TemplateResRef", FieldType = GffFieldType.ResRef,
                             StringValue = NoSpawnResRef, IsInstanceOnly = true, ClearOnSwap = false
                         },
                         new BehaviorManagedValue

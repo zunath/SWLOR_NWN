@@ -17,7 +17,8 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
         public const string TaxiStopId = "taxi_stop";
         public const string StarshipDockId = "starship_dock";
         public const string PropertyEntranceId = "property_entrance";
-        public const string RespawnPointId = "respawn_point";
+        public const string DeathRespawnId = "death_respawn";
+        public const string RebuildId = "rebuild";
         public const string CustomId = "custom";
 
         public const string StuckWaypointTag = "STUCK_WAYPOINT";
@@ -34,7 +35,8 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
         private readonly HashSet<string> _landingTags;
         private readonly HashSet<string> _orbitTags;
         private readonly HashSet<string> _taxiTags;
-        private readonly HashSet<string> _respawnTags;
+        private readonly HashSet<string> _deathRespawnTags;
+        private readonly HashSet<string> _rebuildTags;
 
         public IReadOnlyList<WaypointBehavior> All { get; }
 
@@ -51,7 +53,8 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
             _landingTags = Set(gameCodeIndex?.PlanetLandingWaypoints.Select(value => value.Tag));
             _orbitTags = Set(gameCodeIndex?.OrbitWaypoints.Select(value => value.Tag));
             _taxiTags = Set(gameCodeIndex?.TaxiDestinations.Select(value => value.Tag));
-            _respawnTags = Set(gameCodeIndex?.RespawnWaypointTags);
+            _deathRespawnTags = Set(gameCodeIndex?.DeathRespawnWaypointTags);
+            _rebuildTags = Set(gameCodeIndex?.RebuildWaypointTags);
 
             All = Build(gameCodeIndex);
         }
@@ -72,8 +75,6 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                 return Get(FishingPointId);
             if (string.Equals(tag, StuckWaypointTag, StringComparison.Ordinal))
                 return Get(StuckRescuePointId);
-            if (_transitionDestinationTags.Contains(tag))
-                return Get(TransitionDestinationId);
             if (string.Equals(tag, PropertyEntranceTag, StringComparison.Ordinal))
                 return Get(PropertyEntranceId);
             if (string.Equals(tag, StarshipDockTag, StringComparison.Ordinal))
@@ -84,10 +85,14 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                 return Get(OrbitPointId);
             if (_taxiTags.Contains(tag))
                 return Get(TaxiStopId);
-            if (_respawnTags.Contains(tag))
-                return Get(RespawnPointId);
+            if (_deathRespawnTags.Contains(tag))
+                return Get(DeathRespawnId);
+            if (_rebuildTags.Contains(tag))
+                return Get(RebuildId);
             if (_spawnTableIds.Contains(tag))
                 return Get(CreatureSpawnPointId);
+            if (_transitionDestinationTags.Contains(tag))
+                return Get(TransitionDestinationId);
 
             return Custom;
         }
@@ -110,7 +115,7 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                     {
                         StringChoice(
                             "Spawn table",
-                            Choices(_spawnTableIds.Select(id => (id, id))),
+                            SpawnChoices(_spawnTableIds, gameCodeIndex?.SpawnTables),
                             "Tag"),
                         Statement("Marker", "Red")
                     },
@@ -126,7 +131,7 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                     {
                         StringChoice(
                             "Fishing location",
-                            Choices(_fishingSpawnTableIds.Select(id => (id, id))),
+                            SpawnChoices(_fishingSpawnTableIds, gameCodeIndex?.FishingSpawnTables),
                             "Tag"),
                         Statement("Marker", "Green")
                     },
@@ -147,12 +152,7 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                             FieldType = GffFieldType.CExoLocString,
                             IsRequired = true
                         },
-                        new BehaviorFieldDefinition
-                        {
-                            Label = "Shown on map", Name = "MapNoteEnabled",
-                            Kind = BehaviorFieldKind.Check,
-                            FieldType = GffFieldType.Byte
-                        },
+                        Statement("Shown on map", "Always"),
                         Statement("Marker", "Blue")
                     },
                     Manages = new[]
@@ -160,6 +160,11 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                         new BehaviorManagedValue
                         {
                             Label = "Has Map Note", Name = "HasMapNote",
+                            FieldType = GffFieldType.Byte, IntValue = 1
+                        },
+                        new BehaviorManagedValue
+                        {
+                            Label = "Shown on Map", Name = "MapNoteEnabled",
                             FieldType = GffFieldType.Byte, IntValue = 1
                         },
                         blue
@@ -190,10 +195,7 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                     Summary = "Where a trigger or door area transition puts the player down.",
                     Fields = new[]
                     {
-                        StringChoice(
-                            "Destination tag",
-                            Choices(_transitionDestinationTags.Select(tag => (tag, tag))),
-                            "Tag"),
+                        StringText("Destination tag", "Tag", WaypointEditorLayout.MaxTagLength),
                         Statement("Marker", "Blue")
                     },
                     Manages = new[] { blue }
@@ -243,7 +245,7 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                         StringChoice(
                             "Taxi stop",
                             Choices(gameCodeIndex?.TaxiDestinations.Select(value =>
-                                (value.Tag, $"{value.DisplayName} — region {value.RegionId}, {value.Price} credits"))),
+                                (value.Tag, value.DisplayName))),
                             "Tag"),
                         Statement("Marker", "Blue")
                     },
@@ -258,6 +260,7 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                     Fields = new[]
                     {
                         Statement("Tag", StarshipDockTag),
+                        Statement("Planet", "Determined by the containing area"),
                         Statement("Marker", "Blue")
                     },
                     Manages = new[]
@@ -285,15 +288,31 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                 },
                 new WaypointBehavior
                 {
-                    Id = RespawnPointId,
-                    DisplayName = "Respawn Point",
+                    Id = DeathRespawnId,
+                    DisplayName = "Death Respawn",
                     Group = "TRAVEL",
-                    Summary = "A unique destination used by death or rebuild recovery.",
+                    Summary = "A unique fallback destination used by the death system.",
                     Fields = new[]
                     {
                         StringChoice(
-                            "Respawn point",
-                            Choices(_respawnTags.Select(tag => (tag, tag))),
+                            "Death respawn",
+                            Choices(_deathRespawnTags.Select(tag => (tag, DeathRespawnName(tag)))),
+                            "Tag"),
+                        Statement("Marker", "Blue")
+                    },
+                    Manages = new[] { blue }
+                },
+                new WaypointBehavior
+                {
+                    Id = RebuildId,
+                    DisplayName = "Rebuild",
+                    Group = "TRAVEL",
+                    Summary = "A unique destination used while entering or leaving character rebuild.",
+                    Fields = new[]
+                    {
+                        StringChoice(
+                            "Rebuild destination",
+                            Choices(_rebuildTags.Select(tag => (tag, RebuildName(tag)))),
                             "Tag"),
                         Statement("Marker", "Blue")
                     },
@@ -313,10 +332,24 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                             Kind = BehaviorFieldKind.Statement,
                             Note = "Custom exposes raw fields and local variables. Existing locals may be consumed by legacy scripts."
                         }
-                    }
+                    }.Concat(WaypointEditorLayout.Custom).ToList()
                 }
             };
         }
+
+        private static BehaviorFieldDefinition StringText(
+            string label,
+            string name,
+            int maxLength) =>
+            new()
+            {
+                Label = label,
+                Name = name,
+                Kind = BehaviorFieldKind.Text,
+                FieldType = GffFieldType.CExoString,
+                IsRequired = true,
+                MaxLength = maxLength
+            };
 
         private static BehaviorFieldDefinition StringChoice(
             string label,
@@ -352,6 +385,30 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                 .Select(value => new BehaviorChoice(value.Value, value.Display))
                 .ToList();
         }
+
+        private static IReadOnlyList<BehaviorChoice> SpawnChoices(
+            IEnumerable<string> ids,
+            IEnumerable<SpawnTableInfo>? tables)
+        {
+            var names = (tables ?? Array.Empty<SpawnTableInfo>())
+                .ToDictionary(table => table.Id, table => table.DisplayName, StringComparer.Ordinal);
+
+            return Choices(ids.Select(id =>
+            {
+                var name = names.GetValueOrDefault(id);
+                return (id, string.IsNullOrWhiteSpace(name) ? id : $"{name} ({id})");
+            }));
+        }
+
+        private static string DeathRespawnName(string tag) =>
+            tag == "DEATH_DEFAULT_RESPAWN_POINT"
+                ? "Initial default respawn"
+                : "Fallback when a saved respawn area is unavailable";
+
+        private static string RebuildName(string tag) =>
+            tag == "REBUILD_LANDING"
+                ? "Enter rebuild area"
+                : "Return to spending area";
 
         private static BehaviorManagedValue Appearance(int id, string color) =>
             new()

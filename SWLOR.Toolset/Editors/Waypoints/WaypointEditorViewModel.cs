@@ -20,7 +20,6 @@ namespace SWLOR.Toolset.Editors.Waypoints
         public ObservableCollection<WaypointBehaviorListItemViewModel> BehaviorList { get; } = new();
         public ObservableCollection<WaypointRowViewModel> BasicRows { get; } = new();
         public ObservableCollection<WaypointRowViewModel> BehaviorRows { get; } = new();
-        public ObservableCollection<WaypointRowViewModel> AdvancedRows { get; } = new();
 
         [ObservableProperty]
         private VarTableSectionViewModel? _variables;
@@ -32,6 +31,9 @@ namespace SWLOR.Toolset.Editors.Waypoints
         public string HeaderKind => _isInstance ? "instance" : "blueprint";
         public string HeaderOwner { get; }
         public bool ShowsVariablesTab => Behavior.AllowsVariables;
+        public bool NeedsSaveNormalization =>
+            Behavior.Id == WaypointBehaviorCatalog.MapNoteId &&
+            _store.GetInteger(BehaviorFieldStorage.Field, "MapNoteEnabled") != 1;
         public string? Incomplete { get; private set; }
         public bool IsIncomplete => Incomplete != null;
 
@@ -66,13 +68,10 @@ namespace SWLOR.Toolset.Editors.Waypoints
                 return;
 
             var previous = Behavior;
-            var previousFields = previous.Id == WaypointBehaviorCatalog.CustomId
-                ? previous.Fields.Concat(WaypointEditorLayout.Advanced.Where(field => field.CustomOnly))
-                : previous.Fields;
 
             var applied = _runEdit($"Set behavior to {behavior.DisplayName}", () =>
             {
-                _store.Clear(previous.Manages, previousFields);
+                _store.Clear(previous.Manages, previous.Fields);
                 foreach (var value in behavior.Manages)
                     _store.Apply(value, _isInstance);
             });
@@ -97,9 +96,27 @@ namespace SWLOR.Toolset.Editors.Waypoints
             ReloadRowsFromDocument();
         }
 
+        public bool PrepareForSave()
+        {
+            if (!NeedsSaveNormalization)
+                return true;
+
+            var applied = _runEdit(
+                "Enable map note on the area map",
+                () => _store.SetInteger(
+                    BehaviorFieldStorage.Field,
+                    "MapNoteEnabled",
+                    GffFieldType.Byte,
+                    1));
+            if (applied)
+                ReloadRowsFromDocument();
+
+            return applied;
+        }
+
         private void ReloadRowsFromDocument()
         {
-            foreach (var row in BasicRows.Concat(BehaviorRows).Concat(AdvancedRows))
+            foreach (var row in BasicRows.Concat(BehaviorRows))
                 row.Reload();
 
             Variables?.RefreshFromDocument();
@@ -132,20 +149,6 @@ namespace SWLOR.Toolset.Editors.Waypoints
                 BasicRows.Add(CreateRow(definition));
         }
 
-        private void RebuildAdvancedRows()
-        {
-            AdvancedRows.Clear();
-
-            var isCustom = Behavior.Id == WaypointBehaviorCatalog.CustomId;
-            foreach (var definition in WaypointEditorLayout.Advanced)
-            {
-                if (definition.CustomOnly && !isCustom)
-                    continue;
-
-                AdvancedRows.Add(CreateRow(definition));
-            }
-        }
-
         private WaypointRowViewModel CreateRow(BehaviorFieldDefinition definition) =>
             new(definition, _store, _runEdit, ResolveChoices(definition), RefreshCompleteness);
 
@@ -163,7 +166,6 @@ namespace SWLOR.Toolset.Editors.Waypoints
             foreach (var definition in Behavior.Fields)
                 BehaviorRows.Add(CreateRow(definition));
 
-            RebuildAdvancedRows();
             Variables = Behavior.AllowsVariables
                 ? new VarTableSectionViewModel(_runEdit, _store.Locals, _gameCodeIndex)
                 : null;

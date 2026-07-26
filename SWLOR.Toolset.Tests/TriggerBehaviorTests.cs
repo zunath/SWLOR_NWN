@@ -355,6 +355,9 @@ namespace SWLOR.Toolset.Tests
             // 16 is the engine's own limit - the GFF ResRef field is a fixed 16 bytes.
             resRef.MaxLength.Should().Be(16);
             resRef.MaxLength.Should().Be(TriggerEditorLayout.MaxResRefLength);
+            resRef.Label.Should().Be("ResRef");
+            TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.NoSpawnZoneId).Manages
+                .Single(value => value.Name == "TemplateResRef").Label.Should().Be("ResRef");
 
             // A tag is a CExoString with no engine maximum; this is the base toolset's editor limit,
             // and it has to stay clear of the longest tag the module actually ships.

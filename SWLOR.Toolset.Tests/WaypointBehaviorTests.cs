@@ -18,7 +18,8 @@ namespace SWLOR.Toolset.Tests
         {
             [WaypointBehaviorCatalog.CreatureSpawnPointId] = new[] { ("Appearance", "2") },
             [WaypointBehaviorCatalog.FishingPointId] = new[] { ("Appearance", "3") },
-            [WaypointBehaviorCatalog.MapNoteId] = new[] { ("HasMapNote", "1"), ("Appearance", "1") },
+            [WaypointBehaviorCatalog.MapNoteId] =
+                new[] { ("HasMapNote", "1"), ("MapNoteEnabled", "1"), ("Appearance", "1") },
             [WaypointBehaviorCatalog.StuckRescuePointId] =
                 new[] { ("Tag", "STUCK_WAYPOINT"), ("Appearance", "1") },
             [WaypointBehaviorCatalog.TransitionDestinationId] = new[] { ("Appearance", "1") },
@@ -29,8 +30,26 @@ namespace SWLOR.Toolset.Tests
                 new[] { ("Tag", "STARSHIP_DOCKPOINT"), ("Appearance", "1") },
             [WaypointBehaviorCatalog.PropertyEntranceId] =
                 new[] { ("Tag", "PROPERTY_ENTRANCE"), ("Appearance", "1") },
-            [WaypointBehaviorCatalog.RespawnPointId] = new[] { ("Appearance", "1") },
+            [WaypointBehaviorCatalog.DeathRespawnId] = new[] { ("Appearance", "1") },
+            [WaypointBehaviorCatalog.RebuildId] = new[] { ("Appearance", "1") },
             [WaypointBehaviorCatalog.CustomId] = Array.Empty<(string, string)>()
+        };
+
+        private static readonly Dictionary<string, int> ExpectedPlacementCounts = new()
+        {
+            [WaypointBehaviorCatalog.CreatureSpawnPointId] = 1952,
+            [WaypointBehaviorCatalog.FishingPointId] = 431,
+            [WaypointBehaviorCatalog.MapNoteId] = 376,
+            [WaypointBehaviorCatalog.StuckRescuePointId] = 300,
+            [WaypointBehaviorCatalog.TransitionDestinationId] = 227,
+            [WaypointBehaviorCatalog.PropertyEntranceId] = 43,
+            [WaypointBehaviorCatalog.StarshipDockId] = 11,
+            [WaypointBehaviorCatalog.PlanetLandingId] = 10,
+            [WaypointBehaviorCatalog.OrbitPointId] = 10,
+            [WaypointBehaviorCatalog.TaxiStopId] = 4,
+            [WaypointBehaviorCatalog.DeathRespawnId] = 1,
+            [WaypointBehaviorCatalog.RebuildId] = 2,
+            [WaypointBehaviorCatalog.CustomId] = 548
         };
 
         private static string GameServerSourceRoot =>
@@ -68,6 +87,17 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PlacementBehaviorCountsMatchTheModuleCorpus()
+        {
+            var counts = CorpusPlacements()
+                .GroupBy(waypoint => Catalog().Classify(waypoint).Id)
+                .ToDictionary(group => group.Key, group => group.Count());
+
+            counts.Should().BeEquivalentTo(ExpectedPlacementCounts);
+            counts.Values.Sum().Should().Be(3915);
+        }
+
+        [Test]
         public void RepresentativeWaypointTagsClassifyToTheirRuntimeBehavior()
         {
             var catalog = Catalog();
@@ -84,6 +114,10 @@ namespace SWLOR.Toolset.Tests
                 .Should().Be(WaypointBehaviorCatalog.PropertyEntranceId);
             catalog.Classify(Waypoint("VISCARA_LANDING")).Id
                 .Should().Be(WaypointBehaviorCatalog.PlanetLandingId);
+            catalog.Classify(Waypoint("DTH_DEFAULT_RESPAWN_POINT")).Id
+                .Should().Be(WaypointBehaviorCatalog.DeathRespawnId);
+            catalog.Classify(Waypoint("REBUILD_LANDING")).Id
+                .Should().Be(WaypointBehaviorCatalog.RebuildId);
             catalog.Classify(Waypoint("WP_anchor_desert_est_2")).Id
                 .Should().Be(WaypointBehaviorCatalog.TransitionDestinationId);
             catalog.Classify(Waypoint("coxxian_hq_exit")).Id
@@ -123,6 +157,8 @@ namespace SWLOR.Toolset.Tests
                 .Should().ContainSingle(field => field.Name == "Tag" && field.IsRequired);
             catalog.Get(WaypointBehaviorCatalog.MapNoteId).Fields
                 .Should().ContainSingle(field => field.Name == "MapNote" && field.IsRequired);
+            catalog.Get(WaypointBehaviorCatalog.MapNoteId).Fields
+                .Should().NotContain(field => field.Name == "MapNoteEnabled");
         }
 
         [Test]
@@ -256,14 +292,103 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void AdvancedRawBehaviorFieldsAreCustomOnly()
+        public void RawWaypointFieldsAreRowsInTheCustomBehavior()
         {
-            WaypointEditorLayout.Advanced.Select(field => field.Name).Should().BeEquivalentTo(
+            WaypointEditorLayout.Custom.Select(field => field.Name).Should().BeEquivalentTo(
                 "Appearance", "Tag", "HasMapNote", "MapNote", "MapNoteEnabled");
-            WaypointEditorLayout.Advanced.Should().OnlyContain(field => field.CustomOnly);
+            Catalog().Custom.Fields.Select(field => field.Name).Should().Contain(
+                "Appearance", "Tag", "HasMapNote", "MapNote", "MapNoteEnabled");
 
             WaypointEditorLayout.Basic.Select(field => field.Name).Should().BeEquivalentTo(
                 "LocalizedName", "TemplateResRef", "PaletteID");
+            WaypointEditorLayout.Basic.Single(field => field.Name == "TemplateResRef").Label
+                .Should().Be("ResRef");
+        }
+
+        [Test]
+        public void TransitionDestinationUsesARequiredFreeTextTag()
+        {
+            var field = Catalog().Get(WaypointBehaviorCatalog.TransitionDestinationId).Fields
+                .Single(row => row.Name == "Tag");
+
+            field.Kind.Should().Be(BehaviorFieldKind.Text);
+            field.IsRequired.Should().BeTrue();
+            field.Choices.Should().BeEmpty();
+        }
+
+        [Test]
+        public void DeathAndRebuildExposeOnlyTheirOwnDestinations()
+        {
+            var deathChoices = Catalog().Get(WaypointBehaviorCatalog.DeathRespawnId).Fields
+                .Single(row => row.Name == "Tag").Choices;
+            var rebuildChoices = Catalog().Get(WaypointBehaviorCatalog.RebuildId).Fields
+                .Single(row => row.Name == "Tag").Choices;
+
+            deathChoices.Select(choice => choice.StringValue).Should().BeEquivalentTo(
+                "DEATH_DEFAULT_RESPAWN_POINT",
+                "DTH_DEFAULT_RESPAWN_POINT");
+            rebuildChoices.Select(choice => choice.StringValue).Should().BeEquivalentTo(
+                "REBUILD_LANDING",
+                "REBUILD_TO_SPENDING_LANDING");
+        }
+
+        [Test]
+        public void SpawnPickersShowFriendlyNamesAlongsideStoredIds()
+        {
+            var creatureChoice = Catalog().Get(WaypointBehaviorCatalog.CreatureSpawnPointId).Fields
+                .Single(row => row.Name == "Tag").Choices
+                .Single(choice => choice.StringValue == "CZ220_DROIDS");
+            var fishingChoice = Catalog().Get(WaypointBehaviorCatalog.FishingPointId).Fields
+                .Single(row => row.Name == "Tag").Choices
+                .Single(choice => choice.StringValue == "FP_VISC_CAVERN");
+
+            creatureChoice.Display.Should().Be("CZ-220 Droids (CZ220_DROIDS)");
+            fishingChoice.Display.Should().Be("Viscara Cavern (FP_VISC_CAVERN)");
+        }
+
+        [Test]
+        public void TaxiPickerShowsOnlyTheDestinationName()
+        {
+            var choice = Catalog().Get(WaypointBehaviorCatalog.TaxiStopId).Fields
+                .Single(row => row.Name == "Tag").Choices
+                .Single(option => option.StringValue == "TAXI_DANTOOINE_GARRISON");
+
+            choice.Display.Should().Be("Dantooine Republic Garrison");
+            choice.Display.Should().NotContain("credits");
+        }
+
+        [Test]
+        public void MapNoteIsEnabledWhenPreparedForSave()
+        {
+            var waypoint = Waypoint("map_note", hasMapNote: true);
+            var store = new BehaviorValueStore(waypoint);
+            var editor = new WaypointEditorViewModel(
+                waypoint,
+                "test",
+                isInstance: false,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                },
+                Catalog(),
+                GameCode);
+
+            editor.NeedsSaveNormalization.Should().BeTrue();
+            editor.PrepareForSave().Should().BeTrue();
+
+            store.GetInteger(BehaviorFieldStorage.Field, "MapNoteEnabled").Should().Be(1);
+            editor.NeedsSaveNormalization.Should().BeFalse();
+        }
+
+        [Test]
+        public void StarshipDockPlanetComesFromItsContainingArea()
+        {
+            Catalog().Get(WaypointBehaviorCatalog.StarshipDockId).Fields
+                .Should().ContainSingle(field =>
+                    field.Kind == BehaviorFieldKind.Statement &&
+                    field.Label == "Planet" &&
+                    field.Note == "Determined by the containing area");
         }
 
         private static JsonGffStruct Waypoint(string tag, bool hasMapNote = false)

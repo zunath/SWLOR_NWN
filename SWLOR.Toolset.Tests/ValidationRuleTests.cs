@@ -835,7 +835,8 @@ namespace SWLOR.Toolset.Tests
             IReadOnlyList<WaypointDestinationInfo>? planetLandingWaypoints = null,
             IReadOnlyList<WaypointDestinationInfo>? orbitWaypoints = null,
             IReadOnlyList<TaxiDestinationInfo>? taxiDestinations = null,
-            IEnumerable<string>? respawnWaypointTags = null)
+            IEnumerable<string>? deathRespawnWaypointTags = null,
+            IEnumerable<string>? rebuildWaypointTags = null)
         {
             _validNpcGroups = new HashSet<int>(validNpcGroups ?? Array.Empty<int>());
             _validSpawnTableIds = new HashSet<string>(validSpawnTableIds ?? Array.Empty<string>(), StringComparer.Ordinal);
@@ -846,11 +847,19 @@ namespace SWLOR.Toolset.Tests
             Factions = factions ?? new Dictionary<int, string>();
             Skills = skills ?? new Dictionary<int, string>();
             SkillEnumNames = Skills;
+            SpawnTables = _validSpawnTableIds
+                .Select(id => new SpawnTableInfo(id, id))
+                .ToList();
             FishingSpawnTableIds = (fishingSpawnTableIds ?? Array.Empty<string>()).ToList();
+            FishingSpawnTables = FishingSpawnTableIds
+                .Select(id => new SpawnTableInfo(id, id))
+                .ToList();
             PlanetLandingWaypoints = planetLandingWaypoints ?? Array.Empty<WaypointDestinationInfo>();
             OrbitWaypoints = orbitWaypoints ?? Array.Empty<WaypointDestinationInfo>();
             TaxiDestinations = taxiDestinations ?? Array.Empty<TaxiDestinationInfo>();
-            RespawnWaypointTags = (respawnWaypointTags ?? Array.Empty<string>()).ToList();
+            DeathRespawnWaypointTags =
+                (deathRespawnWaypointTags ?? Array.Empty<string>()).ToList();
+            RebuildWaypointTags = (rebuildWaypointTags ?? Array.Empty<string>()).ToList();
         }
 
         public bool IsSourceScanAvailable { get; }
@@ -872,7 +881,11 @@ namespace SWLOR.Toolset.Tests
 
         public IReadOnlyCollection<string> SpawnTableIds => _validSpawnTableIds;
 
+        public IReadOnlyList<SpawnTableInfo> SpawnTables { get; }
+
         public IReadOnlyCollection<string> FishingSpawnTableIds { get; }
+
+        public IReadOnlyList<SpawnTableInfo> FishingSpawnTables { get; }
 
         public IReadOnlyList<WaypointDestinationInfo> PlanetLandingWaypoints { get; }
 
@@ -880,7 +893,9 @@ namespace SWLOR.Toolset.Tests
 
         public IReadOnlyList<TaxiDestinationInfo> TaxiDestinations { get; }
 
-        public IReadOnlyCollection<string> RespawnWaypointTags { get; }
+        public IReadOnlyCollection<string> DeathRespawnWaypointTags { get; }
+
+        public IReadOnlyCollection<string> RebuildWaypointTags { get; }
 
         public IReadOnlyCollection<string> LootTableIds => Array.Empty<string>();
 

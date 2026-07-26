@@ -18,7 +18,7 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
             },
             new BehaviorFieldDefinition
             {
-                Label = "Blueprint", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
+                Label = "ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
                 FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength
             },
             new BehaviorFieldDefinition
@@ -28,33 +28,32 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
             }
         };
 
-        public static IReadOnlyList<BehaviorFieldDefinition> Advanced { get; } = new[]
+        public static IReadOnlyList<BehaviorFieldDefinition> Custom { get; } = new[]
         {
             new BehaviorFieldDefinition
             {
                 Label = "Appearance", Name = "Appearance", Kind = BehaviorFieldKind.Choice,
-                FieldType = GffFieldType.Byte, ChoicesKey = WaypointChoiceKeys.Appearances,
-                CustomOnly = true
+                FieldType = GffFieldType.Byte, ChoicesKey = WaypointChoiceKeys.Appearances
             },
             new BehaviorFieldDefinition
             {
                 Label = "Tag", Name = "Tag", Kind = BehaviorFieldKind.Text,
-                FieldType = GffFieldType.CExoString, MaxLength = MaxTagLength, CustomOnly = true
+                FieldType = GffFieldType.CExoString, MaxLength = MaxTagLength
             },
             new BehaviorFieldDefinition
             {
                 Label = "Has Map Note", Name = "HasMapNote", Kind = BehaviorFieldKind.Check,
-                FieldType = GffFieldType.Byte, CustomOnly = true
+                FieldType = GffFieldType.Byte
             },
             new BehaviorFieldDefinition
             {
                 Label = "Map Note", Name = "MapNote", Kind = BehaviorFieldKind.LocalizedText,
-                FieldType = GffFieldType.CExoLocString, CustomOnly = true
+                FieldType = GffFieldType.CExoLocString
             },
             new BehaviorFieldDefinition
             {
                 Label = "Shown on Map", Name = "MapNoteEnabled", Kind = BehaviorFieldKind.Check,
-                FieldType = GffFieldType.Byte, CustomOnly = true
+                FieldType = GffFieldType.Byte
             }
         };
     }

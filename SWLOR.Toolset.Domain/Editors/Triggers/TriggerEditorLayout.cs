@@ -68,7 +68,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             },
             new BehaviorFieldDefinition
             {
-                Label = "Blueprint", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
+                Label = "ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
                 FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength
             },
             new BehaviorFieldDefinition

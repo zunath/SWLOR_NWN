@@ -35,11 +35,14 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         public IReadOnlyCollection<string> QuestIds => _questIds;
         public IReadOnlyDictionary<string, QuestDefinitionInfo> Quests => _quests;
         public IReadOnlyCollection<string> SpawnTableIds => _spawnTableIds;
+        public IReadOnlyList<SpawnTableInfo> SpawnTables { get; }
         public IReadOnlyCollection<string> FishingSpawnTableIds => _fishingSpawnTableIds;
+        public IReadOnlyList<SpawnTableInfo> FishingSpawnTables { get; }
         public IReadOnlyList<WaypointDestinationInfo> PlanetLandingWaypoints { get; }
         public IReadOnlyList<WaypointDestinationInfo> OrbitWaypoints { get; }
         public IReadOnlyList<TaxiDestinationInfo> TaxiDestinations { get; }
-        public IReadOnlyCollection<string> RespawnWaypointTags { get; }
+        public IReadOnlyCollection<string> DeathRespawnWaypointTags { get; }
+        public IReadOnlyCollection<string> RebuildWaypointTags { get; }
         public IReadOnlyCollection<string> LootTableIds => _lootTableIds;
         public IReadOnlyCollection<string> DialogNames => _dialogNames;
         public IReadOnlyDictionary<int, string> SkillTypes { get; }
@@ -71,10 +74,13 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             PlanetLandingWaypoints = ReflectionWaypointReader.ReadPlanetLandings();
             OrbitWaypoints = ReflectionWaypointReader.ReadPlanetOrbits();
             TaxiDestinations = ReflectionWaypointReader.ReadTaxiDestinations();
-            RespawnWaypointTags = new[]
+            DeathRespawnWaypointTags = new[]
             {
                 "DEATH_DEFAULT_RESPAWN_POINT",
-                "DTH_DEFAULT_RESPAWN_POINT",
+                "DTH_DEFAULT_RESPAWN_POINT"
+            };
+            RebuildWaypointTags = new[]
+            {
                 "REBUILD_LANDING",
                 "REBUILD_TO_SPENDING_LANDING"
             };
@@ -102,6 +108,10 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             _fishingSpawnTableIds = new HashSet<string>(
                 _spawnTableIds.Where(id => id.StartsWith("FP_", StringComparison.Ordinal)),
                 StringComparer.Ordinal);
+            SpawnTables = SpawnTableSourceReader.Read(spawnDirectory, _spawnTableIds);
+            FishingSpawnTables = SpawnTables
+                .Where(table => _fishingSpawnTableIds.Contains(table.Id))
+                .ToList();
 
             // Loot table ids are declared with exactly the same _builder.Create("ID") shape, so the
             // existing scanner reads them unchanged. Their completeness is not folded into

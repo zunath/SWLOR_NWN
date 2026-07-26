@@ -5,8 +5,9 @@ already ships and with none of its conventions changed:
 
 - the header is **behavior name · kind · owner resref** (`HeaderName`/`HeaderKind`/`HeaderOwner`),
   not the object's own name;
-- the tabs are Basic / Behavior / Advanced, and **Variables is not a tab at all** unless the
-  behavior is Custom — `ShowsVariablesTab` binds `IsVisible`, so it is absent rather than disabled;
+- the tabs are Basic / Behavior, and **Variables is not a tab at all** unless the behavior is
+  Custom — `ShowsVariablesTab` binds `IsVisible`, so it is absent rather than disabled. The raw
+  waypoint fields formerly proposed for Advanced are rows in the Custom behavior itself;
 - the Behavior rail is group headings, plain behavior names, and a rule above the ungrouped Custom
   entry — no counts, no annotations. (A `Tagline` exists on the model; no trigger behavior sets one
   and no waypoint behavior needs one.)
@@ -31,7 +32,7 @@ GFF names verified against `Module\utw\*.json` and `Module\git\*.git.json`.
 |---|---|---|
 | Name | `LocalizedName` | locstring |
 | Tag | `Tag` | **the only field the runtime reads** — see §2 |
-| Blueprint ResRef | `TemplateResRef` | file name on a blueprint; a copy on a placement |
+| ResRef | `TemplateResRef` | file name on a blueprint; a copy on a placement |
 | Category | `PaletteID` | opens the category tree |
 | Appearance | `Appearance` | row in `waypoint.2da` — 1 blue, 2 red, 3 green, 4 yellow, …79 rows |
 | Has Map Note | `HasMapNote` | |
@@ -62,8 +63,8 @@ Four of these drive the designs:
 
 - **The Tag is the whole wiring.** `Spawn.cs` matches a waypoint's tag against the declared spawn
   table IDs; `GetWaypointByTag` resolves travel and respawn points by tag; a trigger or door's
-  `LinkedTo` names a tag. Nothing else on a waypoint is read at runtime. A waypoint editor that leaves
-  Tag as a free-text box is leaving the entire object unvalidated.
+  `LinkedTo` names a tag. Nothing else on a waypoint is read at runtime. Where the game declares a
+  closed set of tags, a free-text box would leave the entire object unvalidated.
 - **The `VarTable` is dead weight.** All 475 locals across those 286 placements belong to the
   pre-C# spawn system — `SPAWN_TABLE_ID` (stored as an **int**, always 0), `SPAWN_RESREF`,
   `IS_SPAWN`, `SPAWN_TYPE`, `SPAWN_BEHAVIOUR`. Nothing in `SWLOR.Game.Server` reads any of them off
@@ -89,33 +90,36 @@ placement count. Classification is precedence-ordered (map note first, then tag 
 
 | Behavior | Group | Placements | Builder fills in | Behavior manages |
 |---|---|---|---|---|
-| Creature Spawn Point | Spawning | 1,952 | Spawn table (picker over the declared IDs) | `Tag` = table ID · Appearance = red |
-| Fishing Point | Spawning | 431 | Fishing location (31 declared) | `Tag` = `FP_…` · Appearance = green |
-| Map Note | World | 376 | Map note text · Shown on map | `HasMapNote` = 1 · `MapNoteEnabled` · Appearance = blue |
+| Creature Spawn Point | Spawning | 1,952 | Spawn table (declared name plus ID) | `Tag` = table ID · Appearance = red |
+| Fishing Point | Spawning | 431 | Fishing location name (31 declared) | `Tag` = `FP_…` · Appearance = green |
+| Map Note | World | 376 | Map note text | `HasMapNote` = 1 · `MapNoteEnabled` = 1 · Appearance = blue |
 | Stuck Rescue Point | World | 300 | nothing | `Tag` = `STUCK_WAYPOINT` · Appearance = blue |
-| Transition Destination | Movement | 227 | Tag that a trigger or a door links to | Appearance = blue |
+| Transition Destination | Movement | 227 | Free-text destination tag | Appearance = blue |
 | Property Entrance | Travel | 43 | nothing | `Tag` = `PROPERTY_ENTRANCE` · Appearance = blue |
-| Starship Dock | Travel | 11 | nothing | `Tag` = `STARSHIP_DOCKPOINT` · Appearance = blue |
+| Starship Dock | Travel | 11 | nothing; planet comes from its area | `Tag` = `STARSHIP_DOCKPOINT` · Appearance = blue |
 | Planet Landing | Travel | 10 | Which planet (10 declared) | `Tag` = `<PLANET>_LANDING` · Appearance = blue |
 | Orbit Point | Travel | 10 | Which planet (10 declared) | `Tag` = `<Planet>_Orbit` · Appearance = blue |
 | Taxi Stop | Travel | 4 | Which stop (14 declared) | `Tag` = `TAXI_…` · Appearance = blue |
-| Respawn Point | Travel | 3 | Which respawn (4 declared) | `Tag` · Appearance = blue |
+| Death Respawn | Travel | 1 | Which death fallback (2 declared) | `Tag` · Appearance = blue |
+| Rebuild | Travel | 2 | Enter rebuild or return to spending (2 declared) | `Tag` · Appearance = blue |
 | Custom | — | 548 | Tag · Appearance · the map-note trio · Variables | — |
 
 **Each code-declared destination is its own behavior, not one "Game Destination".** They share a
-mechanism — the tag is a name the C# side already declares, so the field is a picker rather than a
-text box — but they answer different questions, carry different rules, and fail differently. Rolling
-them together would be the same mistake as folding Rest Zone and No-Spawn Zone into one "script
-behavior" on the trigger side.
+mechanism — most use a tag the C# side already declares, so those fields are pickers rather than
+text boxes — but they answer different questions, carry different rules, and fail differently.
+Transition Destination is the deliberate exception because builders must be able to author a new
+tag before anything links to it. Rolling the declared destinations together would be the same
+mistake as folding Rest Zone and No-Spawn Zone into one "script behavior" on the trigger side.
 
 | | Declared in | Rule the behavior knows |
 |---|---|---|
 | Planet Landing | `PlanetType.LandingWaypointTag` | one per planet, in that planet's own areas; where the shuttle and NPC property landings arrive |
 | Orbit Point | `PlanetType.SpaceOrbitWaypointTag` | one per planet, in its orbit area; where a ship arrives in space |
-| Taxi Stop | `TaxiDestinationType` | one per stop; the picker also shows the region and fare |
-| Starship Dock | `Space.cs`, `StarportLayoutDefinition` | repeats — one per starport interior; the runtime stamps `STARSHIP_DOCKPOINT_ID` on it and registers it as a landing point |
+| Taxi Stop | `TaxiDestinationType` | one per stop; the picker shows the destination name |
+| Starship Dock | `Space.cs`, `StarportLayoutDefinition` | repeats — one per starport interior; `Planet.GetPlanetType(area)` determines its planet and the runtime stamps `STARSHIP_DOCKPOINT_ID` |
 | Property Entrance | `Property.cs`, `Shuttle.cs` | repeats — one per property interior layout |
-| Respawn Point | `Death.cs`, `PersistentLocation.cs` | module-wide singletons |
+| Death Respawn | `Death.cs`, `PlayerInitialization.cs` | two death fallbacks; module-wide singletons |
+| Rebuild | `PersistentLocation.cs`, `PlaceableScripts.cs`, `CharacterFullRebuildViewModel.cs` | two rebuild destinations; module-wide singletons |
 
 Two things fall out of the split that a merged behavior would have hidden:
 
@@ -123,8 +127,8 @@ Two things fall out of the split that a merged behavior would have hidden:
   from `TAXI_VELES_ENTRANCE` to `TAXI_VELES_APARTMENT`. Only the four Dantooine stops are placed. A
   Taxi Stop picker that lists the declared stops shows that at a glance; a free tag box never can.
 - **`Death.cs` looks up two different respawn tags** — `DEATH_DEFAULT_RESPAWN_POINT` and
-  `DTH_DEFAULT_RESPAWN_POINT` — and only the second is placed. Worth a code fix, and the Respawn
-  Point picker is what surfaces it.
+  `DTH_DEFAULT_RESPAWN_POINT` — and only the second is placed. Worth a code fix, and the Death
+  Respawn picker is what surfaces it. Rebuild has its own picker and cannot offer either death tag.
 
 Notes the catalog carries into the editor:
 
@@ -139,23 +143,23 @@ Notes the catalog carries into the editor:
 
 ## Design A — Behavior owns the tag
 
-**Idea.** The trigger editor, one for one. **Tag leaves the Basic tab**: on every behavior but Custom
-it is a managed value written from the picker above it, because a tag that has to equal a declared
-spawn table ID is not free text. What the behavior wrote is stated back as a Statement row rather
-than left to be discovered on the Advanced tab.
+**Idea.** The trigger editor, one for one. **Tag leaves the Basic tab**: declared behaviors write it
+from a picker, while Transition Destination exposes it as required free text so a builder can create
+a new destination before any trigger or door refers to it. What a behavior writes is stated back as
+a Statement row. Custom owns the raw Tag, Appearance and map-note fields directly.
 
 ```text
 ┌ malfdroids_cz220.utw ───────────────────────────────────── ● unsaved ┐
 │ Creature Spawn Point   blueprint · malfdroids_cz220                  │
 ├──────────────────────────────────────────────────────────────────────┤
-│  Basic │ ┌Behavior─┐ │ Advanced                                      │
+│  Basic │ ┌Behavior─┐                                                 │
 ├────────────────────┴─────────────────────────────────────────────────┤
 │ SPAWNING                   │ ┌ Creature Spawn Point ───────────────┐ │
 │  ▸ Creature Spawn Point ◂  │ │ Spawns a table's creatures here and │ │
 │  ▸ Fishing Point           │ │ respawns them on its own timer.     │ │
 │ WORLD                      │ │                                     │ │
 │  ▸ Map Note                │ │ Spawn table *                       │ │
-│  ▸ Stuck Rescue Point      │ │  [CZ220_DROIDS  CZ-220 Droids  ▾]   │ │
+│  ▸ Stuck Rescue Point      │ │  [CZ-220 Droids (CZ220_DROIDS) ▾]   │ │
 │ MOVEMENT                   │ │   malsecdroid 50 · malspiderdroid 50│ │
 │  ▸ Transition Destination  │ │                                     │ │
 │ TRAVEL                     │ │ Tag         CZ220_DROIDS            │ │
@@ -164,7 +168,8 @@ than left to be discovered on the Advanced tab.
 │  ▸ Taxi Stop               │ └─────────────────────────────────────┘ │
 │  ▸ Starship Dock           │                                         │
 │  ▸ Property Entrance       │                                         │
-│  ▸ Respawn Point           │                                         │
+│  ▸ Death Respawn           │                                         │
+│  ▸ Rebuild                 │                                         │
 │  ──────────────────────    │                                         │
 │  ▸ Custom                  │                                         │
 ├────────────────────────────┴─────────────────────────────────────────┤
@@ -179,18 +184,18 @@ Map Note                               Taxi Stop
 │ Draws a pin on the area map.       │  │ Where a taxi terminal sets the     │
 │                                    │  │ player down when they pay.         │
 │ Map note text *                    │  │                                    │
-│  [Veles Colony Starport        ]   │  │ Taxi stop *                        │
-│ Shown on the map           [x]     │  │  [Dantooine Starport          ▾]   │
-│                                    │  │   region 2 · 150 credits           │
-│ Map note flag   set                │  │ Tag        TAXI_DANTOOINE_STARPORT │
-│ Marker          blue               │  │   10 of the 14 declared stops      │
-│                                    │  │   have no waypoint at all          │
+│  [Veles Colony Starport        ]   │  │  [Dantooine Starport          ▾]   │
+│ Shown on map               Always  │  │ Tag        TAXI_DANTOOINE_STARPORT │
+│ Map note flag   set                │  │   10 of the 14 declared stops      │
+│ Marker          blue               │  │   have no waypoint at all          │
 └────────────────────────────────────┘  └────────────────────────────────────┘
 
-Basic tab                             Advanced tab
-  Name      [CZ-220 - Malfunctio… …]    Appearance  [red          ▾]  ← Custom only
-  Blueprint [malfdroids_cz220      ]    Tag         [              ]  ← Custom only
-  Category  [Waypoints ▸ Spawns   …]
+Basic tab                             Custom behavior
+  Name      [CZ-220 - Malfunctio… …]    Appearance  [red          ▾]
+  ResRef    [malfdroids_cz220      ]    Tag         [              ]
+  Category  [Waypoints ▸ Spawns   …]    Has Map Note [ ]
+                                        Map Note     [              ]
+                                        Shown on Map [ ]
 ```
 
 **Wins.** The smallest thing that fixes the real error: the tag becomes a value picked from what the
@@ -223,7 +228,7 @@ before it happens.
 ┌ v_repubbase_ext · waypoint ─────────────────────────────── ● unsaved ┐
 │ Transition Destination   instance · v_repubbase_ext                  │
 ├──────────────────────────────────────────────────────────────────────┤
-│  Basic │ ┌Behavior─┐ │ Advanced                                      │
+│  Basic │ ┌Behavior─┐                                                 │
 ├────────────────────┴─────────────────────────────────────────────────┤
 │ SPAWNING                   │ ┌ Transition Destination ─────────────┐ │
 │  ▸ Creature Spawn Point    │ │ Where a trigger or door sends the   │ │
@@ -239,7 +244,8 @@ before it happens.
 │  ▸ Taxi Stop               │ │   viscara_forkwest V_WFork_to…      │ │
 │  ▸ Starship Dock           │ │   viscara_mountasc V_WFork_to…      │ │
 │  ▸ Property Entrance       │ │ Game code references           0    │ │
-│  ▸ Respawn Point           │ │ Other placements, this tag     0    │ │
+│  ▸ Death Respawn           │ │ Other placements, this tag     0    │ │
+│  ▸ Rebuild                 │ │                                     │ │
 │  ──────────────────────    │ │                                     │ │
 │  ▸ Custom                  │ │ Renaming the tag breaks both.       │ │
 │                            │ │ [ Rename and update them ]          │ │
@@ -283,7 +289,7 @@ of waypoints. And a tag typed on Basic can still be saved wrong, where Design A'
 | | A · Behavior owns the tag | B · Behavior + what points here |
 |---|---|---|
 | Behavior rail and managed values | Yes | Yes |
-| Tag | Written by the behavior | On Basic, resolved by the behavior |
+| Tag | Written or edited by the behavior | On Basic, resolved by the behavior |
 | Bad spawn table ID | Impossible to enter | Flagged, counted across the module |
 | Dangling transition links | Invisible | Listed, and rename can fix them |
 | Cross-area writes | None | Needed for rename-and-update |
@@ -293,9 +299,10 @@ of waypoints. And a tag typed on Basic can still be saved wrong, where Design A'
 
 **A now, B's Used-by card next** — the same order the trigger editor took.
 
-A is the whole win on data entry: the tag stops being free text, the spawn/fishing pickers come from
-`IGameCodeIndex`, and Appearance stops being a per-waypoint guess. It is catalog data over machinery
-that already exists.
+A is the whole win on data entry: declared spawn, fishing and travel tags come from named
+`IGameCodeIndex` choices, Transition Destination keeps the free-text field needed to introduce a new
+tag, and Appearance stops being a per-waypoint guess. It is catalog data over machinery that already
+exists.
 
 B is the whole win on *existing* content, and the module needs it — 484 placements name deleted
 blueprints, 40 spawn nothing, and 41 distinct transition targets dangle (16 trigger targets and 25
@@ -303,12 +310,11 @@ door targets, referenced by 43 linking objects). That makes the case for B stron
 it is a module-wide index plus cross-area writes, and rename-and-update should land **before** any
 rename affordance does, never after.
 
-Two prerequisites belong to whichever ships first:
+Two implementation requirements belong to whichever ships first:
 
-- **The spawn table picker is short 31 IDs.** `SourceIdScanner` deliberately skips IDs threaded
-  through a helper method, which is exactly how `FishingSpawnPointDefinition` declares its tables —
-  so `SpawnTableIds` omits every `FP_…` table and would flag all 431 fishing points as unknown.
-  Resolve the one-level helper call, or the Fishing Point behavior cannot validate anything.
+- **Spawn choices need names, not raw IDs.** `SourceIdScanner` resolves the one-level helper shape
+  used by all 31 fishing tables, and the waypoint index pairs declared spawn IDs with their
+  programmer-facing names. Pickers show the friendly name together with the stored tag.
 - **Custom must warn about the legacy locals rather than inherit them.** 286 placements carry
   variables no runtime reads. Editing one under Custom should say so; silently preserving them keeps
   authoring the `HUTLAR_WASTES = 0` mistake forward.

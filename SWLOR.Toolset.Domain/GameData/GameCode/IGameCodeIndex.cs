@@ -50,8 +50,14 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         /// <summary>Spawn table IDs declared via <c>SpawnTableBuilder.Create(id, ...)</c> calls.</summary>
         IReadOnlyCollection<string> SpawnTableIds { get; }
 
+        /// <summary>Spawn table IDs paired with author-facing names for editor pickers.</summary>
+        IReadOnlyList<SpawnTableInfo> SpawnTables { get; }
+
         /// <summary>The fishing spawn tables declared through CreateFishingPoint helper calls.</summary>
         IReadOnlyCollection<string> FishingSpawnTableIds { get; }
+
+        /// <summary>Fishing spawn table IDs paired with their location names.</summary>
+        IReadOnlyList<SpawnTableInfo> FishingSpawnTables { get; }
 
         /// <summary>Planet landing waypoint tags and their player-facing planet names.</summary>
         IReadOnlyList<WaypointDestinationInfo> PlanetLandingWaypoints { get; }
@@ -59,11 +65,14 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         /// <summary>Planet orbit waypoint tags and their player-facing planet names.</summary>
         IReadOnlyList<WaypointDestinationInfo> OrbitWaypoints { get; }
 
-        /// <summary>Taxi stop tags and the region/fare metadata shown by the waypoint picker.</summary>
+        /// <summary>Taxi stop tags and their declared destination metadata.</summary>
         IReadOnlyList<TaxiDestinationInfo> TaxiDestinations { get; }
 
-        /// <summary>Waypoint tags used by the death and rebuild respawn paths.</summary>
-        IReadOnlyCollection<string> RespawnWaypointTags { get; }
+        /// <summary>Waypoint tags used by death respawn paths.</summary>
+        IReadOnlyCollection<string> DeathRespawnWaypointTags { get; }
+
+        /// <summary>Waypoint tags used by character rebuild paths.</summary>
+        IReadOnlyCollection<string> RebuildWaypointTags { get; }
 
         /// <summary>
         /// Loot table IDs declared via <c>LootTableBuilder.Create(id)</c> calls in

@@ -109,6 +109,13 @@ namespace SWLOR.Toolset.Tests
             index.FishingSpawnTableIds.Should().Contain("FP_DAN_FORSAKEN_JUNGLES");
             index.SpawnTableIds.Should().Contain(index.FishingSpawnTableIds,
                 "helper-created tables are still ordinary spawn tables");
+
+            index.FishingSpawnTables.Should().Contain(table =>
+                table.Id == "FP_VISC_CAVERN" &&
+                table.DisplayName == "Viscara Cavern");
+            index.SpawnTables.Should().Contain(table =>
+                table.Id == "CZ220_DROIDS" &&
+                table.DisplayName == "CZ-220 Droids");
         }
 
         [Test]
@@ -133,9 +140,11 @@ namespace SWLOR.Toolset.Tests
                                destination.RegionId == 2 &&
                                destination.Price == 150);
 
-            index.RespawnWaypointTags.Should().BeEquivalentTo(
+            index.DeathRespawnWaypointTags.Should().BeEquivalentTo(
                 "DEATH_DEFAULT_RESPAWN_POINT",
-                "DTH_DEFAULT_RESPAWN_POINT",
+                "DTH_DEFAULT_RESPAWN_POINT");
+
+            index.RebuildWaypointTags.Should().BeEquivalentTo(
                 "REBUILD_LANDING",
                 "REBUILD_TO_SPENDING_LANDING");
         }

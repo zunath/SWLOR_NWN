@@ -2330,17 +2330,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Korriban Dungeon Loot - Forge"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "korrdunforgeloot"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Korriban Dungeon Loot - Temple"
                     },
                     "RESREF": {

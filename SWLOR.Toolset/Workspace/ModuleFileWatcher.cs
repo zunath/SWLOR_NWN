@@ -53,15 +53,22 @@ namespace SWLOR.Toolset.Workspace
 
         /// <summary>
         /// Reads a module resource path as its type and resref - "…/utc/foo.utc.json" is a UTC named
-        /// "foo". False for anything that is not a module resource, which is most of what the recursive
-        /// watcher sees.
+        /// "foo", and "…/nss/on_enter.nss" is a script named "on_enter". False for anything that is not
+        /// a module resource, which is most of what the recursive watcher sees.
         /// </summary>
-        private static bool TryResolveResource(string path, out ResourceType type, out string resRef)
+        public static bool TryResolveResource(string path, out ResourceType type, out string resRef)
         {
             type = default;
             resRef = string.Empty;
 
             var fileName = Path.GetFileName(path);
+            if (fileName.EndsWith(".nss", StringComparison.OrdinalIgnoreCase))
+            {
+                type = ResourceType.Nss;
+                resRef = Path.GetFileNameWithoutExtension(fileName);
+                return !string.IsNullOrEmpty(resRef);
+            }
+
             if (!fileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
                 return false;
 
@@ -130,7 +137,7 @@ namespace SWLOR.Toolset.Workspace
 
         /// <summary>True for paths the pack pipeline or this app churn as part of normal
         /// builds: anything under the packer's "packing" working directory (including the
-        /// directory itself), packed .mod artifacts, and atomic-save .tmp files.</summary>
+        /// directory itself), packed .mod artifacts, and atomic-save temporary/rollback files.</summary>
         private bool IsBuildNoise(string path)
         {
             if (_packingDirectoryPrefix != null)
@@ -144,7 +151,8 @@ namespace SWLOR.Toolset.Workspace
             }
 
             return path.EndsWith(".mod", StringComparison.OrdinalIgnoreCase)
-                || path.EndsWith(".tmp", StringComparison.OrdinalIgnoreCase);
+                || path.EndsWith(".tmp", StringComparison.OrdinalIgnoreCase)
+                || path.EndsWith(".save-backup", StringComparison.OrdinalIgnoreCase);
         }
 
         public void Stop()

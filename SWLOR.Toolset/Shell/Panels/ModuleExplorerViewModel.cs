@@ -393,10 +393,20 @@ namespace SWLOR.Toolset.Shell.Panels
             if (string.IsNullOrWhiteSpace(name))
                 return;
 
+            var trimmed = name.Trim();
+            var nameAvailable = parent == null
+                ? section.IsNameAvailable(trimmed)
+                : parent.IsNameAvailable(trimmed);
+            if (!nameAvailable)
+            {
+                StatusMessage = $"A folder named '{trimmed}' already exists here.";
+                return;
+            }
+
             if (parent == null)
-                section.AddFolder(name.Trim());
+                section.AddFolder(trimmed);
             else
-                parent.AddChild(name.Trim());
+                parent.AddChild(trimmed);
 
             SaveCategories();
             Refresh();
@@ -413,7 +423,14 @@ namespace SWLOR.Toolset.Shell.Panels
             if (string.IsNullOrWhiteSpace(name) || name.Trim() == folder.Name)
                 return;
 
-            folder.Rename(name.Trim());
+            var section = _categories.Section(SelectedType);
+            var trimmed = name.Trim();
+            if (section == null || !section.TryRenameFolder(folder, trimmed))
+            {
+                StatusMessage = $"A folder named '{trimmed}' already exists here.";
+                return;
+            }
+
             SaveCategories();
             Refresh();
         }

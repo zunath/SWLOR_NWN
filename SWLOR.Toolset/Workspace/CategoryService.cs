@@ -167,10 +167,8 @@ namespace SWLOR.Toolset.Workspace
 
                 // A pin is stored by path, and a path is built from names. Renaming a folder therefore
                 // moves every pin at or below it and the stored keys need to move with the folder.
-                var oldPathKey = section.PathKey(folder);
-                folder.Rename(resolved.Trim());
-                section.RepathPins(oldPathKey, section.PathKey(folder));
-                repaired++;
+                if (section.TryRenameFolder(folder, resolved.Trim()))
+                    repaired++;
             }
 
             if (repaired == 0)

@@ -84,8 +84,52 @@ namespace SWLOR.Toolset.Domain.Categories
         public CategoryFolder AddFolder(string name)
         {
             var folder = new CategoryFolder(name);
+            if (!IsNameAvailable(folder.Name))
+                throw new ArgumentException($"This category already has a '{folder.Name}' folder.", nameof(name));
+
             _folders.Add(folder);
             return folder;
+        }
+
+        /// <summary>
+        /// True when <paramref name="name"/> is free among the section's root folders, ignoring
+        /// <paramref name="except"/> when a root is being renamed.
+        /// </summary>
+        public bool IsNameAvailable(string name, CategoryFolder? except = null)
+        {
+            var candidate = name?.Trim();
+            if (string.IsNullOrEmpty(candidate))
+                return false;
+
+            return _folders.All(folder =>
+                ReferenceEquals(folder, except) ||
+                !string.Equals(folder.Name, candidate, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Renames a folder only when its new name is unique among its siblings, and keeps pinned paths
+        /// aligned with the rename.
+        /// </summary>
+        /// <returns>False when the folder is outside this section or a sibling already has the name.</returns>
+        public bool TryRenameFolder(CategoryFolder folder, string name)
+        {
+            ArgumentNullException.ThrowIfNull(folder);
+
+            var parent = ParentOf(folder);
+            var isRoot = _folders.Contains(folder);
+            if (!isRoot && parent == null)
+                return false;
+
+            var available = parent == null
+                ? IsNameAvailable(name, folder)
+                : parent.IsNameAvailable(name, folder);
+            if (!available)
+                return false;
+
+            var oldPathKey = PathKey(folder);
+            folder.Rename(name);
+            RepathPins(oldPathKey, PathKey(folder));
+            return true;
         }
 
         public void AddFolder(CategoryFolder folder, int index = -1)
@@ -210,6 +254,33 @@ namespace SWLOR.Toolset.Domain.Categories
 
         private static bool Matches(CategoryFolder folder, string name) =>
             string.Equals(folder.Name, name, StringComparison.OrdinalIgnoreCase);
+
+        private CategoryFolder? ParentOf(CategoryFolder target)
+        {
+            foreach (var root in _folders)
+            {
+                var parent = ParentOf(root, target);
+                if (parent != null)
+                    return parent;
+            }
+
+            return null;
+        }
+
+        private static CategoryFolder? ParentOf(CategoryFolder current, CategoryFolder target)
+        {
+            if (current.Children.Contains(target))
+                return current;
+
+            foreach (var child in current.Children)
+            {
+                var parent = ParentOf(child, target);
+                if (parent != null)
+                    return parent;
+            }
+
+            return null;
+        }
 
         private static bool TryBuildPath(CategoryFolder current, CategoryFolder target, List<string> path)
         {

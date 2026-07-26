@@ -945,6 +945,15 @@ namespace SWLOR.Toolset.Shell.Panels
             if (name == null)
                 return;
 
+            var nameAvailable = parent == null
+                ? section.IsNameAvailable(name)
+                : parent.IsNameAvailable(name);
+            if (!nameAvailable)
+            {
+                StatusMessage = $"A category named '{name.Trim()}' already exists here.";
+                return;
+            }
+
             if (parent != null)
                 parent.AddChild(name);
             else
@@ -982,13 +991,12 @@ namespace SWLOR.Toolset.Shell.Panels
 
             var previous = folder.Name;
 
-            // A rename changes this folder's path and every descendant's, so any pin naming them has to
-            // move with it or it silently stops resolving.
             var section = CurrentSection();
-            var oldPathKey = section?.PathKey(folder);
-            folder.Rename(name);
-            if (section != null && oldPathKey != null)
-                section.RepathPins(oldPathKey, section.PathKey(folder));
+            if (section == null || !section.TryRenameFolder(folder, name))
+            {
+                StatusMessage = $"A category named '{name.Trim()}' already exists here.";
+                return;
+            }
 
             if (!SaveCategories())
             {
@@ -1309,14 +1317,20 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            var cached = _thumbnails?.Cached(SelectedType, tile.ResRef);
+            var useIndexedBlueprint = tile.Source == PaletteSource.Standard;
+            var cached = _thumbnails?.Cached(
+                SelectedType, tile.ResRef, useIndexedBlueprint);
             if (cached != null)
             {
                 tile.Preview = cached;
                 return;
             }
 
-            _thumbnails?.RequestAsync(SelectedType, tile.ResRef, bitmap => tile.Preview = bitmap);
+            _thumbnails?.RequestAsync(
+                SelectedType,
+                tile.ResRef,
+                useIndexedBlueprint,
+                bitmap => tile.Preview = bitmap);
         }
 
         /// <summary>

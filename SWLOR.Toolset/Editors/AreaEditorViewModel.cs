@@ -1778,42 +1778,21 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Replaces each staged file with its new content. Only the renames happen here, so the window
-        /// in which the files can disagree is as small as the filesystem allows.
+        /// Replaces every staged file as one logical save, rolling all earlier replacements back if a
+        /// later destination cannot be replaced.
         /// </summary>
-        /// <remarks>
-        /// A rename that fails after an earlier one succeeded cannot be undone from here - the previous
-        /// content is gone. That is reported loudly rather than swallowed, because the area on disk is
-        /// then genuinely mixed and the builder needs to know before they close it.
-        /// </remarks>
         private bool CommitStagedWrites(List<Services.SaveService.StagedWrite> staged)
         {
-            for (var i = 0; i < staged.Count; i++)
+            try
             {
-                try
-                {
-                    Services.SaveService.Commit(staged[i]);
-                }
-                catch (Exception ex)
-                {
-                    _log.AppendLine($"Save failed for {staged[i].TargetPath}: {ex.Message}");
-
-                    for (var remaining = i; remaining < staged.Count; remaining++)
-                        Services.SaveService.Discard(staged[remaining]);
-
-                    if (i > 0)
-                    {
-                        _log.AppendLine(
-                            "This area is now part-saved on disk: " +
-                            string.Join(", ", staged.Take(i).Select(s => Path.GetFileName(s.TargetPath))) +
-                            " were replaced before the failure. Re-save once the problem is fixed.");
-                    }
-
-                    return false;
-                }
+                Services.SaveService.CommitAll(staged);
+                return true;
             }
-
-            return true;
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Area save failed; the original files were restored: {ex.Message}");
+                return false;
+            }
         }
 
         private (bool Success, bool Reloaded) ApplySavePlan(DocumentSession session, SavePlan plan)

@@ -130,5 +130,44 @@ namespace SWLOR.Toolset.Tests
 
             act.Should().Throw<ArgumentException>("names are trimmed before they are compared");
         }
+
+        [Test]
+        public void RootFolderNamesAreUniqueIgnoringCase()
+        {
+            var section = new CategorySection();
+            section.AddFolder("Weapons");
+
+            var act = () => section.AddFolder("weapons");
+
+            act.Should().Throw<ArgumentException>().WithMessage("*already has*");
+            section.Folders.Should().ContainSingle();
+        }
+
+        [Test]
+        public void RenamingCannotCollideWithASibling()
+        {
+            var section = new CategorySection();
+            var weapons = section.AddFolder("Weapons");
+            section.AddFolder("Props");
+
+            section.TryRenameFolder(weapons, "props").Should().BeFalse();
+            weapons.Name.Should().Be("Weapons");
+        }
+
+        [Test]
+        public void NestedRenameChecksItsOwnParentAndRepathsPins()
+        {
+            var section = new CategorySection();
+            var weapons = section.AddFolder("Weapons");
+            var melee = weapons.AddChild("Melee");
+            weapons.AddChild("Ranged");
+            section.Pin(section.PathKey(melee));
+
+            section.TryRenameFolder(melee, "RANGED").Should().BeFalse();
+            section.TryRenameFolder(melee, "Blades").Should().BeTrue();
+
+            melee.Name.Should().Be("Blades");
+            section.Pinned.Should().Equal("Weapons/Blades");
+        }
     }
 }

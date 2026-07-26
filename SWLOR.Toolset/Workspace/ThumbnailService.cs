@@ -85,6 +85,7 @@ namespace SWLOR.Toolset.Workspace
             ThumbnailDiskCache Disk,
             ResourceType Type,
             string ResRef,
+            bool UseIndexedBlueprint,
             bool Persist);
         private readonly ConcurrentDictionary<ResourceType, Bitmap> _typeIcons = new();
         private readonly ConcurrentDictionary<ResourceType, Bitmap> _typeChipIcons = new();
@@ -111,16 +112,19 @@ namespace SWLOR.Toolset.Workspace
             if (string.IsNullOrWhiteSpace(resRef))
                 return;
 
-            var key = Key(type, resRef);
             _cacheGate.EnterReadLock();
             try
             {
-                lock (GateFor(key))
+                foreach (var useIndexedBlueprint in new[] { false, true })
                 {
-                    _versions.AddOrUpdate(key, 1, (_, version) => version + 1);
-                    _inFlight.TryRemove(key, out _);
-                    _memory.Remove(key);
-                    Disk.Remove(type, resRef);
+                    var key = Key(type, resRef, useIndexedBlueprint);
+                    lock (GateFor(key))
+                    {
+                        _versions.AddOrUpdate(key, 1, (_, version) => version + 1);
+                        _inFlight.TryRemove(key, out _);
+                        _memory.Remove(key);
+                        Disk.Remove(type, resRef, useIndexedBlueprint);
+                    }
                 }
             }
             finally
@@ -154,12 +158,15 @@ namespace SWLOR.Toolset.Workspace
         /// The preview for a blueprint if it is already decoded in memory, else null. Callers use this to
         /// fill a tile without a round trip through the thread pool.
         /// </summary>
-        public Bitmap? Cached(ResourceType type, string resRef)
+        public Bitmap? Cached(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint = false)
         {
             if (!IsAvailable)
                 return null;
 
-            return _memory.TryGet(Key(type, resRef), out var bitmap)
+            return _memory.TryGet(Key(type, resRef, useIndexedBlueprint), out var bitmap)
                 ? bitmap ?? TypeIcon(type)
                 : null;
         }
@@ -170,14 +177,24 @@ namespace SWLOR.Toolset.Workspace
         /// something already rendering joins it rather than queueing a second render, so a palette that
         /// republishes its tiles on every keystroke does not repeat the work.
         /// </summary>
-        public void RequestAsync(ResourceType type, string resRef, Action<Bitmap> onReady)
+        public void RequestAsync(
+            ResourceType type,
+            string resRef,
+            Action<Bitmap> onReady) =>
+            RequestAsync(type, resRef, useIndexedBlueprint: false, onReady: onReady);
+
+        public void RequestAsync(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint,
+            Action<Bitmap> onReady)
         {
             ArgumentNullException.ThrowIfNull(onReady);
 
             if (!IsAvailable || string.IsNullOrWhiteSpace(resRef))
                 return;
 
-            var key = Key(type, resRef);
+            var key = Key(type, resRef, useIndexedBlueprint);
             if (_memory.TryGet(key, out var known))
             {
                 var resolved = known ?? TypeIcon(type);
@@ -194,7 +211,7 @@ namespace SWLOR.Toolset.Workspace
                 PreviewResolution? result = null;
                 try
                 {
-                    result = Resolve(type, resRef);
+                    result = Resolve(type, resRef, useIndexedBlueprint);
                 }
                 catch (Exception)
                 {
@@ -249,7 +266,8 @@ namespace SWLOR.Toolset.Workspace
                 }
 
                 var result = new PreviewResolution(
-                    bitmap, new ThumbnailDiskCache(null), ResourceType.Area, modelResRef, Persist: false);
+                    bitmap, new ThumbnailDiskCache(null), ResourceType.Area, modelResRef,
+                    UseIndexedBlueprint: false, Persist: false);
                 CompleteRender(key, operation, result, bitmap);
             });
         }
@@ -317,9 +335,12 @@ namespace SWLOR.Toolset.Workspace
                         if (resolved.Persist)
                         {
                             if (resolved.Bitmap == null)
-                                resolved.Disk.StoreNoArtwork(resolved.Type, resolved.ResRef);
+                                resolved.Disk.StoreNoArtwork(
+                                    resolved.Type, resolved.ResRef, resolved.UseIndexedBlueprint);
                             else
-                                resolved.Disk.Store(resolved.Type, resolved.ResRef, resolved.Bitmap);
+                                resolved.Disk.Store(
+                                    resolved.Type, resolved.ResRef,
+                                    resolved.UseIndexedBlueprint, resolved.Bitmap);
                         }
 
                         _memory.Set(key, resolved.Bitmap);
@@ -406,27 +427,20 @@ namespace SWLOR.Toolset.Workspace
             if (workspace == null || !IsAvailable)
                 return new PreviewCacheProgress(0, 0, 0, 0, 0);
 
-            var work = new List<(ResourceType Type, string ResRef)>();
+            var work = new List<(ResourceType Type, string ResRef, bool UseIndexedBlueprint)>();
             foreach (var type in ModuleWorkspace.BlueprintTypes.Where(BlueprintPreviewRenderer.IsSupported))
             {
-                var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var resRef in workspace.EnumerateResRefs(type))
-                {
-                    if (seen.Add(resRef))
-                        work.Add((type, resRef));
-                }
+                    work.Add((type, resRef, UseIndexedBlueprint: false));
 
-                // The base game and the haks, minus anything the module overrides - LoadBlueprint
-                // prefers the module's copy, so those are already queued above.
+                // Standard content is a separate cache identity. A same-resref module override must not
+                // suppress it: the Palette offers both sources and they can render differently.
                 if (workspace.ResourceIndex is not { } index)
                     continue;
 
                 foreach (var identity in index.EnumerateResources(
                              ResourceIdentity.TypeFromExtension(type.Extension())))
-                {
-                    if (seen.Add(identity.ResRef))
-                        work.Add((type, identity.ResRef));
-                }
+                    work.Add((type, identity.ResRef, UseIndexedBlueprint: true));
             }
 
             var disk = Disk;
@@ -450,23 +464,29 @@ namespace SWLOR.Toolset.Workspace
 
             await Parallel.ForEachAsync(work, options, (item, _) =>
             {
-                var key = Key(item.Type, item.ResRef);
+                var key = Key(item.Type, item.ResRef, item.UseIndexedBlueprint);
                 var version = VersionOf(key);
                 var epoch = Volatile.Read(ref _cacheEpoch);
                 try
                 {
-                    if (disk.Contains(item.Type, item.ResRef, workspace.GetResourcePath(item.Type, item.ResRef)))
+                    var blueprintPath = item.UseIndexedBlueprint
+                        ? null
+                        : workspace.GetResourcePath(item.Type, item.ResRef);
+                    if (disk.Contains(
+                            item.Type, item.ResRef, blueprintPath, item.UseIndexedBlueprint))
                     {
                         Interlocked.Increment(ref reused);
                     }
                     else
                     {
-                        var image = _renderer.Render(item.Type, item.ResRef);
+                        var image = _renderer.Render(
+                            item.Type, item.ResRef, item.UseIndexedBlueprint);
                         if (image == null)
                         {
                             if (TryPersistWarmResult(
                                     key, version, epoch,
-                                    () => disk.StoreNoArtwork(item.Type, item.ResRef)))
+                                    () => disk.StoreNoArtwork(
+                                        item.Type, item.ResRef, item.UseIndexedBlueprint)))
                                 Interlocked.Increment(ref withoutArtwork);
                         }
                         else
@@ -476,7 +496,8 @@ namespace SWLOR.Toolset.Workspace
                             using var bitmap = ToBitmap(image);
                             if (TryPersistWarmResult(
                                     key, version, epoch,
-                                    () => disk.Store(item.Type, item.ResRef, bitmap)))
+                                    () => disk.Store(
+                                        item.Type, item.ResRef, item.UseIndexedBlueprint, bitmap)))
                                 Interlocked.Increment(ref rendered);
                         }
                     }
@@ -553,26 +574,36 @@ namespace SWLOR.Toolset.Workspace
         public int PruneSupersededCaches() => Disk.PruneSupersededVersions();
 
         /// <summary>Disk hit, then render. Null means "no artwork" - the caller substitutes a type symbol.</summary>
-        private PreviewResolution Resolve(ResourceType type, string resRef)
+        private PreviewResolution Resolve(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint)
         {
             var workspace = _workspaceContext.Workspace;
-            var blueprintPath = workspace?.GetResourcePath(type, resRef);
+            var blueprintPath = useIndexedBlueprint
+                ? null
+                : workspace?.GetResourcePath(type, resRef);
             var disk = Disk;
 
-            switch (disk.TryLoad(type, resRef, blueprintPath, out var cached))
+            switch (disk.TryLoad(
+                        type, resRef, blueprintPath, useIndexedBlueprint, out var cached))
             {
                 case ThumbnailDiskCache.Lookup.Image:
-                    return new PreviewResolution(cached, disk, type, resRef, Persist: false);
+                    return new PreviewResolution(
+                        cached, disk, type, resRef, useIndexedBlueprint, Persist: false);
                 case ThumbnailDiskCache.Lookup.NoArtwork:
-                    return new PreviewResolution(null, disk, type, resRef, Persist: false);
+                    return new PreviewResolution(
+                        null, disk, type, resRef, useIndexedBlueprint, Persist: false);
             }
 
-            var image = _renderer.Render(type, resRef);
+            var image = _renderer.Render(type, resRef, useIndexedBlueprint);
             if (image == null)
-                return new PreviewResolution(null, disk, type, resRef, Persist: true);
+                return new PreviewResolution(
+                    null, disk, type, resRef, useIndexedBlueprint, Persist: true);
 
             var bitmap = ToBitmap(image);
-            return new PreviewResolution(bitmap, disk, type, resRef, Persist: true);
+            return new PreviewResolution(
+                bitmap, disk, type, resRef, useIndexedBlueprint, Persist: true);
         }
 
         /// <summary>
@@ -622,6 +653,10 @@ namespace SWLOR.Toolset.Workspace
             return bitmap;
         }
 
-        private static string Key(ResourceType type, string resRef) => $"{type}:{resRef}";
+        private static string Key(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint) =>
+            $"{(useIndexedBlueprint ? "standard" : "custom")}:{type}:{resRef}";
     }
 }

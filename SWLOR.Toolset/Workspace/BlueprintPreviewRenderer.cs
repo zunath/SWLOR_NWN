@@ -119,7 +119,10 @@ namespace SWLOR.Toolset.Workspace
         /// "no artwork" - an unparseable model, an undecodable texture - are still handled at the point
         /// where that is the honest answer.
         /// </remarks>
-        public IconImage? Render(ResourceType type, string resRef)
+        public IconImage? Render(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint = false)
         {
             if (!IsAvailable || string.IsNullOrWhiteSpace(resRef))
                 return null;
@@ -128,13 +131,16 @@ namespace SWLOR.Toolset.Workspace
             if (workspace == null)
                 return null;
 
-            var root = workspace.LoadBlueprint(type, resRef).Fields;
+            var root = (useIndexedBlueprint
+                ? workspace.LoadIndexedBlueprint(type, resRef)
+                : workspace.LoadBlueprint(type, resRef)).Fields;
 
             return type switch
             {
                 ResourceType.Uti => RenderItemIcon(root),
-                ResourceType.Utc => RenderModel(type, root) ?? RenderPortrait(root),
-                ResourceType.Utp or ResourceType.Utd or ResourceType.Utw => RenderModel(type, root),
+                ResourceType.Utc => RenderModel(type, root, useIndexedBlueprint) ?? RenderPortrait(root),
+                ResourceType.Utp or ResourceType.Utd or ResourceType.Utw =>
+                    RenderModel(type, root, useIndexedBlueprint),
                 _ => null
             };
         }
@@ -168,7 +174,8 @@ namespace SWLOR.Toolset.Workspace
                 : workspace.LoadBlueprint(type, resRef);
             var reference = BlueprintModelResolver.Resolve(
                 type, blueprint.Fields, _appearances, _placeables, _doors,
-                LoadItemBlueprintRoot, PartModelExists, _waypoints);
+                itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
+                PartModelExists, _waypoints);
 
             return reference.Kind switch
             {
@@ -247,11 +254,15 @@ namespace SWLOR.Toolset.Workspace
         /// several thousand fully expanded meshes at once. Parsing again costs milliseconds and the
         /// result is written to the disk cache anyway, so nothing is parsed twice across sessions.
         /// </remarks>
-        private IconImage? RenderModel(ResourceType type, Domain.Gff.JsonGffStruct root)
+        private IconImage? RenderModel(
+            ResourceType type,
+            Domain.Gff.JsonGffStruct root,
+            bool useIndexedBlueprint)
         {
             var reference = BlueprintModelResolver.Resolve(
-                type, root, _appearances, _placeables, _doors, LoadItemBlueprintRoot, PartModelExists,
-                _waypoints);
+                type, root, _appearances, _placeables, _doors,
+                itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
+                PartModelExists, _waypoints);
 
             var model = reference.Kind switch
             {
@@ -436,7 +447,9 @@ namespace SWLOR.Toolset.Workspace
             _resourceIndex.TryLookup(ResourceIdentity.FromFileName(resRef + ".mdl"), out _);
 
         /// <summary>Loads an equipped item's root struct so armor can override a creature's body parts.</summary>
-        private Domain.Gff.JsonGffStruct? LoadItemBlueprintRoot(string resRef)
+        private Domain.Gff.JsonGffStruct? LoadItemBlueprintRoot(
+            string resRef,
+            bool useIndexedBlueprint)
         {
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
@@ -444,7 +457,9 @@ namespace SWLOR.Toolset.Workspace
 
             try
             {
-                return workspace.LoadBlueprint(ResourceType.Uti, resRef).Fields;
+                return (useIndexedBlueprint
+                    ? workspace.LoadIndexedBlueprint(ResourceType.Uti, resRef)
+                    : workspace.LoadBlueprint(ResourceType.Uti, resRef)).Fields;
             }
             catch (Exception)
             {

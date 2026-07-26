@@ -137,5 +137,29 @@ namespace SWLOR.Toolset.Tests
 
             Directory.EnumerateFiles(_directory, "*.tmp").Should().BeEmpty();
         }
+
+        [Test]
+        public void ALaterCommitFailureRestoresEveryEarlierOriginal()
+        {
+            var are = FileWith("area.are.json", "are-original");
+            var git = Path.Combine(_directory, "locked.git.json");
+            Directory.CreateDirectory(git);
+
+            var areWrite = SaveService.Stage(are, Encoding.UTF8.GetBytes("are-new"));
+            var gitWrite = SaveService.Stage(git, Encoding.UTF8.GetBytes("git-new"));
+
+            var act = () => SaveService.CommitAll(new[] { areWrite, gitWrite });
+
+            var failure = act.Should().Throw<Exception>().Which;
+            (failure is IOException || failure is UnauthorizedAccessException).Should().BeTrue(
+                "different filesystems report replacing a directory as one of these two I/O failures");
+            File.ReadAllText(are).Should().Be(
+                "are-original",
+                "the first replacement must be rolled back when a later destination cannot be replaced");
+            Directory.Exists(git).Should().BeTrue();
+            File.Exists(areWrite.TemporaryPath).Should().BeFalse();
+            File.Exists(gitWrite.TemporaryPath).Should().BeFalse();
+            Directory.EnumerateFiles(_directory, "*.save-backup").Should().BeEmpty();
+        }
     }
 }

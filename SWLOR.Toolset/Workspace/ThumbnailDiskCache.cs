@@ -112,14 +112,19 @@ namespace SWLOR.Toolset.Workspace
         /// Reads a cached preview. Returns <see cref="Lookup.Miss"/> on any I/O or decode failure - a
         /// damaged cache file must cost a re-render, never an error.
         /// </summary>
-        public Lookup TryLoad(ResourceType type, string resRef, string? blueprintPath, out Bitmap? bitmap)
+        public Lookup TryLoad(
+            ResourceType type,
+            string resRef,
+            string? blueprintPath,
+            bool useIndexedBlueprint,
+            out Bitmap? bitmap)
         {
             bitmap = null;
             if (_root == null)
                 return Lookup.Miss;
 
-            var imagePath = PathFor(type, resRef, ".png");
-            var markerPath = PathFor(type, resRef, MissingArtworkExtension);
+            var imagePath = PathFor(type, resRef, useIndexedBlueprint, ".png");
+            var markerPath = PathFor(type, resRef, useIndexedBlueprint, MissingArtworkExtension);
 
             try
             {
@@ -148,7 +153,11 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>True when a usable entry exists, without paying to decode the image.</summary>
-        public bool Contains(ResourceType type, string resRef, string? blueprintPath)
+        public bool Contains(
+            ResourceType type,
+            string resRef,
+            string? blueprintPath,
+            bool useIndexedBlueprint)
         {
             if (_root == null)
                 return false;
@@ -158,7 +167,7 @@ namespace SWLOR.Toolset.Workspace
                 var threshold = FreshnessThreshold(blueprintPath, _contentVersionUtc);
                 foreach (var extension in new[] { ".png", MissingArtworkExtension })
                 {
-                    var path = PathFor(type, resRef, extension);
+                    var path = PathFor(type, resRef, useIndexedBlueprint, extension);
                     if (File.Exists(path) && File.GetLastWriteTimeUtc(path) >= threshold)
                         return true;
                 }
@@ -172,16 +181,20 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>Writes a rendered preview. Failures are swallowed: a cache is an optimisation.</summary>
-        public void Store(ResourceType type, string resRef, Bitmap bitmap)
+        public void Store(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint,
+            Bitmap bitmap)
         {
             if (_root == null)
                 return;
 
-            var path = PathFor(type, resRef, ".png");
+            var path = PathFor(type, resRef, useIndexedBlueprint, ".png");
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                Delete(PathFor(type, resRef, MissingArtworkExtension));
+                Delete(PathFor(type, resRef, useIndexedBlueprint, MissingArtworkExtension));
 
                 // Written aside and moved so a crash mid-write cannot leave a truncated PNG behind. The
                 // name is unique per write because the background cache build and a palette browsing
@@ -199,16 +212,19 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>Records that a blueprint has no artwork, so the next session does not look again.</summary>
-        public void StoreNoArtwork(ResourceType type, string resRef)
+        public void StoreNoArtwork(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint)
         {
             if (_root == null)
                 return;
 
-            var path = PathFor(type, resRef, MissingArtworkExtension);
+            var path = PathFor(type, resRef, useIndexedBlueprint, MissingArtworkExtension);
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                Delete(PathFor(type, resRef, ".png"));
+                Delete(PathFor(type, resRef, useIndexedBlueprint, ".png"));
                 File.WriteAllBytes(path, Array.Empty<byte>());
             }
             catch (Exception)
@@ -221,15 +237,18 @@ namespace SWLOR.Toolset.Workspace
         /// Removes both possible forms of one entry. Used when a saved blueprint changes so an
         /// in-flight or timestamp-equal result cannot survive as stale artwork.
         /// </summary>
-        public void Remove(ResourceType type, string resRef)
+        public void Remove(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint)
         {
             if (_root == null)
                 return;
 
             try
             {
-                Delete(PathFor(type, resRef, ".png"));
-                Delete(PathFor(type, resRef, MissingArtworkExtension));
+                Delete(PathFor(type, resRef, useIndexedBlueprint, ".png"));
+                Delete(PathFor(type, resRef, useIndexedBlueprint, MissingArtworkExtension));
             }
             catch (Exception)
             {
@@ -309,8 +328,14 @@ namespace SWLOR.Toolset.Workspace
                 File.Delete(path);
         }
 
-        private string PathFor(ResourceType type, string resRef, string extension) =>
-            Path.Combine(_root!, type.Extension(), Sanitize(resRef) + extension);
+        private string PathFor(
+            ResourceType type,
+            string resRef,
+            bool useIndexedBlueprint,
+            string extension) =>
+            useIndexedBlueprint
+                ? Path.Combine(_root!, "standard", type.Extension(), Sanitize(resRef) + extension)
+                : Path.Combine(_root!, type.Extension(), Sanitize(resRef) + extension);
 
         /// <summary>
         /// Resrefs are lowercase alphanumerics and underscores by NWN's own rules, but a hand-edited

@@ -1,6 +1,6 @@
 using SWLOR.Toolset.Domain.Documents;
 
-namespace SWLOR.Toolset.Domain.Editors.Triggers
+namespace SWLOR.Toolset.Domain.Editors.Behaviors
 {
     /// <summary>
     /// Turns a palette (.itp) into the named categories a blueprint's PaletteID can point at, so the
@@ -14,12 +14,12 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
     /// </remarks>
     public static class PaletteCategoryReader
     {
-        public static IReadOnlyList<TriggerChoice> Read(
+        public static IReadOnlyList<BehaviorChoice> Read(
             ItpDocument palette, Func<uint, string?>? resolveStrRef = null)
         {
             ArgumentNullException.ThrowIfNull(palette);
 
-            var categories = new List<TriggerChoice>();
+            var categories = new List<BehaviorChoice>();
             Walk(palette.Nodes, parentName: null, resolveStrRef, categories);
 
             return categories
@@ -33,7 +33,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             IReadOnlyList<PaletteNode> nodes,
             string? parentName,
             Func<uint, string?>? resolveStrRef,
-            List<TriggerChoice> categories)
+            List<BehaviorChoice> categories)
         {
             foreach (var node in nodes)
             {
@@ -44,7 +44,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                 var qualified = parentName == null ? name : $"{parentName} ▸ {name}";
 
                 if (node.Id is { } id)
-                    categories.Add(new TriggerChoice(id, qualified));
+                    categories.Add(new BehaviorChoice(id, qualified));
 
                 if (node.Children.Count > 0)
                     Walk(node.Children, qualified, resolveStrRef, categories);

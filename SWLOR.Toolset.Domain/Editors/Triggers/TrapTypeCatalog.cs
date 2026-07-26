@@ -1,4 +1,5 @@
 using System.Text;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 
 namespace SWLOR.Toolset.Domain.Editors.Triggers
@@ -12,19 +13,19 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         private const string TableName = "traps";
         private const string LabelColumn = "Label";
 
-        public static IReadOnlyList<TriggerChoice> Read(TwoDaService? twoDa)
+        public static IReadOnlyList<BehaviorChoice> Read(TwoDaService? twoDa)
         {
             if (twoDa == null || !twoDa.TryGetTable(TableName, out var table) || table == null)
-                return Array.Empty<TriggerChoice>();
+                return Array.Empty<BehaviorChoice>();
 
-            var traps = new List<TriggerChoice>();
+            var traps = new List<BehaviorChoice>();
             for (var row = 0; row < table.RowCount; row++)
             {
                 var label = table.GetString(row, LabelColumn);
                 if (string.IsNullOrWhiteSpace(label))
                     continue;
 
-                traps.Add(new TriggerChoice(row, Humanise(label)));
+                traps.Add(new BehaviorChoice(row, Humanise(label)));
             }
 
             return traps;

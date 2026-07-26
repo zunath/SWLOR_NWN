@@ -830,7 +830,12 @@ namespace SWLOR.Toolset.Tests
             IEnumerable<QuestDefinitionInfo>? quests = null,
             IReadOnlyDictionary<int, string>? keyItems = null,
             IReadOnlyDictionary<int, string>? factions = null,
-            IReadOnlyDictionary<int, string>? skills = null)
+            IReadOnlyDictionary<int, string>? skills = null,
+            IEnumerable<string>? fishingSpawnTableIds = null,
+            IReadOnlyList<WaypointDestinationInfo>? planetLandingWaypoints = null,
+            IReadOnlyList<WaypointDestinationInfo>? orbitWaypoints = null,
+            IReadOnlyList<TaxiDestinationInfo>? taxiDestinations = null,
+            IEnumerable<string>? respawnWaypointTags = null)
         {
             _validNpcGroups = new HashSet<int>(validNpcGroups ?? Array.Empty<int>());
             _validSpawnTableIds = new HashSet<string>(validSpawnTableIds ?? Array.Empty<string>(), StringComparer.Ordinal);
@@ -841,6 +846,11 @@ namespace SWLOR.Toolset.Tests
             Factions = factions ?? new Dictionary<int, string>();
             Skills = skills ?? new Dictionary<int, string>();
             SkillEnumNames = Skills;
+            FishingSpawnTableIds = (fishingSpawnTableIds ?? Array.Empty<string>()).ToList();
+            PlanetLandingWaypoints = planetLandingWaypoints ?? Array.Empty<WaypointDestinationInfo>();
+            OrbitWaypoints = orbitWaypoints ?? Array.Empty<WaypointDestinationInfo>();
+            TaxiDestinations = taxiDestinations ?? Array.Empty<TaxiDestinationInfo>();
+            RespawnWaypointTags = (respawnWaypointTags ?? Array.Empty<string>()).ToList();
         }
 
         public bool IsSourceScanAvailable { get; }
@@ -861,6 +871,16 @@ namespace SWLOR.Toolset.Tests
         public IReadOnlyDictionary<string, QuestDefinitionInfo> Quests => _quests;
 
         public IReadOnlyCollection<string> SpawnTableIds => _validSpawnTableIds;
+
+        public IReadOnlyCollection<string> FishingSpawnTableIds { get; }
+
+        public IReadOnlyList<WaypointDestinationInfo> PlanetLandingWaypoints { get; }
+
+        public IReadOnlyList<WaypointDestinationInfo> OrbitWaypoints { get; }
+
+        public IReadOnlyList<TaxiDestinationInfo> TaxiDestinations { get; }
+
+        public IReadOnlyCollection<string> RespawnWaypointTags { get; }
 
         public IReadOnlyCollection<string> LootTableIds => Array.Empty<string>();
 

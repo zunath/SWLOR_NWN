@@ -21,6 +21,7 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
 
         private readonly HashSet<string> _questIds;
         private readonly HashSet<string> _spawnTableIds;
+        private readonly HashSet<string> _fishingSpawnTableIds;
         private readonly HashSet<string> _lootTableIds;
         private readonly HashSet<string> _dialogNames;
         private readonly Dictionary<string, QuestDefinitionInfo> _quests;
@@ -34,6 +35,11 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         public IReadOnlyCollection<string> QuestIds => _questIds;
         public IReadOnlyDictionary<string, QuestDefinitionInfo> Quests => _quests;
         public IReadOnlyCollection<string> SpawnTableIds => _spawnTableIds;
+        public IReadOnlyCollection<string> FishingSpawnTableIds => _fishingSpawnTableIds;
+        public IReadOnlyList<WaypointDestinationInfo> PlanetLandingWaypoints { get; }
+        public IReadOnlyList<WaypointDestinationInfo> OrbitWaypoints { get; }
+        public IReadOnlyList<TaxiDestinationInfo> TaxiDestinations { get; }
+        public IReadOnlyCollection<string> RespawnWaypointTags { get; }
         public IReadOnlyCollection<string> LootTableIds => _lootTableIds;
         public IReadOnlyCollection<string> DialogNames => _dialogNames;
         public IReadOnlyDictionary<int, string> SkillTypes { get; }
@@ -62,6 +68,16 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             Factions = ReflectionEnumReader.ReadFactions();
             Skills = ReflectionEnumReader.ReadSkills();
             SkillEnumNames = ReflectionEnumReader.ReadSkillEnumNames();
+            PlanetLandingWaypoints = ReflectionWaypointReader.ReadPlanetLandings();
+            OrbitWaypoints = ReflectionWaypointReader.ReadPlanetOrbits();
+            TaxiDestinations = ReflectionWaypointReader.ReadTaxiDestinations();
+            RespawnWaypointTags = new[]
+            {
+                "DEATH_DEFAULT_RESPAWN_POINT",
+                "DTH_DEFAULT_RESPAWN_POINT",
+                "REBUILD_LANDING",
+                "REBUILD_TO_SPENDING_LANDING"
+            };
 
             var questDirectory = CombineIfUsable(gameServerSourceRoot, QuestDefinitionRelativePath);
             var spawnDirectory = CombineIfUsable(gameServerSourceRoot, SpawnDefinitionRelativePath);
@@ -83,6 +99,9 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             _spawnTableIds = spawnDirectory != null
                 ? SourceIdScanner.ScanBuilderCreateIds(spawnDirectory, out spawnComplete)
                 : new HashSet<string>(StringComparer.Ordinal);
+            _fishingSpawnTableIds = new HashSet<string>(
+                _spawnTableIds.Where(id => id.StartsWith("FP_", StringComparison.Ordinal)),
+                StringComparer.Ordinal);
 
             // Loot table ids are declared with exactly the same _builder.Create("ID") shape, so the
             // existing scanner reads them unchanged. Their completeness is not folded into

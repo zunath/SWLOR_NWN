@@ -1,61 +1,60 @@
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Gff;
 
-namespace SWLOR.Toolset.Domain.Editors.Triggers
+namespace SWLOR.Toolset.Domain.Editors.Behaviors
 {
     /// <summary>
-    /// Reads and writes a trigger's values, whichever of the two shapes it has: a blueprint
-    /// document's root, or one entry of an area's TriggerList. Both are a
-    /// <see cref="JsonGffStruct"/> carrying the same fields and the same VarTable, which is what
-    /// lets one editor serve blueprints and placements alike.
+    /// Reads and writes behavior-owned values on either a blueprint root or an area-instance
+    /// struct. Both carry the same fields and VarTable, which lets one behavior editor serve
+    /// blueprints and placements alike.
     /// </summary>
     /// <remarks>
     /// Every write here mutates the document directly and must therefore run inside the owning
     /// session's transaction — the view model is what supplies that.
     /// </remarks>
-    public sealed class TriggerValueStore
+    public sealed class BehaviorValueStore
     {
-        private readonly JsonGffStruct _trigger;
+        private readonly JsonGffStruct _valueStruct;
         private readonly VarTable _locals;
 
-        public TriggerValueStore(JsonGffStruct trigger)
+        public BehaviorValueStore(JsonGffStruct valueStruct)
         {
-            _trigger = trigger ?? throw new ArgumentNullException(nameof(trigger));
-            _locals = new VarTable(trigger);
+            _valueStruct = valueStruct ?? throw new ArgumentNullException(nameof(valueStruct));
+            _locals = new VarTable(valueStruct);
         }
 
-        public JsonGffStruct Trigger => _trigger;
+        public JsonGffStruct ValueStruct => _valueStruct;
 
         public VarTable Locals => _locals;
 
-        /// <summary>The language-0 text of a CExoLocString field, such as the trigger's name.</summary>
+        /// <summary>The language-0 text of a CExoLocString field, such as an object's name.</summary>
         public string GetLocalizedText(string name) =>
-            _trigger.GetLocStringOrNull(name)?.Text ?? string.Empty;
+            _valueStruct.GetLocStringOrNull(name)?.Text ?? string.Empty;
 
         public void SetLocalizedText(string name, string value) =>
-            _trigger.GetOrAddLocString(name).Text = value;
+            _valueStruct.GetOrAddLocString(name).Text = value;
 
-        public string GetString(TriggerFieldStorage storage, string name)
+        public string GetString(BehaviorFieldStorage storage, string name)
         {
-            return storage == TriggerFieldStorage.Local
+            return storage == BehaviorFieldStorage.Local
                 ? _locals.GetString(name) ?? string.Empty
-                : _trigger.GetStringOrNull(name) ?? string.Empty;
+                : _valueStruct.GetStringOrNull(name) ?? string.Empty;
         }
 
-        public void SetString(TriggerFieldStorage storage, string name, GffFieldType type, string value)
+        public void SetString(BehaviorFieldStorage storage, string name, GffFieldType type, string value)
         {
-            if (storage == TriggerFieldStorage.Local)
+            if (storage == BehaviorFieldStorage.Local)
                 _locals.SetString(name, value);
             else
-                _trigger.SetString(name, type, value);
+                _valueStruct.SetString(name, type, value);
         }
 
-        public long? GetInteger(TriggerFieldStorage storage, string name)
+        public long? GetInteger(BehaviorFieldStorage storage, string name)
         {
-            if (storage == TriggerFieldStorage.Local)
+            if (storage == BehaviorFieldStorage.Local)
                 return _locals.GetInt(name);
 
-            if (!_trigger.TryGet(name, out var field))
+            if (!_valueStruct.TryGet(name, out var field))
                 return null;
 
             return field.Type is GffFieldType.Dword or GffFieldType.Dword64
@@ -63,9 +62,9 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                 : field.GetInteger();
         }
 
-        public void SetInteger(TriggerFieldStorage storage, string name, GffFieldType type, long value)
+        public void SetInteger(BehaviorFieldStorage storage, string name, GffFieldType type, long value)
         {
-            if (storage == TriggerFieldStorage.Local)
+            if (storage == BehaviorFieldStorage.Local)
             {
                 JsonGffField.ValidateIntegerValue(GffFieldType.Int, value);
                 _locals.SetInt(name, checked((int)value));
@@ -73,32 +72,32 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             else if (type is GffFieldType.Dword or GffFieldType.Dword64)
             {
                 JsonGffField.ValidateIntegerValue(type, value);
-                _trigger.SetULong(name, type, checked((ulong)value));
+                _valueStruct.SetULong(name, type, checked((ulong)value));
             }
             else
             {
                 JsonGffField.ValidateIntegerValue(type, value);
-                _trigger.SetLong(name, type, value);
+                _valueStruct.SetLong(name, type, value);
             }
         }
 
-        public double? GetFloat(TriggerFieldStorage storage, string name)
+        public double? GetFloat(BehaviorFieldStorage storage, string name)
         {
-            return storage == TriggerFieldStorage.Local
+            return storage == BehaviorFieldStorage.Local
                 ? _locals.GetFloat(name)
-                : _trigger.GetSingleOrNull(name);
+                : _valueStruct.GetSingleOrNull(name);
         }
 
-        public void SetFloat(TriggerFieldStorage storage, string name, double value)
+        public void SetFloat(BehaviorFieldStorage storage, string name, double value)
         {
-            if (storage == TriggerFieldStorage.Local)
+            if (storage == BehaviorFieldStorage.Local)
                 _locals.SetFloat(name, (float)value);
             else
-                _trigger.SetSingle(name, (float)value);
+                _valueStruct.SetSingle(name, (float)value);
         }
 
         /// <summary>Applies one managed value, skipping what only a placement can carry.</summary>
-        public void Apply(TriggerManagedValue value, bool isInstance = true)
+        public void Apply(BehaviorManagedValue value, bool isInstance = true)
         {
             ArgumentNullException.ThrowIfNull(value);
 
@@ -117,7 +116,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         /// Whether a managed value currently holds what its behavior says it should — what the
         /// editor's tick beside each managed row means.
         /// </summary>
-        public bool Matches(TriggerManagedValue value, bool isInstance = true)
+        public bool Matches(BehaviorManagedValue value, bool isInstance = true)
         {
             ArgumentNullException.ThrowIfNull(value);
 
@@ -141,17 +140,20 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         /// Clears what a behavior owned, so swapping behaviors never leaves the previous one's
         /// scripts firing or its locals lying around.
         /// </summary>
-        public void Clear(TriggerBehavior behavior)
+        public void Clear(
+            IEnumerable<BehaviorManagedValue> managedValues,
+            IEnumerable<BehaviorFieldDefinition> fields)
         {
-            ArgumentNullException.ThrowIfNull(behavior);
+            ArgumentNullException.ThrowIfNull(managedValues);
+            ArgumentNullException.ThrowIfNull(fields);
 
-            foreach (var value in behavior.Manages)
+            foreach (var value in managedValues)
             {
                 if (value.ClearOnSwap)
                     ClearOne(value.Storage, value.Name, value.FieldType);
             }
 
-            foreach (var field in behavior.Fields)
+            foreach (var field in fields)
             {
                 if (field.Name.Length == 0)
                     continue;
@@ -160,9 +162,9 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             }
         }
 
-        private void ClearOne(TriggerFieldStorage storage, string name, GffFieldType type)
+        private void ClearOne(BehaviorFieldStorage storage, string name, GffFieldType type)
         {
-            if (storage == TriggerFieldStorage.Local)
+            if (storage == BehaviorFieldStorage.Local)
             {
                 _locals.Remove(name);
                 return;
@@ -170,19 +172,22 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
 
             switch (type)
             {
+                case GffFieldType.CExoLocString:
+                    SetLocalizedText(name, string.Empty);
+                    break;
                 case GffFieldType.ResRef:
                 case GffFieldType.CExoString:
-                    _trigger.SetString(name, type, string.Empty);
+                    _valueStruct.SetString(name, type, string.Empty);
                     break;
                 case GffFieldType.Float:
-                    _trigger.SetSingle(name, 0f);
+                    _valueStruct.SetSingle(name, 0f);
                     break;
                 case GffFieldType.Dword:
                 case GffFieldType.Dword64:
-                    _trigger.SetUInt(name, type, 0);
+                    _valueStruct.SetUInt(name, type, 0);
                     break;
                 default:
-                    _trigger.SetInt(name, type, 0);
+                    _valueStruct.SetInt(name, type, 0);
                     break;
             }
         }

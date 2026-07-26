@@ -9,7 +9,7 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
     /// fluent calls, so they are invisible to reflection - the only way to recover them without
     /// executing game code is to scan the C# source text.
     ///
-    /// Handles the two shapes actually used across every quest/spawn definition file in this repo:
+    /// Handles the shapes used across the quest/spawn definition files in this repo:
     ///   - a string literal passed directly, e.g. <c>builder.Create("selan_request", ...)</c>
     ///     (~75 quest calls, ~191 spawn table calls use this form directly);
     ///   - a same-file <c>const string</c> field resolved by name, e.g.
@@ -18,15 +18,9 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
     ///     (this is the dominant pattern in the ability capstone quest chains - ~196 const
     ///     declarations across 19 files).
     ///
-    /// Deliberately NOT resolved: IDs threaded through a further level of indirection, i.e. a
-    /// private helper method that takes the ID as a plain <c>string</c> parameter and is itself
-    /// invoked with a literal elsewhere (e.g. <c>AgricultureGuildQuestDefinition.BuildItemTask</c>,
-    /// <c>FishingSpawnPointDefinition.CreateFishingPoint</c>). Resolving that would mean matching
-    /// call-site arguments to method parameters positionally across the file, which needs real
-    /// parsing rather than a well-anchored regex. It affects a small minority of definitions (mostly
-    /// per-item guild task generators and fishing points) and does not change validation behavior in
-    /// a meaningful way - IDs from these generators are internal to their own generator and not
-    /// referenced by hand-authored content that would need validating against this index.
+    /// Also resolves the one-level helper shape used by fishing spawn tables: a private helper takes
+    /// an ID as its first string parameter, passes that parameter directly to
+    /// <c>builder.Create</c>, and is called with a literal in the same file.
     /// </summary>
     internal static class SourceIdScanner
     {
@@ -37,6 +31,12 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         private static readonly Regex CreateCallRegex = new(
             @"(?:builder|_builder)\.Create\(\s*(?:""(?<literal>(?:[^""\\]|\\.)*)""|(?<identifier>[A-Za-z_]\w*))",
             RegexOptions.Compiled);
+
+        private static readonly Regex HelperCreateRegex = new(
+            @"(?:(?:private|public|protected|internal)\s+)?(?:static\s+)?(?:void|[A-Za-z_][\w<>,.? ]*)\s+" +
+            @"(?<method>[A-Za-z_]\w*)\s*\(\s*string\s+(?<parameter>[A-Za-z_]\w*)[^)]*\)\s*\{" +
+            @"(?:(?!\n\s*\}).)*?(?:builder|_builder)\.Create\(\s*\k<parameter>\b",
+            RegexOptions.Compiled | RegexOptions.Singleline);
 
         /// <summary>
         /// Scans every *.cs file under <paramref name="directoryPath"/> for builder.Create() IDs.
@@ -111,6 +111,17 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
                 {
                     ids.Add(resolved);
                 }
+            }
+
+            foreach (Match helperMatch in HelperCreateRegex.Matches(text))
+            {
+                var methodName = Regex.Escape(helperMatch.Groups["method"].Value);
+                var callRegex = new Regex(
+                    $@"\b{methodName}\s*\(\s*""(?<literal>(?:[^""\\]|\\.)*)""",
+                    RegexOptions.Compiled);
+
+                foreach (Match callMatch in callRegex.Matches(text))
+                    ids.Add(callMatch.Groups["literal"].Value);
             }
 
             return true;

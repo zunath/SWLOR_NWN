@@ -100,6 +100,47 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void FishingHelpersContributeAllFishingSpawnTableIds()
+        {
+            var index = CreateIndex();
+
+            index.FishingSpawnTableIds.Should().HaveCount(31);
+            index.FishingSpawnTableIds.Should().Contain("FP_VISC_CAVERN");
+            index.FishingSpawnTableIds.Should().Contain("FP_DAN_FORSAKEN_JUNGLES");
+            index.SpawnTableIds.Should().Contain(index.FishingSpawnTableIds,
+                "helper-created tables are still ordinary spawn tables");
+        }
+
+        [Test]
+        public void WaypointDestinationsComeFromTheServerDeclarations()
+        {
+            var index = CreateIndex();
+
+            index.PlanetLandingWaypoints.Should().HaveCount(10);
+            index.PlanetLandingWaypoints.Should().Contain(
+                destination => destination.Tag == "VISCARA_LANDING" &&
+                               destination.DisplayName == "Viscara");
+
+            index.OrbitWaypoints.Should().HaveCount(10);
+            index.OrbitWaypoints.Should().Contain(
+                destination => destination.Tag == "Viscara_Orbit" &&
+                               destination.DisplayName == "Viscara");
+
+            index.TaxiDestinations.Should().HaveCount(14);
+            index.TaxiDestinations.Should().Contain(
+                destination => destination.Tag == "TAXI_DANTOOINE_GARRISON" &&
+                               destination.DisplayName == "Dantooine Republic Garrison" &&
+                               destination.RegionId == 2 &&
+                               destination.Price == 150);
+
+            index.RespawnWaypointTags.Should().BeEquivalentTo(
+                "DEATH_DEFAULT_RESPAWN_POINT",
+                "DTH_DEFAULT_RESPAWN_POINT",
+                "REBUILD_LANDING",
+                "REBUILD_TO_SPENDING_LANDING");
+        }
+
+        [Test]
         public void Missing_Source_Root_Yields_Empty_Collections_And_Unavailable_Flag_Without_Throwing()
         {
             GameCodeIndex? index = null;

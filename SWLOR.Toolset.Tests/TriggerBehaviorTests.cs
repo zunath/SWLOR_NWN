@@ -1,8 +1,8 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Triggers;
@@ -48,7 +48,7 @@ namespace SWLOR.Toolset.Tests
 
             foreach (var behavior in TriggerBehaviorCatalog.All)
             {
-                var store = new TriggerValueStore(NewTrigger());
+                var store = new BehaviorValueStore(NewTrigger());
                 foreach (var value in behavior.Manages)
                     store.Apply(value, isInstance: true);
 
@@ -57,8 +57,8 @@ namespace SWLOR.Toolset.Tests
                     // The expected value's own shape says how to read the field back: a GFF field
                     // refuses to hand an int out as a string, and vice versa.
                     var actual = long.TryParse(expected, out _)
-                        ? store.GetInteger(TriggerFieldStorage.Field, field)?.ToString() ?? string.Empty
-                        : store.GetString(TriggerFieldStorage.Field, field);
+                        ? store.GetInteger(BehaviorFieldStorage.Field, field)?.ToString() ?? string.Empty
+                        : store.GetString(BehaviorFieldStorage.Field, field);
 
                     actual.Should().Be(expected,
                         $"{behavior.DisplayName} must set {field} for the server to act on it");
@@ -92,10 +92,10 @@ namespace SWLOR.Toolset.Tests
                 document.OnClose();
             }
 
-            var saved = new TriggerValueStore(JsonGffDocument.Load(path).Root);
-            saved.GetString(TriggerFieldStorage.Field, "ScriptOnEnter").Should().Be("explore_trigger");
-            saved.GetFloat(TriggerFieldStorage.Field, "HighlightHeight").Should().BeApproximately(3.0, 1e-4);
-            saved.GetString(TriggerFieldStorage.Local, "DISPLAY_TEXT")
+            var saved = new BehaviorValueStore(JsonGffDocument.Load(path).Root);
+            saved.GetString(BehaviorFieldStorage.Field, "ScriptOnEnter").Should().Be("explore_trigger");
+            saved.GetFloat(BehaviorFieldStorage.Field, "HighlightHeight").Should().BeApproximately(3.0, 1e-4);
+            saved.GetString(BehaviorFieldStorage.Local, "DISPLAY_TEXT")
                 .Should().Be("A crashed shuttle lies half-buried in the dune.");
             TriggerBehaviorCatalog.Classify(JsonGffDocument.Load(path).Root).Id
                 .Should().Be(TriggerBehaviorCatalog.ExplorationNoteId);
@@ -135,16 +135,16 @@ namespace SWLOR.Toolset.Tests
             var behavior = TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.NoSpawnZoneId);
             var resRef = behavior.Manages.Single(value => value.Name == "TemplateResRef");
 
-            var blueprint = new TriggerValueStore(NewTrigger());
+            var blueprint = new BehaviorValueStore(NewTrigger());
             blueprint.Apply(resRef, isInstance: false);
-            blueprint.GetString(TriggerFieldStorage.Field, "TemplateResRef").Should().BeEmpty();
+            blueprint.GetString(BehaviorFieldStorage.Field, "TemplateResRef").Should().BeEmpty();
 
-            var placement = new TriggerValueStore(NewTrigger());
+            var placement = new BehaviorValueStore(NewTrigger());
             placement.Apply(resRef, isInstance: true);
-            placement.GetString(TriggerFieldStorage.Field, "TemplateResRef").Should().Be("anti_spawn_trigg");
+            placement.GetString(BehaviorFieldStorage.Field, "TemplateResRef").Should().Be("anti_spawn_trigg");
 
-            placement.Clear(behavior);
-            placement.GetString(TriggerFieldStorage.Field, "TemplateResRef")
+            placement.Clear(behavior.Manages, behavior.Fields);
+            placement.GetString(BehaviorFieldStorage.Field, "TemplateResRef")
                 .Should().Be("anti_spawn_trigg", "swapping behavior must not orphan a placement");
         }
 
@@ -224,7 +224,7 @@ namespace SWLOR.Toolset.Tests
             foreach (var behavior in TriggerBehaviorCatalog.All.Where(b => !b.AllowsVariables))
             {
                 var surfaced = behavior.Fields
-                    .Where(field => field.Storage == TriggerFieldStorage.Local)
+                    .Where(field => field.Storage == BehaviorFieldStorage.Local)
                     .Select(field => field.Name)
                     .ToHashSet(StringComparer.Ordinal);
 
@@ -266,14 +266,14 @@ namespace SWLOR.Toolset.Tests
         public void ChoosingABehaviorWritesEverythingItManages()
         {
             var trigger = NewTrigger();
-            var store = new TriggerValueStore(trigger);
+            var store = new BehaviorValueStore(trigger);
             var exploration = TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.ExplorationNoteId);
 
             foreach (var value in exploration.Manages)
                 store.Apply(value);
 
-            store.GetString(TriggerFieldStorage.Field, "ScriptOnEnter").Should().Be("explore_trigger");
-            store.GetFloat(TriggerFieldStorage.Field, "HighlightHeight").Should().BeApproximately(3.0, 1e-4);
+            store.GetString(BehaviorFieldStorage.Field, "ScriptOnEnter").Should().Be("explore_trigger");
+            store.GetFloat(BehaviorFieldStorage.Field, "HighlightHeight").Should().BeApproximately(3.0, 1e-4);
             exploration.Manages.Should().OnlyContain(value => store.Matches(value));
         }
 
@@ -281,37 +281,37 @@ namespace SWLOR.Toolset.Tests
         public void SwappingBehaviorLeavesNothingOfThePreviousOneBehind()
         {
             var trigger = NewTrigger();
-            var store = new TriggerValueStore(trigger);
+            var store = new BehaviorValueStore(trigger);
             var exploration = TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.ExplorationNoteId);
             var transition = TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.AreaTransitionId);
 
             foreach (var value in exploration.Manages)
                 store.Apply(value);
-            store.SetString(TriggerFieldStorage.Local, "DISPLAY_TEXT", GffFieldType.CExoString, "a note");
+            store.SetString(BehaviorFieldStorage.Local, "DISPLAY_TEXT", GffFieldType.CExoString, "a note");
 
-            store.Clear(exploration);
+            store.Clear(exploration.Manages, exploration.Fields);
             foreach (var value in transition.Manages)
                 store.Apply(value);
 
             // A stale OnEnter would still fire in game, and a stale local would still be read.
-            store.GetString(TriggerFieldStorage.Field, "ScriptOnEnter").Should().BeEmpty();
+            store.GetString(BehaviorFieldStorage.Field, "ScriptOnEnter").Should().BeEmpty();
             store.Locals.GetString("DISPLAY_TEXT").Should().BeNull();
-            store.GetInteger(TriggerFieldStorage.Field, "Type").Should().Be(1);
-            store.GetInteger(TriggerFieldStorage.Field, "Cursor").Should().Be(1);
+            store.GetInteger(BehaviorFieldStorage.Field, "Type").Should().Be(1);
+            store.GetInteger(BehaviorFieldStorage.Field, "Cursor").Should().Be(1);
         }
 
         [Test]
         public void AMangledManagedValueLosesItsTick()
         {
             var trigger = NewTrigger();
-            var store = new TriggerValueStore(trigger);
+            var store = new BehaviorValueStore(trigger);
             var restZone = TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.RestZoneId);
 
             foreach (var value in restZone.Manages)
                 store.Apply(value);
             restZone.Manages.Should().OnlyContain(value => store.Matches(value));
 
-            store.SetString(TriggerFieldStorage.Field, "ScriptOnExit", GffFieldType.ResRef, "something_else");
+            store.SetString(BehaviorFieldStorage.Field, "ScriptOnExit", GffFieldType.ResRef, "something_else");
 
             store.Matches(restZone.Manages.Single(value => value.Name == "ScriptOnExit"))
                 .Should().BeFalse();
@@ -322,8 +322,8 @@ namespace SWLOR.Toolset.Tests
         {
             // An exploration note is Type 0 like any generic trigger; only its handler identifies it.
             var trigger = NewTrigger();
-            new TriggerValueStore(trigger)
-                .SetString(TriggerFieldStorage.Field, "ScriptOnEnter", GffFieldType.ResRef, "explore_trigger");
+            new BehaviorValueStore(trigger)
+                .SetString(BehaviorFieldStorage.Field, "ScriptOnEnter", GffFieldType.ResRef, "explore_trigger");
 
             TriggerBehaviorCatalog.Classify(trigger).Id
                 .Should().Be(TriggerBehaviorCatalog.ExplorationNoteId);
@@ -397,9 +397,9 @@ namespace SWLOR.Toolset.Tests
             var category = TriggerEditorLayout.Basic.Single(row => row.Name == "PaletteID");
             var faction = TriggerEditorLayout.Advanced.Single(row => row.Name == "Faction");
 
-            category.Kind.Should().Be(TriggerFieldKind.Choice);
+            category.Kind.Should().Be(BehaviorFieldKind.Choice);
             category.ChoicesKey.Should().Be(TriggerChoiceKeys.PaletteCategories);
-            faction.Kind.Should().Be(TriggerFieldKind.Choice);
+            faction.Kind.Should().Be(BehaviorFieldKind.Choice);
             faction.ChoicesKey.Should().Be(TriggerChoiceKeys.Factions);
         }
 
@@ -422,8 +422,8 @@ namespace SWLOR.Toolset.Tests
         {
             var longest = 0;
             foreach (var trigger in CorpusTriggers())
-                longest = Math.Max(longest, new TriggerValueStore(trigger)
-                    .GetString(TriggerFieldStorage.Field, "Tag").Length);
+                longest = Math.Max(longest, new BehaviorValueStore(trigger)
+                    .GetString(BehaviorFieldStorage.Field, "Tag").Length);
 
             return longest;
         }
@@ -432,7 +432,7 @@ namespace SWLOR.Toolset.Tests
         public void CustomExposesEveryScriptSlotItsClassifierRecognises()
         {
             var names = TriggerBehaviorCatalog.Custom.Fields
-                .Where(field => field.Kind == TriggerFieldKind.Script)
+                .Where(field => field.Kind == BehaviorFieldKind.Script)
                 .Select(field => field.Name)
                 .ToHashSet(StringComparer.Ordinal);
 
@@ -447,12 +447,12 @@ namespace SWLOR.Toolset.Tests
         public void TriggerIntegersOutsideTheirStorageRangeAreRejectedWithoutMutation()
         {
             var trigger = NewTrigger();
-            var store = new TriggerValueStore(trigger);
+            var store = new BehaviorValueStore(trigger);
 
             var local = () => store.SetInteger(
-                TriggerFieldStorage.Local, "QUEST_STATE", GffFieldType.Int, 2_147_483_648L);
+                BehaviorFieldStorage.Local, "QUEST_STATE", GffFieldType.Int, 2_147_483_648L);
             var dword = () => store.SetInteger(
-                TriggerFieldStorage.Field, "LargeValue", GffFieldType.Dword, 4_294_967_296L);
+                BehaviorFieldStorage.Field, "LargeValue", GffFieldType.Dword, 4_294_967_296L);
 
             local.Should().Throw<ArgumentOutOfRangeException>();
             dword.Should().Throw<ArgumentOutOfRangeException>();
@@ -473,8 +473,8 @@ namespace SWLOR.Toolset.Tests
                 });
             editor.Behavior.Id.Should().Be(TriggerBehaviorCatalog.CustomId);
 
-            new TriggerValueStore(trigger).SetString(
-                TriggerFieldStorage.Field, "ScriptOnEnter", GffFieldType.ResRef, "explore_trigger");
+            new BehaviorValueStore(trigger).SetString(
+                BehaviorFieldStorage.Field, "ScriptOnEnter", GffFieldType.ResRef, "explore_trigger");
             editor.ReloadFromDocument();
 
             editor.Behavior.Id.Should().Be(TriggerBehaviorCatalog.ExplorationNoteId);
@@ -504,7 +504,7 @@ namespace SWLOR.Toolset.Tests
         {
             // A combo box falls back to ToString with no item template, and the record default
             // printed the whole shape - which is what "Destination is a" was showing.
-            new TriggerChoice(2, "Waypoint").ToString().Should().Be("Waypoint");
+            new BehaviorChoice(2, "Waypoint").ToString().Should().Be("Waypoint");
         }
 
         [Test]
@@ -513,7 +513,7 @@ namespace SWLOR.Toolset.Tests
             var loadScreen = TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.AreaTransitionId)
                 .Fields.Single(field => field.Name == "LoadScreenID");
 
-            loadScreen.Kind.Should().Be(TriggerFieldKind.Choice);
+            loadScreen.Kind.Should().Be(BehaviorFieldKind.Choice);
             loadScreen.ChoicesKey.Should().Be(TriggerChoiceKeys.LoadScreens);
             loadScreen.Choices.Should().BeEmpty("the screens come from loadscreens.2da, not from this file");
         }

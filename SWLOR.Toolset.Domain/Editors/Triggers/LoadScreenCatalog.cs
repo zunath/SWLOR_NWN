@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.GameData.TwoDa;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 
 namespace SWLOR.Toolset.Domain.Editors.Triggers
 {
@@ -16,19 +17,19 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         private const string LabelColumn = "Label";
         private const string ImageColumn = "BMPResRef";
 
-        public static IReadOnlyList<TriggerChoice> Read(TwoDaService? twoDa)
+        public static IReadOnlyList<BehaviorChoice> Read(TwoDaService? twoDa)
         {
             if (twoDa == null || !twoDa.TryGetTable(TableName, out var table) || table == null)
-                return Array.Empty<TriggerChoice>();
+                return Array.Empty<BehaviorChoice>();
 
-            var screens = new List<TriggerChoice>();
+            var screens = new List<BehaviorChoice>();
             for (var row = 0; row < table.RowCount; row++)
             {
                 var label = table.GetString(row, LabelColumn);
                 if (string.IsNullOrWhiteSpace(label))
                     continue;
 
-                screens.Add(new TriggerChoice(row, Humanise(label), table.GetString(row, ImageColumn)));
+                screens.Add(new BehaviorChoice(row, Humanise(label), table.GetString(row, ImageColumn)));
             }
 
             return screens;

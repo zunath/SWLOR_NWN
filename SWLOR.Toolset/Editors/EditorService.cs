@@ -64,6 +64,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Triggers.TriggerDocumentViewModel> _openTriggerEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Waypoints.WaypointDocumentViewModel> _openWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
 
         // Keyed by path like the blueprint map rather than by resref like the area map: a script is
         // one file, so the path is its identity and there is no are/git/gic triplet to name.
@@ -350,6 +351,12 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            if (_openWaypointEditors.TryGetValue(filePath, out var existingWaypoint))
+            {
+                _factory.ActivateDocument(existingWaypoint);
+                return;
+            }
+
             try
             {
                 if (!CanRepresentEveryValue(filePath, resRef, schema))
@@ -360,6 +367,12 @@ namespace SWLOR.Toolset.Editors
                 if (type == ResourceType.Utt)
                 {
                     OpenTriggerEditor(filePath, resRef);
+                    return;
+                }
+
+                if (type == ResourceType.Utw)
+                {
+                    OpenWaypointEditor(filePath, resRef);
                     return;
                 }
 
@@ -496,6 +509,7 @@ namespace SWLOR.Toolset.Editors
             var path = workspace.GetResourcePath(type, resRef);
             return _openEditors.ContainsKey(path)
                    || _openTriggerEditors.ContainsKey(path)
+                   || _openWaypointEditors.ContainsKey(path)
                    || _openConversations.ContainsKey(path);
         }
 
@@ -512,6 +526,12 @@ namespace SWLOR.Toolset.Editors
             }
 
             foreach (var editor in _openTriggerEditors.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
+            foreach (var editor in _openWaypointEditors.Values.ToList())
             {
                 if (!await editor.TrySaveAsync().ConfigureAwait(true))
                     return false;
@@ -556,6 +576,7 @@ namespace SWLOR.Toolset.Editors
         {
             if (!_openEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openWaypointEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openAreaEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openScriptEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openConversations.Values.Any(editor => editor.IsDirty))
@@ -571,6 +592,8 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openTriggerEditors.Values)
+                editor.ApproveApplicationClose();
+            foreach (var editor in _openWaypointEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openAreaEditors.Values)
                 editor.ApproveApplicationClose();
@@ -597,12 +620,35 @@ namespace SWLOR.Toolset.Editors
             _factory.OpenDocument(editor);
         }
 
+        /// <summary>Waypoint blueprints open in the behavior editor, as a document tab.</summary>
+        private void OpenWaypointEditor(string filePath, string resRef)
+        {
+            var workspace = _workspaceContext.Workspace;
+            var catalog = new Domain.Editors.Waypoints.WaypointBehaviorCatalog(
+                _gameCodeIndex,
+                workspace?.TagIndex.TransitionDestinationTags);
+            var editor = new Waypoints.WaypointDocumentViewModel(
+                filePath,
+                resRef,
+                _gameCodeIndex,
+                _log,
+                _prompts,
+                catalog,
+                ResolveWaypointChoices);
+            editor.Closed += _ => _openWaypointEditors.Remove(filePath);
+            editor.CloseRequested += _ => _factory.CloseDocument(editor);
+            editor.CatalogEntryChanged += () =>
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Utw, resRef);
+            _openWaypointEditors[filePath] = editor;
+            _factory.OpenDocument(editor);
+        }
+
         /// <summary>
         /// Game-data choice sets a trigger row asks for. Most forward to the shared lookup provider,
         /// whose keys these deliberately match; the palette categories come from the module's own
         /// .itp, which no 2DA lookup covers.
         /// </summary>
-        private IReadOnlyList<Domain.Editors.Triggers.TriggerChoice> ResolveTriggerChoices(string key)
+        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ResolveTriggerChoices(string key)
         {
             if (key == Domain.Editors.Triggers.TriggerChoiceKeys.PaletteCategories)
                 return ResolveTriggerCategories();
@@ -616,7 +662,7 @@ namespace SWLOR.Toolset.Editors
                 return Domain.Editors.Triggers.TrapTypeCatalog.Read(_twoDaService);
 
             return _lookups.GetOptions(key)
-                .Select(option => new Domain.Editors.Triggers.TriggerChoice(option.Id, option.Display))
+                .Select(option => new Domain.Editors.Behaviors.BehaviorChoice(option.Id, option.Display))
                 .ToList();
         }
 
@@ -624,26 +670,64 @@ namespace SWLOR.Toolset.Editors
         /// The trigger palette's categories, named rather than numbered. A missing or unreadable
         /// palette yields an empty list, which shows as an empty picker instead of a bare id.
         /// </summary>
-        private IReadOnlyList<Domain.Editors.Triggers.TriggerChoice> ResolveTriggerCategories()
+        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ResolveTriggerCategories()
         {
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
-                return Array.Empty<Domain.Editors.Triggers.TriggerChoice>();
+                return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
 
             try
             {
                 var path = Path.Combine(workspace.ModuleRoot, "itp", "triggerpalcus.itp.json");
                 if (!File.Exists(path))
-                    return Array.Empty<Domain.Editors.Triggers.TriggerChoice>();
+                    return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
 
-                return Domain.Editors.Triggers.PaletteCategoryReader.Read(
+                return Domain.Editors.Behaviors.PaletteCategoryReader.Read(
                     Domain.Documents.ItpDocument.Load(path),
                     _tlkService != null ? _tlkService.GetString : null);
             }
             catch (Exception ex)
             {
                 _log.AppendLine($"Could not read the trigger palette categories: {ex.Message}");
-                return Array.Empty<Domain.Editors.Triggers.TriggerChoice>();
+                return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+            }
+        }
+
+        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ResolveWaypointChoices(string key)
+        {
+            if (key == Domain.Editors.Waypoints.WaypointChoiceKeys.PaletteCategories)
+                return ResolveWaypointCategories();
+
+            if (key == Domain.Editors.Waypoints.WaypointChoiceKeys.Appearances)
+                return _waypointAppearances == null
+                    ? Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>()
+                    : _waypointAppearances.GetAll()
+                    .Select(row => new Domain.Editors.Behaviors.BehaviorChoice(row.Id, row.DisplayName))
+                    .ToList();
+
+            return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+        }
+
+        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ResolveWaypointCategories()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+
+            try
+            {
+                var path = Path.Combine(workspace.ModuleRoot, "itp", "waypointpalcus.itp.json");
+                if (!File.Exists(path))
+                    return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+
+                return Domain.Editors.Behaviors.PaletteCategoryReader.Read(
+                    Domain.Documents.ItpDocument.Load(path),
+                    _tlkService != null ? _tlkService.GetString : null);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not read the waypoint palette categories: {ex.Message}");
+                return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
             }
         }
 

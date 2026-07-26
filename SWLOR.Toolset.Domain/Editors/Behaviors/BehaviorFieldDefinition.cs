@@ -1,21 +1,21 @@
 using SWLOR.Toolset.Domain.Gff;
 
-namespace SWLOR.Toolset.Domain.Editors.Triggers
+namespace SWLOR.Toolset.Domain.Editors.Behaviors
 {
     /// <summary>
     /// One row a behavior asks the builder to fill in: where the value lives, how it is presented,
     /// and whether the behavior is incomplete without it.
     /// </summary>
-    public sealed class TriggerFieldDefinition
+    public sealed class BehaviorFieldDefinition
     {
         public required string Label { get; init; }
 
-        /// <summary>Field name on the trigger struct, or the local's name when Storage is Local.</summary>
+        /// <summary>Field name on the object struct, or the local's name when Storage is Local.</summary>
         public required string Name { get; init; }
 
-        public required TriggerFieldKind Kind { get; init; }
+        public required BehaviorFieldKind Kind { get; init; }
 
-        public TriggerFieldStorage Storage { get; init; } = TriggerFieldStorage.Field;
+        public BehaviorFieldStorage Storage { get; init; } = BehaviorFieldStorage.Field;
 
         /// <summary>GFF type used when a Field-stored value has to be created on first write.</summary>
         public GffFieldType FieldType { get; init; } = GffFieldType.Int;
@@ -30,7 +30,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         public int MaxLength { get; init; }
 
         /// <summary>Named values for a Choice row, when the set is fixed.</summary>
-        public IReadOnlyList<TriggerChoice> Choices { get; init; } = Array.Empty<TriggerChoice>();
+        public IReadOnlyList<BehaviorChoice> Choices { get; init; } = Array.Empty<BehaviorChoice>();
 
         /// <summary>
         /// Lookup key for a Choice row whose values come from game data rather than from this file -
@@ -49,6 +49,6 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         public bool CustomOnly { get; init; }
 
         /// <summary>Which tag index a TagReference row resolves against.</summary>
-        public TriggerTagScope TagScope { get; init; } = TriggerTagScope.None;
+        public BehaviorTagScope TagScope { get; init; } = BehaviorTagScope.None;
     }
 }

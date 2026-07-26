@@ -1,3 +1,5 @@
+using SWLOR.Toolset.Domain.Editors.Behaviors;
+
 namespace SWLOR.Toolset.Domain.Editors.Triggers
 {
     /// <summary>
@@ -27,17 +29,17 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         /// </summary>
         public string? Summary { get; init; }
 
-        public IReadOnlyList<TriggerFieldDefinition> Fields { get; init; } = Array.Empty<TriggerFieldDefinition>();
+        public IReadOnlyList<BehaviorFieldDefinition> Fields { get; init; } = Array.Empty<BehaviorFieldDefinition>();
 
-        public IReadOnlyList<TriggerManagedValue> Manages { get; init; } = Array.Empty<TriggerManagedValue>();
+        public IReadOnlyList<BehaviorManagedValue> Manages { get; init; } = Array.Empty<BehaviorManagedValue>();
 
         /// <summary>True only for Custom: the raw VarTable is the builder's to edit.</summary>
         public bool AllowsVariables { get; init; }
 
         /// <summary>Every local this behavior owns, whether as a row or as a managed value.</summary>
         public IEnumerable<string> OwnedLocals =>
-            Fields.Where(row => row.Storage == TriggerFieldStorage.Local).Select(row => row.Name)
-                .Concat(Manages.Where(value => value.Storage == TriggerFieldStorage.Local).Select(value => value.Name))
+            Fields.Where(row => row.Storage == BehaviorFieldStorage.Local).Select(row => row.Name)
+                .Concat(Manages.Where(value => value.Storage == BehaviorFieldStorage.Local).Select(value => value.Name))
                 .Distinct(StringComparer.Ordinal);
     }
 }

@@ -50,6 +50,21 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         /// <summary>Spawn table IDs declared via <c>SpawnTableBuilder.Create(id, ...)</c> calls.</summary>
         IReadOnlyCollection<string> SpawnTableIds { get; }
 
+        /// <summary>The fishing spawn tables declared through CreateFishingPoint helper calls.</summary>
+        IReadOnlyCollection<string> FishingSpawnTableIds { get; }
+
+        /// <summary>Planet landing waypoint tags and their player-facing planet names.</summary>
+        IReadOnlyList<WaypointDestinationInfo> PlanetLandingWaypoints { get; }
+
+        /// <summary>Planet orbit waypoint tags and their player-facing planet names.</summary>
+        IReadOnlyList<WaypointDestinationInfo> OrbitWaypoints { get; }
+
+        /// <summary>Taxi stop tags and the region/fare metadata shown by the waypoint picker.</summary>
+        IReadOnlyList<TaxiDestinationInfo> TaxiDestinations { get; }
+
+        /// <summary>Waypoint tags used by the death and rebuild respawn paths.</summary>
+        IReadOnlyCollection<string> RespawnWaypointTags { get; }
+
         /// <summary>
         /// Loot table IDs declared via <c>LootTableBuilder.Create(id)</c> calls in
         /// <c>Feature/LootTableDefinition</c>. These back the loot-table pickers on gathering

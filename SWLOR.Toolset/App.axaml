@@ -4,6 +4,7 @@
              xmlns:core="using:Dock.Model.Core"
              xmlns:editors="using:SWLOR.Toolset.Editors"
              xmlns:triggers="using:SWLOR.Toolset.Editors.Triggers"
+             xmlns:waypoints="using:SWLOR.Toolset.Editors.Waypoints"
              xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
              x:Class="SWLOR.Toolset.App"
              RequestedThemeVariant="Dark">
@@ -25,6 +26,36 @@
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
         <TextBlock Grid.Column="2" Text="{Binding StrRefDisplay}" Classes="count"
                    VerticalAlignment="Top" Margin="6,5,0,0" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="waypoints:WaypointRowViewModel">
+      <Grid ColumnDefinitions="*,340" Margin="16,0" MinHeight="32" RowDefinitions="Auto,Auto">
+        <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" ClipToBounds="True">
+          <TextBlock Text="{Binding Label}" Classes="dim" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="required" FontSize="10" Margin="0,1,0,0"
+                     Foreground="{DynamicResource AmberBrush}"
+                     IsVisible="{Binding IsRequired}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="8"
+                    HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,3">
+          <TextBlock Text="{Binding Counter}" Classes="label" VerticalAlignment="Center"
+                     IsVisible="{Binding HasCounter}" />
+          <TextBox Text="{Binding Text, Mode=TwoWay}" MinWidth="210"
+                   MaxLength="{Binding MaxLength}" IsVisible="{Binding IsTextEntry}" />
+          <TextBox Text="{Binding Text, Mode=TwoWay}" MinWidth="210" AcceptsReturn="True"
+                   TextWrapping="Wrap" MaxHeight="90" MaxLength="{Binding MaxLength}"
+                   IsVisible="{Binding IsParagraph}" />
+          <NumericUpDown Value="{Binding Number, Mode=TwoWay}" MinWidth="150"
+                         IsVisible="{Binding IsNumber}" />
+          <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsVisible="{Binding IsCheck}" />
+          <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice, Mode=TwoWay}"
+                    MinWidth="240" MaxDropDownHeight="400" IsVisible="{Binding IsChoice}" />
+        </StackPanel>
+
+        <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Note}" Classes="label"
+                   TextWrapping="Wrap" Margin="0,0,0,7" IsVisible="{Binding HasNote}" />
       </Grid>
     </DataTemplate>
 

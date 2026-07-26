@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.Gff;
@@ -27,10 +28,10 @@ namespace SWLOR.Toolset.Editors.Triggers
     /// </remarks>
     public sealed partial class TriggerEditorViewModel : ObservableObject
     {
-        private readonly TriggerValueStore _store;
+        private readonly BehaviorValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<string, string?>? _resolveTag;
-        private readonly Func<string, IReadOnlyList<TriggerChoice>>? _resolveChoices;
+        private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly ChoicePreviewService? _previews;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly bool _isInstance;
@@ -73,12 +74,12 @@ namespace SWLOR.Toolset.Editors.Triggers
             Func<string, Action, bool> runEdit,
             IGameCodeIndex? gameCodeIndex = null,
             Func<string, string?>? resolveTag = null,
-            Func<string, IReadOnlyList<TriggerChoice>>? resolveChoices = null,
+            Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             ChoicePreviewService? previews = null)
         {
             ArgumentNullException.ThrowIfNull(trigger);
 
-            _store = new TriggerValueStore(trigger);
+            _store = new BehaviorValueStore(trigger);
             _runEdit = runEdit;
             _gameCodeIndex = gameCodeIndex;
             _resolveTag = resolveTag;
@@ -106,7 +107,7 @@ namespace SWLOR.Toolset.Editors.Triggers
             var previous = Behavior;
             var applied = _runEdit($"Set behavior to {behavior.DisplayName}", () =>
             {
-                _store.Clear(previous);
+                _store.Clear(previous.Manages, previous.Fields);
                 foreach (var value in behavior.Manages)
                     _store.Apply(value, _isInstance);
             });
@@ -128,7 +129,7 @@ namespace SWLOR.Toolset.Editors.Triggers
         /// </summary>
         public void ReloadFromDocument()
         {
-            var classified = TriggerBehaviorCatalog.Classify(_store.Trigger);
+            var classified = TriggerBehaviorCatalog.Classify(_store.ValueStruct);
             if (classified.Id != Behavior.Id)
             {
                 Behavior = classified;
@@ -195,19 +196,19 @@ namespace SWLOR.Toolset.Editors.Triggers
             }
         }
 
-        private TriggerRowViewModel CreateRow(TriggerFieldDefinition definition) =>
+        private TriggerRowViewModel CreateRow(BehaviorFieldDefinition definition) =>
             new(definition, _store, _runEdit, _resolveTag, ResolveChoices(definition), _previews);
 
         /// <summary>
         /// A row's choices, from game data when it names a key. An unresolvable key yields an empty
         /// list, which the row shows as an empty picker rather than as invented values.
         /// </summary>
-        private IReadOnlyList<TriggerChoice> ResolveChoices(TriggerFieldDefinition definition)
+        private IReadOnlyList<BehaviorChoice> ResolveChoices(BehaviorFieldDefinition definition)
         {
             if (definition.ChoicesKey == null)
                 return definition.Choices;
 
-            return _resolveChoices?.Invoke(definition.ChoicesKey) ?? Array.Empty<TriggerChoice>();
+            return _resolveChoices?.Invoke(definition.ChoicesKey) ?? Array.Empty<BehaviorChoice>();
         }
 
         private void RebuildBehaviorSection()

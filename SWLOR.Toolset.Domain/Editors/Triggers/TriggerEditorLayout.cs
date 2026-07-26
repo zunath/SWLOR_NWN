@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 
 namespace SWLOR.Toolset.Domain.Editors.Triggers
 {
@@ -46,63 +47,63 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         /// </summary>
         public const int MaxNameLength = 64;
 
-        private static readonly IReadOnlyList<TriggerChoice> TriggerTypeChoices = new[]
+        private static readonly IReadOnlyList<BehaviorChoice> TriggerTypeChoices = new[]
         {
-            new TriggerChoice(0, "Generic"),
-            new TriggerChoice(1, "Area Transition"),
-            new TriggerChoice(2, "Trap")
+            new BehaviorChoice(0, "Generic"),
+            new BehaviorChoice(1, "Area Transition"),
+            new BehaviorChoice(2, "Trap")
         };
 
-        public static IReadOnlyList<TriggerFieldDefinition> Basic { get; } = new[]
+        public static IReadOnlyList<BehaviorFieldDefinition> Basic { get; } = new[]
         {
-            new TriggerFieldDefinition
+            new BehaviorFieldDefinition
             {
-                Label = "Name", Name = "LocalizedName", Kind = TriggerFieldKind.LocalizedText,
+                Label = "Name", Name = "LocalizedName", Kind = BehaviorFieldKind.LocalizedText,
                 FieldType = GffFieldType.CExoLocString, MaxLength = MaxNameLength
             },
-            new TriggerFieldDefinition
+            new BehaviorFieldDefinition
             {
-                Label = "Tag", Name = "Tag", Kind = TriggerFieldKind.Text,
+                Label = "Tag", Name = "Tag", Kind = BehaviorFieldKind.Text,
                 FieldType = GffFieldType.CExoString, MaxLength = MaxTagLength
             },
-            new TriggerFieldDefinition
+            new BehaviorFieldDefinition
             {
-                Label = "Blueprint", Name = "TemplateResRef", Kind = TriggerFieldKind.Text,
+                Label = "Blueprint", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
                 FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength
             },
-            new TriggerFieldDefinition
+            new BehaviorFieldDefinition
             {
-                Label = "Category", Name = "PaletteID", Kind = TriggerFieldKind.Choice,
+                Label = "Category", Name = "PaletteID", Kind = BehaviorFieldKind.Choice,
                 FieldType = GffFieldType.Byte, ChoicesKey = TriggerChoiceKeys.PaletteCategories
             }
         };
 
-        public static IReadOnlyList<TriggerFieldDefinition> Advanced { get; } = new[]
+        public static IReadOnlyList<BehaviorFieldDefinition> Advanced { get; } = new[]
         {
-            new TriggerFieldDefinition
+            new BehaviorFieldDefinition
             {
-                Label = "Trigger Type", Name = "Type", Kind = TriggerFieldKind.Choice,
+                Label = "Trigger Type", Name = "Type", Kind = BehaviorFieldKind.Choice,
                 FieldType = GffFieldType.Int, Choices = TriggerTypeChoices, CustomOnly = true,
                 Note = "Every other behavior sets this itself."
             },
-            new TriggerFieldDefinition
+            new BehaviorFieldDefinition
             {
-                Label = "Faction", Name = "Faction", Kind = TriggerFieldKind.Choice,
+                Label = "Faction", Name = "Faction", Kind = BehaviorFieldKind.Choice,
                 FieldType = GffFieldType.Dword, ChoicesKey = TriggerChoiceKeys.Factions
             },
-            new TriggerFieldDefinition
+            new BehaviorFieldDefinition
             {
-                Label = "Highlight Height", Name = "HighlightHeight", Kind = TriggerFieldKind.Float,
+                Label = "Highlight Height", Name = "HighlightHeight", Kind = BehaviorFieldKind.Float,
                 FieldType = GffFieldType.Float
             },
-            new TriggerFieldDefinition
+            new BehaviorFieldDefinition
             {
-                Label = "Key Tag", Name = "KeyName", Kind = TriggerFieldKind.Text,
+                Label = "Key Tag", Name = "KeyName", Kind = BehaviorFieldKind.Text,
                 FieldType = GffFieldType.CExoString, MaxLength = MaxTagLength
             },
-            new TriggerFieldDefinition
+            new BehaviorFieldDefinition
             {
-                Label = "Auto-Remove Key", Name = "AutoRemoveKey", Kind = TriggerFieldKind.Check,
+                Label = "Auto-Remove Key", Name = "AutoRemoveKey", Kind = BehaviorFieldKind.Check,
                 FieldType = GffFieldType.Byte
             }
         };

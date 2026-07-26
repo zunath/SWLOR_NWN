@@ -1,5 +1,6 @@
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 
 namespace SWLOR.Toolset.Editors.Triggers
@@ -10,7 +11,7 @@ namespace SWLOR.Toolset.Editors.Triggers
     /// </summary>
     public sealed partial class TriggerChoiceViewModel : ObservableObject
     {
-        public TriggerChoice Choice { get; }
+        public BehaviorChoice Choice { get; }
 
         public long Value => Choice.Value;
 
@@ -23,7 +24,7 @@ namespace SWLOR.Toolset.Editors.Triggers
         [ObservableProperty]
         private Bitmap? _thumbnail;
 
-        public TriggerChoiceViewModel(TriggerChoice choice)
+        public TriggerChoiceViewModel(BehaviorChoice choice)
         {
             Choice = choice;
         }

@@ -1,13 +1,13 @@
-namespace SWLOR.Toolset.Domain.Editors.Triggers
+namespace SWLOR.Toolset.Domain.Editors.Behaviors
 {
     /// <summary>What kind of object a tag-reference row is allowed to point at.</summary>
-    public enum TriggerTagScope
+    public enum BehaviorTagScope
     {
         None,
         Waypoint,
         Door,
 
-        /// <summary>Either — decided by the trigger's own link-target field.</summary>
+        /// <summary>Either kind of transition destination.</summary>
         WaypointOrDoor
     }
 }

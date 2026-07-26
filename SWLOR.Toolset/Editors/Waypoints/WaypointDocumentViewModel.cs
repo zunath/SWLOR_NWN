@@ -2,18 +2,14 @@ using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
+using SWLOR.Toolset.Domain.Editors.Waypoints;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
-namespace SWLOR.Toolset.Editors.Triggers
+namespace SWLOR.Toolset.Editors.Waypoints
 {
-    /// <summary>
-    /// A trigger blueprint (.utt) open as a document tab, hosting the shared trigger editor. Revert
-    /// unwinds every unsaved edit; Save writes the file. The same editor serves a placement, where
-    /// the area editor owns the session instead.
-    /// </summary>
-    public partial class TriggerDocumentViewModel : Document, IEditorDocument
+    public partial class WaypointDocumentViewModel : Document, IEditorDocument
     {
         private readonly DocumentSession _session;
         private readonly OutputLogService _log;
@@ -23,42 +19,39 @@ namespace SWLOR.Toolset.Editors.Triggers
         private bool _closePromptOpen;
         private bool _disposed;
 
-        public TriggerEditorViewModel Editor { get; }
+        public WaypointEditorViewModel Editor { get; }
 
         public bool IsDirty => _session.UndoStack.IsDirty;
-
         public bool CanUndo => _session.UndoStack.CanUndo;
-
         public bool CanRedo => _session.UndoStack.CanRedo;
 
-        /// <summary>Raised when the tab closes so the editor registry can forget this instance.</summary>
-        public event Action<TriggerDocumentViewModel>? Closed;
-
-        /// <summary>Raised after an async close prompt approves closing this tab.</summary>
-        public event Action<TriggerDocumentViewModel>? CloseRequested;
-
-        /// <summary>Raised after this resource is saved or reloaded so catalog views can re-index it.</summary>
+        public event Action<WaypointDocumentViewModel>? Closed;
+        public event Action<WaypointDocumentViewModel>? CloseRequested;
         public event Action? CatalogEntryChanged;
 
-        public TriggerDocumentViewModel(
+        public WaypointDocumentViewModel(
             string filePath,
             string resRef,
             IGameCodeIndex? gameCodeIndex,
             OutputLogService log,
             IEditorPromptService prompts,
-            Func<string, string?>? resolveTag = null,
-            Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
-            ChoicePreviewService? previews = null)
+            WaypointBehaviorCatalog catalog,
+            Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null)
         {
             _log = log;
             _prompts = prompts;
             _resRef = resRef;
-            Id = $"trigger:{filePath}";
+            Id = $"waypoint:{filePath}";
             _session = DocumentSession.Open(filePath);
 
-            Editor = new TriggerEditorViewModel(
-                _session.Document.Root, resRef, isInstance: false, RunEdit, gameCodeIndex, resolveTag,
-                resolveChoices, previews);
+            Editor = new WaypointEditorViewModel(
+                _session.Document.Root,
+                resRef,
+                isInstance: false,
+                RunEdit,
+                catalog,
+                gameCodeIndex,
+                resolveChoices);
 
             UpdateTitle();
         }
@@ -81,7 +74,6 @@ namespace SWLOR.Toolset.Editors.Triggers
         [RelayCommand]
         private async Task Save() => await TrySaveAsync().ConfigureAwait(true);
 
-        /// <summary>Unwinds every unsaved edit — the footer's Revert.</summary>
         [RelayCommand(CanExecute = nameof(IsDirty))]
         private void Revert()
         {
@@ -147,7 +139,6 @@ namespace SWLOR.Toolset.Editors.Triggers
             AfterHistoryChange();
         }
 
-        /// <summary>Suppresses a second tab-level prompt after the window-level discard decision.</summary>
         internal void ApproveApplicationClose() => _closeApproved = true;
 
         public override bool OnClose()

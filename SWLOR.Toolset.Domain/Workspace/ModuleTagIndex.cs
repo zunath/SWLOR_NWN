@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         private readonly ModuleWorkspace _workspace;
         private readonly object _syncRoot = new();
         private Dictionary<string, string>? _areasByTag;
+        private HashSet<string>? _transitionDestinationTags;
 
         public ModuleTagIndex(ModuleWorkspace workspace)
         {
@@ -43,11 +44,31 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// </summary>
         public IReadOnlyCollection<string> Tags => Index().Keys.OrderBy(tag => tag, StringComparer.OrdinalIgnoreCase).ToList();
 
+        /// <summary>
+        /// Every non-empty destination tag named by an area transition trigger or door.
+        /// </summary>
+        public IReadOnlyCollection<string> TransitionDestinationTags
+        {
+            get
+            {
+                lock (_syncRoot)
+                {
+                    _ = Index();
+                    return _transitionDestinationTags!
+                        .OrderBy(tag => tag, StringComparer.OrdinalIgnoreCase)
+                        .ToList();
+                }
+            }
+        }
+
         /// <summary>Drops the cache so the next question re-reads the module.</summary>
         public void Invalidate()
         {
             lock (_syncRoot)
+            {
                 _areasByTag = null;
+                _transitionDestinationTags = null;
+            }
         }
 
         private Dictionary<string, string> Index()
@@ -58,6 +79,7 @@ namespace SWLOR.Toolset.Domain.Workspace
                     return _areasByTag;
 
                 var index = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                var transitionDestinations = new HashSet<string>(StringComparer.Ordinal);
                 foreach (var areaResRef in _workspace.EnumerateAreaResRefs())
                 {
                     GitDocument git;
@@ -73,10 +95,25 @@ namespace SWLOR.Toolset.Domain.Workspace
 
                     AddTags(index, areaResRef, git.Waypoints, ResourceType.Utw);
                     AddTags(index, areaResRef, git.Doors, ResourceType.Utd);
+                    AddTransitionDestinations(transitionDestinations, git.Triggers);
+                    AddTransitionDestinations(transitionDestinations, git.Doors);
                 }
 
                 _areasByTag = index;
+                _transitionDestinationTags = transitionDestinations;
                 return index;
+            }
+        }
+
+        private static void AddTransitionDestinations(
+            HashSet<string> destinations,
+            IReadOnlyList<Gff.JsonGffStruct> instances)
+        {
+            foreach (var instance in instances)
+            {
+                var linkedTo = instance.GetStringOrNull("LinkedTo");
+                if (!string.IsNullOrWhiteSpace(linkedTo))
+                    destinations.Add(linkedTo);
             }
         }
 

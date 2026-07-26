@@ -11,7 +11,7 @@ already ships and with none of its conventions changed:
   entry — no counts, no annotations. (A `Tagline` exists on the model; no trigger behavior sets one
   and no waypoint behavior needs one.)
 - the pane is one card: the behavior's name, a one-line summary, then its rows. Values the behavior
-  writes on the builder's behalf are `TriggerManagedValue`s applied silently and surfaced, where they
+  writes on the builder's behalf are `BehaviorManagedValue`s applied silently and surfaced, where they
   are worth stating, as non-editable Statement rows — the same device `No-Spawn Zone` uses today.
 
 The same editor serves blueprints and placements. See `Editors\Triggers` and

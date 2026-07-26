@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Domain.Editors.Triggers
@@ -32,10 +33,10 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         private const string RestExitHandler = "rest_trg_exit";
         private const string QuestHandler = "quest_trigger";
 
-        private static readonly IReadOnlyList<TriggerChoice> LinkTargetChoices = new[]
+        private static readonly IReadOnlyList<BehaviorChoice> LinkTargetChoices = new[]
         {
-            new TriggerChoice(2, "Waypoint"),
-            new TriggerChoice(1, "Door")
+            new BehaviorChoice(2, "Waypoint"),
+            new BehaviorChoice(1, "Door")
         };
 
         public static IReadOnlyList<TriggerBehavior> All { get; } = Build();
@@ -89,32 +90,32 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     Group = "Movement",
                     Fields = new[]
                     {
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "Destination Tag", Name = "LinkedTo", Kind = TriggerFieldKind.TagReference,
+                            Label = "Destination Tag", Name = "LinkedTo", Kind = BehaviorFieldKind.TagReference,
                             FieldType = GffFieldType.CExoString, IsRequired = true,
-                            TagScope = TriggerTagScope.WaypointOrDoor
+                            TagScope = BehaviorTagScope.WaypointOrDoor
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "Destination is a", Name = "LinkedToFlags", Kind = TriggerFieldKind.Choice,
+                            Label = "Destination is a", Name = "LinkedToFlags", Kind = BehaviorFieldKind.Choice,
                             FieldType = GffFieldType.Byte, Choices = LinkTargetChoices
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "Load screen", Name = "LoadScreenID", Kind = TriggerFieldKind.Choice,
+                            Label = "Load screen", Name = "LoadScreenID", Kind = BehaviorFieldKind.Choice,
                             FieldType = GffFieldType.Word, ChoicesKey = TriggerChoiceKeys.LoadScreens,
                             Note = "Leave on Random to use the destination area's own default."
                         }
                     },
                     Manages = new[]
                     {
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "Trigger Type", Name = "Type", FieldType = GffFieldType.Int,
                             IntValue = 1, Display = "Area Transition"
                         },
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "Cursor", Name = "Cursor", FieldType = GffFieldType.Byte,
                             IntValue = 1, Display = "Transition"
@@ -130,10 +131,10 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     Group = "World",
                     Fields = new[]
                     {
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
                             Label = "Nothing to set", Name = string.Empty,
-                            Kind = TriggerFieldKind.Statement,
+                            Kind = BehaviorFieldKind.Statement,
                             Note = "Uses the '" + NoSpawnResRef + "' blueprint, which is how the game "
                                  + "recognises it."
                         }
@@ -145,12 +146,12 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                         // that actually makes it a no-spawn zone. A blueprint's resref is its own
                         // file name and cannot be rewritten here, hence instance-only - and it is
                         // never cleared, because a placement without a blueprint is orphaned.
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "Blueprint", Name = "TemplateResRef", FieldType = GffFieldType.ResRef,
                             StringValue = NoSpawnResRef, IsInstanceOnly = true, ClearOnSwap = false
                         },
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "Trigger Type", Name = "Type", FieldType = GffFieldType.Int,
                             IntValue = 0, Display = "Generic"
@@ -166,26 +167,26 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     Group = "World",
                     Fields = new[]
                     {
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "Message", Name = "DISPLAY_TEXT", Kind = TriggerFieldKind.Paragraph,
-                            Storage = TriggerFieldStorage.Local, IsRequired = true
+                            Label = "Message", Name = "DISPLAY_TEXT", Kind = BehaviorFieldKind.Paragraph,
+                            Storage = BehaviorFieldStorage.Local, IsRequired = true
                         },
                     },
                     Summary = "Shows a message the first time a player enters, once per server reboot.",
                     Manages = new[]
                     {
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "Trigger Type", Name = "Type", FieldType = GffFieldType.Int,
                             IntValue = 0, Display = "Generic"
                         },
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "OnEnter", Name = "ScriptOnEnter", FieldType = GffFieldType.ResRef,
                             StringValue = ExploreHandler
                         },
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "Highlight Height", Name = "HighlightHeight",
                             FieldType = GffFieldType.Float, FloatValue = 3.0
@@ -201,27 +202,27 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     Group = "World",
                     Fields = new[]
                     {
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
                             Label = "Nothing to set", Name = string.Empty,
-                            Kind = TriggerFieldKind.Statement,
+                            Kind = BehaviorFieldKind.Statement,
                             Note = "Entering the trigger permits rest; leaving revokes it."
                         }
                     },
                     Summary = "Lets players rest inside the trigger.",
                     Manages = new[]
                     {
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "Trigger Type", Name = "Type", FieldType = GffFieldType.Int,
                             IntValue = 0, Display = "Generic"
                         },
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "OnEnter", Name = "ScriptOnEnter", FieldType = GffFieldType.ResRef,
                             StringValue = RestEnterHandler
                         },
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "OnExit", Name = "ScriptOnExit", FieldType = GffFieldType.ResRef,
                             StringValue = RestExitHandler
@@ -236,30 +237,30 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     Group = "Progression",
                     Fields = new[]
                     {
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "Quest ID", Name = "QUEST_ID", Kind = TriggerFieldKind.Text,
-                            Storage = TriggerFieldStorage.Local, IsRequired = true
+                            Label = "Quest ID", Name = "QUEST_ID", Kind = BehaviorFieldKind.Text,
+                            Storage = BehaviorFieldStorage.Local, IsRequired = true
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "Advance to state", Name = "QUEST_STATE", Kind = TriggerFieldKind.Integer,
-                            Storage = TriggerFieldStorage.Local
+                            Label = "Advance to state", Name = "QUEST_STATE", Kind = BehaviorFieldKind.Integer,
+                            Storage = BehaviorFieldStorage.Local
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "Message", Name = "QUEST_MESSAGE", Kind = TriggerFieldKind.Paragraph,
-                            Storage = TriggerFieldStorage.Local
+                            Label = "Message", Name = "QUEST_MESSAGE", Kind = BehaviorFieldKind.Paragraph,
+                            Storage = BehaviorFieldStorage.Local
                         }
                     },
                     Manages = new[]
                     {
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "Trigger Type", Name = "Type", FieldType = GffFieldType.Int,
                             IntValue = 0, Display = "Generic"
                         },
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "OnEnter", Name = "ScriptOnEnter", FieldType = GffFieldType.ResRef,
                             StringValue = QuestHandler
@@ -275,55 +276,55 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     Group = "Hazard",
                     Fields = new[]
                     {
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "Trap type", Name = "TrapType", Kind = TriggerFieldKind.Choice,
+                            Label = "Trap type", Name = "TrapType", Kind = BehaviorFieldKind.Choice,
                             FieldType = GffFieldType.Byte, ChoicesKey = TriggerChoiceKeys.TrapTypes
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "Detectable", Name = "TrapDetectable", Kind = TriggerFieldKind.Check,
+                            Label = "Detectable", Name = "TrapDetectable", Kind = BehaviorFieldKind.Check,
                             FieldType = GffFieldType.Byte
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "Detect DC", Name = "TrapDetectDC", Kind = TriggerFieldKind.Integer,
+                            Label = "Detect DC", Name = "TrapDetectDC", Kind = BehaviorFieldKind.Integer,
                             FieldType = GffFieldType.Byte
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "Disarmable", Name = "TrapDisarmable", Kind = TriggerFieldKind.Check,
+                            Label = "Disarmable", Name = "TrapDisarmable", Kind = BehaviorFieldKind.Check,
                             FieldType = GffFieldType.Byte
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "Disarm DC", Name = "DisarmDC", Kind = TriggerFieldKind.Integer,
+                            Label = "Disarm DC", Name = "DisarmDC", Kind = BehaviorFieldKind.Integer,
                             FieldType = GffFieldType.Byte
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "Fires once", Name = "TrapOneShot", Kind = TriggerFieldKind.Check,
+                            Label = "Fires once", Name = "TrapOneShot", Kind = BehaviorFieldKind.Check,
                             FieldType = GffFieldType.Byte
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "OnTrapTriggered", Name = "OnTrapTriggered", Kind = TriggerFieldKind.Script,
+                            Label = "OnTrapTriggered", Name = "OnTrapTriggered", Kind = BehaviorFieldKind.Script,
                             FieldType = GffFieldType.ResRef
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "OnDisarm", Name = "OnDisarm", Kind = TriggerFieldKind.Script,
+                            Label = "OnDisarm", Name = "OnDisarm", Kind = BehaviorFieldKind.Script,
                             FieldType = GffFieldType.ResRef
                         }
                     },
                     Manages = new[]
                     {
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "Trigger Type", Name = "Type", FieldType = GffFieldType.Int,
                             IntValue = 2, Display = "Trap"
                         },
-                        new TriggerManagedValue
+                        new BehaviorManagedValue
                         {
                             Label = "Trap Flag", Name = "TrapFlag", FieldType = GffFieldType.Byte,
                             IntValue = 1, Display = "set"
@@ -338,39 +339,39 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                     AllowsVariables = true,
                     Fields = new[]
                     {
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "OnClick", Name = "OnClick", Kind = TriggerFieldKind.Script,
+                            Label = "OnClick", Name = "OnClick", Kind = BehaviorFieldKind.Script,
                             FieldType = GffFieldType.ResRef
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "OnDisarm", Name = "OnDisarm", Kind = TriggerFieldKind.Script,
+                            Label = "OnDisarm", Name = "OnDisarm", Kind = BehaviorFieldKind.Script,
                             FieldType = GffFieldType.ResRef
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "OnTrapTriggered", Name = "OnTrapTriggered", Kind = TriggerFieldKind.Script,
+                            Label = "OnTrapTriggered", Name = "OnTrapTriggered", Kind = BehaviorFieldKind.Script,
                             FieldType = GffFieldType.ResRef
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "OnEnter", Name = "ScriptOnEnter", Kind = TriggerFieldKind.Script,
+                            Label = "OnEnter", Name = "ScriptOnEnter", Kind = BehaviorFieldKind.Script,
                             FieldType = GffFieldType.ResRef
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "OnExit", Name = "ScriptOnExit", Kind = TriggerFieldKind.Script,
+                            Label = "OnExit", Name = "ScriptOnExit", Kind = BehaviorFieldKind.Script,
                             FieldType = GffFieldType.ResRef
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "OnHeartbeat", Name = "ScriptHeartbeat", Kind = TriggerFieldKind.Script,
+                            Label = "OnHeartbeat", Name = "ScriptHeartbeat", Kind = BehaviorFieldKind.Script,
                             FieldType = GffFieldType.ResRef
                         },
-                        new TriggerFieldDefinition
+                        new BehaviorFieldDefinition
                         {
-                            Label = "OnUserDefined", Name = "ScriptUserDefine", Kind = TriggerFieldKind.Script,
+                            Label = "OnUserDefined", Name = "ScriptUserDefine", Kind = BehaviorFieldKind.Script,
                             FieldType = GffFieldType.ResRef
                         }
                     }

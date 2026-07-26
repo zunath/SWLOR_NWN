@@ -1,6 +1,7 @@
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Gff;
 
@@ -18,14 +19,14 @@ namespace SWLOR.Toolset.Editors.Triggers
     /// </remarks>
     public sealed partial class TriggerRowViewModel : ObservableObject
     {
-        private readonly TriggerValueStore _store;
+        private readonly BehaviorValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<string, string?>? _resolveTag;
         private readonly ChoicePreviewService? _previews;
         private bool _galleryLoaded;
         private bool _loading;
 
-        public TriggerFieldDefinition Definition { get; }
+        public BehaviorFieldDefinition Definition { get; }
 
         public string Label => Definition.Label;
 
@@ -70,14 +71,14 @@ namespace SWLOR.Toolset.Editors.Triggers
         [ObservableProperty]
         private bool _isGalleryOpen;
 
-        public bool IsText => Definition.Kind is TriggerFieldKind.Text or TriggerFieldKind.Script;
-        public bool IsLocalizedText => Definition.Kind == TriggerFieldKind.LocalizedText;
-        public bool IsParagraph => Definition.Kind == TriggerFieldKind.Paragraph;
-        public bool IsNumber => Definition.Kind is TriggerFieldKind.Integer or TriggerFieldKind.Float;
-        public bool IsCheck => Definition.Kind == TriggerFieldKind.Check;
-        public bool IsChoice => Definition.Kind == TriggerFieldKind.Choice;
-        public bool IsTagReference => Definition.Kind == TriggerFieldKind.TagReference;
-        public bool IsStatement => Definition.Kind == TriggerFieldKind.Statement;
+        public bool IsText => Definition.Kind is BehaviorFieldKind.Text or BehaviorFieldKind.Script;
+        public bool IsLocalizedText => Definition.Kind == BehaviorFieldKind.LocalizedText;
+        public bool IsParagraph => Definition.Kind == BehaviorFieldKind.Paragraph;
+        public bool IsNumber => Definition.Kind is BehaviorFieldKind.Integer or BehaviorFieldKind.Float;
+        public bool IsCheck => Definition.Kind == BehaviorFieldKind.Check;
+        public bool IsChoice => Definition.Kind == BehaviorFieldKind.Choice;
+        public bool IsTagReference => Definition.Kind == BehaviorFieldKind.TagReference;
+        public bool IsStatement => Definition.Kind == BehaviorFieldKind.Statement;
 
         /// <summary>Every kind that shows a single-line text box: text, scripts, names and tags.</summary>
         public bool IsTextEntry => IsText || IsTagReference || IsLocalizedText;
@@ -102,11 +103,11 @@ namespace SWLOR.Toolset.Editors.Triggers
         private bool _isStatusGood;
 
         public TriggerRowViewModel(
-            TriggerFieldDefinition definition,
-            TriggerValueStore store,
+            BehaviorFieldDefinition definition,
+            BehaviorValueStore store,
             Func<string, Action, bool> runEdit,
             Func<string, string?>? resolveTag,
-            IReadOnlyList<TriggerChoice>? choices = null,
+            IReadOnlyList<BehaviorChoice>? choices = null,
             ChoicePreviewService? previews = null)
         {
             Definition = definition;
@@ -126,7 +127,7 @@ namespace SWLOR.Toolset.Editors.Triggers
         /// <summary>Re-reads this row's value from the document, after an undo or a behavior swap.</summary>
         public void Reload()
         {
-            if (Definition.Kind == TriggerFieldKind.Statement)
+            if (Definition.Kind == BehaviorFieldKind.Statement)
                 return;
 
             _loading = true;
@@ -134,22 +135,22 @@ namespace SWLOR.Toolset.Editors.Triggers
             {
                 switch (Definition.Kind)
                 {
-                    case TriggerFieldKind.Check:
+                    case BehaviorFieldKind.Check:
                         IsChecked = _store.GetInteger(Definition.Storage, Definition.Name) == 1;
                         break;
-                    case TriggerFieldKind.Integer:
+                    case BehaviorFieldKind.Integer:
                         Number = _store.GetInteger(Definition.Storage, Definition.Name) ?? 0;
                         break;
-                    case TriggerFieldKind.Float:
+                    case BehaviorFieldKind.Float:
                         Number = (decimal)(_store.GetFloat(Definition.Storage, Definition.Name) ?? 0);
                         break;
-                    case TriggerFieldKind.Choice:
+                    case BehaviorFieldKind.Choice:
                         var current = _store.GetInteger(Definition.Storage, Definition.Name) ?? 0;
                         Choice = Choices.FirstOrDefault(option => option.Value == current)
                                  ?? Choices.FirstOrDefault();
                         _ = LoadSelectedPreviewAsync(Choice);
                         break;
-                    case TriggerFieldKind.LocalizedText:
+                    case BehaviorFieldKind.LocalizedText:
                         Text = _store.GetLocalizedText(Definition.Name);
                         break;
                     default:
@@ -171,7 +172,7 @@ namespace SWLOR.Toolset.Editors.Triggers
             if (_loading)
                 return;
 
-            var applied = Definition.Kind == TriggerFieldKind.LocalizedText
+            var applied = Definition.Kind == BehaviorFieldKind.LocalizedText
                 ? _runEdit($"Change {Label}", () => _store.SetLocalizedText(Definition.Name, value))
                 : _runEdit($"Change {Label}",
                     () => _store.SetString(Definition.Storage, Definition.Name, Definition.FieldType, value));
@@ -189,7 +190,7 @@ namespace SWLOR.Toolset.Editors.Triggers
             if (_loading)
                 return;
 
-            var applied = Definition.Kind == TriggerFieldKind.Float
+            var applied = Definition.Kind == BehaviorFieldKind.Float
                 ? _runEdit($"Change {Label}",
                     () => _store.SetFloat(Definition.Storage, Definition.Name, (double)value))
                 : _runEdit($"Change {Label}",
@@ -276,7 +277,7 @@ namespace SWLOR.Toolset.Editors.Triggers
         /// </summary>
         private void UpdateStatus()
         {
-            if (Definition.Kind == TriggerFieldKind.TagReference && Text.Length > 0)
+            if (Definition.Kind == BehaviorFieldKind.TagReference && Text.Length > 0)
             {
                 if (_resolveTag == null)
                 {

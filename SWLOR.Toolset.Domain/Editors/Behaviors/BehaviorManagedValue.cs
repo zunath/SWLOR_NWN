@@ -1,20 +1,20 @@
 using SWLOR.Toolset.Domain.Gff;
 
-namespace SWLOR.Toolset.Domain.Editors.Triggers
+namespace SWLOR.Toolset.Domain.Editors.Behaviors
 {
     /// <summary>
     /// A value a behavior writes on the builder's behalf — the contents of the editor's "what this
     /// behavior manages" block. Applied when the behavior is chosen and cleared when it is swapped
-    /// out, so a trigger never keeps the leavings of a behavior it no longer has.
+    /// out, so an object never keeps the leavings of a behavior it no longer has.
     /// </summary>
-    public sealed class TriggerManagedValue
+    public sealed class BehaviorManagedValue
     {
         public required string Label { get; init; }
 
-        /// <summary>Field name on the trigger struct, or the local's name when Storage is Local.</summary>
+        /// <summary>Field name on the object struct, or the local's name when Storage is Local.</summary>
         public required string Name { get; init; }
 
-        public TriggerFieldStorage Storage { get; init; } = TriggerFieldStorage.Field;
+        public BehaviorFieldStorage Storage { get; init; } = BehaviorFieldStorage.Field;
 
         public GffFieldType FieldType { get; init; } = GffFieldType.Int;
 
@@ -38,7 +38,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
         public bool IsInstanceOnly { get; init; }
 
         /// <summary>
-        /// Whether swapping behavior clears this value. False for anything a trigger cannot be left
+        /// Whether swapping behavior clears this value. False for anything an object cannot be left
         /// without: blanking an instance's TemplateResRef would orphan it, so choosing a different
         /// behavior leaves the blueprint reference alone.
         /// </summary>

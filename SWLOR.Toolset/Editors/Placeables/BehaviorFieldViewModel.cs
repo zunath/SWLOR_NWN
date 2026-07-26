@@ -129,9 +129,12 @@ namespace SWLOR.Toolset.Editors.Placeables
         public bool IsText => !IsToggle && !IsInteger && !IsNameChoice && !IsTableChoice &&
                               !IsSearchableIdChoice && !IsIdChoice && !IsGalleryChoice;
         public string SelectedDisplay => SelectedOption?.Display ??
-                                         (string.IsNullOrWhiteSpace(Text) ? "Not selected" : Text);
+                                         (string.IsNullOrWhiteSpace(Text)
+                                             ? _field.EmptyChoiceLabel
+                                             : Text);
         public string? SelectedDetails => SelectedOption?.Details;
         public bool HasSelectedDetails => !string.IsNullOrWhiteSpace(SelectedDetails);
+        public string ClearChoiceLabel => _field.ClearChoiceLabel;
         public bool CanLoadMore => _galleryPublished < _galleryMatches.Count;
         public bool CanClearChoice => _field.Kind == PlaceableFieldKind.Choice &&
                                       !IsRequired &&

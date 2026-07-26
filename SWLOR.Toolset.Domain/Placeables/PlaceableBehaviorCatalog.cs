@@ -145,10 +145,14 @@ namespace SWLOR.Toolset.Domain.Placeables
                         new PlaceableBehaviorField
                         {
                             VariableName = "RESOURCE_PROP",
-                            Label = "Visible placeable",
+                            Label = "Prop",
                             Kind = PlaceableFieldKind.Choice,
                             Source = PlaceableValueSource.PlaceableBlueprints,
-                            Description = "Existing placeable blueprint spawned on top of the node."
+                            EmptyChoiceLabel = "No prop",
+                            ClearChoiceLabel = "Remove prop",
+                            Description = "Optional. Select a visual-only prop to appear over the resource node, " +
+                                          "most often a tree. Players cannot select or interact with the prop. " +
+                                          "Remove it to use only the resource node's own appearance."
                         },
                         new PlaceableBehaviorField
                         {

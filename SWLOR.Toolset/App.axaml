@@ -268,7 +268,7 @@
                     ItemsSource="{Binding Options}"
                     SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
                     MaxDropDownHeight="400" HorizontalAlignment="Stretch" />
-          <Button Grid.Column="1" Content="Clear" Padding="10,4"
+          <Button Grid.Column="1" Content="{Binding ClearChoiceLabel}" Padding="10,4"
                   Command="{Binding ClearChoiceCommand}"
                   IsVisible="{Binding CanClearChoice}" />
         </Grid>
@@ -282,7 +282,7 @@
                            FilterMode="Contains" MaxDropDownHeight="400"
                            Text="{Binding ChoiceSearchText, Mode=TwoWay}"
                            Watermark="Search key items" />
-          <Button Grid.Column="1" Content="Clear" Padding="10,4"
+          <Button Grid.Column="1" Content="{Binding ClearChoiceLabel}" Padding="10,4"
                   Command="{Binding ClearChoiceCommand}"
                   IsVisible="{Binding CanClearChoice}" />
         </Grid>
@@ -301,7 +301,7 @@
               <TextBlock Text="{Binding SelectedDetails}" Classes="dim" FontSize="11"
                          TextWrapping="Wrap" MaxLines="2" IsVisible="{Binding HasSelectedDetails}" />
             </StackPanel>
-            <Button Grid.Column="1" Content="Clear" Padding="10,4"
+            <Button Grid.Column="1" Content="{Binding ClearChoiceLabel}" Padding="10,4"
                     Command="{Binding ClearChoiceCommand}"
                     IsVisible="{Binding CanClearChoice}" />
           </Grid>

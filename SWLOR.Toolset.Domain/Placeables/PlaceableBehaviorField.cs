@@ -28,6 +28,12 @@ namespace SWLOR.Toolset.Domain.Placeables
         /// <summary>Optional help text shown under the control.</summary>
         public string? Description { get; init; }
 
+        /// <summary>Text shown when an optional choice has no saved value.</summary>
+        public string EmptyChoiceLabel { get; init; } = "Not selected";
+
+        /// <summary>Action text used to remove an optional saved choice.</summary>
+        public string ClearChoiceLabel { get; init; } = "Clear";
+
         /// <summary>Smallest value the numeric editor accepts, when the game has a real lower bound.</summary>
         public int? Minimum { get; init; }
 

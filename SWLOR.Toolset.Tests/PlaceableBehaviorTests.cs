@@ -112,8 +112,18 @@ namespace SWLOR.Toolset.Tests
             Field("harvest_node", "RESOURCE_COUNT").DefaultIntValue.Should().Be(4);
             Field("resource_node", "RESOURCE_SPAWN_COUNT").DefaultIntValue.Should().Be(4);
 
-            Field("resource_node", "RESOURCE_PROP").Source
-                .Should().Be(PlaceableValueSource.PlaceableBlueprints);
+            var resourceProp = Field("resource_node", "RESOURCE_PROP");
+            resourceProp.Label.Should().Be("Prop");
+            resourceProp.Source.Should().Be(PlaceableValueSource.PlaceableBlueprints);
+            resourceProp.IsRequired.Should().BeFalse();
+            resourceProp.EmptyChoiceLabel.Should().Be("No prop");
+            resourceProp.ClearChoiceLabel.Should().Be("Remove prop");
+            resourceProp.Description.Should().ContainAll(
+                "Optional",
+                "visual-only",
+                "tree",
+                "cannot select",
+                "Remove");
             Field("quest_activator", "QUEST_ENCOUNTER_RESREF").Source
                 .Should().Be(PlaceableValueSource.CreatureBlueprints);
             Field("teleporter", "VISUAL_EFFECT").Source
@@ -213,6 +223,13 @@ namespace SWLOR.Toolset.Tests
                                 field.DefaultStringValue,
                                 $"{behavior.Name} supplies the normal {field.Label} value");
                     }
+                }
+
+                if (behavior.Id == "resource_node")
+                {
+                    variables.Should().NotContain(
+                        entry => entry.Name == "RESOURCE_PROP",
+                        "a resource node must save cleanly without its optional prop");
                 }
             }
         }
@@ -533,17 +550,15 @@ namespace SWLOR.Toolset.Tests
                     }
                     : Array.Empty<Domain.Workspace.CatalogEntry>());
             var gallery = new BehaviorFieldViewModel(
-                new PlaceableBehaviorField
-                {
-                    VariableName = "RESOURCE_PROP",
-                    Label = "Visible placeable",
-                    Kind = PlaceableFieldKind.Choice,
-                    Source = PlaceableValueSource.PlaceableBlueprints
-                },
+                Field("resource_node", "RESOURCE_PROP"),
                 context,
                 gallerySource);
 
             gallery.IsGalleryChoice.Should().BeTrue();
+            gallery.IsRequired.Should().BeFalse();
+            gallery.SelectedDisplay.Should().Be("No prop");
+            gallery.ClearChoiceLabel.Should().Be("Remove prop");
+            gallery.CanClearChoice.Should().BeFalse();
             gallery.GallerySearchWatermark.Should().Be("Search by name or resref");
             gallery.GalleryTiles.Should().ContainSingle();
             gallery.PickChoiceCommand.Execute(gallery.GalleryTiles.Single());
@@ -556,6 +571,8 @@ namespace SWLOR.Toolset.Tests
             gallery.CanClearChoice.Should().BeTrue();
             gallery.ClearChoiceCommand.Execute(null);
             new VarTable(document.Root).Should().NotContain(entry => entry.Name == "RESOURCE_PROP");
+            gallery.SelectedDisplay.Should().Be("No prop");
+            gallery.CanClearChoice.Should().BeFalse();
 
             new BehaviorFieldViewModel(
                     Field("teleporter", "VISUAL_EFFECT"),

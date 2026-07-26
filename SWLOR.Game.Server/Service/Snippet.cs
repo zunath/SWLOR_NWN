@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.NWN.API.NWNX;
 
@@ -96,6 +97,12 @@ namespace SWLOR.Game.Server.Service
                 var args = param.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
                 var snippetName = condition.Key;
 
+                // A condition given the wrong number of arguments cannot be evaluated, so it fails
+                // rather than guessing. Checked here from the snippet's declared arguments so every
+                // snippet reports the same way.
+                if (!HasUsableArguments(snippetName, condition.Value, args.Count, player))
+                    return false;
+
                 // The first command that fails will result in failure.
                 var commandResult = _appearsWhenCommands[snippetName].ConditionAction(player, args.ToArray());
 
@@ -124,8 +131,36 @@ namespace SWLOR.Game.Server.Service
                 var args = param.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
                 var commandText = action.Key;
 
+                // Skipped rather than run with arguments it cannot read - a half-applied action is
+                // worse than none, and the conversation carries on either way.
+                if (!HasUsableArguments(commandText, action.Value, args.Count, player))
+                    continue;
+
                 _actionsTakenCommands[commandText].ActionsTakenAction(player, args.ToArray());
             }
+        }
+
+        /// <summary>
+        /// Checks that a snippet was given enough arguments to run, reporting the shortfall to the
+        /// player and the log once, in one place, instead of each snippet phrasing it differently.
+        /// </summary>
+        /// <remarks>
+        /// Only a shortfall is refused, never a surplus - see
+        /// <see cref="SnippetDetail.HasEnoughArguments"/> for why. A snippet that declares no
+        /// arguments is not checked at all: an empty declaration is indistinguishable from one that
+        /// has simply not been written yet, and refusing to run it would break working content.
+        /// </remarks>
+        private static bool HasUsableArguments(string key, SnippetDetail snippet, int argumentCount, uint player)
+        {
+            if (snippet.Arguments.Count == 0 || snippet.HasEnoughArguments(argumentCount))
+                return true;
+
+            var error = $"'{key}' was given {argumentCount} argument(s) but needs at least "
+                        + $"{snippet.MinimumArgumentCount}.";
+
+            SendMessageToPC(player, error);
+            Log.Write(LogGroup.Error, error);
+            return false;
         }
     }
 }

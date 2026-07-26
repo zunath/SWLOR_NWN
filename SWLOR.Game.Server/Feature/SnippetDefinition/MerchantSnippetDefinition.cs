@@ -25,6 +25,8 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-open-store")
                 .Description("Opens a store. If store tag isn't specified, the nearest store to the NPC will be opened.")
+                .Phrase("opens the shop")
+                .Argument("storeTag", SnippetArgumentType.StoreTag, isOptional: true)
                 .ActionsTakenAction((player, args) =>
                 {
 

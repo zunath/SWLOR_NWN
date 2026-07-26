@@ -22,6 +22,8 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-teleport")
                 .Description("Teleports a player to the waypoint with the specified tag.")
+                .Phrase("sends the player to {waypointTag}")
+                .Argument("waypointTag", SnippetArgumentType.WaypointTag)
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length <= 0)

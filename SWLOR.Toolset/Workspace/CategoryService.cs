@@ -41,6 +41,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly Dictionary<ResourceType, StandardPalette> _standardPalettes = new();
 
         private CategoryCatalog? _catalog;
+        private CategoryCatalog? _persistedCatalog;
         private string? _loadedForModuleRoot;
 
         public CategoryService(
@@ -75,6 +76,7 @@ namespace SWLOR.Toolset.Workspace
 
                 var path = CategoryCatalog.DefaultPathFor(moduleRoot);
                 _catalog = CategoryCatalog.Load(path, out var warning);
+                _persistedCatalog = _catalog.DeepClone();
                 _loadedForModuleRoot = moduleRoot;
                 _sidecarStateKnown = true;
                 _sidecarExistedWhenLoaded = File.Exists(path);
@@ -106,7 +108,7 @@ namespace SWLOR.Toolset.Workspace
             {
                 _seeded.Add(type);
                 RepairPlaceholderNames(section);
-                return section;
+                return _catalog?.Section(type) ?? section;
             }
 
             var importedFolders = ReadPaletteSeed(type);
@@ -241,6 +243,7 @@ namespace SWLOR.Toolset.Workspace
                 var refusal = catalog.ReadOnlyReason
                     ?? "These categories will not be overwritten.";
                 _log.AppendLine(refusal);
+                RestorePersistedCatalog();
                 return CategorySaveResult.Failed(refusal);
             }
 
@@ -250,6 +253,7 @@ namespace SWLOR.Toolset.Workspace
                     $"'{catalog.FilePath}' changed outside the toolset; the change was not saved. " +
                     "Reopen the module to pick up the external version.";
                 _log.AppendLine(conflict);
+                RestorePersistedCatalog();
                 return CategorySaveResult.Failed(conflict);
             }
 
@@ -260,14 +264,31 @@ namespace SWLOR.Toolset.Workspace
                 _sidecarStateKnown = true;
                 _sidecarExistedWhenLoaded = true;
                 _sidecarWrittenUtc = LastWriteUtc(catalog.FilePath);
+                _persistedCatalog = catalog.DeepClone();
                 Changed?.Invoke();
                 return CategorySaveResult.Ok();
             }
             catch (Exception ex)
             {
                 _log.AppendLine($"Could not save categories: {ex.Message}");
+                RestorePersistedCatalog();
                 return CategorySaveResult.Failed($"Could not save categories: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Discards mutations made since the last successful load or save.
+        /// </summary>
+        /// <remarks>
+        /// Commands mutate the live folder tree before calling <see cref="SaveChanges"/>. Replacing it
+        /// with a fresh clone keeps a refused rename, move, pin, or folder edit from leaking into a later
+        /// successful save. Views already refresh after a failed save and therefore bind to this restored
+        /// tree rather than retaining references to the rejected one.
+        /// </remarks>
+        private void RestorePersistedCatalog()
+        {
+            if (_persistedCatalog != null)
+                _catalog = _persistedCatalog.DeepClone();
         }
 
         /// <summary>When this session last read or wrote the sidecar; null when it has never existed.</summary>

@@ -177,6 +177,30 @@ namespace SWLOR.Toolset.Domain.Categories
 
         public IEnumerable<ResourceType> Types => _sections.Keys;
 
+        /// <summary>
+        /// Returns an independent in-memory copy of this catalog.
+        /// </summary>
+        /// <remarks>
+        /// Category edits are applied to the live tree before the sidecar is written. The workspace keeps
+        /// this snapshot so a refused or failed write can restore the last persisted tree instead of
+        /// leaving a change visible only until restart.
+        /// </remarks>
+        public CategoryCatalog DeepClone()
+        {
+            var clone = new CategoryCatalog
+            {
+                FilePath = FilePath,
+                IsDirty = IsDirty,
+                IsReadOnly = IsReadOnly,
+                ReadOnlyReason = ReadOnlyReason
+            };
+
+            foreach (var (type, section) in _sections)
+                clone._sections[type] = CloneSection(section);
+
+            return clone;
+        }
+
         /// <summary>Marks the catalog changed. Callers do this after mutating a section or folder.</summary>
         public void MarkDirty() => IsDirty = true;
 
@@ -239,6 +263,34 @@ namespace SWLOR.Toolset.Domain.Categories
             Children = folder.Children.Count == 0 ? null : folder.Children.Select(ToDto).ToList(),
             Members = folder.Members.Count == 0 ? null : folder.Members.ToList()
         };
+
+        private static CategorySection CloneSection(CategorySection source)
+        {
+            var clone = new CategorySection
+            {
+                Grouping = source.Grouping,
+                IsSeeded = source.IsSeeded
+            };
+
+            foreach (var pinned in source.Pinned)
+                clone.Pin(pinned);
+
+            foreach (var folder in source.Folders)
+                clone.AddFolder(CloneFolder(folder));
+
+            return clone;
+        }
+
+        private static CategoryFolder CloneFolder(CategoryFolder source)
+        {
+            var clone = new CategoryFolder(source.Name);
+            foreach (var member in source.Members)
+                clone.AddMember(member);
+            foreach (var child in source.Children)
+                clone.AddChild(CloneFolder(child));
+
+            return clone;
+        }
 
         private static CategorySection ReadSection(CategorySectionDto dto, List<string> repairedNames)
         {

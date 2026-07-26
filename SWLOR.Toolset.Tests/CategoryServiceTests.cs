@@ -78,6 +78,29 @@ namespace SWLOR.Toolset.Tests
             result.Saved.Should().BeFalse();
             result.Problem.Should().Contain("changed outside");
             File.Exists(sidecar).Should().BeFalse("an external deletion must not be silently recreated");
+            service.Section(ResourceType.Utp)!.Find("Cargo").Should().NotBeNull();
+            service.Section(ResourceType.Utp)!.Find("Interiors").Should().BeNull(
+                "a rejected edit must not remain live and leak into a later save");
+        }
+
+        [Test]
+        public void ReadOnlySidecarRollsBackRejectedInMemoryEdits()
+        {
+            var sidecar = CategoryCatalog.DefaultPathFor(_module);
+            Directory.CreateDirectory(Path.GetDirectoryName(sidecar)!);
+            File.WriteAllText(sidecar, """
+                { "version": 2, "sections": {
+                    "utp": { "seeded": true, "folders": [ { "name": "Cargo" } ] }
+                } }
+                """);
+            var service = OpenService();
+            service.Section(ResourceType.Utp)!.Find("Cargo")!.Rename("Rejected rename");
+
+            var result = service.SaveChanges();
+
+            result.Saved.Should().BeFalse();
+            service.Section(ResourceType.Utp)!.Find("Cargo").Should().NotBeNull();
+            service.Section(ResourceType.Utp)!.Find("Rejected rename").Should().BeNull();
         }
 
         private CategoryService OpenService()

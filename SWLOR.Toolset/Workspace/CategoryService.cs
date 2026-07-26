@@ -106,7 +106,15 @@ namespace SWLOR.Toolset.Workspace
                 return section;
             }
 
-            SeedFromPalette(type, section);
+            if (!SeedFromPalette(type, section))
+            {
+                // Not recorded as seeded, and not saved: the palette could not be read this time, and
+                // persisting the flag would make a temporary failure permanent. Dropped from _seeded too,
+                // so a later request in this same session can try again.
+                _seeded.Remove(type);
+                return section;
+            }
+
             section.IsSeeded = true;
             SaveChanges();
             return section;
@@ -145,7 +153,13 @@ namespace SWLOR.Toolset.Workspace
                 if (string.IsNullOrWhiteSpace(resolved))
                     continue;
 
+                // A pin is stored by path, and a path is built from names - so renaming a folder moves
+                // every pin at or below it. The interactive rename already repaths; this one did not, so
+                // a category pinned while it was still "Category 6782" lost its pin the moment the TLK
+                // turned up and the name was repaired.
+                var oldPathKey = section.PathKey(folder);
                 folder.Rename(resolved.Trim());
+                section.RepathPins(oldPathKey, section.PathKey(folder));
                 repaired++;
             }
 
@@ -253,11 +267,15 @@ namespace SWLOR.Toolset.Workspace
         {
             var current = LastWriteUtc(catalog.FilePath);
 
-            // Never seen before (first save of a new file) is not a conflict.
-            if (_sidecarWrittenUtc == null || current == null)
-                return false;
+            // Null on either side is not one situation, and collapsing them into "no conflict" lost two
+            // real ones. If nothing was there when this session last looked, a file existing now was
+            // written by somebody else and overwriting it would discard their work. If something was
+            // there and is gone, it was deleted outside the app - a branch switch or a pull - and saving
+            // would quietly recreate it from a stale in-memory catalog, undoing the deletion.
+            if (_sidecarWrittenUtc == null)
+                return current != null;
 
-            return current != _sidecarWrittenUtc;
+            return current == null || current != _sidecarWrittenUtc;
         }
 
         private static DateTime? LastWriteUtc(string? path)
@@ -292,15 +310,29 @@ namespace SWLOR.Toolset.Workspace
             return palette;
         }
 
-        private void SeedFromPalette(ResourceType type, CategorySection section)
+        /// <summary>
+        /// Imports a type's categories from its palette file, reporting whether the import actually
+        /// happened - false means try again next time rather than record this as done.
+        /// </summary>
+        /// <remarks>
+        /// The seeded flag is persisted, so marking a section seeded after a failed read made the failure
+        /// permanent: a palette that was missing, locked or briefly malformed on first open meant every
+        /// later launch skipped the import and left the whole existing organization in Unsorted, with
+        /// nothing short of hand-editing the sidecar to recover it.
+        /// <para>
+        /// A palette that genuinely is not there is a different thing from one that could not be read,
+        /// and still counts as seeded - there is nothing to import and never will be.
+        /// </para>
+        /// </remarks>
+        private bool SeedFromPalette(ResourceType type, CategorySection section)
         {
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
-                return;
+                return false;
 
             var itpPath = PalettePathFor(workspace.ModuleRoot, type);
             if (itpPath == null || !File.Exists(itpPath))
-                return;
+                return true;
 
             try
             {
@@ -312,10 +344,15 @@ namespace SWLOR.Toolset.Workspace
                 if (count > 0)
                     _log.AppendLine(
                         $"Seeded {count} {type.DisplayName().ToLowerInvariant()} categories from '{Path.GetFileName(itpPath)}'.");
+
+                return true;
             }
             catch (Exception ex)
             {
-                _log.AppendLine($"Could not read categories from '{Path.GetFileName(itpPath)}': {ex.Message}");
+                _log.AppendLine(
+                    $"Could not read categories from '{Path.GetFileName(itpPath)}': {ex.Message} " +
+                    "The import will be retried next time this module is opened.");
+                return false;
             }
         }
 

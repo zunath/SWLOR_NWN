@@ -152,7 +152,9 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
-            _log.AppendLine($"Opening the Lexicon page for {name}.");
+            // The full URL, not just the symbol name. If the browser does not come up there is
+            // otherwise no way to tell what was attempted, or whether the link was even well-formed.
+            _log.AppendLine($"Opening Lexicon: {url}");
             _links.Open(url);
         }
 

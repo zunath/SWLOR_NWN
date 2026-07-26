@@ -1486,3 +1486,131 @@ kept as an alias, since two shortcuts for one action is just something else to d
   that still exercises the guard.
 - Known gap: this worktree has SWLOR_Haks uninitialized, so the 2DA/tileset/model-dependent suites
   fail for that reason alone. Everything schema-, editing- and behavior-related is green.
+
+## D1 — done — 2026-07-26 — Dialog document model
+
+- Tier: Lead (controller-executed). First package of the dialog editor; design in
+  `DialogEditorDesign.md` (approved direction: "Play it").
+- Files: `Domain\Documents\{DlgDocument,DlgNode,DlgLink,DlgParam}.cs`;
+  `Domain\Gff\JsonGffStruct.cs` (+`StructId`/`SetStructId`);
+  `Domain\Editing\StructFieldEdits.cs` (+`StructIdEdit`);
+  tests `DocumentTests.Dlg.cs`, `DlgEditingTests.cs`, `DlgCorpusTests.cs` (74 tests, ~5s).
+- **Links address nodes by list position**, so inserts are always appends whatever the node's
+  place in the conversation: `AddEntry`/`AddReply` touch one new struct and one new link, and
+  `AddingALine_LeavesEveryExistingLineOfTheFileUntouched` proves the original file survives as an
+  exact line subsequence on the biggest conversations in the module. Removal is the expensive
+  direction and says so first — `EstimateRemoveNode` returns routes removed, nodes renumbered and
+  links rewritten.
+- **Every list numbers its elements by position.** Verified across all 609 dialogs. Exactly four
+  deviations, all `sera_vonn` starting-link condition params left at id 0 — pinned in
+  `KnownStructIdDeviations`. `RenumberStructIds` writes only where the value differs, so it does
+  not disturb them until that list is edited for a real reason.
+- **The dispatcher resrefs are the editor's job, not the writer's.** `AddAction`/`AddCondition`
+  wire `Script`/`Active`; removing the last param clears them. Params without a dispatcher are a
+  silent no-op at runtime and are now unauthorable. Clearing recognises every registered spelling
+  (`action`/`actions`, `appear`/`appears`/`condition`/`conditions`) so it also tidies the 725
+  existing links written as `appears` — and deliberately does NOT match `dialog_appears_*`, which
+  belongs to the C# `Dialog` service's 255 generated shells.
+- **Aurora's word-count rule confirmed**: whitespace-separated tokens across every entry and reply,
+  punctuation included (bartender = 26, exactly). It reproduces the stored `NumWords` for 549 of
+  the 570 files that carry one; the other 21 are stale by up to 69 words in both directions and are
+  pinned in `KnownStaleWordCounts`. `RecomputeWordCount` writes only when the value moves.
+- **Corrected a design-doc claim**: the doc said exactly one link in the module carries two
+  conditions. It is five — the earlier survey missed `StartingList`, where `sera_vonn` has four.
+- Corpus-gate performance: the "original survives as a subsequence" check started as an LCS table,
+  which is O(n×m) and made one test (`dmfi_universal`, 108k lines) take 4m48s of the suite. A greedy
+  two-pointer walk answers the same question exactly, because the insertion is a contiguous block:
+  5s.
+- Environment note: this worktree has neither submodule initialised. `External\Radoub` was cloned
+  from the main checkout at the pinned SHA to build. `SWLOR_Haks` is 27 GB and was left absent, so
+  82 hak/2DA/tileset/model tests fail here with missing-path errors; every GFF fidelity gate
+  (round-trip over ~17,900 files, edit locality, float conformance, bridge) passes.
+
+## D2–D9 — done — 2026-07-26 — Dialog editor (Play it)
+
+- Tier: Lead (controller-executed). Design: `DialogEditorDesign.md`. D1 entry above.
+- **D2 — snippet metadata in the game server.** `SnippetArgumentType`, `.Argument(…)`,
+  `.Phrase(…)`, `.NegatedPhrase(…)` on `SnippetBuilder`; all **20** snippets declare theirs.
+  `SnippetCatalog` reflects them into Domain, so the editor never restates SWLOR's conversation
+  logic. Runtime now checks arity centrally in `Snippet.cs`.
+  **Minimum-arity only, deliberately** — `rorrska_buvvien` passes a step number to
+  `condition-has-quest`, which reads one argument and ignores the rest. It works today, so rejecting
+  a surplus would have broken a shipped conversation. Exact-shape checking is the editor's job
+  (`IsValidArgumentCount`), the runtime's is `HasEnoughArguments`. Guarded by
+  `NoSnippetUsageInTheModuleIsShortOfArguments`, which must stay empty.
+- **D3 — game-code index.** `QuestSourceScanner` reads name, step count, journal text per step,
+  repeatability and prerequisites; plus faction/skill enums by reflection.
+  **Prerequisites resolve through `private const string` fields, not only literals.** Reading
+  literals alone lost the prerequisite on exactly the quests with the longest chains (the capstone
+  lines declare every id as a const), which made each chain look like five offers that all fire at
+  once — and reported 184 unreachable openings instead of 28.
+- **D4 — situations + reachability.** The navigation model, not a debugging aid. It resolves which
+  opening wins, which choices are hidden, which coverage cells are filled, and which situation a
+  click lands on. Unreachability is detected by construction: build a player who satisfies the
+  situation, then repeatedly break whichever earlier opening still catches them; when no such
+  player exists the situation is dead. **28 dead openings across 5 conversations**, pinned in
+  `KnownUnreachableOpenings` — 24 are a second unguarded greeting, and `dantherbs` opening 5
+  ("Thanks for your help!") is a genuine logical dead end nobody has ever seen.
+- **D7 — problems as sentences**, anchored to the situation, line or choice. `ConversationAnalyzer`
+  in Domain; the two module-wide rules (`DanglingConversation`, `UnreferencedConversation`) join
+  `ModuleValidator`.
+  **The dangling count is 6, not the 4 recorded during design.** That figure came from a sweep of
+  blueprints only; `pug_cap_computer` and `untitled000` are named exclusively by placed instances,
+  the latter by seventeen of them.
+- **D8 — quest scaffold.** Lays out the situations a quest giver needs from the quest definition,
+  lifted above anything already in the file (an appended opening would sit below an existing
+  catch-all, where none of it could fire — hence `DlgDocument.MoveOpening`).
+  **The analyzer caught a flaw in the scaffold itself**: a guarded "not ready yet" opening is the
+  exact complement of the offer's guard, so between them they answered everybody and whichever came
+  last was dead. The unguarded line at the bottom does that job instead, and the scaffold declines
+  to add a greeting when the conversation already has one.
+  Placeholder is `<write this>` — NWN's single-byte string encoding cannot represent typographic
+  angle brackets, which the first version used.
+- **D5 — the surface, done.** `ConversationEditorViewModel` + `ConversationEditorView`: quest pills,
+  situation rail, coverage strip, breadcrumb, walking, edit-in-place, hidden choices with their
+  reason, "used in N places" on a shared line, findings under the conversation. Wired into
+  `EditorService`; the 255 generated `dialogN` shells refuse to open, using the same predicate the
+  validation rule uses. Text commits on focus loss, not per keystroke — every commit re-runs the
+  analyzer.
+- **D6 — done.** Add and remove a choice, edit a line, the reuse warning with **Make a separate
+  copy** (`DlgDocument.DuplicateNode` + `Retarget`), guard and consequence editing as sentences with
+  typed argument pickers (`SnippetArgumentOptions` — quest ids from the quest list, states bounded
+  by that quest's count, key items and factions from the enums, store and waypoint tags from the
+  catalog), **Move up / Move down** on every situation, and the delete-cost statement.
+- **D8 — done.** Quest picker in the rail with a live preview of the situations it would create,
+  driven by `QuestConversationScaffold.Preview(questId, document)`.
+- **D9 — done except the tree.** Generated shells excluded from the Dialogs list behind a
+  "Show generated" toggle; **"Search what people say"** runs `DialogueSearch` over all 609
+  conversations through the existing filter box (opt-in, because it reads every file);
+  `Conversation` on creatures, doors and placeables is now a picker over the real conversations
+  (`EditorKind.ResourcePicker`) that still accepts a hak resref and says when a value names nothing.
+  **The refusal is implemented** — `ConversationCompatibility` declines 15 of 354 authored
+  conversations, all with custom guard scripts. No Advanced tree: with the refusal in place nothing
+  is half-shown, so it is future work rather than a gap.
+- **State pills now cover everything the evaluator reads** — key items, skills, faction standing and
+  points, tutorial completion — built from what each conversation actually asks about rather than
+  from the whole game, so an NPC that checks one key item gets one checkbox.
+- **The view model has 24 tests**, and they earned their keep immediately by finding two bugs no
+  Domain test could see:
+  - **Saving was broken outright.** The word-count recompute ran outside a transaction, which the
+    session guard rejects, so every save threw and was swallowed into the log. Nothing had ever
+    saved from this editor.
+  - **The guard/consequence panel rendered raw ids**, because it built its sentences without the
+    name resolver the rest of the editor uses.
+  A third failure was a design smell rather than a bug: opening a finished conversation landed on
+  situation 1 ("Finished Field Tinctures"), the last thing anyone hears. It now opens on what a
+  brand-new player hears.
+- **Bindings are compile-checked.** `AvaloniaUseCompiledBindingsByDefault` is on, so every binding
+  path in the new views is validated against its `x:DataType` at build time — including the
+  `$parent[ItemsControl]` command bindings. The app itself has still not been launched, and no human
+  visual gate has been run.
+- Also corrected: the creature editor called `Conversation` a "legacy" field and said SWLOR dialogs
+  are C# classes. It is how 352 of the 371 conversations are wired; the C# route is the
+  `CONVERSATION` local variable.
+- Tests: **+107** (1097 total, 1001 passing). The 82 failures are the absent 27 GB `SWLOR_Haks`
+  submodule — every message names a missing hak path, and the count is unchanged from before this
+  work. Game server suite: 1585 passing, 32 failing, all the same missing haks. Round-trip,
+  edit-locality and float-conformance gates all green.
+- Left for a human: launch the toolset, open a conversation, and confirm it reads the way the
+  mockups do. That is the gate this repo runs for every visual work package and it has not been run
+  for this one.

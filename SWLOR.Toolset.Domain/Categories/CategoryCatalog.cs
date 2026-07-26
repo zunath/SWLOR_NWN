@@ -55,6 +55,13 @@ namespace SWLOR.Toolset.Domain.Categories
         public bool IsReadOnly { get; private set; }
 
         /// <summary>
+        /// Why this catalog will not be written back, or null when it is writable. Carried rather than
+        /// assumed, because there is now more than one reason and telling a builder their categories came
+        /// from a newer Toolset when the file is actually truncated sends them looking in the wrong place.
+        /// </summary>
+        public string? ReadOnlyReason { get; private set; }
+
+        /// <summary>
         /// The sidecar's conventional location for a module: a <c>toolset</c> folder beside the module
         /// directory, so it sits in the repository but outside anything pack, unpack or the game touches.
         /// </summary>
@@ -90,7 +97,15 @@ namespace SWLOR.Toolset.Domain.Categories
             }
             catch (Exception ex)
             {
-                warning = $"Could not read categories from '{path}': {ex.Message}. Starting with no categories.";
+                // Read-only, not merely empty. A sidecar that fails to parse is usually a live file in
+                // trouble - unresolved merge-conflict markers, a truncated write - not an absent one. It
+                // used to come back writable, and then startup seeded the Area section and saved over it,
+                // destroying the builder's arrangement on nothing worse than opening the toolset.
+                warning =
+                    $"Could not read categories from '{path}': {ex.Message}. No categories are shown, and " +
+                    "the file will not be overwritten - repair or delete it to start again.";
+                catalog.IsReadOnly = true;
+                catalog.ReadOnlyReason = warning;
                 return catalog;
             }
 
@@ -105,6 +120,7 @@ namespace SWLOR.Toolset.Domain.Categories
                     $"'{path}' was written by a newer Toolset (version {document.Version}; this build " +
                     $"understands {CurrentVersion}). Categories are shown as loaded but will not be saved.";
                 catalog.IsReadOnly = true;
+                catalog.ReadOnlyReason = warning;
                 return catalog;
             }
 
@@ -154,7 +170,7 @@ namespace SWLOR.Toolset.Domain.Categories
             if (IsReadOnly)
             {
                 throw new InvalidOperationException(
-                    "This category sidecar was written by a newer Toolset and will not be overwritten.");
+                    ReadOnlyReason ?? "This category sidecar will not be overwritten.");
             }
 
             var target = path ?? FilePath

@@ -216,7 +216,8 @@ namespace SWLOR.Toolset.Workspace
 
             if (catalog.IsReadOnly)
             {
-                var refusal = "These categories were written by a newer Toolset and will not be overwritten.";
+                var refusal = catalog.ReadOnlyReason
+                    ?? "These categories will not be overwritten.";
                 _log.AppendLine(refusal);
                 return CategorySaveResult.Failed(refusal);
             }

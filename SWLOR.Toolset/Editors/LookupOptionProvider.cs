@@ -125,11 +125,23 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>Trigger Type is a fixed engine enum rather than a 2DA table.</summary>
+        /// <remarks>
+        /// 1 is the area transition and 2 is the trap, not the other way round. These were reversed,
+        /// which is worse than a wrong label: picking "Trap" wrote 1 and turned the trigger into an
+        /// area transition, and picking "Area Transition" wrote 2 and made it a trap - so editing this
+        /// dropdown changed the object into the opposite of what was chosen.
+        /// <para>
+        /// The module's own data settles it. <c>pitfalltrap.utt.json</c> carries <c>Type=2</c> with
+        /// <c>TrapFlag=1</c>, <c>TrapDetectable=1</c> and <c>TrapType=122</c>, and an empty
+        /// <c>LinkedTo</c> - a trap in every field but the one this list was naming. The other six
+        /// checked-in triggers are all <c>Type=0</c>.
+        /// </para>
+        /// </remarks>
         private static readonly IReadOnlyList<LookupOption> TriggerTypeOptions = new[]
         {
             new LookupOption(0, "Generic"),
-            new LookupOption(1, "Trap"),
-            new LookupOption(2, "Area Transition")
+            new LookupOption(1, "Area Transition"),
+            new LookupOption(2, "Trap")
         };
 
         /// <summary>Faction ids come from the module's repute.fac: FactionList index = id.</summary>

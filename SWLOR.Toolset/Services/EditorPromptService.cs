@@ -1,3 +1,4 @@
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Shell.Views;
 
 namespace SWLOR.Toolset.Services
@@ -34,6 +35,10 @@ namespace SWLOR.Toolset.Services
         /// Asks for a single line of text. Returns null when cancelled or left blank.
         /// </summary>
         Task<string?> PromptForTextAsync(string headline, string message, string initialValue, string confirmLabel);
+
+        /// <summary>Asks which script template a new .nss should be created from.</summary>
+        Task<string?> PromptForScriptTemplateAsync(IReadOnlyList<ScriptTemplateDefinition> templates) =>
+            Task.FromResult<string?>(null);
     }
 
     public sealed class EditorPromptService : IEditorPromptService
@@ -83,5 +88,8 @@ namespace SWLOR.Toolset.Services
         public Task<string?> PromptForTextAsync(
             string headline, string message, string initialValue, string confirmLabel) =>
             TextPromptDialog.ShowAsync(headline, message, initialValue, confirmLabel);
+
+        public Task<string?> PromptForScriptTemplateAsync(IReadOnlyList<ScriptTemplateDefinition> templates) =>
+            ScriptTemplateChoiceDialog.ShowAsync(templates);
     }
 }

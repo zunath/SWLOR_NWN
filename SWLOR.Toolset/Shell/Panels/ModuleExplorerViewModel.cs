@@ -299,11 +299,21 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
+            string? scriptTemplateId = null;
+            if (SelectedType == ResourceType.Nss)
+            {
+                scriptTemplateId = await _prompts.PromptForScriptTemplateAsync(
+                    ModuleResourceTemplateFactory.ScriptTemplates);
+                if (string.IsNullOrWhiteSpace(scriptTemplateId))
+                    return;
+            }
+
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
                 SaveService.WriteNewAtomic(
-                    path, ModuleResourceTemplateFactory.CreateFileContent(SelectedType, resRef, name.Trim()));
+                    path, ModuleResourceTemplateFactory.CreateFileContent(
+                        SelectedType, resRef, name.Trim(), scriptTemplateId));
             }
             catch (Exception ex)
             {

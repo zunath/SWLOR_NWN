@@ -1,8 +1,15 @@
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.Documents
 {
+    public sealed record ScriptTemplateDefinition(
+        string Id,
+        string DisplayName,
+        string Description,
+        string Body);
+
     /// <summary>
     /// Builds the file content of a brand-new dialog or script, for Module Contents' "New
     /// Dialog…" / "New Script…" actions. Areas have their own writer (they also have a .git and
@@ -20,6 +27,38 @@ namespace SWLOR.Toolset.Domain.Documents
     {
         /// <summary>The line a new dialog opens with, so the file is startable as created.</summary>
         public const string PlaceholderEntryText = "<Enter dialogue here>";
+
+        private const string EmptyTemplateId = "empty";
+
+        public static IReadOnlyList<ScriptTemplateDefinition> ScriptTemplates { get; } =
+            new[]
+            {
+                new ScriptTemplateDefinition(
+                    EmptyTemplateId,
+                    "Empty",
+                    "No-op action script with void main().",
+                    "void main()\n{\n}"),
+                new ScriptTemplateDefinition(
+                    "starting_conditional",
+                    "Starting Conditional",
+                    "Conversation condition that starts true.",
+                    "int StartingConditional()\n{\n    return TRUE;\n}"),
+                new ScriptTemplateDefinition(
+                    "on_spawn",
+                    "OnSpawn",
+                    "Creature spawn event stub with the standard NWN AI include.",
+                    "#include \"nw_i0_generic\"\n\nvoid main()\n{\n}"),
+                new ScriptTemplateDefinition(
+                    "on_used",
+                    "OnUsed",
+                    "Placeable OnUsed event stub with the activating object ready.",
+                    "void main()\n{\n    object oUser = GetLastUsedBy();\n    object oSelf = OBJECT_SELF;\n}"),
+                new ScriptTemplateDefinition(
+                    "on_heartbeat",
+                    "OnHeartbeat",
+                    "Periodic event stub for module, creature or placeable heartbeat hooks.",
+                    "void main()\n{\n    object oSelf = OBJECT_SELF;\n}")
+            };
 
         public static bool Supports(ResourceType type) => type is ResourceType.Dlg or ResourceType.Nss;
 
@@ -47,7 +86,14 @@ namespace SWLOR.Toolset.Domain.Documents
         /// The new file's bytes: GFF-JSON for a dialog, plain text for a script - see
         /// <see cref="ResourceTypeExtensions.IsJsonEncoded"/>, which .nss is the sole exception to.
         /// </summary>
-        public static byte[] CreateFileContent(ResourceType type, string resRef, string displayName)
+        public static byte[] CreateFileContent(ResourceType type, string resRef, string displayName) =>
+            CreateFileContent(type, resRef, displayName, scriptTemplateId: null);
+
+        public static byte[] CreateFileContent(
+            ResourceType type,
+            string resRef,
+            string displayName,
+            string? scriptTemplateId)
         {
             if (string.IsNullOrWhiteSpace(resRef))
                 throw new ArgumentException("ResRef must be provided.", nameof(resRef));
@@ -55,7 +101,7 @@ namespace SWLOR.Toolset.Domain.Documents
             return type switch
             {
                 ResourceType.Dlg => CreateDialog(),
-                ResourceType.Nss => CreateScript(resRef, displayName),
+                ResourceType.Nss => CreateScript(resRef, displayName, scriptTemplateId),
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(type), type, "There is no template for this resource type.")
             };
@@ -113,19 +159,24 @@ namespace SWLOR.Toolset.Domain.Documents
             return document.ToBytes();
         }
 
-        private static byte[] CreateScript(string resRef, string displayName)
+        public static ScriptTemplateDefinition ScriptTemplateById(string? templateId)
+        {
+            if (string.IsNullOrWhiteSpace(templateId))
+                return ScriptTemplates.Single(t => t.Id == EmptyTemplateId);
+
+            return ScriptTemplates.SingleOrDefault(t =>
+                    t.Id.Equals(templateId, StringComparison.OrdinalIgnoreCase))
+                ?? throw new ArgumentException($"Unknown script template '{templateId}'.", nameof(templateId));
+        }
+
+        private static byte[] CreateScript(string resRef, string displayName, string? templateId)
         {
             var title = string.IsNullOrWhiteSpace(displayName) ? resRef : displayName;
+            var template = ScriptTemplateById(templateId);
 
             // A compilable no-op rather than an empty file: an .nss with no main() does not compile,
             // and a script that fails to compile is worse than one that does nothing.
-            var source =
-                $"// {title}\r\n" +
-                "void main()\r\n" +
-                "{\r\n" +
-                "}\r\n";
-
-            return System.Text.Encoding.UTF8.GetBytes(source);
+            return ScriptTextDocument.NewScript(title, template.Body).ToBytes();
         }
     }
 }

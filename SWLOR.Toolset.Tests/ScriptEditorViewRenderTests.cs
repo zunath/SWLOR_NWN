@@ -7,6 +7,7 @@ using AvaloniaEdit;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Shell.Views;
 using SWLOR.Toolset.Workspace;
@@ -94,6 +95,15 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void ScriptTemplateChoiceDialogLoadsItsXaml()
+        {
+            var dialog = new ScriptTemplateChoiceDialog();
+
+            dialog.FindControl<ListBox>("TemplateList")
+                .Should().NotBeNull("New Script needs a visible template picker");
+        }
+
+        [AvaloniaTest]
         public void BindingAScriptPutsItsTextInTheBuffer()
         {
             if (!File.Exists(SampleScript))
@@ -162,6 +172,9 @@ namespace SWLOR.Toolset.Tests
 
             public Task<string?> PromptForTextAsync(
                 string headline, string message, string initialValue, string confirmLabel) =>
+                Task.FromResult<string?>(null);
+
+            public Task<string?> PromptForScriptTemplateAsync(IReadOnlyList<ScriptTemplateDefinition> templates) =>
                 Task.FromResult<string?>(null);
 
             public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) =>

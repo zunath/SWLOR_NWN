@@ -1710,3 +1710,27 @@ updates the same strip with the outcome, and opens Problems if any dependent com
   artifacts clears the scanner. Focused run:
   `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
   "FullyQualifiedName~ScriptStalenessScannerTests"` - 9 passed.
+
+## Script editor improvement 5 - 2026-07-26 - New scripts start from the right event shape
+
+The Module Contents **New Script** flow now asks for a template after the script name is chosen.
+The choices are Empty, Starting Conditional, OnSpawn, OnUsed, and OnHeartbeat; the selected template
+is passed into `ModuleResourceTemplateFactory`, which remains the single Domain owner of new script
+bytes.
+
+- **Why.** The old unconditional `void main()` stub was compilable, but it was the wrong shape for
+  conversation conditionals and easy to forget after the file existed. Starting from the intended
+  event shape makes the first saved file closer to what NWN will actually call.
+- **Decision.** Templates are Domain data (`ScriptTemplateDefinition`) and are serialized through
+  `ScriptTextDocument.NewScript`, so every new `.nss` keeps CRLF, no BOM, and a trailing newline.
+  The Avalonia dialog only returns a template id; it does not build script source.
+- **Include choice.** Only the OnSpawn template includes `nw_i0_generic`, because that is the standard
+  NWN spawn-event include. The other stubs use only engine symbols, avoiding extra dependencies where
+  the event shape does not need them.
+- **Verification.** `ModuleResourceTemplateFactoryTests` now asserts the selected template is used,
+  every template keeps CRLF plus a trailing newline, and every template compile-checks through the
+  vendored compiler in `-s` mode with zero errors. `ScriptTemplateChoiceDialogLoadsItsXaml` covers the
+  new picker. Focused run:
+  `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
+  "FullyQualifiedName~ModuleResourceTemplateFactoryTests|FullyQualifiedName~ScriptEditorViewRenderTests"` -
+  21 passed.

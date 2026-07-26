@@ -129,7 +129,11 @@ namespace SWLOR.Toolset.Domain.Script
 
         /// <summary>The template for a brand-new script. Mirrors ModuleResourceTemplateFactory.</summary>
         public static ScriptTextDocument NewScript(string title) =>
-            new($"// {title}\nvoid main()\n{{\n}}", ScriptEolStyle.Crlf,
+            NewScript(title, "void main()\n{\n}");
+
+        /// <summary>A brand-new script with caller-selected source, preserving the new-file shape.</summary>
+        public static ScriptTextDocument NewScript(string title, string body) =>
+            new($"// {title}\n{Normalise(body).TrimEnd('\n')}", ScriptEolStyle.Crlf,
                 trailingNewline: true, bom: false, ScriptEncoding.Utf8);
 
         /// <summary>Returns this document with different text, keeping the on-disk shape.</summary>

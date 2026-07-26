@@ -2,7 +2,9 @@ using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Script.Compile;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -19,6 +21,14 @@ namespace SWLOR.Toolset.Tests
     [TestFixture]
     public class ModuleResourceTemplateFactoryTests
     {
+        private static string CompilerPath => Path.Combine(
+            CorpusLocator.RepositoryRoot, "tools", "SWLOR.CLI", "nwn_script_comp.exe");
+
+        private static string NssDirectory => Path.Combine(CorpusLocator.ModuleDirectory, "nss");
+
+        private static string EngineHeaderDirectory => Path.Combine(
+            CorpusLocator.RepositoryRoot, "SWLOR.NWN.API", "NWN");
+
         /// <summary>Root fields every one of the module's 609 dialogs carries.</summary>
         private static readonly string[] RequiredRootFields =
         {
@@ -126,6 +136,20 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void CreateFileContent_Script_UsesTheSelectedTemplate()
+        {
+            var source = Encoding.UTF8.GetString(
+                ModuleResourceTemplateFactory.CreateFileContent(
+                    ResourceType.Nss,
+                    "probe_cond",
+                    "Probe Conditional",
+                    "starting_conditional"));
+
+            source.Should().Contain("int StartingConditional()");
+            source.Should().Contain("return TRUE;");
+        }
+
+        [Test]
         public void CreateFileContent_Script_FallsBackToTheResRefWhenUnnamed()
         {
             var source = Encoding.UTF8.GetString(
@@ -142,8 +166,77 @@ namespace SWLOR.Toolset.Tests
             ModuleResourceTemplateFactory.ToResRef(name).Should().Be(expected);
         }
 
+        [Test]
+        public void CreateFileContent_ScriptTemplates_UseCrlfAndTrailingNewline()
+        {
+            foreach (var template in ModuleResourceTemplateFactory.ScriptTemplates)
+            {
+                var source = Encoding.UTF8.GetString(
+                    ModuleResourceTemplateFactory.CreateFileContent(
+                        ResourceType.Nss,
+                        $"probe_{template.Id}",
+                        template.DisplayName,
+                        template.Id));
+
+                source.Should().EndWith("\r\n", because: $"{template.DisplayName} must keep the corpus shape");
+                source.Should().Contain("\r\n");
+                source.Replace("\r\n", string.Empty)
+                    .Should().NotContain("\n", because: $"{template.DisplayName} should not use bare LF");
+            }
+        }
+
+        [Test]
+        public async Task CreateFileContent_EveryScriptTemplate_CompileChecksWithoutErrors()
+        {
+            if (!File.Exists(CompilerPath))
+                Assert.Ignore("vendored compiler not present");
+
+            var staging = Path.Combine(Path.GetTempPath(), "swlor_template_comp_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(staging);
+
+            try
+            {
+                StageEngineHeader(staging);
+
+                var compiler = new ScriptCompiler(
+                    CompilerPath,
+                    new[] { NssDirectory, staging },
+                    NwnInstallLocator.Locate());
+
+                foreach (var template in ModuleResourceTemplateFactory.ScriptTemplates)
+                {
+                    var source = Path.Combine(staging, $"probe_{template.Id}.nss");
+                    await File.WriteAllBytesAsync(source,
+                        ModuleResourceTemplateFactory.CreateFileContent(
+                            ResourceType.Nss,
+                            $"probe_{template.Id}",
+                            template.DisplayName,
+                            template.Id));
+
+                    var result = await compiler.CompileAsync(source, checkOnly: true);
+
+                    result.HasErrors.Should().BeFalse(
+                        $"{template.DisplayName} must be a starter script that compile-checks cleanly: {result.Output}");
+                }
+            }
+            finally
+            {
+                Directory.Delete(staging, recursive: true);
+            }
+        }
+
         private static JsonGffDocument ParseDialog() =>
             JsonGffDocument.Parse(
                 ModuleResourceTemplateFactory.CreateFileContent(ResourceType.Dlg, "probe_talk", "Probe Talk"));
+
+        private static void StageEngineHeader(string staging)
+        {
+            var header = Directory.Exists(EngineHeaderDirectory)
+                ? Directory.EnumerateFiles(EngineHeaderDirectory, "nwscript*.nss").FirstOrDefault()
+                : null;
+
+            if (header != null)
+                File.Copy(header, Path.Combine(staging, "nwscript.nss"));
+        }
     }
 }

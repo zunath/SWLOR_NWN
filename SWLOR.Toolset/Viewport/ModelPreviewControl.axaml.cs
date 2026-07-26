@@ -9,18 +9,38 @@ namespace SWLOR.Toolset.Viewport
     /// <see cref="AppearanceSectionViewModel"/>'s one-model scene.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Hosts the same <see cref="GlAreaControl"/> the area editor uses rather than a second
     /// renderer: orbit, pan, zoom, lighting, textures and the model cache all come with it, and
     /// there is one GL path to keep working instead of two that drift apart.
+    /// </para>
+    /// <para>
+    /// The child controls are resolved with <see cref="Control.FindControl{T}"/> rather than used as
+    /// <c>x:Name</c> fields, which is the convention every view in this project that declares its
+    /// own <c>InitializeComponent</c> follows (see <c>ScriptEditorView</c>). Declaring one suppresses
+    /// the generated name wiring, so the fields compile but are null at runtime - which is exactly
+    /// how this view first shipped, throwing a NullReferenceException the moment the Appearance tab
+    /// was opened.
+    /// </para>
     /// </remarks>
     public partial class ModelPreviewControl : UserControl
     {
+        private readonly GlAreaControl? _modelView;
+        private readonly Control? _viewportInput;
+        private readonly Control? _emptyNotice;
+
         private AppearanceSectionViewModel? _viewModel;
 
         public ModelPreviewControl()
         {
             InitializeComponent();
+
+            _modelView = this.FindControl<GlAreaControl>("ModelView");
+            _viewportInput = this.FindControl<Control>("ViewportInput");
+            _emptyNotice = this.FindControl<Control>("EmptyNotice");
+
             DataContextChanged += (_, _) => AttachViewModel();
+            AttachViewModel();
         }
 
         private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
@@ -46,28 +66,34 @@ namespace SWLOR.Toolset.Viewport
 
         private void Apply()
         {
-            if (_viewModel == null)
+            if (_modelView == null)
                 return;
 
-            ModelView.ResourceIndex = _viewModel.ResourceIndex;
-            ModelView.Scene = _viewModel.PreviewScene;
+            var scene = _viewModel?.PreviewScene;
 
-            var hasScene = _viewModel.PreviewScene != null;
-            ModelView.IsVisible = hasScene;
-            ViewportInput.IsVisible = hasScene;
-            EmptyNotice.IsVisible = !hasScene;
+            _modelView.ResourceIndex = _viewModel?.ResourceIndex;
+            _modelView.Scene = scene;
+
+            var hasScene = scene != null;
+            _modelView.IsVisible = hasScene;
+
+            if (_viewportInput != null)
+                _viewportInput.IsVisible = hasScene;
+
+            if (_emptyNotice != null)
+                _emptyNotice.IsVisible = !hasScene;
         }
 
         private void OnViewportPointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e) =>
-            ModelView.HandlePointerPressed(e);
+            _modelView?.HandlePointerPressed(e);
 
         private void OnViewportPointerMoved(object? sender, Avalonia.Input.PointerEventArgs e) =>
-            ModelView.HandlePointerMoved(e);
+            _modelView?.HandlePointerMoved(e);
 
         private void OnViewportPointerReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e) =>
-            ModelView.HandlePointerReleased(e);
+            _modelView?.HandlePointerReleased(e);
 
         private void OnViewportPointerWheel(object? sender, Avalonia.Input.PointerWheelEventArgs e) =>
-            ModelView.HandlePointerWheel(e);
+            _modelView?.HandlePointerWheel(e);
     }
 }

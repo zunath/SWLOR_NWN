@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:editors="using:SWLOR.Toolset.Editors"
              xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
-             xmlns:viewport="using:SWLOR.Toolset.Viewport"
              x:Class="SWLOR.Toolset.Editors.BlueprintEditorView"
              x:DataType="editors:BlueprintEditorViewModel">
 
@@ -104,7 +103,7 @@
           <!-- The live 3D: drag to orbit, wheel to zoom. Shows the highlighted model while
                browsing, and the placeable's own model when nothing is highlighted. -->
           <Border Height="190" Background="{DynamicResource PanelRaisedBrush}" CornerRadius="3">
-            <viewport:ModelPreviewControl />
+            <ContentControl Content="{Binding PreviewView}" />
           </Border>
           <TextBlock Text="Left-drag to turn &#x00B7; right-drag to move &#x00B7; wheel to zoom" Classes="dim" FontSize="10.5" />
 

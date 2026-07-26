@@ -55,7 +55,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         private bool _loaded;
 
         /// <summary>How long typing has to pause before the grid re-filters.</summary>
-        private static readonly TimeSpan SearchDebounce = TimeSpan.FromMilliseconds(220);
+        private static readonly TimeSpan SearchDebounce = TimeSpan.FromMilliseconds(350);
 
         /// <summary>Cancels the pending re-filter when another keystroke arrives.</summary>
         private CancellationTokenSource? _searchDebounce;
@@ -153,6 +153,22 @@ namespace SWLOR.Toolset.Editors.Placeables
 
         /// <summary>Texture/material layer the 3D preview resolves through; null renders untextured.</summary>
         public Domain.GameData.Resources.ResourceIndex? ResourceIndex { get; }
+
+        private Viewport.ModelPreviewControl? _previewView;
+
+        /// <summary>
+        /// The 3D view itself, owned by this section rather than built by the tab's template.
+        /// </summary>
+        /// <remarks>
+        /// A control in a view model is not the usual arrangement, and it is here for one reason:
+        /// the docking host rebuilds an editor's view every time you switch documents, so a preview
+        /// declared in the template meant a fresh OpenGL control - context, shaders, mesh and
+        /// texture uploads - on every switch between two placeables. Holding the instance here
+        /// makes that a re-parent instead of a rebuild. Created on first use, so an editor whose
+        /// Appearance tab is never opened never makes one.
+        /// </remarks>
+        public Avalonia.Controls.Control PreviewView =>
+            _previewView ??= new Viewport.ModelPreviewControl { DataContext = this };
 
         /// <summary>
         /// A one-model scene for the interactive 3D view: whatever tile is highlighted, or the

@@ -35,6 +35,10 @@ namespace SWLOR.Toolset.Domain.Validation
         /// <summary>The full set of rules this package ships, in a stable, deterministic order.</summary>
         public static IReadOnlyList<IValidationRule> DefaultRules() => new IValidationRule[]
         {
+            // First: the floor beneath every convention below. If a resource will not parse, the rules
+            // that only read the files they care about cannot report it, and a module with a file broken
+            // by an external edit or a bad merge validated clean.
+            new GffParseRule(),
             new ResRefLengthRule(),
             new DanglingInstanceTemplateRule(),
             new VarTableEnumRule(),

@@ -81,6 +81,11 @@
                   <MenuItem Header="Open"
                             Command="{Binding $parent[ListBox].((panels:ModuleExplorerViewModel)DataContext).OpenSelectedCommand}"
                             IsVisible="{Binding $parent[ListBox].((panels:ModuleExplorerViewModel)DataContext).CanOpenSelectedType}" />
+                  <!-- Compile from the file, without opening it. Shown only on the Scripts tab, since
+                       it is the one resource kind with a build step. -->
+                  <MenuItem Header="Compile"
+                            Command="{Binding $parent[ListBox].((panels:ModuleExplorerViewModel)DataContext).CompileSelectedCommand}"
+                            IsVisible="{Binding $parent[ListBox].((panels:ModuleExplorerViewModel)DataContext).CanCompileSelectedType}" />
                   <!-- A submenu of folders rather than a modal picker: the tree the builder is looking
                        at is already the list of choices. -->
                   <MenuItem Header="Move to"

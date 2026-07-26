@@ -206,7 +206,6 @@ namespace SWLOR.Toolset.Shell
 
             NotifyActiveEditorCommandsChanged();
             OnPropertyChanged(nameof(StatusDetail));
-            CompileScriptCommand.NotifyCanExecuteChanged();
         }
 
         private Editors.ScriptEditorViewModel? _activeScript;
@@ -283,31 +282,10 @@ namespace SWLOR.Toolset.Shell
 
         // ----- scripts -----
 
-        private bool CanCompileScript => _activeScript != null && _compileService?.IsAvailable == true;
-
-        /// <summary>Compiles the script in front. Joins the Build menu beside Pack Module.</summary>
-        [RelayCommand(CanExecute = nameof(CanCompileScript))]
-        private async Task CompileScript()
-        {
-            if (_activeScript == null || _compileService == null)
-                return;
-
-            // Compiling the file on disk, so unsaved work would silently not be built.
-            if (!await _activeScript.TrySaveAsync().ConfigureAwait(true))
-            {
-                StatusText = "Compile cancelled: the script could not be saved.";
-                return;
-            }
-
-            var resRef = Path.GetFileNameWithoutExtension(_activeScript.FilePath);
-            StatusText = $"Compiling {resRef}...";
-            _factory.Focus(_output);
-
-            var outcome = await _compileService.CompileAsync(resRef).ConfigureAwait(true);
-            StatusText = outcome.Succeeded
-                ? $"Compiled {resRef}."
-                : $"Could not compile {resRef} - see Problems.";
-        }
+        // Compiling ONE script is deliberately NOT here. It acts on the document in front of you, so
+        // it lives on the script editor itself — a Compile button on the tab plus F7 — rather than in
+        // a module-wide menu that offered the action greyed out whenever no script was open.
+        // What remains below is genuinely module-scoped.
 
         /// <summary>Compiles every entry-point script in the module.</summary>
         [RelayCommand]

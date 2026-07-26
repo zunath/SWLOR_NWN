@@ -237,6 +237,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
             OnPropertyChanged(nameof(NewItemLabel));
             OnPropertyChanged(nameof(CanOpenSelectedType));
+            OnPropertyChanged(nameof(CanCompileSelectedType));
             OnPropertyChanged(nameof(CanCreateSelectedType));
             SelectedRow = null;
             StatusMessage = null;
@@ -578,6 +579,28 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </summary>
         public bool CanOpenSelectedType =>
             SelectedType is ResourceType.Area or ResourceType.Nss;
+
+        /// <summary>
+        /// Scripts are the one resource kind with a build step, so they are the only one that offers
+        /// Compile. Lets a builder rebuild a script without opening it — useful after editing an
+        /// include, when the dependents needing a rebuild are not the file you were working in.
+        /// </summary>
+        public bool CanCompileSelectedType => SelectedType == ResourceType.Nss;
+
+        [RelayCommand]
+        private async Task CompileSelected()
+        {
+            if (SelectedRow?.Item is not { } item || SelectedType != ResourceType.Nss)
+                return;
+
+            StatusMessage = $"Compiling {item.ResRef}...";
+
+            if (_editorService == null)
+                return;
+
+            await _editorService.Invoke().CompileScriptAsync(item.ResRef).ConfigureAwait(true);
+            StatusMessage = null;
+        }
 
         /// <summary>The context menu's Open, which is the double-click by another route.</summary>
         [RelayCommand]

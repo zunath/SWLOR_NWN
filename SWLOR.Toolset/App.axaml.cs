@@ -61,6 +61,7 @@ namespace SWLOR.Toolset
 
             services.AddSingleton<OutputLogService>();
             services.AddSingleton<Services.IEditorPromptService, Services.EditorPromptService>();
+            services.AddSingleton<Services.IExternalLinkService, Services.ExternalLinkService>();
             // The index is what lets a workspace hand back a base-game blueprint the module has no file
             // of its own for - the palette's Standard group depends on it.
             services.AddSingleton<Func<string, ModuleWorkspace>>(sp =>
@@ -98,7 +99,8 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<Workspace.BlueprintPreviewRenderer>(),
                 sp.GetRequiredService<Workspace.ScriptLanguageService>(),
                 sp.GetRequiredService<ProblemsViewModel>(),
-                sp.GetRequiredService<Services.ScriptCompileService>()));
+                sp.GetRequiredService<Services.ScriptCompileService>(),
+                sp.GetRequiredService<Services.IExternalLinkService>()));
 
             // One parsed engine header shared by every script tab, built lazily on first use: the
             // header is 13,870 lines, so parsing it per tab would be wasteful and parsing it at
@@ -205,7 +207,8 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<ToolsetSettings>()));
             services.AddSingleton<ProblemsViewModel>();
             services.AddSingleton(sp => new ScriptReferenceViewModel(
-                sp.GetRequiredService<Workspace.ScriptLanguageService>()));
+                sp.GetRequiredService<Workspace.ScriptLanguageService>(),
+                sp.GetRequiredService<Services.IExternalLinkService>()));
             services.AddSingleton(sp => new Services.ScriptCompileService(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<OutputLogService>(),

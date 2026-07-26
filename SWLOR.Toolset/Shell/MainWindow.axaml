@@ -32,11 +32,11 @@
         <MenuItem Header="Output" Command="{Binding FocusOutputCommand}" />
       </MenuItem>
       <MenuItem Header="_Build">
-        <!-- Scripts join Build rather than getting a menu of their own: this is where "make the
-             module runnable" already lives, and ModulePacker never compiles, so the two belong
-             together. -->
-        <MenuItem Header="_Compile Script" Command="{Binding CompileScriptCommand}" InputGesture="F7" />
-        <MenuItem Header="Build _All Scripts" Command="{Binding BuildAllScriptsCommand}" />
+        <!-- Compiling ONE script is not here: it is an act on the document in front of you, so it
+             lives on the script editor itself (a Compile button plus F7). What remains is genuinely
+             module-wide, which is what this menu is for. -->
+        <MenuItem Header="Build _All Scripts" Command="{Binding BuildAllScriptsCommand}"
+                  InputGesture="Ctrl+Shift+B" />
         <MenuItem Header="Check Script _Staleness" Command="{Binding CheckScriptStalenessCommand}" />
         <Separator />
         <MenuItem Header="_Pack Module" Command="{Binding PackModuleCommand}" />
@@ -74,13 +74,6 @@
         </Button>
         <Button Classes="tool" Command="{Binding RedoCommand}" ToolTip.Tip="Redo (Ctrl+Y)">
           <Path Data="M16,6 L21,11 L16,16 M21,11 H10 A6,6 0 0 0 10,23 H14" />
-        </Button>
-
-        <Border Width="1" Margin="5,3" Background="{DynamicResource RuleBrush}" />
-
-        <!-- Compile sits in the left group, which this bar reserves for what changes the module. -->
-        <Button Classes="tool" Command="{Binding CompileScriptCommand}" ToolTip.Tip="Compile script (F7)">
-          <Path Data="M6,4 L14,12 L6,20 M14,20 H20" />
         </Button>
 
         <Border Width="1" Margin="5,3" Background="{DynamicResource RuleBrush}" />

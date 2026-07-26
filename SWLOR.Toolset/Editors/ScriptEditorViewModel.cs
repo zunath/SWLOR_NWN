@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
@@ -77,6 +78,110 @@ namespace SWLOR.Toolset.Editors
         /// compiler is vendored, in which case saving still works and simply changes nothing in game.
         /// </summary>
         public Func<string, Task>? CompileOnSave { get; set; }
+
+        // ----- compiling, from the tab itself -----
+
+        /// <summary>
+        /// Compiles this script. Set by EditorService; null when no compiler is vendored.
+        /// </summary>
+        /// <remarks>
+        /// Lives on the document rather than on the shell's Build menu. Compiling is an act on the
+        /// file in front of you — a module-wide menu is the wrong home for it, and it left the action
+        /// available (greyed) when nothing compilable was open.
+        /// </remarks>
+        public Func<string, Task<bool>>? CompileRequested { get; set; }
+
+        /// <summary>Opens the Problems panel. Set by EditorService.</summary>
+        public Action? ShowProblemsRequested { get; set; }
+
+        public bool CanCompile => CompileRequested != null && !IsCompiling;
+
+        [ObservableProperty]
+        private bool _isCompiling;
+
+        /// <summary>
+        /// The last compile's outcome, shown on the tab's own status strip so a failure is visible
+        /// without hunting for a panel.
+        /// </summary>
+        [ObservableProperty]
+        private string _compileStatus = string.Empty;
+
+        [ObservableProperty]
+        private bool _lastCompileFailed;
+
+        public bool HasCompileStatus => CompileStatus.Length > 0;
+
+        partial void OnCompileStatusChanged(string value) => OnPropertyChanged(nameof(HasCompileStatus));
+
+        partial void OnIsCompilingChanged(bool value)
+        {
+            OnPropertyChanged(nameof(CanCompile));
+            CompileCommand.NotifyCanExecuteChanged();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanCompile))]
+        private async Task Compile()
+        {
+            if (CompileRequested == null)
+                return;
+
+            // Compiling reads the file from disk, so unsaved work would silently not be built.
+            if (!await TrySaveAsync().ConfigureAwait(true))
+            {
+                CompileStatus = "Compile cancelled: could not save.";
+                LastCompileFailed = true;
+                return;
+            }
+
+            IsCompiling = true;
+            CompileStatus = "Compiling...";
+            LastCompileFailed = false;
+
+            try
+            {
+                var ok = await CompileRequested(_resRef).ConfigureAwait(true);
+                LastCompileFailed = !ok;
+                CompileStatus = ok
+                    ? $"Compiled {_resRef}.ncs at {DateTime.Now:HH:mm:ss}"
+                    : $"{_resRef} failed to compile — see Problems";
+
+                if (!ok)
+                    ShowProblemsRequested?.Invoke();
+            }
+            finally
+            {
+                IsCompiling = false;
+            }
+        }
+
+        /// <summary>Brings the Problems panel forward; the status strip is clickable.</summary>
+        [RelayCommand]
+        private void ShowProblems() => ShowProblemsRequested?.Invoke();
+
+        /// <summary>
+        /// Opens the community Lexicon page for the symbol under the caret (F1). Linked rather than
+        /// bundled because the Lexicon is GFDL.
+        /// </summary>
+        public void OpenLexiconFor(int caretOffset)
+        {
+            var name = ScriptNavigation.IdentifierAt(_text, caretOffset);
+            if (name == null || OpenLexiconRequested == null)
+            {
+                _log.AppendLine("Place the caret on a function or constant to open its Lexicon page.");
+                return;
+            }
+
+            OpenLexiconRequested(name);
+        }
+
+        /// <summary>Opens a Lexicon page by symbol name. Set by EditorService.</summary>
+        public Action<string>? OpenLexiconRequested { get; set; }
+
+        /// <summary>Where the caret is, so the toolbar button can act like F1 does. Set by the view.</summary>
+        public Func<int>? CaretOffsetProbe { get; set; }
+
+        [RelayCommand]
+        private void OpenLexiconAtCaret() => OpenLexiconFor(CaretOffsetProbe?.Invoke() ?? 0);
 
         /// <summary>
         /// The ranked completion list for a caret position, plus the offset the partial word starts

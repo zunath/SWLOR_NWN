@@ -53,6 +53,34 @@ namespace SWLOR.Toolset.Tests
                 KeyBifCatalog.Load(dataDirectory));
         }
 
+        /// <summary>
+        /// Skips the test when <paramref name="resRef"/> is not in the resource index at all.
+        /// </summary>
+        /// <remarks>
+        /// These cases read SWLOR's own artwork, which lives in the SWLOR_Haks submodule. The fixture
+        /// already skips when there is no NWN:EE install, but a checkout with the submodule
+        /// uninitialised - a fresh clone, or any git worktree, which does not populate submodules - still
+        /// built an index (the base game resolves fine) and then failed on a null image, reporting a
+        /// texture-decoding regression where the truth was that the texture was never there.
+        /// <para>
+        /// Deliberately a presence check rather than skipping whenever the image is null: a texture that
+        /// <b>is</b> in the index and fails to decode is exactly the regression these tests exist to
+        /// catch, and must still fail.
+        /// </para>
+        /// </remarks>
+        private static void RequireCorpusTexture(ResourceIndex index, string resRef)
+        {
+            foreach (var extension in new[] { "tga", "dds", "plt" })
+            {
+                if (index.TryLookup(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension(extension)), out _))
+                    return;
+            }
+
+            Assert.Ignore(
+                $"'{resRef}' is not in the resource index - the SWLOR_Haks submodule is not populated " +
+                "in this checkout, so there is no module artwork to decode.");
+        }
+
         private static (int R, int G, int B)? AverageColour(ResourceIndex index, string resRef)
         {
             var image = TextureLoader.Load(index, resRef);
@@ -85,6 +113,8 @@ namespace SWLOR.Toolset.Tests
                 return;
             }
 
+            RequireCorpusTexture(index, "chewyrug");
+
             var colour = AverageColour(index, "chewyrug");
             colour.Should().NotBeNull("chewyrug ships with the module's placeable artwork");
 
@@ -109,6 +139,8 @@ namespace SWLOR.Toolset.Tests
                 Assert.Ignore("No local NWN:EE installation was found; skipping.");
                 return;
             }
+
+            RequireCorpusTexture(index, resRef);
 
             var colour = AverageColour(index, resRef);
             colour.Should().NotBeNull();

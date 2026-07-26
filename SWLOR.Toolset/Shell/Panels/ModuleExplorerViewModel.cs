@@ -134,10 +134,11 @@ namespace SWLOR.Toolset.Shell.Panels
         public string NewItemLabel => $"New {SelectedType.SingularDisplayName()}...";
 
         /// <summary>
-        /// Dialog creation stays unavailable until dialogs have an editor. Producing a blank DLG that
-        /// this toolset cannot populate or even open leaves the builder with an unusable resource.
+        /// Every kind here can be created. Dialogs were the exception while they had no editor —
+        /// a blank DLG the toolset could not open was an unusable resource — and the conversation
+        /// editor is what lifted that.
         /// </summary>
-        public bool CanCreateSelectedType => SelectedType != ResourceType.Dlg;
+        public bool CanCreateSelectedType => true;
 
         /// <summary>Builds the tree for the selected tab.</summary>
         public void Initialize()

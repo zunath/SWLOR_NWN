@@ -38,8 +38,10 @@ namespace SWLOR.Toolset.Editors
         private string _text;
         private bool _closeApproved;
         private bool _closePromptOpen;
+        private bool _isClosed;
         private int _line = 1;
         private int _column = 1;
+        private readonly object _analysisGate = new();
 
         private readonly ScriptLanguageService? _language;
         private readonly ScriptCompletionEngine? _completion;
@@ -77,7 +79,7 @@ namespace SWLOR.Toolset.Editors
         /// Rebuilds this script's .ncs after a successful save. Set by EditorService; null when no
         /// compiler is vendored, in which case saving still works and simply changes nothing in game.
         /// </summary>
-        public Func<string, Task>? CompileOnSave { get; set; }
+        public Func<string, Task<bool>>? CompileOnSave { get; set; }
 
         // ----- compiling, from the tab itself -----
 
@@ -126,7 +128,7 @@ namespace SWLOR.Toolset.Editors
                 return;
 
             // Compiling reads the file from disk, so unsaved work would silently not be built.
-            if (!await TrySaveAsync().ConfigureAwait(true))
+            if (!await TrySaveAsync(compileOnSave: false).ConfigureAwait(true))
             {
                 CompileStatus = "Compile cancelled: could not save.";
                 LastCompileFailed = true;
@@ -271,12 +273,20 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         private void QueueAnalysis()
         {
-            if (_analyzer == null)
+            if (_analyzer == null || _isClosed)
                 return;
 
-            _analysisCts?.Cancel();
-            var cts = new CancellationTokenSource();
-            _analysisCts = cts;
+            CancellationTokenSource cts;
+            lock (_analysisGate)
+            {
+                if (_isClosed)
+                    return;
+
+                _analysisCts?.Cancel();
+                _analysisCts?.Dispose();
+                cts = new CancellationTokenSource();
+                _analysisCts = cts;
+            }
 
             var source = _text;
             _ = Task.Run(async () =>
@@ -285,11 +295,15 @@ namespace SWLOR.Toolset.Editors
                 {
                     await Task.Delay(250, cts.Token).ConfigureAwait(false);
                     var analysis = _analyzer.Analyze(source);
-                    if (cts.IsCancellationRequested)
-                        return;
 
-                    Diagnostics = analysis.Diagnostics;
-                    DiagnosticsChanged?.Invoke(Diagnostics);
+                    lock (_analysisGate)
+                    {
+                        if (_isClosed || cts.IsCancellationRequested || !ReferenceEquals(_analysisCts, cts))
+                            return;
+
+                        Diagnostics = analysis.Diagnostics;
+                        DiagnosticsChanged?.Invoke(Diagnostics);
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -301,7 +315,7 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Runs analysis immediately, e.g. right after the tab opens.</summary>
         public void AnalyzeNow()
         {
-            if (_analyzer == null)
+            if (_analyzer == null || _isClosed)
                 return;
 
             var analysis = _analyzer.Analyze(_text);
@@ -495,7 +509,13 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>Saves this editor, returning false when the user cancels or the write fails.</summary>
-        public async Task<bool> TrySaveAsync()
+        public Task<bool> TrySaveAsync() => TrySaveAsync(compileOnSave: true);
+
+        /// <summary>
+        /// Saves this editor, optionally suppressing compile-on-save when an explicit compile is about
+        /// to follow. A requested compile is awaited so pack/build cannot race the bytecode writer.
+        /// </summary>
+        public async Task<bool> TrySaveAsync(bool compileOnSave)
         {
             if (!IsDirty)
                 return true;
@@ -524,11 +544,15 @@ namespace SWLOR.Toolset.Editors
                 AfterHistoryChange();
                 _log.AppendLine($"Saved {_session.FilePath}.");
 
-                // Compile-on-save, per the locked decision. Fire-and-forget so the save returns
-                // immediately: NWN runs the .ncs, not the .nss, so a save that did not rebuild
-                // bytecode would look effective and change nothing in game.
-                if (CompileOnSave != null)
-                    _ = CompileOnSave(_resRef);
+                // NWN runs the .ncs, not the .nss. The save is not complete for build/pack purposes
+                // until the bytecode writer has finished.
+                if (compileOnSave && CompileOnSave != null &&
+                    !await CompileOnSave(_resRef).ConfigureAwait(true))
+                {
+                    _log.AppendLine(
+                        $"Saved {_session.FilePath}, but its compiled output was not updated.");
+                    return false;
+                }
 
                 return true;
             }
@@ -553,6 +577,15 @@ namespace SWLOR.Toolset.Editors
                 }
 
                 return false;
+            }
+
+            lock (_analysisGate)
+            {
+                _isClosed = true;
+                _analysisCts?.Cancel();
+                _analysisCts?.Dispose();
+                _analysisCts = null;
+                DiagnosticsChanged = null;
             }
 
             Closed?.Invoke(this);

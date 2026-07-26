@@ -29,5 +29,21 @@ namespace SWLOR.Toolset.Tests
         {
             ModuleFileWatcher.TryResolveResource(path, out _, out _).Should().BeFalse();
         }
+
+        [TestCase(@"C:\module\git\area.git.json")]
+        [TestCase(@"C:\module\are\area.are.json")]
+        [TestCase(@"C:\module\utd\door.utd.json")]
+        [TestCase(@"C:\module\utw\waypoint.utw.json")]
+        public void TransitionTagResourcesInvalidateTheTagIndex(string path)
+        {
+            ModuleFileWatcher.AffectsTagIndex(path).Should().BeTrue();
+        }
+
+        [TestCase(@"C:\module\utc\creature.utc.json")]
+        [TestCase(@"C:\module\dlg\conversation.dlg.json")]
+        public void UnrelatedResourcesDoNotInvalidateTheTagIndex(string path)
+        {
+            ModuleFileWatcher.AffectsTagIndex(path).Should().BeFalse();
+        }
     }
 }

@@ -437,6 +437,19 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void DeletedPaletteEntry_MissingBlueprint_IsIgnored()
+        {
+            using var module = SyntheticModule.Create();
+            module.WritePalette(
+                "creaturepalcus",
+                SyntheticPalette.DeletedFlat(("Retired NPC", "retired_npc")));
+
+            var issues = new PaletteOrphanRule().Validate(new ValidationContext(module.Workspace)).ToList();
+
+            issues.Should().NotContain(i => i.ResRef == "retired_npc");
+        }
+
+        [Test]
         public void PaletteEntry_WithExistingBlueprint_NoIssue()
         {
             using var module = SyntheticModule.Create();
@@ -765,7 +778,13 @@ namespace SWLOR.Toolset.Tests
     {
         public static ItpDocument Empty() => Flat();
 
-        public static ItpDocument Flat(params (string Name, string ResRef)[] entries)
+        public static ItpDocument Flat(params (string Name, string ResRef)[] entries) =>
+            Build(entries, deleted: false);
+
+        public static ItpDocument DeletedFlat(params (string Name, string ResRef)[] entries) =>
+            Build(entries, deleted: true);
+
+        private static ItpDocument Build((string Name, string ResRef)[] entries, bool deleted)
         {
             var root = new JsonGffStruct();
             var mainList = JsonGffField.CreateList();
@@ -780,6 +799,13 @@ namespace SWLOR.Toolset.Tests
                 var resRefField = JsonGffField.CreateScalar(GffFieldType.ResRef, Array.Empty<byte>());
                 resRefField.SetString(resRef);
                 leaf.Add("RESREF", resRefField);
+
+                if (deleted)
+                {
+                    var deleteField = JsonGffField.CreateScalar(GffFieldType.Byte, Array.Empty<byte>());
+                    deleteField.SetInteger(1);
+                    leaf.Add("DELETE_ME", deleteField);
+                }
 
                 mainList.Elements!.Add(leaf);
             }

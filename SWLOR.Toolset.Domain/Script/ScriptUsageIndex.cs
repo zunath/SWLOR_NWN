@@ -36,7 +36,7 @@ namespace SWLOR.Toolset.Domain.Script
         {
             ResourceType.Utc, ResourceType.Utd, ResourceType.Utp, ResourceType.Utt,
             ResourceType.Uts, ResourceType.Utm, ResourceType.Uti, ResourceType.Utw,
-            ResourceType.Area
+            ResourceType.Area, ResourceType.Dlg
         };
 
         /// <summary>True when a GFF field name looks like a script slot.</summary>
@@ -55,30 +55,17 @@ namespace SWLOR.Toolset.Domain.Script
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    var path = workspace.GetResourcePath(type, resRef);
-                    if (!File.Exists(path))
-                        continue;
+                    Scan(workspace.GetResourcePath(type, resRef), type, resRef, byScript);
 
-                    JsonGffDocument document;
-                    try
+                    // Area script hooks live on the placed instances in the paired GIT, not in the
+                    // ARE resource returned by GetResourcePath(ResourceType.Area, ...).
+                    if (type == ResourceType.Area)
                     {
-                        document = JsonGffDocument.Load(path);
-                    }
-                    catch (Exception)
-                    {
-                        // One malformed resource must not take out the whole index.
-                        continue;
-                    }
-
-                    foreach (var (field, value) in EnumerateScriptSlots(document.Root))
-                    {
-                        if (string.IsNullOrWhiteSpace(value))
-                            continue;
-
-                        if (!byScript.TryGetValue(value, out var list))
-                            byScript[value] = list = new List<ScriptUsage>();
-
-                        list.Add(new ScriptUsage(type, resRef, field));
+                        Scan(
+                            Path.Combine(workspace.ModuleRoot, "git", resRef + ".git.json"),
+                            type,
+                            resRef,
+                            byScript);
                     }
                 }
             }
@@ -94,24 +81,79 @@ namespace SWLOR.Toolset.Domain.Script
         public IReadOnlyDictionary<string, int> UsageCounts() =>
             _byScript.ToDictionary(p => p.Key, p => p.Value.Count, StringComparer.OrdinalIgnoreCase);
 
-        private static IEnumerable<(string Field, string Value)> EnumerateScriptSlots(JsonGffStruct root)
+        private static void Scan(
+            string path,
+            ResourceType type,
+            string resRef,
+            Dictionary<string, List<ScriptUsage>> byScript)
+        {
+            if (!File.Exists(path))
+                return;
+
+            JsonGffDocument document;
+            try
+            {
+                document = JsonGffDocument.Load(path);
+            }
+            catch (Exception)
+            {
+                // One malformed resource must not take out the whole index.
+                return;
+            }
+
+            foreach (var (field, value) in EnumerateScriptSlots(document.Root, type))
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    continue;
+
+                if (!byScript.TryGetValue(value, out var list))
+                    byScript[value] = list = new List<ScriptUsage>();
+
+                list.Add(new ScriptUsage(type, resRef, field));
+            }
+        }
+
+        private static IEnumerable<(string Field, string Value)> EnumerateScriptSlots(
+            JsonGffStruct root,
+            ResourceType type,
+            string prefix = "")
         {
             foreach (var entry in root.Entries)
             {
-                if (entry.Value.Type != GffFieldType.ResRef || !IsScriptSlotField(entry.Key))
+                var path = prefix.Length == 0 ? entry.Key : prefix + "." + entry.Key;
+                if (entry.Value.Type == GffFieldType.ResRef &&
+                    (IsScriptSlotField(entry.Key) ||
+                     type == ResourceType.Dlg && entry.Key is "Active" or "Script"))
+                {
+                    string value;
+                    try
+                    {
+                        value = entry.Value.GetString();
+                    }
+                    catch (Exception)
+                    {
+                        value = string.Empty;
+                    }
+
+                    if (value.Length > 0)
+                        yield return (path, value);
+                }
+
+                if (entry.Value.Struct != null)
+                {
+                    foreach (var nested in EnumerateScriptSlots(entry.Value.Struct, type, path))
+                        yield return nested;
+                }
+
+                if (entry.Value.Elements == null)
                     continue;
 
-                string value;
-                try
+                for (var i = 0; i < entry.Value.Elements.Count; i++)
                 {
-                    value = entry.Value.GetString();
+                    foreach (var nested in EnumerateScriptSlots(
+                                 entry.Value.Elements[i], type, $"{path}[{i}]"))
+                        yield return nested;
                 }
-                catch (Exception)
-                {
-                    continue;
-                }
-
-                yield return (entry.Key, value);
             }
         }
     }

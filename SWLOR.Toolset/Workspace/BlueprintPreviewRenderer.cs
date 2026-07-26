@@ -172,8 +172,25 @@ namespace SWLOR.Toolset.Workspace
             var blueprint = useIndexedBlueprint
                 ? workspace.LoadIndexedBlueprint(type, resRef)
                 : workspace.LoadBlueprint(type, resRef);
+            return BuildModel(type, blueprint.Fields, useIndexedBlueprint);
+        }
+
+        /// <summary>
+        /// Builds geometry from an embedded blueprint struct, such as a creature instance in a GIT.
+        /// Instances carry a complete copy of the creature fields and may intentionally differ from
+        /// (or outlive) their source UTC, so resolving them by TemplateResRef is not equivalent.
+        /// </summary>
+        public RenderModel? BuildModel(
+            ResourceType type,
+            Domain.Gff.JsonGffStruct root,
+            bool useIndexedBlueprint = false)
+        {
+            ArgumentNullException.ThrowIfNull(root);
+            if (!IsAvailable)
+                return null;
+
             var reference = BlueprintModelResolver.Resolve(
-                type, blueprint.Fields, _appearances, _placeables, _doors,
+                type, root, _appearances, _placeables, _doors,
                 itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
                 PartModelExists, _waypoints);
 

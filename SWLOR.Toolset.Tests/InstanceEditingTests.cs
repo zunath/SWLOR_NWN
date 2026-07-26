@@ -2,10 +2,13 @@ using System.Numerics;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Services;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -264,6 +267,51 @@ namespace SWLOR.Toolset.Tests
                 "undoing the gizmo move transaction must restore the exact original bytes, the same guarantee the instance-list detail form's Undo provides");
         }
 
+        [Test]
+        public void SetInstanceTransform_SnappedDoorStyleMove_UndoesPositionAndHeadingTogether()
+        {
+            var original = File.ReadAllBytes(GitPath);
+            var gitDocument = JsonGffDocument.Parse(original);
+            using var gitSession = new DocumentSession(GitPath, gitDocument);
+            using var gicSession = new DocumentSession(
+                "unused.gic.json",
+                new JsonGffDocument("GIC ", new JsonGffStruct()));
+            var section = new InstanceListSectionViewModel(
+                "Creatures",
+                "Creature List",
+                ResourceType.Utc,
+                gitSession,
+                gicSession,
+                new ModuleWorkspace(CorpusLocator.ModuleDirectory),
+                (description, edit) =>
+                {
+                    using (gitSession.Begin(description))
+                        edit();
+                    return true;
+                },
+                null,
+                new OutputLogService(),
+                new StubPrompts());
+            var row = section.Rows.Single(candidate =>
+                candidate.TemplateResRef == "vnpcsofficer");
+
+            section.SetInstanceTransform(
+                    row.Index,
+                    row.X + 3,
+                    row.Y - 4,
+                    row.Z + 1,
+                    xOrientation: 0,
+                    yOrientation: 1,
+                    "Snap to doorway")
+                .Should().BeTrue();
+
+            gitSession.UndoStack.Undo();
+
+            gitDocument.ToBytes().Should().Equal(
+                original,
+                "one Undo must restore both halves of the snapped transform");
+        }
+
         /// <summary>Mirrors <see cref="SetPosition_ProgrammaticGizmoMovePath_ChangesOnlyXyValueLines_AndUndoRestoresBytesExactly"/> for the rotate gizmo's InstanceFieldMap.SetOrientation path.</summary>
         [Test]
         public void SetOrientation_ProgrammaticGizmoRotatePath_ChangesOnlyOrientationValueLines_AndUndoRestoresBytesExactly()
@@ -314,6 +362,23 @@ namespace SWLOR.Toolset.Tests
             InstanceFieldMap.GetInstanceTemplateField(ResourceType.Utw).Should().Be("TemplateResRef");
             InstanceFieldMap.GetInstanceTemplateField(ResourceType.Uts).Should().Be("TemplateResRef");
             InstanceFieldMap.GetInstanceTemplateField(ResourceType.Utt).Should().Be("TemplateResRef");
+        }
+
+        private sealed class StubPrompts : IEditorPromptService
+        {
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string name) =>
+                Task.FromResult(UnsavedChangesChoice.Cancel);
+
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string path) =>
+                Task.FromResult(ExternalChangeChoice.Cancel);
+
+            public Task<string?> PromptForTextAsync(
+                string headline, string message, string initialValue, string confirmLabel) =>
+                Task.FromResult<string?>(null);
+
+            public Task<bool> ConfirmDestructiveAsync(
+                string headline, string message, string confirmLabel) =>
+                Task.FromResult(false);
         }
     }
 }

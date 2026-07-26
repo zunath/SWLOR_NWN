@@ -215,7 +215,7 @@ namespace SWLOR.Toolset.Editors
                 };
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CompileOnSave = _compileService != null && _compileService.IsAvailable
-                    ? name => _compileService.CompileAsync(name)
+                    ? async name => (await _compileService.CompileAsync(name).ConfigureAwait(true)).Succeeded
                     : null;
 
                 // Compile belongs to the document, not to a module-wide menu. The tab owns the button
@@ -414,6 +414,21 @@ namespace SWLOR.Toolset.Editors
                     return false;
             }
 
+            return await SaveScriptsAsync().ConfigureAwait(true);
+        }
+
+        /// <summary>
+        /// Saves every open script buffer. Explicit bulk compilation suppresses per-file
+        /// compile-on-save so each entry point is written exactly once by the subsequent build.
+        /// </summary>
+        public async Task<bool> SaveScriptsAsync(bool compileOnSave = true)
+        {
+            foreach (var editor in _openScriptEditors.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync(compileOnSave).ConfigureAwait(true))
+                    return false;
+            }
+
             return true;
         }
 
@@ -426,7 +441,8 @@ namespace SWLOR.Toolset.Editors
         {
             if (!_openEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
-                !_openAreaEditors.Values.Any(editor => editor.IsDirty))
+                !_openAreaEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openScriptEditors.Values.Any(editor => editor.IsDirty))
                 return true;
 
             var choice = await _prompts.ConfirmCloseAsync("all open editors").ConfigureAwait(true);
@@ -441,6 +457,8 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openTriggerEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openAreaEditors.Values)
+                editor.ApproveApplicationClose();
+            foreach (var editor in _openScriptEditors.Values)
                 editor.ApproveApplicationClose();
 
             return true;
@@ -539,7 +557,10 @@ namespace SWLOR.Toolset.Editors
                         ? (type, blueprintResRef, useIndexed) =>
                             _previewRenderer.BuildModel(type, blueprintResRef, useIndexed)
                         : null,
-                    CreateScriptSlotHost($"Area '{resRef}'"));
+                    CreateScriptSlotHost($"Area '{resRef}'"),
+                    _previewRenderer != null
+                        ? instance => _previewRenderer.BuildModel(ResourceType.Utc, instance)
+                        : null);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);

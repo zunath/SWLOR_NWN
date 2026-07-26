@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -91,10 +92,10 @@ namespace SWLOR.Toolset.Tests
                 return;
             }
 
-            var asked = new List<string>();
+            var asked = new List<JsonGffStruct>();
             var scene = AreaSceneBuilder.Build(
                 pair.Are, pair.Git, catalog, models,
-                resolveCreatureModel: r => { asked.Add(r); return StubModel(); });
+                resolveCreatureModel: instance => { asked.Add(instance); return StubModel(); });
 
             var creatures = scene.Instances.Where(i => i.Kind == InstanceMarkerKind.Creature).ToList();
             creatures.Should().NotBeEmpty($"'{resRef}' was chosen because it has creatures");
@@ -125,8 +126,8 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
-        /// The resolver is asked once per distinct blueprint, not once per placement. Composing a
-        /// segmented body is expensive and an area repeats the same creature many times.
+        /// The resolver is asked for every embedded instance, because placements sharing a blueprint
+        /// may carry different appearance and body-part overrides.
         /// </summary>
         [Test]
         public void TheResolverIsAskedPerInstance_SoTheCallerMustCache()
@@ -139,14 +140,13 @@ namespace SWLOR.Toolset.Tests
                 return;
             }
 
-            var asked = new List<string>();
+            var asked = new List<JsonGffStruct>();
             AreaSceneBuilder.Build(
                 pair.Are, pair.Git, catalog, models,
-                resolveCreatureModel: r => { asked.Add(r); return StubModel(); });
+                resolveCreatureModel: instance => { asked.Add(instance); return StubModel(); });
 
-            // Documents the contract the editor's cache exists to satisfy: the builder does not
-            // deduplicate, so a caller that composes on every call pays per placement.
             asked.Count.Should().Be(pair.Git.Creatures.Count);
+            asked.Should().Equal(pair.Git.Creatures);
         }
     }
 }

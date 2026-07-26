@@ -39,6 +39,25 @@ namespace SWLOR.Toolset.Services
 
         public static void WriteAtomic(string path, byte[] bytes) => Commit(Stage(path, bytes));
 
+        /// <summary>
+        /// Atomically creates a new file without replacing one that appeared after the caller's
+        /// existence check. A failed staging write or losing the creation race leaves no partial target.
+        /// </summary>
+        public static void WriteNewAtomic(string path, byte[] bytes)
+        {
+            var temporaryPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            try
+            {
+                File.WriteAllBytes(temporaryPath, bytes);
+                File.Move(temporaryPath, path, overwrite: false);
+            }
+            finally
+            {
+                if (File.Exists(temporaryPath))
+                    File.Delete(temporaryPath);
+            }
+        }
+
         /// <summary>A serialized document written to its temporary file, waiting to replace the real one.</summary>
         public readonly record struct StagedWrite(string TargetPath, string TemporaryPath);
 

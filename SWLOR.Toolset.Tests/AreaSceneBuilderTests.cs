@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -345,28 +346,59 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void Build_CreatureWithoutTemplateResRef_DoesNotCallTheModelResolverWithNull()
+        public void Build_CreatureWithoutTemplateResRef_StillPassesItsEmbeddedFieldsToTheResolver()
         {
             var (are, git) = LoadArea("coxxian_hq");
             git.Creatures.Should().NotBeEmpty("the fixture needs a creature to corrupt");
-            git.Creatures[0].Remove("TemplateResRef");
+            var embedded = git.Creatures[0];
+            embedded.Remove("TemplateResRef");
 
             var index = BuildHakOnlyIndex();
-            var calls = new List<string>();
+            var calls = new List<JsonGffStruct>();
 
             var act = () => AreaSceneBuilder.Build(
                 are,
                 git,
                 new TilesetCatalog(index),
                 new TileModelCache(index),
-                resolveCreatureModel: resRef =>
+                resolveCreatureModel: instance =>
                 {
-                    calls.Add(resRef);
+                    calls.Add(instance);
                     return null;
                 });
 
             act.Should().NotThrow();
-            calls.Should().OnlyContain(resRef => !string.IsNullOrWhiteSpace(resRef));
+            calls.Should().Contain(instance => ReferenceEquals(instance, embedded));
+        }
+
+        [Test]
+        public void Build_DanPlayerlandsNerf_PassesThePlacedAppearanceOverrideToTheResolver()
+        {
+            var (are, git) = LoadArea("dan_playerlands");
+            var nerf = git.Creatures.First(creature =>
+                string.Equals(
+                    creature.GetOrNull("TemplateResRef")?.GetString(),
+                    "nerf",
+                    StringComparison.OrdinalIgnoreCase) &&
+                creature.Get("Appearance_Type").GetInteger() == 10039);
+            var appearances = new List<long>();
+            var index = BuildHakOnlyIndex();
+
+            AreaSceneBuilder.Build(
+                are,
+                git,
+                new TilesetCatalog(index),
+                new TileModelCache(index),
+                resolveCreatureModel: instance =>
+                {
+                    if (ReferenceEquals(instance, nerf))
+                        appearances.Add(instance.Get("Appearance_Type").GetInteger());
+                    return null;
+                });
+
+            appearances.Should().ContainSingle().Which.Should().Be(
+                10039,
+                "the composer must receive the GIT instance, not reload Appearance_Type 416 from nerf.utc");
         }
 
         /// <summary>

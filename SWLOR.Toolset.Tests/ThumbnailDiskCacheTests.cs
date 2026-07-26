@@ -53,5 +53,37 @@ namespace SWLOR.Toolset.Tests
                     ThumbnailDiskCache.Lookup.NoArtwork,
                     "invalidating a Standard preview must not erase the Custom entry");
         }
+
+        [Test]
+        public void CreatureCacheBecomesStaleWhenItsEquippedItemChanges()
+        {
+            var blueprintPath = Path.Combine(_moduleRoot, "creature.utc.json");
+            var armorPath = Path.Combine(_moduleRoot, "armor.uti.json");
+            File.WriteAllText(blueprintPath, "creature");
+            File.WriteAllText(armorPath, "armor");
+            _cache.StoreNoArtwork(ResourceType.Utc, "creature", useIndexedBlueprint: false);
+
+            _cache.TryLoad(
+                    ResourceType.Utc,
+                    "creature",
+                    blueprintPath,
+                    useIndexedBlueprint: false,
+                    out _,
+                    new[] { armorPath })
+                .Should().Be(ThumbnailDiskCache.Lookup.NoArtwork);
+
+            File.SetLastWriteTimeUtc(armorPath, DateTime.UtcNow.AddMinutes(1));
+
+            _cache.TryLoad(
+                    ResourceType.Utc,
+                    "creature",
+                    blueprintPath,
+                    useIndexedBlueprint: false,
+                    out _,
+                    new[] { armorPath })
+                .Should().Be(
+                    ThumbnailDiskCache.Lookup.Miss,
+                    "the equipped UTI contributes visible armor to the UTC preview");
+        }
     }
 }

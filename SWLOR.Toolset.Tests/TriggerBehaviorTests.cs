@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Gff;
@@ -238,6 +239,77 @@ namespace SWLOR.Toolset.Tests
                     .GetString(TriggerFieldStorage.Field, "Tag").Length);
 
             return longest;
+        }
+
+        [Test]
+        public void CustomExposesEveryScriptSlotItsClassifierRecognises()
+        {
+            var names = TriggerBehaviorCatalog.Custom.Fields
+                .Where(field => field.Kind == TriggerFieldKind.Script)
+                .Select(field => field.Name)
+                .ToHashSet(StringComparer.Ordinal);
+
+            names.Should().Contain(new[]
+            {
+                "ScriptOnEnter", "ScriptOnExit", "ScriptHeartbeat", "ScriptUserDefine",
+                "OnClick", "OnDisarm", "OnTrapTriggered"
+            });
+        }
+
+        [Test]
+        public void TriggerIntegersOutsideTheirStorageRangeAreRejectedWithoutMutation()
+        {
+            var trigger = NewTrigger();
+            var store = new TriggerValueStore(trigger);
+
+            var local = () => store.SetInteger(
+                TriggerFieldStorage.Local, "QUEST_STATE", GffFieldType.Int, 2_147_483_648L);
+            var dword = () => store.SetInteger(
+                TriggerFieldStorage.Field, "LargeValue", GffFieldType.Dword, 4_294_967_296L);
+
+            local.Should().Throw<ArgumentOutOfRangeException>();
+            dword.Should().Throw<ArgumentOutOfRangeException>();
+            store.Locals.GetInt("QUEST_STATE").Should().BeNull();
+            trigger.TryGet("LargeValue", out _).Should().BeFalse();
+        }
+
+        [Test]
+        public void ReloadReclassifiesBehaviorAfterDocumentStateChanges()
+        {
+            var trigger = NewTrigger();
+            var editor = new TriggerEditorViewModel(
+                trigger, "test_trigger", isInstance: false,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                });
+            editor.Behavior.Id.Should().Be(TriggerBehaviorCatalog.CustomId);
+
+            new TriggerValueStore(trigger).SetString(
+                TriggerFieldStorage.Field, "ScriptOnEnter", GffFieldType.ResRef, "explore_trigger");
+            editor.ReloadFromDocument();
+
+            editor.Behavior.Id.Should().Be(TriggerBehaviorCatalog.ExplorationNoteId);
+            editor.HeaderName.Should().Be("Exploration Note");
+            editor.BehaviorRows.Should().Contain(row => row.Label == "Message");
+        }
+
+        [Test]
+        public void ChoosingBlankCustomBehaviorRemainsCustom()
+        {
+            var editor = new TriggerEditorViewModel(
+                NewTrigger(), "test_trigger", isInstance: false,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                });
+
+            editor.ChooseBehavior(TriggerBehaviorCatalog.Custom);
+
+            editor.Behavior.Id.Should().Be(TriggerBehaviorCatalog.CustomId);
+            editor.ShowsVariablesTab.Should().BeTrue();
         }
 
         [Test]

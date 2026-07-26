@@ -89,6 +89,7 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public void RefreshCatalogEntry(ResourceType type, string resRef)
         {
+            InvalidateTagIndexWhenRelevant(type);
             Catalog?.RefreshEntry(type, resRef);
             CatalogEntryRefreshed?.Invoke(type, resRef);
         }
@@ -100,8 +101,21 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public void RemoveCatalogEntry(ResourceType type, string resRef)
         {
+            InvalidateTagIndexWhenRelevant(type);
             Catalog?.RemoveEntry(type, resRef);
             CatalogEntryRefreshed?.Invoke(type, resRef);
+        }
+
+        /// <summary>
+        /// Drops the lazy transition-tag lookup after a paired GIT file changes. GIT is not a
+        /// first-class <see cref="ResourceType"/>, so the file watcher calls this directly.
+        /// </summary>
+        public void InvalidateTagIndex() => Workspace?.TagIndex.Invalidate();
+
+        private void InvalidateTagIndexWhenRelevant(ResourceType type)
+        {
+            if (type is ResourceType.Area or ResourceType.Utd or ResourceType.Utw)
+                InvalidateTagIndex();
         }
     }
 }

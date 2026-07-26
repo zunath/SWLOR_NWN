@@ -128,5 +128,24 @@ namespace SWLOR.Toolset.Tests
             // Without the tag, a disagreement between the tiers reads as a compiler bug.
             vm.Rows[0].SourceTag.Should().Be("compiler");
         }
+
+        [Test]
+        public void ForeignIncludeDiagnosticNavigatesToTheIncludeButIsClearedByItsOwningCompile()
+        {
+            var vm = new ProblemsViewModel();
+            var diagnostic = new ScriptAnalysisDiagnostic(
+                "include failure", 0, 0, ScriptDiagnosticSeverity.Error,
+                ScriptDiagnosticSource.Compiler, 12, "shared_inc");
+
+            vm.SetDiagnostics("entry", ScriptDiagnosticSource.Compiler, new[] { diagnostic });
+
+            vm.Rows.Should().ContainSingle();
+            vm.Rows[0].ResRef.Should().Be("shared_inc");
+            vm.Rows[0].OwnerResRef.Should().Be("entry");
+
+            vm.SetDiagnostics(
+                "entry", ScriptDiagnosticSource.Compiler, Array.Empty<ScriptAnalysisDiagnostic>());
+            vm.Rows.Should().BeEmpty();
+        }
     }
 }

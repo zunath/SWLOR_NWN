@@ -77,9 +77,24 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private bool _isExpanded;
 
-        public string Twisty => IsCategory ? IsExpanded ? "▾" : "▸" : string.Empty;
+        [ObservableProperty]
+        private bool _isAutoExpanded;
 
-        partial void OnIsExpandedChanged(bool value) => OnPropertyChanged(nameof(Twisty));
+        public bool IsEffectivelyExpanded => IsExpanded || IsAutoExpanded;
+
+        public string Twisty => IsCategory ? IsEffectivelyExpanded ? "▾" : "▸" : string.Empty;
+
+        partial void OnIsExpandedChanged(bool value)
+        {
+            OnPropertyChanged(nameof(IsEffectivelyExpanded));
+            OnPropertyChanged(nameof(Twisty));
+        }
+
+        partial void OnIsAutoExpandedChanged(bool value)
+        {
+            OnPropertyChanged(nameof(IsEffectivelyExpanded));
+            OnPropertyChanged(nameof(Twisty));
+        }
 
         /// <summary>What Insert at cursor writes: a call skeleton, or the constant's name.</summary>
         public string InsertText => Function?.CallSkeleton ?? Constant?.Name ?? Label;
@@ -285,14 +300,16 @@ namespace SWLOR.Toolset.Shell.Panels
                 // While filtering, a group with no surviving children is hidden entirely and the rest
                 // auto-expand — otherwise a search looks like it found nothing.
                 if (filtering && children.Count == 0)
+                {
+                    group.IsAutoExpanded = false;
                     continue;
+                }
 
+                group.IsAutoExpanded = filtering;
                 Rows.Add(group);
                 shown += children.Count;
 
-                if (filtering)
-                    group.IsExpanded = true;
-                else if (!group.IsExpanded)
+                if (!group.IsEffectivelyExpanded)
                     continue;
 
                 foreach (var child in children)

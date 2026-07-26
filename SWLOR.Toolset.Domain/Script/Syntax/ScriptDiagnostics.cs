@@ -27,13 +27,15 @@ namespace SWLOR.Toolset.Domain.Script.Syntax
     /// <param name="Severity">Error or warning.</param>
     /// <param name="Source">Editor or compiler.</param>
     /// <param name="Line">1-based line, for the Problems list.</param>
+    /// <param name="ResRef">The file the compiler named, when different from the requested entry point.</param>
     public sealed record ScriptAnalysisDiagnostic(
         string Message,
         int Start,
         int Length,
         ScriptDiagnosticSeverity Severity,
         ScriptDiagnosticSource Source,
-        int Line)
+        int Line,
+        string? ResRef = null)
     {
         public int End => Start + Length;
     }

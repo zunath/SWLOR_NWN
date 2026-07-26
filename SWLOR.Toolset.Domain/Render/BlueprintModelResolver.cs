@@ -278,11 +278,21 @@ namespace SWLOR.Toolset.Domain.Render
             if (itemBlueprintLoader == null)
                 return null;
 
-            var chest = root.GetListOrEmpty("Equip_ItemList")
-                .FirstOrDefault(item => ParseStructId(item.RawStructId) == ChestSlotStructId);
-            var resRef = chest?.GetStringOrNull("EquippedRes");
+            var resRef = GetEquippedChestArmorResRef(root);
 
             return string.IsNullOrWhiteSpace(resRef) ? null : itemBlueprintLoader(resRef);
+        }
+
+        /// <summary>
+        /// The item blueprint resref supplying a segmented creature's visible armor, if any. Shared
+        /// with thumbnail caching so the cache observes the same dependency as model resolution.
+        /// </summary>
+        public static string? GetEquippedChestArmorResRef(JsonGffStruct root)
+        {
+            ArgumentNullException.ThrowIfNull(root);
+            var chest = root.GetListOrEmpty("Equip_ItemList")
+                .FirstOrDefault(item => ParseStructId(item.RawStructId) == ChestSlotStructId);
+            return chest?.GetStringOrNull("EquippedRes");
         }
 
         private static int ParseStructId(byte[]? raw)

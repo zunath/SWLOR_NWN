@@ -11,6 +11,7 @@ using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
+using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
@@ -66,6 +67,7 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Builds an armed blueprint's geometry for the placement ghost. Null degrades the ghost to a marker.</summary>
         private readonly Func<ResourceType, string, bool, RenderModel?>? _resolveBlueprintModel;
+        private readonly Func<JsonGffStruct, RenderModel?>? _resolvePlacedCreatureModel;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly IEditorPromptService _prompts;
         private readonly IScriptSlotHost? _scriptSlotHost;
@@ -954,51 +956,26 @@ namespace SWLOR.Toolset.Editors
         /// kind's marker, the same fallback the placed instance itself would use.
         /// </summary>
         /// <summary>
-        /// A creature's composed geometry, one build per distinct blueprint.
+        /// Composes the creature from the fields embedded in its GIT instance. Those fields are the
+        /// runtime creature and can differ from the source UTC, so neither template-only resolution nor
+        /// a cache keyed solely by TemplateResRef is correct.
         /// </summary>
-        /// <remarks>
-        /// Cached because composing a segmented body is not cheap and an area holds many instances of
-        /// the same creature - the cache is keyed by template resref, so the cost is the number of
-        /// distinct creatures in the area rather than the number placed. That distinction matters:
-        /// <see cref="Workspace.BlueprintPreviewRenderer"/> deliberately caches nothing itself, because
-        /// retaining every blueprint's expanded meshes at once is what once drove the preview build to a
-        /// 37 GB working set. Bounding it per area keeps that from coming back.
-        /// <para>
-        /// Runs on the scene-build worker thread, so the dictionary is locked rather than left to luck.
-        /// </para>
-        /// </remarks>
-        private RenderModel? ResolveCreatureModel(string resRef)
+        private RenderModel? ResolveCreatureModel(JsonGffStruct instance)
         {
-            if (string.IsNullOrWhiteSpace(resRef) || _resolveBlueprintModel == null)
+            if (_resolvePlacedCreatureModel == null)
                 return null;
 
-            lock (_creatureModelGate)
-            {
-                if (_creatureModels.TryGetValue(resRef, out var cached))
-                    return cached;
-            }
-
-            RenderModel? model = null;
             try
             {
-                model = _resolveBlueprintModel(ResourceType.Utc, resRef, false);
+                return _resolvePlacedCreatureModel(instance);
             }
             catch (Exception ex)
             {
+                var resRef = InstanceFieldMap.GetTemplateResRef(ResourceType.Utc, instance) ?? "(embedded)";
                 _log.AppendLine($"Creature '{resRef}' could not be drawn and falls back to a marker: {ex.Message}");
+                return null;
             }
-
-            lock (_creatureModelGate)
-            {
-                _creatureModels[resRef] = model;
-            }
-
-            return model;
         }
-
-        private readonly Dictionary<string, RenderModel?> _creatureModels = new(StringComparer.OrdinalIgnoreCase);
-
-        private readonly object _creatureModelGate = new();
 
         private InstanceMarker? BuildPlacementGhost(
             ResourceType type,
@@ -1148,13 +1125,17 @@ namespace SWLOR.Toolset.Editors
             InstanceMarker instance, InstanceListSectionViewModel section, int index, TileDoorAnchor anchor)
         {
             var description = $"Move {instance.Kind} \"{instance.Tag}\"";
-            if (!section.SetInstancePosition(
-                    index, anchor.Position.X, anchor.Position.Y, anchor.Position.Z, description))
+            if (!section.SetInstanceTransform(
+                    index,
+                    anchor.Position.X,
+                    anchor.Position.Y,
+                    anchor.Position.Z,
+                    anchor.Orientation.X,
+                    anchor.Orientation.Y,
+                    description))
             {
                 return;
             }
-
-            section.SetInstanceOrientation(index, anchor.Orientation.X, anchor.Orientation.Y, description);
 
             if (!ApplyTransformInPlace(instance, anchor.Position, anchor.Orientation))
                 _ = BuildSceneAsync((instance.Kind, index));
@@ -1294,10 +1275,12 @@ namespace SWLOR.Toolset.Editors
             Func<uint, string?>? resolveStrRef = null,
             WaypointAppearanceService? waypointAppearances = null,
             Func<ResourceType, string, bool, RenderModel?>? resolveBlueprintModel = null,
-            IScriptSlotHost? scriptSlotHost = null)
+            IScriptSlotHost? scriptSlotHost = null,
+            Func<JsonGffStruct, RenderModel?>? resolvePlacedCreatureModel = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resolveBlueprintModel = resolveBlueprintModel;
+            _resolvePlacedCreatureModel = resolvePlacedCreatureModel;
             _waypointAppearances = waypointAppearances;
             _resolveBlueprintName = resolveBlueprintName;
             _openBlueprint = openBlueprint;

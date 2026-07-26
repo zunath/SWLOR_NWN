@@ -9,11 +9,15 @@ namespace SWLOR.Toolset.Shell.Panels
     /// <summary>One row in the Problems list.</summary>
     public sealed class ProblemRow
     {
-        public ProblemRow(string resRef, ScriptAnalysisDiagnostic diagnostic)
+        public ProblemRow(string ownerResRef, ScriptAnalysisDiagnostic diagnostic)
         {
-            ResRef = resRef;
+            OwnerResRef = ownerResRef;
+            ResRef = diagnostic.ResRef ?? ownerResRef;
             Diagnostic = diagnostic;
         }
+
+        /// <summary>The entry point whose diagnostics batch owns this row.</summary>
+        public string OwnerResRef { get; }
 
         public string ResRef { get; }
 
@@ -85,7 +89,7 @@ namespace SWLOR.Toolset.Shell.Panels
         {
             for (var i = Rows.Count - 1; i >= 0; i--)
             {
-                if (string.Equals(Rows[i].ResRef, resRef, StringComparison.OrdinalIgnoreCase) &&
+                if (string.Equals(Rows[i].OwnerResRef, resRef, StringComparison.OrdinalIgnoreCase) &&
                     Rows[i].Diagnostic.Source == source)
                     Rows.RemoveAt(i);
             }

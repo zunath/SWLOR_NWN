@@ -456,6 +456,36 @@ namespace SWLOR.Toolset.Editors
             return ok;
         }
 
+        /// <summary>
+        /// Sets position and heading together as one document transaction. Door snapping uses this
+        /// because the doorway position and orientation are one invariant: undoing only one of them
+        /// leaves the door stranded sideways in its previous frame.
+        /// </summary>
+        public bool SetInstanceTransform(
+            int index,
+            float x,
+            float y,
+            float z,
+            float xOrientation,
+            float yOrientation,
+            string? description = null)
+        {
+            var element = GetElement(index);
+            if (element == null)
+                return false;
+
+            var ok = _runEdit(description ?? $"Move {Title} instance", () =>
+            {
+                InstanceFieldMap.SetPosition(_blueprintType, element, x, y, z);
+                InstanceFieldMap.SetOrientation(_blueprintType, element, xOrientation, yOrientation);
+            });
+
+            if (ok)
+                RefreshFromDocument();
+
+            return ok;
+        }
+
         [RelayCommand]
         private void Duplicate()
         {

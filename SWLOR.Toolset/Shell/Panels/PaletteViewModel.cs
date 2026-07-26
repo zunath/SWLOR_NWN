@@ -8,6 +8,7 @@ using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Settings;
 using SWLOR.Toolset.Workspace;
 
@@ -878,7 +879,8 @@ namespace SWLOR.Toolset.Shell.Panels
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                File.WriteAllBytes(path, BlueprintTemplateFactory.CreateFileContent(SelectedType, resRef, name));
+                SaveService.WriteNewAtomic(
+                    path, BlueprintTemplateFactory.CreateFileContent(SelectedType, resRef, name));
             }
             catch (Exception ex)
             {

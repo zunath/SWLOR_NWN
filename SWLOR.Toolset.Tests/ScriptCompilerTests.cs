@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Script.Compile;
+using SWLOR.Toolset.Services;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -171,6 +172,32 @@ namespace SWLOR.Toolset.Tests
         {
             ScriptCompiler.ParseDiagnostics("I [2026-07-26] 1 successful, 0 skipped, 0 errored")
                 .Should().BeEmpty();
+        }
+
+        [Test]
+        public void AnalysisMappingPreservesForeignIncludeFilenameAndDoesNotSquiggleTheEntryPoint()
+        {
+            var result = new ScriptCompileResult(
+                false,
+                new[]
+                {
+                    new ScriptDiagnostic(@"C:\module\nss\shared_inc.nss", 2, "include error", true),
+                    new ScriptDiagnostic(@"C:\module\nss\entry.nss", 3, "entry error", true)
+                },
+                string.Empty,
+                false);
+
+            var diagnostics = ScriptCompileService.ToAnalysisDiagnostics(
+                result,
+                "line one\nline two\nline three\n",
+                "entry");
+
+            diagnostics[0].ResRef.Should().Be("shared_inc");
+            diagnostics[0].Start.Should().Be(0);
+            diagnostics[0].Length.Should().Be(0);
+            diagnostics[1].ResRef.Should().BeNull();
+            diagnostics[1].Start.Should().BeGreaterThan(0);
+            diagnostics[1].Length.Should().BeGreaterThan(0);
         }
     }
 }

@@ -39,16 +39,40 @@ namespace SWLOR.Toolset.Workspace
         /// </remarks>
         private void SyncCatalog(string path, bool deleted)
         {
-            if (_workspaceContext == null || !TryResolveResource(path, out var type, out var resRef))
+            if (_workspaceContext == null)
+                return;
+
+            var affectsTagIndex = AffectsTagIndex(path);
+            var resolved = TryResolveResource(path, out var type, out var resRef);
+            if (!affectsTagIndex && !resolved)
                 return;
 
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
-                if (deleted)
-                    _workspaceContext.RemoveCatalogEntry(type, resRef);
-                else
-                    _workspaceContext.RefreshCatalogEntry(type, resRef);
+                if (affectsTagIndex)
+                    _workspaceContext.InvalidateTagIndex();
+
+                if (resolved)
+                {
+                    if (deleted)
+                        _workspaceContext.RemoveCatalogEntry(type, resRef);
+                    else
+                        _workspaceContext.RefreshCatalogEntry(type, resRef);
+                }
             });
+        }
+
+        /// <summary>
+        /// True when changing this file can alter the area associated with a transition target tag.
+        /// Paired GITs carry placed door/waypoint tags; UTD/UTW blueprints supply their fallbacks.
+        /// </summary>
+        public static bool AffectsTagIndex(string path)
+        {
+            var fileName = Path.GetFileName(path);
+            return fileName.EndsWith(".git.json", StringComparison.OrdinalIgnoreCase) ||
+                   fileName.EndsWith(".are.json", StringComparison.OrdinalIgnoreCase) ||
+                   fileName.EndsWith(".utd.json", StringComparison.OrdinalIgnoreCase) ||
+                   fileName.EndsWith(".utw.json", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

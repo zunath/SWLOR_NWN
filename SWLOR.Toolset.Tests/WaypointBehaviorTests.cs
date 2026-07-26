@@ -333,6 +333,26 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PlainChoiceTemplateWrapsLongWaypointLabels()
+        {
+            var appPath = Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset",
+                "App.axaml");
+            var app = File.ReadAllText(appPath);
+            var template = app[
+                app.IndexOf(
+                    "<DataTemplate DataType=\"waypoints:WaypointRowViewModel\">",
+                    StringComparison.Ordinal)..app.IndexOf(
+                    "<DataTemplate DataType=\"editors:CheckFieldViewModel\">",
+                    StringComparison.Ordinal)];
+
+            template.Should().Contain("MinWidth=\"320\"");
+            template.Should().Contain(
+                "<TextBlock Text=\"{Binding Display}\" TextWrapping=\"Wrap\" MaxWidth=\"292\" />");
+        }
+
+        [Test]
         public void SpawnPickersShowFriendlyNamesAlongsideStoredIds()
         {
             var creatureField = Catalog().Get(WaypointBehaviorCatalog.CreatureSpawnPointId).Fields

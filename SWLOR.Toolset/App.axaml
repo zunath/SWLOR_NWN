@@ -59,7 +59,13 @@
                            MinWidth="240" MaxDropDownHeight="400"
                            IsVisible="{Binding IsSearchableChoice}" />
           <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice, Mode=TwoWay}"
-                    MinWidth="240" MaxDropDownHeight="400" IsVisible="{Binding IsPlainChoice}" />
+                    MinWidth="320" MaxDropDownHeight="400" IsVisible="{Binding IsPlainChoice}">
+            <ComboBox.ItemTemplate>
+              <DataTemplate DataType="waypoints:WaypointChoiceViewModel">
+                <TextBlock Text="{Binding Display}" TextWrapping="Wrap" MaxWidth="292" />
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
         </StackPanel>
 
         <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Note}" Classes="label"

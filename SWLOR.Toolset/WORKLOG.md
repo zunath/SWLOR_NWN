@@ -1865,3 +1865,57 @@ as `Data2 DA` now appears as `2DA`.
   `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
   "FullyQualifiedName~EngineSymbolDatabaseTests|FullyQualifiedName~ScriptReferenceViewModelTests"` -
   27 passed.
+
+## Area viewport - 2026-07-26 - Tile models were being parsed into each other
+
+Area geometry was corrupt in a way that looked like bad tileset data and was not. `TileModelCache`
+held one `MdlReader` and filled its misses from `ConcurrentDictionary.GetOrAdd`, which does not
+serialise its factory - so two tiles parsing at the same time read each other's `_modelData` and
+`_pointerBase`.
+
+- **Why it read as three unrelated bugs.** cz220shipbreakin showed all of them at once: enormous
+  black and brown polygons swallowing the camera (vertices read at another model's pointer base),
+  untextured slabs (mesh headers landing on the wrong bytes), and magenta fallback tiles (a read past
+  the end throwing, and the `null` being cached forever). Assembling the same area headlessly, one
+  model at a time, produced zero fallbacks and no oversized mesh - which is what showed the fault was
+  in the parse and not in the .set, the .are, or the haks.
+- **Decision.** A reader per parse, as `BlueprintPreviewRenderer` already does for the same reason.
+  Parsing is not the hot path; the cache is.
+- **Verification.** `TileModelCacheConcurrencyTests` fingerprints every zsf01 tile model parsed
+  serially, then parses the set four times over `Parallel.ForEach` and requires identical geometry,
+  textures and bounds. Confirmed to fail against the shared reader before the fix.
+
+## Area viewport - 2026-07-26 - Ceilings hidden by tilefade, on interior tilesets only
+
+The area view now drops an interior tileset's ceilings, as Aurora's does, and the toolbar has a
+switch to put them back.
+
+- **Why.** `HideCeilings` had no caller at all, so an interior always drew sealed: a field of blank
+  slabs with the rooms underneath them. Its old test - discard downward-facing fragments above a
+  height - could not be turned back on, because a wall is full of downward-facing surfaces that are
+  not ceilings (ledges, sills, the trim band), so walls came and went as the camera orbited.
+- **Decision.** Read the tileset's own answer: the MDL `tilefade` flag, now carried through
+  `RenderMesh.TileFade`. In zsf01 it marks every `ceilling*` node and the wall bands above 3m and
+  nothing at floor height. Gated on `AreaScene.IsInteriorTileset` (the .set's `Interior=1`), because
+  an exterior set flags overhead geometry too - ttw01's `treefol_01` canopy - and Aurora draws that;
+  hiding it turns Kashyyyk - Forest Paths into a field of bare poles.
+- **Deliberately not done.** No per-node name matching. `ceilling*` is this tileset's spelling, not a
+  convention, and the flag already covers the unnamed roof slabs and wall bands too.
+- **Verification.** `CeilingVisibilityTests` asserts every zsf01 ceiling node is flagged, that nothing
+  flagged reaches the tile floor, that ttw01's canopy is flagged too, and that `IsInteriorTileset` is
+  true for cz220shipbreakin, false for kashyyykpaths, and false when the tileset will not resolve.
+
+## Area editor - 2026-07-26 - Raise and lower act on the selected tile
+
+Clicking open ground selects that grid cell (highlighted in the selection yellow, with its height in
+the viewport overlay); the raise and lower buttons then move it a level per press and are disabled
+until something is selected.
+
+- **Why.** They used to arm a mode that the next map click resolved. That showed nothing about which
+  cell was going to change, cost a click per level, and read as a placement cursor for an operation
+  that places nothing.
+- **Decision.** A tile selection and an object selection are mutually exclusive, in both directions -
+  otherwise the next raise has no way to say which one it meant.
+- **Verification.** `AreaTileSelectionTests` covers the disabled-until-selected gate, one level per
+  press, the minimum-height refusal and its message, and an instance selection clearing the tile one.
+  Driven in the running app as well: Tile (3,6) stepped 0 -> 2 and back down to 0, refusing below it.

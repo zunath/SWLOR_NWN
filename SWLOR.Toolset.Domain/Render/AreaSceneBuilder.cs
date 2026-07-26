@@ -71,6 +71,7 @@ namespace SWLOR.Toolset.Domain.Render
                 Tiles = tiles,
                 Instances = instances,
                 DoorAnchors = doorAnchors,
+                IsInteriorTileset = tileset?.Interior ?? false,
                 Diagnostics = diagnostics,
                 Lighting = ComputeLighting(are)
             };

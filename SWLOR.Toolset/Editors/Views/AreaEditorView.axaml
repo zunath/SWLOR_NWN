@@ -56,6 +56,13 @@
                          Classes="mono" FontSize="10.5"
                          Foreground="{DynamicResource InkTertiaryBrush}"
                          IsVisible="{Binding HasSceneSelection}" />
+              <TextBlock Text="{Binding TileSelectionStatus}" Classes="mono" FontSize="10.5"
+                         Foreground="{DynamicResource AmberBrush}"
+                         IsVisible="{Binding HasTileSelection}" />
+              <TextBlock Text="Raise and lower move this tile one height level"
+                         Classes="mono" FontSize="10.5"
+                         Foreground="{DynamicResource InkTertiaryBrush}"
+                         IsVisible="{Binding HasTileSelection}" />
               <TextBlock Text="{Binding PlacementStatus}" Classes="mono" FontSize="10.5"
                          Foreground="{DynamicResource AccentBrush}"
                          TextTrimming="CharacterEllipsis" MaxWidth="480"
@@ -130,10 +137,12 @@
 
               <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
 
+              <!-- These act on the selected tile, immediately and once per press, so a RepeatButton
+                   would step it several levels from one held click. Click a cell to select it. -->
               <Button Classes="pad" Content="&#x21E7;" Command="{Binding RaiseTileCommand}"
-                      ToolTip.Tip="Raise a tile - then click a grid cell" />
+                      ToolTip.Tip="Raise the selected tile one height level - click a grid cell to select one" />
               <Button Classes="pad" Content="&#x21E9;" Command="{Binding LowerTileCommand}"
-                      ToolTip.Tip="Lower a tile - then click a grid cell (minimum level 0)" />
+                      ToolTip.Tip="Lower the selected tile one height level (minimum level 0)" />
             </StackPanel>
           </Border>
 

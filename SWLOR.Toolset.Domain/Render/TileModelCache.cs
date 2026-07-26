@@ -17,7 +17,6 @@ namespace SWLOR.Toolset.Domain.Render
         private static readonly ushort MdlResourceType = ResourceIdentity.TypeFromExtension("mdl");
 
         private readonly ResourceIndex _resourceIndex;
-        private readonly MdlReader _reader = new();
         private readonly ConcurrentDictionary<string, RenderModel?> _cache =
             new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentDictionary<string, RenderModel?> _placeablePreviewCache =
@@ -79,8 +78,16 @@ namespace SWLOR.Toolset.Domain.Render
                 if (bytes.Length == 0)
                     return null;
 
-                var model = _reader.Parse(bytes);
-                return model;
+                // A reader per parse. MdlReader is not reentrant - MdlBinaryReader keeps the file's
+                // data block, its pointer base and the live BinaryReader in fields - and this method
+                // runs from ConcurrentDictionary.GetOrAdd, which deliberately does NOT serialise its
+                // factory. One shared reader therefore had two threads parsing two tiles into each
+                // other's state, which is not a crash but a corruption: vertices read at another
+                // model's pointer base come back as enormous garbage triangles, mesh headers land on
+                // the wrong bytes so textures resolve to nothing, and a read past the end throws and
+                // caches a null - the tile then draws as a magenta placeholder. cz220shipbreakin
+                // showed all three at once (see TileModelCacheConcurrencyTests).
+                return new MdlReader().Parse(bytes);
             }
             catch (Exception)
             {

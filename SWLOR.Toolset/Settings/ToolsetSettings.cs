@@ -57,6 +57,9 @@ namespace SWLOR.Toolset.Settings
         [JsonPropertyName("showFog")]
         public bool ShowFog { get; set; }
 
+        [JsonPropertyName("showCeilings")]
+        public bool ShowCeilings { get; set; }
+
         [JsonPropertyName("dockProportions")]
         public Dictionary<string, double> DockProportions { get; set; } = new();
 
@@ -92,6 +95,7 @@ namespace SWLOR.Toolset.Settings
         private string _tilePaintMode = string.Empty;
         private bool _showAreaLighting;
         private bool _showFog;
+        private bool _showCeilings;
         private Dictionary<string, double> _dockProportions = new(StringComparer.Ordinal);
         private double _paletteCategoryProportion;
         private bool _suppressSave;
@@ -261,6 +265,20 @@ namespace SWLOR.Toolset.Settings
             }
         }
 
+        /// <summary>Whether the viewport draws the tileset's overhead geometry (ceilings, canopy).</summary>
+        public bool ShowCeilings
+        {
+            get => _showCeilings;
+            set
+            {
+                if (_showCeilings == value)
+                    return;
+
+                _showCeilings = value;
+                Save();
+            }
+        }
+
         /// <summary>
         /// Which Module Contents tab was open, as a resource extension; empty when none was saved.
         /// </summary>
@@ -407,6 +425,7 @@ namespace SWLOR.Toolset.Settings
                         settings._tilePaintMode = data.TilePaintMode ?? string.Empty;
                         settings._showAreaLighting = data.ShowAreaLighting;
                         settings._showFog = data.ShowFog;
+                        settings._showCeilings = data.ShowCeilings;
                         settings._paletteCategoryProportion =
                             data.PaletteCategoryProportion > 0 && data.PaletteCategoryProportion < 1
                                 ? data.PaletteCategoryProportion
@@ -500,6 +519,7 @@ namespace SWLOR.Toolset.Settings
                     TilePaintMode = _tilePaintMode,
                     ShowAreaLighting = _showAreaLighting,
                     ShowFog = _showFog,
+                    ShowCeilings = _showCeilings,
                     DockProportions = new Dictionary<string, double>(_dockProportions, StringComparer.Ordinal),
                     PaletteCategoryProportion = Finite(_paletteCategoryProportion) ?? 0
                 };

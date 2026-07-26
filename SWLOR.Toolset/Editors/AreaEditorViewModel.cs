@@ -172,7 +172,8 @@ namespace SWLOR.Toolset.Editors
         /// </remarks>
         public bool HasViewportHud =>
             !IsBuildingScene &&
-            (HasSceneStatus || HasSceneSelection || !string.IsNullOrEmpty(PlacementStatus));
+            (HasSceneStatus || HasSceneSelection || HasTileSelection ||
+             !string.IsNullOrEmpty(PlacementStatus));
 
         // ----- 3D-view <-> instance-list selection sync -----
 
@@ -411,6 +412,12 @@ namespace SWLOR.Toolset.Editors
                 SelectedSceneInstance = instance;
                 OnPropertyChanged(nameof(CanRotateSelection));
 
+                // An object and a tile are never selected together - raise/lower would have no way to
+                // say which one it meant. Cleared here rather than only in the viewport so a
+                // list-driven selection drops the tile highlight too.
+                if (instance != null)
+                    SelectedTile = null;
+
                 var targetType = instance != null ? MapKindToSectionType(instance.Kind) : null;
 
                 // Index-within-kind mapping: both the scene's Instances (built by
@@ -516,20 +523,15 @@ namespace SWLOR.Toolset.Editors
                     ? $"Click a cell to place {tile.Label} facing {PendingTileFacing}... " +
                       "(R to rotate, Esc or right-click to cancel)"
                     : $"Click a cell to place {tile.Label}... (Esc or right-click to cancel)"
-            : _pendingTileElevationDelta > 0
-                ? "Click a cell to raise it one level... (Esc or right-click to cancel)"
-            : _pendingTileElevationDelta < 0
-                ? "Click a cell to lower it one level... (Esc or right-click to cancel)"
             : string.Empty;
 
         /// <summary>This area's tileset resref, which is what the Tiles palette lists tiles from.</summary>
         public string? TilesetResRef => new AreDocument(_areSession.Document).Tileset;
 
         private TilePaletteEntry? _pendingTile;
-        private int _pendingTileElevationDelta;
 
         /// <summary>True while a tile or group is armed - drives GlAreaControl.IsTilePlacementActive.</summary>
-        public bool IsTilePlacementPending => _pendingTile != null || _pendingTileElevationDelta != 0;
+        public bool IsTilePlacementPending => _pendingTile != null;
 
         /// <summary>The armed stamp's footprint in cells, for the viewport's cell highlight.</summary>
         public (int Columns, int Rows) TilePlacementFootprint =>
@@ -632,7 +634,6 @@ namespace SWLOR.Toolset.Editors
             CancelPlacement();
 
             _pendingTile = entry;
-            _pendingTileElevationDelta = 0;
             _pendingTileOrientation = 0;
             InvalidateTilePlacementValidity();
             _tilePlacementModels = ResolveTileModels(entry);
@@ -649,11 +650,10 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Called by the view when a tile placement is cancelled from inside the viewport.</summary>
         public void CancelTilePlacement()
         {
-            if (_pendingTile == null && _pendingTileElevationDelta == 0)
+            if (_pendingTile == null)
                 return;
 
             _pendingTile = null;
-            _pendingTileElevationDelta = 0;
             _tilePlacementModels = Array.Empty<RenderModel?>();
             InvalidateTilePlacementValidity();
             OnPropertyChanged(nameof(IsTilePlacementPending));
@@ -675,18 +675,10 @@ namespace SWLOR.Toolset.Editors
         public void CommitTilePlacement(int anchorColumn, int anchorRow)
         {
             var entry = _pendingTile;
-            var elevationDelta = _pendingTileElevationDelta;
             _pendingTile = null;
-            _pendingTileElevationDelta = 0;
             OnPropertyChanged(nameof(IsTilePlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
             OnPropertyChanged(nameof(HasViewportHud));
-
-            if (elevationDelta != 0)
-            {
-                CommitTileElevation(anchorColumn, anchorRow, elevationDelta);
-                return;
-            }
 
             if (entry == null)
                 return;
@@ -757,9 +749,6 @@ namespace SWLOR.Toolset.Editors
         /// </remarks>
         public bool CanPlaceArmedTileAt(int column, int row)
         {
-            if (_pendingTileElevationDelta != 0)
-                return AreaTiles.IndexOf(new AreDocument(_areSession.Document), column, row) >= 0;
-
             if (_pendingTile is not { } entry)
                 return false;
 
@@ -773,23 +762,77 @@ namespace SWLOR.Toolset.Editors
 
         private readonly Dictionary<(int Column, int Row), bool> _tileValidity = new();
 
-        [RelayCommand]
-        private void RaiseTile() => ArmTileElevation(1);
+        private (int Column, int Row)? _selectedTile;
 
-        [RelayCommand]
-        private void LowerTile() => ArmTileElevation(-1);
-
-        private void ArmTileElevation(int delta)
+        /// <summary>
+        /// The grid cell the builder has selected in the 3D view, or null when none is. The view
+        /// mirrors it onto <c>GlAreaControl.SelectedTileCell</c> for the highlight, and the raise and
+        /// lower commands act on it.
+        /// </summary>
+        /// <remarks>
+        /// Selecting a tile is what a click on open ground means, so it and
+        /// <see cref="SelectedSceneInstance"/> are mutually exclusive - one click cannot leave both a
+        /// tile and an object looking selected, because the next command would be ambiguous.
+        /// </remarks>
+        public (int Column, int Row)? SelectedTile
         {
-            CancelPlacement();
-            CancelTilePlacement();
-            _pendingTileElevationDelta = Math.Sign(delta);
-            _tilePlacementModels = Array.Empty<RenderModel?>();
-            OnPropertyChanged(nameof(IsTilePlacementPending));
-            OnPropertyChanged(nameof(TilePlacementFootprint));
-            OnPropertyChanged(nameof(TilePlacementModels));
-            OnPropertyChanged(nameof(PlacementStatus));
-            OnPropertyChanged(nameof(HasViewportHud));
+            get => _selectedTile;
+            private set
+            {
+                if (_selectedTile == value)
+                    return;
+
+                _selectedTile = value;
+                OnPropertyChanged(nameof(SelectedTile));
+                OnPropertyChanged(nameof(HasTileSelection));
+                OnPropertyChanged(nameof(TileSelectionStatus));
+                OnPropertyChanged(nameof(HasViewportHud));
+                RaiseTileCommand.NotifyCanExecuteChanged();
+                LowerTileCommand.NotifyCanExecuteChanged();
+            }
+        }
+
+        public bool HasTileSelection => _selectedTile != null;
+
+        /// <summary>The selected cell and its height level, for the 3D-view overlay; empty when no tile is selected.</summary>
+        public string TileSelectionStatus
+        {
+            get
+            {
+                if (_selectedTile is not { } cell)
+                    return string.Empty;
+
+                var state = AreaTiles.StateAt(new AreDocument(_areSession.Document), cell.Column, cell.Row);
+                return state == null
+                    ? $"Tile ({cell.Column},{cell.Row})"
+                    : $"Tile ({cell.Column},{cell.Row}) - height {state.Value.HeightLevel}";
+            }
+        }
+
+        /// <summary>
+        /// Called by the view when a click in the 3D view resolves to a grid cell (or to none).
+        /// </summary>
+        public void SelectTile((int Column, int Row)? cell) => SelectedTile = cell;
+
+        [RelayCommand(CanExecute = nameof(HasTileSelection))]
+        private void RaiseTile() => AdjustSelectedTileElevation(1);
+
+        [RelayCommand(CanExecute = nameof(HasTileSelection))]
+        private void LowerTile() => AdjustSelectedTileElevation(-1);
+
+        /// <summary>
+        /// Moves the selected tile one height level, immediately. Aurora's model: the tile you can see
+        /// highlighted is the tile that moves, so pressing again steps it another level - rather than
+        /// arming a mode that the next map click resolves, which showed nothing about which cell was
+        /// going to change and cost a click per level.
+        /// </summary>
+        private void AdjustSelectedTileElevation(int delta)
+        {
+            if (_selectedTile is not { } cell)
+                return;
+
+            CommitTileElevation(cell.Column, cell.Row, Math.Sign(delta));
+            OnPropertyChanged(nameof(TileSelectionStatus));
         }
 
         private void CommitTileElevation(int column, int row, int delta)

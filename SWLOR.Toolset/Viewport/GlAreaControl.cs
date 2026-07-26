@@ -59,30 +59,6 @@ namespace SWLOR.Toolset.Viewport
         private long _lastOrbitTicks;
         private const float FallbackCubeHeight = 1.5f;
 
-        /// <summary>
-        /// With "hide ceilings" on, DOWNWARD-FACING tile fragments higher than this above their own
-        /// tile's base height are discarded. Per-tile rather than absolute so it stays correct in
-        /// multi-elevation areas.
-        /// </summary>
-        /// <remarks>
-        /// A plain height cut cannot do this job, which is what a 4m cut got wrong: measured over the
-        /// corpus, shp02's ceiling planes sit at 3.0-3.5m while its walls top out at 3.5-4.0m, so no
-        /// threshold separates the two. Cutting at 4m therefore kept the ceilings, and an area read
-        /// as a field of blank grey plates - the ceilings seen from above, with the walls and floors
-        /// sealed underneath them.
-        ///
-        /// Facing is the signal that actually distinguishes them: a ceiling faces down, a wall faces
-        /// sideways, a floor or a roof faces up. So only down-facing fragments are cut, which leaves
-        /// every wall standing at any height and leaves exterior terrain and building roofs
-        /// (up-facing) intact - hiding those would gut an outdoor map. What else goes is the
-        /// underside of overhangs, archways and catwalks, which a camera looking down cannot see.
-        ///
-        /// 2m rather than something taller because walls no longer need the headroom, and shp02's
-        /// lowest ceiling geometry starts at 3.0m. Measured cut share: 17% of triangles for shp02,
-        /// 6% for tin01, 10% for tno01, 1% for the ttd01 desert exterior.
-        /// </remarks>
-        private const float CeilingClipHeight = 2.0f;
-        private const float CeilingClipDisabled = 1e9f;
         private const float MarkerHalfWidth = 0.4f;
         private const float MarkerHeight = 1.2f;
         private const float MarkerGroundOffset = 0.05f;
@@ -175,7 +151,6 @@ uniform bool unlit;
 uniform float alphaCutoff;
 uniform float flatAlpha;
 uniform bool useTextureAlpha;
-uniform float ceilingClipZ;
 uniform vec3 lightDir;
 uniform vec3 lightColor;
 uniform vec3 ambientColor;
@@ -185,12 +160,6 @@ uniform vec3 cameraPos;
 
 void main()
 {
-    // Hide-ceilings support: DOWN-FACING fragments above the per-draw clip height are discarded
-    // (the height is a huge value when the toggle is off). Walls and floors survive because they do
-    // not face down; see CeilingClipHeight for why facing, not height alone, is the test.
-    if (WorldPos.z > ceilingClipZ && normalize(Normal).z < -0.5)
-        discard;
-
     vec4 texColor = hasTexture ? texture(diffuseTexture, TexCoord) : vec4(flatColor, 1.0);
 
     if (alphaCutoff > 0.0 && texColor.a < alphaCutoff)
@@ -237,6 +206,13 @@ void main()
                 new Dictionary<string, IReadOnlyList<Matrix4x4>>(StringComparer.OrdinalIgnoreCase);
 
             public string? TextureName { get; init; }
+
+            /// <summary>
+            /// The source node's MDL <c>tilefade</c> flag - see <see cref="RenderMesh.TileFade"/>.
+            /// Non-zero marks the tileset's own overhead geometry, which the tile pass drops unless
+            /// <see cref="ShowCeilings"/> is on.
+            /// </summary>
+            public int TileFade { get; init; }
         }
 
         private sealed class ModelBuffer
@@ -518,6 +494,37 @@ void main()
         /// </summary>
         public event Action<int, int>? TileCellPicked;
 
+        private (int Column, int Row)? _selectedTileCell;
+
+        /// <summary>
+        /// The grid cell the builder has selected, or null when none is. Set by the host from its own
+        /// selection state (so a rebuilt scene keeps the highlight), and reported by
+        /// <see cref="TileSelected"/> when a click resolves one here.
+        /// </summary>
+        /// <remarks>
+        /// A selected tile is what the raise/lower commands act on. Aurora works the same way: you
+        /// click the tile you mean and then raise it, rather than arming a mode and clicking a cell -
+        /// which gave no way to see which cell you were about to change, and cost a click per level.
+        /// </remarks>
+        public (int Column, int Row)? SelectedTileCell
+        {
+            get => _selectedTileCell;
+            set
+            {
+                if (_selectedTileCell == value)
+                    return;
+
+                _selectedTileCell = value;
+                RequestNextFrameRendering();
+            }
+        }
+
+        /// <summary>
+        /// Raised when a plain click lands on the area's ground rather than on an instance: the
+        /// clicked cell's column and row, or null when the click missed the grid entirely.
+        /// </summary>
+        public event Action<(int Column, int Row)?>? TileSelected;
+
         private IReadOnlyList<RenderModel?> _tilePlacementModels = Array.Empty<RenderModel?>();
 
         /// <summary>
@@ -541,36 +548,46 @@ void main()
         public event Action? TileRotateRequested;
 
         /// <summary>
-        /// Discards downward-facing tile geometry above each tile's own base height + 2m.
+        /// Draws an interior tileset's ceilings instead of looking into its rooms from above. Off by
+        /// default, which is what Aurora's area view does: a room you cannot see into is not editable.
         /// </summary>
         /// <remarks>
-        /// Off, because as written it takes more than the ceiling. The test is "faces downward and is
-        /// high up", and an interior wall is full of downward-facing surfaces that are not ceilings -
-        /// window ledges, sills, the trim band running around the room. Those get discarded too, and
-        /// which of them the camera can see changes as it orbits, so walls appear to come and go while
-        /// panning. Aurora shows those walls solid.
+        /// What counts as a ceiling is the tileset's own answer, not a guess about height or facing.
+        /// Every mesh node carries an MDL <c>tilefade</c> flag, and a non-zero value is exactly the
+        /// geometry the engine fades out when the camera would otherwise be looking through it - in
+        /// zsf01 that is every <c>ceilling*</c> node plus the wall bands above 3m, and nothing at floor
+        /// or wall height.
         /// <para>
-        /// Turning it off restores what the toolbar rework intended - its commit message says ceilings
-        /// default off - and what it left half-done: the toggle was removed while the field stayed true,
-        /// so there has been no way to reach this at all. Hiding ceilings is worth having back once the
-        /// test asks whether a surface IS a ceiling rather than merely whether it faces down; until
-        /// then, showing the room correctly matters more than seeing into it from above.
+        /// Only interior tilesets are cut (see <see cref="AreaScene.IsInteriorTileset"/>). An exterior
+        /// set flags overhead geometry too - ttw01's <c>treefol_01</c> canopy hangs 10-20m over the
+        /// forest floor - but Aurora draws that, and removing it turns a wood into a field of bare
+        /// poles.
+        /// </para>
+        /// <para>
+        /// An earlier attempt cut fragments that faced downward above a height threshold instead, and
+        /// that took more than the ceiling with it: an interior wall is full of downward-facing
+        /// surfaces that are not ceilings - window ledges, sills, the trim band round the room - so
+        /// walls appeared to come and go as the camera orbited. Reading the flag has no such
+        /// ambiguity, and it costs nothing per fragment because whole mesh ranges are skipped.
         /// </para>
         /// </remarks>
-        private bool _hideCeilings;
+        private bool _showCeilings;
 
-        public bool HideCeilings
+        public bool ShowCeilings
         {
-            get => _hideCeilings;
+            get => _showCeilings;
             set
             {
-                if (_hideCeilings == value)
+                if (_showCeilings == value)
                     return;
 
-                _hideCeilings = value;
+                _showCeilings = value;
                 RequestNextFrameRendering();
             }
         }
+
+        /// <summary>Whether <paramref name="scene"/>'s ceilings are cut out of the tile pass.</summary>
+        private bool HidesCeilings(AreaScene scene) => !_showCeilings && scene.IsInteriorTileset;
 
         private bool _showAreaLighting;
 
@@ -1042,6 +1059,31 @@ void main()
             // drawing, and everything with geometry draws as its model.
             var hit = AreaPicking.PickClosestInstance(ray, scene, showPlaceableModels: true);
             InstancePicked?.Invoke(hit);
+
+            // A click that hit nothing placed is a click on the map itself, and that selects the tile
+            // under it. Raised after InstancePicked so the host has already cleared its instance
+            // selection by the time it takes a tile one - the two are mutually exclusive.
+            if (hit == null)
+                TileSelected?.Invoke(ResolveTileCell(ray, scene));
+            else
+                TileSelected?.Invoke(null);
+        }
+
+        /// <summary>
+        /// The grid cell <paramref name="ray"/> lands on, or null when it misses the ground or falls
+        /// outside the area's grid.
+        /// </summary>
+        private static (int Column, int Row)? ResolveTileCell(PickRay ray, AreaScene scene)
+        {
+            var point = AreaWalkmesh.RaycastGround(ray, scene)
+                        ?? AreaManipulation.IntersectRayWithHorizontalPlane(ray, 0f);
+            if (point is not { } hit)
+                return null;
+
+            var (column, row) = WorldPointToCell(hit);
+            return column < 0 || row < 0 || column >= scene.Width || row >= scene.Height
+                ? null
+                : (column, row);
         }
 
         // ----- Move/rotate gizmo -----
@@ -2162,15 +2204,12 @@ void main()
             SetUniformVec3("fogColor", scene.Lighting.FogColor);
             SetUniformFloat("fogDensity", _showFog ? scene.Lighting.FogDensity : 0f);
             SetUniformInt("diffuseTexture", 0);
-            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
             SetUniformVec2("uvScale", Vector2.One);
             SetUniformVec2("uvOffset", Vector2.Zero);
             SetUniformBool("useTextureAlpha", false);
 
-            DrawTileBatches();
+            DrawTileBatches(HidesCeilings(scene));
 
-            // Markers, walkmesh overlay, and trigger outlines are never ceiling-clipped — reset the sticky per-tile value.
-            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
             DrawWalkmeshOverlay();
             DrawInstanceMarkers(scene);
             DrawPolygonOverlays();
@@ -2178,12 +2217,13 @@ void main()
             DrawTransformGizmo();
             DrawDoorAnchors();
             DrawPlacementGhost();
+            DrawSelectedTileCell(scene);
             DrawTileCellHighlight(scene);
 
             _gl.BindVertexArray(0);
         }
 
-        private void DrawTileBatches()
+        private void DrawTileBatches(bool hideCeilings)
         {
             if (_tileBatches == null)
                 return;
@@ -2204,11 +2244,11 @@ void main()
                     if (!IsPlacementVisible(placement))
                         continue;
 
-                    SetUniformFloat("ceilingClipZ",
-                        _hideCeilings ? placement.HeightOffset + CeilingClipHeight : CeilingClipDisabled);
-
                     foreach (var meshRange in buffer.MeshRanges)
                     {
+                        if (hideCeilings && meshRange.TileFade != 0)
+                            continue;
+
                         var worldMatrix = meshRange.MeshTransform * placement.Transform;
                         SetUniformMatrix4("model", worldMatrix);
                         BindMeshTexture(meshRange.TextureName);
@@ -2239,8 +2279,6 @@ void main()
                 if (!IsPlacementVisible(placement))
                     continue;
 
-                SetUniformFloat("ceilingClipZ",
-                    _hideCeilings ? placement.HeightOffset + CeilingClipHeight : CeilingClipDisabled);
                 SetUniformMatrix4("model", placement.Transform);
                 unsafe
                 {
@@ -2422,7 +2460,6 @@ void main()
                 SetUniformBool("unlit", true);
                 SetUniformBool("useTextureAlpha", true);
                 SetUniformFloat("alphaCutoff", 0.01f);
-                SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
 
                 var cameraDirection = _target - _cameraEye;
                 var cameraForward = cameraDirection.LengthSquared() > 0.000001f
@@ -2634,7 +2671,6 @@ void main()
             SetUniformBool("unlit", true);
             SetUniformFloat("alphaCutoff", 0f);
             SetUniformFloat("flatAlpha", 1f);
-            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
             SetUniformVec3("flatColor", SelectionHighlightColor);
             SetUniformMatrix4("model", Matrix4x4.Identity); // bounds are already world-space
 
@@ -2713,7 +2749,6 @@ void main()
             _gl.Disable(EnableCap.DepthTest);
 
             SetUniformFloat("flatAlpha", PlacementGhostAlpha);
-            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
 
             // A door away from any empty doorway draws as a red silhouette of itself: still the object
             // being placed, visibly not placeable here.
@@ -2810,7 +2845,6 @@ void main()
             SetUniformFloat("alphaCutoff", 0f);
             SetUniformFloat("flatAlpha", DoorAnchorAlpha);
             SetUniformVec3("flatColor", DoorAnchorColor);
-            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
 
             foreach (var anchor in scene.DoorAnchors)
             {
@@ -2854,6 +2888,15 @@ void main()
         private static readonly Vector3 TileCellRejectedColor = new(0.92f, 0.28f, 0.22f);
 
         /// <summary>
+        /// The selected cell's tint - the same yellow the instance selection box uses, because it
+        /// answers the same question ("this is the thing the commands will act on") rather than the
+        /// hover highlight's "the next click lands here".
+        /// </summary>
+        private static readonly Vector3 SelectedTileCellColor = SelectionHighlightColor;
+
+        private const float SelectedTileCellAlpha = 0.28f;
+
+        /// <summary>
         /// Whether the armed tile would actually go down at this (column, row). Supplied by the area
         /// editor, which is the only thing that can answer it: in Auto mode the answer comes from the
         /// tileset's own rules, and "inside the grid" is not the same question.
@@ -2865,6 +2908,51 @@ void main()
 
         /// <summary>Lifts the highlight above the tile floor (and above the walkmesh overlay, which may be on at the same time) so it reads as painted on the ground rather than buried in it.</summary>
         private const float TileCellHighlightHeightOffset = 0.08f;
+
+        /// <summary>Tints the selected grid cell, so the tile the raise/lower commands act on is visible.</summary>
+        private void DrawSelectedTileCell(AreaScene scene)
+        {
+            // While a stamp is armed the hovered-cell highlight is the cursor, and a second tinted
+            // cell beside it would only be read as a second cursor.
+            if (_isPlacementActive || _isTilePlacementActive ||
+                _selectedTileCell is not { } cell || _gl == null)
+            {
+                return;
+            }
+
+            var vertices = BuildFootprintQuadVertices(scene, cell.Column, cell.Row, (1, 1));
+            if (vertices.Length == 0)
+                return;
+
+            EnsureHighlightBuffer();
+            if (!_hasHighlightBuffer)
+                return;
+
+            _gl.Enable(EnableCap.Blend);
+            _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            _gl.DepthMask(false);
+            _gl.Disable(EnableCap.DepthTest);
+
+            _gl.BindVertexArray(_highlightVao);
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _highlightVbo);
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(vertices.Length * sizeof(float)),
+                new ReadOnlySpan<float>(vertices), BufferUsageARB.DynamicDraw);
+            SetVertexAttribPointers();
+
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("flatAlpha", SelectedTileCellAlpha);
+            SetUniformVec3("flatColor", SelectedTileCellColor);
+            SetUniformMatrix4("model", Matrix4x4.Identity); // cell corners are already world-space
+
+            _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint)(vertices.Length / FloatsPerVertex));
+
+            _gl.Enable(EnableCap.DepthTest);
+            _gl.DepthMask(true);
+            _gl.Disable(EnableCap.Blend);
+            SetUniformFloat("flatAlpha", 1f);
+        }
 
         /// <summary>
         /// Draws a translucent quad over each grid cell the armed palette entry would write.
@@ -2914,7 +3002,6 @@ void main()
             SetUniformBool("unlit", true);
             SetUniformFloat("alphaCutoff", 0f);
             SetUniformFloat("flatAlpha", TileCellHighlightAlpha);
-            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
             SetUniformVec3("flatColor", TilePlacementAllowed(scene, anchor.Column, anchor.Row)
                 ? TileCellHighlightColor
                 : TileCellRejectedColor);
@@ -2958,6 +3045,10 @@ void main()
 
             var (columns, rows) = _tilePlacementFootprint;
             var fits = TilePlacementAllowed(scene, anchorColumn, anchorRow);
+            // The ghost has to show what the tile will look like once it is down, and in an interior
+            // that is the room without its ceiling - otherwise the stamp a builder is aiming reads as
+            // a translucent slab with its doorways and stairs hidden underneath.
+            var hideCeilings = HidesCeilings(scene);
 
             SetUniformFloat("flatAlpha", TileGhostAlpha);
             if (!fits)
@@ -2993,6 +3084,9 @@ void main()
 
                 foreach (var meshRange in buffer.MeshRanges)
                 {
+                    if (hideCeilings && meshRange.TileFade != 0)
+                        continue;
+
                     SetUniformMatrix4("model", meshRange.MeshTransform * transform);
                     if (fits)
                         BindMeshTexture(meshRange.TextureName);
@@ -3011,9 +3105,13 @@ void main()
         /// (<paramref name="anchorColumn"/>, <paramref name="anchorRow"/>), each sitting just above
         /// that cell's own tile floor so the highlight follows elevation changes across the footprint.
         /// </summary>
-        private float[] BuildFootprintQuadVertices(AreaScene scene, int anchorColumn, int anchorRow)
+        private float[] BuildFootprintQuadVertices(AreaScene scene, int anchorColumn, int anchorRow) =>
+            BuildFootprintQuadVertices(scene, anchorColumn, anchorRow, _tilePlacementFootprint);
+
+        private static float[] BuildFootprintQuadVertices(
+            AreaScene scene, int anchorColumn, int anchorRow, (int Columns, int Rows) footprint)
         {
-            var (columns, rows) = _tilePlacementFootprint;
+            var (columns, rows) = footprint;
             var data = new List<float>(columns * rows * 6 * FloatsPerVertex);
 
             for (var dRow = 0; dRow < rows; dRow++)
@@ -3098,7 +3196,6 @@ void main()
             SetUniformBool("unlit", true);
             SetUniformFloat("alphaCutoff", 0f);
             SetUniformFloat("flatAlpha", 1f);
-            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
             SetUniformMatrix4("model", Matrix4x4.Identity);
 
             DrawGizmoLines(BuildAxisVertices(origin, new Vector3(GizmoArmLength, 0, 0)), GizmoAxisXColor);
@@ -3295,7 +3392,8 @@ void main()
                     MeshTransform = mesh.Transform,
                     PoseFrames = mesh.PoseFrames,
                     AnimationFrames = mesh.AnimationFrames,
-                    TextureName = string.IsNullOrEmpty(mesh.TextureName) ? null : mesh.TextureName
+                    TextureName = string.IsNullOrEmpty(mesh.TextureName) ? null : mesh.TextureName,
+                    TileFade = mesh.TileFade
                 });
 
                 baseVertex += (uint)vertexCount;

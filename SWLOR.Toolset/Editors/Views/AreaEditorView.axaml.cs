@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.PlacementPointPicked += OnPlacementPointPicked;
             AreaView.PlacementCancelled += OnPlacementCancelled;
             AreaView.TileCellPicked += OnTileCellPicked;
+            AreaView.TileSelected += OnTileSelected;
             AreaView.TilePlacementCancelled += OnTilePlacementCancelled;
             AreaView.TileRotateRequested += OnTileRotateRequested;
             DataContextChanged += (_, _) => AttachViewModel();
@@ -67,6 +68,7 @@ namespace SWLOR.Toolset.Editors
 
             AreaView.ShowAreaLighting = _display.ShowAreaLighting;
             AreaView.ShowFog = _display.ShowFog;
+            AreaView.ShowCeilings = _display.ShowCeilings;
         }
 
         private void AttachViewModel()
@@ -87,6 +89,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
             AreaView.TilePlacementModels = _viewModel.TilePlacementModels;
             AreaView.TilePlacementValidator = _viewModel.CanPlaceArmedTileAt;
+            AreaView.SelectedTileCell = _viewModel.SelectedTile;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
             // Opening an area shows its map. Not gated on the 3D View tab being selected: it always is
@@ -114,6 +117,8 @@ namespace SWLOR.Toolset.Editors
                 AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
             else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementModels))
                 AreaView.TilePlacementModels = _viewModel.TilePlacementModels;
+            else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedTile))
+                AreaView.SelectedTileCell = _viewModel.SelectedTile;
         }
 
         /// <summary>
@@ -203,6 +208,9 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>An armed tile stamp resolved to a grid cell - the anchor is its bottom-left corner.</summary>
         private void OnTileCellPicked(int column, int row) => _viewModel?.CommitTilePlacement(column, row);
+
+        /// <summary>A click on open ground selected a grid cell (or cleared the selection).</summary>
+        private void OnTileSelected((int Column, int Row)? cell) => _viewModel?.SelectTile(cell);
 
         /// <summary>An armed tile stamp was cancelled (Esc or right-click in the viewport).</summary>
         private void OnTilePlacementCancelled() => _viewModel?.CancelTilePlacement();

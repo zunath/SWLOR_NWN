@@ -91,6 +91,11 @@
           <Path Data="M3,7 H19 M5,11 H21 M3,15 H16 M7,19 H21" />
         </ToggleButton>
         <ToggleButton Classes="tool"
+                      IsChecked="{Binding Display.ShowCeilings, Mode=TwoWay}"
+                      ToolTip.Tip="Display ceilings - roof an interior area over instead of seeing into its rooms from above">
+          <Path Data="M3,11 L12,4 L21,11 M5,11 V20 H19 V11" />
+        </ToggleButton>
+        <ToggleButton Classes="tool"
                       IsChecked="{Binding Display.ShowAreaLighting, Mode=TwoWay}"
                       ToolTip.Tip="Display area lighting - light the scene with the area's own sun/moon colours instead of neutral editor light">
           <Path Data="M8,12 A4,4 0 1 0 16,12 A4,4 0 1 0 8,12 Z M12,2 V4 M12,20 V22 M2,12 H4 M20,12 H22 M5.5,5.5 L7,7 M17,17 L18.5,18.5 M18.5,5.5 L17,7 M7,17 L5.5,18.5" />

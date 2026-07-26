@@ -47,6 +47,19 @@ namespace SWLOR.Toolset.Domain.Render
         public required int[] Indices { get; init; }
 
         /// <summary>
+        /// The source node's MDL <c>tilefade</c> flag: 0 for geometry that is always drawn, non-zero
+        /// for geometry the engine fades out when the camera would otherwise be looking through it.
+        /// </summary>
+        /// <remarks>
+        /// This is how a tileset marks what is overhead. Every <c>ceilling*</c> node of the zsf01
+        /// interior tiles carries tilefade 1, as does the high <c>treefol_01</c> canopy shell of the
+        /// ttw01 forest tiles - and nothing at floor or wall height does. Aurora's area view drops all
+        /// of it, which is why a builder can see into rooms from above and see the forest floor at all;
+        /// see <c>GlAreaControl.ShowCeilings</c>.
+        /// </remarks>
+        public int TileFade { get; init; }
+
+        /// <summary>
         /// Accumulated node-to-model transform: this node's own SRT composed with every ancestor
         /// up to (but not including) a transform for the model root itself. See
         /// <see cref="MdlMeshBuilder.ComposeNodeTransform"/>.
@@ -380,6 +393,7 @@ namespace SWLOR.Toolset.Domain.Render
                 Normals = normals,
                 TexCoords = texCoords,
                 Indices = indices,
+                TileFade = trimesh.Tilefade,
                 Transform = ComposeNodeTransform(trimesh, pose),
                 PoseFrames = poseFrames.Count == 0
                     ? Array.Empty<Matrix4x4>()

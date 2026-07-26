@@ -190,6 +190,21 @@ namespace SWLOR.Toolset.Domain.Render
         public required AreaSceneDiagnostics Diagnostics { get; init; }
 
         /// <summary>
+        /// Whether this area's tileset declares <c>Interior=1</c> in its .set - i.e. its tiles are
+        /// rooms with a ceiling over them rather than open sky.
+        /// </summary>
+        /// <remarks>
+        /// This is what decides whether the viewport's hide-ceilings pass applies. Interior and
+        /// exterior tilesets both mark overhead geometry with the MDL <c>tilefade</c> flag, but they
+        /// mean different things by it: zsf01 flags the ceiling slabs sealing each room, which have to
+        /// go or the area reads as a field of blank plates; ttw01 flags the forest canopy, which
+        /// Aurora draws - a wood with its treetops removed is a field of bare poles, and the reference
+        /// toolset shows the canopy. False for an area whose tileset would not resolve, which is also
+        /// the safe answer: nothing is hidden.
+        /// </remarks>
+        public bool IsInteriorTileset { get; init; }
+
+        /// <summary>
         /// Every doorway the placed tiles declare, in world space - the only positions a door may be
         /// hung at. Empty for an area whose tileset would not resolve, or one laid entirely with
         /// tiles that carry no door nodes.

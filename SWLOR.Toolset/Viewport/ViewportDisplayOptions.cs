@@ -25,6 +25,7 @@ namespace SWLOR.Toolset.Viewport
             {
                 _showAreaLighting = settings?.ShowAreaLighting ?? false;
                 _showFog = settings?.ShowFog ?? false;
+                _showCeilings = settings?.ShowCeilings ?? false;
             }
             finally
             {
@@ -48,6 +49,18 @@ namespace SWLOR.Toolset.Viewport
         private bool _showFog;
 
         /// <summary>
+        /// Draw an interior tileset's ceilings instead of looking into its rooms from above.
+        /// </summary>
+        /// <remarks>
+        /// Off by default, matching Aurora: an interior seen from above is otherwise a field of blank
+        /// ceiling slabs with the rooms sealed underneath them. Turning it on is for checking the
+        /// ceiling itself. Exterior tilesets are unaffected - their overhead geometry is the treetops,
+        /// which Aurora draws.
+        /// </remarks>
+        [ObservableProperty]
+        private bool _showCeilings;
+
+        /// <summary>
         /// Reserved for the shadow pass, which the viewport renderer does not have yet. The bar shows
         /// the control disabled rather than omitting it, so it is clear the switch is missing rather
         /// than hidden.
@@ -61,6 +74,8 @@ namespace SWLOR.Toolset.Viewport
 
         partial void OnShowFogChanged(bool value) => Persist();
 
+        partial void OnShowCeilingsChanged(bool value) => Persist();
+
         private void Persist()
         {
             if (_loading || _settings == null)
@@ -68,6 +83,7 @@ namespace SWLOR.Toolset.Viewport
 
             _settings.ShowAreaLighting = ShowAreaLighting;
             _settings.ShowFog = ShowFog;
+            _settings.ShowCeilings = ShowCeilings;
         }
     }
 }

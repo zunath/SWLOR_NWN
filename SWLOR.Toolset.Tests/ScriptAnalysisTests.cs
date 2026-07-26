@@ -329,6 +329,84 @@ namespace SWLOR.Toolset.Tests
         }
     }
 
+    /// <summary>Project-wide script search.</summary>
+    public class ScriptWorkspaceSearchTests
+    {
+        [Test]
+        public void RealModuleCorpus_FindsKnownIdentifierWhereItIsUsed()
+        {
+            var search = new ScriptWorkspaceSearch(Path.Combine(CorpusLocator.ModuleDirectory, "nss"));
+
+            var results = search.Search("GetIsPC", ScriptSearchMode.Identifier);
+
+            results.Should().Contain(r => r.ResRef == "dmfi_activate" && r.Line == 106);
+            results.Should().Contain(r => r.ResRef == "dmfi_execute");
+            results.Should().OnlyContain(r => !r.LineText.TrimStart().StartsWith("//", StringComparison.Ordinal),
+                "identifier mode searches code tokens, not comments");
+        }
+
+        [Test]
+        public void IdentifierMode_ExcludesStringsAndComments()
+        {
+            using var corpus = new TempScriptCorpus();
+            corpus.Write("one", """
+                void main()
+                {
+                    string s = "Needle";
+                    // Needle
+                    int Needle = 1;
+                }
+                """);
+
+            var results = new ScriptWorkspaceSearch(corpus.NssDirectory)
+                .Search("Needle", ScriptSearchMode.Identifier);
+
+            results.Should().ContainSingle()
+                .Which.LineText.Should().Contain("int Needle");
+        }
+
+        [Test]
+        public void SubstringMode_IncludesStrings()
+        {
+            using var corpus = new TempScriptCorpus();
+            corpus.Write("one", """
+                void main()
+                {
+                    string s = "Needle";
+                }
+                """);
+
+            var results = new ScriptWorkspaceSearch(corpus.NssDirectory)
+                .Search("Needle", ScriptSearchMode.Substring);
+
+            results.Should().ContainSingle()
+                .Which.LineText.Should().Contain("\"Needle\"");
+        }
+
+        private sealed class TempScriptCorpus : IDisposable
+        {
+            private readonly string _root = Path.Combine(
+                Path.GetTempPath(), "swlor_script_search_" + Guid.NewGuid().ToString("N"));
+
+            public TempScriptCorpus()
+            {
+                NssDirectory = Path.Combine(_root, "nss");
+                Directory.CreateDirectory(NssDirectory);
+            }
+
+            public string NssDirectory { get; }
+
+            public void Write(string resRef, string source) =>
+                File.WriteAllText(Path.Combine(NssDirectory, resRef + ".nss"), source);
+
+            public void Dispose()
+            {
+                if (Directory.Exists(_root))
+                    Directory.Delete(_root, recursive: true);
+            }
+        }
+    }
+
     /// <summary>Go-to-definition, find-references and rename.</summary>
     public class ScriptNavigationTests
     {

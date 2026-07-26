@@ -24,6 +24,7 @@ namespace SWLOR.Toolset.Shell
         private readonly ValidationViewModel _validation;
         private readonly PaletteViewModel _palette;
         private readonly ProblemsViewModel _problems;
+        private readonly ScriptSearchViewModel _scriptSearch;
         private readonly ScriptReferenceViewModel _scriptReference;
 
         /// <summary>Where remembered divider positions come from and go, or null in a test with none.</summary>
@@ -45,6 +46,7 @@ namespace SWLOR.Toolset.Shell
             ValidationViewModel validation,
             PaletteViewModel palette,
             ProblemsViewModel problems,
+            ScriptSearchViewModel scriptSearch,
             ScriptReferenceViewModel scriptReference,
             ToolsetSettings? settings = null)
         {
@@ -55,6 +57,7 @@ namespace SWLOR.Toolset.Shell
             _validation = validation;
             _palette = palette;
             _problems = problems;
+            _scriptSearch = scriptSearch;
             _scriptReference = scriptReference;
             _settings = settings;
         }
@@ -139,7 +142,7 @@ namespace SWLOR.Toolset.Shell
             {
                 Id = "OutputDock",
                 ActiveDockable = _output,
-                VisibleDockables = CreateList<IDockable>(_output, _validation, _problems),
+                VisibleDockables = CreateList<IDockable>(_output, _validation, _problems, _scriptSearch),
                 Alignment = Alignment.Bottom,
                 Proportion = 0.20,
                 // Each panel draws its own title; Dock's chrome adds a dotted drag grip and window
@@ -243,6 +246,7 @@ namespace SWLOR.Toolset.Shell
                 [_validation.Id] = () => _validation,
                 [_palette.Id] = () => _palette,
                 [_problems.Id] = () => _problems,
+                [_scriptSearch.Id] = () => _scriptSearch,
                 [_scriptReference.Id] = () => _scriptReference
             };
 

@@ -1666,3 +1666,24 @@ and undo remain owned by the editor buffer.
   panel exists and opens through a real headless keypress. Focused run:
   `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
   "FullyQualifiedName~ScriptEditorViewRenderTests"` - 6 passed.
+
+## Script editor improvement 3 - 2026-07-26 - Find text across all module scripts
+
+A new **Find Scripts** bottom dock searches every `.nss` under `Module/nss`. It sits beside Output,
+Validation, and Problems, has identifier-only and substring modes, and double-clicking a result opens
+that script at the matching line through `EditorService.NavigateToScriptLine`.
+
+- **Why.** Single-file references answer "where in this file?", but module work usually starts with
+  "which scripts mention this at all?" With only 87 sources the search can stay simple and synchronous,
+  but it still needs the lexer so comments and string literals do not masquerade as code references.
+- **Decision.** `Domain.Script.ScriptWorkspaceSearch` owns the scan. Identifier mode requires a valid
+  NWScript identifier and matches only lexer `Identifier` tokens, so string keys and comments are
+  excluded. Substring mode is intentionally plain text and case-insensitive, because sometimes the
+  builder really is looking for a string key or comment note.
+- **UI wiring.** `ScriptSearchViewModel` and `ScriptSearchView` follow the `Shell/Panels` ->
+  `Shell/Views` namespace convention that `ViewLocator` expects, and `ToolsetDockFactory` adds the
+  singleton to `OutputDock` plus `ContextLocator`.
+- **Verification.** `ScriptWorkspaceSearchTests` covers real corpus hits for `GetIsPC`, string/comment
+  exclusion in identifier mode, and string inclusion in substring mode. `ScriptSearchViewLoadsItsXaml`
+  covers the docked view. Focused runs: `ScriptWorkspaceSearchTests` - 3 passed;
+  `ScriptEditorViewRenderTests` - 7 passed.

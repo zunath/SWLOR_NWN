@@ -8,6 +8,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset;
 using SWLOR.Toolset.Editors;
+using SWLOR.Toolset.Shell.Views;
 using SWLOR.Toolset.Workspace;
 
 [assembly: AvaloniaTestApplication(typeof(SWLOR.Toolset.Tests.HeadlessAppBuilder))]
@@ -79,6 +80,17 @@ namespace SWLOR.Toolset.Tests
             window.KeyPress(Key.F, RawInputModifiers.Control, PhysicalKey.F, "f");
 
             SearchPanelOpen(view).Should().BeTrue("Ctrl+F should open find without relying on menu gestures");
+        }
+
+        [AvaloniaTest]
+        public void ScriptSearchViewLoadsItsXaml()
+        {
+            var view = new ScriptSearchView();
+
+            view.FindControl<TextBox>("QueryBox")
+                .Should().NotBeNull("the cross-script search panel needs a query box");
+            view.FindControl<ListBox>("ResultsList")
+                .Should().NotBeNull("the cross-script search panel needs a results list");
         }
 
         [AvaloniaTest]

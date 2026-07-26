@@ -238,9 +238,9 @@
       </Grid>
     </DataTemplate>
 
-    <!-- One behavior field. Six shapes over the same row so the label column stays aligned with
-         the schema fields above: toggle, number, name-valued picker, id-valued picker, preview
-         gallery, and free text.
+    <!-- One behavior field. Seven shapes over the same row so the label column stays aligned with
+         the schema fields above: toggle, number, name-valued picker, table dropdown, id-valued
+         picker, preview gallery, and free text.
          A name picker is an AutoCompleteBox rather than a combo because the tag source alone offers
          five figures of options and a stored value the source does not know must stay visible. -->
     <DataTemplate DataType="placeables:BehaviorFieldViewModel">
@@ -261,6 +261,17 @@
                          ValueMemberBinding="{Binding Value}"
                          FilterMode="Contains" MaxDropDownHeight="360"
                          Text="{Binding Text, Mode=TwoWay}" />
+
+        <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="8"
+              IsVisible="{Binding IsTableChoice}">
+          <ComboBox Grid.Column="0"
+                    ItemsSource="{Binding Options}"
+                    SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                    MaxDropDownHeight="400" HorizontalAlignment="Stretch" />
+          <Button Grid.Column="1" Content="Clear" Padding="10,4"
+                  Command="{Binding ClearChoiceCommand}"
+                  IsVisible="{Binding CanClearChoice}" />
+        </Grid>
 
         <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="8"
               IsVisible="{Binding IsSearchableIdChoice}">

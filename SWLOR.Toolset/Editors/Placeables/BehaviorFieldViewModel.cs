@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         private readonly EditorFieldContext _context;
         private readonly PlaceableBehaviorField _field;
         private readonly BehaviorValueSourceProvider _sources;
+        private readonly List<BehaviorChoiceOption> _options;
         private List<BehaviorChoiceOption> _galleryMatches = new();
         private int _galleryPublished;
         private bool _hasStoredValue;
@@ -58,7 +59,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             _field = field;
             _context = context;
             _sources = sources;
-            Options = sources.GetOptions(field.Source);
+            _options = sources.GetOptions(field.Source).ToList();
 
             RefreshFromDocument();
             RebuildGallery();
@@ -72,7 +73,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         public decimal Minimum => _field.Minimum ?? int.MinValue;
         public decimal Maximum => _field.Maximum ?? int.MaxValue;
 
-        public IReadOnlyList<BehaviorChoiceOption> Options { get; }
+        public IReadOnlyList<BehaviorChoiceOption> Options => _options;
         public ObservableCollection<BehaviorGalleryTileViewModel> GalleryTiles { get; } = new();
 
         public bool IsToggle => _field.Kind == PlaceableFieldKind.Toggle;
@@ -94,8 +95,19 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// </summary>
         public bool IsNameChoice => _field.Kind == PlaceableFieldKind.Choice &&
                                     _field.VarType == VarTable.TypeString &&
+                                    !IsTableChoice &&
                                     !IsGalleryChoice &&
                                     Options.Count > 0;
+
+        /// <summary>
+        /// Loot and spawn tables are finite server declarations, so they use a true dropdown rather
+        /// than the free-typing autocomplete needed by the module's five-figure tag collection.
+        /// </summary>
+        public bool IsTableChoice => _field.Kind == PlaceableFieldKind.Choice &&
+                                     _field.VarType == VarTable.TypeString &&
+                                     _field.Source is PlaceableValueSource.LootTables
+                                         or PlaceableValueSource.SpawnTables &&
+                                     Options.Count > 0;
 
         /// <summary>
         /// Key items are numerous enough to need a searchable selector. The text filters choices,
@@ -114,8 +126,8 @@ namespace SWLOR.Toolset.Editors.Placeables
                                   Options.Count > 0;
 
         /// <summary>Free text, and the fallback whenever a choice source produced no options.</summary>
-        public bool IsText => !IsToggle && !IsInteger && !IsNameChoice && !IsSearchableIdChoice &&
-                              !IsIdChoice && !IsGalleryChoice;
+        public bool IsText => !IsToggle && !IsInteger && !IsNameChoice && !IsTableChoice &&
+                              !IsSearchableIdChoice && !IsIdChoice && !IsGalleryChoice;
         public string SelectedDisplay => SelectedOption?.Display ??
                                          (string.IsNullOrWhiteSpace(Text) ? "Not selected" : Text);
         public string? SelectedDetails => SelectedOption?.Details;
@@ -160,6 +172,17 @@ namespace SWLOR.Toolset.Editors.Placeables
                     Text = entry?.StringValue ?? string.Empty;
                     SelectedOption = Options.FirstOrDefault(option =>
                         string.Equals(option.Value, Text, StringComparison.OrdinalIgnoreCase));
+
+                    // Keep a legacy or misspelled stored table visible in the dropdown so opening
+                    // the editor never hides data. It remains marked dangling until replaced.
+                    if (SelectedOption == null &&
+                        IsTableChoice &&
+                        !string.IsNullOrWhiteSpace(Text))
+                    {
+                        var missing = new BehaviorChoiceOption(Text, $"{Text} (missing)");
+                        _options.Add(missing);
+                        SelectedOption = missing;
+                    }
                 }
 
                 ChoiceSearchText = SelectedOption?.Display ?? string.Empty;

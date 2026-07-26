@@ -364,6 +364,83 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void LootAndSpawnTableFields_UseDropdownsAndWriteDeclaredValues()
+        {
+            var sourceRoot = FindGameServerSource();
+            if (sourceRoot == null)
+                Assert.Ignore("SWLOR.Game.Server source not found from the test context.");
+
+            var fields = PlaceableBehaviorCatalog.Behaviors
+                .SelectMany(behavior => behavior.Fields)
+                .Where(field => field.Source is PlaceableValueSource.LootTables
+                    or PlaceableValueSource.SpawnTables)
+                .ToList();
+            fields.Select(field => field.VariableName).Should().BeEquivalentTo(
+                "SCAVENGE_POINT_LOOT_TABLE_NAME",
+                "HARVESTING_LOOT_TABLE",
+                "RESOURCE_SPAWN_TABLE_ID",
+                "ASTEROID_LOOT_TABLE_ID",
+                "STRIPMINE_LOOT_TABLE_ID");
+
+            var document = BuildDocument();
+            var context = new EditorFieldContext(
+                document,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+            var sources = new BehaviorValueSourceProvider(
+                new GameCodeIndex(sourceRoot),
+                tags: () => null);
+
+            foreach (var field in fields)
+            {
+                var picker = new BehaviorFieldViewModel(field, context, sources);
+                picker.IsTableChoice.Should().BeTrue(
+                    $"{field.Label} should render as a dropdown");
+                picker.IsNameChoice.Should().BeFalse();
+                picker.IsText.Should().BeFalse();
+                picker.Options.Should().NotBeEmpty();
+
+                picker.SelectedOption = picker.Options.First();
+
+                new VarTable(document.Root)
+                    .Single(entry => entry.Name == field.VariableName)
+                    .StringValue.Should().Be(picker.SelectedOption.Value);
+            }
+
+            var optional = new BehaviorFieldViewModel(
+                Field("asteroid", "STRIPMINE_LOOT_TABLE_ID"),
+                context,
+                sources);
+            optional.CanClearChoice.Should().BeTrue();
+            optional.ClearChoiceCommand.Execute(null);
+            new VarTable(document.Root).Should().NotContain(
+                entry => entry.Name == "STRIPMINE_LOOT_TABLE_ID");
+
+            var legacyDocument = BuildDocument();
+            new VarTable(legacyDocument.Root).SetString(
+                "ASTEROID_LOOT_TABLE_ID",
+                "LEGACY_TABLE");
+            var legacy = new BehaviorFieldViewModel(
+                Field("asteroid", "ASTEROID_LOOT_TABLE_ID"),
+                new EditorFieldContext(
+                    legacyDocument,
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    }),
+                sources);
+
+            legacy.SelectedOption.Should().NotBeNull();
+            legacy.SelectedOption!.Value.Should().Be("LEGACY_TABLE");
+            legacy.SelectedOption.Display.Should().Be("LEGACY_TABLE (missing)");
+            legacy.Status.Should().Be(BehaviorValueStatus.Dangling);
+        }
+
+        [Test]
         public void BehaviorView_UsesInlineInfiniteGalleriesAndSearchableKeyItems()
         {
             var viewPath = Path.Combine(
@@ -388,6 +465,7 @@ namespace SWLOR.Toolset.Tests
                     StringComparison.Ordinal)..app.IndexOf("<local:ViewLocator", StringComparison.Ordinal)];
 
             behaviorTemplate.Should().Contain("IsSearchableIdChoice");
+            behaviorTemplate.Should().Contain("IsTableChoice");
             behaviorTemplate.Should().Contain("Watermark=\"Search key items\"");
             behaviorTemplate.Should().Contain("ScrollChanged=\"OnBehaviorGalleryScrollChanged\"");
             behaviorTemplate.Should().NotContain("<Popup");

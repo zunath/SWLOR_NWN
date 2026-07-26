@@ -34,7 +34,6 @@ namespace SWLOR.Toolset.Viewport
 
         // ----- Tunables -----
         private const float VerticalFovRadians = MathF.PI / 4f; // 45 degrees - comfortable for open outdoor areas
-        private const float NearPlane = 0.1f;
         private const int FloatsPerVertex = 8; // position(3) + normal(3) + texcoord(2)
         private const float PolygonHeightOffset = 0.05f; // lift trigger outlines slightly above the tile floor
         /// <summary>
@@ -1832,9 +1831,14 @@ void main()
 
         private void DrawScene(AreaScene scene, int width, int height)
         {
+            // The far plane only has to reach past the area; 25x the framing distance covers the
+            // largest in the corpus with room to spare. The near plane scales with the distance -
+            // see AreaCameraMath.NearPlaneFor - because the ratio between the two is what decides
+            // whether a painting can be told from the wall it hangs on.
             var farPlane = MathF.Max(_distance, _initialDistance) * 25f + 100f;
             var aspect = (float)width / height;
-            var projection = Matrix4x4.CreatePerspectiveFieldOfView(VerticalFovRadians, aspect, NearPlane, farPlane);
+            var projection = Matrix4x4.CreatePerspectiveFieldOfView(
+                VerticalFovRadians, aspect, AreaCameraMath.NearPlaneFor(_distance), farPlane);
 
             var eye = _target + AreaCameraMath.OrbitEyeOffset(_azimuth, _elevation, _distance);
             var view = Matrix4x4.CreateLookAt(eye, _target, Vector3.UnitZ);

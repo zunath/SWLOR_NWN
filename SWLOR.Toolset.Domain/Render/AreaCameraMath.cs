@@ -44,6 +44,27 @@ namespace SWLOR.Toolset.Domain.Render
         /// <summary>Farthest the camera may zoom out, expressed as a multiple of the scene's initial framing distance.</summary>
         public const float MaxDistanceMultiplier = 20f;
 
+        /// <summary>
+        /// The near clip plane to use at a given orbit distance.
+        /// </summary>
+        /// <remarks>
+        /// Scaled with the distance rather than fixed, because a depth buffer's precision is governed
+        /// by the ratio between the planes and almost all of it is spent in the first few metres. A
+        /// fixed 0.1m near plane against a far plane hundreds of metres out leaves so little precision
+        /// at working range that coplanar surfaces cannot be told apart: the paintings hung on a wall
+        /// flickered against the wall behind them whenever the camera moved, because a picture is a
+        /// decal a centimetre off the surface it hangs on.
+        /// <para>
+        /// A twentieth of the orbit distance keeps the ratio constant as the builder zooms, so the
+        /// precision at whatever is being looked at does not change with the zoom. At a typical
+        /// interior framing of 20m that is a 1m near plane against the old 0.1m - twenty times the
+        /// depth resolution at working range. The floor is a tenth of <see cref="MinDistance"/>,
+        /// which is nearer than the camera can be brought, so nothing is clipped by it.
+        /// </para>
+        /// </remarks>
+        public static float NearPlaneFor(float distance) =>
+            MathF.Max(MinDistance / 10f, MathF.Abs(distance) / 20f);
+
         /// <summary>Fractional slack added around the fitted area footprint so it doesn't touch the frustum edges.</summary>
         private const float FramingSlack = 1.25f;
 

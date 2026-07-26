@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Headless.NUnit;
+using Avalonia.Input;
 using AvaloniaEdit;
 using FluentAssertions;
 using NUnit.Framework;
@@ -61,6 +62,23 @@ namespace SWLOR.Toolset.Tests
             // or a bad control reference throws here rather than rendering blank in the app.
             view.FindControl<TextEditor>("Editor")
                 .Should().NotBeNull("the buffer control must exist for the editor to be usable");
+        }
+
+        [AvaloniaTest]
+        public void SearchPanelIsInstalledAndOpensFromCtrlF()
+        {
+            var view = new ScriptEditorView();
+            var window = new Window { Content = view };
+            window.Show();
+
+            SearchPanelInstalled(view).Should().BeTrue();
+            SearchPanelOpen(view).Should().BeFalse();
+
+            var editor = view.FindControl<TextEditor>("Editor")!;
+            editor.TextArea.Focus();
+            window.KeyPress(Key.F, RawInputModifiers.Control, PhysicalKey.F, "f");
+
+            SearchPanelOpen(view).Should().BeTrue("Ctrl+F should open find without relying on menu gestures");
         }
 
         [AvaloniaTest]
@@ -137,5 +155,15 @@ namespace SWLOR.Toolset.Tests
             public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) =>
                 Task.FromResult(false);
         }
+
+        private static bool SearchPanelInstalled(ScriptEditorView view) =>
+            (bool)typeof(ScriptEditorView)
+                .GetProperty("IsSearchPanelInstalledForTests", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                .GetValue(view)!;
+
+        private static bool SearchPanelOpen(ScriptEditorView view) =>
+            (bool)typeof(ScriptEditorView)
+                .GetProperty("IsSearchPanelOpenForTests", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                .GetValue(view)!;
     }
 }

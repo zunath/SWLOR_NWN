@@ -13,15 +13,34 @@
     <!-- The buffer is not bound. AvaloniaEdit owns the text, its own undo stack and the caret, so a
          two-way binding would fight it: re-setting Text on every keystroke resets the caret to 0.
          The code-behind seeds the document once and pushes changes out to the view model instead. -->
-    <edit:TextEditor Grid.Row="0" Name="Editor"
-                     FontFamily="{DynamicResource MonoFont}"
-                     FontSize="13"
-                     Background="{DynamicResource ShellBackgroundBrush}"
-                     Foreground="{DynamicResource InkBrush}"
-                     ShowLineNumbers="True"
-                     WordWrap="False"
-                     HorizontalScrollBarVisibility="Auto"
-                     VerticalScrollBarVisibility="Auto" />
+    <Grid Grid.Row="0">
+      <edit:TextEditor Name="Editor"
+                       FontFamily="{DynamicResource MonoFont}"
+                       FontSize="13"
+                       Background="{DynamicResource ShellBackgroundBrush}"
+                       Foreground="{DynamicResource InkBrush}"
+                       ShowLineNumbers="True"
+                       WordWrap="False"
+                       HorizontalScrollBarVisibility="Auto"
+                       VerticalScrollBarVisibility="Auto" />
+
+      <Border Name="SearchPanel" IsVisible="False" HorizontalAlignment="Right" VerticalAlignment="Top"
+              Background="{DynamicResource PanelRaisedBrush}" BorderBrush="{DynamicResource AccentBrush}"
+              BorderThickness="1" Padding="8" Margin="0,8,24,0" CornerRadius="4">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <TextBlock Text="Find" VerticalAlignment="Center" Classes="count" />
+          <TextBox Name="FindTextBox" Width="170" KeyDown="OnSearchBoxKeyDown" />
+          <Button Content="Prev" Padding="8,3" Click="OnFindPreviousClick" />
+          <Button Content="Next" Padding="8,3" Click="OnFindNextClick" />
+          <TextBlock Name="ReplaceLabel" Text="Replace" VerticalAlignment="Center" Classes="count" />
+          <TextBox Name="ReplaceTextBox" Width="150" KeyDown="OnSearchBoxKeyDown" />
+          <Button Name="ReplaceButton" Content="Replace" Padding="8,3" Click="OnReplaceClick" />
+          <Button Name="ReplaceAllButton" Content="All" Padding="8,3" Click="OnReplaceAllClick" />
+          <CheckBox Name="MatchCaseBox" Content="Case" VerticalAlignment="Center" />
+          <Button Content="X" Padding="8,3" Click="OnCloseSearchClick" />
+        </StackPanel>
+      </Border>
+    </Grid>
 
     <!-- Outline sits under the code rather than in a side rail: the shipped layout has no room for a
          fourth column, and NWScript files are short and function-dense, so a horizontal strip costs

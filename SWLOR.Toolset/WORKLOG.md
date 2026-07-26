@@ -1644,3 +1644,25 @@ Scripts, rescans, and only packs if the stale list clears.
 - **Verification.** `ScriptStalenessScannerTests` now pins both clean readiness and the stale warning
   naming the script. Focused run: `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj
   --no-build --filter "FullyQualifiedName~ScriptStalenessScannerTests"` - 8 passed.
+
+## Script editor improvement 2 - 2026-07-26 - Find and replace opens from the editor
+
+The script editor now has a compact find/replace strip over the top-right of the `TextEditor`.
+`Ctrl+F` opens find, `Ctrl+H` opens the same strip with replace controls visible, `Enter`/`F3` move
+between matches, and replace operations edit the AvaloniaEdit `TextDocument` directly so dirty state
+and undo remain owned by the editor buffer.
+
+- **Why.** Builders had single-file references and rename, but no ordinary "find this text in the
+  file" path. For legacy NWScript, quick find is the daily tool; making it leave the editor surface
+  would be friction in the place people are already typing.
+- **Decision.** The available AvaloniaEdit 11.3 package exposes only the low-level search result type,
+  so the implementation stays local to `ScriptEditorView` rather than adding a second dependency or
+  moving logic into a view model that would then know about Avalonia controls. The search strip is
+  app glue only: it does no file I/O and never bypasses `ScriptTextDocument` saves.
+- **Bug caught by the render test.** Registering key handling only on the outer `TextEditor` did not
+  prove Ctrl+F works, because real keyboard focus sits on AvaloniaEdit's inner `TextArea`. The handler
+  now lives on both controls, and the headless test focuses `TextArea` before pressing Ctrl+F.
+- **Verification.** `ScriptEditorViewRenderTests.SearchPanelIsInstalledAndOpensFromCtrlF` asserts the
+  panel exists and opens through a real headless keypress. Focused run:
+  `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
+  "FullyQualifiedName~ScriptEditorViewRenderTests"` - 6 passed.

@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using AvaloniaEdit;
 using AvaloniaEdit.CodeCompletion;
@@ -16,11 +17,25 @@ namespace SWLOR.Toolset.Editors
         private ScriptEditorViewModel? _bound;
         private CompletionWindow? _completionWindow;
         private bool _suppressTextChanged;
+        private Border? _searchPanel;
+        private TextBox? _findTextBox;
+        private TextBox? _replaceTextBox;
+        private TextBlock? _replaceLabel;
+        private Button? _replaceButton;
+        private Button? _replaceAllButton;
+        private CheckBox? _matchCaseBox;
 
         public ScriptEditorView()
         {
             InitializeComponent();
             _editor = this.FindControl<TextEditor>("Editor");
+            _searchPanel = this.FindControl<Border>("SearchPanel");
+            _findTextBox = this.FindControl<TextBox>("FindTextBox");
+            _replaceTextBox = this.FindControl<TextBox>("ReplaceTextBox");
+            _replaceLabel = this.FindControl<TextBlock>("ReplaceLabel");
+            _replaceButton = this.FindControl<Button>("ReplaceButton");
+            _replaceAllButton = this.FindControl<Button>("ReplaceAllButton");
+            _matchCaseBox = this.FindControl<CheckBox>("MatchCaseBox");
             DataContextChanged += OnDataContextChanged;
 
             if (_editor != null)
@@ -32,6 +47,7 @@ namespace SWLOR.Toolset.Editors
                 _editor.TextArea.TextEntered += OnTextEntered;
                 _editor.TextArea.TextEntering += OnTextEntering;
                 _editor.AddHandler(KeyDownEvent, OnEditorKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+                _editor.TextArea.AddHandler(KeyDownEvent, OnEditorKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
             }
         }
 
@@ -113,7 +129,24 @@ namespace SWLOR.Toolset.Editors
 
         private void OnEditorKeyDown(object? sender, KeyEventArgs e)
         {
-            if (_editor == null || _bound == null)
+            if (_editor == null)
+                return;
+
+            if (e.Key == Key.F && e.KeyModifiers.HasFlag(KeyModifiers.Control))
+            {
+                OpenSearchPanel(showReplace: false);
+                e.Handled = true;
+                return;
+            }
+
+            if (e.Key == Key.H && e.KeyModifiers.HasFlag(KeyModifiers.Control))
+            {
+                OpenSearchPanel(showReplace: true);
+                e.Handled = true;
+                return;
+            }
+
+            if (_bound == null)
                 return;
 
             var caret = _editor.TextArea.Caret.Offset;
@@ -169,6 +202,195 @@ namespace SWLOR.Toolset.Editors
                     break;
             }
         }
+
+        internal bool IsSearchPanelInstalledForTests => _searchPanel != null;
+
+        internal bool IsSearchPanelOpenForTests => _searchPanel?.IsVisible == true;
+
+        internal void OpenSearchPanelForTests(bool showReplace = false) => OpenSearchPanel(showReplace);
+
+        private void OpenSearchPanel(bool showReplace)
+        {
+            if (_searchPanel == null || _findTextBox == null || _editor == null)
+                return;
+
+            SetReplaceVisible(showReplace);
+
+            var selected = _editor.TextArea.Selection;
+            if (!selected.IsEmpty)
+            {
+                var segment = selected.SurroundingSegment;
+                var text = _editor.Document.GetText(segment);
+                if (!text.Contains('\n') && !text.Contains('\r'))
+                    _findTextBox.Text = text;
+            }
+
+            _searchPanel.IsVisible = true;
+            _findTextBox.Focus();
+            _findTextBox.SelectAll();
+        }
+
+        private void CloseSearchPanel()
+        {
+            if (_searchPanel == null)
+                return;
+
+            _searchPanel.IsVisible = false;
+            _editor?.Focus();
+        }
+
+        private void SetReplaceVisible(bool isVisible)
+        {
+            if (_replaceLabel != null)
+                _replaceLabel.IsVisible = isVisible;
+            if (_replaceTextBox != null)
+                _replaceTextBox.IsVisible = isVisible;
+            if (_replaceButton != null)
+                _replaceButton.IsVisible = isVisible;
+            if (_replaceAllButton != null)
+                _replaceAllButton.IsVisible = isVisible;
+        }
+
+        private void OnSearchBoxKeyDown(object? sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    FindNext(previous: e.KeyModifiers.HasFlag(KeyModifiers.Shift));
+                    e.Handled = true;
+                    break;
+                case Key.F3:
+                    FindNext(previous: e.KeyModifiers.HasFlag(KeyModifiers.Shift));
+                    e.Handled = true;
+                    break;
+                case Key.Escape:
+                    CloseSearchPanel();
+                    e.Handled = true;
+                    break;
+            }
+        }
+
+        private void OnFindNextClick(object? sender, RoutedEventArgs e) => FindNext(previous: false);
+
+        private void OnFindPreviousClick(object? sender, RoutedEventArgs e) => FindNext(previous: true);
+
+        private void OnCloseSearchClick(object? sender, RoutedEventArgs e) => CloseSearchPanel();
+
+        private void OnReplaceClick(object? sender, RoutedEventArgs e)
+        {
+            if (_editor?.Document == null)
+                return;
+
+            var pattern = _findTextBox?.Text;
+            if (string.IsNullOrEmpty(pattern))
+                return;
+
+            var replacement = _replaceTextBox?.Text ?? string.Empty;
+            var selection = _editor.TextArea.Selection;
+            if (!selection.IsEmpty)
+            {
+                var segment = selection.SurroundingSegment;
+                var selected = _editor.Document.GetText(segment);
+                if (string.Equals(selected, pattern, Comparison()))
+                {
+                    _editor.Document.Replace(segment.Offset, segment.Length, replacement);
+                    _editor.TextArea.Caret.Offset = segment.Offset + replacement.Length;
+                }
+            }
+
+            FindNext(previous: false);
+        }
+
+        private void OnReplaceAllClick(object? sender, RoutedEventArgs e)
+        {
+            if (_editor?.Document == null)
+                return;
+
+            var pattern = _findTextBox?.Text;
+            if (string.IsNullOrEmpty(pattern))
+                return;
+
+            var replacement = _replaceTextBox?.Text ?? string.Empty;
+            var comparison = Comparison();
+            var source = _editor.Text;
+            var offset = 0;
+
+            using (_editor.Document.RunUpdate())
+            {
+                while (offset <= source.Length)
+                {
+                    var found = source.IndexOf(pattern, offset, comparison);
+                    if (found < 0)
+                        break;
+
+                    _editor.Document.Replace(found, pattern.Length, replacement);
+                    source = _editor.Text;
+                    offset = found + replacement.Length;
+                    if (replacement.Length == 0)
+                        offset = found;
+                }
+            }
+
+            FindNext(previous: false);
+        }
+
+        private bool FindNext(bool previous)
+        {
+            if (_editor?.Document == null)
+                return false;
+
+            var pattern = _findTextBox?.Text;
+            if (string.IsNullOrEmpty(pattern))
+                return false;
+
+            var source = _editor.Text;
+            if (source.Length == 0)
+                return false;
+
+            var comparison = Comparison();
+            var caret = Math.Clamp(_editor.TextArea.Caret.Offset, 0, source.Length);
+            int found;
+
+            if (previous)
+            {
+                var start = Math.Max(0, caret - 1);
+                found = source.LastIndexOf(pattern, start, comparison);
+                if (found < 0)
+                    found = source.LastIndexOf(pattern, source.Length - 1, comparison);
+            }
+            else
+            {
+                var start = Math.Min(source.Length, caret + CurrentSelectionLength(pattern));
+                found = source.IndexOf(pattern, start, comparison);
+                if (found < 0)
+                    found = source.IndexOf(pattern, 0, comparison);
+            }
+
+            if (found < 0)
+                return false;
+
+            _editor.Select(found, pattern.Length);
+            _editor.TextArea.Caret.BringCaretToView();
+            _editor.Focus();
+            return true;
+        }
+
+        private int CurrentSelectionLength(string pattern)
+        {
+            if (_editor?.Document == null)
+                return 0;
+
+            var selection = _editor.TextArea.Selection;
+            if (selection.IsEmpty)
+                return 0;
+
+            var segment = selection.SurroundingSegment;
+            var selected = _editor.Document.GetText(segment);
+            return string.Equals(selected, pattern, Comparison()) ? segment.Length : 0;
+        }
+
+        private StringComparison Comparison() =>
+            _matchCaseBox?.IsChecked == true ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 
         /// <summary>
         /// Comments the selected lines, or uncomments them when every one is already commented.

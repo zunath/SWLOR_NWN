@@ -9,8 +9,8 @@ namespace SWLOR.Toolset.Domain.Workspace
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Built once by reading every area's .git. The application warms it in the background when a
-    /// workspace opens; direct domain consumers still build it lazily on their first tag question.
+    /// Built from every area's .git. The small transition-destination subset is independently
+    /// prewarmed in the background when a workspace opens; broader tag-to-area maps remain lazy.
     /// </para>
     /// <para>
     /// An instance's own Tag wins, and a blank one falls back to the blueprint's — which is how the
@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Domain.Workspace
     {
         private readonly ModuleWorkspace _workspace;
         private readonly object _syncRoot = new();
+        private readonly object _transitionSyncRoot = new();
         private Dictionary<string, string>? _areasByTag;
         private HashSet<string>? _transitionDestinationTags;
         private Dictionary<string, string>? _waypointAreasByTag;
@@ -29,8 +30,8 @@ namespace SWLOR.Toolset.Domain.Workspace
         private Dictionary<string, string>? _itemResRefsByTag;
         private readonly Dictionary<string, string?> _blueprintTags =
             new(StringComparer.OrdinalIgnoreCase);
-        private Task? _warmTask;
-        private int _generation;
+        private Task<IReadOnlyCollection<string>>? _transitionWarmTask;
+        private int _transitionGeneration;
 
         public ModuleTagIndex(ModuleWorkspace workspace)
         {
@@ -87,12 +88,10 @@ namespace SWLOR.Toolset.Domain.Workspace
         {
             get
             {
-                lock (_syncRoot)
+                lock (_transitionSyncRoot)
                 {
-                    _ = Index();
-                    return _transitionDestinationTags!
-                        .OrderBy(tag => tag, StringComparer.OrdinalIgnoreCase)
-                        .ToList();
+                    _transitionDestinationTags ??= IndexTransitionDestinations();
+                    return SortedTransitionDestinations();
                 }
             }
         }
@@ -101,39 +100,32 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// Returns transition destinations without ever making the caller perform a cold scan. This
         /// is the UI-facing path; it also remains safe if a file change invalidates a prior warm-up.
         /// </summary>
-        public Task<IReadOnlyCollection<string>> GetTransitionDestinationTagsAsync() =>
-            Task.Run(() => TransitionDestinationTags);
-
-        /// <summary>
-        /// Builds the index on a worker thread. Concurrent callers share the same build, while
-        /// callers after an invalidation receive a fresh one.
-        /// </summary>
-        public Task WarmAsync()
+        public Task<IReadOnlyCollection<string>> GetTransitionDestinationTagsAsync()
         {
-            lock (_syncRoot)
+            lock (_transitionSyncRoot)
             {
-                if (_areasByTag != null)
-                    return Task.CompletedTask;
-                if (_warmTask != null)
-                    return _warmTask;
+                if (_transitionDestinationTags != null)
+                    return Task.FromResult(SortedTransitionDestinations());
+                if (_transitionWarmTask != null)
+                    return _transitionWarmTask;
 
-                var generation = _generation;
-                _warmTask = Task.Run(() =>
+                var generation = _transitionGeneration;
+                _transitionWarmTask = Task.Run(() =>
                 {
                     try
                     {
-                        _ = Index();
+                        return TransitionDestinationTags;
                     }
                     finally
                     {
-                        lock (_syncRoot)
+                        lock (_transitionSyncRoot)
                         {
-                            if (_generation == generation)
-                                _warmTask = null;
+                            if (_transitionGeneration == generation)
+                                _transitionWarmTask = null;
                         }
                     }
                 });
-                return _warmTask;
+                return _transitionWarmTask;
             }
         }
 
@@ -142,14 +134,18 @@ namespace SWLOR.Toolset.Domain.Workspace
         {
             lock (_syncRoot)
             {
-                _generation++;
                 _areasByTag = null;
-                _transitionDestinationTags = null;
                 _waypointAreasByTag = null;
                 _doorAreasByTag = null;
                 _itemResRefsByTag = null;
                 _blueprintTags.Clear();
-                _warmTask = null;
+            }
+
+            lock (_transitionSyncRoot)
+            {
+                _transitionGeneration++;
+                _transitionDestinationTags = null;
+                _transitionWarmTask = null;
             }
         }
 
@@ -161,7 +157,6 @@ namespace SWLOR.Toolset.Domain.Workspace
                     return _areasByTag;
 
                 var index = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                var transitionDestinations = new HashSet<string>(StringComparer.Ordinal);
                 var waypoints = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 var doors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var areaResRef in _workspace.EnumerateAreaResRefs())
@@ -170,7 +165,6 @@ namespace SWLOR.Toolset.Domain.Workspace
                     {
                         IndexGit(
                             index,
-                            transitionDestinations,
                             waypoints,
                             doors,
                             areaResRef);
@@ -185,14 +179,12 @@ namespace SWLOR.Toolset.Domain.Workspace
                 _waypointAreasByTag = waypoints;
                 _doorAreasByTag = doors;
                 _areasByTag = index;
-                _transitionDestinationTags = transitionDestinations;
                 return index;
             }
         }
 
         private void IndexGit(
             Dictionary<string, string> index,
-            HashSet<string> transitionDestinations,
             Dictionary<string, string> waypoints,
             Dictionary<string, string> doors,
             string areaResRef)
@@ -202,14 +194,164 @@ namespace SWLOR.Toolset.Domain.Workspace
             using var document = JsonDocument.Parse(stream);
             var root = document.RootElement;
 
-            // A GIT can contain tens of thousands of fields, but this index needs only three lists
-            // and three scalar fields within their entries. JsonDocument avoids materializing the
+            // A GIT can contain tens of thousands of fields, but this index needs only two lists
+            // and two scalar fields within their entries. JsonDocument avoids materializing the
             // complete editable GFF object graph that GitDocument.Load intentionally creates.
             AddTags(index, waypoints, areaResRef, Instances(root, "WaypointList"), ResourceType.Utw);
             AddTags(index, doors, areaResRef, Instances(root, "Door List"), ResourceType.Utd);
-            AddTransitionDestinations(transitionDestinations, Instances(root, "TriggerList"));
-            AddTransitionDestinations(transitionDestinations, Instances(root, "Door List"));
         }
+
+        private HashSet<string> IndexTransitionDestinations()
+        {
+            var areaResRefs = _workspace.EnumerateAreaResRefs();
+            var perArea = new HashSet<string>?[areaResRefs.Count];
+            var options = new ParallelOptions
+            {
+                // Parsing GIT JSON is CPU-heavy. Four workers reduce cold-start latency without
+                // allowing the largest area files to create an unbounded memory spike.
+                MaxDegreeOfParallelism = Math.Max(1, Math.Min(Environment.ProcessorCount, 4))
+            };
+
+            Parallel.For(0, areaResRefs.Count, options, index =>
+            {
+                try
+                {
+                    perArea[index] = ReadTransitionDestinations(areaResRefs[index]);
+                }
+                catch (Exception)
+                {
+                    // One unreadable area must not cost every other area its destinations.
+                }
+            });
+
+            var destinations = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var areaDestinations in perArea)
+            {
+                if (areaDestinations != null)
+                    destinations.UnionWith(areaDestinations);
+            }
+
+            return destinations;
+        }
+
+        private HashSet<string> ReadTransitionDestinations(string areaResRef)
+        {
+            var path = Path.Combine(_workspace.ModuleRoot, "git", areaResRef + ".git.json");
+            var json = File.ReadAllBytes(path);
+            var reader = new Utf8JsonReader(json);
+            var destinations = new HashSet<string>(StringComparer.Ordinal);
+
+            while (reader.Read())
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName || reader.CurrentDepth != 1)
+                    continue;
+
+                var isTransitionList =
+                    reader.ValueTextEquals("TriggerList") ||
+                    reader.ValueTextEquals("Door List");
+                if (!reader.Read())
+                    break;
+
+                if (isTransitionList)
+                    ReadTransitionList(ref reader, destinations);
+                else
+                    reader.Skip();
+            }
+
+            return destinations;
+        }
+
+        private static void ReadTransitionList(
+            ref Utf8JsonReader reader,
+            HashSet<string> destinations)
+        {
+            if (reader.TokenType != JsonTokenType.StartObject)
+            {
+                reader.Skip();
+                return;
+            }
+
+            var fieldDepth = reader.CurrentDepth;
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndObject && reader.CurrentDepth == fieldDepth)
+                    return;
+                if (reader.TokenType != JsonTokenType.PropertyName ||
+                    !reader.ValueTextEquals("value"))
+                {
+                    continue;
+                }
+
+                if (!reader.Read())
+                    return;
+                if (reader.TokenType == JsonTokenType.StartArray)
+                    ReadLinkedToValues(ref reader, destinations);
+                else
+                    reader.Skip();
+            }
+        }
+
+        private static void ReadLinkedToValues(
+            ref Utf8JsonReader reader,
+            HashSet<string> destinations)
+        {
+            var listDepth = reader.CurrentDepth;
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndArray && reader.CurrentDepth == listDepth)
+                    return;
+                if (reader.TokenType != JsonTokenType.PropertyName ||
+                    !reader.ValueTextEquals("LinkedTo"))
+                {
+                    continue;
+                }
+
+                if (!reader.Read())
+                    return;
+                ReadLinkedToField(ref reader, destinations);
+            }
+        }
+
+        private static void ReadLinkedToField(
+            ref Utf8JsonReader reader,
+            HashSet<string> destinations)
+        {
+            if (reader.TokenType != JsonTokenType.StartObject)
+            {
+                reader.Skip();
+                return;
+            }
+
+            var fieldDepth = reader.CurrentDepth;
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndObject && reader.CurrentDepth == fieldDepth)
+                    return;
+                if (reader.TokenType != JsonTokenType.PropertyName ||
+                    !reader.ValueTextEquals("value"))
+                {
+                    continue;
+                }
+
+                if (!reader.Read())
+                    return;
+                if (reader.TokenType == JsonTokenType.String)
+                {
+                    var linkedTo = reader.GetString();
+                    if (!string.IsNullOrWhiteSpace(linkedTo))
+                        destinations.Add(linkedTo);
+                }
+                else
+                {
+                    reader.Skip();
+                }
+            }
+        }
+
+        private IReadOnlyCollection<string> SortedTransitionDestinations() =>
+            _transitionDestinationTags!
+                .OrderBy(tag => tag, StringComparer.OrdinalIgnoreCase)
+                .ToList();
 
         private static IEnumerable<JsonElement> Instances(JsonElement root, string label)
         {

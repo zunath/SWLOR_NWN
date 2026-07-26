@@ -68,18 +68,18 @@ namespace SWLOR.Toolset.Workspace
 
             var tagIndex = Workspace.TagIndex;
             var tagIndexStopwatch = Stopwatch.StartNew();
-            _ = tagIndex.WarmAsync().ContinueWith(task =>
+            _ = tagIndex.GetTransitionDestinationTagsAsync().ContinueWith(task =>
             {
                 tagIndexStopwatch.Stop();
                 if (task.IsCompletedSuccessfully)
                 {
                     _log.AppendLine(
-                        $"Module tag index ready in {tagIndexStopwatch.ElapsedMilliseconds}ms.");
+                        $"Transition tag index ready in {tagIndexStopwatch.ElapsedMilliseconds}ms.");
                 }
                 else if (task.Exception != null)
                 {
                     _log.AppendLine(
-                        $"Module tag index failed after {tagIndexStopwatch.ElapsedMilliseconds}ms: " +
+                        $"Transition tag index failed after {tagIndexStopwatch.ElapsedMilliseconds}ms: " +
                         task.Exception.GetBaseException().Message);
                 }
             }, TaskScheduler.Default);

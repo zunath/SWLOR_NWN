@@ -108,9 +108,11 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void TagIndex_DoesNotParseUnrelatedAreaAndCommentDocuments()
+        public async Task TransitionTagIndex_ReadsOnlyGitAndRefreshesInTheBackground()
         {
             const string resRef = "anchor_entreesud";
+            const string originalTarget = "WP_anchor_desert_est_2";
+            const string replacementTarget = "WP_BACKGROUND_INDEX_REFRESH";
             var root = Path.Combine(
                 Path.GetTempPath(), "SWLOR.Toolset.Tests", "git_only_" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(Path.Combine(root, "are"));
@@ -126,14 +128,21 @@ namespace SWLOR.Toolset.Tests
                 File.WriteAllText(
                     Path.Combine(root, "gic", resRef + ".gic.json"),
                     "This GIC must not be parsed by the tag index.");
-                File.Copy(
-                    Path.Combine(ModuleDirectory, "git", resRef + ".git.json"),
-                    Path.Combine(root, "git", resRef + ".git.json"));
+                var gitPath = Path.Combine(root, "git", resRef + ".git.json");
+                File.Copy(Path.Combine(ModuleDirectory, "git", resRef + ".git.json"), gitPath);
 
                 var workspace = new ModuleWorkspace(root);
+                var initial = await workspace.TagIndex.GetTransitionDestinationTagsAsync();
 
-                workspace.TagIndex.TransitionDestinationTags.Should()
-                    .Contain("WP_anchor_desert_est_2");
+                initial.Should().Contain(originalTarget);
+
+                var updatedGit = File.ReadAllText(gitPath).Replace(originalTarget, replacementTarget);
+                File.WriteAllText(gitPath, updatedGit);
+                workspace.TagIndex.Invalidate();
+
+                var refreshed = await workspace.TagIndex.GetTransitionDestinationTagsAsync();
+                refreshed.Should().Contain(replacementTarget);
+                refreshed.Should().NotContain(originalTarget);
             }
             finally
             {

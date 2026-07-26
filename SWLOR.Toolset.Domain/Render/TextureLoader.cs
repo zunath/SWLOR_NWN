@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
+// The BioWare-DDS conversion below is adapted from Radoub.UI.Services.TextureService
+// (https://github.com/LordOfMyatar/Radoub), which is GPL-3.0. That makes this file a derivative
+// work: it is GPL-3.0 even though the rest of the SWLOR Toolset's own source is MIT. Dropping the
+// Radoub reference would not change that - the logic would have to be clean-roomed from the DDS
+// and BioWare header formats instead. See SWLOR.Toolset/LICENSE-NOTICE.md.
 using Pfim;
 using Radoub.Formats.Plt;
 using Radoub.Formats.Tga;

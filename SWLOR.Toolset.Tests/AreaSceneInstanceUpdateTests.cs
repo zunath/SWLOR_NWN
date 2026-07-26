@@ -76,14 +76,75 @@ namespace SWLOR.Toolset.Tests
                     new TileDoorAnchor
                     {
                         TileIndex = 1, DoorIndex = 0, Type = 0,
-                        // Directly above the first, and much closer in 3D - but a doorway must not win
-                        // for being on a lower or higher storey.
-                        Position = new Vector3(25, 5, 40), Orientation = new Vector2(0, 1)
+                        // Far away across the floor, so the ground-floor doorway wins despite the click
+                        // being level with this one.
+                        Position = new Vector3(60, 5, 40), Orientation = new Vector2(0, 1)
                     }
                 }
             };
 
-            scene.NearestDoorAnchor(new Vector3(7, 5, 39))!.Position.Should().Be(new Vector3(5, 5, 0));
+            scene.NearestDoorAnchor(new Vector3(7, 5, 0))!.Position.Should().Be(new Vector3(5, 5, 0));
+        }
+
+        /// <summary>
+        /// Doorways in a multi-storey area stack almost exactly above one another, so ignoring Z meant a
+        /// click upstairs took whichever lower-floor anchor was marginally nearer across the floor.
+        /// </summary>
+        [Test]
+        public void AClickUpstairsTakesTheUpstairsDoorway()
+        {
+            var scene = new AreaScene
+            {
+                Tileset = "tde01", Width = 4, Height = 4,
+                Tiles = Array.Empty<TilePlacement>(),
+                Instances = Array.Empty<InstanceMarker>(),
+                Diagnostics = new AreaSceneDiagnostics(),
+                DoorAnchors = new[]
+                {
+                    new TileDoorAnchor
+                    {
+                        TileIndex = 0, DoorIndex = 0, Type = 0,
+                        // Marginally nearer across the floor, but a storey down.
+                        Position = new Vector3(5, 5, 0), Orientation = new Vector2(1, 0)
+                    },
+                    new TileDoorAnchor
+                    {
+                        TileIndex = 1, DoorIndex = 0, Type = 0,
+                        Position = new Vector3(7, 5, 10), Orientation = new Vector2(0, 1)
+                    }
+                }
+            };
+
+            scene.NearestDoorAnchor(new Vector3(6, 5, 10))!.Position.Should().Be(new Vector3(7, 5, 10));
+        }
+
+        [Test]
+        public void OnTheSameStoreyTheNearerDoorwayStillWins()
+        {
+            // Height must separate floors without dominating: two doorways on one floor are chosen
+            // between by where the builder actually clicked.
+            var scene = new AreaScene
+            {
+                Tileset = "tde01", Width = 4, Height = 4,
+                Tiles = Array.Empty<TilePlacement>(),
+                Instances = Array.Empty<InstanceMarker>(),
+                Diagnostics = new AreaSceneDiagnostics(),
+                DoorAnchors = new[]
+                {
+                    new TileDoorAnchor
+                    {
+                        TileIndex = 0, DoorIndex = 0, Type = 0,
+                        Position = new Vector3(5, 5, 10), Orientation = new Vector2(1, 0)
+                    },
+                    new TileDoorAnchor
+                    {
+                        TileIndex = 1, DoorIndex = 0, Type = 0,
+                        Position = new Vector3(35, 5, 10), Orientation = new Vector2(0, 1)
+                    }
+                }
+            };
+
+            scene.NearestDoorAnchor(new Vector3(30, 5, 10))!.Position.Should().Be(new Vector3(35, 5, 10));
         }
 
         [Test]

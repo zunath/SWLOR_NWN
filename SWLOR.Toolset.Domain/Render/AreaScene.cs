@@ -206,8 +206,22 @@ namespace SWLOR.Toolset.Domain.Render
         /// buffers rather than rebuilding them to move one object.
         /// </remarks>
         /// <summary>
-        /// The doorway nearest a ground point, measured on the floor plane so a doorway is not preferred
-        /// merely for being on a lower storey. Null when this area declares none.
+        /// How much a metre of height counts for against a metre across the floor when choosing a
+        /// doorway.
+        /// </summary>
+        /// <remarks>
+        /// Elevation has to count for something or a multi-storey area cannot be edited: doorways stack
+        /// almost exactly above one another, so ignoring Z entirely meant a click upstairs took whichever
+        /// lower-floor anchor happened to be marginally nearer in X/Y. It must not dominate either -
+        /// weighting height equally would let a doorway on the same floor lose to a nearer one above it.
+        /// A tile storey is 10m at this tileset's transition height, so a modest weight separates floors
+        /// decisively while leaving same-floor choices to the floor distance that the builder is aiming
+        /// with.
+        /// </remarks>
+        private const float DoorAnchorHeightWeight = 4f;
+
+        /// <summary>
+        /// The doorway nearest a point, preferring the same storey. Null when this area declares none.
         /// </summary>
         /// <remarks>
         /// Deliberately unbounded: there is no radius past which a door is refused instead. A door has to
@@ -228,7 +242,8 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 var dx = anchor.Position.X - groundPoint.X;
                 var dy = anchor.Position.Y - groundPoint.Y;
-                var distance = dx * dx + dy * dy;
+                var dz = (anchor.Position.Z - groundPoint.Z) * DoorAnchorHeightWeight;
+                var distance = dx * dx + dy * dy + dz * dz;
                 if (distance >= bestDistance)
                     continue;
 

@@ -25,6 +25,28 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         /// <summary>Quest IDs declared via <c>QuestBuilder.Create(id, ...)</c> calls.</summary>
         IReadOnlyCollection<string> QuestIds { get; }
 
+        /// <summary>
+        /// Full quest definitions by id - name, state count, journal text, repeatability and
+        /// prerequisites. Read from the same source scan as <see cref="QuestIds"/>, so it is empty
+        /// when <see cref="IsSourceScanAvailable"/> is false.
+        /// </summary>
+        IReadOnlyDictionary<string, QuestDefinitionInfo> Quests { get; }
+
+        /// <summary>Faction enum value to display name, read from <c>FactionType</c>.</summary>
+        IReadOnlyDictionary<int, string> Factions { get; }
+
+        /// <summary>Skill enum value to display name, read from <c>SkillType</c>.</summary>
+        IReadOnlyDictionary<int, string> Skills { get; }
+
+        /// <summary>
+        /// Skill enum value to its C# member name. Conversations may name a skill either way, so
+        /// both spellings have to resolve.
+        /// </summary>
+        IReadOnlyDictionary<int, string> SkillEnumNames { get; }
+
+        /// <summary>The quest with this id, or null when it is not declared anywhere.</summary>
+        QuestDefinitionInfo? FindQuest(string questId);
+
         /// <summary>Spawn table IDs declared via <c>SpawnTableBuilder.Create(id, ...)</c> calls.</summary>
         IReadOnlyCollection<string> SpawnTableIds { get; }
 

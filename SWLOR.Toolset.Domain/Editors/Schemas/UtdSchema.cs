@@ -81,7 +81,7 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                         Title = "Conversation",
                         Fields = new[]
                         {
-                            new FieldDescriptor { Label = "Conversation", FieldName = "Conversation", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, Description = "Legacy .dlg resref; SWLOR dialogs are C# classes." }
+                            new FieldDescriptor { Label = "Conversation", FieldName = "Conversation", Kind = EditorKind.ResourcePicker, LookupKey = "dlg", FieldType = GffFieldType.ResRef, Description = "The .dlg this object talks from. For a C# dialog class, leave this blank and set the CONVERSATION local variable instead." }
                         }
                     },
                     new FieldGroup

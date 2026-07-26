@@ -239,8 +239,8 @@
     </DataTemplate>
 
     <!-- One behavior field. Seven shapes over the same row so the label column stays aligned with
-         the schema fields above: toggle, number, name-valued picker, table dropdown, id-valued
-         picker, preview gallery, and free text.
+         the schema fields above: toggle, number, name-valued picker, table dropdown, searchable
+         select list, preview gallery, and free text.
          A name picker is an AutoCompleteBox rather than a combo because the tag source alone offers
          five figures of options and a stored value the source does not know must stay visible. -->
     <DataTemplate DataType="placeables:BehaviorFieldViewModel">
@@ -273,7 +273,7 @@
                   IsVisible="{Binding CanClearChoice}" />
         </Grid>
 
-        <StackPanel Grid.Column="1" IsVisible="{Binding IsSearchableIdChoice}" Spacing="6">
+        <StackPanel Grid.Column="1" IsVisible="{Binding IsSearchableChoice}" Spacing="6">
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
             <TextBlock Grid.Column="0" Text="{Binding SelectedDisplay}"
                        VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
@@ -282,19 +282,19 @@
                     IsVisible="{Binding CanClearChoice}" />
           </Grid>
           <TextBox Text="{Binding ChoiceSearchText, Mode=TwoWay}"
-                   Watermark="Search key items by name" />
-          <TextBlock Text="{Binding SearchableIdSummary}" Classes="count" />
+                   Watermark="{Binding ChoiceSearchWatermark}" />
+          <TextBlock Text="{Binding SearchableChoiceSummary}" Classes="count" />
           <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
                   CornerRadius="2" ClipToBounds="True">
             <ScrollViewer Height="240" VerticalScrollBarVisibility="Auto">
-              <ItemsControl ItemsSource="{Binding SearchableIdOptions}">
+              <ItemsControl ItemsSource="{Binding SearchableOptions}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate DataType="placeables:BehaviorChoiceOption">
                     <Button Classes="behavior" Content="{Binding Display}"
                             Margin="2" Padding="8,5"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Left"
-                            Command="{Binding $parent[ItemsControl].((placeables:BehaviorFieldViewModel)DataContext).PickSearchableIdChoiceCommand}"
+                            Command="{Binding $parent[ItemsControl].((placeables:BehaviorFieldViewModel)DataContext).PickSearchableChoiceCommand}"
                             CommandParameter="{Binding}" />
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>

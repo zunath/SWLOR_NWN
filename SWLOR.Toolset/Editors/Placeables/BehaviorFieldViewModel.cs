@@ -62,7 +62,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             _options = sources.GetOptions(field.Source).ToList();
 
             RefreshFromDocument();
-            RebuildSearchableIdOptions();
+            RebuildSearchableOptions();
             RebuildGallery();
         }
 
@@ -75,7 +75,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         public decimal Maximum => _field.Maximum ?? int.MaxValue;
 
         public IReadOnlyList<BehaviorChoiceOption> Options => _options;
-        public ObservableCollection<BehaviorChoiceOption> SearchableIdOptions { get; } = new();
+        public ObservableCollection<BehaviorChoiceOption> SearchableOptions { get; } = new();
         public ObservableCollection<BehaviorGalleryTileViewModel> GalleryTiles { get; } = new();
 
         public bool IsToggle => _field.Kind == PlaceableFieldKind.Toggle;
@@ -98,17 +98,17 @@ namespace SWLOR.Toolset.Editors.Placeables
         public bool IsNameChoice => _field.Kind == PlaceableFieldKind.Choice &&
                                     _field.VarType == VarTable.TypeString &&
                                     !IsTableChoice &&
+                                    !IsSearchableTableChoice &&
                                     !IsGalleryChoice &&
                                     Options.Count > 0;
 
         /// <summary>
-        /// Loot and spawn tables are finite server declarations, so they use a true dropdown rather
-        /// than the free-typing autocomplete needed by the module's five-figure tag collection.
+        /// Loot tables are finite server declarations, so they use a true dropdown rather than the
+        /// free-typing autocomplete needed by the module's five-figure tag collection.
         /// </summary>
         public bool IsTableChoice => _field.Kind == PlaceableFieldKind.Choice &&
                                      _field.VarType == VarTable.TypeString &&
-                                     _field.Source is PlaceableValueSource.LootTables
-                                         or PlaceableValueSource.SpawnTables &&
+                                     _field.Source == PlaceableValueSource.LootTables &&
                                      Options.Count > 0;
 
         /// <summary>
@@ -120,6 +120,18 @@ namespace SWLOR.Toolset.Editors.Placeables
                                             _field.VarType == VarTable.TypeInt &&
                                             Options.Count > 0;
 
+        /// <summary>
+        /// Spawn tables use a visible, searchable select list. Builders can browse every valid
+        /// option without knowing part of its name first, while selection still writes the exact
+        /// server table id.
+        /// </summary>
+        public bool IsSearchableTableChoice => _field.Kind == PlaceableFieldKind.Choice &&
+                                               _field.Source == PlaceableValueSource.SpawnTables &&
+                                               _field.VarType == VarTable.TypeString &&
+                                               Options.Count > 0;
+
+        public bool IsSearchableChoice => IsSearchableIdChoice || IsSearchableTableChoice;
+
         /// <summary>A short id-valued choice (skill or market region), rendered as a combo box.</summary>
         public bool IsIdChoice => _field.Kind == PlaceableFieldKind.Choice &&
                                   _field.VarType == VarTable.TypeInt &&
@@ -129,7 +141,7 @@ namespace SWLOR.Toolset.Editors.Placeables
 
         /// <summary>Free text, and the fallback whenever a choice source produced no options.</summary>
         public bool IsText => !IsToggle && !IsInteger && !IsNameChoice && !IsTableChoice &&
-                              !IsSearchableIdChoice && !IsIdChoice && !IsGalleryChoice;
+                              !IsSearchableChoice && !IsIdChoice && !IsGalleryChoice;
         public string SelectedDisplay => SelectedOption?.Display ??
                                          (string.IsNullOrWhiteSpace(Text)
                                              ? _field.EmptyChoiceLabel
@@ -150,11 +162,22 @@ namespace SWLOR.Toolset.Editors.Placeables
             : _galleryPublished >= _galleryMatches.Count
                 ? $"{_galleryMatches.Count} choice{(_galleryMatches.Count == 1 ? string.Empty : "s")}"
                 : $"{_galleryPublished} of {_galleryMatches.Count} choices";
-        public string SearchableIdSummary => SearchableIdOptions.Count == 0
-            ? "No matching key items"
-            : SearchableIdOptions.Count == Options.Count
-                ? $"{Options.Count} key item{(Options.Count == 1 ? string.Empty : "s")}"
-                : $"{SearchableIdOptions.Count} of {Options.Count} key items";
+        public string ChoiceSearchWatermark => IsSearchableTableChoice
+            ? "Search spawn tables by name"
+            : "Search key items by name";
+        public string SearchableChoiceSummary
+        {
+            get
+            {
+                var noun = IsSearchableTableChoice ? "spawn table" : "key item";
+                if (SearchableOptions.Count == 0)
+                    return $"No matching {noun}s";
+
+                return SearchableOptions.Count == Options.Count
+                    ? $"{Options.Count} {noun}{(Options.Count == 1 ? string.Empty : "s")}"
+                    : $"{SearchableOptions.Count} of {Options.Count} {noun}s";
+            }
+        }
 
         public void RefreshFromDocument()
         {
@@ -183,10 +206,10 @@ namespace SWLOR.Toolset.Editors.Placeables
                     SelectedOption = Options.FirstOrDefault(option =>
                         string.Equals(option.Value, Text, StringComparison.OrdinalIgnoreCase));
 
-                    // Keep a legacy or misspelled stored table visible in the dropdown so opening
+                    // Keep a legacy or misspelled stored table visible in the selector so opening
                     // the editor never hides data. It remains marked dangling until replaced.
                     if (SelectedOption == null &&
-                        IsTableChoice &&
+                        (IsTableChoice || IsSearchableTableChoice) &&
                         !string.IsNullOrWhiteSpace(Text))
                     {
                         var missing = new BehaviorChoiceOption(Text, $"{Text} (missing)");
@@ -285,7 +308,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         }
 
         partial void OnGalleryQueryChanged(string value) => RebuildGallery();
-        partial void OnChoiceSearchTextChanged(string value) => RebuildSearchableIdOptions();
+        partial void OnChoiceSearchTextChanged(string value) => RebuildSearchableOptions();
 
         [RelayCommand]
         private void PickChoice(BehaviorGalleryTileViewModel? tile)
@@ -297,7 +320,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         }
 
         [RelayCommand]
-        private void PickSearchableIdChoice(BehaviorChoiceOption? option)
+        private void PickSearchableChoice(BehaviorChoiceOption? option)
         {
             if (option != null)
                 SelectedOption = option;
@@ -344,21 +367,22 @@ namespace SWLOR.Toolset.Editors.Placeables
             OnPropertyChanged(nameof(CanClearChoice));
         }
 
-        private void RebuildSearchableIdOptions()
+        private void RebuildSearchableOptions()
         {
-            if (!IsSearchableIdChoice)
+            if (!IsSearchableChoice)
                 return;
 
             var query = ChoiceSearchText.Trim();
             var matches = Options.Where(option =>
                 query.Length == 0 ||
-                option.Display.Contains(query, StringComparison.OrdinalIgnoreCase));
+                option.Display.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                (option.Details?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false));
 
-            SearchableIdOptions.Clear();
+            SearchableOptions.Clear();
             foreach (var option in matches)
-                SearchableIdOptions.Add(option);
+                SearchableOptions.Add(option);
 
-            OnPropertyChanged(nameof(SearchableIdSummary));
+            OnPropertyChanged(nameof(SearchableChoiceSummary));
         }
 
         private void Write(Action<VarTable> mutation)

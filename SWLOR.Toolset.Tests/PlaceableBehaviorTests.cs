@@ -399,7 +399,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void LootAndSpawnTableFields_UseDropdownsAndWriteDeclaredValues()
+        public void LootTablesUseDropdownsAndSpawnTablesUseSearchableLists()
         {
             var sourceRoot = FindGameServerSource();
             if (sourceRoot == null)
@@ -447,11 +447,13 @@ namespace SWLOR.Toolset.Tests
             spawnOptions.Select(option => option.Display).Should().OnlyHaveUniqueItems(
                 "every saved table id must remain distinguishable in the friendly list");
 
-            foreach (var field in fields)
+            foreach (var field in fields.Where(field =>
+                         field.Source == PlaceableValueSource.LootTables))
             {
                 var picker = new BehaviorFieldViewModel(field, context, sources);
                 picker.IsTableChoice.Should().BeTrue(
-                    $"{field.Label} should render as a dropdown");
+                    $"{field.Label} should render as a loot-table dropdown");
+                picker.IsSearchableTableChoice.Should().BeFalse();
                 picker.IsNameChoice.Should().BeFalse();
                 picker.IsText.Should().BeFalse();
                 picker.Options.Should().NotBeEmpty();
@@ -461,6 +463,34 @@ namespace SWLOR.Toolset.Tests
                 new VarTable(document.Root)
                     .Single(entry => entry.Name == field.VariableName)
                     .StringValue.Should().Be(picker.SelectedOption.Value);
+            }
+
+            foreach (var field in fields.Where(field =>
+                         field.Source == PlaceableValueSource.SpawnTables))
+            {
+                var picker = new BehaviorFieldViewModel(field, context, sources);
+                picker.IsSearchableTableChoice.Should().BeTrue(
+                    $"{field.Label} should render as a searchable select list");
+                picker.IsSearchableChoice.Should().BeTrue();
+                picker.IsTableChoice.Should().BeFalse();
+                picker.IsNameChoice.Should().BeFalse();
+                picker.IsText.Should().BeFalse();
+                picker.SearchableOptions.Should().BeEquivalentTo(picker.Options);
+                picker.ChoiceSearchWatermark.Should().Be("Search spawn tables by name");
+
+                picker.ChoiceSearchText = "capstone";
+                picker.SearchableOptions.Should().NotBeEmpty();
+                picker.SearchableOptions.Should().OnlyContain(option =>
+                    option.Display.Contains("capstone", StringComparison.OrdinalIgnoreCase) ||
+                    option.Details != null &&
+                    option.Details.Contains("capstone", StringComparison.OrdinalIgnoreCase));
+
+                var selected = picker.SearchableOptions.First();
+                picker.PickSearchableChoiceCommand.Execute(selected);
+
+                new VarTable(document.Root)
+                    .Single(entry => entry.Name == field.VariableName)
+                    .StringValue.Should().Be(selected.Value);
             }
 
             var optional = new BehaviorFieldViewModel(
@@ -491,6 +521,27 @@ namespace SWLOR.Toolset.Tests
             legacy.SelectedOption!.Value.Should().Be("LEGACY_TABLE");
             legacy.SelectedOption.Display.Should().Be("LEGACY_TABLE (missing)");
             legacy.Status.Should().Be(BehaviorValueStatus.Dangling);
+
+            var legacySpawnDocument = BuildDocument();
+            new VarTable(legacySpawnDocument.Root).SetString(
+                "RESOURCE_SPAWN_TABLE_ID",
+                "LEGACY_SPAWN_TABLE");
+            var legacySpawn = new BehaviorFieldViewModel(
+                Field("resource_node", "RESOURCE_SPAWN_TABLE_ID"),
+                new EditorFieldContext(
+                    legacySpawnDocument,
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    }),
+                sources);
+
+            legacySpawn.IsSearchableTableChoice.Should().BeTrue();
+            legacySpawn.SelectedOption.Should().NotBeNull();
+            legacySpawn.SelectedOption!.Value.Should().Be("LEGACY_SPAWN_TABLE");
+            legacySpawn.SearchableOptions.Should().Contain(legacySpawn.SelectedOption);
+            legacySpawn.Status.Should().Be(BehaviorValueStatus.Dangling);
         }
 
         [Test]
@@ -520,11 +571,11 @@ namespace SWLOR.Toolset.Tests
                 app.IndexOf("<DataTemplate DataType=\"placeables:BehaviorFieldViewModel\">",
                     StringComparison.Ordinal)..app.IndexOf("<local:ViewLocator", StringComparison.Ordinal)];
 
-            behaviorTemplate.Should().Contain("IsSearchableIdChoice");
+            behaviorTemplate.Should().Contain("IsSearchableChoice");
             behaviorTemplate.Should().Contain("IsTableChoice");
-            behaviorTemplate.Should().Contain("Watermark=\"Search key items by name\"");
-            behaviorTemplate.Should().Contain("ItemsSource=\"{Binding SearchableIdOptions}\"");
-            behaviorTemplate.Should().Contain("PickSearchableIdChoiceCommand");
+            behaviorTemplate.Should().Contain("Watermark=\"{Binding ChoiceSearchWatermark}\"");
+            behaviorTemplate.Should().Contain("ItemsSource=\"{Binding SearchableOptions}\"");
+            behaviorTemplate.Should().Contain("PickSearchableChoiceCommand");
             behaviorTemplate.Should().Contain("ScrollChanged=\"OnBehaviorGalleryScrollChanged\"");
             behaviorTemplate.Should().NotContain("<Popup");
             behaviorTemplate.Should().NotContain("Load more");
@@ -631,17 +682,19 @@ namespace SWLOR.Toolset.Tests
             keyItem.IsSearchableIdChoice.Should().BeTrue();
             keyItem.IsIdChoice.Should().BeFalse();
             keyItem.Options.Should().NotBeEmpty();
-            keyItem.SearchableIdOptions.Should().BeEquivalentTo(keyItem.Options);
+            keyItem.IsSearchableChoice.Should().BeTrue();
+            keyItem.SearchableOptions.Should().BeEquivalentTo(keyItem.Options);
+            keyItem.ChoiceSearchWatermark.Should().Be("Search key items by name");
 
             keyItem.ChoiceSearchText = "shuttle";
-            keyItem.SearchableIdOptions.Should().NotBeEmpty();
-            keyItem.SearchableIdOptions.Should().OnlyContain(option =>
+            keyItem.SearchableOptions.Should().NotBeEmpty();
+            keyItem.SearchableOptions.Should().OnlyContain(option =>
                 option.Display.Contains("shuttle", StringComparison.OrdinalIgnoreCase));
-            keyItem.SearchableIdSummary.Should().Contain(
+            keyItem.SearchableChoiceSummary.Should().Contain(
                 $"of {keyItem.Options.Count} key items");
 
-            var selected = keyItem.SearchableIdOptions.First();
-            keyItem.PickSearchableIdChoiceCommand.Execute(selected);
+            var selected = keyItem.SearchableOptions.First();
+            keyItem.PickSearchableChoiceCommand.Execute(selected);
             new VarTable(document.Root).Single(entry => entry.Name == "KEY_ITEM_ID")
                 .IntValue.Should().Be(int.Parse(selected.Value));
             keyItem.SelectedDisplay.Should().Be(selected.Display);

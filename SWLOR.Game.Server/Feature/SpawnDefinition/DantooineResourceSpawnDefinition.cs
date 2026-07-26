@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             DantooineLake();
             DanPiles();
+            DanHay();
             DanHerbs();
             DantooineWildPlains();
             DantooineWareHouse();
@@ -49,6 +50,14 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "dan_junk")
                 .WithFrequency(50);
         }
+
+        private void DanHay()
+        {
+            _builder.Create("DANTOOINE_HAY")
+                .AddSpawn(ObjectType.Placeable, "dan_hay")
+                .WithFrequency(50);
+        }
+
         private void DanHerbs()
         {
             _builder.Create("DANTOOINE_HERB")

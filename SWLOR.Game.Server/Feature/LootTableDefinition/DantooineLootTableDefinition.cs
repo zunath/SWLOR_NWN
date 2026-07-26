@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
         public Dictionary<string, LootTable> BuildLootTables()
         {
+            DantooineHay();
             MedicalCache();
             QueenKinrath();
             ThuneLeader();
@@ -347,6 +348,12 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("kolto_injection", 20)
                 .AddItem("medisyringes", 20)
                 .AddGold(10, 15);
+        }
+
+        private void DantooineHay()
+        {
+            _builder.Create("DANTOOINE_HAY")
+                .AddItem("haybundle", 50);
         }
 
         private void DantooineHerb()

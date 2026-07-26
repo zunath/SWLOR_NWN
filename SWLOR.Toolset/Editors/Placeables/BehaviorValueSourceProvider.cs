@@ -101,8 +101,8 @@ namespace SWLOR.Toolset.Editors.Placeables
             {
                 return source switch
                 {
-                    PlaceableValueSource.LootTables => FromNames(_gameCode?.LootTableIds),
-                    PlaceableValueSource.SpawnTables => FromNames(_gameCode?.SpawnTableIds),
+                    PlaceableValueSource.LootTables => FromTableNames(_gameCode?.LootTableIds),
+                    PlaceableValueSource.SpawnTables => FromTableNames(_gameCode?.SpawnTableIds),
                     PlaceableValueSource.Quests => FromNames(_gameCode?.QuestIds),
                     PlaceableValueSource.Dialogs => FromNames(_gameCode?.DialogNames),
                     PlaceableValueSource.ObjectTags => FromNames(_tags()?.Tags),
@@ -130,6 +130,22 @@ namespace SWLOR.Toolset.Editors.Placeables
                 .Where(name => !string.IsNullOrWhiteSpace(name))
                 .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
                 .Select(name => new BehaviorChoiceOption(name, name))
+                .ToList();
+        }
+
+        private static IReadOnlyList<BehaviorChoiceOption> FromTableNames(IEnumerable<string>? names)
+        {
+            if (names == null)
+                return Array.Empty<BehaviorChoiceOption>();
+
+            return names
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Select(name => new BehaviorChoiceOption(
+                    name,
+                    TableChoiceDisplayName.FromIdentifier(name),
+                    Details: name))
+                .OrderBy(option => option.Display, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(option => option.Value, StringComparer.OrdinalIgnoreCase)
                 .ToList();
         }
 

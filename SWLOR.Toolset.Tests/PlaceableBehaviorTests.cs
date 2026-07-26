@@ -393,6 +393,24 @@ namespace SWLOR.Toolset.Tests
             var sources = new BehaviorValueSourceProvider(
                 new GameCodeIndex(sourceRoot),
                 tags: () => null);
+            var lootOptions = sources.GetOptions(PlaceableValueSource.LootTables);
+            lootOptions.Single(option => option.Value == "ANCHRANGE_CANYON_COMP")
+                .Display.Should().Be("Anchorhead Canyon Range - Components");
+            lootOptions.Single(option => option.Value == "ASTEROID_ARDANIUM_STRIP")
+                .Display.Should().Be("Asteroid - Ardanium - Strip Mining");
+            lootOptions.Single(option => option.Value == "CAPSTONE_ABSDEF_WD_RARES")
+                .Display.Should().Be("Capstone - Absolute Defense - Warden Rare Drops");
+            lootOptions.Should().OnlyContain(option =>
+                option.Details == option.Value,
+                "builders see friendly labels while the exact identifier remains available as metadata");
+            lootOptions.Select(option => option.Display).Should().OnlyHaveUniqueItems(
+                "every saved table id must remain distinguishable in the friendly list");
+
+            var spawnOptions = sources.GetOptions(PlaceableValueSource.SpawnTables);
+            spawnOptions.Single(option => option.Value == "CAPSTONE_ANCHORHEAD_CANYON_RANGE")
+                .Display.Should().Be("Capstone - Anchorhead Canyon Range");
+            spawnOptions.Select(option => option.Display).Should().OnlyHaveUniqueItems(
+                "every saved table id must remain distinguishable in the friendly list");
 
             foreach (var field in fields)
             {

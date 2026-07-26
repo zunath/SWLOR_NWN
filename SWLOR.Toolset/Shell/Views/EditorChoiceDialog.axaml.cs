@@ -1,5 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
 
 namespace SWLOR.Toolset.Shell.Views
 {
@@ -13,19 +15,38 @@ namespace SWLOR.Toolset.Shell.Views
     /// <summary>A small modal three-way decision dialog used for destructive editor choices.</summary>
     public partial class EditorChoiceDialog : Window
     {
+        private bool _closeScheduled;
+
         public EditorChoiceDialog()
         {
             InitializeComponent();
         }
 
-        private void OnPrimaryClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-            Close(EditorDialogChoice.Primary);
+        private void OnPrimaryClicked(object? sender, RoutedEventArgs e) =>
+            ScheduleClose(EditorDialogChoice.Primary, e);
 
-        private void OnSecondaryClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-            Close(EditorDialogChoice.Secondary);
+        private void OnSecondaryClicked(object? sender, RoutedEventArgs e) =>
+            ScheduleClose(EditorDialogChoice.Secondary, e);
 
-        private void OnCancelClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-            Close(EditorDialogChoice.Cancel);
+        private void OnCancelClicked(object? sender, RoutedEventArgs e) =>
+            ScheduleClose(EditorDialogChoice.Cancel, e);
+
+        /// <summary>
+        /// Lets Avalonia finish routing the button's input before destroying the native window.
+        /// Closing synchronously inside the click callback leaves the remainder of the current raw
+        /// input pass targeting a TopLevel whose PlatformImpl has already been cleared.
+        /// </summary>
+        private void ScheduleClose(EditorDialogChoice choice, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (_closeScheduled)
+                return;
+
+            _closeScheduled = true;
+            Dispatcher.UIThread.Post(
+                () => Close(choice),
+                DispatcherPriority.Background);
+        }
 
         /// <param name="secondaryLabel">
         /// Null for a two-button prompt (act or cancel) - the middle button is hidden rather than given

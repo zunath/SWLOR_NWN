@@ -62,6 +62,14 @@ namespace SWLOR.Toolset.Editors.Triggers
         [ObservableProperty]
         private Bitmap? _selectedPreview;
 
+        /// <summary>
+        /// Whether the gallery is showing. Bound rather than left to the flyout so that picking a
+        /// screen can close it — a picker that stays open after you have chosen makes you dismiss it
+        /// yourself to see what you did.
+        /// </summary>
+        [ObservableProperty]
+        private bool _isGalleryOpen;
+
         public bool IsText => Definition.Kind is TriggerFieldKind.Text or TriggerFieldKind.Script;
         public bool IsLocalizedText => Definition.Kind == TriggerFieldKind.LocalizedText;
         public bool IsParagraph => Definition.Kind == TriggerFieldKind.Paragraph;
@@ -222,8 +230,10 @@ namespace SWLOR.Toolset.Editors.Triggers
         /// editor has paid for exactly one image.
         /// </summary>
         [RelayCommand]
-        private async Task LoadGallery()
+        private async Task OpenGallery()
         {
+            IsGalleryOpen = true;
+
             if (_galleryLoaded || _previews == null)
                 return;
 
@@ -256,6 +266,8 @@ namespace SWLOR.Toolset.Editors.Triggers
         {
             if (choice != null)
                 Choice = choice;
+
+            IsGalleryOpen = false;
         }
 
         /// <summary>

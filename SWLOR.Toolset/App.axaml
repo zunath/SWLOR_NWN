@@ -109,13 +109,12 @@
          the control in the value cell changes, so the alternative was nine near-identical copies. -->
     <DataTemplate DataType="triggers:TriggerRowViewModel">
       <Grid ColumnDefinitions="*,340" Margin="16,0" MinHeight="32" RowDefinitions="Auto,Auto">
-        <!-- The label column trims rather than growing: it used to run under the value column at
-             narrow widths, which is how "required" ended up on top of the counter. -->
-        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="6"
-                    VerticalAlignment="Center" ClipToBounds="True">
+        <!-- "required" sits under the label rather than beside it: side by side it was the first
+             thing to be squeezed out at narrow pane widths, which is exactly when it matters. -->
+        <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" ClipToBounds="True">
           <TextBlock Text="{Binding Label}" Classes="dim" TextTrimming="CharacterEllipsis" />
-          <TextBlock Text="required" FontWeight="Bold" FontSize="11"
-                     Foreground="{DynamicResource InkBrush}" VerticalAlignment="Center"
+          <TextBlock Text="required" FontSize="10" Margin="0,1,0,0"
+                     Foreground="{DynamicResource AmberBrush}"
                      IsVisible="{Binding IsRequired}" />
         </StackPanel>
 
@@ -155,11 +154,14 @@
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
               <TextBlock Grid.Column="0" Text="{Binding Choice.Display}" Classes="mono"
                          VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-              <Button Grid.Column="1" Content="Choose&#x2026;" Padding="10,4"
-                      Command="{Binding LoadGalleryCommand}">
-                <Button.Flyout>
-                  <Flyout Placement="Left">
-                    <ScrollViewer MaxHeight="520" MaxWidth="680">
+              <Button Grid.Column="1" x:Name="ChooseScreenButton" Content="Choose&#x2026;" Padding="10,4"
+                      Command="{Binding OpenGalleryCommand}" />
+              <Popup Grid.Column="1" IsOpen="{Binding IsGalleryOpen, Mode=TwoWay}"
+                     PlacementTarget="{Binding #ChooseScreenButton}" Placement="Left"
+                     IsLightDismissEnabled="True">
+                <Border Background="{DynamicResource PanelBrush}" CornerRadius="4" Padding="4"
+                        BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
+                  <ScrollViewer MaxHeight="520" MaxWidth="680">
                       <ItemsControl ItemsSource="{Binding Choices}" Margin="4">
                         <ItemsControl.ItemsPanel>
                           <ItemsPanelTemplate>
@@ -184,10 +186,9 @@
                           </DataTemplate>
                         </ItemsControl.ItemTemplate>
                       </ItemsControl>
-                    </ScrollViewer>
-                  </Flyout>
-                </Button.Flyout>
-              </Button>
+                  </ScrollViewer>
+                </Border>
+              </Popup>
             </Grid>
           </StackPanel>
         </StackPanel>

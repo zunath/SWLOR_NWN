@@ -1734,3 +1734,26 @@ bytes.
   `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
   "FullyQualifiedName~ModuleResourceTemplateFactoryTests|FullyQualifiedName~ScriptEditorViewRenderTests"` -
   21 passed.
+
+## Script editor improvement 6 - 2026-07-26 - Literal argument type checks stay conservative
+
+Tier-1 analysis now reports only certain literal argument mismatches on known engine calls, such as a
+string literal passed to an `int` parameter or a float literal passed where an `object` is required.
+The check deliberately ignores non-literal expressions and still treats the vendored compiler as the
+authority.
+
+- **Why.** Type squiggles are useful only if they are trusted. Full NWScript expression inference is
+  too risky for legacy scripts, but a single literal token in an engine-function argument position is
+  narrow enough to be helpful without guessing.
+- **Decision.** The analyzer asks `ScriptBinder` for a resolved scope first and runs the type pass only
+  when `ScriptScope.Complete` is true. If any include cannot be resolved, the result is no squiggle.
+  Unknown-identifier diagnostics reuse the same built scope so the binder does not have to walk the
+  include chain twice.
+- **Conversion rule.** `int` and `float` literals are mutually compatible, matching NWScript's
+  implicit numeric conversions. Other primitive literal checks are exact, and engine structure types
+  reject string/number literals only when the argument itself is literally that token.
+- **Verification.** `ScriptAnalyzerTests` now covers string-to-int, float-to-object, numeric
+  conversion silence, incomplete-scope silence, and an analyzer-with-includes corpus gate across all
+  module scripts. Focused run:
+  `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
+  "FullyQualifiedName~ScriptAnalyzerTests|FullyQualifiedName~ScriptBinderTests"` - 29 passed.

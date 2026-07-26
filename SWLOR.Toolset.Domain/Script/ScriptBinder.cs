@@ -106,6 +106,11 @@ namespace SWLOR.Toolset.Domain.Script
         public IReadOnlyList<ScriptAnalysisDiagnostic> FindUnknownIdentifiers(string source)
         {
             var scope = BuildScope(source);
+            return FindUnknownIdentifiers(source, scope);
+        }
+
+        public IReadOnlyList<ScriptAnalysisDiagnostic> FindUnknownIdentifiers(string source, ScriptScope scope)
+        {
             if (!scope.Complete)
                 return Array.Empty<ScriptAnalysisDiagnostic>();
 

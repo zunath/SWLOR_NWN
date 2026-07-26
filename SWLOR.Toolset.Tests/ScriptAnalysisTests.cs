@@ -22,6 +22,9 @@ namespace SWLOR.Toolset.Tests
 
         private static ScriptAnalyzer Analyzer => new(Db);
 
+        private static ScriptAnalyzer AnalyzerWithBinder(Func<string, string?>? readInclude = null) =>
+            new(Db, readInclude ?? (_ => null));
+
         [Test]
         public void EveryModuleScript_ProducesNoDiagnostics()
         {
@@ -37,6 +40,33 @@ namespace SWLOR.Toolset.Tests
 
             offenders.Should().BeEmpty(
                 "these 87 files are known-good, so any finding is this analyzer's bug, not the code's");
+        }
+
+        [Test]
+        public void EveryModuleScript_WithResolvedIncludes_ProducesNoDiagnostics()
+        {
+            if (Db.Functions.Count == 0)
+                Assert.Ignore("engine header not present");
+
+            var directory = Path.Combine(CorpusLocator.ModuleDirectory, "nss");
+            var sources = Directory.EnumerateFiles(directory, "*.nss")
+                .ToDictionary(
+                    p => Path.GetFileNameWithoutExtension(p)!,
+                    p => ScriptTextDocument.Load(p).Text,
+                    StringComparer.OrdinalIgnoreCase);
+
+            var analyzer = AnalyzerWithBinder(name => sources.TryGetValue(name, out var text) ? text : null);
+            var offenders = new List<string>();
+
+            foreach (var (resRef, source) in sources)
+            {
+                var analysis = analyzer.Analyze(source);
+                foreach (var d in analysis.Diagnostics)
+                    offenders.Add($"{resRef}.nss({d.Line}): {d.Message}");
+            }
+
+            offenders.Should().BeEmpty(
+                "literal type checking must never squiggle shipped module scripts");
         }
 
         [Test]
@@ -111,6 +141,60 @@ namespace SWLOR.Toolset.Tests
             // A short call is usually a half-typed one; squiggling it would fight the author's cursor.
             Analyzer.Analyze("void main() { int n = Random(); }")
                 .Diagnostics.Should().BeEmpty();
+        }
+
+        [Test]
+        public void StringLiteralToIntParameter_IsReported()
+        {
+            if (Db.Functions.Count == 0)
+                Assert.Ignore("engine header not present");
+
+            var diagnostics = AnalyzerWithBinder()
+                .Analyze("void main() { int n = Random(\"bad\"); }")
+                .Diagnostics;
+
+            diagnostics.Should().ContainSingle(d =>
+                d.Message.Contains("string literal") &&
+                d.Message.Contains("int parameter") &&
+                d.Message.Contains("Random"));
+        }
+
+        [Test]
+        public void FloatLiteralToObjectParameter_IsReported()
+        {
+            if (Db.Functions.Count == 0)
+                Assert.Ignore("engine header not present");
+
+            var diagnostics = AnalyzerWithBinder()
+                .Analyze("void main() { float f = GetDistanceBetween(1.0, OBJECT_SELF); }")
+                .Diagnostics;
+
+            diagnostics.Should().ContainSingle(d =>
+                d.Message.Contains("float literal") &&
+                d.Message.Contains("object parameter") &&
+                d.Message.Contains("GetDistanceBetween"));
+        }
+
+        [Test]
+        public void IntAndFloatLiteralArguments_AreImplicitlyCompatible()
+        {
+            if (Db.Functions.Count == 0)
+                Assert.Ignore("engine header not present");
+
+            AnalyzerWithBinder()
+                .Analyze("void main() { int n = Random(1.0); string s = FloatToString(1); }")
+                .Diagnostics.Should().BeEmpty();
+        }
+
+        [Test]
+        public void LiteralTypeChecking_IsSilentWhenAnIncludeCannotBeResolved()
+        {
+            if (Db.Functions.Count == 0)
+                Assert.Ignore("engine header not present");
+
+            AnalyzerWithBinder()
+                .Analyze("#include \"missing_inc\"\nvoid main() { int n = Random(\"bad\"); }")
+                .Diagnostics.Should().BeEmpty("an unresolved include makes the scope incomplete");
         }
 
         [Test]

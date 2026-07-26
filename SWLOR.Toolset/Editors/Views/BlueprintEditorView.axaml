@@ -171,11 +171,13 @@
             <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="2*" />
           </DataGrid.Columns>
         </DataGrid>
-        <Grid ColumnDefinitions="2*,Auto,*,2*,Auto,Auto" ColumnSpacing="6">
+        <!-- Type sizes to its content: as a star column it shrank with the pane until the
+             drop-down was narrower than the word inside it. -->
+        <Grid ColumnDefinitions="2*,Auto,Auto,2*,Auto,Auto" ColumnSpacing="6">
           <AutoCompleteBox Grid.Column="0" Text="{Binding NewName, Mode=TwoWay}"
                            ItemsSource="{Binding KnownKeys}" Watermark="Variable name" />
           <TextBlock Grid.Column="1" Text="=" VerticalAlignment="Center" />
-          <ComboBox Grid.Column="2" ItemsSource="{Binding TypeChoices}"
+          <ComboBox Grid.Column="2" MinWidth="96" ItemsSource="{Binding TypeChoices}"
                     SelectedItem="{Binding NewType, Mode=TwoWay}" />
           <TextBox Grid.Column="3" Text="{Binding NewValue, Mode=TwoWay}" Watermark="Value" />
           <Button Grid.Column="4" Content="Set" Command="{Binding SetVariableCommand}" />

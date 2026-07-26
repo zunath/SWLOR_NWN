@@ -103,11 +103,6 @@ namespace SWLOR.Toolset.Domain.Render
                 using var image = Pfimage.FromStream(stream);
                 var pixels = ConvertPfimToRgba(image);
 
-                // BioWare DDS stores DXT color endpoints as BGR 5:6:5, but Pfim's DXT decoder
-                // assumes standard RGB 5:6:5 ordering - swap channels back for BioWare-sourced data.
-                if (isBiowareDds)
-                    SwapRedBlue(pixels);
-
                 return new TextureImage
                 {
                     Width = image.Width,
@@ -271,6 +266,23 @@ namespace SWLOR.Toolset.Domain.Render
             return result;
         }
 
+        /// <summary>
+        /// Copies Pfim's decoded pixels out as RGBA, putting the channels the right way round.
+        /// </summary>
+        /// <remarks>
+        /// Pfim's <c>ImageFormat</c> names describe the DDS pixel format, not the byte order it hands
+        /// back: <c>Rgba32</c> and <c>Rgb24</c> both arrive blue-first, so red and blue have to be
+        /// exchanged on the way out.
+        /// <para>
+        /// This used to be done only for BioWare's DDS variant, on the theory that BioWare stored its
+        /// DXT endpoints as BGR 5:6:5 while Pfim assumed RGB. That fixed the majority of the corpus by
+        /// accident and left every standard DDS with its red and blue exchanged - which is invisible on
+        /// the grey and desaturated artwork most of a tileset is made of, and glaring on anything with
+        /// a real hue: PLC_JR1's chewyrug decoded to rgb(31,49,74) and drew as a blue pelt where Aurora
+        /// shows brown fur. BioWare-variant textures are unaffected by the move, because doing the swap
+        /// during the copy and doing it afterwards are the same swap.
+        /// </para>
+        /// </remarks>
         private static byte[] ConvertPfimToRgba(IImage image)
         {
             var width = image.Width;
@@ -281,15 +293,21 @@ namespace SWLOR.Toolset.Domain.Render
             switch (image.Format)
             {
                 case Pfim.ImageFormat.Rgba32:
-                    Array.Copy(src, output, Math.Min(src.Length, output.Length));
+                    for (int i = 0; i < output.Length && i < src.Length - 3; i += 4)
+                    {
+                        output[i] = src[i + 2];
+                        output[i + 1] = src[i + 1];
+                        output[i + 2] = src[i];
+                        output[i + 3] = src[i + 3];
+                    }
                     break;
 
                 case Pfim.ImageFormat.Rgb24:
                     for (int i = 0, j = 0; i < output.Length && j < src.Length - 2; i += 4, j += 3)
                     {
-                        output[i] = src[j];
+                        output[i] = src[j + 2];
                         output[i + 1] = src[j + 1];
-                        output[i + 2] = src[j + 2];
+                        output[i + 2] = src[j];
                         output[i + 3] = 255;
                     }
                     break;
@@ -318,12 +336,5 @@ namespace SWLOR.Toolset.Domain.Render
             return output;
         }
 
-        internal static void SwapRedBlue(byte[] rgba)
-        {
-            for (var i = 0; i < rgba.Length - 2; i += 4)
-            {
-                (rgba[i], rgba[i + 2]) = (rgba[i + 2], rgba[i]);
-            }
-        }
     }
 }

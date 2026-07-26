@@ -49,8 +49,13 @@ namespace SWLOR.Toolset.Workspace
         /// v6-v10: thumbnail camera angle. v6-v8 had it below the model looking up; v9 put it
         /// overhead, v10-v11 eased it back off vertical.
         /// </para>
+        /// <para>
+        /// v12: standard-DDS textures had their red and blue channels exchanged, so anything with a
+        /// real hue was cached the wrong colour - a brown pelt as a blue one. Every thumbnail drawn
+        /// from a standard DDS is wrong on disk and has to be drawn again.
+        /// </para>
         /// </remarks>
-        private const string FormatVersion = "v11";
+        private const string FormatVersion = "v12";
 
         private const string MissingArtworkExtension = ".none";
 

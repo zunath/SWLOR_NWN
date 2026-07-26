@@ -56,9 +56,10 @@ namespace SWLOR.Toolset.Domain.Placeables
                 return losses;
             }
 
-            losses.AddRange(from.VariableNames
-                .Where(name => !kept.Contains(name))
-                .Where(name => HasValue(table, name)));
+            losses.AddRange(from.Fields
+                .Where(field => !kept.Contains(field.VariableName))
+                .Where(field => HasAuthoredValue(table, field))
+                .Select(field => field.VariableName));
             return losses;
         }
 
@@ -203,6 +204,38 @@ namespace SWLOR.Toolset.Domain.Placeables
                 VarTable.TypeFloat => entry.FloatValue is not (null or 0f),
                 _ => true
             };
+        }
+
+        /// <summary>
+        /// A value that differs from the behavior's initial value is authored configuration worth
+        /// warning about. Defaults written merely by selecting a behavior are replaceable setup,
+        /// not an unsaved decision by the builder.
+        /// </summary>
+        private static bool HasAuthoredValue(VarTable table, PlaceableBehaviorField field)
+        {
+            var entry = table.FirstOrDefault(candidate =>
+                string.Equals(candidate.Name, field.VariableName, StringComparison.Ordinal));
+            if (entry == null || !HasValue(table, field.VariableName))
+                return false;
+
+            if (field.DefaultIntValue is { } intValue &&
+                entry.Type == VarTable.TypeInt &&
+                entry.IntValue == intValue)
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(field.DefaultStringValue) &&
+                entry.Type == VarTable.TypeString &&
+                string.Equals(
+                    entry.StringValue,
+                    field.DefaultStringValue,
+                    StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private static bool AlreadyHasFixedValue(VarTable table, PlaceableBehaviorField field)

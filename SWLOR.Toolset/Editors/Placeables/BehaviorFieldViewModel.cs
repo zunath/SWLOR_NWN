@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Collections.ObjectModel;
-using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Documents;
@@ -49,10 +48,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         private string _galleryQuery = string.Empty;
 
         [ObservableProperty]
-        private bool _isGalleryOpen;
-
-        [ObservableProperty]
-        private Bitmap? _selectedPreview;
+        private string _choiceSearchText = string.Empty;
 
         public BehaviorFieldViewModel(
             PlaceableBehaviorField field,
@@ -101,23 +97,33 @@ namespace SWLOR.Toolset.Editors.Placeables
                                     !IsGalleryChoice &&
                                     Options.Count > 0;
 
-        /// <summary>An id-valued choice (key item, skill, visual effect), rendered as a combo box.</summary>
+        /// <summary>
+        /// Key items are numerous enough to need a searchable selector. The text filters choices,
+        /// while only selecting a real option writes its numeric id to the placeable.
+        /// </summary>
+        public bool IsSearchableIdChoice => _field.Kind == PlaceableFieldKind.Choice &&
+                                            _field.Source == PlaceableValueSource.KeyItems &&
+                                            _field.VarType == VarTable.TypeInt &&
+                                            Options.Count > 0;
+
+        /// <summary>A short id-valued choice (skill or market region), rendered as a combo box.</summary>
         public bool IsIdChoice => _field.Kind == PlaceableFieldKind.Choice &&
                                   _field.VarType == VarTable.TypeInt &&
                                   !IsGalleryChoice &&
+                                  !IsSearchableIdChoice &&
                                   Options.Count > 0;
 
         /// <summary>Free text, and the fallback whenever a choice source produced no options.</summary>
-        public bool IsText => !IsToggle && !IsInteger && !IsNameChoice && !IsIdChoice && !IsGalleryChoice;
+        public bool IsText => !IsToggle && !IsInteger && !IsNameChoice && !IsSearchableIdChoice &&
+                              !IsIdChoice && !IsGalleryChoice;
         public string SelectedDisplay => SelectedOption?.Display ??
                                          (string.IsNullOrWhiteSpace(Text) ? "Not selected" : Text);
         public string? SelectedDetails => SelectedOption?.Details;
         public bool HasSelectedDetails => !string.IsNullOrWhiteSpace(SelectedDetails);
-        public string SelectedGlyph => string.IsNullOrWhiteSpace(SelectedDisplay)
-            ? "?"
-            : SelectedDisplay.Trim()[..1].ToUpperInvariant();
         public bool CanLoadMore => _galleryPublished < _galleryMatches.Count;
-        public bool CanClearChoice => IsGalleryChoice && !IsRequired && _hasStoredValue;
+        public bool CanClearChoice => _field.Kind == PlaceableFieldKind.Choice &&
+                                      !IsRequired &&
+                                      _hasStoredValue;
         public string GallerySummary => _galleryMatches.Count == 0
             ? "No matches"
             : _galleryPublished >= _galleryMatches.Count
@@ -152,6 +158,7 @@ namespace SWLOR.Toolset.Editors.Placeables
                         string.Equals(option.Value, Text, StringComparison.OrdinalIgnoreCase));
                 }
 
+                ChoiceSearchText = SelectedOption?.Display ?? string.Empty;
                 UpdateSelectedChoice(SelectedOption);
                 UpdateStatus();
                 OnPropertyChanged(nameof(CanClearChoice));
@@ -224,6 +231,9 @@ namespace SWLOR.Toolset.Editors.Placeables
             if (_context.IsRefreshing || value == null)
                 return;
 
+            if (IsSearchableIdChoice)
+                ChoiceSearchText = value.Display;
+
             if (_field.VarType == VarTable.TypeInt)
             {
                 if (int.TryParse(value.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed))
@@ -244,20 +254,12 @@ namespace SWLOR.Toolset.Editors.Placeables
         partial void OnGalleryQueryChanged(string value) => RebuildGallery();
 
         [RelayCommand]
-        private void OpenGallery()
-        {
-            RebuildGallery();
-            IsGalleryOpen = true;
-        }
-
-        [RelayCommand]
         private void PickChoice(BehaviorGalleryTileViewModel? tile)
         {
             if (tile == null)
                 return;
 
             SelectedOption = tile.Choice;
-            IsGalleryOpen = false;
         }
 
         [RelayCommand]
@@ -289,7 +291,7 @@ namespace SWLOR.Toolset.Editors.Placeables
                 SelectedOption = null;
                 Text = string.Empty;
                 Number = 0;
-                SelectedPreview = null;
+                ChoiceSearchText = string.Empty;
             }
             finally
             {
@@ -381,7 +383,10 @@ namespace SWLOR.Toolset.Editors.Placeables
                          .Skip(_galleryPublished)
                          .Take(GalleryPageSize))
             {
-                var tile = new BehaviorGalleryTileViewModel(option, _field.Source, _sources);
+                var tile = new BehaviorGalleryTileViewModel(option, _field.Source, _sources)
+                {
+                    IsSelected = IsSelectedOption(option)
+                };
                 GalleryTiles.Add(tile);
                 tile.EnsurePreview();
             }
@@ -393,16 +398,16 @@ namespace SWLOR.Toolset.Editors.Placeables
 
         private void UpdateSelectedChoice(BehaviorChoiceOption? value)
         {
-            SelectedPreview = value == null ? null : _sources.CachedPreview(_field.Source, value);
-            if (value != null && SelectedPreview == null)
-            {
-                _sources.RequestPreview(_field.Source, value, bitmap => SelectedPreview = bitmap);
-            }
+            foreach (var tile in GalleryTiles)
+                tile.IsSelected = value != null && IsSelectedOption(tile.Choice);
 
             OnPropertyChanged(nameof(SelectedDisplay));
             OnPropertyChanged(nameof(SelectedDetails));
             OnPropertyChanged(nameof(HasSelectedDetails));
-            OnPropertyChanged(nameof(SelectedGlyph));
         }
+
+        private bool IsSelectedOption(BehaviorChoiceOption option) =>
+            SelectedOption != null &&
+            string.Equals(option.Value, SelectedOption.Value, StringComparison.OrdinalIgnoreCase);
     }
 }

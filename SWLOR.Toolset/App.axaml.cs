@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,7 @@ using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Editors.Placeables;
 using SWLOR.Toolset.Settings;
 using SWLOR.Toolset.Shell;
 using SWLOR.Toolset.Shell.Panels;
@@ -18,6 +20,7 @@ namespace SWLOR.Toolset
 {
     public class App : Application
     {
+        private const double GalleryLoadAheadPixels = 600;
         private ServiceProvider? _serviceProvider;
 
         /// <summary>
@@ -29,6 +32,25 @@ namespace SWLOR.Toolset
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        /// <summary>
+        /// Keeps inline behavior galleries flowing as the builder scrolls without constructing every
+        /// creature, placeable, or VFX preview when the form first opens.
+        /// </summary>
+        private void OnBehaviorGalleryScrollChanged(object? sender, ScrollChangedEventArgs e)
+        {
+            if (sender is not ScrollViewer scrollViewer ||
+                scrollViewer.DataContext is not BehaviorFieldViewModel field ||
+                !field.CanLoadMore)
+            {
+                return;
+            }
+
+            var remaining =
+                scrollViewer.Extent.Height - scrollViewer.Offset.Y - scrollViewer.Viewport.Height;
+            if (remaining <= GalleryLoadAheadPixels)
+                field.LoadMoreGalleryCommand.Execute(null);
         }
 
         public override void OnFrameworkInitializationCompleted()

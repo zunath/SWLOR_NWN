@@ -35,6 +35,20 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BehaviorSelection_GivesCustomItsOwnSection()
+        {
+            var section = BuildBehaviorSection();
+            var customIndex = section.Items
+                .Select((item, index) => (item, index))
+                .Single(entry => entry.item.Behavior?.Id == PlaceableBehaviorCatalog.CustomId)
+                .index;
+
+            customIndex.Should().BeGreaterThan(0);
+            section.Items[customIndex - 1].IsHeader.Should().BeTrue();
+            section.Items[customIndex - 1].Text.Should().Be("Custom");
+        }
+
+        [Test]
         public void PlaceableSchema_ShowsRawFlagsOnlyOnCustomAndMakesDescriptionMultiline()
         {
             var schema = UtpSchema.Build();
@@ -161,10 +175,17 @@ namespace SWLOR.Toolset.Tests
                 .Should().OnlyContain(reference => Uri.IsWellFormedUriString(
                     reference.ImageUrl,
                     UriKind.Absolute));
+
+            var sources = new BehaviorValueSourceProvider(index, tags: () => null);
+            sources.GetOptions(PlaceableValueSource.SkillTypes)
+                .Should().OnlyContain(option => option.Display == index.SkillTypes[int.Parse(option.Value)],
+                    "skill names do not need their internal ids in the workbench list");
+            sources.GetOptions(PlaceableValueSource.KeyItems)
+                .Should().OnlyContain(option => option.Display == index.KeyItems[int.Parse(option.Value)]);
         }
 
         [Test]
-        public void BehaviorView_DoesNotShowTheRemovedManagementSummary()
+        public void BehaviorView_UsesInlineInfiniteGalleriesAndSearchableKeyItems()
         {
             var viewPath = Path.Combine(
                 CorpusLocator.RepositoryRoot,
@@ -176,6 +197,22 @@ namespace SWLOR.Toolset.Tests
 
             view.Should().NotContain("WHAT THIS BEHAVIOR MANAGES");
             view.Should().Contain("ItemsSource=\"{Binding CustomScriptFields}\"");
+
+            var appPath = Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset",
+                "App.axaml");
+            var app = File.ReadAllText(appPath);
+            var behaviorTemplate = app[
+                app.IndexOf("<DataTemplate DataType=\"placeables:BehaviorFieldViewModel\">",
+                    StringComparison.Ordinal)..app.IndexOf("<local:ViewLocator", StringComparison.Ordinal)];
+
+            behaviorTemplate.Should().Contain("IsSearchableIdChoice");
+            behaviorTemplate.Should().Contain("Watermark=\"Search key items\"");
+            behaviorTemplate.Should().Contain("ScrollChanged=\"OnBehaviorGalleryScrollChanged\"");
+            behaviorTemplate.Should().NotContain("<Popup");
+            behaviorTemplate.Should().NotContain("Load more");
+            behaviorTemplate.Should().NotContain("OpenGalleryCommand");
         }
 
         [Test]
@@ -239,6 +276,41 @@ namespace SWLOR.Toolset.Tests
             gallery.CanClearChoice.Should().BeTrue();
             gallery.ClearChoiceCommand.Execute(null);
             new VarTable(document.Root).Should().NotContain(entry => entry.Name == "RESOURCE_PROP");
+        }
+
+        [Test]
+        public void KeyItemField_IsSearchableAndWritesOnlyASelectedId()
+        {
+            var sourceRoot = FindGameServerSource();
+            if (sourceRoot == null)
+                Assert.Ignore("SWLOR.Game.Server source not found from the test context.");
+
+            var document = BuildDocument();
+            var context = new EditorFieldContext(
+                document,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+            var sources = new BehaviorValueSourceProvider(
+                new GameCodeIndex(sourceRoot),
+                tags: () => null);
+            var keyItem = new BehaviorFieldViewModel(
+                Field("slicing_terminal", "KEY_ITEM_ID"),
+                context,
+                sources);
+
+            keyItem.IsSearchableIdChoice.Should().BeTrue();
+            keyItem.IsIdChoice.Should().BeFalse();
+            keyItem.Options.Should().NotBeEmpty();
+
+            var selected = keyItem.Options.First();
+            keyItem.SelectedOption = selected;
+
+            keyItem.ChoiceSearchText.Should().Be(selected.Display);
+            new VarTable(document.Root).Single(entry => entry.Name == "KEY_ITEM_ID")
+                .IntValue.Should().Be(int.Parse(selected.Value));
         }
 
         [Test]
@@ -525,6 +597,87 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ValuesLostBySwitching_IgnoresDefaultsUntilTheBuilderChangesThem()
+        {
+            foreach (var behavior in PlaceableBehaviorCatalog.Behaviors
+                         .Where(candidate => !candidate.IsSentinel))
+            {
+                var document = BuildDocument();
+                PlaceableBehaviorApplier.Apply(
+                    document.Root,
+                    PlaceableBehaviorCatalog.None,
+                    behavior);
+
+                PlaceableBehaviorApplier
+                    .ValuesLostBySwitching(
+                        document.Root,
+                        behavior,
+                        PlaceableBehaviorCatalog.None)
+                    .Should().BeEmpty(
+                        $"{behavior.Name}'s automatic defaults are not user-authored changes");
+            }
+
+            var questDocument = BuildDocument();
+            var quest = PlaceableBehaviorCatalog.FindById("quest_activator")!;
+            PlaceableBehaviorApplier.Apply(
+                questDocument.Root,
+                PlaceableBehaviorCatalog.None,
+                quest);
+            new VarTable(questDocument.Root)
+                .SetInt("QUEST_ENCOUNTER_COOLDOWN_MINUTES", 30);
+
+            PlaceableBehaviorApplier
+                .ValuesLostBySwitching(
+                    questDocument.Root,
+                    quest,
+                    PlaceableBehaviorCatalog.None)
+                .Should().BeEquivalentTo("QUEST_ENCOUNTER_COOLDOWN_MINUTES");
+        }
+
+        [Test]
+        public void BehaviorSelection_WarnsOnlyForChangedValuesAndUsesPlainLabels()
+        {
+            var document = BuildDocument();
+            var quest = PlaceableBehaviorCatalog.FindById("quest_activator")!;
+            PlaceableBehaviorApplier.Apply(
+                document.Root,
+                PlaceableBehaviorCatalog.None,
+                quest);
+            var context = new EditorFieldContext(
+                document,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+            var prompts = new RecordingPrompts();
+            var section = new PlaceableBehaviorSectionViewModel(
+                context,
+                new BehaviorValueSourceProvider(gameCode: null, tags: () => null),
+                prompts,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+
+            section.SelectedItem = section.Items.Single(item => item.Behavior?.Id == "teleporter");
+            prompts.DestructivePrompts.Should().BeEmpty(
+                "selecting Quest Activator only wrote its normal defaults");
+
+            PlaceableBehaviorApplier.Apply(document.Root, section.Current, quest);
+            new VarTable(document.Root).SetInt("QUEST_ENCOUNTER_IDLE_MINUTES", 25);
+            section.RefreshFromDocument(reclassifyAmbiguousSelection: true);
+            section.SelectedItem = section.Items.Single(item => item.Behavior?.Id == "teleporter");
+
+            prompts.DestructivePrompts.Should().ContainSingle();
+            prompts.DestructivePrompts[0].Headline.Should().Be("Change behavior to Teleporter?");
+            prompts.DestructivePrompts[0].Message.Should().Contain("Idle despawn (minutes)");
+            prompts.DestructivePrompts[0].Message.Should().NotContain("QUEST_ENCOUNTER_IDLE_MINUTES");
+            prompts.DestructivePrompts[0].ConfirmLabel.Should().Be("Change behavior");
+        }
+
+        [Test]
         public void UnmanagedVariables_ReportsWhatTheBehaviorDoesNotOwn()
         {
             var document = BuildDocument();
@@ -665,6 +818,31 @@ namespace SWLOR.Toolset.Tests
             public Task<bool> ConfirmDestructiveAsync(
                 string headline, string message, string confirmLabel) =>
                 Task.FromResult(true);
+
+            public Task<string?> PromptForTextAsync(
+                string headline, string message, string initialValue, string confirmLabel) =>
+                Task.FromResult<string?>(null);
+        }
+
+        private sealed class RecordingPrompts : IEditorPromptService
+        {
+            public List<(string Headline, string Message, string ConfirmLabel)> DestructivePrompts
+            {
+                get;
+            } = new();
+
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) =>
+                Task.FromResult(ExternalChangeChoice.Overwrite);
+
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) =>
+                Task.FromResult(UnsavedChangesChoice.Discard);
+
+            public Task<bool> ConfirmDestructiveAsync(
+                string headline, string message, string confirmLabel)
+            {
+                DestructivePrompts.Add((headline, message, confirmLabel));
+                return Task.FromResult(true);
+            }
 
             public Task<string?> PromptForTextAsync(
                 string headline, string message, string initialValue, string confirmLabel) =>

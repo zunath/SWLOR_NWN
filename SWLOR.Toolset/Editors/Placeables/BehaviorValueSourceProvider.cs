@@ -133,7 +133,8 @@ namespace SWLOR.Toolset.Editors.Placeables
                 .ToList();
         }
 
-        private static IReadOnlyList<BehaviorChoiceOption> FromIds(IReadOnlyDictionary<int, string>? entries)
+        private static IReadOnlyList<BehaviorChoiceOption> FromIds(
+            IReadOnlyDictionary<int, string>? entries)
         {
             if (entries == null)
                 return Array.Empty<BehaviorChoiceOption>();
@@ -142,7 +143,7 @@ namespace SWLOR.Toolset.Editors.Placeables
                 .OrderBy(entry => entry.Key)
                 .Select(entry => new BehaviorChoiceOption(
                     entry.Key.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                    $"{entry.Value} ({entry.Key})"))
+                    entry.Value))
                 .ToList();
         }
 

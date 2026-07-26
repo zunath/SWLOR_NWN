@@ -552,7 +552,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                 {
                     Id = CustomId,
                     Name = "Custom",
-                    Group = string.Empty,
+                    Group = "Custom",
                     IsSentinel = true,
                     AllowsRawEditing = true
                 }

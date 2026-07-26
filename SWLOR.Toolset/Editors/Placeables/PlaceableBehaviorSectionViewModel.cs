@@ -161,11 +161,14 @@ namespace SWLOR.Toolset.Editors.Placeables
 
             if (losses.Count > 0)
             {
+                var labels = losses
+                    .Select(FriendlyLossName)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
                 var confirmed = await _prompts.ConfirmDestructiveAsync(
-                    $"Switch to {target.Name}?",
-                    $"{Current.Name} stores {string.Join(", ", losses)}. Switching to {target.Name} " +
-                    "replaces or clears those values. Everything else on this placeable is left alone.",
-                    "Switch").ConfigureAwait(true);
+                    $"Change behavior to {target.Name}?",
+                    $"This will discard the values you entered for {JoinNaturally(labels)}.",
+                    "Change behavior").ConfigureAwait(true);
 
                 if (!confirmed)
                 {
@@ -240,5 +243,33 @@ namespace SWLOR.Toolset.Editors.Placeables
                 _context.Document.Root,
                 Current);
         }
+
+        private string FriendlyLossName(string loss)
+        {
+            var field = Current.Fields.FirstOrDefault(candidate =>
+                string.Equals(candidate.VariableName, loss, StringComparison.Ordinal));
+            if (field != null)
+                return field.Label;
+
+            const string ScriptSuffix = " script";
+            if (loss.EndsWith(ScriptSuffix, StringComparison.Ordinal))
+            {
+                var slot = loss[..^ScriptSuffix.Length];
+                var descriptor = UtpSchema.CustomBehaviorScriptFields.FirstOrDefault(candidate =>
+                    string.Equals(candidate.FieldName, slot, StringComparison.Ordinal));
+                if (descriptor != null)
+                    return $"{descriptor.Label} script";
+            }
+
+            return loss.Replace('_', ' ').ToLowerInvariant();
+        }
+
+        private static string JoinNaturally(IReadOnlyList<string> values) => values.Count switch
+        {
+            0 => "these settings",
+            1 => values[0],
+            2 => $"{values[0]} and {values[1]}",
+            _ => $"{string.Join(", ", values.Take(values.Count - 1))}, and {values[^1]}"
+        };
     }
 }

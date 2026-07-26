@@ -33,6 +33,9 @@ namespace SWLOR.Toolset.Editors.Placeables
         [ObservableProperty]
         private Bitmap? _preview;
 
+        [ObservableProperty]
+        private bool _isSelected;
+
         public bool PreviewRequested { get; private set; }
 
         public void EnsurePreview()

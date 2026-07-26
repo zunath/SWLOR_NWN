@@ -140,8 +140,12 @@
             <TextBlock Text="{Binding CurrentName}" FontSize="15" FontWeight="SemiBold" />
 
             <ItemsControl ItemsSource="{Binding Fields}" IsVisible="{Binding HasFields}" />
+            <StackPanel Spacing="6" IsVisible="{Binding ShowsCustomFlags}">
+              <TextBlock Text="FLAGS" Classes="label" />
+              <ItemsControl ItemsSource="{Binding CustomFlagFields}" />
+            </StackPanel>
             <TextBlock Text="This behavior has no settings of its own." Classes="dim" FontSize="11.5"
-                       IsVisible="{Binding !HasFields}" />
+                       IsVisible="{Binding !HasSettings}" />
 
             <Border Height="1" Background="{DynamicResource RuleBrush}" Margin="0,2" />
 

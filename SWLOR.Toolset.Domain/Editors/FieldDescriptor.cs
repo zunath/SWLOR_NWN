@@ -33,6 +33,12 @@ namespace SWLOR.Toolset.Domain.Editors
         public bool IsReadOnly { get; init; }
 
         /// <summary>
+        /// True when a text or localized-string field is prose rather than a single-line value.
+        /// The editor gives these fields a taller box and accepts embedded line breaks.
+        /// </summary>
+        public bool IsMultiline { get; init; }
+
+        /// <summary>
         /// True when this field must name a real row or enum value, so its editor offers no "(None)".
         /// </summary>
         /// <remarks>

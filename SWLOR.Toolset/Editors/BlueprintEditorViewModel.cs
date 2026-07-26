@@ -339,7 +339,7 @@ namespace SWLOR.Toolset.Editors
                     {
                         _session.ReloadFromDisk();
                         RecreateVarTableSection();
-                        RefreshAllFields();
+                        RefreshAllFields(reclassifyAmbiguousBehavior: true);
                         AfterHistoryChange();
                         CatalogEntryChanged?.Invoke();
                         _log.AppendLine($"Reloaded externally changed file {_session.FilePath}.");
@@ -443,7 +443,7 @@ namespace SWLOR.Toolset.Editors
             RebuildVariablesTab();
         }
 
-        private void RefreshAllFields()
+        private void RefreshAllFields(bool reclassifyAmbiguousBehavior = false)
         {
             foreach (var group in Groups)
             foreach (var field in group.Fields)
@@ -456,7 +456,7 @@ namespace SWLOR.Toolset.Editors
 
             // Undo can move a placeable back across a behavior switch, so the behavior section
             // re-detects rather than trusting what it last showed.
-            PlaceableSections.Behavior.RefreshFromDocument();
+            PlaceableSections.Behavior.RefreshFromDocument(reclassifyAmbiguousBehavior);
             PlaceableSections.Appearance.RefreshFromDocument();
             RebuildVariablesTab();
         }

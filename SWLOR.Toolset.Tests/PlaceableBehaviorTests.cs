@@ -2,8 +2,12 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
+using SWLOR.Toolset.Domain.Editors.Schemas;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Placeables;
+using SWLOR.Toolset.Editors;
+using SWLOR.Toolset.Editors.Placeables;
+using SWLOR.Toolset.Services;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -22,10 +26,30 @@ namespace SWLOR.Toolset.Tests
 
             behaviors.Select(behavior => behavior.Id).Should().OnlyHaveUniqueItems();
             PlaceableBehaviorCatalog.None.IsSentinel.Should().BeTrue();
+            PlaceableBehaviorCatalog.None.Name.Should().Be("Decor");
             PlaceableBehaviorCatalog.Custom.AllowsRawEditing.Should().BeTrue();
             behaviors.Where(behavior => !behavior.IsSentinel)
                 .Should().OnlyContain(behavior => behavior.Scripts.Count > 0 || behavior.Fields.Count > 0,
                     "a named behavior has to be recognisable from something stored");
+        }
+
+        [Test]
+        public void PlaceableSchema_ShowsRawFlagsOnlyOnCustomAndMakesDescriptionMultiline()
+        {
+            var schema = UtpSchema.Build();
+            var schemaFields = schema.AllFields.ToList();
+            var customFlagNames = UtpSchema.CustomBehaviorFlagFields
+                .Select(field => field.FieldName)
+                .ToList();
+
+            schemaFields.Should().NotContain(field => customFlagNames.Contains(field.FieldName),
+                "raw flags belong to Custom on the Behavior tab");
+            customFlagNames.Should().BeEquivalentTo("Useable", "HasInventory", "Static", "Plot");
+
+            schemaFields.Single(field => field.FieldName == "Description")
+                .IsMultiline.Should().BeTrue();
+            schemaFields.Single(field => field.FieldName == "LocName")
+                .IsMultiline.Should().BeFalse();
         }
 
         [Test]
@@ -113,8 +137,89 @@ namespace SWLOR.Toolset.Tests
 
             document.Root.GetOrNull("OnOpen")!.GetString().Should().BeEmpty("the old behavior owned that slot");
             document.Root.GetOrNull("OnUsed")!.GetString().Should().Be("teleport");
+            document.Root.GetOrNull("HasInventory")!.GetInteger().Should().Be(0,
+                "a flag required only by the old behavior must not leak into the new one");
             new VarTable(document.Root).Any(entry => entry.Name == "SCAVENGE_POINT_LOOT_TABLE_NAME")
                 .Should().BeFalse("switching clears the variables only the old behavior used");
+        }
+
+        [Test]
+        public void Apply_CustomToDecorClearsRawWiringAndReportsWhatWillBeLost()
+        {
+            var document = BuildDocument(
+                ("OnUsed", "my_custom_script"),
+                ("OnDeath", "my_custom_death"));
+            var variables = new VarTable(document.Root);
+            variables.SetString("CUSTOM_SETTING", "value");
+
+            PlaceableBehaviorApplier
+                .ValuesLostBySwitching(
+                    document.Root,
+                    PlaceableBehaviorCatalog.Custom,
+                    PlaceableBehaviorCatalog.None)
+                .Should().BeEquivalentTo(
+                    "OnUsed script",
+                    "OnDeath script",
+                    "CUSTOM_SETTING");
+
+            PlaceableBehaviorApplier.Apply(
+                document.Root,
+                PlaceableBehaviorCatalog.Custom,
+                PlaceableBehaviorCatalog.None);
+
+            PlaceableBehaviorDetector.ReadScripts(document.Root).Should().BeEmpty();
+            new VarTable(document.Root).Should().BeEmpty();
+            PlaceableBehaviorDetector.Detect(document.Root).Should().BeSameAs(PlaceableBehaviorCatalog.None);
+        }
+
+        [Test]
+        public void BehaviorSelection_DoesNotSnapAmbiguousChoicesBackToDecor()
+        {
+            var document = BuildDocument();
+            var context = new EditorFieldContext(
+                document,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+            var section = new PlaceableBehaviorSectionViewModel(
+                context,
+                new BehaviorValueSourceProvider(gameCode: null, tags: () => null),
+                new AcceptingPrompts(),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+
+            // This mirrors the blueprint editor's refresh after a behavior switch. Custom and
+            // variable-only behaviors have no stored signature until their first field is filled.
+            section.BehaviorChanged += () => section.RefreshFromDocument();
+
+            foreach (var id in new[]
+                     {
+                         PlaceableBehaviorCatalog.CustomId,
+                         "harvest_node",
+                         "asteroid",
+                         "visibility_gated"
+                     })
+            {
+                section.SelectedItem = section.Items.Single(item => item.Behavior?.Id == id);
+                section.Current.Id.Should().Be(id);
+            }
+
+            section.SelectedItem = section.Items.Single(
+                item => item.Behavior?.Id == PlaceableBehaviorCatalog.CustomId);
+            section.ShowsCustomFlags.Should().BeTrue();
+            section.CustomFlagFields
+                .Select(field => field.Descriptor.FieldName)
+                .Should().BeEquivalentTo("Useable", "HasInventory", "Static", "Plot");
+
+            section.SelectedItem = section.Items.Single(
+                item => item.Behavior?.Id == PlaceableBehaviorCatalog.NoneId);
+            section.Current.Should().BeSameAs(PlaceableBehaviorCatalog.None);
+            section.ShowsCustomFlags.Should().BeFalse();
         }
 
         [Test]
@@ -245,6 +350,23 @@ namespace SWLOR.Toolset.Tests
             }
 
             return null;
+        }
+
+        private sealed class AcceptingPrompts : IEditorPromptService
+        {
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) =>
+                Task.FromResult(ExternalChangeChoice.Overwrite);
+
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) =>
+                Task.FromResult(UnsavedChangesChoice.Discard);
+
+            public Task<bool> ConfirmDestructiveAsync(
+                string headline, string message, string confirmLabel) =>
+                Task.FromResult(true);
+
+            public Task<string?> PromptForTextAsync(
+                string headline, string message, string initialValue, string confirmLabel) =>
+                Task.FromResult<string?>(null);
         }
     }
 }

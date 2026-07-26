@@ -17,7 +17,7 @@ namespace SWLOR.Toolset.Domain.Placeables
     public static class PlaceableBehaviorApplier
     {
         /// <summary>
-        /// Variables the previous behavior owned that carry a value, and so would be lost by
+        /// Values the previous behavior owned that carry data and would be replaced or cleared by
         /// switching. The editor names these in its confirmation rather than discarding silently.
         /// </summary>
         public static IReadOnlyList<string> ValuesLostBySwitching(
@@ -29,11 +29,33 @@ namespace SWLOR.Toolset.Domain.Placeables
 
             var kept = new HashSet<string>(to.VariableNames, StringComparer.Ordinal);
             var table = new VarTable(root);
+            var losses = new List<string>();
 
-            return from.VariableNames
+            if (ReferenceEquals(from, PlaceableBehaviorCatalog.Custom))
+            {
+                foreach (var slot in PlaceableBehaviorDetector.ReadScripts(root))
+                {
+                    var targetKeepsValue = to.Scripts.TryGetValue(slot.Key, out var targetScript) &&
+                                           string.Equals(
+                                               slot.Value,
+                                               targetScript,
+                                               StringComparison.OrdinalIgnoreCase);
+                    if (!targetKeepsValue)
+                        losses.Add($"{slot.Key} script");
+                }
+
+                losses.AddRange(table
+                    .Select(entry => entry.Name)
+                    .Where(name => !kept.Contains(name))
+                    .Where(name => HasValue(table, name)));
+
+                return losses;
+            }
+
+            losses.AddRange(from.VariableNames
                 .Where(name => !kept.Contains(name))
-                .Where(name => HasValue(table, name))
-                .ToList();
+                .Where(name => HasValue(table, name)));
+            return losses;
         }
 
         /// <summary>Applies <paramref name="to"/>, having previously been <paramref name="from"/>.</summary>
@@ -48,6 +70,7 @@ namespace SWLOR.Toolset.Domain.Placeables
 
             ClearOwnedScripts(root, from, to);
             ClearOwnedVariables(root, from, to);
+            ClearOwnedFlags(root, from, to);
 
             foreach (var slot in to.Scripts)
                 SetString(root, slot.Key, slot.Value, GffFieldType.ResRef);
@@ -65,6 +88,17 @@ namespace SWLOR.Toolset.Domain.Placeables
 
         private static void ClearOwnedScripts(JsonGffStruct root, PlaceableBehavior from, PlaceableBehavior to)
         {
+            if (ReferenceEquals(from, PlaceableBehaviorCatalog.Custom))
+            {
+                foreach (var slot in PlaceableBehaviorDetector.ScriptSlots)
+                {
+                    if (!to.Scripts.ContainsKey(slot) && root.GetStringOrNull(slot) != null)
+                        SetString(root, slot, string.Empty, GffFieldType.ResRef);
+                }
+
+                return;
+            }
+
             foreach (var slot in from.Scripts)
             {
                 if (to.Scripts.ContainsKey(slot.Key))
@@ -88,10 +122,44 @@ namespace SWLOR.Toolset.Domain.Placeables
             var kept = new HashSet<string>(to.VariableNames, StringComparer.Ordinal);
             var table = new VarTable(root);
 
+            if (ReferenceEquals(from, PlaceableBehaviorCatalog.Custom))
+            {
+                foreach (var name in table.Select(entry => entry.Name).ToList())
+                {
+                    if (!kept.Contains(name))
+                        table.Remove(name);
+                }
+
+                return;
+            }
+
             foreach (var name in from.VariableNames)
             {
                 if (!kept.Contains(name))
                     table.Remove(name);
+            }
+        }
+
+        private static void ClearOwnedFlags(JsonGffStruct root, PlaceableBehavior from, PlaceableBehavior to)
+        {
+            // Custom flags are explicitly hand-authored. A named behavior may add what it requires,
+            // but must not silently erase the other choices when the builder leaves Custom.
+            if (ReferenceEquals(from, PlaceableBehaviorCatalog.Custom) ||
+                ReferenceEquals(to, PlaceableBehaviorCatalog.Custom))
+                return;
+
+            var kept = new HashSet<string>(
+                to.Flags.Select(flag => flag.FieldName),
+                StringComparer.Ordinal);
+
+            foreach (var flag in from.Flags)
+            {
+                if (kept.Contains(flag.FieldName))
+                    continue;
+
+                var field = root.GetOrNull(flag.FieldName);
+                if (field?.GetInteger() == (flag.Value ? 1 : 0))
+                    SetInteger(root, flag.FieldName, 0, GffFieldType.Byte);
             }
         }
 

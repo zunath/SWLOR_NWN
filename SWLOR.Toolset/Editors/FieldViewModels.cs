@@ -51,6 +51,8 @@ namespace SWLOR.Toolset.Editors
         public string Label => Descriptor.Label;
         public string? Description => Descriptor.Description;
         public bool IsReadOnly => Descriptor.IsReadOnly;
+        public bool IsMultiline => Descriptor.IsMultiline;
+        public bool IsSingleLine => !Descriptor.IsMultiline;
 
         protected FieldViewModel(FieldDescriptor descriptor, EditorFieldContext context)
         {

@@ -47,6 +47,19 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
         public const string BasicTab = "Basic";
         public const string AdvancedTab = "Advanced";
 
+        /// <summary>
+        /// Raw placeable flags. Named behaviors manage the flags they require, so these are exposed
+        /// only by Custom in the Behavior tab instead of competing with behavior selection on Basic.
+        /// </summary>
+        public static IReadOnlyList<FieldDescriptor> CustomBehaviorFlagFields { get; } =
+            new[]
+            {
+                new FieldDescriptor { Label = "Useable", FieldName = "Useable", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
+                new FieldDescriptor { Label = "Has Inventory", FieldName = "HasInventory", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
+                new FieldDescriptor { Label = "Static", FieldName = "Static", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
+                new FieldDescriptor { Label = "Plot", FieldName = "Plot", Kind = EditorKind.Check, FieldType = GffFieldType.Byte }
+            };
+
         public static EditorSchema Build()
         {
             return new EditorSchema
@@ -67,14 +80,10 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                     },
                     new FieldGroup
                     {
-                        Title = "Flags",
+                        Title = "Durability",
                         Tab = BasicTab,
                         Fields = new[]
                         {
-                            new FieldDescriptor { Label = "Useable", FieldName = "Useable", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Has Inventory", FieldName = "HasInventory", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Static", FieldName = "Static", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Plot", FieldName = "Plot", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
                             new FieldDescriptor { Label = "Hit Points", FieldName = "HP", Kind = EditorKind.Integer, FieldType = GffFieldType.Short, Description = "Only matters while Plot is off." }
                         }
                     },
@@ -84,7 +93,15 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                         Tab = BasicTab,
                         Fields = new[]
                         {
-                            new FieldDescriptor { Label = "Description", FieldName = "Description", Kind = EditorKind.LocString, FieldType = GffFieldType.CExoLocString, Description = "Shown when a player examines it." }
+                            new FieldDescriptor
+                            {
+                                Label = "Description",
+                                FieldName = "Description",
+                                Kind = EditorKind.LocString,
+                                FieldType = GffFieldType.CExoLocString,
+                                Description = "Shown when a player examines it.",
+                                IsMultiline = true
+                            }
                         }
                     },
                     new FieldGroup

@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using SWLOR.Toolset.Domain.Editors;
+using SWLOR.Toolset.Domain.Editors.Schemas;
 using SWLOR.Toolset.Domain.Placeables;
 using SWLOR.Toolset.Services;
 
@@ -39,6 +41,16 @@ namespace SWLOR.Toolset.Editors.Placeables
             _prompts = prompts;
             _runEdit = runEdit;
 
+            foreach (var descriptor in UtpSchema.CustomBehaviorFlagFields)
+            {
+                CustomFlagFields.Add(descriptor.Kind switch
+                {
+                    EditorKind.Check => new CheckFieldViewModel(descriptor, _context),
+                    _ => throw new InvalidOperationException(
+                        $"Custom placeable flag '{descriptor.FieldName}' must be a checkbox.")
+                });
+            }
+
             foreach (var behavior in PlaceableBehaviorCatalog.Behaviors)
             {
                 if (!string.IsNullOrEmpty(behavior.Group) && behavior.Group != CurrentGroup)
@@ -63,6 +75,9 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// <summary>The typed fields of the selected behavior.</summary>
         public ObservableCollection<BehaviorFieldViewModel> Fields { get; } = new();
 
+        /// <summary>Raw root flags shown only for the Custom behavior.</summary>
+        public ObservableCollection<FieldViewModel> CustomFlagFields { get; } = new();
+
         /// <summary>What the placeable is wired as right now.</summary>
         public PlaceableBehavior Current { get; private set; }
 
@@ -84,14 +99,27 @@ namespace SWLOR.Toolset.Editors.Placeables
         public string? OwnerFile => Current.OwnerFile;
 
         public bool HasFields => Fields.Count > 0;
+        public bool ShowsCustomFlags => ReferenceEquals(Current, PlaceableBehaviorCatalog.Custom);
+        public bool HasSettings => HasFields || ShowsCustomFlags;
 
         /// <summary>Raised when a behavior switch lands, so the editor can refresh its other tabs.</summary>
         public event Action? BehaviorChanged;
 
-        /// <summary>Re-reads the document after an undo, redo or external reload.</summary>
-        public void RefreshFromDocument()
+        /// <summary>
+        /// Re-reads the document after an edit, undo or redo. A newly chosen Custom or variable-only
+        /// behavior has no stored signature until the builder fills it in, so an otherwise blank
+        /// document must not immediately snap the selection back to Decor.
+        /// </summary>
+        public void RefreshFromDocument(bool reclassifyAmbiguousSelection = false)
         {
             var detected = PlaceableBehaviorDetector.Detect(_context.Document.Root);
+            if (!reclassifyAmbiguousSelection &&
+                ReferenceEquals(detected, PlaceableBehaviorCatalog.None) &&
+                IsAmbiguousWithoutConfiguredValues(Current))
+            {
+                detected = Current;
+            }
+
             if (!ReferenceEquals(detected, Current))
             {
                 Current = detected;
@@ -104,6 +132,8 @@ namespace SWLOR.Toolset.Editors.Placeables
             }
 
             foreach (var field in Fields)
+                field.RefreshFromDocument();
+            foreach (var field in CustomFlagFields)
                 field.RefreshFromDocument();
         }
 
@@ -136,8 +166,8 @@ namespace SWLOR.Toolset.Editors.Placeables
             {
                 var confirmed = await _prompts.ConfirmDestructiveAsync(
                     $"Switch to {target.Name}?",
-                    $"{Current.Name} stores {string.Join(", ", losses)}, which {target.Name} does not use. " +
-                    "Switching clears those values. Everything else on this placeable is left alone.",
+                    $"{Current.Name} stores {string.Join(", ", losses)}. Switching to {target.Name} " +
+                    "replaces or clears those values. Everything else on this placeable is left alone.",
                     "Switch").ConfigureAwait(true);
 
                 if (!confirmed)
@@ -173,8 +203,11 @@ namespace SWLOR.Toolset.Editors.Placeables
             Fields.Clear();
             foreach (var field in Current.Fields)
                 Fields.Add(new BehaviorFieldViewModel(field, _context, _sources));
+            foreach (var field in CustomFlagFields)
+                field.RefreshFromDocument();
 
             OnPropertyChanged(nameof(HasFields));
+            OnPropertyChanged(nameof(HasSettings));
         }
 
         private void NotifyBehaviorProperties()
@@ -184,6 +217,12 @@ namespace SWLOR.Toolset.Editors.Placeables
             OnPropertyChanged(nameof(ManagedFlags));
             OnPropertyChanged(nameof(OwnerFile));
             OnPropertyChanged(nameof(AllowsRawEditing));
+            OnPropertyChanged(nameof(ShowsCustomFlags));
+            OnPropertyChanged(nameof(HasSettings));
         }
+
+        private static bool IsAmbiguousWithoutConfiguredValues(PlaceableBehavior behavior) =>
+            ReferenceEquals(behavior, PlaceableBehaviorCatalog.Custom) ||
+            !behavior.IsSentinel && behavior.Scripts.Count == 0;
     }
 }

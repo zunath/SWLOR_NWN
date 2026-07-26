@@ -46,7 +46,7 @@ namespace SWLOR.Toolset.Domain.Placeables
                 new PlaceableBehavior
                 {
                     Id = NoneId,
-                    Name = "None - decor",
+                    Name = "Decor",
                     Group = string.Empty,
                     IsSentinel = true
                 },

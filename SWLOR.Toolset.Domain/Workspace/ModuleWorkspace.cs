@@ -138,24 +138,10 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// </remarks>
         public GffDocumentBase LoadBlueprint(ResourceType type, string resRef)
         {
-            if (string.IsNullOrWhiteSpace(resRef))
-                throw new ArgumentException("ResRef must be provided.", nameof(resRef));
-
-            if (type == ResourceType.Area)
-                throw new ArgumentException("Use LoadArea for area resources.", nameof(type));
-
-            // Rejected before any I/O: a conversation or a script is not a blueprint, and reading one
-            // first would surface a parse failure instead of the actual mistake.
-            if (!BlueprintTypes.Contains(type))
-                throw new ArgumentOutOfRangeException(nameof(type), type, "Not a blueprint resource type.");
+            if (TryLoadBlueprint(type, resRef, out var document))
+                return document;
 
             var path = GetResourcePath(type, resRef);
-            if (File.Exists(path))
-                return Wrap(type, JsonGffDocument.Parse(File.ReadAllBytes(path)));
-
-            if (TryLoadFromResourceIndex(type, resRef, out var indexed))
-                return Wrap(type, indexed);
-
             throw new FileNotFoundException(
                 $"Blueprint '{resRef}.{type.Extension()}' was not found in the module at '{path}'" +
                 (ResourceIndex == null
@@ -165,23 +151,79 @@ namespace SWLOR.Toolset.Domain.Workspace
         }
 
         /// <summary>
+        /// Attempts to load a blueprint using the same module-first, indexed-resource fallback as
+        /// <see cref="LoadBlueprint"/>. An absent resource returns false instead of throwing; malformed
+        /// or unreadable resources still throw because those are content failures, not ordinary misses.
+        /// </summary>
+        public bool TryLoadBlueprint(
+            ResourceType type,
+            string resRef,
+            out GffDocumentBase document)
+        {
+            ValidateBlueprintRequest(type, resRef);
+
+            var path = GetResourcePath(type, resRef);
+            if (File.Exists(path))
+            {
+                document = Wrap(type, JsonGffDocument.Parse(File.ReadAllBytes(path)));
+                return true;
+            }
+
+            if (TryLoadFromResourceIndex(type, resRef, out var indexed))
+            {
+                document = Wrap(type, indexed);
+                return true;
+            }
+
+            document = null!;
+            return false;
+        }
+
+        /// <summary>
         /// Loads a blueprint specifically from the indexed Standard/HAK layers, bypassing any
         /// same-resref module override. This preserves the Palette's source choice through placement.
         /// </summary>
         public GffDocumentBase LoadIndexedBlueprint(ResourceType type, string resRef)
         {
+            if (TryLoadIndexedBlueprint(type, resRef, out var document))
+                return document;
+
+            throw new FileNotFoundException(
+                $"Standard blueprint '{resRef}.{type.Extension()}' was not found in the base game / hak resource index.");
+        }
+
+        /// <summary>
+        /// Attempts to load a blueprint from only the indexed Standard/HAK layers. An absent resource
+        /// returns false instead of using <see cref="FileNotFoundException"/> as normal control flow.
+        /// </summary>
+        public bool TryLoadIndexedBlueprint(
+            ResourceType type,
+            string resRef,
+            out GffDocumentBase document)
+        {
+            ValidateBlueprintRequest(type, resRef);
+
+            if (TryLoadFromResourceIndex(type, resRef, out var indexed))
+            {
+                document = Wrap(type, indexed);
+                return true;
+            }
+
+            document = null!;
+            return false;
+        }
+
+        private static void ValidateBlueprintRequest(ResourceType type, string resRef)
+        {
             if (string.IsNullOrWhiteSpace(resRef))
                 throw new ArgumentException("ResRef must be provided.", nameof(resRef));
             if (type == ResourceType.Area)
                 throw new ArgumentException("Use LoadArea for area resources.", nameof(type));
+
+            // Rejected before any I/O: a conversation or a script is not a blueprint, and reading one
+            // first would surface a parse failure instead of the actual mistake.
             if (!BlueprintTypes.Contains(type))
                 throw new ArgumentOutOfRangeException(nameof(type), type, "Not a blueprint resource type.");
-
-            if (TryLoadFromResourceIndex(type, resRef, out var indexed))
-                return Wrap(type, indexed);
-
-            throw new FileNotFoundException(
-                $"Standard blueprint '{resRef}.{type.Extension()}' was not found in the base game / hak resource index.");
         }
 
         /// <summary>

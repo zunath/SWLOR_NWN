@@ -150,7 +150,13 @@ namespace SWLOR.Toolset.Workspace
             {
                 try
                 {
-                    var creature = workspace.LoadBlueprint(ResourceType.Utc, creatureResRef).Fields;
+                    if (!workspace.TryLoadBlueprint(
+                            ResourceType.Utc, creatureResRef, out var creatureBlueprint))
+                    {
+                        continue;
+                    }
+
+                    var creature = creatureBlueprint.Fields;
                     if (string.Equals(
                             BlueprintModelResolver.GetEquippedChestArmorResRef(creature),
                             itemResRef,
@@ -657,7 +663,10 @@ namespace SWLOR.Toolset.Workspace
 
             try
             {
-                var creature = workspace.LoadBlueprint(type, resRef).Fields;
+                if (!workspace.TryLoadBlueprint(type, resRef, out var creatureBlueprint))
+                    return Array.Empty<string>();
+
+                var creature = creatureBlueprint.Fields;
                 var itemResRef = BlueprintModelResolver.GetEquippedChestArmorResRef(creature);
                 return string.IsNullOrWhiteSpace(itemResRef)
                     ? Array.Empty<string>()

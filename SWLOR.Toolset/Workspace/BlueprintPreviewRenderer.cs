@@ -472,16 +472,16 @@ namespace SWLOR.Toolset.Workspace
             if (workspace == null)
                 return null;
 
-            try
+            if (useIndexedBlueprint)
             {
-                return (useIndexedBlueprint
-                    ? workspace.LoadIndexedBlueprint(ResourceType.Uti, resRef)
-                    : workspace.LoadBlueprint(ResourceType.Uti, resRef)).Fields;
+                return workspace.TryLoadIndexedBlueprint(ResourceType.Uti, resRef, out var indexed)
+                    ? indexed.Fields
+                    : null;
             }
-            catch (Exception)
-            {
-                return null;
-            }
+
+            return workspace.TryLoadBlueprint(ResourceType.Uti, resRef, out var moduleOrIndexed)
+                ? moduleOrIndexed.Fields
+                : null;
         }
     }
 }

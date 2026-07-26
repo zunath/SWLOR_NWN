@@ -119,6 +119,22 @@ namespace SWLOR.Toolset.Tests
             act.Should().Throw<ArgumentException>();
         }
 
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TryLoadBlueprint_MissingResourceReturnsFalseWithoutThrowing(bool indexedOnly)
+        {
+            var workspace = new ModuleWorkspace(ModuleDirectory);
+
+            var found = indexedOnly
+                ? workspace.TryLoadIndexedBlueprint(
+                    ResourceType.Uti, "missing_preview_armor", out var document)
+                : workspace.TryLoadBlueprint(
+                    ResourceType.Uti, "missing_preview_armor", out document);
+
+            found.Should().BeFalse();
+            document.Should().BeNull();
+        }
+
         [Test]
         public void BlueprintCatalog_OverSyntheticModule_IndexesEntriesWithNameAndTag()
         {

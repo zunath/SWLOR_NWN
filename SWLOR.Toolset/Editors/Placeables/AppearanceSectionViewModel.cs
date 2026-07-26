@@ -247,6 +247,17 @@ namespace SWLOR.Toolset.Editors.Placeables
                 return;
 
             _searchDebounce?.Cancel();
+            _searchDebounce = null;
+
+            // Clearing the box is not a search being typed - it is one being abandoned, and waiting
+            // out the debounce for it leaves the old results sitting there looking like the filter
+            // did not clear. Emptying it takes effect at once.
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                Rebuild();
+                return;
+            }
+
             var pending = new CancellationTokenSource();
             _searchDebounce = pending;
 
@@ -337,7 +348,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         private void Rebuild()
         {
             var usage = _usage();
-            var matches = _catalog.Search(Query);
+            var matches = _catalog.Search(Query ?? string.Empty);
 
             if (NamedOnly)
                 matches = matches.Where(row => row.HasLabel);

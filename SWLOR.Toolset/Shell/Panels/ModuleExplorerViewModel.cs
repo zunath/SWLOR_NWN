@@ -393,6 +393,17 @@ namespace SWLOR.Toolset.Shell.Panels
             if (string.IsNullOrWhiteSpace(name))
                 return;
 
+            // Checked rather than sanitized: the builder typed this and is still here to retype it, so
+            // say what is wrong instead of quietly hyphenating a name they did not ask for. The
+            // constructor would throw, and an exception out of a command handler has nowhere to go.
+            // Asked before the sibling check, so a name holding a separator is reported as that rather
+            // than as a clash with whatever the split happened to land on.
+            if (CategoryFolder.NameProblem(name) is { } problem)
+            {
+                StatusMessage = problem;
+                return;
+            }
+
             var trimmed = name.Trim();
             var nameAvailable = parent == null
                 ? section.IsNameAvailable(trimmed)
@@ -423,6 +434,12 @@ namespace SWLOR.Toolset.Shell.Panels
             if (string.IsNullOrWhiteSpace(name) || name.Trim() == folder.Name)
                 return;
 
+            if (CategoryFolder.NameProblem(name) is { } problem)
+            {
+                StatusMessage = problem;
+                return;
+            }
+
             var section = _categories.Section(SelectedType);
             var trimmed = name.Trim();
             if (section == null || !section.TryRenameFolder(folder, trimmed))
@@ -430,6 +447,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 StatusMessage = $"A folder named '{trimmed}' already exists here.";
                 return;
             }
+
 
             SaveCategories();
             Refresh();

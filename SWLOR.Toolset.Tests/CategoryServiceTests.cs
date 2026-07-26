@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Categories;
+using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 
@@ -103,12 +104,45 @@ namespace SWLOR.Toolset.Tests
             service.Section(ResourceType.Utp)!.Find("Rejected rename").Should().BeNull();
         }
 
-        private CategoryService OpenService()
+        /// <summary>
+        /// A name resolved out of the TLK is no more trustworthy than one read out of a palette - several
+        /// of the base game's carry a path separator. This repair runs over a tree that is already loaded
+        /// and on screen, so throwing here took the open module down after it had opened cleanly.
+        /// </summary>
+        [Test]
+        public void APlaceholderResolvingToANameWithThePathSeparator_IsRepairedRatherThanThrownAt()
+        {
+            const uint StrRef = TlkService.CustomTlkBase + 42;
+
+            var sidecar = CategoryCatalog.DefaultPathFor(_module);
+            Directory.CreateDirectory(Path.GetDirectoryName(sidecar)!);
+            File.WriteAllText(sidecar, $$"""
+                { "version": 1, "sections": { "utp": {
+                    "pinned": [ "Category {{StrRef}}" ],
+                    "folders": [ { "name": "Category {{StrRef}}", "members": [ "crate01" ] } ] } } }
+                """);
+
+            var service = OpenService(Tlk(42, "Skin/Hide"));
+
+            var section = service.Section(ResourceType.Utp)!;
+            var folder = section.Folders.Should().ContainSingle().Subject;
+            folder.Name.Should().Be("Skin-Hide");
+            folder.Members.Should().Contain("crate01", "repairing the name must not lose the contents");
+            section.Pinned.Should().Equal(new[] { "Skin-Hide" },
+                because: "a pin is stored by path, so it has to move with the name");
+        }
+
+        private static TlkService Tlk(int entryId, string text) =>
+            new(TlkJsonFile.Parse($$"""
+                { "language": 0, "entries": [ { "id": {{entryId}}, "text": "{{text}}" } ] }
+                """));
+
+        private CategoryService OpenService(TlkService? tlk = null)
         {
             var log = new OutputLogService();
             var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
             context.Open(_module);
-            return new CategoryService(context, log);
+            return new CategoryService(context, log, tlk);
         }
     }
 }

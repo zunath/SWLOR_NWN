@@ -208,9 +208,17 @@ namespace SWLOR.Toolset.Domain.Categories
             return Array.Empty<string>();
         }
 
-        /// <summary>Splits a display name on the convention's separator, dropping empty segments.</summary>
+        /// <summary>
+        /// Splits a display name on the convention's separator, dropping empty segments. Each segment is
+        /// sanitized, because these become folder names and they come from a blueprint's name rather than
+        /// from anything a builder typed here - one holding a path separator must not take the whole seed
+        /// down with it. A segment left with nothing usable is dropped, as an empty one already is.
+        /// </summary>
         private static IReadOnlyList<string> Segments(string name) =>
-            name.Split(Separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            name.Split(Separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Select(CategoryFolder.Sanitize)
+                .OfType<string>()
+                .ToList();
 
         /// <summary>Walks (creating as needed) to the folder at a path.</summary>
         private static CategoryFolder FolderAt(CategorySection section, IReadOnlyList<string> path)

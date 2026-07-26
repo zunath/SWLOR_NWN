@@ -161,13 +161,16 @@ namespace SWLOR.Toolset.Workspace
                 if (!match.Success || !uint.TryParse(match.Groups[1].Value, out var strRef))
                     continue;
 
-                var resolved = ResolveCategoryName(strRef);
-                if (string.IsNullOrWhiteSpace(resolved))
+                // Sanitized like every other name that comes out of the TLK: several of the base game's
+                // category names carry a path separator, and this repair runs over a tree that is already
+                // loaded and on screen, so a throw here would take the open module with it.
+                var resolved = CategoryFolder.Sanitize(ResolveCategoryName(strRef));
+                if (resolved == null)
                     continue;
 
                 // A pin is stored by path, and a path is built from names. Renaming a folder therefore
                 // moves every pin at or below it and the stored keys need to move with the folder.
-                if (section.TryRenameFolder(folder, resolved.Trim()))
+                if (section.TryRenameFolder(folder, resolved))
                     repaired++;
             }
 

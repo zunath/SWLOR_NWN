@@ -130,6 +130,33 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
+        /// Segments come out of a blueprint's own name, and the convention splits on " - " - so a name
+        /// with a '/' inside a segment reaches the folder constructor intact and used to throw, taking the
+        /// whole seed with it. These names belong to the module rather than to anyone who could be asked
+        /// to correct them, so the segment is repaired the same way a sidecar's is.
+        /// </summary>
+        [Test]
+        public void ASegmentHoldingThePathSeparator_IsRepairedRatherThanThrownAt()
+        {
+            AreaPath("Tatooine - Anchorhead/Docks - Bay 1")
+                .Should().Equal("Tatooine", "Anchorhead-Docks");
+        }
+
+        [Test]
+        public void Seeding_SurvivesANameWhoseSegmentHoldsThePathSeparator()
+        {
+            var section = new CategorySection();
+
+            var act = () => ModuleFolderSeeder.Seed(section, ResourceType.Area, new[]
+            {
+                new SeedableResource("bay01", "Tatooine - Anchorhead/Docks - Bay 1")
+            });
+
+            act.Should().NotThrow();
+            section.Find("Tatooine", "Anchorhead-Docks")!.Members.Should().Contain("bay01");
+        }
+
+        /// <summary>
         /// The seed is a starting point, never a correction. Once a builder has folders, re-seeding would
         /// silently undo whatever they arranged.
         /// </summary>

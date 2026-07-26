@@ -65,6 +65,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
             AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
             AreaView.TilePlacementModels = _viewModel.TilePlacementModels;
+            AreaView.TilePlacementValidator = _viewModel.CanPlaceArmedTileAt;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
             // Opening an area shows its map. Not gated on the 3D View tab being selected: it always is

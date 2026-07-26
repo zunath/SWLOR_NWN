@@ -48,6 +48,9 @@ namespace SWLOR.Toolset.Settings
         [JsonPropertyName("moduleContentsTab")]
         public string ModuleContentsTab { get; set; } = string.Empty;
 
+        [JsonPropertyName("tilePaintMode")]
+        public string TilePaintMode { get; set; } = string.Empty;
+
         [JsonPropertyName("showAreaLighting")]
         public bool ShowAreaLighting { get; set; }
 
@@ -86,6 +89,7 @@ namespace SWLOR.Toolset.Settings
         private string _paletteSelection = string.Empty;
         private bool _paletteShowsStandard;
         private string _moduleContentsTab = string.Empty;
+        private string _tilePaintMode = string.Empty;
         private bool _showAreaLighting;
         private bool _showFog;
         private Dictionary<string, double> _dockProportions = new(StringComparer.Ordinal);
@@ -211,6 +215,20 @@ namespace SWLOR.Toolset.Settings
                     return;
 
                 _paletteShowsStandard = value;
+                Save();
+            }
+        }
+
+        /// <summary>Whether the Tiles palette picks the tile for the builder ("Auto") or is told which one ("Manual"). Empty until chosen.</summary>
+        public string TilePaintMode
+        {
+            get => _tilePaintMode;
+            set
+            {
+                if (string.Equals(_tilePaintMode, value, StringComparison.Ordinal))
+                    return;
+
+                _tilePaintMode = value ?? string.Empty;
                 Save();
             }
         }
@@ -386,6 +404,7 @@ namespace SWLOR.Toolset.Settings
                         settings._paletteSelection = data.PaletteSelection ?? string.Empty;
                         settings._paletteShowsStandard = data.PaletteShowsStandard;
                         settings._moduleContentsTab = data.ModuleContentsTab ?? string.Empty;
+                        settings._tilePaintMode = data.TilePaintMode ?? string.Empty;
                         settings._showAreaLighting = data.ShowAreaLighting;
                         settings._showFog = data.ShowFog;
                         settings._paletteCategoryProportion =
@@ -478,6 +497,7 @@ namespace SWLOR.Toolset.Settings
                     PaletteSelection = _paletteSelection,
                     PaletteShowsStandard = _paletteShowsStandard,
                     ModuleContentsTab = _moduleContentsTab,
+                    TilePaintMode = _tilePaintMode,
                     ShowAreaLighting = _showAreaLighting,
                     ShowFog = _showFog,
                     DockProportions = new Dictionary<string, double>(_dockProportions, StringComparer.Ordinal),

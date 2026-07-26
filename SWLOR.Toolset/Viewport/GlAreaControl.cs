@@ -2341,10 +2341,24 @@ void main()
             SetUniformFloat("flatAlpha", 1f);
         }
 
-        /// <summary>Cell-highlight tint: the ghost's accent when the stamp fits, a warning red when it does not.</summary>
-        private static readonly Vector3 TileCellHighlightColor = PlacementGhostColor;
+        /// <summary>
+        /// Cell-highlight tint: green where the click will land, red where it will be refused.
+        /// </summary>
+        /// <remarks>
+        /// Green and red rather than accent-and-red because this is a yes/no about the very next
+        /// click, and an accent colour reads as "selected" rather than "allowed" - the builder has to
+        /// learn which of the two blues means what. The pairing is the one Aurora uses.
+        /// </remarks>
+        private static readonly Vector3 TileCellHighlightColor = new(0.30f, 0.82f, 0.36f);
 
         private static readonly Vector3 TileCellRejectedColor = new(0.92f, 0.28f, 0.22f);
+
+        /// <summary>
+        /// Whether the armed tile would actually go down at this (column, row). Supplied by the area
+        /// editor, which is the only thing that can answer it: in Auto mode the answer comes from the
+        /// tileset's own rules, and "inside the grid" is not the same question.
+        /// </summary>
+        public Func<int, int, bool>? TilePlacementValidator { get; set; }
 
         /// <summary>Translucent enough to read the tile underneath - the builder is choosing between tiles, not covering one up.</summary>
         private const float TileCellHighlightAlpha = 0.45f;
@@ -2401,7 +2415,7 @@ void main()
             SetUniformFloat("alphaCutoff", 0f);
             SetUniformFloat("flatAlpha", TileCellHighlightAlpha);
             SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
-            SetUniformVec3("flatColor", FootprintFitsGrid(scene, anchor.Column, anchor.Row)
+            SetUniformVec3("flatColor", TilePlacementAllowed(scene, anchor.Column, anchor.Row)
                 ? TileCellHighlightColor
                 : TileCellRejectedColor);
             SetUniformMatrix4("model", Matrix4x4.Identity); // cell corners are already world-space
@@ -2428,13 +2442,22 @@ void main()
         /// <see cref="DrawTileCellHighlight"/>, which has already set up blending and turned the depth
         /// test off, and which leaves the outline underneath as the fits/does-not-fit signal.
         /// </remarks>
+        /// <summary>
+        /// Whether the armed tile may be placed at this cell: the grid's own bounds, and then whatever
+        /// the editor says. Without a validator this is the bounds check alone, which is what it was
+        /// before the rules had a say.
+        /// </summary>
+        private bool TilePlacementAllowed(AreaScene scene, int anchorColumn, int anchorRow) =>
+            FootprintFitsGrid(scene, anchorColumn, anchorRow) &&
+            (TilePlacementValidator == null || TilePlacementValidator(anchorColumn, anchorRow));
+
         private void DrawTileGhostModels(AreaScene scene, int anchorColumn, int anchorRow)
         {
             if (_gl == null || _tilePlacementModels.Count == 0)
                 return;
 
             var (columns, rows) = _tilePlacementFootprint;
-            var fits = FootprintFitsGrid(scene, anchorColumn, anchorRow);
+            var fits = TilePlacementAllowed(scene, anchorColumn, anchorRow);
 
             SetUniformFloat("flatAlpha", TileGhostAlpha);
             if (!fits)

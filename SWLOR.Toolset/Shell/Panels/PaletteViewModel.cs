@@ -189,6 +189,9 @@ namespace SWLOR.Toolset.Shell.Panels
                 }
 
                 Source = _settings.PaletteShowsStandard ? PaletteSource.Standard : PaletteSource.Custom;
+
+                if (Enum.TryParse<TilePaintMode>(_settings.TilePaintMode, ignoreCase: true, out var paintMode))
+                    TilePaintMode = paintMode;
             }
             finally
             {
@@ -376,7 +379,18 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            foreach (var category in _tiles.Categories)
+            // Only what this mode is for. The palette itself still describes the whole tileset - the
+            // mode decides which of its categories are a sensible thing to click right now.
+            var offered = TilePaintModes.CategoriesFor(_tiles, TilePaintMode);
+            if (offered.Count == 0)
+            {
+                StatusMessage = IsAutoTilePaint
+                    ? $"'{_tilesets.GetDisplayName(tilesetResRef)}' declares no terrain to paint - switch to Manual."
+                    : $"'{_tilesets.GetDisplayName(tilesetResRef)}' lists no individual tiles.";
+                return;
+            }
+
+            foreach (var category in offered)
                 _allRows.Add(new CategoryRowViewModel(folder: null, depth: 0, count: category.Entries.Count,
                     hasChildren: false)
                 {
@@ -386,7 +400,9 @@ namespace SWLOR.Toolset.Shell.Panels
             PublishVisibleRows();
             SelectedRow = _allRows[0];
             RebuildTileGrid();
-            StatusMessage = $"{_tilesets.GetDisplayName(tilesetResRef)} - pick a tile, then click a cell.";
+            StatusMessage = IsAutoTilePaint
+                ? $"{_tilesets.GetDisplayName(tilesetResRef)} - pick a terrain, then click a cell to paint it."
+                : $"{_tilesets.GetDisplayName(tilesetResRef)} - pick a tile, then click a cell to stamp it.";
         }
 
         /// <summary>
@@ -504,6 +520,7 @@ namespace SWLOR.Toolset.Shell.Panels
             SyncChipSelection();
             OnPropertyChanged(nameof(IsBlueprintMode));
             OnPropertyChanged(nameof(ShowsSourceSwitch));
+            OnPropertyChanged(nameof(ShowsTilePaintSwitch));
             OnPropertyChanged(nameof(CanWrite));
             OnPropertyChanged(nameof(ReadOnlyNotice));
             OnPropertyChanged(nameof(HasReadOnlyNotice));
@@ -526,6 +543,46 @@ namespace SWLOR.Toolset.Shell.Panels
         /// in play is decided by the area, not by the builder.
         /// </summary>
         public bool ShowsSourceSwitch => !IsTileMode;
+
+        /// <summary>
+        /// Whether a click picks the tile itself or only the terrain and lets the tileset choose.
+        /// </summary>
+        /// <remarks>
+        /// Auto is the default because it is what Aurora does and what laying a floor actually means:
+        /// the builder is saying "this is rich carpet", not "this is the outside corner piece of rich
+        /// carpet, rotated once". Manual stays because the rules cannot express everything, and a
+        /// tileset always holds a tile the solver would never pick on its own.
+        /// </remarks>
+        [ObservableProperty]
+        private TilePaintMode _tilePaintMode = TilePaintMode.Auto;
+
+        public bool IsAutoTilePaint => TilePaintMode == TilePaintMode.Auto;
+
+        public bool IsManualTilePaint => TilePaintMode == TilePaintMode.Manual;
+
+        /// <summary>The Auto/Manual switch replaces Custom/Standard while Tiles is showing - the two are never both meaningful.</summary>
+        public bool ShowsTilePaintSwitch => IsTileMode;
+
+        [RelayCommand]
+        private void UseAutoTilePaint() => TilePaintMode = TilePaintMode.Auto;
+
+        [RelayCommand]
+        private void UseManualTilePaint() => TilePaintMode = TilePaintMode.Manual;
+
+        partial void OnTilePaintModeChanged(TilePaintMode value)
+        {
+            OnPropertyChanged(nameof(IsAutoTilePaint));
+            OnPropertyChanged(nameof(IsManualTilePaint));
+
+            if (_restoring)
+                return;
+
+            if (_settings != null)
+                _settings.TilePaintMode = value.ToString();
+
+            if (IsTileMode)
+                RefreshTiles();
+        }
 
         partial void OnQueryChanged(string value)
         {

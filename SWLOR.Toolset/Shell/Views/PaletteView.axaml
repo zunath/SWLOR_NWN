@@ -27,13 +27,26 @@
     <!-- Disabled rather than hidden in Tiles mode. Hiding it moved the search box, the tree and the
          grid up by a row every time the type changed, which is a lot of motion to save one row. -->
     <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,8,10,0" Spacing="0"
-                IsEnabled="{Binding ShowsSourceSwitch}">
+                IsVisible="{Binding ShowsSourceSwitch}" IsEnabled="{Binding ShowsSourceSwitch}">
       <Button Content="Custom" CornerRadius="4,0,0,4" Padding="14,4" FontSize="11.5"
               Classes.primary="{Binding IsCustomSource}" Command="{Binding ShowCustomCommand}"
               ToolTip.Tip="Blueprints that live in this module" />
       <Button Content="Standard" CornerRadius="0,4,4,0" Padding="14,4" FontSize="11.5"
               Classes.primary="{Binding IsStandardSource}" Command="{Binding ShowStandardCommand}"
               ToolTip.Tip="Blueprints the base game ships. Place them, but they cannot be edited here." />
+    </StackPanel>
+
+    <!-- Tiles get their own switch in the same row, because Custom/Standard means nothing for a
+         tileset and this does: it decides whether a click picks the tile or only the terrain. Same
+         row rather than an extra one, so switching type does not shunt the search box up and down. -->
+    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,8,10,0" Spacing="0"
+                IsVisible="{Binding ShowsTilePaintSwitch}">
+      <Button Content="Auto" CornerRadius="4,0,0,4" Padding="14,4" FontSize="11.5"
+              Classes.primary="{Binding IsAutoTilePaint}" Command="{Binding UseAutoTilePaintCommand}"
+              ToolTip.Tip="Pick a terrain and let the tileset choose the tile, matching it to its neighbours" />
+      <Button Content="Manual" CornerRadius="0,4,4,0" Padding="14,4" FontSize="11.5"
+              Classes.primary="{Binding IsManualTilePaint}" Command="{Binding UseManualTilePaintCommand}"
+              ToolTip.Tip="Pick an individual tile and stamp exactly that" />
     </StackPanel>
 
     <!-- Type row: one icon per type, all of them, wrapping if the panel is ever narrower than eight.

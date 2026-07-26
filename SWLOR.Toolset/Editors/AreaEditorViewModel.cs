@@ -587,6 +587,7 @@ namespace SWLOR.Toolset.Editors
 
             _pendingTile = entry;
             _pendingTileOrientation = 0;
+            InvalidateTilePlacementValidity();
             _tilePlacementModels = ResolveTileModels(entry);
             OnPropertyChanged(nameof(IsTilePlacementPending));
             OnPropertyChanged(nameof(TilePlacementFootprint));
@@ -606,6 +607,7 @@ namespace SWLOR.Toolset.Editors
 
             _pendingTile = null;
             _tilePlacementModels = Array.Empty<RenderModel?>();
+            InvalidateTilePlacementValidity();
             OnPropertyChanged(nameof(IsTilePlacementPending));
             OnPropertyChanged(nameof(TilePlacementModels));
             OnPropertyChanged(nameof(PlacementStatus));
@@ -679,6 +681,65 @@ namespace SWLOR.Toolset.Editors
             });
         }
 
+
+        /// <summary>
+        /// Whether the armed palette entry would actually go down at this cell - the question the
+        /// hovered cell is coloured green or red by.
+        /// </summary>
+        /// <remarks>
+        /// For a terrain this is not a bounds check but the real answer: the solver is run against the
+        /// live grid and asked whether it can produce a blend, exactly as the click would. It says no
+        /// where the terrain has no tile that can meet what is already around the cell, which is a
+        /// thing a builder otherwise only discovers by clicking and reading a status line.
+        /// <para>
+        /// A dry run, so nothing is written; the result is memoised per cell because the pointer asks
+        /// this on every move and a solve walks the eight-neighbour ring. The memo is dropped whenever
+        /// the grid changes, which is what <see cref="InvalidateTilePlacementValidity"/> is for.
+        /// </para>
+        /// </remarks>
+        public bool CanPlaceArmedTileAt(int column, int row)
+        {
+            if (_pendingTile is not { } entry)
+                return false;
+
+            if (_tileValidity.TryGetValue((column, row), out var memo))
+                return memo;
+
+            var valid = SolveTilePlacementValidity(column, row, entry);
+            _tileValidity[(column, row)] = valid;
+            return valid;
+        }
+
+        private readonly Dictionary<(int Column, int Row), bool> _tileValidity = new();
+
+        /// <summary>Drops the memoised answers - the grid they were computed against has changed.</summary>
+        private void InvalidateTilePlacementValidity() => _tileValidity.Clear();
+
+        private bool SolveTilePlacementValidity(int column, int row, TilePaletteEntry entry)
+        {
+            var are = new AreDocument(_areSession.Document);
+            var width = AreaTiles.Width(are);
+            var height = AreaTiles.Height(are);
+
+            if (column < 0 || row < 0 || column >= width || row >= height)
+                return false;
+
+            // A fixed stamp only has to fit the grid: every one of its cells must be a real cell.
+            if (string.IsNullOrWhiteSpace(entry.Terrain))
+            {
+                return column + entry.Columns <= width && row + entry.Rows <= height;
+            }
+
+            if (_tilesetCatalog == null ||
+                string.IsNullOrWhiteSpace(TilesetResRef) ||
+                !_tilesetCatalog.TryGetTileset(TilesetResRef, out var tileset))
+            {
+                return false;
+            }
+
+            return TilePainter.PaintTerrain(
+                tileset, width, height, AreaTiles.Reader(are), column, row, entry.Terrain).Count > 0;
+        }
 
         /// <summary>
         /// Fills the clicked cell with a terrain and re-blends its eight neighbours, as ONE undo step.
@@ -1079,6 +1140,11 @@ namespace SWLOR.Toolset.Editors
         /// </remarks>
         private void RequestSceneRefresh()
         {
+            // Whatever changed the grid also invalidated every answer about where a tile may go.
+            // Hooked here rather than at each edit site because this is the one thing every path
+            // through - paint, stamp, undo, redo, an external file change - has to call.
+            InvalidateTilePlacementValidity();
+
             if (!_sceneBuildRequested || _disposed)
                 return;
 

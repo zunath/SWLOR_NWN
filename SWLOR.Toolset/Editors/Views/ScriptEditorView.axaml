@@ -32,10 +32,10 @@
         <TextBlock Grid.Column="0" Classes="title" Text="OUTLINE" VerticalAlignment="Center" />
 
         <!-- Compile lives on the document, not in a module-wide menu: it acts on the file in front
-             of you, and F7 does the same thing without leaving the keyboard. -->
-        <Button Grid.Column="2" Classes="primary" Content="Compile (F7)" Padding="10,3"
+             of you, and Ctrl+B does the same thing without leaving the keyboard. -->
+        <Button Grid.Column="2" Classes="primary" Content="Compile (Ctrl+B)" Padding="10,3"
                 Command="{Binding CompileCommand}" VerticalAlignment="Center"
-                ToolTip.Tip="Save and compile this script to .ncs" />
+                ToolTip.Tip="Save and compile this script to .ncs (Ctrl+B)" />
 
         <!-- The answer to "what is this script attached to?", which nothing else in the pipeline
              can give: 2,250 module resources name a script by resref. -->

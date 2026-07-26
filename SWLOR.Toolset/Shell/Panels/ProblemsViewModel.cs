@@ -74,7 +74,7 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </summary>
         /// <remarks>
         /// The two tiers arrive on completely different schedules — the editor re-analyses on every
-        /// idle keystroke, the compiler only on save or F7 — so they must not overwrite each other.
+        /// idle keystroke, the compiler only on save or Ctrl+B — so they must not overwrite each other.
         /// Replacing all of a script's rows from the idle pass would wipe the compiler's findings a
         /// quarter-second after they appeared.
         /// </remarks>

@@ -152,8 +152,11 @@ namespace SWLOR.Toolset.Editors
                     e.Handled = true;
                     break;
 
-                // F7 compiles the script in front of you. Bound on the document, not the shell menu.
-                case Key.F7 when _bound.CompileCommand.CanExecute(null):
+                // Ctrl+B compiles the script in front of you. Handled here as well as by the window
+                // binding so it fires reliably with the buffer focused; marking it handled stops the
+                // window binding running it a second time.
+                case Key.B when e.KeyModifiers.HasFlag(KeyModifiers.Control) &&
+                                _bound.CompileCommand.CanExecute(null):
                     _bound.CompileCommand.Execute(null);
                     e.Handled = true;
                     break;

@@ -7,7 +7,7 @@ namespace SWLOR.Toolset.Tests
 {
     /// <summary>
     /// The Problems list holds two tiers that arrive on different schedules. The editor re-analyses
-    /// on every idle keystroke; the compiler only on save or F7. Neither may erase the other.
+    /// on every idle keystroke; the compiler only on save or Ctrl+B. Neither may erase the other.
     /// </summary>
     public class ProblemsViewModelTests
     {

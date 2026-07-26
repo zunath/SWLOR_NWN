@@ -20,8 +20,25 @@ namespace SWLOR.Toolset.Tests
             var url = ScriptLexicon.UrlFor(name);
 
             url.Should().NotBeNull();
-            url.Should().StartWith("https://nwnlexicon.com/index.php/");
+            url.Should().StartWith("https://www.nwnlexicon.com/");
             url.Should().EndWith(name);
+        }
+
+        /// <summary>
+        /// The host is pinned deliberately. The apex (no <c>www</c>) answers 403 to some clients and
+        /// produced SSL_ERROR_INTERNAL_ERROR_ALERT on a builder's machine while another opened it
+        /// fine — a TLS failure against the apex, not a malformed link. Dropping back to the apex or
+        /// re-adding index.php should fail here rather than in someone's browser.
+        /// </summary>
+        [Test]
+        public void UsesTheWwwHostAndNoIndexPhp()
+        {
+            var url = ScriptLexicon.UrlFor("GetNearestCreature")!;
+
+            url.Should().Be("https://www.nwnlexicon.com/GetNearestCreature");
+            url.Should().NotContain("index.php");
+
+            new Uri(url).Host.Should().Be("www.nwnlexicon.com");
         }
 
         [TestCase(null)]

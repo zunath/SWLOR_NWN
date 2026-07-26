@@ -20,7 +20,22 @@ namespace SWLOR.Toolset.Domain.Script
     public static class ScriptLexicon
     {
         /// <summary>The wiki's article base. Public so a future settings override has somewhere to go.</summary>
-        public const string BaseUrl = "https://nwnlexicon.com/index.php";
+        /// <remarks>
+        /// <para>
+        /// <b>The <c>www.</c> host matters, and so does dropping <c>index.php</c>.</b> The apex host
+        /// does not behave the same as <c>www</c>: <c>https://nwnlexicon.com/index.php?title=…</c>
+        /// answers <b>403 Forbidden</b> to some clients, and a builder reported
+        /// <c>SSL_ERROR_INTERNAL_ERROR_ALERT</c> from it on one machine while another opened it fine —
+        /// a TLS handshake failing against the apex, not a malformed link. The <c>www</c> host serves
+        /// the same pages cleanly.
+        /// </para>
+        /// <para>
+        /// This is also the form the rest of the repository already uses for Lexicon references
+        /// (see <c>SWLOR.Game.Server/Readmes/VisualEffectSelection.md</c>), so the toolset now matches
+        /// it rather than inventing a second shape.
+        /// </para>
+        /// </remarks>
+        public const string BaseUrl = "https://www.nwnlexicon.com";
 
         /// <summary>
         /// The Lexicon page for a symbol, or null when <paramref name="name"/> could not be a page

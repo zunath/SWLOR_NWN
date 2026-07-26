@@ -1399,3 +1399,24 @@ All four from direct feedback on the shipped editor.
 - **Note on the earlier "1 failing test":** it did not reproduce. A clean TRX-logged run is
   **1127 passed, 0 failed**. It was flaky under load (a full suite was running alongside other builds);
   it cannot be named because the first run's output filter discarded the detail.
+
+## Fix — 2026-07-28 — Lexicon links used the apex host, which fails TLS for some clients
+
+Reported from a second machine: clicking a Lexicon link gave
+`SSL_ERROR_INTERNAL_ERROR_ALERT`, while the same link opened fine elsewhere.
+
+- **Not a missing scheme.** The URL was already absolute, and the error itself proves it — a TLS
+  handshake failure means the browser did negotiate HTTPS. A schemeless string would have been
+  refused outright by `ExternalLinkService`, which only launches http/https.
+- **The host was wrong.** `BaseUrl` was `https://nwnlexicon.com/index.php`. The apex does not behave
+  like `www`: `https://nwnlexicon.com/index.php?title=…` answers **403 Forbidden** to some clients
+  (observed directly), and the reporter's browser failed the handshake against it on one machine
+  while another succeeded. `https://www.nwnlexicon.com/<Page>` serves the same content cleanly and
+  needs no `index.php`.
+- Changed to `https://www.nwnlexicon.com`, which is **also the form the rest of this repository
+  already uses** for Lexicon references (`SWLOR.Game.Server/Readmes/VisualEffectSelection.md`), so
+  the toolset now matches instead of inventing a second shape.
+- `ScriptLexiconTests.UsesTheWwwHostAndNoIndexPhp` pins the exact host and asserts `index.php` is
+  absent, so dropping back to the apex fails a test rather than a builder's browser.
+- The previous commit's URL logging is what made this diagnosable at all: the Output panel now prints
+  the full link, so "which URL failed" is answerable without reading source.

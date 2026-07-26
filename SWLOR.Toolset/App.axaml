@@ -273,19 +273,35 @@
                   IsVisible="{Binding CanClearChoice}" />
         </Grid>
 
-        <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="8"
-              IsVisible="{Binding IsSearchableIdChoice}">
-          <AutoCompleteBox Grid.Column="0"
-                           ItemsSource="{Binding Options}"
-                           ValueMemberBinding="{Binding Display}"
-                           SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
-                           FilterMode="Contains" MaxDropDownHeight="400"
-                           Text="{Binding ChoiceSearchText, Mode=TwoWay}"
-                           Watermark="Search key items" />
-          <Button Grid.Column="1" Content="{Binding ClearChoiceLabel}" Padding="10,4"
-                  Command="{Binding ClearChoiceCommand}"
-                  IsVisible="{Binding CanClearChoice}" />
-        </Grid>
+        <StackPanel Grid.Column="1" IsVisible="{Binding IsSearchableIdChoice}" Spacing="6">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Grid.Column="0" Text="{Binding SelectedDisplay}"
+                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+            <Button Grid.Column="1" Content="{Binding ClearChoiceLabel}" Padding="10,4"
+                    Command="{Binding ClearChoiceCommand}"
+                    IsVisible="{Binding CanClearChoice}" />
+          </Grid>
+          <TextBox Text="{Binding ChoiceSearchText, Mode=TwoWay}"
+                   Watermark="Search key items by name" />
+          <TextBlock Text="{Binding SearchableIdSummary}" Classes="count" />
+          <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                  CornerRadius="2" ClipToBounds="True">
+            <ScrollViewer Height="240" VerticalScrollBarVisibility="Auto">
+              <ItemsControl ItemsSource="{Binding SearchableIdOptions}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="placeables:BehaviorChoiceOption">
+                    <Button Classes="behavior" Content="{Binding Display}"
+                            Margin="2" Padding="8,5"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding $parent[ItemsControl].((placeables:BehaviorFieldViewModel)DataContext).PickSearchableIdChoiceCommand}"
+                            CommandParameter="{Binding}" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+          </Border>
+        </StackPanel>
 
         <ComboBox Grid.Column="1" IsVisible="{Binding IsIdChoice}"
                   ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"

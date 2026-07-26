@@ -522,7 +522,9 @@ namespace SWLOR.Toolset.Tests
 
             behaviorTemplate.Should().Contain("IsSearchableIdChoice");
             behaviorTemplate.Should().Contain("IsTableChoice");
-            behaviorTemplate.Should().Contain("Watermark=\"Search key items\"");
+            behaviorTemplate.Should().Contain("Watermark=\"Search key items by name\"");
+            behaviorTemplate.Should().Contain("ItemsSource=\"{Binding SearchableIdOptions}\"");
+            behaviorTemplate.Should().Contain("PickSearchableIdChoiceCommand");
             behaviorTemplate.Should().Contain("ScrollChanged=\"OnBehaviorGalleryScrollChanged\"");
             behaviorTemplate.Should().NotContain("<Popup");
             behaviorTemplate.Should().NotContain("Load more");
@@ -629,13 +631,20 @@ namespace SWLOR.Toolset.Tests
             keyItem.IsSearchableIdChoice.Should().BeTrue();
             keyItem.IsIdChoice.Should().BeFalse();
             keyItem.Options.Should().NotBeEmpty();
+            keyItem.SearchableIdOptions.Should().BeEquivalentTo(keyItem.Options);
 
-            var selected = keyItem.Options.First();
-            keyItem.SelectedOption = selected;
+            keyItem.ChoiceSearchText = "shuttle";
+            keyItem.SearchableIdOptions.Should().NotBeEmpty();
+            keyItem.SearchableIdOptions.Should().OnlyContain(option =>
+                option.Display.Contains("shuttle", StringComparison.OrdinalIgnoreCase));
+            keyItem.SearchableIdSummary.Should().Contain(
+                $"of {keyItem.Options.Count} key items");
 
-            keyItem.ChoiceSearchText.Should().Be(selected.Display);
+            var selected = keyItem.SearchableIdOptions.First();
+            keyItem.PickSearchableIdChoiceCommand.Execute(selected);
             new VarTable(document.Root).Single(entry => entry.Name == "KEY_ITEM_ID")
                 .IntValue.Should().Be(int.Parse(selected.Value));
+            keyItem.SelectedDisplay.Should().Be(selected.Display);
         }
 
         [Test]

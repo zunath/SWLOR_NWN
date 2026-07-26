@@ -62,6 +62,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             _options = sources.GetOptions(field.Source).ToList();
 
             RefreshFromDocument();
+            RebuildSearchableIdOptions();
             RebuildGallery();
         }
 
@@ -74,6 +75,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         public decimal Maximum => _field.Maximum ?? int.MaxValue;
 
         public IReadOnlyList<BehaviorChoiceOption> Options => _options;
+        public ObservableCollection<BehaviorChoiceOption> SearchableIdOptions { get; } = new();
         public ObservableCollection<BehaviorGalleryTileViewModel> GalleryTiles { get; } = new();
 
         public bool IsToggle => _field.Kind == PlaceableFieldKind.Toggle;
@@ -148,6 +150,11 @@ namespace SWLOR.Toolset.Editors.Placeables
             : _galleryPublished >= _galleryMatches.Count
                 ? $"{_galleryMatches.Count} choice{(_galleryMatches.Count == 1 ? string.Empty : "s")}"
                 : $"{_galleryPublished} of {_galleryMatches.Count} choices";
+        public string SearchableIdSummary => SearchableIdOptions.Count == 0
+            ? "No matching key items"
+            : SearchableIdOptions.Count == Options.Count
+                ? $"{Options.Count} key item{(Options.Count == 1 ? string.Empty : "s")}"
+                : $"{SearchableIdOptions.Count} of {Options.Count} key items";
 
         public void RefreshFromDocument()
         {
@@ -188,7 +195,6 @@ namespace SWLOR.Toolset.Editors.Placeables
                     }
                 }
 
-                ChoiceSearchText = SelectedOption?.Display ?? string.Empty;
                 UpdateSelectedChoice(SelectedOption);
                 UpdateStatus();
                 OnPropertyChanged(nameof(CanClearChoice));
@@ -261,9 +267,6 @@ namespace SWLOR.Toolset.Editors.Placeables
             if (_context.IsRefreshing || value == null)
                 return;
 
-            if (IsSearchableIdChoice)
-                ChoiceSearchText = value.Display;
-
             if (_field.VarType == VarTable.TypeInt)
             {
                 if (int.TryParse(value.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed))
@@ -282,6 +285,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         }
 
         partial void OnGalleryQueryChanged(string value) => RebuildGallery();
+        partial void OnChoiceSearchTextChanged(string value) => RebuildSearchableIdOptions();
 
         [RelayCommand]
         private void PickChoice(BehaviorGalleryTileViewModel? tile)
@@ -290,6 +294,13 @@ namespace SWLOR.Toolset.Editors.Placeables
                 return;
 
             SelectedOption = tile.Choice;
+        }
+
+        [RelayCommand]
+        private void PickSearchableIdChoice(BehaviorChoiceOption? option)
+        {
+            if (option != null)
+                SelectedOption = option;
         }
 
         [RelayCommand]
@@ -331,6 +342,23 @@ namespace SWLOR.Toolset.Editors.Placeables
             UpdateSelectedChoice(null);
             UpdateStatus();
             OnPropertyChanged(nameof(CanClearChoice));
+        }
+
+        private void RebuildSearchableIdOptions()
+        {
+            if (!IsSearchableIdChoice)
+                return;
+
+            var query = ChoiceSearchText.Trim();
+            var matches = Options.Where(option =>
+                query.Length == 0 ||
+                option.Display.Contains(query, StringComparison.OrdinalIgnoreCase));
+
+            SearchableIdOptions.Clear();
+            foreach (var option in matches)
+                SearchableIdOptions.Add(option);
+
+            OnPropertyChanged(nameof(SearchableIdSummary));
         }
 
         private void Write(Action<VarTable> mutation)

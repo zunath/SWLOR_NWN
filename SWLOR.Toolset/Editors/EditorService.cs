@@ -208,7 +208,7 @@ namespace SWLOR.Toolset.Editors
                     : null;
 
                 // Compile belongs to the document, not to a module-wide menu. The tab owns the button
-                // and F7; this just gives it the service.
+                // and Ctrl+B; this just gives it the service.
                 editor.CompileRequested = _compileService != null && _compileService.IsAvailable
                     ? async name => (await _compileService.CompileAsync(name).ConfigureAwait(true)).Succeeded
                     : null;

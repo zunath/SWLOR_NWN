@@ -206,6 +206,7 @@ namespace SWLOR.Toolset.Shell
 
             NotifyActiveEditorCommandsChanged();
             OnPropertyChanged(nameof(StatusDetail));
+            CompileActiveScriptCommand.NotifyCanExecuteChanged();
         }
 
         private Editors.ScriptEditorViewModel? _activeScript;
@@ -228,6 +229,8 @@ namespace SWLOR.Toolset.Shell
         private void NotifyActiveEditorCommandsChanged()
         {
             SaveCommand.NotifyCanExecuteChanged();
+            // Ctrl+B must go dead while a compile is already running, and come back when it ends.
+            CompileActiveScriptCommand.NotifyCanExecuteChanged();
             UndoCommand.NotifyCanExecuteChanged();
             RedoCommand.NotifyCanExecuteChanged();
         }
@@ -282,10 +285,27 @@ namespace SWLOR.Toolset.Shell
 
         // ----- scripts -----
 
-        // Compiling ONE script is deliberately NOT here. It acts on the document in front of you, so
-        // it lives on the script editor itself — a Compile button on the tab plus F7 — rather than in
-        // a module-wide menu that offered the action greyed out whenever no script was open.
-        // What remains below is genuinely module-scoped.
+        private bool CanCompileActiveScript => _activeScript?.CanCompile == true;
+
+        /// <summary>
+        /// Compiles the script in front (Ctrl+B).
+        /// </summary>
+        /// <remarks>
+        /// A command here rather than only on the document because a window-level shortcut needs one:
+        /// Ctrl+B has to work with focus in the explorer or the reference panel, not just in the
+        /// buffer. It is deliberately <b>not</b> in any menu — compiling one script is an act on the
+        /// open document, and as a Build-menu item it sat greyed out whenever no script was open.
+        /// The work itself stays on the editor, which owns the save-then-compile sequence and the
+        /// status strip; this only forwards.
+        /// </remarks>
+        [RelayCommand(CanExecute = nameof(CanCompileActiveScript))]
+        private async Task CompileActiveScript()
+        {
+            if (_activeScript?.CompileCommand.CanExecute(null) == true)
+                await _activeScript.CompileCommand.ExecuteAsync(null).ConfigureAwait(true);
+        }
+
+        // Everything below is genuinely module-scoped, which is what the Build menu is for.
 
         /// <summary>Compiles every entry-point script in the module.</summary>
         [RelayCommand]

@@ -60,8 +60,10 @@ namespace SWLOR.Toolset.Shell
             Bind(Key.Z, KeyModifiers.Control, viewModel.UndoCommand);
             Bind(Key.Y, KeyModifiers.Control, viewModel.RedoCommand);
 
-            // Module-wide script build. Compiling a single script is F7, handled by the script editor
-            // itself so it follows the document rather than the window.
+            // Ctrl+B compiles the active script, Ctrl+Shift+B builds them all. Ctrl+B is also handled
+            // by the script editor so it fires with the buffer focused; that path marks the key
+            // handled, so it never runs twice.
+            Bind(Key.B, KeyModifiers.Control, viewModel.CompileActiveScriptCommand);
             Bind(Key.B, KeyModifiers.Control | KeyModifiers.Shift, viewModel.BuildAllScriptsCommand);
 
             Opened += async (_, _) =>

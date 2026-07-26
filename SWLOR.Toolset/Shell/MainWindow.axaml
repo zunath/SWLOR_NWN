@@ -33,7 +33,7 @@
       </MenuItem>
       <MenuItem Header="_Build">
         <!-- Compiling ONE script is not here: it is an act on the document in front of you, so it
-             lives on the script editor itself (a Compile button plus F7). What remains is genuinely
+             lives on the script editor itself (a Compile button plus Ctrl+B). What remains is genuinely
              module-wide, which is what this menu is for. -->
         <MenuItem Header="Build _All Scripts" Command="{Binding BuildAllScriptsCommand}"
                   InputGesture="Ctrl+Shift+B" />

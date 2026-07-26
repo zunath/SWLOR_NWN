@@ -1378,7 +1378,7 @@ All four from direct feedback on the shipped editor.
   on the script tab's own header strip, plus a **Compile** item on the Scripts tab's row context menu
   so an include's dependents can be rebuilt without opening them. `Build All Scripts` and
   `Check Script Staleness` stay under Build — those genuinely are module-wide.
-- **Hotkeys are real now.** F7 (compile) had been added as an `InputGesture`, which the XAML's own
+- **Hotkeys are real now.** (Ctrl+B replaced F7 in a follow-up; see the entry below.) F7 (compile) had been added as an `InputGesture`, which the XAML's own
   comment warns only *draws* the shortcut — the actual bindings are window `KeyBindings` registered in
   code-behind. It never fired. F7 and F1 are now handled by the script editor itself so they follow
   the document and work with the buffer focused; `Ctrl+Shift+B` (Build All Scripts) is a real window
@@ -1420,3 +1420,23 @@ Reported from a second machine: clicking a Lexicon link gave
   absent, so dropping back to the apex fails a test rather than a builder's browser.
 - The previous commit's URL logging is what made this diagnosable at all: the Output panel now prints
   the full link, so "which URL failed" is answerable without reading source.
+
+## Change — 2026-07-28 — Ctrl+B compiles the active script (replaces F7)
+
+Direct request: F7 was the wrong key. **Ctrl+B now compiles the active script, and F7 is gone** — not
+kept as an alias, since two shortcuts for one action is just something else to document.
+
+- Bound in **two places on purpose, with no risk of firing twice**: the script editor's own key handler
+  (so it works with the buffer focused) marks the key handled, which stops the window `KeyBinding`
+  running it again. The window binding covers the case where focus is in the explorer or the reference
+  panel — a document-only binding would have made Ctrl+B dead in exactly the situation where reaching
+  for it is most natural.
+- That window binding needs a shell command, so `CompileActiveScriptCommand` exists again. It is
+  **deliberately not in any menu**: it forwards to the active document's own Compile, which still owns
+  the save-then-compile sequence and the status strip. The earlier objection was to compiling living
+  *in the Build menu*, not to a command existing.
+- `CanExecute` is re-evaluated from `NotifyActiveEditorCommandsChanged`, so Ctrl+B goes dead while a
+  compile is already running and comes back when it finishes.
+- `Ctrl+Shift+B` still builds every script, which pairs the way Visual Studio's does.
+- Button relabelled `Compile (Ctrl+B)`. Stale F7 references purged from comments and doc strings too,
+  so nothing tells a future reader the wrong key.

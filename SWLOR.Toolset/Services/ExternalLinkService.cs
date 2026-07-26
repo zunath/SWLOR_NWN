@@ -36,7 +36,15 @@ namespace SWLOR.Toolset.Services
 
             try
             {
-                Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
+                // UseShellExecute is what hands the absolute URI to the OS so it picks the default
+                // browser; without it .NET treats the string as an executable path and fails.
+                var started = Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
+
+                // A null process is not an error here — the shell often hands the URL to an already
+                // running browser and returns nothing — but if it happens and no window appears, this
+                // line is the only trace of it.
+                if (started == null)
+                    _log.AppendLine($"Handed {uri.AbsoluteUri} to the shell; no new process was started.");
             }
             catch (Exception ex)
             {

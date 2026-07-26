@@ -29,7 +29,16 @@ namespace SWLOR.Toolset.Viewport
         private readonly Control? _viewportInput;
         private readonly Control? _emptyNotice;
 
+        /// <summary>
+        /// How much of one pad step a pixel of drag is worth. Tuned so a drag across the preview is
+        /// a bit more than a full turn - enough to see every side without wearing out a wrist.
+        /// </summary>
+        private const float OrbitPerPixel = 0.06f;
+
         private AppearanceSectionViewModel? _viewModel;
+
+        /// <summary>Where the pointer was last seen during a left-drag, or null when not dragging.</summary>
+        private Avalonia.Point? _dragFrom;
 
         public ModelPreviewControl()
         {
@@ -84,14 +93,63 @@ namespace SWLOR.Toolset.Viewport
                 _emptyNotice.IsVisible = !hasScene;
         }
 
-        private void OnViewportPointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e) =>
-            _modelView?.HandlePointerPressed(e);
+        /// <summary>
+        /// Left-drag turns the model. The shared viewport reserves left for picking and orbits on
+        /// the middle button, which is right for a map you select things in - but here there is
+        /// nothing to select and only one thing to look at, so the plainest gesture should be the
+        /// one that turns it. Handled here rather than changed in the area control, so the map keeps
+        /// its own semantics.
+        /// </summary>
+        private void OnViewportPointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            if (_modelView == null)
+                return;
 
-        private void OnViewportPointerMoved(object? sender, Avalonia.Input.PointerEventArgs e) =>
-            _modelView?.HandlePointerMoved(e);
+            var point = e.GetCurrentPoint(_viewportInput ?? (Control)_modelView);
+            if (point.Properties.IsLeftButtonPressed)
+            {
+                _dragFrom = point.Position;
+                e.Pointer.Capture(_viewportInput);
+                e.Handled = true;
+                return;
+            }
 
-        private void OnViewportPointerReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e) =>
+            _modelView.HandlePointerPressed(e);
+        }
+
+        private void OnViewportPointerMoved(object? sender, Avalonia.Input.PointerEventArgs e)
+        {
+            if (_modelView == null)
+                return;
+
+            if (_dragFrom == null)
+            {
+                _modelView.HandlePointerMoved(e);
+                return;
+            }
+
+            var position = e.GetPosition(_viewportInput ?? (Control)_modelView);
+            var deltaX = (float)(position.X - _dragFrom.Value.X);
+            var deltaY = (float)(position.Y - _dragFrom.Value.Y);
+            _dragFrom = position;
+
+            // Negated so the model follows the mouse: dragging right turns its near face right.
+            _modelView.NudgeOrbit(-deltaX * OrbitPerPixel, -deltaY * OrbitPerPixel);
+            e.Handled = true;
+        }
+
+        private void OnViewportPointerReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
+        {
+            if (_dragFrom != null)
+            {
+                _dragFrom = null;
+                e.Pointer.Capture(null);
+                e.Handled = true;
+                return;
+            }
+
             _modelView?.HandlePointerReleased(e);
+        }
 
         private void OnViewportPointerWheel(object? sender, Avalonia.Input.PointerWheelEventArgs e) =>
             _modelView?.HandlePointerWheel(e);

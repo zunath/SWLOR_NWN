@@ -101,7 +101,7 @@
           <Border Height="190" Background="{DynamicResource PanelRaisedBrush}" CornerRadius="3">
             <viewport:ModelPreviewControl />
           </Border>
-          <TextBlock Text="Drag to orbit &#x00B7; wheel to zoom" Classes="dim" FontSize="10.5" />
+          <TextBlock Text="Left-drag to turn &#x00B7; wheel to zoom" Classes="dim" FontSize="10.5" />
 
           <StackPanel Spacing="4" IsVisible="{Binding HasHighlight}">
             <TextBlock Text="{Binding Highlighted.Caption}" TextWrapping="Wrap" />

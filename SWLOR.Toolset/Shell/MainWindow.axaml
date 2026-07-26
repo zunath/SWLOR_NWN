@@ -3,6 +3,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:shell="using:SWLOR.Toolset.Shell"
+        xmlns:dockModel="using:Dock.Model.Controls"
         mc:Ignorable="d"
         x:Class="SWLOR.Toolset.Shell.MainWindow"
         x:DataType="shell:ShellViewModel"
@@ -97,7 +98,18 @@
       </StackPanel>
     </Border>
     <Grid Grid.Row="2">
-      <DockControl Layout="{Binding Layout}" Margin="4" IsEnabled="{Binding !IsModuleMutationLocked}" />
+      <!-- Do not instantiate DockControl until the shell has a real layout. Dock's theme binds several
+           control properties through Layout itself; constructing it for the lightweight startup view
+           makes those valid compiled bindings report five null-path errors before bootstrap finishes. -->
+      <ContentControl Content="{Binding Layout}"
+                      Margin="4"
+                      IsEnabled="{Binding !IsModuleMutationLocked}">
+        <ContentControl.ContentTemplate>
+          <DataTemplate x:DataType="dockModel:IRootDock">
+            <DockControl Layout="{Binding}" />
+          </DataTemplate>
+        </ContentControl.ContentTemplate>
+      </ContentControl>
       <!-- First-paint surface. App composes the lightweight shell on a worker and removes this before
            slower game-data indexes finish; individual features continue loading behind the workspace. -->
       <Border x:Name="StartupPanel"

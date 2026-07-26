@@ -62,6 +62,26 @@ namespace SWLOR.Toolset.Shell
             _settings = settings;
         }
 
+        // Dock uses these virtual constructors while splitting, floating, pinning, and otherwise
+        // reshaping a layout after startup. Keep those newly-created models under the same non-null
+        // theme contract as the fixed layout assembled below.
+        public override IRootDock CreateRootDock() => PrepareForThemeBindings(base.CreateRootDock());
+        public override IProportionalDock CreateProportionalDock() => PrepareForThemeBindings(base.CreateProportionalDock());
+        public override IDockDock CreateDockDock() => PrepareForThemeBindings(base.CreateDockDock());
+        public override IStackDock CreateStackDock() => PrepareForThemeBindings(base.CreateStackDock());
+        public override IGridDock CreateGridDock() => PrepareForThemeBindings(base.CreateGridDock());
+        public override IWrapDock CreateWrapDock() => PrepareForThemeBindings(base.CreateWrapDock());
+        public override IUniformGridDock CreateUniformGridDock() => PrepareForThemeBindings(base.CreateUniformGridDock());
+        public override IProportionalDockSplitter CreateProportionalDockSplitter() =>
+            PrepareForThemeBindings(base.CreateProportionalDockSplitter());
+        public override IGridDockSplitter CreateGridDockSplitter() =>
+            PrepareForThemeBindings(base.CreateGridDockSplitter());
+        public override IToolDock CreateToolDock() => PrepareForThemeBindings(base.CreateToolDock());
+        public override IDocumentDock CreateDocumentDock() => PrepareForThemeBindings(base.CreateDocumentDock());
+        public override ISplitViewDock CreateSplitViewDock() => PrepareForThemeBindings(base.CreateSplitViewDock());
+        public override IDocument CreateDocument() => PrepareForThemeBindings(base.CreateDocument());
+        public override ITool CreateTool() => PrepareForThemeBindings(base.CreateTool());
+
         /// <summary>
         /// The area document in front, when it can accept a placement - what the Palette's Place button
         /// acts on. Null when the active tab is a blueprint editor or nothing is open.
@@ -171,6 +191,8 @@ namespace SWLOR.Toolset.Shell
 
             _rootDock = rootDock;
 
+            PrepareForThemeBindings(rootDock);
+
             // The proportions set above are the designed layout; anything the builder dragged last
             // session replaces them before the layout is ever shown, so the window does not open on the
             // defaults and then jump.
@@ -192,6 +214,7 @@ namespace SWLOR.Toolset.Shell
             if (_documentDock == null)
                 return;
 
+            PrepareForThemeBindings(document);
             AddDockable(_documentDock, document);
             ActivateDocument(document);
         }
@@ -234,6 +257,29 @@ namespace SWLOR.Toolset.Shell
 
         /// <summary>Brings the Problems panel to the front of the bottom dock.</summary>
         public void ShowProblems() => SetActiveDockable(_problems);
+
+        /// <summary>
+        /// Supplies Dock's optional capability objects before its Fluent theme observes the model.
+        /// Empty objects preserve Dock's normal inheritance semantics: every nullable capability inside
+        /// them still falls through to the dock, root, and legacy flags. The theme nevertheless walks
+        /// through the objects directly, so leaving either container null produces a binding warning for
+        /// every drag, drop, pin, and close check on every visible pane or tab.
+        /// </summary>
+        private static T PrepareForThemeBindings<T>(T root) where T : IDockable
+        {
+            foreach (var dockable in DockProportions.Walk(root))
+            {
+                dockable.DockCapabilityOverrides ??= new DockCapabilityOverrides();
+
+                if (dockable is IDock dock)
+                    dock.DockCapabilityPolicy ??= new DockCapabilityPolicy();
+
+                if (dockable is IRootDock rootDock)
+                    rootDock.RootDockCapabilityPolicy ??= new DockCapabilityPolicy();
+            }
+
+            return root;
+        }
 
         public override void InitLayout(IDockable layout)
         {

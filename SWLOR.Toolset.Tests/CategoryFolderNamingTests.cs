@@ -92,6 +92,34 @@ namespace SWLOR.Toolset.Tests
             parent.IsNameAvailable("Melee").Should().BeFalse();
         }
 
+        /// <summary>
+        /// The strict constructor is for names this build invents; names read out of a file or a base-game
+        /// palette go through <see cref="CategoryFolder.Sanitize"/> first, because refusing those means
+        /// refusing to open the module at all.
+        /// </summary>
+        [Test]
+        public void SanitizeRepairsANameTheConstructorWouldRefuse()
+        {
+            var repaired = CategoryFolder.Sanitize("Skin/Hide");
+
+            repaired.Should().Be("Skin-Hide");
+            var act = () => new CategoryFolder(repaired!);
+            act.Should().NotThrow();
+        }
+
+        [Test]
+        public void SanitizeLeavesALegalNameAloneApartFromTrimming()
+        {
+            CategoryFolder.Sanitize("  Weapons  ").Should().Be("Weapons");
+        }
+
+        [Test]
+        public void SanitizeReportsANameWithNothingUsableInIt()
+        {
+            CategoryFolder.Sanitize(null).Should().BeNull();
+            CategoryFolder.Sanitize("   ").Should().BeNull("a folder with no name cannot be shown or addressed");
+        }
+
         [Test]
         public void SurroundingWhitespaceStillDoesNotCreateADistinctSibling()
         {

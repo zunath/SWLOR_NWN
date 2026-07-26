@@ -112,16 +112,27 @@ namespace SWLOR.Toolset.Domain.Categories
             return folders;
         }
 
+        /// <summary>
+        /// A palette node's display name, or null when it has none to offer.
+        /// </summary>
+        /// <remarks>
+        /// Sanitised, because these names are the base game's rather than ours and a folder name may not
+        /// hold a path separator: the standard item palette really does ship "Skin/Hide" and
+        /// "Crafting/Tradeskill Material", and importing those verbatim threw. Repairing here is what keeps
+        /// the seeder from writing a name the reader would then have to repair again.
+        /// </remarks>
         private static string? ResolveName(PaletteNode node, Func<uint, string?>? resolveStrRef)
         {
             if (!string.IsNullOrWhiteSpace(node.Name))
-                return node.Name.Trim();
+                return CategoryFolder.Sanitize(node.Name);
 
             if (node.StrRef is not { } strRef)
                 return null;
 
             var resolved = resolveStrRef?.Invoke(strRef);
-            return string.IsNullOrWhiteSpace(resolved) ? $"Category {strRef}" : resolved.Trim();
+            return string.IsNullOrWhiteSpace(resolved)
+                ? $"Category {strRef}"
+                : CategoryFolder.Sanitize(resolved) ?? $"Category {strRef}";
         }
     }
 }

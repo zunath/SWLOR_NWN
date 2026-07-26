@@ -126,6 +126,30 @@ namespace SWLOR.Toolset.Domain.Categories
         /// <summary>The character <c>PathKey</c> joins segments with, and so the one a name may not contain.</summary>
         public const char PathSeparator = '/';
 
+        /// <summary>What <see cref="Sanitize"/> puts in place of a <see cref="PathSeparator"/>.</summary>
+        public const char PathSeparatorReplacement = '-';
+
+        /// <summary>
+        /// A name from outside this build turned into one the constructor will accept, or null when
+        /// nothing usable is left. Names that are already legal come back trimmed and otherwise untouched.
+        /// </summary>
+        /// <remarks>
+        /// The constructor is deliberately strict: a name with a separator in it cannot be addressed, so
+        /// code that invents one has a bug and should hear about it. Data does not have that luxury. A
+        /// sidecar written before the rule existed, and a base-game palette category such as "Skin/Hide",
+        /// both carry the separator, and throwing at them means the module cannot be opened at all - so
+        /// every path that reads a name from a file goes through here first. Repairing rather than dropping
+        /// keeps the folder and everything filed in it; the name is the only thing that changes.
+        /// </remarks>
+        public static string? Sanitize(string? name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return null;
+
+            var repaired = name.Replace(PathSeparator, PathSeparatorReplacement).Trim();
+            return string.IsNullOrWhiteSpace(repaired) ? null : repaired;
+        }
+
         private static string Normalize(string name)
         {
             if (string.IsNullOrWhiteSpace(name))

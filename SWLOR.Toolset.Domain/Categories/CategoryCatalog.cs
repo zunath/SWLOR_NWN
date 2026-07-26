@@ -130,12 +130,28 @@ namespace SWLOR.Toolset.Domain.Categories
             if (document.Sections == null)
                 return catalog;
 
+            var repairedNames = new List<string>();
             foreach (var (key, sectionDto) in document.Sections)
             {
                 if (!ResourceTypeExtensions.TryFromExtension(key, out var type) || sectionDto == null)
                     continue;
 
-                catalog._sections[type] = ReadSection(sectionDto);
+                catalog._sections[type] = ReadSection(sectionDto, repairedNames);
+            }
+
+            // Said rather than done silently: the builder is looking at a name this build changed, and the
+            // change reaches the file the next time anything is saved. Not a read-only condition - the
+            // sidecar is fine, it just predates the rule that a name may not hold a path separator.
+            if (repairedNames.Count > 0)
+            {
+                var repair =
+                    $"Repaired {repairedNames.Count} category name(s) in '{path}' that contained " +
+                    $"'{CategoryFolder.PathSeparator}', which a category name cannot hold: " +
+                    string.Join(", ", repairedNames.Select(name => $"'{name}'")) + ".";
+
+                // Appended, never overwriting: the version warning above carries the read-only reason, and
+                // losing it would leave a builder wondering why nothing they arrange is being saved.
+                warning = warning == null ? repair : warning + " " + repair;
             }
 
             return catalog;
@@ -224,7 +240,7 @@ namespace SWLOR.Toolset.Domain.Categories
             Members = folder.Members.Count == 0 ? null : folder.Members.ToList()
         };
 
-        private static CategorySection ReadSection(CategorySectionDto dto)
+        private static CategorySection ReadSection(CategorySectionDto dto, List<string> repairedNames)
         {
             var section = new CategorySection
             {
@@ -240,30 +256,55 @@ namespace SWLOR.Toolset.Domain.Categories
             foreach (var name in dto.Pinned ?? new List<string>())
                 section.Pin(name);
 
+            var repaired = new List<(string StoredPathKey, CategoryFolder Folder)>();
             foreach (var folderDto in dto.Folders ?? new List<CategoryFolderDto>())
             {
-                var folder = ReadFolder(folderDto);
+                var folder = ReadFolder(folderDto, storedParentPath: null, repaired);
                 if (folder != null)
                     section.AddFolder(folder);
+            }
+
+            // A pin is stored as a path key built from names, so a name that had to be repaired takes the
+            // pins that named it with it. Done after the folders are in the section, since the new key is
+            // the folder's path and it does not have one until then.
+            foreach (var (storedPathKey, folder) in repaired)
+            {
+                section.RepathPins(storedPathKey, section.PathKey(folder));
+                repairedNames.Add(folder.Name);
             }
 
             return section;
         }
 
-        private static CategoryFolder? ReadFolder(CategoryFolderDto dto)
+        /// <summary>
+        /// Reads one folder and its subtree. <paramref name="storedParentPath"/> is the path its parents
+        /// were written under - the names as the file has them, which is what any stored pin used - and
+        /// <paramref name="repaired"/> collects the folders whose names this build had to change.
+        /// </summary>
+        private static CategoryFolder? ReadFolder(
+            CategoryFolderDto dto,
+            string? storedParentPath,
+            List<(string StoredPathKey, CategoryFolder Folder)> repaired)
         {
             // A nameless folder cannot be shown or addressed, so it is dropped rather than guessed at.
-            if (string.IsNullOrWhiteSpace(dto.Name))
+            var stored = dto.Name?.Trim();
+            if (CategoryFolder.Sanitize(stored) is not { } name)
                 return null;
 
-            var folder = new CategoryFolder(dto.Name);
+            var folder = new CategoryFolder(name);
+            var storedPath = storedParentPath == null
+                ? stored!
+                : storedParentPath + CategorySection.PathSeparator + stored;
+
+            if (!string.Equals(name, stored, StringComparison.Ordinal))
+                repaired.Add((storedPath, folder));
 
             foreach (var member in dto.Members ?? new List<string>())
                 folder.AddMember(member);
 
             foreach (var childDto in dto.Children ?? new List<CategoryFolderDto>())
             {
-                var child = ReadFolder(childDto);
+                var child = ReadFolder(childDto, storedPath, repaired);
                 if (child != null)
                     folder.AddChild(child);
             }

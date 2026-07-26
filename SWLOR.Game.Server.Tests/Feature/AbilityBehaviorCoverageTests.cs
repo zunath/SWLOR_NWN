@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors;
+using SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 

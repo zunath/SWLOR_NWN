@@ -43,9 +43,39 @@ namespace SWLOR.Toolset.Domain.Categories
 
         public void Rename(string name) => Name = Normalize(name);
 
+        /// <summary>
+        /// True when <paramref name="name"/> is free among this folder's children, ignoring
+        /// <paramref name="except"/> (the folder being renamed, which may keep its own name).
+        /// </summary>
+        /// <remarks>
+        /// Sibling names have to be unique because a path key is built from names: two children called
+        /// the same thing share a key, so pinning or locating the second resolved the first, and
+        /// toggling either pin could unpin the other.
+        /// </remarks>
+        public bool IsNameAvailable(string name, CategoryFolder? except = null)
+        {
+            var candidate = name?.Trim();
+            if (string.IsNullOrEmpty(candidate))
+                return false;
+
+            foreach (var child in _children)
+            {
+                if (!ReferenceEquals(child, except) &&
+                    string.Equals(child.Name, candidate, StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public CategoryFolder AddChild(string name)
         {
             var child = new CategoryFolder(name);
+            if (!IsNameAvailable(child.Name))
+                throw new ArgumentException($"This category already has a '{child.Name}' folder.", nameof(name));
+
             _children.Add(child);
             return child;
         }
@@ -93,12 +123,28 @@ namespace SWLOR.Toolset.Domain.Categories
                 yield return descendant;
         }
 
+        /// <summary>The character <c>PathKey</c> joins segments with, and so the one a name may not contain.</summary>
+        public const char PathSeparator = '/';
+
         private static string Normalize(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("A category needs a name.", nameof(name));
 
-            return name.Trim();
+            var trimmed = name.Trim();
+
+            // Paths are joined with '/' and split on it again, unescaped. A folder called
+            // "Weapons/Melee" produced a key that FindByPathKey read as two nested folders, so pinning
+            // it stored a path that resolved to nothing - or to another branch entirely - and the pin
+            // vanished on the next refresh.
+            if (trimmed.IndexOf(PathSeparator) >= 0)
+            {
+                throw new ArgumentException(
+                    $"A category name cannot contain '{PathSeparator}' - it separates folders in a category path.",
+                    nameof(name));
+            }
+
+            return trimmed;
         }
     }
 }

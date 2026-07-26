@@ -98,6 +98,29 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ASidecarFromANewerToolsetStillShowsTheFoldersThisBuildUnderstands()
+        {
+            // The warning says the categories are shown but will not be saved. Returning before reading
+            // any section broke that promise: an older build opening a newer file hid the whole saved
+            // arrangement behind freshly seeded empties.
+            File.WriteAllText(_file, """
+                {
+                  "version": 999,
+                  "sections": {
+                    "utc": { "folders": [ { "name": "Troopers" } ], "pinned": [] }
+                  }
+                }
+                """);
+
+            var catalog = CategoryCatalog.Load(_file, out _);
+
+            catalog.IsReadOnly.Should().BeTrue("it still must not be written back");
+            var section = catalog.Section(SWLOR.Toolset.Domain.Workspace.ResourceType.Utc);
+            section.Should().NotBeNull();
+            section!.Folders.Should().ContainSingle().Which.Name.Should().Be("Troopers");
+        }
+
+        [Test]
         public void AnAbsentSidecarIsStillTheNormalFirstRun()
         {
             var catalog = CategoryCatalog.Load(Path.Combine(_directory, "nothing-here.json"), out var warning);

@@ -113,7 +113,11 @@ namespace SWLOR.Toolset.Domain.Categories
                 return catalog;
 
             // A sidecar from a newer, incompatible Toolset must not be read as v1 and then rewritten as
-            // v1 - that silently discards whatever this build does not understand. Left read-only instead.
+            // v1 - that silently discards whatever this build does not understand. Left read-only
+            // instead, but still read: the warning promises the categories are shown, and returning here
+            // broke that promise, hiding the whole saved arrangement behind freshly seeded empties the
+            // moment an older build opened a newer file. Whatever this version understands is loaded
+            // below; what it does not is what the read-only flag is protecting.
             if (document.Version > CurrentVersion)
             {
                 warning =
@@ -121,7 +125,6 @@ namespace SWLOR.Toolset.Domain.Categories
                     $"understands {CurrentVersion}). Categories are shown as loaded but will not be saved.";
                 catalog.IsReadOnly = true;
                 catalog.ReadOnlyReason = warning;
-                return catalog;
             }
 
             if (document.Sections == null)

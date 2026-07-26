@@ -107,6 +107,8 @@ namespace SWLOR.Toolset.Viewport
 
         private const float AmbientLightFloor = 0.25f;
         private const float DiffuseLightFloor = 0.20f;
+        /// <summary>The empty-space colour behind the scene.</summary>
+        private static readonly Vector3 ViewportBackground = new(0.12f, 0.14f, 0.18f);
         private static readonly Vector3 UntexturedTileColor = new(0.6f, 0.6f, 0.6f);
         private static readonly Vector3 FallbackTileColor = new(0.95f, 0.15f, 0.55f);
         private static readonly Vector3 PolygonOverlayColor = new(1f, 0.65f, 0.15f);
@@ -1729,7 +1731,7 @@ void main()
 
             try
             {
-                _gl.ClearColor(0.12f, 0.14f, 0.18f, 1f);
+                _gl.ClearColor(ViewportBackground.X, ViewportBackground.Y, ViewportBackground.Z, 1f);
                 _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
                 _gl.Enable(EnableCap.DepthTest);
                 _gl.DepthFunc(DepthFunction.Less);
@@ -1775,7 +1777,7 @@ void main()
             {
                 // Composite onto Avalonia's framebuffer whatever happened above - including the
                 // early return for a null scene, which still owes it the cleared background.
-                _depthPrecisionTarget.EndFrame(_gl, fb);
+                _depthPrecisionTarget.EndFrame(_gl, fb, ViewportBackground);
             }
         }
 

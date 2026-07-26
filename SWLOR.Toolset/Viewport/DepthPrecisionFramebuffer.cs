@@ -1,3 +1,4 @@
+using System.Numerics;
 using Silk.NET.OpenGL;
 
 namespace SWLOR.Toolset.Viewport
@@ -85,7 +86,7 @@ namespace SWLOR.Toolset.Viewport
         /// Copies the frame over Avalonia's framebuffer and rebinds it, so the control leaves the
         /// context in the state Avalonia expects. Safe to call when <see cref="BeginFrame"/> failed.
         /// </summary>
-        public void EndFrame(GL gl, int targetFramebuffer)
+        public void EndFrame(GL gl, int targetFramebuffer, Vector3 background)
         {
             ArgumentNullException.ThrowIfNull(gl);
 
@@ -97,6 +98,18 @@ namespace SWLOR.Toolset.Viewport
             try
             {
                 var target = (uint)Math.Max(0, targetFramebuffer);
+                gl.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _framebuffer);
+                gl.BindFramebuffer(FramebufferTarget.DrawFramebuffer, target);
+
+                // Clear the target first, because it is not necessarily the same size as this one.
+                // Drawing straight to Avalonia's framebuffer used to clear all of it - glClear ignores
+                // the viewport - so any part of it wider or taller than the size computed from Bounds x
+                // RenderScaling still ended up as background. The blit only covers the region it is
+                // given, so without this those edge pixels keep whatever was in them: measured as a
+                // one-pixel seam of stale content along the top of the viewport.
+                gl.BindFramebuffer(FramebufferTarget.Framebuffer, target);
+                gl.ClearColor(background.X, background.Y, background.Z, 1f);
+                gl.Clear((uint)ClearBufferMask.ColorBufferBit);
                 gl.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _framebuffer);
                 gl.BindFramebuffer(FramebufferTarget.DrawFramebuffer, target);
 

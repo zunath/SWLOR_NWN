@@ -1780,3 +1780,25 @@ families documented by the NWScript header first and then falling back to shared
   `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
   "FullyQualifiedName~EngineSymbolDatabaseTests|FullyQualifiedName~ScriptReferenceViewModelTests"` -
   23 passed.
+
+## Script editor follow-up - 2026-07-26 - Outline can get out of the way
+
+The script editor no longer exposes a Lexicon link or F1 shortcut in the editor chrome. Lexicon access
+stays in the Script Reference panel, where the selected row is already known to be a function or
+constant-like symbol and the action is less surprising.
+
+- **Why.** The editor-level link competed with more common script-editing controls and made F1 feel
+  like a hidden browser shortcut. Builders already have the reference browser for symbol lookup, so
+  the editor tab should prioritize editing and navigation.
+- **Decision.** `EditorService` no longer wires an external-link action into each script editor, and
+  the editor view model dropped the caret-probed Lexicon command entirely. The outline strip gained a
+  `Minimize`/`Show` toggle that hides only the outline list, leaving compile and usage controls visible.
+- **Deliberately not done.** The Script Reference panel still has its Lexicon button. That panel is
+  the useful context for function/constant browsing, and removing it would make lookup worse rather
+  than quieter.
+- **Verification.** `ScriptEditorLifecycleTests` covers the outline toggle state. A headless render
+  test asserts the editor chrome has no Lexicon button and that the rendered outline list hides and
+  restores. Focused run:
+  `dotnet test SWLOR.Toolset.Tests\SWLOR.Toolset.Tests.csproj --no-build --filter
+  "FullyQualifiedName~ScriptEditorLifecycleTests|FullyQualifiedName~ScriptEditorViewRenderTests|FullyQualifiedName~ScriptReferenceViewModelTests"` -
+  24 passed.

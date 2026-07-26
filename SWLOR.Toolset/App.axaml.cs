@@ -190,7 +190,6 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<Workspace.ScriptLanguageService>(),
                 sp.GetRequiredService<ProblemsViewModel>(),
                 sp.GetRequiredService<Services.ScriptCompileService>(),
-                sp.GetRequiredService<Services.IExternalLinkService>(),
                 sp.GetService<PlaceableModelCatalog>(),
                 sp.GetService<ThumbnailService>(),
                 sp.GetRequiredService<Workspace.PlaceableIndexService>(),

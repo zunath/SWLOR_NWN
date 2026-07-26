@@ -49,25 +49,25 @@
          less width than a column would. -->
     <Border Grid.Row="1" Background="{DynamicResource PanelHeaderBrush}"
             BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,1" Padding="14,6">
-      <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto" ColumnSpacing="10">
+      <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto" ColumnSpacing="10">
         <TextBlock Grid.Column="0" Classes="title" Text="OUTLINE" VerticalAlignment="Center" />
+        <Button Grid.Column="1" Classes="link" Content="{Binding OutlineToggleLabel}" Padding="0"
+                Command="{Binding ToggleOutlineCommand}" VerticalAlignment="Center"
+                ToolTip.Tip="Minimize or restore the script outline" />
 
         <!-- Compile lives on the document, not in a module-wide menu: it acts on the file in front
              of you, and Ctrl+B does the same thing without leaving the keyboard. -->
-        <Button Grid.Column="2" Classes="primary" Content="Compile (Ctrl+B)" Padding="10,3"
+        <Button Grid.Column="3" Classes="primary" Content="Compile (Ctrl+B)" Padding="10,3"
                 Command="{Binding CompileCommand}" VerticalAlignment="Center"
                 ToolTip.Tip="Save and compile this script to .ncs (Ctrl+B)" />
 
         <!-- The answer to "what is this script attached to?", which nothing else in the pipeline
              can give: 2,250 module resources name a script by resref. -->
-        <TextBlock Grid.Column="3" Classes="count" VerticalAlignment="Center"
+        <TextBlock Grid.Column="4" Classes="count" VerticalAlignment="Center"
                    Foreground="{DynamicResource GreenBrush}"
                    IsVisible="{Binding HasUsageSummary}" Text="{Binding UsageSummary}" />
-        <Button Grid.Column="4" Classes="link" Content="Used by..." Padding="0"
+        <Button Grid.Column="5" Classes="link" Content="Used by..." Padding="0"
                 Command="{Binding ShowUsagesCommand}" VerticalAlignment="Center" />
-        <Button Grid.Column="5" Classes="link" Content="Lexicon (F1)" Padding="0"
-                Command="{Binding OpenLexiconAtCaretCommand}" VerticalAlignment="Center"
-                ToolTip.Tip="Open the NWN Lexicon page for the symbol under the caret" />
       </Grid>
     </Border>
 
@@ -87,7 +87,8 @@
       </StackPanel>
     </Button>
 
-    <ScrollViewer Grid.Row="2" MaxHeight="110" VerticalScrollBarVisibility="Auto"
+    <ScrollViewer Name="OutlineList" Grid.Row="2" MaxHeight="110" VerticalScrollBarVisibility="Auto"
+                  IsVisible="{Binding !IsOutlineCollapsed}"
                   Background="{DynamicResource PanelBrush}">
       <ItemsControl ItemsSource="{Binding OutlineFunctions}" Margin="0,3">
         <ItemsControl.ItemTemplate>

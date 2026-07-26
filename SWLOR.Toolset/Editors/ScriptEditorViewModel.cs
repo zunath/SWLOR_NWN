@@ -205,31 +205,6 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Opens the community Lexicon page for the symbol under the caret (F1). Linked rather than
-        /// bundled because the Lexicon is GFDL.
-        /// </summary>
-        public void OpenLexiconFor(int caretOffset)
-        {
-            var name = ScriptNavigation.IdentifierAt(_text, caretOffset);
-            if (name == null || OpenLexiconRequested == null)
-            {
-                _log.AppendLine("Place the caret on a function or constant to open its Lexicon page.");
-                return;
-            }
-
-            OpenLexiconRequested(name);
-        }
-
-        /// <summary>Opens a Lexicon page by symbol name. Set by EditorService.</summary>
-        public Action<string>? OpenLexiconRequested { get; set; }
-
-        /// <summary>Where the caret is, so the toolbar button can act like F1 does. Set by the view.</summary>
-        public Func<int>? CaretOffsetProbe { get; set; }
-
-        [RelayCommand]
-        private void OpenLexiconAtCaret() => OpenLexiconFor(CaretOffsetProbe?.Invoke() ?? 0);
-
-        /// <summary>
         /// The ranked completion list for a caret position, plus the offset the partial word starts
         /// at so the insertion replaces what was typed. Ranking happens in Domain.
         /// </summary>
@@ -376,6 +351,17 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Functions declared in this file, for the outline strip.</summary>
         public ObservableCollection<ScriptFunctionDeclaration> OutlineFunctions { get; } = new();
+
+        [ObservableProperty]
+        private bool _isOutlineCollapsed;
+
+        public string OutlineToggleLabel => IsOutlineCollapsed ? "Show" : "Minimize";
+
+        partial void OnIsOutlineCollapsedChanged(bool value) =>
+            OnPropertyChanged(nameof(OutlineToggleLabel));
+
+        [RelayCommand]
+        private void ToggleOutline() => IsOutlineCollapsed = !IsOutlineCollapsed;
 
         private void RefreshOutline(ScriptOutline outline)
         {

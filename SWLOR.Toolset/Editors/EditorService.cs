@@ -53,9 +53,6 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Rebuilds a script's .ncs on save; null when no compiler is vendored.</summary>
         private readonly Services.ScriptCompileService? _compileService;
 
-        /// <summary>Opens Lexicon pages in a browser; null disables the action.</summary>
-        private readonly Services.IExternalLinkService? _links;
-
         /// <summary>
         /// Built in the background on first use, then invalidated when a scripted resource changes.
         /// Scanning all script slots is expensive; builders who never request usages still pay
@@ -99,7 +96,6 @@ namespace SWLOR.Toolset.Editors
             Workspace.ScriptLanguageService? scriptLanguage = null,
             Shell.Panels.ProblemsViewModel? problems = null,
             Services.ScriptCompileService? compileService = null,
-            Services.IExternalLinkService? links = null,
             PlaceableModelCatalog? placeableModels = null,
             ThumbnailService? thumbnails = null,
             PlaceableIndexService? placeableIndexes = null,
@@ -127,7 +123,6 @@ namespace SWLOR.Toolset.Editors
             _scriptLanguage = scriptLanguage;
             _problems = problems;
             _compileService = compileService;
-            _links = links;
             _scriptUsageIndex = new ScriptUsageIndexCache(() =>
             {
                 var workspace = _workspaceContext.Workspace;
@@ -160,28 +155,6 @@ namespace SWLOR.Toolset.Editors
 
             if (_openScriptEditors.TryGetValue(workspace.GetResourcePath(ResourceType.Nss, resRef), out var editor))
                 Avalonia.Threading.Dispatcher.UIThread.Post(() => editor.GoToLineRequested?.Invoke(line));
-        }
-
-        /// <summary>
-        /// Opens a symbol's page in the community NWN Lexicon. Linked rather than bundled: the
-        /// Lexicon is GFDL, and its wiki titles pages with the exact function name, so no map is kept.
-        /// </summary>
-        private void OpenLexiconPage(string name)
-        {
-            if (_links == null)
-                return;
-
-            var url = Domain.Script.ScriptLexicon.UrlFor(name);
-            if (url == null)
-            {
-                _log.AppendLine($"'{name}' is not a name the Lexicon could have a page for.");
-                return;
-            }
-
-            // The full URL, not just the symbol name. If the browser does not come up there is
-            // otherwise no way to tell what was attempted, or whether the link was even well-formed.
-            _log.AppendLine($"Opening Lexicon: {url}");
-            _links.Open(url);
         }
 
         /// <summary>Compiles a script by resref, for callers outside an open tab (the explorer).</summary>
@@ -294,7 +267,6 @@ namespace SWLOR.Toolset.Editors
                     ? async name => (await _compileService.CompileAsync(name).ConfigureAwait(true)).Succeeded
                     : null;
                 editor.ShowProblemsRequested = () => _factory.ShowProblems();
-                editor.OpenLexiconRequested = OpenLexiconPage;
                 editor.FindUsages = async name =>
                 {
                     var index = await _scriptUsageIndex.GetAsync().ConfigureAwait(true);

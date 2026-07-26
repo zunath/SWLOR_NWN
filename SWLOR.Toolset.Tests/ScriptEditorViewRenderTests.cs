@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Headless.NUnit;
 using Avalonia.Input;
+using Avalonia.VisualTree;
 using AvaloniaEdit;
 using FluentAssertions;
 using NUnit.Framework;
@@ -121,6 +122,39 @@ namespace SWLOR.Toolset.Tests
             var editor = view.FindControl<TextEditor>("Editor")!;
             editor.Text.Should().Contain("dmw_CleanUp", "the file's contents must reach the buffer");
             editor.Text.Should().NotContain("\r", "the buffer works in \\n; CRLF is reapplied on save");
+        }
+
+        [AvaloniaTest]
+        public void EditorChromeOmitsLexiconAndCanMinimizeTheOutline()
+        {
+            if (!File.Exists(SampleScript))
+                Assert.Ignore("module corpus not present");
+
+            var viewModel = new ScriptEditorViewModel(
+                SampleScript, "dmfi_activate", new OutputLogService(), new StubPrompts());
+
+            var view = new ScriptEditorView();
+            var window = new Window { Content = view };
+            window.Show();
+            view.DataContext = viewModel;
+
+            var buttonLabels = view.GetVisualDescendants()
+                .OfType<Button>()
+                .Select(button => button.Content?.ToString())
+                .Where(content => content != null)
+                .ToList();
+
+            buttonLabels.Should().NotContain(content =>
+                content!.Contains("Lexicon", StringComparison.OrdinalIgnoreCase));
+
+            var outline = view.FindControl<ScrollViewer>("OutlineList")!;
+            outline.IsVisible.Should().BeTrue();
+
+            viewModel.ToggleOutlineCommand.Execute(null);
+            outline.IsVisible.Should().BeFalse();
+
+            viewModel.ToggleOutlineCommand.Execute(null);
+            outline.IsVisible.Should().BeTrue();
         }
 
         [AvaloniaTest]

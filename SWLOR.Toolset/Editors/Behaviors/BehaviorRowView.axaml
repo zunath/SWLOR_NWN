@@ -12,11 +12,9 @@
        comfortable margin around it. Every pixel it takes comes out of the value, and the value is
        the part that has to hold a search list, a picture grid, or a tag - at a narrow pane width the
        generous column was leaving a text box a couple of characters wide. -->
-  <Grid ColumnDefinitions="150,*" ColumnSpacing="12" RowDefinitions="Auto,Auto,Auto"
-        IsVisible="{Binding IsVisible}" Margin="0,2" MinHeight="32">
+  <behaviors:LabeledFieldPanel IsVisible="{Binding IsVisible}" Margin="0,2" MinHeight="32">
 
-    <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Margin="0,7,0,0"
-                ClipToBounds="True">
+    <StackPanel VerticalAlignment="Top" Margin="0,7,0,0" ClipToBounds="True">
       <TextBlock Text="{Binding Label}" Classes="dim" TextWrapping="Wrap" />
       <!-- "required" sits under the label rather than beside it: side by side it was the first
            thing squeezed out at narrow pane widths, which is exactly when it matters. -->
@@ -25,7 +23,7 @@
                  IsVisible="{Binding IsRequired}" />
     </StackPanel>
 
-    <StackPanel Grid.Row="0" Grid.Column="1" Spacing="5" Margin="0,3">
+    <StackPanel Spacing="5" Margin="0,3">
       <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" IsVisible="{Binding IsTextEntry}">
         <TextBox Grid.Column="0" Text="{Binding Text, Mode=TwoWay}"
                  MaxLength="{Binding MaxLength}" IsReadOnly="{Binding IsReadOnly}" />
@@ -37,8 +35,8 @@
                MaxHeight="120" MaxLength="{Binding MaxLength}"
                IsReadOnly="{Binding IsReadOnly}" IsVisible="{Binding IsParagraph}" />
 
-      <NumericUpDown Value="{Binding Number, Mode=TwoWay}" MinWidth="150"
-                     HorizontalAlignment="Left" IsEnabled="{Binding !IsReadOnly}"
+      <NumericUpDown Value="{Binding Number, Mode=TwoWay}" MinWidth="110"
+                     HorizontalAlignment="Stretch" MaxWidth="220" IsEnabled="{Binding !IsReadOnly}"
                      IsVisible="{Binding IsNumber}" />
 
       <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsEnabled="{Binding !IsReadOnly}"
@@ -204,13 +202,13 @@
       </StackPanel>
 
       <TextBlock Text="{Binding StatementText}" Classes="mono" IsVisible="{Binding IsStatement}" />
+
+      <TextBlock Text="{Binding Status}" FontSize="11.5"
+                 Foreground="{DynamicResource AmberBrush}" TextWrapping="Wrap"
+                 IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+      <TextBlock Text="{Binding Note}" Classes="label" TextWrapping="Wrap" Margin="0,0,0,4"
+                 IsVisible="{Binding HasNote}" />
     </StackPanel>
-
-    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Status}" FontSize="11.5"
-               Foreground="{DynamicResource AmberBrush}" TextWrapping="Wrap" Margin="0,2,0,0"
-               IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-
-    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Note}" Classes="label"
-               TextWrapping="Wrap" Margin="0,2,0,6" IsVisible="{Binding HasNote}" />
-  </Grid>
+  </behaviors:LabeledFieldPanel>
 </UserControl>

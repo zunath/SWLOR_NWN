@@ -40,7 +40,8 @@ namespace SWLOR.Toolset.Editors.Sounds
             OutputLogService log,
             IEditorPromptService prompts,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
-            IReadOnlyList<string>? audioResources = null)
+            IReadOnlyList<string>? audioResources = null,
+            Services.SoundPreviewService? preview = null)
         {
             _log = log;
             _prompts = prompts;
@@ -55,7 +56,8 @@ namespace SWLOR.Toolset.Editors.Sounds
                 RunEdit,
                 gameCodeIndex,
                 resolveChoices,
-                audioResources);
+                audioResources,
+                preview);
             UpdateTitle();
         }
 

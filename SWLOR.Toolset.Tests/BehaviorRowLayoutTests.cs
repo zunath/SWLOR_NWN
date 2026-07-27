@@ -1,4 +1,5 @@
 using System.Text;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using Avalonia.Threading;
@@ -65,6 +66,60 @@ namespace SWLOR.Toolset.Tests
             window.Close();
             Dispatcher.UIThread.RunJobs();
             GC.KeepAlive(row);
+        }
+
+        [AvaloniaTest]
+        public void ANumberStartsWhereEveryOtherControlStarts()
+        {
+            // Stretch plus a MaxWidth centres rather than left-aligns: the layout hands over the
+            // whole slot, the maximum shrinks the control, and the remainder is split evenly on
+            // both sides. Every spinner floated in the middle of its column while the text boxes
+            // and checkboxes beside it began at the left.
+            const double wide = 700;
+
+            var text = Row("Opens with key", "KeyName", BehaviorFieldKind.Text, GffFieldType.CExoString);
+            var number = Row("Relock DC", "RelockDC", BehaviorFieldKind.Integer, GffFieldType.Int);
+
+            var (textView, textWindow) = Host(text, wide);
+            var (numberView, numberWindow) = Host(number, wide);
+
+            var box = textView.GetVisualDescendants().OfType<TextBox>().First();
+            var spinner = numberView.GetVisualDescendants().OfType<NumericUpDown>().First();
+
+            var boxLeft = box.TranslatePoint(new Point(0, 0), textView)!.Value.X;
+            var spinnerLeft = spinner.TranslatePoint(new Point(0, 0), numberView)!.Value.X;
+
+            TestContext.Out.WriteLine($"box={boxLeft:0.#} spinner={spinnerLeft:0.#}");
+
+            spinnerLeft.Should().BeApproximately(boxLeft, 1,
+                "a number belongs on the same left edge as every other value in the column");
+
+            textWindow.Close();
+            numberWindow.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+
+        private static DoorRowViewModel Row(
+            string label, string name, BehaviorFieldKind kind, GffFieldType type) =>
+            new(
+                new DoorFieldDefinition { Label = label, Name = name, Kind = kind, FieldType = type },
+                new DoorValueStore(Door()),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                _ => { },
+                _ => { });
+
+        private static (BehaviorRowView View, Window Window) Host(DoorRowViewModel row, double width)
+        {
+            var view = new BehaviorRowView { DataContext = row };
+            var window = new Window { Width = width, Height = 300, Content = view };
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+            return (view, window);
         }
 
         private static (double Label, double Value) Measure(double width)

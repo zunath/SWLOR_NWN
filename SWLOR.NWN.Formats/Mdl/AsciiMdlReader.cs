@@ -123,6 +123,10 @@ internal sealed class AsciiMdlReader
                 pending.Add(ParseNode(tokens, line, animationOnly));
         }
 
+        // Real corpus files end truncated (sw_t_cepdesert/ztd01_o64_01.mdl stops mid-node with no
+        // block terminator); tolerate a missing terminator when the block yielded nodes.
+        if (pending.Count > 0)
+            return LinkNodes(pending, preferredRootName);
         throw Error($"ASCII MDL block is missing {terminator}.");
     }
 
@@ -284,7 +288,13 @@ internal sealed class AsciiMdlReader
             }
         }
 
-        throw Error($"ASCII MDL node '{node.Name}' is missing endnode.", source);
+        // Tolerate a node cut off by end-of-input the same way (finalize what was read).
+        if (node is MdlTrimeshNode finalMesh)
+        {
+            ApplyTexture0Fallback();
+            FinalizeMesh(finalMesh, vertices, normals, textureCoordinates, faces, influences, source);
+        }
+        return new PendingNode(node, NullAsEmpty(parentName ?? string.Empty), source);
     }
 
     private Vector3[] ReadVector3Array(string[] declaration, SourceLine source, string context)

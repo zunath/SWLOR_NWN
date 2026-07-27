@@ -310,15 +310,16 @@ public sealed class MdlReader
         var weightPointer = _reader.ReadInt32(offset + 12);
         if (weightPointer >= 0 && vertexCount > 0)
         {
+            var weightStride = EffectiveMdxStride(mdxStride, 16);
             var absolute = MdxOffset(
                 weightPointer,
-                MdxWindowSize(vertexCount, mdxStride, 16, "MDL bone weights"),
+                MdxWindowSize(vertexCount, weightStride, 16, "MDL bone weights"),
                 "MDL bone weights");
             _allocationBudget.ReserveElements(vertexCount, 16, "MDL bone weights");
             var weights = new Vector4[vertexCount];
             for (var index = 0; index < weights.Length; index++)
             {
-                var current = absolute + index * (long)mdxStride;
+                var current = absolute + index * (long)weightStride;
                 weights[index] = new Vector4(
                     Finite(_reader.ReadSingle(current), "MDL bone weight"),
                     Finite(_reader.ReadSingle(current + 4), "MDL bone weight"),
@@ -331,15 +332,16 @@ public sealed class MdlReader
         var indexPointer = _reader.ReadInt32(offset + 16);
         if (indexPointer >= 0 && vertexCount > 0)
         {
+            var indexStride = EffectiveMdxStride(mdxStride, 8);
             var absolute = MdxOffset(
                 indexPointer,
-                MdxWindowSize(vertexCount, mdxStride, 8, "MDL bone indices"),
+                MdxWindowSize(vertexCount, indexStride, 8, "MDL bone indices"),
                 "MDL bone indices");
             _allocationBudget.ReserveElements(vertexCount, 8, "MDL bone indices");
             var indices = new MdlBoneIndices[vertexCount];
             for (var index = 0; index < indices.Length; index++)
             {
-                var current = absolute + index * (long)mdxStride;
+                var current = absolute + index * (long)indexStride;
                 indices[index] = new MdlBoneIndices(
                     _reader.ReadInt16(current),
                     _reader.ReadInt16(current + 2),
@@ -442,6 +444,7 @@ public sealed class MdlReader
     {
         if (pointer < 0 || count == 0)
             return Array.Empty<Vector3>();
+        stride = EffectiveMdxStride(stride, 12);
         var offset = MdxOffset(pointer, MdxWindowSize(count, stride, 12, context), context);
         _allocationBudget.ReserveElements(count, 12, context);
         var values = new Vector3[count];
@@ -454,6 +457,7 @@ public sealed class MdlReader
     {
         if (pointer < 0 || count == 0)
             return Array.Empty<Vector2>();
+        stride = EffectiveMdxStride(stride, 8);
         var offset = MdxOffset(pointer, MdxWindowSize(count, stride, 8, context), context);
         _allocationBudget.ReserveElements(count, 8, context);
         var values = new Vector2[count];
@@ -471,10 +475,15 @@ public sealed class MdlReader
     {
         if (vertexCount == 0)
             return 0;
-        if (value == 0 || value > int.MaxValue)
+        if (value > int.MaxValue)
             throw new NwnFormatException($"MDL MDX vertex stride {value} is invalid.");
+        // A stored stride of 0 is real corpus data (base-game dag_*/ptm_* placeables): it means
+        // the MDX arrays are tightly packed, so each consumer substitutes its own element size.
         return (int)value;
     }
+
+    private static int EffectiveMdxStride(int stride, int elementSize) =>
+        stride == 0 ? elementSize : stride;
 
     private static long MdxWindowSize(int count, int stride, int elementSize, string context)
     {

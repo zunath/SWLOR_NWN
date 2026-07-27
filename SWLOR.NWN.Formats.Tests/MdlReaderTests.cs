@@ -239,8 +239,13 @@ public sealed class MdlReaderTests
         parsePointer.Should().Throw<NwnFormatException>();
     }
 
+    /// <summary>
+    /// Real corpus files end truncated — sw_t_cepdesert/ztd01_o64_01.mdl stops mid-node with no
+    /// endnode or block terminator — and every prior reader tolerated them, so a missing
+    /// terminator after readable nodes must finalize what was read instead of throwing.
+    /// </summary>
     [Test]
-    public void RejectsAsciiGeometryMissingItsTerminatorAfterACompleteNode()
+    public void ToleratesAsciiGeometryMissingItsTerminatorAfterACompleteNode()
     {
         var text = """
                    newmodel sample
@@ -250,14 +255,14 @@ public sealed class MdlReaderTests
                      endnode
                    """;
 
-        Action action = () => new MdlReader().Parse(Encoding.ASCII.GetBytes(text));
+        var model = new MdlReader().Parse(Encoding.ASCII.GetBytes(text));
 
-        action.Should().Throw<NwnFormatException>()
-            .WithMessage("*missing endmodelgeom*");
+        model.GeometryRoot.Should().NotBeNull();
+        model.GeometryRoot!.Name.Should().Be("sample");
     }
 
     [Test]
-    public void RejectsAsciiNodeMissingItsTerminatorAtEndOfFile()
+    public void ToleratesAsciiNodeCutOffAtEndOfFile()
     {
         var text = """
                    newmodel sample
@@ -266,10 +271,10 @@ public sealed class MdlReaderTests
                        parent NULL
                    """;
 
-        Action action = () => new MdlReader().Parse(Encoding.ASCII.GetBytes(text));
+        var model = new MdlReader().Parse(Encoding.ASCII.GetBytes(text));
 
-        action.Should().Throw<NwnFormatException>()
-            .WithMessage("*node 'sample' is missing endnode*");
+        model.GeometryRoot.Should().NotBeNull();
+        model.GeometryRoot!.Name.Should().Be("sample");
     }
 
     [Test]

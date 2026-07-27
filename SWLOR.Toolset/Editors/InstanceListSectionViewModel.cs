@@ -109,6 +109,7 @@ namespace SWLOR.Toolset.Editors
         private readonly string _soundHeaderOwner;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveSoundChoices;
         private readonly IReadOnlyList<string> _audioResources;
+        private readonly Services.SoundPreviewService? _soundPreview;
 
         /// <summary>Resolves the STRREF labels the module's palettes use instead of inline names.</summary>
         private readonly Func<uint, string?>? _resolveStrRef;
@@ -188,7 +189,8 @@ namespace SWLOR.Toolset.Editors
             Doors.DoorEditorServices? doorEditorServices = null,
             string? soundHeaderOwner = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveSoundChoices = null,
-            IReadOnlyList<string>? audioResources = null)
+            IReadOnlyList<string>? audioResources = null,
+            Services.SoundPreviewService? soundPreview = null)
         {
             Title = title;
             _listFieldName = listFieldName;
@@ -205,6 +207,7 @@ namespace SWLOR.Toolset.Editors
             _soundHeaderOwner = soundHeaderOwner ?? string.Empty;
             _resolveSoundChoices = resolveSoundChoices;
             _audioResources = audioResources ?? Array.Empty<string>();
+            _soundPreview = soundPreview;
 
             RefreshFromDocument();
         }
@@ -306,7 +309,8 @@ namespace SWLOR.Toolset.Editors
                     _runEdit,
                     _gameCodeIndex,
                     _resolveSoundChoices,
-                    _audioResources);
+                    _audioResources,
+                    _soundPreview);
                 SoundEditor.ValueChanged += () =>
                 {
                     if (SelectedRow is { } row)

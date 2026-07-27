@@ -11,8 +11,11 @@
       <StackPanel Margin="16,1">
         <behaviors:BehaviorRowView />
 
-        <Grid ColumnDefinitions="150,*" ColumnSpacing="12" IsVisible="{Binding IsSoundList}">
-          <StackPanel Grid.Column="1" Spacing="6"
+        <!-- Indented under its own row's label when there is room, and full width when there is
+             not - the same rule the rows themselves follow, so the list never overflows the pane. -->
+        <behaviors:LabeledFieldPanel IsVisible="{Binding IsSoundList}">
+          <Panel />
+          <StackPanel Spacing="6"
                       DataContext="{Binding SoundList}" x:DataType="sounds:SoundListEditorViewModel">
             <!-- The catalog is a visible select list, not a name to guess at: a builder picking an
                  ambient sound is choosing from what the module ships, and an autocomplete showed
@@ -39,27 +42,48 @@
                        Foreground="{DynamicResource AmberBrush}" TextWrapping="Wrap"
                        IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-            <!-- What the behavior actually plays, in order. -->
-            <ListBox ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedEntry, Mode=TwoWay}"
-                     MaxHeight="150">
-              <ListBox.ItemTemplate>
-                <DataTemplate DataType="sounds:SoundListEntryViewModel">
-                  <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="4,2">
-                    <TextBlock Grid.Column="0" Text="{Binding Index}" Classes="count"
-                               VerticalAlignment="Center" />
-                    <TextBlock Grid.Column="1" Text="{Binding ResRef}" Classes="mono"
-                               VerticalAlignment="Center" />
-                  </Grid>
-                </DataTemplate>
-              </ListBox.ItemTemplate>
-            </ListBox>
-            <StackPanel Orientation="Horizontal" Spacing="6">
-              <Button Content="Remove" Command="{Binding RemoveCommand}" />
-              <Button Content="Move up" Command="{Binding MoveUpCommand}" />
-              <Button Content="Move down" Command="{Binding MoveDownCommand}" />
-            </StackPanel>
+            <!-- What the behavior actually plays, in order, with the buttons that act on it beside
+                 it rather than under it. They are all about the highlighted row, and a column of
+                 them stacked below the list reads as belonging to whatever came next on the form -
+                 which on a short window is all a builder can see of either. The original toolset
+                 put them in this column for the same reason. -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <ListBox Grid.Column="0" ItemsSource="{Binding Rows}"
+                       SelectedItem="{Binding SelectedEntry, Mode=TwoWay}" MaxHeight="150">
+                <ListBox.ItemTemplate>
+                  <DataTemplate DataType="sounds:SoundListEntryViewModel">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="4,2">
+                      <TextBlock Grid.Column="0" Text="{Binding Index}" Classes="count"
+                                 VerticalAlignment="Center" />
+                      <TextBlock Grid.Column="1" Text="{Binding ResRef}" Classes="mono"
+                                 VerticalAlignment="Center" />
+                    </Grid>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+
+              <StackPanel Grid.Column="1" Spacing="4" MinWidth="92">
+                <!-- Play answers the question the names cannot: al_pl_bazarwalla says nothing about
+                     what it sounds like. It plays whatever is highlighted - the entry picked here,
+                     or the catalog row above when nothing here is picked, so a sound can be heard
+                     before it is added rather than after. -->
+                <Button Content="Play" Command="{Binding PlayCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                        IsVisible="{Binding CanPreview}" />
+                <Button Content="Stop" Command="{Binding StopPlaybackCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                        IsVisible="{Binding CanPreview}" />
+                <Border Height="6" IsVisible="{Binding CanPreview}" />
+                <Button Content="Remove" Command="{Binding RemoveCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                <Button Content="Move up" Command="{Binding MoveUpCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                <Button Content="Move down" Command="{Binding MoveDownCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+              </StackPanel>
+            </Grid>
           </StackPanel>
-        </Grid>
+        </behaviors:LabeledFieldPanel>
       </StackPanel>
     </DataTemplate>
   </UserControl.DataTemplates>

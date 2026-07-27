@@ -37,6 +37,10 @@
          AvaloniaEdit tracks Avalonia's minor versions, so the two must move together. MIT. -->
     <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <!-- Sound preview. NWN ships its audio as RIFF WAV (often IMA ADPCM, which WaveOut cannot take
+         directly) and as BMU, which is an MP3 behind an eight-byte header; NAudio reads both and
+         converts the first. MIT. -->
+    <PackageReference Include="NAudio" Version="2.3.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
     <PackageReference Include="Dock.Avalonia" Version="11.3.12.1" />
     <PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="11.3.12.1" />

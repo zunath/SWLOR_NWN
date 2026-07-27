@@ -30,13 +30,14 @@ namespace SWLOR.Toolset.Editors.Sounds
             Func<string, Action, bool> runEdit,
             IReadOnlyList<BehaviorChoice> choices,
             IReadOnlyList<string> audioResources,
-            Action changed)
+            Action changed,
+            Services.SoundPreviewService? preview = null)
             : base(definition, store, runEdit, choices, changed)
         {
             if (IsSoundList)
             {
                 SoundList = new SoundListEditorViewModel(
-                    store, runEdit, audioResources, definition.MaxItems, OnListChanged);
+                    store, runEdit, audioResources, definition.MaxItems, OnListChanged, preview);
             }
 
             Reload();

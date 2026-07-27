@@ -81,6 +81,7 @@ namespace SWLOR.Toolset.Services
 
             var restored = new List<string>();
             var protectedBackups = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var protectedTransactionIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var manifestPath in Directory.EnumerateFiles(
                          moduleRoot, "*" + TransactionSuffix, SearchOption.AllDirectories))
@@ -93,8 +94,17 @@ namespace SWLOR.Toolset.Services
                 }
                 catch (Exception)
                 {
-                    // An unreadable manifest is transaction evidence, not litter. Leave it and all
-                    // backups alone for a builder to recover manually.
+                    // An unreadable manifest is transaction evidence, not litter. Leave it alone -
+                    // and shield its transaction's backups (identifiable by the id embedded in
+                    // ".<id>.save-transaction.json" / "<target>.<id>.save-backup") from the orphan
+                    // sweep below, which would otherwise restore or delete group members piecemeal
+                    // and leave an ARE/GIT/GIC group at mixed generations.
+                    var manifestName = Path.GetFileName(manifestPath);
+                    if (manifestName.StartsWith('.') &&
+                        manifestName.Length > 1 + TransactionSuffix.Length)
+                    {
+                        protectedTransactionIds.Add(manifestName[1..^TransactionSuffix.Length]);
+                    }
                     continue;
                 }
 
@@ -167,6 +177,14 @@ namespace SWLOR.Toolset.Services
 
                 // "area.git.json.<guid>.save-backup" -> "area.git.json"
                 var withoutSuffix = backup[..^BackupSuffix.Length];
+
+                // Backups belonging to an unreadable manifest's transaction stay untouched.
+                var transactionSeparator = withoutSuffix.LastIndexOf('.');
+                if (transactionSeparator >= 0 &&
+                    protectedTransactionIds.Contains(withoutSuffix[(transactionSeparator + 1)..]))
+                {
+                    continue;
+                }
                 var target = Path.ChangeExtension(withoutSuffix, null);
                 if (target.Length == 0)
                     continue;

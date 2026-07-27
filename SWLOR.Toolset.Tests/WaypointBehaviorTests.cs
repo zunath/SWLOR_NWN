@@ -361,13 +361,15 @@ namespace SWLOR.Toolset.Tests
                     $"{path} still reserves the old label column");
             }
 
-            // Anything drawn underneath a row has to use the row's column or it hangs off it.
-            File.ReadAllText(Path.Combine(
-                    CorpusLocator.RepositoryRoot,
-                    "SWLOR.Toolset", "Editors", "Views", "DoorEditorView.axaml"))
-                .Should().Contain(
-                    "ColumnDefinitions=\"150,*\" ColumnSpacing=\"12\" IsVisible=\"{Binding IsMultiChoice}\"",
-                    "the door's key-item list sits under the shared row and shares its label column");
+            // Anything drawn underneath a row follows the row: indented under the label column when
+            // there is room for one, and full width when there is not. A fixed grid cannot do the
+            // second, which is how a key-item list ends up hanging off the side of a narrow pane.
+            foreach (var view in new[] { "DoorEditorView.axaml", "SoundEditorView.axaml" })
+            {
+                File.ReadAllText(Path.Combine(
+                        CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view))
+                    .Should().Contain("behaviors:LabeledFieldPanel", $"{view} follows the shared row");
+            }
 
             foreach (var view in new[]
                      {

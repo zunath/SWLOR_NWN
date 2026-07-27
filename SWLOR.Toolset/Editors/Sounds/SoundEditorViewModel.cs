@@ -17,6 +17,7 @@ namespace SWLOR.Toolset.Editors.Sounds
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly IReadOnlyList<string> _audioResources;
+        private readonly Services.SoundPreviewService? _preview;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly bool _isInstance;
 
@@ -56,7 +57,8 @@ namespace SWLOR.Toolset.Editors.Sounds
             Func<string, Action, bool> runEdit,
             IGameCodeIndex? gameCodeIndex = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
-            IReadOnlyList<string>? audioResources = null)
+            IReadOnlyList<string>? audioResources = null,
+            Services.SoundPreviewService? preview = null)
         {
             ArgumentNullException.ThrowIfNull(sound);
 
@@ -65,6 +67,7 @@ namespace SWLOR.Toolset.Editors.Sounds
             _gameCodeIndex = gameCodeIndex;
             _resolveChoices = resolveChoices;
             _audioResources = audioResources ?? Array.Empty<string>();
+            _preview = preview;
             _isInstance = isInstance;
             HeaderOwner = headerOwner;
 
@@ -186,7 +189,8 @@ namespace SWLOR.Toolset.Editors.Sounds
                 RunEdit,
                 ResolveChoices(definition),
                 _audioResources,
-                RefreshCompleteness);
+                RefreshCompleteness,
+                _preview);
 
         private IReadOnlyList<BehaviorChoice> ResolveChoices(BehaviorFieldDefinition definition)
         {

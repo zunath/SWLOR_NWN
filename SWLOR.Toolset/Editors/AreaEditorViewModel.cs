@@ -1323,7 +1323,8 @@ namespace SWLOR.Toolset.Editors
             Func<JsonGffStruct, RenderModel?>? resolvePlacedCreatureModel = null,
             Doors.DoorEditorServices? doorEditorServices = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveSoundChoices = null,
-            IReadOnlyList<string>? audioResources = null)
+            IReadOnlyList<string>? audioResources = null,
+            Services.SoundPreviewService? soundPreview = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resolveBlueprintModel = resolveBlueprintModel;
@@ -1367,7 +1368,8 @@ namespace SWLOR.Toolset.Editors
                     config.BlueprintType == ResourceType.Utd ? doorEditorServices : null,
                     areResRef,
                     resolveSoundChoices,
-                    audioResources));
+                    audioResources,
+                    soundPreview));
             }
 
             // A row click in any section should update the 3D-view highlight

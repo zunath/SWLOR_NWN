@@ -357,6 +357,19 @@ namespace SWLOR.Toolset.Tests
             Scan().Should().BeEmpty("an include produces no .ncs by design");
         }
 
+        [Test]
+        public void AnIncludeWithALeftoverArtifact_IsStale()
+        {
+            // The dmfi_dmw_inc case: a source that lost its entry point but kept its old bytecode.
+            // Timestamps cannot see it, and the packer ships every .ncs verbatim, so the scan must.
+            Source("helper_inc", "int Helper() { return 1; }");
+            Compiled("helper_inc", DateTime.UtcNow);
+
+            var finding = Scan().Should().ContainSingle().Which;
+            finding.Reason.Should().Be(StaleReason.ObsoleteIncludeArtifact);
+            finding.ResRef.Should().Be("helper_inc");
+        }
+
         /// <summary>The case nothing else in the pipeline can see.</summary>
         [Test]
         public void EditingAnInclude_MarksEveryTransitiveDependentStale()

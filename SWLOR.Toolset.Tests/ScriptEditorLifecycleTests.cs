@@ -73,6 +73,32 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task AFailedCompileOnSaveIsRetriedByTheNextSave()
+        {
+            var editor = Editor();
+            editor.OnTextChanged("void main() { int value = 3; }\n");
+            var compileSucceeds = false;
+            var compileCount = 0;
+            editor.CompileOnSave = _ =>
+            {
+                compileCount++;
+                return Task.FromResult(compileSucceeds);
+            };
+
+            (await editor.TrySaveAsync()).Should().BeFalse("the .ncs was not updated");
+
+            // The source is clean now, but the stale bytecode means the save is not done: the next
+            // save must retry the compile instead of silently succeeding (which previously let a
+            // second close attempt ship the stale .ncs).
+            compileSucceeds = true;
+            (await editor.TrySaveAsync()).Should().BeTrue();
+            compileCount.Should().Be(2, "the clean-source save must retry the failed compile");
+
+            (await editor.TrySaveAsync()).Should().BeTrue();
+            compileCount.Should().Be(2, "a successful compile clears the pending retry");
+        }
+
+        [Test]
         public async Task ClosingCancelsThePendingDebouncedAnalysis()
         {
             var log = new OutputLogService();

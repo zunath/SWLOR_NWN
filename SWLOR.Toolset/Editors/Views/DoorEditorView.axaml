@@ -15,8 +15,9 @@
       <StackPanel Margin="6,1" IsVisible="{Binding IsVisible}">
         <behaviors:BehaviorRowView />
 
-        <Grid ColumnDefinitions="150,*" ColumnSpacing="12" IsVisible="{Binding IsMultiChoice}">
-          <StackPanel Grid.Column="1" Spacing="6">
+        <behaviors:LabeledFieldPanel IsVisible="{Binding IsMultiChoice}">
+          <Panel />
+          <StackPanel Spacing="6">
             <ItemsControl ItemsSource="{Binding SelectedKeyItems}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -60,7 +61,7 @@
               </ScrollViewer>
             </Border>
           </StackPanel>
-        </Grid>
+        </behaviors:LabeledFieldPanel>
       </StackPanel>
     </DataTemplate>
   </UserControl.DataTemplates>

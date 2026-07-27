@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Editors.Sounds;
+using SWLOR.Toolset.Services;
 
 namespace SWLOR.Toolset.Editors.Sounds
 {
@@ -11,6 +12,7 @@ namespace SWLOR.Toolset.Editors.Sounds
         private readonly SoundValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action _changed;
+        private readonly SoundPreviewService? _preview;
         private readonly int _maxItems;
         private int _matchCount;
 
@@ -48,6 +50,16 @@ namespace SWLOR.Toolset.Editors.Sounds
 
         public bool HasSelection => SelectedEntry != null;
 
+        /// <summary>Whether this build can play anything, which decides if Play and Stop appear.</summary>
+        public bool CanPreview => _preview?.IsAvailable == true;
+
+        /// <summary>
+        /// What Play would play: the entry picked out of the object's own list, or - when nothing
+        /// there is picked - whatever is highlighted in the catalog, so a builder can listen to a
+        /// sound before adding it rather than after.
+        /// </summary>
+        public string? PreviewTarget => SelectedEntry?.ResRef ?? Candidate;
+
         [ObservableProperty]
         private SoundListEntryViewModel? _selectedEntry;
 
@@ -66,13 +78,15 @@ namespace SWLOR.Toolset.Editors.Sounds
             Func<string, Action, bool> runEdit,
             IReadOnlyList<string> availableSounds,
             int maxItems,
-            Action changed)
+            Action changed,
+            SoundPreviewService? preview = null)
         {
             _store = store;
             _runEdit = runEdit;
             AvailableSounds = availableSounds;
             _maxItems = maxItems;
             _changed = changed;
+            _preview = preview;
             RebuildFilteredSounds();
             Reload();
         }
@@ -168,7 +182,27 @@ namespace SWLOR.Toolset.Editors.Sounds
             _changed();
         }
 
-        partial void OnCandidateChanged(string? value) => AddCommand.NotifyCanExecuteChanged();
+        private bool CanPlay() => CanPreview && !string.IsNullOrWhiteSpace(PreviewTarget);
+
+        /// <summary>Plays what is highlighted, the way the original toolset's Play does.</summary>
+        [RelayCommand(CanExecute = nameof(CanPlay))]
+        private void Play()
+        {
+            if (_preview == null)
+                return;
+
+            Status = _preview.Play(PreviewTarget);
+        }
+
+        [RelayCommand]
+        private void StopPlayback() => _preview?.Stop();
+
+        partial void OnCandidateChanged(string? value)
+        {
+            AddCommand.NotifyCanExecuteChanged();
+            OnPropertyChanged(nameof(PreviewTarget));
+            PlayCommand.NotifyCanExecuteChanged();
+        }
 
         partial void OnSearchChanged(string value) => RebuildFilteredSounds();
 
@@ -218,10 +252,12 @@ namespace SWLOR.Toolset.Editors.Sounds
             OnPropertyChanged(nameof(HasRoom));
             OnPropertyChanged(nameof(HasValidCount));
             OnPropertyChanged(nameof(HasSelection));
+            OnPropertyChanged(nameof(PreviewTarget));
             AddCommand.NotifyCanExecuteChanged();
             RemoveCommand.NotifyCanExecuteChanged();
             MoveUpCommand.NotifyCanExecuteChanged();
             MoveDownCommand.NotifyCanExecuteChanged();
+            PlayCommand.NotifyCanExecuteChanged();
         }
     }
 }

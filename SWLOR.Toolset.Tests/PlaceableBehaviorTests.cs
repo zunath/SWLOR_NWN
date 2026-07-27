@@ -40,17 +40,18 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void BehaviorSelection_GivesCustomItsOwnSection()
+        public void OnlyOneRowInTheListReadsCustomAndItIsTheSelectableOne()
         {
             var section = BuildBehaviorSection();
-            var customIndex = section.Items
-                .Select((item, index) => (item, index))
-                .Single(entry => entry.item.Behavior?.Id == PlaceableBehaviorCatalog.CustomId)
-                .index;
 
-            customIndex.Should().BeGreaterThan(0);
-            section.Items[customIndex - 1].IsHeader.Should().BeTrue();
-            section.Items[customIndex - 1].Text.Should().Be("Custom");
+            // A heading repeating the single row beneath it gives a builder two things to click that
+            // say the same word, one of which is disabled.
+            section.Items.Where(item => item.Text == "Custom")
+                .Should().ContainSingle()
+                .Which.IsSelectable.Should().BeTrue();
+
+            // Groups that hold more than one behavior keep their headings.
+            section.Items.Should().Contain(item => item.IsHeader && item.Text == "Gathering");
         }
 
         [Test]
@@ -1334,6 +1335,25 @@ namespace SWLOR.Toolset.Tests
             // the pane keeps the old behavior's name reads as the click not registering.
             section.SelectedItem = custom;
             section.CurrentName.Should().Be(PlaceableBehaviorCatalog.Custom.Name);
+            section.ShowsCustomFlags.Should().BeTrue();
+        }
+
+        [Test]
+        public void CustomCanBeChosenFromDecor()
+        {
+            // The state a plain decor placeable opens in, and the switch a builder makes to get at
+            // its raw flags and scripts. Both are sentinels - neither writes anything - so this is
+            // the switch most likely to be mistaken for one that did not happen.
+            var section = BuildBehaviorSection();
+            var custom = section.Items.Single(item =>
+                item.Behavior?.Id == PlaceableBehaviorCatalog.CustomId);
+
+            section.CurrentName.Should().Be(PlaceableBehaviorCatalog.None.Name);
+
+            section.SelectedItem = custom;
+
+            section.CurrentName.Should().Be(PlaceableBehaviorCatalog.Custom.Name);
+            section.SelectedItem.Should().BeSameAs(custom, "the list must keep the choice it made");
             section.ShowsCustomFlags.Should().BeTrue();
         }
 

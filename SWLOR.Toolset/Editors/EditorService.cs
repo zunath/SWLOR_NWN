@@ -98,6 +98,7 @@ namespace SWLOR.Toolset.Editors
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice>? _doorAppearances;
         private readonly Dictionary<string, Sounds.SoundDocumentViewModel> _openSoundEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<string>? _soundResources;
+        private Services.SoundPreviewService? _soundPreviews;
 
         // Keyed by path like the blueprint map rather than by resref like the area map: a script is
         // one file, so the path is its identity and there is no are/git/gic triplet to name.
@@ -1073,7 +1074,8 @@ namespace SWLOR.Toolset.Editors
                 _log,
                 _prompts,
                 ResolveSoundChoices,
-                SoundResources());
+                SoundResources(),
+                SoundPreviews());
             editor.Closed += _ => _openSoundEditors.Remove(filePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -1084,6 +1086,13 @@ namespace SWLOR.Toolset.Editors
 
         private IReadOnlyList<string> SoundResources() =>
             _soundResources ??= Domain.Editors.Sounds.SoundResourceCatalog.Read(_resourceIndex);
+
+        /// <summary>
+        /// The sound preview, one for the session. It owns an output device and plays one thing at a
+        /// time on purpose, so every sound list shares it rather than each opening its own.
+        /// </summary>
+        private Services.SoundPreviewService SoundPreviews() =>
+            _soundPreviews ??= new Services.SoundPreviewService(_resourceIndex);
 
         private IReadOnlyList<BehaviorChoice> ResolveSoundChoices(string key) =>
             Cached("sound", key, BuildSoundChoices);
@@ -1347,7 +1356,8 @@ namespace SWLOR.Toolset.Editors
                         _thumbnails,
                         ChoicePreviews()),
                     ResolveSoundChoices,
-                    SoundResources());
+                    SoundResources(),
+                    SoundPreviews());
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);

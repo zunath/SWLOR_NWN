@@ -1,14 +1,16 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors.Behaviors
 {
     /// <summary>
-    /// Decodes a choice's artwork into a bitmap a picker can show: the load screens, the door
-    /// appearances, the portraits.
+    /// Resolves the picture a choice is picked by: the load screens, the door appearances, the
+    /// portraits, and the waypoint markers.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -19,9 +21,14 @@ namespace SWLOR.Toolset.Editors.Behaviors
     /// </para>
     /// <para>
     /// So decoding happens off the UI thread and only when something actually needs the picture —
-    /// one image for the selected screen, the rest only if the gallery is opened. Results are cached
-    /// per size, including the misses, since a resref that will not resolve now will not resolve on
-    /// the next scroll either.
+    /// the tiles a gallery has actually published, and no more. Results are cached per size,
+    /// including the misses, since a resref that will not resolve now will not resolve on the next
+    /// scroll either.
+    /// </para>
+    /// <para>
+    /// A choice can name a model instead of a texture, which has to be rendered rather than decoded.
+    /// That work belongs to <see cref="ThumbnailService"/>, which already owns the render queue and
+    /// its caches, so this forwards to it rather than growing a second one.
     /// </para>
     /// </remarks>
     public sealed class ChoicePreviewService
@@ -29,16 +36,55 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// <summary>Gallery thumbnails. Small enough that twenty of them cost little memory.</summary>
         public const int ThumbnailWidth = 192;
 
-        /// <summary>The selected screen, shown large enough to actually judge.</summary>
+        /// <summary>The chosen option, shown large enough to actually judge.</summary>
         public const int PreviewWidth = 384;
 
         private readonly ResourceIndex? _resources;
+        private readonly ThumbnailService? _models;
         private readonly object _syncRoot = new();
         private readonly Dictionary<string, Bitmap?> _cache = new(StringComparer.OrdinalIgnoreCase);
 
-        public ChoicePreviewService(ResourceIndex? resources)
+        public ChoicePreviewService(ResourceIndex? resources, ThumbnailService? models = null)
         {
             _resources = resources;
+            _models = models;
+        }
+
+        /// <summary>The already-resolved picture for a choice, or null. Never starts work.</summary>
+        public Bitmap? Cached(BehaviorChoice choice, int maxWidth)
+        {
+            ArgumentNullException.ThrowIfNull(choice);
+
+            return choice.ModelResRef is { Length: > 0 } model
+                ? _models?.CachedTile(model)
+                : Cached(choice.ImageResRef, maxWidth);
+        }
+
+        /// <summary>
+        /// Resolves a choice's picture and hands it to <paramref name="onReady"/> on the UI thread.
+        /// </summary>
+        /// <remarks>
+        /// A choice whose picture cannot be produced is simply never called back, and its tile stays
+        /// on the letter it started with. That is the degrade path on purpose: a gallery that waited
+        /// on every unrenderable row would hold the ones that do render behind them.
+        /// </remarks>
+        public async Task RequestAsync(BehaviorChoice choice, int maxWidth, Action<Bitmap> onReady)
+        {
+            ArgumentNullException.ThrowIfNull(choice);
+            ArgumentNullException.ThrowIfNull(onReady);
+
+            if (choice.ModelResRef is { Length: > 0 } model)
+            {
+                if (_models?.CachedTile(model) is { } cached)
+                    onReady(cached);
+                else
+                    _models?.RequestTileAsync(model, onReady);
+
+                return;
+            }
+
+            if (await ResolveAsync(choice.ImageResRef, maxWidth).ConfigureAwait(true) is { } bitmap)
+                onReady(bitmap);
         }
 
         /// <summary>

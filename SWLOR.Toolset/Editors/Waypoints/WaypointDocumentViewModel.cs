@@ -36,7 +36,8 @@ namespace SWLOR.Toolset.Editors.Waypoints
             OutputLogService log,
             IEditorPromptService prompts,
             WaypointBehaviorCatalog catalog,
-            Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null)
+            Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
+            Behaviors.ChoicePreviewService? previews = null)
         {
             _log = log;
             _prompts = prompts;
@@ -51,7 +52,8 @@ namespace SWLOR.Toolset.Editors.Waypoints
                 RunEdit,
                 catalog,
                 gameCodeIndex,
-                resolveChoices);
+                resolveChoices,
+                previews);
 
             UpdateTitle();
         }

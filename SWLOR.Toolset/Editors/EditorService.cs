@@ -838,7 +838,8 @@ namespace SWLOR.Toolset.Editors
                     _log,
                     _prompts,
                     catalog,
-                    ResolveWaypointChoices);
+                    ResolveWaypointChoices,
+                    ChoicePreviews());
                 editor.Closed += _ => _openWaypointEditors.Remove(filePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
@@ -886,7 +887,7 @@ namespace SWLOR.Toolset.Editors
             _doorAppearances ??= Domain.Editors.Doors.DoorAppearanceCatalog.Read(_doorTypes);
 
         private Behaviors.ChoicePreviewService ChoicePreviews() =>
-            _choicePreviews ??= new Behaviors.ChoicePreviewService(_resourceIndex);
+            _choicePreviews ??= new Behaviors.ChoicePreviewService(_resourceIndex, _thumbnails);
 
         /// <summary>
         /// One option set, built on first use and kept. Every one of these is a 2DA read, a palette
@@ -1147,12 +1148,10 @@ namespace SWLOR.Toolset.Editors
             if (key == Domain.Editors.Waypoints.WaypointChoiceKeys.PaletteCategories)
                 return ResolveWaypointCategories();
 
+            // Not routed through the shared lookup: the picker draws each marker's model, and the
+            // generic 2DA lookup returns labels only.
             if (key == Domain.Editors.Waypoints.WaypointChoiceKeys.Appearances)
-                return _waypointAppearances == null
-                    ? Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>()
-                    : _waypointAppearances.GetAll()
-                    .Select(row => new Domain.Editors.Behaviors.BehaviorChoice(row.Id, row.DisplayName))
-                    .ToList();
+                return Domain.Editors.Waypoints.WaypointAppearanceCatalog.Read(_waypointAppearances);
 
             return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
         }

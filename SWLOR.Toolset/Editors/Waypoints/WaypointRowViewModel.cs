@@ -14,8 +14,9 @@ namespace SWLOR.Toolset.Editors.Waypoints
             BehaviorValueStore store,
             Func<string, Action, bool> runEdit,
             IReadOnlyList<BehaviorChoice>? choices = null,
-            Action? valueChanged = null)
-            : base(definition, store, runEdit, choices, valueChanged)
+            Action? valueChanged = null,
+            ChoicePreviewService? previews = null)
+            : base(definition, store, runEdit, choices, valueChanged, previews)
         {
             Reload();
         }

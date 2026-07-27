@@ -37,7 +37,7 @@
       </TabItem>
 
       <TabItem Header="Behavior">
-        <Grid ColumnDefinitions="290,*">
+        <Grid ColumnDefinitions="210,*">
           <behaviors:BehaviorRailView Grid.Column="0" Items="{Binding BehaviorList}"
                                       ChooseCommand="{Binding ChooseBehaviorCommand}" />
 

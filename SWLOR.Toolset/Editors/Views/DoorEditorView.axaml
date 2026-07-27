@@ -15,7 +15,7 @@
       <StackPanel Margin="16,1" IsVisible="{Binding IsVisible}">
         <behaviors:BehaviorRowView />
 
-        <Grid ColumnDefinitions="220,*" IsVisible="{Binding IsMultiChoice}">
+        <Grid ColumnDefinitions="150,*" ColumnSpacing="12" IsVisible="{Binding IsMultiChoice}">
           <StackPanel Grid.Column="1" Spacing="6">
             <ItemsControl ItemsSource="{Binding SelectedKeyItems}">
               <ItemsControl.ItemsPanel>
@@ -46,7 +46,7 @@
             <TextBlock Text="{Binding KeyItemSearchSummary}" Classes="count" />
             <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
                     ClipToBounds="True">
-              <ScrollViewer Height="200" VerticalScrollBarVisibility="Auto">
+              <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding MatchingKeyItems}">
                   <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="doors:DoorKeyItemViewModel">
@@ -103,7 +103,7 @@
         </TabItem>
 
         <TabItem Header="Behavior">
-          <Grid ColumnDefinitions="250,*">
+          <Grid ColumnDefinitions="210,*">
             <behaviors:BehaviorRailView Grid.Column="0" Items="{Binding BehaviorList}"
                                         ChooseCommand="{Binding ChooseBehaviorCommand}" />
 

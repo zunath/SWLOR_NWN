@@ -349,6 +349,58 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TheRowGivesItsWidthToTheValueRatherThanTheLabel()
+        {
+            // Every pixel the label column takes comes out of the value, and the value is the part
+            // that has to hold a search list, a picture grid, or a tag.
+            foreach (var (path, file) in SharedRowMarkup())
+            {
+                file.Should().NotContain("ColumnDefinitions=\"220,*\"",
+                    $"{path} still reserves the old label column");
+                file.Should().NotContain("ColumnDefinitions=\"180,*\"",
+                    $"{path} still reserves the old label column");
+            }
+
+            // Anything drawn underneath a row has to use the row's column or it hangs off it.
+            File.ReadAllText(Path.Combine(
+                    CorpusLocator.RepositoryRoot,
+                    "SWLOR.Toolset", "Editors", "Views", "DoorEditorView.axaml"))
+                .Should().Contain(
+                    "ColumnDefinitions=\"150,*\" ColumnSpacing=\"12\" IsVisible=\"{Binding IsMultiChoice}\"",
+                    "the door's key-item list sits under the shared row and shares its label column");
+
+            foreach (var view in new[]
+                     {
+                         "WaypointDocumentView.axaml", "TriggerDocumentView.axaml",
+                         "DoorEditorView.axaml", "SoundEditorView.axaml"
+                     })
+            {
+                var markup = File.ReadAllText(Path.Combine(
+                    CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view));
+                markup.Should().Contain("ColumnDefinitions=\"210,*\"",
+                    $"{view}'s behavior rail lists short names and does not need more");
+            }
+        }
+
+        [Test]
+        public void APictureSetThatFitsThePageIsNotHiddenBehindAButton()
+        {
+            var row = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset", "Editors", "Behaviors", "BehaviorRowView.axaml"));
+
+            // The inline grid is the whole point of a picture picker: names are what it replaces.
+            row.Should().Contain("IsVisible=\"{Binding IsInlineGallery}\"");
+            row.Should().NotContain("Content=\"Choose&#x2026;\"",
+                "a picture set on the page needs no button, and one behind the preview is opened by "
+                + "clicking the preview");
+
+            // The large sets keep their popup, opened by the picture itself.
+            row.Should().Contain("IsVisible=\"{Binding IsPopupGallery}\"");
+            row.Should().Contain("Command=\"{Binding OpenGalleryCommand}\"");
+        }
+
+        [Test]
         public void EveryBehaviorEditorDrawsItsRowsFromTheSharedControl()
         {
             // One row control, not four. The trigger, waypoint, door, and sound editors each used to
@@ -419,6 +471,49 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AppearancesOfferMarkerModelsRatherThanNames()
+        {
+            var sw2Da = Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks", "sw_2da");
+            if (!Directory.Exists(sw2Da))
+                Assert.Ignore("The haks submodule is not initialised in this checkout.");
+
+            var appearances = WaypointAppearanceCatalog.Read(
+                new Domain.GameData.Lookups.WaypointAppearanceService(
+                    new Domain.GameData.TwoDa.TwoDaService(sw2Da),
+                    new Domain.GameData.Tlk.TlkService(
+                        Domain.GameData.Tlk.TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}"))));
+
+            appearances.Should().NotBeEmpty();
+            appearances.Should().OnlyContain(row => !string.IsNullOrWhiteSpace(row.ModelResRef),
+                "the picker draws each marker, so every row must carry waypoint.2da's RESREF");
+        }
+
+        [Test]
+        public void AnAppearanceRowIsPickedFromPicturesOnThePage()
+        {
+            var appearances = Enumerable.Range(1, 76)
+                .Select(id => new BehaviorChoice(id, $"marker {id}", modelResRef: $"gi_waypoint{id:00}"))
+                .ToList();
+            using var row = new WaypointRowViewModel(
+                WaypointEditorLayout.Custom.Single(field => field.Name == "Appearance"),
+                new BehaviorValueStore(Waypoint("wp_test")),
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                },
+                appearances);
+
+            // A model is artwork as much as a texture is, and 76 markers fit the page. Before this,
+            // the row had no pictures to offer and degraded to the searchable list of colour names.
+            row.IsGallery.Should().BeTrue();
+            row.IsInlineGallery.Should().BeTrue();
+            row.IsSearchableChoice.Should().BeFalse();
+            row.GalleryChoices.Should().NotBeEmpty();
+            row.GalleryChoices[0].Detail.Should().Be("gi_waypoint01");
+        }
+
+        [Test]
         public void MapNoteIsEnabledWhenPreparedForSave()
         {
             var waypoint = Waypoint("map_note", hasMapNote: true);
@@ -450,6 +545,19 @@ namespace SWLOR.Toolset.Tests
                     field.Kind == BehaviorFieldKind.Statement &&
                     field.Label == "Planet" &&
                     field.Note == "Determined by the containing area");
+        }
+
+        /// <summary>Every markup file that declares a field row's label column.</summary>
+        private static IEnumerable<(string Path, string Markup)> SharedRowMarkup()
+        {
+            var files = new[]
+            {
+                Path.Combine("SWLOR.Toolset", "Editors", "Behaviors", "BehaviorRowView.axaml"),
+                Path.Combine("SWLOR.Toolset", "App.axaml")
+            };
+
+            foreach (var file in files)
+                yield return (file, File.ReadAllText(Path.Combine(CorpusLocator.RepositoryRoot, file)));
         }
 
         private static JsonGffStruct Waypoint(string tag, bool hasMapNote = false)

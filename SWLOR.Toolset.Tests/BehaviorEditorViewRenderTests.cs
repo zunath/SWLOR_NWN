@@ -101,6 +101,58 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        [AvaloniaTest]
+        public void BothPictureRowShapesDrawWithoutBindingErrors()
+        {
+            var previous = Logger.Sink;
+            var sink = new CountingSink();
+            Logger.Sink = sink;
+
+            try
+            {
+                // The grid on the page and the grid behind the picture are different markup over the
+                // same row, and the popup binds through an ancestor lookup the compiler cannot check.
+                foreach (var count in new[] { 12, 400 })
+                {
+                    var row = PictureRow(count);
+                    var view = new BehaviorRowView { DataContext = row };
+                    var window = new Window { Width = 900, Height = 700, Content = view };
+                    window.Show();
+                    Dispatcher.UIThread.RunJobs();
+
+                    row.OpenGalleryCommand.Execute(null);
+                    Dispatcher.UIThread.RunJobs();
+
+                    view.GetVisualDescendants().Should().NotBeEmpty();
+
+                    window.Close();
+                    Dispatcher.UIThread.RunJobs();
+                }
+            }
+            finally
+            {
+                Logger.Sink = previous;
+            }
+
+            sink.Errors.Should().BeEmpty();
+        }
+
+        private static WaypointRowViewModel PictureRow(int count) =>
+            new(
+                new BehaviorFieldDefinition
+                {
+                    Label = "Appearance",
+                    Name = "Appearance",
+                    Kind = BehaviorFieldKind.Choice,
+                    FieldType = Domain.Gff.GffFieldType.Byte
+                },
+                new BehaviorValueStore(Struct("UTW ")),
+                Accept,
+                Enumerable.Range(1, count)
+                    .Select(id => new BehaviorChoice(
+                        id, $"marker {id}", modelResRef: $"gi_waypoint{id:00}"))
+                    .ToList());
+
         private static IEnumerable<Control> BuildViews()
         {
             var waypoint = new WaypointEditorViewModel(

@@ -597,6 +597,33 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TheFieldPageSpendsItsWidthOnValuesAndItsHeightOnTheDescription()
+        {
+            var app = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "App.axaml"));
+
+            app.Should().NotContain("ColumnDefinitions=\"180,*",
+                "the label column was wider than the longest label these editors use");
+            app.Should().NotContain("ColumnDefinitions=\"220,*",
+                "the behavior field row was wider still");
+
+            // The strref explains a blank box; it is not a second value beside the real one. As a
+            // column it ran as wide as the box it explained, on every row, and a description got
+            // whatever was left.
+            app.Should().NotContain("Text=\"{Binding StrRefDisplay}\"");
+            app.Should().Contain("Watermark=\"{Binding StrRefDisplay}\"");
+            app.Should().Contain("MinHeight=\"220\"");
+
+            var blueprintView = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset", "Editors", "Views", "BlueprintEditorView.axaml"));
+
+            // A group holds two or three fields. Collapsing one buys a couple of rows in exchange
+            // for a page whose contents depend on state a builder has to remember setting.
+            blueprintView.Should().NotContain("<Expander");
+        }
+
+        [Test]
         public void BehaviorFields_ClampNumbersAndGalleryChoicesWriteAndClearResrefs()
         {
             var document = BuildDocument();

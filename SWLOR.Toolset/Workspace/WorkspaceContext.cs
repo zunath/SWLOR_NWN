@@ -23,6 +23,7 @@ namespace SWLOR.Toolset.Workspace
         public event Action? WorkspaceOpened;
         public event Action<ResourceType, string>? CatalogEntryRefreshed;
         public event Action? ScriptUsagesInvalidated;
+        public event Action? TagIndexInvalidated;
 
         public WorkspaceContext(
             Func<string, ModuleWorkspace> workspaceFactory,
@@ -139,7 +140,11 @@ namespace SWLOR.Toolset.Workspace
         /// Drops the lazy transition-tag lookup after a paired GIT file changes. GIT is not a
         /// first-class <see cref="ResourceType"/>, so the file watcher calls this directly.
         /// </summary>
-        public void InvalidateTagIndex() => Workspace?.TagIndex.Invalidate();
+        public void InvalidateTagIndex()
+        {
+            Workspace?.TagIndex.Invalidate();
+            TagIndexInvalidated?.Invoke();
+        }
 
         /// <summary>
         /// Drops the lazy script-usage snapshot. Paired GIT files are not first-class resource types,

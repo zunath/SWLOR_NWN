@@ -312,6 +312,41 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void RemovingTheChoiceBeingEditedClosesItsRulesPanel()
+        {
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "On step 2 of Field Tinctures"));
+            var choice = editor.Value.Choices.Single(row => row.Text.Contains("hazard pay"));
+            editor.Value.EditChoiceCommand.Execute(choice);
+
+            editor.Value.RemoveChoiceCommand.Execute(choice);
+
+            editor.Value.IsEditingChoice.Should().BeFalse();
+            editor.Value.IsEditingRules.Should().BeFalse();
+            editor.Value.Guards.Should().BeEmpty();
+            editor.Value.Consequences.Should().BeEmpty();
+        }
+
+        [Test]
+        public void UndoingTheAdditionOfTheChoiceBeingEditedClosesItsRulesPanel()
+        {
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            editor.Value.AddChoiceCommand.Execute(null);
+            var choice = editor.Value.Choices.Last();
+            editor.Value.EditChoiceCommand.Execute(choice);
+
+            editor.Value.UndoCommand.Execute(null);
+
+            editor.Value.IsEditingChoice.Should().BeFalse();
+            editor.Value.IsEditingRules.Should().BeFalse();
+            editor.Value.Guards.Should().BeEmpty();
+            editor.Value.Consequences.Should().BeEmpty();
+        }
+
+        [Test]
         public void EditingAChoiceExposesItsGuardsAndConsequencesAsSentences()
         {
             using var editor = new Disposable(Open());

@@ -78,5 +78,20 @@ namespace SWLOR.Toolset.Tests
 
             invalidations.Should().Be(1);
         }
+
+        [Test]
+        public void WorkspaceTagInvalidationNotifiesLiveIndexConsumers()
+        {
+            var context = new WorkspaceContext(
+                _ => throw new NotSupportedException(),
+                new OutputLogService());
+            var invalidations = 0;
+            context.TagIndexInvalidated += () => invalidations++;
+
+            context.InvalidateTagIndex();
+
+            invalidations.Should().Be(1,
+                "open behavior editors need a signal that their materialized object-tag choices are stale");
+        }
     }
 }

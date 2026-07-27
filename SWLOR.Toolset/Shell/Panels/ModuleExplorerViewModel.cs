@@ -158,7 +158,9 @@ namespace SWLOR.Toolset.Shell.Panels
         private void OnMutationLockChanged()
         {
             OnPropertyChanged(nameof(CanCreateSelectedType));
+            OnPropertyChanged(nameof(CanCompileSelectedType));
             NewItemCommand.NotifyCanExecuteChanged();
+            CompileSelectedCommand.NotifyCanExecuteChanged();
         }
 
         /// <summary>Builds the tree for the selected tab.</summary>
@@ -265,6 +267,7 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(CanCompileSelectedType));
             OnPropertyChanged(nameof(CanCreateSelectedType));
             OnPropertyChanged(nameof(HasDialogOptions));
+            CompileSelectedCommand.NotifyCanExecuteChanged();
             SelectedRow = null;
             StatusMessage = null;
             // The dialogue scan only means anything on the Dialogs tab; leaving one running against
@@ -637,19 +640,26 @@ namespace SWLOR.Toolset.Shell.Panels
         /// Compile. Lets a builder rebuild a script without opening it — useful after editing an
         /// include, when the dependents needing a rebuild are not the file you were working in.
         /// </summary>
-        public bool CanCompileSelectedType => SelectedType == ResourceType.Nss;
+        public bool CanCompileSelectedType =>
+            SelectedType == ResourceType.Nss &&
+            _mutationLock?.IsLocked != true;
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanCompileSelectedType))]
         private async Task CompileSelected()
         {
             if (SelectedRow?.Item is not { } item || SelectedType != ResourceType.Nss)
                 return;
 
-            StatusMessage = $"Compiling {item.ResRef}...";
+            if (_mutationLock?.IsLocked == true)
+            {
+                StatusMessage = "Compiling scripts is unavailable while the module is being packed, validated, or built.";
+                return;
+            }
 
             if (_editorService == null)
                 return;
 
+            StatusMessage = $"Compiling {item.ResRef}...";
             await _editorService.Invoke().CompileScriptAsync(item.ResRef).ConfigureAwait(true);
             StatusMessage = null;
         }

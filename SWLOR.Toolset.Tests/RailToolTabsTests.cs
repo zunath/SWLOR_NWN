@@ -21,7 +21,7 @@ namespace SWLOR.Toolset.Tests
     /// someone reaches for a theme-wide style later - so both halves are asserted here.
     /// </remarks>
     [NonParallelizable]
-    public class ToolTabStripPlacementTests
+    public class RailToolTabsTests
     {
         [AvaloniaTest]
         public void TheLeftRailDrawsItsTabsAboveThePanel()

@@ -177,9 +177,11 @@ namespace SWLOR.Toolset.Shell.Panels
             if (reselect != null)
                 SelectedRow = Rows.FirstOrDefault(row => NodeKey(row) == reselect);
 
+            // The area leads, because the tab above can only say which panel this is - which area it
+            // is following is the thing you cannot read anywhere else in the rail.
             StatusMessage = HasFilter
-                ? $"{matched} of {total} match “{Filter.Trim()}”"
-                : $"{total} objects";
+                ? $"{AreaResRef} — {matched} of {total} match “{Filter.Trim()}”"
+                : $"{AreaResRef} — {total} objects";
         }
 
         private bool HasFilter => !string.IsNullOrWhiteSpace(Filter);

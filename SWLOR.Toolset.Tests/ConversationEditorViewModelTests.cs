@@ -172,6 +172,24 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ReachingAnNpcLineAppliesItsActionsBeforeShowingChoices()
+        {
+            var document = DlgDocument.Load(_workingCopy);
+            var answer = document.Entries.Single(entry => entry.Text.StartsWith("Three Wild Innards"));
+            answer.AddAction("action-accept-quest", "field_tinctures");
+            File.WriteAllBytes(_workingCopy, document.ToBytes());
+
+            using var editor = new Disposable(Open());
+            var offer = editor.Value.Situations.Single(row => row.Title == "Offering Field Tinctures");
+            editor.Value.SelectSituationCommand.Execute(offer);
+            editor.Value.PickChoiceCommand.Execute(
+                editor.Value.Choices.Single(choice => choice.Text == "What do you need this time?"));
+
+            editor.Value.QuestPills.Single(pill => pill.Name == "Field Tinctures")
+                .SelectedOption.Should().Be("on step 1");
+        }
+
+        [Test]
         public void BackReturnsToThePreviousLine()
         {
             using var editor = new Disposable(Open());
@@ -184,6 +202,25 @@ namespace SWLOR.Toolset.Tests
             editor.Value.BackCommand.Execute(null);
 
             editor.Value.LineText.Should().Be(opening);
+        }
+
+        [Test]
+        public void BackRestoresThePretendPlayerStateFromBeforeTheChoice()
+        {
+            using var editor = new Disposable(Open());
+            var offer = editor.Value.Situations.Single(row => row.Title == "Offering Field Tinctures");
+            editor.Value.SelectSituationCommand.Execute(offer);
+            editor.Value.PickChoiceCommand.Execute(
+                editor.Value.Choices.Single(choice => choice.Text == "What do you need this time?"));
+            editor.Value.PickChoiceCommand.Execute(
+                editor.Value.Choices.Single(choice => choice.Text.StartsWith("I'll bring")));
+            editor.Value.QuestPills.Single(pill => pill.Name == "Field Tinctures")
+                .SelectedOption.Should().Be("on step 1");
+
+            editor.Value.BackCommand.Execute(null);
+
+            editor.Value.QuestPills.Single(pill => pill.Name == "Field Tinctures")
+                .SelectedOption.Should().Be("never started");
         }
 
         [Test]
@@ -242,6 +279,22 @@ namespace SWLOR.Toolset.Tests
 
             editor.Value.Choices.Should().HaveCount(before + 1);
             editor.Value.Choices.Last().Text.Should().Be(QuestConversationScaffold.Placeholder);
+        }
+
+        [Test]
+        public void AddingAFollowUpTurnsANewChoiceIntoAMultiTurnBranch()
+        {
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            editor.Value.AddChoiceCommand.Execute(null);
+            var choice = editor.Value.Choices.Last();
+
+            choice.CanAddFollowUp.Should().BeTrue();
+            editor.Value.AddFollowUpCommand.Execute(choice);
+
+            choice.Target.Links.Should().ContainSingle();
+            choice.Target.Links[0].Target.IsEntry.Should().BeTrue();
         }
 
         [Test]
@@ -310,6 +363,92 @@ namespace SWLOR.Toolset.Tests
             choice.Link.Active.Should().Be(DlgDocument.ConditionDispatcher);
             editor.Value.Guards.Should().ContainSingle()
                 .Which.Sentence.Should().Be("the player has finished the tutorial on some character");
+        }
+
+        [Test]
+        public void OptionalAndRepeatedSnippetArgumentsCanBeAddedAndRemoved()
+        {
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            editor.Value.AddChoiceCommand.Execute(null);
+            var choice = editor.Value.Choices.Last();
+            editor.Value.EditChoiceCommand.Execute(choice);
+
+            editor.Value.ConsequenceToAdd = Snippets.Find("action-open-store");
+            editor.Value.AddConsequenceCommand.Execute(null);
+            var optional = editor.Value.Consequences.Single();
+            optional.Arguments.Should().BeEmpty();
+            optional.AddArgumentsCommand.Execute(null);
+            optional.Arguments.Should().ContainSingle();
+            optional.Arguments[0].FreeText = "test_store";
+            optional.Param.Value.Should().Be("test_store");
+            optional.RemoveArgumentsCommand.Execute(null);
+            optional.Arguments.Should().BeEmpty();
+
+            editor.Value.GuardToAdd = Snippets.Find("condition-completed-quest");
+            editor.Value.AddGuardCommand.Execute(null);
+            var repeated = editor.Value.Guards.Single();
+            repeated.Arguments.Should().ContainSingle();
+            repeated.AddArgumentsCommand.Execute(null);
+            repeated.Arguments.Should().HaveCount(2);
+            repeated.RemoveArgumentsCommand.Execute(null);
+            repeated.Arguments.Should().ContainSingle();
+        }
+
+        [Test]
+        public void UnmatchedDropdownValuesSurviveUnrelatedSnippetEdits()
+        {
+            var document = DlgDocument.Load(_workingCopy);
+            var opening = document.Openings.Single(link => link.Target.Text.StartsWith("The bottles are lined up"));
+            opening.Conditions[0].Value = "removed_quest";
+            File.WriteAllBytes(_workingCopy, document.ToBytes());
+
+            using var editor = new Disposable(Open());
+            var situation = editor.Value.Situations.Single(row =>
+                row.Situation.Opening.Target.Text.StartsWith("The bottles are lined up"));
+            editor.Value.EditSituationCommand.Execute(situation);
+            var guard = editor.Value.Guards.Single();
+            var argument = guard.Arguments.Single();
+            argument.HasOptions.Should().BeTrue();
+            argument.Selected.Should().BeNull();
+            argument.Value.Should().Be("removed_quest");
+
+            guard.IsNegated = !guard.IsNegated;
+
+            guard.Param.Value.Should().Be("removed_quest");
+        }
+
+        [Test]
+        public void SituationRulesEditTheOpeningGuard()
+        {
+            using var editor = new Disposable(Open());
+            var situation = editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures");
+            editor.Value.EditSituationCommand.Execute(situation);
+            editor.Value.GuardToAdd = Snippets.Find("condition-has-completed-tutorial");
+
+            editor.Value.AddGuardCommand.Execute(null);
+
+            situation.Situation.Opening.Conditions.Should().Contain(condition =>
+                condition.SnippetKey == "condition-has-completed-tutorial");
+        }
+
+        [Test]
+        public void CurrentNpcLineActionsAreShownInTheRulesEditor()
+        {
+            var document = DlgDocument.Load(_workingCopy);
+            var opening = document.Openings.Single(link => link.Target.Text.StartsWith("The bottles are lined up"));
+            opening.Target.AddAction("action-give-key-items", "1");
+            File.WriteAllBytes(_workingCopy, document.ToBytes());
+
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            editor.Value.EditCurrentLineCommand.Execute(null);
+
+            editor.Value.IsEditingRules.Should().BeTrue();
+            editor.Value.Consequences.Should().ContainSingle()
+                .Which.Snippet.Key.Should().Be("action-give-key-items");
         }
 
         [Test]

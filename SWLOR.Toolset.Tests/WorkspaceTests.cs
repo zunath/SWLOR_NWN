@@ -151,6 +151,44 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PlacedTagIndexUsesInstanceTags()
+        {
+            var workspace = new ModuleWorkspace(ModuleDirectory);
+
+            workspace.TagIndex.TagsFor(ResourceType.Utw).Should().Contain("VELES_COLONIST");
+            workspace.TagIndex.TagsFor(ResourceType.Utm).Should().NotBeEmpty();
+        }
+
+        [Test]
+        public void TagIndexReadsAWindows1252Git()
+        {
+            var root = Path.Combine(
+                Path.GetTempPath(), "SWLOR.Toolset.Tests", "cp1252_git_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(Path.Combine(root, "are"));
+            Directory.CreateDirectory(Path.Combine(root, "utc"));
+            Directory.CreateDirectory(Path.Combine(root, "git"));
+
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(root, "are", "coolship.are.json"),
+                    "{\"__data_type\":\"ARE \"}");
+                File.Copy(
+                    Path.Combine(ModuleDirectory, "git", "coolship.git.json"),
+                    Path.Combine(root, "git", "coolship.git.json"));
+                var workspace = new ModuleWorkspace(root);
+
+                workspace.TagIndex.FindAreaDefiningTag("STUCK_WAYPOINT", ResourceType.Utw)
+                    .Should().Be("coolship",
+                        "that GIT contains a Windows-1252 em dash and must not be skipped as invalid UTF-8");
+            }
+            finally
+            {
+                Directory.Delete(root, recursive: true);
+            }
+        }
+
+        [Test]
         public void LoadBlueprint_Utc_ReturnsTypedDocumentMatchingTheFileOnDisk()
         {
             var workspace = new ModuleWorkspace(ModuleDirectory);

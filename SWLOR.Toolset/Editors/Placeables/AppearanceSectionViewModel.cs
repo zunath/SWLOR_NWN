@@ -138,6 +138,7 @@ namespace SWLOR.Toolset.Editors.Placeables
 
             Task.Run(() =>
             {
+                var catalogReady = true;
                 try
                 {
                     // Forces the catalog's lazy parse here rather than on the first keystroke.
@@ -147,6 +148,7 @@ namespace SWLOR.Toolset.Editors.Placeables
                 {
                     // A catalog that will not build leaves an empty grid, which the tab already
                     // reads as "no models match" - not a reason to take the editor down.
+                    catalogReady = false;
                 }
 
                 Avalonia.Threading.Dispatcher.UIThread.Post(() =>
@@ -155,8 +157,11 @@ namespace SWLOR.Toolset.Editors.Placeables
                         return;
 
                     _loaded = true;
-                    Rebuild();
-                    UpdatePreviewScene();
+                    if (catalogReady)
+                    {
+                        Rebuild();
+                        UpdatePreviewScene();
+                    }
                     IsLoading = false;
                 });
             });

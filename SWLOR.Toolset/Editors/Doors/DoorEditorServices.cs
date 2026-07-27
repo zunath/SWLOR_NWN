@@ -18,5 +18,6 @@ namespace SWLOR.Toolset.Editors.Doors
         ResourceIndex? ResourceIndex,
         Func<JsonGffStruct, RenderModel?>? ResolveModel,
         ThumbnailService? Thumbnails = null,
-        ChoicePreviewService? ChoicePreviews = null);
+        ChoicePreviewService? ChoicePreviews = null,
+        Services.IEditorPromptService? Prompts = null);
 }

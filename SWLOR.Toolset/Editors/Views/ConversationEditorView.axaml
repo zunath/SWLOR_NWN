@@ -245,6 +245,9 @@
                           <Button Content="Move down" Classes="link"
                                   Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).MoveSituationDownCommand}"
                                   CommandParameter="{Binding}" />
+                          <Button Content="Edit rules" Classes="link"
+                                  Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).EditSituationCommand}"
+                                  CommandParameter="{Binding}" />
                         </StackPanel>
                       </StackPanel>
                     </Grid>
@@ -303,6 +306,10 @@
                          LostFocus="OnLineLostFocus" FontSize="14" />
               </Border>
 
+              <Button Content="Edit this NPC line's rules and effects" Classes="link"
+                      Command="{Binding EditCurrentLineCommand}" HorizontalAlignment="Left"
+                      Margin="4,4,0,0" />
+
               <StackPanel Orientation="Horizontal" Spacing="10" Margin="4,6,0,0"
                           VerticalAlignment="Center" IsVisible="{Binding HasReuseWarning}">
                 <TextBlock Text="{Binding ReuseWarning}" Classes="mono" FontSize="10.5"
@@ -317,7 +324,7 @@
                 <ItemsControl.ItemTemplate>
                   <DataTemplate DataType="editors:ChoiceRowViewModel">
                     <Border Classes="choice" Margin="0,0,0,6" IsVisible="{Binding IsVisible}">
-                      <Grid ColumnDefinitions="24,*,Auto,Auto">
+                      <Grid ColumnDefinitions="24,*,Auto,Auto,Auto">
                         <TextBlock Grid.Column="0" Text="{Binding Number}" Classes="mono"
                                    Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
                         <Button Grid.Column="1" Content="{Binding Text}" Background="Transparent"
@@ -333,7 +340,11 @@
                                 ToolTip.Tip="Change what this choice does, and when it shows"
                                 Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).EditChoiceCommand}"
                                 CommandParameter="{Binding}" />
-                        <Button Grid.Column="3" Content="✕" Classes="link" Margin="10,0,0,0"
+                        <Button Grid.Column="3" Content="Add follow-up" Classes="link" Margin="10,0,0,0"
+                                IsVisible="{Binding CanAddFollowUp}"
+                                Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).AddFollowUpCommand}"
+                                CommandParameter="{Binding}" />
+                        <Button Grid.Column="4" Content="✕" Classes="link" Margin="10,0,0,0"
                                 ToolTip.Tip="Remove this choice"
                                 Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).RemoveChoiceCommand}"
                                 CommandParameter="{Binding}" />
@@ -371,14 +382,16 @@
               <!-- ===================== what a choice does, and when it shows =====================
                    Everything here is sentences and pickers. The snippet key, the '!' prefix and the
                    dispatcher resref are the editor's business, not the writer's. -->
-              <Border IsVisible="{Binding IsEditingChoice}" Margin="0,16,0,0" MaxWidth="620"
+              <Border IsVisible="{Binding IsEditingRules}" Margin="0,16,0,0" MaxWidth="620"
                       HorizontalAlignment="Left" CornerRadius="4" Padding="14,12"
                       Background="{DynamicResource PanelBrush}"
                       BorderBrush="{DynamicResource AccentBorderBrush}" BorderThickness="1">
                 <StackPanel Spacing="14">
+                  <TextBlock Text="{Binding RulesTitle}" Classes="label"
+                             Foreground="{DynamicResource AccentBrush}" />
 
                   <StackPanel Spacing="7">
-                    <TextBlock Text="WHEN THIS CHOICE SHOWS" Classes="label" />
+                    <TextBlock Text="WHEN THIS ROUTE SHOWS" Classes="label" />
                     <TextBlock Text="It shows unless something here says otherwise. Every line must pass."
                                Classes="dim" FontSize="11" TextWrapping="Wrap" />
                     <ItemsControl ItemsSource="{Binding Guards}">
@@ -417,6 +430,14 @@
                                   </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                               </ItemsControl>
+                              <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Content="+ argument(s)" Classes="link"
+                                        Command="{Binding AddArgumentsCommand}"
+                                        IsVisible="{Binding CanAddArguments}" />
+                                <Button Content="Remove last argument(s)" Classes="link"
+                                        Command="{Binding RemoveArgumentsCommand}"
+                                        IsVisible="{Binding CanRemoveArguments}" />
+                              </StackPanel>
                             </StackPanel>
                           </Border>
                         </DataTemplate>
@@ -437,7 +458,7 @@
                   </StackPanel>
 
                   <StackPanel Spacing="7">
-                    <TextBlock Text="WHAT PICKING IT DOES" Classes="label" />
+                    <TextBlock Text="WHAT REACHING IT DOES" Classes="label" />
                     <ItemsControl ItemsSource="{Binding Consequences}">
                       <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="editors:SnippetEditorViewModel">
@@ -472,6 +493,14 @@
                                   </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                               </ItemsControl>
+                              <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Content="+ argument(s)" Classes="link"
+                                        Command="{Binding AddArgumentsCommand}"
+                                        IsVisible="{Binding CanAddArguments}" />
+                                <Button Content="Remove last argument(s)" Classes="link"
+                                        Command="{Binding RemoveArgumentsCommand}"
+                                        IsVisible="{Binding CanRemoveArguments}" />
+                              </StackPanel>
                             </StackPanel>
                           </Border>
                         </DataTemplate>

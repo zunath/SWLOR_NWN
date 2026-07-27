@@ -51,12 +51,21 @@ namespace SWLOR.Toolset.Editors
         public bool IsFreeText => Options.Count == 0;
 
         /// <summary>What would be written into the conversation.</summary>
-        public string Value => HasOptions ? Selected?.Value ?? string.Empty : FreeText;
+        public string Value => HasOptions ? Selected?.Value ?? FreeText : FreeText;
 
         partial void OnSelectedChanged(ArgumentOption? value)
         {
-            if (!_loading)
-                _onChanged();
+            if (_loading)
+                return;
+
+            if (value != null)
+            {
+                _loading = true;
+                FreeText = value.Value;
+                _loading = false;
+            }
+
+            _onChanged();
         }
 
         partial void OnFreeTextChanged(string value)
@@ -74,6 +83,7 @@ namespace SWLOR.Toolset.Editors
     {
         private readonly Action<SnippetEditorViewModel> _onCommit;
         private readonly Action<SnippetEditorViewModel> _onRemove;
+        private readonly SnippetArgumentOptions _options;
         private bool _loading;
 
         [ObservableProperty]
@@ -95,6 +105,7 @@ namespace SWLOR.Toolset.Editors
             CanNegate = canNegate;
             _onCommit = onCommit;
             _onRemove = onRemove;
+            _options = options;
             _display = display;
 
             _loading = true;
@@ -125,6 +136,11 @@ namespace SWLOR.Toolset.Editors
 
         public ObservableCollection<ArgumentEditorViewModel> Arguments { get; } = new();
 
+        public bool CanAddArguments =>
+            Snippet.RepeatGroupSize > 0 || Arguments.Count < Snippet.Arguments.Count;
+
+        public bool CanRemoveArguments => Arguments.Count > Snippet.MinimumArgumentCount;
+
         /// <summary>
         /// The whole thing as one sentence, which is what the writer reads. Ids are resolved to
         /// names — a panel that says "field_tinctures" where the rest of the editor says "Field
@@ -137,6 +153,55 @@ namespace SWLOR.Toolset.Editors
 
         [RelayCommand]
         private void Remove() => _onRemove(this);
+
+        [RelayCommand(CanExecute = nameof(CanAddArguments))]
+        private void AddArguments()
+        {
+            var count = Snippet.RepeatGroupSize > 0 && Arguments.Count >= Snippet.Arguments.Count
+                ? Snippet.RepeatGroupSize
+                : 1;
+
+            _loading = true;
+            for (var i = 0; i < count; i++)
+            {
+                var argument = Snippet.ArgumentAt(Arguments.Count);
+                if (argument == null)
+                    break;
+
+                Arguments.Add(new ArgumentEditorViewModel(
+                    argument,
+                    string.Empty,
+                    _options.For(argument, Arguments.Select(item => item.Value).ToArray()),
+                    Commit));
+            }
+            _loading = false;
+
+            NotifyArgumentShapeChanged();
+            Commit();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanRemoveArguments))]
+        private void RemoveArguments()
+        {
+            var removable = Arguments.Count - Snippet.MinimumArgumentCount;
+            var count = Snippet.RepeatGroupSize > 0 && Arguments.Count > Snippet.Arguments.Count
+                ? Math.Min(Snippet.RepeatGroupSize, removable)
+                : 1;
+
+            for (var i = 0; i < count && Arguments.Count > Snippet.MinimumArgumentCount; i++)
+                Arguments.RemoveAt(Arguments.Count - 1);
+
+            NotifyArgumentShapeChanged();
+            Commit();
+        }
+
+        private void NotifyArgumentShapeChanged()
+        {
+            OnPropertyChanged(nameof(CanAddArguments));
+            OnPropertyChanged(nameof(CanRemoveArguments));
+            AddArgumentsCommand.NotifyCanExecuteChanged();
+            RemoveArgumentsCommand.NotifyCanExecuteChanged();
+        }
 
         /// <summary>The key and value this should be stored as.</summary>
         public (string Key, string Value) ToParam() =>

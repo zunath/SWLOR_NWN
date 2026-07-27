@@ -127,6 +127,20 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void FailedSingleFileCommitRemovesItsTemporary()
+        {
+            var path = FileWith("locked.nss", "original");
+            using var hold = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
+
+            var act = () => SaveService.WriteAtomic(path, Encoding.UTF8.GetBytes("replacement"));
+
+            var failure = act.Should().Throw<Exception>().Which;
+            (failure is IOException or UnauthorizedAccessException).Should().BeTrue();
+            File.Exists(path + ".tmp").Should().BeFalse(
+                "script packers must never see failed-save transaction debris");
+        }
+
+        [Test]
         public void WriteNewAtomicCreatesACompleteFileAndNeverOverwritesARacingDestination()
         {
             var path = Path.Combine(_directory, "new.utc.json");

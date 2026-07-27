@@ -58,11 +58,13 @@ namespace SWLOR.Toolset.Tests
             var issues = new UnreferencedConversationRule().Validate(Context()).ToList();
 
             // Every one is a hand-authored conversation: the generated shells are excluded by
-            // design, and if they were not this would be 296 findings instead of 41 and nobody
+            // design, and if they were not this would be 295 findings instead of 40 and nobody
             // would read any of them.
-            issues.Should().HaveCount(41);
+            issues.Should().HaveCount(40);
             issues.Should().OnlyContain(issue => issue.Severity == ValidationSeverity.Warning);
             issues.Select(issue => issue.ResRef).Should().Contain("trooperquest");
+            issues.Select(issue => issue.ResRef).Should().NotContain("dmfi_universal",
+                "that conversation is started directly by an NSS script");
         }
 
         [Test]
@@ -79,6 +81,7 @@ namespace SWLOR.Toolset.Tests
         {
             UnreferencedConversationRule.IsGeneratedShell("dialog1").Should().BeTrue();
             UnreferencedConversationRule.IsGeneratedShell("dialog255").Should().BeTrue();
+            UnreferencedConversationRule.IsGeneratedShell("dialog256").Should().BeFalse();
 
             // Real conversations that merely start with the same letters.
             UnreferencedConversationRule.IsGeneratedShell("dialognova").Should().BeFalse();

@@ -401,8 +401,11 @@ namespace SWLOR.Toolset.Domain.Documents
             copy.Comment = node.Comment;
             copy.Quest = node.Quest;
 
+            // AddAction owns the dispatcher field. Copy the params first, then restore the exact
+            // script so custom-script and historical hybrid nodes round-trip unchanged.
             foreach (var action in node.Actions)
                 copy.AddAction(action.Key, action.Value);
+            copy.Script = node.Script;
 
             foreach (var link in node.Links)
             {

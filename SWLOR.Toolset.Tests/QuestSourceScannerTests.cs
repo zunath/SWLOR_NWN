@@ -103,6 +103,21 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void HelperBuiltGuildQuestsAreIndexed()
+        {
+            var agriculture = Index.FindQuest("agr_tsk_001");
+
+            agriculture.Should().NotBeNull();
+            agriculture!.StateCount.Should().Be(1);
+            agriculture.IsRepeatable.Should().BeTrue();
+            agriculture.SourceFile.Should().Be("AgricultureGuildQuestDefinition.cs");
+
+            Index.FindQuest("eng_tsk_001").Should().NotBeNull();
+            Index.FindQuest("fab_tsk_001").Should().NotBeNull();
+            Index.FindQuest("smth_tsk_001").Should().NotBeNull();
+        }
+
+        [Test]
         public void JournalTextIsAttachedToTheStepItBelongsTo()
         {
             var quest = Index.FindQuest("field_tinctures")!;

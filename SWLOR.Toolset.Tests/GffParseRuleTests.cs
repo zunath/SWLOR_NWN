@@ -22,7 +22,11 @@ namespace SWLOR.Toolset.Tests
         public void SetUp()
         {
             _root = Path.Combine(Path.GetTempPath(), "swlor-gffparse-" + Guid.NewGuid().ToString("N"));
-            foreach (var folder in new[] { "are", "utc", "uti", "utp", "utd", "utm", "utt", "uts", "utw" })
+            foreach (var folder in new[]
+                     {
+                         "are", "utc", "uti", "utp", "utd", "utm", "utt", "uts", "utw",
+                         "dlg", "git", "gic", "fac", "ifo", "itp", "jrl"
+                     })
                 Directory.CreateDirectory(Path.Combine(_root, folder));
         }
 
@@ -95,18 +99,19 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void EveryGffBackedTypeIsSwept()
         {
-            // Areas and every blueprint type - the finding named ARE, UTI, UTD, UTM, UTT and UTS as the
-            // ones no existing rule parsed.
+            // Areas, blueprints, dialogs, area companions, and module-level GFF resources.
             foreach (var (folder, extension) in new[]
                      {
                          ("are", "are"), ("uti", "uti"), ("utd", "utd"),
-                         ("utm", "utm"), ("utt", "utt"), ("uts", "uts")
+                         ("utm", "utm"), ("utt", "utt"), ("uts", "uts"),
+                         ("dlg", "dlg"), ("git", "git"), ("gic", "gic"),
+                         ("fac", "fac"), ("ifo", "ifo"), ("itp", "itp"), ("jrl", "jrl")
                      })
             {
                 Write(folder, $"bad_{extension}.{extension}.json", "{ broken");
             }
 
-            new GffParseRule().Validate(Context()).Should().HaveCount(6);
+            new GffParseRule().Validate(Context()).Should().HaveCount(13);
         }
     }
 }

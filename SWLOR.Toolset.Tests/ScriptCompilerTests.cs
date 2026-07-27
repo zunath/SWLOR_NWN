@@ -62,6 +62,22 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task BuildAllWithoutACompilerReportsAFailure()
+        {
+            var log = new OutputLogService();
+            var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
+            var service = new ScriptCompileService(
+                context,
+                log,
+                compilerPathOverride: Path.Combine(_staging, "not_here.exe"));
+
+            var result = await service.BuildAllAsync();
+
+            result.Compiled.Should().Be(0);
+            result.Failed.Should().Be(1);
+        }
+
+        [Test]
         public async Task CheckOnly_CompilesAKnownGoodScriptAndWritesNothing()
         {
             if (!File.Exists(CompilerPath))

@@ -204,6 +204,24 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void FactionActionsChangeTheStateReadByLaterGuards()
+        {
+            var document = DantHerbs();
+            var reply = document.AddReply("Adjust faction.");
+            reply.AddAction("action-give-faction-standing", "7 12");
+            reply.AddAction("action-take-faction-standing", "7 -2");
+            reply.AddAction("action-give-faction-points", "7 8");
+            reply.AddAction("action-take-faction-points", "7 3");
+
+            var after = Evaluator.ApplyActions(
+                reply,
+                new PretendPlayer().WithFactionStanding(7, 5).WithFactionPoints(7, 2));
+
+            after.GetFactionStanding(7).Should().Be(15);
+            after.GetFactionPoints(7).Should().Be(7);
+        }
+
+        [Test]
         public void AWholeQuestArcCanBeWalkedWithoutAServer()
         {
             var document = DantHerbs();

@@ -167,6 +167,12 @@ namespace SWLOR.Toolset.Domain.Documents
         /// <summary>Adds an action, wiring the dispatcher script if this is the first one.</summary>
         public DlgParam AddAction(string key, string value = "")
         {
+            if (!string.IsNullOrEmpty(Script) && !DlgDocument.IsActionDispatcher(Script))
+            {
+                throw new InvalidOperationException(
+                    $"This line runs the custom script '{Script}'. Remove it before adding snippet effects.");
+            }
+
             var field = GetOrCreateActionParams();
             var element = DlgParam.CreateStruct((uint)field.Elements!.Count, key, value);
             field.InsertElement(field.Elements.Count, element);

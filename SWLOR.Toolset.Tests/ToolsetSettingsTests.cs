@@ -55,6 +55,21 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void FailedSettingsReplacementPreservesTheLastValidFile()
+        {
+            var settings = ToolsetSettings.Load(_file);
+            settings.ShowFog = true;
+            var before = File.ReadAllBytes(_file);
+
+            using (var hold = new FileStream(_file, FileMode.Open, FileAccess.Read, FileShare.None))
+                settings.ShowCeilings = true;
+
+            settings.LastSaveError.Should().NotBeNull();
+            File.ReadAllBytes(_file).Should().Equal(before);
+            Directory.EnumerateFiles(_directory, "*.tmp").Should().BeEmpty();
+        }
+
+        [Test]
         public void WindowSizeAndPositionSurviveARestart()
         {
             var settings = ToolsetSettings.Load(_file);

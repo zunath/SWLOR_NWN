@@ -176,10 +176,43 @@ namespace SWLOR.Toolset.Domain.Conversations
                         foreach (var keyItem in arguments)
                             result.WithKeyItem(keyItem);
                         break;
+
+                    case "action-give-faction-standing":
+                    case "action-take-faction-standing":
+                        ApplyFactionChange(
+                            arguments,
+                            action.SnippetKey.StartsWith("action-give-", StringComparison.Ordinal),
+                            result.GetFactionStanding,
+                            result.WithFactionStanding);
+                        break;
+
+                    case "action-give-faction-points":
+                    case "action-take-faction-points":
+                        ApplyFactionChange(
+                            arguments,
+                            action.SnippetKey.StartsWith("action-give-", StringComparison.Ordinal),
+                            result.GetFactionPoints,
+                            result.WithFactionPoints);
+                        break;
                 }
             }
 
             return result;
+        }
+
+        private static void ApplyFactionChange(
+            string[] arguments,
+            bool give,
+            Func<int, int> read,
+            Func<int, int, PretendPlayer> write)
+        {
+            if (arguments.Length < 2
+                || !int.TryParse(arguments[0], out var factionId)
+                || !int.TryParse(arguments[1], out var parsedAmount))
+                return;
+
+            var amount = Math.Abs(parsedAmount);
+            write(factionId, read(factionId) + (give ? amount : -amount));
         }
 
         /// <summary>The condition as a sentence, with ids resolved to names where they are known.</summary>

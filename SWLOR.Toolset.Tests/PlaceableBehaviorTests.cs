@@ -300,7 +300,7 @@ namespace SWLOR.Toolset.Tests
                     "behavior_save",
                     "Behavior Save"));
                 initial.Root.GetOrNull("OnUsed")!.SetString("zep_torch");
-                initial.Root.GetOrNull("OnHeartbeat")!.SetString(string.Empty);
+                initial.Root.GetOrNull("OnHeartbeat")!.SetString("zep_torchspawn");
                 initial.Root.GetOrNull("Useable")!.SetInteger(0);
                 initial.Root.GetOrNull("Static")!.SetInteger(1);
                 File.WriteAllBytes(path, initial.ToBytes());
@@ -353,6 +353,13 @@ namespace SWLOR.Toolset.Tests
 
                 (await editor.TrySaveAsync()).Should().BeTrue();
                 editor.IsDirty.Should().BeFalse();
+
+                name.Text = "Unsaved After Save";
+                editor.RevertCommand.Execute(null);
+                name.Text.Should().Be("Saved Behavior",
+                    "Revert must stop at the saved undo position, not unwind saved edits");
+                editor.IsDirty.Should().BeFalse();
+
                 editor.OnClose().Should().BeTrue();
 
                 var saved = JsonGffDocument.Load(path);
@@ -774,6 +781,15 @@ namespace SWLOR.Toolset.Tests
                 ("OnDeath", "plc_death"));
 
             PlaceableBehaviorDetector.Detect(root).Id.Should().Be("scavenge_point");
+        }
+
+        [Test]
+        public void Detect_RequiresEveryManagedScriptBeforeNamingABehavior()
+        {
+            var incompleteTorch = BuildPlaceable(("OnUsed", "zep_torch"));
+
+            PlaceableBehaviorDetector.Detect(incompleteTorch).Id
+                .Should().Be(PlaceableBehaviorCatalog.CustomId);
         }
 
         [Test]

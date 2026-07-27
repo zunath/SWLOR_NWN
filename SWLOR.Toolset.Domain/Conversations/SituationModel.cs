@@ -290,8 +290,14 @@ namespace SWLOR.Toolset.Domain.Conversations
             {
                 foreach (var condition in link.Conditions)
                 {
-                    if (IsQuestSnippet(condition.SnippetKey) && condition.Arguments.Length > 0)
-                        yield return condition.Arguments[0];
+                    if (!IsQuestSnippet(condition.SnippetKey))
+                        continue;
+
+                    var count = condition.SnippetKey == "condition-completed-quest"
+                        ? condition.Arguments.Length
+                        : Math.Min(condition.Arguments.Length, 1);
+                    for (var i = 0; i < count; i++)
+                        yield return condition.Arguments[i];
                 }
             }
 
@@ -466,7 +472,17 @@ namespace SWLOR.Toolset.Domain.Conversations
                         break;
 
                     case "condition-can-accept-quest" when arguments.Length > 0:
-                        SatisfyPrerequisites(arguments[0], player);
+                        if (satisfy)
+                        {
+                            SatisfyPrerequisites(arguments[0], player);
+                        }
+                        else
+                        {
+                            // Being in progress makes CanAcceptQuest false for both repeatable and
+                            // one-shot quests, without accidentally invalidating another opening's
+                            // prerequisite checks.
+                            player.WithQuest(arguments[0], QuestProgress.OnStep(1));
+                        }
                         break;
 
                     case "condition-all-key-items":

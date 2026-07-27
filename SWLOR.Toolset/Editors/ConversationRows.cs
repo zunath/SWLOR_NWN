@@ -129,6 +129,8 @@ namespace SWLOR.Toolset.Editors
         public bool IsHidden => HiddenBecause != null;
 
         public bool IsVisible => HiddenBecause == null;
+
+        public bool CanAddFollowUp => Target.Links.Count == 0;
     }
 
     /// <summary>One finding, shown against the thing it is about.</summary>

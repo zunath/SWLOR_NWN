@@ -135,6 +135,13 @@ namespace SWLOR.Toolset.Domain.Editing
                 UndoStack.Redo();
         }
 
+        /// <summary>Restores the last saved undo position while holding the document lock.</summary>
+        public bool RestoreSaved()
+        {
+            lock (_syncRoot)
+                return UndoStack.RestoreSaved();
+        }
+
         /// <summary>
         /// Unwinds every edit made since the last save - what an editor's Revert action means.
         /// </summary>

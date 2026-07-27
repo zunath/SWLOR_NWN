@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.RegularExpressions;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -101,6 +103,7 @@ namespace SWLOR.Toolset.Domain.Validation
             var referenced = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var (_, _, conversation, _) in DanglingConversationRule.ConversationReferences(context))
                 referenced.Add(conversation);
+            AddScriptReferences(context, referenced);
 
             foreach (var resRef in context.ResRefsFor(ResourceType.Dlg))
             {
@@ -113,6 +116,31 @@ namespace SWLOR.Toolset.Domain.Validation
                     $"Nothing in the module has conversation '{resRef}', so nobody will ever hear it.",
                     null,
                     resRef);
+            }
+        }
+
+        private static void AddScriptReferences(ValidationContext context, ISet<string> referenced)
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            var encoding = Encoding.GetEncoding(1252);
+            var pattern = new Regex(
+                @"\bActionStartConversation\s*\(\s*[^,]+,\s*""(?<dialog>[a-zA-Z0-9_]+)""",
+                RegexOptions.CultureInvariant);
+
+            foreach (var script in context.ResRefsFor(ResourceType.Nss))
+            {
+                var path = context.Workspace.GetResourcePath(ResourceType.Nss, script);
+                try
+                {
+                    var source = encoding.GetString(File.ReadAllBytes(path));
+                    foreach (Match match in pattern.Matches(source))
+                        referenced.Add(match.Groups["dialog"].Value);
+                }
+                catch (Exception)
+                {
+                    // Script readability is reported by the script validation/build paths. One
+                    // unreadable source must not suppress references from every other script.
+                }
             }
         }
 
@@ -130,7 +158,9 @@ namespace SWLOR.Toolset.Domain.Validation
                 return false;
 
             var suffix = resRef.AsSpan("dialog".Length);
-            return suffix.Length > 0 && int.TryParse(suffix, out _);
+            return suffix.Length > 0
+                   && int.TryParse(suffix, out var number)
+                   && number is >= 1 and <= 255;
         }
     }
 }

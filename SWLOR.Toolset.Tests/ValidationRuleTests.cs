@@ -56,6 +56,19 @@ namespace SWLOR.Toolset.Tests
 
             issues.Should().BeEmpty();
         }
+
+        [Test]
+        public void ResRef_WithIllegalCharacters_FiresError()
+        {
+            using var module = SyntheticModule.Create();
+            module.CopyBlueprintRaw(ResourceType.Utc, "alask", "bad-name");
+
+            var issues = new ResRefLengthRule().Validate(
+                new ValidationContext(module.Workspace)).ToList();
+
+            issues.Should().ContainSingle(issue =>
+                issue.Message.Contains("only lowercase letters, digits, and underscores"));
+        }
     }
 
     public class DanglingInstanceTemplateRuleTests

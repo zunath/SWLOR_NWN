@@ -57,5 +57,35 @@ namespace SWLOR.Toolset.Tests
             catalog.Search(sample.DisplayName).Should().Contain(row => row.Id == sample.Id);
             catalog.Search(sample.ModelName).Should().Contain(row => row.Id == sample.Id);
         }
+
+        [Test]
+        public void MissingPlaceablesTableDegradesToAnEmptyCatalog()
+        {
+            var empty2Da = Path.Combine(
+                Path.GetTempPath(), "swlor-missing-placeables-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(empty2Da);
+            try
+            {
+                var haks = Path.Combine(
+                    Directory.GetParent(CorpusLocator.ModuleDirectory)!.FullName, "SWLOR_Haks");
+                var tlkPath = Path.Combine(haks, "sw_tlk", "sw_tlk.tlk.json");
+                if (!File.Exists(tlkPath))
+                    Assert.Ignore("SWLOR_Haks TLK is not available from the test context.");
+
+                var catalog = new PlaceableModelCatalog(
+                    new TwoDaService(empty2Da),
+                    TlkService.Load(tlkPath));
+
+                var read = () => catalog.GetAll();
+                read.Should().NotThrow();
+                catalog.GetAll().Should().BeEmpty();
+                catalog.Search("anything").Should().BeEmpty();
+                catalog.TryGet(1, out _).Should().BeFalse();
+            }
+            finally
+            {
+                Directory.Delete(empty2Da, recursive: true);
+            }
+        }
     }
 }

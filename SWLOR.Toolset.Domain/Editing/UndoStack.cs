@@ -136,6 +136,23 @@ namespace SWLOR.Toolset.Domain.Editing
             _savedPosition = _position;
         }
 
+        /// <summary>
+        /// Replays history in either direction until the last saved baseline is restored.
+        /// Returns false when that baseline was discarded by branching after an undo.
+        /// </summary>
+        public bool RestoreSaved()
+        {
+            if (_savedPosition is not { } saved)
+                return false;
+
+            while (_position > saved)
+                Undo();
+            while (_position < saved)
+                Redo();
+
+            return true;
+        }
+
         /// <summary>Clears all history and establishes the current document as a clean baseline.</summary>
         public void Reset()
         {

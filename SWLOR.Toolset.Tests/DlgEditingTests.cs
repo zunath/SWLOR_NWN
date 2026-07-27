@@ -132,6 +132,35 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AddingASnippetActionCannotReplaceACustomScript()
+        {
+            var document = LoadDantHerbs();
+            var reply = document.AddReply("Custom.");
+            reply.Script = "my_custom_script";
+
+            var act = () => reply.AddAction("action-accept-quest", "field_tinctures");
+
+            act.Should().Throw<InvalidOperationException>();
+            reply.Script.Should().Be("my_custom_script");
+            reply.Actions.Should().BeEmpty();
+        }
+
+        [Test]
+        public void DuplicatingAHybridNodePreservesItsCustomScriptAndSnippetParameters()
+        {
+            var document = LoadDantHerbs();
+            var reply = document.AddReply("Hybrid.");
+            reply.AddAction("action-accept-quest", "field_tinctures");
+            reply.Script = "my_custom_script";
+
+            var copy = document.DuplicateNode(reply);
+
+            copy.Script.Should().Be("my_custom_script");
+            copy.Actions.Should().ContainSingle()
+                .Which.Value.Should().Be("field_tinctures");
+        }
+
+        [Test]
         public void RemovingTheLastAction_ClearsTheDispatcherScript()
         {
             var document = LoadDantHerbs();

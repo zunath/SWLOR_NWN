@@ -35,8 +35,8 @@ namespace SWLOR.Toolset.Editors
         private readonly IEditorPromptService _prompts;
         private readonly string _resRef;
 
-        /// <summary>Where the walk has been, so Back can retrace it.</summary>
-        private readonly List<DlgNode> _trail = new();
+        /// <summary>Where the walk has been and the player state after entering each NPC line.</summary>
+        private readonly List<WalkStep> _trail = new();
 
         private PretendPlayer _player = new();
         private DlgNode? _currentLine;
@@ -44,6 +44,11 @@ namespace SWLOR.Toolset.Editors
         private bool _closePromptOpen;
         private bool _disposed;
         private bool _suspendRedraw;
+        private DlgLink? _editingLink;
+        private DlgNode? _editingNode;
+        private string _rulesTitle = string.Empty;
+
+        private sealed record WalkStep(DlgNode Line, PretendPlayer Player);
 
         [ObservableProperty]
         private string _lineText = string.Empty;
@@ -76,6 +81,7 @@ namespace SWLOR.Toolset.Editors
                 _editingChoice = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsEditingChoice));
+                OnPropertyChanged(nameof(IsEditingRules));
             }
         }
 
@@ -247,8 +253,7 @@ namespace SWLOR.Toolset.Editors
             }
 
             Breadcrumb.Add(Shorten(choice.Text));
-            _trail.Add(next.Target);
-            ShowLine(next.Target);
+            EnterLine(next.Target);
         }
 
         /// <summary>Steps back one line in the walk.</summary>
@@ -262,7 +267,9 @@ namespace SWLOR.Toolset.Editors
             if (Breadcrumb.Count > 1)
                 Breadcrumb.RemoveAt(Breadcrumb.Count - 1);
 
-            ShowLine(_trail[^1]);
+            _player = _trail[^1].Player.Clone();
+            SyncPillsFromPlayer();
+            ShowLine(_trail[^1].Line);
         }
 
         /// <summary>Returns to whichever opening this player actually gets.</summary>
@@ -336,6 +343,20 @@ namespace SWLOR.Toolset.Editors
             {
                 var reply = _dialog.AddReply(QuestConversationScaffold.Placeholder);
                 _dialog.AddLink(parent, reply);
+            });
+        }
+
+        /// <summary>Adds the NPC line that follows a player choice which currently ends the talk.</summary>
+        [RelayCommand]
+        private void AddFollowUp(ChoiceRowViewModel? choice)
+        {
+            if (choice == null || choice.Target.Links.Count != 0)
+                return;
+
+            RunEdit("Add a follow-up line", () =>
+            {
+                var entry = _dialog.AddEntry(QuestConversationScaffold.Placeholder);
+                _dialog.AddLink(choice.Target, entry);
             });
         }
 
@@ -424,7 +445,11 @@ namespace SWLOR.Toolset.Editors
             });
 
             if (copy != null)
+            {
+                if (_trail.Count > 0)
+                    _trail[^1] = new WalkStep(copy, _player.Clone());
                 ShowLine(copy);
+            }
         }
 
         /// <summary>Moves a situation one place up the order, which is how a dead one is revived.</summary>
@@ -455,14 +480,61 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand]
         private void EditChoice(ChoiceRowViewModel? choice)
         {
-            EditingChoice = ReferenceEquals(EditingChoice, choice) ? null : choice;
+            if (choice == null || ReferenceEquals(EditingChoice, choice))
+            {
+                CloseRulesEditor();
+                return;
+            }
+
+            EditingChoice = choice;
+            _editingLink = choice.Link;
+            _editingNode = choice.Target;
+            RulesTitle = "THIS CHOICE";
+            RefreshSnippetEditors();
+        }
+
+        /// <summary>Edits the guard and NPC actions attached to a conversation opening.</summary>
+        [RelayCommand]
+        private void EditSituation(SituationRowViewModel? row)
+        {
+            if (row == null)
+                return;
+
+            EditingChoice = null;
+            _editingLink = row.Situation.Opening;
+            _editingNode = row.Situation.Opening.Target;
+            RulesTitle = row.Title;
+            RefreshSnippetEditors();
+        }
+
+        /// <summary>Edits the route into, and actions on, the NPC line currently being shown.</summary>
+        [RelayCommand]
+        private void EditCurrentLine()
+        {
+            if (_currentLine == null)
+                return;
+
+            EditingChoice = null;
+            _editingLink = FindRouteInto(_currentLine)
+                           ?? Situations.FirstOrDefault(row => row.IsSelected)?.Situation.Opening;
+            _editingNode = _currentLine;
+            RulesTitle = "THIS NPC LINE";
+            RefreshSnippetEditors();
+        }
+
+        private void CloseRulesEditor()
+        {
+            EditingChoice = null;
+            _editingLink = null;
+            _editingNode = null;
+            RulesTitle = string.Empty;
             RefreshSnippetEditors();
         }
 
         [RelayCommand]
         private void AddGuard()
         {
-            var link = EditingChoice?.Link;
+            var link = _editingLink;
             if (link == null || GuardToAdd == null)
                 return;
 
@@ -474,13 +546,13 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand]
         private void AddConsequence()
         {
-            var node = EditingChoice?.Target;
+            var node = _editingNode;
             if (node == null || ConsequenceToAdd == null)
                 return;
 
             var snippet = ConsequenceToAdd;
-            RunEdit($"Add an effect", () => node.AddAction(snippet.Key));
-            ConsequenceToAdd = null;
+            if (RunEdit($"Add an effect", () => node.AddAction(snippet.Key)))
+                ConsequenceToAdd = null;
         }
 
         /// <summary>
@@ -503,7 +575,7 @@ namespace SWLOR.Toolset.Editors
 
         private void RemoveGuard(SnippetEditorViewModel editor)
         {
-            var link = EditingChoice?.Link;
+            var link = _editingLink;
             if (link == null)
                 return;
 
@@ -512,7 +584,7 @@ namespace SWLOR.Toolset.Editors
 
         private void RemoveConsequence(SnippetEditorViewModel editor)
         {
-            var node = EditingChoice?.Target;
+            var node = _editingNode;
             if (node == null)
                 return;
 
@@ -524,14 +596,14 @@ namespace SWLOR.Toolset.Editors
             Guards.Clear();
             Consequences.Clear();
 
-            var choice = EditingChoice;
-            if (choice == null)
+            if (_editingLink == null && _editingNode == null)
             {
                 OnPropertyChanged(nameof(IsEditingChoice));
+                OnPropertyChanged(nameof(IsEditingRules));
                 return;
             }
 
-            foreach (var condition in choice.Link.Conditions)
+            foreach (var condition in _editingLink?.Conditions ?? Array.Empty<DlgParam>())
             {
                 var snippet = _snippets.Find(condition.Key);
                 if (snippet != null)
@@ -541,7 +613,7 @@ namespace SWLOR.Toolset.Editors
                 }
             }
 
-            foreach (var action in choice.Target.Actions)
+            foreach (var action in _editingNode?.Actions ?? Array.Empty<DlgParam>())
             {
                 var snippet = _snippets.Find(action.Key);
                 if (snippet != null)
@@ -552,9 +624,24 @@ namespace SWLOR.Toolset.Editors
             }
 
             OnPropertyChanged(nameof(IsEditingChoice));
+            OnPropertyChanged(nameof(IsEditingRules));
         }
 
         public bool IsEditingChoice => EditingChoice != null;
+
+        public bool IsEditingRules => _editingLink != null || _editingNode != null;
+
+        public string RulesTitle
+        {
+            get => _rulesTitle;
+            private set
+            {
+                if (_rulesTitle == value)
+                    return;
+                _rulesTitle = value;
+                OnPropertyChanged();
+            }
+        }
 
         // ---------- the scaffold ----------
 
@@ -607,18 +694,30 @@ namespace SWLOR.Toolset.Editors
                 _suspendRedraw = false;
             }
 
+            SyncPillsFromPlayer();
             OnPropertyChanged(nameof(HasQuestPills));
         }
 
         private DlgLink? FindRouteInto(DlgNode line)
         {
-            var parent = _trail.Count > 1 ? _trail[^2] : null;
+            var parent = _trail.Count > 1 ? _trail[^2].Line : null;
             if (parent == null)
                 return null;
 
-            return parent.Links.FirstOrDefault(link =>
-                _dialog.HasNode(link.TargetKind, link.TargetIndex)
-                && ReferenceEquals(link.Target.Struct, line.Struct));
+            foreach (var choiceLink in parent.Links)
+            {
+                if (!_dialog.HasNode(choiceLink.TargetKind, choiceLink.TargetIndex))
+                    continue;
+
+                var reply = choiceLink.Target;
+                var route = reply.Links.FirstOrDefault(link =>
+                    _dialog.HasNode(link.TargetKind, link.TargetIndex)
+                    && ReferenceEquals(link.Target.Struct, line.Struct));
+                if (route != null)
+                    return route;
+            }
+
+            return null;
         }
 
         // ---------- redraw ----------
@@ -662,7 +761,10 @@ namespace SWLOR.Toolset.Editors
         private void RestoreEditingChoice()
         {
             if (EditingChoice == null)
+            {
+                RefreshSnippetEditors();
                 return;
+            }
 
             var previous = EditingChoice.Link.Struct;
             EditingChoice = Choices.FirstOrDefault(choice => ReferenceEquals(choice.Link.Struct, previous));
@@ -685,13 +787,20 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
-            _trail.Add(opening.Target);
-            ShowLine(opening.Target);
+            EnterLine(opening.Target);
 
             var reached = Situations.FirstOrDefault(row =>
                 ReferenceEquals(row.Situation.Opening.Struct, opening.Struct));
             foreach (var row in Situations)
                 row.IsSelected = ReferenceEquals(row, reached);
+        }
+
+        private void EnterLine(DlgNode line)
+        {
+            _player = _evaluator.ApplyActions(line, _player);
+            SyncPillsFromPlayer();
+            _trail.Add(new WalkStep(line, _player.Clone()));
+            ShowLine(line);
         }
 
         private void ShowLine(DlgNode line)
@@ -912,6 +1021,7 @@ namespace SWLOR.Toolset.Editors
 
         private void AfterHistoryChange()
         {
+            RebuildPlayerControls();
             Redraw();
 
             // The walk's current line may have been renumbered or removed by the edit; re-resolving

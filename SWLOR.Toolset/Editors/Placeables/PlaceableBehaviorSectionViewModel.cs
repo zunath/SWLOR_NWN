@@ -283,6 +283,16 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// </summary>
         public void MarkSavedBaseline() => CaptureBehaviorBaseline();
 
+        /// <summary>
+        /// Rebuilds module-backed choice rows after the background tag/blueprint index changes.
+        /// Stored values are re-read from the document, so a just-resolved tag remains selected.
+        /// </summary>
+        public void RefreshValueSources()
+        {
+            _sources.InvalidateModuleSources();
+            BuildFields();
+        }
+
         private void BuildFields()
         {
             Fields.Clear();

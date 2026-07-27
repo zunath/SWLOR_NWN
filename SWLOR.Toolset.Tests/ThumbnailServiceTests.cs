@@ -1,0 +1,271 @@
+using Avalonia.Headless.NUnit;
+using Avalonia.Threading;
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Toolset.Domain.Render.Icons;
+using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Workspace;
+
+namespace SWLOR.Toolset.Tests
+{
+    /// <summary>
+    /// The preview cache's own logic: coalescing concurrent requests, answering from memory, and
+    /// deciding when an in-flight render has been invalidated out from under itself.
+    /// </summary>
+    /// <remarks>
+    /// This is the layer where the bugs live, and until <see cref="IPreviewImageSource"/> existed
+    /// none of it could be exercised — reaching a real render needs a resolved NWN install, a hak
+    /// stack, and seconds per image. The fake below counts calls and answers instantly, which is all
+    /// the cache needs to be interrogated.
+    /// </remarks>
+    [NonParallelizable]
+    public class ThumbnailServiceTests
+    {
+        [AvaloniaTest]
+        public void AModelIsRenderedOnceAndAnsweredFromMemoryAfterThat()
+        {
+            var source = new CountingSource();
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+
+            var first = Request(service, "fci01_b01_01");
+            first.Should().NotBeNull();
+            source.ModelCalls.Should().Be(1);
+
+            service.CachedTile("fci01_b01_01").Should().NotBeNull();
+
+            var second = Request(service, "fci01_b01_01");
+            second.Should().BeSameAs(first, "the second request is answered from memory");
+            source.ModelCalls.Should().Be(1, "nothing should be rendered twice");
+        }
+
+        [AvaloniaTest]
+        public void EveryCallerWaitingOnOneRenderIsCalledBack()
+        {
+            // Four tileset groups routinely share a preview model. An earlier version tracked only
+            // "is running", so the second request saw the first in flight and returned without ever
+            // being called back - three of the four cells stayed permanently blank.
+            var source = new CountingSource { BlockUntilReleased = true };
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+
+            var delivered = 0;
+            for (var caller = 0; caller < 4; caller++)
+                service.RequestTileAsync("shared_model", _ => delivered++);
+
+            source.Release();
+            Drain();
+
+            delivered.Should().Be(4, "every caller that asked has to be told");
+            source.ModelCalls.Should().Be(1, "one render serves all four");
+        }
+
+        [AvaloniaTest]
+        public void AKeyWithNoArtworkIsRememberedRatherThanRetriedForever()
+        {
+            var source = new CountingSource { ModelResult = null };
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+
+            service.RequestTileAsync("nothing_here", _ => { });
+            Drain();
+            service.RequestTileAsync("nothing_here", _ => { });
+            Drain();
+
+            source.ModelCalls.Should().Be(1, "an answered \"no artwork\" is still an answer");
+        }
+
+        [AvaloniaTest]
+        public void AnAppearanceRowIsCachedUnderItsOwnKeyRatherThanColliding()
+        {
+            var source = new CountingSource();
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+
+            service.CachedAppearance(7).Should().BeNull();
+
+            service.RequestAppearanceAsync(7, _ => { });
+            Drain();
+
+            service.CachedAppearance(7).Should().NotBeNull();
+            source.AppearanceCalls.Should().Be(1);
+
+            // A row id must not be answered by a model or blueprint of the same name.
+            service.CachedTile("7").Should().BeNull();
+            service.Cached(ResourceType.Utc, "7").Should().BeNull();
+        }
+
+        [AvaloniaTest]
+        public void ClearingTheCacheMakesTheNextRequestRenderAgain()
+        {
+            var source = new CountingSource();
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+
+            Request(service, "a_model");
+            source.ModelCalls.Should().Be(1);
+
+            service.ClearCache();
+
+            Request(service, "a_model");
+            source.ModelCalls.Should().Be(2, "a cleared cache has nothing to answer from");
+        }
+
+        [AvaloniaTest]
+        public void ARenderInvalidatedWhileItWasRunningIsNotPublished()
+        {
+            // The whole point of the epoch: a render that started before the cache was cleared is
+            // answering a question about game data that has since changed.
+            var source = new CountingSource { BlockUntilReleased = true };
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+
+            service.RequestTileAsync("stale_model", _ => { });
+            service.ClearCache();
+            source.Release();
+            Drain();
+
+            service.CachedTile("stale_model").Should().BeNull(
+                "the result belongs to an epoch that no longer exists");
+        }
+
+        [AvaloniaTest]
+        public void AnUnavailableRendererMakesTheWholeCacheANoOp()
+        {
+            // What happens with no resolved repository layout: the palette falls back to letter
+            // glyphs rather than sitting on an empty grid waiting for renders that cannot happen.
+            var source = new CountingSource { IsAvailable = false };
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+
+            service.IsAvailable.Should().BeFalse();
+
+            var delivered = 0;
+            service.RequestTileAsync("anything", _ => delivered++);
+            service.RequestAppearanceAsync(3, _ => delivered++);
+            service.RequestAsync(ResourceType.Utc, "npc_guard", _ => delivered++);
+            Drain();
+
+            delivered.Should().Be(0);
+            source.ModelCalls.Should().Be(0);
+            service.Cached(ResourceType.Utc, "npc_guard").Should().BeNull();
+        }
+
+        [AvaloniaTest]
+        public void ABlankRequestIsIgnoredRatherThanCached()
+        {
+            var source = new CountingSource();
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+
+            service.RequestTileAsync("   ", _ => { });
+            service.RequestAppearanceAsync(-1, _ => { });
+            Drain();
+
+            source.ModelCalls.Should().Be(0);
+            source.AppearanceCalls.Should().Be(0);
+        }
+
+        [AvaloniaTest]
+        public void ATypeSymbolIsDrawnOnceAndSharedByEveryTileThatNeedsIt()
+        {
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), new CountingSource());
+
+            var first = service.TypeIcon(ResourceType.Utc);
+            service.TypeIcon(ResourceType.Utc).Should().BeSameAs(first,
+                "thousands of tiles can want the same symbol and they are all identical");
+
+            service.TypeIcon(ResourceType.Utp).Should().NotBeSameAs(first);
+            service.TypeChipIcon(ResourceType.Utc).Should().NotBeSameAs(
+                first, "the row chip is drawn at its own size rather than scaled down");
+        }
+
+        [AvaloniaTest]
+        public void ARendererThatThrowsLeavesTheRestOfTheGridFillingIn()
+        {
+            var source = new CountingSource { ThrowOnModel = true };
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+
+            var act = () =>
+            {
+                service.RequestTileAsync("explodes", _ => { });
+                Drain();
+            };
+
+            act.Should().NotThrow("one bad model must not take the palette down");
+        }
+
+        private static Avalonia.Media.Imaging.Bitmap? Request(ThumbnailService service, string model)
+        {
+            service.RequestTileAsync(model, _ => { });
+            Drain();
+            return service.CachedTile(model);
+        }
+
+        /// <summary>
+        /// Lets the render task finish and its UI-thread callback run. The service deliberately does
+        /// its work on the pool and publishes through the dispatcher, so a test has to do both.
+        /// </summary>
+        private static void Drain()
+        {
+            for (var attempt = 0; attempt < 100; attempt++)
+            {
+                Dispatcher.UIThread.RunJobs();
+                Thread.Sleep(5);
+                Dispatcher.UIThread.RunJobs();
+            }
+        }
+
+        private sealed class CountingSource : IPreviewImageSource
+        {
+            private readonly ManualResetEventSlim _gate = new(initialState: true);
+
+            public bool IsAvailable { get; init; } = true;
+
+            public DateTime ContentVersionUtc => new(2026, 1, 1);
+
+            public bool ThrowOnModel { get; init; }
+
+            public IconImage? ModelResult { get; init; } = Image();
+
+            public bool BlockUntilReleased
+            {
+                init
+                {
+                    if (value)
+                        _gate.Reset();
+                }
+            }
+
+            public int ModelCalls;
+            public int AppearanceCalls;
+
+            public void Release() => _gate.Set();
+
+            public IconImage? Render(ResourceType type, string resRef, bool useIndexedBlueprint = false) =>
+                Image();
+
+            public IconImage? RenderModel(string modelResRef)
+            {
+                _gate.Wait(TimeSpan.FromSeconds(5));
+                Interlocked.Increment(ref ModelCalls);
+
+                if (ThrowOnModel)
+                    throw new InvalidOperationException("unparseable model");
+
+                return ModelResult;
+            }
+
+            public IconImage? RenderCreatureAppearance(int appearanceId)
+            {
+                _gate.Wait(TimeSpan.FromSeconds(5));
+                Interlocked.Increment(ref AppearanceCalls);
+                return Image();
+            }
+
+            private static IconImage Image() => new(2, 2, new byte[2 * 2 * 4]);
+        }
+    }
+}

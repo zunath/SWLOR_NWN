@@ -45,7 +45,7 @@ namespace SWLOR.Toolset.Workspace
         private const int MaxBuildWorkers = 4;
 
         private readonly WorkspaceContext _workspaceContext;
-        private readonly BlueprintPreviewRenderer _renderer;
+        private readonly IPreviewImageSource _renderer;
 
         private readonly BitmapMemoryCache _memory = new(MemoryCacheCapacity);
 
@@ -95,7 +95,7 @@ namespace SWLOR.Toolset.Workspace
         private ThumbnailDiskCache _disk = new(null);
         private string? _diskModuleRoot;
 
-        public ThumbnailService(WorkspaceContext workspaceContext, BlueprintPreviewRenderer renderer)
+        public ThumbnailService(WorkspaceContext workspaceContext, IPreviewImageSource renderer)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));

@@ -37,7 +37,7 @@ namespace SWLOR.Toolset.Workspace
     /// the model declared by waypoint.2da.
     /// </para>
     /// </remarks>
-    public sealed class BlueprintPreviewRenderer
+    public sealed class BlueprintPreviewRenderer : IPreviewImageSource
     {
         /// <summary>Square size for rasterized model previews.</summary>
         public const int ModelRenderSize = 128;

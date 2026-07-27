@@ -35,7 +35,7 @@ namespace SWLOR.Toolset.Editors.Appearance
         /// <summary>How long typing has to pause before the grid re-filters.</summary>
         private static readonly TimeSpan SearchDebounce = TimeSpan.FromMilliseconds(250);
 
-        private readonly IReadOnlyList<AppearanceOption> _options;
+        private IReadOnlyList<AppearanceOption> _options;
         private readonly ThumbnailService? _thumbnails;
         private readonly Func<string> _currentKey;
 
@@ -88,6 +88,15 @@ namespace SWLOR.Toolset.Editors.Appearance
 
         public string SearchWatermark => $"Search {_noun}s by name or ResRef";
 
+        /// <summary>
+        /// Tile edge in pixels. The placeable grid packs 24,000 models and wants them small; the
+        /// door and creature grids have hundreds and can afford a picture worth judging.
+        /// </summary>
+        public double TileSize { get; init; } = 112;
+
+        /// <summary>Picture height inside a tile, kept proportional to <see cref="TileSize"/>.</summary>
+        public double TileImageHeight => TileSize * 0.73;
+
         public AppearanceGallerySectionViewModel(
             IReadOnlyList<AppearanceOption> options,
             ThumbnailService? thumbnails,
@@ -106,6 +115,23 @@ namespace SWLOR.Toolset.Editors.Appearance
 
         [RelayCommand]
         private void LoadMore() => PublishPage();
+
+        /// <summary>
+        /// Replaces the rows the grid offers, keeping whatever is typed in the search box.
+        /// </summary>
+        /// <remarks>
+        /// For the filters that change the set rather than the query — the placeable tab's "used in
+        /// module" and "named only". A filter that narrowed the search text instead would hide the
+        /// builder's own words from them.
+        /// </remarks>
+        public void SetOptions(IReadOnlyList<AppearanceOption> options)
+        {
+            ArgumentNullException.ThrowIfNull(options);
+
+            _options = options;
+            Rebuild();
+            NotifyCurrentChanged();
+        }
 
         /// <summary>Re-reads the stored appearance after a save, an undo, or an external reload.</summary>
         public void ReloadFromDocument()

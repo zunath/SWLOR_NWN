@@ -482,8 +482,17 @@ namespace SWLOR.Toolset.Tests
             failures.Should().BeEmpty(
                 $"every area must assemble without throwing; failures:\n{string.Join("\n", failures)}");
 
-            stopwatch.Elapsed.Should().BeLessThan(
-                TimeSpan.FromMinutes(2), "the shared model cache should make batch assembly fast");
+            // The elapsed time is reported, not asserted. A wall-clock budget here measures the
+            // machine: under a coverage collector, or beside a second build, this pass has taken
+            // 2m21s against a two-minute limit while assembling every area correctly. All that
+            // failure said was that the runner was busy.
+            //
+            // What is worth asserting is the thing the shared cache exists to do - parse each
+            // distinct tile model once rather than once per placement. That ratio collapses long
+            // before any timing threshold notices.
+            distinctModels.Count.Should().BeLessThan(
+                totalPlacements / 4,
+                "the shared model cache is what keeps repeated tiles from being reparsed");
         }
     }
 }

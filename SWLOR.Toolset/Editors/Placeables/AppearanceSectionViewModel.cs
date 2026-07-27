@@ -41,14 +41,6 @@ namespace SWLOR.Toolset.Editors.Placeables
     /// </remarks>
     public partial class AppearanceSectionViewModel : ObservableObject, IDisposable, Viewport.IModelPreviewSource
     {
-        /// <summary>
-        /// Tiles added per page. Small on purpose: every tile published is a control realized and a
-        /// render queued, so a big page is a visible stall mid-scroll. Loading is triggered early
-        /// enough that several small pages feel like continuous scrolling where one large one does
-        /// not.
-        /// </summary>
-        private const int PageSize = 48;
-
         private readonly EditorFieldContext _context;
         private readonly PlaceableModelCatalog _catalog;
         private readonly ThumbnailService? _thumbnails;
@@ -58,23 +50,15 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// <summary>Builds the render geometry for a model resref; null leaves the 3D view empty.</summary>
         private readonly Func<string, Domain.Render.RenderModel?>? _resolveModel;
 
-        private List<PlaceableModelRow> _matches = new();
-        private int _published;
-
         /// <summary>False until the tab has been shown once; see EnsureLoaded.</summary>
         private bool _loaded;
 
-        /// <summary>How long typing has to pause before the grid re-filters.</summary>
-        private static readonly TimeSpan SearchDebounce = TimeSpan.FromMilliseconds(350);
-
-        /// <summary>Cancels the pending re-filter when another keystroke arrives.</summary>
-        private CancellationTokenSource? _searchDebounce;
-
-        [ObservableProperty]
-        private string _query = string.Empty;
-
-        [ObservableProperty]
-        private AppearanceTileViewModel? _highlighted;
+        /// <summary>
+        /// The searchable picture grid, shared with the door and creature editors. This section
+        /// keeps only what is genuinely a placeable's: the retained 3D view, the animation states
+        /// its model declares, and the two filters that narrow which models are offered at all.
+        /// </summary>
+        public Appearance.AppearanceGallerySectionViewModel Gallery { get; }
 
         [ObservableProperty]
         private bool _usedInModuleOnly = true;
@@ -111,6 +95,19 @@ namespace SWLOR.Toolset.Editors.Placeables
             _runEdit = runEdit;
             _resolveModel = resolveModel;
             ResourceIndex = resourceIndex;
+
+            Gallery = new Appearance.AppearanceGallerySectionViewModel(
+                Array.Empty<Appearance.AppearanceOption>(),
+                thumbnails,
+                () => CurrentId.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                Apply,
+                noun: "model")
+            {
+                // 24,304 rows: the grid earns its density here in a way the door and creature
+                // tables, with hundreds each, do not.
+                TileSize = 92
+            };
+            Gallery.PropertyChanged += OnGalleryChanged;
 
             BeginLoading();
         }
@@ -228,9 +225,6 @@ namespace SWLOR.Toolset.Editors.Placeables
 
         public string? PreviewAnimationName => SelectedAnimation?.Name;
 
-        /// <summary>The published page of matching models.</summary>
-        public ObservableCollection<AppearanceTileViewModel> Tiles { get; } = new();
-
         /// <summary>The appearance row the placeable stores right now.</summary>
         public int CurrentId => (int)(_context.Document.Root.GetOrNull("Appearance")?.GetInteger() ?? 0);
 
@@ -249,28 +243,17 @@ namespace SWLOR.Toolset.Editors.Placeables
 
         public bool CurrentIsUnknown => !_catalog.TryGet(CurrentId, out _);
 
-        public string MatchSummary
-        {
-            get
-            {
-                if (_matches.Count == 0)
-                    return "No models match";
+        public bool HasHighlight => Gallery.Highlighted != null;
 
-                return _published >= _matches.Count
-                    ? $"{_matches.Count} model{(_matches.Count == 1 ? string.Empty : "s")}"
-                    : $"{_published} of {_matches.Count} models";
-            }
-        }
+        /// <summary>The highlighted model's own name, for the panel beside the 3D view.</summary>
+        public string? HighlightedModelName => Gallery.Highlighted?.Option.ModelResRef;
 
-        public bool CanLoadMore => _published < _matches.Count;
+        public string? HighlightedCaption => Gallery.Highlighted?.Caption;
 
-        public bool HasHighlight => Highlighted != null;
+        public string? HighlightedUsage => Gallery.Highlighted?.Detail;
 
         /// <summary>Raised after the stored appearance changes, so the preview can re-resolve.</summary>
         public event Action? AppearanceChanged;
-
-        [RelayCommand]
-        private void LoadMore() => PublishPage();
 
         [RelayCommand]
         private void ToggleAnimation()
@@ -282,45 +265,8 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// <summary>Re-reads the stored appearance after an undo, redo or reload.</summary>
         public void RefreshFromDocument()
         {
-            var current = CurrentId;
-            foreach (var tile in Tiles)
-                tile.IsCurrent = tile.Id == current;
-
+            Gallery.ReloadFromDocument();
             NotifyCurrentChanged();
-        }
-
-        /// <summary>
-        /// Rebuilds after typing stops rather than on every keystroke. Each rebuild filters ~24,000
-        /// rows, throws away every published tile and realizes a fresh page with its renders - once
-        /// per letter that is a visible stall, and the intermediate results are ones nobody reads.
-        /// </summary>
-        partial void OnQueryChanged(string value)
-        {
-            if (!_loaded)
-                return;
-
-            _searchDebounce?.Cancel();
-            _searchDebounce = null;
-
-            // Clearing the box is not a search being typed - it is one being abandoned, and waiting
-            // out the debounce for it leaves the old results sitting there looking like the filter
-            // did not clear. Emptying it takes effect at once.
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                Rebuild();
-                return;
-            }
-
-            var pending = new CancellationTokenSource();
-            _searchDebounce = pending;
-
-            Task.Delay(SearchDebounce, pending.Token).ContinueWith(
-                task =>
-                {
-                    if (!task.IsCanceled)
-                        Avalonia.Threading.Dispatcher.UIThread.Post(Rebuild);
-                },
-                TaskScheduler.Default);
         }
 
         partial void OnUsedInModuleOnlyChanged(bool value)
@@ -335,14 +281,17 @@ namespace SWLOR.Toolset.Editors.Placeables
                 Rebuild();
         }
 
-        partial void OnHighlightedChanged(AppearanceTileViewModel? value)
+        /// <summary>Follows the grid's highlight, which is what the 3D view is showing.</summary>
+        private void OnGalleryChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            OnPropertyChanged(nameof(HasHighlight));
-            UpdatePreviewScene();
+            if (e.PropertyName is not nameof(Gallery.Highlighted))
+                return;
 
-            // Picking a model IS the edit. A confirm button in between only asks a builder to say
-            // twice what they already said once, and undo is the real safety net either way.
-            Apply(value);
+            OnPropertyChanged(nameof(HasHighlight));
+            OnPropertyChanged(nameof(HighlightedModelName));
+            OnPropertyChanged(nameof(HighlightedCaption));
+            OnPropertyChanged(nameof(HighlightedUsage));
+            UpdatePreviewScene();
         }
 
         partial void OnSelectedAnimationChanged(PlaceableAnimationOption? value)
@@ -355,19 +304,21 @@ namespace SWLOR.Toolset.Editors.Placeables
         partial void OnIsAnimationPlayingChanged(bool value) =>
             OnPropertyChanged(nameof(AnimationToggleText));
 
-        private void Apply(AppearanceTileViewModel? tile)
+        /// <summary>
+        /// Picking a model IS the edit. A confirm button in between only asks a builder to say twice
+        /// what they already said once, and undo is the real safety net either way.
+        /// </summary>
+        private bool Apply(Appearance.AppearanceOption option)
         {
-            if (tile == null || tile.Id == CurrentId)
-                return;
+            if (!int.TryParse(option.Key, out var id) || id == CurrentId)
+                return false;
 
-            if (!_runEdit($"Change appearance to {tile.Caption}", () => WriteAppearance(tile.Id)))
-                return;
-
-            foreach (var published in Tiles)
-                published.IsCurrent = published.Id == tile.Id;
+            if (!_runEdit($"Change appearance to {option.Caption}", () => WriteAppearance(id)))
+                return false;
 
             NotifyCurrentChanged();
             AppearanceChanged?.Invoke();
+            return true;
         }
 
         /// <summary>Rebuilds the single-model scene for whatever should be on screen right now.</summary>
@@ -376,7 +327,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             if (_disposed)
                 return;
 
-            var modelName = Highlighted?.ModelName;
+            var modelName = Gallery.Highlighted?.Option.ModelResRef;
             if (modelName == null && _catalog.TryGet(CurrentId, out var currentRow))
                 modelName = currentRow.ModelName;
 
@@ -448,72 +399,46 @@ namespace SWLOR.Toolset.Editors.Placeables
                 return;
 
             _disposed = true;
-            _searchDebounce?.Cancel();
-            _searchDebounce?.Dispose();
-            _searchDebounce = null;
+            Gallery.PropertyChanged -= OnGalleryChanged;
+            Gallery.Dispose();
             _previewView?.Dispose();
             _previewView = null;
         }
 
+        /// <summary>
+        /// Republishes which models the grid offers. The two filters change the set rather than the
+        /// query, so they cannot be folded into the search text: a builder's own words have to stay
+        /// visible in the box.
+        /// </summary>
         private void Rebuild()
         {
             if (_disposed)
                 return;
 
             var usage = _usage();
-            var matches = _catalog.Search(Query ?? string.Empty);
+            IEnumerable<PlaceableModelRow> rows = _catalog.GetAll();
 
             if (NamedOnly)
-                matches = matches.Where(row => row.HasLabel);
+                rows = rows.Where(row => row.HasLabel);
 
             // Only a built index can filter on usage; before the scan lands this would hide
             // everything, which reads as an empty table rather than a pending count.
             if (UsedInModuleOnly && usage.IsBuilt)
-                matches = matches.Where(row => usage.CountFor(row.Id) > 0);
+                rows = rows.Where(row => usage.CountFor(row.Id) > 0);
 
-            _matches = matches.ToList();
-            _published = 0;
-            Tiles.Clear();
-            PublishPage();
+            Gallery.SetOptions(rows
+                .Select(row => new Appearance.AppearanceOption(
+                    row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    row.DisplayName,
+                    Detail(row, usage.CountFor(row.Id)),
+                    ModelResRef: row.ModelName))
+                .ToList());
         }
 
-        private void PublishPage()
-        {
-            var usage = _usage();
-            var current = CurrentId;
-            var end = Math.Min(_published + PageSize, _matches.Count);
-
-            for (var index = _published; index < end; index++)
-            {
-                var row = _matches[index];
-                var tile = new AppearanceTileViewModel(row, usage.CountFor(row.Id))
-                {
-                    IsCurrent = row.Id == current
-                };
-
-                Tiles.Add(tile);
-                RequestPreview(tile);
-            }
-
-            _published = end;
-            OnPropertyChanged(nameof(MatchSummary));
-            OnPropertyChanged(nameof(CanLoadMore));
-        }
-
-        private void RequestPreview(AppearanceTileViewModel tile)
-        {
-            if (_thumbnails == null)
-                return;
-
-            var cached = _thumbnails.CachedTile(tile.ModelName);
-            if (cached != null)
-            {
-                tile.Preview = cached;
-                return;
-            }
-
-            _thumbnails.RequestTileAsync(tile.ModelName, bitmap => tile.Preview = bitmap);
-        }
+        private static string Detail(PlaceableModelRow row, int usageCount) =>
+            usageCount > 0
+                ? $"{row.ModelName} · used {usageCount}\u00d7"
+                : row.ModelName;
 
         private void WriteAppearance(int id)
         {

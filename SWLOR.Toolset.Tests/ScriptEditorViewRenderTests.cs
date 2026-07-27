@@ -167,14 +167,14 @@ namespace SWLOR.Toolset.Tests
                 "outline collapse/expand should be an icon, not a text label");
             searchToggle.Content.Should().BeOfType<Avalonia.Controls.Shapes.Path>(
                 "cross-script search should be represented by a search icon");
-            outline.IsVisible.Should().BeTrue();
+            outline.IsVisible.Should().BeFalse("the outline should start collapsed");
             search.IsVisible.Should().BeFalse();
 
             viewModel.ToggleOutlineCommand.Execute(null);
-            outline.IsVisible.Should().BeFalse();
+            outline.IsVisible.Should().BeTrue();
 
             viewModel.ToggleOutlineCommand.Execute(null);
-            outline.IsVisible.Should().BeTrue();
+            outline.IsVisible.Should().BeFalse();
 
             viewModel.ToggleWorkspaceSearchCommand.Execute(null);
             search.IsVisible.Should().BeTrue();

@@ -136,19 +136,19 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void OutlineCanBeCollapsedAndRestored()
+        public void OutlineStartsCollapsedAndCanBeRestored()
         {
             var editor = Editor();
-
-            editor.IsOutlineCollapsed.Should().BeFalse();
-
-            editor.ToggleOutlineCommand.Execute(null);
 
             editor.IsOutlineCollapsed.Should().BeTrue();
 
             editor.ToggleOutlineCommand.Execute(null);
 
             editor.IsOutlineCollapsed.Should().BeFalse();
+
+            editor.ToggleOutlineCommand.Execute(null);
+
+            editor.IsOutlineCollapsed.Should().BeTrue();
         }
 
         private ScriptEditorViewModel Editor() =>

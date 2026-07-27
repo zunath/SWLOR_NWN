@@ -26,6 +26,13 @@ namespace SWLOR.Toolset.Shell.Panels
         private readonly Func<EditorService> _editorService;
         private readonly ModuleValidator _validator = new();
 
+        /// <summary>
+        /// Raised while a pack or Build All is running. Validation saves every dirty editor before it
+        /// scans, so starting it during one of those replaces resources the packer is copying or the
+        /// compiler is walking. <see cref="IsRunning"/> only stops what starts after validation does.
+        /// </summary>
+        private readonly Services.ModuleMutationLock? _mutationLock;
+
         public ObservableCollection<ValidationIssue> Issues { get; } = new();
 
         [ObservableProperty]
@@ -39,9 +46,13 @@ namespace SWLOR.Toolset.Shell.Panels
             OutputLogService log,
             Func<EditorService> editorService,
             Func<IGameCodeIndex?>? gameCodeIndex = null,
-            Func<Domain.GameData.Resources.ResourceIndex?>? resourceIndex = null)
+            Func<Domain.GameData.Resources.ResourceIndex?>? resourceIndex = null,
+            Services.ModuleMutationLock? mutationLock = null)
         {
             _resourceIndex = resourceIndex;
+            _mutationLock = mutationLock;
+            if (_mutationLock != null)
+                _mutationLock.Changed += () => RunCommand.NotifyCanExecuteChanged();
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _editorService = editorService ?? throw new ArgumentNullException(nameof(editorService));
@@ -57,6 +68,14 @@ namespace SWLOR.Toolset.Shell.Panels
             if (workspace == null)
             {
                 StatusText = "No module open.";
+                return;
+            }
+
+            // Rechecked here as well as in the predicate: a keyboard binding or a pack that started
+            // between the click and this line would otherwise get through the disabled button.
+            if (_mutationLock?.IsLocked == true)
+            {
+                StatusText = "Validation is unavailable while the module is being packed or built.";
                 return;
             }
 
@@ -99,7 +118,7 @@ namespace SWLOR.Toolset.Shell.Panels
             }
         }
 
-        private bool CanRun() => !IsRunning;
+        public bool CanRun() => !IsRunning && _mutationLock?.IsLocked != true;
 
         partial void OnIsRunningChanged(bool value)
         {

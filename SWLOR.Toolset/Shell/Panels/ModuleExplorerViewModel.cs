@@ -80,6 +80,9 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private ResourceType _selectedType = ResourceType.Area;
 
+        /// <summary>Raised while a pack, validation, or Build All is walking the module folder.</summary>
+        private readonly Services.ModuleMutationLock? _mutationLock;
+
         public ModuleExplorerViewModel(
             WorkspaceContext workspaceContext,
             PropertiesViewModel properties,
@@ -88,8 +91,13 @@ namespace SWLOR.Toolset.Shell.Panels
             Func<Editors.EditorService>? editorService = null,
             TilesetCatalog? tilesetCatalog = null,
             Services.IEditorPromptService? prompts = null,
-            Settings.ToolsetSettings? settings = null)
+            Settings.ToolsetSettings? settings = null,
+            Services.ModuleMutationLock? mutationLock = null)
         {
+            _mutationLock = mutationLock;
+            if (_mutationLock != null)
+                _mutationLock.Changed += OnMutationLockChanged;
+
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _properties = properties ?? throw new ArgumentNullException(nameof(properties));
             _categories = categories ?? throw new ArgumentNullException(nameof(categories));
@@ -138,7 +146,20 @@ namespace SWLOR.Toolset.Shell.Panels
         /// a blank DLG the toolset could not open was an unusable resource — and the conversation
         /// editor is what lifted that.
         /// </summary>
-        public bool CanCreateSelectedType => true;
+        /// <remarks>
+        /// The lock is the second condition because creating writes into the folders a pack is
+        /// copying. Creating an area in particular writes an ARE/GIT/GIC triplet and then edits
+        /// module.ifo, so a pack that runs between those two steps can capture an IFO entry with no
+        /// area behind it — or an area the module never lists.
+        /// </remarks>
+        public bool CanCreateSelectedType => _mutationLock?.IsLocked != true;
+
+        /// <summary>Re-reads <see cref="CanCreateSelectedType"/> after the module-wide lock flips.</summary>
+        private void OnMutationLockChanged()
+        {
+            OnPropertyChanged(nameof(CanCreateSelectedType));
+            NewItemCommand.NotifyCanExecuteChanged();
+        }
 
         /// <summary>Builds the tree for the selected tab.</summary>
         public void Initialize()
@@ -246,6 +267,9 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(HasDialogOptions));
             SelectedRow = null;
             StatusMessage = null;
+            // The dialogue scan only means anything on the Dialogs tab; leaving one running against
+            // another tab spends a full corpus read on a result nothing will read.
+            QueueDialogueScan();
             Refresh();
         }
 
@@ -257,12 +281,12 @@ namespace SWLOR.Toolset.Shell.Panels
         // ----- creating -----
 
         /// <summary>Creates a resource of the selected type: the area wizard, or a prompt plus a template.</summary>
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanCreateSelectedType))]
         private async Task NewItemAsync()
         {
             if (!CanCreateSelectedType)
             {
-                StatusMessage = "Dialog creation will be available with the dialog editor.";
+                StatusMessage = "Creating resources is unavailable while the module is being packed or built.";
                 return;
             }
 
@@ -308,6 +332,14 @@ namespace SWLOR.Toolset.Shell.Panels
                     return;
             }
 
+            // Rechecked after the prompts: the builder was looking at a dialog while a pack could
+            // have started behind it, and the write below is what a pack must not race.
+            if (_mutationLock?.IsLocked == true)
+            {
+                StatusMessage = "Creating resources is unavailable while the module is being packed or built.";
+                return;
+            }
+
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
@@ -323,11 +355,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
             // Filed straight into the folder that was selected, so creating inside a folder puts it
             // there rather than dropping it in Unsorted for the builder to move.
-            if (SelectedRow?.Folder is { } folder)
-            {
-                folder.AddMember(resRef);
-                SaveCategories();
-            }
+            var filed = FileNewResource(resRef);
 
             _log.AppendLine($"Created {SelectedType.SingularDisplayName().ToLowerInvariant()} '{resRef}'.");
             _workspaceContext.RefreshCatalogEntry(SelectedType, resRef);
@@ -336,9 +364,12 @@ namespace SWLOR.Toolset.Shell.Panels
             // Said plainly rather than left to be discovered: the toolset writes .nss source and does
             // not compile it, and NWN runs the compiled .ncs. A new script is a real file in the module
             // but it does nothing until the build pipeline compiles it.
-            StatusMessage = SelectedType == ResourceType.Nss
-                ? $"Created '{resRef}'. It must be compiled to .ncs by the build before the game will run it."
-                : $"Created '{resRef}'.";
+            if (filed)
+            {
+                StatusMessage = SelectedType == ResourceType.Nss
+                    ? $"Created '{resRef}'. It must be compiled to .ncs by the build before the game will run it."
+                    : $"Created '{resRef}'.";
+            }
 
             if (CanOpenSelectedType)
                 _editorService?.Invoke().TryOpenEditor(SelectedType, resRef);
@@ -357,17 +388,41 @@ namespace SWLOR.Toolset.Shell.Panels
                 {
                     ActiveNewArea = null;
 
-                    if (SelectedRow?.Folder is { } folder)
-                    {
-                        folder.AddMember(resRef);
-                        SaveCategories();
-                    }
+                    FileNewResource(resRef);
 
                     _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
                     Refresh();
                     _editorService?.Invoke().TryOpenEditor(ResourceType.Area, resRef);
                 },
-                () => ActiveNewArea = null);
+                () => ActiveNewArea = null,
+                // The wizard writes the ARE/GIT/GIC triplet and then edits module.ifo. A pack that
+                // starts between those two writes captures one without the other, so the wizard has
+                // to ask again at the moment it commits rather than trusting the check that opened it.
+                () => _mutationLock?.IsLocked != true);
+        }
+
+        /// <summary>
+        /// Files a freshly created resource into the selected folder, reporting a sidecar failure
+        /// rather than letting the "Created ..." message overwrite it.
+        /// </summary>
+        /// <returns>
+        /// False when the resource was created but could not be filed, in which case the caller
+        /// leaves the sidecar failure on screen. True when there was nothing to file, or filing worked.
+        /// </returns>
+        private bool FileNewResource(string resRef)
+        {
+            if (SelectedRow?.Folder is not { } folder)
+                return true;
+
+            folder.AddMember(resRef);
+            if (SaveCategories())
+                return true;
+
+            // SaveCategories restored the persisted catalog, so the file exists but is in Unsorted.
+            // Said explicitly: silently filing it somewhere else is how a builder loses track of it.
+            StatusMessage =
+                $"Created '{resRef}', but it could not be filed under '{folder.Name}' — it is in Unsorted. {StatusMessage}";
+            return false;
         }
 
         // ----- folders -----
@@ -634,7 +689,11 @@ namespace SWLOR.Toolset.Shell.Panels
             PublishVisibleRows();
         }
 
-        partial void OnFilterChanged(string value) => Refresh();
+        partial void OnFilterChanged(string value)
+        {
+            QueueDialogueScan();
+            Refresh();
+        }
 
         /// <summary>Whether the filter box searches what people say rather than resrefs and names.</summary>
         [ObservableProperty]
@@ -647,7 +706,121 @@ namespace SWLOR.Toolset.Shell.Panels
         /// <summary>True only for Dialogs, which is where the two options above mean anything.</summary>
         public bool HasDialogOptions => SelectedType == ResourceType.Dlg;
 
-        partial void OnSearchDialogueTextChanged(bool value) => Refresh();
+        partial void OnSearchDialogueTextChanged(bool value)
+        {
+            QueueDialogueScan();
+            Refresh();
+        }
+
+        /// <summary>True while a dialogue-text scan is running, so the tree can say so.</summary>
+        [ObservableProperty]
+        private bool _isSearchingDialogue;
+
+        // ----- dialogue-text search -----
+
+        /// <summary>
+        /// How long typing has to pause before the corpus is read. The scan opens all 609
+        /// conversations, so this is the difference between one scan for a word and one per letter.
+        /// </summary>
+        private static readonly TimeSpan DialogueSearchDebounce = TimeSpan.FromMilliseconds(300);
+
+        /// <summary>The resrefs the last completed scan matched, and the query it was run for.</summary>
+        private HashSet<string>? _dialogueHits;
+
+        private string? _dialogueHitsQuery;
+
+        /// <summary>Cancels the scan in flight when the query changes underneath it.</summary>
+        private CancellationTokenSource? _dialogueScan;
+
+        /// <summary>
+        /// Starts a background dialogue scan for the current query, after a pause in typing.
+        /// </summary>
+        /// <remarks>
+        /// This used to run inline from <c>Refresh</c>, which put a full read of the conversation
+        /// corpus - about a second - on the keystroke path: typing a five-letter word froze the
+        /// window five times over, and four of those scans were for prefixes nobody wanted results
+        /// for. Now the keystroke only schedules, the scan runs off the UI thread, and a result is
+        /// published only if its query is still the one in the box.
+        /// </remarks>
+        private void QueueDialogueScan()
+        {
+            _dialogueScan?.Cancel();
+            _dialogueScan?.Dispose();
+            _dialogueScan = null;
+
+            var needle = Filter?.Trim() ?? string.Empty;
+            if (!SearchDialogueText || SelectedType != ResourceType.Dlg || needle.Length == 0)
+            {
+                _dialogueHits = null;
+                _dialogueHitsQuery = null;
+                IsSearchingDialogue = false;
+                return;
+            }
+
+            // Already have it: retyping the same query, or toggling the checkbox back on, should not
+            // re-read the corpus.
+            if (string.Equals(_dialogueHitsQuery, needle, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            var moduleRoot = _workspaceContext.Workspace?.ModuleRoot;
+            if (moduleRoot == null)
+                return;
+
+            IsSearchingDialogue = true;
+
+            var pending = new CancellationTokenSource();
+            _dialogueScan = pending;
+            var token = pending.Token;
+
+            _ = Task.Run(
+                () =>
+                {
+                    try
+                    {
+                        var matching = DialogueSearch
+                            .Search(Path.Combine(moduleRoot, "dlg"), needle, cancellationToken: token)
+                            .Select(hit => hit.ResRef)
+                            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                        PublishDialogueHits(needle, matching, token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Superseded by a later query; the scan that replaced it owns the result.
+                    }
+                    catch (Exception ex)
+                    {
+                        PublishDialogueFailure(ex, token);
+                    }
+                },
+                token);
+        }
+
+        private void PublishDialogueHits(string needle, HashSet<string> matching, CancellationToken token)
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                if (token.IsCancellationRequested)
+                    return;
+
+                _dialogueHitsQuery = needle;
+                _dialogueHits = matching;
+                IsSearchingDialogue = false;
+                Refresh();
+            });
+        }
+
+        private void PublishDialogueFailure(Exception ex, CancellationToken token)
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                if (token.IsCancellationRequested)
+                    return;
+
+                IsSearchingDialogue = false;
+                StatusMessage = $"Dialogue search failed: {ex.Message}";
+            });
+        }
 
         partial void OnShowGeneratedDialogsChanged(bool value) => Refresh();
 
@@ -699,21 +872,23 @@ namespace SWLOR.Toolset.Shell.Panels
         /// <em>Veldite</em>?", which the resref/name filter cannot answer.
         /// </summary>
         /// <remarks>
-        /// Opt-in rather than always-on because it reads all 609 files, which is about a second: fine
-        /// for a deliberate search, miserable on every keystroke of an ordinary one.
+        /// Reads whatever the last completed background scan found rather than scanning here: this
+        /// runs on the UI thread from <c>Refresh</c>, and reading all 609 conversations from it is
+        /// what made the search box appear hung. <see cref="QueueDialogueScan"/> owns the reading.
         /// </remarks>
         private IReadOnlyList<ExplorerItem> DialogueMatches(IReadOnlyList<ExplorerItem> items, string needle)
         {
-            var workspace = _workspaceContext.Workspace;
-            if (workspace == null)
+            if (_workspaceContext.Workspace == null)
                 return items;
 
-            var matching = DialogueSearch
-                .Search(Path.Combine(workspace.ModuleRoot, "dlg"), needle)
-                .Select(hit => hit.ResRef)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            // No result for this query yet. Showing the resref matches instead would be a different
+            // search wearing this one's answer, so the tree stays empty until the scan lands - which
+            // is what IsSearchingDialogue is on screen to explain.
+            if (_dialogueHits == null ||
+                !string.Equals(_dialogueHitsQuery, needle, StringComparison.OrdinalIgnoreCase))
+                return Array.Empty<ExplorerItem>();
 
-            return items.Where(item => matching.Contains(item.ResRef)).ToList();
+            return items.Where(item => _dialogueHits.Contains(item.ResRef)).ToList();
         }
 
         private ExplorerNodeViewModel BuildFolderNode(

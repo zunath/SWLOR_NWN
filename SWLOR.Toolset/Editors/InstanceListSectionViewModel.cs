@@ -285,7 +285,8 @@ namespace SWLOR.Toolset.Editors
                     _doorEditorServices?.ResolveModel,
                     _gitSession.UndoStack.IsDirty,
                     _doorEditorServices?.Thumbnails,
-                    _doorEditorServices?.ChoicePreviews);
+                    _doorEditorServices?.ChoicePreviews,
+                    _prompts);
                 VarTableSection = null;
             }
             else if (_blueprintType == ResourceType.Uts)

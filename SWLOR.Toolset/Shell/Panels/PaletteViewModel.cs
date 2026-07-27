@@ -235,11 +235,11 @@ namespace SWLOR.Toolset.Shell.Panels
         /// at all, so neither offers anything to create, rename, refile or delete.
         /// </summary>
         /// <summary>
-        /// Whether the module is mid-pack or mid-validation, or null in a test with no shell. A
-        /// <see cref="Func{TResult}"/> because the shell is constructed after this panel - asking it a
-        /// question later avoids the construction cycle a direct reference would create.
+        /// Whether a module-wide operation is running, or null in a test with no shell. Shared with
+        /// every other panel and editor tab that writes to the module, so all of them grey out
+        /// together rather than each holding its own opinion.
         /// </summary>
-        private readonly Func<bool>? _isModuleLocked;
+        private readonly Services.ModuleMutationLock? _mutationLock;
 
         /// <summary>
         /// True when this panel may write to the module: the Custom side of a blueprint type, and no
@@ -250,7 +250,7 @@ namespace SWLOR.Toolset.Shell.Panels
         /// those controls stayed enabled through a pack - which reads the very files being written - so
         /// a click at the wrong moment could put a half-written resource into the .mod being built.
         /// </remarks>
-        public bool CanWrite => IsCustomSource && IsBlueprintMode && _isModuleLocked?.Invoke() != true;
+        public bool CanWrite => IsCustomSource && IsBlueprintMode && _mutationLock?.IsLocked != true;
 
         /// <summary>Re-reads <see cref="CanWrite"/>, for when the module-wide lock has flipped.</summary>
         public void NotifyWriteAvailabilityChanged() => OnPropertyChanged(nameof(CanWrite));
@@ -294,9 +294,11 @@ namespace SWLOR.Toolset.Shell.Panels
             TilesetCatalog? tilesets = null,
             Domain.GameData.Tlk.TlkService? tlk = null,
             ToolsetSettings? settings = null,
-            Func<bool>? isModuleLocked = null)
+            Services.ModuleMutationLock? mutationLock = null)
         {
-            _isModuleLocked = isModuleLocked;
+            _mutationLock = mutationLock;
+            if (_mutationLock != null)
+                _mutationLock.Changed += NotifyWriteAvailabilityChanged;
             _thumbnails = thumbnails;
             _prompts = prompts;
             _tilesets = tilesets;
@@ -773,6 +775,20 @@ namespace SWLOR.Toolset.Shell.Panels
                 }
             }
 
+            // Asked before the delete, not after: removing the file is irreversible from here, and a
+            // sidecar that cannot be written would leave the category pointing at a resource that no
+            // longer exists with nothing the builder can do about it.
+            if (_categories.Section(SelectedType)?.FoldersContaining(tile.ResRef).Any() == true)
+            {
+                var preflight = _categories.CanSaveChanges();
+                if (!preflight.Saved)
+                {
+                    StatusMessage = $"'{tile.Name}' was not deleted: {preflight.Problem}";
+                    _log.AppendLine($"Deleting blueprint '{tile.ResRef}' was refused: {preflight.Problem}");
+                    return;
+                }
+            }
+
             var confirmed = await _prompts.ConfirmDestructiveAsync(
                 $"Delete the {kind} '{tile.Name}'?",
                 $"This deletes {Path.GetFileName(path)} from the module. Any area that already placed " +
@@ -800,18 +816,31 @@ namespace SWLOR.Toolset.Shell.Panels
             _workspaceContext.RemoveCatalogEntry(SelectedType, tile.ResRef);
 
             // Drop it from the sidecar too, or the category keeps a member that resolves to nothing.
+            // Preflighted above, so a failure here means the sidecar changed underneath us while the
+            // confirmation was on screen - rare, and still worth saying out loud.
+            var unfiled = true;
             if (_categories.Section(SelectedType) is { } section)
             {
                 foreach (var folder in section.FoldersContaining(tile.ResRef).ToList())
                     folder.RemoveMember(tile.ResRef);
 
-                SaveCategories();
+                unfiled = SaveCategories();
+                if (!unfiled)
+                {
+                    StatusMessage =
+                        $"Deleted {tile.Name}, but its category still lists it. {StatusMessage}";
+                    _log.AppendLine(
+                        $"Deleted blueprint '{tile.ResRef}' but its category entry could not be removed.");
+                }
             }
 
             SelectedTile = null;
             Refresh();
-            StatusMessage = $"Deleted {tile.Name}.";
-            _log.AppendLine($"Deleted blueprint '{tile.ResRef}' ({path}).");
+            if (unfiled)
+            {
+                StatusMessage = $"Deleted {tile.Name}.";
+                _log.AppendLine($"Deleted blueprint '{tile.ResRef}' ({path}).");
+            }
         }
 
         private static string? CustomPalettePath(string moduleRoot, ResourceType type)
@@ -896,15 +925,31 @@ namespace SWLOR.Toolset.Shell.Panels
 
             // Filed where the builder asked for it, which is the whole reason this lives on the category's
             // menu rather than a global New button.
+            var filed = true;
             if (SelectedRow?.Folder is { } folder)
             {
                 folder.AddMember(resRef);
-                SaveCategories();
+                filed = SaveCategories();
+
+                // SaveCategories restored the persisted catalog, so the blueprint exists but is in
+                // Unsorted. Said rather than overwritten with "Created ...": create-and-file was the
+                // operation asked for, and only half of it happened.
+                if (!filed)
+                {
+                    StatusMessage =
+                        $"Created {name}, but it could not be filed under '{folder.Name}' - it is in Unsorted. {StatusMessage}";
+                    _log.AppendLine(
+                        $"Created {SelectedType.Extension()} blueprint '{resRef}' but could not file it under '{folder.Name}'.");
+                }
             }
 
             Refresh();
-            StatusMessage = $"Created {name}.";
-            _log.AppendLine($"Created {SelectedType.Extension()} blueprint '{resRef}' ({path}).");
+            if (filed)
+            {
+                StatusMessage = $"Created {name}.";
+                _log.AppendLine($"Created {SelectedType.Extension()} blueprint '{resRef}' ({path}).");
+            }
+
             _editorService?.Invoke().TryOpenEditor(SelectedType, resRef);
         }
 

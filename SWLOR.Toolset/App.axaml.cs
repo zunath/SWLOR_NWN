@@ -216,6 +216,10 @@ namespace SWLOR.Toolset
                 sp.GetService<TwoDaLookupService>(),
                 sp.GetService<WaypointAppearanceService>()));
             services.AddSingleton<Editors.Placeables.VfxPreviewService>();
+            // One answer to "is a module-wide operation running", shared by every panel and editor
+            // tab that writes to the module. Registered before its consumers so all of them take
+            // the same instance; the shell is its only writer.
+            services.AddSingleton<Services.ModuleMutationLock>();
             services.AddSingleton(sp => new Editors.EditorService(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<Editors.LookupOptionProvider>(),
@@ -241,7 +245,8 @@ namespace SWLOR.Toolset
                 sp.GetService<TwoDaService>(),
                 sp.GetRequiredService<Editors.Placeables.VfxPreviewService>(),
                 sp.GetService<PortraitService>(),
-                sp.GetService<AppearanceService>()));
+                sp.GetService<AppearanceService>(),
+                sp.GetRequiredService<Services.ModuleMutationLock>()));
 
             // One parsed engine header shared by every script tab, built lazily on first use: the
             // header is 13,870 lines, so parsing it per tab would be wasteful and parsing it at
@@ -268,7 +273,8 @@ namespace SWLOR.Toolset
                 // degrades to "no tilesets available" without it.
                 sp.GetService<Domain.GameData.Lookups.TilesetCatalog>(),
                 sp.GetRequiredService<Services.IEditorPromptService>(),
-                sp.GetRequiredService<ToolsetSettings>()));
+                sp.GetRequiredService<ToolsetSettings>(),
+                sp.GetRequiredService<Services.ModuleMutationLock>()));
             services.AddSingleton(sp => new CategoryService(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<OutputLogService>(),
@@ -307,25 +313,11 @@ namespace SWLOR.Toolset
                 sp.GetService<Domain.GameData.Lookups.TilesetCatalog>(),
                 sp.GetService<TlkService>(),
                 sp.GetRequiredService<ToolsetSettings>(),
-                // Deferred: the shell is built from this panel, so it cannot be injected - but it can be
-                // asked later. The palette writes straight to the module, so its create/delete controls
-                // have to follow the same lock that packing and validation raise.
-                //
-                // The catch is for reentrancy, not for hiding faults: this panel is constructed as part
-                // of building the shell, so anything that read CanWrite during that window would ask the
-                // container for a ShellViewModel it is still constructing. Nothing does today, and the
-                // honest answer in that window is "nothing is packing yet" - which is what false says.
-                () =>
-                {
-                    try
-                    {
-                        return sp.GetRequiredService<ShellViewModel>().IsModuleMutationLocked;
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        return false;
-                    }
-                }));
+                // The palette writes straight to the module, so its create/delete controls follow the
+                // same lock that packing and validation raise. Taken as the shared object rather than
+                // resolved back through the shell: this panel is constructed as part of building the
+                // shell, and asking the container for a ShellViewModel from here is reentrant.
+                sp.GetRequiredService<Services.ModuleMutationLock>()));
             services.AddSingleton(sp => new AreaContentsViewModel(
                 sp.GetRequiredService<Services.IEditorPromptService>()));
             services.AddSingleton<SearchViewModel>();
@@ -335,7 +327,8 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<OutputLogService>(),
                 sp.GetRequiredService<Func<Editors.EditorService>>(),
                 () => sp.GetService<IGameCodeIndex>(),
-                () => sp.GetService<ResourceIndex>()));
+                () => sp.GetService<ResourceIndex>(),
+                sp.GetRequiredService<Services.ModuleMutationLock>()));
             // Constructed explicitly so the settings the layout's divider positions live in are wired in
             // rather than left to constructor selection.
             services.AddSingleton(sp => new ToolsetDockFactory(

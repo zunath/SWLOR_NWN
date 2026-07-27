@@ -100,10 +100,12 @@ namespace SWLOR.Toolset.Editors.Doors
             Func<JsonGffStruct, RenderModel?>? resolveModel = null,
             bool isDirty = false,
             ThumbnailService? thumbnails = null,
-            ChoicePreviewService? choicePreviews = null)
+            ChoicePreviewService? choicePreviews = null,
+            Services.IEditorPromptService? prompts = null)
         {
             ArgumentNullException.ThrowIfNull(door);
 
+            _prompts = prompts;
             _store = new DoorValueStore(door);
             _runEdit = runEdit;
             _gameCodeIndex = gameCodeIndex;
@@ -146,19 +148,77 @@ namespace SWLOR.Toolset.Editors.Doors
             if (descriptor is not DoorBehavior behavior || behavior.Id == Behavior.Id)
                 return;
 
+            _ = ChooseBehaviorAsync(behavior);
+        }
+
+        /// <summary>Asks before a switch throws something away. Null in tests, which never lose data.</summary>
+        private readonly Services.IEditorPromptService? _prompts;
+
+        /// <summary>
+        /// The switch itself, with the confirmation in front of it when something real is being
+        /// discarded.
+        /// </summary>
+        /// <remarks>
+        /// A door is classified Custom whenever it carries locals, and those locals are frequently
+        /// unrelated gameplay wiring rather than anything a door behavior owns. Choosing Area
+        /// Transition or Locked Door then swept the whole VarTable with nothing said, and the loss
+        /// became permanent on the next save.
+        /// </remarks>
+        public async Task ChooseBehaviorAsync(DoorBehavior behavior)
+        {
+            ArgumentNullException.ThrowIfNull(behavior);
+
             var previous = Behavior;
+            if (behavior.Id == previous.Id)
+                return;
+
+            var losses = BehaviorSwitchLosses.Describe(
+                _store,
+                previous.Manages,
+                previous.Fields,
+                behavior.Manages,
+                DoorValueStore.LocalsClearedBySwitchingFrom(_store, previous));
+
+            if (losses.Count > 0 && _prompts != null)
+            {
+                var confirmed = await _prompts.ConfirmDestructiveAsync(
+                    $"Change behavior to {behavior.DisplayName}?",
+                    $"This clears {Describe(losses)}, which {(losses.Count == 1 ? "is" : "are")} " +
+                    $"not part of {behavior.DisplayName}. Undo will put {(losses.Count == 1 ? "it" : "them")} back " +
+                    "until the door is saved.",
+                    "Change behavior").ConfigureAwait(true);
+
+                if (!confirmed)
+                {
+                    // Put the rail's highlight back on what the door actually is.
+                    BehaviorListItemViewModel.Select(BehaviorList, previous.Id);
+                    return;
+                }
+            }
+
             if (!RunEdit($"Set behavior to {behavior.DisplayName}", () =>
                 {
                     _store.Clear(previous);
                     _store.Apply(behavior, _isInstance);
                 }))
             {
+                BehaviorListItemViewModel.Select(BehaviorList, previous.Id);
                 return;
             }
 
             Behavior = behavior;
             RebuildBehaviorSection();
             ReloadRowsFromDocument();
+        }
+
+        /// <summary>Names the discarded slots in prose, capped so the prompt stays readable.</summary>
+        private static string Describe(IReadOnlyList<string> losses)
+        {
+            const int shown = 6;
+            var named = string.Join(", ", losses.Take(shown));
+            return losses.Count <= shown
+                ? named
+                : $"{named} and {losses.Count - shown} more";
         }
 
         public void ReloadFromDocument()

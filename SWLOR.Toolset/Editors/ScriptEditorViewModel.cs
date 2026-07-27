@@ -96,7 +96,41 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Opens the Problems panel. Set by EditorService.</summary>
         public Action? ShowProblemsRequested { get; set; }
 
-        public bool CanCompile => CompileRequested != null && !IsCompiling;
+        /// <summary>
+        /// Raised while a pack, validation, or Build All is running. Compiling saves the .nss and then
+        /// writes its .ncs, so during a pack it replaces files the packer is copying, and during a
+        /// Build All it points a second compiler process at the same output.
+        /// </summary>
+        public ModuleMutationLock? MutationLock
+        {
+            get => _mutationLock;
+            set
+            {
+                if (ReferenceEquals(_mutationLock, value))
+                    return;
+
+                if (_mutationLock != null)
+                    _mutationLock.Changed -= OnMutationLockChanged;
+
+                _mutationLock = value;
+
+                if (_mutationLock != null)
+                    _mutationLock.Changed += OnMutationLockChanged;
+
+                OnMutationLockChanged();
+            }
+        }
+
+        private ModuleMutationLock? _mutationLock;
+
+        private void OnMutationLockChanged()
+        {
+            OnPropertyChanged(nameof(CanCompile));
+            CompileCommand.NotifyCanExecuteChanged();
+        }
+
+        public bool CanCompile =>
+            CompileRequested != null && !IsCompiling && _mutationLock?.IsLocked != true;
 
         [ObservableProperty]
         private bool _isCompiling;
@@ -128,6 +162,15 @@ namespace SWLOR.Toolset.Editors
         {
             if (CompileRequested == null)
                 return;
+
+            // Rechecked at execution: Ctrl+B goes straight here, and a pack can start between the
+            // keystroke and this line.
+            if (_mutationLock?.IsLocked == true)
+            {
+                CompileStatus = "Compile is unavailable while the module is being packed or built.";
+                LastCompileFailed = true;
+                return;
+            }
 
             // Compiling reads the file from disk, so unsaved work would silently not be built.
             if (!await TrySaveAsync(compileOnSave: false).ConfigureAwait(true))

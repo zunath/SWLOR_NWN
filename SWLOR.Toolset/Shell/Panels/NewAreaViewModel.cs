@@ -57,12 +57,14 @@ namespace SWLOR.Toolset.Shell.Panels
             ModuleWorkspace workspace,
             TilesetCatalog? tilesetCatalog,
             Action<string> onCreated,
-            Action onCancelled)
+            Action onCancelled,
+            Func<bool>? canWrite = null)
         {
             _workspace = workspace;
             _tilesetCatalog = tilesetCatalog;
             _onCreated = onCreated;
             _onCancelled = onCancelled;
+            _canWrite = canWrite;
 
             if (_tilesetCatalog == null)
             {
@@ -79,9 +81,21 @@ namespace SWLOR.Toolset.Shell.Panels
                               ?? Tilesets.FirstOrDefault();
         }
 
+        /// <summary>Whether the module can be written to right now; null when nothing gates it.</summary>
+        private readonly Func<bool>? _canWrite;
+
         [RelayCommand]
         private void Create()
         {
+            // Asked at the moment of the write, not when the wizard opened: the builder can have this
+            // dialog on screen for minutes, and a pack that starts in between would otherwise copy an
+            // ARE/GIT/GIC triplet mid-creation or a module.ifo that does not yet list it.
+            if (_canWrite?.Invoke() == false)
+            {
+                StatusMessage = "Areas cannot be created while the module is being packed or built.";
+                return;
+            }
+
             if (!double.IsFinite(Width) ||
                 !double.IsFinite(Height) ||
                 Width != Math.Truncate(Width) ||

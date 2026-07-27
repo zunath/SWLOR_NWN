@@ -134,6 +134,32 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
             }
         }
 
+        /// <summary>
+        /// Locals <see cref="Clear(DoorBehavior)"/> would remove beyond the behavior's named fields.
+        /// </summary>
+        /// <remarks>
+        /// Custom sweeps the entire table, and any behavior with owned prefixes sweeps everything
+        /// under them. Neither set is derivable from the behavior's field list, so a caller that
+        /// wants to warn the builder before the sweep has to ask for it here rather than reconstruct
+        /// the rule and get it subtly wrong.
+        /// </remarks>
+        public static IReadOnlyList<string> LocalsClearedBySwitchingFrom(
+            DoorValueStore store, DoorBehavior behavior)
+        {
+            ArgumentNullException.ThrowIfNull(store);
+            ArgumentNullException.ThrowIfNull(behavior);
+
+            var names = store.Locals.Select(entry => entry.Name);
+
+            if (behavior.Id != DoorBehaviorCatalog.CustomId)
+            {
+                names = names.Where(name => behavior.OwnedLocalPrefixes.Any(prefix =>
+                    name.StartsWith(prefix, StringComparison.Ordinal)));
+            }
+
+            return names.ToList();
+        }
+
         public void Clear(DoorBehavior behavior)
         {
             ArgumentNullException.ThrowIfNull(behavior);

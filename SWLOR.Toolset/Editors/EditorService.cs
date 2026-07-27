@@ -63,6 +63,9 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Backs the placeable Appearance tab's model grid; null degrades it to an empty grid.</summary>
         private readonly PlaceableModelCatalog? _placeableModels;
+
+        /// <summary>Raised while a pack, validation, or Build All is running; handed to script tabs.</summary>
+        private readonly Services.ModuleMutationLock? _mutationLock;
         private readonly ThumbnailService? _thumbnails;
         private readonly PlaceableIndexService? _placeableIndexes;
         private readonly Placeables.VfxPreviewService? _vfxPreviews;
@@ -134,8 +137,10 @@ namespace SWLOR.Toolset.Editors
             Domain.GameData.TwoDa.TwoDaService? twoDaService = null,
             Placeables.VfxPreviewService? vfxPreviews = null,
             PortraitService? portraits = null,
-            AppearanceService? appearances = null)
+            AppearanceService? appearances = null,
+            Services.ModuleMutationLock? mutationLock = null)
         {
+            _mutationLock = mutationLock;
             _placeableModels = placeableModels;
             _thumbnails = thumbnails;
             _placeableIndexes = placeableIndexes;
@@ -297,7 +302,12 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                var editor = new ScriptEditorViewModel(filePath, resRef, _log, _prompts, _scriptLanguage);
+                var editor = new ScriptEditorViewModel(filePath, resRef, _log, _prompts, _scriptLanguage)
+                {
+                    // The tab's own Compile button writes a .ncs, so it follows the same module-wide
+                    // lock that the Build menu does.
+                    MutationLock = _mutationLock
+                };
                 editor.Closed += _ =>
                 {
                     _openScriptEditors.Remove(filePath);

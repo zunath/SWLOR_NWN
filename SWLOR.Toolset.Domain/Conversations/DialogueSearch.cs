@@ -33,7 +33,16 @@ namespace SWLOR.Toolset.Domain.Conversations
         /// <param name="dialogDirectory">The module's <c>dlg</c> folder.</param>
         /// <param name="query">Case-insensitive substring. Blank returns nothing.</param>
         /// <param name="limit">Stops after this many hits, so a common word cannot hang the panel.</param>
-        public static IReadOnlyList<DialogueHit> Search(string dialogDirectory, string query, int limit = 300)
+        /// <param name="cancellationToken">
+        /// Abandons the scan. This reads every conversation in the module, so a caller searching as
+        /// the builder types needs a way to drop a query the next keystroke has already replaced
+        /// rather than paying for all of them.
+        /// </param>
+        public static IReadOnlyList<DialogueHit> Search(
+            string dialogDirectory,
+            string query,
+            int limit = 300,
+            CancellationToken cancellationToken = default)
         {
             var hits = new List<DialogueHit>();
             if (string.IsNullOrWhiteSpace(query) || !Directory.Exists(dialogDirectory))
@@ -44,6 +53,8 @@ namespace SWLOR.Toolset.Domain.Conversations
 
             foreach (var path in files)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 DlgDocument document;
                 try
                 {

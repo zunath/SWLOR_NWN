@@ -54,6 +54,12 @@ namespace SWLOR.Toolset.Shell
         public bool IsModuleMutationLocked => IsPacking || IsValidationRunning || IsBuildingScripts;
 
         /// <summary>
+        /// The shared answer to <see cref="IsModuleMutationLocked"/>, published for the panels and
+        /// editor tabs that also write to the module. The shell is its only writer.
+        /// </summary>
+        private readonly ModuleMutationLock _mutationLock;
+
+        /// <summary>
         /// The editor tab the File/Edit menus act on, or null when no document is open. Tracked
         /// from the dock's active document so Save/Undo/Redo always target what the user is looking
         /// at; the shell listens to its property changes to keep the menu items enabled correctly.
@@ -98,9 +104,11 @@ namespace SWLOR.Toolset.Shell
             ScriptReferenceViewModel? scriptReference = null,
             ProblemsViewModel? problems = null,
             AreaContentsViewModel? areaContents = null,
-            StartupNotice? startupNotice = null)
+            StartupNotice? startupNotice = null,
+            ModuleMutationLock? mutationLock = null)
         {
             _areaContents = areaContents;
+            _mutationLock = mutationLock ?? new ModuleMutationLock();
             _startupNotice = startupNotice;
             _compileService = compileService;
             _scriptReference = scriptReference;
@@ -588,8 +596,10 @@ namespace SWLOR.Toolset.Shell
         private void NotifyMutationStateChanged()
         {
             OnPropertyChanged(nameof(IsModuleMutationLocked));
-            // The palette writes directly to the module, so its own write controls follow this lock.
-            _palette.NotifyWriteAvailabilityChanged();
+            // Publish before the local notifications: every other panel and open editor tab learns
+            // about the lock from here, and they should all flip in the same frame the menu does.
+            // The palette, explorer, validation panel and script tabs all subscribe to it.
+            _mutationLock.Set(IsModuleMutationLocked);
             SaveAllCommand.NotifyCanExecuteChanged();
             PackModuleCommand.NotifyCanExecuteChanged();
             BuildAllScriptsCommand.NotifyCanExecuteChanged();

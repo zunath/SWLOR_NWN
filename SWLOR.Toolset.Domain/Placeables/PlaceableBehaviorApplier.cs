@@ -179,6 +179,14 @@ namespace SWLOR.Toolset.Domain.Placeables
                 return;
             }
 
+            // Custom is "stop interpreting this, show me the raw wiring". Erasing the wiring on the
+            // way in is backwards: a Chair switched to Custom opened the script panel with its
+            // OnUsed already blank, so the panel that exists to reveal what is there revealed
+            // nothing, and the loss was silent because no target behavior was replacing it. Flags
+            // are already exempt for exactly this reason; scripts belong with them.
+            if (ReferenceEquals(to, PlaceableBehaviorCatalog.Custom))
+                return;
+
             foreach (var slot in from.Scripts)
             {
                 if (to.Scripts.ContainsKey(slot.Key))

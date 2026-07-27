@@ -233,29 +233,45 @@ namespace SWLOR.Toolset.Workspace
         /// otherwise be overwritten by whatever this session happened to be holding.
         /// </para>
         /// </remarks>
-        public CategorySaveResult SaveChanges()
+        /// <summary>
+        /// Whether <see cref="SaveChanges"/> would be refused, without writing anything or discarding
+        /// pending edits.
+        /// </summary>
+        /// <remarks>
+        /// For callers whose real work is irreversible. Deleting a blueprint also has to drop it from
+        /// the sidecar; if that write is going to be refused, the honest order is to find out first
+        /// rather than to delete the file and then discover the category still lists it.
+        /// </remarks>
+        public CategorySaveResult CanSaveChanges()
         {
             var catalog = Catalog;
             if (catalog == null)
                 return CategorySaveResult.Ok();
 
             if (catalog.IsReadOnly)
-            {
-                var refusal = catalog.ReadOnlyReason
-                    ?? "These categories will not be overwritten.";
-                _log.AppendLine(refusal);
-                RestorePersistedCatalog();
-                return CategorySaveResult.Failed(refusal);
-            }
+                return CategorySaveResult.Failed(
+                    catalog.ReadOnlyReason ?? "These categories will not be overwritten.");
 
             if (HasExternalChange(catalog))
-            {
-                var conflict =
+                return CategorySaveResult.Failed(
                     $"'{catalog.FilePath}' changed outside the toolset; the change was not saved. " +
-                    "Reopen the module to pick up the external version.";
-                _log.AppendLine(conflict);
+                    "Reopen the module to pick up the external version.");
+
+            return CategorySaveResult.Ok();
+        }
+
+        public CategorySaveResult SaveChanges()
+        {
+            var catalog = Catalog;
+            if (catalog == null)
+                return CategorySaveResult.Ok();
+
+            var preflight = CanSaveChanges();
+            if (!preflight.Saved)
+            {
+                _log.AppendLine(preflight.Problem!);
                 RestorePersistedCatalog();
-                return CategorySaveResult.Failed(conflict);
+                return preflight;
             }
 
             try

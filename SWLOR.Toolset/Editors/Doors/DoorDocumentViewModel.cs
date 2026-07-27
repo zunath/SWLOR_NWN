@@ -71,7 +71,8 @@ namespace SWLOR.Toolset.Editors.Doors
                 resourceIndex,
                 resolveModel,
                 thumbnails: thumbnails,
-                choicePreviews: choicePreviews);
+                choicePreviews: choicePreviews,
+                prompts: prompts);
             UpdateTitle();
         }
 

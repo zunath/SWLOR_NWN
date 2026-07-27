@@ -74,10 +74,12 @@ namespace SWLOR.Toolset.Editors.Triggers
             IGameCodeIndex? gameCodeIndex = null,
             Func<string, string?>? resolveTag = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
-            ChoicePreviewService? previews = null)
+            ChoicePreviewService? previews = null,
+            Services.IEditorPromptService? prompts = null)
         {
             ArgumentNullException.ThrowIfNull(trigger);
 
+            _prompts = prompts;
             _store = new BehaviorValueStore(trigger);
             _runEdit = runEdit;
             _gameCodeIndex = gameCodeIndex;
@@ -93,6 +95,9 @@ namespace SWLOR.Toolset.Editors.Triggers
             RebuildBehaviorSection();
         }
 
+        /// <summary>Asks before a switch throws something away. Null in tests, which never lose data.</summary>
+        private readonly Services.IEditorPromptService? _prompts;
+
         /// <summary>
         /// Switches behavior: clear what the old one owned, then write what the new one manages, as
         /// one undo step so a mis-click is one Ctrl+Z rather than several.
@@ -103,7 +108,47 @@ namespace SWLOR.Toolset.Editors.Triggers
             if (descriptor is not TriggerBehavior behavior || behavior.Id == Behavior.Id)
                 return;
 
+            _ = ChooseBehaviorAsync(behavior);
+        }
+
+        /// <summary>
+        /// The switch itself, with the confirmation in front of it when something real is being
+        /// discarded.
+        /// </summary>
+        /// <remarks>
+        /// Custom is the case that needed this. Its <c>Fields</c> are every raw script slot the
+        /// trigger has — heartbeat, user-defined, an enter handler nobody recognises — and the clear
+        /// below removes all of them before the preset writes its two. Nothing warned, and the loss
+        /// only became visible after the document was saved.
+        /// </remarks>
+        public async Task ChooseBehaviorAsync(TriggerBehavior behavior)
+        {
+            ArgumentNullException.ThrowIfNull(behavior);
+
             var previous = Behavior;
+            if (behavior.Id == previous.Id)
+                return;
+
+            var losses = BehaviorSwitchLosses.Describe(
+                _store, previous.Manages, previous.Fields, behavior.Manages);
+
+            if (losses.Count > 0 && _prompts != null)
+            {
+                var confirmed = await _prompts.ConfirmDestructiveAsync(
+                    $"Change behavior to {behavior.DisplayName}?",
+                    $"This clears {Describe(losses)}, which {(losses.Count == 1 ? "is" : "are")} " +
+                    $"not part of {behavior.DisplayName}. Undo will put {(losses.Count == 1 ? "it" : "them")} back " +
+                    "until the trigger is saved.",
+                    "Change behavior").ConfigureAwait(true);
+
+                if (!confirmed)
+                {
+                    // Put the rail's highlight back on what the trigger actually is.
+                    BehaviorListItemViewModel.Select(BehaviorList, previous.Id);
+                    return;
+                }
+            }
+
             var applied = _runEdit($"Set behavior to {behavior.DisplayName}", () =>
             {
                 _store.Clear(previous.Manages, previous.Fields);
@@ -112,11 +157,24 @@ namespace SWLOR.Toolset.Editors.Triggers
             });
 
             if (!applied)
+            {
+                BehaviorListItemViewModel.Select(BehaviorList, previous.Id);
                 return;
+            }
 
             Behavior = behavior;
             RebuildBehaviorSection();
             ReloadRowsFromDocument();
+        }
+
+        /// <summary>Names the discarded slots in prose, capped so the prompt stays readable.</summary>
+        private static string Describe(IReadOnlyList<string> losses)
+        {
+            const int shown = 6;
+            var named = string.Join(", ", losses.Take(shown));
+            return losses.Count <= shown
+                ? named
+                : $"{named} and {losses.Count - shown} more";
         }
 
         /// <summary>

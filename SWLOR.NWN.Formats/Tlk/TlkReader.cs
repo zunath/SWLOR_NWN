@@ -44,6 +44,11 @@ public static class TlkReader
 
         var encoding = NwnTextEncoding.ForLanguage(languageId);
         var entries = new List<TlkEntry>(checked((int)count));
+        // Aliased entries (many records pointing at the same string-data range) share one decoded
+        // string, and every unique decode is charged against a cumulative budget so a small file
+        // cannot expand into gigabytes of managed strings.
+        var decodedStrings = new Dictionary<(uint Offset, uint Length), string>();
+        var allocationBudget = new AllocationBudget("TLK");
         for (var index = 0; index < count; index++)
         {
             var entryOffset = HeaderSize + (long)index * EntrySize;
@@ -58,9 +63,14 @@ public static class TlkReader
             string? text = null;
             if ((flags & TextPresent) != 0)
             {
-                var absoluteTextOffset = checked((long)stringsOffset + relativeTextOffset);
-                reader.ValidateRange(absoluteTextOffset, textLength, $"TLK string {index}");
-                text = encoding.GetString(reader.Slice(absoluteTextOffset, textLength, $"TLK string {index}"));
+                if (!decodedStrings.TryGetValue((relativeTextOffset, textLength), out text))
+                {
+                    var absoluteTextOffset = checked((long)stringsOffset + relativeTextOffset);
+                    reader.ValidateRange(absoluteTextOffset, textLength, $"TLK string {index}");
+                    allocationBudget.Reserve(textLength, $"TLK string {index}");
+                    text = encoding.GetString(reader.Slice(absoluteTextOffset, textLength, $"TLK string {index}"));
+                    decodedStrings[(relativeTextOffset, textLength)] = text;
+                }
             }
 
             entries.Add(new TlkEntry(flags, soundResRef, soundLength, text));

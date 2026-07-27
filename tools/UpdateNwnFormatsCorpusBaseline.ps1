@@ -37,6 +37,9 @@ $testArguments = @(
 Push-Location $repositoryRoot
 try
 {
+    # Baseline evidence must never come from a silently skipped run: the availability gate turns
+    # missing licensed assets into a hard failure under this variable.
+    $env:SWLOR_REQUIRE_LICENSED_CORPUS = "1"
     $testOutput = @(& dotnet @testArguments 2>&1)
     $testExitCode = $LASTEXITCODE
 }
@@ -120,16 +123,30 @@ $tlkEntryCounts = @(
         ForEach-Object { Number $_ "entries" }
 )
 
+# The corpus tests read whatever revision is checked out in the SWLOR_Haks worktree, so the
+# manifest must record that revision - not the HEAD gitlink, which lags during a staged
+# submodule bump. Fail on divergence the checkout cannot explain (dirty worktree).
+$haksPath = Join-Path $repositoryRoot "SWLOR_Haks"
+$submoduleHead = "$(& git -C $haksPath rev-parse HEAD)".Trim()
+if ($submoduleHead -notmatch "^[0-9a-f]{40}$")
+{
+    throw "Could not resolve the checked-out SWLOR_Haks revision."
+}
+$haksStatus = @(& git -C $haksPath status --porcelain)
+if ($haksStatus.Count -gt 0)
+{
+    throw "SWLOR_Haks worktree is dirty; the baseline would not be attributable to revision $submoduleHead."
+}
 $gitlinkLine = & git -C $repositoryRoot ls-tree HEAD SWLOR_Haks
 $gitlinkMatch = [regex]::Match("$gitlinkLine", "\b(?<sha>[0-9a-f]{40})\b")
-if (-not $gitlinkMatch.Success)
+if ($gitlinkMatch.Success -and $gitlinkMatch.Groups["sha"].Value -ne $submoduleHead)
 {
-    throw "Could not resolve the SWLOR_Haks gitlink from HEAD."
+    Write-Output "NOTE: SWLOR_Haks checkout $submoduleHead differs from the HEAD gitlink $($gitlinkMatch.Groups["sha"].Value) (staged submodule bump); recording the checkout."
 }
 
 $manifest = [ordered]@{
     schemaVersion = 2
-    swlorHaksGitlink = $gitlinkMatch.Groups["sha"].Value
+    swlorHaksGitlink = $submoduleHead
     formats = [ordered]@{
         keyBif = [ordered]@{
             keys = Number $keyBif "keys"

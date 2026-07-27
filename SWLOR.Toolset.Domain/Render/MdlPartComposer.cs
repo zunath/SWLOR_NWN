@@ -95,6 +95,12 @@ namespace SWLOR.Toolset.Domain.Render
                 attachedParts.TryAdd(partType.Trim(), partRoot);
             }
 
+            // A bare skeleton clone is not a usable composition: when every requested part is
+            // missing, malformed, or unmapped, return null so the caller takes its no-model
+            // fallback (the type symbol) instead of drawing an invisible ghost.
+            if (attachedParts.Count == 0)
+                return null;
+
             if (adjustSeams)
                 AdjustSeamOverlaps(composed, attachedParts);
 

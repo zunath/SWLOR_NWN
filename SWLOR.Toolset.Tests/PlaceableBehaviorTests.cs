@@ -818,6 +818,34 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void Apply_NamedBehaviorToCustomRetainsItsScripts()
+        {
+            var document = BuildDocument();
+            var chair = PlaceableBehaviorCatalog.FindById("chair")!;
+            PlaceableBehaviorApplier.Apply(
+                document.Root,
+                PlaceableBehaviorCatalog.None,
+                chair);
+            document.Root.GetOrNull("OnUsed")!.GetString().Should().Be("sit");
+
+            PlaceableBehaviorApplier
+                .ValuesLostBySwitching(
+                    document.Root,
+                    chair,
+                    PlaceableBehaviorCatalog.Custom)
+                .Should().BeEmpty(
+                    "entering the raw Custom editor does not discard the named behavior's wiring");
+
+            PlaceableBehaviorApplier.Apply(
+                document.Root,
+                chair,
+                PlaceableBehaviorCatalog.Custom);
+
+            document.Root.GetOrNull("OnUsed")!.GetString().Should().Be("sit",
+                "Custom must reveal the existing raw script rather than erase it");
+        }
+
+        [Test]
         public void Apply_CustomToDecorClearsRawWiringAndReportsWhatWillBeLost()
         {
             var document = BuildDocument(

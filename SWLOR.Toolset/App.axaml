@@ -26,7 +26,7 @@
         <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
                  Watermark="{Binding StrRefDisplay}"
                  IsVisible="{Binding IsMultiline}" AcceptsReturn="True" TextWrapping="Wrap"
-                 MinHeight="220" VerticalContentAlignment="Top"
+                 MinHeight="140" VerticalContentAlignment="Top"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
       </Grid>
@@ -35,7 +35,7 @@
     <!-- Every behavior editor's row, from one control. The trigger, waypoint, door and sound
          editors each used to carry their own copy of this markup. -->
     <DataTemplate DataType="behaviors:BehaviorRowViewModel">
-      <behaviors:BehaviorRowView Margin="16,1" />
+      <behaviors:BehaviorRowView Margin="4,1" />
     </DataTemplate>
 
     <DataTemplate DataType="editors:CheckFieldViewModel">
@@ -130,7 +130,7 @@
          A name picker is an AutoCompleteBox rather than a combo because the tag source alone offers
          five figures of options and a stored value the source does not know must stay visible. -->
     <DataTemplate DataType="placeables:BehaviorFieldViewModel">
-      <Grid ColumnDefinitions="150,*,Auto" ColumnSpacing="12" RowDefinitions="Auto,Auto" Margin="0,2">
+      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" RowDefinitions="Auto,Auto,Auto" Margin="0,2">
         <StackPanel Grid.Column="0" VerticalAlignment="Center">
           <TextBlock Text="{Binding Label}" Classes="dim" TextWrapping="Wrap" />
           <TextBlock Text="required" Classes="count" IsVisible="{Binding IsRequired}" />
@@ -252,10 +252,10 @@
           </ScrollViewer>
         </StackPanel>
 
-        <TextBlock Grid.Column="2" Margin="8,0,0,0" VerticalAlignment="Center" Classes="count"
+        <TextBlock Grid.Row="1" Grid.Column="1" Classes="count" Margin="0,2,0,0" TextWrapping="Wrap"
                    Text="{Binding StatusText}"
                    IsVisible="{Binding StatusText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}" Classes="dim"
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Description}" Classes="dim"
                    FontSize="11" TextWrapping="Wrap" Margin="0,3,0,3"
                    IsVisible="{Binding HasDescription}" />
       </Grid>

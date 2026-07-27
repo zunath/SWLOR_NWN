@@ -29,9 +29,19 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         public bool HasDetail => !string.IsNullOrWhiteSpace(Detail);
 
+        /// <summary>Whether this option stands for "any of them" and draws its own mark.</summary>
+        public bool IsAny => Choice.IsAny;
+
         /// <summary>Stands in until the picture lands, so a grid is never a field of empty boxes.</summary>
         public string Glyph =>
             string.IsNullOrWhiteSpace(Display) ? "?" : Display.Trim()[..1].ToUpperInvariant();
+
+        /// <summary>
+        /// Whether the tile falls back to its letter: no picture yet, and no mark of its own. The
+        /// "any of them" option is never a letter, because a letter on an empty tile reads as
+        /// artwork that failed rather than as a choice.
+        /// </summary>
+        public bool ShowsGlyph => Thumbnail == null && !IsAny;
 
         /// <summary>Null until the thumbnail has been decoded; the row shows the name meanwhile.</summary>
         [ObservableProperty]
@@ -45,6 +55,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
         {
             Choice = choice ?? throw new ArgumentNullException(nameof(choice));
         }
+
+        partial void OnThumbnailChanged(Bitmap? value) => OnPropertyChanged(nameof(ShowsGlyph));
 
         public static IReadOnlyList<BehaviorChoiceViewModel> From(
             IReadOnlyList<BehaviorChoice> choices)

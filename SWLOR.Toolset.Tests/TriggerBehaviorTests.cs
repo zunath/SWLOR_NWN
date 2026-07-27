@@ -529,6 +529,31 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>A bare trigger struct, standing in for a freshly created blueprint.</summary>
+        [Test]
+        public void SwappingAwayFromABehaviorDoesNotAskAboutWhatItWroteItself()
+        {
+            var trigger = NewTrigger();
+            var store = new BehaviorValueStore(trigger);
+            var transition = TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.AreaTransitionId);
+            var noSpawn = TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.NoSpawnZoneId);
+
+            foreach (var value in transition.Manages)
+                store.Apply(value, isInstance: true);
+
+            // Choosing Area Transition writes Cursor; choosing something else takes it away again.
+            // Asking the builder to approve that is asking them to approve undoing a change they
+            // never made.
+            BehaviorSwitchLosses.Describe(
+                    store, transition.Manages, transition.Fields, noSpawn.Manages)
+                .Should().BeEmpty();
+
+            // A value the builder has since moved off what the behavior pinned is a real loss.
+            store.SetInteger(BehaviorFieldStorage.Field, "Cursor", GffFieldType.Byte, 9);
+            BehaviorSwitchLosses.Describe(
+                    store, transition.Manages, transition.Fields, noSpawn.Manages)
+                .Should().Contain("Cursor");
+        }
+
         private static JsonGffStruct NewTrigger()
         {
             var document = JsonGffDocument.Parse(

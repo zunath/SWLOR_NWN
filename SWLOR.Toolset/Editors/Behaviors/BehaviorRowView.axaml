@@ -45,6 +45,7 @@
 
       <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice, Mode=TwoWay}"
                 MaxDropDownHeight="400" HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Left"
                 IsEnabled="{Binding !IsReadOnly}" IsVisible="{Binding IsPlainChoice}">
         <ComboBox.ItemTemplate>
           <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
@@ -105,9 +106,17 @@
                     <StackPanel Width="104" Spacing="3">
                       <Panel Height="78">
                         <!-- The letter stands in until the picture lands, so the grid is never a
-                             field of empty boxes while it fills. -->
+                             field of empty boxes while it fills. The option that means "any of
+                             them" draws a mark instead: it has no picture because there is no one
+                             picture it means, and a bare letter would read as artwork that failed. -->
                         <TextBlock Text="{Binding Glyph}" FontSize="24" Classes="dim"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   IsVisible="{Binding ShowsGlyph}" />
+                        <Path Data="{StaticResource ToolsetRandomIconGeometry}"
+                              Stroke="{DynamicResource InkBrush}" StrokeThickness="1.1"
+                              StrokeLineCap="Round" StrokeJoin="Round" Stretch="Uniform"
+                              Width="40" Height="40" IsVisible="{Binding IsAny}"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
                         <Image Source="{Binding Thumbnail}" Stretch="Uniform" />
                       </Panel>
                       <TextBlock Text="{Binding Display}" FontSize="10.5"

@@ -78,6 +78,27 @@
     Z
   </StreamGeometry>
 
+  <!--
+    The mark for a choice that stands for "any of them" rather than for one picture: two crossing
+    arrows, drawn on the same 16px grid as the close mark. The load screen picker needs it because
+    its Random row has no artwork to show and the alternative - the letter R on an empty tile -
+    reads as a screen that failed to load rather than as a deliberate choice.
+  -->
+  <StreamGeometry x:Key="ToolsetRandomIconGeometry">
+    M2,4 L5.5,4
+    C6.2,4 6.7,4.4 7.1,5
+    L9.2,10
+    C9.5,10.6 10,11 10.7,11
+    L14,11
+    M2,11 L5.5,11
+    C6.2,11 6.7,10.6 7.1,10
+    L9.2,5
+    C9.5,4.4 10,4 10.7,4
+    L14,4
+    M12.2,2.2 L14,4 L12.2,5.8
+    M12.2,9.2 L14,11 L12.2,12.8
+  </StreamGeometry>
+
   <StaticResource x:Key="DockIconCloseGeometry"
                   ResourceKey="ToolsetCloseIconGeometry" />
   <StaticResource x:Key="DockToolIconCloseGeometry"

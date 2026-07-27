@@ -60,6 +60,13 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
                 if (!value.ClearOnSwap || replaced.Contains(value.Name))
                     continue;
 
+                // A pinned value that still holds exactly what its behavior wrote is the editor's
+                // own footprint, not the builder's work. Choosing Area Transition writes Cursor and
+                // choosing anything else takes it away again; stopping to ask about that is asking
+                // the builder to approve undoing a change they never made.
+                if (store.Matches(value))
+                    continue;
+
                 Consider(value.Storage, value.Name, value.FieldType);
             }
 

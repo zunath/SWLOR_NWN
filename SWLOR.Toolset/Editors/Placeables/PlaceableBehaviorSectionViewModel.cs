@@ -154,9 +154,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             if (!ReferenceEquals(detected, Current))
             {
                 Current = detected;
-                _switching = true;
-                SelectedItem = Items.FirstOrDefault(item => ReferenceEquals(item.Behavior, Current));
-                _switching = false;
+                RestoreSelection();
                 BuildFields();
                 NotifyBehaviorProperties();
                 CaptureBehaviorBaseline();
@@ -193,6 +191,25 @@ namespace SWLOR.Toolset.Editors.Placeables
             NotifyBehaviorProperties();
         }
 
+        /// <summary>
+        /// Puts the list's highlight back on the behavior the placeable actually has, after a switch
+        /// that was refused or declined.
+        /// </summary>
+        /// <remarks>
+        /// Posted rather than assigned. The refusal is decided inside the notification the list
+        /// raised when it was clicked - for the confirm prompt, several turns later - and a list
+        /// told to change its selection while it is still processing that click keeps the highlight
+        /// the click put there. The pane then names one behavior while the highlight names another,
+        /// which reads as the click not registering at all.
+        /// </remarks>
+        private void RestoreSelection() =>
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                _switching = true;
+                SelectedItem = Items.FirstOrDefault(item => ReferenceEquals(item.Behavior, Current));
+                _switching = false;
+            });
+
         partial void OnSelectedItemChanged(BehaviorListItemViewModel? value)
         {
             if (_switching)
@@ -201,9 +218,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             // A heading is not a behavior; put the selection back where it was.
             if (value?.Behavior == null)
             {
-                _switching = true;
-                SelectedItem = Items.FirstOrDefault(item => ReferenceEquals(item.Behavior, Current));
-                _switching = false;
+                RestoreSelection();
                 return;
             }
 
@@ -248,9 +263,7 @@ namespace SWLOR.Toolset.Editors.Placeables
 
             if (!applied)
             {
-                _switching = true;
-                SelectedItem = Items.FirstOrDefault(item => ReferenceEquals(item.Behavior, Current));
-                _switching = false;
+                RestoreSelection();
                 return;
             }
 

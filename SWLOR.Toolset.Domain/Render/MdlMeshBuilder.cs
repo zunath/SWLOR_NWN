@@ -47,6 +47,18 @@ namespace SWLOR.Toolset.Domain.Render
         public required int[] Indices { get; init; }
 
         /// <summary>
+        /// The node's MDL diffuse colour, which multiplies the texture rather than replacing it.
+        /// White for the great majority of meshes, and for any that do not state one.
+        /// </summary>
+        /// <remarks>
+        /// Carried because for some models it is the only colour there is. Every waypoint marker in
+        /// the haks - the cyan flag, the orange one, the treasure chest - is drawn on
+        /// <c>tcn01_white</c> and coloured entirely by this, so a pipeline that samples the texture
+        /// alone renders the whole set as identical white shapes.
+        /// </remarks>
+        public Vector3 DiffuseColor { get; init; } = Vector3.One;
+
+        /// <summary>
         /// The source node's MDL <c>tilefade</c> flag: 0 for geometry that is always drawn, non-zero
         /// for geometry the engine fades out when the camera would otherwise be looking through it.
         /// </summary>
@@ -389,6 +401,7 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 NodeName = trimesh.Name,
                 TextureName = textureName,
+                DiffuseColor = ReadDiffuse(trimesh),
                 Positions = positions,
                 Normals = normals,
                 TexCoords = texCoords,
@@ -401,6 +414,17 @@ namespace SWLOR.Toolset.Domain.Render
                 AnimationFrames = BuildAnimationTransforms(trimesh, animationFrames)
             };
         }
+
+        /// <summary>
+        /// The node's diffuse colour, with an all-zero one read as unstated rather than as black.
+        /// </summary>
+        /// <remarks>
+        /// The zeros in this module's content are untextured helper planes - a five-vertex
+        /// <c>base</c> node with a NULL bitmap - and multiplying a preview to nothing on their
+        /// account would be reading "no colour given" as "paint it black".
+        /// </remarks>
+        private static Vector3 ReadDiffuse(MdlTrimeshNode trimesh) =>
+            trimesh.Diffuse == Vector3.Zero ? Vector3.One : trimesh.Diffuse;
 
         private static RenderEmitter BuildEmitter(
             MdlEmitterNode emitter,

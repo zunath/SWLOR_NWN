@@ -204,7 +204,6 @@
             <StackPanel Spacing="3" IsVisible="{Binding HasHighlight}">
               <TextBlock Text="{Binding HighlightedCaption}" TextWrapping="Wrap" FontSize="10.5" />
               <TextBlock Text="{Binding HighlightedModelName}" Classes="mono" FontSize="10" />
-              <TextBlock Text="{Binding HighlightedUsage}" Classes="count" />
             </StackPanel>
           </StackPanel>
         </Grid>

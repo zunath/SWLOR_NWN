@@ -158,6 +158,7 @@ namespace SWLOR.Toolset.Domain.Render
                         B = b,
                         C = c,
                         Texture = hasUvs ? texture : null,
+                        Tint = mesh.DiffuseColor,
                         UvA = hasUvs ? Uv(mesh, first) : Vector2.Zero,
                         UvB = hasUvs ? Uv(mesh, second) : Vector2.Zero,
                         UvC = hasUvs ? Uv(mesh, third) : Vector2.Zero
@@ -289,6 +290,7 @@ namespace SWLOR.Toolset.Domain.Render
                     Depth = depth,
                     Shade = Math.Clamp(Vector3.Dot(normal, LightDirection), 0f, 1f),
                     Texture = source.Texture,
+                    Tint = source.Tint,
                     UvA = source.UvA,
                     UvB = source.UvB,
                     UvC = source.UvC
@@ -324,9 +326,15 @@ namespace SWLOR.Toolset.Domain.Render
                 return;
 
             var shade = palette.Ambient + (1f - palette.Ambient) * triangle.Shade;
-            var flatB = (byte)Math.Clamp(palette.BaseB * shade, 0, 255);
-            var flatG = (byte)Math.Clamp(palette.BaseG * shade, 0, 255);
-            var flatR = (byte)Math.Clamp(palette.BaseR * shade, 0, 255);
+
+            // The MDL diffuse multiplies the texture rather than replacing it, exactly as the shade
+            // does, so the two fold into one factor per channel before the span is walked.
+            var tintR = shade * triangle.Tint.X;
+            var tintG = shade * triangle.Tint.Y;
+            var tintB = shade * triangle.Tint.Z;
+            var flatB = (byte)Math.Clamp(palette.BaseB * tintB, 0, 255);
+            var flatG = (byte)Math.Clamp(palette.BaseG * tintG, 0, 255);
+            var flatR = (byte)Math.Clamp(palette.BaseR * tintR, 0, 255);
 
             for (var y = minY; y <= maxY; y++)
             {
@@ -347,7 +355,7 @@ namespace SWLOR.Toolset.Domain.Render
                         // far below a pixel, so the divide a correct implementation would need buys
                         // nothing here.
                         var uv = triangle.UvA * w0 + triangle.UvB * w1 + triangle.UvC * w2;
-                        if (!TrySample(triangle.Texture, uv, shade, out r, out g, out b))
+                        if (!TrySample(triangle.Texture, uv, tintR, tintG, tintB, out r, out g, out b))
                             continue; // Cut-out texel: leave whatever is behind it showing.
                     }
 
@@ -361,11 +369,19 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         /// <summary>
-        /// Point-samples a wrapped UV and applies the key light. Returns false for a texel the artwork
-        /// marks transparent, which the caller treats as not covered at all.
+        /// Point-samples a wrapped UV and applies the key light and the mesh's diffuse colour.
+        /// Returns false for a texel the artwork marks transparent, which the caller treats as not
+        /// covered at all.
         /// </summary>
         private static bool TrySample(
-            TextureImage texture, Vector2 uv, float shade, out byte r, out byte g, out byte b)
+            TextureImage texture,
+            Vector2 uv,
+            float tintR,
+            float tintG,
+            float tintB,
+            out byte r,
+            out byte g,
+            out byte b)
         {
             r = g = b = 0;
 
@@ -383,9 +399,9 @@ namespace SWLOR.Toolset.Domain.Render
             if (texture.Pixels[offset + 3] < AlphaCutoff)
                 return false;
 
-            r = (byte)Math.Clamp(texture.Pixels[offset] * shade, 0, 255);
-            g = (byte)Math.Clamp(texture.Pixels[offset + 1] * shade, 0, 255);
-            b = (byte)Math.Clamp(texture.Pixels[offset + 2] * shade, 0, 255);
+            r = (byte)Math.Clamp(texture.Pixels[offset] * tintR, 0, 255);
+            g = (byte)Math.Clamp(texture.Pixels[offset + 1] * tintG, 0, 255);
+            b = (byte)Math.Clamp(texture.Pixels[offset + 2] * tintB, 0, 255);
             return true;
         }
 
@@ -402,6 +418,9 @@ namespace SWLOR.Toolset.Domain.Render
             /// <summary>Null when this triangle's mesh has no resolvable texture and fills flat.</summary>
             public TextureImage? Texture;
 
+            /// <summary>The mesh's diffuse colour, multiplied into whatever this triangle fills with.</summary>
+            public Vector3 Tint;
+
             public Vector2 UvA;
             public Vector2 UvB;
             public Vector2 UvC;
@@ -415,6 +434,10 @@ namespace SWLOR.Toolset.Domain.Render
             public float Depth;
             public float Shade;
             public TextureImage? Texture;
+
+            /// <summary>The mesh's diffuse colour, multiplied into the fill.</summary>
+            public Vector3 Tint;
+
             public Vector2 UvA;
             public Vector2 UvB;
             public Vector2 UvC;

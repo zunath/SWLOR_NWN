@@ -612,7 +612,10 @@ namespace SWLOR.Toolset.Tests
             // whatever was left.
             app.Should().NotContain("Text=\"{Binding StrRefDisplay}\"");
             app.Should().Contain("Watermark=\"{Binding StrRefDisplay}\"");
-            app.Should().Contain("MinHeight=\"220\"");
+
+            // The description's problem was its width, not its height: a floor tall enough to write
+            // in, low enough that it does not own a short window.
+            app.Should().Contain("MinHeight=\"140\"");
 
             var blueprintView = File.ReadAllText(Path.Combine(
                 CorpusLocator.RepositoryRoot,
@@ -1314,6 +1317,25 @@ namespace SWLOR.Toolset.Tests
         private static PlaceableBehaviorField Field(string behaviorId, string variableName) =>
             PlaceableBehaviorCatalog.FindById(behaviorId)!.Fields
                 .Single(field => field.VariableName == variableName);
+
+        [Test]
+        public void ChoosingABehaviorInTheListMakesItTheCurrentOne()
+        {
+            var section = BuildBehaviorSection();
+            var doorBlocker = section.Items.Single(item =>
+                item.Behavior?.Id == "door_blocker");
+            var custom = section.Items.Single(item =>
+                item.Behavior?.Id == PlaceableBehaviorCatalog.CustomId);
+
+            section.SelectedItem = doorBlocker;
+            section.CurrentName.Should().Be(doorBlocker.Behavior!.Name);
+
+            // The list is the control; the pane is what it controls. A highlight that moves while
+            // the pane keeps the old behavior's name reads as the click not registering.
+            section.SelectedItem = custom;
+            section.CurrentName.Should().Be(PlaceableBehaviorCatalog.Custom.Name);
+            section.ShowsCustomFlags.Should().BeTrue();
+        }
 
         private static PlaceableBehaviorSectionViewModel BuildBehaviorSection()
         {

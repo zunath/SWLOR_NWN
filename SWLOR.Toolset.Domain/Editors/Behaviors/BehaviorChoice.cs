@@ -25,6 +25,14 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         /// </summary>
         public string? ModelResRef { get; }
 
+        /// <summary>
+        /// Whether this option stands for "any of them" rather than for one of them — the load
+        /// screen row that leaves the choice to the destination area. It has no picture because
+        /// there is no one picture it means, which is different from a picture that failed to load,
+        /// and a picker that draws pictures has to say which of the two it is showing.
+        /// </summary>
+        public bool IsAny { get; init; }
+
         public bool IsStringValue => StringValue != null;
 
         public BehaviorChoice(

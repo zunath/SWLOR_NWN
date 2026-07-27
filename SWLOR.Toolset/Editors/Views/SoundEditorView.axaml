@@ -11,7 +11,7 @@
       <StackPanel Margin="16,1">
         <behaviors:BehaviorRowView />
 
-        <Grid ColumnDefinitions="220,*" IsVisible="{Binding IsSoundList}">
+        <Grid ColumnDefinitions="150,*" ColumnSpacing="12" IsVisible="{Binding IsSoundList}">
           <StackPanel Grid.Column="1" Spacing="6"
                       DataContext="{Binding SoundList}" x:DataType="sounds:SoundListEditorViewModel">
             <!-- The catalog is a visible select list, not a name to guess at: a builder picking an

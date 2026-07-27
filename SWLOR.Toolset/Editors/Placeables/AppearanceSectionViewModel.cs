@@ -255,8 +255,6 @@ namespace SWLOR.Toolset.Editors.Placeables
 
         public string? HighlightedCaption => Gallery.Highlighted?.Caption;
 
-        public string? HighlightedUsage => Gallery.Highlighted?.Detail;
-
         /// <summary>Raised after the stored appearance changes, so the preview can re-resolve.</summary>
         public event Action? AppearanceChanged;
 
@@ -305,7 +303,6 @@ namespace SWLOR.Toolset.Editors.Placeables
             OnPropertyChanged(nameof(HasHighlight));
             OnPropertyChanged(nameof(HighlightedModelName));
             OnPropertyChanged(nameof(HighlightedCaption));
-            OnPropertyChanged(nameof(HighlightedUsage));
             UpdatePreviewScene();
         }
 
@@ -445,15 +442,10 @@ namespace SWLOR.Toolset.Editors.Placeables
                 .Select(row => new Appearance.AppearanceOption(
                     row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture),
                     row.DisplayName,
-                    Detail(row, usage.CountFor(row.Id)),
+                    row.ModelName,
                     ModelResRef: row.ModelName))
                 .ToList());
         }
-
-        private static string Detail(PlaceableModelRow row, int usageCount) =>
-            usageCount > 0
-                ? $"{row.ModelName} · used {usageCount}\u00d7"
-                : row.ModelName;
 
         private void WriteAppearance(int id)
         {

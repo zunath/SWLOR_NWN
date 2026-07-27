@@ -116,6 +116,8 @@ namespace SWLOR.Toolset.Services
         /// </summary>
         public static void WriteNewAtomic(string path, byte[] bytes)
         {
+            ModuleMutationLock.ThrowIfModuleLocked();
+
             var temporaryPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
             try
             {
@@ -145,14 +147,22 @@ namespace SWLOR.Toolset.Services
         /// </remarks>
         public static StagedWrite Stage(string path, byte[] bytes)
         {
+            // Checked at staging as well as at commit: staging writes a real file into the folder
+            // the packer is copying, and a stray .tmp arriving mid-pass is the thing the packer's
+            // own filter exists to survive rather than something to hand it.
+            ModuleMutationLock.ThrowIfModuleLocked();
+
             var temporaryPath = path + ".tmp";
             File.WriteAllBytes(temporaryPath, bytes);
             return new StagedWrite(path, temporaryPath);
         }
 
         /// <summary>Replaces the real file with its staged content.</summary>
-        public static void Commit(StagedWrite staged) =>
+        public static void Commit(StagedWrite staged)
+        {
+            ModuleMutationLock.ThrowIfModuleLocked();
             File.Move(staged.TemporaryPath, staged.TargetPath, overwrite: true);
+        }
 
         /// <summary>
         /// Commits a group of staged writes as one logical save, restoring every original if any
@@ -169,6 +179,10 @@ namespace SWLOR.Toolset.Services
             ArgumentNullException.ThrowIfNull(stagedWrites);
             if (stagedWrites.Count == 0)
                 return;
+
+            // The whole group is refused up front. Half a triplet installed and then rolled back is
+            // a worse outcome than not starting, and the pack is not going to finish mid-loop.
+            ModuleMutationLock.ThrowIfModuleLocked();
 
             var states = stagedWrites.Select(staged => new CommitState(staged)).ToList();
             try

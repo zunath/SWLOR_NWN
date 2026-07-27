@@ -172,6 +172,13 @@ namespace SWLOR.Toolset.Editors.Doors
             if (behavior.Id == previous.Id)
                 return;
 
+            // Entering Custom clears nothing: Custom is the raw editor for these very fields, and
+            // nothing is replacing them.
+            //
+            // A door is deliberately NOT on that rule. The catalog classifies a door by its locals,
+            // so switching a Key Item Door to Custom is precisely how a builder unwires it - the
+            // clear is the operation, not a side effect of it. What a door needed was the
+            // confirmation below, for the locals the preset does not own.
             var losses = BehaviorSwitchLosses.Describe(
                 _store,
                 previous.Manages,

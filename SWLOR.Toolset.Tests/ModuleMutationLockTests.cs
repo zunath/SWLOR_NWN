@@ -177,6 +177,54 @@ namespace SWLOR.Toolset.Tests
             announced.Should().BeGreaterThan(0, "the palette's write controls have to be told, not asked");
         }
 
+        /// <summary>
+        /// The backstop, and the reason it is process-wide. Eight editor tabs each own a Save button
+        /// that goes straight to their own TrySaveAsync; greying the shell's menu never reached any
+        /// of them, so every one was a way to replace an ARE/GIT/GIC triplet while the packer walked
+        /// past it - leaving the built module with two generations of the same area. Checking at the
+        /// write means a ninth editor cannot forget.
+        /// </summary>
+        [Test]
+        public void NoModuleWriteLandsWhileTheModuleIsLocked()
+        {
+            var directory = Path.Combine(Path.GetTempPath(), $"swlor_write_{Guid.NewGuid():N}");
+            Directory.CreateDirectory(directory);
+            var path = Path.Combine(directory, "guard.utc.json");
+            File.WriteAllText(path, "{\"original\":true}");
+
+            var mutationLock = new ModuleMutationLock();
+            var previous = ModuleMutationLock.ModuleWrites;
+            ModuleMutationLock.ModuleWrites = mutationLock;
+
+            try
+            {
+                mutationLock.Set(true);
+
+                var write = () => SaveService.WriteAtomic(
+                    path, System.Text.Encoding.UTF8.GetBytes("{\"new\":true}"));
+                write.Should().Throw<ModuleLockedException>();
+
+                var create = () => SaveService.WriteNewAtomic(
+                    Path.Combine(directory, "fresh.utc.json"),
+                    System.Text.Encoding.UTF8.GetBytes("{}"));
+                create.Should().Throw<ModuleLockedException>();
+
+                File.ReadAllText(path).Should().Be("{\"original\":true}");
+                Directory.GetFiles(directory).Should().ContainSingle(
+                    "a refused write leaves no staging debris either");
+
+                mutationLock.Set(false);
+
+                write.Should().NotThrow();
+                File.ReadAllText(path).Should().Be("{\"new\":true}");
+            }
+            finally
+            {
+                ModuleMutationLock.ModuleWrites = previous;
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+
         private sealed class StubPrompts : IEditorPromptService
         {
             public Task<UnsavedChangesChoice> ConfirmCloseAsync(string name) =>

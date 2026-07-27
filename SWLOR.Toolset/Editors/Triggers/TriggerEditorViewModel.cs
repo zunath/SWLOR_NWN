@@ -129,8 +129,14 @@ namespace SWLOR.Toolset.Editors.Triggers
             if (behavior.Id == previous.Id)
                 return;
 
-            var losses = BehaviorSwitchLosses.Describe(
-                _store, previous.Manages, previous.Fields, behavior.Manages);
+            // Entering Custom clears nothing: Custom is the raw editor for these very fields, and
+            // nothing is replacing them. See the waypoint and sound editors for the same rule.
+            var entersRawEditing = behavior.AllowsVariables;
+
+            var losses = entersRawEditing
+                ? Array.Empty<string>()
+                : BehaviorSwitchLosses.Describe(
+                    _store, previous.Manages, previous.Fields, behavior.Manages);
 
             if (losses.Count > 0 && _prompts != null)
             {
@@ -151,7 +157,9 @@ namespace SWLOR.Toolset.Editors.Triggers
 
             var applied = _runEdit($"Set behavior to {behavior.DisplayName}", () =>
             {
-                _store.Clear(previous.Manages, previous.Fields);
+                if (!entersRawEditing)
+                    _store.Clear(previous.Manages, previous.Fields);
+
                 foreach (var value in behavior.Manages)
                     _store.Apply(value, _isInstance);
             });

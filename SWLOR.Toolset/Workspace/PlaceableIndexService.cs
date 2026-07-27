@@ -29,6 +29,16 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>Set when content changed mid-scan, so the stale result is followed by a fresh one.</summary>
         private bool _rescanWhenIdle;
 
+        /// <summary>
+        /// How long a burst of saves has to settle before the module is rescanned. A rescan is a
+        /// pass over every area's GIT and every placeable blueprint, so saving ten blueprints in a
+        /// row must not buy ten of them.
+        /// </summary>
+        private static readonly TimeSpan RescanDebounce = TimeSpan.FromSeconds(2);
+
+        /// <summary>Cancels the pending rescan when more content changes before it fires.</summary>
+        private CancellationTokenSource? _rescanDebounce;
+
         public PlaceableIndexService(WorkspaceContext workspaceContext)
         {
             _workspaceContext = workspaceContext;
@@ -48,17 +58,31 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
-        /// Drops the built indexes and rescans, if anything is listening. A scan already in flight is
-        /// left to finish - it will publish, and this will then be re-run against the newer content.
+        /// Drops the built indexes, and rescans if anything was relying on them.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// A rescan reads every area's GIT and every placeable blueprint, so this is careful about
+        /// when it actually starts one. Nothing is scanned if nothing had been scanned yet - the
+        /// next editor to open will ask, and a session that saves blueprints without ever opening a
+        /// placeable should not pay for an index nobody is reading. And a burst of saves settles
+        /// before the rescan fires, so ten saves in a row cost one pass rather than ten.
+        /// </para>
+        /// <para>
+        /// A scan already in flight is left to finish - it will publish, and the rescan is queued
+        /// behind it rather than racing it.
+        /// </para>
+        /// </remarks>
         public void Invalidate()
         {
             // The workspace's tag index caches its own dictionaries for the life of the workspace,
             // so clearing only this service's handle would hand the next scan the same stale answer.
             _workspaceContext.Workspace?.TagIndex.Invalidate();
 
+            bool wasBuilt;
             lock (_gate)
             {
+                wasBuilt = _builtFor != null;
                 _builtFor = null;
 
                 // Mid-scan: the in-flight pass is about to claim the root as built. Let it, and
@@ -70,7 +94,29 @@ namespace SWLOR.Toolset.Workspace
                 }
             }
 
-            EnsureBuilt();
+            if (!wasBuilt)
+                return;
+
+            QueueRescan();
+        }
+
+        /// <summary>Rescans once the changes stop arriving.</summary>
+        private void QueueRescan()
+        {
+            _rescanDebounce?.Cancel();
+            _rescanDebounce?.Dispose();
+
+            var pending = new CancellationTokenSource();
+            _rescanDebounce = pending;
+            var token = pending.Token;
+
+            Task.Delay(RescanDebounce, token).ContinueWith(
+                task =>
+                {
+                    if (!task.IsCanceled)
+                        Dispatcher.UIThread.Post(EnsureBuilt);
+                },
+                TaskScheduler.Default);
         }
 
         public ModuleTagIndex? Tags { get; private set; }
@@ -138,7 +184,7 @@ namespace SWLOR.Toolset.Workspace
                     // Content changed while this pass was reading; what it published is already
                     // one edit behind.
                     if (rescan)
-                        Invalidate();
+                        QueueRescan();
                 });
             });
         }

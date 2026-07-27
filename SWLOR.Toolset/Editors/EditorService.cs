@@ -212,11 +212,27 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>Compiles a script by resref, for callers outside an open tab (the explorer).</summary>
+        /// <remarks>
+        /// An open tab with unsaved edits is routed through its own compile path, which saves first.
+        /// The compiler reads the file from disk, so without this the explorer's Compile produced
+        /// bytecode for source the builder had already replaced on screen - and for a dirty include
+        /// it rebuilt every dependent entry point from the old version, which is a far larger wrong
+        /// answer than one stale script.
+        /// </remarks>
         public async Task CompileScriptAsync(string resRef)
         {
             if (_compileService == null || !_compileService.IsAvailable)
             {
                 _log.AppendLine("Cannot compile: nwn_script_comp.exe is missing from tools/SWLOR.CLI.");
+                return;
+            }
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace != null &&
+                _openScriptEditors.TryGetValue(
+                    workspace.GetResourcePath(ResourceType.Nss, resRef), out var open))
+            {
+                await open.CompileCommand.ExecuteAsync(null).ConfigureAwait(true);
                 return;
             }
 

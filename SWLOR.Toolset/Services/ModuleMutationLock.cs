@@ -44,5 +44,39 @@ namespace SWLOR.Toolset.Services
             _isLocked = isLocked;
             Changed?.Invoke();
         }
+
+        /// <summary>
+        /// The lock every module write is checked against, or null when nothing is enforcing one.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Process-wide on purpose, and the one piece of shared state here that is. Greying a
+        /// command is a courtesy; this is the guarantee. Eight editor tabs each own a Save button
+        /// that goes straight to their own <c>TrySaveAsync</c>, and every one of them was a way to
+        /// replace an ARE/GIT/GIC triplet while the packer was walking past it — so the module
+        /// being built could contain two generations of the same area. Asking each editor to
+        /// remember the check is asking the ninth one to forget it.
+        /// </para>
+        /// <para>
+        /// Left null by tests and by any host that has no shell, where there is no packer to race.
+        /// </para>
+        /// </remarks>
+        public static ModuleMutationLock? ModuleWrites { get; set; }
+
+        /// <summary>
+        /// Throws when a module-wide operation is in flight. Called from the write paths in
+        /// <c>SaveService</c>, so a refused save surfaces through the same "Save failed" reporting
+        /// every other write failure already uses.
+        /// </summary>
+        public static void ThrowIfModuleLocked()
+        {
+            if (ModuleWrites?.IsLocked == true)
+                throw new ModuleLockedException();
+        }
     }
+
+    /// <summary>Raised when a write is attempted while the module is being packed, validated or built.</summary>
+    public sealed class ModuleLockedException()
+        : InvalidOperationException(
+            "The module is being packed, validated, or built. Try again when that finishes.");
 }

@@ -70,9 +70,19 @@ namespace SWLOR.Toolset.Editors.Waypoints
 
             var previous = Behavior;
 
+            // Entering Custom clears nothing. Custom is the raw editor for these very fields, so
+            // wiping them on the way in leaves the panel that exists to expose the configuration
+            // opening with the configuration erased - a Map Note switched to Custom lost its text,
+            // HasMapNote, MapNoteEnabled and appearance, and a Point Ambience lost its Volume,
+            // Interval, PitchVariation, MaxDistance, Elevation and Times. Nothing is replacing any
+            // of it either, which is what makes the clear pure loss rather than a swap.
+            var entersRawEditing = behavior.AllowsVariables;
+
             var applied = _runEdit($"Set behavior to {behavior.DisplayName}", () =>
             {
-                _store.Clear(previous.Manages, previous.Fields);
+                if (!entersRawEditing)
+                    _store.Clear(previous.Manages, previous.Fields);
+
                 foreach (var value in behavior.Manages)
                     _store.Apply(value, _isInstance);
             });

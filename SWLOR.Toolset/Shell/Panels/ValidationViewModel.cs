@@ -79,18 +79,20 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
+            // Saved before IsRunning goes up. That flag is what raises the module-wide lock, and
+            // the lock refuses module writes - so claiming it first would refuse these saves.
+            StatusText = "Saving open editors before validation...";
+            if (!await _editorService().SaveAllAsync().ConfigureAwait(true))
+            {
+                StatusText = "Validation cancelled because an open editor could not be saved.";
+                _log.AppendLine("Validation aborted: one or more open editors were not saved.");
+                return;
+            }
+
             IsRunning = true;
 
             try
             {
-                StatusText = "Saving open editors before validation...";
-                if (!await _editorService().SaveAllAsync().ConfigureAwait(true))
-                {
-                    StatusText = "Validation cancelled because an open editor could not be saved.";
-                    _log.AppendLine("Validation aborted: one or more open editors were not saved.");
-                    return;
-                }
-
                 Issues.Clear();
                 StatusText = "Loading validation indexes...";
                 var gameCodeIndex = await Task.Run(

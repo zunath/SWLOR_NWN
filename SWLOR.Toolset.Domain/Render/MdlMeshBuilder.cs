@@ -416,15 +416,17 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         /// <summary>
-        /// The node's diffuse colour, with an all-zero one read as unstated rather than as black.
+        /// The node's diffuse colour, preserved verbatim - including explicit black.
         /// </summary>
         /// <remarks>
-        /// The zeros in this module's content are untextured helper planes - a five-vertex
-        /// <c>base</c> node with a NULL bitmap - and multiplying a preview to nothing on their
-        /// account would be reading "no colour given" as "paint it black".
+        /// The corpus authors black on purpose: <c>jr_lab_sink.mdl</c> carries rendered
+        /// <c>diffuse 0 0 0</c> geometry, and armor parts state black over their textures.
+        /// An unstated diffuse is already white (<see cref="MdlTrimeshNode.Diffuse"/> defaults to
+        /// <see cref="Vector3.One"/>), and non-rendered helper planes never reach this method
+        /// because <see cref="BuildMesh"/> skips <c>render 0</c> nodes, so no substitution for
+        /// zero is needed or correct.
         /// </remarks>
-        private static Vector3 ReadDiffuse(MdlTrimeshNode trimesh) =>
-            trimesh.Diffuse == Vector3.Zero ? Vector3.One : trimesh.Diffuse;
+        private static Vector3 ReadDiffuse(MdlTrimeshNode trimesh) => trimesh.Diffuse;
 
         private static RenderEmitter BuildEmitter(
             MdlEmitterNode emitter,

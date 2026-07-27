@@ -35,6 +35,15 @@ namespace SWLOR.Toolset.Editors
         private readonly IEditorPromptService _prompts;
         private readonly string _resRef;
 
+        /// <summary>The conversation's resref (stable, unlike <see cref="Document.Title"/>, which carries a dirty marker).</summary>
+        public string ResRef => _resRef;
+
+        /// <summary>
+        /// The live in-editor document, including unsaved edits. Dialogue search overlays this over
+        /// the on-disk copy so results reflect what the builder currently sees.
+        /// </summary>
+        public DlgDocument LiveDialog => _dialog;
+
         /// <summary>Where the walk has been and the player state after entering each NPC line.</summary>
         private readonly List<WalkStep> _trail = new();
 

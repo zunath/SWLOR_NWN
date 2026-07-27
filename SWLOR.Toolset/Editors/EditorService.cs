@@ -106,6 +106,19 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, ConversationEditorViewModel> _openConversations = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
+        /// Live documents of every open conversation editor, keyed by resref. Dialogue search
+        /// consults these before falling back to the saved file so unsaved edits are searchable.
+        /// Snapshot the map on the UI thread before handing it to a worker.
+        /// </summary>
+        public IReadOnlyDictionary<string, DlgDocument> GetOpenConversationDocuments()
+        {
+            var documents = new Dictionary<string, DlgDocument>(StringComparer.OrdinalIgnoreCase);
+            foreach (var editor in _openConversations.Values)
+                documents[editor.ResRef] = editor.LiveDialog;
+            return documents;
+        }
+
+        /// <summary>
         /// The conversation snippet registry, read once from the game code. Built lazily because
         /// reflecting over every <c>ISnippetListDefinition</c> is wasted work in a session that
         /// never opens a dialog.

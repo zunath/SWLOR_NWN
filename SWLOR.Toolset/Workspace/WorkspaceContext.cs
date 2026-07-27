@@ -114,13 +114,31 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
+        /// The resource kinds <see cref="BlueprintCatalog"/>'s initial build actually indexes - areas
+        /// and every blueprint type. Shared by <see cref="RefreshCatalogEntry"/>/
+        /// <see cref="RemoveCatalogEntry"/> here and by callers deciding whether to read the catalog or
+        /// enumerate the workspace directly (see <c>ModuleExplorerViewModel.IsCatalogIndexed</c>), so
+        /// the two can never drift apart.
+        /// </summary>
+        /// <remarks>
+        /// Dialogs and scripts are deliberately excluded. The initial build never indexes them, so
+        /// inserting one here on a save/create/external-change event would seed the catalog with
+        /// exactly one dialog or script - and Search would then return that single changed resource by
+        /// resref while silently omitting every other, unchanged one of the same type until the module
+        /// is reopened and the catalog rebuilt from scratch.
+        /// </remarks>
+        public static bool IsCatalogIndexedType(ResourceType type) =>
+            type == ResourceType.Area || ModuleWorkspace.BlueprintTypes.Contains(type);
+
+        /// <summary>
         /// Re-indexes one saved resource and tells catalog-backed panels to refresh immediately.
         /// </summary>
         public void RefreshCatalogEntry(ResourceType type, string resRef)
         {
             InvalidateTagIndexWhenRelevant(type);
             InvalidateScriptUsagesWhenRelevant(type);
-            Catalog?.RefreshEntry(type, resRef);
+            if (IsCatalogIndexedType(type))
+                Catalog?.RefreshEntry(type, resRef);
             CatalogEntryRefreshed?.Invoke(type, resRef);
         }
 
@@ -133,7 +151,8 @@ namespace SWLOR.Toolset.Workspace
         {
             InvalidateTagIndexWhenRelevant(type);
             InvalidateScriptUsagesWhenRelevant(type);
-            Catalog?.RemoveEntry(type, resRef);
+            if (IsCatalogIndexedType(type))
+                Catalog?.RemoveEntry(type, resRef);
             CatalogEntryRefreshed?.Invoke(type, resRef);
         }
 

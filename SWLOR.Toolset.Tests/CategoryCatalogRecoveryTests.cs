@@ -128,5 +128,27 @@ namespace SWLOR.Toolset.Tests
             catalog.IsReadOnly.Should().BeFalse("a first run has to be able to write its first sidecar");
             warning.Should().BeNull();
         }
+
+        /// <summary>
+        /// The JSON token <c>null</c> deserializes without throwing, so it never reaches the
+        /// JsonException handler above. Loading it as a writable empty catalog let the normal
+        /// section-seeding path save fresh sections straight over whatever the truncated or
+        /// corrupted write actually left behind, destroying the only evidence of it.
+        /// </summary>
+        [Test]
+        public void ASidecarThatDeserializesToNullLoadsReadOnly()
+        {
+            File.WriteAllText(_file, "null");
+
+            var catalog = CategoryCatalog.Load(_file, out var warning);
+
+            catalog.IsReadOnly.Should().BeTrue("a null document must not be treated as an empty, writable catalog");
+            warning.Should().NotBeNullOrEmpty();
+            catalog.ReadOnlyReason.Should().NotBeNullOrEmpty();
+
+            var act = () => catalog.Save();
+            act.Should().Throw<InvalidOperationException>();
+            File.ReadAllText(_file).Should().Be("null", "the builder's file must survive untouched");
+        }
     }
 }

@@ -200,6 +200,118 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
+        /// The compile writes to a transaction-unique temp file beside the canonical .ncs and only
+        /// installs it via <c>File.Move(..., overwrite: true)</c> once the compiler reports success.
+        /// A crash or kill mid-write then leaves a stray temp file, never a half-written canonical
+        /// artifact - and a clean run must leave no such debris behind either.
+        /// </summary>
+        [Test]
+        public async Task ASuccessfulCompileLeavesNoTemporaryArtifactsBehind()
+        {
+            if (!File.Exists(CompilerPath))
+                Assert.Ignore("vendored compiler not present");
+
+            var module = Path.Combine(_staging, "Module");
+            foreach (var folder in new[] { "are", "utc", "nss", "ncs" })
+                Directory.CreateDirectory(Path.Combine(module, folder));
+
+            await File.WriteAllTextAsync(
+                Path.Combine(module, "nss", "spike_atomic.nss"),
+                "void main() { }\r\n");
+
+            var log = new OutputLogService();
+            var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
+            context.Open(module);
+            var service = new ScriptCompileService(context, log, compilerPathOverride: CompilerPath);
+
+            var outcome = await service.CompileAsync("spike_atomic");
+
+            outcome.Succeeded.Should().BeTrue();
+            var ncsDirectory = Path.Combine(module, "ncs");
+            File.Exists(Path.Combine(ncsDirectory, "spike_atomic.ncs")).Should().BeTrue();
+            Directory.EnumerateFiles(ncsDirectory)
+                .Should().ContainSingle("a successful compile must not leave its staging file behind")
+                .Which.Should().Be(Path.Combine(ncsDirectory, "spike_atomic.ncs"));
+        }
+
+        /// <summary>
+        /// The previous valid artifact must survive a failed recompile untouched - it is compiled to a
+        /// temp path first, so a compile error (or, in production, a crash mid-write) never overwrites
+        /// it with a partial file that <c>ScriptStalenessScanner</c> would then read as newer than its
+        /// source.
+        /// </summary>
+        [Test]
+        public async Task AFailedRecompileLeavesThePreviousArtifactUntouched()
+        {
+            if (!File.Exists(CompilerPath))
+                Assert.Ignore("vendored compiler not present");
+
+            var module = Path.Combine(_staging, "Module");
+            foreach (var folder in new[] { "are", "utc", "nss", "ncs" })
+                Directory.CreateDirectory(Path.Combine(module, folder));
+
+            var source = Path.Combine(module, "nss", "spike_atomic2.nss");
+            await File.WriteAllTextAsync(source, "void main() { }\r\n");
+
+            var log = new OutputLogService();
+            var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
+            context.Open(module);
+            var service = new ScriptCompileService(context, log, compilerPathOverride: CompilerPath);
+
+            (await service.CompileAsync("spike_atomic2")).Succeeded.Should().BeTrue();
+            var output = Path.Combine(module, "ncs", "spike_atomic2.ncs");
+            var before = await File.ReadAllBytesAsync(output);
+
+            await File.WriteAllTextAsync(source, "void main() { ThisFunctionDoesNotExist(); }\r\n");
+
+            var outcome = await service.CompileAsync("spike_atomic2");
+
+            outcome.Succeeded.Should().BeFalse();
+            (await File.ReadAllBytesAsync(output)).Should().Equal(before,
+                "a failed compile must never replace the last good bytecode");
+            Directory.EnumerateFiles(Path.Combine(module, "ncs"))
+                .Should().ContainSingle("a failed compile must clean up its own staging file")
+                .Which.Should().Be(output);
+        }
+
+        /// <summary>
+        /// The fresh evidence from review: dmfi_dmw_inc.ncs survived every Build All since its source
+        /// stopped declaring main(), because the per-source loop simply skipped an include and the
+        /// packer went on shipping whatever ncs/ still had. Build All must purge the same-resref
+        /// output whenever it classifies a source as an include, not only when that source is
+        /// compiled directly through <see cref="ScriptCompileService.CompileAsync"/>.
+        /// </summary>
+        [Test]
+        public async Task BuildAllRemovesBytecodeForASourceThatBecameAnInclude()
+        {
+            if (!File.Exists(CompilerPath))
+                Assert.Ignore("vendored compiler not present");
+
+            var module = Path.Combine(_staging, "Module");
+            foreach (var folder in new[] { "are", "utc", "nss", "ncs" })
+                Directory.CreateDirectory(Path.Combine(module, folder));
+
+            // No main() - this is what an include looks like once its entry point has been removed.
+            await File.WriteAllTextAsync(
+                Path.Combine(module, "nss", "dmfi_dmw_inc.nss"),
+                "int SharedValue() { return 1; }\r\n");
+            var obsolete = Path.Combine(module, "ncs", "dmfi_dmw_inc.ncs");
+            await File.WriteAllBytesAsync(obsolete, new byte[] { 1, 2, 3, 4 });
+
+            var log = new OutputLogService();
+            var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
+            context.Open(module);
+            var service = new ScriptCompileService(context, log, compilerPathOverride: CompilerPath);
+
+            var outcome = await service.BuildAllAsync();
+
+            outcome.Ran.Should().BeTrue();
+            outcome.Purged.Should().Be(1);
+            File.Exists(obsolete).Should().BeFalse(
+                "Build All must not leave known-obsolete bytecode for the packer to ship verbatim");
+        }
+
+        /// <summary>
         /// The headline gate, reproduced as a test: recompiling a committed script must reproduce
         /// its committed .ncs byte for byte. dmfi_unact_nam03 is the smallest such script and uses
         /// no includes, so a failure here is unambiguous.

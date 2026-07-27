@@ -28,21 +28,37 @@ namespace SWLOR.Toolset.Domain.Conversations
     public static class DialogueSearch
     {
         /// <summary>
-        /// Every line containing <paramref name="query"/>, ordered by conversation then position.
+        /// One conversation's worth of matches, ordered by position, then every other conversation
+        /// with a match — bounded by unique conversations rather than by raw line count.
         /// </summary>
         /// <param name="dialogDirectory">The module's <c>dlg</c> folder.</param>
         /// <param name="query">Case-insensitive substring. Blank returns nothing.</param>
-        /// <param name="limit">Stops after this many hits, so a common word cannot hang the panel.</param>
+        /// <param name="limit">
+        /// Stops after this many <em>conversations</em> have matched, so a common word cannot hang
+        /// the panel. A conversation with several matching lines still only counts once - otherwise a
+        /// handful of early, heavily-matching dialogs in this alphabetically ordered scan could
+        /// exhaust the limit before it ever reaches the rest of the directory. Only the first
+        /// matching line of a conversation is kept; that is all the one caller today (Module
+        /// Contents) reads before collapsing hits down to resrefs.
+        /// </param>
         /// <param name="cancellationToken">
         /// Abandons the scan. This reads every conversation in the module, so a caller searching as
         /// the builder types needs a way to drop a query the next keystroke has already replaced
         /// rather than paying for all of them.
         /// </param>
+        /// <param name="openDocument">
+        /// Consulted by resref before a conversation is loaded from disk. An open editor with unsaved
+        /// changes should return its live in-memory document here, so the search matches what the
+        /// builder is looking at rather than what was last saved; returning null (the default) falls
+        /// back to <see cref="DlgDocument.Load"/>. Wired from an open-editors registry such as
+        /// <c>EditorService</c>'s conversation tab map.
+        /// </param>
         public static IReadOnlyList<DialogueHit> Search(
             string dialogDirectory,
             string query,
             int limit = 300,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default,
+            Func<string, DlgDocument?>? openDocument = null)
         {
             var hits = new List<DialogueHit>();
             if (string.IsNullOrWhiteSpace(query) || !Directory.Exists(dialogDirectory))
@@ -51,41 +67,62 @@ namespace SWLOR.Toolset.Domain.Conversations
             var files = Directory.EnumerateFiles(dialogDirectory, "*.json")
                 .OrderBy(path => path, StringComparer.OrdinalIgnoreCase);
 
+            var matchedConversations = 0;
             foreach (var path in files)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                DlgDocument document;
-                try
-                {
-                    document = DlgDocument.Load(path);
-                }
-                catch (Exception)
-                {
-                    // One unreadable conversation must not stop the search over the other 608.
-                    continue;
-                }
+                if (matchedConversations >= limit)
+                    break;
 
                 var resRef = Path.GetFileName(path).Replace(".dlg.json", string.Empty, StringComparison.OrdinalIgnoreCase);
 
-                foreach (var kind in new[] { DlgNodeKind.Entry, DlgNodeKind.Reply })
+                var document = openDocument?.Invoke(resRef);
+                if (document == null)
                 {
-                    var nodes = kind == DlgNodeKind.Entry ? document.Entries : document.Replies;
-                    for (var i = 0; i < nodes.Count; i++)
+                    try
                     {
-                        var text = nodes[i].Text;
-                        if (string.IsNullOrEmpty(text)
-                            || !text.Contains(query, StringComparison.OrdinalIgnoreCase))
-                            continue;
-
-                        hits.Add(new DialogueHit(resRef, kind, i, text));
-                        if (hits.Count >= limit)
-                            return hits;
+                        document = DlgDocument.Load(path);
                     }
+                    catch (Exception)
+                    {
+                        // One unreadable conversation must not stop the search over the other 608.
+                        continue;
+                    }
+                }
+
+                if (FindFirstMatch(document, resRef, query) is { } hit)
+                {
+                    hits.Add(hit);
+                    matchedConversations++;
                 }
             }
 
             return hits;
+        }
+
+        /// <summary>
+        /// The first line in <paramref name="document"/> containing <paramref name="query"/>,
+        /// entries before replies, or null when nothing matches. One hit is enough to name the
+        /// conversation as a match; the caller collapses hits to resrefs anyway.
+        /// </summary>
+        private static DialogueHit? FindFirstMatch(DlgDocument document, string resRef, string query)
+        {
+            foreach (var kind in new[] { DlgNodeKind.Entry, DlgNodeKind.Reply })
+            {
+                var nodes = kind == DlgNodeKind.Entry ? document.Entries : document.Replies;
+                for (var i = 0; i < nodes.Count; i++)
+                {
+                    var text = nodes[i].Text;
+                    if (string.IsNullOrEmpty(text)
+                        || !text.Contains(query, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    return new DialogueHit(resRef, kind, i, text);
+                }
+            }
+
+            return null;
         }
     }
 }

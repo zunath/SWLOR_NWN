@@ -109,6 +109,40 @@ namespace SWLOR.Toolset.Tests
             hits.Select(hit => hit.ResRef).Should().ContainSingle().Which.Should().Be("mining");
         }
 
+        /// <summary>
+        /// The declared debounce has to actually be awaited before the corpus is read, not just sit
+        /// there unused while the scan starts immediately. A single small conversation scans in a few
+        /// milliseconds, so timing the gap between the keystroke and the scan settling is enough to
+        /// tell "waited out the debounce" apart from "started reading right away".
+        /// </summary>
+        [AvaloniaTest]
+        public async Task DialogueScanWaitsOutTheDebounceBeforeReadingTheCorpus()
+        {
+            WriteConversation("mining", "The Veldite seam runs deep.");
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            workspace.Open(_root);
+            var explorer = new ModuleExplorerViewModel(
+                workspace,
+                new PropertiesViewModel(workspace, log),
+                new CategoryService(workspace, log),
+                log)
+            {
+                SelectedType = ResourceType.Dlg,
+                SearchDialogueText = true
+            };
+            explorer.Initialize();
+
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            explorer.Filter = "veldite";
+
+            await WaitUntilAsync(() => !explorer.IsSearchingDialogue);
+            stopwatch.Stop();
+
+            stopwatch.ElapsedMilliseconds.Should().BeGreaterThanOrEqualTo(200,
+                "the declared debounce must be awaited before the scan runs, not skipped");
+        }
+
         [AvaloniaTest]
         public async Task SavingAConversationInvalidatesHitsForTheSameQuery()
         {

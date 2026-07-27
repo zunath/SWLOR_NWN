@@ -164,8 +164,27 @@ namespace SWLOR.Toolset.Services
             Directory.CreateDirectory(ncsDirectory);
             var output = Path.Combine(ncsDirectory, resRef + ".ncs");
 
-            var result = await compiler.CompileAsync(source, output, cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
+            // Compiled to a transaction-unique temp file beside the canonical one - same directory, so
+            // the replace below is a same-volume rename - rather than straight to output. If the
+            // compiler crashes or is killed mid-write, a partial file lands on the temp path, not on
+            // the canonical .ncs: ScriptStalenessScanner only compares timestamps, so a partial write
+            // to the real path would look newer than its source and ModulePacker would ship it verbatim.
+            // The name must still end in ".ncs" - nwn_script_comp derives its output resref from -o by
+            // stripping whatever extension is there and reappending its own, so "foo.<guid>.ncs.tmp"
+            // comes back out as "foo.<guid>.ncs.ncs" rather than landing on the path actually given.
+            var temporaryOutput = Path.Combine(ncsDirectory, $"{resRef}.{Guid.NewGuid():N}.ncs");
+
+            ScriptCompileResult result;
+            try
+            {
+                result = await compiler.CompileAsync(source, temporaryOutput, cancellationToken: cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch
+            {
+                DeleteTempOutput(temporaryOutput);
+                throw;
+            }
 
             var diagnostics = ToAnalysisDiagnostics(
                 result, ScriptTextDocument.Load(source).Text, resRef);
@@ -173,9 +192,14 @@ namespace SWLOR.Toolset.Services
 
             if (result.Succeeded)
             {
+                // Installed only now that the compiler reported success - the previous valid artifact
+                // is never visible in a partially-written state.
+                File.Move(temporaryOutput, output, overwrite: true);
                 _log.AppendLine($"Compiled {resRef}.nss -> ncs/{resRef}.ncs");
                 return new CompileOutcome(true, diagnostics);
             }
+
+            DeleteTempOutput(temporaryOutput);
 
             _log.AppendLine(ScriptCompiler.RequiresGameInstall(result)
                 ? $"Could not compile {resRef}: it includes base-game headers, which needs an NWN installation."
@@ -279,7 +303,11 @@ namespace SWLOR.Toolset.Services
         /// compiled and zero failed is indistinguishable from a clean build without this, which is
         /// how a missing compiler came back as "Built 0 script(s)."
         /// </param>
-        public readonly record struct BuildAllOutcome(bool Ran, int Compiled, int Failed);
+        /// <param name="Purged">
+        /// Canonical .ncs files removed because their source is now an include - see
+        /// <see cref="BuildAllAsync"/>.
+        /// </param>
+        public readonly record struct BuildAllOutcome(bool Ran, int Compiled, int Failed, int Purged = 0);
 
         /// <summary>Compiles every entry-point script in the module.</summary>
         public async Task<BuildAllOutcome> BuildAllAsync(CancellationToken cancellationToken = default)
@@ -293,14 +321,34 @@ namespace SWLOR.Toolset.Services
 
             var compiled = 0;
             var failed = 0;
+            var purged = 0;
 
             foreach (var resRef in workspace.EnumerateResRefs(ResourceType.Nss))
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var source = workspace.GetResourcePath(ResourceType.Nss, resRef);
-                if (!File.Exists(source) || !ScriptStalenessScanner.IsEntryPoint(ScriptTextDocument.Load(source).Text))
+                if (!File.Exists(source))
                     continue;
+
+                if (!ScriptStalenessScanner.IsEntryPoint(ScriptTextDocument.Load(source).Text))
+                {
+                    // The source is an include now, but the module may still carry bytecode from
+                    // before it lost its entry point. CompileAsync's own include branch already
+                    // handles this when a script is compiled directly; Build All skipped the source
+                    // entirely instead, which is exactly why dmfi_dmw_inc.ncs survived every Build
+                    // All since its source stopped declaring main() - the staleness scanner
+                    // deliberately excludes includes, and the packer copies whatever ncs/ still has.
+                    var obsoleteOutput = Path.Combine(workspace.ModuleRoot, "ncs", resRef + ".ncs");
+                    if (File.Exists(obsoleteOutput))
+                    {
+                        File.Delete(obsoleteOutput);
+                        _log.AppendLine($"Removed obsolete compiled output ncs/{resRef}.ncs (now an include).");
+                        purged++;
+                    }
+
+                    continue;
+                }
 
                 if ((await CompileAsync(resRef, cancellationToken).ConfigureAwait(false)).Succeeded)
                     compiled++;
@@ -308,8 +356,10 @@ namespace SWLOR.Toolset.Services
                     failed++;
             }
 
-            _log.AppendLine($"Build All Scripts: {compiled} compiled, {failed} failed.");
-            return new BuildAllOutcome(Ran: true, compiled, failed);
+            _log.AppendLine(purged == 0
+                ? $"Build All Scripts: {compiled} compiled, {failed} failed."
+                : $"Build All Scripts: {compiled} compiled, {failed} failed, {purged} obsolete include artifact(s) removed.");
+            return new BuildAllOutcome(Ran: true, compiled, failed, purged);
         }
 
         /// <summary>Every script that transitively depends on an include.</summary>
@@ -362,6 +412,23 @@ namespace SWLOR.Toolset.Services
         {
             var workspace = _workspaceContext.Workspace;
             return workspace == null ? null : ScriptIncludeGraph.Build(Path.Combine(workspace.ModuleRoot, "nss"));
+        }
+
+        /// <summary>Discards a compile's temporary output. Never throws - a leaked .tmp is untidy,
+        /// not harmful, and must never mask the real compile failure that got us here.</summary>
+        private static void DeleteTempOutput(string temporaryOutput)
+        {
+            try
+            {
+                if (File.Exists(temporaryOutput))
+                    File.Delete(temporaryOutput);
+            }
+            catch (IOException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
         }
 
         private static bool IsEntryPoint(ModuleWorkspace workspace, string resRef)

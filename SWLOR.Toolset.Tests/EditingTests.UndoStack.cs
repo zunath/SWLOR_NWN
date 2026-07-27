@@ -61,6 +61,31 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void RevertAfterUndoingPastSavedPosition_RedoesToTheSavedState()
+        {
+            var (document, session) = OpenSample();
+            using var _ = session;
+            var field = CorpusFiles.FindFirstMutableInteger(document.Root)!;
+
+            using (session.Begin("edit A"))
+                field.SetInteger(field.GetInteger() + 1);
+            using (session.Begin("edit B"))
+                field.SetInteger(field.GetInteger() + 1);
+            session.UndoStack.MarkSaved();
+            var savedValue = field.GetInteger();
+
+            session.UndoStack.Undo();
+            session.UndoStack.Undo();
+            session.UndoStack.Position.Should().Be(0);
+
+            session.RevertToSaved();
+
+            field.GetInteger().Should().Be(savedValue);
+            session.UndoStack.Position.Should().Be(2);
+            session.UndoStack.IsDirty.Should().BeFalse();
+        }
+
+        [Test]
         public void PushingNewEditAfterUndo_ClearsTheRedoTail()
         {
             var (document, session) = OpenSample();

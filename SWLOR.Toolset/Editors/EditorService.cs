@@ -194,6 +194,7 @@ namespace SWLOR.Toolset.Editors
             };
             _workspaceContext.CatalogEntryRefreshed += (_, _) =>
                 _behaviorValues?.InvalidateModuleSources();
+            _workspaceContext.PaletteChoicesInvalidated += InvalidatePaletteChoices;
         }
 
         /// <summary>
@@ -904,6 +905,47 @@ namespace SWLOR.Toolset.Editors
             var built = build(key);
             _choiceSets[cacheKey] = built;
             return built;
+        }
+
+        private void InvalidatePaletteChoices(string paletteResRef)
+        {
+            switch (paletteResRef.ToLowerInvariant())
+            {
+                case "doorpalcus":
+                    _choiceSets.Remove(
+                        "door:" + Domain.Editors.Doors.DoorChoiceKeys.DoorPaletteCategories);
+                    foreach (var editor in _openDoorEditors.Values)
+                        editor.Editor.RefreshPaletteChoices();
+                    foreach (var section in _openAreaEditors.Values.SelectMany(editor => editor.Sections)
+                                 .Where(section => section.BlueprintType == ResourceType.Utd))
+                    {
+                        section.RefreshPaletteChoices();
+                    }
+                    break;
+                case "soundpalcus":
+                    _choiceSets.Remove(
+                        "sound:" + Domain.Editors.Sounds.SoundChoiceKeys.PaletteCategories);
+                    foreach (var editor in _openSoundEditors.Values)
+                        editor.Editor.RefreshPaletteChoices();
+                    foreach (var section in _openAreaEditors.Values.SelectMany(editor => editor.Sections)
+                                 .Where(section => section.BlueprintType == ResourceType.Uts))
+                    {
+                        section.RefreshPaletteChoices();
+                    }
+                    break;
+                case "triggerpalcus":
+                    _choiceSets.Remove(
+                        "trigger:" + Domain.Editors.Triggers.TriggerChoiceKeys.PaletteCategories);
+                    foreach (var editor in _openTriggerEditors.Values)
+                        editor.Editor.RefreshPaletteChoices();
+                    break;
+                case "waypointpalcus":
+                    _choiceSets.Remove(
+                        "waypoint:" + Domain.Editors.Waypoints.WaypointChoiceKeys.PaletteCategories);
+                    foreach (var editor in _openWaypointEditors.Values)
+                        editor.Editor.RefreshPaletteChoices();
+                    break;
+            }
         }
 
         private IReadOnlyList<BehaviorChoice> ResolveDoorChoices(string key) =>

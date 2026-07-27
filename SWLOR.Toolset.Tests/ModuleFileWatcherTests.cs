@@ -23,6 +23,20 @@ namespace SWLOR.Toolset.Tests
             resRef.Should().Be(expectedResRef);
         }
 
+        [TestCase(@"C:\module\itp\doorpalcus.itp.json", "doorpalcus")]
+        [TestCase(@"C:\module\itp\soundpalcus.ITP.JSON", "soundpalcus")]
+        [TestCase(@"C:\module\itp\triggerpalcus.itp.json", "triggerpalcus")]
+        [TestCase(@"C:\module\itp\waypointpalcus.itp.json", "waypointpalcus")]
+        public void PalettePathsResolveWithoutPretendingItpIsAResourceType(
+            string path,
+            string expectedResRef)
+        {
+            ModuleFileWatcher.TryResolvePalette(path, out var paletteResRef).Should().BeTrue();
+
+            paletteResRef.Should().Be(expectedResRef);
+            ModuleFileWatcher.TryResolveResource(path, out _, out _).Should().BeFalse();
+        }
+
         [TestCase(@"C:\module\config.json")]
         [TestCase(@"C:\module\packing\area.git.json.tmp")]
         [TestCase(@"C:\module\readme.txt")]
@@ -92,6 +106,20 @@ namespace SWLOR.Toolset.Tests
 
             invalidations.Should().Be(1,
                 "open behavior editors need a signal that their materialized object-tag choices are stale");
+        }
+
+        [Test]
+        public void WorkspacePaletteInvalidationNotifiesChoiceConsumers()
+        {
+            var context = new WorkspaceContext(
+                _ => throw new NotSupportedException(),
+                new OutputLogService());
+            string? invalidated = null;
+            context.PaletteChoicesInvalidated += paletteResRef => invalidated = paletteResRef;
+
+            context.InvalidatePaletteChoices("doorpalcus");
+
+            invalidated.Should().Be("doorpalcus");
         }
     }
 }

@@ -220,6 +220,13 @@ namespace SWLOR.Toolset.Editors
         /// </remarks>
         public event Action? RowsRefreshed;
 
+        /// <summary>Refreshes a selected door or sound instance's category picker after its ITP changes.</summary>
+        public void RefreshPaletteChoices()
+        {
+            DoorEditor?.RefreshPaletteChoices();
+            SoundEditor?.RefreshPaletteChoices();
+        }
+
         /// <summary>Rebuilds the grid rows from the current document state for initial load,
         /// structural edits, and undo/redo. Detail-field edits update the selected row in place
         /// so typing does not recreate every row in a large area.</summary>

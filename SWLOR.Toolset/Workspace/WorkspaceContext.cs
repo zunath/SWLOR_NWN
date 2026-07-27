@@ -24,6 +24,7 @@ namespace SWLOR.Toolset.Workspace
         public event Action<ResourceType, string>? CatalogEntryRefreshed;
         public event Action? ScriptUsagesInvalidated;
         public event Action? TagIndexInvalidated;
+        public event Action<string>? PaletteChoicesInvalidated;
 
         public WorkspaceContext(
             Func<string, ModuleWorkspace> workspaceFactory,
@@ -151,6 +152,16 @@ namespace SWLOR.Toolset.Workspace
         /// so the file watcher calls this directly when a placed-instance script slot changes.
         /// </summary>
         public void InvalidateScriptUsages() => ScriptUsagesInvalidated?.Invoke();
+
+        /// <summary>
+        /// Tells behavior editors that one module ITP changed and any materialized category choices
+        /// from that palette must be rebuilt.
+        /// </summary>
+        public void InvalidatePaletteChoices(string paletteResRef)
+        {
+            if (!string.IsNullOrWhiteSpace(paletteResRef))
+                PaletteChoicesInvalidated?.Invoke(paletteResRef);
+        }
 
         private void InvalidateTagIndexWhenRelevant(ResourceType type)
         {

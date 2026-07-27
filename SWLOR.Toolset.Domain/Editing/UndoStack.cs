@@ -54,15 +54,16 @@ namespace SWLOR.Toolset.Domain.Editing
         /// the document ended up older than the version on disk and still marked dirty, and the
         /// next save wrote that over work the builder had already committed.
         ///
-        /// A saved position past the current one means the save was undone past and the redo branch
-        /// has been discarded, so there is nothing to return to; the beginning is the only defined
-        /// baseline left, which is what the old loop happened to do in that one case.
+        /// The saved position can be on either side of the cursor. When it remains in the history,
+        /// undo or redo back to it. Only an invalidated marker means branching discarded the saved
+        /// state; in that case the beginning is the only defined fallback baseline.
         /// </remarks>
         public void RevertToSaved()
         {
-            var target = _savedPosition is { } saved && saved <= _position ? saved : 0;
+            if (RestoreSaved())
+                return;
 
-            while (_position > target)
+            while (CanUndo)
                 Undo();
         }
 

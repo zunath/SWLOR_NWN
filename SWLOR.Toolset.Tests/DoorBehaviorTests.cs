@@ -331,8 +331,39 @@ namespace SWLOR.Toolset.Tests
             var destination = editor.BehaviorRows.Single(row => row.Definition.Name == "LinkedTo");
 
             destination.IsStatusGood.Should().BeFalse();
-            destination.Status.Should().Contain("no door or waypoint");
+            destination.Status.Should().Contain("destination type is unset");
             destination.Status.Should().Contain("will do nothing");
+        }
+
+        [TestCase(1, BehaviorTagScope.Door, BehaviorTagScope.Waypoint, "no door")]
+        [TestCase(2, BehaviorTagScope.Waypoint, BehaviorTagScope.Door, "no waypoint")]
+        public void TransitionRowsResolveOnlyAgainstTheSelectedDestinationKind(
+            int linkedToFlags,
+            BehaviorTagScope selectedScope,
+            BehaviorTagScope oppositeScope,
+            string expectedWarning)
+        {
+            var door = NewDoor();
+            var store = Store(door);
+            store.SetString(
+                BehaviorFieldStorage.Field, "LinkedTo", GffFieldType.CExoString, "shared_tag");
+            store.SetInteger(
+                BehaviorFieldStorage.Field, "LinkedToFlags", GffFieldType.Byte, linkedToFlags);
+            var requestedScopes = new List<BehaviorTagScope>();
+
+            var editor = Editor(
+                door,
+                isInstance: true,
+                resolveTag: (scope, _) =>
+                {
+                    requestedScopes.Add(scope);
+                    return scope == oppositeScope ? "opposite-kind destination" : null;
+                });
+            var destination = editor.BehaviorRows.Single(row => row.Definition.Name == "LinkedTo");
+
+            requestedScopes.Should().Equal(selectedScope);
+            destination.IsStatusGood.Should().BeFalse();
+            destination.Status.Should().Contain(expectedWarning);
         }
 
         [Test]

@@ -107,6 +107,24 @@ namespace SWLOR.Toolset.Editors.Waypoints
             ReloadRowsFromDocument();
         }
 
+        /// <summary>Rebuilds the category row after its module ITP changes.</summary>
+        public void RefreshPaletteChoices()
+        {
+            var index = BasicRows
+                .Select((row, rowIndex) => (row, rowIndex))
+                .Where(item => item.row.Definition.Name == "PaletteID")
+                .Select(item => item.rowIndex)
+                .DefaultIfEmpty(-1)
+                .Single();
+            if (index < 0)
+                return;
+
+            var definition = BasicRows[index].Definition;
+            BasicRows[index].Dispose();
+            BasicRows[index] = CreateRow(definition);
+            RefreshCompleteness();
+        }
+
         public bool PrepareForSave()
         {
             if (!NeedsSaveNormalization)

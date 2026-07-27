@@ -29,6 +29,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         private HashSet<string>? _transitionDestinationTags;
         private Dictionary<string, string>? _waypointAreasByTag;
         private Dictionary<string, string>? _doorAreasByTag;
+        private Dictionary<string, string>? _storeAreasByTag;
         private Dictionary<string, string>? _itemResRefsByTag;
         private readonly Dictionary<string, string?> _blueprintTags =
             new(StringComparer.OrdinalIgnoreCase);
@@ -82,6 +83,26 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// about a tag already stored - the placeable teleporter's destination, for instance.
         /// </summary>
         public IReadOnlyCollection<string> Tags => Index().Keys.OrderBy(tag => tag, StringComparer.OrdinalIgnoreCase).ToList();
+
+        /// <summary>Placed-instance tags for one supported resource kind.</summary>
+        public IReadOnlyCollection<string> TagsFor(ResourceType type)
+        {
+            _ = Index();
+            var typed = type switch
+            {
+                ResourceType.Utw => _waypointAreasByTag,
+                ResourceType.Utd => _doorAreasByTag,
+                ResourceType.Utm => _storeAreasByTag,
+                _ => null
+            };
+
+            if (typed == null)
+                return Array.Empty<string>();
+
+            return typed.Keys
+                .OrderBy(tag => tag, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
 
         /// <summary>
         /// Every non-empty destination tag named by an area transition trigger or door.
@@ -139,6 +160,7 @@ namespace SWLOR.Toolset.Domain.Workspace
                 _areasByTag = null;
                 _waypointAreasByTag = null;
                 _doorAreasByTag = null;
+                _storeAreasByTag = null;
                 _itemResRefsByTag = null;
                 _blueprintTags.Clear();
             }
@@ -196,6 +218,7 @@ namespace SWLOR.Toolset.Domain.Workspace
                 var index = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 var waypoints = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 var doors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                var stores = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var areaResRef in _workspace.EnumerateAreaResRefs())
                 {
                     try
@@ -204,6 +227,7 @@ namespace SWLOR.Toolset.Domain.Workspace
                             index,
                             waypoints,
                             doors,
+                            stores,
                             areaResRef);
                     }
                     catch (Exception)
@@ -215,6 +239,7 @@ namespace SWLOR.Toolset.Domain.Workspace
 
                 _waypointAreasByTag = waypoints;
                 _doorAreasByTag = doors;
+                _storeAreasByTag = stores;
                 _areasByTag = index;
                 return index;
             }
@@ -224,6 +249,7 @@ namespace SWLOR.Toolset.Domain.Workspace
             Dictionary<string, string> index,
             Dictionary<string, string> waypoints,
             Dictionary<string, string> doors,
+            Dictionary<string, string> stores,
             string areaResRef)
         {
             var path = Path.Combine(_workspace.ModuleRoot, "git", areaResRef + ".git.json");
@@ -235,6 +261,13 @@ namespace SWLOR.Toolset.Domain.Workspace
             // complete editable GFF object graph that GitDocument.Load intentionally creates.
             AddTags(index, waypoints, areaResRef, Instances(root, "WaypointList"), ResourceType.Utw);
             AddTags(index, doors, areaResRef, Instances(root, "Door List"), ResourceType.Utd);
+            AddTags(
+                index,
+                stores,
+                areaResRef,
+                Instances(root, "StoreList"),
+                ResourceType.Utm,
+                "ResRef");
         }
 
         private HashSet<string> IndexTransitionDestinations()
@@ -418,13 +451,14 @@ namespace SWLOR.Toolset.Domain.Workspace
             Dictionary<string, string> typedIndex,
             string areaResRef,
             IEnumerable<JsonElement> instances,
-            ResourceType blueprintType)
+            ResourceType blueprintType,
+            string templateField = "TemplateResRef")
         {
             foreach (var instance in instances)
             {
                 var tag = FieldString(instance, "Tag");
                 if (string.IsNullOrEmpty(tag))
-                    tag = BlueprintTag(blueprintType, FieldString(instance, "TemplateResRef"));
+                    tag = BlueprintTag(blueprintType, FieldString(instance, templateField));
 
                 if (!string.IsNullOrEmpty(tag))
                 {

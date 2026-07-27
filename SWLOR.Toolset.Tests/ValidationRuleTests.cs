@@ -67,7 +67,8 @@ namespace SWLOR.Toolset.Tests
                 new ValidationContext(module.Workspace)).ToList();
 
             issues.Should().ContainSingle(issue =>
-                issue.Message.Contains("only lowercase letters, digits, and underscores"));
+                issue.ResRef == "bad-name" &&
+                issue.Message.Contains("only lowercase letters"));
         }
     }
 

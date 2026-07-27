@@ -491,30 +491,6 @@ namespace SWLOR.Toolset.Tests
             new GitDocument(JsonGffDocument.Load(path)).Doors.Count.Should().Be(expected);
         }
 
-        [Test]
-        public async Task RejectingABehaviorChangePreservesCustomDoorState()
-        {
-            var door = NewDoor();
-            var store = Store(door);
-            store.SetString(
-                BehaviorFieldStorage.Field, "OnOpen", GffFieldType.ResRef, "my_custom_open");
-            store.SetString(
-                BehaviorFieldStorage.Local, "CUSTOM_VALUE", GffFieldType.CExoString, "keep");
-            var editor = new DoorEditorViewModel(
-                door,
-                "test",
-                isInstance: false,
-                Run,
-                prompts: new StubPrompts());
-
-            await editor.ChooseBehavior(
-                DoorBehaviorCatalog.Get(DoorBehaviorCatalog.SealedDoorId));
-
-            editor.Behavior.Id.Should().Be(DoorBehaviorCatalog.CustomId);
-            store.GetString(BehaviorFieldStorage.Field, "OnOpen").Should().Be("my_custom_open");
-            store.GetString(BehaviorFieldStorage.Local, "CUSTOM_VALUE").Should().Be("keep");
-        }
-
         private static DoorEditorViewModel Editor(
             JsonGffStruct door,
             bool isInstance,

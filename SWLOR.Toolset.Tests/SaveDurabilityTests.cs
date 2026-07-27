@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Editing;
@@ -71,6 +72,54 @@ namespace SWLOR.Toolset.Tests
 
             File.ReadAllText(target).Should().Be("{\"saved\":true}");
             File.Exists(backup).Should().BeFalse();
+        }
+
+        [Test]
+        public void AnInterruptedGroupedSaveRollsBackEveryMember()
+        {
+            var transactionId = Guid.NewGuid().ToString("N");
+            var areTarget = Path.Combine(_root, "are", "cantina.are.json");
+            var gitTarget = Path.Combine(_root, "git", "cantina.git.json");
+            var areBackup = areTarget + "." + transactionId + SaveService.BackupSuffix;
+            var gitBackup = gitTarget + "." + transactionId + SaveService.BackupSuffix;
+
+            File.WriteAllText(areTarget, "{\"generation\":\"new\"}");
+            File.WriteAllText(areBackup, "{\"generation\":\"old-are\"}");
+            File.WriteAllText(gitBackup, "{\"generation\":\"old-git\"}");
+
+            var manifestPath = Path.Combine(
+                _root, "." + transactionId + SaveService.TransactionSuffix);
+            File.WriteAllText(
+                manifestPath,
+                JsonSerializer.Serialize(new
+                {
+                    Entries = new[]
+                    {
+                        new
+                        {
+                            TargetPath = areTarget,
+                            TemporaryPath = areTarget + ".tmp",
+                            BackupPath = areBackup,
+                            HadOriginal = true
+                        },
+                        new
+                        {
+                            TargetPath = gitTarget,
+                            TemporaryPath = gitTarget + ".tmp",
+                            BackupPath = gitBackup,
+                            HadOriginal = true
+                        }
+                    }
+                }));
+
+            var restored = SaveService.RecoverInterruptedSaves(_root);
+
+            restored.Should().BeEquivalentTo(areTarget, gitTarget);
+            File.ReadAllText(areTarget).Should().Be("{\"generation\":\"old-are\"}");
+            File.ReadAllText(gitTarget).Should().Be("{\"generation\":\"old-git\"}");
+            File.Exists(manifestPath).Should().BeFalse();
+            File.Exists(areBackup).Should().BeFalse();
+            File.Exists(gitBackup).Should().BeFalse();
         }
 
         /// <summary>

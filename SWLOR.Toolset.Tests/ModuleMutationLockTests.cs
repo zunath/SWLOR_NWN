@@ -225,6 +225,41 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        [Test]
+        public void TheOwningModuleOperationCanPerformItsPrerequisiteSave()
+        {
+            var directory = Path.Combine(Path.GetTempPath(), $"swlor_owner_{Guid.NewGuid():N}");
+            Directory.CreateDirectory(directory);
+            var path = Path.Combine(directory, "guard.utc.json");
+            File.WriteAllText(path, "{\"original\":true}");
+
+            var mutationLock = new ModuleMutationLock();
+            var previous = ModuleMutationLock.ModuleWrites;
+            ModuleMutationLock.ModuleWrites = mutationLock;
+
+            try
+            {
+                mutationLock.Set(true);
+
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    SaveService.WriteAtomic(
+                        path, System.Text.Encoding.UTF8.GetBytes("{\"saved\":true}"));
+                }
+
+                File.ReadAllText(path).Should().Be("{\"saved\":true}");
+                var unrelatedWrite = () => SaveService.WriteAtomic(
+                    path, System.Text.Encoding.UTF8.GetBytes("{\"raced\":true}"));
+                unrelatedWrite.Should().Throw<ModuleLockedException>(
+                    "only the operation that reserved the lock may perform its prerequisite saves");
+            }
+            finally
+            {
+                ModuleMutationLock.ModuleWrites = previous;
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+
         private sealed class StubPrompts : IEditorPromptService
         {
             public Task<UnsavedChangesChoice> ConfirmCloseAsync(string name) =>

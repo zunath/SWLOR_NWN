@@ -1203,23 +1203,19 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Tags of every blueprint of one kind, so a store or waypoint argument is a list rather than
-        /// a remembered string. Read from the background catalog, which already parsed them.
+        /// Tags of placed objects of one kind, so a store or waypoint argument names something the
+        /// runtime can actually find. Instance overrides win; blank tags fall back to the blueprint.
         /// </summary>
         private IReadOnlyList<string> TagsFor(string extension)
         {
             if (!ResourceTypeExtensions.TryFromExtension(extension, out var type))
                 return Array.Empty<string>();
 
-            var catalog = _workspaceContext.Catalog;
-            if (catalog == null)
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
                 return Array.Empty<string>();
 
-            return catalog.EntriesOfType(type)
-                .Where(entry => !string.IsNullOrWhiteSpace(entry.Tag))
-                .Select(entry => entry.Tag!)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            return workspace.TagIndex.TagsFor(type).ToList();
         }
 
         /// <summary>Areas open in the composite editor (.are properties + .git instance lists).</summary>

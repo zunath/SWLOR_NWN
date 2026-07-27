@@ -24,6 +24,7 @@ namespace SWLOR.Toolset.Services
     /// </remarks>
     public sealed class ModuleMutationLock
     {
+        private static readonly AsyncLocal<int> ModuleWriteAllowance = new();
         private bool _isLocked;
 
         /// <summary>True while a module-wide operation is running.</summary>
@@ -64,14 +65,42 @@ namespace SWLOR.Toolset.Services
         public static ModuleMutationLock? ModuleWrites { get; set; }
 
         /// <summary>
+        /// Allows the module-wide operation that owns the lock to perform its prerequisite saves.
+        /// </summary>
+        /// <remarks>
+        /// The allowance follows only the current async operation. Other UI commands and background
+        /// work still see the lock, so reserving a pack before awaiting Save All closes the race
+        /// without making the pack's own requested saves fail.
+        /// </remarks>
+        public static IDisposable AllowModuleWrites()
+        {
+            ModuleWriteAllowance.Value++;
+            return new ModuleWriteAllowanceScope();
+        }
+
+        /// <summary>
         /// Throws when a module-wide operation is in flight. Called from the write paths in
         /// <c>SaveService</c>, so a refused save surfaces through the same "Save failed" reporting
         /// every other write failure already uses.
         /// </summary>
         public static void ThrowIfModuleLocked()
         {
-            if (ModuleWrites?.IsLocked == true)
+            if (ModuleWrites?.IsLocked == true && ModuleWriteAllowance.Value == 0)
                 throw new ModuleLockedException();
+        }
+
+        private sealed class ModuleWriteAllowanceScope : IDisposable
+        {
+            private bool _disposed;
+
+            public void Dispose()
+            {
+                if (_disposed)
+                    return;
+
+                _disposed = true;
+                ModuleWriteAllowance.Value = Math.Max(0, ModuleWriteAllowance.Value - 1);
+            }
         }
     }
 

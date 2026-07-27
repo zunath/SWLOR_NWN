@@ -73,8 +73,9 @@ namespace SWLOR.Toolset.Tests
 
             var result = await service.BuildAllAsync();
 
+            result.Ran.Should().BeFalse();
             result.Compiled.Should().Be(0);
-            result.Failed.Should().Be(1);
+            result.Failed.Should().Be(0);
         }
 
         [Test]
@@ -167,6 +168,35 @@ namespace SWLOR.Toolset.Tests
             includeOutcome.Succeeded.Should().BeTrue();
             (await File.ReadAllBytesAsync(output)).Should().NotEqual(before,
                 "saving the transitive include must replace the dependent entry point's bytecode");
+        }
+
+        [Test]
+        public async Task CompilingAScriptThatBecameAnIncludeRemovesItsObsoleteBytecode()
+        {
+            if (!File.Exists(CompilerPath))
+                Assert.Ignore("vendored compiler not present");
+
+            var module = Path.Combine(_staging, "Module");
+            foreach (var folder in new[] { "are", "utc", "nss", "ncs" })
+                Directory.CreateDirectory(Path.Combine(module, folder));
+
+            await File.WriteAllTextAsync(
+                Path.Combine(module, "nss", "former_entry.nss"),
+                "int SharedValue() { return 1; }\r\n");
+            var obsolete = Path.Combine(module, "ncs", "former_entry.ncs");
+            await File.WriteAllBytesAsync(obsolete, new byte[] { 1, 2, 3, 4 });
+
+            var log = new OutputLogService();
+            var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
+            context.Open(module);
+            var service = new ScriptCompileService(
+                context, log, compilerPathOverride: CompilerPath);
+
+            var outcome = await service.CompileAsync("former_entry");
+
+            outcome.Succeeded.Should().BeTrue();
+            File.Exists(obsolete).Should().BeFalse(
+                "the packer copies NCS files verbatim and must not ship behavior the source can no longer produce");
         }
 
         /// <summary>

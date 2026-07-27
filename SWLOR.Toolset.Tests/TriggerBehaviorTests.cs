@@ -67,16 +67,16 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public async Task ABehaviorSurvivesBeingSavedAndReopened()
+        public void ABehaviorSurvivesBeingSavedAndReopened()
         {
             // The point of the whole thing: choosing a behavior has to reach the file, not just the
             // screen, and reopening the file has to recognise what was chosen.
             var path = CopyToTemp("badge_trigger");
             var document = new TriggerDocumentViewModel(
-                path, "badge_trigger", null, new OutputLogService(), new AcceptingPrompts());
+                path, "badge_trigger", null, new OutputLogService(), new StubPrompts());
             try
             {
-                await document.Editor.ChooseBehavior(
+                document.Editor.ChooseBehavior(
                     TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.ExplorationNoteId));
                 document.Editor.BehaviorRows.Single(row => row.Definition.Name == "DISPLAY_TEXT")
                     .Text = "A crashed shuttle lies half-buried in the dune.";
@@ -102,17 +102,16 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public async Task RevertPutsTheStoredBehaviorBackOnScreen()
+        public void RevertPutsTheStoredBehaviorBackOnScreen()
         {
             var path = CopyToTemp("badge_trigger");
             var document = new TriggerDocumentViewModel(
-                path, "badge_trigger", null, new OutputLogService(), new AcceptingPrompts());
+                path, "badge_trigger", null, new OutputLogService(), new StubPrompts());
             try
             {
                 var stored = document.Editor.Behavior.Id;
 
-                await document.Editor.ChooseBehavior(
-                    TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.TrapId));
+                document.Editor.ChooseBehavior(TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.TrapId));
                 document.Editor.Behavior.Id.Should().Be(TriggerBehaviorCatalog.TrapId);
 
                 document.RevertCommand.Execute(null);
@@ -202,26 +201,9 @@ namespace SWLOR.Toolset.Tests
                 throw new InvalidOperationException("No close prompt is expected.");
 
             public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) =>
-                Task.FromResult(false);
+                throw new InvalidOperationException("The editor destroys nothing.");
 
             public Task<string?> PromptForTextAsync(string headline, string message, string initialValue, string confirmLabel) =>
-                throw new InvalidOperationException("The editor asks for no text.");
-        }
-
-        private sealed class AcceptingPrompts : IEditorPromptService
-        {
-            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) =>
-                throw new InvalidOperationException("Nothing changed the file underneath the editor.");
-
-            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) =>
-                throw new InvalidOperationException("No close prompt is expected.");
-
-            public Task<bool> ConfirmDestructiveAsync(
-                string headline, string message, string confirmLabel) =>
-                Task.FromResult(true);
-
-            public Task<string?> PromptForTextAsync(
-                string headline, string message, string initialValue, string confirmLabel) =>
                 throw new InvalidOperationException("The editor asks for no text.");
         }
 
@@ -525,33 +507,6 @@ namespace SWLOR.Toolset.Tests
 
             editor.Behavior.Id.Should().Be(TriggerBehaviorCatalog.CustomId);
             editor.ShowsVariablesTab.Should().BeTrue();
-        }
-
-        [Test]
-        public async Task RejectingABehaviorChangePreservesCustomScriptsAndVariables()
-        {
-            var trigger = NewTrigger();
-            var store = new BehaviorValueStore(trigger);
-            store.SetString(
-                BehaviorFieldStorage.Field, "ScriptOnEnter", GffFieldType.ResRef, "my_custom_enter");
-            store.SetString(
-                BehaviorFieldStorage.Local, "CUSTOM_VALUE", GffFieldType.CExoString, "keep");
-            var editor = new TriggerEditorViewModel(
-                trigger, "test_trigger", isInstance: false,
-                (_, edit) =>
-                {
-                    edit();
-                    return true;
-                },
-                prompts: new StubPrompts());
-
-            await editor.ChooseBehavior(
-                TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.ExplorationNoteId));
-
-            editor.Behavior.Id.Should().Be(TriggerBehaviorCatalog.CustomId);
-            store.GetString(BehaviorFieldStorage.Field, "ScriptOnEnter")
-                .Should().Be("my_custom_enter");
-            store.GetString(BehaviorFieldStorage.Local, "CUSTOM_VALUE").Should().Be("keep");
         }
 
         [Test]

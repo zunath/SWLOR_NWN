@@ -127,6 +127,16 @@ namespace SWLOR.Toolset.Services
                     return new CompileOutcome(false, checkDiagnostics);
                 }
 
+                // A script that used to be an entry point may already have bytecode on disk. Once
+                // its source becomes an include, that artifact is no longer buildable and must not
+                // be packed as if the old behavior still existed.
+                var obsoleteOutput = Path.Combine(workspace.ModuleRoot, "ncs", resRef + ".ncs");
+                if (File.Exists(obsoleteOutput))
+                {
+                    File.Delete(obsoleteOutput);
+                    _log.AppendLine($"Removed obsolete compiled output ncs/{resRef}.ncs.");
+                }
+
                 var failed = 0;
                 foreach (var dependent in entryPoints)
                 {

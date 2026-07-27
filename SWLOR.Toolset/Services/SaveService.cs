@@ -1,3 +1,4 @@
+using System.Text.Json;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Workspace;
 
@@ -58,6 +59,9 @@ namespace SWLOR.Toolset.Services
         /// <summary>The suffix a grouped save gives an original while its replacement is installed.</summary>
         public const string BackupSuffix = ".save-backup";
 
+        /// <summary>The suffix of the recovery manifest that keeps a grouped save indivisible.</summary>
+        public const string TransactionSuffix = ".save-transaction.json";
+
         /// <summary>
         /// Puts back any canonical file a grouped save was interrupted mid-way through replacing.
         /// </summary>
@@ -76,10 +80,91 @@ namespace SWLOR.Toolset.Services
                 return Array.Empty<string>();
 
             var restored = new List<string>();
+            var protectedBackups = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var manifestPath in Directory.EnumerateFiles(
+                         moduleRoot, "*" + TransactionSuffix, SearchOption.AllDirectories))
+            {
+                SaveTransactionManifest? manifest;
+                try
+                {
+                    manifest = JsonSerializer.Deserialize<SaveTransactionManifest>(
+                        File.ReadAllText(manifestPath));
+                }
+                catch (Exception)
+                {
+                    // An unreadable manifest is transaction evidence, not litter. Leave it and all
+                    // backups alone for a builder to recover manually.
+                    continue;
+                }
+
+                if (manifest?.Entries.Count is not > 0)
+                    continue;
+
+                var recovered = true;
+                foreach (var entry in manifest.Entries.AsEnumerable().Reverse())
+                {
+                    if (!IsPathUnderRoot(moduleRoot, entry.TargetPath) ||
+                        !IsPathUnderRoot(moduleRoot, entry.TemporaryPath) ||
+                        !IsPathUnderRoot(moduleRoot, entry.BackupPath))
+                    {
+                        recovered = false;
+                        continue;
+                    }
+
+                    try
+                    {
+                        if (entry.HadOriginal)
+                        {
+                            if (File.Exists(entry.BackupPath))
+                            {
+                                File.Move(entry.BackupPath, entry.TargetPath, overwrite: true);
+                                restored.Add(entry.TargetPath);
+                            }
+                            else if (!File.Exists(entry.TargetPath))
+                            {
+                                recovered = false;
+                            }
+                        }
+                        else if (File.Exists(entry.TargetPath))
+                        {
+                            File.Delete(entry.TargetPath);
+                        }
+
+                        if (File.Exists(entry.TemporaryPath))
+                            File.Delete(entry.TemporaryPath);
+                    }
+                    catch (Exception)
+                    {
+                        recovered = false;
+                    }
+                }
+
+                if (recovered)
+                {
+                    try
+                    {
+                        File.Delete(manifestPath);
+                    }
+                    catch (Exception)
+                    {
+                        recovered = false;
+                    }
+                }
+
+                if (!recovered)
+                {
+                    foreach (var entry in manifest.Entries)
+                        protectedBackups.Add(entry.BackupPath);
+                }
+            }
 
             foreach (var backup in Directory.EnumerateFiles(
                          moduleRoot, "*" + BackupSuffix, SearchOption.AllDirectories))
             {
+                if (protectedBackups.Contains(backup))
+                    continue;
+
                 // "area.git.json.<guid>.save-backup" -> "area.git.json"
                 var withoutSuffix = backup[..^BackupSuffix.Length];
                 var target = Path.ChangeExtension(withoutSuffix, null);
@@ -184,12 +269,20 @@ namespace SWLOR.Toolset.Services
             // a worse outcome than not starting, and the pack is not going to finish mid-loop.
             ModuleMutationLock.ThrowIfModuleLocked();
 
-            var states = stagedWrites.Select(staged => new CommitState(staged)).ToList();
+            var transactionId = Guid.NewGuid().ToString("N");
+            var states = stagedWrites
+                .Select(staged => new CommitState(staged, transactionId))
+                .ToList();
+            foreach (var state in states)
+                state.HadOriginal = File.Exists(state.Staged.TargetPath);
+
+            var manifestPath = TransactionManifestPath(states, transactionId);
             try
             {
+                WriteTransactionManifest(manifestPath, states);
+
                 foreach (var state in states)
                 {
-                    state.HadOriginal = File.Exists(state.Staged.TargetPath);
                     if (state.HadOriginal)
                     {
                         File.Move(state.Staged.TargetPath, state.BackupPath);
@@ -199,6 +292,11 @@ namespace SWLOR.Toolset.Services
                     File.Move(state.Staged.TemporaryPath, state.Staged.TargetPath, overwrite: true);
                     state.ReplacementMoved = true;
                 }
+
+                // This is the commit point. While the manifest exists, startup always rolls the
+                // entire group back. Once every replacement has landed, removing it declares the
+                // new generation complete; any backups left by a later interruption are stale.
+                File.Delete(manifestPath);
             }
             catch (Exception commitFailure)
             {
@@ -226,6 +324,7 @@ namespace SWLOR.Toolset.Services
                         rollbackFailures);
                 }
 
+                DeleteManifest(manifestPath);
                 throw;
             }
 
@@ -252,10 +351,10 @@ namespace SWLOR.Toolset.Services
 
         private sealed class CommitState
         {
-            public CommitState(StagedWrite staged)
+            public CommitState(StagedWrite staged, string transactionId)
             {
                 Staged = staged;
-                BackupPath = staged.TargetPath + "." + Guid.NewGuid().ToString("N") + BackupSuffix;
+                BackupPath = staged.TargetPath + "." + transactionId + BackupSuffix;
             }
 
             public StagedWrite Staged { get; }
@@ -293,6 +392,89 @@ namespace SWLOR.Toolset.Services
             catch (UnauthorizedAccessException)
             {
             }
+        }
+
+        private static string TransactionManifestPath(
+            IReadOnlyList<CommitState> states,
+            string transactionId)
+        {
+            var commonDirectory = Path.GetDirectoryName(
+                Path.GetFullPath(states[0].Staged.TargetPath))!;
+
+            while (states.Any(state =>
+                       !IsPathUnderRoot(commonDirectory, state.Staged.TargetPath)))
+            {
+                commonDirectory = Directory.GetParent(commonDirectory)?.FullName
+                    ?? throw new InvalidOperationException(
+                        "Grouped save targets do not share a writable directory.");
+            }
+
+            return Path.Combine(commonDirectory, "." + transactionId + TransactionSuffix);
+        }
+
+        private static void WriteTransactionManifest(
+            string manifestPath,
+            IReadOnlyList<CommitState> states)
+        {
+            var manifest = new SaveTransactionManifest
+            {
+                Entries = states.Select(state => new SaveTransactionEntry
+                {
+                    TargetPath = Path.GetFullPath(state.Staged.TargetPath),
+                    TemporaryPath = Path.GetFullPath(state.Staged.TemporaryPath),
+                    BackupPath = Path.GetFullPath(state.BackupPath),
+                    HadOriginal = state.HadOriginal
+                }).ToList()
+            };
+
+            var temporaryPath = manifestPath + ".tmp";
+            try
+            {
+                File.WriteAllText(temporaryPath, JsonSerializer.Serialize(manifest));
+                File.Move(temporaryPath, manifestPath, overwrite: true);
+            }
+            finally
+            {
+                if (File.Exists(temporaryPath))
+                    File.Delete(temporaryPath);
+            }
+        }
+
+        private static void DeleteManifest(string manifestPath)
+        {
+            try
+            {
+                File.Delete(manifestPath);
+            }
+            catch (IOException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+        }
+
+        private static bool IsPathUnderRoot(string root, string path)
+        {
+            var relative = Path.GetRelativePath(
+                Path.GetFullPath(root),
+                Path.GetFullPath(path));
+            return !Path.IsPathRooted(relative) &&
+                   relative != ".." &&
+                   !relative.StartsWith(".." + Path.DirectorySeparatorChar, StringComparison.Ordinal);
+        }
+
+        private sealed class SaveTransactionManifest
+        {
+            public List<SaveTransactionEntry> Entries { get; set; } = new();
+        }
+
+        private sealed class SaveTransactionEntry
+        {
+            public string TargetPath { get; set; } = string.Empty;
+            public string TemporaryPath { get; set; } = string.Empty;
+            public string BackupPath { get; set; } = string.Empty;
+            public bool HadOriginal { get; set; }
         }
     }
 }

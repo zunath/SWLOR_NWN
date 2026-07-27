@@ -349,19 +349,21 @@ namespace SWLOR.Toolset.Shell
         [RelayCommand(CanExecute = nameof(CanMutateModule))]
         private async Task BuildAllScripts()
         {
-            if (_compileService == null)
+            if (_compileService == null || IsModuleMutationLocked)
                 return;
-
-            // Before the lock, for the same reason the pack saves before raising it.
-            if (!await _editorService.Value.SaveScriptsAsync(compileOnSave: false).ConfigureAwait(true))
-            {
-                StatusText = "Build cancelled: an open script could not be saved.";
-                return;
-            }
 
             IsBuildingScripts = true;
             try
             {
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    if (!await _editorService.Value.SaveScriptsAsync(compileOnSave: false).ConfigureAwait(true))
+                    {
+                        StatusText = "Build cancelled: an open script could not be saved.";
+                        return;
+                    }
+                }
+
                 StatusText = "Building all scripts...";
                 _factory.Focus(_output);
 
@@ -514,19 +516,19 @@ namespace SWLOR.Toolset.Shell
                 return;
             }
 
-            // Saved before the lock goes up, not after. The lock refuses module writes, and the
-            // open editors are module writes - claiming it first would refuse the very saves the
-            // pack is asking for.
-            if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
-            {
-                StatusText = "Pack cancelled because an open editor could not be saved.";
-                _log.AppendLine("Pack aborted: one or more open editors were not saved.");
-                return;
-            }
-
             IsPacking = true;
             try
             {
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
+                    {
+                        StatusText = "Pack cancelled because an open editor could not be saved.";
+                        _log.AppendLine("Pack aborted: one or more open editors were not saved.");
+                        return;
+                    }
+                }
+
                 if (_compileService != null &&
                     !await ResolveStaleScriptsBeforePackAsync().ConfigureAwait(true))
                 {

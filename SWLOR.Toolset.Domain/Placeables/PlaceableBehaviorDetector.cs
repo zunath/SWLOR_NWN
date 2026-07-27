@@ -153,18 +153,18 @@ namespace SWLOR.Toolset.Domain.Placeables
             var requiredHits = behavior.Fields.Count(field =>
                 field.IsRequired && variables.Contains(field.VariableName));
 
-            // A behavior defined by its scripts must match one; a behavior defined only by its
-            // variables must match one of those. Otherwise a shared variable such as KEY_ITEM_ID
-            // would drag in every behavior that happens to mention it.
-            //
-            // One rather than all, deliberately. A partially wired placeable - a scavenge point with
-            // scav_opened but no scav_closed - is still that behavior with a slot missing, and
-            // requiring the full signature would drop it to Custom and take the preset away from the
-            // very object that needs it. The gap does not survive: PlaceableBehaviorApplier's
-            // EnsureExpectedValues runs on save and writes every script the selected behavior
-            // declares, so saving completes the wiring rather than persisting the hole.
-            if (behavior.Scripts.Count > 0 && scriptHits == 0)
-                return 0;
+            // Every slot the behavior owns must match. A partial multi-slot signature is Custom so
+            // its raw scripts remain visible and repairable. One-slot legacy alternates (chairs and
+            // switches) may still appear in a different slot, matching the authored corpus.
+            if (behavior.Scripts.Count > 0)
+            {
+                var allManagedScriptsMatch = scriptHits == behavior.Scripts.Count;
+                var oneSlotAlternateMatches = behavior.Scripts.Count == 1
+                                              && alternates.Count > 0
+                                              && scripts.Values.Any(alternates.Contains);
+                if (!allManagedScriptsMatch && !oneSlotAlternateMatches)
+                    return 0;
+            }
 
             if (behavior.Scripts.Count == 0 && requiredHits == 0)
                 return 0;

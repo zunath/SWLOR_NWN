@@ -108,9 +108,27 @@ public class TwoDAReaderTests
         writer.Write((ushort)6);
         writer.Write((ushort)8);
         writer.Write((ushort)13);
-        writer.Write((ushort)0);
+        // The declared string-data section size - not padding; every cell offset must land in it.
+        writer.Write((ushort)strings.Length);
         writer.Write(strings);
         return stream.ToArray();
+    }
+
+    [Test]
+    public void BinaryReader_RejectsCellOffsetsOutsideTheDeclaredDataSection()
+    {
+        var bytes = BuildBinaryTwoDa();
+        // Shrink the declared data-section size below the last cell offset (13): the reader must
+        // refuse rather than read trailing bytes beyond the declared window as cell text.
+        var declaredSizeOffset = bytes.Length - Encoding.ASCII.GetBytes(
+            "alpha\0" + "7\0" + "****\0" + "beta\0").Length - 2;
+        bytes[declaredSizeOffset] = 10;
+        bytes[declaredSizeOffset + 1] = 0;
+
+        Action action = () => TwoDAReader.Read(bytes);
+
+        action.Should().Throw<NwnFormatException>()
+            .WithMessage("*declared*data*section*");
     }
 
     private static byte[] BuildBinaryTwoDa(string columnBytes)

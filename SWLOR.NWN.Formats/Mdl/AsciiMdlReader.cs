@@ -640,14 +640,37 @@ internal sealed class AsciiMdlReader
             return;
         var minimum = new Vector3(float.PositiveInfinity);
         var maximum = new Vector3(float.NegativeInfinity);
-        foreach (var vertex in meshes.SelectMany(mesh => mesh.Vertices))
+        var radiusSquared = 0f;
+        foreach (var mesh in meshes)
         {
-            minimum = Vector3.Min(minimum, vertex);
-            maximum = Vector3.Max(maximum, vertex);
+            // Bounds describe the model, not each mesh's local space: a positioned, rotated, or
+            // scaled node (or ancestor) moves its vertices, and consumers compose transforms the
+            // same way (scale, then rotation, then translation, accumulated root-ward).
+            var transform = ComposeNodeToModelTransform(mesh);
+            foreach (var vertex in mesh.Vertices)
+            {
+                var transformed = Vector3.Transform(vertex, transform);
+                minimum = Vector3.Min(minimum, transformed);
+                maximum = Vector3.Max(maximum, transformed);
+                radiusSquared = MathF.Max(radiusSquared, transformed.LengthSquared());
+            }
         }
         model.BoundsMinimum = minimum;
         model.BoundsMaximum = maximum;
-        model.Radius = meshes.SelectMany(mesh => mesh.Vertices).Max(vertex => vertex.Length());
+        model.Radius = MathF.Sqrt(radiusSquared);
+    }
+
+    private static Matrix4x4 ComposeNodeToModelTransform(MdlNode node)
+    {
+        var transform = Matrix4x4.Identity;
+        for (var current = node; current != null; current = current.Parent)
+        {
+            var local = Matrix4x4.CreateScale(current.Scale) *
+                        Matrix4x4.CreateFromQuaternion(current.Orientation) *
+                        Matrix4x4.CreateTranslation(current.Position);
+            transform *= local;
+        }
+        return transform;
     }
 
     private void LoadLines(string text)

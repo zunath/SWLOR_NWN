@@ -43,12 +43,16 @@ public static class TlkReader
             throw new NwnFormatException("TLK string-data offset is outside the valid data region.");
 
         var encoding = NwnTextEncoding.ForLanguage(languageId);
+        // The entry list, entry objects, and sound resrefs are allocations too - charge them
+        // before building anything so an 8M-entry table cannot blow past the budget on metadata
+        // alone, the same way the KEY and BIF readers budget their tables.
+        var allocationBudget = new AllocationBudget("TLK");
+        allocationBudget.ReserveElements(count, 64, "TLK entry table");
         var entries = new List<TlkEntry>(checked((int)count));
         // Aliased entries (many records pointing at the same string-data range) share one decoded
         // string, and every unique decode is charged against a cumulative budget so a small file
         // cannot expand into gigabytes of managed strings.
         var decodedStrings = new Dictionary<(uint Offset, uint Length), string>();
-        var allocationBudget = new AllocationBudget("TLK");
         for (var index = 0; index < count; index++)
         {
             var entryOffset = HeaderSize + (long)index * EntrySize;

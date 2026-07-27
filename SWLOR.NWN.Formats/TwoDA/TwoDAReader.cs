@@ -147,8 +147,14 @@ public static class TwoDAReader
         reader.ValidateRange(cursor, offsetsByteCount + 2, "2DA cell offsets and padding");
         var offsetsStart = cursor;
         cursor = checked(cursor + (int)offsetsByteCount);
-        cursor += 2; // documented unused bytes
+        // The two bytes after the offset table declare the string-data section's size; every cell
+        // offset and its terminator must land inside that declared window, not merely inside the
+        // file, or a malformed table reads arbitrary trailing bytes as cell text.
+        var dataSize = reader.ReadUInt16(cursor);
+        cursor += 2;
         var dataStart = cursor;
+        reader.ValidateRange(dataStart, dataSize, "2DA string data");
+        var dataEnd = dataStart + dataSize;
 
         var rows = new List<IReadOnlyList<string?>>(checked((int)rowCount));
         for (var row = 0; row < rowCount; row++)
@@ -158,7 +164,9 @@ public static class TwoDAReader
             {
                 var cellIndex = checked((long)row * columns.Count + column);
                 var relativeOffset = reader.ReadUInt16(offsetsStart + cellIndex * 2);
-                var value = ReadNullTerminated(reader, dataStart + relativeOffset, "2DA cell");
+                if (relativeOffset >= dataSize)
+                    throw new NwnFormatException("Binary 2DA cell offset lies outside the declared string data.");
+                var value = ReadNullTerminated(reader, dataStart + relativeOffset, "2DA cell", dataEnd);
                 values[column] = value == "****" ? null : value;
             }
             rows.Add(values);
@@ -275,13 +283,13 @@ public static class TwoDAReader
         throw new NwnFormatException($"{context} is truncated.");
     }
 
-    private static string ReadNullTerminated(GuardedBinaryReader reader, long offset, string context)
+    private static string ReadNullTerminated(GuardedBinaryReader reader, long offset, string context, long limit)
     {
         var end = offset;
-        while (end < reader.Length && reader.ReadByte(end) != 0)
+        while (end < limit && reader.ReadByte(end) != 0)
             end++;
-        if (end >= reader.Length)
-            throw new NwnFormatException($"{context} is not null terminated.");
+        if (end >= limit)
+            throw new NwnFormatException($"{context} is not null terminated within its declared data section.");
         return NwnTextEncoding.DecodeGeneral(reader.Slice(offset, end - offset, context));
     }
 

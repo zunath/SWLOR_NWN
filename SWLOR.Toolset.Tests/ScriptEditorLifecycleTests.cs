@@ -141,17 +141,14 @@ namespace SWLOR.Toolset.Tests
             var editor = Editor();
 
             editor.IsOutlineCollapsed.Should().BeFalse();
-            editor.OutlineToggleLabel.Should().Be("Minimize");
 
             editor.ToggleOutlineCommand.Execute(null);
 
             editor.IsOutlineCollapsed.Should().BeTrue();
-            editor.OutlineToggleLabel.Should().Be("Show");
 
             editor.ToggleOutlineCommand.Execute(null);
 
             editor.IsOutlineCollapsed.Should().BeFalse();
-            editor.OutlineToggleLabel.Should().Be("Minimize");
         }
 
         private ScriptEditorViewModel Editor() =>

@@ -30,6 +30,54 @@
     Z
   </StreamGeometry>
 
+  <!-- Compact utility icons used by editor chrome. Kept as vectors so their weight and color follow
+       the Toolset theme instead of depending on a platform font's symbol coverage. -->
+  <StreamGeometry x:Key="ToolsetSearchIconGeometry">
+    M6.75,2
+    C4.13,2 2,4.13 2,6.75
+    C2,9.37 4.13,11.5 6.75,11.5
+    C7.87,11.5 8.9,11.11 9.71,10.46
+    L13.13,13.88
+    C13.37,14.12 13.76,14.12 14,13.88
+    C14.24,13.64 14.24,13.25 14,13.01
+    L10.58,9.59
+    C11.16,8.8 11.5,7.82 11.5,6.75
+    C11.5,4.13 9.37,2 6.75,2
+    Z
+    M6.75,3.25
+    C8.68,3.25 10.25,4.82 10.25,6.75
+    C10.25,8.68 8.68,10.25 6.75,10.25
+    C4.82,10.25 3.25,8.68 3.25,6.75
+    C3.25,4.82 4.82,3.25 6.75,3.25
+    Z
+  </StreamGeometry>
+
+  <StreamGeometry x:Key="ToolsetChevronDownIconGeometry">
+    M3.18,5.3
+    C2.94,5.06 2.55,5.06 2.31,5.3
+    C2.07,5.54 2.07,5.93 2.31,6.17
+    L7.56,11.42
+    C7.8,11.66 8.2,11.66 8.44,11.42
+    L13.69,6.17
+    C13.93,5.93 13.93,5.54 13.69,5.3
+    C13.45,5.06 13.06,5.06 12.82,5.3
+    L8,10.12
+    Z
+  </StreamGeometry>
+
+  <StreamGeometry x:Key="ToolsetChevronUpIconGeometry">
+    M3.18,10.7
+    C2.94,10.94 2.55,10.94 2.31,10.7
+    C2.07,10.46 2.07,10.07 2.31,9.83
+    L7.56,4.58
+    C7.8,4.34 8.2,4.34 8.44,4.58
+    L13.69,9.83
+    C13.93,10.07 13.93,10.46 13.69,10.7
+    C13.45,10.94 13.06,10.94 12.82,10.7
+    L8,5.88
+    Z
+  </StreamGeometry>
+
   <StaticResource x:Key="DockIconCloseGeometry"
                   ResourceKey="ToolsetCloseIconGeometry" />
   <StaticResource x:Key="DockToolIconCloseGeometry"

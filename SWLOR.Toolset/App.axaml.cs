@@ -344,14 +344,10 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<ValidationViewModel>(),
                 sp.GetRequiredService<PaletteViewModel>(),
                 sp.GetRequiredService<ProblemsViewModel>(),
-                sp.GetRequiredService<ScriptSearchViewModel>(),
                 sp.GetRequiredService<ScriptReferenceViewModel>(),
                 sp.GetRequiredService<AreaContentsViewModel>(),
                 sp.GetRequiredService<ToolsetSettings>()));
             services.AddSingleton<ProblemsViewModel>();
-            services.AddSingleton(sp => new ScriptSearchViewModel(
-                sp.GetRequiredService<WorkspaceContext>(),
-                sp.GetRequiredService<Func<Editors.EditorService>>()));
             services.AddSingleton(sp => new ScriptReferenceViewModel(
                 sp.GetRequiredService<Workspace.ScriptLanguageService>(),
                 sp.GetRequiredService<Services.IExternalLinkService>()));

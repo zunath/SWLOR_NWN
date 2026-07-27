@@ -86,8 +86,7 @@ namespace SWLOR.Toolset.Tests
                     provider.GetRequiredService<ScriptReferenceViewModel>(),
                     provider.GetRequiredService<OutputViewModel>(),
                     provider.GetRequiredService<ValidationViewModel>(),
-                    provider.GetRequiredService<ProblemsViewModel>(),
-                    provider.GetRequiredService<ScriptSearchViewModel>()
+                    provider.GetRequiredService<ProblemsViewModel>()
                 };
                 foreach (var tool in dockedTools)
                 {

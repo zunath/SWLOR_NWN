@@ -1,26 +1,20 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Script;
-using SWLOR.Toolset.Domain.Workspace;
-using SWLOR.Toolset.Editors;
-using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Shell.Panels
 {
-    /// <summary>Finds text or identifiers across every module script.</summary>
-    public partial class ScriptSearchViewModel : Tool
+    /// <summary>Finds text or identifiers across every module script from a script editor.</summary>
+    public partial class ScriptSearchViewModel : ObservableObject
     {
-        private readonly WorkspaceContext _workspaceContext;
-        private readonly Func<EditorService> _editorService;
+        private readonly string _scriptRoot;
+        private readonly Action<string, int> _navigate;
 
-        public ScriptSearchViewModel(WorkspaceContext workspaceContext, Func<EditorService> editorService)
+        public ScriptSearchViewModel(string scriptRoot, Action<string, int> navigate)
         {
-            _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
-            _editorService = editorService ?? throw new ArgumentNullException(nameof(editorService));
-            Id = "ScriptSearch";
-            Title = "Find Scripts";
+            _scriptRoot = scriptRoot ?? throw new ArgumentNullException(nameof(scriptRoot));
+            _navigate = navigate ?? throw new ArgumentNullException(nameof(navigate));
         }
 
         [ObservableProperty]
@@ -47,15 +41,14 @@ namespace SWLOR.Toolset.Shell.Panels
         {
             Results.Clear();
 
-            var moduleRoot = _workspaceContext.Workspace?.ModuleRoot;
-            if (moduleRoot == null || string.IsNullOrWhiteSpace(Query))
+            if (string.IsNullOrWhiteSpace(Query))
             {
                 RaiseSummary();
                 return;
             }
 
             var mode = IdentifierOnly ? ScriptSearchMode.Identifier : ScriptSearchMode.Substring;
-            var search = new ScriptWorkspaceSearch(Path.Combine(moduleRoot, "nss"));
+            var search = new ScriptWorkspaceSearch(_scriptRoot);
             foreach (var result in search.Search(Query, mode).Take(500))
                 Results.Add(result);
 
@@ -68,13 +61,12 @@ namespace SWLOR.Toolset.Shell.Panels
             if (result == null)
                 return;
 
-            _editorService().NavigateToScriptLine(result.ResRef, result.Line);
+            _navigate(result.ResRef, result.Line);
         }
 
         private void RaiseSummary()
         {
             OnPropertyChanged(nameof(Summary));
-            Title = Results.Count == 0 ? "Find Scripts" : $"Find Scripts {Results.Count}";
         }
     }
 }

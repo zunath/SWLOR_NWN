@@ -4,6 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:edit="using:AvaloniaEdit"
              xmlns:editors="using:SWLOR.Toolset.Editors"
+             xmlns:shellViews="using:SWLOR.Toolset.Shell.Views"
              xmlns:script="using:SWLOR.Toolset.Domain.Script"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
              x:Class="SWLOR.Toolset.Editors.ScriptEditorView"
@@ -44,29 +45,47 @@
       </Border>
     </Grid>
 
-    <!-- Outline sits under the code rather than in a side rail: the shipped layout has no room for a
-         fourth column, and NWScript files are short and function-dense, so a horizontal strip costs
-         less width than a column would. -->
+    <!-- Script-only utilities sit under the code rather than occupying the application-wide bottom
+         dock. Outline is the default; cross-script search temporarily takes its place when requested. -->
     <Border Grid.Row="1" Background="{DynamicResource PanelHeaderBrush}"
             BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,1" Padding="14,6">
-      <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto" ColumnSpacing="10">
-        <TextBlock Grid.Column="0" Classes="title" Text="OUTLINE" VerticalAlignment="Center" />
-        <Button Grid.Column="1" Classes="link" Content="{Binding OutlineToggleLabel}" Padding="0"
+      <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
+        <TextBlock Grid.Column="0" Classes="title" Text="OUTLINE" VerticalAlignment="Center"
+                   IsVisible="{Binding !IsWorkspaceSearchOpen}" />
+        <TextBlock Grid.Column="0" Classes="title" Text="FIND IN SCRIPTS" VerticalAlignment="Center"
+                   IsVisible="{Binding IsWorkspaceSearchOpen}" />
+
+        <Button Name="OutlineToggleButton" Grid.Column="1" Classes="utility-icon"
                 Command="{Binding ToggleOutlineCommand}" VerticalAlignment="Center"
-                ToolTip.Tip="Minimize or restore the script outline" />
+                IsVisible="{Binding !IsWorkspaceSearchOpen}"
+                ToolTip.Tip="Collapse or expand the script outline">
+          <Grid>
+            <Path Data="{DynamicResource ToolsetChevronDownIconGeometry}"
+                  IsVisible="{Binding IsOutlineCollapsed}" />
+            <Path Data="{DynamicResource ToolsetChevronUpIconGeometry}"
+                  IsVisible="{Binding !IsOutlineCollapsed}" />
+          </Grid>
+        </Button>
+
+        <Button Name="WorkspaceSearchToggleButton" Grid.Column="2" Classes="utility-icon"
+                Classes.active="{Binding IsWorkspaceSearchOpen}"
+                Command="{Binding ToggleWorkspaceSearchCommand}" VerticalAlignment="Center"
+                IsVisible="{Binding HasWorkspaceSearch}" ToolTip.Tip="Find in all scripts">
+          <Path Data="{DynamicResource ToolsetSearchIconGeometry}" />
+        </Button>
 
         <!-- Compile lives on the document, not in a module-wide menu: it acts on the file in front
              of you, and Ctrl+B does the same thing without leaving the keyboard. -->
-        <Button Grid.Column="3" Classes="primary" Content="Compile (Ctrl+B)" Padding="10,3"
+        <Button Grid.Column="4" Classes="primary" Content="Compile (Ctrl+B)" Padding="10,3"
                 Command="{Binding CompileCommand}" VerticalAlignment="Center"
                 ToolTip.Tip="Save and compile this script to .ncs (Ctrl+B)" />
 
         <!-- The answer to "what is this script attached to?", which nothing else in the pipeline
              can give: 2,250 module resources name a script by resref. -->
-        <TextBlock Grid.Column="4" Classes="count" VerticalAlignment="Center"
+        <TextBlock Grid.Column="5" Classes="count" VerticalAlignment="Center"
                    Foreground="{DynamicResource GreenBrush}"
                    IsVisible="{Binding HasUsageSummary}" Text="{Binding UsageSummary}" />
-        <Button Grid.Column="5" Classes="link" Content="Used by..." Padding="0"
+        <Button Grid.Column="6" Classes="link" Content="Used by..." Padding="0"
                 Command="{Binding ShowUsagesCommand}" VerticalAlignment="Center" />
       </Grid>
     </Border>
@@ -88,7 +107,7 @@
     </Button>
 
     <ScrollViewer Name="OutlineList" Grid.Row="2" MaxHeight="110" VerticalScrollBarVisibility="Auto"
-                  IsVisible="{Binding !IsOutlineCollapsed}"
+                  IsVisible="{Binding IsOutlineVisible}"
                   Background="{DynamicResource PanelBrush}">
       <ItemsControl ItemsSource="{Binding OutlineFunctions}" Margin="0,3">
         <ItemsControl.ItemTemplate>
@@ -109,5 +128,11 @@
         </ItemsControl.ItemTemplate>
       </ItemsControl>
     </ScrollViewer>
+
+    <Border Name="WorkspaceSearchPanel" Grid.Row="2" MaxHeight="220"
+            IsVisible="{Binding IsWorkspaceSearchOpen}"
+            Background="{DynamicResource PanelBrush}">
+      <shellViews:ScriptSearchView DataContext="{Binding WorkspaceSearch}" />
+    </Border>
   </Grid>
 </UserControl>

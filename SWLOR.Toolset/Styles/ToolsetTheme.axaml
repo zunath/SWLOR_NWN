@@ -462,6 +462,34 @@
     <Setter Property="Fill" Value="{DynamicResource AccentInkBrush}" />
   </Style>
 
+  <!-- Compact icon-only editor utility actions. Tooltips carry the accessible action name while the
+       chrome stays scannable at the narrow widths where text links crowd out document actions. -->
+  <Style Selector="Button.utility-icon">
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Padding" Value="5" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="Button.utility-icon Path">
+    <Setter Property="Width" Value="12" />
+    <Setter Property="Height" Value="12" />
+    <Setter Property="Stretch" Value="Uniform" />
+    <Setter Property="Fill" Value="{DynamicResource InkSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="Button.utility-icon:pointerover Path">
+    <Setter Property="Fill" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
+  <Style Selector="Button.utility-icon.active /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+  </Style>
+
   <!-- Dock's close controls are real Buttons, so the broad Button style above otherwise gives their
        16px chrome 20px of horizontal padding. Dock still creates the Path and resolves its geometry,
        but layout collapses it to 0x0 - the result is the empty rounded square seen on document tabs.

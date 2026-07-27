@@ -319,7 +319,15 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                var editor = new ScriptEditorViewModel(filePath, resRef, _log, _prompts, _scriptLanguage)
+                var editor = new ScriptEditorViewModel(
+                    filePath,
+                    resRef,
+                    _log,
+                    _prompts,
+                    _scriptLanguage,
+                    new Shell.Panels.ScriptSearchViewModel(
+                        Path.Combine(workspace.ModuleRoot, "nss"),
+                        NavigateToScriptLine))
                 {
                     // The tab's own Compile button writes a .ncs, so it follows the same module-wide
                     // lock that the Build menu does.

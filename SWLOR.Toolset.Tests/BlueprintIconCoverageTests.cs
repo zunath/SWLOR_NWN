@@ -21,6 +21,12 @@ namespace SWLOR.Toolset.Tests
     /// placeables point at appearance rows that are blank in placeables.2da and legitimately have no
     /// model to preview, so the interesting failure is coverage dropping, not coverage being short of
     /// 100%.
+    /// <para>
+    /// Note that a blueprint's appearance indexes placeables.2da by row <i>position</i>, not by the
+    /// value printed in its first column - the two disagree in this corpus, where the labels run to
+    /// 32189 across 32,090 rows. <see cref="Domain.GameData.TwoDa.TwoDaTable"/> reads positionally and
+    /// so does the game; anything that reads the label column instead lands on the wrong artwork.
+    /// </para>
     /// </remarks>
     [TestFixture]
     [Category("Corpus")]
@@ -145,16 +151,33 @@ namespace SWLOR.Toolset.Tests
                          $"unresolved: {string.Join(", ", unresolved.Take(10))}");
         }
 
+        /// <summary>
+        /// Placeables are the one type where "no preview" is common, so this guards both directions:
+        /// coverage must not fall, and the modelless residue must not grow.
+        /// </summary>
+        /// <remarks>
+        /// A placeable that resolves no model becomes a palette tile that cannot draw itself. 2,911 of
+        /// the module's blueprints are in that state here: 2,899 name a blank placeables.2da row, and
+        /// the remaining dozen name a model file that is not shipped in any hak - which is why this
+        /// counts what <see cref="ResolvesModel"/> answers rather than what the 2DA says.
+        /// <para>
+        /// The ceiling is a ratchet against today's count, not a target: it exists so the number can
+        /// only shrink. <b>Retighten it when the placeable cleanup on the feature/combat-upgrade side
+        /// merges in</b> - that deletes the unreferenced ones and should leave only a handful.
+        /// </para>
+        /// </remarks>
         [Test]
         public void Placeable_Model_Coverage_Does_Not_Regress()
         {
-            var resolved = Data.Workspace.EnumerateResRefs(ResourceType.Utp)
-                .Count(resRef => ResolvesModel(
-                    ResourceType.Utp, Data.Workspace.LoadBlueprint(ResourceType.Utp, resRef).Fields));
+            var resRefs = Data.Workspace.EnumerateResRefs(ResourceType.Utp).ToList();
+            var resolved = resRefs.Count(resRef => ResolvesModel(
+                ResourceType.Utp, Data.Workspace.LoadBlueprint(ResourceType.Utp, resRef).Fields));
 
-            resolved.Should().BeGreaterThanOrEqualTo(5000,
-                because: "5,357 placeables resolved a model when this was measured; the rest point at " +
-                         "blank placeables.2da rows and fall back to the type symbol");
+            resolved.Should().BeGreaterThanOrEqualTo(5440,
+                because: "5,444 placeables resolved a model when this was measured");
+            (resRefs.Count - resolved).Should().BeLessThanOrEqualTo(2915,
+                because: "2,911 placeables cannot draw themselves in the palette; that count should " +
+                         "only ever shrink");
         }
 
         [Test]

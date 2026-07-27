@@ -2253,8 +2253,13 @@ namespace SWLOR.Toolset.Editors
         {
             try
             {
-                _gitSession.ReloadFromDisk();
-                _gicSession.ReloadFromDisk();
+                // Parse both externals before replacing either session: GIT instances and GIC
+                // comments correspond by index, and a malformed or vanished GIC must not leave an
+                // external GIT sitting beside the old locally edited comments.
+                var externalGit = JsonGffDocument.Load(_gitSession.FilePath);
+                var externalGic = JsonGffDocument.Load(_gicSession.FilePath);
+                _gitSession.ReloadFrom(externalGit);
+                _gicSession.ReloadFrom(externalGic);
                 _savedGicBytes = _gicSession.ToBytes();
                 _gicDirty = false;
                 RefreshInstanceSections();

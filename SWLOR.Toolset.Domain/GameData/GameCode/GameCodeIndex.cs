@@ -95,12 +95,17 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
                 ? SourceIdScanner.ScanBuilderCreateIds(questDirectory, out questComplete)
                 : new HashSet<string>(StringComparer.Ordinal);
 
-            // The detail scan is a superset of the id scan in intent but not in reach: a quest whose
-            // id resolves through a const still yields details, while one built by a helper method
-            // yields neither. Kept separate so the id set stays exactly as authoritative as it was.
             _quests = questDirectory != null
                 ? QuestSourceScanner.Scan(questDirectory, out _)
                 : new Dictionary<string, QuestDefinitionInfo>(StringComparer.Ordinal);
+
+            // The two scans reach different quests: SourceIdScanner only expands helpers whose
+            // FIRST parameter is a string, while the guild helpers (Smithery, Engineering, ...)
+            // take a QuestBuilder first and the id second - their hundreds of quests appear only
+            // in the detailed scan. The pickers read QuestIds, so merge the detailed keys in or
+            // eng_tsk_* and friends vanish from the Quest Activator list.
+            foreach (var questId in _quests.Keys)
+                _questIds.Add(questId);
 
             _spawnTableIds = spawnDirectory != null
                 ? SourceIdScanner.ScanBuilderCreateIds(spawnDirectory, out spawnComplete)

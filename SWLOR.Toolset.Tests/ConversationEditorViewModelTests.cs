@@ -412,6 +412,36 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void SelectingAQuestRebuildsItsDependentStatePicker()
+        {
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            var choice = editor.Value.Choices[0];
+            editor.Value.EditChoiceCommand.Execute(choice);
+            editor.Value.GuardToAdd = Snippets.Find("condition-on-quest-state");
+            editor.Value.AddGuardCommand.Execute(null);
+            var guard = editor.Value.Guards.Single(rule =>
+                rule.Snippet.Key == "condition-on-quest-state");
+            var quest = guard.Arguments[0];
+            var state = guard.Arguments[1];
+
+            state.HasOptions.Should().BeFalse(
+                "no quest is selected when a new quest-state guard is first added");
+
+            quest.Selected = quest.Options.Single(option => option.Value == "field_tinctures");
+
+            state.HasOptions.Should().BeTrue();
+            state.IsFreeText.Should().BeFalse();
+            state.Options.Should().NotBeEmpty()
+                .And.OnlyContain(option => option.Label.StartsWith("Step "));
+
+            state.Selected = state.Options.Last();
+
+            guard.Param.Arguments.Should().Equal("field_tinctures", state.Selected.Value);
+        }
+
+        [Test]
         public void AddingAGuardWiresTheDispatcherWithoutTheWriterSeeingIt()
         {
             using var editor = new Disposable(Open());

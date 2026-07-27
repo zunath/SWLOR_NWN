@@ -1744,7 +1744,10 @@ namespace SWLOR.Toolset.Editors
         /// </remarks>
         public async Task<bool> TrySaveAsync()
         {
-            var areaCatalogEntryChanged = _areSession.UndoStack.IsDirty;
+            var catalogEntryChanged =
+                _areSession.UndoStack.IsDirty ||
+                _gitSession.UndoStack.IsDirty;
+            var instancePairReloaded = false;
             var tilesetBefore = TilesetResRef;
 
             var arePlan = await PlanSaveAsync(_areSession).ConfigureAwait(true);
@@ -1767,6 +1770,7 @@ namespace SWLOR.Toolset.Editors
             {
                 if (!ReloadInstancePair())
                     return false;
+                instancePairReloaded = true;
                 gitPlan = SavePlan.Nothing;
             }
 
@@ -1779,6 +1783,7 @@ namespace SWLOR.Toolset.Editors
             {
                 if (!ReloadInstancePair())
                     return false;
+                instancePairReloaded = true;
                 gitPlan = SavePlan.Nothing;
                 gicPlan = SavePlan.Nothing;
             }
@@ -1824,8 +1829,13 @@ namespace SWLOR.Toolset.Editors
                 TilesetChanged?.Invoke();
 
             AfterHistoryChange();
-            if (areaCatalogEntryChanged || areResult.Reloaded)
+            if (catalogEntryChanged ||
+                areResult.Reloaded ||
+                gitResult.Reloaded ||
+                instancePairReloaded)
+            {
                 CatalogEntryChanged?.Invoke();
+            }
             return true;
         }
 

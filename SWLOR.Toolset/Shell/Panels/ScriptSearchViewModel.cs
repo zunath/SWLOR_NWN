@@ -10,11 +10,16 @@ namespace SWLOR.Toolset.Shell.Panels
     {
         private readonly string _scriptRoot;
         private readonly Action<string, int> _navigate;
+        private readonly Func<string, string?>? _sourceOverlay;
 
-        public ScriptSearchViewModel(string scriptRoot, Action<string, int> navigate)
+        public ScriptSearchViewModel(
+            string scriptRoot,
+            Action<string, int> navigate,
+            Func<string, string?>? sourceOverlay = null)
         {
             _scriptRoot = scriptRoot ?? throw new ArgumentNullException(nameof(scriptRoot));
             _navigate = navigate ?? throw new ArgumentNullException(nameof(navigate));
+            _sourceOverlay = sourceOverlay;
         }
 
         [ObservableProperty]
@@ -48,7 +53,7 @@ namespace SWLOR.Toolset.Shell.Panels
             }
 
             var mode = IdentifierOnly ? ScriptSearchMode.Identifier : ScriptSearchMode.Substring;
-            var search = new ScriptWorkspaceSearch(_scriptRoot);
+            var search = new ScriptWorkspaceSearch(_scriptRoot, _sourceOverlay);
             foreach (var result in search.Search(Query, mode).Take(500))
                 Results.Add(result);
 

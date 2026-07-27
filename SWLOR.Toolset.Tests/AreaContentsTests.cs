@@ -53,7 +53,7 @@ namespace SWLOR.Toolset.Tests
                 Directory.Delete(_moduleRoot, recursive: true);
         }
 
-        private AreaEditorViewModel CreateEditor()
+        private AreaEditorViewModel CreateEditor(IEditorPromptService? prompts = null)
         {
             var log = new OutputLogService();
             return new AreaEditorViewModel(
@@ -62,7 +62,7 @@ namespace SWLOR.Toolset.Tests
                 new LookupOptionProvider(new WorkspaceContext(_ => throw new NotSupportedException(), log)),
                 gameCodeIndex: null,
                 log,
-                prompts: new StubPrompts());
+                prompts: prompts ?? new StubPrompts());
         }
 
         private static AreaContentsViewModel CreatePanel(
@@ -333,6 +333,45 @@ namespace SWLOR.Toolset.Tests
                 before, "the panel listens for content changes rather than being refreshed by hand");
         }
 
+        [Test]
+        public async Task SavingAGitOnlyEditPublishesTheAreaCatalogChange()
+        {
+            var editor = CreateEditor();
+            var section = editor.SectionFor(ResourceType.Utp)!;
+            section.SelectedRow = section.Rows[0];
+            var notifications = 0;
+            editor.CatalogEntryChanged += () => notifications++;
+
+            section.DetailTag = "git_only_catalog_refresh";
+
+            (await editor.TrySaveAsync()).Should().BeTrue();
+            notifications.Should().Be(1,
+                "placed-instance tags and script slots are indexed from GIT, not ARE");
+        }
+
+        [Test]
+        public async Task ReloadingAnExternalGitChangePublishesTheAreaCatalogChange()
+        {
+            var editor = CreateEditor(new ReloadPrompts());
+            var section = editor.SectionFor(ResourceType.Utp)!;
+            section.SelectedRow = section.Rows[0];
+            var diskTag = section.Rows[0].Tag;
+            section.DetailTag = "local_unsaved_tag";
+
+            var gitPath = Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json");
+            File.SetLastWriteTimeUtc(
+                gitPath,
+                File.GetLastWriteTimeUtc(gitPath).AddSeconds(2));
+
+            var notifications = 0;
+            editor.CatalogEntryChanged += () => notifications++;
+
+            (await editor.TrySaveAsync()).Should().BeTrue();
+
+            notifications.Should().Be(1);
+            editor.SectionFor(ResourceType.Utp)!.Rows[0].Tag.Should().Be(diskTag);
+        }
+
         private static int CountUnder(AreaContentsNodeViewModel kind) =>
             kind.Children.Sum(child => child.Kind == AreaContentsNodeKind.Group ? child.Indices.Count : 1);
 
@@ -364,6 +403,23 @@ namespace SWLOR.Toolset.Tests
                 Task.FromResult<string?>(null);
 
             public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) =>
+                Task.FromResult(true);
+        }
+
+        private sealed class ReloadPrompts : IEditorPromptService
+        {
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string name) =>
+                Task.FromResult(UnsavedChangesChoice.Cancel);
+
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string path) =>
+                Task.FromResult(ExternalChangeChoice.Reload);
+
+            public Task<string?> PromptForTextAsync(
+                string headline, string message, string initialValue, string confirmLabel) =>
+                Task.FromResult<string?>(null);
+
+            public Task<bool> ConfirmDestructiveAsync(
+                string headline, string message, string confirmLabel) =>
                 Task.FromResult(true);
         }
     }

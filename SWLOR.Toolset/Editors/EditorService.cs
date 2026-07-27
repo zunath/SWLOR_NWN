@@ -327,7 +327,13 @@ namespace SWLOR.Toolset.Editors
                     _scriptLanguage,
                     new Shell.Panels.ScriptSearchViewModel(
                         Path.Combine(workspace.ModuleRoot, "nss"),
-                        NavigateToScriptLine))
+                        NavigateToScriptLine,
+                        scriptResRef =>
+                            _openScriptEditors.TryGetValue(
+                                workspace.GetResourcePath(ResourceType.Nss, scriptResRef),
+                                out var openEditor)
+                                ? openEditor.TextBinding
+                                : null))
                 {
                     // The tab's own Compile button writes a .ncs, so it follows the same module-wide
                     // lock that the Build menu does.

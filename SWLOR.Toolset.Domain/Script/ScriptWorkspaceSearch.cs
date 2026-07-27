@@ -16,10 +16,14 @@ namespace SWLOR.Toolset.Domain.Script
     public sealed class ScriptWorkspaceSearch
     {
         private readonly string _nssDirectory;
+        private readonly Func<string, string?>? _sourceOverlay;
 
-        public ScriptWorkspaceSearch(string nssDirectory)
+        public ScriptWorkspaceSearch(
+            string nssDirectory,
+            Func<string, string?>? sourceOverlay = null)
         {
             _nssDirectory = nssDirectory;
+            _sourceOverlay = sourceOverlay;
         }
 
         public IReadOnlyList<ScriptSearchResult> Search(string query, ScriptSearchMode mode)
@@ -36,7 +40,7 @@ namespace SWLOR.Toolset.Domain.Script
                          .OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase))
             {
                 var resRef = Path.GetFileNameWithoutExtension(path);
-                var source = ScriptTextDocument.Load(path).Text;
+                var source = _sourceOverlay?.Invoke(resRef) ?? ScriptTextDocument.Load(path).Text;
                 if (mode == ScriptSearchMode.Identifier)
                     SearchIdentifier(source, resRef, query, results);
                 else

@@ -1742,6 +1742,34 @@ void main()
             RequestNextFrameRendering();
         }
 
+        /// <summary>
+        /// How close the camera comes when it is sent to a single object. Chosen to frame the object
+        /// and the ground around it rather than to fill the viewport with it: an object this tool can
+        /// place ranges from a coin on the floor to a building, and a distance that suits the coin
+        /// puts the camera inside the building.
+        /// </summary>
+        private const float FocusDistance = 15f;
+
+        /// <summary>
+        /// Sends the camera to one object: the orbit target moves onto it and the view closes to
+        /// <see cref="FocusDistance"/>, while azimuth and elevation are left where the builder had
+        /// them - arriving at a different angle than you were working at is disorienting, and the
+        /// pad is right there if the new spot needs turning.
+        /// </summary>
+        /// <remarks>
+        /// Never zooms out. Someone already in close on a neighbouring object is looking at this
+        /// scale deliberately, and pushing the camera back out to a fixed distance would throw that
+        /// away every time they stepped through a list.
+        /// </remarks>
+        public void FocusOn(Vector3 position)
+        {
+            _target = position;
+            _distance = AreaCameraMath.ClampDistance(
+                MathF.Min(_distance, FocusDistance), _initialDistance);
+
+            RequestNextFrameRendering();
+        }
+
         public void HandlePointerWheel(PointerWheelEventArgs e)
         {
             // Wheel up (positive delta) zooms IN (shrinks distance) per common convention.

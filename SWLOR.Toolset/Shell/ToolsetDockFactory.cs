@@ -26,6 +26,7 @@ namespace SWLOR.Toolset.Shell
         private readonly ProblemsViewModel _problems;
         private readonly ScriptSearchViewModel _scriptSearch;
         private readonly ScriptReferenceViewModel _scriptReference;
+        private readonly AreaContentsViewModel _areaContents;
 
         /// <summary>Where remembered divider positions come from and go, or null in a test with none.</summary>
         private readonly ToolsetSettings? _settings;
@@ -48,8 +49,10 @@ namespace SWLOR.Toolset.Shell
             ProblemsViewModel problems,
             ScriptSearchViewModel scriptSearch,
             ScriptReferenceViewModel scriptReference,
+            AreaContentsViewModel areaContents,
             ToolsetSettings? settings = null)
         {
+            _areaContents = areaContents;
             _explorer = explorer;
             _properties = properties;
             _search = search;
@@ -91,11 +94,15 @@ namespace SWLOR.Toolset.Shell
 
         public override IRootDock CreateLayout()
         {
+            // Area Contents tabs beside Module Contents rather than nesting inside its tree. Aurora
+            // put an area's objects under the area itself, in the same tree as the other 442 areas,
+            // and that is the thing this layout is deliberately not doing: the two lists answer
+            // different questions and neither should be able to bury the other.
             var explorerDock = new ToolDock
             {
                 Id = "ExplorerDock",
                 ActiveDockable = _explorer,
-                VisibleDockables = CreateList<IDockable>(_explorer),
+                VisibleDockables = CreateList<IDockable>(_explorer, _areaContents),
                 Alignment = Alignment.Left,
                 Proportion = 0.26,
                 // Each panel draws its own title; Dock's chrome adds a dotted drag grip and window
@@ -217,6 +224,13 @@ namespace SWLOR.Toolset.Shell
             PrepareForThemeBindings(document);
             AddDockable(_documentDock, document);
             ActivateDocument(document);
+
+            // Opening an area shows what is in it. On open only, not on every re-activation: which
+            // of the two left-hand panels you want while switching between tabs you already have
+            // open is your business, and taking the rail off Module Contents each time would fight
+            // whatever you were doing there.
+            if (document is Editors.AreaEditorViewModel)
+                Focus(_areaContents);
         }
 
         /// <summary>Brings an already-open editor document to the front.</summary>
@@ -293,7 +307,8 @@ namespace SWLOR.Toolset.Shell
                 [_palette.Id] = () => _palette,
                 [_problems.Id] = () => _problems,
                 [_scriptSearch.Id] = () => _scriptSearch,
-                [_scriptReference.Id] = () => _scriptReference
+                [_scriptReference.Id] = () => _scriptReference,
+                [_areaContents.Id] = () => _areaContents
             };
 
             DockableLocator = new Dictionary<string, Func<IDockable?>>

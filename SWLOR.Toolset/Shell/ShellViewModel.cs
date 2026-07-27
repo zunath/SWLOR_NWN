@@ -76,6 +76,7 @@ namespace SWLOR.Toolset.Shell
         private readonly ScriptCompileService? _compileService;
         private readonly ScriptReferenceViewModel? _scriptReference;
         private readonly ProblemsViewModel? _problems;
+        private readonly AreaContentsViewModel? _areaContents;
 
         public ShellViewModel(
             ToolsetSettings settings,
@@ -96,8 +97,10 @@ namespace SWLOR.Toolset.Shell
             ScriptCompileService? compileService = null,
             ScriptReferenceViewModel? scriptReference = null,
             ProblemsViewModel? problems = null,
+            AreaContentsViewModel? areaContents = null,
             StartupNotice? startupNotice = null)
         {
+            _areaContents = areaContents;
             _startupNotice = startupNotice;
             _compileService = compileService;
             _scriptReference = scriptReference;
@@ -204,6 +207,11 @@ namespace SWLOR.Toolset.Shell
             if (_activeEditorNotifier != null)
                 _activeEditorNotifier.PropertyChanged += OnActiveEditorPropertyChanged;
 
+            // Area Contents follows the front tab. Pointed at null while a blueprint or script is in
+            // front rather than left showing the last area's objects, which would be a list of
+            // things Delete no longer reaches.
+            _areaContents?.SetEditor(document as Editors.AreaEditorViewModel);
+
             // The right dock follows the tab: the Palette lists the front AREA's tileset, so it has
             // nothing to say while a script is in front, and Script Reference has nothing to say
             // while an area is. Insert-at-cursor is retargeted at the same moment.
@@ -283,6 +291,13 @@ namespace SWLOR.Toolset.Shell
 
         [RelayCommand]
         private void FocusExplorer() => _factory.Focus(_explorer);
+
+        [RelayCommand]
+        private void FocusAreaContents()
+        {
+            if (_areaContents != null)
+                _factory.Focus(_areaContents);
+        }
 
         [RelayCommand]
         private void FocusPalette() => _factory.Focus(_palette);

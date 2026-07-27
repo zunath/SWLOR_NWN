@@ -52,7 +52,11 @@ namespace SWLOR.Toolset.Editors
             if (_display != null)
                 _display.PropertyChanged -= OnDisplayPropertyChanged;
             if (_viewModel != null)
+            {
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+                _viewModel.CameraFocusRequested -= OnCameraFocusRequested;
+            }
+
             _viewModel = null;
 
             base.OnDetachedFromVisualTree(e);
@@ -74,7 +78,10 @@ namespace SWLOR.Toolset.Editors
         private void AttachViewModel()
         {
             if (_viewModel != null)
+            {
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+                _viewModel.CameraFocusRequested -= OnCameraFocusRequested;
+            }
 
             _viewModel = DataContext as AreaEditorViewModel;
             if (_viewModel == null)
@@ -91,6 +98,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.TilePlacementValidator = _viewModel.CanPlaceArmedTileAt;
             AreaView.SelectedTileCell = _viewModel.SelectedTile;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+            _viewModel.CameraFocusRequested += OnCameraFocusRequested;
 
             // Opening an area shows its map. Not gated on the 3D View tab being selected: it always is
             // (it is the first tab), and reading IsSelected here raced the TabControl's own setup - the
@@ -119,6 +127,39 @@ namespace SWLOR.Toolset.Editors
                 AreaView.TilePlacementModels = _viewModel.TilePlacementModels;
             else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedTile))
                 AreaView.SelectedTileCell = _viewModel.SelectedTile;
+        }
+
+        /// <summary>
+        /// The Area Contents tree asked for an object to be shown: bring the map to the front if the
+        /// Properties tab is, then send the camera.
+        /// </summary>
+        /// <remarks>
+        /// The tab switch is not optional. Double-clicking a row while Properties is in front would
+        /// otherwise move a camera nobody can see, which reads as the row having done nothing.
+        /// </remarks>
+        private void OnCameraFocusRequested(Vector3 position)
+        {
+            RootTabs.SelectedItem = ViewTab3D;
+            AreaView.FocusOn(position);
+        }
+
+        /// <summary>
+        /// Delete removes whatever the map has selected. Not handled when nothing is selected, so
+        /// the key still reaches a field or grid that wants it.
+        /// </summary>
+        /// <remarks>
+        /// On the view rather than the GL control because the control is only hit-testable through
+        /// the transparent input overlay and never takes focus from a click; this sees the key
+        /// wherever it lands in the editor, and a focused TextBox has already consumed its own.
+        /// </remarks>
+        protected override void OnKeyDown(Avalonia.Input.KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            if (e.Handled || e.Key != Avalonia.Input.Key.Delete || _viewModel == null)
+                return;
+
+            e.Handled = _viewModel.DeleteSelectedSceneInstance();
         }
 
         /// <summary>

@@ -52,8 +52,12 @@
           <ProgressBar IsIndeterminate="True" Width="180" />
         </StackPanel>
 
-        <appearance:AppearanceGalleryView Grid.Row="1" IsVisible="{Binding !IsLoading}"
-                                          DataContext="{Binding Gallery}" />
+        <!-- The visibility test and the DataContext swap have to sit on different elements. Both on
+             the gallery view meant IsLoading was looked up on the Gallery it had just switched to,
+             which does not have one - a compiled-binding error that failed the whole build. -->
+        <Border Grid.Row="1" IsVisible="{Binding !IsLoading}">
+          <appearance:AppearanceGalleryView DataContext="{Binding Gallery}" />
+        </Border>
       </Grid>
     </DataTemplate>
 
@@ -189,10 +193,13 @@
             </Grid>
             <TextBlock Text="Left-drag to turn &#x00B7; right-drag to move &#x00B7; wheel to zoom"
                        Classes="dim" FontSize="10" TextWrapping="Wrap" />
+            <!-- The section flattens the highlight onto itself (HighlightedCaption and friends); the
+                 tile it comes from lives on Gallery, so binding through "Highlighted." from here
+                 resolved against nothing. -->
             <StackPanel Spacing="3" IsVisible="{Binding HasHighlight}">
-              <TextBlock Text="{Binding Highlighted.Caption}" TextWrapping="Wrap" FontSize="10.5" />
-              <TextBlock Text="{Binding Highlighted.ModelName}" Classes="mono" FontSize="10" />
-              <TextBlock Text="{Binding Highlighted.UsageText}" Classes="count" />
+              <TextBlock Text="{Binding HighlightedCaption}" TextWrapping="Wrap" FontSize="10.5" />
+              <TextBlock Text="{Binding HighlightedModelName}" Classes="mono" FontSize="10" />
+              <TextBlock Text="{Binding HighlightedUsage}" Classes="count" />
             </StackPanel>
           </StackPanel>
         </Grid>

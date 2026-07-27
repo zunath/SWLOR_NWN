@@ -29,6 +29,7 @@
       </MenuItem>
       <MenuItem Header="_View">
         <MenuItem Header="Module Contents" Command="{Binding FocusExplorerCommand}" />
+        <MenuItem Header="Area Contents" Command="{Binding FocusAreaContentsCommand}" />
         <MenuItem Header="Palette" Command="{Binding FocusPaletteCommand}" />
         <MenuItem Header="Output" Command="{Binding FocusOutputCommand}" />
       </MenuItem>

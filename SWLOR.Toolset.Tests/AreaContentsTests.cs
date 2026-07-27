@@ -1,0 +1,423 @@
+using System.Numerics;
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Editors;
+using SWLOR.Toolset.Services;
+using SWLOR.Toolset.Shell.Panels;
+using SWLOR.Toolset.Workspace;
+
+namespace SWLOR.Toolset.Tests
+{
+    /// <summary>
+    /// The Area Contents panel, over a working copy of a real area.
+    /// </summary>
+    /// <remarks>
+    /// veles_exterior is the area the design was measured against and the reason the tree groups the
+    /// way it does: 1,599 placeables, 179 blueprints, and one blueprint placed 648 times under 108
+    /// different names. Anything that quietly re-keys the grouping onto the blueprint will fail
+    /// <see cref="NameGrouping_KeepsDifferentlyNamedPlacementsOfOneBlueprintApart"/>.
+    /// </remarks>
+    public class AreaContentsTests
+    {
+        private const string AreaResRef = "veles_exterior";
+
+        /// <summary>The blueprint veles_exterior reuses as a generic host for unrelated scenery.</summary>
+        private const string ReusedBlueprint = "_mdrn_pl_carpt04";
+
+        private string _moduleRoot = string.Empty;
+
+        [SetUp]
+        public void CreateWorkingModule()
+        {
+            _moduleRoot = Path.Combine(Path.GetTempPath(), "swlor-area-contents-" + Guid.NewGuid().ToString("N"));
+            foreach (var folder in CorpusLocator.GffFolders)
+                Directory.CreateDirectory(Path.Combine(_moduleRoot, folder));
+
+            foreach (var folder in new[] { "are", "git", "gic" })
+            {
+                var source = Path.Combine(CorpusLocator.ModuleDirectory, folder, $"{AreaResRef}.{folder}.json");
+                if (!File.Exists(source))
+                    continue;
+
+                File.Copy(source, Path.Combine(_moduleRoot, folder, Path.GetFileName(source)));
+            }
+        }
+
+        [TearDown]
+        public void RemoveWorkingModule()
+        {
+            if (Directory.Exists(_moduleRoot))
+                Directory.Delete(_moduleRoot, recursive: true);
+        }
+
+        private AreaEditorViewModel CreateEditor()
+        {
+            var log = new OutputLogService();
+            return new AreaEditorViewModel(
+                AreaResRef,
+                new ModuleWorkspace(_moduleRoot),
+                new LookupOptionProvider(new WorkspaceContext(_ => throw new NotSupportedException(), log)),
+                gameCodeIndex: null,
+                log,
+                prompts: new StubPrompts());
+        }
+
+        private static AreaContentsViewModel CreatePanel(
+            AreaEditorViewModel editor, AreaContentsGrouping grouping = AreaContentsGrouping.Name)
+        {
+            var panel = new AreaContentsViewModel(new StubPrompts());
+            panel.SetEditor(editor);
+            panel.SelectedGrouping = panel.GroupingOptions.Single(option => option.Value == grouping);
+            return panel;
+        }
+
+        private static AreaContentsNodeViewModel KindNode(AreaContentsViewModel panel, string title) =>
+            panel.Rows.Single(row => row.Kind == AreaContentsNodeKind.Kind && row.Name == title);
+
+        // ----- grouping -----
+
+        [Test]
+        public void Placeables_GroupedByName_AreFarFewerRowsThanInstances()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor);
+
+            var placeables = KindNode(panel, "Placeables");
+            var instances = editor.SectionFor(ResourceType.Utp)!.Rows.Count;
+
+            instances.Should().BeGreaterThan(1000, "this test is only meaningful on a busy area");
+            placeables.Children.Count.Should().BeLessThan(
+                instances / 4,
+                "grouping exists so the branch is readable - a row per instance is what it replaces");
+        }
+
+        [Test]
+        public void NameGrouping_KeepsDifferentlyNamedPlacementsOfOneBlueprintApart()
+        {
+            var editor = CreateEditor();
+            var section = editor.SectionFor(ResourceType.Utp)!;
+
+            var namesOfTheReusedBlueprint = section.Rows
+                .Where(row => row.TemplateResRef == ReusedBlueprint)
+                .Select(row => editor.ResolveInstanceName(ResourceType.Utp, row))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            namesOfTheReusedBlueprint.Count.Should().BeGreaterThan(
+                1,
+                "the whole point of grouping by name is that one blueprint is placed as several different objects");
+
+            var panel = CreatePanel(editor, AreaContentsGrouping.Name);
+            var placeables = KindNode(panel, "Placeables");
+
+            // Every name the reused blueprint appears under must be its own row. Under blueprint
+            // keying they would all be filed under the blueprint's own name instead - roads and
+            // lightposts inside a row that says "Rug".
+            foreach (var name in namesOfTheReusedBlueprint)
+            {
+                placeables.Children.Should().Contain(
+                    child => child.Name == name,
+                    "'{0}' is a distinct object in this area, not a copy of whatever {1} is called",
+                    name, ReusedBlueprint);
+            }
+        }
+
+        [Test]
+        public void BlueprintGrouping_CollapsesTheReusedBlueprintIntoOneRow()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor, AreaContentsGrouping.Blueprint);
+
+            var placeables = KindNode(panel, "Placeables");
+            var reused = placeables.Children.Single(child => child.Name == ReusedBlueprint);
+
+            reused.Indices.Count.Should().BeGreaterThan(
+                100,
+                "grouping by blueprint answers 'what would editing this blueprint touch', so every placement belongs to it");
+        }
+
+        [Test]
+        public void SomethingPlacedOnce_IsALeafRatherThanAGroupOfOne()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor);
+
+            var singletons = panel.Rows
+                .Where(row => row.Depth == 1 && row.Kind == AreaContentsNodeKind.Instance)
+                .ToList();
+
+            singletons.Should().NotBeEmpty("a real area always has objects placed exactly once");
+            singletons.Should().OnlyContain(
+                row => row.Indices.Count == 1 && row.Children.Count == 0,
+                "a group of one is a click that buys nothing");
+        }
+
+        [Test]
+        public void EmptyKinds_StillAppear()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor);
+
+            // veles_exterior has no doors, no triggers and no encounters. "None here" is an answer,
+            // and a kind that vanished would read as a filter having hidden it.
+            KindNode(panel, "Doors").Detail.Should().Be("0");
+        }
+
+        // ----- filtering -----
+
+        [Test]
+        public void Filter_MatchesNameResRefAndTag()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor);
+
+            panel.Filter = ReusedBlueprint;
+
+            var matched = panel.Rows
+                .Where(row => row.Kind == AreaContentsNodeKind.Kind)
+                .Sum(row => CountUnder(row));
+
+            matched.Should().BeGreaterThan(0, "the filter must reach the resref, not only the name");
+            panel.StatusMessage.Should().Contain("of", "the status line reports matched of total");
+        }
+
+        [Test]
+        public void Filter_ThatMatchesNothing_LeavesEveryKindEmpty()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor);
+
+            panel.Filter = "no-object-is-called-this-zzz";
+
+            panel.Rows.Should().OnlyContain(
+                row => row.Kind == AreaContentsNodeKind.Kind,
+                "with nothing matching, only the kind headings remain");
+        }
+
+        // ----- what a row does -----
+
+        [Test]
+        public void Opening_AnInstance_SelectsItAndAsksForTheCamera()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor);
+
+            Vector3? focused = null;
+            editor.CameraFocusRequested += position => focused = position;
+
+            var creatures = KindNode(panel, "Creatures");
+            var row = FirstInstanceUnder(creatures);
+            var expected = editor.SectionFor(ResourceType.Utc)!.Rows[row.Indices[0]];
+
+            panel.OpenCommand.Execute(row);
+
+            focused.Should().NotBeNull("double-clicking a row is how the camera is sent to an object");
+            focused!.Value.X.Should().BeApproximately(expected.X, 0.001f);
+            focused.Value.Y.Should().BeApproximately(expected.Y, 0.001f);
+            editor.SectionFor(ResourceType.Utc)!.SelectedRow.Should().BeSameAs(expected);
+        }
+
+        [Test]
+        public void Selecting_AnInstance_SelectsItWithoutMovingTheCamera()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor);
+
+            var moved = false;
+            editor.CameraFocusRequested += _ => moved = true;
+
+            panel.SelectedRow = FirstInstanceUnder(KindNode(panel, "Creatures"));
+
+            moved.Should().BeFalse(
+                "a single click picks the object out; flying the camera on every arrow-key step would be unusable");
+        }
+
+        // ----- deleting -----
+
+        [Test]
+        public void Deleting_AGroup_RemovesEveryMemberAndNothingElse()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor, AreaContentsGrouping.Blueprint);
+            var section = editor.SectionFor(ResourceType.Utp)!;
+
+            var before = section.Rows.Count;
+            var group = KindNode(panel, "Placeables").Children
+                .First(child => child.Kind == AreaContentsNodeKind.Group);
+            var doomed = group.Indices.Count;
+            var survivor = section.Rows
+                .First(row => !group.Indices.Contains(row.Index));
+            var survivorResRef = survivor.TemplateResRef;
+            var survivorX = survivor.X;
+
+            editor.DeleteInstances(ResourceType.Utp, group.Indices).Should().BeTrue();
+
+            section.Rows.Count.Should().Be(before - doomed);
+            section.Rows.Should().Contain(
+                row => row.TemplateResRef == survivorResRef && Math.Abs(row.X - survivorX) < 0.001f,
+                "removing a group must not take its neighbours with it - which is what deleting " +
+                "ascending indices does, because every index after the first has already shifted");
+        }
+
+        [Test]
+        public void Deleting_AGroup_IsOneUndoEntry()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor, AreaContentsGrouping.Blueprint);
+            var section = editor.SectionFor(ResourceType.Utp)!;
+
+            var before = section.Rows.Count;
+            var group = KindNode(panel, "Placeables").Children
+                .First(child => child.Kind == AreaContentsNodeKind.Group && child.Indices.Count > 1);
+
+            editor.DeleteInstances(ResourceType.Utp, group.Indices).Should().BeTrue();
+            section.Rows.Count.Should().BeLessThan(before);
+
+            editor.UndoInstancesCommand.Execute(null);
+
+            section.Rows.Count.Should().Be(
+                before,
+                "one delete of a group must come back in one undo, not one undo per object");
+        }
+
+        [Test]
+        public void Deleting_TheMapSelection_RemovesThatOneObject()
+        {
+            var editor = CreateEditor();
+            var section = editor.SectionFor(ResourceType.Utc)!;
+            var before = section.Rows.Count;
+
+            editor.DeleteInstances(ResourceType.Utc, new[] { 0 }).Should().BeTrue();
+
+            section.Rows.Count.Should().Be(before - 1);
+        }
+
+        [Test]
+        public void DeleteSelected_WithNothingSelected_DoesNothing()
+        {
+            var editor = CreateEditor();
+
+            editor.DeleteSelectedSceneInstance().Should().BeFalse(
+                "Delete has to fall through when the map has no selection, or it swallows the key");
+        }
+
+        // ----- following the front tab -----
+
+        [Test]
+        public void PointingThePanelAtNothing_ClearsTheTree()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor);
+            panel.Rows.Should().NotBeEmpty();
+
+            panel.SetEditor(null);
+
+            panel.Rows.Should().BeEmpty();
+            panel.HasArea.Should().BeFalse();
+            panel.AreaResRef.Should().BeEmpty();
+        }
+
+        [Test]
+        public void AnEditAfterBinding_RebuildsTheTree()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor, AreaContentsGrouping.Flat);
+
+            var before = KindNode(panel, "Creatures").Detail;
+            editor.DeleteInstances(ResourceType.Utc, new[] { 0 });
+
+            KindNode(panel, "Creatures").Detail.Should().NotBe(
+                before, "the panel listens for content changes rather than being refreshed by hand");
+        }
+
+        private static int CountUnder(AreaContentsNodeViewModel kind) =>
+            kind.Children.Sum(child => child.Kind == AreaContentsNodeKind.Group ? child.Indices.Count : 1);
+
+        private static AreaContentsNodeViewModel FirstInstanceUnder(AreaContentsNodeViewModel kind)
+        {
+            foreach (var child in kind.Children)
+            {
+                if (child.Kind == AreaContentsNodeKind.Instance)
+                    return child;
+
+                var nested = child.Children.FirstOrDefault(g => g.Kind == AreaContentsNodeKind.Instance);
+                if (nested != null)
+                    return nested;
+            }
+
+            throw new InvalidOperationException($"No placement under '{kind.Name}'.");
+        }
+
+        private sealed class StubPrompts : IEditorPromptService
+        {
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string name) =>
+                Task.FromResult(UnsavedChangesChoice.Cancel);
+
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string path) =>
+                Task.FromResult(ExternalChangeChoice.Cancel);
+
+            public Task<string?> PromptForTextAsync(
+                string headline, string message, string initialValue, string confirmLabel) =>
+                Task.FromResult<string?>(null);
+
+            public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) =>
+                Task.FromResult(true);
+        }
+    }
+
+    /// <summary>
+    /// <see cref="InstanceFieldMap.GetDisplayName"/> against the real corpus, one list shape at a
+    /// time. The field a placement keeps its name in differs per list, and getting it wrong is
+    /// silent: every object simply falls back to its blueprint's name.
+    /// </summary>
+    public class InstanceDisplayNameTests
+    {
+        private static JsonGffStruct FirstElement(string areaResRef, string listField)
+        {
+            var path = Path.Combine(CorpusLocator.ModuleDirectory, "git", $"{areaResRef}.git.json");
+            var document = JsonGffDocument.Parse(File.ReadAllBytes(path));
+            return document.Root.Get(listField).Elements!.First();
+        }
+
+        [Test]
+        public void Creature_JoinsFirstAndLastName()
+        {
+            var path = Path.Combine(CorpusLocator.ModuleDirectory, "utc", "osk.utc.json");
+            var blueprint = JsonGffDocument.Parse(File.ReadAllBytes(path));
+
+            InstanceFieldMap.GetDisplayName(ResourceType.Utc, blueprint.Root)
+                .Should().Be("Osk Moh'roli", "a creature's name is split across two fields");
+        }
+
+        [Test]
+        public void Placeable_ReadsLocName()
+        {
+            var element = FirstElement("veles_exterior", "Placeable List");
+            var name = InstanceFieldMap.GetDisplayName(ResourceType.Utp, element);
+
+            name.Should().NotBeNullOrWhiteSpace(
+                "placeables in this module carry their own LocName, which is what the tree groups on");
+        }
+
+        [Test]
+        public void Waypoint_ReadsLocalizedName()
+        {
+            var element = FirstElement("veles_exterior", "WaypointList");
+
+            InstanceFieldMap.GetDisplayName(ResourceType.Utw, element)
+                .Should().NotBeNullOrWhiteSpace("waypoints use LocalizedName, not LocName");
+        }
+
+        [Test]
+        public void APlacementWithNoNameOfItsOwn_ReturnsNull()
+        {
+            var element = JsonGffField.CreateStruct(0).Struct!;
+
+            InstanceFieldMap.GetDisplayName(ResourceType.Utp, element).Should().BeNull(
+                "null is what tells the caller to fall back to the blueprint's name");
+        }
+    }
+}

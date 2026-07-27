@@ -99,6 +99,51 @@ namespace SWLOR.Toolset.Domain.Documents
             return instance.GetStringOrNull("Tag");
         }
 
+        /// <summary>
+        /// The name this placement carries itself, or null when it has none and inherits its
+        /// blueprint's.
+        /// </summary>
+        /// <remarks>
+        /// Which field holds it depends on the list, verified against the corpus in Module\git:
+        /// creatures split it across FirstName/LastName, placeables/doors/stores/sounds use
+        /// "LocName", and waypoints/triggers/loose items use "LocalizedName".
+        /// <para>
+        /// Worth reading rather than going straight to the blueprint's name, because in this module
+        /// the instance's own name is often the only thing separating two placements of the same
+        /// blueprint: veles_exterior places <c>_mdrn_pl_carpt04</c> ("Rug, Maze (Brown/Cream)") 648
+        /// times under 108 different names and 105 different appearances - as roads, lightposts and
+        /// fences. Grouping those by blueprint would file all of them under the rug.
+        /// </para>
+        /// </remarks>
+        public static string? GetDisplayName(ResourceType type, JsonGffStruct instance)
+        {
+            if (type == ResourceType.Utc)
+            {
+                var first = ReadLocString(instance, "FirstName");
+                var last = ReadLocString(instance, "LastName");
+                var full = $"{first} {last}".Trim();
+                return full.Length == 0 ? null : full;
+            }
+
+            var text = ReadLocString(instance, NameFieldName(type));
+            return text.Length == 0 ? null : text;
+        }
+
+        /// <summary>The cexolocstring field a non-creature instance keeps its own name in.</summary>
+        private static string NameFieldName(ResourceType type)
+        {
+            return type switch
+            {
+                ResourceType.Utw or ResourceType.Utt or ResourceType.Uti => "LocalizedName",
+                _ => "LocName"
+            };
+        }
+
+        private static string ReadLocString(JsonGffStruct instance, string fieldName)
+        {
+            return instance.GetLocStringOrNull(fieldName)?.Text?.Trim() ?? string.Empty;
+        }
+
         public static void SetTag(JsonGffStruct instance, string value)
         {
             instance.SetString("Tag", GffFieldType.CExoString, value);

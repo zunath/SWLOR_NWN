@@ -326,6 +326,8 @@ namespace SWLOR.Toolset
                         return false;
                     }
                 }));
+            services.AddSingleton(sp => new AreaContentsViewModel(
+                sp.GetRequiredService<Services.IEditorPromptService>()));
             services.AddSingleton<SearchViewModel>();
             services.AddSingleton<OutputViewModel>();
             services.AddSingleton(sp => new ValidationViewModel(
@@ -346,6 +348,7 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<ProblemsViewModel>(),
                 sp.GetRequiredService<ScriptSearchViewModel>(),
                 sp.GetRequiredService<ScriptReferenceViewModel>(),
+                sp.GetRequiredService<AreaContentsViewModel>(),
                 sp.GetRequiredService<ToolsetSettings>()));
             services.AddSingleton<ProblemsViewModel>();
             services.AddSingleton(sp => new ScriptSearchViewModel(

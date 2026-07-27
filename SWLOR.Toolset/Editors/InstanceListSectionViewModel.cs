@@ -23,8 +23,24 @@ namespace SWLOR.Toolset.Editors
         private float _y;
         private float _z;
         private string _templateResRef;
+        private string _displayName;
 
         public int Index { get; }
+
+        /// <summary>
+        /// The name this placement carries itself, or empty when it inherits its blueprint's.
+        /// </summary>
+        /// <remarks>
+        /// Read here rather than resolved from the blueprint, because the two disagree constantly:
+        /// see <see cref="InstanceFieldMap.GetDisplayName"/>. Callers that want a name that is never
+        /// blank should go through <c>AreaEditorViewModel.ResolveInstanceName</c>, which falls back
+        /// through the blueprint, the tag, and the resref.
+        /// </remarks>
+        public string DisplayName
+        {
+            get => _displayName;
+            set => SetProperty(ref _displayName, value);
+        }
 
         public string TemplateResRef
         {
@@ -56,7 +72,9 @@ namespace SWLOR.Toolset.Editors
             set => SetProperty(ref _z, value);
         }
 
-        public InstanceRow(int index, string tag, string templateResRef, float x, float y, float z)
+        public InstanceRow(
+            int index, string tag, string templateResRef, float x, float y, float z,
+            string displayName = "")
         {
             Index = index;
             _tag = tag;
@@ -64,6 +82,7 @@ namespace SWLOR.Toolset.Editors
             _x = x;
             _y = y;
             _z = z;
+            _displayName = displayName;
         }
     }
 
@@ -190,6 +209,17 @@ namespace SWLOR.Toolset.Editors
             RefreshFromDocument();
         }
 
+        /// <summary>
+        /// Raised once at the end of every <see cref="RefreshFromDocument"/>.
+        /// </summary>
+        /// <remarks>
+        /// One signal for "this list changed", whatever moved it - an add, a delete, an undo, a redo,
+        /// or a reload after an external edit. The Area Contents panel rebuilds its tree from this
+        /// rather than watching <see cref="Rows"/>, which reports a clear plus one add per row and so
+        /// would rebuild 1,599 times for one refresh of a busy area.
+        /// </remarks>
+        public event Action? RowsRefreshed;
+
         /// <summary>Rebuilds the grid rows from the current document state for initial load,
         /// structural edits, and undo/redo. Detail-field edits update the selected row in place
         /// so typing does not recreate every row in a large area.</summary>
@@ -209,13 +239,16 @@ namespace SWLOR.Toolset.Editors
                         i,
                         InstanceFieldMap.GetTag(element) ?? string.Empty,
                         InstanceFieldMap.GetTemplateResRef(_blueprintType, element) ?? string.Empty,
-                        x, y, z));
+                        x, y, z,
+                        InstanceFieldMap.GetDisplayName(_blueprintType, element) ?? string.Empty));
                 }
             }
 
             SelectedRow = selectedIndex.HasValue && selectedIndex.Value < Rows.Count
                 ? Rows[selectedIndex.Value]
                 : null;
+
+            RowsRefreshed?.Invoke();
         }
 
         partial void OnSelectedRowChanged(InstanceRow? value)
@@ -617,22 +650,51 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand]
         private void Delete()
         {
-            if (SelectedRow is not { } row)
-                return;
+            if (SelectedRow is { } row)
+                DeleteInstances(new[] { row.Index });
+        }
 
-            _runEdit($"Delete {Title} instance", () =>
+        /// <summary>
+        /// Removes the placements at <paramref name="indices"/> as one transaction, so a whole group
+        /// deleted from the Area Contents tree is one undo rather than one per object.
+        /// </summary>
+        /// <remarks>
+        /// Removal runs highest index first. Ascending order is wrong and wrong quietly: every index
+        /// after the first has shifted down by one, so the second removal takes its neighbour and the
+        /// last one runs off the end of the list.
+        /// </remarks>
+        public bool DeleteInstances(IReadOnlyList<int> indices)
+        {
+            if (indices == null || indices.Count == 0)
+                return false;
+
+            var ordered = indices.Distinct().OrderByDescending(index => index).ToList();
+            var description = ordered.Count == 1
+                ? $"Delete {Title} instance"
+                : $"Delete {ordered.Count} {Title} instances";
+
+            var ok = _runEdit(description, () =>
             {
                 var listField = _gitSession.Document.Root.Get(_listFieldName);
-                listField.RemoveElementAt(row.Index);
-                new GicDocument(_gicSession.Document).RemoveComment(
-                    _listFieldName,
-                    _blueprintType,
-                    row.Index,
-                    listField.Elements!.Count);
+                var comments = new GicDocument(_gicSession.Document);
+
+                foreach (var index in ordered)
+                {
+                    if (listField.Elements == null || index < 0 || index >= listField.Elements.Count)
+                        continue;
+
+                    listField.RemoveElementAt(index);
+                    comments.RemoveComment(
+                        _listFieldName, _blueprintType, index, listField.Elements.Count);
+                }
             });
+
+            if (!ok)
+                return false;
 
             SelectedRow = null;
             RefreshFromDocument();
+            return true;
         }
 
         private JsonGffStruct? GetElement(int index)

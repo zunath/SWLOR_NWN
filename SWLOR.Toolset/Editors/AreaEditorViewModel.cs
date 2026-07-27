@@ -1380,9 +1380,95 @@ namespace SWLOR.Toolset.Editors
                         OnSectionSelectionChanged(section);
 
                 };
+
+                // Every path that changes a list ends in that section's RefreshFromDocument, so this
+                // is the one place the Area Contents panel has to hear about to stay in step.
+                section.RowsRefreshed += () => ContentsChanged?.Invoke();
             }
 
             UpdateTitle();
+        }
+
+        // ----- what the Area Contents panel reads and drives -----
+
+        /// <summary>The area's resref, without the dirty marker the tab title carries.</summary>
+        public string AreaResRef => _areResRef;
+
+        /// <summary>Raised whenever any placed-instance list changed.</summary>
+        public event Action? ContentsChanged;
+
+        /// <summary>
+        /// Asks the view to put the camera on a world position and show the map if it is not in
+        /// front. Raised rather than acted on here because the camera belongs to the GL control,
+        /// which this view model deliberately does not own.
+        /// </summary>
+        public event Action<Vector3>? CameraFocusRequested;
+
+        /// <summary>
+        /// The name to show for one placement: its own if it has one, then its blueprint's, then its
+        /// tag, and the resref last. Never blank, so no row in the contents tree is nameless.
+        /// </summary>
+        public string ResolveInstanceName(ResourceType type, InstanceRow row)
+        {
+            if (!string.IsNullOrWhiteSpace(row.DisplayName))
+                return row.DisplayName;
+
+            var blueprintName = _resolveBlueprintName?.Invoke(type, row.TemplateResRef);
+            if (!string.IsNullOrWhiteSpace(blueprintName))
+                return blueprintName;
+
+            if (!string.IsNullOrWhiteSpace(row.Tag))
+                return row.Tag;
+
+            return string.IsNullOrWhiteSpace(row.TemplateResRef)
+                ? "(unnamed)"
+                : row.TemplateResRef;
+        }
+
+        /// <summary>The section holding <paramref name="type"/>'s placements, or null.</summary>
+        public InstanceListSectionViewModel? SectionFor(ResourceType type) =>
+            Sections.FirstOrDefault(section => section.BlueprintType == type);
+
+        /// <summary>
+        /// Selects one placement and, when <paramref name="frameCamera"/> is set, flies the camera to
+        /// it - what a double-click in the Area Contents tree does.
+        /// </summary>
+        /// <remarks>
+        /// Selection goes through the section's own SelectedRow, the same property a grid row click
+        /// sets, so both routes land in <see cref="OnSectionSelectionChanged"/> and there is one
+        /// selection path rather than two. That path already handles a scene that has not finished
+        /// building, holding the choice until the first build binds it to a marker.
+        /// </remarks>
+        public void RevealInstance(ResourceType type, int index, bool frameCamera)
+        {
+            if (SectionFor(type) is not { } section || index < 0 || index >= section.Rows.Count)
+                return;
+
+            EnsureSceneBuilt();
+
+            var row = section.Rows[index];
+            section.SelectedRow = row;
+
+            if (frameCamera)
+                CameraFocusRequested?.Invoke(new Vector3(row.X, row.Y, row.Z));
+        }
+
+        /// <summary>Deletes placements of one kind as a single undo entry.</summary>
+        public bool DeleteInstances(ResourceType type, IReadOnlyList<int> indices) =>
+            SectionFor(type)?.DeleteInstances(indices) ?? false;
+
+        /// <summary>
+        /// Deletes whatever the map has selected - what Delete does with focus in the viewport.
+        /// Returns false when nothing is selected, so the key can fall through to anything else.
+        /// </summary>
+        public bool DeleteSelectedSceneInstance()
+        {
+            if (SelectedSceneInstance is not { } instance ||
+                MapKindToSectionType(instance.Kind) is not { } type)
+                return false;
+
+            var index = IndexWithinKind(instance);
+            return index >= 0 && DeleteInstances(type, new[] { index });
         }
 
         /// <summary>

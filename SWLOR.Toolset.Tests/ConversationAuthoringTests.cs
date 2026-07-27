@@ -124,6 +124,96 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AnUnknownKeyItemIsReported()
+        {
+            var document = NewConversation();
+            document.Openings[0].AddCondition("condition-all-key-items", "99999999");
+
+            var problems = Analyzer.Analyze(document);
+
+            problems.Should().Contain(problem =>
+                problem.RuleId == "unknown-key-item"
+                && problem.Message.Contains("no key item called “99999999”"));
+        }
+
+        [Test]
+        public void AKeyItemThatExistsIsNotReported()
+        {
+            // 79 is KeyItemType.DantooineShovel - a real key item, so nothing should flag it.
+            var document = NewConversation();
+            document.Openings[0].AddCondition("condition-all-key-items", "79");
+
+            var problems = Analyzer.Analyze(document);
+
+            problems.Should().NotContain(problem => problem.RuleId == "unknown-key-item");
+        }
+
+        [Test]
+        public void AnUnknownFactionIsReported()
+        {
+            var document = NewConversation();
+            document.Openings[0].AddCondition("condition-has-faction-standing", "99999999 5");
+
+            var problems = Analyzer.Analyze(document);
+
+            problems.Should().Contain(problem =>
+                problem.RuleId == "unknown-faction"
+                && problem.Message.Contains("no faction called “99999999”"));
+        }
+
+        [Test]
+        public void AFactionThatExistsIsNotReported()
+        {
+            // 7 is FactionType.Czerka - a real faction, so nothing should flag it.
+            var document = NewConversation();
+            document.Openings[0].AddCondition("condition-has-faction-standing", "7 5");
+
+            var problems = Analyzer.Analyze(document);
+
+            problems.Should().NotContain(problem => problem.RuleId == "unknown-faction");
+        }
+
+        [Test]
+        public void AnUnknownSkillIsReported()
+        {
+            // The exact shape from the review: an unknown skill with a required rank of 0 used to
+            // preview as passing, because ReachabilityEvaluator treated the raw identifier as a
+            // valid key with GetSkillRank defaulting to 0. It is now reported as broken instead.
+            var document = NewConversation();
+            document.Openings[0].AddCondition("condition-any-skill", "no_such_skill 0");
+
+            var problems = Analyzer.Analyze(document);
+
+            problems.Should().Contain(problem =>
+                problem.RuleId == "unknown-skill"
+                && problem.Message.Contains("no skill called “no_such_skill”"));
+        }
+
+        [Test]
+        public void ASkillNamedByItsEnumMemberIsNotReported()
+        {
+            // Skills are stored by name in the corpus - the same form SkillType.TryParse reads.
+            var document = NewConversation();
+            document.Openings[0].AddCondition("condition-any-skill", "Force 10");
+
+            var problems = Analyzer.Analyze(document);
+
+            problems.Should().NotContain(problem => problem.RuleId == "unknown-skill");
+        }
+
+        [Test]
+        public void ASkillNamedByItsNumberIsNotReported()
+        {
+            // 5 is SkillType.Force - skills may also be stored by their integer value.
+            var document = NewConversation();
+            document.Openings[0].AddCondition("condition-any-skill", "5 10");
+
+            var problems = Analyzer.Analyze(document);
+
+            problems.Should().NotContain(problem => problem.RuleId == "unknown-skill");
+        }
+
+        [Test]
         public void AnIncompleteRepeatingArgumentGroupIsBroken()
         {
             var document = NewConversation();

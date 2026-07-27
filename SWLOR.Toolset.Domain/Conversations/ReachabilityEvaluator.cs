@@ -165,11 +165,11 @@ namespace SWLOR.Toolset.Domain.Conversations
                 switch (action.SnippetKey)
                 {
                     case "action-accept-quest" when arguments.Length > 0:
-                        result.WithQuest(arguments[0], QuestProgress.OnStep(1));
+                        TryAcceptQuest(result, arguments[0]);
                         break;
 
                     case "action-advance-quest" when arguments.Length > 0:
-                        result.WithQuest(arguments[0], Advance(result.GetQuest(arguments[0]), arguments[0]));
+                        TryAdvanceQuest(result, arguments[0]);
                         break;
 
                     case "action-give-key-items":
@@ -232,6 +232,57 @@ namespace SWLOR.Toolset.Domain.Conversations
             return snippet == null
                 ? $"an unknown effect ({action.SnippetKey})"
                 : snippet.ToSentence(action.Arguments, negated: false, display: DisplayValue);
+        }
+
+        /// <summary>
+        /// Mirrors <c>QuestDetail.Accept</c>, which silently refuses under <c>CanAccept</c>: already
+        /// on the quest, already finished it and not repeatable, or missing a prerequisite quest.
+        /// Unlike a guard, an unprovable gate here must not be guessed open - firing anyway would
+        /// rewind or restart a quest the game would have left alone, so the pretend player's state is
+        /// left exactly as it was.
+        /// </summary>
+        private void TryAcceptQuest(PretendPlayer player, string questId)
+        {
+            var progress = player.GetQuest(questId);
+
+            // Accept refuses outright once a quest is already under way - this needs nothing from
+            // the game code, so it always applies.
+            if (progress.IsInProgress)
+                return;
+
+            var quest = _gameCode?.FindQuest(questId);
+
+            // Already finished: refused unless repeatable. An unknown quest cannot prove
+            // repeatability, so it is treated the same as non-repeatable rather than guessed open.
+            if (progress.IsCompleted && (quest == null || !quest.IsRepeatable))
+                return;
+
+            if (quest != null)
+            {
+                foreach (var prerequisite in quest.PrerequisiteQuestIds)
+                {
+                    if (!player.GetQuest(prerequisite).IsCompleted)
+                        return;
+                }
+            }
+
+            player.WithQuest(questId, QuestProgress.OnStep(1));
+        }
+
+        /// <summary>
+        /// Mirrors <c>QuestDetail.Advance</c>, which silently refuses when the player has not
+        /// accepted the quest (<c>CurrentState &lt;= 0</c>) or has already finished it. Whether the
+        /// current step's objectives are complete is not modelled at all - the pretend player carries
+        /// no objective progress - so that gate is neither enforced nor guessed; reaching this action
+        /// is taken as the writer's word that the step is done.
+        /// </summary>
+        private void TryAdvanceQuest(PretendPlayer player, string questId)
+        {
+            var progress = player.GetQuest(questId);
+            if (!progress.IsInProgress)
+                return;
+
+            player.WithQuest(questId, Advance(progress, questId));
         }
 
         private QuestProgress Advance(QuestProgress current, string questId)

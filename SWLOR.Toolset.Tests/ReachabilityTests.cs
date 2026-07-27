@@ -184,7 +184,10 @@ namespace SWLOR.Toolset.Tests
             var document = DantHerbs();
             var accept = document.Replies.Single(r => r.Text == "I'll bring the innards and blood sample.");
 
-            var after = Evaluator.ApplyActions(accept, new PretendPlayer());
+            // Field Tinctures declares harvest_herbs as a prerequisite - CanAccept would refuse
+            // without it, so a player who could actually reach this reply already has it.
+            var player = new PretendPlayer().WithQuest("harvest_herbs", QuestProgress.Completed);
+            var after = Evaluator.ApplyActions(accept, player);
 
             after.GetQuest("field_tinctures").CurrentState.Should().Be(1);
             after.GetQuest("field_tinctures").IsInProgress.Should().BeTrue();
@@ -201,6 +204,92 @@ namespace SWLOR.Toolset.Tests
 
             after.GetQuest("field_tinctures").IsCompleted.Should()
                 .BeTrue("Field Tinctures has two steps, so advancing from the second finishes it");
+        }
+
+        [Test]
+        public void AcceptingAQuestAlreadyInProgressLeavesItsStepAlone()
+        {
+            // QuestDetail.CanAccept refuses once a quest is already under way. Firing anyway would
+            // rewind harvest_herbs from step 2 back to step 1.
+            var document = DantHerbs();
+            var accept = document.Replies.Single(r => r.Text == "Of course, I'll gather the herbs for you.");
+
+            var player = new PretendPlayer().WithQuest("harvest_herbs", QuestProgress.OnStep(2));
+            var after = Evaluator.ApplyActions(accept, player);
+
+            after.GetQuest("harvest_herbs").CurrentState.Should().Be(2);
+        }
+
+        [Test]
+        public void AcceptingAFinishedNonRepeatableQuestDoesNotRestartIt()
+        {
+            // Field Tinctures is not repeatable, so CanAccept refuses once it is completed - the
+            // reply must not convert that completion back into step 1.
+            var document = DantHerbs();
+            var accept = document.Replies.Single(r => r.Text == "I'll bring the innards and blood sample.");
+
+            var player = new PretendPlayer()
+                .WithQuest("harvest_herbs", QuestProgress.Completed)
+                .WithQuest("field_tinctures", QuestProgress.Completed);
+            var after = Evaluator.ApplyActions(accept, player);
+
+            after.GetQuest("field_tinctures").IsCompleted.Should().BeTrue();
+            after.GetQuest("field_tinctures").CurrentState.Should().BeNull();
+        }
+
+        [Test]
+        public void AcceptingAQuestWithoutItsPrerequisiteDoesNothing()
+        {
+            // Field Tinctures declares harvest_herbs as a prerequisite. CanAccept refuses without
+            // it, so this reply must leave the player exactly as unstarted as it found them.
+            var document = DantHerbs();
+            var accept = document.Replies.Single(r => r.Text == "I'll bring the innards and blood sample.");
+
+            var after = Evaluator.ApplyActions(accept, new PretendPlayer());
+
+            after.GetQuest("field_tinctures").IsInProgress.Should().BeFalse();
+            after.GetQuest("field_tinctures").CurrentState.Should().BeNull();
+        }
+
+        [Test]
+        public void AcceptingARepeatableQuestAfterCompletionRestartsIt()
+        {
+            // Unlike Field Tinctures, harvest_herbs is repeatable - CanAccept allows a fresh accept
+            // once it is completed, so this reply must still put the player back on step 1.
+            var document = DantHerbs();
+            var accept = document.Replies.Single(r => r.Text == "Of course, I'll gather the herbs for you.");
+
+            var player = new PretendPlayer().WithQuest("harvest_herbs", QuestProgress.Completed);
+            var after = Evaluator.ApplyActions(accept, player);
+
+            after.GetQuest("harvest_herbs").CurrentState.Should().Be(1);
+            after.GetQuest("harvest_herbs").IsInProgress.Should().BeTrue();
+        }
+
+        [Test]
+        public void AdvancingAnUnacceptedQuestDoesNothing()
+        {
+            // QuestDetail.Advance refuses when the player has not accepted the quest yet.
+            var document = DantHerbs();
+            var advance = document.Replies.Single(r => r.Text == "[Collect your reward]");
+
+            var after = Evaluator.ApplyActions(advance, new PretendPlayer());
+
+            after.GetQuest("harvest_herbs").IsInProgress.Should().BeFalse();
+            after.GetQuest("harvest_herbs").CurrentState.Should().BeNull();
+        }
+
+        [Test]
+        public void AdvancingAFinishedQuestDoesNothing()
+        {
+            // QuestDetail.Advance also refuses a quest that is already completed.
+            var document = DantHerbs();
+            var advance = document.Replies.Single(r => r.Text == "[Collect your reward]");
+
+            var player = new PretendPlayer().WithQuest("harvest_herbs", QuestProgress.Completed);
+            var after = Evaluator.ApplyActions(advance, player);
+
+            after.GetQuest("harvest_herbs").IsCompleted.Should().BeTrue();
         }
 
         [Test]

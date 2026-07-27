@@ -206,6 +206,142 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
+        /// A pack, validation, or Build All can start in the gap between the confirmation dialog
+        /// resuming and the deletion actually running - the dialog is the one await in the whole
+        /// command with nothing stopping the click that started it. Unlike blueprint creation, which
+        /// always goes through SaveService.WriteNewAtomic, blueprint deletion used to go straight to
+        /// File.Delete with no recheck at all, so it could remove the file out from under a module
+        /// walk that started while the "Delete?" dialog was still on screen.
+        /// </summary>
+        [Test]
+        public async Task DeletingABlueprintRefusesWhenTheModuleLocksWhileTheConfirmationIsOpen()
+        {
+            var moduleRoot = Path.Combine(Path.GetTempPath(), $"swlor_palette_delete_{Guid.NewGuid():N}");
+            foreach (var folder in new[] { "are", "utc", "utp" })
+                Directory.CreateDirectory(Path.Combine(moduleRoot, folder));
+
+            var blueprintPath = Path.Combine(moduleRoot, "utp", "testplc.utp.json");
+            File.WriteAllText(blueprintPath, "{}");
+
+            try
+            {
+                var log = new OutputLogService();
+                var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+                workspace.Open(moduleRoot);
+                var mutationLock = new ModuleMutationLock();
+
+                // Stands in for a pack, validation, or Build All starting while the builder is still
+                // looking at the confirmation dialog - the resume from that await is where the recheck
+                // has to happen.
+                var prompts = new LockDuringConfirmationPrompts(mutationLock);
+
+                var palette = new PaletteViewModel(
+                    workspace,
+                    new CategoryService(workspace, log),
+                    log,
+                    prompts: prompts,
+                    mutationLock: mutationLock)
+                {
+                    SelectedType = ResourceType.Utp
+                };
+
+                var tile = new PaletteTileViewModel("testplc", "Test Placeable", categoryPath: null);
+
+                await palette.DeleteTileCommand.ExecuteAsync(tile);
+
+                File.Exists(blueprintPath).Should().BeTrue(
+                    "the module locked before the deletion ran, so the file must survive");
+                palette.StatusMessage.Should().Contain("not deleted");
+            }
+            finally
+            {
+                Directory.Delete(moduleRoot, recursive: true);
+            }
+        }
+
+        /// <summary>Baseline for the test above: with no module-wide operation in the way, deletion still works.</summary>
+        [Test]
+        public async Task DeletingABlueprintStillWorksWhenTheModuleIsNotLocked()
+        {
+            var moduleRoot = Path.Combine(Path.GetTempPath(), $"swlor_palette_delete_{Guid.NewGuid():N}");
+            foreach (var folder in new[] { "are", "utc", "utp" })
+                Directory.CreateDirectory(Path.Combine(moduleRoot, folder));
+
+            var blueprintPath = Path.Combine(moduleRoot, "utp", "testplc.utp.json");
+            File.WriteAllText(blueprintPath, "{}");
+
+            try
+            {
+                var log = new OutputLogService();
+                var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+                workspace.Open(moduleRoot);
+                var mutationLock = new ModuleMutationLock();
+                var prompts = new AlwaysConfirmPrompts();
+
+                var palette = new PaletteViewModel(
+                    workspace,
+                    new CategoryService(workspace, log),
+                    log,
+                    prompts: prompts,
+                    mutationLock: mutationLock)
+                {
+                    SelectedType = ResourceType.Utp
+                };
+
+                var tile = new PaletteTileViewModel("testplc", "Test Placeable", categoryPath: null);
+
+                await palette.DeleteTileCommand.ExecuteAsync(tile);
+
+                File.Exists(blueprintPath).Should().BeFalse("nothing locked the module, so the delete must go through");
+                palette.StatusMessage.Should().Contain("Deleted");
+            }
+            finally
+            {
+                if (Directory.Exists(moduleRoot))
+                    Directory.Delete(moduleRoot, recursive: true);
+            }
+        }
+
+        private sealed class AlwaysConfirmPrompts : IEditorPromptService
+        {
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string name) =>
+                Task.FromResult(UnsavedChangesChoice.Cancel);
+
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string path) =>
+                Task.FromResult(ExternalChangeChoice.Cancel);
+
+            public Task<string?> PromptForTextAsync(
+                string headline, string message, string initialValue, string confirmLabel) =>
+                Task.FromResult<string?>(null);
+
+            public Task<bool> ConfirmDestructiveAsync(
+                string headline, string message, string confirmLabel) =>
+                Task.FromResult(true);
+        }
+
+        private sealed class LockDuringConfirmationPrompts(ModuleMutationLock mutationLock) : IEditorPromptService
+        {
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string name) =>
+                Task.FromResult(UnsavedChangesChoice.Cancel);
+
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string path) =>
+                Task.FromResult(ExternalChangeChoice.Cancel);
+
+            public Task<string?> PromptForTextAsync(
+                string headline, string message, string initialValue, string confirmLabel) =>
+                Task.FromResult<string?>(null);
+
+            public Task<bool> ConfirmDestructiveAsync(
+                string headline, string message, string confirmLabel)
+            {
+                // The builder clicked Delete before anything else started, so the confirmation
+                // resumes true - but a module-wide operation began while it was on screen.
+                mutationLock.Set(true);
+                return Task.FromResult(true);
+            }
+        }
+
+        /// <summary>
         /// The backstop, and the reason it is process-wide. Eight editor tabs each own a Save button
         /// that goes straight to their own TrySaveAsync; greying the shell's menu never reached any
         /// of them, so every one was a way to replace an ARE/GIT/GIC triplet while the packer walked

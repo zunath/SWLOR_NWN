@@ -390,6 +390,13 @@ namespace SWLOR.Toolset.Shell.Panels
             if (workspace == null)
                 return;
 
+            // Captured now, not read from the live selection when the wizard's callback fires: the
+            // wizard is a nonmodal overlay, so the builder can switch Module Contents tabs or select a
+            // different folder while it sits open, and the area must still file into the folder that
+            // was current when "New Area..." was clicked - never whatever tab or folder happens to be
+            // selected minutes later when they finish the form.
+            var targetFolder = SelectedRow?.Folder;
+
             ActiveNewArea = new NewAreaViewModel(
                 workspace,
                 _tilesetCatalog,
@@ -397,7 +404,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 {
                     ActiveNewArea = null;
 
-                    FileNewResource(resRef);
+                    FileNewResource(resRef, targetFolder);
 
                     _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
                     Refresh();
@@ -411,16 +418,28 @@ namespace SWLOR.Toolset.Shell.Panels
         }
 
         /// <summary>
-        /// Files a freshly created resource into the selected folder, reporting a sidecar failure
-        /// rather than letting the "Created ..." message overwrite it.
+        /// Files a freshly created resource into the currently selected folder, reporting a sidecar
+        /// failure rather than letting the "Created ..." message overwrite it.
         /// </summary>
         /// <returns>
         /// False when the resource was created but could not be filed, in which case the caller
         /// leaves the sidecar failure on screen. True when there was nothing to file, or filing worked.
         /// </returns>
-        private bool FileNewResource(string resRef)
+        private bool FileNewResource(string resRef) => FileNewResource(resRef, SelectedRow?.Folder);
+
+        /// <summary>
+        /// Files a freshly created resource into an explicit folder rather than reading the current
+        /// selection. Callers whose creation flow can outlive a change of tab or selection - the
+        /// nonmodal New Area wizard chief among them - must capture the folder up front and pass it
+        /// through here instead of letting this read whatever happens to be selected when it runs.
+        /// </summary>
+        /// <returns>
+        /// False when the resource was created but could not be filed, in which case the caller
+        /// leaves the sidecar failure on screen. True when there was nothing to file, or filing worked.
+        /// </returns>
+        private bool FileNewResource(string resRef, CategoryFolder? folder)
         {
-            if (SelectedRow?.Folder is not { } folder)
+            if (folder == null)
                 return true;
 
             folder.AddMember(resRef);
@@ -788,13 +807,28 @@ namespace SWLOR.Toolset.Shell.Panels
             _dialogueScan = pending;
             var token = pending.Token;
 
+            // Snapshot open-editor documents on the UI thread so the worker-side search sees
+            // unsaved edits instead of the stale on-disk copies.
+            var openDialogs = _editorService?.Invoke().GetOpenConversationDocuments();
+
             _ = Task.Run(
-                () =>
+                async () =>
                 {
                     try
                     {
+                        // The debounce itself has to be awaited here, not just declared - this is what
+                        // turns "read the corpus on every keystroke" into "read it once typing pauses".
+                        await Task.Delay(DialogueSearchDebounce, token).ConfigureAwait(false);
+
                         var matching = DialogueSearch
-                            .Search(Path.Combine(moduleRoot, "dlg"), needle, cancellationToken: token)
+                            .Search(
+                                Path.Combine(moduleRoot, "dlg"),
+                                needle,
+                                cancellationToken: token,
+                                openDocument: resRef =>
+                                    openDialogs != null && openDialogs.TryGetValue(resRef, out var open)
+                                        ? open
+                                        : null)
                             .Select(hit => hit.ResRef)
                             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
@@ -1043,10 +1077,12 @@ namespace SWLOR.Toolset.Shell.Panels
         /// It indexes areas and the blueprint types, and nothing else. Dialogs and scripts have to stay
         /// enumeration-backed, because creating one calls RefreshCatalogEntry and that single insert
         /// would otherwise make the type look catalog-backed - at which point the list is that one new
-        /// resource and every pre-existing dialog or script disappears until restart.
+        /// resource and every pre-existing dialog or script disappears until restart. Delegated to
+        /// <see cref="WorkspaceContext.IsCatalogIndexedType"/> so this can never drift from what
+        /// <see cref="WorkspaceContext"/> actually inserts into the catalog on a refresh.
         /// </remarks>
         private static bool IsCatalogIndexed(ResourceType type) =>
-            type == ResourceType.Area || ModuleWorkspace.BlueprintTypes.Contains(type);
+            WorkspaceContext.IsCatalogIndexedType(type);
 
         private static string SortKey(ExplorerItem item) => item.PrimaryText;
 

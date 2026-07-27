@@ -110,7 +110,20 @@ namespace SWLOR.Toolset.Domain.Categories
             }
 
             if (document == null)
+            {
+                // The JSON token `null` deserializes cleanly - no exception, so the catch above never
+                // runs - but is not usable data. Read as a writable empty catalog here, it let the
+                // normal section-seeding path save fresh sections straight over the file, destroying
+                // whatever a truncated or corrupted write actually left behind. Treated as invalid
+                // instead, the same as a file that fails to parse at all.
+                warning =
+                    $"Could not read categories from '{path}': the file contains only the JSON value " +
+                    "'null'. No categories are shown, and the file will not be overwritten - repair or " +
+                    "delete it to start again.";
+                catalog.IsReadOnly = true;
+                catalog.ReadOnlyReason = warning;
                 return catalog;
+            }
 
             // A sidecar from a newer, incompatible Toolset must not be read as v1 and then rewritten as
             // v1 - that silently discards whatever this build does not understand. Left read-only

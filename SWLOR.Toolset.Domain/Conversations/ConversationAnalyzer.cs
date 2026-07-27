@@ -257,7 +257,7 @@ namespace SWLOR.Toolset.Domain.Conversations
             DlgNode? node,
             List<ConversationProblem> problems)
         {
-            if (_gameCode == null || !_gameCode.IsSourceScanAvailable)
+            if (_gameCode == null)
                 return;
 
             QuestDefinitionInfo? quest = null;
@@ -267,21 +267,28 @@ namespace SWLOR.Toolset.Domain.Conversations
                 if (argument == null)
                     continue;
 
+                var value = arguments[i];
                 switch (argument.Type)
                 {
+                    // Quests and quest steps come from the source scan, so they need it available;
+                    // key items, factions and skills are read via reflection and stay populated even
+                    // when the scan is not.
                     case SnippetArgumentType.QuestId:
-                        quest = _gameCode.FindQuest(arguments[i]);
+                        if (!_gameCode.IsSourceScanAvailable)
+                            break;
+
+                        quest = _gameCode.FindQuest(value);
                         if (quest == null)
                         {
                             problems.Add(Make("unknown-quest", ProblemSeverity.Broken,
-                                $"There is no quest called “{arguments[i]}”, so this can never match.",
+                                $"There is no quest called “{value}”, so this can never match.",
                                 anchor, link, node));
                         }
 
                         break;
 
                     case SnippetArgumentType.QuestState:
-                        if (quest == null || !int.TryParse(arguments[i], out var state))
+                        if (!_gameCode.IsSourceScanAvailable || quest == null || !int.TryParse(value, out var state))
                             break;
 
                         if (state < 1 || state > quest.StateCount)
@@ -289,6 +296,43 @@ namespace SWLOR.Toolset.Domain.Conversations
                             problems.Add(Make("impossible-step", ProblemSeverity.Broken,
                                 $"{quest.Name} has {quest.StateCount} step(s), so step {state} "
                                 + "will never match.",
+                                anchor, link, node));
+                        }
+
+                        break;
+
+                    // Key items and factions are stored as their integer enum value.
+                    case SnippetArgumentType.KeyItemId:
+                        if (!(int.TryParse(value, out var keyItemId) && _gameCode.KeyItems.ContainsKey(keyItemId)))
+                        {
+                            problems.Add(Make("unknown-key-item", ProblemSeverity.Broken,
+                                $"There is no key item called “{value}”, so this can never match.",
+                                anchor, link, node));
+                        }
+
+                        break;
+
+                    case SnippetArgumentType.FactionId:
+                        if (!(int.TryParse(value, out var factionId) && _gameCode.Factions.ContainsKey(factionId)))
+                        {
+                            problems.Add(Make("unknown-faction", ProblemSeverity.Broken,
+                                $"There is no faction called “{value}”, so this can never match.",
+                                anchor, link, node));
+                        }
+
+                        break;
+
+                    // Skills are stored either as their integer enum value or by their C# member
+                    // name - both are what SkillType.TryParse accepts at runtime.
+                    case SnippetArgumentType.SkillId:
+                        var isKnownSkill = (int.TryParse(value, out var skillId) && _gameCode.Skills.ContainsKey(skillId))
+                            || _gameCode.SkillEnumNames.Values.Any(name =>
+                                string.Equals(name, value, StringComparison.OrdinalIgnoreCase));
+
+                        if (!isKnownSkill)
+                        {
+                            problems.Add(Make("unknown-skill", ProblemSeverity.Broken,
+                                $"There is no skill called “{value}”, so this can never match.",
                                 anchor, link, node));
                         }
 

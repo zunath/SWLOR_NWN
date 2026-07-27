@@ -421,7 +421,7 @@ namespace SWLOR.Toolset.Editors
         public bool HasWorkspaceSearch => WorkspaceSearch != null;
 
         [ObservableProperty]
-        private bool _isOutlineCollapsed;
+        private bool _isOutlineCollapsed = true;
 
         [ObservableProperty]
         private bool _isWorkspaceSearchOpen;

@@ -462,8 +462,11 @@ namespace SWLOR.Toolset.Editors.Placeables
 
             if (string.IsNullOrWhiteSpace(stored))
             {
+                // Not "required" - the label already says that, under the field's own name. Saying
+                // it a second time beside the control puts the word on screen twice for one fact,
+                // and leaves no room for the status line's real job below.
                 Status = IsRequired ? BehaviorValueStatus.Missing : BehaviorValueStatus.None;
-                StatusText = IsRequired ? "required" : null;
+                StatusText = null;
                 return;
             }
 

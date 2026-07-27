@@ -39,13 +39,13 @@
                                       ChooseCommand="{Binding ChooseBehaviorCommand}" />
 
           <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1,0,0,0">
-            <Border Classes="card" Margin="14,12">
+            <Border Classes="card" Margin="8,12">
               <StackPanel>
                 <TextBlock Text="{Binding HeaderName}" Classes="section" Margin="16,12,16,2" />
                 <TextBlock Text="{Binding Behavior.Summary}" Classes="dim" Margin="16,0,16,8"
                            TextWrapping="Wrap"
                            IsVisible="{Binding Behavior.Summary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="14,2,14,8" />
+                <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="8,2,8,8" />
               </StackPanel>
             </Border>
           </ScrollViewer>

@@ -799,14 +799,30 @@ namespace SWLOR.Toolset.Shell.Panels
             if (!confirmed)
                 return;
 
+            // Rechecked here, not just at the CanWrite gate that greys the menu item: a pack,
+            // validation, or Build All can start while the confirmation dialog is on screen, and this
+            // delete - unlike blueprint creation, which always goes through
+            // SaveService.WriteNewAtomic - had no guarded write path of its own to catch that.
+            if (_mutationLock?.IsLocked == true)
+            {
+                StatusMessage = $"'{tile.Name}' was not deleted: the module is being packed, validated, or built.";
+                _log.AppendLine($"Deleting blueprint '{tile.ResRef}' was refused: the module is locked.");
+                return;
+            }
+
             try
             {
+                // The same guard SaveService's write paths check before touching disk, so the delete
+                // itself is refused the instant a module-wide operation starts - not just at the
+                // recheck above, which still leaves a race between it and the file operation.
+                Services.ModuleMutationLock.ThrowIfModuleLocked();
+
                 if (File.Exists(path))
                     File.Delete(path);
             }
             catch (Exception ex)
             {
-                StatusMessage = $"Could not delete {tile.ResRef}: {ex.Message}";
+                StatusMessage = $"'{tile.Name}' was not deleted: {ex.Message}";
                 _log.AppendLine($"Deleting blueprint '{tile.ResRef}' failed: {ex.Message}");
                 return;
             }

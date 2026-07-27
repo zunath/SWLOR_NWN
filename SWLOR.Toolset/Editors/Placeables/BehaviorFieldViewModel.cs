@@ -391,6 +391,16 @@ namespace SWLOR.Toolset.Editors.Placeables
             foreach (var option in matches.Take(MaxSearchResults))
                 SearchableOptions.Add(option);
 
+            // A filter excludes a non-match on purpose; the cap excludes one by accident. A legacy
+            // or misspelled table is appended past every real option, so truncating is exactly what
+            // would hide it - and a value the editor will not show is one a builder cannot see.
+            if (SearchableOptions.Count >= MaxSearchResults &&
+                SelectedOption != null &&
+                !SearchableOptions.Contains(SelectedOption))
+            {
+                SearchableOptions.Insert(0, SelectedOption);
+            }
+
             OnPropertyChanged(nameof(SearchableChoiceSummary));
         }
 

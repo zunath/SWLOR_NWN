@@ -399,7 +399,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void LootTablesUseDropdownsAndSpawnTablesUseSearchableLists()
+        public void LootAndSpawnTablesBothUseSearchableSelectLists()
         {
             var sourceRoot = FindGameServerSource();
             if (sourceRoot == null)
@@ -690,7 +690,10 @@ namespace SWLOR.Toolset.Tests
             keyItem.IsIdChoice.Should().BeFalse();
             keyItem.Options.Should().NotBeEmpty();
             keyItem.IsSearchableChoice.Should().BeTrue();
-            keyItem.SearchableOptions.Should().BeEquivalentTo(keyItem.Options);
+            // 415 key items. The list publishes the first screenful and narrows as you type, rather
+            // than realizing a control per declared item on every keystroke.
+            keyItem.SearchableOptions.Should().BeEquivalentTo(
+                keyItem.Options.Take(BehaviorFieldViewModel.MaxSearchResults));
             keyItem.ChoiceSearchWatermark.Should().Be("Search key items by name");
 
             keyItem.ChoiceSearchText = "shuttle";

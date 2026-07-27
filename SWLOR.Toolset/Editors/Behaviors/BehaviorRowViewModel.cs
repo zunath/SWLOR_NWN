@@ -572,6 +572,12 @@ namespace SWLOR.Toolset.Editors.Behaviors
                     break;
             }
 
+            // A filter excludes a non-match on purpose; the cap excludes one by accident. When the
+            // list was truncated, put what is stored back at the top - a value the editor will not
+            // show is one a builder cannot see they have.
+            if (published >= MaxSearchResults && Choice != null && !FilteredChoices.Contains(Choice))
+                FilteredChoices.Insert(0, Choice);
+
             OnPropertyChanged(nameof(SearchSummary));
         }
 

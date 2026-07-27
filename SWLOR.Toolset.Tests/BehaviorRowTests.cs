@@ -173,6 +173,35 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ATruncatedListStillShowsWhatIsStored()
+        {
+            // The cap excludes options by accident where a filter excludes them on purpose. A value
+            // the editor will not show is one a builder cannot see they have.
+            var choices = Enumerable.Range(0, 1000)
+                .Select(index => new BehaviorChoice(index, $"Table {index:D4}"))
+                .ToList();
+            var store = Store(
+                """{ "__data_type": "UTP ", "Table": { "type": "int", "value": 900 } }""");
+            var row = Row(
+                new BehaviorFieldDefinition
+                {
+                    Label = "Table", Name = "Table", Kind = BehaviorFieldKind.Choice,
+                    FieldType = GffFieldType.Int, Choices = choices, IsSearchable = true
+                },
+                store,
+                new List<string>());
+
+            row.Choice!.Value.Should().Be(900);
+            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.MaxSearchResults + 1);
+            row.FilteredChoices[0].Should().BeSameAs(row.Choice, "the stored value goes back on top");
+
+            // A filter is deliberate: it may exclude the selection without putting it back.
+            row.ChoiceSearchText = "Table 0001";
+            row.FilteredChoices.Should().ContainSingle()
+                .Which.Display.Should().Be("Table 0001");
+        }
+
+        [Test]
         public void AShortChoiceSetStaysADropDown()
         {
             var row = Row(

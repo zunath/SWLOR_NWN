@@ -427,8 +427,15 @@ namespace SWLOR.Toolset.Domain.Render
             return false;
         }
 
+        private static readonly string[] EmitterOffStates =
+        {
+            // A placeable in any of these states is inert: a closed door of a portal, a
+            // deactivated device, a dying fire. Persistent particles must not keep playing.
+            "off", "close", "closed", "deactivate", "deactivated", "die", "dead", "destroyed"
+        };
+
         private static bool StateShowsEmitters(string name) =>
-            !string.Equals(name, "off", StringComparison.OrdinalIgnoreCase) &&
+            !EmitterOffStates.Any(state => string.Equals(name, state, StringComparison.OrdinalIgnoreCase)) &&
             !(name?.Contains("damage", StringComparison.OrdinalIgnoreCase) ?? false) &&
             !(name?.Contains("destroy", StringComparison.OrdinalIgnoreCase) ?? false) &&
             !(name?.Contains("dead", StringComparison.OrdinalIgnoreCase) ?? false);

@@ -196,13 +196,21 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void LicensedCorpusTestsAreExcludedFromTheDefaultSolution()
+        public void LicensedCorpusTestsAreInTheSolutionBehindTheAvailabilityGate()
         {
+            // Both halves matter: the solution entry makes a full `dotnet test` discover the
+            // corpus sweeps on machines that have the licensed assets, and the availability gate
+            // is what keeps asset-less machines green (skipping, or failing loudly under
+            // SWLOR_REQUIRE_LICENSED_CORPUS=1 so evidence runs cannot silently skip).
             var solution = File.ReadAllText(Path.Combine(RepositoryRoot, "SWLOR.Game.Server.sln"));
-
-            solution.Should().NotContain(
+            solution.Should().Contain(
                 @"SWLOR.NWN.Formats.Corpus.Tests\SWLOR.NWN.Formats.Corpus.Tests.csproj",
-                "the licensed corpus is an opt-in verification suite and must not run with the default solution");
+                "a full solution test run must discover the corpus verification suite");
+
+            var gate = Path.Combine(
+                RepositoryRoot, "SWLOR.NWN.Formats.Corpus.Tests", "CorpusAvailabilityGate.cs");
+            File.Exists(gate).Should().BeTrue(
+                "the availability gate is what makes solution-level inclusion safe without the licensed assets");
         }
 
         [Test]

@@ -212,28 +212,24 @@ namespace SWLOR.Toolset.Domain.Render
             out byte[] bytes)
         {
             bytes = Array.Empty<byte>();
-            try
-            {
-                var fileName = Path.GetFileName(resRef.Trim());
-                var resourceExtension = "." + extension.TrimStart('.');
-                var normalizedResRef = fileName.EndsWith(
-                    resourceExtension,
-                    StringComparison.OrdinalIgnoreCase)
-                    ? fileName[..^resourceExtension.Length]
-                    : fileName;
-                var identity = new ResourceIdentity(
-                    normalizedResRef,
-                    ResourceIdentity.TypeFromExtension(extension));
-                if (!resourceIndex.TryLookup(identity, out var handle))
-                    return false;
-
-                bytes = handle.GetBytes();
-                return bytes.Length > 0;
-            }
-            catch (Exception)
-            {
+            var fileName = Path.GetFileName(resRef.Trim());
+            var resourceExtension = "." + extension.TrimStart('.');
+            var normalizedResRef = fileName.EndsWith(
+                resourceExtension,
+                StringComparison.OrdinalIgnoreCase)
+                ? fileName[..^resourceExtension.Length]
+                : fileName;
+            var identity = new ResourceIdentity(
+                normalizedResRef,
+                ResourceIdentity.TypeFromExtension(extension));
+            if (!resourceIndex.TryLookup(identity, out var handle))
                 return false;
-            }
+
+            // Only "not indexed" means "no such artwork". A read that throws (file vanished,
+            // sharing violation, BIF extraction failure) must escape so callers report a failure
+            // and retry later, instead of persisting a no-artwork result for a real texture.
+            bytes = handle.GetBytes();
+            return bytes.Length > 0;
         }
 
         private static bool IsStandardDds(byte[] bytes) =>

@@ -278,6 +278,11 @@ namespace SWLOR.Toolset.Tests
                 var mutationLock = new ModuleMutationLock();
                 var prompts = new AlwaysConfirmPrompts();
 
+                // The delete path also consults the ambient ModuleWrites guard; own it here so a
+                // lock left behind by another fixture cannot leak into this baseline.
+                var previousAmbient = ModuleMutationLock.ModuleWrites;
+                ModuleMutationLock.ModuleWrites = mutationLock;
+
                 var palette = new PaletteViewModel(
                     workspace,
                     new CategoryService(workspace, log),
@@ -290,7 +295,14 @@ namespace SWLOR.Toolset.Tests
 
                 var tile = new PaletteTileViewModel("testplc", "Test Placeable", categoryPath: null);
 
-                await palette.DeleteTileCommand.ExecuteAsync(tile);
+                try
+                {
+                    await palette.DeleteTileCommand.ExecuteAsync(tile);
+                }
+                finally
+                {
+                    ModuleMutationLock.ModuleWrites = previousAmbient;
+                }
 
                 File.Exists(blueprintPath).Should().BeFalse("nothing locked the module, so the delete must go through");
                 palette.StatusMessage.Should().Contain("Deleted");

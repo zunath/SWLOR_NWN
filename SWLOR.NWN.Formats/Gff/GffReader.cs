@@ -38,6 +38,7 @@ public static class GffReader
         private readonly AllocationBudget _allocationBudget = new("GFF");
         private readonly HashSet<uint> _activeStructs = new();
         private readonly Dictionary<uint, GffStruct> _structCache = new();
+        private readonly Dictionary<uint, long> _structRetainedBytes = new();
         private readonly Dictionary<uint, CachedField> _fieldCache = new();
         private string[] _labels = [];
 
@@ -126,10 +127,17 @@ public static class GffReader
             if (index >= _structCount)
                 throw new NwnFormatException($"GFF references missing struct index {index}.");
             if (_structCache.TryGetValue(index, out var cached))
+            {
+                // A repeat reference reuses the parsed struct, but consumers (the JSON bridge)
+                // expand every reference into a fresh subtree - charge the full retained cost of
+                // the subtree again so aliasing cannot multiply a payload past the budget.
+                _allocationBudget.Reserve(_structRetainedBytes[index], $"GFF aliased struct {index}");
                 return cached;
+            }
             if (!_activeStructs.Add(index))
                 throw new NwnFormatException($"GFF contains a cyclic struct reference at index {index}.");
 
+            var reservedBefore = _allocationBudget.ReservedBytes;
             try
             {
                 var offset = _structOffset + (long)index * StructSize;
@@ -164,6 +172,8 @@ public static class GffReader
                 }
 
                 _structCache.Add(index, result);
+                _structRetainedBytes[index] =
+                    Math.Max(64, _allocationBudget.ReservedBytes - reservedBefore);
                 return result;
             }
             finally
@@ -200,6 +210,11 @@ public static class GffReader
                 $"GFF field {index}");
             _allocationBudget.Reserve(repeatCharge, $"GFF field {index}");
 
+            // Struct and List payloads are only fully known after the nested parse; measure what
+            // it actually reserved so an aliased reference to this field re-charges the whole
+            // retained subtree, not just the reference slots the static estimate covers.
+            var reservedBeforeValue = _allocationBudget.ReservedBytes;
+
             object? value = type switch
             {
                 GffField.BYTE => (byte)data,
@@ -222,6 +237,13 @@ public static class GffReader
             };
 
             var field = new GffField(type, _labels[labelIndex], value);
+            if (type is GffField.Struct or GffField.List)
+            {
+                repeatCharge = CheckedAddAllocation(
+                    repeatCharge,
+                    _allocationBudget.ReservedBytes - reservedBeforeValue,
+                    $"GFF field {index}");
+            }
             _fieldCache.Add(index, new CachedField(field, repeatCharge));
             return field;
         }
@@ -353,7 +375,10 @@ public static class GffReader
                 cursor += 8;
                 if (length > end - cursor)
                     throw new NwnFormatException($"GFF locstring field {fieldIndex} substring {index} is truncated.");
-                var text = NwnTextEncoding.DecodeGeneral(_reader.Slice(cursor, length, "GFF locstring substring"));
+                // The string id encodes language*2 + gender; legacy substrings are stored in that
+                // language's codepage (Polish ids 10/11 are Windows-1250), same as TLK text.
+                var text = NwnTextEncoding.ForLanguage(stringId / 2)
+                    .GetString(_reader.Slice(cursor, length, "GFF locstring substring"));
                 if (!result.LocalizedStrings.TryAdd(stringId, text))
                     throw new NwnFormatException($"GFF locstring field {fieldIndex} repeats string id {stringId}.");
                 cursor += length;

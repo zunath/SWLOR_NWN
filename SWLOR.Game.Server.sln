@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32407.343
@@ -32,6 +32,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.NWN.Formats", "SWLOR.NWN.Formats\SWLOR.NWN.Formats.csproj", "{9C5417CE-F98A-46A4-96C2-3C0C8D9D89DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.NWN.Formats.Tests", "SWLOR.NWN.Formats.Tests\SWLOR.NWN.Formats.Tests.csproj", "{1D7DD607-5A33-491D-8667-E5B51B6A3841}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.NWN.Formats.Corpus.Tests", "SWLOR.NWN.Formats.Corpus.Tests\SWLOR.NWN.Formats.Corpus.Tests.csproj", "{B6F0A151-0BF4-45F1-87EF-1333B148F948}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -211,6 +213,18 @@ Global
 		{1D7DD607-5A33-491D-8667-E5B51B6A3841}.Release|x64.Build.0 = Release|Any CPU
 		{1D7DD607-5A33-491D-8667-E5B51B6A3841}.Release|x86.ActiveCfg = Release|Any CPU
 		{1D7DD607-5A33-491D-8667-E5B51B6A3841}.Release|x86.Build.0 = Release|Any CPU
+		{B6F0A151-0BF4-45F1-87EF-1333B148F948}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6F0A151-0BF4-45F1-87EF-1333B148F948}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6F0A151-0BF4-45F1-87EF-1333B148F948}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B6F0A151-0BF4-45F1-87EF-1333B148F948}.Debug|x64.Build.0 = Debug|Any CPU
+		{B6F0A151-0BF4-45F1-87EF-1333B148F948}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B6F0A151-0BF4-45F1-87EF-1333B148F948}.Debug|x86.Build.0 = Debug|Any CPU
+		{B6F0A151-0BF4-45F1-87EF-1333B148F948}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6F0A151-0BF4-45F1-87EF-1333B148F948}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6F0A151-0BF4-45F1-87EF-1333B148F948}.Release|x64.ActiveCfg = Release|Any CPU
+		{B6F0A151-0BF4-45F1-87EF-1333B148F948}.Release|x64.Build.0 = Release|Any CPU
+		{B6F0A151-0BF4-45F1-87EF-1333B148F948}.Release|x86.ActiveCfg = Release|Any CPU
+		{B6F0A151-0BF4-45F1-87EF-1333B148F948}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -221,6 +235,7 @@ Global
 		{313E813A-3700-4B42-9790-6A6FD9535E60} = {7EB1F210-4BC0-03BA-16B8-DB302C38F263}
 		{9C5417CE-F98A-46A4-96C2-3C0C8D9D89DC} = {7EB1F210-4BC0-03BA-16B8-DB302C38F263}
 		{1D7DD607-5A33-491D-8667-E5B51B6A3841} = {7EB1F210-4BC0-03BA-16B8-DB302C38F263}
+		{B6F0A151-0BF4-45F1-87EF-1333B148F948} = {7EB1F210-4BC0-03BA-16B8-DB302C38F263}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01933D17-C90C-4AB1-AD6C-523F2F4B584D}

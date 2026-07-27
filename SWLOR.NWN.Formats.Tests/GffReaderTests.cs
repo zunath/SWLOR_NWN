@@ -81,6 +81,121 @@ public class GffReaderTests
             "the aliased VOID payload is cached while each logical expansion is still budgeted");
     }
 
+    [Test]
+    public void LocStringSubstringsDecodeInTheirDeclaredLanguage()
+    {
+        // String id 10 = language 5 (Polish) * 2 + male; the payload bytes are Windows-1250
+        // "Łódź" (A3 F3 64 9F), which Windows-1252 would garble (0xA3 reads as £).
+        var file = GffReader.Read(BuildLocStringGff(
+            stringId: 10,
+            payload: new byte[] { 0xA3, 0xF3, 0x64, 0x9F }));
+
+        var loc = file.RootStruct.Fields.Single().Value.Should().BeOfType<CExoLocString>().Subject;
+        loc.LocalizedStrings.Should().ContainKey(10).WhoseValue.Should().Be("Łódź");
+    }
+
+    [Test]
+    public void RepeatedStructAliasesInAListAreCumulativelyBudgeted()
+    {
+        // 64 list entries all referencing one struct holding a 2 MiB VOID: the parse caches the
+        // struct, but every logical expansion must still be charged, so the cumulative budget
+        // trips long before the JSON bridge could expand the aliases into hundreds of megabytes.
+        var bytes = BuildAliasedStructListGff(listReferences: 64, payloadLength: 2 * 1024 * 1024);
+        var before = GC.GetAllocatedBytesForCurrentThread();
+
+        Action action = () => GffReader.Read(bytes);
+
+        action.Should().Throw<NwnFormatException>()
+            .WithMessage("*allocation budget*");
+        (GC.GetAllocatedBytesForCurrentThread() - before).Should().BeLessThan(
+            10_000_000,
+            "aliased structs are parsed once while each logical expansion is still budgeted");
+    }
+
+    private static byte[] BuildLocStringGff(uint stringId, byte[] payload)
+    {
+        const int headerSize = 56;
+        const int structSize = 12;
+        const int fieldSize = 12;
+        const int labelSize = 16;
+        var structOffset = headerSize;
+        var fieldOffset = structOffset + structSize;
+        var labelOffset = fieldOffset + fieldSize;
+        var fieldDataOffset = labelOffset + labelSize;
+        var substringBytes = 8 + payload.Length;
+        var totalSize = 8 + substringBytes;
+        var fieldDataCount = 4 + totalSize;
+        var totalLength = fieldDataOffset + fieldDataCount;
+        var bytes = new byte[totalLength];
+
+        "TST "u8.CopyTo(bytes);
+        "V3.2"u8.CopyTo(bytes.AsSpan(4));
+        WriteHeaderPair(bytes, 8, structOffset, 1);
+        WriteHeaderPair(bytes, 16, fieldOffset, 1);
+        WriteHeaderPair(bytes, 24, labelOffset, 1);
+        WriteHeaderPair(bytes, 32, fieldDataOffset, fieldDataCount);
+        WriteHeaderPair(bytes, 40, totalLength, 0);
+        WriteHeaderPair(bytes, 48, totalLength, 0);
+
+        WriteStruct(bytes, structOffset, uint.MaxValue, 0, 1);
+        WriteField(bytes, fieldOffset, GffField.CExoLocString, 0, 0);
+        "Name"u8.CopyTo(bytes.AsSpan(labelOffset));
+
+        var cursor = fieldDataOffset;
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(cursor), checked((uint)totalSize));
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(cursor + 4), uint.MaxValue);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(cursor + 8), 1);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(cursor + 12), stringId);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(cursor + 16), checked((uint)payload.Length));
+        payload.CopyTo(bytes.AsSpan(cursor + 20));
+        return bytes;
+    }
+
+    private static byte[] BuildAliasedStructListGff(int listReferences, int payloadLength)
+    {
+        const int headerSize = 56;
+        const int structSize = 12;
+        const int fieldSize = 12;
+        const int labelSize = 16;
+        var structOffset = headerSize;
+        var fieldOffset = structOffset + 2 * structSize;
+        var labelOffset = fieldOffset + 2 * fieldSize;
+        var fieldDataOffset = labelOffset + 2 * labelSize;
+        var fieldDataCount = 4 + payloadLength;
+        var listIndicesOffset = checked(fieldDataOffset + fieldDataCount);
+        var listIndicesCount = checked((1 + listReferences) * 4);
+        var totalLength = checked(listIndicesOffset + listIndicesCount);
+        var bytes = new byte[totalLength];
+
+        "TST "u8.CopyTo(bytes);
+        "V3.2"u8.CopyTo(bytes.AsSpan(4));
+        WriteHeaderPair(bytes, 8, structOffset, 2);
+        WriteHeaderPair(bytes, 16, fieldOffset, 2);
+        WriteHeaderPair(bytes, 24, labelOffset, 2);
+        WriteHeaderPair(bytes, 32, fieldDataOffset, fieldDataCount);
+        WriteHeaderPair(bytes, 40, listIndicesOffset, 0);
+        WriteHeaderPair(bytes, 48, listIndicesOffset, listIndicesCount);
+
+        // Root struct: one List field. Struct 1: one VOID field holding the large payload.
+        WriteStruct(bytes, structOffset, uint.MaxValue, 0, 1);
+        WriteStruct(bytes, structOffset + structSize, 1, 1, 1);
+        WriteField(bytes, fieldOffset, GffField.List, 0, 0);
+        WriteField(bytes, fieldOffset + fieldSize, GffField.VOID, 1, 0);
+        "Items"u8.CopyTo(bytes.AsSpan(labelOffset));
+        "Payload"u8.CopyTo(bytes.AsSpan(labelOffset + labelSize));
+
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(fieldDataOffset), checked((uint)payloadLength));
+
+        BinaryPrimitives.WriteUInt32LittleEndian(
+            bytes.AsSpan(listIndicesOffset), checked((uint)listReferences));
+        for (var index = 0; index < listReferences; index++)
+        {
+            BinaryPrimitives.WriteUInt32LittleEndian(
+                bytes.AsSpan(listIndicesOffset + 4 + index * 4), 1);
+        }
+        return bytes;
+    }
+
     private static byte[] BuildAllFieldsGff()
     {
         const int structCount = 3;

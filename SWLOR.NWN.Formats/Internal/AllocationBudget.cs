@@ -14,6 +14,12 @@ internal sealed class AllocationBudget
     private readonly string _format;
     private long _reservedBytes;
 
+    /// <summary>
+    /// Total bytes reserved so far. Readers measure the delta across a nested parse to learn a
+    /// subtree's retained cost, so aliased references can be charged that full cost again.
+    /// </summary>
+    public long ReservedBytes => _reservedBytes;
+
     public AllocationBudget(string format, long maximumBytes = DefaultMaximumBytes)
     {
         if (string.IsNullOrWhiteSpace(format))

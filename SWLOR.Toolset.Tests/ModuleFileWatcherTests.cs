@@ -78,6 +78,25 @@ namespace SWLOR.Toolset.Tests
             ModuleFileWatcher.AffectsScriptUsages(path).Should().BeFalse();
         }
 
+        [TestCase("temp0")]
+        [TestCase("TEMP1")]
+        [TestCase("temp12")]
+        public void NwnToolsetTemporaryDirectoryNamesAreRecognized(string directoryName)
+        {
+            ModuleFileWatcher.IsNwnToolsetTemporaryDirectoryName(directoryName).Should().BeTrue();
+        }
+
+        [TestCase("temp")]
+        [TestCase("temporary")]
+        [TestCase("temp1-backup")]
+        [TestCase("attempt0")]
+        [TestCase("templates")]
+        public void NormalDirectoryNamesAreNotMistakenForNwnToolsetTemporaryDirectories(
+            string directoryName)
+        {
+            ModuleFileWatcher.IsNwnToolsetTemporaryDirectoryName(directoryName).Should().BeFalse();
+        }
+
         [Test]
         public void WorkspaceCatalogRefreshInvalidatesScriptUsagesOnlyForScriptedResources()
         {

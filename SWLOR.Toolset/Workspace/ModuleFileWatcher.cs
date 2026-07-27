@@ -3,15 +3,18 @@ using SWLOR.Toolset.Domain.Workspace;
 namespace SWLOR.Toolset.Workspace
 {
     /// <summary>
-    /// Watches a module root directory (recursively) for external changes and logs them to the
-    /// Output panel. Build noise is filtered out: the packer's transient "packing" working
-    /// directory, the packed .mod artifact it rewrites, and this app's own atomic-save .tmp
-    /// files would otherwise flood the log with thousands of lines per pack.
+    /// Watches a module root and its resource directories for external changes and logs them to
+    /// the Output panel. The packer's transient "packing" directory and the NWN toolset's temp#
+    /// workspaces are excluded from recursive monitoring; packed .mod artifacts and this app's
+    /// atomic-save .tmp files are filtered before reporting.
     /// </summary>
     public sealed class ModuleFileWatcher : IDisposable
     {
         private readonly OutputLogService _log;
-        private FileSystemWatcher? _watcher;
+        private readonly object _watchersLock = new();
+        private readonly Dictionary<string, FileSystemWatcher> _watchers =
+            new(StringComparer.OrdinalIgnoreCase);
+        private string? _moduleRoot;
         private string? _packingDirectoryPrefix;
 
         /// <summary>The catalog to keep in step with the disk, or null in a test with none.</summary>
@@ -157,35 +160,138 @@ namespace SWLOR.Toolset.Workspace
 
             try
             {
+                _moduleRoot = Path.GetFullPath(moduleRoot);
                 _packingDirectoryPrefix =
-                    Path.Combine(Path.GetFullPath(moduleRoot), "packing") + Path.DirectorySeparatorChar;
+                    Path.Combine(_moduleRoot, "packing") + Path.DirectorySeparatorChar;
 
-                _watcher = new FileSystemWatcher(moduleRoot)
+                // FileSystemWatcher has no directory-exclusion filter. Watching the module root
+                // recursively and discarding temp# events here still lets those events overflow the
+                // native watcher buffer. Watch the root itself plus each accepted child instead, so
+                // the NWN toolset's temp0/temp1/... workspaces never enter a recursive watcher.
+                AddWatcher(_moduleRoot, includeSubdirectories: false);
+                foreach (var directory in Directory.EnumerateDirectories(_moduleRoot))
+                    AddTopLevelDirectoryWatcher(directory);
+
+                _log.AppendLine($"Watching '{moduleRoot}' for external changes.");
+            }
+            catch (Exception ex)
+            {
+                Stop();
+                _log.AppendLine($"Could not start file watcher on '{moduleRoot}': {ex.Message}");
+            }
+        }
+
+        private void AddTopLevelDirectoryWatcher(string directory)
+        {
+            if (IsIgnoredTopLevelDirectory(directory))
+                return;
+
+            AddWatcher(directory, includeSubdirectories: true);
+        }
+
+        private void AddWatcher(string directory, bool includeSubdirectories)
+        {
+            var fullPath = Path.TrimEndingDirectorySeparator(Path.GetFullPath(directory));
+
+            lock (_watchersLock)
+            {
+                if (_moduleRoot == null ||
+                    _watchers.ContainsKey(fullPath) ||
+                    !Directory.Exists(fullPath))
                 {
-                    IncludeSubdirectories = true,
-                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.DirectoryName
+                    return;
+                }
+
+                var watcher = new FileSystemWatcher(fullPath)
+                {
+                    IncludeSubdirectories = includeSubdirectories,
+                    // LastWrite belongs on recursive resource-directory watchers only. Listening for
+                    // it on the root could still receive metadata churn from an ignored temp# child.
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName |
+                                   (includeSubdirectories ? NotifyFilters.LastWrite : 0)
                 };
 
-                _watcher.Changed += (_, e) => Report($"External change detected: {e.FullPath}", e.FullPath);
-                _watcher.Created += (_, e) => Report($"External file created: {e.FullPath}", e.FullPath);
-                _watcher.Deleted += (_, e) => Report(
-                    $"External file deleted: {e.FullPath}", deleted: true, e.FullPath);
-                _watcher.Renamed += (_, e) =>
+                watcher.Changed += (_, e) => Report($"External change detected: {e.FullPath}", e.FullPath);
+                watcher.Created += (_, e) =>
                 {
+                    if (!includeSubdirectories && Directory.Exists(e.FullPath))
+                        TryAddTopLevelDirectoryWatcher(e.FullPath);
+
+                    Report($"External file created: {e.FullPath}", e.FullPath);
+                };
+                watcher.Deleted += (_, e) =>
+                {
+                    if (!includeSubdirectories)
+                        RemoveWatcher(e.FullPath);
+
+                    Report($"External file deleted: {e.FullPath}", deleted: true, e.FullPath);
+                };
+                watcher.Renamed += (_, e) =>
+                {
+                    if (!includeSubdirectories)
+                    {
+                        RemoveWatcher(e.OldFullPath);
+                        if (Directory.Exists(e.FullPath))
+                            TryAddTopLevelDirectoryWatcher(e.FullPath);
+                    }
+
                     // A rename is a delete and a create: the old resref leaves the catalog and the new
                     // one joins it, or Search keeps offering a name that no longer resolves.
                     Report($"External rename: {e.OldFullPath} -> {e.FullPath}", deleted: true, e.OldFullPath);
                     Report($"External rename: {e.OldFullPath} -> {e.FullPath}", e.FullPath);
                 };
-                _watcher.Error += (_, e) => _log.AppendLine($"File watcher error: {e.GetException().Message}");
+                watcher.Error += (_, e) => _log.AppendLine($"File watcher error: {e.GetException().Message}");
 
-                _watcher.EnableRaisingEvents = true;
-                _log.AppendLine($"Watching '{moduleRoot}' for external changes.");
+                _watchers.Add(fullPath, watcher);
+                watcher.EnableRaisingEvents = true;
+            }
+        }
+
+        private void TryAddTopLevelDirectoryWatcher(string directory)
+        {
+            try
+            {
+                AddTopLevelDirectoryWatcher(directory);
             }
             catch (Exception ex)
             {
-                _log.AppendLine($"Could not start file watcher on '{moduleRoot}': {ex.Message}");
+                _log.AppendLine($"Could not watch new module directory '{directory}': {ex.Message}");
             }
+        }
+
+        private void RemoveWatcher(string directory)
+        {
+            var fullPath = Path.TrimEndingDirectorySeparator(Path.GetFullPath(directory));
+            FileSystemWatcher? watcher;
+
+            lock (_watchersLock)
+            {
+                if (!_watchers.Remove(fullPath, out watcher))
+                    return;
+            }
+
+            watcher.EnableRaisingEvents = false;
+            watcher.Dispose();
+        }
+
+        private bool IsIgnoredTopLevelDirectory(string directory)
+        {
+            var directoryName = Path.GetFileName(
+                directory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+            return string.Equals(directoryName, "packing", StringComparison.OrdinalIgnoreCase) ||
+                   IsNwnToolsetTemporaryDirectoryName(directoryName);
+        }
+
+        /// <summary>
+        /// True for the numbered temporary directory names created alongside module resources by
+        /// the NWN toolset, such as temp0 and temp12.
+        /// </summary>
+        public static bool IsNwnToolsetTemporaryDirectoryName(string directoryName)
+        {
+            const string prefix = "temp";
+            return directoryName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) &&
+                   directoryName.Length > prefix.Length &&
+                   directoryName.AsSpan(prefix.Length).IndexOfAnyExceptInRange('0', '9') < 0;
         }
 
         private void Report(string message, params string[] paths) => Report(message, false, paths);
@@ -201,11 +307,24 @@ namespace SWLOR.Toolset.Workspace
                 SyncCatalog(path, deleted);
         }
 
-        /// <summary>True for paths the pack pipeline or this app churn as part of normal
-        /// builds: anything under the packer's "packing" working directory (including the
-        /// directory itself), packed .mod artifacts, and atomic-save temporary/rollback files.</summary>
+        /// <summary>True for paths the NWN toolset, pack pipeline, or this app churn as part of
+        /// normal work: numbered toolset workspaces, anything under the packer's "packing"
+        /// directory (including the directory itself), packed .mod artifacts, and atomic-save
+        /// temporary/rollback files.</summary>
         private bool IsBuildNoise(string path)
         {
+            if (_moduleRoot != null)
+            {
+                var relativePath = Path.GetRelativePath(_moduleRoot, Path.GetFullPath(path));
+                var firstSeparator = relativePath.IndexOfAny(
+                    Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                var topLevelName = firstSeparator < 0
+                    ? relativePath
+                    : relativePath[..firstSeparator];
+                if (IsNwnToolsetTemporaryDirectoryName(topLevelName))
+                    return true;
+            }
+
             if (_packingDirectoryPrefix != null)
             {
                 if (path.StartsWith(_packingDirectoryPrefix, StringComparison.OrdinalIgnoreCase))
@@ -223,12 +342,20 @@ namespace SWLOR.Toolset.Workspace
 
         public void Stop()
         {
-            if (_watcher == null)
-                return;
+            FileSystemWatcher[] watchers;
+            lock (_watchersLock)
+            {
+                _moduleRoot = null;
+                _packingDirectoryPrefix = null;
+                watchers = _watchers.Values.ToArray();
+                _watchers.Clear();
+            }
 
-            _watcher.EnableRaisingEvents = false;
-            _watcher.Dispose();
-            _watcher = null;
+            foreach (var watcher in watchers)
+            {
+                watcher.EnableRaisingEvents = false;
+                watcher.Dispose();
+            }
         }
 
         public void Dispose() => Stop();

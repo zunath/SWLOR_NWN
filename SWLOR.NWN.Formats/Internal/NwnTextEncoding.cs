@@ -30,6 +30,7 @@ internal static class NwnTextEncoding
     {
         var codePage = languageId switch
         {
+            5 => 1250,
             128 => 949,
             129 => 950,
             130 => 936,

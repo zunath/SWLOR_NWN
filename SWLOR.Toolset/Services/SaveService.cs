@@ -86,6 +86,22 @@ namespace SWLOR.Toolset.Services
             foreach (var manifestPath in Directory.EnumerateFiles(
                          moduleRoot, "*" + TransactionSuffix, SearchOption.AllDirectories))
             {
+                // A manifest that cannot be trusted - unreadable, or valid JSON that carries no
+                // entries (a bare "null" or "{}") - is transaction evidence, not litter. Leave it
+                // alone and shield its transaction's backups (identifiable by the id embedded in
+                // ".<id>.save-transaction.json" / "<target>.<id>.save-backup") from the orphan
+                // sweep below, which would otherwise restore or delete group members piecemeal
+                // and leave an ARE/GIT/GIC group at mixed generations.
+                void ProtectTransaction()
+                {
+                    var manifestName = Path.GetFileName(manifestPath);
+                    if (manifestName.StartsWith('.') &&
+                        manifestName.Length > 1 + TransactionSuffix.Length)
+                    {
+                        protectedTransactionIds.Add(manifestName[1..^TransactionSuffix.Length]);
+                    }
+                }
+
                 SaveTransactionManifest? manifest;
                 try
                 {
@@ -94,22 +110,15 @@ namespace SWLOR.Toolset.Services
                 }
                 catch (Exception)
                 {
-                    // An unreadable manifest is transaction evidence, not litter. Leave it alone -
-                    // and shield its transaction's backups (identifiable by the id embedded in
-                    // ".<id>.save-transaction.json" / "<target>.<id>.save-backup") from the orphan
-                    // sweep below, which would otherwise restore or delete group members piecemeal
-                    // and leave an ARE/GIT/GIC group at mixed generations.
-                    var manifestName = Path.GetFileName(manifestPath);
-                    if (manifestName.StartsWith('.') &&
-                        manifestName.Length > 1 + TransactionSuffix.Length)
-                    {
-                        protectedTransactionIds.Add(manifestName[1..^TransactionSuffix.Length]);
-                    }
+                    ProtectTransaction();
                     continue;
                 }
 
                 if (manifest?.Entries.Count is not > 0)
+                {
+                    ProtectTransaction();
                     continue;
+                }
 
                 var recovered = true;
                 foreach (var entry in manifest.Entries.AsEnumerable().Reverse())

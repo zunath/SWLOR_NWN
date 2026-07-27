@@ -147,6 +147,7 @@ namespace SWLOR.Toolset.Domain.Conversations
             ApplyToSatisfy(opening, candidate);
 
             var protectedQuests = QuestsConstrainedBy(opening);
+            var budget = NonQuestConstraintsOf(opening);
             var earlier = _document.Openings.Take(order - 1).ToList();
 
             // Each pass breaks one blocking opening. Bounded by their number plus slack, since
@@ -157,7 +158,7 @@ namespace SWLOR.Toolset.Domain.Conversations
                 if (blocking == null)
                     return _evaluator.Evaluate(opening, candidate).IsOpen;
 
-                if (!TryBreak(blocking, protectedQuests, candidate))
+                if (!TryBreak(blocking, protectedQuests, budget, candidate))
                     return false;
             }
 
@@ -165,22 +166,34 @@ namespace SWLOR.Toolset.Domain.Conversations
         }
 
         /// <summary>
-        /// Makes an earlier opening stop matching, without disturbing any quest the target situation
-        /// depends on. Returns false when there is no such move — which is what "unreachable" means.
+        /// Makes an earlier opening stop matching, without disturbing any quest, key item, skill,
+        /// faction threshold or tutorial flag the target situation depends on. Returns false when
+        /// there is no such move — which is what "unreachable" means.
         /// </summary>
-        private static bool TryBreak(DlgLink blocking, ISet<string> protectedQuests, PretendPlayer player)
+        /// <remarks>
+        /// Every guard kind here is the mirror image of what <see cref="ApplyToSatisfy"/> does to
+        /// make that same guard pass: a positive guard breaks by undoing that state, and a negated
+        /// guard — passing today only because the pretend player starts from nothing — breaks by
+        /// granting exactly what it says the player must not have.
+        /// </remarks>
+        private static bool TryBreak(
+            DlgLink blocking, ISet<string> protectedQuests, GuardBudget budget, PretendPlayer player)
         {
             foreach (var condition in blocking.Conditions)
             {
-                var questId = condition.Arguments.FirstOrDefault();
-                if (string.IsNullOrEmpty(questId) || protectedQuests.Contains(questId))
-                    continue;
+                var arguments = condition.Arguments;
+                var satisfy = !condition.IsNegated;
 
                 switch (condition.SnippetKey)
                 {
                     case "condition-has-quest":
                     case "condition-on-quest-state":
                     case "condition-completed-quest":
+                    {
+                        var questId = arguments.FirstOrDefault();
+                        if (string.IsNullOrEmpty(questId) || protectedQuests.Contains(questId))
+                            continue;
+
                         // A positive guard breaks by removing the quest; a negated one breaks by
                         // giving the player exactly what it says they must not have.
                         player.WithQuest(questId, condition.IsNegated
@@ -189,17 +202,225 @@ namespace SWLOR.Toolset.Domain.Conversations
                                 : QuestProgress.OnStep(1))
                             : QuestProgress.None);
                         return true;
+                    }
 
                     case "condition-can-accept-quest" when !condition.IsNegated:
+                    {
+                        var questId = arguments.FirstOrDefault();
+                        if (string.IsNullOrEmpty(questId) || protectedQuests.Contains(questId))
+                            continue;
+
                         // Someone who has already finished it can no longer be offered it. This is
                         // what breaks an earlier rung of a quest chain without disturbing the rung
                         // the target situation sits on.
                         player.WithQuest(questId, QuestProgress.Completed);
                         return true;
+                    }
+
+                    case "condition-all-key-items" when arguments.Length > 0:
+                        if (satisfy)
+                        {
+                            // Every listed key item is held; taking away one the target doesn't
+                            // itself need makes the guard fail.
+                            var removable = arguments.FirstOrDefault(keyItem => !budget.KeyItems.Contains(keyItem));
+                            if (removable == null)
+                                continue;
+
+                            player.WithoutKeyItem(removable);
+                            return true;
+                        }
+                        else
+                        {
+                            // Passes today because at least one is missing; breaking it means
+                            // granting every one of them, so none can be an item the target needs
+                            // absent.
+                            if (arguments.Any(budget.KeyItems.Contains))
+                                continue;
+
+                            foreach (var keyItem in arguments)
+                                player.WithKeyItem(keyItem);
+                            return true;
+                        }
+
+                    case "condition-has-completed-tutorial":
+                        if (budget.Tutorial)
+                            continue;
+
+                        player.HasCompletedTutorial = !satisfy;
+                        return true;
+
+                    case "condition-any-skill":
+                    case "condition-all-skills":
+                    {
+                        if (arguments.Length < 2 || arguments.Length % 2 != 0)
+                            continue;
+
+                        var pairs = new List<(string Skill, int Rank)>();
+                        var parsed = true;
+                        for (var i = 0; i + 1 < arguments.Length; i += 2)
+                        {
+                            if (!int.TryParse(arguments[i + 1], out var rank))
+                            {
+                                parsed = false;
+                                break;
+                            }
+
+                            pairs.Add((arguments[i], rank));
+                        }
+
+                        if (!parsed)
+                            continue;
+
+                        var wantsAll = condition.SnippetKey == "condition-all-skills";
+
+                        // "all-skills" passing needs one unmet pair to break; "any-skill" passing
+                        // needs every pair unmet. Negating either flips which of those breaks it.
+                        var touchOne = satisfy == wantsAll;
+
+                        if (touchOne)
+                        {
+                            var pick = pairs.FirstOrDefault(pair => !budget.Skills.Contains(pair.Skill));
+                            if (pick.Skill == null)
+                                continue;
+
+                            player.WithSkill(pick.Skill, satisfy ? Math.Max(0, pick.Rank - 1) : pick.Rank);
+                            return true;
+                        }
+
+                        if (pairs.Any(pair => budget.Skills.Contains(pair.Skill)))
+                            continue;
+
+                        foreach (var (skill, rank) in pairs)
+                            player.WithSkill(skill, satisfy ? Math.Max(0, rank - 1) : rank);
+                        return true;
+                    }
+
+                    case "condition-has-faction-standing" when arguments.Length > 1:
+                    case "condition-has-faction-points" when arguments.Length > 1:
+                    {
+                        if (!int.TryParse(arguments[0], out var factionId)
+                            || !int.TryParse(arguments[1], out var required))
+                            continue;
+
+                        var isStanding = condition.SnippetKey == "condition-has-faction-standing";
+                        if (isStanding
+                                ? budget.FactionStandings.Contains(factionId)
+                                : budget.FactionPoints.Contains(factionId))
+                            continue;
+
+                        // Faction points floor at zero and standing is clamped to the runtime's
+                        // range, the same as Faction.AdjustPlayerFactionStanding/Points - a
+                        // breaker must not write a value the game could never produce.
+                        var floor = isStanding ? Game.Server.Service.Faction.MinimumFaction : 0;
+                        var ceiling = isStanding ? Game.Server.Service.Faction.MaximumFaction : int.MaxValue;
+
+                        if (satisfy)
+                        {
+                            // Currently at or above the requirement; drop just below it.
+                            var below = required - 1;
+                            if (below < floor)
+                                continue;
+
+                            if (isStanding)
+                                player.WithFactionStanding(factionId, below);
+                            else
+                                player.WithFactionPoints(factionId, below);
+                            return true;
+                        }
+                        else
+                        {
+                            // Currently below the requirement; raise it to exactly meet it.
+                            if (required > ceiling)
+                                continue;
+
+                            if (isStanding)
+                                player.WithFactionStanding(factionId, required);
+                            else
+                                player.WithFactionPoints(factionId, required);
+                            return true;
+                        }
+                    }
                 }
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Everything besides quests that this opening's own guards pin down — key items it needs
+        /// held or absent, skills, faction thresholds, and the tutorial flag — which a breaker must
+        /// leave alone for the same reason <see cref="QuestsConstrainedBy"/> protects quest ids.
+        /// </summary>
+        private GuardBudget NonQuestConstraintsOf(DlgLink opening)
+        {
+            var keyItems = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var skills = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var factionStandings = new HashSet<int>();
+            var factionPoints = new HashSet<int>();
+            var tutorial = false;
+
+            foreach (var condition in opening.Conditions)
+            {
+                var arguments = condition.Arguments;
+                switch (condition.SnippetKey)
+                {
+                    case "condition-all-key-items":
+                        foreach (var keyItem in arguments)
+                            keyItems.Add(keyItem);
+                        break;
+
+                    case "condition-has-completed-tutorial":
+                        tutorial = true;
+                        break;
+
+                    case "condition-any-skill":
+                    case "condition-all-skills":
+                        for (var i = 0; i + 1 < arguments.Length; i += 2)
+                            skills.Add(arguments[i]);
+                        break;
+
+                    case "condition-has-faction-standing" when arguments.Length > 0:
+                        if (int.TryParse(arguments[0], out var standingFaction))
+                            factionStandings.Add(standingFaction);
+                        break;
+
+                    case "condition-has-faction-points" when arguments.Length > 0:
+                        if (int.TryParse(arguments[0], out var pointsFaction))
+                            factionPoints.Add(pointsFaction);
+                        break;
+
+                    case "condition-can-accept-quest" when arguments.Length > 0:
+                    {
+                        // Reaching an offer means meeting its prerequisites too, the same reason
+                        // QuestsConstrainedBy pins the prerequisite quest ids.
+                        var quest = _gameCode?.FindQuest(arguments[0]);
+                        foreach (var keyItem in quest?.PrerequisiteKeyItems ?? Array.Empty<string>())
+                            keyItems.Add(keyItem);
+                        foreach (var (skill, _) in quest?.PrerequisiteSkills ?? Array.Empty<(string, int)>())
+                            skills.Add(skill);
+                        break;
+                    }
+                }
+            }
+
+            return new GuardBudget
+            {
+                KeyItems = keyItems,
+                Skills = skills,
+                FactionStandings = factionStandings,
+                FactionPoints = factionPoints,
+                Tutorial = tutorial
+            };
+        }
+
+        /// <summary>The non-quest state one opening's own guards require, so <see cref="TryBreak"/> can avoid it.</summary>
+        private sealed class GuardBudget
+        {
+            public required ISet<string> KeyItems { get; init; }
+            public required ISet<string> Skills { get; init; }
+            public required ISet<int> FactionStandings { get; init; }
+            public required ISet<int> FactionPoints { get; init; }
+            public required bool Tutorial { get; init; }
         }
 
         /// <summary>Quest ids this opening's own guards pin down, which a breaker must not touch.</summary>

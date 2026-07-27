@@ -311,6 +311,47 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TakingMoreFactionPointsThanOwnedFloorsAtZero()
+        {
+            // Faction.AdjustPlayerFactionPoints floors at zero rather than going negative - a
+            // simulated take that ignores this would leave a later "has at least 0 points" guard
+            // reading differently than the runtime does.
+            var document = DantHerbs();
+            var reply = document.AddReply("Take more points than she has.");
+            reply.AddAction("action-take-faction-points", "7 50");
+
+            var after = Evaluator.ApplyActions(reply, new PretendPlayer().WithFactionPoints(7, 10));
+
+            after.GetFactionPoints(7).Should().Be(0);
+        }
+
+        [Test]
+        public void GivingFactionStandingClampsToTheRuntimeMaximum()
+        {
+            // Faction.AdjustPlayerFactionStanding clamps to MaximumFaction rather than overshooting.
+            var document = DantHerbs();
+            var reply = document.AddReply("Give more standing than the scale allows.");
+            reply.AddAction("action-give-faction-standing", "7 500");
+
+            var after = Evaluator.ApplyActions(reply, new PretendPlayer().WithFactionStanding(7, 4900));
+
+            after.GetFactionStanding(7).Should().Be(SWLOR.Game.Server.Service.Faction.MaximumFaction);
+        }
+
+        [Test]
+        public void TakingFactionStandingClampsToTheRuntimeMinimum()
+        {
+            // Same clamp, the other direction.
+            var document = DantHerbs();
+            var reply = document.AddReply("Take more standing than the scale allows.");
+            reply.AddAction("action-take-faction-standing", "7 500");
+
+            var after = Evaluator.ApplyActions(reply, new PretendPlayer().WithFactionStanding(7, -4900));
+
+            after.GetFactionStanding(7).Should().Be(SWLOR.Game.Server.Service.Faction.MinimumFaction);
+        }
+
+        [Test]
         public void AWholeQuestArcCanBeWalkedWithoutAServer()
         {
             var document = DantHerbs();
@@ -469,6 +510,129 @@ namespace SWLOR.Toolset.Tests
                 reached!.Struct.Should().BeSameAs(situation.Opening.Struct,
                     $"situation {situation.Order} ({situation.Title}) is what that player should get");
             }
+        }
+
+        [Test]
+        public void ANonQuestGuardCanBeBrokenSoALaterUnguardedOpeningIsReachable()
+        {
+            // A real gap TryBreak used to have: it only knew how to break quest guards, so an
+            // earlier opening guarded only by "!condition-all-key-items K" reported the unguarded
+            // opening below it as Unreachable even though a player who is given K bypasses the
+            // first route and reaches the second in game.
+            var document = DantHerbs();
+            document.RemoveLink(document.Openings.Single(o => o.Conditions.Count == 0));
+
+            var guardedEntry = document.AddEntry("Only for those without the token.");
+            var guarded = document.AddOpening(guardedEntry);
+            guarded.AddCondition("!condition-all-key-items", "5001");
+
+            var catchAllEntry = document.AddEntry("Nice to meet you.");
+            var catchAll = document.AddOpening(catchAllEntry);
+
+            var model = Model(document);
+            var situation = model.Situations().Single(s => s.Opening.Struct == catchAll.Struct);
+            situation.State.Should().Be(SituationState.Written);
+
+            var player = model.PlayerFor(situation);
+            player.Should().NotBeNull();
+            player!.HasKeyItem("5001").Should().BeTrue();
+            Evaluator.ResolveOpening(document, player!)!.Struct.Should().BeSameAs(catchAll.Struct);
+        }
+
+        [Test]
+        public void ATutorialGuardCanBeBrokenSoALaterUnguardedOpeningIsReachable()
+        {
+            var document = DantHerbs();
+            document.RemoveLink(document.Openings.Single(o => o.Conditions.Count == 0));
+
+            var guardedEntry = document.AddEntry("New to town?");
+            var guarded = document.AddOpening(guardedEntry);
+            guarded.AddCondition("!condition-has-completed-tutorial");
+
+            var catchAllEntry = document.AddEntry("Welcome back.");
+            var catchAll = document.AddOpening(catchAllEntry);
+
+            var model = Model(document);
+            var situation = model.Situations().Single(s => s.Opening.Struct == catchAll.Struct);
+            situation.State.Should().Be(SituationState.Written);
+
+            var player = model.PlayerFor(situation);
+            player.Should().NotBeNull();
+            player!.HasCompletedTutorial.Should().BeTrue();
+            Evaluator.ResolveOpening(document, player!)!.Struct.Should().BeSameAs(catchAll.Struct);
+        }
+
+        [Test]
+        public void ASkillGuardCanBeBrokenSoALaterUnguardedOpeningIsReachable()
+        {
+            var document = DantHerbs();
+            document.RemoveLink(document.Openings.Single(o => o.Conditions.Count == 0));
+
+            var guardedEntry = document.AddEntry("Not trained enough to hear this yet.");
+            var guarded = document.AddOpening(guardedEntry);
+            guarded.AddCondition("!condition-any-skill", "7 3");
+
+            var catchAllEntry = document.AddEntry("Everyone else.");
+            var catchAll = document.AddOpening(catchAllEntry);
+
+            var model = Model(document);
+            var situation = model.Situations().Single(s => s.Opening.Struct == catchAll.Struct);
+            situation.State.Should().Be(SituationState.Written);
+
+            var player = model.PlayerFor(situation);
+            player.Should().NotBeNull();
+            player!.GetSkillRank("7").Should().BeGreaterThanOrEqualTo(3);
+            Evaluator.ResolveOpening(document, player!)!.Struct.Should().BeSameAs(catchAll.Struct);
+        }
+
+        [Test]
+        public void AFactionGuardCanBeBrokenSoALaterUnguardedOpeningIsReachable()
+        {
+            var document = DantHerbs();
+            document.RemoveLink(document.Openings.Single(o => o.Conditions.Count == 0));
+
+            var guardedEntry = document.AddEntry("Not trusted enough to hear this yet.");
+            var guarded = document.AddOpening(guardedEntry);
+            guarded.AddCondition("!condition-has-faction-points", "7 50");
+
+            var catchAllEntry = document.AddEntry("Everyone else.");
+            var catchAll = document.AddOpening(catchAllEntry);
+
+            var model = Model(document);
+            var situation = model.Situations().Single(s => s.Opening.Struct == catchAll.Struct);
+            situation.State.Should().Be(SituationState.Written);
+
+            var player = model.PlayerFor(situation);
+            player.Should().NotBeNull();
+            player!.GetFactionPoints(7).Should().Be(50);
+            Evaluator.ResolveOpening(document, player!)!.Struct.Should().BeSameAs(catchAll.Struct);
+        }
+
+        [Test]
+        public void ANonQuestGuardThatWouldContradictTheTargetLeavesItUnreachable()
+        {
+            // The other half of the fix: TryBreak must not remove a key item the target situation
+            // depends on just to unblock an earlier opening. Here both openings need the same key
+            // item present, so nobody who reaches the second was ever not caught by the first -
+            // breaking the earlier one is only possible by taking away what the target needs too,
+            // and that is refused.
+            var document = DantHerbs();
+            document.RemoveLink(document.Openings.Single(o => o.Conditions.Count == 0));
+
+            var firstEntry = document.AddEntry("Ah, you carry the seal.");
+            var first = document.AddOpening(firstEntry);
+            first.AddCondition("condition-all-key-items", "5001");
+
+            var secondEntry = document.AddEntry("The seal-bearer returns.");
+            var second = document.AddOpening(secondEntry);
+            second.AddCondition("condition-all-key-items", "5001");
+            second.AddCondition("condition-has-completed-tutorial");
+
+            var model = Model(document);
+            var situation = model.Situations().Single(s => s.Opening.Struct == second.Struct);
+
+            situation.State.Should().Be(SituationState.Unreachable);
+            model.PlayerFor(situation).Should().BeNull();
         }
 
         // ---------- coverage ----------

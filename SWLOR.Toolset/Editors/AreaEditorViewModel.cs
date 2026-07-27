@@ -1797,12 +1797,27 @@ namespace SWLOR.Toolset.Editors
             if (!TryStageWrites(arePlan, gitPlan, gicPlan, out var staged))
                 return false;
 
+            // A Reload parses external bytes and can fail - the file may be malformed or gone by
+            // the time the prompt is answered. Complete it before any staged companion write
+            // replaces its file, so a failed ARE reload cannot leave the GIT/GIC committed at a
+            // newer generation while this method returns false; the save stays all-or-nothing.
+            var areReloadedEarly = false;
+            if (arePlan == SavePlan.Reload)
+            {
+                var earlyResult = ApplySavePlan(_areSession, arePlan);
+                if (!earlyResult.Success)
+                    return false;
+                areReloadedEarly = true;
+                arePlan = SavePlan.Nothing;
+            }
+
             if (!CommitStagedWrites(staged))
                 return false;
 
             var areResult = ApplySavePlan(_areSession, arePlan);
             if (!areResult.Success)
                 return false;
+            areResult = (areResult.Success, areResult.Reloaded || areReloadedEarly);
 
             var gitResult = ApplySavePlan(_gitSession, gitPlan);
             if (!gitResult.Success)

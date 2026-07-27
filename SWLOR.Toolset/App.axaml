@@ -131,7 +131,7 @@
          five figures of options and a stored value the source does not know must stay visible. -->
     <DataTemplate DataType="placeables:BehaviorFieldViewModel">
       <Grid ColumnDefinitions="150,*" ColumnSpacing="12" RowDefinitions="Auto,Auto,Auto" Margin="0,2">
-        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+        <StackPanel Grid.Column="0" VerticalAlignment="Top" Margin="0,7,0,0">
           <TextBlock Text="{Binding Label}" Classes="dim" TextWrapping="Wrap" />
           <TextBlock Text="required" Classes="count" IsVisible="{Binding IsRequired}" />
         </StackPanel>

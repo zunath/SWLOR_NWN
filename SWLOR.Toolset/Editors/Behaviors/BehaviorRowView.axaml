@@ -15,7 +15,8 @@
   <Grid ColumnDefinitions="150,*" ColumnSpacing="12" RowDefinitions="Auto,Auto,Auto"
         IsVisible="{Binding IsVisible}" Margin="0,2" MinHeight="32">
 
-    <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" ClipToBounds="True">
+    <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Margin="0,7,0,0"
+                ClipToBounds="True">
       <TextBlock Text="{Binding Label}" Classes="dim" TextWrapping="Wrap" />
       <!-- "required" sits under the label rather than beside it: side by side it was the first
            thing squeezed out at narrow pane widths, which is exactly when it matters. -->

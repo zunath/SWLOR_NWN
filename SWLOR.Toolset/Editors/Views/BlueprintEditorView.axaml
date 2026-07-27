@@ -165,7 +165,7 @@
     <Grid ColumnDefinitions="Auto,*">
       <!-- Keep one retained 3D control visible while moving between a placeable's tabs, matching the
            Door editor. The Appearance tab now concentrates on searching and comparing thumbnails. -->
-      <Border Grid.Column="0" Width="220"
+      <Border Grid.Column="0" Width="190"
               BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0"
               Padding="12" IsVisible="{Binding IsPlaceableEditor}">
         <Grid RowDefinitions="*,Auto"

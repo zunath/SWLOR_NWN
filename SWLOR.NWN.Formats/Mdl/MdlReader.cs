@@ -232,6 +232,10 @@ public sealed class MdlReader
     private int ParseMesh(MdlTrimeshNode mesh, long offset)
     {
         ValidateModelAbsoluteRange(offset, MeshHeaderSize, "MDL mesh header");
+        mesh.Diffuse = new Vector3(
+            Finite(_reader.ReadSingle(offset + 60), "MDL mesh diffuse"),
+            Finite(_reader.ReadSingle(offset + 64), "MDL mesh diffuse"),
+            Finite(_reader.ReadSingle(offset + 68), "MDL mesh diffuse"));
         mesh.Render = _reader.ReadUInt32(offset + 108) != 0;
         mesh.Bitmap = FixedString(offset + 120, 64, "MDL mesh bitmap");
         mesh.Lightmap = FixedString(offset + 184, 64, "MDL mesh lightmap");

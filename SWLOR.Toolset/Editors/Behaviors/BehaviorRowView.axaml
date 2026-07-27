@@ -6,8 +6,13 @@
 
   <!-- The one row every behavior editor draws: a label on the left and whichever control the field
        kind calls for on the right. Trigger, waypoint, door, and sound each used to carry their own
-       copy of this markup, with three different label-column widths between them. -->
-  <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto,Auto"
+       copy of this markup, with three different label-column widths between them.
+
+       The label column is sized to the longest label these editors actually use rather than to a
+       comfortable margin around it. Every pixel it takes comes out of the value, and the value is
+       the part that has to hold a search list, a picture grid, or a tag - at a narrow pane width the
+       generous column was leaving a text box a couple of characters wide. -->
+  <Grid ColumnDefinitions="150,*" ColumnSpacing="12" RowDefinitions="Auto,Auto,Auto"
         IsVisible="{Binding IsVisible}" Margin="0,2" MinHeight="32">
 
     <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" ClipToBounds="True">
@@ -40,6 +45,7 @@
 
       <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice, Mode=TwoWay}"
                 MaxDropDownHeight="400" HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Left"
                 IsEnabled="{Binding !IsReadOnly}" IsVisible="{Binding IsPlainChoice}">
         <ComboBox.ItemTemplate>
           <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
@@ -59,7 +65,7 @@
         <TextBlock Text="{Binding SearchSummary}" Classes="count" />
         <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
                 ClipToBounds="True">
-          <ScrollViewer Height="220" VerticalScrollBarVisibility="Auto">
+          <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding FilteredChoices}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
@@ -74,28 +80,84 @@
         </Border>
       </StackPanel>
 
-      <!-- Choices that carry artwork are picked from their pictures. Only the chosen image is
-           decoded until Choose is opened; the gallery is searchable and publishes one page at a
-           time, so a portrait row never realizes the whole 2DA at once. -->
-      <StackPanel IsVisible="{Binding IsGallery}" Spacing="6" HorizontalAlignment="Stretch">
-        <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3"
-                Background="{DynamicResource FieldBrush}" ClipToBounds="True"
-                Width="256" Height="192" HorizontalAlignment="Left">
-          <Panel>
-            <TextBlock Text="{Binding SelectedChoiceDisplay}" FontSize="15"
-                       Foreground="{DynamicResource InkBrush}"
-                       HorizontalAlignment="Center" VerticalAlignment="Center"
-                       TextWrapping="Wrap" TextAlignment="Center" Margin="10" />
-            <Image Source="{Binding SelectedPreview}" Stretch="Uniform" />
-          </Panel>
+      <!-- A set of pictures that fits the page is shown on it. The difference between a blue marker
+           and a treasure marker, or between two load screens, is visible and not sayable, so a list
+           of their names is not a picker for them. Tiles are still published a page at a time and
+           each one's picture is requested only once its tile exists. -->
+      <StackPanel IsVisible="{Binding IsInlineGallery}" Spacing="6" HorizontalAlignment="Stretch">
+        <TextBox Text="{Binding GalleryQuery, Mode=TwoWay}" Watermark="{Binding SearchWatermark}" />
+        <TextBlock Text="{Binding GallerySummary}" Classes="count" />
+        <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
+                ClipToBounds="True">
+          <ScrollViewer MaxHeight="330" VerticalScrollBarVisibility="Auto"
+                        ScrollChanged="OnChoiceGalleryScrollChanged">
+            <ItemsControl ItemsSource="{Binding GalleryChoices}" Margin="2">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+                  <Button Classes="behavior" Classes.on="{Binding IsSelected}"
+                          Margin="3" Padding="4"
+                          Command="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).PickChoiceCommand}"
+                          CommandParameter="{Binding}">
+                    <StackPanel Width="104" Spacing="3">
+                      <Panel Height="78">
+                        <!-- The letter stands in until the picture lands, so the grid is never a
+                             field of empty boxes while it fills. The option that means "any of
+                             them" draws a mark instead: it has no picture because there is no one
+                             picture it means, and a bare letter would read as artwork that failed. -->
+                        <TextBlock Text="{Binding Glyph}" FontSize="24" Classes="dim"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   IsVisible="{Binding ShowsGlyph}" />
+                        <Path Data="{StaticResource ToolsetRandomIconGeometry}"
+                              Stroke="{DynamicResource InkBrush}" StrokeThickness="1.1"
+                              StrokeLineCap="Round" StrokeJoin="Round" Stretch="Uniform"
+                              Width="40" Height="40" IsVisible="{Binding IsAny}"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Image Source="{Binding Thumbnail}" Stretch="Uniform" />
+                      </Panel>
+                      <TextBlock Text="{Binding Display}" FontSize="10.5"
+                                 TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" />
+                      <TextBlock Text="{Binding Detail}" Classes="mono" FontSize="9.5"
+                                 TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"
+                                 IsVisible="{Binding HasDetail}" />
+                    </StackPanel>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
         </Border>
-        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-          <TextBlock Grid.Column="0" Text="{Binding SelectedChoiceDisplay}" Classes="mono"
-                     VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-          <Button Grid.Column="1" x:Name="ChooseArtworkButton" Content="Choose&#x2026;"
-                  Padding="10,4" Command="{Binding OpenGalleryCommand}" />
-          <Popup Grid.Column="1" IsOpen="{Binding IsGalleryOpen, Mode=TwoWay}"
-                 PlacementTarget="{Binding #ChooseArtworkButton}" Placement="Left"
+      </StackPanel>
+
+      <!-- A set too large for the page - the portraits run to four figures - keeps its grid behind
+           the picture. The picture IS the button: a builder aiming at the thing they want to change
+           is already aiming at the only control here, so a separate Choose button beside it was one
+           more target for the same intent. -->
+      <StackPanel IsVisible="{Binding IsPopupGallery}" Spacing="6" HorizontalAlignment="Stretch">
+        <!-- The popup shares the picture's cell rather than sitting beside it: as a sibling of the
+             StackPanel it would be spaced like a row of its own, leaving a gap under the picture. -->
+        <Panel HorizontalAlignment="Left">
+          <Button x:Name="ChooseArtworkButton" Classes="behavior" Padding="0"
+                  Command="{Binding OpenGalleryCommand}"
+                  ToolTip.Tip="Click the picture to choose a different one">
+            <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3"
+                    Background="{DynamicResource FieldBrush}" ClipToBounds="True"
+                    Width="256" Height="192">
+              <Panel>
+                <TextBlock Text="{Binding SelectedChoiceDisplay}" FontSize="15"
+                           Foreground="{DynamicResource InkBrush}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           TextWrapping="Wrap" TextAlignment="Center" Margin="10" />
+                <Image Source="{Binding SelectedPreview}" Stretch="Uniform" />
+              </Panel>
+            </Border>
+          </Button>
+          <Popup IsOpen="{Binding IsGalleryOpen, Mode=TwoWay}"
+                 PlacementTarget="{Binding #ChooseArtworkButton}" Placement="Right"
                  IsLightDismissEnabled="True">
             <Border Background="{DynamicResource PanelBrush}" CornerRadius="4" Padding="8"
                     BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
@@ -114,7 +176,8 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                       <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
-                        <Button Classes="behavior" Margin="3" Padding="4"
+                        <Button Classes="behavior" Classes.on="{Binding IsSelected}"
+                                Margin="3" Padding="4"
                                 Command="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).PickChoiceCommand}"
                                 CommandParameter="{Binding}">
                           <StackPanel Width="145" Spacing="4">
@@ -134,7 +197,9 @@
               </Grid>
             </Border>
           </Popup>
-        </Grid>
+        </Panel>
+        <TextBlock Text="{Binding SelectedChoiceDisplay}" Classes="mono"
+                   TextTrimming="CharacterEllipsis" />
       </StackPanel>
 
       <TextBlock Text="{Binding StatementText}" Classes="mono" IsVisible="{Binding IsStatement}" />

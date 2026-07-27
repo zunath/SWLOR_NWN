@@ -22,7 +22,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             for (var row = 0; row < table.RowCount; row++)
             {
                 var label = table.GetString(row, LabelColumn);
-                if (string.IsNullOrWhiteSpace(label))
+                if (string.IsNullOrWhiteSpace(label) || IsPlaceholder(label))
                     continue;
 
                 traps.Add(new BehaviorChoice(row, Humanise(label)));
@@ -30,6 +30,15 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
 
             return traps;
         }
+
+        /// <summary>
+        /// Whether a row is padding rather than a trap. More than half of traps.2da is: 52 rows
+        /// labelled <c>Bio_reserved</c> and 20 labelled <c>USER</c>, all of them holding a row index
+        /// open and none of them a kind a trigger can be. Offering them buries the 57 real traps.
+        /// </summary>
+        private static bool IsPlaceholder(string label) =>
+            label.StartsWith("Bio_reserved", StringComparison.OrdinalIgnoreCase) ||
+            label.Equals("USER", StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Splits the 2DA's run-together labels: "MinorSpike" reads as "Minor Spike". They are

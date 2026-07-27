@@ -329,10 +329,10 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                     {
                         new BehaviorFieldDefinition
                         {
-                            Label = "Legacy waypoint",
+                            Label = "Custom",
                             Name = string.Empty,
                             Kind = BehaviorFieldKind.Statement,
-                            Note = "Custom exposes raw fields and local variables. Existing locals may be consumed by legacy scripts."
+                            Note = "Custom exposes raw fields and local variables."
                         }
                     }.Concat(WaypointEditorLayout.Custom).ToList()
                 }

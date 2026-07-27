@@ -11,16 +11,21 @@
        CONTENTS, which only this editor hosts. -->
   <UserControl.DataTemplates>
 
-    <!-- A schema-driven tab: its groups, as expanders. -->
+    <!-- A schema-driven tab: its groups, one after another. Headings rather than expanders - a group
+         holds two or three fields, so collapsing one buys a couple of rows in exchange for a page
+         whose contents depend on state a builder has to remember setting, and the chevron column
+         charged for that on every group whether or not anyone ever used it. -->
     <DataTemplate DataType="editors:FieldGroupsViewModel">
       <ScrollViewer>
         <ItemsControl ItemsSource="{Binding Groups}" Margin="8">
           <ItemsControl.ItemTemplate>
             <DataTemplate DataType="editors:EditorGroup">
-              <Expander Header="{Binding Title}" IsExpanded="True" Margin="0,0,0,6"
-                        HorizontalAlignment="Stretch">
-                <ItemsControl ItemsSource="{Binding Fields}" Margin="8,4" />
-              </Expander>
+              <Border Classes="card" Margin="0,0,0,8" Padding="12,10">
+                <StackPanel>
+                  <TextBlock Text="{Binding Title}" Classes="section" Margin="0,0,0,8" />
+                  <ItemsControl ItemsSource="{Binding Fields}" />
+                </StackPanel>
+              </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
@@ -63,7 +68,7 @@
 
     <!-- The Behavior tab: every option on screen, the selected one's fields beside it. -->
     <DataTemplate DataType="placeables:PlaceableBehaviorSectionViewModel">
-      <Grid ColumnDefinitions="230,*" Margin="8">
+      <Grid ColumnDefinitions="210,*" Margin="8">
         <ListBox Grid.Column="0" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                  Background="Transparent" BorderThickness="1" Margin="0,0,8,0"
                  BorderBrush="{DynamicResource RuleBrush}">
@@ -199,7 +204,6 @@
             <StackPanel Spacing="3" IsVisible="{Binding HasHighlight}">
               <TextBlock Text="{Binding HighlightedCaption}" TextWrapping="Wrap" FontSize="10.5" />
               <TextBlock Text="{Binding HighlightedModelName}" Classes="mono" FontSize="10" />
-              <TextBlock Text="{Binding HighlightedUsage}" Classes="count" />
             </StackPanel>
           </StackPanel>
         </Grid>

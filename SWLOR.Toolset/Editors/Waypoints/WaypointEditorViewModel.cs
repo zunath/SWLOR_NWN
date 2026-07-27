@@ -16,6 +16,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly IGameCodeIndex? _gameCodeIndex;
+        private readonly ChoicePreviewService? _previews;
         private readonly bool _isInstance;
 
         public ObservableCollection<BehaviorListItemViewModel> BehaviorList { get; } = new();
@@ -45,7 +46,8 @@ namespace SWLOR.Toolset.Editors.Waypoints
             Func<string, Action, bool> runEdit,
             WaypointBehaviorCatalog catalog,
             IGameCodeIndex? gameCodeIndex = null,
-            Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null)
+            Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
+            ChoicePreviewService? previews = null)
         {
             ArgumentNullException.ThrowIfNull(waypoint);
             _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
@@ -53,6 +55,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
             _runEdit = runEdit;
             _gameCodeIndex = gameCodeIndex;
             _resolveChoices = resolveChoices;
+            _previews = previews;
             _isInstance = isInstance;
             HeaderOwner = headerOwner;
             _behavior = _catalog.Classify(waypoint);
@@ -107,6 +110,24 @@ namespace SWLOR.Toolset.Editors.Waypoints
             ReloadRowsFromDocument();
         }
 
+        /// <summary>Rebuilds the category row after its module ITP changes.</summary>
+        public void RefreshPaletteChoices()
+        {
+            var index = BasicRows
+                .Select((row, rowIndex) => (row, rowIndex))
+                .Where(item => item.row.Definition.Name == "PaletteID")
+                .Select(item => item.rowIndex)
+                .DefaultIfEmpty(-1)
+                .Single();
+            if (index < 0)
+                return;
+
+            var definition = BasicRows[index].Definition;
+            BasicRows[index].Dispose();
+            BasicRows[index] = CreateRow(definition);
+            RefreshCompleteness();
+        }
+
         public bool PrepareForSave()
         {
             if (!NeedsSaveNormalization)
@@ -141,7 +162,8 @@ namespace SWLOR.Toolset.Editors.Waypoints
         }
 
         private WaypointRowViewModel CreateRow(BehaviorFieldDefinition definition) =>
-            new(definition, _store, _runEdit, ResolveChoices(definition), RefreshCompleteness);
+            new(definition, _store, _runEdit, ResolveChoices(definition), RefreshCompleteness,
+                _previews);
 
         private IReadOnlyList<BehaviorChoice> ResolveChoices(BehaviorFieldDefinition definition)
         {

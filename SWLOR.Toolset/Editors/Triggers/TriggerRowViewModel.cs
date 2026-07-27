@@ -13,13 +13,16 @@ namespace SWLOR.Toolset.Editors.Triggers
     /// </remarks>
     public sealed class TriggerRowViewModel : BehaviorRowViewModel
     {
-        private readonly Func<string, string?>? _resolveTag;
+        private readonly Func<BehaviorTagScope, string, string?>? _resolveTag;
+
+        protected override bool SelectsFirstChoiceWhenUnset =>
+            Definition.Name != "LinkedToFlags";
 
         public TriggerRowViewModel(
             BehaviorFieldDefinition definition,
             BehaviorValueStore store,
             Func<string, Action, bool> runEdit,
-            Func<string, string?>? resolveTag,
+            Func<BehaviorTagScope, string, string?>? resolveTag,
             IReadOnlyList<BehaviorChoice>? choices = null,
             ChoicePreviewService? previews = null,
             Action? valueChanged = null)
@@ -50,9 +53,34 @@ namespace SWLOR.Toolset.Editors.Triggers
                 return;
             }
 
-            var area = _resolveTag(Text);
+            var scope = Definition.TagScope;
+            if (Definition.Name == "LinkedTo")
+            {
+                scope = Store.GetInteger(BehaviorFieldStorage.Field, "LinkedToFlags") switch
+                {
+                    1 => BehaviorTagScope.Door,
+                    2 => BehaviorTagScope.Waypoint,
+                    _ => BehaviorTagScope.None
+                };
+            }
+
+            if (scope == BehaviorTagScope.None)
+            {
+                IsStatusGood = false;
+                Status = "✗ choose whether the destination is a waypoint or door";
+                return;
+            }
+
+            var area = _resolveTag(scope, Text);
             IsStatusGood = area != null;
-            Status = area != null ? $"✓ in {area}" : "✗ no area defines this tag";
+            Status = area != null
+                ? $"✓ in {area}"
+                : scope switch
+                {
+                    BehaviorTagScope.Waypoint => "✗ no waypoint defines this tag",
+                    BehaviorTagScope.Door => "✗ no door defines this tag",
+                    _ => "✗ no waypoint or door defines this tag"
+                };
         }
     }
 }

@@ -115,6 +115,34 @@ namespace SWLOR.Toolset.Tests
             explorer.NewItemCommand.CanExecute(null).Should().BeTrue();
         }
 
+        [Test]
+        public void ModuleContentsStopsOfferingScriptCompilationWhileTheModuleIsLocked()
+        {
+            var (workspace, log) = Context();
+            var mutationLock = new ModuleMutationLock();
+            var explorer = new ModuleExplorerViewModel(
+                workspace,
+                new PropertiesViewModel(workspace, log),
+                new CategoryService(workspace, log),
+                log,
+                mutationLock: mutationLock)
+            {
+                SelectedType = ResourceType.Nss
+            };
+
+            explorer.CanCompileSelectedType.Should().BeTrue();
+            explorer.CompileSelectedCommand.CanExecute(null).Should().BeTrue();
+
+            mutationLock.Set(true);
+
+            explorer.CanCompileSelectedType.Should().BeFalse();
+            explorer.CompileSelectedCommand.CanExecute(null).Should().BeFalse();
+
+            mutationLock.Set(false);
+
+            explorer.CompileSelectedCommand.CanExecute(null).Should().BeTrue();
+        }
+
         /// <summary>
         /// The tab's own Compile button, not the Build menu. It saves the .nss and then writes the
         /// .ncs, so during a pack it replaces what is being copied and during Build All it points a

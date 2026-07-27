@@ -597,6 +597,36 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TheFieldPageSpendsItsWidthOnValuesAndItsHeightOnTheDescription()
+        {
+            var app = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "App.axaml"));
+
+            app.Should().NotContain("ColumnDefinitions=\"180,*",
+                "the label column was wider than the longest label these editors use");
+            app.Should().NotContain("ColumnDefinitions=\"220,*",
+                "the behavior field row was wider still");
+
+            // The strref explains a blank box; it is not a second value beside the real one. As a
+            // column it ran as wide as the box it explained, on every row, and a description got
+            // whatever was left.
+            app.Should().NotContain("Text=\"{Binding StrRefDisplay}\"");
+            app.Should().Contain("Watermark=\"{Binding StrRefDisplay}\"");
+
+            // The description's problem was its width, not its height: a floor tall enough to write
+            // in, low enough that it does not own a short window.
+            app.Should().Contain("MinHeight=\"140\"");
+
+            var blueprintView = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset", "Editors", "Views", "BlueprintEditorView.axaml"));
+
+            // A group holds two or three fields. Collapsing one buys a couple of rows in exchange
+            // for a page whose contents depend on state a builder has to remember setting.
+            blueprintView.Should().NotContain("<Expander");
+        }
+
+        [Test]
         public void BehaviorFields_ClampNumbersAndGalleryChoicesWriteAndClearResrefs()
         {
             var document = BuildDocument();
@@ -815,6 +845,34 @@ namespace SWLOR.Toolset.Tests
                 "a flag required only by the old behavior must not leak into the new one");
             new VarTable(document.Root).Any(entry => entry.Name == "SCAVENGE_POINT_LOOT_TABLE_NAME")
                 .Should().BeFalse("switching clears the variables only the old behavior used");
+        }
+
+        [Test]
+        public void Apply_NamedBehaviorToCustomRetainsItsScripts()
+        {
+            var document = BuildDocument();
+            var chair = PlaceableBehaviorCatalog.FindById("chair")!;
+            PlaceableBehaviorApplier.Apply(
+                document.Root,
+                PlaceableBehaviorCatalog.None,
+                chair);
+            document.Root.GetOrNull("OnUsed")!.GetString().Should().Be("sit");
+
+            PlaceableBehaviorApplier
+                .ValuesLostBySwitching(
+                    document.Root,
+                    chair,
+                    PlaceableBehaviorCatalog.Custom)
+                .Should().BeEmpty(
+                    "entering the raw Custom editor does not discard the named behavior's wiring");
+
+            PlaceableBehaviorApplier.Apply(
+                document.Root,
+                chair,
+                PlaceableBehaviorCatalog.Custom);
+
+            document.Root.GetOrNull("OnUsed")!.GetString().Should().Be("sit",
+                "Custom must reveal the existing raw script rather than erase it");
         }
 
         [Test]
@@ -1259,6 +1317,25 @@ namespace SWLOR.Toolset.Tests
         private static PlaceableBehaviorField Field(string behaviorId, string variableName) =>
             PlaceableBehaviorCatalog.FindById(behaviorId)!.Fields
                 .Single(field => field.VariableName == variableName);
+
+        [Test]
+        public void ChoosingABehaviorInTheListMakesItTheCurrentOne()
+        {
+            var section = BuildBehaviorSection();
+            var doorBlocker = section.Items.Single(item =>
+                item.Behavior?.Id == "door_blocker");
+            var custom = section.Items.Single(item =>
+                item.Behavior?.Id == PlaceableBehaviorCatalog.CustomId);
+
+            section.SelectedItem = doorBlocker;
+            section.CurrentName.Should().Be(doorBlocker.Behavior!.Name);
+
+            // The list is the control; the pane is what it controls. A highlight that moves while
+            // the pane keeps the old behavior's name reads as the click not registering.
+            section.SelectedItem = custom;
+            section.CurrentName.Should().Be(PlaceableBehaviorCatalog.Custom.Name);
+            section.ShowsCustomFlags.Should().BeTrue();
+        }
 
         private static PlaceableBehaviorSectionViewModel BuildBehaviorSection()
         {

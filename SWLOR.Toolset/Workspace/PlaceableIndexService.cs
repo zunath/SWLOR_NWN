@@ -54,6 +54,7 @@ namespace SWLOR.Toolset.Workspace
                     Invalidate();
             };
 
+            _workspaceContext.TagIndexInvalidated += Invalidate;
             _workspaceContext.WorkspaceOpened += Invalidate;
         }
 

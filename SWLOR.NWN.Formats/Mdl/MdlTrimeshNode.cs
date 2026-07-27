@@ -12,6 +12,12 @@ public class MdlTrimeshNode : MdlNode
 
     public string Bitmap { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The mesh's authored diffuse colour. Untextured marker meshes (waypoint flags on
+    /// tcn01_white) are coloured entirely by this value, so consumers must not drop it.
+    /// </summary>
+    public Vector3 Diffuse { get; set; } = Vector3.One;
+
     public string Lightmap { get; set; } = string.Empty;
 
     public Vector3[] Vertices { get; set; } = Array.Empty<Vector3>();

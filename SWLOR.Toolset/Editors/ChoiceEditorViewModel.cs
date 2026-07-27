@@ -23,6 +23,12 @@ namespace SWLOR.Toolset.Editors
         [ObservableProperty]
         private string _freeText = string.Empty;
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasOptions))]
+        [NotifyPropertyChangedFor(nameof(IsFreeText))]
+        [NotifyPropertyChangedFor(nameof(Value))]
+        private IReadOnlyList<ArgumentOption> _options = Array.Empty<ArgumentOption>();
+
         public ArgumentEditorViewModel(
             SnippetArgument argument,
             string value,
@@ -30,10 +36,10 @@ namespace SWLOR.Toolset.Editors
             Action onChanged)
         {
             Argument = argument;
-            Options = options;
             _onChanged = onChanged;
 
             _loading = true;
+            _options = options;
             _freeText = value;
             _selected = options.FirstOrDefault(option => option.Value == value);
             _loading = false;
@@ -43,8 +49,6 @@ namespace SWLOR.Toolset.Editors
 
         public string Name => Argument.Name;
 
-        public IReadOnlyList<ArgumentOption> Options { get; }
-
         /// <summary>True when there is a real list to pick from; otherwise the box is free text.</summary>
         public bool HasOptions => Options.Count > 0;
 
@@ -52,6 +56,30 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>What would be written into the conversation.</summary>
         public string Value => HasOptions ? Selected?.Value ?? FreeText : FreeText;
+
+        /// <summary>
+        /// Rebuilds this argument's picker after an earlier sibling changes, preserving its stored
+        /// value even when that value is no longer in the newly selected option family.
+        /// </summary>
+        public void RefreshOptions(IReadOnlyList<ArgumentOption> options)
+        {
+            ArgumentNullException.ThrowIfNull(options);
+
+            var value = Value;
+            _loading = true;
+            try
+            {
+                Options = options;
+                FreeText = value;
+                Selected = options.FirstOrDefault(option => option.Value == value);
+            }
+            finally
+            {
+                _loading = false;
+            }
+
+            OnPropertyChanged(nameof(Value));
+        }
 
         partial void OnSelectedChanged(ArgumentOption? value)
         {
@@ -120,8 +148,12 @@ namespace SWLOR.Toolset.Editors
                     continue;
 
                 var value = i < values.Length ? values[i] : string.Empty;
+                var argumentIndex = i;
                 Arguments.Add(new ArgumentEditorViewModel(
-                    argument, value, options.For(argument, values), Commit));
+                    argument,
+                    value,
+                    options.For(argument, values),
+                    () => CommitArgument(argumentIndex)));
             }
 
             _loading = false;
@@ -164,7 +196,8 @@ namespace SWLOR.Toolset.Editors
             _loading = true;
             for (var i = 0; i < count; i++)
             {
-                var argument = Snippet.ArgumentAt(Arguments.Count);
+                var argumentIndex = Arguments.Count;
+                var argument = Snippet.ArgumentAt(argumentIndex);
                 if (argument == null)
                     break;
 
@@ -172,7 +205,7 @@ namespace SWLOR.Toolset.Editors
                     argument,
                     string.Empty,
                     _options.For(argument, Arguments.Select(item => item.Value).ToArray()),
-                    Commit));
+                    () => CommitArgument(argumentIndex)));
             }
             _loading = false;
 
@@ -207,6 +240,25 @@ namespace SWLOR.Toolset.Editors
         public (string Key, string Value) ToParam() =>
             (IsNegated && CanNegate ? "!" + Snippet.Key : Snippet.Key,
                 string.Join(' ', Arguments.Select(argument => argument.Value).Where(value => value.Length > 0)));
+
+        private void CommitArgument(int changedIndex)
+        {
+            if (_loading)
+                return;
+
+            var values = Arguments.Select(argument => argument.Value).ToArray();
+            for (var i = changedIndex + 1; i < Arguments.Count; i++)
+            {
+                var argument = Snippet.ArgumentAt(i);
+                if (argument == null)
+                    continue;
+
+                Arguments[i].RefreshOptions(_options.For(argument, values));
+                values[i] = Arguments[i].Value;
+            }
+
+            Commit();
+        }
 
         private void Commit()
         {

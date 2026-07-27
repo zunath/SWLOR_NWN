@@ -393,6 +393,7 @@ namespace SWLOR.Toolset.Domain.Documents
             RequireIndex(node);
 
             var copy = AddNode(node.Kind, node.Text);
+            copy.TextLocString.CopyFrom(node.TextLocString);
             copy.Speaker = node.Speaker;
             copy.Sound = node.Sound;
             copy.Animation = node.Animation;

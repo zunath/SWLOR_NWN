@@ -147,7 +147,8 @@ namespace SWLOR.Toolset.Editors.Placeables
                     PlaceableValueSource.SpawnTables => FromTableNames(_gameCode?.SpawnTableIds),
                     PlaceableValueSource.Quests => FromNames(_gameCode?.QuestIds),
                     PlaceableValueSource.Dialogs => FromNames(_gameCode?.DialogNames),
-                    PlaceableValueSource.ObjectTags => FromNames(_tags()?.Tags),
+                    PlaceableValueSource.ObjectTags => FromNames(
+                        _tags()?.TagsFor(ResourceType.Utw)),
                     PlaceableValueSource.KeyItems => FromIds(_gameCode?.KeyItems),
                     PlaceableValueSource.SkillTypes => FromIds(_gameCode?.SkillTypes),
                     PlaceableValueSource.MarketRegions => FromIds(_gameCode?.MarketRegions),

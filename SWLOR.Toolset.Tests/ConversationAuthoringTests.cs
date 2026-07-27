@@ -124,6 +124,20 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AnIncompleteRepeatingArgumentGroupIsBroken()
+        {
+            var document = NewConversation();
+            document.Openings[0].AddCondition("condition-all-skills", "1 10 2");
+
+            var problems = Analyzer.Analyze(document);
+
+            problems.Should().Contain(problem =>
+                problem.RuleId == "incomplete-repeat-group" &&
+                problem.Severity == ProblemSeverity.Broken &&
+                problem.Message.Contains("incomplete repeating set"));
+        }
+
+        [Test]
         public void ALineNothingLeadsToIsReportedWithItsText()
         {
             var document = DantHerbs();

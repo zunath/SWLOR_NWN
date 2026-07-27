@@ -10,6 +10,7 @@ using NUnit.Framework;
 using SWLOR.Toolset;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Editors;
+using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Shell.Views;
 using SWLOR.Toolset.Workspace;
 
@@ -125,13 +126,19 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
-        public void EditorChromeOmitsLexiconAndCanMinimizeTheOutline()
+        public void EditorChromeUsesIconsForOutlineAndContextualScriptSearch()
         {
             if (!File.Exists(SampleScript))
                 Assert.Ignore("module corpus not present");
 
             var viewModel = new ScriptEditorViewModel(
-                SampleScript, "dmfi_activate", new OutputLogService(), new StubPrompts());
+                SampleScript,
+                "dmfi_activate",
+                new OutputLogService(),
+                new StubPrompts(),
+                workspaceSearch: new ScriptSearchViewModel(
+                    Path.GetDirectoryName(SampleScript)!,
+                    (_, _) => { }));
 
             var view = new ScriptEditorView();
             var window = new Window { Content = view };
@@ -146,15 +153,33 @@ namespace SWLOR.Toolset.Tests
 
             buttonLabels.Should().NotContain(content =>
                 content!.Contains("Lexicon", StringComparison.OrdinalIgnoreCase));
+            buttonLabels.Should().NotContain(content =>
+                content!.Contains("Minimize", StringComparison.OrdinalIgnoreCase));
+            buttonLabels.Should().NotContain(content =>
+                content!.Equals("Show", StringComparison.OrdinalIgnoreCase));
 
             var outline = view.FindControl<ScrollViewer>("OutlineList")!;
+            var search = view.FindControl<Border>("WorkspaceSearchPanel")!;
+            var outlineToggle = view.FindControl<Button>("OutlineToggleButton")!;
+            var searchToggle = view.FindControl<Button>("WorkspaceSearchToggleButton")!;
+
+            outlineToggle.Content.Should().BeOfType<Grid>(
+                "outline collapse/expand should be an icon, not a text label");
+            searchToggle.Content.Should().BeOfType<Avalonia.Controls.Shapes.Path>(
+                "cross-script search should be represented by a search icon");
             outline.IsVisible.Should().BeTrue();
+            search.IsVisible.Should().BeFalse();
 
             viewModel.ToggleOutlineCommand.Execute(null);
             outline.IsVisible.Should().BeFalse();
 
             viewModel.ToggleOutlineCommand.Execute(null);
             outline.IsVisible.Should().BeTrue();
+
+            viewModel.ToggleWorkspaceSearchCommand.Execute(null);
+            search.IsVisible.Should().BeTrue();
+            outline.IsVisible.Should().BeFalse(
+                "cross-script results replace the outline within the active script editor");
         }
 
         [AvaloniaTest]

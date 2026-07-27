@@ -224,6 +224,34 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BackFromAnEndingRestoresTheLastNpcLine()
+        {
+            var document = DlgDocument.Load(_workingCopy);
+            var endingReply = document.AddReply("End this test conversation.");
+            foreach (var entry in document.Entries)
+                document.AddLink(entry, endingReply);
+            File.WriteAllBytes(_workingCopy, document.ToBytes());
+
+            using var editor = new Disposable(Open());
+            var offer = editor.Value.Situations.Single(row => row.Title == "Offering Field Tinctures");
+            editor.Value.SelectSituationCommand.Execute(offer);
+            var lastNpcLine = editor.Value.LineText;
+            var playerState = editor.Value.QuestPills
+                .ToDictionary(pill => pill.Name, pill => pill.SelectedOption);
+            var ending = editor.Value.Choices.First(choice => choice.Consequence == "ends the talk");
+
+            editor.Value.PickChoiceCommand.Execute(ending);
+            editor.Value.HasNoLine.Should().BeTrue();
+
+            editor.Value.BackCommand.Execute(null);
+
+            editor.Value.HasLine.Should().BeTrue();
+            editor.Value.LineText.Should().Be(lastNpcLine);
+            editor.Value.QuestPills.Should().OnlyContain(pill =>
+                pill.SelectedOption == playerState[pill.Name]);
+        }
+
+        [Test]
         public void ChangingAPillRedrawsTheConversation()
         {
             using var editor = new Disposable(Open());
@@ -312,6 +340,41 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void RemovingTheChoiceBeingEditedClosesItsRulesPanel()
+        {
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "On step 2 of Field Tinctures"));
+            var choice = editor.Value.Choices.Single(row => row.Text.Contains("hazard pay"));
+            editor.Value.EditChoiceCommand.Execute(choice);
+
+            editor.Value.RemoveChoiceCommand.Execute(choice);
+
+            editor.Value.IsEditingChoice.Should().BeFalse();
+            editor.Value.IsEditingRules.Should().BeFalse();
+            editor.Value.Guards.Should().BeEmpty();
+            editor.Value.Consequences.Should().BeEmpty();
+        }
+
+        [Test]
+        public void UndoingTheAdditionOfTheChoiceBeingEditedClosesItsRulesPanel()
+        {
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            editor.Value.AddChoiceCommand.Execute(null);
+            var choice = editor.Value.Choices.Last();
+            editor.Value.EditChoiceCommand.Execute(choice);
+
+            editor.Value.UndoCommand.Execute(null);
+
+            editor.Value.IsEditingChoice.Should().BeFalse();
+            editor.Value.IsEditingRules.Should().BeFalse();
+            editor.Value.Guards.Should().BeEmpty();
+            editor.Value.Consequences.Should().BeEmpty();
+        }
+
+        [Test]
         public void EditingAChoiceExposesItsGuardsAndConsequencesAsSentences()
         {
             using var editor = new Disposable(Open());
@@ -346,6 +409,36 @@ namespace SWLOR.Toolset.Tests
             reloaded = DlgDocument.Parse(File.ReadAllBytes(_workingCopy));
             reloaded.Replies.SelectMany(reply => reply.Actions)
                 .Should().Contain(action => action.Value == "harvest_herbs");
+        }
+
+        [Test]
+        public void SelectingAQuestRebuildsItsDependentStatePicker()
+        {
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            var choice = editor.Value.Choices[0];
+            editor.Value.EditChoiceCommand.Execute(choice);
+            editor.Value.GuardToAdd = Snippets.Find("condition-on-quest-state");
+            editor.Value.AddGuardCommand.Execute(null);
+            var guard = editor.Value.Guards.Single(rule =>
+                rule.Snippet.Key == "condition-on-quest-state");
+            var quest = guard.Arguments[0];
+            var state = guard.Arguments[1];
+
+            state.HasOptions.Should().BeFalse(
+                "no quest is selected when a new quest-state guard is first added");
+
+            quest.Selected = quest.Options.Single(option => option.Value == "field_tinctures");
+
+            state.HasOptions.Should().BeTrue();
+            state.IsFreeText.Should().BeFalse();
+            state.Options.Should().NotBeEmpty()
+                .And.OnlyContain(option => option.Label.StartsWith("Step "));
+
+            state.Selected = state.Options.Last();
+
+            guard.Param.Arguments.Should().Equal("field_tinctures", state.Selected.Value);
         }
 
         [Test]

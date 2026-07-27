@@ -243,6 +243,9 @@ internal sealed class AsciiMdlReader
                 case "lightmap" when node is MdlTrimeshNode mesh:
                     mesh.Lightmap = NullAsEmpty(RequiredToken(tokens, 1, line, "mesh lightmap"));
                     break;
+                case "diffuse" when node is MdlTrimeshNode mesh:
+                    mesh.Diffuse = Vector3Tokens(tokens, 1, line, "mesh diffuse");
+                    break;
                 case "deadspace" when node is MdlEmitterNode emitter:
                     emitter.DeadSpace = FloatToken(tokens, 1, line, "emitter dead space");
                     break;

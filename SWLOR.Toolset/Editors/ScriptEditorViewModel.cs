@@ -7,6 +7,7 @@ using SWLOR.Toolset.Domain.Script.Symbols;
 using SWLOR.Toolset.Domain.Script.Syntax;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
+using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors
@@ -52,7 +53,8 @@ namespace SWLOR.Toolset.Editors
             string resRef,
             OutputLogService log,
             IEditorPromptService prompts,
-            ScriptLanguageService? language = null)
+            ScriptLanguageService? language = null,
+            ScriptSearchViewModel? workspaceSearch = null)
         {
             _log = log;
             _prompts = prompts;
@@ -60,6 +62,7 @@ namespace SWLOR.Toolset.Editors
             _language = language;
             _completion = language?.CreateCompletionEngine();
             _analyzer = language != null ? new ScriptAnalyzer(language.Engine, language.ReadScriptSource) : null;
+            WorkspaceSearch = workspaceSearch;
             Id = $"editor:{filePath}";
             _session = ScriptSession.Open(filePath);
             _text = _session.Document.Text;
@@ -412,13 +415,27 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Functions declared in this file, for the outline strip.</summary>
         public ObservableCollection<ScriptFunctionDeclaration> OutlineFunctions { get; } = new();
 
+        /// <summary>Cross-file search scoped to this script editor; absent in isolated view-model tests.</summary>
+        public ScriptSearchViewModel? WorkspaceSearch { get; }
+
+        public bool HasWorkspaceSearch => WorkspaceSearch != null;
+
         [ObservableProperty]
         private bool _isOutlineCollapsed;
 
-        public string OutlineToggleLabel => IsOutlineCollapsed ? "Show" : "Minimize";
+        [ObservableProperty]
+        private bool _isWorkspaceSearchOpen;
+
+        public bool IsOutlineVisible => !IsOutlineCollapsed && !IsWorkspaceSearchOpen;
 
         partial void OnIsOutlineCollapsedChanged(bool value) =>
-            OnPropertyChanged(nameof(OutlineToggleLabel));
+            OnPropertyChanged(nameof(IsOutlineVisible));
+
+        partial void OnIsWorkspaceSearchOpenChanged(bool value) =>
+            OnPropertyChanged(nameof(IsOutlineVisible));
+
+        [RelayCommand(CanExecute = nameof(HasWorkspaceSearch))]
+        private void ToggleWorkspaceSearch() => IsWorkspaceSearchOpen = !IsWorkspaceSearchOpen;
 
         [RelayCommand]
         private void ToggleOutline() => IsOutlineCollapsed = !IsOutlineCollapsed;
@@ -682,6 +699,7 @@ namespace SWLOR.Toolset.Editors
                 DiagnosticsChanged = null;
             }
 
+            MutationLock = null;
             Closed?.Invoke(this);
             return base.OnClose();
         }

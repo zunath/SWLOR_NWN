@@ -15,22 +15,48 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
 
         public string Display { get; }
 
+        /// <summary>A texture this choice is pictured by: a load screen, a portrait.</summary>
         public string? ImageResRef { get; }
+
+        /// <summary>
+        /// A model this choice is pictured by, rendered rather than decoded. A waypoint's appearance
+        /// names one of these — <c>waypoint.2da</c> gives each row a marker model, and a builder
+        /// choosing between coloured flags and letters is choosing between pictures, not names.
+        /// </summary>
+        public string? ModelResRef { get; }
+
+        /// <summary>
+        /// Whether this option stands for "any of them" rather than for one of them — the load
+        /// screen row that leaves the choice to the destination area. It has no picture because
+        /// there is no one picture it means, which is different from a picture that failed to load,
+        /// and a picker that draws pictures has to say which of the two it is showing.
+        /// </summary>
+        public bool IsAny { get; init; }
 
         public bool IsStringValue => StringValue != null;
 
-        public BehaviorChoice(long value, string display, string? imageResRef = null)
+        public BehaviorChoice(
+            long value,
+            string display,
+            string? imageResRef = null,
+            string? modelResRef = null)
         {
             Value = value;
             Display = display;
             ImageResRef = imageResRef;
+            ModelResRef = modelResRef;
         }
 
-        public BehaviorChoice(string value, string display, string? imageResRef = null)
+        public BehaviorChoice(
+            string value,
+            string display,
+            string? imageResRef = null,
+            string? modelResRef = null)
         {
             StringValue = value ?? throw new ArgumentNullException(nameof(value));
             Display = display;
             ImageResRef = imageResRef;
+            ModelResRef = modelResRef;
         }
 
         public override string ToString() => Display;

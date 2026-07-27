@@ -48,7 +48,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         private List<BehaviorChoiceViewModel> _galleryMatches = new();
         private CancellationTokenSource? _searchDebounce;
         private int _galleryPublished;
-        private bool _galleryLoaded;
+        private bool _galleryBuilt;
         private bool _disposed;
         private bool _loading;
 
@@ -105,11 +105,31 @@ namespace SWLOR.Toolset.Editors.Behaviors
         public bool IsTextEntry => IsText || IsTagReference || IsLocalizedText;
 
         /// <summary>
-        /// True when the choices carry artwork, which the picker shows as a large preview plus a
-        /// searchable gallery rather than as a list of names. The load screens, the door
-        /// appearances, and the portraits all arrive this way.
+        /// True when the choices carry pictures, which the row shows as a searchable grid of them on
+        /// the page rather than as a list of names. The load screens, the door appearances, the
+        /// portraits, and the waypoint markers all arrive this way.
         /// </summary>
         public bool IsGallery => IsChoice && Choices.Any(choice => choice.HasArtwork);
+
+        /// <summary>
+        /// A gallery whose whole set fits on the page, shown there rather than behind a button. A
+        /// picture picker exists because the difference between its options is visible and not
+        /// sayable, so hiding it leaves the row showing exactly the names it was meant to replace.
+        /// </summary>
+        public bool IsInlineGallery => IsGallery && Choices.Count <= InlineGalleryLimit;
+
+        /// <summary>
+        /// A gallery too large to sit on the page — the portraits, which run to four figures. Its
+        /// preview opens the grid: the picture is the control, so there is nothing else to aim at.
+        /// </summary>
+        public bool IsPopupGallery => IsGallery && !IsInlineGallery;
+
+        /// <summary>
+        /// Option count past which a gallery moves off the page. Set where a grid stops being a part
+        /// of the form and starts being the form: a few rows of tiles a builder can take in at once,
+        /// against a set they can only search.
+        /// </summary>
+        protected virtual int InlineGalleryLimit => 120;
 
         /// <summary>
         /// A choice row the builder searches rather than scrolls. Declared per field, and forced on
@@ -213,20 +233,20 @@ namespace SWLOR.Toolset.Editors.Behaviors
         [ObservableProperty]
         private bool _isVisible = true;
 
-        /// <summary>The chosen option's artwork, shown large enough to actually judge.</summary>
+        [ObservableProperty]
+        private string _galleryQuery = string.Empty;
+
+        /// <summary>The chosen option's picture, shown large enough to actually judge.</summary>
         [ObservableProperty]
         private Bitmap? _selectedPreview;
 
         /// <summary>
-        /// Whether the gallery is showing. Bound rather than left to the flyout so that picking an
-        /// option can close it - a picker that stays open after you have chosen makes you dismiss it
-        /// yourself to see what you did.
+        /// Whether a popup gallery is showing. Bound rather than left to the flyout so that picking
+        /// an option can close it — a picker that stays open after you have chosen makes you dismiss
+        /// it yourself to see what you did.
         /// </summary>
         [ObservableProperty]
         private bool _isGalleryOpen;
-
-        [ObservableProperty]
-        private string _galleryQuery = string.Empty;
 
         public BehaviorRowViewModel(
             BehaviorFieldDefinition definition,
@@ -241,9 +261,10 @@ namespace SWLOR.Toolset.Editors.Behaviors
             RunEditFunc = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _valueChanged = valueChanged;
             _previews = previews;
-            // No artwork is decoded here. Building the rows used to decode every load screen -
-            // around thirty megabytes of DDS - before the tab could draw, which is what made
-            // switching to Area Transition stall.
+            // Wrapping the choices costs nothing: no picture is decoded or rendered until a tile
+            // that shows one exists, and then only for the page that has been published. Building
+            // the rows used to decode every load screen - around thirty megabytes of DDS - before
+            // the tab could draw, which is what made switching to Area Transition stall.
             Choices = BehaviorChoiceViewModel.From(choices ?? definition.Choices);
         }
 
@@ -267,6 +288,14 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 ChoiceSearchText = string.Empty;
 
             RebuildFilteredChoices();
+
+            // An inline grid is part of the row rather than something opened, so it is built with the
+            // row. Only the published page costs anything: the tiles beyond it are not realized and
+            // their pictures are not requested until the builder scrolls to them. A popup gallery
+            // still waits to be opened - four figures of portraits is not a page's worth of anything.
+            if (IsInlineGallery)
+                RebuildGallery();
+
             RefreshStatus();
             NotifyValueShapeChanged();
         }
@@ -371,17 +400,20 @@ namespace SWLOR.Toolset.Editors.Behaviors
         private void ClearSearch() => ChoiceSearchText = string.Empty;
 
         /// <summary>
-        /// Builds the gallery, once, when the picker is first opened. Until then the row has paid
-        /// for exactly one image - the one it is showing.
+        /// Opens a popup gallery, building it on the first open. Until then the row has paid for
+        /// exactly one picture — the one it is showing.
         /// </summary>
         [RelayCommand]
         private void OpenGallery()
         {
-            IsGalleryOpen = true;
-            if (_galleryLoaded)
+            if (!IsPopupGallery)
                 return;
 
-            _galleryLoaded = true;
+            IsGalleryOpen = true;
+            if (_galleryBuilt)
+                return;
+
+            _galleryBuilt = true;
             RebuildGallery();
         }
 
@@ -390,7 +422,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         partial void OnGalleryQueryChanged(string value)
         {
-            if (!_galleryLoaded)
+            if (!_galleryBuilt)
                 return;
 
             _searchDebounce?.Cancel();
@@ -421,13 +453,13 @@ namespace SWLOR.Toolset.Editors.Behaviors
             if (_disposed)
                 return;
 
+            _galleryBuilt = true;
             var words = (GalleryQuery ?? string.Empty)
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             _galleryMatches = Choices
                 .Where(candidate => words.All(word =>
                     candidate.Display.Contains(word, StringComparison.OrdinalIgnoreCase) ||
-                    (candidate.Choice.ImageResRef?.Contains(
-                        word, StringComparison.OrdinalIgnoreCase) ?? false)))
+                    (candidate.Detail?.Contains(word, StringComparison.OrdinalIgnoreCase) ?? false)))
                 .ToList();
             _galleryPublished = 0;
             GalleryChoices.Clear();
@@ -436,15 +468,16 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         private void PublishGalleryPage()
         {
-            if (_disposed || !_galleryLoaded)
+            if (_disposed || !_galleryBuilt)
                 return;
 
             var end = Math.Min(_galleryPublished + GalleryPageSize, _galleryMatches.Count);
             for (var index = _galleryPublished; index < end; index++)
             {
                 var choice = _galleryMatches[index];
+                choice.IsSelected = ReferenceEquals(choice, Choice);
                 GalleryChoices.Add(choice);
-                _ = LoadThumbnailAsync(choice);
+                RequestThumbnail(choice);
             }
 
             _galleryPublished = end;
@@ -452,61 +485,21 @@ namespace SWLOR.Toolset.Editors.Behaviors
             OnPropertyChanged(nameof(CanLoadMoreGallery));
         }
 
-        private async Task LoadThumbnailAsync(BehaviorChoiceViewModel choice)
+        private void RequestThumbnail(BehaviorChoiceViewModel choice)
         {
             if (_previews == null || !choice.HasArtwork || choice.Thumbnail != null)
                 return;
 
-            choice.Thumbnail =
-                _previews.Cached(choice.Choice.ImageResRef, ChoicePreviewService.ThumbnailWidth)
-                ?? await _previews
-                    .ResolveAsync(choice.Choice.ImageResRef, ChoicePreviewService.ThumbnailWidth)
-                    .ConfigureAwait(true);
-        }
-
-        /// <summary>
-        /// Which selection the large preview is being loaded for. Incremented on every request so a
-        /// slower earlier decode can tell that it has been overtaken.
-        /// </summary>
-        private int _previewGeneration;
-
-        /// <summary>
-        /// Loads the large picture for the current selection.
-        /// </summary>
-        /// <remarks>
-        /// Two uncached choices picked in quick succession decode independently, and whichever
-        /// finished last used to win - so a slow first load could land after a fast second one and
-        /// leave the panel showing artwork A while the field stored B. That is worse than a blank
-        /// panel: the builder is choosing by the picture. A result is now published only if its
-        /// request is still the current one.
-        /// </remarks>
-        private async Task LoadSelectedPreviewAsync(BehaviorChoiceViewModel? choice)
-        {
-            var generation = ++_previewGeneration;
-
-            if (_previews == null || choice == null || !choice.HasArtwork)
+            if (_previews.Cached(choice.Choice, ChoicePreviewService.ThumbnailWidth) is { } cached)
             {
-                SelectedPreview = null;
+                choice.Thumbnail = cached;
                 return;
             }
 
-            var cached = _previews.Cached(choice.Choice.ImageResRef, ChoicePreviewService.PreviewWidth);
-            if (cached != null)
-            {
-                SelectedPreview = cached;
-                return;
-            }
-
-            // Cleared while the decode runs, so the panel does not keep showing the previous choice's
-            // artwork under the new choice's name.
-            SelectedPreview = null;
-
-            var loaded = await _previews
-                .ResolveAsync(choice.Choice.ImageResRef, ChoicePreviewService.PreviewWidth)
-                .ConfigureAwait(true);
-
-            if (generation == _previewGeneration)
-                SelectedPreview = loaded;
+            _ = _previews.RequestAsync(
+                choice.Choice,
+                ChoicePreviewService.ThumbnailWidth,
+                bitmap => choice.Thumbnail = bitmap);
         }
 
         public void Dispose()
@@ -560,15 +553,71 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         /// <summary>Called whenever the selected choice changes, including during a reload.</summary>
         /// <remarks>
-        /// Decodes one image, not the whole set: the chosen option is the only one on screen until
-        /// the gallery is opened.
+        /// A popup gallery resolves one picture, not the whole set: the chosen option is the only
+        /// one on screen until the grid is opened.
         /// </remarks>
         protected virtual void OnChoiceSelected(BehaviorChoiceViewModel? value)
         {
             OnPropertyChanged(nameof(SelectedChoiceDisplay));
 
-            if (IsGallery)
+            if (!IsGallery)
+                return;
+
+            // The grid marks what is stored rather than restating it underneath, so the tile a
+            // builder is looking at is the answer to "which one is this".
+            foreach (var choice in Choices)
+                choice.IsSelected = ReferenceEquals(choice, value);
+
+            if (IsPopupGallery)
                 _ = LoadSelectedPreviewAsync(value);
+        }
+
+        /// <summary>
+        /// Which selection the large preview is being loaded for. Incremented on every request so a
+        /// slower earlier resolve can tell that it has been overtaken.
+        /// </summary>
+        private int _previewGeneration;
+
+        /// <summary>
+        /// Loads the large picture for the current selection.
+        /// </summary>
+        /// <remarks>
+        /// Two uncached choices picked in quick succession resolve independently, and whichever
+        /// finished last used to win - so a slow first load could land after a fast second one and
+        /// leave the panel showing artwork A while the field stored B. That is worse than a blank
+        /// panel: the builder is choosing by the picture. A result is now published only if its
+        /// request is still the current one.
+        /// </remarks>
+        private async Task LoadSelectedPreviewAsync(BehaviorChoiceViewModel? choice)
+        {
+            var generation = ++_previewGeneration;
+
+            if (_previews == null || choice == null || !choice.HasArtwork)
+            {
+                SelectedPreview = null;
+                return;
+            }
+
+            if (_previews.Cached(choice.Choice, ChoicePreviewService.PreviewWidth) is { } cached)
+            {
+                SelectedPreview = cached;
+                return;
+            }
+
+            // Cleared while the picture is resolved, so the panel does not keep showing the previous
+            // choice's artwork under the new choice's name.
+            SelectedPreview = null;
+
+            await _previews
+                .RequestAsync(
+                    choice.Choice,
+                    ChoicePreviewService.PreviewWidth,
+                    bitmap =>
+                    {
+                        if (generation == _previewGeneration)
+                            SelectedPreview = bitmap;
+                    })
+                .ConfigureAwait(true);
         }
 
         private void Apply(Action mutation, string? description = null)

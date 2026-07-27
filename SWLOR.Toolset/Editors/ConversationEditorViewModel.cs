@@ -260,6 +260,17 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand]
         private void Back()
         {
+            if (_currentLine == null)
+            {
+                if (_trail.Count == 0)
+                    return;
+
+                _player = _trail[^1].Player.Clone();
+                SyncPillsFromPlayer();
+                ShowLine(_trail[^1].Line);
+                return;
+            }
+
             if (_trail.Count <= 1)
                 return;
 
@@ -376,7 +387,7 @@ namespace SWLOR.Toolset.Editors
             var cost = _dialog.EstimateRemoveNode(target);
 
             if (ReferenceEquals(EditingChoice, choice))
-                EditingChoice = null;
+                CloseRulesEditor();
 
             RunEdit("Remove a choice", () =>
             {
@@ -767,7 +778,14 @@ namespace SWLOR.Toolset.Editors
             }
 
             var previous = EditingChoice.Link.Struct;
-            EditingChoice = Choices.FirstOrDefault(choice => ReferenceEquals(choice.Link.Struct, previous));
+            var restored = Choices.FirstOrDefault(choice => ReferenceEquals(choice.Link.Struct, previous));
+            if (restored == null)
+            {
+                CloseRulesEditor();
+                return;
+            }
+
+            EditingChoice = restored;
             RefreshSnippetEditors();
         }
 

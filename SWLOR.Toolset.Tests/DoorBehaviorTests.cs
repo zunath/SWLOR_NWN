@@ -331,8 +331,39 @@ namespace SWLOR.Toolset.Tests
             var destination = editor.BehaviorRows.Single(row => row.Definition.Name == "LinkedTo");
 
             destination.IsStatusGood.Should().BeFalse();
-            destination.Status.Should().Contain("no door or waypoint");
+            destination.Status.Should().Contain("destination type is unset");
             destination.Status.Should().Contain("will do nothing");
+        }
+
+        [TestCase(1, BehaviorTagScope.Door, BehaviorTagScope.Waypoint, "no door")]
+        [TestCase(2, BehaviorTagScope.Waypoint, BehaviorTagScope.Door, "no waypoint")]
+        public void TransitionRowsResolveOnlyAgainstTheSelectedDestinationKind(
+            int linkedToFlags,
+            BehaviorTagScope selectedScope,
+            BehaviorTagScope oppositeScope,
+            string expectedWarning)
+        {
+            var door = NewDoor();
+            var store = Store(door);
+            store.SetString(
+                BehaviorFieldStorage.Field, "LinkedTo", GffFieldType.CExoString, "shared_tag");
+            store.SetInteger(
+                BehaviorFieldStorage.Field, "LinkedToFlags", GffFieldType.Byte, linkedToFlags);
+            var requestedScopes = new List<BehaviorTagScope>();
+
+            var editor = Editor(
+                door,
+                isInstance: true,
+                resolveTag: (scope, _) =>
+                {
+                    requestedScopes.Add(scope);
+                    return scope == oppositeScope ? "opposite-kind destination" : null;
+                });
+            var destination = editor.BehaviorRows.Single(row => row.Definition.Name == "LinkedTo");
+
+            requestedScopes.Should().Equal(selectedScope);
+            destination.IsStatusGood.Should().BeFalse();
+            destination.Status.Should().Contain(expectedWarning);
         }
 
         [Test]
@@ -419,12 +450,44 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void ArtworkChoicesAreLazyAndPaged()
+        public void ASmallPictureSetIsShownOnThePageAndPaged()
         {
-            var choices = Enumerable.Range(0, 60)
-                .Select(index => new BehaviorChoice(index, $"Portrait {index}", $"portrait_{index}"))
-                .ToList();
-            using var row = new DoorRowViewModel(
+            using var row = PictureRow(60);
+
+            row.IsGallery.Should().BeTrue();
+            row.IsInlineGallery.Should().BeTrue("a set this size fits on the page");
+            row.IsPopupGallery.Should().BeFalse();
+
+            // On the page, but still paged: the tiles past the first page are not realized and their
+            // pictures are not requested until the builder scrolls to them.
+            row.GalleryChoices.Should().HaveCount(48);
+            row.LoadMoreGalleryCommand.Execute(null);
+            row.GalleryChoices.Should().HaveCount(60);
+        }
+
+        [Test]
+        public void ALargePictureSetStaysBehindItsPreviewUntilOpened()
+        {
+            using var row = PictureRow(400);
+
+            row.IsInlineGallery.Should().BeFalse("four hundred tiles is not a page's worth of row");
+            row.IsPopupGallery.Should().BeTrue();
+            row.GalleryChoices.Should().BeEmpty("opening the editor must not realize portrait tiles");
+
+            row.OpenGalleryCommand.Execute(null);
+            row.IsGalleryOpen.Should().BeTrue();
+            row.GalleryChoices.Should().HaveCount(48);
+
+            // Picking closes it: a picker left open after the choice makes you dismiss it yourself
+            // to see what you did.
+            row.PickChoiceCommand.Execute(row.GalleryChoices[3]);
+            row.IsGalleryOpen.Should().BeFalse();
+            row.Choice!.Display.Should().Be("Portrait 3");
+            row.GalleryChoices[3].IsSelected.Should().BeTrue();
+        }
+
+        private static DoorRowViewModel PictureRow(int count) =>
+            new(
                 new DoorFieldDefinition
                 {
                     Label = "Portrait",
@@ -437,16 +500,9 @@ namespace SWLOR.Toolset.Tests
                 null,
                 _ => { },
                 _ => { },
-                choices);
-
-            row.IsGallery.Should().BeTrue();
-            row.GalleryChoices.Should().BeEmpty("opening the editor must not realize portrait tiles");
-
-            row.OpenGalleryCommand.Execute(null);
-            row.GalleryChoices.Should().HaveCount(48);
-            row.LoadMoreGalleryCommand.Execute(null);
-            row.GalleryChoices.Should().HaveCount(60);
-        }
+                Enumerable.Range(0, count)
+                    .Select(index => new BehaviorChoice(index, $"Portrait {index}", $"portrait_{index}"))
+                    .ToList());
 
         [Test]
         public void TheLayoutKeepsEngineNoiseOutAndRawBehaviorFlagsUnderCustom()

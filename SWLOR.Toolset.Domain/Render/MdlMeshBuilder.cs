@@ -8,19 +8,73 @@ namespace SWLOR.Toolset.Domain.Render
     /// <summary>Renderable triangle data and transform metadata for one MDL mesh node.</summary>
     public sealed class RenderMesh
     {
-        public string NodeName { get; init; } = string.Empty;
-        public string TextureName { get; init; } = string.Empty;
-        public float[] Positions { get; init; } = Array.Empty<float>();
-        public float[] Normals { get; init; } = Array.Empty<float>();
-        public float[] TexCoords { get; init; } = Array.Empty<float>();
-        public int[] Indices { get; init; } = Array.Empty<int>();
-        public Matrix4x4 Transform { get; init; } = Matrix4x4.Identity;
+        /// <summary>Source MDL node name (for diagnostics/debugging, not guaranteed unique).</summary>
+        public required string NodeName { get; init; }
+
+        /// <summary>
+        /// Lowercased primary texture (bitmap) resref for this mesh, or empty when the mesh has
+        /// no bitmap assigned (e.g. a "NULL" bitmap in the source MDL).
+        /// </summary>
+        public required string TextureName { get; init; }
+
+        /// <summary>Vertex positions in node-local space, 3 floats (x, y, z) per vertex.</summary>
+        public required float[] Positions { get; init; }
+
+        /// <summary>
+        /// Vertex normals, 3 floats (x, y, z) per vertex, parallel to <see cref="Positions"/>.
+        /// Empty when the source mesh had no normal array or a mismatched count.
+        /// </summary>
+        public required float[] Normals { get; init; }
+
+        /// <summary>
+        /// Primary UV set, 2 floats (u, v) per vertex, parallel to <see cref="Positions"/>.
+        /// Empty when the source mesh had no UV set or a mismatched count.
+        /// </summary>
+        public required float[] TexCoords { get; init; }
+
+        /// <summary>Triangle face indices into the vertex arrays above, 3 ints per face.</summary>
+        public required int[] Indices { get; init; }
+
+        /// <summary>
+        /// The node's MDL diffuse colour, which multiplies the texture rather than replacing it.
+        /// White for the great majority of meshes, and for any that do not state one.
+        /// </summary>
+        /// <remarks>
+        /// Carried because for some models it is the only colour there is. Every waypoint marker in
+        /// the haks - the cyan flag, the orange one, the treasure chest - is drawn on
+        /// <c>tcn01_white</c> and coloured entirely by this, so a pipeline that samples the texture
+        /// alone renders the whole set as identical white shapes.
+        /// </remarks>
+        public Vector3 DiffuseColor { get; init; } = Vector3.One;
+
+        /// <summary>
+        /// The source node's MDL <c>tilefade</c> flag: 0 for geometry that is always drawn, non-zero
+        /// for geometry the engine fades out when the camera would otherwise be looking through it.
+        /// </summary>
+        /// <remarks>
+        /// This is how a tileset marks what is overhead. Every <c>ceilling*</c> node of the zsf01
+        /// interior tiles carries tilefade 1, as does the high <c>treefol_01</c> canopy shell of the
+        /// ttw01 forest tiles - and nothing at floor or wall height does. Aurora's area view drops all
+        /// of it, which is why a builder can see into rooms from above and see the forest floor at all;
+        /// see <c>GlAreaControl.ShowCeilings</c>.
+        /// </remarks>
+        public int TileFade { get; init; }
+
+        /// <summary>
+        /// Accumulated node-to-model transform: this node's own SRT composed with every ancestor
+        /// up to (but not including) a transform for the model root itself. See
+        /// <see cref="MdlMeshBuilder.ComposeNodeTransform"/>.
+        /// </summary>
+        public required Matrix4x4 Transform { get; init; }
+
+        /// <summary>
+        /// This mesh's node-to-model transform at each frame of the idle, or empty when the model has
+        /// no idle to play. <see cref="Transform"/> is the last of them - where the animation comes to
+        /// rest - so anything that wants the settled model rather than the playback uses that.
+        /// </summary>
         public IReadOnlyList<Matrix4x4> PoseFrames { get; init; } = Array.Empty<Matrix4x4>();
         public IReadOnlyDictionary<string, IReadOnlyList<Matrix4x4>> AnimationFrames { get; init; } =
             new Dictionary<string, IReadOnlyList<Matrix4x4>>(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>The source mesh's signed Aurora <c>tilefade</c> value.</summary>
-        public int TileFade { get; init; }
 
         public int VertexCount => Positions.Length / 3;
         public int TriangleCount => Indices.Length / 3;
@@ -253,6 +307,7 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 NodeName = mesh.Name,
                 TextureName = NormalizeTextureName(mesh.Bitmap),
+                DiffuseColor = ReadDiffuse(mesh),
                 Positions = positions,
                 Normals = normals,
                 TexCoords = texCoords,
@@ -263,6 +318,17 @@ namespace SWLOR.Toolset.Domain.Render
                 TileFade = mesh.TileFade
             };
         }
+
+        /// <summary>
+        /// The node's diffuse colour, with an all-zero one read as unstated rather than as black.
+        /// </summary>
+        /// <remarks>
+        /// The zeros in this module's content are untextured helper planes - a five-vertex
+        /// <c>base</c> node with a NULL bitmap - and multiplying a preview to nothing on their
+        /// account would be reading "no colour given" as "paint it black".
+        /// </remarks>
+        private static Vector3 ReadDiffuse(MdlTrimeshNode trimesh) =>
+            trimesh.Diffuse == Vector3.Zero ? Vector3.One : trimesh.Diffuse;
 
         private static RenderEmitter BuildEmitter(
             MdlEmitterNode emitter,

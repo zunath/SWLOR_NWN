@@ -101,6 +101,60 @@
   <!-- Dock draws a dotted drag grip beside each panel title, and styling this control beyond its
        background is not worth it: BorderThickness here collapses the docks that follow. -->
 
+  <!-- ===================== left rail tool tabs ===================== -->
+  <!--
+    The left rail's tabs sit above their panel and are its title bar - see Shell/Controls/
+    RailToolTabs.cs, which moves them and adds the "rail" class. Every other tool dock keeps Dock's
+    own tabs at the bottom, so all of this is scoped to that class.
+
+    Set in the same small-caps monospace panel titles use, because that is what these are now: the
+    two tabs name the furniture, and the panels no longer repeat their own name underneath.
+  -->
+  <Style Selector="ToolTabStrip.rail">
+    <Setter Property="Background" Value="{DynamicResource PanelHeaderBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+  </Style>
+
+  <Style Selector="ToolTabStrip.rail ToolTabStripItem">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Padding" Value="14,9" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,1,0" />
+  </Style>
+
+  <!-- Tracking is the half of the panel-title look that has to land on the text itself:
+       LetterSpacing is a TextBlock property, and the tab item has nowhere to put it. -->
+  <Style Selector="ToolTabStrip.rail ToolTabStripItem TextBlock">
+    <Setter Property="LetterSpacing" Value="1.4" />
+  </Style>
+
+  <!--
+    The selected tab joins the panel below it. Dock's own selected state draws "1 0 1 1" - open at
+    the top, closed at the bottom - which is right for tabs that sit under their panel and exactly
+    backwards for tabs that sit over one: it drew a line between the tab and the thing it belongs to.
+    The accent edge goes on the same side for the same reason.
+  -->
+  <Style Selector="ToolTabStrip.rail ToolTabStripItem:selected">
+    <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AccentInkBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,1,2" />
+    <Setter Property="Padding" Value="14,9,14,7" />
+  </Style>
+
+  <Style Selector="ToolTabStrip.rail ToolTabStripItem:pointerover">
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+  </Style>
+
+  <Style Selector="ToolTabStrip.rail ToolTabStripItem:selected:pointerover">
+    <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
 <!-- ===================== rows ===================== -->
   <Style Selector="ListBoxItem">
     <Setter Property="Padding" Value="8,3" />
@@ -406,6 +460,34 @@
 
   <Style Selector="Button.close:pointerover Path">
     <Setter Property="Fill" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
+  <!-- Compact icon-only editor utility actions. Tooltips carry the accessible action name while the
+       chrome stays scannable at the narrow widths where text links crowd out document actions. -->
+  <Style Selector="Button.utility-icon">
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Padding" Value="5" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="Button.utility-icon Path">
+    <Setter Property="Width" Value="12" />
+    <Setter Property="Height" Value="12" />
+    <Setter Property="Stretch" Value="Uniform" />
+    <Setter Property="Fill" Value="{DynamicResource InkSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="Button.utility-icon:pointerover Path">
+    <Setter Property="Fill" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
+  <Style Selector="Button.utility-icon.active /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
   </Style>
 
   <!-- Dock's close controls are real Buttons, so the broad Button style above otherwise gives their

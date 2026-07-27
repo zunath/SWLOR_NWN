@@ -44,14 +44,17 @@ namespace SWLOR.Toolset.Workspace
 
             var affectsTagIndex = AffectsTagIndex(path);
             var affectsScriptUsages = AffectsScriptUsages(path);
+            var affectsPaletteChoices = TryResolvePalette(path, out var paletteResRef);
             var resolved = TryResolveResource(path, out var type, out var resRef);
-            if (!affectsTagIndex && !affectsScriptUsages && !resolved)
+            if (!affectsTagIndex && !affectsScriptUsages && !affectsPaletteChoices && !resolved)
                 return;
 
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
                 if (affectsTagIndex)
                     _workspaceContext.InvalidateTagIndex();
+                if (affectsPaletteChoices)
+                    _workspaceContext.InvalidatePaletteChoices(paletteResRef);
 
                 // Resolved scripted resources invalidate through Refresh/Remove below. GIT has no
                 // ResourceType, so its placed-instance script slots need the direct path.
@@ -96,6 +99,22 @@ namespace SWLOR.Toolset.Workspace
 
             return TryResolveResource(path, out var type, out _) &&
                    Domain.Script.ScriptUsageIndex.ScriptedTypes.Contains(type);
+        }
+
+        /// <summary>
+        /// Reads a module ITP JSON path as its palette resref. ITP is not a first-class
+        /// <see cref="ResourceType"/>, so it needs an explicit watcher path.
+        /// </summary>
+        public static bool TryResolvePalette(string path, out string paletteResRef)
+        {
+            paletteResRef = string.Empty;
+            var fileName = Path.GetFileName(path);
+            if (!fileName.EndsWith(".itp.json", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            paletteResRef = Path.GetFileNameWithoutExtension(
+                Path.GetFileNameWithoutExtension(fileName));
+            return !string.IsNullOrWhiteSpace(paletteResRef);
         }
 
         /// <summary>

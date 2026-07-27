@@ -1,3 +1,4 @@
+using Avalonia.Headless.NUnit;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Conversations;
@@ -106,6 +107,58 @@ namespace SWLOR.Toolset.Tests
             var hits = DialogueSearch.Search(Path.Combine(_root, "dlg"), "veldite");
 
             hits.Select(hit => hit.ResRef).Should().ContainSingle().Which.Should().Be("mining");
+        }
+
+        [AvaloniaTest]
+        public async Task SavingAConversationInvalidatesHitsForTheSameQuery()
+        {
+            WriteConversation("greeting", "Nothing to see here.");
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            workspace.Open(_root);
+            var explorer = new ModuleExplorerViewModel(
+                workspace,
+                new PropertiesViewModel(workspace, log),
+                new CategoryService(workspace, log),
+                log)
+            {
+                SelectedType = ResourceType.Dlg,
+                SearchDialogueText = true
+            };
+            explorer.Initialize();
+            explorer.Filter = "veldite";
+
+            await WaitUntilAsync(() => !explorer.IsSearchingDialogue);
+            ContainsResRef(explorer.Rows, "greeting").Should().BeFalse();
+
+            WriteConversation("greeting", "The Veldite seam runs deep.");
+            workspace.RefreshCatalogEntry(ResourceType.Dlg, "greeting");
+
+            explorer.IsSearchingDialogue.Should().BeTrue(
+                "a DLG refresh must invalidate and requeue the cached same-query scan");
+            await WaitUntilAsync(() => !explorer.IsSearchingDialogue);
+            ContainsResRef(explorer.Rows, "greeting").Should().BeTrue();
+        }
+
+        private static bool ContainsResRef(
+            IEnumerable<ExplorerNodeViewModel> rows,
+            string resRef)
+        {
+            return rows.Any(row =>
+                (row.Item != null && row.Item.ResRef == resRef) ||
+                ContainsResRef(row.Children, resRef));
+        }
+
+        private static async Task WaitUntilAsync(Func<bool> condition)
+        {
+            var deadline = DateTime.UtcNow.AddSeconds(5);
+            while (!condition())
+            {
+                if (DateTime.UtcNow >= deadline)
+                    Assert.Fail("Timed out waiting for the dialogue search to settle.");
+
+                await Task.Delay(25);
+            }
         }
 
         private void WriteConversation(string resRef, string line)

@@ -194,6 +194,7 @@ namespace SWLOR.Toolset.Editors
             };
             _workspaceContext.CatalogEntryRefreshed += (_, _) =>
                 _behaviorValues?.InvalidateModuleSources();
+            _workspaceContext.PaletteChoicesInvalidated += InvalidatePaletteChoices;
         }
 
         /// <summary>
@@ -318,7 +319,21 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                var editor = new ScriptEditorViewModel(filePath, resRef, _log, _prompts, _scriptLanguage)
+                var editor = new ScriptEditorViewModel(
+                    filePath,
+                    resRef,
+                    _log,
+                    _prompts,
+                    _scriptLanguage,
+                    new Shell.Panels.ScriptSearchViewModel(
+                        Path.Combine(workspace.ModuleRoot, "nss"),
+                        NavigateToScriptLine,
+                        scriptResRef =>
+                            _openScriptEditors.TryGetValue(
+                                workspace.GetResourcePath(ResourceType.Nss, scriptResRef),
+                                out var openEditor)
+                                ? openEditor.TextBinding
+                                : null))
                 {
                     // The tab's own Compile button writes a .ncs, so it follows the same module-wide
                     // lock that the Build menu does.
@@ -568,6 +583,7 @@ namespace SWLOR.Toolset.Editors
                 var indexes = _placeableIndexes;
                 void OnIndexUpdated()
                 {
+                    appearance.RefreshUsage();
                     values.InvalidateModuleSources();
                     behavior.RefreshChoiceSources();
                 }
@@ -793,7 +809,8 @@ namespace SWLOR.Toolset.Editors
         private void OpenTriggerEditor(string filePath, string resRef)
         {
             var editor = new Triggers.TriggerDocumentViewModel(
-                filePath, resRef, _gameCodeIndex, _log, _prompts, ResolveTagArea, ResolveTriggerChoices,
+                filePath, resRef, _gameCodeIndex, _log, _prompts, ResolveTriggerTagArea,
+                ResolveTriggerChoices,
                 ChoicePreviews());
             editor.Closed += _ => _openTriggerEditors.Remove(filePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
@@ -835,7 +852,8 @@ namespace SWLOR.Toolset.Editors
                     _log,
                     _prompts,
                     catalog,
-                    ResolveWaypointChoices);
+                    ResolveWaypointChoices,
+                    ChoicePreviews());
                 editor.Closed += _ => _openWaypointEditors.Remove(filePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
@@ -883,7 +901,7 @@ namespace SWLOR.Toolset.Editors
             _doorAppearances ??= Domain.Editors.Doors.DoorAppearanceCatalog.Read(_doorTypes);
 
         private Behaviors.ChoicePreviewService ChoicePreviews() =>
-            _choicePreviews ??= new Behaviors.ChoicePreviewService(_resourceIndex);
+            _choicePreviews ??= new Behaviors.ChoicePreviewService(_resourceIndex, _thumbnails);
 
         /// <summary>
         /// One option set, built on first use and kept. Every one of these is a 2DA read, a palette
@@ -902,6 +920,47 @@ namespace SWLOR.Toolset.Editors
             var built = build(key);
             _choiceSets[cacheKey] = built;
             return built;
+        }
+
+        private void InvalidatePaletteChoices(string paletteResRef)
+        {
+            switch (paletteResRef.ToLowerInvariant())
+            {
+                case "doorpalcus":
+                    _choiceSets.Remove(
+                        "door:" + Domain.Editors.Doors.DoorChoiceKeys.DoorPaletteCategories);
+                    foreach (var editor in _openDoorEditors.Values)
+                        editor.Editor.RefreshPaletteChoices();
+                    foreach (var section in _openAreaEditors.Values.SelectMany(editor => editor.Sections)
+                                 .Where(section => section.BlueprintType == ResourceType.Utd))
+                    {
+                        section.RefreshPaletteChoices();
+                    }
+                    break;
+                case "soundpalcus":
+                    _choiceSets.Remove(
+                        "sound:" + Domain.Editors.Sounds.SoundChoiceKeys.PaletteCategories);
+                    foreach (var editor in _openSoundEditors.Values)
+                        editor.Editor.RefreshPaletteChoices();
+                    foreach (var section in _openAreaEditors.Values.SelectMany(editor => editor.Sections)
+                                 .Where(section => section.BlueprintType == ResourceType.Uts))
+                    {
+                        section.RefreshPaletteChoices();
+                    }
+                    break;
+                case "triggerpalcus":
+                    _choiceSets.Remove(
+                        "trigger:" + Domain.Editors.Triggers.TriggerChoiceKeys.PaletteCategories);
+                    foreach (var editor in _openTriggerEditors.Values)
+                        editor.Editor.RefreshPaletteChoices();
+                    break;
+                case "waypointpalcus":
+                    _choiceSets.Remove(
+                        "waypoint:" + Domain.Editors.Waypoints.WaypointChoiceKeys.PaletteCategories);
+                    foreach (var editor in _openWaypointEditors.Values)
+                        editor.Editor.RefreshPaletteChoices();
+                    break;
+            }
         }
 
         private IReadOnlyList<BehaviorChoice> ResolveDoorChoices(string key) =>
@@ -1103,12 +1162,10 @@ namespace SWLOR.Toolset.Editors
             if (key == Domain.Editors.Waypoints.WaypointChoiceKeys.PaletteCategories)
                 return ResolveWaypointCategories();
 
+            // Not routed through the shared lookup: the picker draws each marker's model, and the
+            // generic 2DA lookup returns labels only.
             if (key == Domain.Editors.Waypoints.WaypointChoiceKeys.Appearances)
-                return _waypointAppearances == null
-                    ? Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>()
-                    : _waypointAppearances.GetAll()
-                    .Select(row => new Domain.Editors.Behaviors.BehaviorChoice(row.Id, row.DisplayName))
-                    .ToList();
+                return Domain.Editors.Waypoints.WaypointAppearanceCatalog.Read(_waypointAppearances);
 
             return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
         }
@@ -1137,13 +1194,27 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Names the area a waypoint or door tag lives in, or null when nothing defines it — what
-        /// puts a tick or a cross beside a transition's destination.
+        /// Names the area a tag lives in for the destination kind selected by a trigger transition.
+        /// Stores and the other destination kind deliberately do not satisfy this lookup.
         /// </summary>
-        private string? ResolveTagArea(string tag) =>
-            _workspaceContext.Workspace == null || string.IsNullOrWhiteSpace(tag)
-                ? null
-                : _workspaceContext.Workspace.TagIndex.FindAreaDefiningTag(tag);
+        private string? ResolveTriggerTagArea(
+            Domain.Editors.Behaviors.BehaviorTagScope scope,
+            string tag)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null || string.IsNullOrWhiteSpace(tag))
+                return null;
+
+            return scope switch
+            {
+                Domain.Editors.Behaviors.BehaviorTagScope.Waypoint =>
+                    workspace.TagIndex.FindAreaDefiningTag(tag, ResourceType.Utw),
+                Domain.Editors.Behaviors.BehaviorTagScope.Door =>
+                    workspace.TagIndex.FindAreaDefiningTag(tag, ResourceType.Utd),
+                _ => null
+            };
+        }
+
         /// <summary>
         /// Conversations open in the Play-it editor. The 255 <c>dialogN</c> shells are refused: they
         /// are generated for the C# <c>Dialog</c> service's runtime menus and editing one by hand

@@ -13,30 +13,33 @@
     <!-- Shared editor field templates: one app-wide copy for every blueprint/area field
          editor, formerly duplicated verbatim in BlueprintEditorView and AreaEditorView. Listed
          before the ViewLocator catch-all. -->
+    <!-- The strref is a watermark rather than a column. It exists to explain a blank box - the name
+         comes from the TLK and this field edits the override - and as a column it was a line of grey
+         text as wide as the box it explained, on every row, whether or not the box was blank. A
+         description then got what was left, which was a couple of characters. -->
     <DataTemplate DataType="editors:LocStringFieldViewModel">
-      <Grid ColumnDefinitions="180,*,Auto" Margin="0,2">
+      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" Margin="0,2">
         <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Top" Margin="0,5,0,0"
                    Classes="dim" TextTrimming="CharacterEllipsis" />
         <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
-                 IsVisible="{Binding IsSingleLine}" />
+                 Watermark="{Binding StrRefDisplay}" IsVisible="{Binding IsSingleLine}" />
         <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
+                 Watermark="{Binding StrRefDisplay}"
                  IsVisible="{Binding IsMultiline}" AcceptsReturn="True" TextWrapping="Wrap"
-                 MinHeight="120" VerticalContentAlignment="Top"
+                 MinHeight="140" VerticalContentAlignment="Top"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
-        <TextBlock Grid.Column="2" Text="{Binding StrRefDisplay}" Classes="count"
-                   VerticalAlignment="Top" Margin="6,5,0,0" />
       </Grid>
     </DataTemplate>
 
     <!-- Every behavior editor's row, from one control. The trigger, waypoint, door and sound
          editors each used to carry their own copy of this markup. -->
     <DataTemplate DataType="behaviors:BehaviorRowViewModel">
-      <behaviors:BehaviorRowView Margin="16,1" />
+      <behaviors:BehaviorRowView Margin="4,1" />
     </DataTemplate>
 
     <DataTemplate DataType="editors:CheckFieldViewModel">
-      <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto" Margin="0,2">
+      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" RowDefinitions="Auto,Auto" Margin="0,2">
         <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
                    Classes="dim" TextTrimming="CharacterEllipsis" />
         <CheckBox Grid.Column="1" IsChecked="{Binding IsChecked, Mode=TwoWay}" IsEnabled="{Binding !IsReadOnly}" />
@@ -47,7 +50,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="editors:IntegerFieldViewModel">
-      <Grid ColumnDefinitions="180,*" Margin="0,2">
+      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" Margin="0,2">
         <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
                    Classes="dim" TextTrimming="CharacterEllipsis" />
         <NumericUpDown Grid.Column="1" Value="{Binding Value, Mode=TwoWay}"
@@ -56,7 +59,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="editors:FloatFieldViewModel">
-      <Grid ColumnDefinitions="180,*" Margin="0,2">
+      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" Margin="0,2">
         <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
                    Classes="dim" TextTrimming="CharacterEllipsis" />
         <NumericUpDown Grid.Column="1" Value="{Binding Value, Mode=TwoWay}"
@@ -65,7 +68,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="editors:DropdownFieldViewModel">
-      <Grid ColumnDefinitions="180,*" Margin="0,2">
+      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" Margin="0,2">
         <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
                    Classes="dim" TextTrimming="CharacterEllipsis" />
         <ComboBox Grid.Column="1" IsVisible="{Binding HasOptions}"
@@ -78,7 +81,7 @@
 
     <DataTemplate DataType="editors:ScriptFieldViewModel">
       <StackPanel Margin="0,2">
-        <Grid ColumnDefinitions="180,*,Auto,Auto">
+        <Grid ColumnDefinitions="150,*,Auto,Auto" ColumnSpacing="12">
           <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
                      Classes="dim" TextTrimming="CharacterEllipsis" />
           <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}"
@@ -92,7 +95,7 @@
         </Grid>
         <!-- A slot naming a script that does not exist is a live, otherwise invisible bug across the
              2,250 module resources that name one. -->
-        <TextBlock Margin="184,2,0,0" FontSize="11" TextWrapping="Wrap"
+        <TextBlock Margin="162,2,0,0" FontSize="11" TextWrapping="Wrap"
                    Foreground="{DynamicResource AmberBrush}"
                    IsVisible="{Binding IsMissing}" Text="{Binding MissingMessage}" />
       </StackPanel>
@@ -101,7 +104,7 @@
     <!-- A resref that names another module resource. Editable text with the real list attached, so
          a value from a hak stays typeable and an unknown one says so rather than being rejected. -->
     <DataTemplate DataType="editors:ResourcePickerFieldViewModel">
-      <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto" Margin="0,2">
+      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" RowDefinitions="Auto,Auto" Margin="0,2">
         <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
                    Classes="dim" TextTrimming="CharacterEllipsis" />
         <AutoCompleteBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}"
@@ -114,7 +117,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="editors:TextFieldViewModel">
-      <Grid ColumnDefinitions="180,*" Margin="0,2">
+      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" Margin="0,2">
         <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
                    Classes="dim" TextTrimming="CharacterEllipsis" />
         <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}" />
@@ -127,7 +130,7 @@
          A name picker is an AutoCompleteBox rather than a combo because the tag source alone offers
          five figures of options and a stored value the source does not know must stay visible. -->
     <DataTemplate DataType="placeables:BehaviorFieldViewModel">
-      <Grid ColumnDefinitions="220,*,Auto" RowDefinitions="Auto,Auto" Margin="0,2">
+      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" RowDefinitions="Auto,Auto,Auto" Margin="0,2">
         <StackPanel Grid.Column="0" VerticalAlignment="Center">
           <TextBlock Text="{Binding Label}" Classes="dim" TextWrapping="Wrap" />
           <TextBlock Text="required" Classes="count" IsVisible="{Binding IsRequired}" />
@@ -158,7 +161,7 @@
           <TextBlock Text="{Binding SearchableChoiceSummary}" Classes="count" />
           <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
                   CornerRadius="2" ClipToBounds="True">
-            <ScrollViewer Height="240" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto">
               <ItemsControl ItemsSource="{Binding SearchableOptions}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate DataType="placeables:BehaviorChoiceOption">
@@ -209,7 +212,7 @@
           <!-- Gallery choices live on the form. They remain paged internally so opening a behavior
                does not create hundreds of preview controls at once; scrolling publishes each next
                page before the builder reaches the end. -->
-          <ScrollViewer Height="480" VerticalScrollBarVisibility="Auto"
+          <ScrollViewer MaxHeight="360" VerticalScrollBarVisibility="Auto"
                         ScrollChanged="OnBehaviorGalleryScrollChanged">
             <ItemsControl ItemsSource="{Binding GalleryTiles}">
               <ItemsControl.ItemsPanel>
@@ -249,10 +252,10 @@
           </ScrollViewer>
         </StackPanel>
 
-        <TextBlock Grid.Column="2" Margin="8,0,0,0" VerticalAlignment="Center" Classes="count"
+        <TextBlock Grid.Row="1" Grid.Column="1" Classes="count" Margin="0,2,0,0" TextWrapping="Wrap"
                    Text="{Binding StatusText}"
                    IsVisible="{Binding StatusText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}" Classes="dim"
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Description}" Classes="dim"
                    FontSize="11" TextWrapping="Wrap" Margin="0,3,0,3"
                    IsVisible="{Binding HasDescription}" />
       </Grid>

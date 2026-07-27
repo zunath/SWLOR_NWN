@@ -9,18 +9,15 @@
 
   <!-- One tab per resource kind, then search, then that kind's folder tree. Search lives in the panel
        it searches, which is why there is no separate Search dock across the top of the window. -->
-  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
-
-    <!-- The panel title is drawn here rather than by Dock's chrome, which pads it out with a dotted
-         drag grip. Small-caps monospace sets furniture apart from every name and value on screen. -->
-    <Border Grid.Row="0" Background="{DynamicResource PanelHeaderBrush}"
-            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="14,9">
-      <TextBlock Classes="title" Text="MODULE CONTENTS" />
-    </Border>
+  <!-- No title row: this panel's tab is its title now that the rail's tool tabs sit above the panel
+       in the same small-caps monospace (Shell/Controls/RailToolTabs.cs). A "MODULE CONTENTS"
+       heading directly beneath a tab reading "Module Contents" was a row of height spent saying it
+       twice. -->
+  <Grid RowDefinitions="Auto,Auto,*,Auto">
 
     <!-- Tabs. Each carries its own total, so the two sections you are not in still say how much is in
          them - the one thing worth knowing about a section you are not looking at. -->
-    <ItemsControl Grid.Row="1" ItemsSource="{Binding Tabs}" Margin="8,8,8,0">
+    <ItemsControl Grid.Row="0" ItemsSource="{Binding Tabs}" Margin="8,8,8,0">
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
           <UniformGrid Rows="1" />
@@ -42,7 +39,7 @@
       </ItemsControl.ItemTemplate>
     </ItemsControl>
 
-    <Grid Grid.Row="2" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto"
+    <Grid Grid.Row="1" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto"
           Margin="8,8,8,6" ColumnSpacing="6">
       <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Filter}" Watermark="Search contents..." />
       <!-- The button names what it makes, which is why it is bound rather than labelled. -->
@@ -62,7 +59,7 @@
       </StackPanel>
     </Grid>
 
-    <Grid Grid.Row="3">
+    <Grid Grid.Row="2">
       <ListBox Background="Transparent" BorderThickness="0"
                ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}"
                DoubleTapped="OnItemsDoubleTapped">
@@ -180,7 +177,7 @@
       </Border>
     </Grid>
 
-    <TextBlock Grid.Row="4" Margin="10,4,10,8" Classes="dim" FontSize="11.5" TextWrapping="Wrap"
+    <TextBlock Grid.Row="3" Margin="10,4,10,8" Classes="dim" FontSize="11.5" TextWrapping="Wrap"
                Text="{Binding StatusMessage}"
                IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
   </Grid>

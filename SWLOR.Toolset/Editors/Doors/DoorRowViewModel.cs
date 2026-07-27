@@ -158,20 +158,42 @@ namespace SWLOR.Toolset.Editors.Doors
             {
                 if (!string.IsNullOrWhiteSpace(Text))
                 {
-                    var resolved = _resolveTag?.Invoke(Definition.TagScope, Text);
-                    if (resolved != null)
+                    var scope = Definition.TagScope;
+                    if (Definition.Name == "LinkedTo")
                     {
-                        messages.Add($"✓ {resolved}");
+                        scope = _store.GetInteger(
+                            BehaviorFieldStorage.Field,
+                            "LinkedToFlags") switch
+                        {
+                            1 => BehaviorTagScope.Door,
+                            2 => BehaviorTagScope.Waypoint,
+                            _ => BehaviorTagScope.None
+                        };
+                    }
+
+                    if (scope == BehaviorTagScope.None)
+                    {
+                        good = false;
+                        messages.Add("⚠ destination type is unset; this transition will do nothing");
                     }
                     else
                     {
-                        good = false;
-                        messages.Add(Definition.TagScope switch
+                        var resolved = _resolveTag?.Invoke(scope, Text);
+                        if (resolved != null)
                         {
-                            BehaviorTagScope.Item => "⚠ no item blueprint carries this tag",
-                            BehaviorTagScope.Waypoint => "⚠ no waypoint carries this tag",
-                            _ => "⚠ no door or waypoint carries this tag"
-                        });
+                            messages.Add($"✓ {resolved}");
+                        }
+                        else
+                        {
+                            good = false;
+                            messages.Add(scope switch
+                            {
+                                BehaviorTagScope.Item => "⚠ no item blueprint carries this tag",
+                                BehaviorTagScope.Waypoint => "⚠ no waypoint carries this tag",
+                                BehaviorTagScope.Door => "⚠ no door carries this tag",
+                                _ => "⚠ no door or waypoint carries this tag"
+                            });
+                        }
                     }
                 }
                 else if (Definition.TagScope == BehaviorTagScope.Item &&
@@ -180,14 +202,6 @@ namespace SWLOR.Toolset.Editors.Doors
                     good = false;
                     messages.Add("⚠ a key is required, but no item tag is set");
                 }
-            }
-
-            if (Definition.Name == "LinkedTo" &&
-                !string.IsNullOrWhiteSpace(Text) &&
-                _store.GetInteger(BehaviorFieldStorage.Field, "LinkedToFlags") == 0)
-            {
-                good = false;
-                messages.Add("⚠ destination type is unset; this transition will do nothing");
             }
 
             if (IsMultiChoice)

@@ -17,7 +17,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AvaloniaResource Include="Assets\**" />
+    <!-- The images, the window icon and the logo - deliberately not the .axaml under here. Avalonia's
+         own default glob already carries every .axaml in the project as AvaloniaXaml, so a file this
+         glob also claims is embedded twice under one avares path, and building the asset table is a
+         ToDictionary: the second entry throws before the first window exists. -->
+    <AvaloniaResource Include="Assets\**" Exclude="Assets\**\*.axaml" />
   </ItemGroup>
 
   <ItemGroup>

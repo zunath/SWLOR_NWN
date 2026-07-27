@@ -495,6 +495,30 @@ namespace SWLOR.Toolset.Tests
                 .Which.LineText.Should().Contain("\"Needle\"");
         }
 
+        [Test]
+        public void OpenBufferOverlayReplacesDiskMatchesAndLineNumbers()
+        {
+            using var corpus = new TempScriptCorpus();
+            corpus.Write("one", "int DiskNeedle = 1;\n");
+            var openBuffer = """
+                void main()
+                {
+                    int BufferNeedle = 2;
+                }
+                """;
+            var search = new ScriptWorkspaceSearch(
+                corpus.NssDirectory,
+                resRef => resRef == "one" ? openBuffer : null);
+
+            var bufferResults = search.Search("BufferNeedle", ScriptSearchMode.Identifier);
+            var diskResults = search.Search("DiskNeedle", ScriptSearchMode.Identifier);
+
+            bufferResults.Should().ContainSingle()
+                .Which.Should().Be(new ScriptSearchResult("one", 3, "    int BufferNeedle = 2;"));
+            diskResults.Should().BeEmpty(
+                "an open editor buffer replaces that script's stale on-disk source");
+        }
+
         private sealed class TempScriptCorpus : IDisposable
         {
             private readonly string _root = Path.Combine(

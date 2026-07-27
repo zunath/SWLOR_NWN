@@ -9,21 +9,12 @@
 
   <!-- What is placed in the area in front. The area list stays in Module Contents; this panel never
        shows an area, only what is inside one. -->
-  <Grid RowDefinitions="Auto,Auto,*,Auto">
+  <!-- No title row: this panel's tab is its title (Shell/Controls/RailToolTabs.cs), and a heading
+       repeating the word directly under the tab that says it was just noise. Which area is being
+       shown is the one thing the tab cannot say, so it leads the status line at the bottom. -->
+  <Grid RowDefinitions="Auto,*,Auto">
 
-    <!-- The title names the panel; the subtitle names the area it is following, which is the one
-         thing you cannot work out from the rows themselves. -->
-    <Border Grid.Row="0" Background="{DynamicResource PanelHeaderBrush}"
-            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="14,9">
-      <Grid ColumnDefinitions="Auto,*">
-        <TextBlock Grid.Column="0" Classes="title" Text="AREA CONTENTS" />
-        <TextBlock Grid.Column="1" Classes="resref" Margin="10,0,0,0"
-                   HorizontalAlignment="Right" VerticalAlignment="Center"
-                   Text="{Binding AreaResRef}" />
-      </Grid>
-    </Border>
-
-    <Grid Grid.Row="1" RowDefinitions="Auto,Auto" Margin="8,8,8,6" IsVisible="{Binding HasArea}">
+    <Grid Grid.Row="0" RowDefinitions="Auto,Auto" Margin="8,8,8,6" IsVisible="{Binding HasArea}">
       <TextBox Grid.Row="0" Text="{Binding Filter}" Watermark="Search this area..." />
       <!-- Grouping is a choice with consequences, not a display toggle: each option's tooltip says
            what it is for. Name is the default; see AreaContentsGrouping. -->
@@ -43,7 +34,7 @@
 
     <!-- KeyDown rather than a KeyBinding: Delete acts on the row the list has selected, and the
          list is where the key lands. -->
-    <ListBox Grid.Row="2" Background="Transparent" BorderThickness="0"
+    <ListBox Grid.Row="1" Background="Transparent" BorderThickness="0"
              ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}"
              DoubleTapped="OnRowDoubleTapped" KeyDown="OnRowKeyDown">
       <ListBox.Styles>
@@ -76,7 +67,7 @@
       </ListBox.ItemTemplate>
     </ListBox>
 
-    <TextBlock Grid.Row="3" Margin="10,4,10,8" Classes="dim" FontSize="11.5" TextWrapping="Wrap"
+    <TextBlock Grid.Row="2" Margin="10,4,10,8" Classes="dim" FontSize="11.5" TextWrapping="Wrap"
                Text="{Binding StatusMessage}" />
   </Grid>
 </UserControl>

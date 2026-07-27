@@ -166,7 +166,7 @@ namespace SWLOR.Toolset.Tests
         // ---- Textured rendering ----
 
         /// <summary>A textured version of <see cref="Box"/>: same quad, with a full 0..1 UV set.</summary>
-        private static RenderModel TexturedQuad(string textureName) =>
+        private static RenderModel TexturedQuad(string textureName, Vector3? diffuse = null) =>
             new()
             {
                 Name = "textured",
@@ -176,6 +176,7 @@ namespace SWLOR.Toolset.Tests
                     {
                         NodeName = "quad",
                         TextureName = textureName,
+                        DiffuseColor = diffuse ?? Vector3.One,
                         Positions = new[] { 0f, 0f, 0f, 1f, 0f, 0f, 1f, 1f, 1f, 0f, 1f, 1f },
                         Normals = Array.Empty<float>(),
                         TexCoords = new[] { 0f, 0f, 1f, 0f, 1f, 1f, 0f, 1f },
@@ -235,6 +236,42 @@ namespace SWLOR.Toolset.Tests
             var brightest = Brightest(pixels);
             brightest.R.Should().BeGreaterThan(brightest.B,
                 because: "the quad should read as the texture's red, not the palette's blue");
+        }
+
+        [Test]
+        public void A_Mesh_Takes_Its_Colour_From_Its_Diffuse_When_The_Texture_Is_White()
+        {
+            // Every waypoint marker in the haks is drawn on tcn01_white and coloured entirely by the
+            // node's diffuse, so a rasterizer that samples the texture alone renders the cyan flag,
+            // the orange flag and the treasure chest as the same white shape.
+            var cyan = TexturedQuad("tcn01_white", new Vector3(0f, 0.5f, 0.5f));
+            var orange = TexturedQuad("tcn01_white", new Vector3(0.7f, 0.35f, 0f));
+
+            var cyanPixels = ThumbnailRenderer.Render(
+                cyan, Size, palette: null, resolveTexture: _ => SolidTexture(255, 255, 255))!;
+            var orangePixels = ThumbnailRenderer.Render(
+                orange, Size, palette: null, resolveTexture: _ => SolidTexture(255, 255, 255))!;
+
+            var cyanBrightest = Brightest(cyanPixels);
+            cyanBrightest.B.Should().BeGreaterThan(cyanBrightest.R);
+            cyanBrightest.G.Should().BeGreaterThan(cyanBrightest.R);
+
+            var orangeBrightest = Brightest(orangePixels);
+            orangeBrightest.R.Should().BeGreaterThan(orangeBrightest.B);
+        }
+
+        [Test]
+        public void An_Unstated_Diffuse_Leaves_A_Texture_Exactly_As_It_Is()
+        {
+            // Nearly every mesh states white, and the untextured helper planes in this module's
+            // content state nothing at all. Neither may tint anything.
+            var pixels = ThumbnailRenderer.Render(
+                TexturedQuad("wall"), Size, palette: null,
+                resolveTexture: _ => SolidTexture(r: 200, g: 200, b: 200))!;
+
+            var brightest = Brightest(pixels);
+            brightest.R.Should().Be(brightest.G);
+            brightest.G.Should().Be(brightest.B);
         }
 
         [Test]

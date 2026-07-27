@@ -158,6 +158,13 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// <summary>Watermark for a searchable row's filter box, named after what it searches.</summary>
         public string SearchWatermark => $"Search {Label.ToLowerInvariant()}";
 
+        /// <summary>
+        /// What the picker says is chosen. A property rather than a <c>Choice.Display</c> binding
+        /// because a row whose stored value matches nothing has no Choice at all, and binding
+        /// through the null logs an error on every render.
+        /// </summary>
+        public string SelectedChoiceDisplay => Choice?.Display ?? "Nothing chosen";
+
         /// <summary>How much of the gallery is on screen, for its count line.</summary>
         public string GallerySummary
         {
@@ -528,6 +535,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// </remarks>
         protected virtual void OnChoiceSelected(BehaviorChoiceViewModel? value)
         {
+            OnPropertyChanged(nameof(SelectedChoiceDisplay));
+
             if (IsGallery)
                 _ = LoadSelectedPreviewAsync(value);
         }
@@ -569,6 +578,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// <summary>Republishes the properties that depend on the stored value rather than on it alone.</summary>
         protected void NotifyValueShapeChanged()
         {
+            OnPropertyChanged(nameof(SelectedChoiceDisplay));
             OnPropertyChanged(nameof(Counter));
             OnPropertyChanged(nameof(HasValue));
             OnPropertyChanged(nameof(IsEmpty));

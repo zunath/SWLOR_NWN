@@ -12,6 +12,7 @@ using SWLOR.Toolset.Domain.Editors.Doors;
 using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
+using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Doors;
 using SWLOR.Toolset.Editors.Sounds;
@@ -40,7 +41,7 @@ namespace SWLOR.Toolset.Tests
                 "wp_test",
                 isInstance: false,
                 Accept,
-                new WaypointBehaviorCatalog(gameCode: null, transitionDestinationTags: null));
+                new WaypointBehaviorCatalog(gameCodeIndex: null, transitionDestinationTags: null));
 
             AssertRenders(new WaypointDocumentView { DataContext = null }, editor.BehaviorList);
         }
@@ -107,7 +108,7 @@ namespace SWLOR.Toolset.Tests
                 "wp_test",
                 isInstance: false,
                 Accept,
-                new WaypointBehaviorCatalog(gameCode: null, transitionDestinationTags: null));
+                new WaypointBehaviorCatalog(gameCodeIndex: null, transitionDestinationTags: null));
             yield return new BehaviorRailView
             {
                 Items = waypoint.BehaviorList,

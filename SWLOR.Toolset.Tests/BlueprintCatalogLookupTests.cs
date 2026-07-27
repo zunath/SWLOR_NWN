@@ -22,6 +22,8 @@ namespace SWLOR.Toolset.Tests
         public void SetUp()
         {
             _moduleRoot = Path.Combine(Path.GetTempPath(), "swlor-catalog-" + Guid.NewGuid().ToString("N"));
+            // ModuleWorkspace insists on the folders a real module has before it will open one.
+            Directory.CreateDirectory(Path.Combine(_moduleRoot, "are"));
             Directory.CreateDirectory(Path.Combine(_moduleRoot, "utc"));
             Directory.CreateDirectory(Path.Combine(_moduleRoot, "utp"));
 

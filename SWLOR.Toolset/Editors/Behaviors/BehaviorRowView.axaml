@@ -52,7 +52,7 @@
            drop-down: a builder can see every valid option without having to guess part of its name
            first, and only picking a listed option writes a value. -->
       <StackPanel IsVisible="{Binding IsSearchableChoice}" Spacing="6">
-        <TextBlock Text="{Binding Choice.Display}" TextTrimming="CharacterEllipsis"
+        <TextBlock Text="{Binding SelectedChoiceDisplay}" TextTrimming="CharacterEllipsis"
                    VerticalAlignment="Center" />
         <TextBox Text="{Binding ChoiceSearchText, Mode=TwoWay}"
                  Watermark="{Binding SearchWatermark}" />
@@ -82,7 +82,7 @@
                 Background="{DynamicResource FieldBrush}" ClipToBounds="True"
                 Width="256" Height="192" HorizontalAlignment="Left">
           <Panel>
-            <TextBlock Text="{Binding Choice.Display}" FontSize="15"
+            <TextBlock Text="{Binding SelectedChoiceDisplay}" FontSize="15"
                        Foreground="{DynamicResource InkBrush}"
                        HorizontalAlignment="Center" VerticalAlignment="Center"
                        TextWrapping="Wrap" TextAlignment="Center" Margin="10" />
@@ -90,7 +90,7 @@
           </Panel>
         </Border>
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-          <TextBlock Grid.Column="0" Text="{Binding Choice.Display}" Classes="mono"
+          <TextBlock Grid.Column="0" Text="{Binding SelectedChoiceDisplay}" Classes="mono"
                      VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
           <Button Grid.Column="1" x:Name="ChooseArtworkButton" Content="Choose&#x2026;"
                   Padding="10,4" Command="{Binding OpenGalleryCommand}" />

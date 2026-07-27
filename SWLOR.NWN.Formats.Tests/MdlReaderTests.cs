@@ -33,14 +33,15 @@ public sealed class MdlReaderTests
         WriteUInt32(bytes, mesh + 108, 1);
         WriteFixed(bytes, mesh + 120, 64, "panel_texture");
         WriteUInt32(bytes, mesh + 376, 0x8000_0007);
+        WriteUInt32(bytes, mesh + 440, 32);
         WriteInt32(bytes, mesh + 444, 0);
         WriteUInt16(bytes, mesh + 448, 3);
         WriteUInt16(bytes, mesh + 450, 1);
-        WriteInt32(bytes, mesh + 452, 36);
+        WriteInt32(bytes, mesh + 452, 12);
         WriteInt32(bytes, mesh + 456, -1);
         WriteInt32(bytes, mesh + 460, -1);
         WriteInt32(bytes, mesh + 464, -1);
-        WriteInt32(bytes, mesh + 468, 60);
+        WriteInt32(bytes, mesh + 468, 20);
         WriteInt32(bytes, mesh + 472, -1);
         for (var offset = 476; offset <= 496; offset += 4)
             WriteInt32(bytes, mesh + offset, -1);
@@ -52,14 +53,15 @@ public sealed class MdlReaderTests
         WriteUInt16(bytes, face + 30, 2);
 
         var mdx = 12 + modelDataSize;
-        WriteVector3(bytes, mdx, new Vector3(0, 0, 0));
-        WriteVector3(bytes, mdx + 12, new Vector3(1, 0, 0));
-        WriteVector3(bytes, mdx + 24, new Vector3(0, 1, 0));
-        WriteVector2(bytes, mdx + 36, new Vector2(0, 0));
-        WriteVector2(bytes, mdx + 44, new Vector2(1, 0));
-        WriteVector2(bytes, mdx + 52, new Vector2(0, 1));
-        for (var index = 0; index < 3; index++)
-            WriteVector3(bytes, mdx + 60 + index * 12, Vector3.UnitZ);
+        var positions = new[] { Vector3.Zero, Vector3.UnitX, Vector3.UnitY };
+        var textureCoordinates = new[] { Vector2.Zero, Vector2.UnitX, Vector2.UnitY };
+        for (var index = 0; index < positions.Length; index++)
+        {
+            var vertex = mdx + index * 32;
+            WriteVector3(bytes, vertex, positions[index]);
+            WriteVector2(bytes, vertex + 12, textureCoordinates[index]);
+            WriteVector3(bytes, vertex + 20, Vector3.UnitZ);
+        }
 
         var model = new MdlReader().Parse(bytes);
 
@@ -76,6 +78,87 @@ public sealed class MdlReaderTests
         parsed.Faces.Should().ContainSingle()
             .Which.Should().Match<MdlFace>(item =>
                 item.VertexIndex0 == 0 && item.VertexIndex1 == 1 && item.VertexIndex2 == 2);
+    }
+
+    [Test]
+    public void ReadsBinarySkinAttributesFromInterleavedMdxRecords()
+    {
+        const int modelDataSize = 956;
+        const int mdxStride = 48;
+        var bytes = new byte[12 + modelDataSize + mdxStride * 2];
+        WriteUInt32(bytes, 4, modelDataSize);
+        WriteUInt32(bytes, 8, mdxStride * 2);
+        WriteUInt32(bytes, 12 + 72, 232);
+
+        var node = 12 + 232;
+        WriteFixed(bytes, node + 32, 32, "skinned");
+        WriteUInt32(bytes, node + 108, 0x60);
+
+        var mesh = node + 112;
+        WriteUInt32(bytes, mesh + 440, mdxStride);
+        WriteInt32(bytes, mesh + 444, 0);
+        WriteUInt16(bytes, mesh + 448, 2);
+        WriteInt32(bytes, mesh + 452, -1);
+        WriteInt32(bytes, mesh + 468, 12);
+
+        var skin = mesh + 512;
+        WriteInt32(bytes, skin + 12, 24);
+        WriteInt32(bytes, skin + 16, 40);
+
+        var mdx = 12 + modelDataSize;
+        for (var index = 0; index < 2; index++)
+        {
+            var vertex = mdx + index * mdxStride;
+            WriteVector3(bytes, vertex, new Vector3(index + 1, index + 2, index + 3));
+            WriteVector3(bytes, vertex + 12, Vector3.UnitZ);
+        }
+        WriteVector4(bytes, mdx + 24, new Vector4(1f, 0f, 0f, 0f));
+        WriteInt16(bytes, mdx + 40, 3);
+        WriteInt16(bytes, mdx + 42, 4);
+        WriteInt16(bytes, mdx + 44, 5);
+        WriteInt16(bytes, mdx + 46, 6);
+        WriteVector4(bytes, mdx + mdxStride + 24, new Vector4(.25f, .75f, 0f, 0f));
+        WriteInt16(bytes, mdx + mdxStride + 40, 7);
+        WriteInt16(bytes, mdx + mdxStride + 42, 8);
+        WriteInt16(bytes, mdx + mdxStride + 44, 9);
+        WriteInt16(bytes, mdx + mdxStride + 46, 10);
+
+        var model = new MdlReader().Parse(bytes);
+
+        var parsed = model.GetMeshNodes().Should().ContainSingle().Subject
+            .Should().BeOfType<MdlSkinmeshNode>().Subject;
+        parsed.Vertices.Should().Equal(new Vector3(1, 2, 3), new Vector3(2, 3, 4));
+        parsed.Normals.Should().OnlyContain(normal => normal == Vector3.UnitZ);
+        parsed.BoneWeights.Should().Equal(
+            new Vector4(1f, 0f, 0f, 0f),
+            new Vector4(.25f, .75f, 0f, 0f));
+        parsed.BoneIndices.Should().Equal(
+            new MdlBoneIndices(3, 4, 5, 6),
+            new MdlBoneIndices(7, 8, 9, 10));
+    }
+
+    [Test]
+    public void RejectsBinaryMdxStrideSmallerThanAnAttribute()
+    {
+        const int modelDataSize = 856;
+        var bytes = new byte[12 + modelDataSize + 12];
+        WriteUInt32(bytes, 4, modelDataSize);
+        WriteUInt32(bytes, 8, 12);
+        WriteUInt32(bytes, 12 + 72, 232);
+
+        var node = 12 + 232;
+        WriteUInt32(bytes, node + 108, 0x20);
+        var mesh = node + 112;
+        WriteUInt32(bytes, mesh + 440, 8);
+        WriteInt32(bytes, mesh + 444, 0);
+        WriteUInt16(bytes, mesh + 448, 1);
+        WriteInt32(bytes, mesh + 452, -1);
+        WriteInt32(bytes, mesh + 468, -1);
+
+        Action action = () => new MdlReader().Parse(bytes);
+
+        action.Should().Throw<NwnFormatException>()
+            .WithMessage("*element size 12 exceeds MDX vertex stride 8*");
     }
 
     [Test]
@@ -154,6 +237,39 @@ public sealed class MdlReaderTests
         WriteUInt32(binary, 12 + 72, 0xFFFF_FFF0);
         Action parsePointer = () => new MdlReader().Parse(binary);
         parsePointer.Should().Throw<NwnFormatException>();
+    }
+
+    [Test]
+    public void RejectsAsciiGeometryMissingItsTerminatorAfterACompleteNode()
+    {
+        var text = """
+                   newmodel sample
+                   beginmodelgeom sample
+                     node dummy sample
+                       parent NULL
+                     endnode
+                   """;
+
+        Action action = () => new MdlReader().Parse(Encoding.ASCII.GetBytes(text));
+
+        action.Should().Throw<NwnFormatException>()
+            .WithMessage("*missing endmodelgeom*");
+    }
+
+    [Test]
+    public void RejectsAsciiNodeMissingItsTerminatorAtEndOfFile()
+    {
+        var text = """
+                   newmodel sample
+                   beginmodelgeom sample
+                     node dummy sample
+                       parent NULL
+                   """;
+
+        Action action = () => new MdlReader().Parse(Encoding.ASCII.GetBytes(text));
+
+        action.Should().Throw<NwnFormatException>()
+            .WithMessage("*node 'sample' is missing endnode*");
     }
 
     [Test]
@@ -429,6 +545,9 @@ public sealed class MdlReaderTests
     private static void WriteUInt16(byte[] bytes, int offset, ushort value) =>
         BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(offset, 2), value);
 
+    private static void WriteInt16(byte[] bytes, int offset, short value) =>
+        BinaryPrimitives.WriteInt16LittleEndian(bytes.AsSpan(offset, 2), value);
+
     private static void WriteUInt32(byte[] bytes, int offset, uint value) =>
         BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(offset, 4), value);
 
@@ -449,5 +568,13 @@ public sealed class MdlReaderTests
         WriteSingle(bytes, offset, value.X);
         WriteSingle(bytes, offset + 4, value.Y);
         WriteSingle(bytes, offset + 8, value.Z);
+    }
+
+    private static void WriteVector4(byte[] bytes, int offset, Vector4 value)
+    {
+        WriteSingle(bytes, offset, value.X);
+        WriteSingle(bytes, offset + 4, value.Y);
+        WriteSingle(bytes, offset + 8, value.Z);
+        WriteSingle(bytes, offset + 12, value.W);
     }
 }

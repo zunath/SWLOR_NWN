@@ -214,8 +214,15 @@ namespace SWLOR.Toolset.Domain.Render
             bytes = Array.Empty<byte>();
             try
             {
+                var fileName = Path.GetFileName(resRef.Trim());
+                var resourceExtension = "." + extension.TrimStart('.');
+                var normalizedResRef = fileName.EndsWith(
+                    resourceExtension,
+                    StringComparison.OrdinalIgnoreCase)
+                    ? fileName[..^resourceExtension.Length]
+                    : fileName;
                 var identity = new ResourceIdentity(
-                    Path.GetFileNameWithoutExtension(resRef.Trim()),
+                    normalizedResRef,
                     ResourceIdentity.TypeFromExtension(extension));
                 if (!resourceIndex.TryLookup(identity, out var handle))
                     return false;

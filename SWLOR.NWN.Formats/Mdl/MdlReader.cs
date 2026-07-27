@@ -166,14 +166,15 @@ public sealed class MdlReader
                 }
                 if ((content & 0x10) != 0)
                     extraOffset = CheckedSection(extraOffset, 68, "MDL reference header");
+                var mdxStride = 0;
                 if (hasMesh)
                 {
-                    ParseMesh((MdlTrimeshNode)node, extraOffset);
+                    mdxStride = ParseMesh((MdlTrimeshNode)node, extraOffset);
                     extraOffset = CheckedSection(extraOffset, MeshHeaderSize, "MDL mesh header");
                 }
                 if (hasSkin)
                 {
-                    ParseSkin((MdlSkinmeshNode)node, extraOffset);
+                    ParseSkin((MdlSkinmeshNode)node, extraOffset, mdxStride);
                     extraOffset = CheckedSection(extraOffset, SkinHeaderSize, "MDL skin header");
                 }
                 if ((content & 0x80) != 0)
@@ -228,7 +229,7 @@ public sealed class MdlReader
         emitter.RenderOrder = _reader.ReadUInt16(offset + 208);
     }
 
-    private void ParseMesh(MdlTrimeshNode mesh, long offset)
+    private int ParseMesh(MdlTrimeshNode mesh, long offset)
     {
         ValidateModelAbsoluteRange(offset, MeshHeaderSize, "MDL mesh header");
         mesh.Render = _reader.ReadUInt32(offset + 108) != 0;
@@ -262,15 +263,26 @@ public sealed class MdlReader
         var vertexCount = _reader.ReadUInt16(offset + 448);
         if (vertexCount > MaximumVertices)
             throw new NwnFormatException($"MDL vertex count {vertexCount} exceeds {MaximumVertices}.");
-        mesh.Vertices = ReadMdxVector3Array(_reader.ReadInt32(offset + 444), vertexCount, "MDL vertices");
+        var mdxStride = CheckedMdxStride(_reader.ReadUInt32(offset + 440), vertexCount);
+        mesh.Vertices = ReadMdxVector3Array(
+            _reader.ReadInt32(offset + 444),
+            vertexCount,
+            mdxStride,
+            "MDL vertices");
         mesh.TextureCoordinates = ReadMdxVector2Array(
             _reader.ReadInt32(offset + 452),
             vertexCount,
+            mdxStride,
             "MDL texture coordinates");
-        mesh.Normals = ReadMdxVector3Array(_reader.ReadInt32(offset + 468), vertexCount, "MDL normals");
+        mesh.Normals = ReadMdxVector3Array(
+            _reader.ReadInt32(offset + 468),
+            vertexCount,
+            mdxStride,
+            "MDL normals");
+        return mdxStride;
     }
 
-    private void ParseSkin(MdlSkinmeshNode skin, long offset)
+    private void ParseSkin(MdlSkinmeshNode skin, long offset, int mdxStride)
     {
         ValidateModelAbsoluteRange(offset, SkinHeaderSize, "MDL skin header");
         var vertexCount = skin.Vertices.Length;
@@ -298,12 +310,15 @@ public sealed class MdlReader
         var weightPointer = _reader.ReadInt32(offset + 12);
         if (weightPointer >= 0 && vertexCount > 0)
         {
-            var absolute = MdxOffset(weightPointer, checked(vertexCount * 16L), "MDL bone weights");
+            var absolute = MdxOffset(
+                weightPointer,
+                MdxWindowSize(vertexCount, mdxStride, 16, "MDL bone weights"),
+                "MDL bone weights");
             _allocationBudget.ReserveElements(vertexCount, 16, "MDL bone weights");
             var weights = new Vector4[vertexCount];
             for (var index = 0; index < weights.Length; index++)
             {
-                var current = absolute + index * 16L;
+                var current = absolute + index * (long)mdxStride;
                 weights[index] = new Vector4(
                     Finite(_reader.ReadSingle(current), "MDL bone weight"),
                     Finite(_reader.ReadSingle(current + 4), "MDL bone weight"),
@@ -316,12 +331,15 @@ public sealed class MdlReader
         var indexPointer = _reader.ReadInt32(offset + 16);
         if (indexPointer >= 0 && vertexCount > 0)
         {
-            var absolute = MdxOffset(indexPointer, checked(vertexCount * 8L), "MDL bone indices");
+            var absolute = MdxOffset(
+                indexPointer,
+                MdxWindowSize(vertexCount, mdxStride, 8, "MDL bone indices"),
+                "MDL bone indices");
             _allocationBudget.ReserveElements(vertexCount, 8, "MDL bone indices");
             var indices = new MdlBoneIndices[vertexCount];
             for (var index = 0; index < indices.Length; index++)
             {
-                var current = absolute + index * 8L;
+                var current = absolute + index * (long)mdxStride;
                 indices[index] = new MdlBoneIndices(
                     _reader.ReadInt16(current),
                     _reader.ReadInt16(current + 2),
@@ -420,33 +438,53 @@ public sealed class MdlReader
         return values;
     }
 
-    private Vector3[] ReadMdxVector3Array(int pointer, int count, string context)
+    private Vector3[] ReadMdxVector3Array(int pointer, int count, int stride, string context)
     {
         if (pointer < 0 || count == 0)
             return Array.Empty<Vector3>();
-        var offset = MdxOffset(pointer, checked(count * 12L), context);
+        var offset = MdxOffset(pointer, MdxWindowSize(count, stride, 12, context), context);
         _allocationBudget.ReserveElements(count, 12, context);
         var values = new Vector3[count];
         for (var index = 0; index < values.Length; index++)
-            values[index] = Vector3At(offset + index * 12L, context);
+            values[index] = Vector3At(offset + index * (long)stride, context);
         return values;
     }
 
-    private Vector2[] ReadMdxVector2Array(int pointer, int count, string context)
+    private Vector2[] ReadMdxVector2Array(int pointer, int count, int stride, string context)
     {
         if (pointer < 0 || count == 0)
             return Array.Empty<Vector2>();
-        var offset = MdxOffset(pointer, checked(count * 8L), context);
+        var offset = MdxOffset(pointer, MdxWindowSize(count, stride, 8, context), context);
         _allocationBudget.ReserveElements(count, 8, context);
         var values = new Vector2[count];
         for (var index = 0; index < values.Length; index++)
         {
-            var current = offset + index * 8L;
+            var current = offset + index * (long)stride;
             values[index] = new Vector2(
                 Finite(_reader.ReadSingle(current), context),
                 Finite(_reader.ReadSingle(current + 4), context));
         }
         return values;
+    }
+
+    private static int CheckedMdxStride(uint value, int vertexCount)
+    {
+        if (vertexCount == 0)
+            return 0;
+        if (value == 0 || value > int.MaxValue)
+            throw new NwnFormatException($"MDL MDX vertex stride {value} is invalid.");
+        return (int)value;
+    }
+
+    private static long MdxWindowSize(int count, int stride, int elementSize, string context)
+    {
+        if (stride < elementSize)
+        {
+            throw new NwnFormatException(
+                $"{context} element size {elementSize} exceeds MDX vertex stride {stride}.");
+        }
+
+        return checked((count - 1L) * stride + elementSize);
     }
 
     private Quaternion[] ReadModelQuaternionArray(long definitionOffset, string context)

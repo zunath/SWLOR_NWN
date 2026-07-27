@@ -190,6 +190,23 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TextureLoaderPreservesDotsInExtensionlessResourceReferences()
+        {
+            var bytes = new byte[21];
+            bytes[2] = 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(12, 2), 1);
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(14, 2), 1);
+            bytes[16] = 24;
+            bytes[20] = 255;
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "c_barract.001.tga"), bytes);
+
+            var image = TextureLoader.LoadTga(Index(), "c_barract.001");
+
+            image.Should().NotBeNull();
+            Pixel(image!, 0, 0).Should().Be((255, 0, 0, 255));
+        }
+
+        [Test]
         public void MeshBuilderPreservesTileFadeAndTriangleCount()
         {
             var mesh = Triangle("ceiling");

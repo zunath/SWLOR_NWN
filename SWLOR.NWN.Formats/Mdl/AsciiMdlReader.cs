@@ -123,8 +123,6 @@ internal sealed class AsciiMdlReader
                 pending.Add(ParseNode(tokens, line, animationOnly));
         }
 
-        if (pending.Count > 0)
-            return LinkNodes(pending, preferredRootName);
         throw Error($"ASCII MDL block is missing {terminator}.");
     }
 
@@ -268,9 +266,7 @@ internal sealed class AsciiMdlReader
             }
         }
 
-        if (node is MdlTrimeshNode finalMesh)
-            FinalizeMesh(finalMesh, vertices, normals, textureCoordinates, faces, influences, source);
-        return new PendingNode(node, NullAsEmpty(parentName ?? string.Empty), source);
+        throw Error($"ASCII MDL node '{node.Name}' is missing endnode.", source);
     }
 
     private Vector3[] ReadVector3Array(string[] declaration, SourceLine source, string context)

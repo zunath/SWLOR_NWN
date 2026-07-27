@@ -4,6 +4,7 @@ using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
+using SWLOR.Toolset.Editors.Appearance;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
@@ -72,6 +73,58 @@ namespace SWLOR.Toolset.Tests
             editor.VarTableSection.Should().NotBeSameAs(oldSection);
             editor.Tabs.Where(tab => tab.Title == "Variables").Should().ContainSingle()
                 .Which.Content.Should().BeSameAs(editor.VarTableSection);
+            editor.OnClose().Should().BeTrue();
+        }
+
+        [Test]
+        public void CreatureAppearanceGalleryFollowsUndoAndRedo()
+        {
+            var log = new OutputLogService();
+            var context = new WorkspaceContext(_ => throw new NotSupportedException(), log);
+            var schema = new EditorSchema
+            {
+                ResourceType = ResourceType.Utc,
+                Groups = Array.Empty<FieldGroup>()
+            };
+            var options = new[]
+            {
+                new AppearanceOption("6", "Appearance 6", "row 6", CreatureAppearanceId: 6),
+                new AppearanceOption("7", "Appearance 7", "row 7", CreatureAppearanceId: 7)
+            };
+            var editor = new BlueprintEditorViewModel(
+                _path,
+                "reload_var",
+                ResourceType.Utc,
+                schema,
+                new LookupOptionProvider(context),
+                gameCodeIndex: null,
+                log,
+                new ReloadPrompts(),
+                appearanceGallery: (fieldContext, runEdit) =>
+                    new AppearanceGallerySectionViewModel(
+                        options,
+                        thumbnails: null,
+                        currentKey: () => fieldContext.Document.Root
+                            .GetOrNull("Appearance_Type")!.GetInteger().ToString(),
+                        apply: option => runEdit(
+                            "Change creature appearance",
+                            () => fieldContext.Document.Root
+                                .GetOrNull("Appearance_Type")!
+                                .SetInteger(option.CreatureAppearanceId!.Value)),
+                        noun: "appearance"));
+            var gallery = editor.AppearanceGallery!;
+            gallery.Tiles.Single(tile => tile.IsCurrent).Option.Key.Should().Be("6");
+
+            gallery.Highlighted = gallery.Tiles.Single(tile => tile.Option.Key == "7");
+            gallery.Tiles.Single(tile => tile.IsCurrent).Option.Key.Should().Be("7");
+
+            editor.Undo();
+            gallery.Tiles.Single(tile => tile.IsCurrent).Option.Key.Should().Be("6");
+
+            editor.Redo();
+            gallery.Tiles.Single(tile => tile.IsCurrent).Option.Key.Should().Be("7");
+
+            editor.Undo();
             editor.OnClose().Should().BeTrue();
         }
 

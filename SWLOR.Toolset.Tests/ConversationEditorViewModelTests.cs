@@ -224,6 +224,34 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BackFromAnEndingRestoresTheLastNpcLine()
+        {
+            var document = DlgDocument.Load(_workingCopy);
+            var endingReply = document.AddReply("End this test conversation.");
+            foreach (var entry in document.Entries)
+                document.AddLink(entry, endingReply);
+            File.WriteAllBytes(_workingCopy, document.ToBytes());
+
+            using var editor = new Disposable(Open());
+            var offer = editor.Value.Situations.Single(row => row.Title == "Offering Field Tinctures");
+            editor.Value.SelectSituationCommand.Execute(offer);
+            var lastNpcLine = editor.Value.LineText;
+            var playerState = editor.Value.QuestPills
+                .ToDictionary(pill => pill.Name, pill => pill.SelectedOption);
+            var ending = editor.Value.Choices.First(choice => choice.Consequence == "ends the talk");
+
+            editor.Value.PickChoiceCommand.Execute(ending);
+            editor.Value.HasNoLine.Should().BeTrue();
+
+            editor.Value.BackCommand.Execute(null);
+
+            editor.Value.HasLine.Should().BeTrue();
+            editor.Value.LineText.Should().Be(lastNpcLine);
+            editor.Value.QuestPills.Should().OnlyContain(pill =>
+                pill.SelectedOption == playerState[pill.Name]);
+        }
+
+        [Test]
         public void ChangingAPillRedrawsTheConversation()
         {
             using var editor = new Disposable(Open());

@@ -1,6 +1,8 @@
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
+using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tlk;
@@ -9,6 +11,7 @@ using SWLOR.Toolset.Domain.Placeables;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Editors.Placeables;
+using SWLOR.Toolset.Editors.Triggers;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -105,6 +108,57 @@ namespace SWLOR.Toolset.Tests
                 .Should().BeEquivalentTo(index.TagsFor(ResourceType.Utw))
                 .And.Contain("WP_ONLY")
                 .And.NotContain(new[] { "DOOR_ONLY", "STORE_ONLY" });
+        }
+
+        [Test]
+        public void TriggerTransitionValidatesAgainstTheSelectedDestinationType()
+        {
+            WriteArea(
+                "typed",
+                waypointTag: "WP_ONLY",
+                displayName: "Typed",
+                doorTag: "DOOR_ONLY",
+                storeTag: "STORE_ONLY");
+            var index = new ModuleTagIndex(new ModuleWorkspace(_root));
+            var trigger = JsonGffDocument.Parse(
+                Encoding.UTF8.GetBytes("""{ "__data_type": "UTT " }"""));
+            var editor = new TriggerEditorViewModel(
+                trigger.Root,
+                "typed_transition",
+                isInstance: false,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                },
+                resolveTag: (scope, tag) =>
+                {
+                    var type = scope switch
+                    {
+                        BehaviorTagScope.Waypoint => ResourceType.Utw,
+                        BehaviorTagScope.Door => ResourceType.Utd,
+                        _ => (ResourceType?)null
+                    };
+                    return type == null ? null : index.FindAreaDefiningTag(tag, type.Value);
+                });
+            editor.ChooseBehavior(TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.AreaTransitionId));
+
+            var destination = editor.BehaviorRows.Single(row => row.Definition.Name == "LinkedTo");
+            var destinationType = editor.BehaviorRows.Single(
+                row => row.Definition.Name == "LinkedToFlags");
+            destinationType.Choice = destinationType.Choices.Single(choice => choice.Value == 2);
+
+            destination.Text = "STORE_ONLY";
+            destination.IsStatusGood.Should().BeFalse();
+            destination.Status.Should().Contain("no waypoint");
+
+            destination.Text = "DOOR_ONLY";
+            destination.IsStatusGood.Should().BeFalse(
+                "a door-only tag cannot satisfy the selected Waypoint destination type");
+
+            destinationType.Choice = destinationType.Choices.Single(choice => choice.Value == 1);
+            destination.IsStatusGood.Should().BeTrue();
+            destination.Status.Should().Contain("in typed");
         }
 
         [Test]

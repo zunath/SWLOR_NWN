@@ -486,6 +486,7 @@ namespace SWLOR.Toolset.Editors
                 field.RefreshFromDocument();
 
             VarTableSection?.RefreshFromDocument();
+            AppearanceGallery?.ReloadFromDocument();
 
             if (PlaceableSections == null)
                 return;

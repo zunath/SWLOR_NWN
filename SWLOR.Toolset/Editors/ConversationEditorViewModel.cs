@@ -260,6 +260,17 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand]
         private void Back()
         {
+            if (_currentLine == null)
+            {
+                if (_trail.Count == 0)
+                    return;
+
+                _player = _trail[^1].Player.Clone();
+                SyncPillsFromPlayer();
+                ShowLine(_trail[^1].Line);
+                return;
+            }
+
             if (_trail.Count <= 1)
                 return;
 

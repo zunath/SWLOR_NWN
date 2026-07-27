@@ -794,7 +794,8 @@ namespace SWLOR.Toolset.Editors
         private void OpenTriggerEditor(string filePath, string resRef)
         {
             var editor = new Triggers.TriggerDocumentViewModel(
-                filePath, resRef, _gameCodeIndex, _log, _prompts, ResolveTagArea, ResolveTriggerChoices,
+                filePath, resRef, _gameCodeIndex, _log, _prompts, ResolveTriggerTagArea,
+                ResolveTriggerChoices,
                 ChoicePreviews());
             editor.Closed += _ => _openTriggerEditors.Remove(filePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
@@ -1138,13 +1139,27 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Names the area a waypoint or door tag lives in, or null when nothing defines it — what
-        /// puts a tick or a cross beside a transition's destination.
+        /// Names the area a tag lives in for the destination kind selected by a trigger transition.
+        /// Stores and the other destination kind deliberately do not satisfy this lookup.
         /// </summary>
-        private string? ResolveTagArea(string tag) =>
-            _workspaceContext.Workspace == null || string.IsNullOrWhiteSpace(tag)
-                ? null
-                : _workspaceContext.Workspace.TagIndex.FindAreaDefiningTag(tag);
+        private string? ResolveTriggerTagArea(
+            Domain.Editors.Behaviors.BehaviorTagScope scope,
+            string tag)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null || string.IsNullOrWhiteSpace(tag))
+                return null;
+
+            return scope switch
+            {
+                Domain.Editors.Behaviors.BehaviorTagScope.Waypoint =>
+                    workspace.TagIndex.FindAreaDefiningTag(tag, ResourceType.Utw),
+                Domain.Editors.Behaviors.BehaviorTagScope.Door =>
+                    workspace.TagIndex.FindAreaDefiningTag(tag, ResourceType.Utd),
+                _ => null
+            };
+        }
+
         /// <summary>
         /// Conversations open in the Play-it editor. The 255 <c>dialogN</c> shells are refused: they
         /// are generated for the C# <c>Dialog</c> service's runtime menus and editing one by hand

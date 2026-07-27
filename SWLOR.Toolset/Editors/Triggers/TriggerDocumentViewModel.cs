@@ -47,7 +47,7 @@ namespace SWLOR.Toolset.Editors.Triggers
             IGameCodeIndex? gameCodeIndex,
             OutputLogService log,
             IEditorPromptService prompts,
-            Func<string, string?>? resolveTag = null,
+            Func<BehaviorTagScope, string, string?>? resolveTag = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             ChoicePreviewService? previews = null)
         {

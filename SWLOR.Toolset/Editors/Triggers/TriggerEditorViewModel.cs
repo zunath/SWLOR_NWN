@@ -31,7 +31,7 @@ namespace SWLOR.Toolset.Editors.Triggers
     {
         private readonly BehaviorValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
-        private readonly Func<string, string?>? _resolveTag;
+        private readonly Func<BehaviorTagScope, string, string?>? _resolveTag;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly ChoicePreviewService? _previews;
         private readonly IGameCodeIndex? _gameCodeIndex;
@@ -72,7 +72,7 @@ namespace SWLOR.Toolset.Editors.Triggers
             bool isInstance,
             Func<string, Action, bool> runEdit,
             IGameCodeIndex? gameCodeIndex = null,
-            Func<string, string?>? resolveTag = null,
+            Func<BehaviorTagScope, string, string?>? resolveTag = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             ChoicePreviewService? previews = null,
             Services.IEditorPromptService? prompts = null)
@@ -221,7 +221,14 @@ namespace SWLOR.Toolset.Editors.Triggers
 
         private TriggerRowViewModel CreateRow(BehaviorFieldDefinition definition) =>
             new(definition, _store, _runEdit, _resolveTag, ResolveChoices(definition), _previews,
-                RefreshCompleteness);
+                RefreshAfterValueChange);
+
+        private void RefreshAfterValueChange()
+        {
+            RefreshCompleteness();
+            foreach (var row in BehaviorRows)
+                row.RefreshStatus();
+        }
 
         /// <summary>
         /// A row's choices, from game data when it names a key. An unresolvable key yields an empty

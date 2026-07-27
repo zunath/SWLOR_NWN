@@ -230,10 +230,20 @@ namespace SWLOR.Toolset.Domain.Conversations
 
             if (!snippet.IsValidArgumentCount(arguments.Length))
             {
-                problems.Add(Make("extra-detail", ProblemSeverity.Untidy,
-                    $"“{snippet.ToSentence(arguments, param.IsNegated)}” was given more than it reads, "
-                    + "so the extra is ignored.",
-                    anchor, link, node));
+                if (snippet.RepeatGroupSize > 0)
+                {
+                    problems.Add(Make("incomplete-repeat-group", ProblemSeverity.Broken,
+                        $"“{snippet.ToSentence(arguments, param.IsNegated)}” has an incomplete "
+                        + "repeating set of details, so the game cannot use it.",
+                        anchor, link, node));
+                }
+                else
+                {
+                    problems.Add(Make("extra-detail", ProblemSeverity.Untidy,
+                        $"“{snippet.ToSentence(arguments, param.IsNegated)}” was given more than it reads, "
+                        + "so the extra is ignored.",
+                        anchor, link, node));
+                }
             }
 
             CheckArgumentValues(snippet, arguments, anchor, link, node, problems);

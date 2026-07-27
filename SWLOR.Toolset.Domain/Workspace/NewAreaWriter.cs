@@ -193,10 +193,17 @@ namespace SWLOR.Toolset.Domain.Workspace
                 // break module load.
                 WriteAtomic(arePath, are.ToBytes(), overwrite: false);
                 createdPaths.Add(arePath);
+                // Destinations are recorded BEFORE each copy: File.Copy can create the file and
+                // then fail partway (full disk, I/O error), and an untracked partial GIT/GIC would
+                // survive cleanup, permanently blocking the resref as "already exists". A
+                // destination that already exists is NOT recorded - the copy will refuse it, and
+                // cleanup must never delete a file this writer did not create.
+                if (!File.Exists(gitPath))
+                    createdPaths.Add(gitPath);
                 File.Copy(templateGit, gitPath, overwrite: false);
-                createdPaths.Add(gitPath);
+                if (!File.Exists(gicPath))
+                    createdPaths.Add(gicPath);
                 File.Copy(templateGic, gicPath, overwrite: false);
-                createdPaths.Add(gicPath);
                 WriteAtomic(ifoPath, ifo.ToBytes(), overwrite: true);
                 try
                 {

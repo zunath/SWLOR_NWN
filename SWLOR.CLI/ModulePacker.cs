@@ -69,6 +69,11 @@ namespace SWLOR.CLI
                 // .mod as though it were a script resource.
                 var scriptFiles = Directory.GetFiles("./ncs/", "*.ncs")
                     .Union(Directory.GetFiles("./nss/", "*.nss"))
+                    // A resref never contains a dot, so a dotted stem is transaction debris - the
+                    // toolset's compiler writes to "resref.<guid>.ncs" and installs atomically, and
+                    // a kill mid-write can leave that temp behind. It was never a committed
+                    // compile, so it must not ship in the module.
+                    .Where(file => !Path.GetFileNameWithoutExtension(file).Contains('.'))
                     .ToList();
                 // Copy the uncompiled (.nss) and compiled (.ncs) scripts to ./packing
                 Console.WriteLine($"Copying {scriptFiles.Count} script files...");

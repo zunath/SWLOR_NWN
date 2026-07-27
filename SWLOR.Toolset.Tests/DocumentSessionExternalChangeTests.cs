@@ -24,6 +24,55 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void SameTimestampDifferentContent_IsStillAnExternalChange()
+        {
+            var recordedMtime = File.GetLastWriteTimeUtc(_path);
+
+            // Prepare the external replacement before a session's edit guard is ambient.
+            var external = JsonGffDocument.Load(_path);
+            var externalField = CorpusFiles.FindFirstMutableInteger(external.Root)!;
+            externalField.SetInteger(externalField.GetInteger() + 1);
+            var externalBytes = external.ToBytes();
+
+            using var session = DocumentSession.Open(_path);
+
+            // An external tool replaces the file but preserves the timestamp (or the filesystem's
+            // granularity makes both writes share one). The fingerprint must catch it.
+            File.WriteAllBytes(_path, externalBytes);
+            File.SetLastWriteTimeUtc(_path, recordedMtime);
+
+            session.HasExternalChange().Should().BeTrue(
+                "identical timestamps must not hide different bytes");
+        }
+
+        [Test]
+        public void RevertAfterTheSavedHistoryWasDiscarded_ReloadsTheDiskState()
+        {
+            using var session = DocumentSession.Open(_path);
+            var field = CorpusFiles.FindFirstMutableInteger(session.Document.Root)!;
+            var initialValue = field.GetInteger();
+
+            // Save a real edit to disk, then undo past it and branch: the saved history is gone.
+            using (session.Begin("edit A"))
+                field.SetInteger(initialValue + 1);
+            File.WriteAllBytes(_path, session.ToBytes());
+            session.UndoStack.MarkSaved();
+            session.RecordCurrentFileState();
+
+            session.Undo();
+            using (session.Begin("edit B"))
+                field.SetInteger(initialValue);
+
+            session.RevertToSaved();
+
+            CorpusFiles.FindFirstMutableInteger(session.Document.Root)!.GetInteger().Should().Be(
+                initialValue + 1,
+                "Revert must land on the version committed to disk, not the initial load state");
+            session.UndoStack.IsDirty.Should().BeFalse();
+            session.HasExternalChange().Should().BeFalse();
+        }
+
+        [Test]
         public void ReloadFromDisk_ReplacesDocumentAndResetsExternalChangeBaseline()
         {
             var external = JsonGffDocument.Load(_path);

@@ -129,5 +129,26 @@ namespace SWLOR.Toolset.Tests
             unposed.Should().Be(new Vector3(0f, 0f, 1f));
             posed.Should().Be(new Vector3(5f, 0f, 1f), "the child rides its parent's posed transform");
         }
+
+        [Test]
+        public void AnimationScaleAppliesToInheritedTranslationsOnly()
+        {
+            var inheritedRoot = new MdlNode { Name = "root" };
+            inheritedRoot.Children.Add(Bone(
+                "hand",
+                (0f, new Vector3(2f, 0f, 0f))));
+            var superModel = ModelWith(Animation("pause1", inheritedRoot));
+            var model = new MdlModel
+            {
+                SuperModel = "shared_idle",
+                Scale = 3f
+            };
+
+            var posed = MdlAnimationPose.SampleIdle(
+                model,
+                resRef => resRef == "shared_idle" ? superModel : null);
+
+            posed["hand"].Position.Should().Be(new Vector3(6f, 0f, 0f));
+        }
     }
 }

@@ -210,6 +210,27 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AnimationScaleDoesNotResizeAuthoredMeshGeometry()
+        {
+            var mesh = Triangle("scaled-animation");
+            mesh.Position = new Vector3(3, 4, 5);
+            var root = new MdlNode { Name = "root" };
+            root.Children.Add(mesh);
+            mesh.Parent = root;
+            var model = new MdlModel
+            {
+                Name = "animated",
+                GeometryRoot = root,
+                Scale = 3f
+            };
+
+            var built = MdlMeshBuilder.Build(model);
+
+            Vector3.Transform(Vector3.UnitX, built.Meshes.Single().Transform)
+                .Should().Be(new Vector3(4, 4, 5));
+        }
+
+        [Test]
         public void FlattenerTerminatesOnAChildCycleAndUsesExactVertexRadius()
         {
             var mesh = Triangle("cyclic");
@@ -265,6 +286,99 @@ namespace SWLOR.Toolset.Tests
             attached.Parent!.Parent!.Name.Should().Be("lthigh_g");
             attached.Should().NotBeSameAs(partMesh);
             partMesh.Bitmap.Should().Be("stale", "cached source models must not be mutated");
+        }
+
+        [Test]
+        public void FullBodyRobeAttachesAtTheSkeletonRoot()
+        {
+            var skeletonRoot = new MdlNode { Name = "root" };
+            var torso = new MdlNode
+            {
+                Name = "torso_g",
+                Position = new Vector3(10f, 0f, 0f),
+                Parent = skeletonRoot
+            };
+            skeletonRoot.Children.Add(torso);
+            var skeleton = new MdlModel { Name = "pfh0", GeometryRoot = skeletonRoot };
+
+            var robeRoot = new MdlNode { Name = "robe-root" };
+            var robeMesh = Triangle("robe-mesh");
+            robeMesh.Vertices =
+            [
+                new Vector3(0f, 0f, 0f),
+                new Vector3(0f, 0f, 1.5f),
+                new Vector3(1f, 0f, 0f)
+            ];
+            robeMesh.Parent = robeRoot;
+            robeRoot.Children.Add(robeMesh);
+            var robe = new MdlModel { Name = "full_robe", GeometryRoot = robeRoot };
+
+            var composer = new MdlPartComposer((resRef, _) =>
+                resRef == "skeleton" ? skeleton :
+                resRef == "full_robe" ? robe :
+                null);
+
+            var composed = composer.Compose(
+                "skeleton",
+                new[] { ("robe", "full_robe") },
+                adjustSeams: false);
+
+            var attached = composed!.GetMeshNodes().Single();
+            attached.Parent!.Parent.Should().BeSameAs(composed.GeometryRoot);
+            Vector3.Transform(Vector3.Zero, MdlMeshBuilder.ComposeNodeTransform(attached))
+                .X.Should().BeApproximately(0f, 0.0001f,
+                    "the flattened robe must not receive the torso transform a second time");
+        }
+
+        [Test]
+        public void SeamAdjustmentIncreasesHeadAndNeckOverlap()
+        {
+            var skeletonRoot = new MdlNode { Name = "root" };
+            var headBone = new MdlNode { Name = "head_g", Parent = skeletonRoot };
+            var neckBone = new MdlNode { Name = "neck_g", Parent = skeletonRoot };
+            skeletonRoot.Children.Add(headBone);
+            skeletonRoot.Children.Add(neckBone);
+            var skeleton = new MdlModel { Name = "pfh0", GeometryRoot = skeletonRoot };
+
+            static MdlModel Part(string name, float minimumZ, float maximumZ)
+            {
+                var root = new MdlNode { Name = name + "-root" };
+                var mesh = Triangle(name + "-mesh");
+                mesh.Vertices =
+                [
+                    new Vector3(0f, 0f, minimumZ),
+                    new Vector3(1f, 0f, maximumZ),
+                    new Vector3(0f, 1f, minimumZ)
+                ];
+                mesh.Parent = root;
+                root.Children.Add(mesh);
+                return new MdlModel { Name = name, GeometryRoot = root };
+            }
+
+            var head = Part("head_part", 1.0f, 1.1f);
+            var neck = Part("neck_part", 0.8f, 0.95f);
+            var composer = new MdlPartComposer((resRef, _) =>
+                resRef == "skeleton" ? skeleton :
+                resRef == "head_part" ? head :
+                resRef == "neck_part" ? neck :
+                null);
+            var parts = new[]
+            {
+                ("head", "head_part"),
+                ("neck", "neck_part")
+            };
+
+            var unchanged = composer.Compose("skeleton", parts, adjustSeams: false)!;
+            var adjusted = composer.Compose("skeleton", parts, adjustSeams: true)!;
+            var unchangedRoot = unchanged.GetMeshNodes()
+                .Single(mesh => mesh.Bitmap == "head_part").Parent!;
+            var adjustedRoot = adjusted.GetMeshNodes()
+                .Single(mesh => mesh.Bitmap == "head_part").Parent!;
+
+            unchangedRoot.Position.Z.Should().Be(0f);
+            adjustedRoot.Position.Z.Should().BeLessThan(
+                unchangedRoot.Position.Z,
+                "the head must move toward the neck when their authored bounds leave a gap");
         }
 
         [Test]

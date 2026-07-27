@@ -19,6 +19,16 @@ namespace SWLOR.Toolset.Domain.Render
         private const int MaximumParts = 256;
         private const int MaximumNodes = 1_000_000;
         private const int MaximumDepth = 4_096;
+        private const float MinimumSeamOverlap = 0.10f;
+        private const float ReferenceBodyHeight = 1.9f;
+
+        // Lower joint first: moving the neck toward the chest establishes the target the head then
+        // moves toward, so the second correction does not reopen the first seam.
+        private static readonly (string Upper, string Lower)[] SeamPairs =
+        [
+            ("neck", "chest"),
+            ("head", "neck")
+        ];
 
         private readonly Func<string, bool, MdlModel?> _loadModel;
         private readonly Dictionary<(string ResRef, bool WithSupermodelAnimations), MdlModel?> _cache =
@@ -51,6 +61,7 @@ namespace SWLOR.Toolset.Domain.Render
                 return null;
 
             var bones = IndexNodes(composed.GeometryRoot);
+            var attachedParts = new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase);
             var partCount = 0;
             foreach (var (partType, modelResRef) in parts)
             {
@@ -59,26 +70,28 @@ namespace SWLOR.Toolset.Domain.Render
                 if (string.IsNullOrWhiteSpace(partType) || string.IsNullOrWhiteSpace(modelResRef))
                     continue;
 
-                var bone = FindBone(bones, partType);
-                if (bone == null)
-                    continue;
-
                 var partSource = Load(modelResRef, withSupermodelAnimations: false);
                 if (partSource?.GeometryRoot == null)
+                    continue;
+
+                var bone = partType.Equals("robe", StringComparison.OrdinalIgnoreCase) &&
+                           RobeCoverage.IsFullBodyRobe(partSource)
+                    ? composed.GeometryRoot
+                    : FindBone(bones, partType);
+                if (bone == null)
                     continue;
 
                 var partRoot = CloneNodeTree(partSource.GeometryRoot);
                 if (partRoot == null)
                     continue;
 
-                // MdlModel.Scale is outside the node tree. Carry a non-default part scale into the
-                // attached root so it is not lost when the part becomes part of another model.
-                if (float.IsFinite(partSource.Scale) && partSource.Scale != 1f)
-                    partRoot.Scale *= partSource.Scale;
-
                 StampPartTexture(partRoot, modelResRef);
-                Attach(bone, partRoot, adjustSeams);
+                Attach(bone, partRoot);
+                attachedParts.TryAdd(partType.Trim(), partRoot);
             }
+
+            if (adjustSeams)
+                AdjustSeamOverlaps(composed, attachedParts);
 
             RecalculateBounds(composed);
             return composed;
@@ -150,18 +163,107 @@ namespace SWLOR.Toolset.Domain.Render
             return result;
         }
 
-        private static void Attach(MdlNode bone, MdlNode partRoot, bool adjustSeams)
+        private static void Attach(MdlNode bone, MdlNode partRoot)
         {
             partRoot.Parent = bone;
             bone.Children.Add(partRoot);
-
-            if (!adjustSeams)
-                return;
 
             // Parts are independently authored trees. Reasserting all child Parent links keeps the
             // transform chain coherent even when an ASCII source omitted or disagreed with them; the
             // Children collection is the topology authority used by the standalone reader.
             RepairParentLinks(partRoot);
+        }
+
+        private static void AdjustSeamOverlaps(
+            MdlModel model,
+            IReadOnlyDictionary<string, MdlNode> attachedParts)
+        {
+            if (model.GeometryRoot == null ||
+                !TryWorldBounds(model.GeometryRoot, out var modelMinimum, out var modelMaximum))
+            {
+                return;
+            }
+
+            var modelHeight = modelMaximum.Z - modelMinimum.Z;
+            var requiredOverlap = float.IsFinite(modelHeight) && modelHeight > 0f
+                ? modelHeight * (MinimumSeamOverlap / ReferenceBodyHeight)
+                : MinimumSeamOverlap;
+
+            foreach (var (upperType, lowerType) in SeamPairs)
+            {
+                if (!attachedParts.TryGetValue(upperType, out var upper) ||
+                    !attachedParts.TryGetValue(lowerType, out var lower) ||
+                    !TryWorldBounds(upper, out var upperMinimum, out var upperMaximum) ||
+                    !TryWorldBounds(lower, out var lowerMinimum, out var lowerMaximum))
+                {
+                    continue;
+                }
+
+                var overlap = MathF.Min(upperMaximum.Z, lowerMaximum.Z) -
+                              MathF.Max(upperMinimum.Z, lowerMinimum.Z);
+                if (!float.IsFinite(overlap) || overlap >= requiredOverlap)
+                    continue;
+
+                MoveInWorld(upper, new Vector3(0f, 0f, -(requiredOverlap - overlap)));
+            }
+        }
+
+        private static bool TryWorldBounds(
+            MdlNode root,
+            out Vector3 minimum,
+            out Vector3 maximum)
+        {
+            minimum = new Vector3(float.MaxValue);
+            maximum = new Vector3(float.MinValue);
+            var found = false;
+            var visited = new HashSet<MdlNode>(ReferenceEqualityComparer.Instance);
+            var pending = new Stack<MdlNode>();
+            pending.Push(root);
+
+            while (pending.Count > 0)
+            {
+                var node = pending.Pop();
+                if (!visited.Add(node))
+                    continue;
+                if (visited.Count > MaximumNodes)
+                    throw new InvalidDataException($"MDL part exceeds the {MaximumNodes:N0}-node limit.");
+
+                if (node is MdlTrimeshNode mesh && mesh.Render)
+                {
+                    var world = MdlMeshBuilder.ComposeNodeTransform(mesh);
+                    foreach (var vertex in mesh.Vertices)
+                    {
+                        var transformed = Vector3.Transform(vertex, world);
+                        if (!IsFinite(transformed))
+                            continue;
+
+                        minimum = Vector3.Min(minimum, transformed);
+                        maximum = Vector3.Max(maximum, transformed);
+                        found = true;
+                    }
+                }
+
+                foreach (var child in node.Children)
+                {
+                    if (child != null)
+                        pending.Push(child);
+                }
+            }
+
+            return found;
+        }
+
+        private static void MoveInWorld(MdlNode root, Vector3 worldOffset)
+        {
+            var parentWorld = root.Parent == null
+                ? Matrix4x4.Identity
+                : MdlMeshBuilder.ComposeNodeTransform(root.Parent);
+            if (!Matrix4x4.Invert(parentWorld, out var inverseParent))
+                return;
+
+            var localOffset = Vector3.TransformNormal(worldOffset, inverseParent);
+            if (IsFinite(localOffset))
+                root.Position += localOffset;
         }
 
         private static void RepairParentLinks(MdlNode root)

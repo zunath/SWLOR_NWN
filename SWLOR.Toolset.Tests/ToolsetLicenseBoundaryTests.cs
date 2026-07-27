@@ -196,6 +196,16 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void LicensedCorpusTestsAreExcludedFromTheDefaultSolution()
+        {
+            var solution = File.ReadAllText(Path.Combine(RepositoryRoot, "SWLOR.Game.Server.sln"));
+
+            solution.Should().NotContain(
+                @"SWLOR.NWN.Formats.Corpus.Tests\SWLOR.NWN.Formats.Corpus.Tests.csproj",
+                "the licensed corpus is an opt-in verification suite and must not run with the default solution");
+        }
+
+        [Test]
         public void TheRepositoryDeclaresItsMitLicense()
         {
             var license = Path.Combine(RepositoryRoot, "LICENSE.txt");

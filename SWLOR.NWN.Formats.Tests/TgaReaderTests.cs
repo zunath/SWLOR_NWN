@@ -28,7 +28,7 @@ public class TgaReaderTests
     [Test]
     public void RleTrueColor_ValidatesPacketsAndRightOrigin()
     {
-        var bytes = Header(imageType: 10, width: 2, height: 1, depth: 32, descriptor: 0x30)
+        var bytes = Header(imageType: 10, width: 2, height: 1, depth: 32, descriptor: 0x38)
             .Concat(new byte[] { 0x81, 3, 2, 1, 4 })
             .ToArray();
 
@@ -38,6 +38,18 @@ public class TgaReaderTests
         bytes[^5] = 0x82;
         Action action = () => TgaReader.Read(bytes);
         action.Should().Throw<NwnFormatException>();
+    }
+
+    [Test]
+    public void TrueColorWithoutAttributeBitsTreatsTheFourthByteAsOpaquePadding()
+    {
+        var bytes = Header(imageType: 2, width: 1, height: 1, depth: 32, descriptor: 0x20)
+            .Concat(new byte[] { 3, 2, 1, 0 })
+            .ToArray();
+
+        var image = TgaReader.Read(bytes);
+
+        image.Pixels.Should().Equal(1, 2, 3, 255);
     }
 
     [Test]

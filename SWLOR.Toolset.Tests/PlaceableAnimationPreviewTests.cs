@@ -97,7 +97,8 @@ namespace SWLOR.Toolset.Tests
                 Parent = root,
                 Texture = "fxpa_starbnw",
                 XGrid = 4,
-                YGrid = 4
+                YGrid = 4,
+                Loop = true
             });
             var model = new MdlModel { Name = "portal", GeometryRoot = root };
 
@@ -138,7 +139,8 @@ namespace SWLOR.Toolset.Tests
             {
                 Name = "fire",
                 Parent = root,
-                Texture = "fxpa_smoke"
+                Texture = "fxpa_smoke",
+                Loop = true
             });
             var model = new MdlModel { Name = "fire", GeometryRoot = root };
             model.Animations.Add(Animation("on", 0.033f));
@@ -148,6 +150,25 @@ namespace SWLOR.Toolset.Tests
 
             rendered.Animations.Single(animation => animation.Name == "on").ShowsEmitters.Should().BeTrue();
             rendered.Animations.Single(animation => animation.Name == "off").ShowsEmitters.Should().BeFalse();
+        }
+
+        [Test]
+        public void NonLoopingEmittersDoNotBecomePermanentAmbientParticles()
+        {
+            var root = new MdlNode { Name = "root" };
+            root.Children.Add(new MdlEmitterNode
+            {
+                Name = "one-shot-debris",
+                Parent = root,
+                Texture = "fxpa_cloud02",
+                Update = "Fountain",
+                Loop = false
+            });
+            var model = new MdlModel { Name = "debris", GeometryRoot = root };
+
+            var rendered = MdlMeshBuilder.BuildPlaceablePreview(model);
+
+            rendered.Emitters.Should().BeEmpty();
         }
 
         [Test]

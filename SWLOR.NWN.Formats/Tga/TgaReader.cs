@@ -35,6 +35,7 @@ public static class TgaReader
         var height = reader.ReadUInt16(14);
         var pixelDepth = reader.ReadByte(16);
         var descriptor = reader.ReadByte(17);
+        var attributeBits = descriptor & 0x0F;
 
         if ((descriptor & 0xC0) != 0)
             throw new NwnFormatException("TGA interleaved image data is not supported.");
@@ -70,7 +71,11 @@ public static class TgaReader
             palette = new Rgba32[colorMapLength];
             for (var index = 0; index < colorMapLength; index++)
             {
-                palette[index] = DecodeBgra(reader, cursor, paletteEntryBytes);
+                palette[index] = DecodeBgra(
+                    reader,
+                    cursor,
+                    paletteEntryBytes,
+                    attributeBits > 0);
                 cursor += paletteEntryBytes;
             }
         }
@@ -95,7 +100,14 @@ public static class TgaReader
 
             if (repeated)
             {
-                var pixel = DecodeSourcePixel(reader, ref cursor, baseType, sourceBytesPerPixel, palette, colorMapFirst);
+                var pixel = DecodeSourcePixel(
+                    reader,
+                    ref cursor,
+                    baseType,
+                    sourceBytesPerPixel,
+                    palette,
+                    colorMapFirst,
+                    attributeBits);
                 for (var count = 0; count < packetCount; count++)
                     WritePixel(output, width, height, written++, originTop, originRight, pixel);
             }
@@ -109,7 +121,8 @@ public static class TgaReader
                         baseType,
                         sourceBytesPerPixel,
                         palette,
-                        colorMapFirst);
+                        colorMapFirst,
+                        attributeBits);
                     WritePixel(output, width, height, written++, originTop, originRight, pixel);
                 }
             }
@@ -124,11 +137,16 @@ public static class TgaReader
         int baseType,
         int sourceBytesPerPixel,
         Rgba32[]? palette,
-        ushort colorMapFirst)
+        ushort colorMapFirst,
+        int attributeBits)
     {
         if (baseType == 2)
         {
-            var result = DecodeBgra(reader, cursor, sourceBytesPerPixel);
+            var result = DecodeBgra(
+                reader,
+                cursor,
+                sourceBytesPerPixel,
+                attributeBits > 0);
             cursor += sourceBytesPerPixel;
             return result;
         }
@@ -137,7 +155,9 @@ public static class TgaReader
         {
             reader.ValidateRange(cursor, sourceBytesPerPixel, "TGA grayscale pixel");
             var intensity = reader.ReadByte(cursor);
-            var alpha = sourceBytesPerPixel == 2 ? reader.ReadByte(cursor + 1) : (byte)255;
+            var alpha = sourceBytesPerPixel == 2 && attributeBits > 0
+                ? reader.ReadByte(cursor + 1)
+                : (byte)255;
             cursor += sourceBytesPerPixel;
             return new Rgba32(intensity, intensity, intensity, alpha);
         }
@@ -150,14 +170,18 @@ public static class TgaReader
         return palette[paletteIndex];
     }
 
-    private static Rgba32 DecodeBgra(GuardedBinaryReader reader, long offset, int byteCount)
+    private static Rgba32 DecodeBgra(
+        GuardedBinaryReader reader,
+        long offset,
+        int byteCount,
+        bool hasAlpha)
     {
         reader.ValidateRange(offset, byteCount, "TGA color pixel");
         return new Rgba32(
             reader.ReadByte(offset + 2),
             reader.ReadByte(offset + 1),
             reader.ReadByte(offset),
-            byteCount == 4 ? reader.ReadByte(offset + 3) : (byte)255);
+            byteCount == 4 && hasAlpha ? reader.ReadByte(offset + 3) : (byte)255);
     }
 
     private static void WritePixel(

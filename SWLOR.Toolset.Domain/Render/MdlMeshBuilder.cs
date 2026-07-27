@@ -156,13 +156,13 @@ namespace SWLOR.Toolset.Domain.Render
                 if (!mesh.Render || PlaceholderNames.Contains(mesh.Name))
                     continue;
 
-                var built = BuildMesh(model, mesh, poseFrames, animationSamples);
+                var built = BuildMesh(mesh, poseFrames, animationSamples);
                 if (built != null)
                     renderMeshes.Add(built);
             }
 
             var renderEmitters = includePlaceableMetadata
-                ? emitterNodes.Select(node => BuildEmitter(model, node, animationSamples)).ToList()
+                ? emitterNodes.Select(node => BuildEmitter(node, animationSamples)).ToList()
                 : new List<RenderEmitter>();
             var renderAnimations = includePlaceableMetadata
                 ? BuildAnimations(animations, renderMeshes, renderEmitters)
@@ -198,7 +198,6 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         private static RenderMesh? BuildMesh(
-            MdlModel model,
             MdlTrimeshNode mesh,
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
             IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationSamples)
@@ -241,16 +240,14 @@ namespace SWLOR.Toolset.Domain.Render
             if (indices.Count == 0)
                 return null;
 
-            var modelScale = Matrix4x4.CreateScale(
-                float.IsFinite(model.Scale) && model.Scale != 0f ? model.Scale : 1f);
-            var staticTransform = ComposeNodeTransform(mesh) * modelScale;
+            var staticTransform = ComposeNodeTransform(mesh);
             var renderedPoseFrames = poseFrames == null
                 ? Array.Empty<Matrix4x4>()
-                : poseFrames.Select(pose => ComposeNodeTransform(mesh, pose) * modelScale).ToArray();
+                : poseFrames.Select(pose => ComposeNodeTransform(mesh, pose)).ToArray();
             var animationFrames = new Dictionary<string, IReadOnlyList<Matrix4x4>>(
                 StringComparer.OrdinalIgnoreCase);
             foreach (var (name, samples) in animationSamples)
-                animationFrames[name] = samples.Select(pose => ComposeNodeTransform(mesh, pose) * modelScale).ToArray();
+                animationFrames[name] = samples.Select(pose => ComposeNodeTransform(mesh, pose)).ToArray();
 
             return new RenderMesh
             {
@@ -268,18 +265,15 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         private static RenderEmitter BuildEmitter(
-            MdlModel model,
             MdlEmitterNode emitter,
             IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationSamples)
         {
-            var modelScale = Matrix4x4.CreateScale(
-                float.IsFinite(model.Scale) && model.Scale != 0f ? model.Scale : 1f);
             var animationFrames = new Dictionary<string, IReadOnlyList<Matrix4x4>>(
                 StringComparer.OrdinalIgnoreCase);
             foreach (var (name, samples) in animationSamples)
             {
                 animationFrames[name] = samples
-                    .Select(pose => ComposeNodeTransform(emitter, pose) * modelScale)
+                    .Select(pose => ComposeNodeTransform(emitter, pose))
                     .ToArray();
             }
 
@@ -287,7 +281,7 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 NodeName = emitter.Name,
                 TextureName = emitter.Texture ?? string.Empty,
-                Transform = ComposeNodeTransform(emitter) * modelScale,
+                Transform = ComposeNodeTransform(emitter),
                 AnimationFrames = animationFrames,
                 XGrid = Math.Clamp(emitter.XGrid, 1, MaximumEmitterGrid),
                 YGrid = Math.Clamp(emitter.YGrid, 1, MaximumEmitterGrid),
@@ -372,6 +366,7 @@ namespace SWLOR.Toolset.Domain.Render
             !(name?.Contains("dead", StringComparison.OrdinalIgnoreCase) ?? false);
 
         private static bool IsPersistentEmitter(MdlEmitterNode emitter) =>
+            emitter.Loop &&
             !string.IsNullOrWhiteSpace(emitter.Texture) &&
             !(emitter.Update?.Contains("explosion", StringComparison.OrdinalIgnoreCase) ?? false);
 

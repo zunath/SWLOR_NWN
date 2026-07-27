@@ -252,6 +252,25 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AcceptingASkillGatedQuestWithoutTheRankDoesNothing()
+        {
+            // primal_overrun_foundation carries a Beast Mastery rank-50 prerequisite; runtime
+            // QuestDetail.CanAccept refuses below it, so the simulated accept must too.
+            var document = DlgDocument.Load(
+                Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "cq_primover.dlg.json"));
+            var accept = document.Replies.Single(r => r.Text == "I'll clear the six and bring your slate.");
+
+            var unqualified = Evaluator.ApplyActions(accept, new PretendPlayer());
+            unqualified.GetQuest("primal_overrun_foundation").IsInProgress.Should().BeFalse(
+                "a rank-0 pretend player cannot pass the rank-50 skill gate");
+
+            var qualified = Evaluator.ApplyActions(
+                accept, new PretendPlayer().WithSkill("BeastMastery", 50));
+            qualified.GetQuest("primal_overrun_foundation").IsInProgress.Should().BeTrue(
+                "the same accept succeeds once the prerequisite rank is met");
+        }
+
+        [Test]
         public void AcceptingARepeatableQuestAfterCompletionRestartsIt()
         {
             // Unlike Field Tinctures, harvest_herbs is repeatable - CanAccept allows a fresh accept

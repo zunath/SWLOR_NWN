@@ -46,6 +46,13 @@ namespace SWLOR.Toolset.Editors
         /// compile instead of skipping straight past a stale .ncs.
         /// </summary>
         private bool _compileOnSaveFailed;
+
+        /// <summary>
+        /// True while the last compile-on-save failed after the source was written: the tab is
+        /// clean, yet the canonical .ncs is stale. Application close treats this as unsaved work
+        /// so a second close attempt cannot exit silently with stale bytecode.
+        /// </summary>
+        public bool HasPendingCompileFailure => _compileOnSaveFailed;
         private bool _isClosed;
         private int _line = 1;
         private int _column = 1;

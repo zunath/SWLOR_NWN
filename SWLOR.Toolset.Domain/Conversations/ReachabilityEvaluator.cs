@@ -280,6 +280,21 @@ namespace SWLOR.Toolset.Domain.Conversations
                     if (!player.GetQuest(prerequisite).IsCompleted)
                         return;
                 }
+
+                // The same key-item and skill gates CanAcceptQuest enforces: runtime
+                // QuestDetail.CanAccept refuses when any is missing, so the simulated accept
+                // must too (a rank-50 capstone gate must not open in preview for a rank-0 player).
+                foreach (var keyItem in quest.PrerequisiteKeyItems)
+                {
+                    if (!player.HasKeyItem(keyItem))
+                        return;
+                }
+
+                foreach (var (skill, rank) in quest.PrerequisiteSkills)
+                {
+                    if (player.GetSkillRank(skill) < rank)
+                        return;
+                }
             }
 
             player.WithQuest(questId, QuestProgress.OnStep(1));

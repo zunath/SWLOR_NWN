@@ -811,7 +811,7 @@ namespace SWLOR.Toolset.Editors
                 !_openDoorEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openSoundEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openAreaEditors.Values.Any(editor => editor.IsDirty) &&
-                !_openScriptEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openScriptEditors.Values.Any(editor => editor.IsDirty || editor.HasPendingCompileFailure) &&
                 !_openConversations.Values.Any(editor => editor.IsDirty))
                 return true;
 

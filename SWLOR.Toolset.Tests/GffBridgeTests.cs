@@ -11,6 +11,26 @@ namespace SWLOR.Toolset.Tests
     public class GffBridgeTests
     {
         [Test]
+        public void Utf8AndWindows1252TokensBothDecodeToTheRealCharacter()
+        {
+            // The corpus stores the em dash both ways: veles_genstore as real UTF-8 bytes,
+            // coolship as the raw Windows-1252 byte. Both must decode to U+2014, and each must
+            // re-encode byte-identically in its own detected encoding.
+            var utf8Token = new byte[] { (byte)'"', (byte)'a', 0xE2, 0x80, 0x94, (byte)'b', (byte)'"' };
+            var cp1252Token = new byte[] { (byte)'"', (byte)'a', 0x97, (byte)'b', (byte)'"' };
+
+            JsonStringCodec.Decode(utf8Token).Should().Be("a—b");
+            JsonStringCodec.Decode(cp1252Token).Should().Be("a—b");
+
+            JsonStringCodec.Encode("a—b", useUtf8: true).Should().Equal(utf8Token);
+            JsonStringCodec.Encode("a—b", useUtf8: false).Should().Equal(cp1252Token);
+        }
+
+        // The JSON->GffFile->JSON byte-identity corpus gate lives on the base branch; this branch
+        // defers binary GFF writing (ToGffFile has no production caller), so only the read-side
+        // and codec coverage applies here.
+
+        [Test]
         public void HandBuiltGffFile_BridgesToExpectedJsonShape()
         {
             var childStruct = new GffStruct { Type = 2 };

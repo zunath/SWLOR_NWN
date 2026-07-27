@@ -91,6 +91,12 @@ namespace SWLOR.Toolset.Editors
         public Placeables.PlaceableEditorSections? PlaceableSections { get; }
 
         /// <summary>
+        /// The searchable appearance grid, for blueprint types that have one. Null leaves the
+        /// schema's own appearance field as the only way to set it.
+        /// </summary>
+        public Appearance.AppearanceGallerySectionViewModel? AppearanceGallery { get; }
+
+        /// <summary>
         /// The generic blueprint view hosts the placeable editor too; only that editor shows the
         /// Waypoint-style Save/Revert footer requested for its multi-tab authoring workflow.
         /// </summary>
@@ -119,7 +125,9 @@ namespace SWLOR.Toolset.Editors
             IScriptSlotHost? scriptSlotHost = null,
             Func<EditorFieldContext, Func<string, Action, bool>, IScriptSlotHost?,
                 Func<string?, IReadOnlyList<string>>, Placeables.PlaceableEditorSections?>? placeableSections = null,
-            Func<Domain.Workspace.ModuleWorkspace?>? resourceLister = null)
+            Func<Domain.Workspace.ModuleWorkspace?>? resourceLister = null,
+            Func<EditorFieldContext, Func<string, Action, bool>,
+                Appearance.AppearanceGallerySectionViewModel?>? appearanceGallery = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resourceLister = resourceLister;
@@ -149,6 +157,11 @@ namespace SWLOR.Toolset.Editors
                 VarTableSection = new VarTableSectionViewModel(
                     _context.RunEdit, new VarTable(_session.Document.Root), gameCodeIndex);
             }
+
+            // A creature's appearance is the most visual choice in the module, and it was the one
+            // place still picked from a list of names. The gallery is the same control the door
+            // editor uses; only the rows differ.
+            AppearanceGallery = appearanceGallery?.Invoke(_context, RunEdit);
 
             PlaceableSections = placeableSections?.Invoke(
                 _context, RunEdit, _scriptSlotHost, ResourceChoices);
@@ -194,6 +207,13 @@ namespace SWLOR.Toolset.Editors
                     new EditorTabViewModel("Behavior", PlaceableSections.Behavior));
                 Tabs.Insert(Math.Min(1, Tabs.Count),
                     new EditorTabViewModel("Appearance", PlaceableSections.Appearance));
+            }
+            else if (AppearanceGallery != null)
+            {
+                // Beside Basic for the same reason: what the thing looks like is one of the two
+                // facts a builder opens it to change.
+                Tabs.Insert(Math.Min(1, Tabs.Count),
+                    new EditorTabViewModel("Appearance", AppearanceGallery));
             }
 
             if (VarTableSection != null && ShouldShowVariablesTab())

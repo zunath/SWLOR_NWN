@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
              xmlns:editors="using:SWLOR.Toolset.Editors"
              x:Class="SWLOR.Toolset.Editors.Doors.DoorEditorView"
              x:DataType="doors:DoorEditorViewModel">
@@ -98,55 +99,7 @@
         </TabItem>
 
         <TabItem Header="Appearance">
-          <Grid RowDefinitions="Auto,Auto,*" Margin="14,10"
-                DataContext="{Binding Appearance}"
-                x:DataType="doors:DoorAppearanceSectionViewModel">
-            <TextBox Grid.Row="0" Text="{Binding Query, Mode=TwoWay}"
-                     Watermark="Search models by name or ResRef" />
-            <TextBlock Grid.Row="1" Text="{Binding MatchSummary}" Classes="count"
-                       Margin="2,7" />
-            <ListBox Grid.Row="2" ItemsSource="{Binding Tiles}"
-                     SelectedItem="{Binding Highlighted, Mode=TwoWay}"
-                     ScrollViewer.ScrollChanged="OnAppearanceScrollChanged"
-                     Background="Transparent" BorderThickness="0" Padding="2">
-              <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <WrapPanel />
-                </ItemsPanelTemplate>
-              </ListBox.ItemsPanel>
-              <ListBox.Styles>
-                <Style Selector="ListBoxItem">
-                  <Setter Property="Padding" Value="0" />
-                  <Setter Property="Margin" Value="3" />
-                </Style>
-              </ListBox.Styles>
-              <ListBox.ItemTemplate>
-                <DataTemplate DataType="doors:DoorAppearanceTileViewModel">
-                  <Border Width="112" Padding="4" CornerRadius="3"
-                          Classes.current="{Binding IsCurrent}"
-                          Background="{DynamicResource PanelRaisedBrush}"
-                          BorderThickness="2" BorderBrush="{DynamicResource RuleBrush}">
-                    <Border.Styles>
-                      <Style Selector="Border.current">
-                        <Setter Property="BorderBrush" Value="{DynamicResource GoldBrush}" />
-                      </Style>
-                    </Border.Styles>
-                    <StackPanel Spacing="3">
-                      <Panel Height="82">
-                        <Image Source="{Binding Preview}" Stretch="Uniform" />
-                      </Panel>
-                      <TextBlock Text="{Binding Caption}" FontSize="10.5"
-                                 TextTrimming="CharacterEllipsis"
-                                 HorizontalAlignment="Center" />
-                      <TextBlock Text="{Binding ModelName}" Classes="mono" FontSize="9.5"
-                                 TextTrimming="CharacterEllipsis"
-                                 HorizontalAlignment="Center" />
-                    </StackPanel>
-                  </Border>
-                </DataTemplate>
-              </ListBox.ItemTemplate>
-            </ListBox>
-          </Grid>
+          <appearance:AppearanceGalleryView DataContext="{Binding Appearance}" />
         </TabItem>
 
         <TabItem Header="Behavior">

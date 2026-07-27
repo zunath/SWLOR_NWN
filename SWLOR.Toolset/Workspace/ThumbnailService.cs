@@ -314,6 +314,63 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
+        /// Resolves the thumbnail for one <c>appearance.2da</c> row, calling
+        /// <paramref name="onReady"/> on the UI thread.
+        /// </summary>
+        /// <remarks>
+        /// Kept beside the tile path rather than the blueprint path for the same reason that one is:
+        /// an appearance row is not a module resource, so there is no file to check a timestamp
+        /// against and nothing that belongs in the module's on-disk preview cache. Memory only, under
+        /// its own key prefix — a row id could otherwise collide with a resref.
+        /// </remarks>
+        public void RequestAppearanceAsync(int appearanceId, Action<Bitmap> onReady)
+        {
+            ArgumentNullException.ThrowIfNull(onReady);
+
+            if (!IsAvailable || appearanceId < 0)
+                return;
+
+            var key = AppearanceKey(appearanceId);
+            if (_memory.TryGet(key, out var known))
+            {
+                if (known != null)
+                    Dispatcher.UIThread.Post(() => onReady(known));
+
+                return;
+            }
+
+            if (!TryStartRender(key, onReady, null, out var operation))
+                return;
+
+            Task.Run(() =>
+            {
+                Bitmap? bitmap = null;
+                try
+                {
+                    if (_renderer.RenderCreatureAppearance(appearanceId) is { } image)
+                        bitmap = ToBitmap(image);
+                }
+                catch (Exception)
+                {
+                    // One unrenderable appearance row must not stop the rest of the grid filling in.
+                }
+
+                var result = new PreviewResolution(
+                    bitmap, new ThumbnailDiskCache(null), ResourceType.Utc,
+                    appearanceId.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    UseIndexedBlueprint: false, Persist: false);
+                CompleteRender(key, operation, result, bitmap);
+            });
+        }
+
+        /// <summary>The cached appearance-row thumbnail if it is already decoded, else null.</summary>
+        public Bitmap? CachedAppearance(int appearanceId) =>
+            _memory.TryGet(AppearanceKey(appearanceId), out var bitmap) ? bitmap : null;
+
+        private static string AppearanceKey(int appearanceId) =>
+            "appearance:" + appearanceId.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        /// <summary>
         /// Registers <paramref name="onReady"/> as a waiter on <paramref name="key"/>, and reports whether
         /// this caller is the one that has to do the render.
         /// </summary>

@@ -37,7 +37,7 @@ namespace SWLOR.Toolset.Editors.Doors
 
         public ObservableCollection<DoorRowViewModel> BehaviorRows { get; } = new();
 
-        public DoorAppearanceSectionViewModel Appearance { get; }
+        public Appearance.AppearanceGallerySectionViewModel Appearance { get; }
 
         [ObservableProperty]
         private VarTableSectionViewModel? _variables;
@@ -116,12 +116,22 @@ namespace SWLOR.Toolset.Editors.Doors
             HeaderOwner = headerOwner;
             ResourceIndex = resourceIndex;
             IsDirty = isDirty;
-            Appearance = new DoorAppearanceSectionViewModel(
-                _store,
-                _appearances,
+            // The same grid the creature editor picks its appearance from. Doors and creatures
+            // want exactly the same thing - search a table, look at the pictures, click one - and
+            // the two had arrived at it separately.
+            Appearance = new Appearance.AppearanceGallerySectionViewModel(
+                _appearances
+                    .Select(choice => new Appearance.AppearanceOption(
+                        AppearanceKey(choice),
+                        choice.Display,
+                        choice.Model,
+                        ModelResRef: choice.Model))
+                    .ToList(),
                 thumbnails,
-                RunEdit,
-                OnAppearanceChanged);
+                () => _store.GetAppearance(_appearances) is { } current
+                    ? AppearanceKey(current)
+                    : string.Empty,
+                option => ApplyAppearance(option));
 
             BehaviorListItemViewModel.Build(BehaviorList, DoorBehaviorCatalog.All);
             Behavior = DoorBehaviorCatalog.Classify(door);
@@ -281,6 +291,27 @@ namespace SWLOR.Toolset.Editors.Doors
             OnPropertyChanged(nameof(DoorTag));
             OnPropertyChanged(nameof(TemplateResRef));
             RefreshCompleteness();
+        }
+
+        /// <summary>
+        /// Identity for an appearance row. The kind has to be part of it: generic row 12 and
+        /// specific row 12 are different doors, and they are stored in different fields.
+        /// </summary>
+        private static string AppearanceKey(DoorAppearanceChoice choice) =>
+            $"{choice.Kind}:{choice.Id}";
+
+        private bool ApplyAppearance(Appearance.AppearanceOption option)
+        {
+            var choice = _appearances.FirstOrDefault(
+                candidate => AppearanceKey(candidate) == option.Key);
+            if (choice == null)
+                return false;
+
+            if (!RunEdit($"Change appearance to {choice.Display}", () => _store.SetAppearance(choice)))
+                return false;
+
+            OnAppearanceChanged();
+            return true;
         }
 
         private void OnAppearanceChanged()

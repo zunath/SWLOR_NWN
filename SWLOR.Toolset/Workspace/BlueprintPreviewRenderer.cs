@@ -314,6 +314,35 @@ namespace SWLOR.Toolset.Workspace
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
 
+        /// <summary>
+        /// Renders one <c>appearance.2da</c> row on its own, with no creature involved — what the
+        /// creature editor's appearance grid shows.
+        /// </summary>
+        /// <remarks>
+        /// Goes through a synthetic creature struct rather than reading the row's model column
+        /// directly, and that is the whole point. Roughly half of appearance.2da is
+        /// <c>MODELTYPE = P</c>, where the row names a phenotype rather than a model and the real
+        /// geometry is composed from head, torso and limb parts. Handing the struct to the same
+        /// resolver the thumbnails and the placement ghost use means those rows draw the same
+        /// creature the game would, instead of showing nothing.
+        /// </remarks>
+        public IconImage? RenderCreatureAppearance(int appearanceId)
+        {
+            if (!IsAvailable || appearanceId < 0)
+                return null;
+
+            var root = Domain.Gff.JsonGffDocument.Parse(
+                System.Text.Encoding.UTF8.GetBytes(
+                    $$"""
+                    {
+                      "__data_type": "UTC ",
+                      "Appearance_Type": { "type": "word", "value": {{appearanceId}} }
+                    }
+                    """)).Root;
+
+            return RenderModel(ResourceType.Utc, root, useIndexedBlueprint: false);
+        }
+
         private RenderModel? BuildRenderModel(string modelResRef)
         {
             var model = LoadMdl(modelResRef, withSupermodelAnims: false);

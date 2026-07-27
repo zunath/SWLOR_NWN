@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -240,7 +240,8 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<Workspace.PlaceableIndexService>(),
                 sp.GetService<TwoDaService>(),
                 sp.GetRequiredService<Editors.Placeables.VfxPreviewService>(),
-                sp.GetService<PortraitService>()));
+                sp.GetService<PortraitService>(),
+                sp.GetService<AppearanceService>()));
 
             // One parsed engine header shared by every script tab, built lazily on first use: the
             // header is 13,870 lines, so parsing it per tab would be wasteful and parsing it at

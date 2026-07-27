@@ -32,6 +32,9 @@ namespace SWLOR.Toolset.Editors
         private readonly TileModelCache? _tileModelCache;
         private readonly ResourceIndex? _resourceIndex;
         private readonly PlaceableAppearanceService? _placeableAppearances;
+
+        /// <summary>Backs the creature Appearance grid; null degrades it to the schema field alone.</summary>
+        private readonly AppearanceService? _appearances;
         private readonly DoorTypeService? _doorTypes;
         private readonly PortraitService? _portraits;
         private readonly WaypointAppearanceService? _waypointAppearances;
@@ -51,6 +54,12 @@ namespace SWLOR.Toolset.Editors
         /// the memory by however many tabs were open.
         /// </summary>
         private Placeables.BehaviorValueSourceProvider? _behaviorValues;
+
+        /// <summary>
+        /// The creature appearance rows, projected once. appearance.2da is thousands of rows and
+        /// every creature editor asks for the same list.
+        /// </summary>
+        private IReadOnlyList<Appearance.AppearanceOption>? _creatureAppearanceOptions;
 
         /// <summary>Backs the placeable Appearance tab's model grid; null degrades it to an empty grid.</summary>
         private readonly PlaceableModelCatalog? _placeableModels;
@@ -124,12 +133,14 @@ namespace SWLOR.Toolset.Editors
             PlaceableIndexService? placeableIndexes = null,
             Domain.GameData.TwoDa.TwoDaService? twoDaService = null,
             Placeables.VfxPreviewService? vfxPreviews = null,
-            PortraitService? portraits = null)
+            PortraitService? portraits = null,
+            AppearanceService? appearances = null)
         {
             _placeableModels = placeableModels;
             _thumbnails = thumbnails;
             _placeableIndexes = placeableIndexes;
             _vfxPreviews = vfxPreviews;
+            _appearances = appearances;
             _workspaceContext = workspaceContext;
             _lookups = lookups;
             _log = log;
@@ -443,7 +454,8 @@ namespace SWLOR.Toolset.Editors
                     _tlkService == null ? null : _tlkService.GetString,
                     CreateScriptSlotHost($"{type.SingularDisplayName()} '{resRef}'"),
                     type == ResourceType.Utp ? CreatePlaceableSections : null,
-                    () => _workspaceContext.Workspace);
+                    () => _workspaceContext.Workspace,
+                    type == ResourceType.Utc ? CreateCreatureAppearanceGallery : null);
                 editor.Closed += _ => _openEditors.Remove(filePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
@@ -525,6 +537,58 @@ namespace SWLOR.Toolset.Editors
                 context, values, _prompts, runEdit, scriptSlotHost, resourceChoices);
 
             return new Placeables.PlaceableEditorSections(appearance, behavior);
+        }
+
+        /// <summary>
+        /// The creature editor's appearance grid. Null without the 2DA layer, which leaves the
+        /// schema's own appearance field as the only way to set it - the same degradation every
+        /// other game-data-backed control makes.
+        /// </summary>
+        private Appearance.AppearanceGallerySectionViewModel? CreateCreatureAppearanceGallery(
+            EditorFieldContext context,
+            Func<string, Action, bool> runEdit)
+        {
+            if (_appearances == null)
+                return null;
+
+            var options = _creatureAppearanceOptions ??= _appearances.GetAll()
+                .Select(row => new Appearance.AppearanceOption(
+                    row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    row.DisplayName,
+                    // The label rather than the model column: half of appearance.2da names a
+                    // phenotype there, and "H" tells a builder nothing about what they picked.
+                    $"row {row.Id} \u00b7 {row.Label}",
+                    CreatureAppearanceId: row.Id))
+                .ToList();
+
+            return new Appearance.AppearanceGallerySectionViewModel(
+                options,
+                _thumbnails,
+                () => (context.Document.Root.GetOrNull("Appearance_Type")?.GetInteger() ?? 0)
+                    .ToString(System.Globalization.CultureInfo.InvariantCulture),
+                option => runEdit(
+                    $"Change appearance to {option.Caption}",
+                    () => WriteCreatureAppearance(context, option)),
+                noun: "appearance");
+        }
+
+        private static void WriteCreatureAppearance(
+            EditorFieldContext context,
+            Appearance.AppearanceOption option)
+        {
+            var id = option.CreatureAppearanceId ?? 0;
+            var field = context.Document.Root.GetOrNull("Appearance_Type");
+            if (field == null)
+            {
+                var raw = System.Text.Encoding.ASCII.GetBytes(
+                    id.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                context.Document.Root.Add(
+                    "Appearance_Type",
+                    Domain.Gff.JsonGffField.CreateScalar(Domain.Gff.GffFieldType.Word, raw));
+                return;
+            }
+
+            field.SetInteger(id);
         }
 
         private IReadOnlyList<CatalogEntry> BlueprintChoices(ResourceType type)
@@ -1244,6 +1308,16 @@ namespace SWLOR.Toolset.Editors
 
             return false;
         }
+
+        /// <summary>
+        /// The schema a blueprint type opens with, or null when the type has no editor yet.
+        /// </summary>
+        /// <remarks>
+        /// Public because it is the one fact about this class worth asserting from outside: every
+        /// type the module explorer lists has to open as something, and a type that quietly falls
+        /// through to "No editor available yet" is a blank double-click a builder has to guess at.
+        /// </remarks>
+        public static EditorSchema? SchemaFor(ResourceType type) => GetSchema(type);
 
         private static EditorSchema? GetSchema(ResourceType type)
         {

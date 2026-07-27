@@ -274,6 +274,16 @@ namespace SWLOR.Toolset.Editors.Placeables
             NotifyCurrentChanged();
         }
 
+        /// <summary>
+        /// Rebuilds the offered models and usage labels after the module-wide usage scan changes.
+        /// If the model table is still loading, its normal completion rebuild will use the new index.
+        /// </summary>
+        public void RefreshUsage()
+        {
+            if (_loaded)
+                Rebuild();
+        }
+
         partial void OnUsedInModuleOnlyChanged(bool value)
         {
             if (_loaded)

@@ -161,6 +161,23 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void DuplicatingANodePreservesEveryLocalizedStringIndependently()
+        {
+            var document = LoadDantHerbs();
+            var reply = document.AddReply("Default language.");
+            reply.TextLocString.SetText("2", "Alternate language.");
+
+            var copy = document.DuplicateNode(reply);
+
+            copy.TextLocString.GetText("0").Should().Be("Default language.");
+            copy.TextLocString.GetText("2").Should().Be("Alternate language.");
+
+            copy.TextLocString.SetText("2", "Changed copy.");
+            reply.TextLocString.GetText("2").Should().Be("Alternate language.",
+                "the copied localized entries must not share mutable storage with the original");
+        }
+
+        [Test]
         public void RemovingTheLastAction_ClearsTheDispatcherScript()
         {
             var document = LoadDantHerbs();

@@ -1,10 +1,14 @@
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
+using SWLOR.Toolset.Domain.Placeables;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Editors;
+using SWLOR.Toolset.Editors.Placeables;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -82,6 +86,78 @@ namespace SWLOR.Toolset.Tests
             index.Tags.Should().Contain("WP_TWO");
         }
 
+        [Test]
+        public void WaypointBehaviorFieldsDoNotOfferDoorOrStoreTags()
+        {
+            WriteArea(
+                "typed",
+                waypointTag: "WP_ONLY",
+                displayName: "Typed",
+                doorTag: "DOOR_ONLY",
+                storeTag: "STORE_ONLY");
+            var index = new ModuleTagIndex(new ModuleWorkspace(_root));
+            index.Tags.Should().Contain(new[] { "WP_ONLY", "DOOR_ONLY", "STORE_ONLY" });
+
+            var sources = new BehaviorValueSourceProvider(gameCode: null, tags: () => index);
+            var options = sources.GetOptions(PlaceableValueSource.ObjectTags);
+
+            options.Select(option => option.Value)
+                .Should().BeEquivalentTo(index.TagsFor(ResourceType.Utw))
+                .And.Contain("WP_ONLY")
+                .And.NotContain(new[] { "DOOR_ONLY", "STORE_ONLY" });
+        }
+
+        [Test]
+        public void AppearanceGridRebuildsWhenTheUsageIndexCompletes()
+        {
+            var twoDaRoot = Path.Combine(_root, "sw_2da");
+            Directory.CreateDirectory(twoDaRoot);
+            File.WriteAllText(
+                Path.Combine(twoDaRoot, "placeables.2da"),
+                "2DA V2.0\r\n\r\nLabel StrRef ModelName\r\n" +
+                "0 Used **** plc_used\r\n" +
+                "1 Unused **** plc_unused\r\n");
+            var catalog = new PlaceableModelCatalog(
+                new TwoDaService(twoDaRoot),
+                new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
+            _ = catalog.GetAll();
+
+            Directory.CreateDirectory(Path.Combine(_root, "utp"));
+            var document = JsonGffDocument.Parse(
+                System.Text.Encoding.UTF8.GetBytes(
+                    "{\n" +
+                    "  \"__data_type\": \"UTP \",\n" +
+                    "  \"Appearance\": { \"type\": \"dword\", \"value\": 0 }\n" +
+                    "}\n"));
+            File.WriteAllBytes(Path.Combine(_root, "utp", "used.utp.json"), document.ToBytes());
+
+            var usage = PlaceableAppearanceUsageIndex.Empty;
+            using var appearance = new AppearanceSectionViewModel(
+                new EditorFieldContext(
+                    document,
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    }),
+                catalog,
+                thumbnails: null,
+                () => usage,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+            appearance.Gallery.MatchSummary.Should().Be("2 models");
+
+            usage = PlaceableAppearanceUsageIndex.Build(new ModuleWorkspace(_root));
+            appearance.RefreshUsage();
+
+            appearance.Gallery.MatchSummary.Should().Be("1 model");
+            appearance.Gallery.Tiles.Should().ContainSingle()
+                .Which.Option.ModelResRef.Should().Be("plc_used");
+        }
+
         /// <summary>
         /// A Lazy whose factory throws caches the exception and rethrows it to every later caller.
         /// The placeable editor caught the failure on its background thread and then rebuilt its
@@ -106,10 +182,32 @@ namespace SWLOR.Toolset.Tests
             catalog.TryGet(1, out _).Should().BeFalse();
         }
 
-        private void WriteArea(string resRef, string waypointTag, string displayName, bool asUtf8 = false)
+        private void WriteArea(
+            string resRef,
+            string waypointTag,
+            string displayName,
+            bool asUtf8 = false,
+            string? doorTag = null,
+            string? storeTag = null)
         {
             File.WriteAllText(Path.Combine(_root, "are", $"{resRef}.are.json"), "{}");
 
+            var doors = doorTag == null
+                ? string.Empty
+                : $$"""
+                    {
+                      "__struct_id": 8,
+                      "Tag": { "type": "cexostring", "value": "{{doorTag}}" }
+                    }
+                    """;
+            var stores = storeTag == null
+                ? string.Empty
+                : $$"""
+                    {
+                      "__struct_id": 11,
+                      "Tag": { "type": "cexostring", "value": "{{storeTag}}" }
+                    }
+                    """;
             var json =
                 $$"""
                 {
@@ -127,7 +225,8 @@ namespace SWLOR.Toolset.Tests
                       }
                     ]
                   },
-                  "Door List": { "type": "list", "value": [] },
+                  "Door List": { "type": "list", "value": [{{doors}}] },
+                  "StoreList": { "type": "list", "value": [{{stores}}] },
                   "TriggerList": { "type": "list", "value": [] }
                 }
                 """;

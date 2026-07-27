@@ -568,6 +568,7 @@ namespace SWLOR.Toolset.Editors
                 var indexes = _placeableIndexes;
                 void OnIndexUpdated()
                 {
+                    appearance.RefreshUsage();
                     values.InvalidateModuleSources();
                     behavior.RefreshChoiceSources();
                 }

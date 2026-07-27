@@ -90,6 +90,29 @@ namespace SWLOR.Toolset.Tests
             callbacks.Should().Be(0);
         }
 
+        [Test]
+        public void ClosingDetachesTheEditorFromTheModuleMutationLock()
+        {
+            var editor = Editor();
+            var mutationLock = new ModuleMutationLock();
+            editor.MutationLock = mutationLock;
+
+            editor.OnClose().Should().BeTrue();
+            editor.MutationLock.Should().BeNull();
+
+            var notifications = 0;
+            editor.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName == nameof(ScriptEditorViewModel.CanCompile))
+                    notifications++;
+            };
+
+            mutationLock.Set(true);
+
+            notifications.Should().Be(0,
+                "a closed editor must no longer be reachable or notified through the singleton lock");
+        }
+
         [AvaloniaTest]
         public async Task DebouncedAnalysisRefreshesTheScriptOutline()
         {

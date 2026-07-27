@@ -120,8 +120,14 @@ namespace SWLOR.Toolset.Shell.Panels
 
             PublishTabs();
 
-            _workspaceContext.CatalogEntryRefreshed += (_, _) =>
+            _workspaceContext.CatalogEntryRefreshed += (type, _) =>
             {
+                if (type == ResourceType.Dlg)
+                {
+                    _dialogueHitsQuery = null;
+                    QueueDialogueScan();
+                }
+
                 if (_workspaceContext.Catalog is { } catalog)
                     RefreshFromCatalog(catalog);
             };

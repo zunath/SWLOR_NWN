@@ -682,6 +682,7 @@ namespace SWLOR.Toolset.Editors
                 DiagnosticsChanged = null;
             }
 
+            MutationLock = null;
             Closed?.Invoke(this);
             return base.OnClose();
         }

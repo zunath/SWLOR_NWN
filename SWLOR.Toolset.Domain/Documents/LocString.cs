@@ -43,6 +43,22 @@ namespace SWLOR.Toolset.Domain.Documents
             GetOrAddEntry(languageKey).SetText(value);
         }
 
+        /// <summary>
+        /// Replaces this value with an independent copy of another complete localized string,
+        /// including its strref and every language/gender entry.
+        /// </summary>
+        internal void CopyFrom(LocString source)
+        {
+            ArgumentNullException.ThrowIfNull(source);
+
+            _field.RawLocStringId = source._field.RawLocStringId?.ToArray();
+            _field.LocStringEntries = source._field.LocStringEntries?
+                .Select(entry => new LocStringEntry(
+                    entry.LanguageKey,
+                    entry.RawText.ToArray()))
+                .ToList();
+        }
+
         private LocStringEntry? FindEntry(string languageKey)
         {
             if (_field.LocStringEntries == null)

@@ -74,8 +74,13 @@ namespace SWLOR.Toolset.Domain.Render
                 if (partSource?.GeometryRoot == null)
                     continue;
 
-                var bone = partType.Equals("robe", StringComparison.OrdinalIgnoreCase) &&
-                           RobeCoverage.IsFullBodyRobe(partSource)
+                // Robe geometry is always authored in absolute body space (see RobeCoverage), so every
+                // robe part grafts at the composite root regardless of how much of the body it covers.
+                // Attach() applies no transform compensation, and parenting a partial robe under a bone
+                // like torso_g would double-transform it by that bone's chain. Coverage-based body-part
+                // suppression (hiding skin/underwear beneath a partial robe) is the caller's concern, not
+                // this attachment decision.
+                var bone = partType.Equals("robe", StringComparison.OrdinalIgnoreCase)
                     ? composed.GeometryRoot
                     : FindBone(bones, partType);
                 if (bone == null)

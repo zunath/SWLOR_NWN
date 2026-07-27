@@ -5,6 +5,7 @@ using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Mdl;
+using SWLOR.NWN.Formats.Plt;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 
@@ -47,8 +48,12 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void CompactDdsRowsRemainTopFirst()
+        public void CompactDdsRowsAreFlippedLikeStandardDds()
         {
+            // Compact BioWare DDS blocks decode in file order (red block first, then green), but
+            // DecodeCompactDds must reverse rows to match DecodeStandardDds's bottom-up consumer
+            // convention: the file-first (red) block lands at the bottom, and the file-last
+            // (green) block lands at the top, same as the standard-DDS orientation test below.
             var payload = RedDxt1Block().Concat(GreenDxt1Block()).ToArray();
             File.WriteAllBytes(
                 Path.Combine(_resourceDirectory, "compactrows.dds"),
@@ -57,8 +62,8 @@ namespace SWLOR.Toolset.Tests
             var image = TextureLoader.LoadDds(Index(), "compactrows");
 
             image.Should().NotBeNull();
-            Pixel(image!, 0, 0).Should().Be((255, 0, 0, 255));
-            Pixel(image, 0, 7).Should().Be((0, 255, 0, 255));
+            Pixel(image!, 0, 0).Should().Be((0, 255, 0, 255));
+            Pixel(image, 0, 7).Should().Be((255, 0, 0, 255));
         }
 
         [Test]
@@ -162,6 +167,29 @@ namespace SWLOR.Toolset.Tests
             image.Height.Should().Be(2);
             Pixel(image, 0, 0).Should().Be((200, 200, 200, 255));
             Pixel(image, 0, 1).Should().Be((10, 10, 10, 255));
+        }
+
+        [TestCase(PltLayers.Cloth1, "pal_cloth01")]
+        [TestCase(PltLayers.Cloth2, "pal_cloth01")]
+        [TestCase(PltLayers.Leather1, "pal_leath01")]
+        [TestCase(PltLayers.Leather2, "pal_leath01")]
+        public void PltClothAndLeatherLayersUseTheirOwnPalettesNotArmor(int layer, string expectedPalette)
+        {
+            // pal_armor01 must only back Metal1/Metal2. Placing a palette resource only under the
+            // expected cloth/leather name (never pal_armor01) proves the layer-to-palette mapping:
+            // an old mapping that pointed Cloth/Leather at pal_armor01 would miss this fixture file
+            // and fall back to grayscale instead of resolving the authored swatch color.
+            File.WriteAllBytes(
+                Path.Combine(_resourceDirectory, expectedPalette + ".tga"),
+                SolidColorTga(10, 20, 30));
+            File.WriteAllBytes(
+                Path.Combine(_resourceDirectory, "swatch.plt"),
+                SinglePixelPlt(layer));
+
+            var image = TextureLoader.LoadPlt(Index(), "swatch");
+
+            image.Should().NotBeNull();
+            Pixel(image!, 0, 0).Should().Be((10, 20, 30, 255));
         }
 
         [Test]
@@ -501,6 +529,32 @@ namespace SWLOR.Toolset.Tests
             "DXT1"u8.CopyTo(bytes.AsSpan(84, 4));
             BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(108, 4), 0x1000);
             payload.CopyTo(bytes, 128);
+            return bytes;
+        }
+
+        private static byte[] SolidColorTga(byte r, byte g, byte b)
+        {
+            // Minimal 1x1 uncompressed 24-bit true-color TGA. Pixel data is stored BGR.
+            var bytes = new byte[18 + 3];
+            bytes[2] = 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(12, 2), 1);
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(14, 2), 1);
+            bytes[16] = 24;
+            bytes[18] = b;
+            bytes[19] = g;
+            bytes[20] = r;
+            return bytes;
+        }
+
+        private static byte[] SinglePixelPlt(int layer)
+        {
+            // 24-byte PLT V1 header followed by one (intensity, layer) pixel for a 1x1 image.
+            var bytes = new byte[24 + 2];
+            "PLT V1  "u8.CopyTo(bytes);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(16, 4), 1);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(20, 4), 1);
+            bytes[24] = 0;
+            bytes[25] = (byte)layer;
             return bytes;
         }
 

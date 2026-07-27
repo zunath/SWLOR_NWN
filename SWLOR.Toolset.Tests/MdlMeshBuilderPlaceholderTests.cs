@@ -74,5 +74,22 @@ namespace SWLOR.Toolset.Tests
 
             built.Meshes.Should().ContainSingle().Which.NodeName.Should().Be("Gargoyle_Lwingtip");
         }
+
+        /// <summary>
+        /// The Aurora "no texture" literal must resolve the same way whether it came from an ASCII
+        /// MDL (already lowercased/blanked by <see cref="AsciiMdlReader"/>) or a binary MDL (which
+        /// stores the raw fixed string as-is), and in any casing. Otherwise a binary mesh authored
+        /// with <c>bitmap NULL</c> attempts a texture lookup literally named "NULL" instead of
+        /// taking the deliberate no-texture path.
+        /// </summary>
+        [TestCase("NULL")]
+        [TestCase("null")]
+        [TestCase("Null")]
+        public void ANullLiteralBitmap_ProducesAnEmptyTextureName(string bitmap)
+        {
+            var built = MdlMeshBuilder.Build(ModelOf(Trimesh("door_panel", bitmap: bitmap)));
+
+            built.Meshes.Should().ContainSingle().Which.TextureName.Should().BeEmpty();
+        }
     }
 }

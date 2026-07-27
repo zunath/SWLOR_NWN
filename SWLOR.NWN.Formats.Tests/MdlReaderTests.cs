@@ -340,8 +340,8 @@ public sealed class MdlReaderTests
                          0 1 0
                          1 1 0
                        faces 2
-                         0 1 2 7 0 1 2 1
-                         0 2 1 8 3 2 1 1
+                         0 1 2 55 0 1 2 7
+                         0 2 1 66 3 2 1 8
                      endnode
                    endmodelgeom sample
                    donemodel sample
@@ -362,8 +362,70 @@ public sealed class MdlReaderTests
         mesh.Vertices.Should().HaveCount(4);
         mesh.TextureCoordinates.Should().HaveCount(4);
         mesh.Faces.Should().HaveCount(2);
+        // Face column layout is "v1 v2 v3 smoothgroup tv1 tv2 tv3 material" - SurfaceId must come
+        // from the material column (index 7: 7/8), not the smoothing-group column (index 3: 55/66).
         mesh.Faces[0].SurfaceId.Should().Be(7);
+        mesh.Faces[1].SurfaceId.Should().Be(8);
         mesh.Faces[1].VertexIndex0.Should().NotBe(mesh.Faces[0].VertexIndex0);
+    }
+
+    [Test]
+    public void AsciiMeshFallsBackToTexture0WhenBitmapIsAbsent()
+    {
+        var text = """
+                   newmodel sample
+                   beginmodelgeom sample
+                     node dummy sample
+                       parent NULL
+                     endnode
+                     node trimesh panel
+                       parent sample
+                       texture0 foo
+                       verts 3
+                         0 0 0
+                         1 0 0
+                         0 1 0
+                       faces 1
+                         0 1 2 0 0 0 0 1
+                     endnode
+                   endmodelgeom sample
+                   donemodel sample
+                   """;
+
+        var model = new MdlReader().Parse(Encoding.ASCII.GetBytes(text));
+
+        var mesh = model.GetMeshNodes().Should().ContainSingle().Subject;
+        mesh.Bitmap.Should().Be("foo");
+    }
+
+    [Test]
+    public void AsciiMeshBitmapKeywordTakesPrecedenceOverTexture0RegardlessOfOrder()
+    {
+        var text = """
+                   newmodel sample
+                   beginmodelgeom sample
+                     node dummy sample
+                       parent NULL
+                     endnode
+                     node trimesh panel
+                       parent sample
+                       texture0 fallback_texture
+                       bitmap real_bitmap
+                       verts 3
+                         0 0 0
+                         1 0 0
+                         0 1 0
+                       faces 1
+                         0 1 2 0 0 0 0 1
+                     endnode
+                   endmodelgeom sample
+                   donemodel sample
+                   """;
+
+        var model = new MdlReader().Parse(Encoding.ASCII.GetBytes(text));
+
+        var mesh = model.GetMeshNodes().Should().ContainSingle().Subject;
+        mesh.Bitmap.Should().Be("real_bitmap");
     }
 
     [Test]

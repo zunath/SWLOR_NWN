@@ -150,6 +150,14 @@ internal sealed class AsciiMdlReader
         var textureCoordinates = Array.Empty<Vector2>();
         var faces = Array.Empty<AsciiFace>();
         var influences = Array.Empty<MdlSkinInfluence[]>();
+        var bitmapSeen = false;
+        string? texture0 = null;
+
+        void ApplyTexture0Fallback()
+        {
+            if (node is MdlTrimeshNode fallbackMesh && !bitmapSeen && texture0 != null)
+                fallbackMesh.Bitmap = texture0;
+        }
 
         while (TryRead(out var line))
         {
@@ -160,14 +168,20 @@ internal sealed class AsciiMdlReader
             if (directive == "endnode")
             {
                 if (node is MdlTrimeshNode mesh)
+                {
+                    ApplyTexture0Fallback();
                     FinalizeMesh(mesh, vertices, normals, textureCoordinates, faces, influences, line);
+                }
                 return new PendingNode(node, NullAsEmpty(parentName ?? string.Empty), source);
             }
             if (directive is "endmodelgeom" or "doneanim" or "donemodel" or "node")
             {
                 _index--;
                 if (node is MdlTrimeshNode mesh)
+                {
+                    ApplyTexture0Fallback();
                     FinalizeMesh(mesh, vertices, normals, textureCoordinates, faces, influences, line);
+                }
                 return new PendingNode(node, NullAsEmpty(parentName ?? string.Empty), source);
             }
 
@@ -216,7 +230,11 @@ internal sealed class AsciiMdlReader
                     mesh.TileFade = IntToken(tokens, 1, line, "mesh tile-fade flag");
                     break;
                 case "bitmap" when node is MdlTrimeshNode mesh:
+                    bitmapSeen = true;
                     mesh.Bitmap = NullAsEmpty(RequiredToken(tokens, 1, line, "mesh bitmap"));
+                    break;
+                case "texture0" when node is MdlTrimeshNode:
+                    texture0 = NullAsEmpty(RequiredToken(tokens, 1, line, "mesh texture0"));
                     break;
                 case "lightmap" when node is MdlTrimeshNode mesh:
                     mesh.Lightmap = NullAsEmpty(RequiredToken(tokens, 1, line, "mesh lightmap"));
@@ -313,11 +331,14 @@ internal sealed class AsciiMdlReader
             var tokens = Tokens(line);
             if (tokens.Length < 7)
                 throw Error("ASCII MDL face requires three vertex indices, a surface, and three texture indices.", line);
+            // Column layout: v1 v2 v3 smoothgroup tv1 tv2 tv3 material. SurfaceId comes from the
+            // material column (index 7), matching the binary reader; smoothgroup (index 3) is not
+            // a surface/material id. Older/malformed lines without a material column default to 0.
             values[index] = new AsciiFace(
                 IntToken(tokens, 0, line, "face vertex"),
                 IntToken(tokens, 1, line, "face vertex"),
                 IntToken(tokens, 2, line, "face vertex"),
-                IntToken(tokens, 3, line, "face surface"),
+                tokens.Length > 7 ? IntToken(tokens, 7, line, "face surface") : 0,
                 IntToken(tokens, 4, line, "face texture vertex"),
                 IntToken(tokens, 5, line, "face texture vertex"),
                 IntToken(tokens, 6, line, "face texture vertex"));

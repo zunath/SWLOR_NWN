@@ -41,15 +41,18 @@ public class TgaReaderTests
     }
 
     [Test]
-    public void TrueColorWithoutAttributeBitsTreatsTheFourthByteAsOpaquePadding()
+    public void TrueColorWithoutAttributeBitsStillCarriesAlpha()
     {
+        // NWN-corpus 32-bit TGAs frequently declare 0 attribute bits in the image
+        // descriptor while still carrying meaningful alpha in the 4th byte, and the
+        // engine honors that byte regardless of the declared attribute bits.
         var bytes = Header(imageType: 2, width: 1, height: 1, depth: 32, descriptor: 0x20)
             .Concat(new byte[] { 3, 2, 1, 0 })
             .ToArray();
 
         var image = TgaReader.Read(bytes);
 
-        image.Pixels.Should().Equal(1, 2, 3, 255);
+        image.Pixels.Should().Equal(1, 2, 3, 0);
     }
 
     [Test]

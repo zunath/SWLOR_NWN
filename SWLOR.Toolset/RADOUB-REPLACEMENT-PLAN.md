@@ -395,10 +395,14 @@ reader.
 
 ### Task 4a implementation result (2026-07-26)
 
-The required licensed scan executed 96,005 loose hak-source and KEY/BIF MDL resources with zero
-failures or skips. It found 79,927 binary resources and 16,078 ASCII resources. The installed
-archive subset contains 25,598 binary and 7,236 ASCII resources (`nwn_base.key`: 25,598 binary /
-7,234 ASCII; `nwn_retail.key`: 0 binary / 2 ASCII). Binary-only scope is therefore rejected.
+The required licensed scan classified 96,005 loose hak-source and KEY/BIF MDL resources by their
+four-byte signature (binary vs. ASCII; it does not parse the file) with zero failures or skips. It
+found 79,927 binary resources and 16,078 ASCII resources. The installed archive subset contains
+25,598 binary and 7,236 ASCII resources (`nwn_base.key`: 25,598 binary / 7,234 ASCII;
+`nwn_retail.key`: 0 binary / 2 ASCII). Binary-only scope is therefore rejected. (At the time, actual
+parse coverage of that binary population was limited to a 600-file base-game sample; the full
+SWLOR_Haks binary MDL population — about 54,000 files — was not parsed until `HakMdlParseSweepTests`
+was added in `SWLOR.NWN.Formats.Corpus.Tests`.)
 Task 4 is expanded to include an independently implemented ASCII reader before the Radoub
 dependency can be removed. The owner approved that material scope expansion on 2026-07-26.
 

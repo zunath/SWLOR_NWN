@@ -135,14 +135,20 @@ zero skips.
   nodes, 141 emitters, and 708 animations. Corpus evidence also established that animation node
   trees carry controller topology without full geometry/emitter payloads (semantic SHA-256
   `863877106d1bdc61a477f74f2925908e2cb47550eedd75c24afcb11cf3e904ed`).
-- Required licensed MDL scope scan (2026-07-26):
-  - all loose hak sources plus installed KEY/BIF resources: requested/executed 96,005, binary
-    79,927, ASCII 16,078, failed 0, skipped 0.
+- Required licensed MDL scope scan (2026-07-26): this scan reads only each file's four-byte
+  signature to classify it as binary or ASCII; it does not parse the file.
+  - all loose hak sources plus installed KEY/BIF resources: requested/executed 96,005 signature
+    classifications, binary 79,927, ASCII 16,078, failed 0, skipped 0.
   - `nwn_base.key`: requested/executed 32,832, binary 25,598, ASCII 7,234, failed 0, skipped 0.
   - `nwn_retail.key`: requested/executed 2, binary 0, ASCII 2, failed 0, skipped 0.
 - The original binary-only assertion failed because ASCII resources were found. The retained scope
-  test reports both populations and the approved ASCII implementation parses the entire required
-  population.
+  test reports both populations, and the approved ASCII implementation parses the entire required
+  ASCII population (16,078 files, including every SWLOR_Haks ASCII model). Binary parse coverage
+  was, at that time, a 600-file evenly distributed sample of base-game binary models; it did not
+  extend to any of the SWLOR_Haks binary MDLs the scope scan had merely signature-classified.
+  `HakMdlParseSweepTests` (`SWLOR.NWN.Formats.Corpus.Tests`) closes that gap by parsing every MDL
+  under SWLOR_Haks, pinning 10 internally-inconsistent phenotype-22 robe models
+  (`pfe22_robe027.mdl` and nine others) as expected-invalid.
 - ASCII grammar inventory: requested/executed 16,078, failed 0, skipped 0. Required node kinds
   include trimesh, dummy, light, emitter, AABB, danglymesh, skin, animmesh, and reference; 11,150
   animation blocks were observed.

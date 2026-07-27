@@ -142,11 +142,17 @@ public static class TgaReader
     {
         if (baseType == 2)
         {
+            // NWN-corpus 32-bit TGAs frequently declare 0 attribute bits in the image
+            // descriptor while still carrying meaningful alpha in the 4th byte, and the
+            // NWN engine honors that byte regardless of the declared attribute bits. So
+            // for 32-bpp true-color pixels (image types 2 and 10), always surface the 4th
+            // byte as alpha rather than gating on attributeBits. This applies to both the
+            // uncompressed and RLE decode paths, which both funnel through this method.
             var result = DecodeBgra(
                 reader,
                 cursor,
                 sourceBytesPerPixel,
-                attributeBits > 0);
+                hasAlpha: true);
             cursor += sourceBytesPerPixel;
             return result;
         }

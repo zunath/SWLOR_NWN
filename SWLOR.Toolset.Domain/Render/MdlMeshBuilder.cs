@@ -252,7 +252,7 @@ namespace SWLOR.Toolset.Domain.Render
             return new RenderMesh
             {
                 NodeName = mesh.Name,
-                TextureName = mesh.Bitmap ?? string.Empty,
+                TextureName = NormalizeTextureName(mesh.Bitmap),
                 Positions = positions,
                 Normals = normals,
                 TexCoords = texCoords,
@@ -280,7 +280,7 @@ namespace SWLOR.Toolset.Domain.Render
             return new RenderEmitter
             {
                 NodeName = emitter.Name,
-                TextureName = emitter.Texture ?? string.Empty,
+                TextureName = NormalizeTextureName(emitter.Texture),
                 Transform = ComposeNodeTransform(emitter),
                 AnimationFrames = animationFrames,
                 XGrid = Math.Clamp(emitter.XGrid, 1, MaximumEmitterGrid),
@@ -367,8 +367,20 @@ namespace SWLOR.Toolset.Domain.Render
 
         private static bool IsPersistentEmitter(MdlEmitterNode emitter) =>
             emitter.Loop &&
-            !string.IsNullOrWhiteSpace(emitter.Texture) &&
+            !string.IsNullOrWhiteSpace(NormalizeTextureName(emitter.Texture)) &&
             !(emitter.Update?.Contains("explosion", StringComparison.OrdinalIgnoreCase) ?? false);
+
+        /// <summary>
+        /// Maps the Aurora "no texture" literal to an empty string and otherwise lowercases the
+        /// name, matching the ASCII reader's own null/casing normalization so binary-authored
+        /// <c>bitmap NULL</c>/<c>texture NULL</c> meshes are treated as untextured.
+        /// </summary>
+        private static string NormalizeTextureName(string? name)
+        {
+            if (string.IsNullOrWhiteSpace(name) || name.Equals("null", StringComparison.OrdinalIgnoreCase))
+                return string.Empty;
+            return name.ToLowerInvariant();
+        }
 
         private static IEnumerable<MdlNode> EnumerateNodes(MdlNode? root)
         {

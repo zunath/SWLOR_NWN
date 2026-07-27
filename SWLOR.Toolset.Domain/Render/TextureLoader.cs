@@ -52,10 +52,10 @@ namespace SWLOR.Toolset.Domain.Render
             "pal_hair01",
             "pal_armor01",
             "pal_armor01",
-            "pal_armor01",
-            "pal_armor01",
-            "pal_armor01",
-            "pal_armor01",
+            "pal_cloth01",
+            "pal_cloth01",
+            "pal_leath01",
+            "pal_leath01",
             "pal_tattoo01",
             "pal_tattoo01"
         };
@@ -491,7 +491,12 @@ namespace SWLOR.Toolset.Domain.Render
                 var alpha = alphaValues.IsEmpty
                     ? color.A
                     : alphaValues[(int)((alphaIndices >> (pixel * 3)) & 0x7)];
-                var target = (y * width + x) * 4;
+                // Decoded blocks arrive in file order (top-down). DecodeStandardDds reverses rows
+                // to match the toolset's bottom-up consumer convention, so this path must do the
+                // same per-pixel-row flip rather than a per-block-row one, since height % 4 may
+                // leave a partial bottom block.
+                var targetY = height - 1 - y;
+                var target = (targetY * width + x) * 4;
                 output[target] = color.R;
                 output[target + 1] = color.G;
                 output[target + 2] = color.B;

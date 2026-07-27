@@ -113,8 +113,10 @@ Static audits:
 
 Licensed corpus verification was not rerun because `Module` and `SWLOR_Haks` were intentionally
 absent from the sanitized snapshot. I did not weaken, skip, or redirect any selected portable
-test. The previously recorded licensed geometry/texture/composition and 96,005-resource MDL
-results remain the corpus evidence for the designated integration environment.
+test. The previously recorded licensed geometry/texture/composition results, the 96,005-resource
+MDL signature-classification scan (binary vs. ASCII by four-byte signature, not a parse), and the
+accompanying ASCII-complete and 600-file binary-sample MDL parse results remain the corpus
+evidence for the designated integration environment.
 
 ## Approval
 

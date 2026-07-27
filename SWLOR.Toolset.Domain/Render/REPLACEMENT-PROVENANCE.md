@@ -75,7 +75,11 @@ Verification recorded on 2026-07-26:
 - Licensed geometry, texture, facing, idle-pose, playback, and real skeleton/part composition
   tests: 46 requested, 46 executed, 0 failed, 0 skipped after correcting binary quaternion order
   and DDS vertical orientation.
-- Required MDL licensed corpus: 96,005 requested/executed, 0 failed, 0 skipped.
+- Required MDL licensed corpus scope scan (signature classification by four-byte prefix, binary
+  vs. ASCII — not a parse): 96,005 requested/executed, 0 failed, 0 skipped. Parse coverage at the
+  time was ASCII-complete (16,078 files) plus a 600-file evenly distributed base-game binary
+  sample; a full parse sweep of every binary MDL under SWLOR_Haks is now covered separately by
+  `HakMdlParseSweepTests` in `SWLOR.NWN.Formats.Corpus.Tests`.
 
 Clean-author verification after independent-review remediation on 2026-07-26:
 

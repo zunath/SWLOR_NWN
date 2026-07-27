@@ -10,6 +10,7 @@ namespace SWLOR.Toolset.Domain.Gff
     public static class JsonStringCodec
     {
         private static readonly Encoding NwnEncoding;
+        private static readonly Encoding StrictUtf8;
 
         static JsonStringCodec()
         {
@@ -18,11 +19,17 @@ namespace SWLOR.Toolset.Domain.Gff
                 1252,
                 EncoderFallback.ExceptionFallback,
                 DecoderFallback.ReplacementFallback);
+            StrictUtf8 = new UTF8Encoding(
+                encoderShouldEmitUTF8Identifier: false,
+                throwOnInvalidBytes: true);
         }
 
         /// <summary>
-        /// Decodes a raw NWN string token (including surrounding quotes) as Windows-1252. Because
-        /// that is a single-byte encoding, native high bytes survive an edit round trip unchanged.
+        /// Decodes a raw NWN string token (including surrounding quotes) following the token's
+        /// detected encoding: valid UTF-8 decodes as UTF-8, anything else falls back to
+        /// Windows-1252 (which accepts any byte). The module corpus mixes both - nwn_gff-era
+        /// files carry raw Windows-1252 bytes while imported files carry real UTF-8 - and
+        /// decoding everything as Windows-1252 turned multibyte text into mojibake.
         /// </summary>
         public static string Decode(ReadOnlySpan<byte> rawToken)
         {
@@ -30,6 +37,7 @@ namespace SWLOR.Toolset.Domain.Gff
                 throw new FormatException("String token must be enclosed in double quotes.");
 
             var inner = rawToken[1..^1];
+            var encoding = DetectContentEncoding(inner);
             var text = new StringBuilder(inner.Length);
             var segmentStart = 0;
             for (var i = 0; i < inner.Length; i++)
@@ -38,7 +46,7 @@ namespace SWLOR.Toolset.Domain.Gff
                     continue;
 
                 if (i > segmentStart)
-                    text.Append(NwnEncoding.GetString(inner[segmentStart..i]));
+                    text.Append(encoding.GetString(inner[segmentStart..i]));
 
                 i++;
                 if (i >= inner.Length)
@@ -68,7 +76,7 @@ namespace SWLOR.Toolset.Domain.Gff
             }
 
             if (segmentStart < inner.Length)
-                text.Append(NwnEncoding.GetString(inner[segmentStart..]));
+                text.Append(encoding.GetString(inner[segmentStart..]));
             return text.ToString();
         }
 
@@ -82,6 +90,36 @@ namespace SWLOR.Toolset.Domain.Gff
         {
             return EncodeBytes(NwnEncoding.GetBytes(value));
         }
+
+        /// <summary>
+        /// Encodes with an explicit byte encoding choice. UTF-8 is used when re-emitting text that
+        /// was decoded from a UTF-8 source so the token's bytes round-trip identically; the default
+        /// remains Windows-1252, the module's canonical storage for new text.
+        /// </summary>
+        public static byte[] Encode(string value, bool useUtf8)
+        {
+            return EncodeBytes(useUtf8 ? StrictUtf8.GetBytes(value) : NwnEncoding.GetBytes(value));
+        }
+
+        /// <summary>
+        /// True when the token's content bytes are valid UTF-8 (escape sequences are ASCII and so
+        /// never change the verdict). Windows-1252 accepts any byte, so it is the fallback.
+        /// </summary>
+        public static bool IsUtf8Content(ReadOnlySpan<byte> contentBytes)
+        {
+            try
+            {
+                StrictUtf8.GetCharCount(contentBytes);
+                return true;
+            }
+            catch (DecoderFallbackException)
+            {
+                return false;
+            }
+        }
+
+        private static Encoding DetectContentEncoding(ReadOnlySpan<byte> contentBytes) =>
+            IsUtf8Content(contentBytes) ? StrictUtf8 : NwnEncoding;
 
         /// <summary>
         /// Decodes a raw string token (including surrounding quotes) to its literal content

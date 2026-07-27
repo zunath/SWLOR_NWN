@@ -136,8 +136,14 @@ namespace SWLOR.Toolset.Domain.Gff
         /// string token via CP-1252 + the byte-level codec.</summary>
         private static byte[] EncodeNwnString(string value)
         {
-            return JsonStringCodec.Encode(value);
+            return JsonStringCodec.Encode(value, UseUtf8Text.Value);
         }
+
+        /// <summary>
+        /// Per-conversion text-encoding choice for <see cref="ToJsonDocument(GffFile, bool)"/>.
+        /// AsyncLocal so nested/concurrent conversions cannot observe each other's flag.
+        /// </summary>
+        private static readonly AsyncLocal<bool> UseUtf8Text = new();
 
         // ---------------------------------------------------------------
         // GffFile -> JSON
@@ -148,7 +154,27 @@ namespace SWLOR.Toolset.Domain.Gff
         /// so the conversion runs as construction - see <see cref="Editing.EditScope.EnterConstruction"/>
         /// for why that is not merely an optimisation.
         /// </summary>
-        public static JsonGffDocument ToJsonDocument(GffFile file)
+        public static JsonGffDocument ToJsonDocument(GffFile file) => ToJsonDocument(file, encodeTextAsUtf8: false);
+
+        /// <summary>
+        /// Converts with an explicit text-encoding choice. Pass true when the strings being
+        /// re-emitted came from a UTF-8 source document so its tokens round-trip byte-identically;
+        /// the default stays Windows-1252, the module's canonical storage.
+        /// </summary>
+        public static JsonGffDocument ToJsonDocument(GffFile file, bool encodeTextAsUtf8)
+        {
+            UseUtf8Text.Value = encodeTextAsUtf8;
+            try
+            {
+                return ToJsonDocumentCore(file);
+            }
+            finally
+            {
+                UseUtf8Text.Value = false;
+            }
+        }
+
+        private static JsonGffDocument ToJsonDocumentCore(GffFile file)
         {
             using var construction = Editing.EditScope.EnterConstruction();
 

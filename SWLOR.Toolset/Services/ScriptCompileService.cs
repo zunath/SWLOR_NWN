@@ -65,7 +65,10 @@ namespace SWLOR.Toolset.Services
         /// <summary>What a compile produced: whether it wrote, and what the compiler said.</summary>
         /// <param name="Succeeded">True when the artifact was written (or the file is an include).</param>
         /// <param name="Diagnostics">Compiler findings, mapped onto buffer offsets.</param>
-        public sealed record CompileOutcome(bool Succeeded, IReadOnlyList<ScriptAnalysisDiagnostic> Diagnostics)
+        public sealed record CompileOutcome(
+            bool Succeeded,
+            IReadOnlyList<ScriptAnalysisDiagnostic> Diagnostics,
+            int RebuiltDependents = 0)
         {
             public static CompileOutcome Failed(string _) =>
                 new(false, Array.Empty<ScriptAnalysisDiagnostic>());
@@ -142,7 +145,9 @@ namespace SWLOR.Toolset.Services
                 if (entryPoints.Count > 0)
                     _log.AppendLine($"Rebuilt all {entryPoints.Count} script(s) affected by include {resRef}.");
 
-                return new CompileOutcome(true, checkDiagnostics);
+                // Reported back rather than left implicit: the caller offered a second, identical
+                // rebuild because it had no way to tell that this one had already happened.
+                return new CompileOutcome(true, checkDiagnostics, entryPoints.Count);
             }
 
             var ncsDirectory = Path.Combine(workspace.ModuleRoot, "ncs");
@@ -258,14 +263,22 @@ namespace SWLOR.Toolset.Services
             return (start, end - start);
         }
 
+        /// <summary>What a Build All actually did.</summary>
+        /// <param name="Ran">
+        /// False when nothing could be attempted - no module open, or no vendored compiler. Zero
+        /// compiled and zero failed is indistinguishable from a clean build without this, which is
+        /// how a missing compiler came back as "Built 0 script(s)."
+        /// </param>
+        public readonly record struct BuildAllOutcome(bool Ran, int Compiled, int Failed);
+
         /// <summary>Compiles every entry-point script in the module.</summary>
-        public async Task<(int Compiled, int Failed)> BuildAllAsync(CancellationToken cancellationToken = default)
+        public async Task<BuildAllOutcome> BuildAllAsync(CancellationToken cancellationToken = default)
         {
             var workspace = _workspaceContext.Workspace;
             if (workspace == null || !IsAvailable)
             {
                 _log.AppendLine("Cannot build scripts: no module open, or the compiler is missing.");
-                return (0, 0);
+                return new BuildAllOutcome(Ran: false, 0, 0);
             }
 
             var compiled = 0;
@@ -286,7 +299,7 @@ namespace SWLOR.Toolset.Services
             }
 
             _log.AppendLine($"Build All Scripts: {compiled} compiled, {failed} failed.");
-            return (compiled, failed);
+            return new BuildAllOutcome(Ran: true, compiled, failed);
         }
 
         /// <summary>Every script that transitively depends on an include.</summary>

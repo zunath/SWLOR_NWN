@@ -46,9 +46,16 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
     /// Deliberately a scanner rather than a parser. It splits each file at <c>Create(</c> calls and
     /// reads the chain that follows, which is exactly as much structure as the repo's own convention
     /// guarantees: one <c>_builder.Create(...)</c> per quest, followed by its own fluent calls, with
-    /// no interleaving. Anything it cannot resolve is left absent rather than guessed at, so a quest
-    /// whose id comes through a helper parameter simply has no entry — the same limitation, and for
-    /// the same reason, as the id scanner it sits beside.
+    /// no interleaving.
+    /// <para>
+    /// The guild definitions break that shape in one specific, regular way: a private helper takes
+    /// the quest id as a parameter and every quest is one call to it. Reading only what
+    /// <c>Create(</c> literally names lost the Smithery, Fabrication, Agriculture and Engineering
+    /// tasks entirely — 651 quests that <c>GameCodeIndex.Quests</c> did not have while
+    /// <c>IsSourceScanAvailable</c> still said yes, so the quest dropdown could not select them and
+    /// conversation analysis reported real quests as nonexistent. Those helpers are expanded at
+    /// their call sites; anything else it cannot resolve is still left absent rather than guessed at.
+    /// </para>
     /// </remarks>
     internal static class QuestSourceScanner
     {
@@ -56,8 +63,14 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             @"const\s+string\s+(?<name>[A-Za-z_]\w*)\s*=\s*""(?<value>(?:[^""\\]|\\.)*)""\s*;",
             RegexOptions.Compiled);
 
+        /// <summary>
+        /// A <c>Create(id, name)</c> call. The name is optional in the pattern, not in the API: the
+        /// guild helpers build it by interpolation (<c>$"Craft {amount}x {itemName}"</c>), and a
+        /// pattern that insisted on a plain literal or an identifier there failed the whole match -
+        /// losing the id as well, which is how four guilds' worth of tasks went unread.
+        /// </summary>
         private static readonly Regex CreateCallRegex = new(
-            @"(?:builder|_builder)\.Create\(\s*(?:""(?<idLiteral>(?:[^""\\]|\\.)*)""|(?<idIdentifier>[A-Za-z_]\w*))\s*,\s*(?:""(?<nameLiteral>(?:[^""\\]|\\.)*)""|(?<nameIdentifier>[A-Za-z_]\w*))",
+            @"(?:builder|_builder)\.Create\(\s*(?:""(?<idLiteral>(?:[^""\\]|\\.)*)""|(?<idIdentifier>[A-Za-z_]\w*))\s*(?:,\s*(?:""(?<nameLiteral>(?:[^""\\]|\\.)*)""|(?<nameIdentifier>[A-Za-z_]\w*)))?",
             RegexOptions.Compiled);
 
         private static readonly Regex AddStateRegex = new(@"\.AddState\(\s*\)", RegexOptions.Compiled);
@@ -78,6 +91,15 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
 
         private static readonly Regex PrerequisiteSkillRegex = new(
             @"\.PrerequisiteSkill\(\s*SkillType\.(?<name>\w+)\s*,\s*(?<rank>\d+)",
+            RegexOptions.Compiled);
+
+        /// <summary>
+        /// A method declaration whose body follows immediately: <c>Name(params) {</c>. Nested
+        /// parentheses in the parameter list are excluded rather than handled, which is enough for
+        /// the helpers this needs to find and keeps a scanner from becoming a parser.
+        /// </summary>
+        private static readonly Regex HelperDeclarationRegex = new(
+            @"(?<name>[A-Za-z_]\w*)\s*\(\s*(?<params>[^()]*)\)\s*\{",
             RegexOptions.Compiled);
 
         /// <summary>
@@ -129,16 +151,33 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             for (var i = 0; i < creates.Count; i++)
             {
                 var create = creates[i];
-                var id = Resolve(create.Groups["idLiteral"], create.Groups["idIdentifier"], constants);
-                if (id == null)
-                    continue;
-
-                var name = Resolve(create.Groups["nameLiteral"], create.Groups["nameIdentifier"], constants) ?? id;
 
                 // One quest's chain runs from its Create call to the next one, or to end of file.
                 var start = create.Index;
                 var end = i + 1 < creates.Count ? creates[i + 1].Index : text.Length;
                 var chain = text[start..end];
+
+                var id = Resolve(create.Groups["idLiteral"], create.Groups["idIdentifier"], constants);
+                if (id == null)
+                {
+                    // Not a literal and not a file constant. If it is a parameter of the enclosing
+                    // helper, every call site supplies one - so the chain describes many quests
+                    // rather than none.
+                    if (create.Groups["idIdentifier"].Success)
+                    {
+                        ExpandHelperCalls(
+                            text,
+                            create.Groups["idIdentifier"].Value,
+                            chain,
+                            constants,
+                            Path.GetFileName(filePath),
+                            quests);
+                    }
+
+                    continue;
+                }
+
+                var name = Resolve(create.Groups["nameLiteral"], create.Groups["nameIdentifier"], constants) ?? id;
 
                 quests[id] = ReadChain(id, name, chain, constants, Path.GetFileName(filePath));
             }
@@ -202,6 +241,151 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
                 PrerequisiteSkills = prerequisiteSkills,
                 SourceFile = sourceFile
             };
+        }
+
+        /// <summary>
+        /// Records one quest per call site of the helper whose <paramref name="parameterName"/>
+        /// supplies the id.
+        /// </summary>
+        /// <remarks>
+        /// Everything but the id is shared: the helper's chain declares the same states, the same
+        /// repeatability and the same gates for every quest it builds. The name is interpolated from
+        /// the helper's other arguments and so cannot be read here, which leaves the id standing in
+        /// for it - a task listed as "eng_tsk_001" is still a task the dropdown can select, where
+        /// before it was not there at all.
+        /// </remarks>
+        private static void ExpandHelperCalls(
+            string text,
+            string parameterName,
+            string chain,
+            IReadOnlyDictionary<string, string> constants,
+            string sourceFile,
+            Dictionary<string, QuestDefinitionInfo> quests)
+        {
+            foreach (Match declaration in HelperDeclarationRegex.Matches(text))
+            {
+                var parameters = SplitArguments(declaration.Groups["params"].Value);
+                var index = parameters.FindIndex(parameter => DeclaresParameter(parameter, parameterName));
+                if (index < 0)
+                    continue;
+
+                var helperName = declaration.Groups["name"].Value;
+                foreach (var id in CallSiteLiterals(text, helperName, index))
+                {
+                    // A real Create() for this id wins: it was read from the quest's own chain.
+                    if (!quests.ContainsKey(id))
+                        quests[id] = ReadChain(id, id, chain, constants, sourceFile);
+                }
+            }
+        }
+
+        /// <summary>Whether one declared parameter is <c>string &lt;name&gt;</c>.</summary>
+        private static bool DeclaresParameter(string parameter, string name)
+        {
+            var trimmed = parameter.Trim();
+            return trimmed.StartsWith("string ", StringComparison.Ordinal) &&
+                   trimmed[7..].Trim() == name;
+        }
+
+        /// <summary>Every string literal passed at <paramref name="index"/> to a named method.</summary>
+        private static IEnumerable<string> CallSiteLiterals(string text, string methodName, int index)
+        {
+            foreach (Match call in Regex.Matches(text, @"\b" + Regex.Escape(methodName) + @"\s*\("))
+            {
+                var open = call.Index + call.Length - 1;
+                var close = FindMatchingParenthesis(text, open);
+                if (close < 0)
+                    continue;
+
+                var arguments = SplitArguments(text[(open + 1)..close]);
+                if (index >= arguments.Count)
+                    continue;
+
+                var argument = arguments[index].Trim();
+                if (argument.Length >= 2 && argument[0] == '"' && argument[^1] == '"')
+                    yield return Unescape(argument[1..^1]);
+            }
+        }
+
+        private static int FindMatchingParenthesis(string text, int open)
+        {
+            var depth = 0;
+            var inString = false;
+
+            for (var i = open; i < text.Length; i++)
+            {
+                var c = text[i];
+
+                if (inString)
+                {
+                    if (c == '\\')
+                        i++;
+                    else if (c == '"')
+                        inString = false;
+                    continue;
+                }
+
+                switch (c)
+                {
+                    case '"':
+                        inString = true;
+                        break;
+                    case '(':
+                        depth++;
+                        break;
+                    case ')':
+                        if (--depth == 0)
+                            return i;
+                        break;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>Splits an argument or parameter list at its top-level commas.</summary>
+        private static List<string> SplitArguments(string text)
+        {
+            var parts = new List<string>();
+            var depth = 0;
+            var inString = false;
+            var start = 0;
+
+            for (var i = 0; i < text.Length; i++)
+            {
+                var c = text[i];
+
+                if (inString)
+                {
+                    if (c == '\\')
+                        i++;
+                    else if (c == '"')
+                        inString = false;
+                    continue;
+                }
+
+                switch (c)
+                {
+                    case '"':
+                        inString = true;
+                        break;
+                    case '(' or '[' or '<' or '{':
+                        depth++;
+                        break;
+                    case ')' or ']' or '>' or '}':
+                        depth--;
+                        break;
+                    case ',' when depth == 0:
+                        parts.Add(text[start..i]);
+                        start = i + 1;
+                        break;
+                }
+            }
+
+            if (start <= text.Length)
+                parts.Add(text[start..]);
+
+            return parts;
         }
 
         private static string? Resolve(Group literal, Group identifier, IReadOnlyDictionary<string, string> constants)

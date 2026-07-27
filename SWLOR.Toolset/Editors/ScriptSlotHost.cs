@@ -72,6 +72,22 @@ namespace SWLOR.Toolset.Editors
             _editorService().TryOpenEditor(ResourceType.Nss, resRef);
         }
 
+        /// <summary>Resrefs with a compiled .ncs and no .nss beside it.</summary>
+        private static IEnumerable<string> EnumerateCompiledOnly(
+            string moduleRoot, IReadOnlySet<string> withSource)
+        {
+            var directory = Path.Combine(moduleRoot, "ncs");
+            if (!Directory.Exists(directory))
+                yield break;
+
+            foreach (var path in Directory.EnumerateFiles(directory, "*.ncs"))
+            {
+                var resRef = Path.GetFileNameWithoutExtension(path);
+                if (resRef.Length > 0 && !withSource.Contains(resRef))
+                    yield return resRef;
+            }
+        }
+
         public async Task<string?> PickScriptAsync(string current)
         {
             var workspace = _workspaceContext.Workspace;
@@ -87,8 +103,11 @@ namespace SWLOR.Toolset.Editors
             var counts = usage?.UsageCounts();
 
             var rows = new List<ScriptPickerRow>();
+            var withSource = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             foreach (var resRef in workspace.EnumerateResRefs(ResourceType.Nss))
             {
+                withSource.Add(resRef);
                 var path = workspace.GetResourcePath(ResourceType.Nss, resRef);
                 var isInclude = false;
 
@@ -101,10 +120,22 @@ namespace SWLOR.Toolset.Editors
                     // Unreadable: still listed, just unlabelled.
                 }
 
-                counts?.TryGetValue(resRef, out var count);
                 rows.Add(new ScriptPickerRow(
                     resRef, resRef, isInclude,
                     counts != null && counts.TryGetValue(resRef, out var n) ? n : 0));
+            }
+
+            // The compiled-only scripts. ScriptExists already treats an .ncs without source as a
+            // real executable script - the module has many - but this list did not, so a slot
+            // naming one was reported as pointing at a script that does not exist, and no other
+            // slot could be pointed at it through the browse UI at all. Listed and marked, not
+            // hidden: the builder can select it, and only opening it is unavailable.
+            foreach (var resRef in EnumerateCompiledOnly(workspace.ModuleRoot, withSource))
+            {
+                rows.Add(new ScriptPickerRow(
+                    resRef, resRef, isInclude: false,
+                    counts != null && counts.TryGetValue(resRef, out var n) ? n : 0,
+                    hasSource: false));
             }
 
             var dialog = new ScriptPickerDialog();

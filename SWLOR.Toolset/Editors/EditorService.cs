@@ -489,20 +489,16 @@ namespace SWLOR.Toolset.Editors
 
             var outcome = await _compileService.CompileAsync(resRef).ConfigureAwait(false);
 
-            var source = workspace.GetResourcePath(ResourceType.Nss, resRef);
-            if (!File.Exists(source) ||
-                Domain.Script.ScriptStalenessScanner.IsEntryPoint(
-                    Domain.Script.ScriptTextDocument.Load(source).Text))
-                return outcome.Succeeded;
-
-            var dependents = _compileService.DependentsOf(resRef);
-            if (dependents.Count == 0)
-                return outcome.Succeeded;
-
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                editor.OfferDependentRebuild(
-                    dependents,
-                    () => _compileService.BuildDependentsAsync(dependents)));
+            // Saving an include compile-checks it and rebuilds every transitive entry point, inside
+            // CompileAsync. This used to then offer the builder a second, identical build - which
+            // for a widely included header is a full compilation pass repeated for nothing, and
+            // which read as "your dependents are still stale" when they were not. Said, not offered.
+            if (outcome.RebuiltDependents > 0)
+            {
+                var count = outcome.RebuiltDependents;
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    editor.ReportDependentRebuild(count));
+            }
 
             return outcome.Succeeded;
         }

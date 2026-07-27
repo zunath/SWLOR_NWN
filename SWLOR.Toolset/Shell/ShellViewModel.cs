@@ -359,10 +359,12 @@ namespace SWLOR.Toolset.Shell
                 StatusText = "Building all scripts...";
                 _factory.Focus(_output);
 
-                var (compiled, failed) = await _compileService.BuildAllAsync().ConfigureAwait(true);
-                StatusText = failed == 0
-                    ? $"Built {compiled} script(s)."
-                    : $"Built {compiled} script(s); {failed} failed - see Output.";
+                var outcome = await _compileService.BuildAllAsync().ConfigureAwait(true);
+                StatusText = !outcome.Ran
+                    ? "Cannot build scripts: no module is open, or no script compiler is vendored."
+                    : outcome.Failed == 0
+                        ? $"Built {outcome.Compiled} script(s)."
+                        : $"Built {outcome.Compiled} script(s); {outcome.Failed} failed - see Output.";
             }
             finally
             {
@@ -559,7 +561,16 @@ namespace SWLOR.Toolset.Shell
             }
 
             StatusText = "Building all scripts before pack...";
-            var (_, failed) = await _compileService.BuildAllAsync().ConfigureAwait(true);
+            var buildOutcome = await _compileService.BuildAllAsync().ConfigureAwait(true);
+            if (!buildOutcome.Ran)
+            {
+                _log.AppendLine(
+                    "Pack cancelled: stale compiled scripts remain and no script compiler is vendored.");
+                StatusText = "Pack cancelled: stale scripts remain.";
+                return false;
+            }
+
+            var failed = buildOutcome.Failed;
 
             var remaining = _compileService.ScanStale();
             var remainingWarning = ScriptPackReadiness.Evaluate(remaining);

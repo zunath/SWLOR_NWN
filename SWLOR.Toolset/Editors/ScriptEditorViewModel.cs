@@ -203,6 +203,23 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>Brings the Problems panel forward; the status strip is clickable.</summary>
+        /// <summary>
+        /// Says how many dependent scripts a saved include already rebuilt.
+        /// </summary>
+        /// <remarks>
+        /// A statement, not an offer: the work is done by the time this is called, and the previous
+        /// clickable "N dependent script(s) need rebuilding" ran the whole pass again.
+        /// </remarks>
+        public void ReportDependentRebuild(int count)
+        {
+            if (count <= 0)
+                return;
+
+            _compileStatusAction = null;
+            LastCompileFailed = false;
+            CompileStatus = $"Rebuilt {count} dependent script(s).";
+        }
+
         public void OfferDependentRebuild(
             IReadOnlyList<string> dependents,
             Func<Task<(int Compiled, int Failed)>> rebuild)

@@ -31,6 +31,45 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        /// <summary>
+        /// The guild definitions build every task through a private helper that takes the quest id
+        /// as a parameter, so nothing about them appears in a literal Create() call. Reading only
+        /// literals lost all four guilds - 651 quests that GameCodeIndex.Quests did not have while
+        /// IsSourceScanAvailable still said yes, so the quest dropdown could not select them and
+        /// conversation analysis reported real quests as nonexistent.
+        /// </summary>
+        [Test]
+        public void HelperBuiltGuildTasksAreIndexed()
+        {
+            Index.FindQuest("eng_tsk_001").Should().NotBeNull();
+            Index.FindQuest("eng_tsk_815").Should().NotBeNull();
+
+            Index.Quests
+                .Count(quest => quest.Key.StartsWith("eng_tsk_", StringComparison.Ordinal))
+                .Should().Be(80, "that is every BuildItemTask call in the Engineering definition");
+
+            // The other three guilds use the same shape, so none of them should be empty either.
+            foreach (var prefix in new[] { "smth_tsk_", "fab_tsk_", "agr_tsk_", "hun_tsk_" })
+            {
+                Index.Quests
+                    .Count(quest => quest.Key.StartsWith(prefix, StringComparison.Ordinal))
+                    .Should().BeGreaterThan(0, $"{prefix} tasks are built through the same helper");
+            }
+        }
+
+        /// <summary>
+        /// A helper-built quest still reports the chain the helper declares - one state, repeatable -
+        /// so the coverage strip has cells to draw.
+        /// </summary>
+        [Test]
+        public void AHelperBuiltQuestCarriesTheHelpersChain()
+        {
+            var quest = Index.FindQuest("eng_tsk_001")!;
+
+            quest.StateCount.Should().BeGreaterThan(0);
+            quest.IsRepeatable.Should().BeTrue();
+        }
+
         [Test]
         public void TheSourceScanIsAvailable()
         {

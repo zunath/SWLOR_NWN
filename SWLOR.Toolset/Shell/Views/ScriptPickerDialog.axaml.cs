@@ -11,12 +11,14 @@ namespace SWLOR.Toolset.Shell.Views
     /// <summary>One selectable script in the picker.</summary>
     public sealed class ScriptPickerRow
     {
-        public ScriptPickerRow(string resRef, string label, bool isInclude, int usageCount)
+        public ScriptPickerRow(
+            string resRef, string label, bool isInclude, int usageCount, bool hasSource = true)
         {
             ResRef = resRef;
             Label = label;
             IsInclude = isInclude;
             UsageCount = usageCount;
+            HasSource = hasSource;
         }
 
         public string ResRef { get; }
@@ -28,14 +30,25 @@ namespace SWLOR.Toolset.Shell.Views
         public int UsageCount { get; }
 
         /// <summary>
-        /// Includes are labelled rather than hidden: an <c>_inc</c> file in an event slot is almost
-        /// always a mistake, but marking beats silently filtering — the builder may know better.
+        /// False for a compiled .ncs with no .nss beside it. The module has many; they run perfectly
+        /// well and simply cannot be opened here.
         /// </summary>
-        public string Note => IsInclude
-            ? "include"
-            : UsageCount > 0 ? $"used by {UsageCount}" : string.Empty;
+        public bool HasSource { get; }
 
-        public IBrush NoteBrush => IsInclude
+        /// <summary>
+        /// Includes are labelled rather than hidden: an <c>_inc</c> file in an event slot is almost
+        /// always a mistake, but marking beats silently filtering — the builder may know better. The
+        /// same reasoning covers source-less scripts, which used to be missing from this list
+        /// entirely: a slot naming one was reported as pointing at a script that does not exist, and
+        /// no other slot could be pointed at it at all.
+        /// </summary>
+        public string Note => !HasSource
+            ? "compiled only"
+            : IsInclude
+                ? "include"
+                : UsageCount > 0 ? $"used by {UsageCount}" : string.Empty;
+
+        public IBrush NoteBrush => IsInclude || !HasSource
             ? new SolidColorBrush(Color.Parse("#6C7683"))
             : new SolidColorBrush(Color.Parse("#5FBE8C"));
     }

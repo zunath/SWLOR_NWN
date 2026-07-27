@@ -88,7 +88,13 @@ namespace SWLOR.Toolset.Editors.Placeables
                 if (!string.IsNullOrEmpty(behavior.Group) && behavior.Group != CurrentGroup)
                 {
                     CurrentGroup = behavior.Group;
-                    Items.Add(BehaviorListItemViewModel.ForHeader(behavior.Group));
+
+                    // A heading that repeats the one row under it puts two rows reading "Custom" in
+                    // the list, and the heading is the disabled one. A builder aiming at the word
+                    // they want has even odds of hitting the half of it that cannot be clicked,
+                    // which is indistinguishable from Custom refusing to be chosen.
+                    if (!NamesItsOnlyBehavior(behavior))
+                        Items.Add(BehaviorListItemViewModel.ForHeader(behavior.Group));
                 }
 
                 Items.Add(BehaviorListItemViewModel.ForBehavior(behavior));
@@ -100,6 +106,12 @@ namespace SWLOR.Toolset.Editors.Placeables
         }
 
         private string CurrentGroup { get; set; } = string.Empty;
+
+        /// <summary>Whether a group holds exactly one behavior and is named after it.</summary>
+        private static bool NamesItsOnlyBehavior(PlaceableBehavior behavior) =>
+            string.Equals(behavior.Group, behavior.Name, StringComparison.Ordinal) &&
+            PlaceableBehaviorCatalog.Behaviors.Count(candidate =>
+                string.Equals(candidate.Group, behavior.Group, StringComparison.Ordinal)) == 1;
 
         /// <summary>Behavior rows and their group headings, in catalog order.</summary>
         public ObservableCollection<BehaviorListItemViewModel> Items { get; } = new();

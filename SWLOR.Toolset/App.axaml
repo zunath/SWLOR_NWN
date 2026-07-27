@@ -18,18 +18,20 @@
          text as wide as the box it explained, on every row, whether or not the box was blank. A
          description then got what was left, which was a couple of characters. -->
     <DataTemplate DataType="editors:LocStringFieldViewModel">
-      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Top" Margin="0,5,0,0"
-                   Classes="dim" TextTrimming="CharacterEllipsis" />
-        <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
-                 Watermark="{Binding StrRefDisplay}" IsVisible="{Binding IsSingleLine}" />
-        <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
-                 Watermark="{Binding StrRefDisplay}"
-                 IsVisible="{Binding IsMultiline}" AcceptsReturn="True" TextWrapping="Wrap"
-                 MinHeight="140" VerticalContentAlignment="Top"
-                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
-      </Grid>
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,5,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <Panel>
+          <TextBox Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
+                   Watermark="{Binding StrRefDisplay}" IsVisible="{Binding IsSingleLine}" />
+          <TextBox Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
+                   Watermark="{Binding StrRefDisplay}"
+                   IsVisible="{Binding IsMultiline}" AcceptsReturn="True" TextWrapping="Wrap"
+                   MinHeight="140" VerticalContentAlignment="Top"
+                   ScrollViewer.VerticalScrollBarVisibility="Auto"
+                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+        </Panel>
+      </behaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <!-- Every behavior editor's row, from one control. The trigger, waypoint, door and sound
@@ -39,63 +41,70 @@
     </DataTemplate>
 
     <DataTemplate DataType="editors:CheckFieldViewModel">
-      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" RowDefinitions="Auto,Auto" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
-                   Classes="dim" TextTrimming="CharacterEllipsis" />
-        <CheckBox Grid.Column="1" IsChecked="{Binding IsChecked, Mode=TwoWay}" IsEnabled="{Binding !IsReadOnly}" />
-        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}" Classes="dim"
-                   FontSize="11" TextWrapping="Wrap" Margin="0,3,0,3"
-                   IsVisible="{Binding HasDescription}" />
-      </Grid>
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,4,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <StackPanel>
+          <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsEnabled="{Binding !IsReadOnly}" />
+          <TextBlock Text="{Binding Description}" Classes="dim"
+                     FontSize="11" TextWrapping="Wrap" Margin="0,3,0,3"
+                     IsVisible="{Binding HasDescription}" />
+        </StackPanel>
+      </behaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <DataTemplate DataType="editors:IntegerFieldViewModel">
-      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
-                   Classes="dim" TextTrimming="CharacterEllipsis" />
-        <NumericUpDown Grid.Column="1" Value="{Binding Value, Mode=TwoWay}"
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <NumericUpDown Value="{Binding Value, Mode=TwoWay}" MaxWidth="220"
                        FormatString="0" Increment="1" IsEnabled="{Binding !IsReadOnly}" />
-      </Grid>
+      </behaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <DataTemplate DataType="editors:FloatFieldViewModel">
-      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
-                   Classes="dim" TextTrimming="CharacterEllipsis" />
-        <NumericUpDown Grid.Column="1" Value="{Binding Value, Mode=TwoWay}"
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <NumericUpDown Value="{Binding Value, Mode=TwoWay}" MaxWidth="220"
                        Increment="0.5" IsEnabled="{Binding !IsReadOnly}" />
-      </Grid>
+      </behaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <DataTemplate DataType="editors:DropdownFieldViewModel">
-      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
-                   Classes="dim" TextTrimming="CharacterEllipsis" />
-        <ComboBox Grid.Column="1" IsVisible="{Binding HasOptions}"
-                  ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
-                  MaxDropDownHeight="400" />
-        <NumericUpDown Grid.Column="1" IsVisible="{Binding !HasOptions}"
-                       Value="{Binding RawValue, Mode=TwoWay}" FormatString="0" Increment="1" />
-      </Grid>
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <Panel>
+          <ComboBox IsVisible="{Binding HasOptions}" HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                    MaxDropDownHeight="400" />
+          <NumericUpDown IsVisible="{Binding !HasOptions}" MaxWidth="220"
+                         Value="{Binding RawValue, Mode=TwoWay}" FormatString="0" Increment="1" />
+        </Panel>
+      </behaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <DataTemplate DataType="editors:ScriptFieldViewModel">
       <StackPanel Margin="0,2">
-        <Grid ColumnDefinitions="150,*,Auto,Auto" ColumnSpacing="12">
-          <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
-                     Classes="dim" TextTrimming="CharacterEllipsis" />
-          <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}"
-                   FontFamily="{DynamicResource MonoFont}" />
-          <Button Grid.Column="2" Content="..." Margin="4,0,0,0" Padding="8,4"
-                  Command="{Binding BrowseCommand}" IsVisible="{Binding CanBrowse}"
-                  ToolTip.Tip="Browse module scripts" />
-          <Button Grid.Column="3" Content="Open" Margin="4,0,0,0" Padding="8,4"
-                  Command="{Binding OpenScriptCommand}" IsVisible="{Binding CanBrowse}"
-                  ToolTip.Tip="Open this script in an editor tab" />
-        </Grid>
+        <behaviors:LabeledFieldPanel>
+          <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
+                     Classes="dim" TextWrapping="Wrap" />
+          <Grid ColumnDefinitions="*,Auto,Auto">
+            <TextBox Grid.Column="0" Text="{Binding Text, Mode=TwoWay}"
+                     FontFamily="{DynamicResource MonoFont}" />
+            <Button Grid.Column="1" Content="..." Margin="4,0,0,0" Padding="8,4"
+                    Command="{Binding BrowseCommand}" IsVisible="{Binding CanBrowse}"
+                    ToolTip.Tip="Browse module scripts" />
+            <Button Grid.Column="2" Content="Open" Margin="4,0,0,0" Padding="8,4"
+                    Command="{Binding OpenScriptCommand}" IsVisible="{Binding CanBrowse}"
+                    ToolTip.Tip="Open this script in an editor tab" />
+          </Grid>
+        </behaviors:LabeledFieldPanel>
         <!-- A slot naming a script that does not exist is a live, otherwise invisible bug across the
              2,250 module resources that name one. -->
-        <TextBlock Margin="162,2,0,0" FontSize="11" TextWrapping="Wrap"
+        <TextBlock Margin="0,2,0,0" FontSize="11" TextWrapping="Wrap"
                    Foreground="{DynamicResource AmberBrush}"
                    IsVisible="{Binding IsMissing}" Text="{Binding MissingMessage}" />
       </StackPanel>
@@ -104,24 +113,26 @@
     <!-- A resref that names another module resource. Editable text with the real list attached, so
          a value from a hak stays typeable and an unknown one says so rather than being rejected. -->
     <DataTemplate DataType="editors:ResourcePickerFieldViewModel">
-      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" RowDefinitions="Auto,Auto" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
-                   Classes="dim" TextTrimming="CharacterEllipsis" />
-        <AutoCompleteBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}"
-                         ItemsSource="{Binding Choices}" FilterMode="Contains"
-                         FontFamily="Consolas,monospace" />
-        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding UnknownHint}" Classes="label"
-                   Foreground="{DynamicResource AmberBrush}" Margin="0,3,0,0"
-                   IsVisible="{Binding IsUnknown}" TextWrapping="Wrap" />
-      </Grid>
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <StackPanel>
+          <AutoCompleteBox Text="{Binding Text, Mode=TwoWay}"
+                           ItemsSource="{Binding Choices}" FilterMode="Contains"
+                           FontFamily="Consolas,monospace" />
+          <TextBlock Text="{Binding UnknownHint}" Classes="label"
+                     Foreground="{DynamicResource AmberBrush}" Margin="0,3,0,0"
+                     IsVisible="{Binding IsUnknown}" TextWrapping="Wrap" />
+        </StackPanel>
+      </behaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <DataTemplate DataType="editors:TextFieldViewModel">
-      <Grid ColumnDefinitions="150,*" ColumnSpacing="12" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
-                   Classes="dim" TextTrimming="CharacterEllipsis" />
-        <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}" />
-      </Grid>
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <TextBox Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}" />
+      </behaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <!-- One behavior field. Seven shapes over the same row so the label column stays aligned with

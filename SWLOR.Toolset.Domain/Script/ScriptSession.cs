@@ -16,6 +16,7 @@ namespace SWLOR.Toolset.Domain.Script
     {
         private readonly object _syncRoot = new();
         private DateTime? _loadedMTimeUtc;
+        private byte[]? _loadedContentHash;
         private string _savedText;
 
         private ScriptSession(string filePath, ScriptTextDocument document)
@@ -62,7 +63,18 @@ namespace SWLOR.Toolset.Domain.Script
                 if (!File.Exists(FilePath))
                     return _loadedMTimeUtc != null;
 
-                return File.GetLastWriteTimeUtc(FilePath) != _loadedMTimeUtc;
+                if (File.GetLastWriteTimeUtc(FilePath) != _loadedMTimeUtc)
+                    return true;
+
+                // Same mtime can hide a swap on coarse-granularity filesystems or under tools
+                // that preserve timestamps; the content fingerprint decides.
+                if (_loadedContentHash == null)
+                    return true;
+
+                return !System.Security.Cryptography.SHA256
+                    .HashData(File.ReadAllBytes(FilePath))
+                    .AsSpan()
+                    .SequenceEqual(_loadedContentHash);
             }
         }
 
@@ -98,7 +110,12 @@ namespace SWLOR.Toolset.Domain.Script
         public void RecordCurrentFileState()
         {
             lock (_syncRoot)
+            {
                 _loadedMTimeUtc = File.Exists(FilePath) ? File.GetLastWriteTimeUtc(FilePath) : null;
+                _loadedContentHash = _loadedMTimeUtc != null
+                    ? System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(FilePath))
+                    : null;
+            }
         }
 
         // The buffer always hands back '\n'; the baseline came off disk the same way. Normalising

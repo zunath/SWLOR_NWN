@@ -15,6 +15,7 @@ namespace SWLOR.Toolset.Domain.Editing
         private readonly object _syncRoot = new();
         private readonly long _lockOrder = Interlocked.Increment(ref _nextLockOrder);
         private DateTime? _loadedMTimeUtc;
+        private byte[]? _loadedContentHash;
         private bool _disposed;
 
         public string FilePath { get; }
@@ -30,6 +31,9 @@ namespace SWLOR.Toolset.Domain.Editing
             Document = document ?? throw new ArgumentNullException(nameof(document));
             UndoStack = new UndoStack();
             _loadedMTimeUtc = File.Exists(filePath) ? File.GetLastWriteTimeUtc(filePath) : null;
+            _loadedContentHash = _loadedMTimeUtc != null
+                ? System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(filePath))
+                : null;
             _guard = EditScope.EnterGuard();
         }
 
@@ -79,8 +83,10 @@ namespace SWLOR.Toolset.Domain.Editing
         }
 
         /// <summary>
-        /// True if the file at FilePath has a different last-write time than when this session
-        /// was opened (or has been deleted since, or now exists when it did not before).
+        /// True if the file at FilePath changed since this session loaded or last saved (deleted,
+        /// newly created, different last-write time, or - because timestamp granularity can be
+        /// coarse and external tools may preserve mtimes - different content under the same
+        /// timestamp, decided by fingerprint).
         /// </summary>
         public bool HasExternalChange()
         {
@@ -89,7 +95,16 @@ namespace SWLOR.Toolset.Domain.Editing
                 if (!File.Exists(FilePath))
                     return _loadedMTimeUtc != null;
 
-                return File.GetLastWriteTimeUtc(FilePath) != _loadedMTimeUtc;
+                if (File.GetLastWriteTimeUtc(FilePath) != _loadedMTimeUtc)
+                    return true;
+
+                if (_loadedContentHash == null)
+                    return true;
+
+                return !System.Security.Cryptography.SHA256
+                    .HashData(File.ReadAllBytes(FilePath))
+                    .AsSpan()
+                    .SequenceEqual(_loadedContentHash);
             }
         }
 
@@ -121,7 +136,12 @@ namespace SWLOR.Toolset.Domain.Editing
         public void RecordCurrentFileState()
         {
             lock (_syncRoot)
+            {
                 _loadedMTimeUtc = File.Exists(FilePath) ? File.GetLastWriteTimeUtc(FilePath) : null;
+                _loadedContentHash = _loadedMTimeUtc != null
+                    ? System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(FilePath))
+                    : null;
+            }
         }
 
         /// <summary>Serializes this document while excluding edits and undo/redo replay.</summary>
@@ -155,10 +175,21 @@ namespace SWLOR.Toolset.Domain.Editing
         /// <summary>
         /// Unwinds every edit made since the last save - what an editor's Revert action means.
         /// </summary>
+        /// <remarks>
+        /// When the saved history position was discarded by branching (save, undo past it, then a
+        /// new edit), the beginning of history is NOT the saved baseline - the disk is. Falling
+        /// back to undo-everything let a following Save overwrite previously committed work with
+        /// the initial load state, so the discarded-marker case reloads the on-disk document.
+        /// </remarks>
         public void RevertToSaved()
         {
             lock (_syncRoot)
-                UndoStack.RevertToSaved();
+            {
+                if (UndoStack.RestoreSaved())
+                    return;
+
+                ReloadFrom(JsonGffDocument.Load(FilePath));
+            }
         }
 
         /// <summary>

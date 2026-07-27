@@ -183,7 +183,8 @@ namespace SWLOR.Toolset.Domain.Conversations
                             arguments,
                             action.SnippetKey.StartsWith("action-give-", StringComparison.Ordinal),
                             result.GetFactionStanding,
-                            result.WithFactionStanding);
+                            result.WithFactionStanding,
+                            ClampStanding);
                         break;
 
                     case "action-give-faction-points":
@@ -192,7 +193,8 @@ namespace SWLOR.Toolset.Domain.Conversations
                             arguments,
                             action.SnippetKey.StartsWith("action-give-", StringComparison.Ordinal),
                             result.GetFactionPoints,
-                            result.WithFactionPoints);
+                            result.WithFactionPoints,
+                            ClampPoints);
                         break;
                 }
             }
@@ -200,11 +202,17 @@ namespace SWLOR.Toolset.Domain.Conversations
             return result;
         }
 
+        /// <summary>
+        /// Mirrors the clamp <c>Faction.AdjustPlayerFactionStanding/Points</c> applies at write time,
+        /// so a simulated give/take can never land on a value the runtime could never produce -
+        /// taking more points than the player owns, or pushing standing past the game's range.
+        /// </summary>
         private static void ApplyFactionChange(
             string[] arguments,
             bool give,
             Func<int, int> read,
-            Func<int, int, PretendPlayer> write)
+            Func<int, int, PretendPlayer> write,
+            Func<int, int> clamp)
         {
             if (arguments.Length < 2
                 || !int.TryParse(arguments[0], out var factionId)
@@ -212,8 +220,16 @@ namespace SWLOR.Toolset.Domain.Conversations
                 return;
 
             var amount = Math.Abs(parsedAmount);
-            write(factionId, read(factionId) + (give ? amount : -amount));
+            var updated = read(factionId) + (give ? amount : -amount);
+            write(factionId, clamp(updated));
         }
+
+        /// <summary>Standing is clamped to the runtime's range, same as <c>Faction.AdjustPlayerFactionStanding</c>.</summary>
+        private static int ClampStanding(int value) =>
+            Math.Clamp(value, Game.Server.Service.Faction.MinimumFaction, Game.Server.Service.Faction.MaximumFaction);
+
+        /// <summary>Points only floor at zero, same as <c>Faction.AdjustPlayerFactionPoints</c> - there is no ceiling.</summary>
+        private static int ClampPoints(int value) => Math.Max(0, value);
 
         /// <summary>The condition as a sentence, with ids resolved to names where they are known.</summary>
         public string Describe(DlgParam condition, SnippetDescriptor? snippet = null)

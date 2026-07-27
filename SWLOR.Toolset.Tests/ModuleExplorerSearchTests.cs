@@ -2,6 +2,7 @@ using Avalonia.Headless.NUnit;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Conversations;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Workspace;
@@ -172,6 +173,53 @@ namespace SWLOR.Toolset.Tests
                 "a DLG refresh must invalidate and requeue the cached same-query scan");
             await WaitUntilAsync(() => !explorer.IsSearchingDialogue);
             ContainsResRef(explorer.Rows, "greeting").Should().BeTrue();
+        }
+
+        // ---------- an open conversation is deep-snapshotted, not passed to the worker live ----------
+
+        /// <summary>
+        /// <c>EditorService.SnapshotOpenConversationDocuments</c> hands the background scan a private
+        /// copy of each open conversation - round-tripped through <c>ToBytes</c>/<c>Parse</c> on the
+        /// UI thread - rather than the editor's live <see cref="DlgDocument"/>. This is the technique
+        /// itself: a builder adding or editing lines on the live document after the snapshot was taken
+        /// (the same moment a background scan could be mid-traversal of it) must not be visible
+        /// through the copy, or the worker would be walking node/link lists out from under a
+        /// concurrent mutation - the exact fault the review comment called out.
+        /// </summary>
+        [Test]
+        public void ADeepSnapshotIsIndependentOfTheLiveDocumentItWasTakenFrom()
+        {
+            WriteConversation("greeting", "Nothing to see here.");
+            var live = DlgDocument.Load(Path.Combine(_root, "dlg", "greeting.dlg.json"));
+
+            var snapshot = DlgDocument.Parse(live.ToBytes());
+
+            // The kind of edit a builder makes while a scan could be reading the same document.
+            live.Entries[0].Text = "The Veldite seam runs deep.";
+            live.AddEntry("A brand new line.");
+
+            snapshot.Entries.Should().ContainSingle().Which.Text.Should().Be("Nothing to see here.");
+        }
+
+        /// <summary>
+        /// The round-tripped copy has to remain a faithful stand-in for the live document, not just an
+        /// inert one: dialogue search reads whatever text was live at snapshot time exactly as it
+        /// would have read the live document itself, before the divergence above happens.
+        /// </summary>
+        [Test]
+        public void ADeepSnapshotStillMatchesDialogueSearchLikeTheLiveDocumentWould()
+        {
+            WriteConversation("greeting", "Nothing to see here.");
+            var live = DlgDocument.Load(Path.Combine(_root, "dlg", "greeting.dlg.json"));
+            live.Entries[0].Text = "The Veldite seam runs deep.";
+
+            var snapshot = DlgDocument.Parse(live.ToBytes());
+
+            var hits = DialogueSearch.Search(
+                Path.Combine(_root, "dlg"), "veldite",
+                openDocument: resRef => resRef == "greeting" ? snapshot : null);
+
+            hits.Select(hit => hit.ResRef).Should().Equal("greeting");
         }
 
         private static bool ContainsResRef(

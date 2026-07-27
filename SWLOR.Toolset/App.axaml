@@ -57,7 +57,8 @@
       <behaviors:LabeledFieldPanel Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
                    Classes="dim" TextWrapping="Wrap" />
-        <NumericUpDown Value="{Binding Value, Mode=TwoWay}" MaxWidth="220"
+        <NumericUpDown Value="{Binding Value, Mode=TwoWay}" MinWidth="110" MaxWidth="220"
+                       HorizontalAlignment="Left"
                        FormatString="0" Increment="1" IsEnabled="{Binding !IsReadOnly}" />
       </behaviors:LabeledFieldPanel>
     </DataTemplate>
@@ -66,7 +67,8 @@
       <behaviors:LabeledFieldPanel Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
                    Classes="dim" TextWrapping="Wrap" />
-        <NumericUpDown Value="{Binding Value, Mode=TwoWay}" MaxWidth="220"
+        <NumericUpDown Value="{Binding Value, Mode=TwoWay}" MinWidth="110" MaxWidth="220"
+                       HorizontalAlignment="Left"
                        Increment="0.5" IsEnabled="{Binding !IsReadOnly}" />
       </behaviors:LabeledFieldPanel>
     </DataTemplate>
@@ -80,7 +82,8 @@
                     HorizontalContentAlignment="Left"
                     ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
                     MaxDropDownHeight="400" />
-          <NumericUpDown IsVisible="{Binding !HasOptions}" MaxWidth="220"
+          <NumericUpDown IsVisible="{Binding !HasOptions}" MinWidth="110" MaxWidth="220"
+                         HorizontalAlignment="Left"
                          Value="{Binding RawValue, Mode=TwoWay}" FormatString="0" Increment="1" />
         </Panel>
       </behaviors:LabeledFieldPanel>
@@ -152,6 +155,7 @@
         <CheckBox IsVisible="{Binding IsToggle}" IsChecked="{Binding Flag, Mode=TwoWay}" />
 
         <NumericUpDown IsVisible="{Binding IsInteger}" FormatString="0" Increment="1"
+                       MinWidth="110" MaxWidth="220" HorizontalAlignment="Left"
                        Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
                        Value="{Binding Number, Mode=TwoWay}" />
 

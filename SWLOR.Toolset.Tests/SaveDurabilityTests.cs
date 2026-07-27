@@ -151,6 +151,33 @@ namespace SWLOR.Toolset.Tests
             File.ReadAllText(areTarget).Should().Be("{\"generation\":\"new\"}");
         }
 
+        [Test]
+        public void AManifestThatDeserializesToNullShieldsItsTransactionBackupsToo()
+        {
+            // "null" is valid JSON: deserialization returns null without throwing, which used to
+            // slip past the unreadable-manifest protection into the generic orphan sweep.
+            var transactionId = Guid.NewGuid().ToString("N");
+            var areTarget = Path.Combine(_root, "are", "cantina.are.json");
+            var gitTarget = Path.Combine(_root, "git", "cantina.git.json");
+            var areBackup = areTarget + "." + transactionId + SaveService.BackupSuffix;
+            var gitBackup = gitTarget + "." + transactionId + SaveService.BackupSuffix;
+
+            File.WriteAllText(areTarget, "{\"generation\":\"new\"}");
+            File.WriteAllText(areBackup, "{\"generation\":\"old-are\"}");
+            File.WriteAllText(gitBackup, "{\"generation\":\"old-git\"}");
+
+            var manifestPath = Path.Combine(
+                _root, "." + transactionId + SaveService.TransactionSuffix);
+            File.WriteAllText(manifestPath, "null");
+
+            SaveService.RecoverInterruptedSaves(_root);
+
+            File.Exists(manifestPath).Should().BeTrue("an entry-less manifest is still evidence");
+            File.Exists(areBackup).Should().BeTrue("the transaction's backups must survive the sweep");
+            File.Exists(gitBackup).Should().BeTrue();
+            File.Exists(gitTarget).Should().BeFalse("no member may be restored piecemeal");
+        }
+
         /// <summary>
         /// The staged file is transaction debris once the commit has failed. Left behind as
         /// "foo.nss.tmp", the packer's script copy - which took whatever was in the folder - shipped

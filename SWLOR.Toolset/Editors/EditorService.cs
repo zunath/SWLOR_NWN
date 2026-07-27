@@ -107,16 +107,44 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, ConversationEditorViewModel> _openConversations = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        /// Live documents of every open conversation editor, keyed by resref. Dialogue search
-        /// consults these before falling back to the saved file so unsaved edits are searchable.
-        /// Snapshot the map on the UI thread before handing it to a worker.
+        /// Deep, independent snapshots of every open conversation editor's live document, keyed by
+        /// resref. Dialogue search consults these before falling back to the saved file so unsaved
+        /// edits are searchable.
         /// </summary>
-        public IReadOnlyDictionary<string, DlgDocument> GetOpenConversationDocuments()
+        /// <remarks>
+        /// Each value is a private copy, not the editor's live <see cref="DlgDocument"/>: a builder
+        /// can add, remove, or reorder nodes and links in an open conversation while a background
+        /// scan is walking that same document's <c>Entries</c>/<c>Replies</c> lists, which can throw
+        /// or produce inconsistent hits. Round-tripping through <see cref="GffDocumentBase.ToBytes"/>
+        /// and <see cref="DlgDocument.Parse"/> here, on the UI thread, gives the worker a document
+        /// nothing else can mutate out from under it.
+        /// </remarks>
+        public IReadOnlyDictionary<string, DlgDocument> SnapshotOpenConversationDocuments()
         {
             var documents = new Dictionary<string, DlgDocument>(StringComparer.OrdinalIgnoreCase);
             foreach (var editor in _openConversations.Values)
-                documents[editor.ResRef] = editor.LiveDialog;
+                documents[editor.ResRef] = DlgDocument.Parse(editor.LiveDialog.ToBytes());
             return documents;
+        }
+
+        /// <summary>
+        /// Current text of every open script editor buffer, keyed by resref. A background script
+        /// search consults this instead of reading the live <c>_openScriptEditors</c> dictionary and
+        /// each editor's live buffer off-thread: a builder opening or closing a script tab while the
+        /// scan is running mutates that dictionary concurrently, which can fault the search.
+        /// </summary>
+        /// <remarks>
+        /// Copied out on the UI thread, before the scan starts. Script text is an immutable
+        /// <see cref="string"/>, so once copied into this dictionary neither the dictionary nor the
+        /// strings it holds can change under the worker; only the dictionary reference itself needs
+        /// to be captured before <c>Task.Run</c>, not the underlying editors.
+        /// </remarks>
+        public IReadOnlyDictionary<string, string> SnapshotOpenScriptSources()
+        {
+            var sources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var editor in _openScriptEditors.Values)
+                sources[editor.ResRef] = editor.TextBinding;
+            return sources;
         }
 
         /// <summary>
@@ -342,12 +370,7 @@ namespace SWLOR.Toolset.Editors
                     new Shell.Panels.ScriptSearchViewModel(
                         Path.Combine(workspace.ModuleRoot, "nss"),
                         NavigateToScriptLine,
-                        scriptResRef =>
-                            _openScriptEditors.TryGetValue(
-                                workspace.GetResourcePath(ResourceType.Nss, scriptResRef),
-                                out var openEditor)
-                                ? openEditor.TextBinding
-                                : null))
+                        SnapshotOpenScriptSources))
                 {
                     // The tab's own Compile button writes a .ncs, so it follows the same module-wide
                     // lock that the Build menu does.

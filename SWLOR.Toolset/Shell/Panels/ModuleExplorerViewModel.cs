@@ -807,9 +807,11 @@ namespace SWLOR.Toolset.Shell.Panels
             _dialogueScan = pending;
             var token = pending.Token;
 
-            // Snapshot open-editor documents on the UI thread so the worker-side search sees
-            // unsaved edits instead of the stale on-disk copies.
-            var openDialogs = _editorService?.Invoke().GetOpenConversationDocuments();
+            // Deep-snapshot open-editor documents on the UI thread so the worker-side search sees
+            // unsaved edits instead of the stale on-disk copies, without ever touching the live
+            // DlgDocument an open editor may be mutating concurrently - see
+            // EditorService.SnapshotOpenConversationDocuments.
+            var openDialogs = _editorService?.Invoke().SnapshotOpenConversationDocuments();
 
             _ = Task.Run(
                 async () =>

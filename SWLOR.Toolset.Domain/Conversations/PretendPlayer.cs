@@ -57,6 +57,13 @@ namespace SWLOR.Toolset.Domain.Conversations
             return this;
         }
 
+        /// <summary>Takes the key item away, for breaking a guard that requires having it.</summary>
+        public PretendPlayer WithoutKeyItem(string keyItem)
+        {
+            _keyItems.Remove(keyItem);
+            return this;
+        }
+
         public PretendPlayer WithSkill(string skill, int rank)
         {
             _skillRanks[skill] = rank;

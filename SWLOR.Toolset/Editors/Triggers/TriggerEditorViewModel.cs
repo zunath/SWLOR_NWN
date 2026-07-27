@@ -171,6 +171,11 @@ namespace SWLOR.Toolset.Editors.Triggers
 
         private void RebuildBehaviorSection()
         {
+            // A row can be holding a pending gallery search; dropping it without saying so leaves
+            // that timer to fire against a form nobody is looking at.
+            foreach (var row in BehaviorRows)
+                row.Dispose();
+
             BehaviorRows.Clear();
             foreach (var definition in Behavior.Fields)
                 BehaviorRows.Add(CreateRow(definition));

@@ -327,25 +327,59 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// contains match. Safe to call while <see cref="BuildTask"/> is still running (searches
         /// whatever has been indexed so far).
         /// </summary>
-        public IReadOnlyList<CatalogSearchResult> Search(string query)
+        /// <param name="limit">
+        /// Most results to return. A one-letter query matches most of the corpus, and nobody reads
+        /// past the first screen; without a bound the panel sorted fifteen thousand records to show
+        /// two hundred, on every keystroke.
+        /// </param>
+        /// <remarks>
+        /// Collected into one bucket per rank rather than sorted by it. There are three ranks, so
+        /// the comparison sort was doing log-n work to answer a question with three answers; only
+        /// the tie-break inside a bucket needs ordering, and the snapshot is already in resref
+        /// order, so each bucket comes out sorted for free.
+        /// </remarks>
+        public IReadOnlyList<CatalogSearchResult> Search(string query, int limit = int.MaxValue)
         {
-            if (string.IsNullOrWhiteSpace(query))
+            if (string.IsNullOrWhiteSpace(query) || limit <= 0)
                 return Array.Empty<CatalogSearchResult>();
 
             var trimmed = query.Trim();
-            var results = new List<CatalogSearchResult>();
+            var exact = new List<CatalogSearchResult>();
+            var prefix = new List<CatalogSearchResult>();
+            var contains = new List<CatalogSearchResult>();
 
             foreach (var entry in Entries)
             {
-                var kind = Match(entry, trimmed);
-                if (kind != null)
-                    results.Add(new CatalogSearchResult(entry, kind.Value));
+                switch (Match(entry, trimmed))
+                {
+                    case CatalogMatchKind.ExactResRef:
+                        exact.Add(new CatalogSearchResult(entry, CatalogMatchKind.ExactResRef));
+                        break;
+                    case CatalogMatchKind.Prefix:
+                        prefix.Add(new CatalogSearchResult(entry, CatalogMatchKind.Prefix));
+                        break;
+                    case CatalogMatchKind.Contains:
+                        // Only collected while a better-ranked bucket could still fall short.
+                        if (exact.Count + prefix.Count + contains.Count < limit)
+                            contains.Add(new CatalogSearchResult(entry, CatalogMatchKind.Contains));
+                        break;
+                }
             }
 
-            return results
-                .OrderBy(result => result.MatchKind)
-                .ThenBy(result => result.Entry.ResRef, StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            var ranked = new List<CatalogSearchResult>(
+                Math.Min(limit, exact.Count + prefix.Count + contains.Count));
+            foreach (var bucket in new[] { exact, prefix, contains })
+            {
+                foreach (var result in bucket)
+                {
+                    if (ranked.Count == limit)
+                        return ranked;
+
+                    ranked.Add(result);
+                }
+            }
+
+            return ranked;
         }
 
         private static CatalogMatchKind? Match(CatalogEntry entry, string query)

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Workspace;
@@ -14,8 +15,15 @@ namespace SWLOR.Toolset.Shell.Panels
     /// </summary>
     public partial class SearchViewModel : Tool
     {
+        /// <summary>Results published. Nobody reads past the first screen of a ranked list.</summary>
+        public const int MaxResults = 200;
+
+        /// <summary>How long typing has to pause before the catalog is searched.</summary>
+        private static readonly TimeSpan SearchDebounce = TimeSpan.FromMilliseconds(200);
+
         private readonly WorkspaceContext _workspaceContext;
         private readonly PropertiesViewModel _properties;
+        private CancellationTokenSource? _pending;
 
         [ObservableProperty]
         private string _query = string.Empty;
@@ -34,16 +42,57 @@ namespace SWLOR.Toolset.Shell.Panels
             _workspaceContext.CatalogEntryRefreshed += (_, _) => Refresh();
         }
 
+        /// <summary>
+        /// Searches after typing stops, off the UI thread.
+        /// </summary>
+        /// <remarks>
+        /// Each search walks the whole indexed corpus - ~17,900 records for this module - and a
+        /// one-letter query matches most of it. Doing that inline on every keystroke put tens of
+        /// milliseconds of string comparison between the key and the character appearing.
+        /// </remarks>
         partial void OnQueryChanged(string value)
         {
-            Results.Clear();
+            _pending?.Cancel();
+            _pending?.Dispose();
+            _pending = null;
 
             var catalog = _workspaceContext.Catalog;
             if (catalog == null || string.IsNullOrWhiteSpace(value))
+            {
+                Results.Clear();
                 return;
+            }
 
-            foreach (var result in catalog.Search(value).Take(200))
-                Results.Add(result);
+            var pending = new CancellationTokenSource();
+            _pending = pending;
+            var token = pending.Token;
+
+            _ = Task.Run(
+                async () =>
+                {
+                    try
+                    {
+                        await Task.Delay(SearchDebounce, token).ConfigureAwait(false);
+                        var matches = catalog.Search(value, MaxResults);
+                        if (token.IsCancellationRequested)
+                            return;
+
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            if (token.IsCancellationRequested)
+                                return;
+
+                            Results.Clear();
+                            foreach (var result in matches)
+                                Results.Add(result);
+                        });
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Another keystroke arrived; its search is the one that matters.
+                    }
+                },
+                token);
         }
 
         /// <summary>Re-runs the current query after the background catalog publishes more entries.</summary>

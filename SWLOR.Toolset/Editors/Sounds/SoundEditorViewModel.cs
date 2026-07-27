@@ -132,6 +132,9 @@ namespace SWLOR.Toolset.Editors.Sounds
 
         private void RebuildBehaviorSection()
         {
+            foreach (var row in BehaviorRows)
+                row.Dispose();
+
             BehaviorRows.Clear();
             foreach (var definition in Behavior.Fields)
                 BehaviorRows.Add(CreateRow(definition));

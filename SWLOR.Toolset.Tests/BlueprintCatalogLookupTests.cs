@@ -94,6 +94,39 @@ namespace SWLOR.Toolset.Tests
             catalog.TryGetEntry(ResourceType.Utc, "npc_sentry", out _).Should().BeFalse();
         }
 
+        [Test]
+        public async Task SearchRanksExactThenPrefixThenContainsAndStopsAtTheLimit()
+        {
+            var catalog = await BuiltCatalogAsync();
+
+            var ranked = catalog.Search("npc");
+            ranked.Should().HaveCount(2);
+            ranked.Should().OnlyContain(result => result.MatchKind == CatalogMatchKind.Prefix);
+
+            catalog.Search("npc_guard")[0].MatchKind.Should().Be(CatalogMatchKind.ExactResRef);
+            catalog.Search("guard")[0].MatchKind.Should().Be(CatalogMatchKind.Prefix,
+                "the tag GUARD_TAG starts with it; nothing has it as a whole ResRef");
+            catalog.Search("uar")[0].MatchKind.Should().Be(CatalogMatchKind.Contains);
+
+            // A better-ranked hit is never displaced by the limit.
+            var limited = catalog.Search("npc", limit: 1);
+            limited.Should().ContainSingle();
+            limited[0].Entry.ResRef.Should().Be("npc_guard");
+
+            catalog.Search("npc", limit: 0).Should().BeEmpty();
+            catalog.Search("   ").Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task SearchNeverReturnsMoreThanTheLimitEvenWhenEverythingMatches()
+        {
+            var catalog = await BuiltCatalogAsync();
+
+            // "_" appears in every seeded resref, so this is the shape a one-letter query takes on
+            // the real corpus: most of the index matches and only the first screen is read.
+            catalog.Search("_", limit: 2).Should().HaveCount(2);
+        }
+
         private async Task<BlueprintCatalog> BuiltCatalogAsync()
         {
             var workspace = new ModuleWorkspace(_moduleRoot);

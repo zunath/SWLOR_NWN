@@ -99,9 +99,19 @@ namespace SWLOR.Toolset.Domain.Editing
         /// </summary>
         public void ReloadFromDisk()
         {
+            ReloadFrom(JsonGffDocument.Load(FilePath));
+        }
+
+        /// <summary>
+        /// Replaces this session's content with an already-parsed reload. Callers reloading a
+        /// multi-file group parse every member first, then commit them through this - so one
+        /// malformed member cannot leave the group half-reloaded.
+        /// </summary>
+        public void ReloadFrom(JsonGffDocument document)
+        {
             lock (_syncRoot)
             {
-                Document.ReplaceWith(JsonGffDocument.Load(FilePath));
+                Document.ReplaceWith(document);
                 UndoStack.Reset();
                 RecordCurrentFileState();
             }

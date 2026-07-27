@@ -301,9 +301,16 @@ namespace SWLOR.Toolset.Domain.Conversations
 
                         break;
 
-                    // Key items and factions are stored as their integer enum value.
+                    // Key items are stored as their integer enum value or their KeyItemType member
+                    // name - the runtime accepts both (KeyItem.GetKeyItemTypeByName resolves names
+                    // case-sensitively), so validation must too.
                     case SnippetArgumentType.KeyItemId:
-                        if (!(int.TryParse(value, out var keyItemId) && _gameCode.KeyItems.ContainsKey(keyItemId)))
+                        var isKnownKeyItem =
+                            (int.TryParse(value, out var keyItemId) && _gameCode.KeyItems.ContainsKey(keyItemId))
+                            || (Enum.TryParse<Game.Server.Service.KeyItemService.KeyItemType>(value, out var keyItemByName)
+                                && keyItemByName != Game.Server.Service.KeyItemService.KeyItemType.Invalid
+                                && _gameCode.KeyItems.ContainsKey((int)keyItemByName));
+                        if (!isKnownKeyItem)
                         {
                             problems.Add(Make("unknown-key-item", ProblemSeverity.Broken,
                                 $"There is no key item called “{value}”, so this can never match.",

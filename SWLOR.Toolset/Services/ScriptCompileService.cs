@@ -82,8 +82,49 @@ namespace SWLOR.Toolset.Services
         /// </summary>
         public event Action<string, IReadOnlyList<ScriptAnalysisDiagnostic>>? DiagnosticsProduced;
 
+        /// <summary>
+        /// Serializes every compiler run - tab compiles, dependent recompiles, and Build All -
+        /// so two compiler processes can never produce or replace the same .ncs concurrently.
+        /// Re-entrant within one logical compile flow via the same AsyncLocal pattern
+        /// <see cref="ModuleMutationLock"/> uses.
+        /// </summary>
+        private static readonly SemaphoreSlim CompilerGate = new(1, 1);
+        private static readonly AsyncLocal<int> CompilerGateDepth = new();
+        private static int _activeCompilations;
+
+        /// <summary>
+        /// True while any compiler run (single script or Build All) is producing artifacts.
+        /// Module-scoped operations (pack, validation, Build All entry) consult this so they never
+        /// copy or rebuild an .ncs mid-replacement.
+        /// </summary>
+        public static bool AnyCompilationActive => Volatile.Read(ref _activeCompilations) > 0;
+
+        private static async Task<T> WithCompilerGateAsync<T>(
+            CancellationToken cancellationToken, Func<Task<T>> action)
+        {
+            if (CompilerGateDepth.Value > 0)
+                return await action().ConfigureAwait(false);
+
+            await CompilerGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+            CompilerGateDepth.Value++;
+            Interlocked.Increment(ref _activeCompilations);
+            try
+            {
+                return await action().ConfigureAwait(false);
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _activeCompilations);
+                CompilerGateDepth.Value--;
+                CompilerGate.Release();
+            }
+        }
+
         /// <summary>Compiles one script to Module/ncs.</summary>
-        public async Task<CompileOutcome> CompileAsync(string resRef, CancellationToken cancellationToken = default)
+        public Task<CompileOutcome> CompileAsync(string resRef, CancellationToken cancellationToken = default) =>
+            WithCompilerGateAsync(cancellationToken, () => CompileGatedAsync(resRef, cancellationToken));
+
+        private async Task<CompileOutcome> CompileGatedAsync(string resRef, CancellationToken cancellationToken)
         {
             var workspace = _workspaceContext.Workspace;
             var compiler = CreateCompiler();
@@ -310,7 +351,10 @@ namespace SWLOR.Toolset.Services
         public readonly record struct BuildAllOutcome(bool Ran, int Compiled, int Failed, int Purged = 0);
 
         /// <summary>Compiles every entry-point script in the module.</summary>
-        public async Task<BuildAllOutcome> BuildAllAsync(CancellationToken cancellationToken = default)
+        public Task<BuildAllOutcome> BuildAllAsync(CancellationToken cancellationToken = default) =>
+            WithCompilerGateAsync(cancellationToken, () => BuildAllGatedAsync(cancellationToken));
+
+        private async Task<BuildAllOutcome> BuildAllGatedAsync(CancellationToken cancellationToken)
         {
             var workspace = _workspaceContext.Workspace;
             if (workspace == null || !IsAvailable)

@@ -329,6 +329,29 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ScaffoldingARepeatableQuestLeavesTheOfferReachableAfterCompletion()
+        {
+            // harvest_herbs is repeatable: a completed player still satisfies
+            // condition-can-accept-quest, and openings are first-match-wins, so a finished
+            // placeholder above the offer would lock them out of ever restarting the quest.
+            var document = NewConversation();
+            new QuestConversationScaffold(GameCode).Apply(document, "harvest_herbs");
+
+            var situations = new SituationModel(document, Evaluator, GameCode).Situations();
+
+            situations.Select(situation => situation.Title).Should().NotContain(
+                title => title.StartsWith("Finished"),
+                "a repeatable quest must not shadow its own offer with a finished opening");
+
+            var completed = new PretendPlayer().WithQuest("harvest_herbs", QuestProgress.Completed);
+            var resolved = Evaluator.ResolveOpening(document, completed);
+            resolved.Should().NotBeNull();
+            resolved!.Conditions.Select(condition => condition.SnippetKey).Should().Contain(
+                "condition-can-accept-quest",
+                "the completed player must land on the offer opening and be able to restart");
+        }
+
+        [Test]
         public void TheScaffoldDoesNotAddASecondGreeting()
         {
             var document = NewConversation();

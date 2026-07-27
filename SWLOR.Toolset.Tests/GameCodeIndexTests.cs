@@ -81,6 +81,12 @@ namespace SWLOR.Toolset.Tests
             // There are 32 quest definition files contributing well over 200 IDs (direct literals
             // plus same-file const resolution); 50 is a conservative floor.
             index.QuestIds.Count.Should().BeGreaterThan(50);
+
+            // Guild quests are built by helpers whose FIRST parameter is a QuestBuilder, which the
+            // id scanner's string-first pattern cannot expand - the detailed scan's keys must be
+            // merged in or the Quest Activator picker loses hundreds of quests.
+            index.IsValidQuestId("eng_tsk_001").Should().BeTrue(
+                "helper-built guild quests appear only in the detailed scan");
         }
 
         [Test]

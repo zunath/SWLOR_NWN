@@ -133,9 +133,14 @@ namespace SWLOR.Toolset.Domain.Conversations
 
             var created = new List<DlgLink>();
 
-            // Finished.
-            created.Add(Opening(document, Placeholder, opening =>
-                opening.AddCondition("condition-completed-quest", questId)));
+            // Finished. A repeatable quest deliberately gets no finished opening: a completed
+            // player still satisfies condition-can-accept-quest, and openings are first-match-wins,
+            // so this placeholder would shadow the offer below and lock them out of restarting.
+            if (!quest.IsRepeatable)
+            {
+                created.Add(Opening(document, Placeholder, opening =>
+                    opening.AddCondition("condition-completed-quest", questId)));
+            }
 
             // Ready to hand in - the turn-in, and the only place the quest advances.
             var turnIn = Opening(document, Placeholder, opening =>

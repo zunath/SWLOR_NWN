@@ -86,6 +86,8 @@ namespace SWLOR.Toolset.Tests
             };
 
             (await editor.TrySaveAsync()).Should().BeFalse("the .ncs was not updated");
+            editor.HasPendingCompileFailure.Should().BeTrue(
+                "application close must treat the stale .ncs as unsaved work");
 
             // The source is clean now, but the stale bytecode means the save is not done: the next
             // save must retry the compile instead of silently succeeding (which previously let a
@@ -93,6 +95,7 @@ namespace SWLOR.Toolset.Tests
             compileSucceeds = true;
             (await editor.TrySaveAsync()).Should().BeTrue();
             compileCount.Should().Be(2, "the clean-source save must retry the failed compile");
+            editor.HasPendingCompileFailure.Should().BeFalse("a successful compile clears the pending state");
 
             (await editor.TrySaveAsync()).Should().BeTrue();
             compileCount.Should().Be(2, "a successful compile clears the pending retry");

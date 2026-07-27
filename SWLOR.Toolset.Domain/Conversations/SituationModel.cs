@@ -190,17 +190,34 @@ namespace SWLOR.Toolset.Domain.Conversations
                     case "condition-on-quest-state":
                     case "condition-completed-quest":
                     {
-                        var questId = arguments.FirstOrDefault();
-                        if (string.IsNullOrEmpty(questId) || protectedQuests.Contains(questId))
+                        if (condition.IsNegated)
+                        {
+                            // A negated guard only fails once EVERY listed quest is in the stated
+                            // condition - completing just the first of "!completed q1 q2" leaves
+                            // the opening matching on the next pass and the solver spinning until
+                            // its retry budget expires. All-or-nothing: if any argument is
+                            // protected by the target's own constraints, this breaker is unusable.
+                            if (arguments.Length == 0 ||
+                                arguments.Any(q => string.IsNullOrEmpty(q) || protectedQuests.Contains(q)))
+                                continue;
+
+                            foreach (var negatedQuest in arguments)
+                            {
+                                player.WithQuest(negatedQuest, condition.SnippetKey == "condition-completed-quest"
+                                    ? QuestProgress.Completed
+                                    : QuestProgress.OnStep(1));
+                            }
+
+                            return true;
+                        }
+
+                        // A positive guard needs only one listed quest removed to fail.
+                        var questId = arguments.FirstOrDefault(
+                            q => !string.IsNullOrEmpty(q) && !protectedQuests.Contains(q));
+                        if (questId == null)
                             continue;
 
-                        // A positive guard breaks by removing the quest; a negated one breaks by
-                        // giving the player exactly what it says they must not have.
-                        player.WithQuest(questId, condition.IsNegated
-                            ? (condition.SnippetKey == "condition-completed-quest"
-                                ? QuestProgress.Completed
-                                : QuestProgress.OnStep(1))
-                            : QuestProgress.None);
+                        player.WithQuest(questId, QuestProgress.None);
                         return true;
                     }
 
@@ -731,15 +748,32 @@ namespace SWLOR.Toolset.Domain.Conversations
                         break;
 
                     case "condition-has-faction-standing" when arguments.Length > 1:
-                        if (satisfy && int.TryParse(arguments[0], out var standingFaction)
-                                    && int.TryParse(arguments[1], out var standing))
-                            player.WithFactionStanding(standingFaction, standing);
+                        if (int.TryParse(arguments[0], out var standingFaction)
+                            && int.TryParse(arguments[1], out var standing))
+                        {
+                            if (satisfy)
+                                player.WithFactionStanding(standingFaction, standing);
+                            else if (standing > Game.Server.Service.Faction.MinimumFaction)
+                            {
+                                // A negated standing guard is reachable at runtime with any value
+                                // below the threshold; only a threshold at the runtime minimum is
+                                // genuinely unsatisfiable.
+                                player.WithFactionStanding(standingFaction, standing - 1);
+                            }
+                        }
+
                         break;
 
                     case "condition-has-faction-points" when arguments.Length > 1:
-                        if (satisfy && int.TryParse(arguments[0], out var pointsFaction)
-                                    && int.TryParse(arguments[1], out var points))
-                            player.WithFactionPoints(pointsFaction, points);
+                        if (int.TryParse(arguments[0], out var pointsFaction)
+                            && int.TryParse(arguments[1], out var points))
+                        {
+                            if (satisfy)
+                                player.WithFactionPoints(pointsFaction, points);
+                            else if (points > 0)
+                                player.WithFactionPoints(pointsFaction, points - 1);
+                        }
+
                         break;
                 }
             }

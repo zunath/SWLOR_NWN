@@ -352,6 +352,12 @@ namespace SWLOR.Toolset.Shell
             if (_compileService == null || IsModuleMutationLocked)
                 return;
 
+            if (ScriptCompileService.AnyCompilationActive)
+            {
+                _log.AppendLine("A script compile is still running; Build All will be available when it finishes.");
+                return;
+            }
+
             IsBuildingScripts = true;
             try
             {
@@ -513,6 +519,12 @@ namespace SWLOR.Toolset.Shell
             if (moduleRoot == null)
             {
                 _log.AppendLine("No module open to pack.");
+                return;
+            }
+
+            if (ScriptCompileService.AnyCompilationActive)
+            {
+                _log.AppendLine("A script compile is still running; pack when it finishes so no .ncs is copied mid-replacement.");
                 return;
             }
 

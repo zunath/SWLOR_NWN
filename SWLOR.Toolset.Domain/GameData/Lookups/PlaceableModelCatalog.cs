@@ -31,9 +31,37 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             ArgumentNullException.ThrowIfNull(twoDa);
             ArgumentNullException.ThrowIfNull(tlk);
 
-            _rows = new Lazy<IReadOnlyList<PlaceableModelRow>>(() => Build(twoDa, tlk));
+            _rows = new Lazy<IReadOnlyList<PlaceableModelRow>>(() => BuildOrEmpty(twoDa, tlk));
             _byId = new Lazy<IReadOnlyDictionary<int, PlaceableModelRow>>(
                 () => _rows.Value.ToDictionary(row => row.Id));
+        }
+
+        /// <summary>Why the table did not load, or null. The grid degrades either way.</summary>
+        public Exception? BuildFailure { get; private set; }
+
+        /// <summary>
+        /// Reads the table, or yields nothing if it cannot be read.
+        /// </summary>
+        /// <remarks>
+        /// The degradation has to live here rather than at each call site. A <see cref="Lazy{T}"/>
+        /// whose factory throws caches the exception and rethrows it to <em>every</em> later caller,
+        /// so a placeable editor that carefully caught the failure on its background thread then
+        /// rebuilt its grid on the UI thread - and the rebuild's <see cref="Search"/> raised the
+        /// same cached exception there, unhandled. What was meant to be an empty grid became a
+        /// crash on opening a placeable. Returning an empty list makes the promise the callers
+        /// already believed.
+        /// </remarks>
+        private IReadOnlyList<PlaceableModelRow> BuildOrEmpty(TwoDaService twoDa, TlkService tlk)
+        {
+            try
+            {
+                return Build(twoDa, tlk);
+            }
+            catch (Exception ex)
+            {
+                BuildFailure = ex;
+                return Array.Empty<PlaceableModelRow>();
+            }
         }
 
         /// <summary>

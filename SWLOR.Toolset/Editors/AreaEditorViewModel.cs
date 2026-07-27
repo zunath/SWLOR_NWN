@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Numerics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -1751,7 +1751,15 @@ namespace SWLOR.Toolset.Editors
             if (arePlan == SavePlan.Cancel)
                 return false;
 
-            var gitPlan = await PlanSaveAsync(_gitSession).ConfigureAwait(true);
+            // GIT instances and GIC comments are parallel lists addressed by index, so whenever
+            // either is going to be written both have to be checked. Editing a GIC comment while an
+            // external tool reordered the GIT used to write the stale GIC straight over it without
+            // noticing - exactly the correspondence ReloadInstancePair exists to protect - because
+            // the clean half returned Nothing before it ever looked at the file.
+            var pairWillBeWritten = _gitSession.UndoStack.IsDirty || _gicDirty;
+
+            var gitPlan = await PlanSaveAsync(
+                _gitSession, checkExternalWhenClean: pairWillBeWritten).ConfigureAwait(true);
             if (gitPlan == SavePlan.Cancel)
                 return false;
 
@@ -1762,7 +1770,8 @@ namespace SWLOR.Toolset.Editors
                 gitPlan = SavePlan.Nothing;
             }
 
-            var gicPlan = await PlanSaveAsync(_gicSession, _gicDirty).ConfigureAwait(true);
+            var gicPlan = await PlanSaveAsync(
+                _gicSession, _gicDirty, checkExternalWhenClean: pairWillBeWritten).ConfigureAwait(true);
             if (gicPlan == SavePlan.Cancel)
                 return false;
 
@@ -1833,17 +1842,25 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>Answers a session's external-change prompt without writing anything yet.</summary>
+        /// <param name="checkExternalWhenClean">
+        /// Asks about an external change even though this session has no edits of its own - for the
+        /// clean half of the GIT/GIC pair, whose file is about to become inconsistent with its
+        /// partner's. Choosing Overwrite then writes the clean half too, because the edit being
+        /// saved was made against the version held in memory.
+        /// </param>
         private async Task<SavePlan> PlanSaveAsync(
             DocumentSession session,
-            bool? dirtyOverride = null)
+            bool? dirtyOverride = null,
+            bool checkExternalWhenClean = false)
         {
-            if (!(dirtyOverride ?? session.UndoStack.IsDirty))
+            var isDirty = dirtyOverride ?? session.UndoStack.IsDirty;
+            if (!isDirty && !checkExternalWhenClean)
                 return SavePlan.Nothing;
 
             try
             {
                 if (!session.HasExternalChange())
-                    return SavePlan.Write;
+                    return isDirty ? SavePlan.Write : SavePlan.Nothing;
             }
             catch (Exception ex)
             {

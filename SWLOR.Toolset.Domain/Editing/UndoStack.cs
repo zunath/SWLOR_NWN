@@ -44,6 +44,28 @@ namespace SWLOR.Toolset.Domain.Editing
         /// <summary>True when the current position differs from the last MarkSaved() position.</summary>
         public bool IsDirty => _savedPosition is not { } saved || saved != _position;
 
+        /// <summary>
+        /// Unwinds to the last saved position, or to the beginning when nothing has been saved.
+        /// </summary>
+        /// <remarks>
+        /// Revert means "put this file back the way it is on disk", and every editor spelled it as
+        /// <c>while (CanUndo) Undo()</c> - which is a different thing. Save does not clear the
+        /// history, so after edit, save, edit, Revert that loop unwound the saved transaction too:
+        /// the document ended up older than the version on disk and still marked dirty, and the
+        /// next save wrote that over work the builder had already committed.
+        ///
+        /// A saved position past the current one means the save was undone past and the redo branch
+        /// has been discarded, so there is nothing to return to; the beginning is the only defined
+        /// baseline left, which is what the old loop happened to do in that one case.
+        /// </remarks>
+        public void RevertToSaved()
+        {
+            var target = _savedPosition is { } saved && saved <= _position ? saved : 0;
+
+            while (_position > target)
+                Undo();
+        }
+
         /// <summary>Begins a new transaction that will push onto this stack when committed.</summary>
         public DocumentTransaction Begin(string description)
         {

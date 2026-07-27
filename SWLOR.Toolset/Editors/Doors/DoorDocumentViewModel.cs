@@ -97,8 +97,9 @@ namespace SWLOR.Toolset.Editors.Doors
         [RelayCommand(CanExecute = nameof(IsDirty))]
         private void Revert()
         {
-            while (_session.UndoStack.CanUndo)
-                _session.Undo();
+            // Back to the saved version on disk, not back to position zero. Save leaves the
+            // history intact, so unwinding the whole stack also unwound edits already committed.
+            _session.RevertToSaved();
 
             Editor.ReloadFromDocument();
             AfterHistoryChange();

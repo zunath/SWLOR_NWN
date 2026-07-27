@@ -175,9 +175,19 @@
           </Border>
         </StackPanel>
 
-        <ComboBox Grid.Column="1" IsVisible="{Binding IsIdChoice}"
-                  ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
-                  MaxDropDownHeight="400" HorizontalAlignment="Stretch" />
+        <!-- The Clear button is the only way out of an optional id choice: a combo has no empty row,
+             assigning null to the selection is ignored, and a named behavior hides the managed local
+             from the raw Variables tab - so the awarded key item, once picked, could not be
+             un-picked without switching behaviors. -->
+        <Grid Grid.Column="1" IsVisible="{Binding IsIdChoice}"
+              ColumnDefinitions="*,Auto" ColumnSpacing="8">
+          <ComboBox Grid.Column="0"
+                    ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                    MaxDropDownHeight="400" HorizontalAlignment="Stretch" />
+          <Button Grid.Column="1" Content="{Binding ClearChoiceLabel}" Padding="10,4"
+                  Command="{Binding ClearChoiceCommand}"
+                  IsVisible="{Binding CanClearChoice}" />
+        </Grid>
 
         <TextBox Grid.Column="1" IsVisible="{Binding IsText}" Text="{Binding Text, Mode=TwoWay}" />
 

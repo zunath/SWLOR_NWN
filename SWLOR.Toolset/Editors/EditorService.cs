@@ -546,6 +546,24 @@ namespace SWLOR.Toolset.Editors
             var behavior = new Placeables.PlaceableBehaviorSectionViewModel(
                 context, values, _prompts, runEdit, scriptSlotHost, resourceChoices);
 
+            // The scan kicked off just above finishes after these fields are built, so the first
+            // placeable opened in a session built every tag field against an empty list - which is
+            // what makes a choice field degrade to plain free text with no suggestions and no
+            // resolution check. Nothing put the real options back, so a Teleporter destination
+            // stayed bare until the tab was closed and reopened.
+            if (_placeableIndexes != null)
+            {
+                var indexes = _placeableIndexes;
+                void OnIndexUpdated()
+                {
+                    values.InvalidateModuleSources();
+                    behavior.RefreshChoiceSources();
+                }
+
+                indexes.Updated += OnIndexUpdated;
+                behavior.Detach = () => indexes.Updated -= OnIndexUpdated;
+            }
+
             return new Placeables.PlaceableEditorSections(appearance, behavior);
         }
 

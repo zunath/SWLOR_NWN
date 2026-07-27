@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.Validation
@@ -7,9 +8,13 @@ namespace SWLOR.Toolset.Domain.Validation
     /// (NWN's resref limit) and lowercase. Purely file-name based - no file is parsed, so this
     /// rule is cheap to run over the entire corpus.
     /// </summary>
-    public sealed class ResRefLengthRule : IValidationRule
+    public sealed partial class ResRefLengthRule : IValidationRule
     {
         private const int MaxResRefLength = 16;
+
+        /// <summary>The character set NWN can address: the same one <c>NewAreaWriter</c> enforces.</summary>
+        [GeneratedRegex("^[a-z0-9_]{1,16}$")]
+        private static partial Regex LegalResRef();
 
         public string RuleId => "ResRefLength";
 
@@ -39,6 +44,22 @@ namespace SWLOR.Toolset.Domain.Validation
                             ValidationSeverity.Error,
                             RuleId,
                             $"ResRef '{resRef}' ({type}) must be lowercase.",
+                            path,
+                            resRef));
+                    }
+                    else if (!LegalResRef().IsMatch(resRef))
+                    {
+                        // The length and case checks pass for a short lowercase name like
+                        // "bad-name", and nothing else in the default rule set looks at the
+                        // character set - so validation reported no resref problem for a resource
+                        // the engine cannot address reliably. Same constraint NewAreaWriter applies
+                        // to a name the builder types; imports and external renames get it too.
+                        // Only raised when the case check did not already fire, so one bad name is
+                        // one issue rather than two.
+                        issues.Add(new ValidationIssue(
+                            ValidationSeverity.Error,
+                            RuleId,
+                            $"ResRef '{resRef}' ({type}) must use only lowercase letters, digits and underscores.",
                             path,
                             resRef));
                     }

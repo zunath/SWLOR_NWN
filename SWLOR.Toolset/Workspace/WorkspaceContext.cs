@@ -41,6 +41,13 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public void Open(string moduleRoot)
         {
+            // Before anything reads the folder. A grouped save that was interrupted between moving
+            // an original aside and installing its replacement leaves the canonical ARE, GIT, or
+            // GIC missing and its only copy sitting beside it under a .save-backup name; opening
+            // the area then fails on a file that is, in fact, right there.
+            foreach (var recovered in Services.SaveService.RecoverInterruptedSaves(moduleRoot))
+                _log.AppendLine($"Recovered '{recovered}' from an interrupted save.");
+
             var openStopwatch = Stopwatch.StartNew();
             Workspace = _workspaceFactory(moduleRoot);
             openStopwatch.Stop();

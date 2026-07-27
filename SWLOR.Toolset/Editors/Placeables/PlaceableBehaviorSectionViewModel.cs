@@ -17,8 +17,21 @@ namespace SWLOR.Toolset.Editors.Placeables
     /// does is the decision the tab exists for, and a builder cannot choose from options they have to
     /// go looking for.
     /// </remarks>
-    public partial class PlaceableBehaviorSectionViewModel : ObservableObject
+    public partial class PlaceableBehaviorSectionViewModel : ObservableObject, IDisposable
     {
+        /// <summary>
+        /// Unhooks whatever this section subscribed to outside itself - the module index's
+        /// "scan finished" event. Set by <c>EditorService</c>; the index outlives every tab, so a
+        /// tab that closed without unhooking would be kept alive by it for the session.
+        /// </summary>
+        public Action? Detach { get; set; }
+
+        public void Dispose()
+        {
+            Detach?.Invoke();
+            Detach = null;
+        }
+
         private readonly EditorFieldContext _context;
         private readonly BehaviorValueSourceProvider _sources;
         private readonly IEditorPromptService _prompts;
@@ -160,6 +173,24 @@ namespace SWLOR.Toolset.Editors.Placeables
                 field.RefreshFromDocument();
             foreach (var field in CustomConversationFields)
                 field.RefreshFromDocument();
+        }
+
+        /// <summary>
+        /// Re-reads every field's options after a module-wide scan lands.
+        /// </summary>
+        /// <remarks>
+        /// The tag and blueprint scans start when the first placeable opens, so the fields on that
+        /// first placeable were built against empty lists — which is what makes a choice field fall
+        /// back to plain free text with no suggestions and no resolution check. Nothing put the real
+        /// options back afterwards, so a Teleporter destination stayed a bare text box for the life
+        /// of the tab.
+        /// </remarks>
+        public void RefreshChoiceSources()
+        {
+            foreach (var field in Fields)
+                field.RefreshOptions();
+
+            NotifyBehaviorProperties();
         }
 
         partial void OnSelectedItemChanged(BehaviorListItemViewModel? value)

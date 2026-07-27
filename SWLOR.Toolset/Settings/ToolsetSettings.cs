@@ -525,7 +525,14 @@ namespace SWLOR.Toolset.Settings
                 };
 
                 var json = JsonSerializer.Serialize(data, JsonOptions);
-                File.WriteAllText(_filePath, json);
+
+                // Staged beside the destination and moved into place, rather than written over the
+                // live file. A write that stops after truncation - the process killed, the disk
+                // full - used to leave a half-written settings.json, and the next launch parses
+                // that, swallows the failure and resets to defaults: module root, NWN install
+                // override, recent modules and the whole window layout, gone. A failed save now
+                // leaves the last good file exactly where it was.
+                Services.SaveService.WriteAtomic(_filePath, System.Text.Encoding.UTF8.GetBytes(json));
                 LastSaveError = null;
             }
             catch (Exception ex)

@@ -29,7 +29,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         private readonly EditorFieldContext _context;
         private readonly PlaceableBehaviorField _field;
         private readonly BehaviorValueSourceProvider _sources;
-        private readonly List<BehaviorChoiceOption> _options;
+        private List<BehaviorChoiceOption> _options;
         private List<BehaviorChoiceOption> _galleryMatches = new();
         private int _galleryPublished;
         private bool _hasStoredValue;
@@ -374,6 +374,42 @@ namespace SWLOR.Toolset.Editors.Placeables
             UpdateSelectedChoice(null);
             UpdateStatus();
             OnPropertyChanged(nameof(CanClearChoice));
+        }
+
+        /// <summary>
+        /// Re-reads this field's options from the source and republishes everything derived from
+        /// them.
+        /// </summary>
+        /// <remarks>
+        /// The module-wide scans start when the first placeable opens, so a field built in that
+        /// same moment cached an empty list — and an empty list makes the field fall back to plain
+        /// free text with no suggestions and no resolution check. Nothing put the real options back
+        /// when the scan landed, so Teleporter destinations and Quest Activator waypoint tags stayed
+        /// bare until the tab was closed and reopened.
+        /// </remarks>
+        public void RefreshOptions()
+        {
+            var rebuilt = _sources.GetOptions(_field.Source).ToList();
+            if (rebuilt.Count == 0 && _options.Count > 0)
+                return;
+
+            _options = rebuilt;
+
+            OnPropertyChanged(nameof(Options));
+            OnPropertyChanged(nameof(IsInteger));
+            OnPropertyChanged(nameof(IsGalleryChoice));
+            OnPropertyChanged(nameof(IsNameChoice));
+            OnPropertyChanged(nameof(IsSearchableIdChoice));
+            OnPropertyChanged(nameof(IsSearchableTableChoice));
+            OnPropertyChanged(nameof(IsSearchableChoice));
+            OnPropertyChanged(nameof(IsIdChoice));
+            OnPropertyChanged(nameof(IsText));
+
+            // Re-reads the stored value against the new options, which is what turns a value that
+            // was reported as unresolvable back into a recognized selection.
+            RefreshFromDocument();
+            RebuildSearchableOptions();
+            RebuildGallery();
         }
 
         private void RebuildSearchableOptions()

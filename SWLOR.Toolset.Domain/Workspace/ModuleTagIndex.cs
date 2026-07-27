@@ -1,4 +1,6 @@
+using System.Text;
 using System.Text.Json;
+using System.Text.Unicode;
 using SWLOR.Toolset.Domain.Documents;
 
 namespace SWLOR.Toolset.Domain.Workspace
@@ -149,6 +151,41 @@ namespace SWLOR.Toolset.Domain.Workspace
             }
         }
 
+        /// <summary>
+        /// A module JSON file as UTF-8 bytes, whatever it is stored as.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Both scans below are UTF-8 readers, and the module is not uniformly UTF-8. nwn_gff writes
+        /// NWN text as raw Windows-1252, so a file carrying an em-dash holds the single byte 0x97 -
+        /// which is not valid UTF-8 at all. <c>coolship.git.json</c> is one such file, and there are
+        /// a dozen more; a Python pass over the module leaves the rest as real UTF-8, so the corpus
+        /// genuinely contains both.
+        /// </para>
+        /// <para>
+        /// The reader threw on the Windows-1252 ones, and the enclosing catch turned that into
+        /// silence: every waypoint and door tag in that area simply disappeared from tag resolution
+        /// and from transition destinations. A door pointing at one of them then read as pointing at
+        /// nothing. Valid UTF-8 is passed through untouched; anything else is transcoded.
+        /// </para>
+        /// </remarks>
+        private static byte[] ReadAsUtf8(string path)
+        {
+            var raw = File.ReadAllBytes(path);
+            return Utf8.IsValid(raw)
+                ? raw
+                : Encoding.UTF8.GetBytes(NwnText.GetString(raw));
+        }
+
+        /// <summary>Windows-1252: what nwn_gff writes, and a single-byte encoding that never throws.</summary>
+        private static readonly Encoding NwnText = CreateNwnTextEncoding();
+
+        private static Encoding CreateNwnTextEncoding()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            return Encoding.GetEncoding(1252);
+        }
+
         private Dictionary<string, string> Index()
         {
             lock (_syncRoot)
@@ -190,8 +227,7 @@ namespace SWLOR.Toolset.Domain.Workspace
             string areaResRef)
         {
             var path = Path.Combine(_workspace.ModuleRoot, "git", areaResRef + ".git.json");
-            using var stream = File.OpenRead(path);
-            using var document = JsonDocument.Parse(stream);
+            using var document = JsonDocument.Parse(ReadAsUtf8(path));
             var root = document.RootElement;
 
             // A GIT can contain tens of thousands of fields, but this index needs only two lists
@@ -237,8 +273,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         private HashSet<string> ReadTransitionDestinations(string areaResRef)
         {
             var path = Path.Combine(_workspace.ModuleRoot, "git", areaResRef + ".git.json");
-            var json = File.ReadAllBytes(path);
-            var reader = new Utf8JsonReader(json);
+            var reader = new Utf8JsonReader(ReadAsUtf8(path));
             var destinations = new HashSet<string>(StringComparer.Ordinal);
 
             while (reader.Read())

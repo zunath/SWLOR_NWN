@@ -338,8 +338,9 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand(CanExecute = nameof(IsDirty))]
         private void Revert()
         {
-            while (_session.UndoStack.CanUndo)
-                _session.Undo();
+            // Back to the saved version on disk, not back to position zero. Save leaves the
+            // history intact, so unwinding the whole stack also unwound edits already committed.
+            _session.RevertToSaved();
 
             RefreshAllFields(reclassifyAmbiguousBehavior: true);
             PlaceableSections?.Behavior.MarkSavedBaseline();
@@ -442,6 +443,7 @@ namespace SWLOR.Toolset.Editors
 
             _disposed = true;
             PlaceableSections?.Appearance.Dispose();
+            PlaceableSections?.Behavior.Dispose();
             _session.Dispose();
             Closed?.Invoke(this);
             return base.OnClose();

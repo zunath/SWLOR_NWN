@@ -136,6 +136,15 @@ namespace SWLOR.Toolset.Domain.Editing
         }
 
         /// <summary>
+        /// Unwinds every edit made since the last save - what an editor's Revert action means.
+        /// </summary>
+        public void RevertToSaved()
+        {
+            lock (_syncRoot)
+                UndoStack.RevertToSaved();
+        }
+
+        /// <summary>
         /// Serializes several sessions under a stable lock order, producing a mutually consistent
         /// immutable snapshot without reading a live document graph on a worker thread.
         /// </summary>

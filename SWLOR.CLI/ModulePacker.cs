@@ -63,7 +63,13 @@ namespace SWLOR.CLI
                     }
                 });
 
-                var scriptFiles = Directory.GetFiles("./ncs/").Union(Directory.GetFiles("./nss/")).ToList();
+                // By extension, not by folder contents. The GFF folders above already filter
+                // transaction debris; the script folders did not, so an interrupted script save
+                // left a "foo.nss.tmp" beside its target and the next pack copied that into the
+                // .mod as though it were a script resource.
+                var scriptFiles = Directory.GetFiles("./ncs/", "*.ncs")
+                    .Union(Directory.GetFiles("./nss/", "*.nss"))
+                    .ToList();
                 // Copy the uncompiled (.nss) and compiled (.ncs) scripts to ./packing
                 Console.WriteLine($"Copying {scriptFiles.Count} script files...");
                 var copiedScriptCount = 0;

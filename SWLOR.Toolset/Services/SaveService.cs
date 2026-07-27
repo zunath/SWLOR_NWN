@@ -37,7 +37,78 @@ namespace SWLOR.Toolset.Services
             }
         }
 
-        public static void WriteAtomic(string path, byte[] bytes) => Commit(Stage(path, bytes));
+        public static void WriteAtomic(string path, byte[] bytes)
+        {
+            var staged = Stage(path, bytes);
+            try
+            {
+                Commit(staged);
+            }
+            catch
+            {
+                // The staged file is transaction debris once the commit has failed - the target is
+                // untouched, so nothing needs it. Left behind, a "foo.nss.tmp" sits next to the
+                // script until someone notices, and ModulePacker copies whatever it finds in the
+                // script folders.
+                Discard(staged);
+                throw;
+            }
+        }
+
+        /// <summary>The suffix a grouped save gives an original while its replacement is installed.</summary>
+        public const string BackupSuffix = ".save-backup";
+
+        /// <summary>
+        /// Puts back any canonical file a grouped save was interrupted mid-way through replacing.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="CommitAll"/> moves each original aside before installing its replacement, and
+        /// rolls the whole group back if a later one fails. What it cannot roll back is the process
+        /// being killed between those two moves: the original is then only at its backup path, and
+        /// the canonical ARE, GIT, or GIC is simply gone. Nothing looked for these afterwards - the
+        /// packer and the file watcher both skip them - so the next open failed on a missing file
+        /// while the one surviving copy sat beside it.
+        /// </remarks>
+        /// <returns>The canonical paths restored.</returns>
+        public static IReadOnlyList<string> RecoverInterruptedSaves(string moduleRoot)
+        {
+            if (string.IsNullOrWhiteSpace(moduleRoot) || !Directory.Exists(moduleRoot))
+                return Array.Empty<string>();
+
+            var restored = new List<string>();
+
+            foreach (var backup in Directory.EnumerateFiles(
+                         moduleRoot, "*" + BackupSuffix, SearchOption.AllDirectories))
+            {
+                // "area.git.json.<guid>.save-backup" -> "area.git.json"
+                var withoutSuffix = backup[..^BackupSuffix.Length];
+                var target = Path.ChangeExtension(withoutSuffix, null);
+                if (target.Length == 0)
+                    continue;
+
+                try
+                {
+                    // A backup beside a canonical file that exists is the tidy-up CommitAll did not
+                    // get to. The save landed; only the leftover is stale.
+                    if (File.Exists(target))
+                    {
+                        File.Delete(backup);
+                        continue;
+                    }
+
+                    File.Move(backup, target);
+                    restored.Add(target);
+                }
+                catch (Exception)
+                {
+                    // A backup that cannot be moved is left exactly where it is: it may be the only
+                    // copy of the builder's work, and deleting it to tidy up would be the one
+                    // unrecoverable move available here.
+                }
+            }
+
+            return restored;
+        }
 
         /// <summary>
         /// Atomically creates a new file without replacing one that appeared after the caller's
@@ -170,10 +241,16 @@ namespace SWLOR.Toolset.Services
             public CommitState(StagedWrite staged)
             {
                 Staged = staged;
-                BackupPath = staged.TargetPath + "." + Guid.NewGuid().ToString("N") + ".save-backup";
+                BackupPath = staged.TargetPath + "." + Guid.NewGuid().ToString("N") + BackupSuffix;
             }
 
             public StagedWrite Staged { get; }
+
+            /// <summary>
+            /// Where the original waits while its replacement is installed. The GUID keeps two
+            /// concurrent saves of the same file apart; <see cref="RecoverInterruptedSaves"/> reads
+            /// the canonical path back out of it by dropping the GUID and this suffix.
+            /// </summary>
             public string BackupPath { get; }
             public bool HadOriginal { get; set; }
             public bool OriginalMoved { get; set; }

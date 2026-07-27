@@ -464,19 +464,49 @@ namespace SWLOR.Toolset.Editors.Behaviors
                     .ConfigureAwait(true);
         }
 
+        /// <summary>
+        /// Which selection the large preview is being loaded for. Incremented on every request so a
+        /// slower earlier decode can tell that it has been overtaken.
+        /// </summary>
+        private int _previewGeneration;
+
+        /// <summary>
+        /// Loads the large picture for the current selection.
+        /// </summary>
+        /// <remarks>
+        /// Two uncached choices picked in quick succession decode independently, and whichever
+        /// finished last used to win - so a slow first load could land after a fast second one and
+        /// leave the panel showing artwork A while the field stored B. That is worse than a blank
+        /// panel: the builder is choosing by the picture. A result is now published only if its
+        /// request is still the current one.
+        /// </remarks>
         private async Task LoadSelectedPreviewAsync(BehaviorChoiceViewModel? choice)
         {
+            var generation = ++_previewGeneration;
+
             if (_previews == null || choice == null || !choice.HasArtwork)
             {
                 SelectedPreview = null;
                 return;
             }
 
-            SelectedPreview =
-                _previews.Cached(choice.Choice.ImageResRef, ChoicePreviewService.PreviewWidth)
-                ?? await _previews
-                    .ResolveAsync(choice.Choice.ImageResRef, ChoicePreviewService.PreviewWidth)
-                    .ConfigureAwait(true);
+            var cached = _previews.Cached(choice.Choice.ImageResRef, ChoicePreviewService.PreviewWidth);
+            if (cached != null)
+            {
+                SelectedPreview = cached;
+                return;
+            }
+
+            // Cleared while the decode runs, so the panel does not keep showing the previous choice's
+            // artwork under the new choice's name.
+            SelectedPreview = null;
+
+            var loaded = await _previews
+                .ResolveAsync(choice.Choice.ImageResRef, ChoicePreviewService.PreviewWidth)
+                .ConfigureAwait(true);
+
+            if (generation == _previewGeneration)
+                SelectedPreview = loaded;
         }
 
         public void Dispose()

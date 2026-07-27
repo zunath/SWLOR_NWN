@@ -14,20 +14,34 @@
         <Grid ColumnDefinitions="220,*" IsVisible="{Binding IsSoundList}">
           <StackPanel Grid.Column="1" Spacing="6"
                       DataContext="{Binding SoundList}" x:DataType="sounds:SoundListEditorViewModel">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-              <AutoCompleteBox Grid.Column="0" Text="{Binding Candidate, Mode=TwoWay}"
-                               ItemsSource="{Binding AvailableSounds}" FilterMode="Contains"
-                               Watermark="Filter audio resources by ResRef" />
-              <Button Grid.Column="1" Content="Add" Command="{Binding AddCommand}" />
-            </Grid>
+            <!-- The catalog is a visible select list, not a name to guess at: a builder picking an
+                 ambient sound is choosing from what the module ships, and an autocomplete showed
+                 nothing at all until they had already typed part of an answer they came here to find.
+                 The filter narrows the same list rather than gating it. -->
             <TextBlock Text="No indexed WAV resources are available."
                        Classes="label" Foreground="{DynamicResource AmberBrush}"
                        IsVisible="{Binding !HasAudioCatalog}" />
+            <TextBox Text="{Binding Search, Mode=TwoWay}" IsVisible="{Binding HasAudioCatalog}"
+                     Watermark="Filter audio resources by ResRef" />
+            <TextBlock Text="{Binding SearchSummary}" Classes="count"
+                       IsVisible="{Binding HasAudioCatalog}" />
+            <ListBox ItemsSource="{Binding FilteredSounds}" IsVisible="{Binding HasAudioCatalog}"
+                     SelectedItem="{Binding Candidate, Mode=TwoWay}" MaxHeight="170">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                  <TextBlock Text="{Binding}" Classes="mono" VerticalAlignment="Center" Margin="4,1" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Content="Add" Command="{Binding AddCommand}" HorizontalAlignment="Left"
+                    IsVisible="{Binding HasAudioCatalog}" />
             <TextBlock Text="{Binding Status}" Classes="label"
-                       Foreground="{DynamicResource AmberBrush}"
+                       Foreground="{DynamicResource AmberBrush}" TextWrapping="Wrap"
                        IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <!-- What the behavior actually plays, in order. -->
             <ListBox ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedEntry, Mode=TwoWay}"
-                     MaxHeight="190">
+                     MaxHeight="150">
               <ListBox.ItemTemplate>
                 <DataTemplate DataType="sounds:SoundListEntryViewModel">
                   <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="4,2">

@@ -12,12 +12,35 @@ namespace SWLOR.Toolset.Editors.Sounds
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action _changed;
         private readonly int _maxItems;
+        private int _matchCount;
+
+        /// <summary>
+        /// Cap on published matches, as everywhere else a picker filters a resource set: enough that a
+        /// builder can browse without a query, few enough that the list stays cheap to realize.
+        /// </summary>
+        private const int MaxSearchResults = 200;
 
         public ObservableCollection<SoundListEntryViewModel> Rows { get; } = new();
 
         public IReadOnlyList<string> AvailableSounds { get; }
 
+        /// <summary>The slice of <see cref="AvailableSounds"/> the picker is showing.</summary>
+        public ObservableCollection<string> FilteredSounds { get; } = new();
+
         public bool HasAudioCatalog => AvailableSounds.Count > 0;
+
+        /// <summary>
+        /// How much of the catalog the filter is showing, for the picker's count line. Counts matches
+        /// rather than published rows, which can also carry a pick the filter excluded.
+        /// </summary>
+        public string SearchSummary =>
+            AvailableSounds.Count == 0
+                ? "No sounds"
+                : _matchCount == AvailableSounds.Count
+                    ? $"{AvailableSounds.Count} sound{(AvailableSounds.Count == 1 ? string.Empty : "s")}"
+                    : _matchCount == 0
+                        ? "No matching sounds"
+                        : $"{_matchCount} of {AvailableSounds.Count} sounds";
 
         public bool HasRoom => _maxItems == 0 || Rows.Count < _maxItems;
 
@@ -28,8 +51,12 @@ namespace SWLOR.Toolset.Editors.Sounds
         [ObservableProperty]
         private SoundListEntryViewModel? _selectedEntry;
 
+        /// <summary>The sound picked out of the catalog, which Add appends to the list.</summary>
         [ObservableProperty]
-        private string _candidate = string.Empty;
+        private string? _candidate;
+
+        [ObservableProperty]
+        private string _search = string.Empty;
 
         [ObservableProperty]
         private string? _status;
@@ -46,6 +73,7 @@ namespace SWLOR.Toolset.Editors.Sounds
             AvailableSounds = availableSounds;
             _maxItems = maxItems;
             _changed = changed;
+            RebuildFilteredSounds();
             Reload();
         }
 
@@ -65,7 +93,7 @@ namespace SWLOR.Toolset.Editors.Sounds
 
         private bool CanAdd()
         {
-            var candidate = Candidate.Trim();
+            var candidate = Candidate?.Trim() ?? string.Empty;
             return HasRoom
                    && candidate.Length > 0
                    && AvailableSounds.Contains(candidate, StringComparer.OrdinalIgnoreCase);
@@ -74,12 +102,17 @@ namespace SWLOR.Toolset.Editors.Sounds
         [RelayCommand(CanExecute = nameof(CanAdd))]
         private void Add()
         {
-            var candidate = Candidate.Trim();
+            var candidate = Candidate?.Trim() ?? string.Empty;
+            if (candidate.Length == 0)
+                return;
+
             if (!_runEdit("Add sound", () => _store.AddSound(candidate)))
                 return;
 
-            Candidate = string.Empty;
-            Status = null;
+            // Clearing the pick leaves it published if the filter had excluded it, which reads as a
+            // sound still waiting to be added.
+            Candidate = null;
+            RebuildFilteredSounds();
             Reload();
             SelectedEntry = Rows.LastOrDefault();
             _changed();
@@ -135,18 +168,53 @@ namespace SWLOR.Toolset.Editors.Sounds
             _changed();
         }
 
-        partial void OnCandidateChanged(string value)
+        partial void OnCandidateChanged(string? value) => AddCommand.NotifyCanExecuteChanged();
+
+        partial void OnSearchChanged(string value) => RebuildFilteredSounds();
+
+        /// <summary>
+        /// Publishes the catalog entries matching the filter, capped. A picked sound the filter or the
+        /// cap would drop is put back at the top and re-selected: emptying the list clears the picker's
+        /// selection, and a pick a builder cannot see is one Add appears to refuse for no reason.
+        /// </summary>
+        private void RebuildFilteredSounds()
         {
-            Status = value.Length == 0 || AvailableSounds.Contains(value.Trim(), StringComparer.OrdinalIgnoreCase)
-                ? null
-                : "Choose an audio resource from the index.";
-            AddCommand.NotifyCanExecuteChanged();
+            var picked = Candidate;
+            var query = Search.Trim();
+            FilteredSounds.Clear();
+
+            _matchCount = 0;
+            foreach (var sound in AvailableSounds)
+            {
+                if (query.Length > 0 && !sound.Contains(query, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                FilteredSounds.Add(sound);
+                if (++_matchCount >= MaxSearchResults)
+                    break;
+            }
+
+            if (picked is { Length: > 0 } &&
+                !FilteredSounds.Contains(picked, StringComparer.OrdinalIgnoreCase))
+            {
+                FilteredSounds.Insert(0, picked);
+            }
+
+            Candidate = picked;
+            OnPropertyChanged(nameof(SearchSummary));
         }
 
         partial void OnSelectedEntryChanged(SoundListEntryViewModel? value) => NotifyState();
 
         private void NotifyState()
         {
+            // The only reason a picked sound cannot be added: say so, rather than leaving Add greyed
+            // out with nothing to read.
+            Status = HasRoom
+                ? null
+                : $"This behavior plays {_maxItems} sound{(_maxItems == 1 ? string.Empty : "s")}. " +
+                  "Remove one to choose another.";
+
             OnPropertyChanged(nameof(HasRoom));
             OnPropertyChanged(nameof(HasValidCount));
             OnPropertyChanged(nameof(HasSelection));

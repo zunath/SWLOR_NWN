@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.VisualTree;
 using SWLOR.Toolset.Shell.Panels;
 
 namespace SWLOR.Toolset.Shell.Views
@@ -83,8 +84,8 @@ namespace SWLOR.Toolset.Shell.Views
         /// <summary>
         /// Clicking a tile arms placement: the object then follows the cursor in the area view until a
         /// click puts it down. That is the default because it is what a builder does with a palette nine
-        /// times in ten; editing is on the tile's ellipsis and its right-click menu, so the common action
-        /// needs no aim and the rare one is still one click away.
+        /// times in ten; everything else is on the tile's menu, which its ellipsis and its right-click
+        /// both open, so the common action needs no aim and the rest is still one click away.
         /// </summary>
         private void OnTileTapped(object? sender, TappedEventArgs e)
         {
@@ -94,8 +95,29 @@ namespace SWLOR.Toolset.Shell.Views
             if (sender is not Control { DataContext: PaletteTileViewModel tile })
                 return;
 
+            // A tap on the tile's own ellipsis is a tap on the tile as far as the gesture is
+            // concerned, so without this, opening the menu also arms placement.
+            if (IsWithinButton(e.Source as Visual, sender as Visual))
+                return;
+
             viewModel.SelectedTile = tile;
             viewModel.PlaceCommand.Execute(tile);
+        }
+
+        /// <summary>
+        /// Whether <paramref name="source"/> sits inside a button below <paramref name="root"/>. Walks
+        /// the visual tree: what a tap reports is whatever the button's own template put on screen,
+        /// which the logical tree does not lead back out of.
+        /// </summary>
+        private static bool IsWithinButton(Visual? source, Visual? root)
+        {
+            for (var node = source; node != null && node != root; node = node.GetVisualParent())
+            {
+                if (node is Button)
+                    return true;
+            }
+
+            return false;
         }
 
         // Right-clicking selects what was right-clicked before the menu opens. Avalonia does not do this
@@ -108,6 +130,35 @@ namespace SWLOR.Toolset.Shell.Views
                 sender is Control { DataContext: PaletteTileViewModel tile })
             {
                 viewModel.SelectedTile = tile;
+            }
+        }
+
+        /// <summary>
+        /// The tile's ellipsis opens the tile's own context menu - the same menu, selecting the same
+        /// tile first, so the visible handle and the right-click reach one set of actions rather than
+        /// two. Left at the default pointer placement, which puts the menu under the ellipsis.
+        /// </summary>
+        private void OnTileMenuButtonClick(object? sender, RoutedEventArgs e)
+        {
+            if (sender is not Control control)
+                return;
+
+            if (DataContext is PaletteViewModel viewModel &&
+                control.DataContext is PaletteTileViewModel tile)
+            {
+                viewModel.SelectedTile = tile;
+            }
+
+            // The menu hangs off the tile's root Border, several levels up from the button. Walking
+            // for the first ancestor that owns one keeps this working if the cell's markup changes.
+            for (var owner = control.Parent as Control; owner != null; owner = owner.Parent as Control)
+            {
+                if (owner.ContextMenu is not { } menu)
+                    continue;
+
+                menu.Open(owner);
+                e.Handled = true;
+                return;
             }
         }
 

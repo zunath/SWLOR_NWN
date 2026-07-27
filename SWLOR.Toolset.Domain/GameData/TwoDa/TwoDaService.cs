@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
-using Radoub.Formats.TwoDA;
+using SWLOR.NWN.Formats;
+using SWLOR.NWN.Formats.TwoDA;
 
 namespace SWLOR.Toolset.Domain.GameData.TwoDa
 {
@@ -8,7 +9,7 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
     /// (cheap directory listing) but table contents are parsed lazily on first request and cached
     /// for the lifetime of the service.
     ///
-    /// Wraps Radoub.Formats' <see cref="TwoDAReader"/>, which handles the sw_2da corpus's standard
+    /// Wraps SWLOR.NWN.Formats' <see cref="TwoDAReader"/>, which handles the sw_2da corpus's standard
     /// "2DA V2.0" text format directly (quoted fields, **** empty cells, optional UTF-8 BOM) - no
     /// custom parser was needed. One corpus file, "iprp_spells past.2da", is not a real 2DA file:
     /// it has no "2DA V2.0" signature line at all and looks like leftover scratch data pasted
@@ -89,7 +90,7 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
                 table = lazy.Value;
                 return true;
             }
-            catch (InvalidDataException)
+            catch (NwnFormatException)
             {
                 // Malformed/non-2DA content (see class remarks) - tolerated rather than thrown.
                 table = null;

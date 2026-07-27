@@ -149,8 +149,12 @@ namespace SWLOR.Toolset.Tests
                 if (image == null)
                     continue;
 
+                var transparent = Enumerable.Range(0, image.Width * image.Height)
+                    .Count(index => image.Pixels[index * 4 + 3] < 128);
+                var transparentShare = (double)transparent / (image.Width * image.Height);
                 TextureAlphaPolicy.RequiresCutoff(image).Should().BeFalse(
-                    $"'{solid}' is a solid surface and must not be punched through");
+                    $"'{solid}' is a solid surface and must not be punched through " +
+                    $"(decoded transparent share: {transparentShare:P2})");
             }
         }
     }

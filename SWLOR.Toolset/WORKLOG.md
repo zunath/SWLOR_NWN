@@ -1,5 +1,9 @@
 # SWLOR Toolset — Work Log
 
+> **Historical work log.** Entries describe the implementation as it existed when each package
+> landed. Radoub references are retained as history and are superseded by
+> `RADOUB-REPLACEMENT-PLAN.md`.
+
 Single source of truth for work-package progress. The approved plan (phases, work packages,
 orchestration protocol, ground rules, corrected format specs) lives in-repo at
 `SWLOR.Toolset\PLAN.md`. One entry per work package; update the status line in place and

@@ -1,4 +1,4 @@
-using Radoub.Formats.Mdl;
+using SWLOR.NWN.Formats.Mdl;
 
 namespace SWLOR.Toolset.Domain.Render
 {

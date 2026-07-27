@@ -1,4 +1,4 @@
-using Radoub.Formats.Mdl;
+using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
@@ -89,8 +89,7 @@ namespace SWLOR.Toolset.Workspace
 
             if (resourceIndex != null)
             {
-                var gameData = new SwlorGameDataService(resourceIndex, twoDa, tlk);
-                _partComposer = new MdlPartComposer(gameData, LoadComposerModel);
+                _partComposer = new MdlPartComposer(LoadComposerModel);
                 _textures = new PreviewTextureCache(resourceIndex);
             }
         }

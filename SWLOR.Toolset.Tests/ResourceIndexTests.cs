@@ -250,8 +250,8 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void ResourceIdentity_MtrExtension_MapsToNwnEeMaterialType()
         {
-            // Radoub.Formats.Common.ResourceTypes does not define MTR; this is the local patch
-            // documented on ResourceIdentity, checked against SWLOR.NWN.API's ResType.MTR = 2072.
+            // NWN:EE added MTR after the original resource-type table; keep the standalone
+            // formats mapping aligned with SWLOR.NWN.API's ResType.MTR = 2072.
             ResourceIdentity.TypeFromExtension("mtr").Should().Be(2072);
             ResourceIdentity.TypeFromExtension(".mtr").Should().Be(2072);
             ResourceIdentity.ExtensionFromType(2072).Should().Be("mtr");

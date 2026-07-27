@@ -270,20 +270,25 @@ source and sample resource identities without committing model data.
 
 If any required ASCII model exists, stop and propose revised scope. If none exists, record that
 ASCII input will receive a specific unsupported-format exception. Do not begin the reader in this
-session.
+session. The 2026-07-26 spike found 16,078 required ASCII resources, and the owner approved
+expanding Task 4 to implement them.
 ```
 
-## Task 4b — MDL binary reader
+## Task 4b — MDL binary and ASCII reader
 
 Role: clean implementation.
 
 ```text
-Implement the binary MDL reader after the spike approves binary-only scope.
+Implement both binary and ASCII MDL readers after the spike determines the required surface.
 
 Work in the increments and verify the complete caller-derived contract described in the plan.
 Include model SuperModel and animation Name/Length/GeometryRoot, which the original draft's surface
 summary omitted. Cover topology, transforms/controllers, trimeshes, normals, UVs, skin data,
 emitters, animations, bounds, overflow, malformed offsets/counts, depth, and cycles.
+
+For ASCII, use a bounded line/token parser and cover legacy concatenated directives, independent
+face UV indices, named skin weights, static and keyed axis-angle transforms, emitters, animation
+trees, and the full required licensed corpus.
 
 Deliver the reader and tests without opening the old derived render files. Integration and clean
 render replacements happen later.

@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using Radoub.Formats.Mdl;
+using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
 using SWLOR.Toolset.Domain.Render;

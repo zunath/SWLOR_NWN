@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using Radoub.Formats.Mdl;
+using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Domain.Render

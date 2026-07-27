@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.Formats.Gff;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
@@ -59,15 +60,15 @@ namespace SWLOR.Toolset.Tests
         /// the bridge builds its structs with the guarded entry point.
         /// </summary>
         [Test]
-        public void ABinaryGffFile_CanBeConvertedToJsonWhileASessionIsOpen()
+        public void AParsedGffModel_CanBeConvertedToJsonWhileASessionIsOpen()
         {
-            var probe = BlueprintTemplateFactory.CreateFileContent(ResourceType.Utp, "probe_resref", "Probe");
-            var gffBytes = GffJsonBridge.ToGffFile(JsonGffDocument.Parse(probe));
+            var root = new GffStruct { Type = 0 };
+            root.Fields.Add(new GffField(GffField.CExoString, "Tag", "probe_resref"));
+            var parsed = new GffFile { FileType = "UTP ", FileVersion = "V3.2", RootStruct = root };
 
             using var session = OpenSession();
 
-            var act = () => GffJsonBridge.ToJsonDocument(
-                Radoub.Formats.Gff.GffReader.Read(Radoub.Formats.Gff.GffWriter.Write(gffBytes)));
+            var act = () => GffJsonBridge.ToJsonDocument(parsed);
 
             act.Should().NotThrow(
                 "converting a parsed GFF produces a new document that no session owns");

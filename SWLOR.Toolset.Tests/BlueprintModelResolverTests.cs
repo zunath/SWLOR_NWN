@@ -7,7 +7,7 @@ using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
-using Radoub.Formats.Plt;
+using SWLOR.NWN.Formats.Plt;
 
 namespace SWLOR.Toolset.Tests
 {

@@ -2,7 +2,7 @@ using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
-using Radoub.Formats.Plt;
+using SWLOR.NWN.Formats.Plt;
 
 namespace SWLOR.Toolset.Domain.Render
 {
@@ -62,7 +62,7 @@ namespace SWLOR.Toolset.Domain.Render
     /// lookup services, headlessly. Creatures whose appearance is a simple model (MODELTYPE S/F/W/L: the
     /// appearance.2da RACE column holds the literal model resref) resolve to a single resref; segmented
     /// player-body creatures (MODELTYPE P) resolve to a skeleton + body-part list following NWN's
-    /// <c>p{gender}{race}{phenotype}</c> naming so the app can compose them with Radoub's MdlPartComposer.
+    /// <c>p{gender}{race}{phenotype}</c> naming so the app can compose them at render time.
     /// Placeables resolve through placeables.2da ModelName. Doors use genericdoors.2da for their
     /// generic appearance, or doortypes.2da when the specific Appearance field is non-zero.
     /// </summary>

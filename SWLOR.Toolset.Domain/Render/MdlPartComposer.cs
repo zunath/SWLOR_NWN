@@ -1,625 +1,451 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-//
-// Vendored verbatim from Radoub.UI.Services.MdlPartComposer
-// (https://github.com/LordOfMyatar/Radoub), which is GPL-3.0, so this file is GPL-3.0 even though
-// the rest of the SWLOR Toolset's own source is MIT. Copied rather than reimplemented: bone
-// grafting, seam-overlap nudging and composite-bounds aggregation are exacting geometry, and a
-// rewrite could only be validated against the full hak corpus. Copying it out drops the Radoub.UI
-// project reference (and its Avalonia version pin) without pretending the code became ours - but it
-// also means upstream fixes no longer flow in. Only the namespace differs from upstream.
-// See SWLOR.Toolset/LICENSE-NOTICE.md.
+// SPDX-License-Identifier: MIT
+
 using System.Numerics;
-using Radoub.Formats.Common;
-using Radoub.Formats.Logging;
-using Radoub.Formats.Mdl;
-using Radoub.Formats.Services;
+using SWLOR.NWN.Formats.Mdl;
 
-namespace SWLOR.Toolset.Domain.Render;
-
-/// <summary>
-/// Composes a single <see cref="MdlModel"/> from a skeleton + body-part MDLs (armor, creature body)
-/// or from a flat list of part MDLs (composite weapons). Generic over the source of parts —
-/// callers handle resolution (creature appearance, item ArmorParts dict, composite weapon parts)
-/// and pass the resolved <c>(partType, resRef)</c> tuples to <see cref="Compose"/>.
-///
-/// Behavior preserved from QM's prior creature-renderer:
-/// <list type="bullet">
-/// <item>Mesh re-parenting under skeleton bones (so animation pose lookup walks the parent chain — #2124)</item>
-/// <item>Body-part texture-name override (the "stale Bitmap field" workaround for body parts)</item>
-/// <item>Head/neck/chest seam-overlap nudge for thin-overlap races (#1557)</item>
-/// <item>Composite-bounds aggregation across all attached meshes</item>
-/// </list>
-/// </summary>
-public sealed class MdlPartComposer
+namespace SWLOR.Toolset.Domain.Render
 {
-    private readonly IGameDataService _gameDataService;
-    private readonly Func<string, bool, MdlModel?> _modelLoader;
-    private readonly Func<string, string> _boneNameForPart;
-
     /// <summary>
-    /// Minimum overlap in world units between adjacent body parts before the seam nudge kicks in,
-    /// at human scale. Measured on full-size skeletons: human=0.112, dwarf=0.090, elf=0.048,
-    /// halfling≈0.05. Target = human-like. For non-human-scale skeletons this is scaled by model
-    /// height — see <see cref="SeamOverlapHeightRatio"/> and <see cref="GetSeamThreshold"/> (#1735).
+    /// Composes Aurora segmented-creature body parts onto a player skeleton.
     /// </summary>
-    public const float MinSeamOverlap = 0.10f;
-
-    /// <summary>
-    /// Reference body height (world units) the <see cref="MinSeamOverlap"/> constant was tuned for —
-    /// a standard NWN human is ≈1.9 tall. The effective seam threshold scales with the actual model
-    /// height so a tiny but human-PROPORTIONED creature (Brownie ≈0.45× scale) gets a proportionally
-    /// small threshold instead of the full human deficit, which would shove its head into its chest.
-    /// </summary>
-    public const float ReferenceBodyHeight = 1.9f;
-
-    /// <summary>Seam threshold as a fraction of model height (= MinSeamOverlap / ReferenceBodyHeight).</summary>
-    public const float SeamOverlapHeightRatio = MinSeamOverlap / ReferenceBodyHeight;
-
-    /// <summary>
-    /// Effective seam threshold for a model of the given world-space Z height. Scales linearly with
-    /// height (#1735); falls back to the human-scale constant for degenerate/zero heights.
-    /// </summary>
-    public static float GetSeamThreshold(float modelHeight)
-        => modelHeight > 0f ? modelHeight * SeamOverlapHeightRatio : MinSeamOverlap;
-
-    /// <summary>Adjacent (upper, lower) part-type pairs that get the seam-overlap nudge.</summary>
-    private static readonly (string Upper, string Lower)[] SeamPairs =
+    /// <remarks>
+    /// Models are loaded through the caller so resource precedence and supermodel policy stay outside
+    /// this class. Source models are never mutated: every composition receives a deep geometry clone,
+    /// attaches each part beneath its category's skeleton bone, and stamps the part resref onto its
+    /// meshes so the normal Aurora part-texture convention can resolve it.
+    /// </remarks>
+    public sealed class MdlPartComposer
     {
-        ("head", "neck"),
-        ("neck", "chest"),
-    };
+        private const int MaximumParts = 256;
+        private const int MaximumNodes = 1_000_000;
+        private const int MaximumDepth = 4_096;
 
-    /// <param name="gameDataService">Used to check resource existence (resolution priority Override→HAK→BIF).</param>
-    /// <param name="modelLoader">
-    ///     Loads a parsed <see cref="MdlModel"/> from a ResRef. Bool argument is "include supermodel
-    ///     animations" — true for the skeleton, false for body parts. Returns null if missing or unparseable.
-    ///     Injected to allow callers (QM) to share a model cache across multiple composer calls.
-    /// </param>
-    /// <param name="boneNameForPart">
-    ///     Maps a part type (e.g., "chest") to its target skeleton bone name (e.g., "torso_g").
-    ///     Defaults to <see cref="MdlPartBoneMap.GetBoneNameForPart"/>.
-    /// </param>
-    public MdlPartComposer(
-        IGameDataService gameDataService,
-        Func<string, bool, MdlModel?> modelLoader,
-        Func<string, string>? boneNameForPart = null)
-    {
-        _gameDataService = gameDataService;
-        _modelLoader = modelLoader;
-        _boneNameForPart = boneNameForPart ?? MdlPartBoneMap.GetBoneNameForPart;
-    }
+        private readonly Func<string, bool, MdlModel?> _loadModel;
+        private readonly Dictionary<(string ResRef, bool WithSupermodelAnimations), MdlModel?> _cache =
+            new(ModelKeyComparer.Instance);
 
-    /// <summary>
-    /// Compose a multi-part model with parts attached to a skeleton's bones.
-    /// Used for armor, creature body, and any other part-on-skeleton composition.
-    /// </summary>
-    /// <param name="skeletonResRef">Skeleton MDL ResRef (e.g., "pmh0"). Drives bone hierarchy + animations.</param>
-    /// <param name="parts">Resolved (partType, partResRef) tuples. Skip already done — callers pass only existing parts.</param>
-    /// <param name="adjustSeams">When true, nudges adjacent body parts together where overlap is below <see cref="MinSeamOverlap"/>.</param>
-    /// <returns>Composite model, or null if no meshes were successfully attached.</returns>
-    public MdlModel? Compose(
-        string skeletonResRef,
-        IReadOnlyList<(string PartType, string ResRef)> parts,
-        bool adjustSeams = true)
-    {
-        if (parts.Count == 0)
+        public MdlPartComposer(Func<string, bool, MdlModel?> loadModel)
+        {
+            _loadModel = loadModel ?? throw new ArgumentNullException(nameof(loadModel));
+        }
+
+        /// <summary>
+        /// Loads and clones <paramref name="skeletonResRef"/>, then attaches every resolvable,
+        /// supported part. Missing skeletons return null; missing, unknown, and malformed individual
+        /// part entries are ignored so one absent cosmetic part does not suppress the whole preview.
+        /// </summary>
+        public MdlModel? Compose(
+            string skeletonResRef,
+            IEnumerable<(string PartType, string ModelResRef)> parts,
+            bool adjustSeams = true)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(skeletonResRef);
+            ArgumentNullException.ThrowIfNull(parts);
+
+            var skeletonSource = Load(skeletonResRef, withSupermodelAnimations: true);
+            if (skeletonSource?.GeometryRoot == null)
+                return null;
+
+            var composed = CloneModel(skeletonSource);
+            if (composed.GeometryRoot == null)
+                return null;
+
+            var bones = IndexNodes(composed.GeometryRoot);
+            var partCount = 0;
+            foreach (var (partType, modelResRef) in parts)
+            {
+                if (++partCount > MaximumParts)
+                    throw new InvalidDataException($"A composed MDL may contain at most {MaximumParts} parts.");
+                if (string.IsNullOrWhiteSpace(partType) || string.IsNullOrWhiteSpace(modelResRef))
+                    continue;
+
+                var bone = FindBone(bones, partType);
+                if (bone == null)
+                    continue;
+
+                var partSource = Load(modelResRef, withSupermodelAnimations: false);
+                if (partSource?.GeometryRoot == null)
+                    continue;
+
+                var partRoot = CloneNodeTree(partSource.GeometryRoot);
+                if (partRoot == null)
+                    continue;
+
+                // MdlModel.Scale is outside the node tree. Carry a non-default part scale into the
+                // attached root so it is not lost when the part becomes part of another model.
+                if (float.IsFinite(partSource.Scale) && partSource.Scale != 1f)
+                    partRoot.Scale *= partSource.Scale;
+
+                StampPartTexture(partRoot, modelResRef);
+                Attach(bone, partRoot, adjustSeams);
+            }
+
+            RecalculateBounds(composed);
+            return composed;
+        }
+
+        private MdlModel? Load(string resRef, bool withSupermodelAnimations)
+        {
+            var key = (resRef.Trim(), withSupermodelAnimations);
+            if (withSupermodelAnimations && _cache.TryGetValue(key, out var cached))
+                return cached;
+
+            MdlModel? loaded;
+            try
+            {
+                loaded = _loadModel(key.Item1, withSupermodelAnimations);
+            }
+            catch (Exception)
+            {
+                loaded = null;
+            }
+
+            // Skeletons are shared across many creatures. Parts intentionally pass through the
+            // caller on every compose run: BlueprintPreviewRenderer records each freshly loaded
+            // part's authored bitmap so it can restore valid custom textures after our resref stamp.
+            if (withSupermodelAnimations)
+                _cache[key] = loaded;
+            return loaded;
+        }
+
+        private static MdlNode? FindBone(
+            IReadOnlyDictionary<string, MdlNode> bones,
+            string partType)
+        {
+            foreach (var name in MdlPartBoneMap.GetBoneCandidates(partType))
+            {
+                if (bones.TryGetValue(name, out var bone))
+                    return bone;
+            }
+
             return null;
-
-        var skeletonModel = _modelLoader(skeletonResRef, /* withSupermodelAnims */ true);
-        var compositeModel = new MdlModel
-        {
-            Name = skeletonResRef,
-            IsBinary = true,
-        };
-
-        // Inherit skeleton's animation list (and any merged from supermodel chain) so the
-        // composite can play idle/walk/attack in the preview (#2124).
-        if (skeletonModel?.Animations != null)
-        {
-            foreach (var anim in skeletonModel.Animations)
-                compositeModel.Animations.Add(anim);
-            compositeModel.SuperModel = skeletonModel.SuperModel;
         }
 
-        // Use a CLONE of the skeleton's bone hierarchy as the composite root so animation pose
-        // lookup finds matching bone names through the full parent chain (#2124) WITHOUT mutating
-        // the cached skeleton model. ModelService caches and reuses parsed MdlModel instances; the
-        // composer reparents part meshes onto bones and nudges part positions, so it must never
-        // touch the shared cache — otherwise parts accumulate and nudges restack on every re-render
-        // (#1735, "models get worse and worse when toggling races").
-        if (skeletonModel?.GeometryRoot != null)
-            compositeModel.GeometryRoot = CloneNode(skeletonModel.GeometryRoot, parent: null);
-
-        var meshPartTypes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var (partType, resRef) in parts)
+        private static IReadOnlyDictionary<string, MdlNode> IndexNodes(MdlNode root)
         {
-            TryAddBodyPart(compositeModel, partType, resRef, meshPartTypes);
-        }
+            var result = new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase);
+            var visited = new HashSet<MdlNode>(ReferenceEqualityComparer.Instance);
+            var pending = new Stack<MdlNode>();
+            pending.Push(root);
 
-        if (adjustSeams)
-            AdjustSeamOverlaps(compositeModel, meshPartTypes);
-
-        UpdateCompositeBounds(compositeModel);
-
-        var meshCount = compositeModel.GetMeshNodes().Count();
-        UnifiedLogger.LogApplication(LogLevel.INFO,
-            $"MdlPartComposer.Compose: skeleton={skeletonResRef}, parts={parts.Count}, meshes={meshCount}, bounds={compositeModel.BoundingMin}-{compositeModel.BoundingMax}");
-
-        return meshCount > 0 ? compositeModel : null;
-    }
-
-    /// <summary>
-    /// Compose a multi-part model without a skeleton — meshes aggregated under a synthetic root.
-    /// Used for composite weapons (twobladed sword, quarterstaff, double axe, dire mace) which
-    /// have no skeletal animation; the three parts are fixed-position pieces of one weapon.
-    /// </summary>
-    public MdlModel? ComposeFlat(IReadOnlyList<string> partResRefs, string compositeName = "composite")
-    {
-        if (partResRefs.Count == 0)
-            return null;
-
-        var compositeModel = new MdlModel
-        {
-            Name = compositeName,
-            IsBinary = true,
-            GeometryRoot = new MdlNode
+            while (pending.Count > 0)
             {
-                Name = "composite_root",
-                Position = Vector3.Zero,
-                Orientation = Quaternion.Identity,
-                Scale = 1.0f,
-            },
-        };
+                var node = pending.Pop();
+                if (!visited.Add(node))
+                    continue;
+                if (visited.Count > MaximumNodes)
+                    throw new InvalidDataException($"MDL skeleton exceeds the {MaximumNodes:N0}-node limit.");
 
-        foreach (var resRef in partResRefs)
-        {
-            var partModel = _modelLoader(resRef, /* withSupermodelAnims */ false);
-            if (partModel == null)
-            {
-                UnifiedLogger.LogApplication(LogLevel.WARN, $"MdlPartComposer.ComposeFlat: '{resRef}' not loadable");
-                continue;
-            }
+                if (!string.IsNullOrWhiteSpace(node.Name))
+                    result.TryAdd(node.Name, node);
 
-            foreach (var node in partModel.EnumerateAllNodes())
-            {
-                if (node is MdlTrimeshNode trimesh)
+                for (var index = node.Children.Count - 1; index >= 0; index--)
                 {
-                    node.Parent = compositeModel.GeometryRoot;
-                    compositeModel.GeometryRoot!.Children.Add(node);
+                    var child = node.Children[index];
+                    if (child != null)
+                        pending.Push(child);
                 }
             }
+
+            return result;
         }
 
-        UpdateCompositeBounds(compositeModel);
-
-        var meshCount = compositeModel.GetMeshNodes().Count();
-        UnifiedLogger.LogApplication(LogLevel.INFO,
-            $"MdlPartComposer.ComposeFlat: parts={partResRefs.Count}, meshes={meshCount}");
-
-        return meshCount > 0 ? compositeModel : null;
-    }
-
-    private void TryAddBodyPart(
-        MdlModel compositeModel,
-        string partType,
-        string partResRef,
-        Dictionary<string, string> meshPartTypes)
-    {
-        try
+        private static void Attach(MdlNode bone, MdlNode partRoot, bool adjustSeams)
         {
-            var partModel = _modelLoader(partResRef, /* withSupermodelAnims */ false);
-            if (partModel == null)
-            {
-                UnifiedLogger.LogApplication(LogLevel.WARN, $"MdlPartComposer: part '{partResRef}' not loadable");
+            partRoot.Parent = bone;
+            bone.Children.Add(partRoot);
+
+            if (!adjustSeams)
                 return;
-            }
 
-            EnsureCompositeRoot(compositeModel);
+            // Parts are independently authored trees. Reasserting all child Parent links keeps the
+            // transform chain coherent even when an ASCII source omitted or disagreed with them; the
+            // Children collection is the topology authority used by the standalone reader.
+            RepairParentLinks(partRoot);
+        }
 
-            // #1989: a robe is not a single body part — it is a near-complete posed body that
-            // ships its own nested bone hierarchy (torso_g→rbicep_g→rforearm_g→rhand_g, etc.)
-            // plus skin meshes (coat, arms). Splicing its individual meshes onto the skeleton's
-            // bones discards the robe's internal local transforms and balloons the arms/legs.
-            // Instead graft the robe's whole subtree, preserving its hierarchy, so each mesh keeps
-            // the exact world transform Aurora computes from the robe's own node chain.
-            if (IsFullBodyPart(partType, partModel))
+        private static void RepairParentLinks(MdlNode root)
+        {
+            var visited = new HashSet<MdlNode>(ReferenceEqualityComparer.Instance);
+            var pending = new Stack<MdlNode>();
+            pending.Push(root);
+
+            while (pending.Count > 0)
             {
-                GraftPartSubtree(compositeModel, partModel, partType, partResRef, meshPartTypes);
-                return;
-            }
+                var node = pending.Pop();
+                if (!visited.Add(node))
+                    continue;
+                if (visited.Count > MaximumNodes)
+                    throw new InvalidDataException($"MDL part exceeds the {MaximumNodes:N0}-node limit.");
 
-            // Bone lookup targets the composite's OWN (cloned) skeleton root — never the cached
-            // skeleton model. Attaching to / nudging the cached skeleton would corrupt it for the
-            // next render (#1735).
-            var boneName = _boneNameForPart(partType);
-            MdlNode? bone = compositeModel.GeometryRoot != null
-                ? FindBoneByName(compositeModel.GeometryRoot, boneName)
-                : null;
-
-            var fallbackPosition = Vector3.Zero;
-            if (bone != null)
-            {
-                var worldMatrix = GetBoneWorldTransform(bone);
-                if (Matrix4x4.Decompose(worldMatrix, out _, out _, out var translation))
-                    fallbackPosition = translation;
-            }
-
-            foreach (var node in partModel.EnumerateAllNodes())
-            {
-                if (node is not MdlTrimeshNode sourceTrimesh) continue;
-
-                // Clone the part mesh before attaching — the source is a cached MdlModel shared
-                // across renders; we set Bitmap/Position/Parent on the CLONE only (#1735).
-                var trimesh = CloneTrimeshShallow(sourceTrimesh);
-
-                // Body part MDL files have geometry at local origin. Body part bitmap fields
-                // often contain stale data from reused file structures — derive the texture
-                // name from the part ResRef instead.
-                trimesh.Bitmap = partResRef;
-
-                if (bone != null)
+                foreach (var child in node.Children)
                 {
-                    trimesh.Position = Vector3.Zero;
-                    trimesh.Parent = bone;
-                    bone.Children.Add(trimesh);
+                    if (child == null || visited.Contains(child))
+                        continue;
+                    child.Parent = node;
+                    pending.Push(child);
                 }
-                else
-                {
-                    trimesh.Position = fallbackPosition;
-                    trimesh.Parent = compositeModel.GeometryRoot;
-                    compositeModel.GeometryRoot!.Children.Add(trimesh);
-                }
-
-                meshPartTypes[trimesh.Name] = partType;
             }
         }
-        catch (Exception ex)
-        {
-            UnifiedLogger.LogApplication(LogLevel.WARN,
-                $"MdlPartComposer.TryAddBodyPart: failed to add '{partType}' from '{partResRef}': {ex.GetType().Name}: {ex.Message}");
-        }
-    }
 
-    private static void EnsureCompositeRoot(MdlModel compositeModel)
-    {
-        if (compositeModel.GeometryRoot == null)
+        private static void StampPartTexture(MdlNode root, string partResRef)
         {
-            compositeModel.GeometryRoot = new MdlNode
+            var visited = new HashSet<MdlNode>(ReferenceEqualityComparer.Instance);
+            var pending = new Stack<MdlNode>();
+            pending.Push(root);
+
+            while (pending.Count > 0)
             {
-                Name = "composite_root",
-                Orientation = Quaternion.Identity,
-                Scale = 1.0f,
-            };
+                var node = pending.Pop();
+                if (!visited.Add(node))
+                    continue;
+                if (visited.Count > MaximumNodes)
+                    throw new InvalidDataException($"MDL part exceeds the {MaximumNodes:N0}-node limit.");
+
+                if (node is MdlTrimeshNode mesh)
+                    mesh.Bitmap = partResRef;
+
+                foreach (var child in node.Children)
+                {
+                    if (child != null)
+                        pending.Push(child);
+                }
+            }
         }
-    }
 
-    /// <summary>
-    /// A "full body" part carries its own multi-node body hierarchy rather than a single mesh
-    /// at the origin. Robes are the case that matters (#1989); detect by part type.
-    /// </summary>
-    private static bool IsFullBodyPart(string partType, MdlModel partModel) =>
-        partType.Equals("robe", StringComparison.OrdinalIgnoreCase);
-
-    /// <summary>
-    /// Graft a full-body part's entire node subtree under the composite root, preserving its
-    /// internal hierarchy and per-node local transforms. The part's root dummy aligns with the
-    /// skeleton root (both at the same world origin), so its children attach directly under the
-    /// composite root and reproduce the part's own world transforms (#1989).
-    /// </summary>
-    private void GraftPartSubtree(
-        MdlModel compositeModel,
-        MdlModel partModel,
-        string partType,
-        string partResRef,
-        Dictionary<string, string> meshPartTypes)
-    {
-        if (partModel.GeometryRoot == null)
-            return;
-
-        EnsureCompositeRoot(compositeModel);
-        var root = compositeModel.GeometryRoot!;
-
-        // Graft the part root's CHILDREN (skip the part's own root dummy, whose translation
-        // duplicates the skeleton root's). Each child subtree is cloned with hierarchy intact.
-        int grafted = 0;
-        foreach (var child in partModel.GeometryRoot.Children)
+        private static MdlModel CloneModel(MdlModel source)
         {
-            var clone = CloneNode(child, root);
-            ApplyPartBitmap(clone, partResRef, partType, meshPartTypes);
-            root.Children.Add(clone);
-            grafted++;
-        }
-
-        UnifiedLogger.LogApplication(LogLevel.INFO,
-            $"MdlPartComposer: grafted full-body part '{partType}' ({partResRef}) — {grafted} subtree(s)");
-    }
-
-    /// <summary>Set the texture name + record the part type on every mesh in a grafted subtree.</summary>
-    private static void ApplyPartBitmap(MdlNode node, string partResRef, string partType, Dictionary<string, string> meshPartTypes)
-    {
-        if (node is MdlTrimeshNode mesh && mesh.Vertices.Length > 0)
-        {
-            mesh.Bitmap = partResRef;
-            meshPartTypes[mesh.Name] = partType;
-        }
-        foreach (var child in node.Children)
-            ApplyPartBitmap(child, partResRef, partType, meshPartTypes);
-    }
-
-    /// <summary>
-    /// Recursively clone a node hierarchy (transform + structure), giving each clone its own
-    /// Children list and Parent pointer. Trimesh geometry arrays are shared (immutable during
-    /// composition); only the per-node transform/parent state is duplicated. Used to build a
-    /// composite skeleton root without mutating the cached source model (#1735).
-    /// </summary>
-    private static MdlNode CloneNode(MdlNode source, MdlNode? parent)
-    {
-        var clone = source is MdlTrimeshNode mesh
-            ? CloneTrimeshShallow(mesh)
-            : new MdlNode
+            var clone = new MdlModel
             {
-                NodeType = source.NodeType,
                 Name = source.Name,
-                Position = source.Position,
-                Orientation = source.Orientation,
+                SuperModel = source.SuperModel,
+                ModelType = source.ModelType,
+                BoundsMinimum = source.BoundsMinimum,
+                BoundsMaximum = source.BoundsMaximum,
+                Radius = source.Radius,
                 Scale = source.Scale,
-                Wirecolor = source.Wirecolor,
-                InheritColor = source.InheritColor,
-                PositionTimes = source.PositionTimes,
-                PositionValues = source.PositionValues,
-                OrientationTimes = source.OrientationTimes,
-                OrientationValues = source.OrientationValues,
-                ScaleTimes = source.ScaleTimes,
-                ScaleValues = source.ScaleValues,
+                GeometryRoot = source.GeometryRoot == null ? null : CloneNodeTree(source.GeometryRoot)
             };
 
-        clone.Parent = parent;
-        foreach (var child in source.Children)
-            clone.Children.Add(CloneNode(child, clone));
-
-        return clone;
-    }
-
-    /// <summary>
-    /// Shallow-clone a trimesh node: copies the per-node transform/material/flags but SHARES the
-    /// large immutable geometry arrays (vertices, normals, faces, UVs, colors). Composition only
-    /// mutates Position / Bitmap / Parent on the clone, so sharing geometry is safe and cheap.
-    /// Children are NOT copied here (CloneNode handles hierarchy).
-    /// </summary>
-    private static MdlTrimeshNode CloneTrimeshShallow(MdlTrimeshNode s)
-    {
-        // Preserve the runtime type so a skin mesh stays an MdlSkinNode (#1989): the
-        // tiny-trimesh skip heuristic and mesh-info counts key on `is MdlSkinNode`, and a
-        // robe's coat/arms are skins. Bone arrays are shared (immutable during composition).
-        MdlTrimeshNode clone = s is MdlSkinNode sk
-            ? new MdlSkinNode
+            foreach (var animation in source.Animations)
             {
-                BoneWeights = sk.BoneWeights,
-                BoneNodeNames = sk.BoneNodeNames,
-                BoneQuaternions = sk.BoneQuaternions,
-                BoneTranslations = sk.BoneTranslations,
-                NodeToBoneMap = sk.NodeToBoneMap,
-            }
-            : new MdlTrimeshNode();
-
-        clone.NodeType = s.NodeType;
-        clone.Name = s.Name;
-        clone.Position = s.Position;
-        clone.Orientation = s.Orientation;
-        clone.Scale = s.Scale;
-        clone.Wirecolor = s.Wirecolor;
-        clone.InheritColor = s.InheritColor;
-        clone.PositionTimes = s.PositionTimes;
-        clone.PositionValues = s.PositionValues;
-        clone.OrientationTimes = s.OrientationTimes;
-        clone.OrientationValues = s.OrientationValues;
-        clone.ScaleTimes = s.ScaleTimes;
-        clone.ScaleValues = s.ScaleValues;
-        clone.Vertices = s.Vertices;
-        clone.Normals = s.Normals;
-        clone.TextureCoords = s.TextureCoords;
-        clone.VertexColors = s.VertexColors;
-        clone.Faces = s.Faces;
-        clone.Bitmap = s.Bitmap;
-        clone.Bitmap2 = s.Bitmap2;
-        clone.MaterialName = s.MaterialName;
-        clone.Ambient = s.Ambient;
-        clone.Diffuse = s.Diffuse;
-        clone.Specular = s.Specular;
-        clone.Shininess = s.Shininess;
-        clone.Alpha = s.Alpha;
-        clone.SelfIllumColor = s.SelfIllumColor;
-        clone.Render = s.Render;
-        clone.Shadow = s.Shadow;
-        clone.Beaming = s.Beaming;
-        clone.RotateTexture = s.RotateTexture;
-        clone.TransparencyHint = s.TransparencyHint;
-        clone.Tilefade = s.Tilefade;
-        clone.RenderOrder = s.RenderOrder;
-        return clone;
-    }
-
-    /// <summary>
-    /// Find a node in the bone hierarchy by name (case-insensitive).
-    /// Public for tests and for QM's adapter that needs the same lookup.
-    /// </summary>
-    public static MdlNode? FindBoneByName(MdlNode root, string name)
-    {
-        if (root.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-            return root;
-
-        foreach (var child in root.Children)
-        {
-            var found = FindBoneByName(child, name);
-            if (found != null)
-                return found;
-        }
-
-        return null;
-    }
-
-    /// <summary>
-    /// Calculate the full world transform of a bone by accumulating S*R*T matrices up the hierarchy.
-    /// Mirrors <c>ModelPreviewGLControl.GetWorldTransform()</c> to handle parent rotations correctly.
-    /// </summary>
-    public static Matrix4x4 GetMeshWorldTransform(MdlNode mesh) => GetBoneWorldTransform(mesh);
-
-    public static Matrix4x4 GetBoneWorldTransform(MdlNode bone)
-    {
-        var worldTransform = Matrix4x4.Identity;
-        var current = bone;
-
-        while (current != null)
-        {
-            var scale = Matrix4x4.CreateScale(current.Scale);
-            var rotation = Matrix4x4.CreateFromQuaternion(current.Orientation);
-            var translation = Matrix4x4.CreateTranslation(current.Position);
-
-            // Row-major local transform: S * R * T (same as ModelPreviewGLControl.GetWorldTransform)
-            var localTransform = scale * rotation * translation;
-
-            // Accumulate: node * parent * grandparent * ... * root
-            worldTransform = worldTransform * localTransform;
-
-            current = current.Parent;
-        }
-
-        return worldTransform;
-    }
-
-    /// <summary>
-    /// Adjust adjacent body parts (head/neck, neck/chest) so they overlap by at least
-    /// <see cref="MinSeamOverlap"/> world units (#1557). NWN body parts rely on skeletal
-    /// deformation for seamless joints; our static preview places rigid meshes that
-    /// can leave thin seams visible under perspective projection.
-    /// </summary>
-    public static void AdjustSeamOverlaps(MdlModel compositeModel, Dictionary<string, string> meshPartTypes)
-    {
-        var meshes = compositeModel.GetMeshNodes().ToList();
-
-        // Seam threshold scales with model height so tiny human-proportioned creatures (Brownie)
-        // aren't over-nudged by the human-scale constant (#1735). Height = world-space Z extent
-        // across all part meshes.
-        float modelMinZ = float.MaxValue, modelMaxZ = float.MinValue;
-        foreach (var mesh in meshes)
-        {
-            var t = GetMeshWorldTransform(mesh);
-            foreach (var vertex in mesh.Vertices)
-            {
-                var wz = Vector3.Transform(vertex, t).Z;
-                if (float.IsNaN(wz)) continue;
-                modelMinZ = Math.Min(modelMinZ, wz);
-                modelMaxZ = Math.Max(modelMaxZ, wz);
-            }
-        }
-        float modelHeight = (modelMaxZ > modelMinZ) ? modelMaxZ - modelMinZ : 0f;
-        float threshold = GetSeamThreshold(modelHeight);
-
-        foreach (var (upperPartType, lowerPartType) in SeamPairs)
-        {
-            var upperMeshes = meshes.Where(m =>
-                meshPartTypes.TryGetValue(m.Name, out var pt) &&
-                string.Equals(pt, upperPartType, StringComparison.OrdinalIgnoreCase)).ToList();
-            var lowerMeshes = meshes.Where(m =>
-                meshPartTypes.TryGetValue(m.Name, out var pt) &&
-                string.Equals(pt, lowerPartType, StringComparison.OrdinalIgnoreCase)).ToList();
-
-            if (upperMeshes.Count == 0 || lowerMeshes.Count == 0)
-                continue;
-
-            // Measure overlap in WORLD space. Body-part meshes are reparented under skeleton
-            // bones with their own Position zeroed (#1735), so the world Z lives in the bone
-            // chain — the mesh-local transform alone reads every part at the bone-local origin.
-            float upperMinZ = float.MaxValue;
-            foreach (var mesh in upperMeshes)
-            {
-                var transform = GetMeshWorldTransform(mesh);
-                foreach (var vertex in mesh.Vertices)
+                clone.Animations.Add(new MdlAnimation
                 {
-                    var wv = Vector3.Transform(vertex, transform);
-                    if (!float.IsNaN(wv.Z))
-                        upperMinZ = Math.Min(upperMinZ, wv.Z);
+                    Name = animation.Name,
+                    Length = animation.Length,
+                    TransitionTime = animation.TransitionTime,
+                    GeometryRoot = animation.GeometryRoot == null ? null : CloneNodeTree(animation.GeometryRoot)
+                });
+            }
+
+            return clone;
+        }
+
+        private static MdlNode? CloneNodeTree(MdlNode root) =>
+            CloneNode(root, parent: null, new HashSet<MdlNode>(ReferenceEqualityComparer.Instance), 0, new NodeCounter());
+
+        private static MdlNode? CloneNode(
+            MdlNode source,
+            MdlNode? parent,
+            HashSet<MdlNode> visited,
+            int depth,
+            NodeCounter counter)
+        {
+            if (depth > MaximumDepth)
+                throw new InvalidDataException($"MDL node depth exceeds the {MaximumDepth:N0}-level limit.");
+            if (!visited.Add(source))
+                return null;
+            if (++counter.Value > MaximumNodes)
+                throw new InvalidDataException($"MDL geometry exceeds the {MaximumNodes:N0}-node limit.");
+
+            var clone = CreateNodeClone(source);
+            clone.Parent = parent;
+            CopyCommon(source, clone);
+
+            foreach (var child in source.Children)
+            {
+                if (child == null)
+                    continue;
+
+                var childClone = CloneNode(child, clone, visited, depth + 1, counter);
+                if (childClone != null)
+                    clone.Children.Add(childClone);
+            }
+
+            return clone;
+        }
+
+        private static MdlNode CreateNodeClone(MdlNode source)
+        {
+            if (source is MdlSkinmeshNode skin)
+            {
+                var clone = new MdlSkinmeshNode
+                {
+                    VertexInfluences = skin.VertexInfluences
+                        .Select(influences => influences?.ToArray() ?? Array.Empty<MdlSkinInfluence>())
+                        .ToArray(),
+                    BoneWeights = skin.BoneWeights.ToArray(),
+                    BoneIndices = skin.BoneIndices.ToArray(),
+                    BoneMapping = skin.BoneMapping.ToArray(),
+                    BoneQuaternions = skin.BoneQuaternions.ToArray(),
+                    BoneTranslations = skin.BoneTranslations.ToArray()
+                };
+                CopyMesh(skin, clone);
+                return clone;
+            }
+
+            if (source is MdlTrimeshNode mesh)
+            {
+                var clone = new MdlTrimeshNode();
+                CopyMesh(mesh, clone);
+                return clone;
+            }
+
+            if (source is MdlEmitterNode emitter)
+            {
+                return new MdlEmitterNode
+                {
+                    DeadSpace = emitter.DeadSpace,
+                    BlastRadius = emitter.BlastRadius,
+                    BlastLength = emitter.BlastLength,
+                    XGrid = emitter.XGrid,
+                    YGrid = emitter.YGrid,
+                    Update = emitter.Update,
+                    RenderMode = emitter.RenderMode,
+                    Blend = emitter.Blend,
+                    Texture = emitter.Texture,
+                    Chunk = emitter.Chunk,
+                    TextureIsTwoSided = emitter.TextureIsTwoSided,
+                    Loop = emitter.Loop,
+                    RenderOrder = emitter.RenderOrder
+                };
+            }
+
+            return new MdlNode();
+        }
+
+        private static void CopyCommon(MdlNode source, MdlNode target)
+        {
+            target.Name = source.Name;
+            target.Position = source.Position;
+            target.Orientation = source.Orientation;
+            target.Scale = source.Scale;
+            target.PositionTimes = source.PositionTimes.ToArray();
+            target.PositionValues = source.PositionValues.ToArray();
+            target.OrientationTimes = source.OrientationTimes.ToArray();
+            target.OrientationValues = source.OrientationValues.ToArray();
+            target.ScaleTimes = source.ScaleTimes.ToArray();
+            target.ScaleValues = source.ScaleValues.ToArray();
+        }
+
+        private static void CopyMesh(MdlTrimeshNode source, MdlTrimeshNode target)
+        {
+            target.Render = source.Render;
+            target.TileFade = source.TileFade;
+            target.Bitmap = source.Bitmap;
+            target.Lightmap = source.Lightmap;
+            target.Vertices = source.Vertices.ToArray();
+            target.Normals = source.Normals.ToArray();
+            target.TextureCoordinates = source.TextureCoordinates.ToArray();
+            target.Faces = source.Faces.Select(face => new MdlFace
+            {
+                Normal = face.Normal,
+                Distance = face.Distance,
+                SurfaceId = face.SurfaceId,
+                VertexIndex0 = face.VertexIndex0,
+                VertexIndex1 = face.VertexIndex1,
+                VertexIndex2 = face.VertexIndex2
+            }).ToArray();
+        }
+
+        private static void RecalculateBounds(MdlModel model)
+        {
+            if (model.GeometryRoot == null)
+                return;
+
+            var minimum = new Vector3(float.MaxValue);
+            var maximum = new Vector3(float.MinValue);
+            var radiusSquared = 0f;
+            var found = false;
+            var visited = new HashSet<MdlNode>(ReferenceEqualityComparer.Instance);
+            var pending = new Stack<(MdlNode Node, Matrix4x4 Parent)>();
+            pending.Push((model.GeometryRoot, Matrix4x4.Identity));
+
+            while (pending.Count > 0)
+            {
+                var (node, parent) = pending.Pop();
+                if (!visited.Add(node))
+                    continue;
+                if (visited.Count > MaximumNodes)
+                    throw new InvalidDataException($"MDL composition exceeds the {MaximumNodes:N0}-node limit.");
+
+                var local = Matrix4x4.CreateScale(FiniteOr(node.Scale, 1f)) *
+                            Matrix4x4.CreateFromQuaternion(NormalizedOrIdentity(node.Orientation)) *
+                            Matrix4x4.CreateTranslation(FiniteOrZero(node.Position));
+                var world = local * parent;
+
+                if (node is MdlTrimeshNode mesh && mesh.Render)
+                {
+                    foreach (var vertex in mesh.Vertices)
+                    {
+                        var transformed = Vector3.Transform(vertex, world);
+                        if (!IsFinite(transformed))
+                            continue;
+                        minimum = Vector3.Min(minimum, transformed);
+                        maximum = Vector3.Max(maximum, transformed);
+                        radiusSquared = MathF.Max(radiusSquared, transformed.LengthSquared());
+                        found = true;
+                    }
+                }
+
+                foreach (var child in node.Children)
+                {
+                    if (child != null)
+                        pending.Push((child, world));
                 }
             }
 
-            float lowerMaxZ = float.MinValue;
-            foreach (var mesh in lowerMeshes)
-            {
-                var transform = GetMeshWorldTransform(mesh);
-                foreach (var vertex in mesh.Vertices)
-                {
-                    var wv = Vector3.Transform(vertex, transform);
-                    if (!float.IsNaN(wv.Z))
-                        lowerMaxZ = Math.Max(lowerMaxZ, wv.Z);
-                }
-            }
+            if (!found)
+                return;
 
-            if (upperMinZ == float.MaxValue || lowerMaxZ == float.MinValue)
-                continue;
-
-            float overlap = lowerMaxZ - upperMinZ;
-
-            UnifiedLogger.LogApplication(LogLevel.DEBUG,
-                $"Seam[{upperPartType}/{lowerPartType}]: overlap={overlap:F3} " +
-                $"threshold={threshold:F3} (modelH={modelHeight:F3}) " +
-                $"{(overlap >= threshold ? "no-nudge" : "nudge")}");
-
-            if (overlap >= threshold)
-                continue;
-
-            // Cap the nudge so parts that already overlap are never driven PAST each other:
-            // the total move can't exceed the existing overlap. For an actual gap (overlap ≤ 0)
-            // there's nothing to push through, so close the full deficit.
-            float deficit = threshold - overlap;
-            if (overlap > 0f)
-                deficit = Math.Min(deficit, overlap);
-            float halfDeficit = deficit / 2f;
-
-            foreach (var mesh in upperMeshes)
-                mesh.Position = new Vector3(mesh.Position.X, mesh.Position.Y, mesh.Position.Z - halfDeficit);
-            foreach (var mesh in lowerMeshes)
-                mesh.Position = new Vector3(mesh.Position.X, mesh.Position.Y, mesh.Position.Z + halfDeficit);
-        }
-    }
-
-    /// <summary>
-    /// Aggregate the bounding box across all attached meshes, using each mesh's local S*R*T transform.
-    /// </summary>
-    public static void UpdateCompositeBounds(MdlModel model)
-    {
-        var minX = float.MaxValue;
-        var minY = float.MaxValue;
-        var minZ = float.MaxValue;
-        var maxX = float.MinValue;
-        var maxY = float.MinValue;
-        var maxZ = float.MinValue;
-
-        foreach (var mesh in model.GetMeshNodes())
-        {
-            // Use the FULL world transform (parent bone chain × mesh-local). Parts reparented
-            // under skeleton bones carry their world position in the chain, not in mesh.Position
-            // (#1735) — the mesh-local transform alone collapses every part to the bone origin.
-            var worldTransform = GetMeshWorldTransform(mesh);
-
-            foreach (var vertex in mesh.Vertices)
-            {
-                var worldVert = Vector3.Transform(vertex, worldTransform);
-
-                minX = Math.Min(minX, worldVert.X);
-                minY = Math.Min(minY, worldVert.Y);
-                minZ = Math.Min(minZ, worldVert.Z);
-                maxX = Math.Max(maxX, worldVert.X);
-                maxY = Math.Max(maxY, worldVert.Y);
-                maxZ = Math.Max(maxZ, worldVert.Z);
-            }
+            model.BoundsMinimum = minimum;
+            model.BoundsMaximum = maximum;
+            model.Radius = MathF.Sqrt(radiusSquared);
         }
 
-        if (minX != float.MaxValue)
+        private static float FiniteOr(float value, float fallback) => float.IsFinite(value) ? value : fallback;
+
+        private static Vector3 FiniteOrZero(Vector3 value) => IsFinite(value) ? value : Vector3.Zero;
+
+        private static Quaternion NormalizedOrIdentity(Quaternion value) =>
+            IsFinite(value) && value.LengthSquared() > 0f ? Quaternion.Normalize(value) : Quaternion.Identity;
+
+        private static bool IsFinite(Vector3 value) =>
+            float.IsFinite(value.X) && float.IsFinite(value.Y) && float.IsFinite(value.Z);
+
+        private static bool IsFinite(Quaternion value) =>
+            float.IsFinite(value.X) && float.IsFinite(value.Y) &&
+            float.IsFinite(value.Z) && float.IsFinite(value.W);
+
+        private sealed class NodeCounter
         {
-            model.BoundingMin = new Vector3(minX, minY, minZ);
-            model.BoundingMax = new Vector3(maxX, maxY, maxZ);
-            model.Radius = (model.BoundingMax - model.BoundingMin).Length() / 2f;
+            public int Value;
+        }
+
+        private sealed class ModelKeyComparer : IEqualityComparer<(string ResRef, bool WithSupermodelAnimations)>
+        {
+            public static readonly ModelKeyComparer Instance = new();
+
+            public bool Equals(
+                (string ResRef, bool WithSupermodelAnimations) x,
+                (string ResRef, bool WithSupermodelAnimations) y) =>
+                x.WithSupermodelAnimations == y.WithSupermodelAnimations &&
+                string.Equals(x.ResRef, y.ResRef, StringComparison.OrdinalIgnoreCase);
+
+            public int GetHashCode((string ResRef, bool WithSupermodelAnimations) key) =>
+                HashCode.Combine(
+                    StringComparer.OrdinalIgnoreCase.GetHashCode(key.ResRef),
+                    key.WithSupermodelAnimations);
         }
     }
 }

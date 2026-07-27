@@ -1,0 +1,453 @@
+// SPDX-License-Identifier: MIT
+
+using System.Buffers.Binary;
+using System.Numerics;
+using System.Text;
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.NWN.Formats.Mdl;
+
+namespace SWLOR.NWN.Formats.Tests;
+
+public sealed class MdlReaderTests
+{
+    [Test]
+    public void ReadsBinaryMeshAndMdxStreams()
+    {
+        const int modelDataSize = 888;
+        var bytes = new byte[12 + modelDataSize + 96];
+        WriteUInt32(bytes, 4, modelDataSize);
+        WriteUInt32(bytes, 8, 96);
+        WriteFixed(bytes, 20, 64, "sample");
+        WriteUInt32(bytes, 84, 232);
+        WriteFixed(bytes, 180, 64, "base_model");
+
+        var node = 12 + 232;
+        WriteFixed(bytes, node + 32, 32, "panel");
+        WriteUInt32(bytes, node + 108, 0x20);
+
+        var mesh = node + 112;
+        WriteUInt32(bytes, mesh + 8, 856);
+        WriteUInt32(bytes, mesh + 12, 1);
+        WriteUInt32(bytes, mesh + 16, 1);
+        WriteUInt32(bytes, mesh + 108, 1);
+        WriteFixed(bytes, mesh + 120, 64, "panel_texture");
+        WriteUInt32(bytes, mesh + 376, 0x8000_0007);
+        WriteInt32(bytes, mesh + 444, 0);
+        WriteUInt16(bytes, mesh + 448, 3);
+        WriteUInt16(bytes, mesh + 450, 1);
+        WriteInt32(bytes, mesh + 452, 36);
+        WriteInt32(bytes, mesh + 456, -1);
+        WriteInt32(bytes, mesh + 460, -1);
+        WriteInt32(bytes, mesh + 464, -1);
+        WriteInt32(bytes, mesh + 468, 60);
+        WriteInt32(bytes, mesh + 472, -1);
+        for (var offset = 476; offset <= 496; offset += 4)
+            WriteInt32(bytes, mesh + offset, -1);
+
+        var face = 12 + 856;
+        WriteSingle(bytes, face + 8, 1f);
+        WriteUInt16(bytes, face + 26, 0);
+        WriteUInt16(bytes, face + 28, 1);
+        WriteUInt16(bytes, face + 30, 2);
+
+        var mdx = 12 + modelDataSize;
+        WriteVector3(bytes, mdx, new Vector3(0, 0, 0));
+        WriteVector3(bytes, mdx + 12, new Vector3(1, 0, 0));
+        WriteVector3(bytes, mdx + 24, new Vector3(0, 1, 0));
+        WriteVector2(bytes, mdx + 36, new Vector2(0, 0));
+        WriteVector2(bytes, mdx + 44, new Vector2(1, 0));
+        WriteVector2(bytes, mdx + 52, new Vector2(0, 1));
+        for (var index = 0; index < 3; index++)
+            WriteVector3(bytes, mdx + 60 + index * 12, Vector3.UnitZ);
+
+        var model = new MdlReader().Parse(bytes);
+
+        model.Name.Should().Be("sample");
+        model.SuperModel.Should().Be("base_model");
+        var parsed = model.GetMeshNodes().Should().ContainSingle().Subject;
+        parsed.Name.Should().Be("panel");
+        parsed.Render.Should().BeTrue();
+        parsed.TileFade.Should().Be(unchecked((int)0x8000_0007));
+        parsed.Bitmap.Should().Be("panel_texture");
+        parsed.Vertices.Should().Equal(Vector3.Zero, Vector3.UnitX, Vector3.UnitY);
+        parsed.TextureCoordinates.Should().Equal(Vector2.Zero, Vector2.UnitX, Vector2.UnitY);
+        parsed.Normals.Should().OnlyContain(normal => normal == Vector3.UnitZ);
+        parsed.Faces.Should().ContainSingle()
+            .Which.Should().Match<MdlFace>(item =>
+                item.VertexIndex0 == 0 && item.VertexIndex1 == 1 && item.VertexIndex2 == 2);
+    }
+
+    [Test]
+    public void ReadsAnimationGeometryAndControllerTracks()
+    {
+        const int modelDataSize = 632;
+        var bytes = new byte[12 + modelDataSize];
+        WriteUInt32(bytes, 4, modelDataSize);
+        WriteUInt32(bytes, 12 + 120, 232);
+        WriteUInt32(bytes, 12 + 124, 1);
+        WriteUInt32(bytes, 12 + 128, 1);
+        WriteUInt32(bytes, 12 + 232, 236);
+
+        var animation = 12 + 236;
+        WriteFixed(bytes, animation + 8, 64, "open");
+        WriteUInt32(bytes, animation + 72, 432);
+        WriteSingle(bytes, animation + 112, 1f);
+        WriteSingle(bytes, animation + 116, 0.25f);
+
+        var node = 12 + 432;
+        WriteFixed(bytes, node + 32, 32, "door");
+        WriteUInt32(bytes, node + 84, 544);
+        WriteUInt32(bytes, node + 88, 2);
+        WriteUInt32(bytes, node + 92, 2);
+        WriteUInt32(bytes, node + 96, 568);
+        WriteUInt32(bytes, node + 100, 13);
+        WriteUInt32(bytes, node + 104, 13);
+
+        var controller = 12 + 544;
+        WriteUInt32(bytes, controller, 8);
+        WriteUInt16(bytes, controller + 4, 2);
+        WriteUInt16(bytes, controller + 6, 0);
+        WriteUInt16(bytes, controller + 8, 2);
+        bytes[controller + 10] = 3;
+        WriteUInt32(bytes, controller + 12, 20);
+        WriteUInt16(bytes, controller + 16, 1);
+        WriteUInt16(bytes, controller + 18, 8);
+        WriteUInt16(bytes, controller + 20, 9);
+        bytes[controller + 22] = 4;
+
+        var data = 12 + 568;
+        WriteSingle(bytes, data, 0f);
+        WriteSingle(bytes, data + 4, 1f);
+        WriteVector3(bytes, data + 8, Vector3.Zero);
+        WriteVector3(bytes, data + 20, new Vector3(4f, 5f, 6f));
+        WriteSingle(bytes, data + 32, 0.5f);
+        WriteSingle(bytes, data + 36, 0f);
+        WriteSingle(bytes, data + 40, 0f);
+        WriteSingle(bytes, data + 44, MathF.Sqrt(0.5f));
+        WriteSingle(bytes, data + 48, MathF.Sqrt(0.5f));
+
+        var model = new MdlReader().Parse(bytes);
+
+        var parsed = model.Animations.Should().ContainSingle().Subject;
+        parsed.Name.Should().Be("open");
+        parsed.Length.Should().Be(1f);
+        parsed.TransitionTime.Should().Be(0.25f);
+        parsed.GeometryRoot.Should().NotBeNull();
+        parsed.GeometryRoot!.Name.Should().Be("door");
+        parsed.GeometryRoot.PositionTimes.Should().Equal(0f, 1f);
+        parsed.GeometryRoot.PositionValues.Should().Equal(Vector3.Zero, new Vector3(4f, 5f, 6f));
+        parsed.GeometryRoot.OrientationTimes.Should().Equal(0.5f);
+        parsed.GeometryRoot.OrientationValues.Should().Equal(
+            new Quaternion(0f, 0f, MathF.Sqrt(0.5f), MathF.Sqrt(0.5f)));
+    }
+
+    [Test]
+    public void RejectsTextAndOutOfBoundsPointers()
+    {
+        var text = Encoding.ASCII.GetBytes("not an mdl");
+        Action parseText = () => new MdlReader().Parse(text);
+        parseText.Should().Throw<NwnFormatException>();
+
+        var binary = new byte[12 + 232];
+        WriteUInt32(binary, 4, 232);
+        WriteUInt32(binary, 12 + 72, 0xFFFF_FFF0);
+        Action parsePointer = () => new MdlReader().Parse(binary);
+        parsePointer.Should().Throw<NwnFormatException>();
+    }
+
+    [Test]
+    public void BinaryModelHeaderMustFitInsideDeclaredModelData()
+    {
+        var bytes = new byte[12 + 232];
+        WriteUInt32(bytes, 4, 200);
+        WriteUInt32(bytes, 8, 32);
+
+        Action action = () => new MdlReader().Parse(bytes);
+
+        action.Should().Throw<NwnFormatException>()
+            .WithMessage("*model header*model data*");
+    }
+
+    [Test]
+    public void IncompatibleBinaryNodeFlagsAreRejectedAsFormatErrors()
+    {
+        var bytes = BuildBinaryNode(0x04 | 0x20);
+
+        Action action = () => new MdlReader().Parse(bytes);
+
+        action.Should().Throw<NwnFormatException>()
+            .WithMessage("*incompatible node types*");
+    }
+
+    [Test]
+    public void SharedFaceTablesCannotMultiplyManagedAllocationBeyondTheParseBudget()
+    {
+        var bytes = BuildBinaryMdlWithSharedFaceTable(meshCount: 5, faceCount: ushort.MaxValue);
+
+        Action action = () => new MdlReader().Parse(bytes);
+
+        action.Should().Throw<NwnFormatException>()
+            .WithMessage("*allocation budget*");
+    }
+
+    [Test]
+    public void ReadsAsciiMeshAndReindexesTextureVertices()
+    {
+        var text = """
+                   #MAXMODEL ASCII
+                   newmodel sample
+                   setsupermodel sample NULL
+                   setanimationscale 1
+                   beginmodelgeom sample
+                     node dummy sample
+                       parent NULL
+                     endnode
+                     node trimesh panel
+                       parent sample
+                       position 1 2 3
+                       orientation 0 0 1 1.57079632679
+                       render 1
+                       tilefade 3
+                       bitmap panel_texture
+                       verts 3
+                         0 0 0
+                         1 0 0
+                         0 1 0
+                       normals 3
+                         0 0 1
+                         0 0 1
+                         0 0 1
+                       tverts 4
+                         0 0 0
+                         1 0 0
+                         0 1 0
+                         1 1 0
+                       faces 2
+                         0 1 2 7 0 1 2 1
+                         0 2 1 8 3 2 1 1
+                     endnode
+                   endmodelgeom sample
+                   donemodel sample
+                   """;
+
+        var model = new MdlReader().Parse(Encoding.ASCII.GetBytes(text));
+
+        model.Name.Should().Be("sample");
+        model.SuperModel.Should().BeEmpty();
+        var mesh = model.GetMeshNodes().Should().ContainSingle().Subject;
+        mesh.Name.Should().Be("panel");
+        mesh.Render.Should().BeTrue();
+        mesh.TileFade.Should().Be(3);
+        mesh.Bitmap.Should().Be("panel_texture");
+        mesh.Position.Should().Be(new Vector3(1, 2, 3));
+        mesh.Orientation.Z.Should().BeApproximately(MathF.Sqrt(0.5f), 0.0001f);
+        mesh.Orientation.W.Should().BeApproximately(MathF.Sqrt(0.5f), 0.0001f);
+        mesh.Vertices.Should().HaveCount(4);
+        mesh.TextureCoordinates.Should().HaveCount(4);
+        mesh.Faces.Should().HaveCount(2);
+        mesh.Faces[0].SurfaceId.Should().Be(7);
+        mesh.Faces[1].VertexIndex0.Should().NotBe(mesh.Faces[0].VertexIndex0);
+    }
+
+    [Test]
+    public void ReadsAsciiSkinEmitterAndAnimationControllers()
+    {
+        var text = """
+                   newmodel sample
+                   beginmodelgeom sample
+                     node dummy sample
+                       parent NULL
+                     endnode
+                     node skin cloth
+                       parent sample
+                       render 1
+                       bitmap cloth
+                       verts 3
+                         0 0 0
+                         1 0 0
+                         0 1 0
+                       tverts 3
+                         0 0 0
+                         1 0 0
+                         0 1 0
+                       faces 1
+                         0 1 2 0 0 1 2 1
+                       weights 3
+                         sample 1
+                         sample .5 arm .5
+                         arm 1
+                     endnode
+                     node emitter sparks
+                       parent sample
+                       texture fx_spark
+                       xgrid 4
+                       ygrid 2
+                       update Explosion
+                       render Normal
+                       blend Lighten
+                       loop 1
+                       twosidedtex 1
+                     endnode
+                   endmodelgeom sample
+                   newanim open sample
+                     length 1
+                     transtime .25
+                     node dummy sample
+                       parent NULL
+                       positionkey 2
+                         0 0 0 0
+                         1 4 5 6
+                       orientationkey
+                         0 0 0 0 0
+                         1 0 0 1 3.14159265
+                       endlist
+                       scalekey 1
+                         0 1
+                     endnode
+                   doneanim open sample
+                   donemodel sample
+                   """;
+
+        var model = new MdlReader().Parse(Encoding.ASCII.GetBytes(text));
+
+        var nodes = Enumerate(model.GeometryRoot!).ToArray();
+        var skin = nodes.OfType<MdlSkinmeshNode>().Should().ContainSingle().Subject;
+        skin.VertexInfluences.Should().HaveCount(3);
+        skin.VertexInfluences[1].Should().Equal(
+            new MdlSkinInfluence("sample", .5f),
+            new MdlSkinInfluence("arm", .5f));
+        var emitter = nodes.OfType<MdlEmitterNode>().Should().ContainSingle().Subject;
+        emitter.Texture.Should().Be("fx_spark");
+        emitter.XGrid.Should().Be(4);
+        emitter.YGrid.Should().Be(2);
+        emitter.Loop.Should().BeTrue();
+        emitter.TextureIsTwoSided.Should().BeTrue();
+
+        var animation = model.Animations.Should().ContainSingle().Subject;
+        animation.Name.Should().Be("open");
+        animation.GeometryRoot!.PositionTimes.Should().Equal(0f, 1f);
+        animation.GeometryRoot.PositionValues[1].Should().Be(new Vector3(4, 5, 6));
+        animation.GeometryRoot.OrientationValues.Should().HaveCount(2);
+        animation.GeometryRoot.ScaleValues.Should().Equal(1f);
+    }
+
+    [Test]
+    public void ReadsLegacyConcatenatedDirectivesAndTwoDimensionalVertices()
+    {
+        var text = """
+                   newmodelsample
+                   setsupermodelsample NULL
+                   beginmodelgeomsample
+                   node dummysample
+                     parent NULL
+                   endnode
+                   node trimesh panel
+                     parentsample
+                     bitmap ##0x7f6bfe28!body
+                     verts 3
+                       0 0
+                       1 0
+                       0 1
+                     faces 1
+                       0 1 2 0 0 0 0 1
+                   endnode
+                   donemodelsample
+                   """;
+
+        var model = new MdlReader().Parse(Encoding.ASCII.GetBytes(text));
+
+        model.Name.Should().Be("sample");
+        var mesh = model.GetMeshNodes().Should().ContainSingle().Subject;
+        mesh.Bitmap.Should().Be("##0x7f6bfe28!body");
+        mesh.Vertices.Should().Equal(Vector3.Zero, Vector3.UnitX, Vector3.UnitY);
+    }
+
+    private static IEnumerable<MdlNode> Enumerate(MdlNode root)
+    {
+        var pending = new Stack<MdlNode>();
+        pending.Push(root);
+        while (pending.Count > 0)
+        {
+            var current = pending.Pop();
+            yield return current;
+            foreach (var child in current.Children)
+                pending.Push(child);
+        }
+    }
+
+    private static byte[] BuildBinaryNode(uint content)
+    {
+        const int modelHeaderSize = 232;
+        const int nodeHeaderSize = 112;
+        const int modelDataSize = modelHeaderSize + nodeHeaderSize;
+        var bytes = new byte[12 + modelDataSize];
+        WriteUInt32(bytes, 4, modelDataSize);
+        WriteUInt32(bytes, 12 + 72, modelHeaderSize);
+        WriteUInt32(bytes, 12 + modelHeaderSize + 108, content);
+        return bytes;
+    }
+
+    private static byte[] BuildBinaryMdlWithSharedFaceTable(int meshCount, int faceCount)
+    {
+        const int modelHeaderSize = 232;
+        const int nodeHeaderSize = 112;
+        const int meshHeaderSize = 512;
+        var rootPointer = modelHeaderSize;
+        var childPointers = rootPointer + nodeHeaderSize;
+        var meshNodes = checked(childPointers + meshCount * 4);
+        var facePointer = checked(meshNodes + meshCount * (nodeHeaderSize + meshHeaderSize));
+        var modelDataSize = checked(facePointer + faceCount * 32);
+        var bytes = new byte[checked(12 + modelDataSize)];
+
+        WriteUInt32(bytes, 4, checked((uint)modelDataSize));
+        WriteUInt32(bytes, 12 + 72, checked((uint)rootPointer));
+        var root = 12 + rootPointer;
+        WriteUInt32(bytes, root + 72, checked((uint)childPointers));
+        WriteUInt32(bytes, root + 76, checked((uint)meshCount));
+
+        for (var index = 0; index < meshCount; index++)
+        {
+            var pointer = checked(meshNodes + index * (nodeHeaderSize + meshHeaderSize));
+            WriteUInt32(bytes, 12 + childPointers + index * 4, checked((uint)pointer));
+            var node = 12 + pointer;
+            WriteUInt32(bytes, node + 108, 0x20);
+            var mesh = node + nodeHeaderSize;
+            WriteUInt32(bytes, mesh + 8, checked((uint)facePointer));
+            WriteUInt32(bytes, mesh + 12, checked((uint)faceCount));
+        }
+
+        return bytes;
+    }
+
+    private static void WriteFixed(byte[] bytes, int offset, int length, string value)
+    {
+        var encoded = Encoding.ASCII.GetBytes(value);
+        encoded.AsSpan(0, Math.Min(encoded.Length, length)).CopyTo(bytes.AsSpan(offset, length));
+    }
+
+    private static void WriteUInt16(byte[] bytes, int offset, ushort value) =>
+        BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(offset, 2), value);
+
+    private static void WriteUInt32(byte[] bytes, int offset, uint value) =>
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(offset, 4), value);
+
+    private static void WriteInt32(byte[] bytes, int offset, int value) =>
+        BinaryPrimitives.WriteInt32LittleEndian(bytes.AsSpan(offset, 4), value);
+
+    private static void WriteSingle(byte[] bytes, int offset, float value) =>
+        WriteInt32(bytes, offset, BitConverter.SingleToInt32Bits(value));
+
+    private static void WriteVector2(byte[] bytes, int offset, Vector2 value)
+    {
+        WriteSingle(bytes, offset, value.X);
+        WriteSingle(bytes, offset + 4, value.Y);
+    }
+
+    private static void WriteVector3(byte[] bytes, int offset, Vector3 value)
+    {
+        WriteSingle(bytes, offset, value.X);
+        WriteSingle(bytes, offset + 4, value.Y);
+        WriteSingle(bytes, offset + 8, value.Z);
+    }
+}

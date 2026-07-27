@@ -393,9 +393,36 @@ If no required ASCII model is found, ASCII is out of scope and the reader throws
 unsupported-format exception. If any are found, stop and re-plan before implementing an ASCII
 reader.
 
-## Task 4b — MDL binary reader
+### Task 4a implementation result (2026-07-26)
 
-Role: clean implementation. Depends on Task 4a approving binary-only scope.
+The required licensed scan executed 96,005 loose hak-source and KEY/BIF MDL resources with zero
+failures or skips. It found 79,927 binary resources and 16,078 ASCII resources. The installed
+archive subset contains 25,598 binary and 7,236 ASCII resources (`nwn_base.key`: 25,598 binary /
+7,234 ASCII; `nwn_retail.key`: 0 binary / 2 ASCII). Binary-only scope is therefore rejected.
+Task 4 is expanded to include an independently implemented ASCII reader before the Radoub
+dependency can be removed. The owner approved that material scope expansion on 2026-07-26.
+
+The follow-up inventory executed all 16,078 ASCII resources with zero failures or skips. The
+required grammar surface includes model/supermodel headers, geometry blocks, 11,150 animation
+blocks, transform controllers, and trimesh, dummy, light, emitter, AABB, danglymesh, skin,
+animmesh, and reference nodes. The revised implementation should share the existing semantic
+object model and safety limits, add a bounded line/token reader, implement only caller-consumed
+node payloads, and verify an evenly distributed sample plus explicit coverage of each observed
+node kind.
+
+### Task 4a implementation follow-up (2026-07-26)
+
+The standalone reader now accepts both binary and ASCII MDL. The ASCII implementation uses a
+bounded line/token reader, preserves node topology, transform tracks, trimesh geometry, independent
+face UV indices, named skin influences, consumed emitter metadata, and animation trees. Portable
+fixtures cover the grammar and malformed boundaries. The licensed parser test executes every one
+of the 16,078 required ASCII resources with zero failures or skips, including the observed legacy
+concatenated directives, two-coordinate vertices, undefined animation scale, and a truncated final
+mesh.
+
+## Task 4b — MDL binary and ASCII reader
+
+Role: clean implementation. Depends on Task 4a determining the required format surface.
 
 Implement in verified increments:
 

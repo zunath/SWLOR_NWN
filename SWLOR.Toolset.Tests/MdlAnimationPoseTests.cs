@@ -1,7 +1,7 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using Radoub.Formats.Mdl;
+using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Tests

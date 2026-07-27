@@ -26,9 +26,9 @@ namespace SWLOR.Toolset.Domain.Render
 
     /// <summary>
     /// Parses MTR (NWN:EE material) resources and resolves the effective diffuse texture name
-    /// for a mesh's bitmap/material name. No MTR parser exists in Radoub.Formats; this is a
-    /// fresh, minimal implementation - it does not attempt to model render hints, custom shaders,
-    /// or parameters beyond exposing them as raw data for later packages to consume.
+    /// for a mesh's bitmap/material name. This deliberately small parser does not attempt to model
+    /// render hints, custom shaders, or parameters beyond exposing them as raw data for later
+    /// packages to consume.
     /// </summary>
     public static class MaterialResolver
     {

@@ -10,7 +10,13 @@ namespace SWLOR.Toolset.Domain.Script
         SourceNewer,
 
         /// <summary>The .ncs is older than something the source includes, transitively.</summary>
-        IncludeNewer
+        IncludeNewer,
+
+        /// <summary>
+        /// The source has no entry point (it is an include), yet a same-resref .ncs from its former
+        /// behavior still exists - obsolete executable code the packer would ship verbatim.
+        /// </summary>
+        ObsoleteIncludeArtifact
     }
 
     /// <summary>One compiled script that would ship stale.</summary>
@@ -23,6 +29,8 @@ namespace SWLOR.Toolset.Domain.Script
         {
             StaleReason.NeverCompiled => $"{ResRef}.nss has never been compiled",
             StaleReason.SourceNewer => $"{ResRef}.ncs is older than {ResRef}.nss",
+            StaleReason.ObsoleteIncludeArtifact =>
+                $"{ResRef}.ncs is obsolete - {ResRef}.nss is an include with no entry point",
             _ => $"{ResRef}.ncs is older than included {TriggerResRef}.nss"
         };
     }
@@ -71,6 +79,7 @@ namespace SWLOR.Toolset.Domain.Script
             var graph = ScriptIncludeGraph.Build(_nssDirectory);
             var sourceTimes = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
             var entryPoints = new List<string>();
+            var includes = new List<string>();
 
             foreach (var path in Directory.EnumerateFiles(_nssDirectory, "*.nss"))
             {
@@ -81,6 +90,8 @@ namespace SWLOR.Toolset.Domain.Script
                 {
                     if (IsEntryPoint(ScriptTextDocument.Load(path).Text))
                         entryPoints.Add(resRef);
+                    else
+                        includes.Add(resRef);
                 }
                 catch (IOException)
                 {
@@ -89,6 +100,17 @@ namespace SWLOR.Toolset.Domain.Script
             }
 
             var stale = new List<StaleScript>();
+
+            // An include with a same-resref artifact is obsolete executable code from the source's
+            // former behavior. Timestamps cannot flag it (the scan deliberately excludes includes
+            // from the freshness dimension), yet the packer ships every .ncs verbatim - so it must
+            // surface here, where the pre-pack readiness check will see it and run Build All, whose
+            // include purge removes the artifact.
+            foreach (var resRef in includes)
+            {
+                if (File.Exists(Path.Combine(_ncsDirectory, resRef + ".ncs")))
+                    stale.Add(new StaleScript(resRef, StaleReason.ObsoleteIncludeArtifact, null));
+            }
 
             foreach (var resRef in entryPoints)
             {

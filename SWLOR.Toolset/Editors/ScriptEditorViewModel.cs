@@ -39,6 +39,13 @@ namespace SWLOR.Toolset.Editors
         private string _text;
         private bool _closeApproved;
         private bool _closePromptOpen;
+
+        /// <summary>
+        /// True when the last compile-on-save failed after the source was already written. The
+        /// source is clean at that point, so this is what makes the next save (or close) retry the
+        /// compile instead of skipping straight past a stale .ncs.
+        /// </summary>
+        private bool _compileOnSaveFailed;
         private bool _isClosed;
         private int _line = 1;
         private int _column = 1;
@@ -629,7 +636,23 @@ namespace SWLOR.Toolset.Editors
         public async Task<bool> TrySaveAsync(bool compileOnSave)
         {
             if (!IsDirty)
+            {
+                // The source is already on disk, but a previously failed compile-on-save means the
+                // canonical .ncs is still stale; retry the compile rather than reporting success.
+                if (compileOnSave && _compileOnSaveFailed && CompileOnSave != null)
+                {
+                    if (!await CompileOnSave(_resRef).ConfigureAwait(true))
+                    {
+                        _log.AppendLine(
+                            $"Compiled output for {_session.FilePath} is still not updated.");
+                        return false;
+                    }
+
+                    _compileOnSaveFailed = false;
+                }
+
                 return true;
+            }
 
             try
             {
@@ -657,12 +680,17 @@ namespace SWLOR.Toolset.Editors
 
                 // NWN runs the .ncs, not the .nss. The save is not complete for build/pack purposes
                 // until the bytecode writer has finished.
-                if (compileOnSave && CompileOnSave != null &&
-                    !await CompileOnSave(_resRef).ConfigureAwait(true))
+                if (compileOnSave && CompileOnSave != null)
                 {
-                    _log.AppendLine(
-                        $"Saved {_session.FilePath}, but its compiled output was not updated.");
-                    return false;
+                    if (!await CompileOnSave(_resRef).ConfigureAwait(true))
+                    {
+                        _compileOnSaveFailed = true;
+                        _log.AppendLine(
+                            $"Saved {_session.FilePath}, but its compiled output was not updated.");
+                        return false;
+                    }
+
+                    _compileOnSaveFailed = false;
                 }
 
                 return true;
@@ -679,7 +707,7 @@ namespace SWLOR.Toolset.Editors
 
         public override bool OnClose()
         {
-            if (!_closeApproved && IsDirty)
+            if (!_closeApproved && (IsDirty || _compileOnSaveFailed))
             {
                 if (!_closePromptOpen)
                 {

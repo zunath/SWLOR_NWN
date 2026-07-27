@@ -122,6 +122,35 @@ namespace SWLOR.Toolset.Tests
             File.Exists(gitBackup).Should().BeFalse();
         }
 
+        [Test]
+        public void AnUnreadableManifestShieldsItsTransactionBackupsFromTheOrphanSweep()
+        {
+            var transactionId = Guid.NewGuid().ToString("N");
+            var areTarget = Path.Combine(_root, "are", "cantina.are.json");
+            var gitTarget = Path.Combine(_root, "git", "cantina.git.json");
+            var areBackup = areTarget + "." + transactionId + SaveService.BackupSuffix;
+            var gitBackup = gitTarget + "." + transactionId + SaveService.BackupSuffix;
+
+            // A replacement landed for the ARE but not the GIT: the generic orphan sweep would
+            // delete the ARE backup (target exists) while restoring the GIT backup, leaving the
+            // group at mixed generations - exactly what the manifest exists to prevent.
+            File.WriteAllText(areTarget, "{\"generation\":\"new\"}");
+            File.WriteAllText(areBackup, "{\"generation\":\"old-are\"}");
+            File.WriteAllText(gitBackup, "{\"generation\":\"old-git\"}");
+
+            var manifestPath = Path.Combine(
+                _root, "." + transactionId + SaveService.TransactionSuffix);
+            File.WriteAllText(manifestPath, "{ this is not json");
+
+            SaveService.RecoverInterruptedSaves(_root);
+
+            File.Exists(manifestPath).Should().BeTrue("unreadable manifests are evidence, not litter");
+            File.Exists(areBackup).Should().BeTrue("the transaction's backups must survive the sweep");
+            File.Exists(gitBackup).Should().BeTrue();
+            File.Exists(gitTarget).Should().BeFalse("no member may be restored piecemeal");
+            File.ReadAllText(areTarget).Should().Be("{\"generation\":\"new\"}");
+        }
+
         /// <summary>
         /// The staged file is transaction debris once the commit has failed. Left behind as
         /// "foo.nss.tmp", the packer's script copy - which took whatever was in the folder - shipped

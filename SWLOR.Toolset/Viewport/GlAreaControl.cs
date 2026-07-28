@@ -4089,6 +4089,15 @@ void main()
                         var txi = TxiInfo.Parse(System.Text.Encoding.ASCII.GetString(bytes));
                         if (txi.Blending == TxiBlendMode.PunchThrough)
                             return TextureAlphaPolicy.PunchThroughCutoff;
+
+                        // An envmaptexture declaration repurposes the alpha channel as a
+                        // reflectivity mask - alpha 0 means "fully mirrored", not "fully
+                        // transparent". w_metal_tex (every base-game metal weapon) carries 11% of
+                        // its texels under the punch-through cutoff this way; discarding them
+                        // punched striped holes across blades, guards and grips. Opaque is the
+                        // correct read until environment mapping is actually implemented.
+                        if (txi.EnvMapTexture != null)
+                            return 0f;
                     }
                 }
             }

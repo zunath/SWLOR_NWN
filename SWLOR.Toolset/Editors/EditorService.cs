@@ -990,7 +990,8 @@ namespace SWLOR.Toolset.Editors
                 ItemSourcesFor,
                 ItemCostTableMax(),
                 resolveModel: _previewRenderer != null
-                    ? item => _previewRenderer.BuildModel(ResourceType.Uti, item)
+                    ? (item, female) => _previewRenderer.BuildModel(
+                        ResourceType.Uti, item, armorPreviewFemale: female)
                     : null,
                 resourceIndex: _resourceIndex,
                 armorDyeSwatches: ArmorDyeSwatches(),

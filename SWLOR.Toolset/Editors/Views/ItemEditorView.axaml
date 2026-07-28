@@ -11,7 +11,7 @@
          Maximum are the property's real engine cap, so garbage or out-of-range input is impossible
          rather than refused after the fact. -->
     <DataTemplate DataType="items:ItemStatCellViewModel">
-      <Grid ColumnDefinitions="*,86" ColumnSpacing="8" Margin="0,2">
+      <Grid ColumnDefinitions="*,116" ColumnSpacing="8" Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
                    Foreground="{DynamicResource InkSecondaryBrush}"
                    TextTrimming="CharacterEllipsis" />
@@ -23,7 +23,7 @@
 
     <!-- One stored entry of a multi-subtype property: what it is, its value, and its removal. -->
     <DataTemplate DataType="items:ItemPropertyEntryViewModel">
-      <Grid ColumnDefinitions="*,86,24" ColumnSpacing="6" Margin="0,2">
+      <Grid ColumnDefinitions="*,116,24" ColumnSpacing="6" Margin="0,2">
         <TextBlock Text="{Binding SubtypeDisplay}" VerticalAlignment="Center"
                    Foreground="{DynamicResource InkSecondaryBrush}"
                    TextTrimming="CharacterEllipsis" />
@@ -139,7 +139,7 @@
          column collapses to nothing when SwatchBrush is null, so this same template serves a bare
          body-part cell (no swatch) and a Colors-panel dye cell (swatch first, per the mockup). -->
     <DataTemplate DataType="items:ItemFieldCellViewModel">
-      <Grid ColumnDefinitions="Auto,*,86" ColumnSpacing="8" Margin="0,2,16,2">
+      <Grid ColumnDefinitions="Auto,*,116" ColumnSpacing="8" Margin="0,2,16,2">
         <Border Grid.Column="0" Width="16" Height="16" CornerRadius="3" VerticalAlignment="Center"
                 Background="{Binding SwatchBrush}"
                 BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
@@ -266,12 +266,12 @@
           <ItemsControl ItemsSource="{Binding Cells}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <WrapPanel ItemWidth="260" />
+                <WrapPanel ItemWidth="290" />
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate DataType="items:ItemStatCellViewModel">
-                <Grid ColumnDefinitions="*,86" ColumnSpacing="8" Margin="0,2,16,2">
+                <Grid ColumnDefinitions="*,116" ColumnSpacing="8" Margin="0,2,16,2">
                   <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
                              Foreground="{DynamicResource InkSecondaryBrush}"
                              TextTrimming="CharacterEllipsis" />
@@ -297,11 +297,11 @@
     <Grid ColumnDefinitions="190,*">
       <Border Grid.Column="0" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0"
               Padding="10">
-        <Grid RowDefinitions="Auto,Auto,Auto">
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto">
           <!-- The inventory icon always shows. Underneath it, an orbitable 3D view of the item's
-               world model appears only when one resolves (weapons and other ModelType 0-2 base
-               items; armor's mannequin preview is future work) - HasModelPreview gates both this
-               box and the drag/orbit hint below. -->
+               world model appears when one resolves (weapons and other ModelType 0-2 base items,
+               and armor dressed on a mannequin) - HasModelPreview gates both this box and the
+               drag/orbit hint below. -->
           <Border Grid.Row="0" Height="110" Background="{DynamicResource PanelRaisedBrush}"
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
             <Image Source="{Binding PreviewImage}" Stretch="Uniform" Margin="10"
@@ -315,7 +315,13 @@
             <ContentControl Content="{Binding PreviewView}" />
           </Border>
 
-          <StackPanel Grid.Row="2" Margin="0,9,0,0" Spacing="3">
+          <!-- Armor is previewed worn; the mannequin's body is the one thing to choose. -->
+          <ToggleSwitch Grid.Row="2" Margin="0,6,0,0"
+                        OnContent="Female" OffContent="Male"
+                        IsChecked="{Binding PreviewFemale, Mode=TwoWay}"
+                        IsVisible="{Binding ShowsMannequinToggle}" />
+
+          <StackPanel Grid.Row="3" Margin="0,9,0,0" Spacing="3">
             <TextBlock Text="{Binding FamilyDisplay}" Classes="mono" FontSize="10.5"
                        TextWrapping="Wrap" />
             <TextBlock Text="{Binding TemplateResRef}" Classes="resref" FontSize="10.5" />

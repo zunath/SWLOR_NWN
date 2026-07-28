@@ -149,7 +149,8 @@ namespace SWLOR.Toolset.Domain.Render
             Func<string, JsonGffStruct?>? itemBlueprintLoader = null,
             Func<string, bool>? partModelExists = null,
             WaypointAppearanceService? waypoints = null,
-            Func<int, BaseItemIconRow?>? baseItems = null)
+            Func<int, BaseItemIconRow?>? baseItems = null,
+            bool armorPreviewFemale = false)
         {
             ArgumentNullException.ThrowIfNull(root);
 
@@ -159,7 +160,7 @@ namespace SWLOR.Toolset.Domain.Render
                 ResourceType.Utp => ResolvePlaceable(root, placeables),
                 ResourceType.Utd => ResolveDoor(root, doors),
                 ResourceType.Utw => ResolveWaypoint(root, waypoints),
-                ResourceType.Uti => ResolveItem(root, baseItems, partModelExists),
+                ResourceType.Uti => ResolveItem(root, baseItems, partModelExists, armorPreviewFemale),
                 _ => BlueprintModelReference.NoneWith("No model preview for this blueprint type.")
             };
         }
@@ -179,7 +180,8 @@ namespace SWLOR.Toolset.Domain.Render
         private static BlueprintModelReference ResolveItem(
             JsonGffStruct root,
             Func<int, BaseItemIconRow?>? baseItems,
-            Func<string, bool>? partModelExists)
+            Func<string, bool>? partModelExists,
+            bool armorPreviewFemale = false)
         {
             if (baseItems == null)
                 return BlueprintModelReference.NoneWith("Item preview unavailable (base item data not loaded).");
@@ -200,17 +202,21 @@ namespace SWLOR.Toolset.Domain.Render
                     var part1 = root.GetIntOrNull("ModelPart1") ?? 0;
                     var part2 = root.GetIntOrNull("ModelPart2") ?? 0;
                     var part3 = root.GetIntOrNull("ModelPart3") ?? 0;
+                    var parts = new[]
+                    {
+                        new BlueprintModelPart("bottom", $"{itemClass}_b_{part1:D3}"),
+                        new BlueprintModelPart("middle", $"{itemClass}_m_{part2:D3}"),
+                        new BlueprintModelPart("top", $"{itemClass}_t_{part3:D3}")
+                    };
+
+                    if (partModelExists != null && !parts.Any(part => partModelExists(part.ModelResRef)))
+                        return LootBagFallback(itemClass, partModelExists, "no composite part model resolves");
 
                     return new BlueprintModelReference
                     {
                         Kind = BlueprintModelKind.ItemComposite,
                         Status = $"{itemClass} (composite {part1}-{part2}-{part3})",
-                        Parts = new[]
-                        {
-                            new BlueprintModelPart("bottom", $"{itemClass}_b_{part1:D3}"),
-                            new BlueprintModelPart("middle", $"{itemClass}_m_{part2:D3}"),
-                            new BlueprintModelPart("top", $"{itemClass}_t_{part3:D3}")
-                        }
+                        Parts = parts
                     };
                 }
 
@@ -220,7 +226,7 @@ namespace SWLOR.Toolset.Domain.Render
                     var part1 = root.GetIntOrNull("ModelPart1") ?? 0;
                     var modelResRef = $"{itemClass}_{part1:D3}";
                     if (partModelExists != null && !partModelExists(modelResRef))
-                        return BlueprintModelReference.NoneWith($"{itemClass}: no ground model '{modelResRef}'.");
+                        return LootBagFallback(itemClass, partModelExists, $"no ground model '{modelResRef}'");
 
                     return new BlueprintModelReference
                     {
@@ -231,12 +237,87 @@ namespace SWLOR.Toolset.Domain.Render
                 }
 
                 case 3:
-                    return BlueprintModelReference.NoneWith($"{itemClass}: armor preview not yet available.");
+                    return ResolveArmorMannequin(root, itemClass, armorPreviewFemale, partModelExists);
 
                 default:
-                    return BlueprintModelReference.NoneWith(
-                        $"{itemClass}: unsupported model type {row.ModelType}.");
+                    return LootBagFallback(
+                        itemClass, partModelExists, $"unsupported model type {row.ModelType}");
             }
+        }
+
+        /// <summary>
+        /// The model NWN itself drops on the ground for an item with no ground model of its own:
+        /// the loot bag (baseitems.2da's near-universal DefaultModel). Every item therefore always
+        /// has SOMETHING to show in a 3D preview; only a session that cannot resolve even the bag
+        /// (no base-game data) degrades to no model at all.
+        /// </summary>
+        private static BlueprintModelReference LootBagFallback(
+            string itemClass, Func<string, bool>? partModelExists, string why)
+        {
+            const string BagModel = "it_bag";
+            if (partModelExists != null && !partModelExists(BagModel))
+                return BlueprintModelReference.NoneWith($"{itemClass}: {why}, and no loot bag model.");
+
+            return new BlueprintModelReference
+            {
+                Kind = BlueprintModelKind.Simple,
+                Status = $"{itemClass}: {why} - showing the loot bag.",
+                ModelResRef = BagModel
+            };
+        }
+
+        /// <summary>
+        /// Dresses a default human mannequin (<c>pmh0</c>/<c>pfh0</c>) with the armor blueprint's
+        /// own parts - the "worn" preview the item editor shows for a ModelType 3 base item. The
+        /// mannequin's naked baseline is part 1 for every body piece (head included) and none for
+        /// the shoulders; each ArmorPart_* the blueprint carries overrides its slot, the robe is
+        /// added when one is set, and the six dye channels come from the blueprint's color fields
+        /// through the same PLT layer mapping a dressed creature uses.
+        /// </summary>
+        private static BlueprintModelReference ResolveArmorMannequin(
+            JsonGffStruct root,
+            string itemClass,
+            bool female,
+            Func<string, bool>? partModelExists)
+        {
+            var prefix = female ? "pfh0" : "pmh0";
+            var parts = new List<BlueprintModelPart>();
+
+            var robeNumber = root.GetIntOrNull("ArmorPart_Robe") ?? 0;
+            if (robeNumber > 0)
+            {
+                var robeResRef = BuildPartName(prefix, "robe", robeNumber);
+                if (partModelExists?.Invoke(robeResRef) ?? true)
+                    parts.Add(new BlueprintModelPart("robe", robeResRef));
+            }
+
+            parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", 1)));
+
+            foreach (var (_, armorKey, partType) in BodyPartFields)
+            {
+                var armorValue = root.GetIntOrNull("ArmorPart_" + armorKey) ?? 0;
+
+                // Unlike a dressed creature (where a creature part of 0 means "this body has no
+                // such part"), the mannequin exists to SHOW the armor: an armor part always wins,
+                // and only the armor-less slots fall back to the bare body (shoulders have no
+                // bare-body piece at all).
+                var number = armorValue > 0
+                    ? armorValue
+                    : partType is "shol" or "shor" ? 0 : 1;
+                if (number > 0)
+                    parts.Add(new BlueprintModelPart(partType, BuildPartName(prefix, partType, number)));
+            }
+
+            return new BlueprintModelReference
+            {
+                Kind = BlueprintModelKind.Segmented,
+                Status = $"{itemClass} on a {(female ? "female" : "male")} mannequin ({prefix})",
+                SkeletonResRef = prefix,
+                Parts = parts,
+                // The item struct carries no Color_* creature fields, so skin/hair fall to palette
+                // row 0; the armor dye channels come from the blueprint itself.
+                LayerColorIndices = ResolveLayerColors(root, root)
+            };
         }
 
         private static BlueprintModelReference ResolveCreature(

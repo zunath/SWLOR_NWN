@@ -300,6 +300,8 @@ namespace SWLOR.Toolset.Shell.Panels
             if (_mutationLock != null)
                 _mutationLock.Changed += NotifyWriteAvailabilityChanged;
             _thumbnails = thumbnails;
+            if (_thumbnails != null)
+                _thumbnails.InvalidatedForResRef += OnThumbnailInvalidated;
             _prompts = prompts;
             _tilesets = tilesets;
             _resolveStrRef = tlk == null ? null : tlk.GetString;
@@ -1424,6 +1426,33 @@ namespace SWLOR.Toolset.Shell.Panels
                 tile.ResRef,
                 tile.Source == PaletteSource.Standard,
                 bitmap => tile.Preview = bitmap);
+        }
+
+        /// <summary>
+        /// Drops a visible tile's stale preview when its blueprint is saved - from its own editor tab,
+        /// or as a dependent of an edited item another creature equips - and asks for a fresh one right
+        /// away.
+        /// </summary>
+        /// <remarks>
+        /// Without this, appearance and icon edits stayed invisible until the category was closed and
+        /// reopened: <see cref="ThumbnailService.Invalidate"/> only clears its own memory/disk caches
+        /// and drops an in-flight render, and a tile that already had a delivered preview - or was
+        /// mid-render when the invalidation landed - had nothing telling it to ask again.
+        /// </remarks>
+        private void OnThumbnailInvalidated(ResourceType type, string resRef)
+        {
+            if (IsTileMode || type != SelectedType)
+                return;
+
+            foreach (var tile in Tiles)
+            {
+                if (tile.IsTile || !string.Equals(tile.ResRef, resRef, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                tile.Preview = null;
+                tile.PreviewRequested = false;
+                EnsurePreview(tile);
+            }
         }
 
         /// <summary>

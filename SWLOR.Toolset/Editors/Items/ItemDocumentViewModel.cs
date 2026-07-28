@@ -72,7 +72,7 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, bool>? textureExists = null,
             Func<string, IReadOnlyList<Domain.Workspace.ItemSourceEntry>>? sourceLookup = null,
             Func<int, int?>? costTableMax = null,
-            Func<JsonGffStruct, RenderModel?>? resolveModel = null,
+            Func<JsonGffStruct, bool, RenderModel?>? resolveModel = null,
             ResourceIndex? resourceIndex = null,
             ArmorDyeSwatchService? armorDyeSwatches = null,
             Func<string, string, IReadOnlyList<string>>? findReferences = null)

@@ -95,6 +95,10 @@ namespace SWLOR.Toolset.Editors.Behaviors
         public bool IsLocalizedText => Definition.Kind == BehaviorFieldKind.LocalizedText;
         public bool IsParagraph => Definition.Kind == BehaviorFieldKind.Paragraph;
         public bool IsNumber => Definition.Kind is BehaviorFieldKind.Integer or BehaviorFieldKind.Float;
+
+        /// <summary>A read-only number (Total Cost) is a fact to display, not a control - no spinner chrome.</summary>
+        public bool IsEditableNumber => IsNumber && !IsReadOnly;
+        public bool IsReadOnlyNumber => IsNumber && IsReadOnly;
         public bool IsFloat => Definition.Kind == BehaviorFieldKind.Float;
         public bool IsCheck => Definition.Kind == BehaviorFieldKind.Check;
         public bool IsChoice => Definition.Kind == BehaviorFieldKind.Choice;

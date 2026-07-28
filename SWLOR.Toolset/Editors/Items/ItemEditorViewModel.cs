@@ -28,7 +28,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly Func<int, BaseItemRow?>? _baseItemRows;
         private readonly Func<JsonGffStruct, IconImage?>? _renderIcon;
-        private readonly Func<JsonGffStruct, RenderModel?>? _resolveModel;
+        private readonly Func<JsonGffStruct, bool, RenderModel?>? _resolveModel;
         private ModelPreviewControl? _previewView;
         private bool _disposed;
 
@@ -69,6 +69,17 @@ namespace SWLOR.Toolset.Editors.Items
 
         /// <summary>Whether the orbitable 3D viewport has anything to show alongside the 2D icon.</summary>
         public bool HasModelPreview => PreviewScene != null;
+
+        /// <summary>
+        /// Which mannequin wears an armor blueprint in the 3D preview. Only armor is previewed on
+        /// a body, so only armor shows the toggle.
+        /// </summary>
+        [ObservableProperty]
+        private bool _previewFemale;
+
+        public bool ShowsMannequinToggle => Family == ItemFamily.Armor && _resolveModel != null;
+
+        partial void OnPreviewFemaleChanged(bool value) => UpdatePreview();
 
         public ResourceIndex? ResourceIndex { get; }
 
@@ -157,7 +168,7 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, IReadOnlyList<Domain.Workspace.ItemSourceEntry>>? sourceLookup = null,
             bool isDirty = false,
             Func<int, int?>? costTableMax = null,
-            Func<JsonGffStruct, RenderModel?>? resolveModel = null,
+            Func<JsonGffStruct, bool, RenderModel?>? resolveModel = null,
             ResourceIndex? resourceIndex = null,
             ArmorDyeSwatchService? armorDyeSwatches = null)
         {
@@ -418,6 +429,7 @@ namespace SWLOR.Toolset.Editors.Items
             OnPropertyChanged(nameof(ShowsVariablesTab));
             OnPropertyChanged(nameof(ShowsBehaviorTab));
             OnPropertyChanged(nameof(ShowsStatsTab));
+            OnPropertyChanged(nameof(ShowsMannequinToggle));
         }
 
         private void RebuildVariablesSection()
@@ -463,7 +475,7 @@ namespace SWLOR.Toolset.Editors.Items
             if (_disposed)
                 return;
 
-            var model = _resolveModel?.Invoke(_store.Item);
+            var model = _resolveModel?.Invoke(_store.Item, PreviewFemale);
             PreviewScene = model == null
                 ? null
                 : new AreaScene

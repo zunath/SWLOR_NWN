@@ -181,8 +181,15 @@ namespace SWLOR.Toolset.Tests
             File.Exists(gitBackup).Should().BeTrue("the only copy of the GIT generation must survive");
         }
 
+        /// <summary>
+        /// An unreadable manifest means recovery cannot know which files the interrupted transaction
+        /// touched, so it protects the backups from the orphan sweep - but a moved ARE/GIT/GIC target
+        /// whose only copy is one of those protected backups is still missing from its canonical path.
+        /// Recovery must refuse to report success here too, the same as the failed-restoration path,
+        /// or WorkspaceContext.Open continues past a group that is still incomplete.
+        /// </summary>
         [Test]
-        public void AnUnreadableManifestShieldsItsTransactionBackupsFromTheOrphanSweep()
+        public void AnUnreadableManifestShieldsItsTransactionBackupsAndReportsIncomplete()
         {
             var transactionId = Guid.NewGuid().ToString("N");
             var areTarget = Path.Combine(_root, "are", "cantina.are.json");
@@ -201,7 +208,9 @@ namespace SWLOR.Toolset.Tests
                 _root, "." + transactionId + SaveService.TransactionSuffix);
             File.WriteAllText(manifestPath, "{ this is not json");
 
-            SaveService.RecoverInterruptedSaves(_root);
+            Action act = () => SaveService.RecoverInterruptedSaves(_root);
+
+            act.Should().Throw<SaveRecoveryException>().Which.Message.Should().Contain(manifestPath);
 
             File.Exists(manifestPath).Should().BeTrue("unreadable manifests are evidence, not litter");
             File.Exists(areBackup).Should().BeTrue("the transaction's backups must survive the sweep");
@@ -210,11 +219,14 @@ namespace SWLOR.Toolset.Tests
             File.ReadAllText(areTarget).Should().Be("{\"generation\":\"new\"}");
         }
 
+        /// <summary>
+        /// "null" is valid JSON: deserialization returns null without throwing, which used to slip
+        /// past the unreadable-manifest protection into the generic orphan sweep and then report
+        /// success over a group that was never actually put back.
+        /// </summary>
         [Test]
-        public void AManifestThatDeserializesToNullShieldsItsTransactionBackupsToo()
+        public void AManifestThatDeserializesToNullShieldsItsTransactionBackupsAndReportsIncomplete()
         {
-            // "null" is valid JSON: deserialization returns null without throwing, which used to
-            // slip past the unreadable-manifest protection into the generic orphan sweep.
             var transactionId = Guid.NewGuid().ToString("N");
             var areTarget = Path.Combine(_root, "are", "cantina.are.json");
             var gitTarget = Path.Combine(_root, "git", "cantina.git.json");
@@ -229,7 +241,9 @@ namespace SWLOR.Toolset.Tests
                 _root, "." + transactionId + SaveService.TransactionSuffix);
             File.WriteAllText(manifestPath, "null");
 
-            SaveService.RecoverInterruptedSaves(_root);
+            Action act = () => SaveService.RecoverInterruptedSaves(_root);
+
+            act.Should().Throw<SaveRecoveryException>().Which.Message.Should().Contain(manifestPath);
 
             File.Exists(manifestPath).Should().BeTrue("an entry-less manifest is still evidence");
             File.Exists(areBackup).Should().BeTrue("the transaction's backups must survive the sweep");

@@ -113,6 +113,69 @@ namespace SWLOR.Toolset.Editors.Items
         }
 
         /// <summary>
+        /// Fills every field the document does not carry yet with the plain-body baseline - part 1
+        /// for the body pieces, 0 for shoulder/belt/robe (none) and the dye channels - as one
+        /// undoable edit, so a base-type swap to armor starts from a dressed body instead of a sea
+        /// of empty boxes. Fields the document already stores keep their values untouched.
+        /// </summary>
+        public void EnsureDefaults()
+        {
+            var missing = new List<(string Field, string? Twin, int Value, bool IsDye)>();
+
+            void Single(string field, string? twin, int value)
+            {
+                if (_store.GetInteger(BehaviorFieldStorage.Field, field) is null)
+                    missing.Add((field, twin, value, false));
+            }
+
+            Single(ItemAppearanceFieldNames.Neck, ItemAppearanceFieldNames.NeckTwin, 1);
+            Single(ItemAppearanceFieldNames.Torso, ItemAppearanceFieldNames.TorsoTwin, 1);
+            Single(ItemAppearanceFieldNames.Belt, ItemAppearanceFieldNames.BeltTwin, 0);
+            Single(ItemAppearanceFieldNames.Pelvis, ItemAppearanceFieldNames.PelvisTwin, 1);
+            Single(ItemAppearanceFieldNames.Robe, ItemAppearanceFieldNames.RobeTwin, 0);
+
+            foreach (var pair in ItemAppearanceFieldNames.Pairs)
+            {
+                // Shoulders default to "none" like belts and robes; every other limb piece has a
+                // plain part 1 model to stand in.
+                var value = pair.Label == "Shoulder" ? 0 : 1;
+                Single(pair.LeftField, pair.LeftTwinField, value);
+                Single(pair.RightField, pair.RightTwinField, value);
+            }
+
+            foreach (var dye in new[]
+                     {
+                         ItemAppearanceFieldNames.Cloth1Color, ItemAppearanceFieldNames.Cloth2Color,
+                         ItemAppearanceFieldNames.Leather1Color, ItemAppearanceFieldNames.Leather2Color,
+                         ItemAppearanceFieldNames.Metal1Color, ItemAppearanceFieldNames.Metal2Color
+                     })
+            {
+                if (_store.GetInteger(BehaviorFieldStorage.Field, dye) is null)
+                    missing.Add((dye, null, 0, true));
+            }
+
+            if (missing.Count == 0)
+                return;
+
+            var applied = _runEdit("Set armor defaults", () =>
+            {
+                foreach (var (field, twin, value, isDye) in missing)
+                {
+                    if (isDye)
+                        _store.SetInteger(BehaviorFieldStorage.Field, field, GffFieldType.Byte, value);
+                    else
+                        WriteArmorField(field, twin, value);
+                }
+            });
+
+            if (!applied)
+                return;
+
+            _appearanceChanged?.Invoke();
+            ReloadFromDocument();
+        }
+
+        /// <summary>
         /// Turning mirroring off just makes the right cells editable again - whatever they already
         /// stored stands. Turning it on is the mockup's "the mirror check writes the right side from
         /// the left": every pair's right field (and its "x" twin) is written from the left field's

@@ -306,6 +306,20 @@ namespace SWLOR.Toolset.Workspace
             try
             {
                 AddTopLevelDirectoryWatcher(directory);
+
+                // A directory that arrives already populated - moved or renamed into the module in one
+                // atomic operation - has files the new recursive watcher above was never told about: it
+                // only observes changes from here on, and Report cannot resolve a bare directory-created
+                // event as a resource. Reusing the debounced rescan machinery (originally added for a
+                // watcher-buffer overflow) is what brings the catalog, Explorer and Search into line with
+                // everything already inside it, without teaching this path to enumerate and refresh
+                // entries one by one.
+                if (!IsIgnoredTopLevelDirectory(directory) &&
+                    Directory.Exists(directory) &&
+                    Directory.EnumerateFileSystemEntries(directory).Any())
+                {
+                    ScheduleRescan();
+                }
             }
             catch (Exception ex)
             {

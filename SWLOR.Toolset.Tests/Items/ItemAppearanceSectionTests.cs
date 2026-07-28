@@ -71,6 +71,39 @@ namespace SWLOR.Toolset.Tests.Items
             }
 
             [Test]
+            public void EnsureSelectionFillsAFreshArmorWithThePlainBodyBaseline()
+            {
+                // The swap-to-armor case: a miscellaneous blueprint carries no ArmorPart_* fields
+                // at all, and without defaults every Appearance box arrives empty.
+                var store = OpenStore("ark_dragon_troph");
+                var section = Open(store, ArmorRow, new HashSet<string>());
+
+                section.EnsureSelection();
+
+                Assert.That(section.Armor!.Torso.Number, Is.EqualTo(1));
+                Assert.That(section.Armor.Neck.Number, Is.EqualTo(1));
+                Assert.That(section.Armor.Belt.Number, Is.EqualTo(0), "belt defaults to none");
+                Assert.That(section.Armor.Robe.Number, Is.EqualTo(0), "robe defaults to none");
+                Assert.That(section.Armor.LeftShoulder.Number, Is.EqualTo(0), "shoulders default to none");
+                Assert.That(section.Armor.LeftBicep.Number, Is.EqualTo(1));
+                Assert.That(section.Armor.RightFoot.Number, Is.EqualTo(1));
+                Assert.That(section.Armor.Cloth1.Number, Is.EqualTo(0));
+                Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ArmorPart_Torso"), Is.EqualTo(1));
+            }
+
+            [Test]
+            public void EnsureSelectionNeverOverwritesStoredArmorFields()
+            {
+                var store = OpenStore("adren_harness");
+                var section = Open(store, ArmorRow, new HashSet<string>());
+
+                section.EnsureSelection();
+
+                Assert.That(section.Armor!.Torso.Number, Is.EqualTo(156), "stored values stand");
+                Assert.That(section.Armor.Cloth1.Number, Is.EqualTo(23));
+            }
+
+            [Test]
             public void EditingLeftBicepWithMirrorOnWritesBothSidesAndBothXTwins()
             {
                 var store = OpenStore("adren_harness");

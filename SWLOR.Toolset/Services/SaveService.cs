@@ -115,12 +115,19 @@ namespace SWLOR.Toolset.Services
                 catch (Exception)
                 {
                     ProtectTransaction();
+                    // Protecting the backups is only half of what an untrustworthy manifest demands.
+                    // A moved ARE/GIT/GIC target whose only surviving copy is one of those protected
+                    // backups is still missing from its canonical path - without this, recovery
+                    // reported success and WorkspaceContext.Open continued past a group that is, in
+                    // fact, still incomplete.
+                    incompleteTransactions.Add($"{manifestPath} (manifest unreadable)");
                     continue;
                 }
 
                 if (manifest?.Entries.Count is not > 0)
                 {
                     ProtectTransaction();
+                    incompleteTransactions.Add($"{manifestPath} (manifest has no entries)");
                     continue;
                 }
 

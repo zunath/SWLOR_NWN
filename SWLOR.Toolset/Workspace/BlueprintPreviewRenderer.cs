@@ -182,7 +182,8 @@ namespace SWLOR.Toolset.Workspace
         public RenderModel? BuildModel(
             ResourceType type,
             Domain.Gff.JsonGffStruct root,
-            bool useIndexedBlueprint = false)
+            bool useIndexedBlueprint = false,
+            bool armorPreviewFemale = false)
         {
             ArgumentNullException.ThrowIfNull(root);
             if (!IsAvailable)
@@ -191,7 +192,8 @@ namespace SWLOR.Toolset.Workspace
             var reference = BlueprintModelResolver.Resolve(
                 type, root, _appearances, _placeables, _doors,
                 itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
-                PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull);
+                PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull,
+                armorPreviewFemale);
 
             return reference.Kind switch
             {

@@ -717,6 +717,14 @@ namespace SWLOR.Toolset.Shell
                     _progressTimer?.Stop();
                     _progressTimer = null;
 
+                    // A file-watcher rescan (OnFileWatcherRescanRequested) can replace
+                    // _workspaceContext.Catalog with a freshly reopened one while this startup build is
+                    // still running. Whichever of the two finishes last would otherwise publish over the
+                    // other; only the build for the catalog that is still current may touch Explorer,
+                    // Search, the palette or the status line.
+                    if (!ReferenceEquals(catalog, _workspaceContext.Catalog))
+                        return;
+
                     // ContinueWith runs on failure too. Announcing "Catalog ready" over a faulted build
                     // invites the builder to trust search and Explorer results that are missing whatever
                     // the fault skipped.
@@ -791,7 +799,16 @@ namespace SWLOR.Toolset.Shell
             {
                 Dispatcher.UIThread.Post(() =>
                 {
+                    // Reset first, and unconditionally: a future rescan must not stay blocked just
+                    // because this build turns out to be superseded below.
                     _isRescanningAfterWatcherOverflow = false;
+
+                    // Symmetric with the startup continuation above: if the module root was reopened
+                    // again after this rescan started, this build's catalog is no longer
+                    // _workspaceContext.Catalog, and publishing it would stomp whatever the newer build
+                    // already reported (or is about to).
+                    if (!ReferenceEquals(catalog, _workspaceContext.Catalog))
+                        return;
 
                     if (task.IsFaulted)
                     {

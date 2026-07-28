@@ -107,6 +107,19 @@ namespace SWLOR.Toolset.Workspace
             _workspaceContext.WorkspaceOpened += ResetForWorkspace;
         }
 
+        /// <summary>
+        /// Raised whenever a blueprint's cached preview is dropped, naming the resource that changed.
+        /// </summary>
+        /// <remarks>
+        /// The cache invalidation above only affects requests that have not happened yet: a
+        /// <see cref="Shell.Panels.PaletteTileViewModel"/> already showing the old picture keeps it,
+        /// because nothing told it the picture is stale. <see cref="Shell.Panels.PaletteViewModel"/>
+        /// subscribes to this so a currently visible tile drops its stale <c>Preview</c> and
+        /// <c>PreviewRequested</c> flag and asks again immediately, instead of the tile only refreshing
+        /// the next time its category is closed and reopened.
+        /// </remarks>
+        public event Action<ResourceType, string>? InvalidatedForResRef;
+
         /// <summary>Forgets a blueprint's cached preview, so the next request re-renders it.</summary>
         public void Invalidate(ResourceType type, string resRef)
         {
@@ -138,6 +151,11 @@ namespace SWLOR.Toolset.Workspace
             {
                 _cacheGate.ExitReadLock();
             }
+
+            // Fired for both the custom and the standard cache identity, and for every dependency this
+            // resref invalidated (a creature wearing an edited item) - the palette does not care which
+            // cache variant changed, only that this resref's picture is no longer trustworthy.
+            InvalidatedForResRef?.Invoke(type, resRef);
         }
 
         private void InvalidateCreaturesUsingItem(string itemResRef)

@@ -1,6 +1,7 @@
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.Formats.Plt;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
@@ -66,7 +67,22 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void SimpleBaseItem_YieldsNoneWhenTheGroundModelDoesNotExist()
+        public void SimpleBaseItem_FallsBackToTheLootBagWhenTheGroundModelIsMissing()
+        {
+            // NWN drops any item without a ground model of its own as the loot bag; so does the preview.
+            var row = new BaseItemIconRow(15, 0, "it_torch", "iit_torch");
+            var root = ItemRoot(15, part1: 250);
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Uti, root, null, null, null,
+                baseItems: _ => row, partModelExists: resRef => resRef == "it_bag");
+
+            result.Kind.Should().Be(BlueprintModelKind.Simple);
+            result.ModelResRef.Should().Be("it_bag");
+        }
+
+        [Test]
+        public void SimpleBaseItem_YieldsNoneOnlyWhenEvenTheLootBagIsMissing()
         {
             var row = new BaseItemIconRow(15, 0, "it_torch", "iit_torch");
             var root = ItemRoot(15, part1: 250);
@@ -76,6 +92,20 @@ namespace SWLOR.Toolset.Tests.Items
                 baseItems: _ => row, partModelExists: _ => false);
 
             result.Kind.Should().Be(BlueprintModelKind.None);
+        }
+
+        [Test]
+        public void CompositeBaseItem_FallsBackToTheLootBagWhenNoPartResolves()
+        {
+            var row = new BaseItemIconRow(512, 2, "WSwGlsbr", "iwswglsbr");
+            var root = ItemRoot(512, part1: 250, part2: 250, part3: 250);
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Uti, root, null, null, null,
+                baseItems: _ => row, partModelExists: resRef => resRef == "it_bag");
+
+            result.Kind.Should().Be(BlueprintModelKind.Simple);
+            result.ModelResRef.Should().Be("it_bag");
         }
 
         [Test]
@@ -94,20 +124,53 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void ArmorBaseItem_ModelType3_YieldsNone()
+        public void ArmorBaseItem_ModelType3_DressesAMaleMannequinWithTheArmorsParts()
         {
-            // Armor's mannequin preview is future work - no model resolves yet.
             var row = new BaseItemIconRow(16, 3, "AArCl", "gifp");
-            var root = ItemRoot(16);
+            var root = JsonGffDocument.Parse(Encoding.UTF8.GetBytes(
+                """
+                {
+                  "__data_type": "UTI ",
+                  "BaseItem": { "type": "int", "value": 16 },
+                  "ArmorPart_Torso": { "type": "byte", "value": 156 },
+                  "ArmorPart_LShoul": { "type": "byte", "value": 0 },
+                  "ArmorPart_RShoul": { "type": "byte", "value": 7 },
+                  "ArmorPart_Robe": { "type": "byte", "value": 12 },
+                  "Cloth1Color": { "type": "byte", "value": 23 }
+                }
+                """)).Root;
 
             var result = BlueprintModelResolver.Resolve(
                 ResourceType.Uti, root, null, null, null, baseItems: _ => row);
 
-            result.Kind.Should().Be(BlueprintModelKind.None);
+            result.Kind.Should().Be(BlueprintModelKind.Segmented);
+            result.SkeletonResRef.Should().Be("pmh0");
+            var parts = result.Parts.ToDictionary(p => p.PartType, p => p.ModelResRef);
+            parts["chest"].Should().Be("pmh0_chest156", "the armor part dresses the slot");
+            parts["bicepl"].Should().EndWith("001", "an armor-less slot falls back to the bare body");
+            parts.Should().NotContainKey("shol", "shoulder 0 means no piece and there is no bare-body shoulder");
+            parts["shor"].Should().Be("pmh0_shor007");
+            parts["robe"].Should().Be("pmh0_robe012");
+            parts["head"].Should().Be("pmh0_head001");
+            result.LayerColorIndices[PltLayers.Cloth1].Should().Be(23);
         }
 
         [Test]
-        public void UnrecognisedModelType_YieldsNoneWithoutThrowing()
+        public void ArmorBaseItem_FemaleFlagSwapsTheMannequinBody()
+        {
+            var row = new BaseItemIconRow(16, 3, "AArCl", "gifp");
+            var root = ItemRoot(16);
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Uti, root, null, null, null, baseItems: _ => row,
+                armorPreviewFemale: true);
+
+            result.Kind.Should().Be(BlueprintModelKind.Segmented);
+            result.SkeletonResRef.Should().Be("pfh0");
+        }
+
+        [Test]
+        public void UnrecognisedModelType_FallsBackToTheLootBagWithoutThrowing()
         {
             var row = new BaseItemIconRow(999, 7, "xx", null);
             var root = ItemRoot(999);
@@ -115,7 +178,8 @@ namespace SWLOR.Toolset.Tests.Items
             var result = BlueprintModelResolver.Resolve(
                 ResourceType.Uti, root, null, null, null, baseItems: _ => row);
 
-            result.Kind.Should().Be(BlueprintModelKind.None);
+            result.Kind.Should().Be(BlueprintModelKind.Simple);
+            result.ModelResRef.Should().Be("it_bag");
         }
 
         [Test]

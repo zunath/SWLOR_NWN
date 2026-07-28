@@ -134,6 +134,10 @@ namespace SWLOR.Toolset.Editors.Items
                     EnsureFirstSelected(Middle);
                     EnsureFirstSelected(Bottom);
                     break;
+
+                case ItemAppearanceKind.ArmorParts:
+                    Armor?.EnsureDefaults();
+                    break;
             }
         }
 

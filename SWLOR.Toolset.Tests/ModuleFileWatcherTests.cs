@@ -1,3 +1,6 @@
+using System.Reflection;
+using Avalonia.Headless.NUnit;
+using Avalonia.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Workspace;
@@ -139,6 +142,70 @@ namespace SWLOR.Toolset.Tests
             context.InvalidatePaletteChoices("doorpalcus");
 
             invalidated.Should().Be("doorpalcus");
+        }
+
+        /// <summary>
+        /// A populated resource directory moved or renamed into the module in one atomic operation
+        /// produces only a single directory-created event at the root watcher. Attaching a recursive
+        /// watcher to it (what the Created/Renamed handlers already did) observes only changes from
+        /// that point on; the files already inside are invisible to the catalog until something
+        /// enumerates them. This exercises the actual production path
+        /// (<c>TryAddTopLevelDirectoryWatcher</c>) rather than waiting on real
+        /// <see cref="FileSystemWatcher"/> event delivery, whose OS-level latency would make the test
+        /// flaky without testing anything this fix does not already cover.
+        /// </summary>
+        /// <remarks>
+        /// Asserts that the debounce timer ends up armed rather than waiting for
+        /// <see cref="ModuleFileWatcher.RescanRequested"/> to actually fire: the headless test platform
+        /// does not drive <see cref="DispatcherTimer"/> from wall-clock sleeps (confirmed separately -
+        /// a bare <see cref="DispatcherTimer"/> started in an <see cref="AvaloniaTestAttribute"/> test
+        /// and pumped with <see cref="Dispatcher.RunJobs"/> in a sleep loop never ticks here), so a real
+        /// one-second wait would only make this test slow without proving anything the armed-timer
+        /// check does not already prove.
+        /// </remarks>
+        [AvaloniaTest]
+        [NonParallelizable]
+        public void APopulatedDirectoryAttachedAfterWatchStartsArmsARescan()
+        {
+            var root = Path.Combine(Path.GetTempPath(), $"swlor_watch_{Guid.NewGuid():N}");
+            Directory.CreateDirectory(root);
+            var utc = Path.Combine(root, "utc");
+            var log = new OutputLogService();
+            using var watcher = new ModuleFileWatcher(log);
+
+            try
+            {
+                // "utc" does not exist yet when watching starts - it arrives afterwards, already
+                // holding a file, the way an atomic move/rename would deliver it.
+                watcher.Watch(root);
+                Directory.CreateDirectory(utc);
+                File.WriteAllText(Path.Combine(utc, "guard.utc.json"), "{}");
+
+                var method = typeof(ModuleFileWatcher).GetMethod(
+                    "TryAddTopLevelDirectoryWatcher", BindingFlags.Instance | BindingFlags.NonPublic);
+                method.Should().NotBeNull("the Created/Renamed handlers call this to attach the new directory's watcher");
+                method!.Invoke(watcher, new object[] { utc });
+
+                // ScheduleRescan defers its own timer setup through a Dispatcher.UIThread.Post; one pump
+                // is enough to run it.
+                Dispatcher.UIThread.RunJobs();
+
+                var timerField = typeof(ModuleFileWatcher).GetField(
+                    "_rescanDebounceTimer", BindingFlags.Instance | BindingFlags.NonPublic);
+                timerField.Should().NotBeNull();
+                var timer = timerField!.GetValue(watcher) as DispatcherTimer;
+
+                timer.Should().NotBeNull(
+                    "the new recursive watcher never enumerated the file already inside 'utc', so only a " +
+                    "full rescan brings the catalog into line with it - and that rescan is armed here");
+                timer!.IsEnabled.Should().BeTrue("the debounced rescan must be armed, not merely constructed");
+            }
+            finally
+            {
+                watcher.Stop();
+                if (Directory.Exists(root))
+                    Directory.Delete(root, recursive: true);
+            }
         }
     }
 }

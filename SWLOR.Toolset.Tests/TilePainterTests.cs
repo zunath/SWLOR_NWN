@@ -578,6 +578,51 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PaintTerrain_DropsACrosserBothTouchedCellsMustAbandonTogether()
+        {
+            // Regression: two ring cells share a Wall crosser, and no dirt-blend tile carries one -
+            // the only valid final blend drops the wall on BOTH sides. Filtering the first cell
+            // hard against the second cell's stale pre-paint edge refused this paint outright;
+            // edges between cells the paint re-solves are jointly mutable.
+            var tileset = new TilesetDefinition
+            {
+                Floor = "Grass",
+                Terrains = new[]
+                {
+                    new TerrainDefinition("Grass", null, null),
+                    new TerrainDefinition("Dirt", null, null)
+                },
+                Tiles = new[]
+                {
+                    Tile("Grass", "Grass", "Grass", "Grass"),               // 0 solid grass
+                    Tile("Dirt", "Dirt", "Dirt", "Dirt"),                   // 1 solid dirt
+                    Tile("Grass", "Grass", "Dirt", "Dirt"),                 // 2 half blend
+                    Tile("Dirt", "Grass", "Grass", "Grass"),                // 3 one-corner blend
+                    Tile("Grass", "Dirt", "Dirt", "Dirt"),                  // 4 three-corner blend
+                    Tile("Grass", "Grass", "Grass", "Grass", right: "Wall"),// 5 walled east edge
+                    Tile("Grass", "Grass", "Grass", "Grass", left: "Wall")  // 6 walled west edge
+                }
+            };
+
+            var cells = Filled(3, 3, SolidGrass);
+            cells[(0, 0)] = new TileCandidate(5, 0);
+            cells[(1, 0)] = new TileCandidate(6, 0);
+
+            var changes = TilePainter.PaintTerrain(tileset, 3, 3, Grid(cells, 3, 3), 1, 1, "Dirt");
+
+            changes.Should().NotBeEmpty(
+                "the paint is legal when both sides of the walled edge drop the crosser together");
+            Apply(cells, changes);
+
+            var west = cells[(0, 0)];
+            var east = cells[(1, 0)];
+            (TileAdjacency.WorldEdgeCrosser(tileset.Tiles[west.TileId], west.Orientation, TileEdge.East) ?? "")
+                .Should().BeEmpty("no blend tile can carry the wall, so it must be gone");
+            (TileAdjacency.WorldEdgeCrosser(tileset.Tiles[east.TileId], east.Orientation, TileEdge.West) ?? "")
+                .Should().BeEmpty("the far side must agree with the near side");
+        }
+
+        [Test]
         public void PaintTerrain_NeverLeavesAOneSidedCrosser()
         {
             // Regression: painting Water into a tcn01 cobble plaza produced boundaries where one tile

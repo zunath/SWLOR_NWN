@@ -148,6 +148,52 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 col < 0 || row < 0 || col >= width || row >= height)
                 return Array.Empty<TilePaintChange>();
 
+            // Every cell this paint may rewrite. Edges BETWEEN these cells are jointly mutable -
+            // both sides get re-solved this pass, so neither side's stale pre-paint crosser is a
+            // hard constraint on the other. Edges to cells outside the set stay hard, since those
+            // tiles will not change.
+            var touched = new HashSet<(int, int)> { (col, row) };
+            for (var dr = -1; dr <= 1; dr++)
+            for (var dc = -1; dc <= 1; dc++)
+            {
+                var nc = col + dc;
+                var nr = row + dr;
+                if ((dc != 0 || dr != 0) && nc >= 0 && nr >= 0 && nc < width && nr < height &&
+                    currentAt(nc, nr) is not null)
+                {
+                    touched.Add((nc, nr));
+                }
+            }
+
+            // First attempt: prefer keeping each stale crosser between touched cells, so a paint
+            // that CAN preserve a dock or doorway does (minimal diff). When that greedy preference
+            // steers a later cell into a dead end - the valid final blend needed both sides to drop
+            // or change the crosser together - retry with the preference off, letting the touched
+            // set settle on a mutually compatible (typically blank) crosser set. Only if both
+            // attempts fail is the paint genuinely impossible here.
+            var solved = TrySolvePaint(tileset, width, height, currentAt, col, row, terrain, tileRank,
+                             touched, preferStaleCrossers: true)
+                         ?? TrySolvePaint(tileset, width, height, currentAt, col, row, terrain, tileRank,
+                             touched, preferStaleCrossers: false);
+            return solved ?? (IReadOnlyList<TilePaintChange>)Array.Empty<TilePaintChange>();
+        }
+
+        /// <summary>
+        /// One greedy solve pass over the centre and its ring, or null when any cell has no legal
+        /// candidate. A null result rejects the entire pure paint operation: applying only the
+        /// centre (or a partially solved ring) would leave mismatched terrain at a shared vertex,
+        /// which is an invalid area even though every individual tile id is valid. The caller
+        /// applies the result as one transaction, so null is the atomic "cannot be painted here"
+        /// outcome (after the retry in <see cref="PaintTerrain(TilesetDefinition,int,int,Func{int,int,PlacedTileState?},int,int,string,Func{int,int}?)"/>).
+        /// </summary>
+        private static List<TilePaintChange>? TrySolvePaint(
+            TilesetDefinition tileset, int width, int height,
+            Func<int, int, PlacedTileState?> currentAt,
+            int col, int row, string terrain,
+            Func<int, int>? tileRank,
+            IReadOnlySet<(int, int)> touched,
+            bool preferStaleCrossers)
+        {
             // A working overlay so each neighbour re-solve sees the freshly painted centre (and any
             // neighbour already re-blended this pass) rather than the stale on-disk grid.
             var overlay = new Dictionary<(int, int), PlacedTileState>();
@@ -174,11 +220,11 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 .WithCorner(TileCorner.SouthEast, terrain);
             var centreCandidates = WithMatchingCrossers(
                 tileset, SetRuleMatcher.FindMatchingTiles(tileset, centreConstraint),
-                col, row, currentAt, overlay);
+                col, row, currentAt, overlay, touched, preferStaleCrossers);
             var centre = SelectCandidate(
                 tileset, centreCandidates, WorkingAt(col, row)?.Candidate, tileRank, preferBlankEdges: true);
             if (centre is not { } centreChoice)
-                return Array.Empty<TilePaintChange>(); // terrain not presentable as a full tile here
+                return null; // terrain not presentable as a full tile here
 
             Place(col, row, centreChoice);
 
@@ -201,18 +247,13 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 var candidates = WithMatchingCrossers(
                     tileset,
                     SetRuleMatcher.FindMatchingTiles(tileset, ConstraintFromVertices(tileset, nc, nr, currentAt, overlay)),
-                    nc, nr, currentAt, overlay);
+                    nc, nr, currentAt, overlay, touched, preferStaleCrossers);
                 var choice = SelectCandidate(
                     tileset, candidates, WorkingAt(nc, nr)?.Candidate, tileRank, preferBlankEdges: false);
                 if (choice is { } chosen)
                     Place(nc, nr, chosen);
                 else
-                    // Returning no changes rejects the entire pure paint operation. Applying only
-                    // the centre (or a partially solved ring) would leave mismatched terrain at a
-                    // shared vertex, which is an invalid area even though every individual tile id
-                    // is valid. The caller applies this result as one transaction, so an empty result
-                    // is the atomic "this terrain cannot be painted here" outcome.
-                    return Array.Empty<TilePaintChange>();
+                    return null;
             }
 
             return changes;
@@ -597,27 +638,37 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         /// matched, Doorway 93%). Being permissive here produced half a dock jutting into open water
         /// with nothing on the far side.
         ///
-        /// A cell with no legal candidate under this rule rejects the entire paint operation, so a
-        /// rare one-sided-crosser layout is never partially rewritten into an invalid boundary.
+        /// The rule is HARD for a neighbour already decided this pass (in the overlay) or outside
+        /// the touched set entirely - those tiles will not change, so their crossers are facts. A
+        /// neighbour in the touched set but not yet re-solved carries only its stale pre-paint
+        /// crosser, and filtering hard against it wrongly refused paints whose valid final blend
+        /// needed both touched cells to drop or change the crosser together; those edges instead
+        /// become a preference (kept when possible, never emptying the pool), and whichever side
+        /// solves first binds the other through the overlay.
         /// </summary>
         private static IReadOnlyList<TileCandidate> WithMatchingCrossers(
             TilesetDefinition tileset, IReadOnlyList<TileCandidate> candidates,
             int col, int row,
             Func<int, int, PlacedTileState?> currentAt,
-            IReadOnlyDictionary<(int, int), PlacedTileState> overlay)
+            IReadOnlyDictionary<(int, int), PlacedTileState> overlay,
+            IReadOnlySet<(int, int)>? touched = null,
+            bool preferStaleCrossers = true)
         {
-            string? Required(TileEdge edge, int dc, int dr)
+            (string? Crosser, bool IsHard) Required(TileEdge edge, int dc, int dr)
             {
                 var key = (col + dc, row + dr);
-                var neighbour = overlay.TryGetValue(key, out var fresh) ? fresh : currentAt(key.Item1, key.Item2);
+                var isFresh = overlay.TryGetValue(key, out var fresh);
+                var neighbour = isFresh ? fresh : currentAt(key.Item1, key.Item2);
                 if (neighbour is not { } tile || tile.TileId < 0 || tile.TileId >= tileset.Tiles.Count)
-                    return null; // nothing placed there yet - this edge is free
+                    return (null, true); // nothing placed there yet - this edge is free
 
-                return TileAdjacency.WorldEdgeCrosser(
+                var crosser = TileAdjacency.WorldEdgeCrosser(
                     tileset.Tiles[tile.TileId], tile.Orientation, TileAdjacency.OppositeEdge(edge)) ?? string.Empty;
+                var isHard = isFresh || touched == null || !touched.Contains(key);
+                return (crosser, isHard);
             }
 
-            var requirements = new (TileEdge Edge, string? Crosser)[]
+            var requirements = new (TileEdge Edge, (string? Crosser, bool IsHard) Requirement)[]
             {
                 (TileEdge.North, Required(TileEdge.North, 0, 1)),
                 (TileEdge.East, Required(TileEdge.East, 1, 0)),
@@ -625,12 +676,24 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 (TileEdge.West, Required(TileEdge.West, -1, 0))
             };
 
-            var kept = candidates.Where(candidate => requirements.All(r =>
-                r.Crosser == null ||
+            bool Matches(TileCandidate candidate, TileEdge edge, string crosser) =>
                 string.Equals(
-                    TileAdjacency.WorldEdgeCrosser(tileset.Tiles[candidate.TileId], candidate.Orientation, r.Edge) ?? string.Empty,
-                    r.Crosser,
-                    StringComparison.OrdinalIgnoreCase))).ToList();
+                    TileAdjacency.WorldEdgeCrosser(
+                        tileset.Tiles[candidate.TileId], candidate.Orientation, edge) ?? string.Empty,
+                    crosser,
+                    StringComparison.OrdinalIgnoreCase);
+
+            var kept = candidates.Where(candidate => requirements.All(r =>
+                r.Requirement.Crosser == null ||
+                !r.Requirement.IsHard ||
+                Matches(candidate, r.Edge, r.Requirement.Crosser))).ToList();
+
+            if (preferStaleCrossers && requirements.Any(r => r.Requirement is { Crosser: not null, IsHard: false }))
+            {
+                return Narrow(kept, candidate => requirements.All(r =>
+                    r.Requirement.Crosser == null ||
+                    Matches(candidate, r.Edge, r.Requirement.Crosser))).ToList();
+            }
 
             return kept;
         }

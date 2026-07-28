@@ -25,7 +25,15 @@ namespace SWLOR.Toolset.Domain.Script
         /// while its mtime was preserved, or a coarse filesystem clock let the writes land in the
         /// same timestamp bucket.
         /// </summary>
-        SourceReplaced
+        SourceReplaced,
+
+        /// <summary>
+        /// The .nss this artifact was compiled from was deleted, yet the .ncs remains - orphaned
+        /// bytecode the packer would ship verbatim, keeping removed script behavior alive in
+        /// production. Only detectable through the fingerprint store: an artifact never
+        /// fingerprinted never had a source here and is an intentional compiled-only script.
+        /// </summary>
+        SourceDeleted
     }
 
     /// <summary>One compiled script that would ship stale.</summary>
@@ -42,6 +50,8 @@ namespace SWLOR.Toolset.Domain.Script
                 $"{ResRef}.ncs is obsolete - {ResRef}.nss is an include with no entry point",
             StaleReason.SourceReplaced =>
                 $"{ResRef}.nss or one of its includes changed without a modification time moving past {ResRef}.ncs's",
+            StaleReason.SourceDeleted =>
+                $"{ResRef}.ncs is orphaned - its source {ResRef}.nss was deleted",
             _ => $"{ResRef}.ncs is older than included {TriggerResRef}.nss"
         };
     }
@@ -182,8 +192,58 @@ namespace SWLOR.Toolset.Domain.Script
                 }
             }
 
+            // The deleted-source dimension: an artifact whose .nss disappeared has no timestamp
+            // left to compare, so only the fingerprint store's memory of "this WAS a sourced
+            // entry point here" can flag it. Entries whose artifact is also gone are dropped -
+            // there is nothing left to guard.
+            foreach (var resRef in fingerprints.TrackedResRefs.ToList())
+            {
+                if (sourceTimes.ContainsKey(resRef))
+                    continue;
+
+                if (File.Exists(Path.Combine(_ncsDirectory, resRef + ".ncs")))
+                    stale.Add(new StaleScript(resRef, StaleReason.SourceDeleted, null));
+                else
+                    fingerprints.Forget(resRef);
+            }
+
             fingerprints.SaveIfDirty();
             return stale;
+        }
+
+        /// <summary>
+        /// Deletes every orphaned artifact the fingerprint store knows about - a .ncs whose .nss
+        /// was deleted after being scanned as a sourced entry point - and forgets the entries.
+        /// Build All runs this so a <see cref="StaleReason.SourceDeleted"/> finding is actually
+        /// resolvable in-tool: Build All's compile loop iterates existing sources and could never
+        /// touch an artifact whose source is gone. Compiled-only artifacts that never had a source
+        /// here were never fingerprinted and are untouched.
+        /// </summary>
+        /// <returns>The resrefs whose artifacts were removed.</returns>
+        public IReadOnlyList<string> PurgeOrphanedArtifacts()
+        {
+            var purged = new List<string>();
+            if (!Directory.Exists(_ncsDirectory))
+                return purged;
+
+            var fingerprints = ScriptFingerprintStore.Load(_ncsDirectory);
+            foreach (var resRef in fingerprints.TrackedResRefs.ToList())
+            {
+                if (File.Exists(Path.Combine(_nssDirectory, resRef + ".nss")))
+                    continue;
+
+                var artifact = Path.Combine(_ncsDirectory, resRef + ".ncs");
+                if (File.Exists(artifact))
+                {
+                    File.Delete(artifact);
+                    purged.Add(resRef);
+                }
+
+                fingerprints.Forget(resRef);
+            }
+
+            fingerprints.SaveIfDirty();
+            return purged;
         }
 
         /// <summary>

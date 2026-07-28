@@ -119,6 +119,38 @@ namespace SWLOR.Toolset.Domain.Render
         public IReadOnlyList<RenderAnimation> Animations { get; init; } = Array.Empty<RenderAnimation>();
         public IReadOnlyList<RenderEmitter> Emitters { get; init; } = Array.Empty<RenderEmitter>();
         public string? DefaultAnimationName { get; init; }
+
+        /// <summary>
+        /// The model's world-space bounding box at rest, or null when it has no drawable vertices.
+        /// Uses each mesh's settled <see cref="RenderMesh.Transform"/> (the last idle frame), which
+        /// is what the viewport draws when nothing is animating.
+        /// </summary>
+        public (Vector3 Minimum, Vector3 Maximum)? ComputeBounds()
+        {
+            var minimum = new Vector3(float.MaxValue);
+            var maximum = new Vector3(float.MinValue);
+            var found = false;
+
+            foreach (var mesh in Meshes)
+            {
+                for (var vertex = 0; vertex < mesh.VertexCount; vertex++)
+                {
+                    var local = new Vector3(
+                        mesh.Positions[vertex * 3],
+                        mesh.Positions[vertex * 3 + 1],
+                        mesh.Positions[vertex * 3 + 2]);
+                    var world = Vector3.Transform(local, mesh.Transform);
+                    if (!float.IsFinite(world.X) || !float.IsFinite(world.Y) || !float.IsFinite(world.Z))
+                        continue;
+
+                    minimum = Vector3.Min(minimum, world);
+                    maximum = Vector3.Max(maximum, world);
+                    found = true;
+                }
+            }
+
+            return found ? (minimum, maximum) : null;
+        }
     }
 
     /// <summary>

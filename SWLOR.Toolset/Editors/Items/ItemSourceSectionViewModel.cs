@@ -40,13 +40,27 @@ namespace SWLOR.Toolset.Editors.Items
         /// </summary>
         public IReadOnlyList<string> EmptyKinds { get; private set; } = Array.Empty<string>();
 
-        public ItemSourceSectionViewModel(string resRef, Func<string, IReadOnlyList<ItemSourceEntry>>? lookup)
+        /// <summary>
+        /// Null when the caller has no notion of readiness (tests, and any lookup that answers
+        /// immediately); otherwise false while the workspace's index is still being built in the
+        /// background, so "not found yet" is never shown as "no player source grants this item".
+        /// </summary>
+        private readonly Func<bool>? _isReady;
+
+        public ItemSourceSectionViewModel(
+            string resRef,
+            Func<string, IReadOnlyList<ItemSourceEntry>>? lookup,
+            Func<bool>? isReady = null)
         {
             _resRef = resRef ?? throw new ArgumentNullException(nameof(resRef));
             _lookup = lookup;
+            _isReady = isReady;
 
             Refresh(resRef);
         }
+
+        /// <summary>False while the index is still building - the tab shows progress, not a verdict.</summary>
+        public bool IsReady => _isReady?.Invoke() ?? true;
 
         /// <summary>Re-runs the lookup for (possibly) a new resref and rebuilds every derived property.</summary>
         public void Refresh(string resRef)
@@ -63,6 +77,15 @@ namespace SWLOR.Toolset.Editors.Items
             }
 
             var entries = _lookup(_resRef) ?? Array.Empty<ItemSourceEntry>();
+
+            if (!IsReady)
+            {
+                IsObtainable = false;
+                Verdict = "Looking for the places this item can be obtained...";
+                Groups = Array.Empty<ItemSourceGroupViewModel>();
+                EmptyKinds = Array.Empty<string>();
+                return;
+            }
 
             var groups = new List<ItemSourceGroupViewModel>();
             var emptyKinds = new List<string>();

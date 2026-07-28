@@ -209,7 +209,20 @@ namespace SWLOR.Toolset.Editors.Behaviors
         private string _text = string.Empty;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(NumberDisplay))]
         private decimal _number;
+
+        /// <summary>
+        /// How a numeric row renders and steps. An integral GFF field is a whole number - showing
+        /// (and stepping) it as "2.0" invites a fractional edit the store cannot hold; only a real
+        /// Float field gets a decimal point.
+        /// </summary>
+        public string NumberFormat => IsFloat ? "0.###" : "0";
+
+        public decimal NumberIncrement => IsFloat ? 0.1m : 1m;
+
+        /// <summary>The read-only rendering of a number (Total Cost), formatted like its editable twin.</summary>
+        public string NumberDisplay => Number.ToString(NumberFormat, System.Globalization.CultureInfo.CurrentCulture);
 
         [ObservableProperty]
         private bool _isChecked;

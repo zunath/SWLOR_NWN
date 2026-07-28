@@ -24,6 +24,36 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ComputeModelFraming_CentresOnTheModelAndScalesWithIt()
+        {
+            var (target, distance) = AreaCameraMath.ComputeModelFraming(
+                new Vector3(-0.05f, -0.2f, 0f), new Vector3(0.05f, 0.9f, 0.1f),
+                verticalFovRadians: MathF.PI / 4f, aspectRatio: 1f);
+
+            target.Should().Be(new Vector3(0f, 0.35f, 0.05f), "the camera looks at the model's own centre");
+
+            // A sword is roughly a metre of geometry, so the camera belongs about a metre away -
+            // not the ~18m a one-tile area footprint used to produce.
+            distance.Should().BeLessThan(3f);
+
+            var (_, bigger) = AreaCameraMath.ComputeModelFraming(
+                new Vector3(-1f, -1f, 0f), new Vector3(1f, 1f, 2f),
+                verticalFovRadians: MathF.PI / 4f, aspectRatio: 1f);
+            bigger.Should().BeGreaterThan(distance, "a mannequin needs more room than a sword");
+        }
+
+        [Test]
+        public void ComputeModelFraming_NarrowViewportPullsBackSoNothingIsClipped()
+        {
+            var (_, square) = AreaCameraMath.ComputeModelFraming(
+                new Vector3(-1f), new Vector3(1f), MathF.PI / 4f, aspectRatio: 1f);
+            var (_, narrow) = AreaCameraMath.ComputeModelFraming(
+                new Vector3(-1f), new Vector3(1f), MathF.PI / 4f, aspectRatio: 0.4f);
+
+            narrow.Should().BeGreaterThan(square, "the horizontal axis is the tight one when the box is narrow");
+        }
+
+        [Test]
         public void ComputeInitialFraming_LargerArea_ProducesLargerDistance()
         {
             var (_, smallDistance) = AreaCameraMath.ComputeInitialFraming(4, 4, 10f, MathF.PI / 4f, 1f);

@@ -222,6 +222,28 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public async Task ARenameTargetAppearingMidSaveFailsInsteadOfBeingOverwritten()
+        {
+            // The destination was free when TryResolveRenameTarget checked, but another process
+            // creates it during the reference scan - the exact window the no-overwrite install
+            // exists for. The scan callback is that window, so the race is deterministic here.
+            var document = new ItemDocumentViewModel(
+                Scratch("adren_harness"), "adren_harness", null, new OutputLogService(), new StubPrompts(),
+                findReferences: (_, _) =>
+                {
+                    File.WriteAllText(Scratch("adren_mk6"), "someone else's blueprint");
+                    return Array.Empty<string>();
+                });
+            SetResRef(document, "adren_mk6");
+
+            Assert.That(await document.TrySaveAsync(), Is.False);
+            Assert.That(File.ReadAllText(Scratch("adren_mk6")), Is.EqualTo("someone else's blueprint"),
+                "the freshly appeared file must survive untouched");
+            Assert.That(File.Exists(Scratch("adren_harness")), Is.True, "the original is not deleted");
+            Assert.That(document.ResRef, Is.EqualTo("adren_harness"));
+        }
+
+        [Test]
         public async Task AFailedDeleteOfTheOriginalRollsTheRenameBack()
         {
             var document = OpenScratch("adren_harness");

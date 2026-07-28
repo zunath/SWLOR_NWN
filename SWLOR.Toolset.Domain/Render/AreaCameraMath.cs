@@ -106,6 +106,43 @@ namespace SWLOR.Toolset.Domain.Render
             return (target, MathF.Max(distance, MinDistance));
         }
 
+        /// <summary>
+        /// Initial framing for a single-model preview: the target is the model's own bounding-box
+        /// centre and the distance is the one that fits its bounding sphere, so a 0.3m sword and a
+        /// 2m mannequin both fill the box.
+        /// </summary>
+        /// <remarks>
+        /// Deliberately NOT the area framing above: that one frames a tile grid, so a one-tile
+        /// preview scene held the camera 10m back regardless of what it contained and every item
+        /// rendered as a speck in the middle of the viewport.
+        /// </remarks>
+        public static (Vector3 Target, float Distance) ComputeModelFraming(
+            Vector3 minimum,
+            Vector3 maximum,
+            float verticalFovRadians,
+            float aspectRatio)
+        {
+            var target = (minimum + maximum) / 2f;
+            var extent = maximum - minimum;
+            var radius = MathF.Max(extent.Length() / 2f, 0.001f);
+
+            var halfFovTanVertical = MathF.Tan(verticalFovRadians / 2f);
+            var halfFovTanHorizontal = halfFovTanVertical * MathF.Max(aspectRatio, 0.001f);
+            var tightest = MathF.Min(halfFovTanVertical, halfFovTanHorizontal);
+
+            // The bounding sphere is orientation-independent, so this framing holds however the
+            // model is orbited - no clipping when a long blade swings toward the camera.
+            var distance = radius / MathF.Max(tightest, 0.001f) * ModelFramingSlack;
+            return (target, MathF.Max(distance, MinDistance));
+        }
+
+        /// <summary>
+        /// Breathing room around a previewed model, as a multiple of its fitted distance. Tighter
+        /// than <see cref="FramingSlack"/>: an area needs its edges clear of the frustum, while a
+        /// single model wants to fill the small preview box.
+        /// </summary>
+        private const float ModelFramingSlack = 1.1f;
+
         /// <summary>Clamps an orbit elevation angle to the allowed range (never flat, never straight overhead).</summary>
         public static float ClampElevation(float elevationRadians) =>
             Math.Clamp(elevationRadians, MinElevationRadians, MaxElevationRadians);

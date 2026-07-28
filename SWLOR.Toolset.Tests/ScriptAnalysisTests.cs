@@ -383,6 +383,49 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void DeletedSourceWithSurvivingArtifact_IsStaleOnceFingerprinted()
+        {
+            var old = DateTime.UtcNow.AddHours(-2);
+            Source("a", "void main() {}", old);
+            Compiled("a", DateTime.UtcNow);
+
+            // First sight records the fingerprint - the memory that "a" WAS a sourced entry point.
+            Scan().Should().BeEmpty();
+
+            // The source is deleted but the bytecode remains; without the fingerprint no timestamp
+            // could flag this, and the packer would ship removed behavior verbatim.
+            File.Delete(Path.Combine(_nss, "a.nss"));
+
+            var finding = Scan().Should().ContainSingle().Which;
+            finding.Reason.Should().Be(StaleReason.SourceDeleted);
+            finding.ResRef.Should().Be("a");
+        }
+
+        [Test]
+        public void ACompiledOnlyArtifactThatNeverHadASourceIsNotReported()
+        {
+            Compiled("vendored_only", DateTime.UtcNow);
+
+            Scan().Should().BeEmpty(
+                "an artifact never fingerprinted never had a source here - intentional compiled-only content");
+        }
+
+        [Test]
+        public void PurgeOrphanedArtifacts_RemovesTheOrphanAndForgetsIt()
+        {
+            var old = DateTime.UtcNow.AddHours(-2);
+            Source("a", "void main() {}", old);
+            Compiled("a", DateTime.UtcNow);
+            Scan();
+
+            File.Delete(Path.Combine(_nss, "a.nss"));
+
+            new ScriptStalenessScanner(_nss, _ncs).PurgeOrphanedArtifacts().Should().Equal("a");
+            File.Exists(Path.Combine(_ncs, "a.ncs")).Should().BeFalse();
+            Scan().Should().BeEmpty("the orphan is gone and its fingerprint forgotten");
+        }
+
+        [Test]
         public void FreshCheckoutWithNoCache_DoesNotReportUntouchedScriptsStale()
         {
             // No prior Scan() has run in this test, so ScriptFingerprintStore has nothing persisted -

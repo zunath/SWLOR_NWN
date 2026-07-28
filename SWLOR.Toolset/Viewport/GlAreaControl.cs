@@ -1001,8 +1001,18 @@ void main()
                 ? (float)_viewportWidth / _viewportHeight
                 : 1.5f;
 
-            var (target, distance) = AreaCameraMath.ComputeInitialFraming(
-                scene.Width, scene.Height, AreaSceneBuilder.TileSize, VerticalFovRadians, aspect);
+            // A single-model preview scene (one instance carrying geometry, no tiles) frames the
+            // MODEL, not the grid it nominally sits on - otherwise the camera sits back far enough
+            // to hold a whole 10m tile and an item renders as a speck.
+            var previewModel = scene.Tiles.Count == 0 && scene.Instances.Count == 1
+                ? scene.Instances[0].Model
+                : null;
+
+            var (target, distance) = previewModel?.ComputeBounds() is { } bounds
+                ? AreaCameraMath.ComputeModelFraming(
+                    bounds.Minimum, bounds.Maximum, VerticalFovRadians, aspect)
+                : AreaCameraMath.ComputeInitialFraming(
+                    scene.Width, scene.Height, AreaSceneBuilder.TileSize, VerticalFovRadians, aspect);
 
             _target = target;
             _distance = distance;

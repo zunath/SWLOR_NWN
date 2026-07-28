@@ -101,6 +101,9 @@ namespace SWLOR.Toolset.Editors
         private BaseItemIconService? _baseItemIconService;
         private Domain.Editors.Items.ItemCostTableRanges? _itemCostTableRanges;
         private ItemObtainabilityIndex? _itemSources;
+
+        /// <summary>The in-flight background index build, so concurrent callers share one scan.</summary>
+        private Task? _itemSourcesBuild;
         private Items.ArmorDyeSwatchService? _armorDyeSwatches;
         private readonly Dictionary<string, Sounds.SoundDocumentViewModel> _openSoundEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<string>? _soundResources;
@@ -240,15 +243,22 @@ namespace SWLOR.Toolset.Editors
                 _doorAppearances = null;
                 _itemSources = null;
                 _behaviorValues?.InvalidateModuleSources();
+
+                // Pay the obtainability scan's cost here, in the background, rather than on
+                // whichever item editor happens to open first.
+                _ = WarmItemSourcesAsync();
             };
-            _workspaceContext.CatalogEntryRefreshed += (type, _) =>
+            _workspaceContext.CatalogEntryRefreshed += (type, refreshedResRef) =>
             {
                 _behaviorValues?.InvalidateModuleSources();
 
                 // A saved store, item, creature, or placeable can change where items are
                 // obtainable; the index is cheap to rebuild, so it is dropped rather than patched.
                 if (type is ResourceType.Utm or ResourceType.Uti or ResourceType.Utc or ResourceType.Utp)
+                {
                     _itemSources = null;
+                    _ = WarmItemSourcesAsync();
+                }
             };
             _workspaceContext.PaletteChoicesInvalidated += InvalidatePaletteChoices;
         }
@@ -988,6 +998,7 @@ namespace SWLOR.Toolset.Editors
                 BaseItemIcons(),
                 _resourceIndex == null ? null : ItemTextureExists,
                 ItemSourcesFor,
+                AreItemSourcesReady,
                 ItemCostTableMax(),
                 resolveModel: _previewRenderer != null
                     ? (item, female) => _previewRenderer.BuildModel(
@@ -1074,33 +1085,69 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Where a player can obtain an item, from the workspace index — built on the first Source
-        /// lookup and dropped whenever a store or item saves.
+        /// Where a player can obtain an item, from the workspace index. Never builds the index on
+        /// the calling thread: an unbuilt index answers "not ready yet" and the background build
+        /// (see <see cref="WarmItemSourcesAsync"/>) refreshes every open item editor when it
+        /// lands. Building here is what made the first item editor open sit for seconds - the scan
+        /// reads every .cs under SWLOR.Game.Server plus every store, creature and container.
         /// </summary>
         private IReadOnlyList<ItemSourceEntry> ItemSourcesFor(string resRef)
         {
+            if (_itemSources != null)
+                return _itemSources.SourcesFor(resRef);
+
+            // A module opened before this service existed (or an editor opened during the build)
+            // still gets an index - the warm is idempotent and returns the running one.
+            _ = WarmItemSourcesAsync();
+            return Array.Empty<ItemSourceEntry>();
+        }
+
+        /// <summary>Whether the obtainability index has finished building, for the Source tab's verdict.</summary>
+        private bool AreItemSourcesReady() => _itemSources != null;
+
+        /// <summary>
+        /// Builds the obtainability index off the UI thread, once per workspace. Started when a
+        /// module opens so the cost is paid during startup rather than on the first item editor,
+        /// and awaited by nothing - open editors refresh from the completion instead.
+        /// </summary>
+        public Task WarmItemSourcesAsync()
+        {
             var workspace = _workspaceContext.Workspace;
-            if (workspace == null)
-                return Array.Empty<ItemSourceEntry>();
+            if (workspace == null || _itemSources != null)
+                return Task.CompletedTask;
 
-            if (_itemSources == null)
+            return _itemSourcesBuild ??= BuildItemSourcesAsync(workspace);
+        }
+
+        private async Task BuildItemSourcesAsync(Domain.Workspace.ModuleWorkspace workspace)
+        {
+            try
             {
-                try
-                {
-                    var repoRoot = Path.GetDirectoryName(Path.GetFullPath(workspace.ModuleRoot));
-                    var gameSourceRoot = repoRoot == null
-                        ? null
-                        : Path.Combine(repoRoot, "SWLOR.Game.Server");
-                    _itemSources = ItemObtainabilityIndex.Build(workspace, gameSourceRoot);
-                }
-                catch (Exception ex)
-                {
-                    _log.AppendLine($"Could not build the item source index: {ex.Message}");
-                    return Array.Empty<ItemSourceEntry>();
-                }
-            }
+                var repoRoot = Path.GetDirectoryName(Path.GetFullPath(workspace.ModuleRoot));
+                var gameSourceRoot = repoRoot == null
+                    ? null
+                    : Path.Combine(repoRoot, "SWLOR.Game.Server");
 
-            return _itemSources.SourcesFor(resRef);
+                var index = await Task.Run(
+                    () => ItemObtainabilityIndex.Build(workspace, gameSourceRoot)).ConfigureAwait(true);
+
+                // Dropped mid-build by a save or a workspace change: that invalidation wins, and the
+                // next lookup starts a fresh build rather than publishing a stale scan.
+                if (!ReferenceEquals(_workspaceContext.Workspace, workspace))
+                    return;
+
+                _itemSources = index;
+                foreach (var editor in _openItemEditors.Values.ToList())
+                    editor.Editor.RefreshSource();
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not build the item source index: {ex.Message}");
+            }
+            finally
+            {
+                _itemSourcesBuild = null;
+            }
         }
 
         /// <summary>

@@ -400,6 +400,17 @@ namespace SWLOR.Toolset.Services
                     failed++;
             }
 
+            // The loop above iterates existing sources, so it can never touch an artifact whose
+            // source was DELETED - the scanner flags those (SourceDeleted), and this is what
+            // resolves them.
+            foreach (var resRef in new ScriptStalenessScanner(
+                         Path.Combine(workspace.ModuleRoot, "nss"),
+                         Path.Combine(workspace.ModuleRoot, "ncs")).PurgeOrphanedArtifacts())
+            {
+                _log.AppendLine($"Removed orphaned compiled output ncs/{resRef}.ncs (source deleted).");
+                purged++;
+            }
+
             _log.AppendLine(purged == 0
                 ? $"Build All Scripts: {compiled} compiled, {failed} failed."
                 : $"Build All Scripts: {compiled} compiled, {failed} failed, {purged} obsolete include artifact(s) removed.");

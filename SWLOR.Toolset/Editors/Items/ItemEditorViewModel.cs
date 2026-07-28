@@ -166,6 +166,7 @@ namespace SWLOR.Toolset.Editors.Items
             Func<int, BaseItemIconRow?>? baseItemIcons = null,
             Func<string, bool>? textureExists = null,
             Func<string, IReadOnlyList<Domain.Workspace.ItemSourceEntry>>? sourceLookup = null,
+            Func<bool>? itemSourcesReady = null,
             bool isDirty = false,
             Func<int, int?>? costTableMax = null,
             Func<JsonGffStruct, bool, RenderModel?>? resolveModel = null,
@@ -199,7 +200,7 @@ namespace SWLOR.Toolset.Editors.Items
                 Appearance = new ItemAppearanceSectionViewModel(
                     _store, RunEdit, baseItemIcons, textureExists, choicePreviews, UpdatePreview, armorDyeSwatches);
             }
-            Source = new ItemSourceSectionViewModel(headerOwner, sourceLookup);
+            Source = new ItemSourceSectionViewModel(headerOwner, sourceLookup, itemSourcesReady);
             _lastAppearanceBaseItem = CurrentBaseItem();
             RebuildVariablesSection();
             RefreshCompleteness();

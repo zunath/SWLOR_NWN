@@ -71,6 +71,7 @@ namespace SWLOR.Toolset.Editors.Items
             Func<int, BaseItemIconRow?>? baseItemIcons = null,
             Func<string, bool>? textureExists = null,
             Func<string, IReadOnlyList<Domain.Workspace.ItemSourceEntry>>? sourceLookup = null,
+            Func<bool>? itemSourcesReady = null,
             Func<int, int?>? costTableMax = null,
             Func<JsonGffStruct, bool, RenderModel?>? resolveModel = null,
             ResourceIndex? resourceIndex = null,
@@ -97,6 +98,7 @@ namespace SWLOR.Toolset.Editors.Items
                 baseItemIcons,
                 textureExists,
                 sourceLookup,
+                itemSourcesReady,
                 isDirty: false,
                 costTableMax,
                 resolveModel: resolveModel,
@@ -177,7 +179,14 @@ namespace SWLOR.Toolset.Editors.Items
                 if (renaming && IsStillReferenced(targetResRef))
                     return false;
 
-                SaveService.WriteAtomic(newPath, _session.ToBytes());
+                // A rename installs its destination with no-overwrite semantics: the existence
+                // check above ran before the (potentially long) reference scan, and a blueprint
+                // another process created in that window must fail this save rather than be
+                // silently replaced and then orphaned by the delete below.
+                if (renaming && !string.Equals(_session.FilePath, newPath, StringComparison.OrdinalIgnoreCase))
+                    SaveService.WriteAtomicNew(newPath, _session.ToBytes());
+                else
+                    SaveService.WriteAtomic(newPath, _session.ToBytes());
 
                 var oldPath = _session.FilePath;
                 var oldResRef = _resRef;

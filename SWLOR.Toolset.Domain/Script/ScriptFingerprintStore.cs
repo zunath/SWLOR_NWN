@@ -67,6 +67,20 @@ namespace SWLOR.Toolset.Domain.Script
         public bool TryGet(string resRef, [NotNullWhen(true)] out ScriptFingerprint? fingerprint) =>
             _entries.TryGetValue(resRef, out fingerprint);
 
+        /// <summary>
+        /// Every resref this cache has ever confirmed as a sourced entry point - which is exactly
+        /// what separates an artifact whose source was DELETED from the repository's intentional
+        /// compiled-only scripts, which never had a source to fingerprint.
+        /// </summary>
+        public IReadOnlyCollection<string> TrackedResRefs => _entries.Keys;
+
+        /// <summary>Drops one entry - its script no longer exists in any form worth remembering.</summary>
+        public void Forget(string resRef)
+        {
+            if (_entries.Remove(resRef))
+                _dirty = true;
+        }
+
         /// <summary>Records (or replaces) the confirmed-fresh signature for one entry point.</summary>
         public void Record(string resRef, ScriptFingerprint fingerprint)
         {

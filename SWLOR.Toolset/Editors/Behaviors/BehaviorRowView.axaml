@@ -37,10 +37,11 @@
 
       <NumericUpDown Value="{Binding Number, Mode=TwoWay}" MinWidth="110" MaxWidth="220"
                      HorizontalAlignment="Left"
+                     FormatString="{Binding NumberFormat}" Increment="{Binding NumberIncrement}"
                      IsVisible="{Binding IsEditableNumber}" />
 
       <!-- A read-only number (Total Cost) is a fact, not a control: no spinner chrome. -->
-      <TextBlock Text="{Binding Number}" FontFamily="{DynamicResource MonoFont}"
+      <TextBlock Text="{Binding NumberDisplay}" FontFamily="{DynamicResource MonoFont}"
                  VerticalAlignment="Center"
                  IsVisible="{Binding IsReadOnlyNumber}" />
 

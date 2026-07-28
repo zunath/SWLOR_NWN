@@ -812,6 +812,22 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
+            // The sidecar preflight above ran BEFORE the confirmation dialog, and the sidecar can
+            // change externally while that dialog sits open. Discovering the conflict only at the
+            // SaveCategories below would be too late - the blueprint would already be gone while
+            // the (externally updated) sidecar still lists it - so the last check runs here,
+            // immediately before the irreversible delete.
+            if (_categories.Section(SelectedType)?.FoldersContaining(tile.ResRef).Any() == true)
+            {
+                var recheck = _categories.CanSaveChanges();
+                if (!recheck.Saved)
+                {
+                    StatusMessage = $"'{tile.Name}' was not deleted: {recheck.Problem}";
+                    _log.AppendLine($"Deleting blueprint '{tile.ResRef}' was refused: {recheck.Problem}");
+                    return;
+                }
+            }
+
             try
             {
                 // The same guard SaveService's write paths check before touching disk, so the delete

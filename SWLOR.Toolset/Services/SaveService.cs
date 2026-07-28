@@ -56,6 +56,29 @@ namespace SWLOR.Toolset.Services
             }
         }
 
+        /// <summary>
+        /// <see cref="WriteAtomic"/> for a path that must NOT exist yet - a rename's destination.
+        /// An ordinary save owns its target and may replace it, but a rename's target was only
+        /// checked before a potentially long preflight (the reference scan); if another process
+        /// created that blueprint in the meantime, overwriting it would silently destroy it. The
+        /// no-overwrite move makes the race lose loudly instead: an <see cref="IOException"/>
+        /// fails the save and the freshly appeared file survives.
+        /// </summary>
+        public static void WriteAtomicNew(string path, byte[] bytes)
+        {
+            var staged = Stage(path, bytes);
+            try
+            {
+                ModuleMutationLock.ThrowIfModuleLocked();
+                File.Move(staged.TemporaryPath, staged.TargetPath, overwrite: false);
+            }
+            catch
+            {
+                Discard(staged);
+                throw;
+            }
+        }
+
         /// <summary>The suffix a grouped save gives an original while its replacement is installed.</summary>
         public const string BackupSuffix = ".save-backup";
 

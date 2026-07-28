@@ -2101,3 +2101,30 @@ Live use surfaced two corrections to the brush work above:
   brush's stale-crosser retry; the strict pass still runs first, so the measured stub-to-corner
   promotion is unchanged. A real refusal now logs the touched cells' tile ids, so the next report
   diagnoses itself.
+=======
+## Area viewport - 2026-07-28 - Interiors were sealed under their own ceilings
+
+Mon Cala - Coral Isles - Facility rendered as flat slabs of bare tile texture with all 789 of its
+placeables hidden underneath, where Aurora shows sand, kelp and machinery. The viewport was drawing
+MDL geometry two-sided; NWN renders it with back-face culling, which is what makes an interior
+readable from above.
+
+- **Why it looked like a texture bug.** The slabs were the real `net_floblu`/`net_flored` artwork,
+  decoded correctly - each tile's ceiling faces down into its room, so from an overhead camera we
+  were painting its back side over everything below. Only the tallest props (towers, silos) poked
+  out, which read as an area that was nearly empty rather than one that was covered.
+- **Why culling is safe.** Measured across virtunet, tatooine, wildwood, starfighter-interior tiles
+  and base-game placeables, 96.6% of faces wind counter-clockwise about their own vertex normals.
+  The exceptions are not errors: foliage such as `plc_kelp13` emits each leaf quad twice, once per
+  facing (per-mesh agree/disagree counts are exactly equal), which is how an NWN model asks to be
+  seen from both sides under a culling renderer.
+- **Scope.** Culling is enabled per MDL pass (tiles, model-drawn instances, placement ghosts, tile
+  stamp ghosts) rather than for the whole frame. This control's own overlay geometry - markers,
+  gizmo arms, walkmesh triangles, trigger outlines, ghost boxes, billboarded particles, the
+  missing-tile placeholder cube - stays two-sided.
+- **Deliberately not done.** The `tilefade` ceiling cut stays as it is. It answers a different
+  question (an interior whose roof would block a *side* view), and this tileset's ceilings carry
+  tilefade 0, so nothing about that path changes.
+- **Verification.** Driven in the running app: the facility now renders sand, kelp, room interiors,
+  machinery and the magenta-striped room, matching Aurora's view of the same area; tat_anc_cantina
+  (interior) draws its floor, bar, pillars and props with no holes where the near walls cull away.

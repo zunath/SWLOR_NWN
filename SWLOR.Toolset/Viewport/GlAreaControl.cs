@@ -2258,7 +2258,9 @@ void main()
                 _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
                 _gl.Enable(EnableCap.DepthTest);
                 _gl.DepthFunc(DepthFunction.Less);
-                // NWN tile/prop meshes have inconsistent winding - culling would drop real faces.
+                // Off by default: this is the state the overlay passes (markers, gizmo, walkmesh,
+                // outlines, particle quads) want. The MDL passes turn it on for themselves -
+                // see BeginModelFaceCulling.
                 _gl.Disable(EnableCap.CullFace);
                 _gl.Viewport(0, 0, pixelWidth, pixelHeight);
 
@@ -2541,43 +2543,89 @@ void main()
             _gl.BindVertexArray(0);
         }
 
+        /// <summary>
+        /// Turns on back-face culling for a pass that draws MDL geometry, the way NWN itself renders.
+        /// </summary>
+        /// <remarks>
+        /// This is what lets an interior area be edited from above. A tile's ceiling faces downward
+        /// into the room, so from an overhead camera only its back faces are visible; NWN culls them
+        /// and you see the floor and everything standing on it. Drawn two-sided instead, the ceiling
+        /// becomes an opaque lid: Mon Cala - Coral Isles - Facility rendered as flat slabs of bare
+        /// tile texture with all 789 of its placeables sealed underneath, where Aurora shows the
+        /// kelp, sand and machinery. Only the tallest props poked out, which is what made the area
+        /// look empty rather than covered.
+        /// <para>
+        /// The winding is reliable enough to cull on: measured across virtunet, tatooine, wildwood,
+        /// starfighter-interior tiles and base-game placeables, 96.6% of faces wind counter-clockwise
+        /// about their own vertex normals, and the exceptions are not errors - foliage like
+        /// <c>plc_kelp13</c> emits each leaf quad twice, once per facing (its per-mesh agree/disagree
+        /// counts are exactly equal), which is how an NWN model asks to be seen from both sides under
+        /// a culling renderer. Cutting the doubled halves is the intended result, not a loss.
+        /// </para>
+        /// <para>
+        /// Scoped to the MDL passes rather than set once for the frame: the overlay geometry this
+        /// control builds itself (markers, gizmo arms, walkmesh triangles, trigger outlines, ghost
+        /// boxes, billboarded particle quads) is meant to be visible from either side.
+        /// </para>
+        /// </remarks>
+        private void BeginModelFaceCulling()
+        {
+            _gl!.Enable(EnableCap.CullFace);
+            _gl.CullFace(TriangleFace.Back);
+            _gl.FrontFace(FrontFaceDirection.Ccw);
+        }
+
+        private void EndModelFaceCulling() => _gl!.Disable(EnableCap.CullFace);
+
         private void DrawTileBatches(bool hideCeilings)
         {
             if (_tileBatches == null)
                 return;
 
-            foreach (var batch in _tileBatches)
+            BeginModelFaceCulling();
+            try
             {
-                if (batch.Model == null)
+                foreach (var batch in _tileBatches)
                 {
-                    DrawFallbackBatch(batch.Placements);
-                    continue;
-                }
-
-                var buffer = GetOrBuildModelBuffer(batch.Model);
-                _gl!.BindVertexArray(buffer.Vao);
-
-                foreach (var placement in batch.Placements)
-                {
-                    if (!IsPlacementVisible(placement))
-                        continue;
-
-                    foreach (var meshRange in buffer.MeshRanges)
+                    if (batch.Model == null)
                     {
-                        if (hideCeilings && meshRange.TileFade != 0)
+                        // The placeholder cube is this control's own geometry, not an MDL, so it
+                        // draws under the same two-sided rule as the other overlays.
+                        EndModelFaceCulling();
+                        DrawFallbackBatch(batch.Placements);
+                        BeginModelFaceCulling();
+                        continue;
+                    }
+
+                    var buffer = GetOrBuildModelBuffer(batch.Model);
+                    _gl!.BindVertexArray(buffer.Vao);
+
+                    foreach (var placement in batch.Placements)
+                    {
+                        if (!IsPlacementVisible(placement))
                             continue;
 
-                        var worldMatrix = meshRange.MeshTransform * placement.Transform;
-                        SetUniformMatrix4("model", worldMatrix);
-                        BindMeshTexture(meshRange.TextureName);
-
-                        unsafe
+                        foreach (var meshRange in buffer.MeshRanges)
                         {
-                            _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
-                                DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
+                            if (hideCeilings && meshRange.TileFade != 0)
+                                continue;
+
+                            var worldMatrix = meshRange.MeshTransform * placement.Transform;
+                            SetUniformMatrix4("model", worldMatrix);
+                            BindMeshTexture(meshRange.TextureName);
+
+                            unsafe
+                            {
+                                _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
+                                    DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
+                            }
                         }
                     }
                 }
+            }
+            finally
+            {
+                EndModelFaceCulling();
             }
         }
 
@@ -2685,6 +2733,7 @@ void main()
             var preview = PreviewAnimation();
             var previewNeedsFrames = false;
 
+            BeginModelFaceCulling();
             foreach (var raw in scene.Instances)
             {
                 if (!DrawsAsModel(raw))
@@ -2725,6 +2774,8 @@ void main()
                     }
                 }
             }
+
+            EndModelFaceCulling();
 
             DrawPreviewEmitters(scene, preview);
             if (previewNeedsFrames)
@@ -3181,17 +3232,25 @@ void main()
                     SetUniformVec3("flatColor", PlacementRefusedColor);
                 }
 
-                foreach (var meshRange in buffer.MeshRanges)
+                BeginModelFaceCulling();
+                try
                 {
-                    SetUniformMatrix4("model", meshRange.MeshTransform * transform);
-                    if (!refused)
-                        BindMeshTexture(meshRange.TextureName);
-
-                    unsafe
+                    foreach (var meshRange in buffer.MeshRanges)
                     {
-                        _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
-                            DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
+                        SetUniformMatrix4("model", meshRange.MeshTransform * transform);
+                        if (!refused)
+                            BindMeshTexture(meshRange.TextureName);
+
+                        unsafe
+                        {
+                            _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
+                                DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
+                        }
                     }
+                }
+                finally
+                {
+                    EndModelFaceCulling();
                 }
             }
             else if (_markerMeshBuffer is { } marker)
@@ -3564,44 +3623,52 @@ void main()
                 SetUniformVec3("flatColor", TileCellRejectedColor);
             }
 
-            for (var row = 0; row < rows; row++)
-            for (var column = 0; column < columns; column++)
+            BeginModelFaceCulling();
+            try
             {
-                var slot = row * columns + column;
-                if (slot >= _tilePlacementModels.Count || _tilePlacementModels[slot] is not { } model)
-                    continue;
-
-                var targetColumn = anchorColumn + column;
-                var targetRow = anchorRow + row;
-                if (targetColumn < 0 || targetRow < 0 ||
-                    targetColumn >= scene.Width || targetRow >= scene.Height)
-                    continue;
-
-                // Tile models are authored about their own centre, which is where the scene's own tile
-                // transform puts them; the ghost has to agree or it would sit a half-tile off.
-                var transform = Matrix4x4.CreateTranslation(
-                    (targetColumn + 0.5f) * AreaSceneBuilder.TileSize,
-                    (targetRow + 0.5f) * AreaSceneBuilder.TileSize,
-                    CellFloorHeight(scene, targetColumn, targetRow));
-
-                var buffer = GetOrBuildModelBuffer(model);
-                _gl.BindVertexArray(buffer.Vao);
-
-                foreach (var meshRange in buffer.MeshRanges)
+                for (var row = 0; row < rows; row++)
+                for (var column = 0; column < columns; column++)
                 {
-                    if (hideCeilings && meshRange.TileFade != 0)
+                    var slot = row * columns + column;
+                    if (slot >= _tilePlacementModels.Count || _tilePlacementModels[slot] is not { } model)
                         continue;
 
-                    SetUniformMatrix4("model", meshRange.MeshTransform * transform);
-                    if (fits)
-                        BindMeshTexture(meshRange.TextureName);
+                    var targetColumn = anchorColumn + column;
+                    var targetRow = anchorRow + row;
+                    if (targetColumn < 0 || targetRow < 0 ||
+                        targetColumn >= scene.Width || targetRow >= scene.Height)
+                        continue;
 
-                    unsafe
+                    // Tile models are authored about their own centre, which is where the scene's own tile
+                    // transform puts them; the ghost has to agree or it would sit a half-tile off.
+                    var transform = Matrix4x4.CreateTranslation(
+                        (targetColumn + 0.5f) * AreaSceneBuilder.TileSize,
+                        (targetRow + 0.5f) * AreaSceneBuilder.TileSize,
+                        CellFloorHeight(scene, targetColumn, targetRow));
+
+                    var buffer = GetOrBuildModelBuffer(model);
+                    _gl.BindVertexArray(buffer.Vao);
+
+                    foreach (var meshRange in buffer.MeshRanges)
                     {
-                        _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
-                            DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
+                        if (hideCeilings && meshRange.TileFade != 0)
+                            continue;
+
+                        SetUniformMatrix4("model", meshRange.MeshTransform * transform);
+                        if (fits)
+                            BindMeshTexture(meshRange.TextureName);
+
+                        unsafe
+                        {
+                            _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
+                                DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
+                        }
                     }
                 }
+            }
+            finally
+            {
+                EndModelFaceCulling();
             }
         }
 

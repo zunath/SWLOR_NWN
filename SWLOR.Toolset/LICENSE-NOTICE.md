@@ -1,88 +1,48 @@
-# License Notice — SWLOR Toolset
+# Third-Party and Provenance Notice — SWLOR Toolset
 
-## The short version
+## Current source and dependency boundary
 
-SWLOR is MIT (see `LICENSE.txt` at the repository root). The toolset's own source is MIT too.
-But the toolset *links* `Radoub.Formats` from
-[Radoub](https://github.com/LordOfMyatar/Radoub) (`External/Radoub` git submodule), which is
-**GPL-3.0** — so a **built toolset binary** is a combined work covered by GPL-3.0, and
-`SWLOR.Toolset/LICENSE.GPL-3.0` is the license that applies to it.
+SWLOR first-party source is licensed under the repository's MIT license in `LICENSE.txt`.
 
-`Radoub.UI` is no longer referenced. The single type the app used from it (`MdlPartComposer`, plus
-its `MdlPartBoneMap` helper) is vendored into `SWLOR.Toolset.Domain/Render` — see the list below.
-That removes a project reference and Radoub.UI's Avalonia version pin; it does **not** change the
-license position, because `Radoub.Formats` is still linked and the vendored files are still GPL.
+The current toolset dependency graph is:
 
-Source stays MIT, the binary is GPL. Those are not in conflict: MIT is one-way compatible with
-the GPL, so MIT code may be incorporated into a GPL work. Keeping the source MIT is deliberate —
-if Radoub is ever removed or relicensed, the toolset is immediately unencumbered with no need to
-chase every contributor for permission. Marking the source GPL would throw that away and buy
-nothing.
-
-## When obligations actually trigger
-
-The GPL attaches to **conveying** — GPLv3 §0: any propagation "that enables other parties to make
-or receive copies." It has nothing to do with who someone is. Being a contributor, having commit
-rights, or being in the Discord changes nothing either way. The only question is whether a *built
-artifact* changes hands.
-
-| Action | Conveying? |
-|---|---|
-| Someone clones this repo and builds the toolset themselves | No |
-| CI publishes a toolset artifact that someone downloads | **Yes** — they received a copy they did not build |
-| A toolset zip is posted in Discord for a builder | **Yes**, whoever they are |
-| You copy the exe to a machine you own | No |
-| You copy the exe to a host someone else controls | **Yes** |
-
-Today nobody conveys toolset binaries: every contributor compiles locally from public source. That
-is *why* there is no live obligation — not because contributors are somehow inside a boundary.
-
-If you do convey a binary, comply by offering the corresponding source under GPL-3.0 to whoever
-received it: this repository plus the pinned Radoub commit, both already public. Ship
-`LICENSE.GPL-3.0` alongside it and keep the notices below intact.
-
-## Boundary rule: dependencies flow one way
-
-To keep the game server and every other project unencumbered, **no MIT project may reference
-`SWLOR.Toolset.*`**. Dependencies flow strictly one way:
-
-```
-SWLOR.Toolset → SWLOR.Toolset.Domain → { Radoub.Formats, SWLOR.Game.Server }
+```text
+SWLOR.Toolset → SWLOR.Toolset.Domain → { SWLOR.NWN.Formats, SWLOR.Game.Server }
 ```
 
-`SWLOR.Toolset.Tests` referencing `SWLOR.Toolset` and `SWLOR.Toolset.Domain` is fine — it is part
-of the toolset. `ToolsetLicenseBoundaryTests` enforces the rule so it cannot rot silently.
+`SWLOR.NWN.Formats` is a standalone first-party, read-only implementation of the Aurora resource
+formats consumed by the toolset. Its exact specifications, fixture sources, exposure declarations,
+corpus counts, and reviewed ambiguities are recorded in
+`SWLOR.NWN.Formats/FORMAT-PROVENANCE.md`.
 
-The practical consequence, worth knowing before it bites: `SWLOR.CLI` cannot borrow the toolset's
-in-process GFF/2DA/KEY-BIF code, even though it does related work through `nwn_gff`/`nwn_erf`. That
-merge is permanently off the table while Radoub is linked.
+The toolset also consumes third-party NuGet packages declared in its project files, including
+Avalonia, AvaloniaEdit, CommunityToolkit.Mvvm, Dock, Silk.NET.OpenGL, Microsoft dependency
+injection, and Pfim. Those packages remain under their respective licenses; redistributions must
+retain any notices their licenses require. Project files and the resolved NuGet assets are the
+authoritative version inventory.
 
-## Files that are GPL regardless of the above
+## Architecture rule
 
-The boundary does **not** run cleanly between projects. Five files in `SWLOR.Toolset.Domain` are
-GPL-3.0 whatever the rest of the toolset is licensed as, because they are Radoub code or derived
-from it rather than merely callers of it. Each carries an SPDX header saying so:
+The desktop toolset is an outer application layer. Shared libraries, command-line tools, and the
+game server must not reference `SWLOR.Toolset` or `SWLOR.Toolset.Domain`. The formats library does
+not reference the toolset or game server. `ToolsetLicenseBoundaryTests` enforces both dependency
+direction and the absence of the retired external format dependency from executable first-party
+source and project references.
 
-*Vendored verbatim* (copied out when the `Radoub.UI` reference was dropped; only the namespace
-differs, so composed geometry is bit-identical to what shipped — but upstream fixes no longer flow
-in, and these are now ours to maintain):
+## Historical attribution
 
-- `Render/MdlPartComposer.cs` — skeleton + body-part composition, seam nudging, composite bounds
-- `Render/MdlPartBoneMap.cs` — part-type → skeleton-bone name table
+Earlier toolset revisions linked the GPL-3.0 Radoub format library and contained five render files
+derived from that project. The removal work, exposure boundaries, and replacement evidence are
+documented in `RADOUB-REPLACEMENT-PLAN.md`, `SWLOR.NWN.Formats/FORMAT-PROVENANCE.md`, and
+`SWLOR.Toolset.Domain/Render/REPLACEMENT-PROVENANCE.md`.
+Historical `PLAN.md`, `WORKLOG.md`, and git history are retained as an accurate record of what
+shipped at that time.
 
-*Adapted or mirrored:*
+`LICENSE.GPL-3.0` is retained as a historical third-party license notice for those earlier
+revisions. Its presence is not a project reference or a declaration that the current toolset
+binary links GPL code.
 
-- `Render/TextureLoader.cs` — BioWare-DDS conversion adapted from `Radoub.UI.Services.TextureService`
-- `Render/MdlMeshBuilder.cs` — world transform mirrors Radoub's `ModelViewController.GetWorldTransform`
-- `Render/MdlGeometryFlattener.cs` — same transform composition order
-
-If Radoub is ever dropped entirely, all five must be clean-roomed from the format specs, not merely
-unreferenced. **Removing a project reference does not remove the derivation** — which is exactly why
-dropping `Radoub.UI` bought build independence rather than license freedom.
-
-## Submodule
-
-Radoub is pinned to a specific commit and updated deliberately; **do not commit changes inside
-`External/Radoub`**. Note that git worktrees do not initialise submodules automatically, and the
-default SSL backend on Windows may fail to reach GitHub — `git -c http.sslBackend=schannel
-submodule update --init External/Radoub` is the working incantation.
+The tracked external submodule and all executable references to it are removed by the replacement
+change. Repository history and historical documentation may still name it for attribution; the
+source and built-output audits intentionally distinguish those records from executable
+dependencies.

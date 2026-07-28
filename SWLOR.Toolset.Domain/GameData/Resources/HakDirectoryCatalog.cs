@@ -1,4 +1,4 @@
-using Radoub.Formats.Common;
+using SWLOR.NWN.Formats.Common;
 
 namespace SWLOR.Toolset.Domain.GameData.Resources
 {

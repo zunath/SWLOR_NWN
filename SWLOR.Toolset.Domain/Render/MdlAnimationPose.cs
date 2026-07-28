@@ -1,5 +1,5 @@
 using System.Numerics;
-using Radoub.Formats.Mdl;
+using SWLOR.NWN.Formats.Mdl;
 
 namespace SWLOR.Toolset.Domain.Render
 {
@@ -130,7 +130,9 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 var posed = Sample(FindIdle(current), seconds);
                 if (posed.Count > 0)
-                    return posed;
+                    return depth == 0
+                        ? posed
+                        : ScaleTranslations(posed, AnimationScale(model));
 
                 var superModel = current.SuperModel;
                 if (string.IsNullOrWhiteSpace(superModel) ||
@@ -211,8 +213,13 @@ namespace SWLOR.Toolset.Domain.Render
             if (animation == null || owner == null)
                 return Array.Empty<IdleFrame>();
 
+            var inheritedScale = ReferenceEquals(owner, model)
+                ? 1f
+                : AnimationScale(model);
             return SampleFrames(animation, framesPerSecond, maxFrames)
-                .Select(frame => new IdleFrame(frame.Pose, frame.Seconds))
+                .Select(frame => new IdleFrame(
+                    ScaleTranslations(frame.Pose, inheritedScale),
+                    frame.Seconds))
                 .ToList();
         }
 
@@ -331,6 +338,24 @@ namespace SWLOR.Toolset.Domain.Render
             }
 
             return (last, last, 0f);
+        }
+
+        private static float AnimationScale(MdlModel? model) =>
+            model != null && float.IsFinite(model.Scale) && model.Scale > 0f
+                ? model.Scale
+                : 1f;
+
+        private static IReadOnlyDictionary<string, PosedNode> ScaleTranslations(
+            IReadOnlyDictionary<string, PosedNode> pose,
+            float scale)
+        {
+            if (scale == 1f || pose.Count == 0)
+                return pose;
+
+            return pose.ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value with { Position = pair.Value.Position * scale },
+                StringComparer.OrdinalIgnoreCase);
         }
     }
 }

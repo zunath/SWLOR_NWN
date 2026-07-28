@@ -1,10 +1,10 @@
 using System.Globalization;
-using Radoub.Formats.TwoDA;
+using SWLOR.NWN.Formats.TwoDA;
 
 namespace SWLOR.Toolset.Domain.GameData.TwoDa
 {
     /// <summary>
-    /// Read-only view over a single parsed 2DA table. Thin wrapper around Radoub.Formats'
+    /// Read-only view over a single parsed 2DA table. Thin wrapper around SWLOR.NWN.Formats'
     /// <see cref="TwoDAFile"/> that adds nullable int parsing and a table name for diagnostics.
     /// Row indices are positional (0-based, matching <see cref="RowCount"/>), not the row's
     /// LABEL column value.

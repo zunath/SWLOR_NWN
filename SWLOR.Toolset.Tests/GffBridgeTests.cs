@@ -1,20 +1,15 @@
-using System.Collections.Concurrent;
 using FluentAssertions;
 using NUnit.Framework;
-using Radoub.Formats.Gff;
+using SWLOR.NWN.Formats.Gff;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Tests
 {
     /// <summary>
-    /// Round-trip coverage for GffJsonBridge: JSON -&gt; GffFile -&gt; JSON must reproduce the
-    /// original bytes for a sample of the module corpus, and a hand-built GffFile must bridge
-    /// to a JSON document with the expected shape.
+    /// Read-side coverage for converting parsed binary GFF models to editor JSON documents.
     /// </summary>
     public class GffBridgeTests
     {
-        private const int FilesPerFolder = 30;
-
         [Test]
         public void Utf8AndWindows1252TokensBothDecodeToTheRealCharacter()
         {
@@ -31,88 +26,42 @@ namespace SWLOR.Toolset.Tests
             JsonStringCodec.Encode("a—b", useUtf8: false).Should().Equal(cp1252Token);
         }
 
-        [Test]
-        public void SampledModuleFiles_BridgeRoundTripsByteIdentical()
-        {
-            var files = CorpusLocator.GffFolders
-                .SelectMany(folder =>
-                {
-                    var path = Path.Combine(CorpusLocator.ModuleDirectory, folder);
-                    return Directory.Exists(path)
-                        ? Directory.EnumerateFiles(path, "*.json").Take(FilesPerFolder)
-                        : Enumerable.Empty<string>();
-                })
-                .ToList();
-
-            files.Should().NotBeEmpty();
-
-            var failures = new ConcurrentBag<string>();
-            Parallel.ForEach(files, file =>
-            {
-                try
-                {
-                    var original = File.ReadAllBytes(file);
-                    var document = JsonGffDocument.Parse(original);
-                    var gffFile = GffJsonBridge.ToGffFile(document);
-                    // The corpus mixes UTF-8 and legacy Windows-1252 files; re-emitting text in
-                    // the source file's detected encoding is what keeps the round trip
-                    // byte-identical for both.
-                    var roundTripped = GffJsonBridge.ToJsonDocument(
-                        gffFile, encodeTextAsUtf8: JsonStringCodec.IsUtf8Content(original));
-
-                    // Formatting metadata (EOL style / trailing newline) lives on the JSON
-                    // document, not on GffFile, so it is not something the bridge carries.
-                    // Copy it from the source so the byte comparison targets content only.
-                    roundTripped.UsesCrLf = document.UsesCrLf;
-                    roundTripped.HasTrailingNewline = document.HasTrailingNewline;
-                    roundTripped.TrailingNewlineUsesCrLf = document.TrailingNewlineUsesCrLf;
-
-                    var written = roundTripped.ToBytes();
-
-                    if (!written.AsSpan().SequenceEqual(original))
-                        failures.Add(RoundTripCorpusTests.DescribeMismatch(file, original, written));
-                }
-                catch (Exception ex)
-                {
-                    failures.Add($"{file}: {ex.GetType().Name}: {ex.Message}");
-                }
-            });
-
-            failures.Should().BeEmpty(
-                $"all sampled files must bridge round-trip byte-identically. " +
-                $"{failures.Count} failed. First failures:\n{string.Join("\n\n", failures.Take(10))}");
-        }
+        // The JSON->GffFile->JSON byte-identity corpus gate lives on the base branch; this branch
+        // defers binary GFF writing (ToGffFile has no production caller), so only the read-side
+        // and codec coverage applies here.
 
         [Test]
         public void HandBuiltGffFile_BridgesToExpectedJsonShape()
         {
             var childStruct = new GffStruct { Type = 2 };
-            GffFieldBuilder.AddIntField(childStruct, "ChildValue", 7);
+            Add(childStruct, GffField.INT, "ChildValue", 7);
 
             var locString = new CExoLocString();
             locString.SetString(0, "Hello");
             locString.SetString(2, "Bonjour");
 
             var listElement = new GffStruct { Type = 0 };
-            GffFieldBuilder.AddCExoStringField(listElement, "Name", "Item One");
+            Add(listElement, GffField.CExoString, "Name", "Item One");
 
             var root = new GffStruct { Type = 0 };
-            GffFieldBuilder.AddByteField(root, "AByte", 199);
-            GffFieldBuilder.AddCharField(root, "AChar", -5);
-            GffFieldBuilder.AddWordField(root, "AWord", 6000);
-            GffFieldBuilder.AddShortField(root, "AShort", -1234);
-            GffFieldBuilder.AddDwordField(root, "ADword", 4000000000u);
-            GffFieldBuilder.AddIntField(root, "AnInt", -70000);
-            GffFieldBuilder.AddDword64Field(root, "ADword64", 18000000000000000000UL);
-            GffFieldBuilder.AddInt64Field(root, "AnInt64", -9000000000000000000L);
-            GffFieldBuilder.AddFloatField(root, "AFloat", 70.0f);
-            GffFieldBuilder.AddDoubleField(root, "ADouble", 12345.6789);
-            GffFieldBuilder.AddCExoStringField(root, "AString", "Hello \"World\"\n");
-            GffFieldBuilder.AddCResRefField(root, "AResRef", "some_resref");
-            GffFieldBuilder.AddLocStringField(root, "ALocString", locString);
-            GffFieldBuilder.AddVoidField(root, "AVoid", new byte[] { 0x00, 0x01, 0xFF, 0x20, (byte)'"' });
-            GffFieldBuilder.AddStructField(root, "AStruct", childStruct);
-            GffFieldBuilder.AddListField(root, "AList", new[] { listElement });
+            Add(root, GffField.BYTE, "AByte", (byte)199);
+            Add(root, GffField.CHAR, "AChar", (sbyte)-5);
+            Add(root, GffField.WORD, "AWord", (ushort)6000);
+            Add(root, GffField.SHORT, "AShort", (short)-1234);
+            Add(root, GffField.DWORD, "ADword", 4000000000u);
+            Add(root, GffField.INT, "AnInt", -70000);
+            Add(root, GffField.DWORD64, "ADword64", 18000000000000000000UL);
+            Add(root, GffField.INT64, "AnInt64", -9000000000000000000L);
+            Add(root, GffField.FLOAT, "AFloat", 70.0f);
+            Add(root, GffField.DOUBLE, "ADouble", 12345.6789);
+            Add(root, GffField.CExoString, "AString", "Hello \"World\"\n");
+            Add(root, GffField.CResRef, "AResRef", "some_resref");
+            Add(root, GffField.CExoLocString, "ALocString", locString);
+            Add(root, GffField.VOID, "AVoid", new byte[] { 0x00, 0x01, 0xFF, 0x20, (byte)'"' });
+            Add(root, GffField.Struct, "AStruct", childStruct);
+            var list = new GffList();
+            list.Elements.Add(listElement);
+            Add(root, GffField.List, "AList", list);
 
             var gffFile = new GffFile { FileType = "TST ", FileVersion = "V3.2", RootStruct = root };
 
@@ -161,32 +110,25 @@ namespace SWLOR.Toolset.Tests
             listField.Elements.Should().HaveCount(1);
             listField.Elements![0].Get("Name").GetString().Should().Be("Item One");
 
-            // Bridging back to GffFile and re-bridging to JSON must reproduce the same shape
-            // (a lightweight structural round-trip complementing the corpus byte-identity gate).
-            var roundTrippedGff = GffJsonBridge.ToGffFile(document);
-            var roundTrippedDocument = GffJsonBridge.ToJsonDocument(roundTrippedGff);
-            roundTrippedDocument.Root.Get("AByte").GetUnsignedInteger().Should().Be(199);
-            roundTrippedDocument.Root.Get("AFloat").GetSingle().Should().Be(70.0f);
         }
 
         [Test]
-        public void LocStringWithStrRef_RoundTripsIdWhenPresent()
+        public void LocStringWithStrRef_PreservesId()
         {
             var locString = new CExoLocString { StrRef = 12835 };
             locString.SetString(0, "Tat Militia Armor");
 
             var root = new GffStruct { Type = 0 };
-            GffFieldBuilder.AddLocStringField(root, "LocalizedName", locString);
+            Add(root, GffField.CExoLocString, "LocalizedName", locString);
 
             var gffFile = new GffFile { FileType = "UTI ", FileVersion = "V3.2", RootStruct = root };
             var document = GffJsonBridge.ToJsonDocument(gffFile);
 
             var field = document.Root.Get("LocalizedName");
             field.GetLocStringId().Should().Be(12835u);
-
-            var roundTripped = GffJsonBridge.ToGffFile(document);
-            var loc = (CExoLocString)roundTripped.RootStruct.Fields.Single(f => f.Label == "LocalizedName").Value!;
-            loc.StrRef.Should().Be(12835u);
         }
+
+        private static void Add(GffStruct target, uint type, string label, object? value) =>
+            target.Fields.Add(new GffField(type, label, value));
     }
 }

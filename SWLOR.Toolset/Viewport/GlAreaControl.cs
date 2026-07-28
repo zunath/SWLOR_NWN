@@ -14,10 +14,9 @@ namespace SWLOR.Toolset.Viewport
     /// 3D viewport for one area's <see cref="AreaScene"/>: renders tile-grid
     /// placements (batched per distinct <see cref="RenderModel"/> via <see cref="AreaDrawBatcher"/>)
     /// plus placed-instance markers, with an orbit/pan/zoom camera framed on the area's tile-grid
-    /// bounds (<see cref="AreaCameraMath"/>). Follows the same <see cref="OpenGlControlBase"/> +
-    /// Silk.NET.OpenGL skeleton as Radoub.UI's <c>ModelPreviewGLControl</c> (see
-    /// Viewport/README.md) but is a fresh implementation tailored to a scene of many placements
-    /// sharing a handful of distinct meshes, rather than one model per control.
+    /// bounds (<see cref="AreaCameraMath"/>). Follows the <see cref="OpenGlControlBase"/> +
+    /// Silk.NET.OpenGL lifecycle documented in Viewport/README.md and is tailored to a scene of
+    /// many placements sharing a handful of distinct meshes.
     /// Read-only picking uses a plain left-click (press+release with &lt;4px of movement)
     /// raises <see cref="InstancePicked"/> with the hit instance (or null for empty space), using
     /// the same view/projection the last frame rendered with (<see cref="AreaCameraMath.ScreenPointToRay"/>
@@ -106,9 +105,8 @@ namespace SWLOR.Toolset.Viewport
         private const float WalkmeshOverlayAlpha = 0.4f;
         private const float WalkmeshHeightOffset = 0.06f; // lift above the floor to avoid z-fighting (just above PolygonHeightOffset)
 
-        // ----- GLSL source (kept inline for this renderer; adapted from, not shared with,
-        // Radoub.UI's OpenGLShaderManager - this control needs an alpha-cutoff/unlit uniform that
-        // control doesn't expose, and Radoub's sources must never be modified). -----
+        // ----- GLSL source (kept inline because this renderer owns its alpha-cutoff and unlit
+        // uniforms and their viewport-specific behavior). -----
         private const string VersionEs = "#version 300 es\nprecision highp float;\n";
         private const string VersionDesktop = "#version 330 core\n";
 
@@ -793,8 +791,7 @@ void main()
 
         /// <summary>
         /// Raises <see cref="RenderStatusChanged"/>, marshaling to the UI thread when called from
-        /// the GL render thread (OnOpenGlInit/OnOpenGlRender do not run on the UI thread - mirrors
-        /// how Radoub.UI's ModelPreviewGLControl posts its own state-changed events).
+        /// the GL render thread because OnOpenGlInit/OnOpenGlRender do not run on the UI thread.
         /// </summary>
         private void RaiseStatus(string message)
         {
@@ -823,7 +820,7 @@ void main()
         // ----- Pointer input: middle orbits, middle+left pans, wheel zooms -----
         //
         // OpenGlControlBase has no Background brush, so pointer events never hit-test to this
-        // control directly (same Avalonia limitation Radoub's ModelPreviewGLControl documents).
+        // control directly.
         // The hosting view overlays a transparent input Border and forwards its events into the
         // public Handle* methods below; the On* overrides remain as a fallback if the control is
         // ever hosted without the overlay.
@@ -2469,9 +2466,9 @@ void main()
         }
 
         /// <summary>
-        /// Draws a deliberately bounded particle cue for emitter-based placeables. The Radoub model
-        /// reader currently exposes emitter placement, texture, sprite grid and blend mode rather
-        /// than NWN's full particle controller set, so this is not an engine simulation. It is enough
+        /// Draws a deliberately bounded particle cue for emitter-based placeables. The model reader
+        /// exposes emitter placement, texture, sprite grid, and blend mode rather than NWN's full
+        /// particle controller set, so this is not an engine simulation. It is enough
         /// to make authored portal/fire effects visibly alive in the one-model design preview, and
         /// it is never entered by the area viewport because that host has no preview animation name.
         /// </summary>

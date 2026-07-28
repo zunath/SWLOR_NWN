@@ -6,11 +6,11 @@ namespace SWLOR.Toolset.Tests
     public class ScaffoldingTests
     {
         [Test]
-        public void RadoubFormats_IsReferencedAndLoadable()
+        public void StandaloneFormatsLibrary_IsReferencedAndLoadable()
         {
-            var gffFileType = typeof(Radoub.Formats.Gff.GffFile);
+            var gffFileType = typeof(SWLOR.NWN.Formats.Gff.GffFile);
 
-            gffFileType.Assembly.GetName().Name.Should().Be("Radoub.Formats");
+            gffFileType.Assembly.GetName().Name.Should().Be("SWLOR.NWN.Formats");
         }
     }
 }

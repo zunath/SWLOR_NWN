@@ -1,4 +1,4 @@
-using Radoub.Formats.Gff;
+using SWLOR.NWN.Formats.Gff;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;

@@ -9,14 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\External\Radoub\Radoub.Formats\Radoub.Formats\Radoub.Formats.csproj" />
+    <ProjectReference Include="..\SWLOR.NWN.Formats\SWLOR.NWN.Formats.csproj" />
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj"
                       AdditionalProperties="RunPostBuildEvent=Never" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- BioWare's proprietary DDS variant needs conversion to standard DDS before Pfim can
-         decode it (see Render/TextureLoader.cs). Version pinned to match Radoub.UI's own pin. -->
+    <!-- BioWare's proprietary DDS variant is wrapped as standard DXT before Pfim decodes it. -->
     <PackageReference Include="Pfim" Version="0.11.4" />
   </ItemGroup>
 

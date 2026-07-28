@@ -1,22 +1,11 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-//
-// The world-transform composition below mirrors Radoub.UI's ModelViewController.GetWorldTransform
-// (https://github.com/LordOfMyatar/Radoub), which is GPL-3.0. That makes this file a derivative
-// work: it is GPL-3.0 even though the rest of the SWLOR Toolset's own source is MIT. Dropping the
-// Radoub reference would not change that - the transform order would have to be clean-roomed from
-// the MDL format spec instead. See SWLOR.Toolset/LICENSE-NOTICE.md.
+// SPDX-License-Identifier: MIT
+
 using System.Numerics;
-using Radoub.Formats.Mdl;
+using SWLOR.NWN.Formats.Mdl;
 
 namespace SWLOR.Toolset.Domain.Render
 {
-    /// <summary>
-    /// A single renderable trimesh extracted from an <see cref="MdlModel"/>: flat vertex/index
-    /// buffers in the mesh node's own local space, plus the accumulated node-to-model transform
-    /// a consumer applies to place it (GL preview, area renderer, etc.). Vertex data is left
-    /// untransformed so callers can bake it into a GPU instance matrix or a CPU-side transform
-    /// as their scene graph requires.
-    /// </summary>
+    /// <summary>Renderable triangle data and transform metadata for one MDL mesh node.</summary>
     public sealed class RenderMesh
     {
         /// <summary>Source MDL node name (for diagnostics/debugging, not guaranteed unique).</summary>
@@ -84,334 +73,249 @@ namespace SWLOR.Toolset.Domain.Render
         /// rest - so anything that wants the settled model rather than the playback uses that.
         /// </summary>
         public IReadOnlyList<Matrix4x4> PoseFrames { get; init; } = Array.Empty<Matrix4x4>();
-
-        /// <summary>
-        /// Per-state transforms for the placeable preview. Geometry remains shared; changing a state
-        /// only changes which matrix is supplied for this mesh.
-        /// </summary>
         public IReadOnlyDictionary<string, IReadOnlyList<Matrix4x4>> AnimationFrames { get; init; } =
             new Dictionary<string, IReadOnlyList<Matrix4x4>>(StringComparer.OrdinalIgnoreCase);
 
-        /// <summary>Vertex count, derived from <see cref="Positions"/>.</summary>
         public int VertexCount => Positions.Length / 3;
-
-        /// <summary>Triangle count, derived from <see cref="Indices"/>.</summary>
         public int TriangleCount => Indices.Length / 3;
     }
 
-    /// <summary>A model-declared placeable state exposed by the preview.</summary>
-    public sealed record RenderAnimation(
-        string Name,
-        float Length,
-        bool HasPosedNodes,
-        bool ShowsEmitters)
+    /// <summary>A placeable preview animation exposed to the state picker and viewport.</summary>
+    public sealed class RenderAnimation
     {
-        /// <summary>Whether continuing to render this state can visibly change the preview.</summary>
-        public bool IsPlayable => (Length > 0f && HasPosedNodes) || ShowsEmitters;
+        public string Name { get; init; } = string.Empty;
+        public float Length { get; init; }
+        public bool ShowsEmitters { get; init; }
+        public bool IsPlayable { get; init; }
     }
 
-    /// <summary>
-    /// The subset of an MDL particle emitter needed for a lightweight editor preview. The game has a
-    /// much richer particle simulation; this keeps the authored texture, sprite grid and node
-    /// transform so effects such as portals and fires visibly move without changing area rendering.
-    /// </summary>
+    /// <summary>Bounded emitter metadata used by the placeable preview's particle cue.</summary>
     public sealed class RenderEmitter
     {
-        public required string NodeName { get; init; }
-        public required string TextureName { get; init; }
-        public required Matrix4x4 Transform { get; init; }
-        public required int XGrid { get; init; }
-        public required int YGrid { get; init; }
-        public required string Blend { get; init; }
-
+        public string NodeName { get; init; } = string.Empty;
+        public string TextureName { get; init; } = string.Empty;
+        public Matrix4x4 Transform { get; init; } = Matrix4x4.Identity;
         public IReadOnlyDictionary<string, IReadOnlyList<Matrix4x4>> AnimationFrames { get; init; } =
             new Dictionary<string, IReadOnlyList<Matrix4x4>>(StringComparer.OrdinalIgnoreCase);
+        public int XGrid { get; init; } = 1;
+        public int YGrid { get; init; } = 1;
+        public string Update { get; init; } = string.Empty;
+        public string RenderMode { get; init; } = string.Empty;
+        public string Blend { get; init; } = string.Empty;
+        public string Chunk { get; init; } = string.Empty;
+        public bool TextureIsTwoSided { get; init; }
+        public bool Loop { get; init; }
+        public ushort RenderOrder { get; init; }
+        public float DeadSpace { get; init; }
+        public float BlastRadius { get; init; }
+        public float BlastLength { get; init; }
     }
 
-    /// <summary>
-    /// Render-ready mesh data for an entire <see cref="MdlModel"/>: one <see cref="RenderMesh"/>
-    /// per visible trimesh node in the model's node hierarchy.
-    /// </summary>
+    /// <summary>All renderable geometry and optional placeable-preview metadata for one MDL.</summary>
     public sealed class RenderModel
     {
-        /// <summary>Source MDL model name.</summary>
-        public required string Name { get; init; }
-
-        /// <summary>Visible trimesh nodes, in the order they were encountered during traversal.</summary>
-        public required IReadOnlyList<RenderMesh> Meshes { get; init; }
-
-        /// <summary>Placeable animation states carried as transform-only tracks.</summary>
+        public string Name { get; init; } = string.Empty;
+        public IReadOnlyList<RenderMesh> Meshes { get; init; } = Array.Empty<RenderMesh>();
         public IReadOnlyList<RenderAnimation> Animations { get; init; } = Array.Empty<RenderAnimation>();
-
-        /// <summary>The explicit state selected by the placeable preview rule.</summary>
-        public string? DefaultAnimationName { get; init; }
-
-        /// <summary>Particle emitters used only by the opt-in single-model preview.</summary>
         public IReadOnlyList<RenderEmitter> Emitters { get; init; } = Array.Empty<RenderEmitter>();
+        public string? DefaultAnimationName { get; init; }
     }
 
     /// <summary>
-    /// Builds <see cref="RenderModel"/> render data from a parsed <see cref="MdlModel"/> (as
-    /// produced by <see cref="MdlReader"/>). Headless/Domain-level pipeline stage - no OpenGL or
-    /// UI dependency - consumed later by both the GL model preview and the area renderer.
+    /// Converts parsed Aurora MDL nodes into compact arrays and transform metadata used by the
+    /// software thumbnail renderer and OpenGL viewport.
     /// </summary>
     public static class MdlMeshBuilder
     {
-        /// <summary>
-        /// Walk the model's node hierarchy and extract render-ready geometry for every trimesh
-        /// node (including its Skin/Dangly/Anim/Aabb specializations, matching
-        /// <see cref="MdlModel.GetMeshNodes"/>). Nodes with <c>Render == false</c>, or with no
-        /// vertex/face data, are skipped for geometry but their transform still composes into any
-        /// descendant's <see cref="RenderMesh.Transform"/> (transform composition walks the plain
-        /// node/parent chain regardless of node type).
-        /// </summary>
-        /// <summary>
-        /// Node names BioWare uses for geometry that is not artwork, and which must not be drawn.
-        /// </summary>
-        /// <remarks>
-        /// These are placeholders that carry real, sizeable geometry and are flagged render=1, so nothing
-        /// else here filters them. Drawing them puts a large untextured slab over the model: every base
-        /// door model carries a <c>sam</c> node, and in TTU_udoor_06 it is 42 of the model's 196
-        /// triangles - which is exactly the blank white panel that appeared across the palette's doors.
-        /// <para>
-        /// Matched by name rather than by "has no texture", because untextured is not the same as
-        /// placeholder. Measured over 4,000 models in the resource stack, only 121 have any untextured
-        /// rendered mesh, and those include real artwork - a gargoyle's wing parts among them - so
-        /// dropping every untextured mesh would delete geometry that belongs on screen.
-        /// </para>
-        /// </remarks>
-        private static readonly HashSet<string> PlaceholderNodeNames =
+        private const int MaximumNodes = 1_000_000;
+        private const int MaximumParentDepth = 4_096;
+        private const int MaximumEmitterGrid = 256;
+
+        private static readonly HashSet<string> PlaceholderNames =
             new(StringComparer.OrdinalIgnoreCase) { "sam", "rootdummy" };
 
-        private static bool IsPlaceholderNode(MdlTrimeshNode trimesh) =>
-            PlaceholderNodeNames.Contains(trimesh.Name ?? string.Empty);
-
-        private static readonly HashSet<string> EmitterOffStates =
-            new(StringComparer.OrdinalIgnoreCase)
-            {
-                "off", "close", "closed", "deactivate", "deactivated", "dead", "die", "destroyed"
-            };
-
         /// <summary>
-        /// The lightweight preview can represent a persistent fountain loop, but not a one-shot
-        /// explosion's birth-rate/lifespan controllers. Treating every emitter node as ambient made
-        /// damage debris on the replacement model look like portal VFX that survived the scene swap.
+        /// Builds ordinary render geometry. Optional poses become a bounded sequence of per-mesh
+        /// matrices; the final pose is the mesh's resting transform.
         /// </summary>
-        private static bool IsContinuousPreviewEmitter(MdlEmitterNode emitter) =>
-            emitter.Loop &&
-            emitter.Update.Equals("Fountain", StringComparison.OrdinalIgnoreCase);
-
-        public static RenderModel Build(MdlModel model) => Build(model, pose: null);
-
-        /// <summary>
-        /// As <see cref="Build(MdlModel)"/>, but standing the model in <paramref name="pose"/> - the
-        /// per-node local transforms sampled from an animation by <see cref="MdlAnimationPose"/>.
-        /// </summary>
-        /// <remarks>
-        /// The pose replaces a node's own local transform wherever it names one; everything else keeps
-        /// what the geometry declares. That is what lets one skeleton's idle pose carry a whole
-        /// composed body: the parts hang off bones by name, so posing the bones moves the parts with
-        /// them without the parts needing keyframes of their own.
-        /// </remarks>
-        public static RenderModel Build(MdlModel model, IReadOnlyDictionary<string, PosedNode>? pose) =>
-            Build(model, pose == null ? Array.Empty<IReadOnlyDictionary<string, PosedNode>>() : new[] { pose });
-
-        /// <summary>
-        /// As <see cref="Build(MdlModel)"/>, carrying a transform per frame of an idle animation.
-        /// </summary>
-        /// <remarks>
-        /// The mesh is built once and posed many times: NWN's bodies are rigid parts attached to bones,
-        /// so a frame changes each mesh's transform and never a vertex. The geometry uploads once and
-        /// playback swaps which matrix is bound. The last frame becomes <see cref="RenderMesh.Transform"/>,
-        /// because that is where the animation stops and stays.
-        /// </remarks>
         public static RenderModel Build(
-            MdlModel model, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> poseFrames)
-            => Build(
-                model,
-                poseFrames,
-                new Dictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>>(
-                    StringComparer.OrdinalIgnoreCase),
-                Array.Empty<RenderAnimation>(),
-                defaultAnimationName: null,
-                includeEmitters: false);
+            MdlModel model,
+            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames = null)
+        {
+            ArgumentNullException.ThrowIfNull(model);
+            return BuildInternal(model, poseFrames, includePlaceableMetadata: false);
+        }
 
         /// <summary>
-        /// Builds a placeable for the interactive preview: every declared state is sampled once into
-        /// mesh transforms, and particle emitters are retained for the preview's lightweight effect
-        /// pass. The ordinary area renderer never opts into these continuous tracks.
+        /// Builds geometry plus transform-only animation and persistent emitter metadata for the
+        /// single-placeable preview.
         /// </summary>
         public static RenderModel BuildPlaceablePreview(MdlModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
-
-            var animationFrames =
-                new Dictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>>(
-                    StringComparer.OrdinalIgnoreCase);
-            var animations = new List<RenderAnimation>();
-            var hasEmitters = model
-                .EnumerateAllNodes()
-                .OfType<MdlEmitterNode>()
-                .Any(IsContinuousPreviewEmitter);
-
-            foreach (var animation in MdlAnimationPose.PlaceableAnimations(model))
-            {
-                var frames = MdlAnimationPose.SampleFrames(animation);
-                var poses = frames.Select(frame => frame.Pose).ToList();
-                var hasPosedNodes = poses.Any(pose => pose.Count > 0);
-
-                if (hasPosedNodes)
-                    animationFrames[animation.Name] = poses;
-
-                animations.Add(new RenderAnimation(
-                    animation.Name,
-                    MathF.Max(0f, animation.Length),
-                    hasPosedNodes,
-                    hasEmitters && !EmitterOffStates.Contains(animation.Name)));
-            }
-
-            // The SWLOR portal is emitter-driven and declares no MdlAnimation at all. A synthetic
-            // default state gives that real authored loop the same play/pause surface as machinery.
-            if (hasEmitters && animations.Count == 0)
-                animations.Add(new RenderAnimation("default", 0f, false, true));
-
-            var defaultAnimationName = MdlAnimationPose.FindPlaceableDefault(model)?.Name ??
-                                       animations.FirstOrDefault()?.Name;
-
-            return Build(
-                model,
-                Array.Empty<IReadOnlyDictionary<string, PosedNode>>(),
-                animationFrames,
-                animations,
-                defaultAnimationName,
-                includeEmitters: true);
+            return BuildInternal(model, poseFrames: null, includePlaceableMetadata: true);
         }
 
-        private static RenderModel Build(
-            MdlModel model,
-            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> poseFrames,
-            IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationFrames,
-            IReadOnlyList<RenderAnimation> animations,
-            string? defaultAnimationName,
-            bool includeEmitters)
+        /// <summary>
+        /// Composes one node's local transform through its parent chain. A supplied pose replaces
+        /// the corresponding node's authored local transform by name.
+        /// </summary>
+        public static Matrix4x4 ComposeNodeTransform(
+            MdlNode node,
+            IReadOnlyDictionary<string, PosedNode>? pose = null)
         {
-            ArgumentNullException.ThrowIfNull(model);
-            ArgumentNullException.ThrowIfNull(poseFrames);
-            ArgumentNullException.ThrowIfNull(animationFrames);
+            ArgumentNullException.ThrowIfNull(node);
 
-            var pose = poseFrames.Count > 0 ? poseFrames[^1] : null;
-            var meshes = new List<RenderMesh>();
-            var emitters = new List<RenderEmitter>();
+            var result = Matrix4x4.Identity;
+            var visited = new HashSet<MdlNode>(ReferenceEqualityComparer.Instance);
+            MdlNode? current = node;
+            var depth = 0;
 
-            if (model.GeometryRoot != null)
+            while (current != null)
             {
-                foreach (var node in model.EnumerateAllNodes())
+                if (!visited.Add(current))
+                    throw new InvalidDataException("MDL parent chain contains a cycle.");
+                if (++depth > MaximumParentDepth)
+                    throw new InvalidDataException(
+                        $"MDL parent chain exceeds the {MaximumParentDepth:N0}-level limit.");
+
+                var local = pose != null &&
+                            !string.IsNullOrEmpty(current.Name) &&
+                            pose.TryGetValue(current.Name, out var posed)
+                    ? LocalTransform(posed.Position, posed.Orientation, posed.Scale)
+                    : LocalTransform(current.Position, current.Orientation, current.Scale);
+                result *= local;
+                current = current.Parent;
+            }
+
+            return result;
+        }
+
+        private static RenderModel BuildInternal(
+            MdlModel model,
+            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
+            bool includePlaceableMetadata)
+        {
+            var animations = includePlaceableMetadata
+                ? MdlAnimationPose.PlaceableAnimations(model)
+                : Array.Empty<MdlAnimation>();
+            var animationSamples = SampleAnimations(animations);
+            var emitterNodes = includePlaceableMetadata
+                ? EnumerateNodes(model.GeometryRoot).OfType<MdlEmitterNode>().Where(IsPersistentEmitter).ToList()
+                : new List<MdlEmitterNode>();
+
+            var renderMeshes = new List<RenderMesh>();
+            foreach (var mesh in EnumerateNodes(model.GeometryRoot).OfType<MdlTrimeshNode>())
+            {
+                if (!mesh.Render || PlaceholderNames.Contains(mesh.Name))
+                    continue;
+
+                var built = BuildMesh(mesh, poseFrames, animationSamples);
+                if (built != null)
+                    renderMeshes.Add(built);
+            }
+
+            var renderEmitters = includePlaceableMetadata
+                ? emitterNodes.Select(node => BuildEmitter(node, animationSamples)).ToList()
+                : new List<RenderEmitter>();
+            var renderAnimations = includePlaceableMetadata
+                ? BuildAnimations(animations, renderMeshes, renderEmitters)
+                : new List<RenderAnimation>();
+
+            string? defaultAnimationName = null;
+            if (includePlaceableMetadata)
+            {
+                defaultAnimationName = MdlAnimationPose.FindPlaceableDefault(model)?.Name;
+
+                if (animations.Count == 0 && renderEmitters.Count > 0)
                 {
-                    if (includeEmitters &&
-                        node is MdlEmitterNode emitter &&
-                        IsContinuousPreviewEmitter(emitter))
+                    const string syntheticDefault = "default";
+                    renderAnimations.Add(new RenderAnimation
                     {
-                        emitters.Add(BuildEmitter(emitter, animationFrames));
-                        continue;
-                    }
-
-                    if (node is not MdlTrimeshNode trimesh)
-                        continue; // Non-trimesh nodes (dummy, light, reference, ...) contribute no geometry.
-
-                    if (!trimesh.Render)
-                        continue;
-
-                    if (IsPlaceholderNode(trimesh))
-                        continue;
-
-                    if (trimesh.Vertices.Length == 0 || trimesh.Faces.Length == 0)
-                        continue;
-
-                    meshes.Add(BuildMesh(trimesh, pose, poseFrames, animationFrames));
+                        Name = syntheticDefault,
+                        Length = 1f,
+                        ShowsEmitters = true,
+                        IsPlayable = true
+                    });
+                    defaultAnimationName = syntheticDefault;
                 }
             }
 
             return new RenderModel
             {
                 Name = model.Name,
-                Meshes = meshes,
-                Animations = animations,
-                DefaultAnimationName = defaultAnimationName,
-                Emitters = emitters
+                Meshes = renderMeshes,
+                Animations = renderAnimations,
+                Emitters = renderEmitters,
+                DefaultAnimationName = defaultAnimationName
             };
         }
 
-        private static RenderMesh BuildMesh(
-            MdlTrimeshNode trimesh,
-            IReadOnlyDictionary<string, PosedNode>? pose,
-            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> poseFrames,
-            IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationFrames)
+        private static RenderMesh? BuildMesh(
+            MdlTrimeshNode mesh,
+            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
+            IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationSamples)
         {
-            var vertexCount = trimesh.Vertices.Length;
+            var vertexCount = mesh.Vertices.Length;
+            if (vertexCount == 0 || mesh.Faces.Length == 0)
+                return null;
 
-            var positions = new float[vertexCount * 3];
-            for (var i = 0; i < vertexCount; i++)
+            var positions = new float[checked(vertexCount * 3)];
+            for (var index = 0; index < vertexCount; index++)
             {
-                var v = trimesh.Vertices[i];
-                positions[i * 3] = v.X;
-                positions[i * 3 + 1] = v.Y;
-                positions[i * 3 + 2] = v.Z;
+                var vertex = FiniteOrZero(mesh.Vertices[index]);
+                positions[index * 3] = vertex.X;
+                positions[index * 3 + 1] = vertex.Y;
+                positions[index * 3 + 2] = vertex.Z;
             }
 
-            var normals = Array.Empty<float>();
-            if (trimesh.Normals.Length == vertexCount)
+            var normals = mesh.Normals.Length == vertexCount
+                ? Flatten(mesh.Normals.Select(FiniteOrZero))
+                : Array.Empty<float>();
+            var texCoords = mesh.TextureCoordinates.Length == vertexCount
+                ? Flatten(mesh.TextureCoordinates.Select(FiniteOrZero))
+                : Array.Empty<float>();
+
+            var indices = new List<int>(checked(mesh.Faces.Length * 3));
+            foreach (var face in mesh.Faces)
             {
-                normals = new float[vertexCount * 3];
-                for (var i = 0; i < vertexCount; i++)
+                if (face.VertexIndex0 >= vertexCount ||
+                    face.VertexIndex1 >= vertexCount ||
+                    face.VertexIndex2 >= vertexCount)
                 {
-                    var n = trimesh.Normals[i];
-                    normals[i * 3] = n.X;
-                    normals[i * 3 + 1] = n.Y;
-                    normals[i * 3 + 2] = n.Z;
+                    continue;
                 }
+
+                indices.Add(face.VertexIndex0);
+                indices.Add(face.VertexIndex1);
+                indices.Add(face.VertexIndex2);
             }
 
-            var texCoords = Array.Empty<float>();
-            if (trimesh.TextureCoords.Length > 0 && trimesh.TextureCoords[0].Length == vertexCount)
-            {
-                var uv0 = trimesh.TextureCoords[0];
-                texCoords = new float[vertexCount * 2];
-                for (var i = 0; i < vertexCount; i++)
-                {
-                    texCoords[i * 2] = uv0[i].X;
-                    texCoords[i * 2 + 1] = uv0[i].Y;
-                }
-            }
+            if (indices.Count == 0)
+                return null;
 
-            var indices = new int[trimesh.Faces.Length * 3];
-            for (var f = 0; f < trimesh.Faces.Length; f++)
-            {
-                var face = trimesh.Faces[f];
-                indices[f * 3] = face.VertexIndex0;
-                indices[f * 3 + 1] = face.VertexIndex1;
-                indices[f * 3 + 2] = face.VertexIndex2;
-            }
-
-            var bitmap = trimesh.Bitmap;
-            var textureName = string.IsNullOrEmpty(bitmap) || bitmap.Equals("null", StringComparison.OrdinalIgnoreCase)
-                ? string.Empty
-                : bitmap.ToLowerInvariant();
+            var staticTransform = ComposeNodeTransform(mesh);
+            var renderedPoseFrames = poseFrames == null
+                ? Array.Empty<Matrix4x4>()
+                : poseFrames.Select(pose => ComposeNodeTransform(mesh, pose)).ToArray();
+            var animationFrames = new Dictionary<string, IReadOnlyList<Matrix4x4>>(
+                StringComparer.OrdinalIgnoreCase);
+            foreach (var (name, samples) in animationSamples)
+                animationFrames[name] = samples.Select(pose => ComposeNodeTransform(mesh, pose)).ToArray();
 
             return new RenderMesh
             {
-                NodeName = trimesh.Name,
-                TextureName = textureName,
-                DiffuseColor = ReadDiffuse(trimesh),
+                NodeName = mesh.Name,
+                TextureName = NormalizeTextureName(mesh.Bitmap),
+                DiffuseColor = ReadDiffuse(mesh),
                 Positions = positions,
                 Normals = normals,
                 TexCoords = texCoords,
-                Indices = indices,
-                TileFade = trimesh.Tilefade,
-                Transform = ComposeNodeTransform(trimesh, pose),
-                PoseFrames = poseFrames.Count == 0
-                    ? Array.Empty<Matrix4x4>()
-                    : poseFrames.Select(frame => ComposeNodeTransform(trimesh, frame)).ToArray(),
-                AnimationFrames = BuildAnimationTransforms(trimesh, animationFrames)
+                Indices = indices.ToArray(),
+                Transform = renderedPoseFrames.Length > 0 ? renderedPoseFrames[^1] : staticTransform,
+                PoseFrames = renderedPoseFrames,
+                AnimationFrames = animationFrames,
+                TileFade = mesh.TileFade
             };
         }
 
@@ -430,66 +334,207 @@ namespace SWLOR.Toolset.Domain.Render
 
         private static RenderEmitter BuildEmitter(
             MdlEmitterNode emitter,
-            IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationFrames) =>
-            new()
-            {
-                NodeName = emitter.Name,
-                TextureName = emitter.Texture.Equals("null", StringComparison.OrdinalIgnoreCase)
-                    ? string.Empty
-                    : emitter.Texture.ToLowerInvariant(),
-                Transform = ComposeNodeTransform(emitter),
-                XGrid = Math.Max(1, emitter.XGrid),
-                YGrid = Math.Max(1, emitter.YGrid),
-                Blend = emitter.Blend,
-                AnimationFrames = BuildAnimationTransforms(emitter, animationFrames)
-            };
-
-        private static IReadOnlyDictionary<string, IReadOnlyList<Matrix4x4>> BuildAnimationTransforms(
-            MdlNode node,
-            IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationFrames)
+            IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationSamples)
         {
-            var transforms = new Dictionary<string, IReadOnlyList<Matrix4x4>>(StringComparer.OrdinalIgnoreCase);
-            foreach (var (name, frames) in animationFrames)
-                transforms[name] = frames.Select(frame => ComposeNodeTransform(node, frame)).ToArray();
-
-            return transforms;
-        }
-
-        /// <summary>
-        /// Compose a node-to-model transform by walking from <paramref name="node"/> up through
-        /// its parent chain, accumulating each ancestor's local Scale * Rotation * Translation
-        /// (SRT, row-vector convention matching <see cref="System.Numerics.Matrix4x4"/>).
-        /// Mirrors Radoub.UI's <c>ModelViewController.GetWorldTransform</c> (the App-layer GL
-        /// renderer reused by the model preview) so both consumers place nodes identically.
-        /// </summary>
-        public static Matrix4x4 ComposeNodeTransform(MdlNode? node) => ComposeNodeTransform(node, pose: null);
-
-        /// <summary>
-        /// As <see cref="ComposeNodeTransform(MdlNode)"/>, taking each ancestor's local transform from
-        /// <paramref name="pose"/> where it names one. Posing has to happen here rather than on the
-        /// finished mesh, because a bone's animation moves everything below it in the hierarchy.
-        /// </summary>
-        public static Matrix4x4 ComposeNodeTransform(MdlNode? node, IReadOnlyDictionary<string, PosedNode>? pose)
-        {
-            var transform = Matrix4x4.Identity;
-            var current = node;
-
-            while (current != null)
+            var animationFrames = new Dictionary<string, IReadOnlyList<Matrix4x4>>(
+                StringComparer.OrdinalIgnoreCase);
+            foreach (var (name, samples) in animationSamples)
             {
-                var local = pose != null && current.Name.Length > 0 && pose.TryGetValue(current.Name, out var posed)
-                    ? posed
-                    : new PosedNode(current.Position, current.Orientation, current.Scale);
-
-                var scale = Matrix4x4.CreateScale(local.Scale);
-                var rotation = Matrix4x4.CreateFromQuaternion(local.Orientation);
-                var translation = Matrix4x4.CreateTranslation(local.Position);
-
-                transform *= scale * rotation * translation;
-
-                current = current.Parent;
+                animationFrames[name] = samples
+                    .Select(pose => ComposeNodeTransform(emitter, pose))
+                    .ToArray();
             }
 
-            return transform;
+            return new RenderEmitter
+            {
+                NodeName = emitter.Name,
+                TextureName = NormalizeTextureName(emitter.Texture),
+                Transform = ComposeNodeTransform(emitter),
+                AnimationFrames = animationFrames,
+                XGrid = Math.Clamp(emitter.XGrid, 1, MaximumEmitterGrid),
+                YGrid = Math.Clamp(emitter.YGrid, 1, MaximumEmitterGrid),
+                Update = emitter.Update ?? string.Empty,
+                RenderMode = emitter.RenderMode ?? string.Empty,
+                Blend = emitter.Blend ?? string.Empty,
+                Chunk = emitter.Chunk ?? string.Empty,
+                TextureIsTwoSided = emitter.TextureIsTwoSided,
+                Loop = emitter.Loop,
+                RenderOrder = emitter.RenderOrder,
+                DeadSpace = FiniteOr(emitter.DeadSpace, 0f),
+                BlastRadius = FiniteOr(emitter.BlastRadius, 0f),
+                BlastLength = FiniteOr(emitter.BlastLength, 0f)
+            };
         }
+
+        private static IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>>
+            SampleAnimations(IReadOnlyList<MdlAnimation> animations)
+        {
+            var result =
+                new Dictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>>(
+                    StringComparer.OrdinalIgnoreCase);
+
+            foreach (var animation in animations)
+            {
+                result[animation.Name] = MdlAnimationPose.SampleFrames(animation)
+                    .Select(frame => frame.Pose)
+                    .ToList();
+            }
+
+            return result;
+        }
+
+        private static List<RenderAnimation> BuildAnimations(
+            IReadOnlyList<MdlAnimation> source,
+            IReadOnlyList<RenderMesh> meshes,
+            IReadOnlyList<RenderEmitter> emitters)
+        {
+            var result = new List<RenderAnimation>(source.Count);
+            foreach (var animation in source)
+            {
+                var showsEmitters = emitters.Count > 0 && StateShowsEmitters(animation.Name);
+                var movesGeometry = meshes.Any(mesh =>
+                    mesh.AnimationFrames.TryGetValue(animation.Name, out var frames) &&
+                    MatricesDiffer(frames));
+                var movesEmitters = emitters.Any(emitter =>
+                    emitter.AnimationFrames.TryGetValue(animation.Name, out var frames) &&
+                    MatricesDiffer(frames));
+
+                result.Add(new RenderAnimation
+                {
+                    Name = animation.Name,
+                    Length = FiniteOr(animation.Length, 0f),
+                    ShowsEmitters = showsEmitters,
+                    IsPlayable = showsEmitters ||
+                                 (animation.Length > 0f && (movesGeometry || movesEmitters))
+                });
+            }
+
+            return result;
+        }
+
+        private static bool MatricesDiffer(IReadOnlyList<Matrix4x4> frames)
+        {
+            if (frames.Count < 2)
+                return false;
+
+            var first = frames[0];
+            for (var index = 1; index < frames.Count; index++)
+            {
+                if (frames[index] != first)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static readonly string[] EmitterOffStates =
+        {
+            // A placeable in any of these states is inert: a closed door of a portal, a
+            // deactivated device, a dying fire. Persistent particles must not keep playing.
+            "off", "close", "closed", "deactivate", "deactivated", "die", "dead", "destroyed"
+        };
+
+        private static bool StateShowsEmitters(string name) =>
+            !EmitterOffStates.Any(state => string.Equals(name, state, StringComparison.OrdinalIgnoreCase)) &&
+            !(name?.Contains("damage", StringComparison.OrdinalIgnoreCase) ?? false) &&
+            !(name?.Contains("destroy", StringComparison.OrdinalIgnoreCase) ?? false) &&
+            !(name?.Contains("dead", StringComparison.OrdinalIgnoreCase) ?? false);
+
+        private static bool IsPersistentEmitter(MdlEmitterNode emitter) =>
+            emitter.Loop &&
+            !string.IsNullOrWhiteSpace(NormalizeTextureName(emitter.Texture)) &&
+            !(emitter.Update?.Contains("explosion", StringComparison.OrdinalIgnoreCase) ?? false);
+
+        /// <summary>
+        /// Maps the Aurora "no texture" literal to an empty string and otherwise lowercases the
+        /// name, matching the ASCII reader's own null/casing normalization so binary-authored
+        /// <c>bitmap NULL</c>/<c>texture NULL</c> meshes are treated as untextured.
+        /// </summary>
+        private static string NormalizeTextureName(string? name)
+        {
+            if (string.IsNullOrWhiteSpace(name) || name.Equals("null", StringComparison.OrdinalIgnoreCase))
+                return string.Empty;
+            return name.ToLowerInvariant();
+        }
+
+        private static IEnumerable<MdlNode> EnumerateNodes(MdlNode? root)
+        {
+            if (root == null)
+                yield break;
+
+            var visited = new HashSet<MdlNode>(ReferenceEqualityComparer.Instance);
+            var pending = new Stack<MdlNode>();
+            pending.Push(root);
+            while (pending.Count > 0)
+            {
+                var node = pending.Pop();
+                if (!visited.Add(node))
+                    continue;
+                if (visited.Count > MaximumNodes)
+                    throw new InvalidDataException($"MDL geometry exceeds the {MaximumNodes:N0}-node render limit.");
+
+                yield return node;
+
+                for (var index = node.Children.Count - 1; index >= 0; index--)
+                {
+                    var child = node.Children[index];
+                    if (child != null)
+                        pending.Push(child);
+                }
+            }
+        }
+
+        private static Matrix4x4 LocalTransform(Vector3 position, Quaternion orientation, float scale)
+        {
+            position = FiniteOrZero(position);
+            orientation = IsFinite(orientation) && orientation.LengthSquared() > 0f
+                ? Quaternion.Normalize(orientation)
+                : Quaternion.Identity;
+            scale = float.IsFinite(scale) ? scale : 1f;
+
+            return Matrix4x4.CreateScale(scale) *
+                   Matrix4x4.CreateFromQuaternion(orientation) *
+                   Matrix4x4.CreateTranslation(position);
+        }
+
+        private static float[] Flatten(IEnumerable<Vector3> values)
+        {
+            var result = new List<float>();
+            foreach (var value in values)
+            {
+                result.Add(value.X);
+                result.Add(value.Y);
+                result.Add(value.Z);
+            }
+
+            return result.ToArray();
+        }
+
+        private static float[] Flatten(IEnumerable<Vector2> values)
+        {
+            var result = new List<float>();
+            foreach (var value in values)
+            {
+                result.Add(value.X);
+                result.Add(value.Y);
+            }
+
+            return result.ToArray();
+        }
+
+        private static Vector3 FiniteOrZero(Vector3 value) =>
+            IsFinite(value) ? value : Vector3.Zero;
+
+        private static Vector2 FiniteOrZero(Vector2 value) =>
+            float.IsFinite(value.X) && float.IsFinite(value.Y) ? value : Vector2.Zero;
+
+        private static float FiniteOr(float value, float fallback) => float.IsFinite(value) ? value : fallback;
+
+        private static bool IsFinite(Vector3 value) =>
+            float.IsFinite(value.X) && float.IsFinite(value.Y) && float.IsFinite(value.Z);
+
+        private static bool IsFinite(Quaternion value) =>
+            float.IsFinite(value.X) && float.IsFinite(value.Y) &&
+            float.IsFinite(value.Z) && float.IsFinite(value.W);
     }
 }

@@ -12,8 +12,7 @@
          from the SWLOR Discord server icon. -->
     <ApplicationIcon>Assets\swlor.ico</ApplicationIcon>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <!-- GlAreaControl uses pointer-offset DrawElements calls, matching Radoub.UI's
-         ModelPreviewGLControl (which also sets this flag). -->
+    <!-- GlAreaControl uses pointer-offset DrawElements calls. -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
@@ -31,9 +30,8 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.17" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.17" />
     <PackageReference Include="Avalonia.Diagnostics" Version="11.3.17" Condition="'$(Configuration)' == 'Debug'" />
-    <!-- App.axaml pulls in this package's Fluent theme. It used to arrive transitively through
-         Radoub.UI, so dropping that reference broke the XAML compile until it was named here.
-         11.3.13 is the newest published build - DataGrid trails the rest of Avalonia. -->
+    <!-- App.axaml pulls in this package's Fluent theme. 11.3.13 is the newest published build;
+         DataGrid trails the rest of Avalonia. -->
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.13" />
     <!-- The NWScript editor's text surface. Pinned to the 11.3 line to match the Avalonia pin above;
          AvaloniaEdit tracks Avalonia's minor versions, so the two must move together. MIT. -->
@@ -47,16 +45,11 @@
     <PackageReference Include="Dock.Avalonia" Version="11.3.12.1" />
     <PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="11.3.12.1" />
     <PackageReference Include="Dock.Model.Mvvm" Version="11.3.12.1" />
-    <!-- GlAreaControl uses Silk.NET.OpenGL types directly, following Radoub.UI's
-         ModelPreviewGLControl skeleton. This was already pinned explicitly rather than taken
-         transitively from Radoub.UI, which is why dropping that reference did not disturb it. -->
+    <!-- GlAreaControl uses Silk.NET.OpenGL types directly. -->
     <PackageReference Include="Silk.NET.OpenGL" Version="2.23.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- No Radoub.UI reference: the one type this app used from it (MdlPartComposer) is vendored
-         into SWLOR.Toolset.Domain/Render, which also frees the toolset to move Avalonia versions
-         independently of Radoub.UI's pin. Radoub.Formats is still referenced from Domain. -->
     <ProjectReference Include="..\SWLOR.Toolset.Domain\SWLOR.Toolset.Domain.csproj" />
   </ItemGroup>
 

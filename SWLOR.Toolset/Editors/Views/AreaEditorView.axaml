@@ -24,10 +24,9 @@
 
           <viewport:GlAreaControl Grid.Row="0" x:Name="AreaView" />
 
-          <!-- OpenGlControlBase has no Background brush, so pointer events never hit-test to it
-               (same Avalonia limitation Radoub's ModelPreviewGLControl documents). This transparent
-               overlay captures camera input and forwards it to the control; the HUD overlays declared
-               after it sit ABOVE it in z-order and keep receiving their own clicks. -->
+          <!-- OpenGlControlBase has no Background brush, so pointer events never hit-test to it.
+               This transparent overlay captures camera input and forwards it to the control; the HUD
+               overlays declared after it sit ABOVE it in z-order and keep receiving their own clicks. -->
           <Border Grid.Row="0" x:Name="ViewportInput" Background="Transparent"
                   PointerPressed="OnViewportPointerPressed"
                   PointerMoved="OnViewportPointerMoved"

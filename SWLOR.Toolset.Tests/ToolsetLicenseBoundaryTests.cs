@@ -5,25 +5,27 @@ using NUnit.Framework;
 namespace SWLOR.Toolset.Tests
 {
     /// <summary>
-    /// Guards the license boundary described in <c>SWLOR.Toolset/LICENSE-NOTICE.md</c>.
+    /// Guards the toolset's dependency direction and the removal of its retired external format
+    /// dependency.
     /// </summary>
-    /// <remarks>
-    /// SWLOR is MIT; the toolset links Radoub, which is GPL-3.0, so a built toolset binary is a
-    /// combined GPL work. That stays contained only while dependencies flow one way -
-    /// <c>SWLOR.Toolset → SWLOR.Toolset.Domain → { Radoub.Formats, SWLOR.Game.Server }</c> - and
-    /// nothing MIT ever references back into the toolset. A rule that lives only in a markdown file
-    /// is one careless "add project reference" away from quietly pulling the game server into the
-    /// GPL, and nothing about the build would complain. Hence a test.
-    /// </remarks>
     [TestFixture]
     public class ToolsetLicenseBoundaryTests
     {
-        /// <summary>The projects that are allowed to reference the toolset: the toolset itself.</summary>
         private static readonly string[] ToolsetProjects =
         {
             "SWLOR.Toolset",
             "SWLOR.Toolset.Domain",
             "SWLOR.Toolset.Tests"
+        };
+
+        private static readonly string[] ExecutableSourceRoots =
+        {
+            "SWLOR.Toolset",
+            "SWLOR.Toolset.Domain",
+            "SWLOR.Toolset.Tests",
+            "SWLOR.NWN.Formats",
+            "SWLOR.NWN.Formats.Tests",
+            "SWLOR.NWN.Formats.Corpus.Tests"
         };
 
         private static string RepositoryRoot
@@ -44,15 +46,38 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        /// <summary>Every first-party project file. Radoub's own projects are not ours to police.</summary>
         private static IEnumerable<string> FirstPartyProjects() =>
             Directory.EnumerateFiles(RepositoryRoot, "*.csproj", SearchOption.AllDirectories)
-                .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}External{Path.DirectorySeparatorChar}"));
+                .Where(path => !HasPathSegment(path, "External"))
+                .Where(path => !HasPathSegment(path, "bin"))
+                .Where(path => !HasPathSegment(path, "obj"));
+
+        private static IEnumerable<string> FirstPartyExecutableSources()
+        {
+            foreach (var sourceRoot in ExecutableSourceRoots)
+            {
+                var root = Path.Combine(RepositoryRoot, sourceRoot);
+                foreach (var path in Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories))
+                {
+                    if (HasPathSegment(path, "bin") || HasPathSegment(path, "obj"))
+                        continue;
+
+                    var extension = Path.GetExtension(path);
+                    if (extension.Equals(".cs", StringComparison.OrdinalIgnoreCase) ||
+                        extension.Equals(".csproj", StringComparison.OrdinalIgnoreCase))
+                        yield return path;
+                }
+            }
+        }
+
+        private static bool HasPathSegment(string path, string segment) =>
+            path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                .Contains(segment, StringComparer.OrdinalIgnoreCase);
 
         private static string ProjectName(string path) => Path.GetFileNameWithoutExtension(path);
 
         [Test]
-        public void NoMitProjectReferencesTheToolset()
+        public void NoFirstPartyProjectReferencesTheToolset()
         {
             var violations = new List<string>();
 
@@ -61,12 +86,10 @@ namespace SWLOR.Toolset.Tests
                 if (ToolsetProjects.Contains(ProjectName(project)))
                     continue;
 
-                var references = Regex.Matches(
-                    File.ReadAllText(project),
-                    @"<ProjectReference\s+Include=""([^""]+)""",
-                    RegexOptions.IgnoreCase);
-
-                foreach (Match reference in references)
+                foreach (Match reference in Regex.Matches(
+                             File.ReadAllText(project),
+                             @"<ProjectReference\s+Include=""([^""]+)""",
+                             RegexOptions.IgnoreCase))
                 {
                     var referenced = ProjectName(reference.Groups[1].Value);
                     if (ToolsetProjects.Contains(referenced))
@@ -75,29 +98,25 @@ namespace SWLOR.Toolset.Tests
             }
 
             violations.Should().BeEmpty(
-                "the toolset is a combined GPL-3.0 work (it links Radoub); an MIT project referencing " +
-                "it would pull that project into the GPL. See SWLOR.Toolset/LICENSE-NOTICE.md.");
+                "the desktop toolset must remain an outer application layer that no shared project consumes");
         }
 
         [Test]
-        public void TheToolsetOnlyDependsOnItselfAndTheAllowedProjects()
+        public void TheToolsetOnlyDependsOnItselfAndApprovedSharedProjects()
         {
-            // The other direction: the toolset consuming MIT code is fine and expected, but it must not
-            // grow a dependency on something that would drag more of the solution across the boundary.
-            // Radoub.UI is deliberately absent: its one consumed type is vendored into
-            // SWLOR.Toolset.Domain/Render, and re-adding the reference would silently re-couple the
-            // toolset to Radoub.UI's Avalonia pin.
-            var allowed = new HashSet<string>(ToolsetProjects) { "SWLOR.Game.Server", "Radoub.Formats" };
+            var allowed = new HashSet<string>(ToolsetProjects)
+            {
+                "SWLOR.Game.Server",
+                "SWLOR.NWN.Formats"
+            };
             var violations = new List<string>();
 
             foreach (var project in FirstPartyProjects().Where(p => ToolsetProjects.Contains(ProjectName(p))))
             {
-                var references = Regex.Matches(
-                    File.ReadAllText(project),
-                    @"<ProjectReference\s+Include=""([^""]+)""",
-                    RegexOptions.IgnoreCase);
-
-                foreach (Match reference in references)
+                foreach (Match reference in Regex.Matches(
+                             File.ReadAllText(project),
+                             @"<ProjectReference\s+Include=""([^""]+)""",
+                             RegexOptions.IgnoreCase))
                 {
                     var referenced = ProjectName(reference.Groups[1].Value);
                     if (!allowed.Contains(referenced))
@@ -106,54 +125,101 @@ namespace SWLOR.Toolset.Tests
             }
 
             violations.Should().BeEmpty(
-                "a new toolset dependency needs a deliberate license decision, not an implicit one");
+                "new toolset project dependencies need an explicit architecture and license review");
         }
 
         [Test]
-        public void TheRepositoryStillDeclaresItsMitLicense()
+        public void FirstPartyExecutableSourcesHaveNoRetiredFormatDependency()
         {
-            // Deleted as collateral in 2020's "Convert from master to dotnet core 3.1" and missing for
-            // years afterwards, which left every fork without a grant and would have made a GPL source
-            // offer impossible to satisfy.
-            var license = Path.Combine(RepositoryRoot, "LICENSE.txt");
+            var dependencyName = string.Concat("Ra", "doub");
+            var importPattern = new Regex(
+                $@"^\s*(?:global\s+)?using\s+{Regex.Escape(dependencyName)}\.",
+                RegexOptions.Multiline);
+            var qualifiedTypePattern = new Regex(
+                $@"\b{Regex.Escape(dependencyName)}\.[A-Za-z_]",
+                RegexOptions.Multiline);
+            var referencePattern = new Regex(
+                @"<(?:ProjectReference|PackageReference|Reference)\s+Include=""([^""]+)""",
+                RegexOptions.IgnoreCase);
+            var violations = new List<string>();
 
-            File.Exists(license).Should().BeTrue("the root MIT license is what every other project relies on");
-            File.ReadAllText(license).Should().Contain("MIT License");
-        }
-
-        [Test]
-        public void TheToolsetShipsTheGplTextForTheCombinedWork()
-        {
-            var gpl = Path.Combine(RepositoryRoot, "SWLOR.Toolset", "LICENSE.GPL-3.0");
-
-            File.Exists(gpl).Should().BeTrue("a conveyed toolset binary has to carry the license it is under");
-            File.ReadAllText(gpl).Should().Contain("GNU GENERAL PUBLIC LICENSE");
-        }
-
-        [Test]
-        public void EveryRadoubDerivedFileSaysItIsGpl()
-        {
-            // These are derivative works of Radoub, so they are GPL no matter how the rest of the
-            // toolset's own source is licensed - and unlike a project reference, that survives Radoub
-            // being dropped. Without a header the next reader has no way to know.
-            var derived = new[]
+            foreach (var path in FirstPartyExecutableSources())
             {
-                Path.Combine("SWLOR.Toolset.Domain", "Render", "TextureLoader.cs"),
-                Path.Combine("SWLOR.Toolset.Domain", "Render", "MdlMeshBuilder.cs"),
-                Path.Combine("SWLOR.Toolset.Domain", "Render", "MdlGeometryFlattener.cs"),
-                // Vendored verbatim out of Radoub.UI, so GPL by copy rather than by adaptation.
-                Path.Combine("SWLOR.Toolset.Domain", "Render", "MdlPartComposer.cs"),
-                Path.Combine("SWLOR.Toolset.Domain", "Render", "MdlPartBoneMap.cs")
+                var source = File.ReadAllText(path);
+                if (Path.GetExtension(path).Equals(".csproj", StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (Match reference in referencePattern.Matches(source))
+                    {
+                        if (reference.Groups[1].Value.Contains(
+                                dependencyName,
+                                StringComparison.OrdinalIgnoreCase))
+                            violations.Add(Path.GetRelativePath(RepositoryRoot, path));
+                    }
+
+                    continue;
+                }
+
+                var uncommented = Regex.Replace(
+                    source,
+                    @"/\*.*?\*/|//[^\r\n]*",
+                    string.Empty,
+                    RegexOptions.Singleline);
+                if (importPattern.IsMatch(uncommented) || qualifiedTypePattern.IsMatch(uncommented))
+                    violations.Add(Path.GetRelativePath(RepositoryRoot, path));
+            }
+
+            violations.Should().BeEmpty(
+                "the retired external format dependency must not return to executable first-party code");
+        }
+
+        [Test]
+        public void BuiltFirstPartyAssembliesHaveNoRetiredAssemblyReference()
+        {
+            var dependencyName = string.Concat("Ra", "doub");
+            var assemblies = new[]
+            {
+                typeof(SWLOR.Toolset.App).Assembly,
+                typeof(SWLOR.Toolset.Domain.Workspace.ModuleWorkspace).Assembly,
+                typeof(SWLOR.NWN.Formats.NwnFormatException).Assembly
             };
 
-            foreach (var relative in derived)
-            {
-                var path = Path.Combine(RepositoryRoot, relative);
-                File.Exists(path).Should().BeTrue($"{relative} is listed in LICENSE-NOTICE.md as Radoub-derived");
-                File.ReadAllText(path).Should().Contain(
-                    "SPDX-License-Identifier: GPL-3.0",
-                    $"{relative} is a derivative work of GPL-3.0 code and has to say so");
-            }
+            var violations = assemblies
+                .SelectMany(assembly => assembly.GetReferencedAssemblies()
+                    .Where(reference => reference.Name?.Contains(
+                        dependencyName,
+                        StringComparison.OrdinalIgnoreCase) == true)
+                    .Select(reference => $"{assembly.GetName().Name} -> {reference.Name}"))
+                .ToArray();
+
+            violations.Should().BeEmpty(
+                "the compiled toolset, domain, and formats assemblies must not reference the retired dependency");
+        }
+
+        [Test]
+        public void LicensedCorpusTestsAreInTheSolutionBehindTheAvailabilityGate()
+        {
+            // Both halves matter: the solution entry makes a full `dotnet test` discover the
+            // corpus sweeps on machines that have the licensed assets, and the availability gate
+            // is what keeps asset-less machines green (skipping, or failing loudly under
+            // SWLOR_REQUIRE_LICENSED_CORPUS=1 so evidence runs cannot silently skip).
+            var solution = File.ReadAllText(Path.Combine(RepositoryRoot, "SWLOR.Game.Server.sln"));
+            solution.Should().Contain(
+                @"SWLOR.NWN.Formats.Corpus.Tests\SWLOR.NWN.Formats.Corpus.Tests.csproj",
+                "a full solution test run must discover the corpus verification suite");
+
+            var gate = Path.Combine(
+                RepositoryRoot, "SWLOR.NWN.Formats.Corpus.Tests", "CorpusAvailabilityGate.cs");
+            File.Exists(gate).Should().BeTrue(
+                "the availability gate is what makes solution-level inclusion safe without the licensed assets");
+        }
+
+        [Test]
+        public void TheRepositoryDeclaresItsMitLicense()
+        {
+            var license = Path.Combine(RepositoryRoot, "LICENSE.txt");
+
+            File.Exists(license).Should().BeTrue("the root license grants use of first-party code");
+            File.ReadAllText(license).Should().Contain("MIT License");
         }
     }
 }

@@ -22,7 +22,7 @@ reuses the existing pack pipeline unchanged.
 | | |
 |---|---|
 | .NET SDK | **10.0** (both toolset projects target `net10.0`, x64) |
-| Submodules | `SWLOR_Haks` and `External/Radoub` must be initialised |
+| Submodules | `SWLOR_Haks` must be initialised |
 | NWN:EE install | **Optional.** Needed only for base-game tilesets/models; SWLOR hak content works without one |
 | OS | Windows (the app is `WinExe`; the viewport uses OpenGL) |
 
@@ -41,9 +41,6 @@ dotnet build SWLOR.Game.Server.sln -p:RunPostBuildEvent=Never
 ```bash
 dotnet run --no-build --project SWLOR.Toolset
 ```
-
-> **Do not run `dotnet` from inside `External/Radoub`.** Its `global.json` pins SDK `9.0.100`, which
-> is typically not installed here, and any command run from that directory will fail.
 
 ## Tests
 
@@ -67,13 +64,13 @@ dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-build --filter "
 SWLOR.Toolset/          Avalonia app  — shell, docked panels, editors, OpenGL viewport
 SWLOR.Toolset.Domain/   headless lib  — all logic lives here (no UI dependency)
 SWLOR.Toolset.Tests/    NUnit         — unit tests + full-corpus gates
+SWLOR.NWN.Formats/      headless lib  — standalone read-only Aurora resource formats
 ```
 
 References flow strictly one way:
 
 ```
-SWLOR.Toolset → SWLOR.Toolset.Domain → { Radoub.Formats, SWLOR.Game.Server }
-SWLOR.Toolset → Radoub.UI
+SWLOR.Toolset → SWLOR.Toolset.Domain → { SWLOR.NWN.Formats, SWLOR.Game.Server }
 ```
 
 **Logic belongs in `Domain`, not in the app project.** The test project references `Domain` only —
@@ -119,11 +116,9 @@ style, and trailing-newline state; floats reproduce Nim's `%.16g` formatting exa
 field must rewrite that field and nothing else. `RoundTripCorpusTests` is the permanent gate and has
 to stay green forever.
 
-**Never reference `SWLOR.Toolset.*` from another project.** The toolset links GPL-3.0 code
-(Radoub); this boundary is what keeps the game server unencumbered. See
+**Never reference `SWLOR.Toolset.*` from another project.** The desktop toolset is an outer
+application layer. Shared libraries and the game server must remain independently reusable. See
 [LICENSE-NOTICE.md](LICENSE-NOTICE.md).
-
-**Never commit inside `External/Radoub`.** It is pinned to a release tag and updated deliberately.
 
 **Corpus gates are the real safety net.** Several tests run against all 438+ module areas — GFF
 round-trip, scene assembly, tile adjacency, matcher soundness, paint idempotency. They exist because
@@ -181,6 +176,7 @@ and the evidence behind each rule.
 
 ## License
 
-The toolset links GPL-3.0 code and is therefore GPL-3.0 when distributed. Internal team use carries
-no obligations; distribution outside the contributor team requires releasing the combined work under
-GPL-3.0 with corresponding source. Full detail in [LICENSE-NOTICE.md](LICENSE-NOTICE.md).
+First-party toolset and format-library source is licensed under the repository's MIT license.
+Third-party package and replacement provenance details are recorded in
+[LICENSE-NOTICE.md](LICENSE-NOTICE.md) and
+[FORMAT-PROVENANCE.md](../SWLOR.NWN.Formats/FORMAT-PROVENANCE.md).

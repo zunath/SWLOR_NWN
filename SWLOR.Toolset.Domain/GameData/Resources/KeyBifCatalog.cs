@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
-using Radoub.Formats.Bif;
-using Radoub.Formats.Key;
+using SWLOR.NWN.Formats.Bif;
+using SWLOR.NWN.Formats.Key;
 
 namespace SWLOR.Toolset.Domain.GameData.Resources
 {
@@ -183,7 +183,13 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
 
             var installRoot = Path.GetDirectoryName(_dataDirectory) ?? _dataDirectory;
 
-            var fromInstallRoot = Path.Combine(installRoot, normalized);
+            var fullInstallRoot = Path.GetFullPath(installRoot);
+            var fromInstallRoot = Path.GetFullPath(normalized, fullInstallRoot);
+            var rootPrefix = fullInstallRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) +
+                             Path.DirectorySeparatorChar;
+            if (!fromInstallRoot.StartsWith(rootPrefix, StringComparison.OrdinalIgnoreCase))
+                return null;
+
             if (File.Exists(fromInstallRoot))
                 return fromInstallRoot;
 

@@ -1,76 +1,137 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-//
-// The transform composition order below follows Radoub.UI's ModelViewController.GetWorldTransform,
-// and the flattening assumes the part origins Radoub's MdlPartComposer establishes
-// (https://github.com/LordOfMyatar/Radoub), which is GPL-3.0. That makes this file a derivative
-// work: it is GPL-3.0 even though the rest of the SWLOR Toolset's own source is MIT. Dropping the
-// Radoub reference would not change that - the composition would have to be clean-roomed from the
-// MDL format spec instead. See SWLOR.Toolset/LICENSE-NOTICE.md.
+// SPDX-License-Identifier: MIT
+
 using System.Numerics;
-using Radoub.Formats.Mdl;
+using SWLOR.NWN.Formats.Mdl;
 
 namespace SWLOR.Toolset.Domain.Render
 {
     /// <summary>
-    /// Bakes every node's composed model-root transform into its mesh vertex data and resets all
-    /// node transforms to identity, so each mesh's vertices are expressed directly in the model's
-    /// root space.
-    ///
-    /// Why this exists: body-part composition attaches a part file's meshes onto skeleton bones
-    /// and assumes part geometry is authored at the part origin (Radoub's MdlPartComposer sets the
-    /// attached mesh's Position to zero). BioWare's parts satisfy that, but several SWLOR hak parts
-    /// (e.g. sw_pt_lthigh\pfh0_legl001.mdl, sw_pt_lshin\pfh0_shinl001.mdl) author vertices offset
-    /// and correct them with node Positions inside the part file — transforms the composer
-    /// discards, leaving those limbs floating away from the body. Flattening a part model first
-    /// makes the at-origin assumption true for every part.
-    ///
-    /// Apply ONLY to models whose node transforms should no longer matter (composer part inputs):
-    /// never to a skeleton (its node transforms are the bone positions) and never to models the
-    /// renderer draws directly (it applies node world transforms itself — baking would double-
-    /// transform). Animation vertex data (AnimatedVertices) is left untouched; static previews do
-    /// not consume it.
+    /// Bakes an MDL geometry tree's local transforms into its mesh data.
     /// </summary>
+    /// <remarks>
+    /// Aurora MDL nodes use row-vector scale, rotation, then translation. A child's world matrix is
+    /// therefore its local matrix multiplied by its parent's world matrix. Flattening is used for
+    /// independently-authored body parts before they are attached to a creature skeleton.
+    /// </remarks>
     public static class MdlGeometryFlattener
     {
+        private const int MaximumNodes = 1_000_000;
+
+        /// <summary>
+        /// Transforms every mesh position and normal through its complete parent chain, then resets
+        /// every visited node to an identity local transform.
+        /// </summary>
         public static void FlattenNodeTransforms(MdlModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
-
             if (model.GeometryRoot == null)
                 return;
 
-            Flatten(model.GeometryRoot, Matrix4x4.Identity);
-        }
+            var visited = new HashSet<MdlNode>(ReferenceEqualityComparer.Instance);
+            var pending = new Stack<(MdlNode Node, Matrix4x4 ParentTransform)>();
+            var minimum = new Vector3(float.MaxValue);
+            var maximum = new Vector3(float.MinValue);
+            var radiusSquared = 0f;
+            var foundVertex = false;
+            pending.Push((model.GeometryRoot, Matrix4x4.Identity));
 
-        private static void Flatten(MdlNode node, Matrix4x4 parentTransform)
-        {
-            // Same composition order as Radoub's ModelViewController.GetWorldTransform:
-            // local = scale × rotation × translation, composed child-to-root.
-            var local = Matrix4x4.CreateScale(node.Scale) *
-                        Matrix4x4.CreateFromQuaternion(node.Orientation) *
-                        Matrix4x4.CreateTranslation(node.Position);
-            var world = local * parentTransform;
-
-            if (node is MdlTrimeshNode mesh && !world.IsIdentity)
+            while (pending.Count > 0)
             {
-                for (var i = 0; i < mesh.Vertices.Length; i++)
-                    mesh.Vertices[i] = Vector3.Transform(mesh.Vertices[i], world);
+                var (node, parentTransform) = pending.Pop();
+                if (!visited.Add(node))
+                    continue;
+                if (visited.Count > MaximumNodes)
+                    throw new InvalidDataException($"MDL geometry exceeds the {MaximumNodes:N0}-node flattening limit.");
 
-                for (var i = 0; i < mesh.Normals.Length; i++)
+                var worldTransform = LocalTransform(node) * parentTransform;
+                if (node is MdlTrimeshNode mesh)
                 {
-                    var normal = Vector3.TransformNormal(mesh.Normals[i], world);
-                    var length = normal.Length();
-                    if (length > 1e-6f)
-                        mesh.Normals[i] = normal / length;
+                    BakeMesh(
+                        mesh,
+                        worldTransform,
+                        ref minimum,
+                        ref maximum,
+                        ref radiusSquared,
+                        ref foundVertex);
                 }
+
+                for (var index = node.Children.Count - 1; index >= 0; index--)
+                {
+                    var child = node.Children[index];
+                    if (child != null)
+                        pending.Push((child, worldTransform));
+                }
+
+                node.Position = Vector3.Zero;
+                node.Orientation = Quaternion.Identity;
+                node.Scale = 1f;
             }
 
-            node.Position = Vector3.Zero;
-            node.Orientation = Quaternion.Identity;
-            node.Scale = 1f;
-
-            foreach (var child in node.Children)
-                Flatten(child, world);
+            if (foundVertex)
+            {
+                model.BoundsMinimum = minimum;
+                model.BoundsMaximum = maximum;
+                model.Radius = MathF.Sqrt(radiusSquared);
+            }
         }
+
+        private static Matrix4x4 LocalTransform(MdlNode node)
+        {
+            var scale = float.IsFinite(node.Scale) ? node.Scale : 1f;
+            var orientation = IsFinite(node.Orientation) && node.Orientation.LengthSquared() > 0f
+                ? Quaternion.Normalize(node.Orientation)
+                : Quaternion.Identity;
+            var position = IsFinite(node.Position) ? node.Position : Vector3.Zero;
+
+            return Matrix4x4.CreateScale(scale) *
+                   Matrix4x4.CreateFromQuaternion(orientation) *
+                   Matrix4x4.CreateTranslation(position);
+        }
+
+        private static void BakeMesh(
+            MdlTrimeshNode mesh,
+            Matrix4x4 transform,
+            ref Vector3 minimum,
+            ref Vector3 maximum,
+            ref float radiusSquared,
+            ref bool foundVertex)
+        {
+            for (var index = 0; index < mesh.Vertices.Length; index++)
+            {
+                var transformed = Vector3.Transform(mesh.Vertices[index], transform);
+                mesh.Vertices[index] = transformed;
+                if (!IsFinite(transformed))
+                    continue;
+
+                minimum = Vector3.Min(minimum, transformed);
+                maximum = Vector3.Max(maximum, transformed);
+                radiusSquared = MathF.Max(radiusSquared, transformed.LengthSquared());
+                foundVertex = true;
+            }
+
+            for (var index = 0; index < mesh.Normals.Length; index++)
+                mesh.Normals[index] = TransformNormal(mesh.Normals[index], transform);
+
+            foreach (var face in mesh.Faces)
+                face.Normal = TransformNormal(face.Normal, transform);
+        }
+
+        private static Vector3 TransformNormal(Vector3 normal, Matrix4x4 transform)
+        {
+            if (!IsFinite(normal))
+                return Vector3.Zero;
+
+            var transformed = Vector3.TransformNormal(normal, transform);
+            return IsFinite(transformed) && transformed.LengthSquared() > 0f
+                ? Vector3.Normalize(transformed)
+                : Vector3.Zero;
+        }
+
+        private static bool IsFinite(Vector3 value) =>
+            float.IsFinite(value.X) && float.IsFinite(value.Y) && float.IsFinite(value.Z);
+
+        private static bool IsFinite(Quaternion value) =>
+            float.IsFinite(value.X) && float.IsFinite(value.Y) &&
+            float.IsFinite(value.Z) && float.IsFinite(value.W);
     }
 }

@@ -72,7 +72,7 @@ namespace SWLOR.Toolset.Tests
                     ? TlkService.Load(swTlkPath, baseTlkPath)
                     : new TlkService(
                         TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}"),
-                        Radoub.Formats.Tlk.TlkReader.Read(baseTlkPath));
+                        SWLOR.NWN.Formats.Tlk.TlkReader.Read(baseTlkPath));
 
                 return new Fixture { Tilesets = new TilesetCatalog(index), Tlk = tlk };
             }

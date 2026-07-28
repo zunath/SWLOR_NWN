@@ -1,4 +1,4 @@
-using Radoub.Formats.Common;
+using SWLOR.NWN.Formats.Common;
 
 namespace SWLOR.Toolset.Domain.GameData.Resources
 {
@@ -7,28 +7,11 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
     /// NWN itself keys resources (KEY/BIF, ERF/HAK, and loose override files are all indexed by
     /// resref+type, case-insensitively).
     ///
-    /// The extension&lt;-&gt;type mapping is backed by <see cref="ResourceTypes"/> (Radoub.Formats.
-    /// Common) for every extension the resource index needs - mdl, wok, set, tga, dds, txi, plt, 2da, tlk, itp,
-    /// wav all match Radoub's table exactly. The one gap is "mtr" (NWN:EE material files, type
-    /// 2072 per SWLOR.NWN.API's own <c>ResType</c> enum - Radoub.Formats.Common.ResourceTypes does
-    /// not define it), which is patched in locally rather than re-deriving Radoub's whole table.
+    /// The extension&lt;-&gt;type mapping is backed by <see cref="ResourceTypes"/> in the standalone
+    /// formats library, including NWN:EE resource types such as MTR.
     /// </summary>
     public readonly struct ResourceIdentity : IEquatable<ResourceIdentity>
     {
-        // Resource types NWN:EE defines that Radoub.Formats.Common.ResourceTypes does not (yet)
-        // expose, keyed by lowercase extension without a leading dot.
-        private static readonly IReadOnlyDictionary<string, ushort> ExtraExtensionToType =
-            new Dictionary<string, ushort>
-            {
-                ["mtr"] = 2072
-            };
-
-        private static readonly IReadOnlyDictionary<ushort, string> ExtraTypeToExtension =
-            new Dictionary<ushort, string>
-            {
-                [2072] = "mtr"
-            };
-
         public string ResRef { get; }
         public ushort ResourceType { get; }
 
@@ -59,11 +42,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         /// </summary>
         public static ushort TypeFromExtension(string extension)
         {
-            var ext = extension.TrimStart('.').ToLowerInvariant();
-            if (ExtraExtensionToType.TryGetValue(ext, out var extraType))
-                return extraType;
-
-            return ResourceTypes.FromExtension(ext);
+            return ResourceTypes.FromExtension(extension);
         }
 
         /// <summary>
@@ -71,9 +50,6 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         /// </summary>
         public static string ExtensionFromType(ushort resourceType)
         {
-            if (ExtraTypeToExtension.TryGetValue(resourceType, out var extraExtension))
-                return extraExtension;
-
             return ResourceTypes.GetExtension(resourceType).TrimStart('.');
         }
 

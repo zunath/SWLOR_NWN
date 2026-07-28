@@ -1,7 +1,7 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using Radoub.Formats.Mdl;
+using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Tests
@@ -10,10 +10,8 @@ namespace SWLOR.Toolset.Tests
     /// Coverage for <see cref="MdlGeometryFlattener"/> — the WP4.3 fix for segmented-creature
     /// preview misalignment. Several SWLOR hak body-part MDLs (e.g. sw_pt_lthigh's
     /// pfh0_legl001) author their vertices offset from the part origin and correct them with a
-    /// mesh-node Position inside the part file; Radoub's MdlPartComposer discards those node
-    /// transforms when attaching parts to skeleton bones (it assumes geometry at local origin),
-    /// which rendered such parts floating away from the body. Flattening bakes the node
-    /// transforms into the vertex data first, making the composer's assumption true.
+    /// mesh-node Position inside the part file. Flattening bakes those node transforms into the
+    /// vertex data before composition so attached parts remain aligned with their skeleton bones.
     /// </summary>
     public class MdlGeometryFlattenerTests
     {
@@ -91,8 +89,8 @@ namespace SWLOR.Toolset.Tests
         public void Flatten_NestedDummyAndRotatedMesh_ComposesFullChainIntoVertices()
         {
             // Synthetic: root → dummy(+1Z) → mesh(+1X, rotated 90° about Z, one vertex at local
-            // (1,0,0) with normal (1,0,0)). The composed transform (matching Radoub's
-            // GetWorldTransform order: scale × rotation × translation, child-to-root) must land
+            // (1,0,0) with normal (1,0,0)). The composed scale × rotation × translation transform,
+            // accumulated child-to-root, must land
             // the vertex at (1,1,1) and rotate the normal to (0,1,0).
             var mesh = new MdlTrimeshNode
             {

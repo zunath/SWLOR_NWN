@@ -1,5 +1,8 @@
 # SWLOR Toolset — SWLOR-Only Aurora Toolset Replacement
 
+> **Historical plan.** This records the original toolset implementation. Its Radoub dependency
+> and licensing guidance were superseded by `RADOUB-REPLACEMENT-PLAN.md`.
+
 > Canonical in-repo copy of the approved execution plan. Progress and recorded decisions
 > live in the companion `WORKLOG.md` (same folder) — on session start, read this file, then
 > WORKLOG.md, then recent git history to recover state. Format-spec corrections discovered

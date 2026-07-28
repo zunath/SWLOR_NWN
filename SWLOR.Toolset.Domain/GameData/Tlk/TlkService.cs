@@ -1,4 +1,4 @@
-using Radoub.Formats.Tlk;
+using SWLOR.NWN.Formats.Tlk;
 
 namespace SWLOR.Toolset.Domain.GameData.Tlk
 {

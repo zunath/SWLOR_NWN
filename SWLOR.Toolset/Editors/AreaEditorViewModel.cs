@@ -519,7 +519,11 @@ namespace SWLOR.Toolset.Editors
                     ? $"Click an empty doorway to hang {_pendingPlacementResRef}... (Esc or right-click to cancel)"
                     : $"Click to place {_pendingPlacementResRef}... (Esc or right-click to cancel)"
             : _pendingTile is { } tile
-                ? CanRotatePendingTile
+                ? tile.Terrain != null
+                    ? $"Click to paint {tile.Label}... (Esc or right-click to stop)"
+                : tile.Crosser != null
+                    ? $"Click a grid edge to paint {tile.Label}... (Esc or right-click to stop)"
+                : CanRotatePendingTile
                     ? $"Click a cell to place {tile.Label} facing {PendingTileFacing}... " +
                       "(R to rotate, Esc or right-click to cancel)"
                     : $"Click a cell to place {tile.Label}... (Esc or right-click to cancel)"
@@ -604,7 +608,7 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>
         /// Whether <paramref name="entry"/> is a tile a builder may turn: a single cell, and not a
-        /// terrain brush (which picks its own tiles and so has no one orientation to set).
+        /// terrain or crosser brush (each picks its own tiles and so has no one orientation to set).
         /// </summary>
         /// <remarks>
         /// Takes the entry rather than reading <see cref="_pendingTile"/>, because the commit path has
@@ -612,7 +616,7 @@ namespace SWLOR.Toolset.Editors
         /// came to be written at orientation 0 while the HUD reported 90, 180 or 270.
         /// </remarks>
         private static bool IsRotatable(TilePaletteEntry? entry) =>
-            entry is { Columns: 1, Rows: 1, Terrain: null };
+            entry is { Columns: 1, Rows: 1, Terrain: null, Crosser: null };
 
         /// <summary>The armed tile's facing, as the compass label the status line shows.</summary>
         public string PendingTileFacing => _pendingTileOrientation switch

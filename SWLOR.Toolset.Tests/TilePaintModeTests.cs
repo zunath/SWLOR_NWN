@@ -166,8 +166,9 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
-        /// Auto's entries carry a terrain and Manual's do not - the difference the click acts on. An
-        /// entry with no terrain is stamped literally; one with a terrain is handed to the solver.
+        /// Every Terrain-category entry is a solver brush - a terrain for a vertex paint or a
+        /// crosser for an edge paint, exactly one of the two - while All tiles entries are stamped
+        /// literally and carry neither. That is the difference the click acts on.
         /// </summary>
         [Test]
         public void OnlyAutosEntriesCarryATerrain()
@@ -187,12 +188,14 @@ namespace SWLOR.Toolset.Tests
             var terrain = palette.Categories
                 .FirstOrDefault(c => c.Name == TilePaletteBuilder.TerrainCategoryName);
             terrain.Should().NotBeNull();
-            terrain!.Entries.Should().OnlyContain(entry => entry.Terrain != null);
+            terrain!.Entries.Should().OnlyContain(entry =>
+                entry.Terrain != null ^ entry.Crosser != null);
 
             var allTiles = palette.Categories
                 .FirstOrDefault(c => c.Name == TilePaletteBuilder.AllTilesCategoryName);
             allTiles.Should().NotBeNull();
-            allTiles!.Entries.Should().OnlyContain(entry => entry.Terrain == null);
+            allTiles!.Entries.Should().OnlyContain(entry =>
+                entry.Terrain == null && entry.Crosser == null);
         }
     }
 }

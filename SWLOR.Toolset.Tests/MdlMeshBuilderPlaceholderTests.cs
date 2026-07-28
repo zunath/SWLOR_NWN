@@ -76,6 +76,27 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
+        /// A collision node is the walkable surface, not artwork, and must never be drawn.
+        /// </summary>
+        /// <remarks>
+        /// It cannot be filtered by <see cref="MdlTrimeshNode.Render"/>: ASCII MDL writes no
+        /// <c>render</c> line for one, so it arrives at the default of true, and it carries no bitmap.
+        /// dath_desert drew 19 of them as flat grey slabs lying over the sand - ztd01 has 440
+        /// <c>node aabb</c> declarations in total.
+        /// </remarks>
+        [Test]
+        public void AWalkmeshNode_IsNotBuilt()
+        {
+            var walkmesh = Trimesh("walkmesh", bitmap: null);
+            walkmesh.IsWalkmesh = true;
+
+            var built = MdlMeshBuilder.Build(ModelOf(walkmesh, Trimesh("ground")));
+
+            built.Meshes.Should().ContainSingle(because: "only the artwork is drawn")
+                .Which.NodeName.Should().Be("ground");
+        }
+
+        /// <summary>
         /// The Aurora "no texture" literal must resolve the same way whether it came from an ASCII
         /// MDL (already lowercased/blanked by <see cref="AsciiMdlReader"/>) or a binary MDL (which
         /// stores the raw fixed string as-is), and in any casing. Otherwise a binary mesh authored

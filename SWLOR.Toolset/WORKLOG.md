@@ -1923,3 +1923,48 @@ until something is selected.
 - **Verification.** `AreaTileSelectionTests` covers the disabled-until-selected gate, one level per
   press, the minimum-height refusal and its message, and an instance selection clearing the tile one.
   Driven in the running app as well: Tile (3,6) stepped 0 -> 2 and back down to 0, refusing below it.
+
+## Area viewport - 2026-07-27 - Collision nodes were being drawn as artwork
+
+dath_desert laid flat grey slabs over its sand and appeared to be missing the sculpted head. Both
+were the same defect: the tile's collision node was being rendered.
+
+- **Why it survived the Radoub replacement.** A tile MDL declares its walkable surface as
+  `node aabb` - ztd01 has 440 of them - and `AsciiMdlReader` built those as ordinary trimeshes.
+  ASCII never writes a `render` line for a collision node, so it arrived at the default of true, and
+  it carries no bitmap: exactly the shape of a mesh the viewport draws untextured. Nineteen of them
+  landed on dath_desert, and one sat over the head, which is what made an occluded object read as a
+  missing one.
+- **Decision.** `MdlTrimeshNode.IsWalkmesh`, set by the ASCII reader for `aabb`/`pwk`/`dwk` and by
+  the binary reader from the node's AABB payload flag (which it previously detected and discarded),
+  and skipped in `MdlMeshBuilder`. A node property rather than something a consumer infers, because
+  nothing else in the node distinguishes one. The area view's walkmesh still comes from the tile's
+  .wok; this geometry has no other consumer.
+- **Deliberately not done.** `Render` was NOT repurposed to mean "not drawn" - it is a distinct
+  authored field, and a reader that lies about it would mislead the next consumer.
+- **Ruled out.** The mesh header's `tilefade` offset (376) was suspected and is correct; brute-forced
+  against zsf01's flagged ceilings and ttw01's flagged canopy. ztd01 simply has no tilefade geometry.
+- **Verification.** `MdlReaderTests` covers all three ASCII collision keywords and the binary AABB
+  flag; `MdlMeshBuilderPlaceholderTests` covers the exclusion. Measured on dath_desert: blank-texture
+  tile meshes 20 -> 0, tile triangles 24,239 -> 19,649.
+
+## Area editor - 2026-07-27 - The selection bar is now a right-click menu
+
+Selecting an object no longer docks a bar under the map.
+
+- **Why.** The bar appeared only while something was selected, so selecting resized the viewport out
+  from under the builder mid-edit - the camera shifted and whatever they were aiming at moved.
+- **Decision.** The Scene tab is one row. A right press picks whatever is under the cursor and
+  selects it before the menu opens, so the menu always describes the thing that was clicked rather
+  than the previous selection, and it carries what the bar did: glyph, name, kind, resref on the
+  tooltip, plus Edit object and the three turn commands. A right-click on empty ground opens nothing.
+- **Deliberately not done.** No raise/lower entry for a right-click on bare ground yet, though that
+  click does select the tile - the ask was about objects.
+
+## Toolset tests - 2026-07-27 - The licence boundary scan ignored sibling worktrees
+
+`TheToolsetOnlyDependsOnItselfAndApprovedSharedProjects` walked the whole repository root and so read
+the `.claude/worktrees/*` checkouts, which are entire second copies of the repository at other
+commits. One still on a pre-Radoub-removal branch reported
+`SWLOR.Toolset.Domain -> Radoub.Formats` against a tree that references Radoub nowhere. Scoped the
+scan to the tree under test.

@@ -20,7 +20,11 @@
              after every edit, and the view options that were here either had no audience or are simply
              the right default (ceilings hidden, placeables drawn as their models). The map gets the
              whole tab. -->
-        <Grid RowDefinitions="*,Auto">
+        <!-- One row: the map. Nothing docks under it, because anything that appears only while
+             something is selected resizes the viewport out from under the builder mid-edit - the
+             camera shifts, and whatever they were aiming at moves. What the old selection bar
+             offered lives on the right-click menu below instead. -->
+        <Grid>
 
           <viewport:GlAreaControl Grid.Row="0" x:Name="AreaView" />
 
@@ -31,7 +35,42 @@
                   PointerPressed="OnViewportPointerPressed"
                   PointerMoved="OnViewportPointerMoved"
                   PointerReleased="OnViewportPointerReleased"
-                  PointerWheelChanged="OnViewportPointerWheel" />
+                  PointerWheelChanged="OnViewportPointerWheel"
+                  ContextRequested="OnViewportContextRequested">
+            <!-- Right-click acts on whatever is under the cursor: the press handler picks it first,
+                 so the menu always describes the thing that was clicked rather than the previous
+                 selection. Suppressed entirely when the click lands on empty ground. -->
+            <Border.ContextMenu>
+              <ContextMenu>
+                <!-- The first two entries are the readout the docked bar used to carry: the name a
+                     builder recognises, and the kind and resref underneath it for anyone scripting
+                     against it. Disabled because they are a caption, not an action. -->
+                <MenuItem Header="{Binding SelectionName}" IsEnabled="False">
+                  <MenuItem.Icon>
+                    <TextBlock Text="{Binding SelectionGlyph}"
+                               Foreground="{DynamicResource AccentBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{Binding SelectionKindLabel}" IsEnabled="False"
+                          ToolTip.Tip="{Binding SelectionResRef}" />
+                <Separator />
+                <MenuItem Header="Edit object..."
+                          Command="{Binding EditSelectedBlueprintCommand}"
+                          ToolTip.Tip="Open the blueprint this was placed from" />
+                <Separator />
+                <MenuItem Header="Turn anticlockwise"
+                          Command="{Binding RotateSelectionCounterClockwiseCommand}"
+                          IsEnabled="{Binding CanRotateSelection}" />
+                <MenuItem Header="Turn clockwise"
+                          Command="{Binding RotateSelectionClockwiseCommand}"
+                          IsEnabled="{Binding CanRotateSelection}" />
+                <MenuItem Header="Turn to a random angle"
+                          Command="{Binding RotateSelectionRandomlyCommand}"
+                          IsEnabled="{Binding CanRotateSelection}" />
+              </ContextMenu>
+            </Border.ContextMenu>
+          </Border>
 
           <Border Grid.Row="0" Background="#B0202020" CornerRadius="4" Padding="10,6"
                   HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -150,35 +189,6 @@
             <TextBlock x:Name="GlStatusText" Foreground="White" TextWrapping="Wrap" MaxWidth="480" />
           </Border>
 
-          <!-- Selection bar. One row, and nothing in it is a number in a narrow box: the name a builder
-               recognises, the resref underneath it for anyone scripting against it, the kind, and the one
-               action worth offering from here - open the thing itself. Coordinates deliberately live on
-               the gizmo while dragging and in the status bar otherwise. -->
-          <Border Grid.Row="1" Background="{DynamicResource PanelBrush}"
-                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0"
-                  Padding="12,8" IsVisible="{Binding HasSceneSelection}">
-            <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="14">
-              <Border Grid.Column="0" Width="38" Height="38" CornerRadius="3"
-                      Background="{DynamicResource FieldBrush}"
-                      BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
-                <TextBlock Text="{Binding SelectionGlyph}" HorizontalAlignment="Center"
-                           VerticalAlignment="Center" FontSize="16"
-                           Foreground="{DynamicResource AccentBrush}" />
-              </Border>
-
-              <StackPanel Grid.Column="1" Spacing="1" VerticalAlignment="Center" MinWidth="180">
-                <TextBlock Classes="name" FontSize="13" Text="{Binding SelectionName}" />
-                <TextBlock Classes="resref" Text="{Binding SelectionResRef}" />
-              </StackPanel>
-
-              <TextBlock Grid.Column="2" Classes="dim" VerticalAlignment="Center"
-                         Text="{Binding SelectionKindLabel}" />
-
-              <Button Grid.Column="3" Content="Edit object..." VerticalAlignment="Center"
-                      Command="{Binding EditSelectedBlueprintCommand}"
-                      ToolTip.Tip="Open the blueprint this was placed from" />
-            </Grid>
-          </Border>
         </Grid>
       </TabItem>
       <TabItem Header="Properties">

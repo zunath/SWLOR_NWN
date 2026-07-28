@@ -87,14 +87,14 @@
           <Path Data="M4,4 H14 V14 H4 Z M8,8 H20 V20 H8 Z" />
         </ToggleButton>
         <ToggleButton Classes="tool"
-                      IsChecked="{Binding Display.ShowFog, Mode=TwoWay}"
-                      ToolTip.Tip="Display fog - draw the area's distance fog, which hides far geometry">
-          <Path Data="M3,7 H19 M5,11 H21 M3,15 H16 M7,19 H21" />
-        </ToggleButton>
-        <ToggleButton Classes="tool"
                       IsChecked="{Binding Display.ShowCeilings, Mode=TwoWay}"
                       ToolTip.Tip="Display ceilings - roof an interior area over instead of seeing into its rooms from above">
           <Path Data="M3,11 L12,4 L21,11 M5,11 V20 H19 V11" />
+        </ToggleButton>
+        <ToggleButton Classes="tool"
+                      IsChecked="{Binding Display.ShowFog, Mode=TwoWay}"
+                      ToolTip.Tip="Display fog - draw the area's distance fog, which hides far geometry">
+          <Path Data="M3,7 H19 M5,11 H21 M3,15 H16 M7,19 H21" />
         </ToggleButton>
         <ToggleButton Classes="tool"
                       IsChecked="{Binding Display.ShowAreaLighting, Mode=TwoWay}"

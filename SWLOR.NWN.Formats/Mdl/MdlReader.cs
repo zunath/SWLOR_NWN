@@ -182,7 +182,13 @@ public sealed class MdlReader
                 if ((content & 0x100) != 0)
                     extraOffset = CheckedSection(extraOffset, 24, "MDL danglymesh header");
                 if ((content & 0x200) != 0)
+                {
+                    // The payload itself is not read, but the node has to be marked: its triangles
+                    // are the walkable surface, not artwork. See MdlTrimeshNode.IsWalkmesh.
+                    if (node is MdlTrimeshNode aabbMesh)
+                        aabbMesh.IsWalkmesh = true;
                     _ = CheckedSection(extraOffset, 4, "MDL AABB header");
+                }
             }
 
             ParseControllers(node, offset + 84, offset + 96);

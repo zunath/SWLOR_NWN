@@ -142,7 +142,11 @@ internal sealed class AsciiMdlReader
             : type switch
             {
                 "skin" => new MdlSkinmeshNode(),
-                "trimesh" or "animmesh" or "danglymesh" or "aabb" or "pwk" => new MdlTrimeshNode(),
+                "trimesh" or "animmesh" or "danglymesh" => new MdlTrimeshNode(),
+                // Collision nodes carry the same vertex/face payload as a trimesh, so they are read
+                // as one - but flagged, because ASCII never writes a "render" line for them and a
+                // consumer would otherwise draw the walkable surface as untextured artwork.
+                "aabb" or "pwk" or "dwk" => new MdlTrimeshNode { IsWalkmesh = true },
                 "emitter" => new MdlEmitterNode(),
                 _ => new MdlNode()
             };

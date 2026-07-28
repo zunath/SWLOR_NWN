@@ -207,7 +207,12 @@ namespace SWLOR.Toolset.Domain.Render
             var renderMeshes = new List<RenderMesh>();
             foreach (var mesh in EnumerateNodes(model.GeometryRoot).OfType<MdlTrimeshNode>())
             {
-                if (!mesh.Render || PlaceholderNames.Contains(mesh.Name))
+                // A collision node is the walkable surface, not artwork. It has to be excluded by its
+                // own flag rather than by Render: ASCII MDL writes no "render" line for one, so it
+                // arrives at the default of true, and it carries no bitmap - which drew it as a flat
+                // grey slab across the ground of every tile that had one. The area view gets its
+                // walkmesh from the tile's .wok (see TileWalkmeshCache), never from here.
+                if (mesh.IsWalkmesh || !mesh.Render || PlaceholderNames.Contains(mesh.Name))
                     continue;
 
                 var built = BuildMesh(mesh, poseFrames, animationSamples);

@@ -850,6 +850,17 @@ void main()
                 return;
             }
 
+            // Outside placement, a right press selects whatever is under the cursor so that the
+            // context menu the host opens from the same gesture describes the thing that was
+            // clicked, not whatever happened to be selected before. Deliberately NOT marked
+            // handled - the menu still has to open - and safe to fall out of, because the right
+            // button drives no camera drag.
+            if (props.IsRightButtonPressed && _dragMode == DragMode.None)
+            {
+                RaiseInstancePicked(pos);
+                return;
+            }
+
             // A camera drag already owns the pointer, so this press is the builder adding or
             // swapping a button mid-drag - middle+left is pan, middle alone is orbit. Resolving it
             // here rather than falling through matters: the left press would otherwise be read as a

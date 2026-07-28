@@ -281,5 +281,19 @@ namespace SWLOR.Toolset.Editors
 
         private void OnViewportPointerWheel(object? sender, Avalonia.Input.PointerWheelEventArgs e) =>
             AreaView.HandlePointerWheel(e);
+
+        /// <summary>
+        /// Opens the viewport's context menu only when the right-click actually landed on something.
+        /// </summary>
+        /// <remarks>
+        /// The press handler has already resolved the pick by the time this runs, so the menu either
+        /// describes the object under the cursor or must not open at all - a menu naming the previous
+        /// selection would act on something the builder is no longer pointing at.
+        /// </remarks>
+        private void OnViewportContextRequested(object? sender, ContextRequestedEventArgs e)
+        {
+            if (_viewModel?.HasSceneSelection != true)
+                e.Handled = true;
+        }
     }
 }

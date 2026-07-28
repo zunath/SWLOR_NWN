@@ -50,7 +50,13 @@ namespace SWLOR.Toolset.Tests
             Directory.EnumerateFiles(RepositoryRoot, "*.csproj", SearchOption.AllDirectories)
                 .Where(path => !HasPathSegment(path, "External"))
                 .Where(path => !HasPathSegment(path, "bin"))
-                .Where(path => !HasPathSegment(path, "obj"));
+                .Where(path => !HasPathSegment(path, "obj"))
+                // Sibling git worktrees live under .claude/worktrees and are whole second copies of
+                // this repository at other commits. Scanning them asks this question of code that is
+                // not the tree under test: a worktree still on a pre-Radoub-removal branch reported
+                // "SWLOR.Toolset.Domain -> Radoub.Formats" against a checkout whose own projects
+                // reference Radoub nowhere.
+                .Where(path => !HasPathSegment(path, ".claude"));
 
         private static IEnumerable<string> FirstPartyExecutableSources()
         {

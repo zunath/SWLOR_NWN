@@ -603,6 +603,96 @@ public sealed class MdlReaderTests
         return bytes;
     }
 
+    /// <summary>
+    /// A collision node has to be distinguishable from artwork. ASCII never writes a
+    /// <c>render</c> line for one, so it arrives at the default of true and carries no bitmap -
+    /// which is exactly the shape of a mesh a renderer draws untextured.
+    /// </summary>
+    [TestCase("aabb")]
+    [TestCase("pwk")]
+    [TestCase("dwk")]
+    public void AsciiCollisionNodesAreFlaggedAsWalkmesh(string nodeType)
+    {
+        var text = $"""
+                    #MAXMODEL ASCII
+                    newmodel sample
+                    beginmodelgeom sample
+                      node dummy sample
+                        parent NULL
+                      endnode
+                      node {nodeType} walkmesh
+                        parent sample
+                        verts 3
+                          0 0 0
+                          1 0 0
+                          0 1 0
+                        faces 1
+                          0 1 2 1 0 1 2 1
+                      endnode
+                      node trimesh ground
+                        parent sample
+                        render 1
+                        bitmap ground_texture
+                        verts 3
+                          0 0 0
+                          1 0 0
+                          0 1 0
+                        faces 1
+                          0 1 2 1 0 1 2 1
+                      endnode
+                    endmodelgeom sample
+                    donemodel sample
+                    """;
+
+        var model = new MdlReader().Parse(Encoding.ASCII.GetBytes(text));
+        var meshes = model.GetMeshNodes().ToDictionary(node => node.Name, StringComparer.OrdinalIgnoreCase);
+
+        meshes["walkmesh"].IsWalkmesh.Should().BeTrue($"'node {nodeType}' is collision, not artwork");
+        meshes["walkmesh"].Render.Should().BeTrue("ASCII writes no render line for a collision node");
+        meshes["ground"].IsWalkmesh.Should().BeFalse();
+    }
+
+    /// <summary>The binary path carries the same information in the node's AABB payload flag.</summary>
+    [Test]
+    public void BinaryAabbNodesAreFlaggedAsWalkmesh()
+    {
+        const int modelDataSize = 888;
+        var bytes = new byte[12 + modelDataSize + 96];
+        WriteUInt32(bytes, 4, modelDataSize);
+        WriteUInt32(bytes, 8, 96);
+        WriteFixed(bytes, 20, 64, "sample");
+        WriteUInt32(bytes, 84, 232);
+
+        var node = 12 + 232;
+        WriteFixed(bytes, node + 32, 32, "walkmesh");
+        WriteUInt32(bytes, node + 108, 0x20 | 0x200); // mesh payload + AABB payload
+
+        var mesh = node + 112;
+        WriteUInt32(bytes, mesh + 8, 856);
+        WriteUInt32(bytes, mesh + 12, 1);
+        WriteUInt32(bytes, mesh + 16, 1);
+        WriteUInt32(bytes, mesh + 108, 1);
+        WriteUInt32(bytes, mesh + 440, 32);
+        WriteInt32(bytes, mesh + 444, 0);
+        WriteUInt16(bytes, mesh + 448, 3);
+        WriteUInt16(bytes, mesh + 450, 1);
+        WriteInt32(bytes, mesh + 452, 12);
+        for (var offset = 456; offset <= 496; offset += 4)
+            WriteInt32(bytes, mesh + offset, -1);
+
+        var face = 12 + 856;
+        WriteSingle(bytes, face + 8, 1f);
+        WriteUInt16(bytes, face + 26, 0);
+        WriteUInt16(bytes, face + 28, 1);
+        WriteUInt16(bytes, face + 30, 2);
+
+        var model = new MdlReader().Parse(bytes);
+        var walkmesh = model.GetMeshNodes().Single();
+
+        walkmesh.Name.Should().Be("walkmesh");
+        walkmesh.IsWalkmesh.Should().BeTrue("the node declares the AABB payload");
+    }
+
     private static void WriteFixed(byte[] bytes, int offset, int length, string value)
     {
         var encoded = Encoding.ASCII.GetBytes(value);

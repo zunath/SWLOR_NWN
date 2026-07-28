@@ -245,9 +245,9 @@ namespace SWLOR.Toolset.Editors
             {
                 _behaviorValues?.InvalidateModuleSources();
 
-                // A saved store or item can change where items are obtainable; the index is cheap
-                // to rebuild, so it is dropped rather than patched.
-                if (type is ResourceType.Utm or ResourceType.Uti)
+                // A saved store, item, creature, or placeable can change where items are
+                // obtainable; the index is cheap to rebuild, so it is dropped rather than patched.
+                if (type is ResourceType.Utm or ResourceType.Uti or ResourceType.Utc or ResourceType.Utp)
                     _itemSources = null;
             };
             _workspaceContext.PaletteChoicesInvalidated += InvalidatePaletteChoices;
@@ -993,7 +993,8 @@ namespace SWLOR.Toolset.Editors
                     ? item => _previewRenderer.BuildModel(ResourceType.Uti, item)
                     : null,
                 resourceIndex: _resourceIndex,
-                armorDyeSwatches: ArmorDyeSwatches());
+                armorDyeSwatches: ArmorDyeSwatches(),
+                findReferences: FindItemReferences);
             editor.Closed += closed => _openItemEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -1052,6 +1053,23 @@ namespace SWLOR.Toolset.Editors
 
             _itemCostTableRanges ??= new Domain.Editors.Items.ItemCostTableRanges(_twoDaService);
             return _itemCostTableRanges.MaxFor;
+        }
+
+        /// <summary>
+        /// Files that still name an item resref, for the rename-on-save refusal. Swept fresh per
+        /// call - a rename is rare, and a stale index here would let a just-added reference slip
+        /// through the very check that exists to protect it.
+        /// </summary>
+        private IReadOnlyList<string> FindItemReferences(string resRef, string selfFilePath)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<string>();
+
+            var repoRoot = Path.GetDirectoryName(Path.GetFullPath(workspace.ModuleRoot));
+            var gameSourceRoot = repoRoot == null ? null : Path.Combine(repoRoot, "SWLOR.Game.Server");
+            return ItemReferenceScanner.FindReferences(
+                workspace.ModuleRoot, gameSourceRoot, resRef, selfFilePath);
         }
 
         /// <summary>

@@ -84,12 +84,14 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void EquipmentHasNoVariablesTab()
+        public void EquipmentExposesVariablesForItsLocals()
         {
             using var editor = Open("adren_harness");
 
-            Assert.That(editor.ShowsVariablesTab, Is.False);
-            Assert.That(editor.Variables, Is.Null);
+            // Equipment has no Behavior tab (no roles), so without this there would be nowhere in
+            // the toolset to edit its locals - the new-item template's NO_ECONOMY opt-out included.
+            Assert.That(editor.ShowsVariablesTab, Is.True);
+            Assert.That(editor.Variables, Is.Not.Null);
         }
 
         [Test]
@@ -202,6 +204,29 @@ namespace SWLOR.Toolset.Tests.Items
             Assert.That(await document.TrySaveAsync(), Is.False);
             Assert.That(File.Exists(Scratch("adren_harness")), Is.True);
             Assert.That(document.ResRef, Is.EqualTo("adren_harness"));
+        }
+
+        [Test]
+        public async Task SaveRefusesARenameWhileOtherFilesStillReferenceTheOldResRef()
+        {
+            var document = new ItemDocumentViewModel(
+                Scratch("adren_harness"), "adren_harness", null, new OutputLogService(), new StubPrompts(),
+                findReferences: (resRef, _) => resRef == "adren_harness"
+                    ? new[] { "SWLOR.Game.Server/Feature/LootTableDefinition/ViscaraLootTableDefinition.cs" }
+                    : Array.Empty<string>());
+            SetResRef(document, "adren_mk4");
+
+            // The rename would delete the file that loot table still points at.
+            Assert.That(await document.TrySaveAsync(), Is.False);
+            Assert.That(File.Exists(Scratch("adren_harness")), Is.True);
+            Assert.That(File.Exists(Scratch("adren_mk4")), Is.False);
+            Assert.That(document.ResRef, Is.EqualTo("adren_harness"));
+
+            // A save that does not rename ignores references entirely.
+            SetResRef(document, "adren_harness");
+            var tagRow = document.Editor.BasicRows.Single(row => row.Definition.Name == "Tag");
+            tagRow.Text = "adren_harness_c";
+            Assert.That(await document.TrySaveAsync(), Is.True);
         }
 
         [Test]

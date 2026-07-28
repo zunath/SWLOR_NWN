@@ -342,6 +342,38 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void SourceSwappedUnderAPreservedMTime_IsStaleOnceAFingerprintExists()
+        {
+            var sharedTime = DateTime.UtcNow.AddHours(-2);
+            Source("a", "void main() { NoOp(); }", sharedTime);
+            Compiled("a", DateTime.UtcNow);
+
+            // First scan: timestamps alone say fresh, and there is no cache yet (first sight), so
+            // this scan also records the fingerprint baseline rather than reporting anything.
+            Scan().Should().BeEmpty();
+
+            // Replace the source's content but force its mtime back to the original value - the
+            // same symptom as an external tool preserving mtimes, or two writes landing in the same
+            // coarse filesystem timestamp bucket. The .ncs is untouched, so timestamps alone would
+            // still say fresh.
+            Source("a", "void main() { DifferentBody(); }", sharedTime);
+
+            Scan().Should().ContainSingle().Which.Reason.Should().Be(StaleReason.SourceReplaced);
+        }
+
+        [Test]
+        public void FreshCheckoutWithNoCache_DoesNotReportUntouchedScriptsStale()
+        {
+            // No prior Scan() has run in this test, so ScriptFingerprintStore has nothing persisted -
+            // exactly a fresh checkout. The scan must still trust the plain timestamp comparison.
+            var old = DateTime.UtcNow.AddHours(-2);
+            Source("a", "void main() {}", old);
+            Compiled("a", DateTime.UtcNow);
+
+            Scan().Should().BeEmpty();
+        }
+
+        [Test]
         public void NeverCompiledEntryPoint_IsStale()
         {
             Source("a", "void main() {}");

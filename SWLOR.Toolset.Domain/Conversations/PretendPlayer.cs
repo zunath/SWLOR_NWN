@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Service.KeyItemService;
+
 namespace SWLOR.Toolset.Domain.Conversations
 {
     /// <summary>
@@ -53,14 +55,14 @@ namespace SWLOR.Toolset.Domain.Conversations
 
         public PretendPlayer WithKeyItem(string keyItem)
         {
-            _keyItems.Add(keyItem);
+            _keyItems.Add(Canonicalize(keyItem));
             return this;
         }
 
         /// <summary>Takes the key item away, for breaking a guard that requires having it.</summary>
         public PretendPlayer WithoutKeyItem(string keyItem)
         {
-            _keyItems.Remove(keyItem);
+            _keyItems.Remove(Canonicalize(keyItem));
             return this;
         }
 
@@ -91,7 +93,29 @@ namespace SWLOR.Toolset.Domain.Conversations
         public QuestProgress GetQuest(string questId) =>
             _quests.TryGetValue(questId, out var progress) ? progress : QuestProgress.None;
 
-        public bool HasKeyItem(string keyItem) => _keyItems.Contains(keyItem);
+        public bool HasKeyItem(string keyItem) => _keyItems.Contains(Canonicalize(keyItem));
+
+        /// <summary>
+        /// A conversation may give a key item by its <c>KeyItemType</c> member name and later check
+        /// it by numeric id, or the reverse — <c>action-give-key-items CZ220ShuttlePass</c> followed
+        /// by <c>condition-all-key-items 5</c> is a real shape in the module. The runtime resolves
+        /// both forms to the same enum value (<c>KeyItem.GetKeyItemTypeById</c>/
+        /// <c>GetKeyItemTypeByName</c>), so storing and comparing the raw strings would make a
+        /// preview walk see them as different key items and report the guard as failing when the
+        /// game would not. Parsing mirrors the runtime's own order — id first, then name, matched
+        /// case-sensitively as <c>GetKeyItemTypeByName</c> does — and an id/name that resolves to
+        /// nothing recognized is left as-is, the same as an unknown key item anywhere else here.
+        /// </summary>
+        private static string Canonicalize(string keyItem)
+        {
+            if (int.TryParse(keyItem, out var id) && Enum.IsDefined(typeof(KeyItemType), id))
+                return id.ToString();
+
+            if (Enum.TryParse<KeyItemType>(keyItem, out var parsed) && parsed != KeyItemType.Invalid)
+                return ((int)parsed).ToString();
+
+            return keyItem;
+        }
 
         public int GetSkillRank(string skill) =>
             _skillRanks.TryGetValue(skill, out var rank) ? rank : 0;

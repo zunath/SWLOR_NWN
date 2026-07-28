@@ -214,6 +214,46 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ANonNumericQuestStateIsBroken()
+        {
+            // The runtime int-parses the step and fails the guard on garbage - previously this
+            // silently skipped validation instead of reporting it.
+            var document = DantHerbs();
+            document.Openings[0].AddCondition("condition-on-quest-state", "field_tinctures nope");
+
+            var problems = Analyzer.Analyze(document);
+
+            problems.Should().Contain(problem =>
+                problem.RuleId == "not-a-number"
+                && problem.Severity == ProblemSeverity.Broken
+                && problem.Message.Contains("“nope” is not a number"));
+        }
+
+        [Test]
+        public void ANonNumericSkillRankIsBroken()
+        {
+            var document = NewConversation();
+            document.Openings[0].AddCondition("condition-any-skill", "Devices nope");
+
+            var problems = Analyzer.Analyze(document);
+
+            problems.Should().Contain(problem =>
+                problem.RuleId == "not-a-number" && problem.Severity == ProblemSeverity.Broken);
+        }
+
+        [Test]
+        public void ANonNumericFactionAmountIsBroken()
+        {
+            var document = NewConversation();
+            document.Openings[0].AddCondition("condition-has-faction-standing", "7 nope");
+
+            var problems = Analyzer.Analyze(document);
+
+            problems.Should().Contain(problem =>
+                problem.RuleId == "not-a-number" && problem.Severity == ProblemSeverity.Broken);
+        }
+
+        [Test]
         public void AnIncompleteRepeatingArgumentGroupIsBroken()
         {
             var document = NewConversation();

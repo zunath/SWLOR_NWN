@@ -19,6 +19,10 @@ namespace SWLOR.CLI
         private const int ResourceConversionRetryDelayMilliseconds = 250;
         private const string PackingDirectory = "./packing";
         private const string WorkerCountEnvironmentVariable = "SWLOR_RESOURCE_CONVERSION_WORKERS";
+        // Mirrors NewAreaWriter.PendingMarkerPrefix in SWLOR.Toolset.Domain - this project cannot
+        // reference that one (see RequireNoInterruptedAreaCreation), so the literal is duplicated.
+        private const string NewAreaPendingMarkerPrefix = ".swlor-toolset-new-area-";
+        private const string NewAreaPendingMarkerSuffix = ".pending";
 
         public void PackModule(string filePath, bool noPrompt = false)
         {
@@ -31,6 +35,7 @@ namespace SWLOR.CLI
             try
             {
                 RequireNoInterruptedSaves();
+                RequireNoInterruptedAreaCreation();
                 RecreateDirectory(PackingDirectory);
                 DeleteFileWithRetry(temporaryModuleFileName);
 
@@ -528,6 +533,37 @@ namespace SWLOR.CLI
                 "Open the module in the SWLOR Toolset to recover it, then pack again. Pending files:" +
                 Environment.NewLine +
                 string.Join(Environment.NewLine, pending));
+        }
+
+        /// <summary>
+        /// Refuses to pack while an interrupted new-area creation is pending. NewAreaWriter (in
+        /// SWLOR.Toolset.Domain) writes a ".swlor-toolset-new-area-&lt;resref&gt;.pending" marker to the
+        /// module root before the first ARE/GIT/GIC destination file, precisely so a kill mid-write
+        /// leaves recoverable evidence - the marker is deleted only once module.ifo is committed with
+        /// the new area registered. Unlike an interrupted save, simply reopening the module in the
+        /// toolset does NOT clear this marker: NewAreaWriter only recognizes and rolls back its own
+        /// partial triplet the next time the SAME resref is created again through the New Area wizard.
+        /// GetFileList would otherwise pack whichever partial area files exist with no module.ifo
+        /// entry pointing at them, so this fails loudly instead of guessing at recovery.
+        /// </summary>
+        private static void RequireNoInterruptedAreaCreation()
+        {
+            var markers = Directory.GetFiles(".", NewAreaPendingMarkerPrefix + "*" + NewAreaPendingMarkerSuffix);
+            if (markers.Length == 0)
+                return;
+
+            var pendingResRefs = markers
+                .Select(marker => Path.GetFileNameWithoutExtension(Path.GetFileName(marker)))
+                .Select(nameWithoutMarkerExtension => nameWithoutMarkerExtension[NewAreaPendingMarkerPrefix.Length..])
+                .ToList();
+
+            throw new InvalidOperationException(
+                "Interrupted area creation detected - packing now could ship a partial area with no " +
+                "module.ifo entry. Open the module in the SWLOR Toolset and use New Area with the " +
+                "same ResRef to complete or roll back the interrupted creation, then pack again. " +
+                $"Pending area(s): {string.Join(", ", pendingResRefs)}" +
+                Environment.NewLine +
+                string.Join(Environment.NewLine, markers));
         }
 
         private static List<string> GetFileList()

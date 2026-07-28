@@ -16,7 +16,15 @@ namespace SWLOR.Toolset.Domain.Script
         /// The source has no entry point (it is an include), yet a same-resref .ncs from its former
         /// behavior still exists - obsolete executable code the packer would ship verbatim.
         /// </summary>
-        ObsoleteIncludeArtifact
+        ObsoleteIncludeArtifact,
+
+        /// <summary>
+        /// The .ncs mtime still looks fresh against the source's mtime, but the source's content no
+        /// longer matches the fingerprint recorded the last time that comparison held - the source was
+        /// swapped for different content while its mtime was preserved, or a coarse filesystem clock
+        /// let the two writes land in the same timestamp bucket.
+        /// </summary>
+        SourceReplaced
     }
 
     /// <summary>One compiled script that would ship stale.</summary>
@@ -31,6 +39,8 @@ namespace SWLOR.Toolset.Domain.Script
             StaleReason.SourceNewer => $"{ResRef}.ncs is older than {ResRef}.nss",
             StaleReason.ObsoleteIncludeArtifact =>
                 $"{ResRef}.ncs is obsolete - {ResRef}.nss is an include with no entry point",
+            StaleReason.SourceReplaced =>
+                $"{ResRef}.nss changed without its modification time moving past {ResRef}.ncs's",
             _ => $"{ResRef}.ncs is older than included {TriggerResRef}.nss"
         };
     }
@@ -100,6 +110,7 @@ namespace SWLOR.Toolset.Domain.Script
             }
 
             var stale = new List<StaleScript>();
+            var fingerprints = ScriptFingerprintStore.Load(_ncsDirectory);
 
             // An include with a same-resref artifact is obsolete executable code from the source's
             // former behavior. Timestamps cannot flag it (the scan deliberately excludes includes
@@ -122,11 +133,32 @@ namespace SWLOR.Toolset.Domain.Script
                 }
 
                 var compiledTime = File.GetLastWriteTimeUtc(compiled);
+                var hasOwnTime = sourceTimes.TryGetValue(resRef, out var ownTime);
 
-                if (sourceTimes.TryGetValue(resRef, out var ownTime) && ownTime > compiledTime)
+                if (hasOwnTime && ownTime > compiledTime)
                 {
                     stale.Add(new StaleScript(resRef, StaleReason.SourceNewer, null));
                     continue;
+                }
+
+                // The mtime check above says fresh, which is not enough on its own: a source replaced
+                // while preserving its mtime, or a source/artifact write landing in the same coarse
+                // filesystem timestamp bucket, would pass it despite shipping stale bytecode. The
+                // persisted fingerprint disambiguates by content hash - but only once one exists. A
+                // script's first sight (no cache entry, e.g. right after a fresh checkout) trusts the
+                // mtime comparison alone, so an untouched module does not report everything stale.
+                if (hasOwnTime && TryHashSource(resRef) is { } currentHash)
+                {
+                    if (fingerprints.TryGet(resRef, out var known) &&
+                        known.CompiledMTimeUtc == compiledTime &&
+                        known.SourceMTimeUtc == ownTime &&
+                        known.SourceHash != currentHash)
+                    {
+                        stale.Add(new StaleScript(resRef, StaleReason.SourceReplaced, null));
+                        continue;
+                    }
+
+                    fingerprints.Record(resRef, new ScriptFingerprint(ownTime, currentHash, compiledTime));
                 }
 
                 // The include dimension: any header in the transitive set being newer is enough.
@@ -144,7 +176,23 @@ namespace SWLOR.Toolset.Domain.Script
                     stale.Add(new StaleScript(resRef, StaleReason.IncludeNewer, trigger));
             }
 
+            fingerprints.SaveIfDirty();
             return stale;
+        }
+
+        /// <summary>Hashes a source file for the fingerprint check, or null if it cannot be read.</summary>
+        private string? TryHashSource(string resRef)
+        {
+            var path = Path.Combine(_nssDirectory, resRef + ".nss");
+            try
+            {
+                var hash = System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(path));
+                return Convert.ToHexString(hash);
+            }
+            catch (IOException)
+            {
+                return null;
+            }
         }
     }
 }

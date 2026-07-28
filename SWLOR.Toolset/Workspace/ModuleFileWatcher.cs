@@ -20,11 +20,27 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>The catalog to keep in step with the disk, or null in a test with none.</summary>
         private readonly WorkspaceContext? _workspaceContext;
 
+        /// <summary>Coalesces a burst of watcher errors into one rescan; UI-thread only, see ScheduleRescan.</summary>
+        private Avalonia.Threading.DispatcherTimer? _rescanDebounceTimer;
+
+        private static readonly TimeSpan RescanDebounceInterval = TimeSpan.FromSeconds(1);
+
         public ModuleFileWatcher(OutputLogService log, WorkspaceContext? workspaceContext = null)
         {
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _workspaceContext = workspaceContext;
         }
+
+        /// <summary>
+        /// Raised (debounced, on the UI thread) after a watcher reports an error. The most common cause
+        /// is its native event buffer overflowing - e.g. a bulk Git checkout touching more files in one
+        /// burst than the OS buffer holds - which means some create/delete/rename notifications were
+        /// already dropped before this fired. The owner should treat this as "the catalog and indexes
+        /// may be out of sync with disk" and re-run whatever full rescan it uses at startup, since
+        /// patching individual entries from here on has nothing but incomplete event history to work
+        /// from.
+        /// </summary>
+        public event Action? RescanRequested;
 
         /// <summary>
         /// Brings the catalog into line with a resource file that changed outside the toolset.
@@ -74,6 +90,40 @@ namespace SWLOR.Toolset.Workspace
                     else
                         _workspaceContext.RefreshCatalogEntry(type, resRef);
                 }
+            });
+        }
+
+        /// <summary>
+        /// Debounces a burst of watcher errors into a single <see cref="RescanRequested"/>. A bulk
+        /// Git checkout can overflow every recursive watcher within milliseconds of each other; without
+        /// coalescing, each one would kick off its own full catalog rebuild.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="DispatcherTimer"/> must be started and stopped from the UI thread, and
+        /// <see cref="System.IO.FileSystemWatcher.Error"/> arrives on a watcher thread - the same
+        /// thread-marshalling reason <see cref="SyncCatalog"/> posts before touching anything.
+        /// </remarks>
+        private void ScheduleRescan()
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                if (_rescanDebounceTimer == null)
+                {
+                    _rescanDebounceTimer = new Avalonia.Threading.DispatcherTimer
+                    {
+                        Interval = RescanDebounceInterval
+                    };
+                    _rescanDebounceTimer.Tick += (_, _) =>
+                    {
+                        _rescanDebounceTimer!.Stop();
+                        RescanRequested?.Invoke();
+                    };
+                }
+
+                // Restarting rather than letting an already-running timer fire is what coalesces a
+                // burst of errors: the window keeps sliding until the errors stop for one full interval.
+                _rescanDebounceTimer.Stop();
+                _rescanDebounceTimer.Start();
             });
         }
 
@@ -240,7 +290,11 @@ namespace SWLOR.Toolset.Workspace
                     Report($"External rename: {e.OldFullPath} -> {e.FullPath}", deleted: true, e.OldFullPath);
                     Report($"External rename: {e.OldFullPath} -> {e.FullPath}", e.FullPath);
                 };
-                watcher.Error += (_, e) => _log.AppendLine($"File watcher error: {e.GetException().Message}");
+                watcher.Error += (_, e) =>
+                {
+                    _log.AppendLine($"File watcher error: {e.GetException().Message}");
+                    ScheduleRescan();
+                };
 
                 _watchers.Add(fullPath, watcher);
                 watcher.EnableRaisingEvents = true;
@@ -342,6 +396,10 @@ namespace SWLOR.Toolset.Workspace
 
         public void Stop()
         {
+            // A rescan debounced just before Stop() (module closed, or Watch() about to point at a
+            // different module) must not fire afterwards against whatever happens to be open by then.
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => _rescanDebounceTimer?.Stop());
+
             FileSystemWatcher[] watchers;
             lock (_watchersLock)
             {

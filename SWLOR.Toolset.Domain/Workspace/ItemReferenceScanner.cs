@@ -1,0 +1,113 @@
+namespace SWLOR.Toolset.Domain.Workspace
+{
+    /// <summary>
+    /// Finds every file that still names an item resref, so a rename-on-save can refuse to
+    /// delete a blueprint other content points at (a loot table's .AddItem literal, the item
+    /// palette, a store page, a placed instance) - deleting it would silently break each of them.
+    /// </summary>
+    /// <remarks>
+    /// A raw quoted-literal sweep rather than a semantic index: resrefs only ever appear inside
+    /// string quotes in both the module's JSON and the game's C#, and a rename is a rare, explicit
+    /// action where a few seconds of IO is a fair price for not missing a reference shape no index
+    /// anticipated. Module folders that cannot carry item resrefs (area terrain, comments) are
+    /// skipped; everything else - instances (git), inventories (utc/utp), stores (utm), palettes
+    /// (itp), dialogs (dlg), scripts (nss) - is swept.
+    /// </remarks>
+    public static class ItemReferenceScanner
+    {
+        private static readonly string[] ModuleFolders = { "git", "utc", "utp", "utm", "itp", "dlg", "nss" };
+
+        /// <summary>
+        /// Relative display paths of every file referencing <paramref name="resRef"/> as a quoted
+        /// string, excluding the blueprint's own file. Module hits come first, then game C# hits.
+        /// </summary>
+        /// <param name="gameSourceRoot">
+        /// The SWLOR.Game.Server project directory, or null/missing to sweep the module only.
+        /// </param>
+        /// <param name="selfFilePath">The blueprint being renamed - always contains its own resref.</param>
+        public static IReadOnlyList<string> FindReferences(
+            string moduleRoot, string? gameSourceRoot, string resRef, string? selfFilePath)
+        {
+            if (string.IsNullOrWhiteSpace(resRef))
+                return Array.Empty<string>();
+
+            var quoted = $"\"{resRef}\"";
+            var hits = new List<string>();
+
+            foreach (var folder in ModuleFolders)
+                SweepDirectory(Path.Combine(moduleRoot, folder), moduleRoot, quoted, selfFilePath, hits);
+
+            if (!string.IsNullOrWhiteSpace(gameSourceRoot) && Directory.Exists(gameSourceRoot))
+                SweepGameSource(gameSourceRoot, quoted, hits);
+
+            return hits;
+        }
+
+        private static void SweepDirectory(
+            string directory, string moduleRoot, string quoted, string? selfFilePath, List<string> hits)
+        {
+            if (!Directory.Exists(directory))
+                return;
+
+            IEnumerable<string> files;
+            try
+            {
+                files = Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            foreach (var file in files)
+            {
+                if (selfFilePath != null &&
+                    string.Equals(Path.GetFullPath(file), Path.GetFullPath(selfFilePath),
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (FileContains(file, quoted))
+                    hits.Add("Module/" + Path.GetRelativePath(moduleRoot, file).Replace('\\', '/'));
+            }
+        }
+
+        private static void SweepGameSource(string gameSourceRoot, string quoted, List<string> hits)
+        {
+            IEnumerable<string> files;
+            try
+            {
+                files = Directory.EnumerateFiles(gameSourceRoot, "*.cs", SearchOption.AllDirectories);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            foreach (var file in files)
+            {
+                // Same nested-worktree guard as ItemObtainabilityIndex: a stray checkout inside
+                // the scanned tree must not report phantom references.
+                var relative = Path.GetRelativePath(gameSourceRoot, file).Replace('\\', '/');
+                if (relative.Contains(".claude/worktrees/"))
+                    continue;
+
+                if (FileContains(file, quoted))
+                    hits.Add("SWLOR.Game.Server/" + relative);
+            }
+        }
+
+        private static bool FileContains(string file, string quoted)
+        {
+            try
+            {
+                return File.ReadAllText(file).Contains(quoted, StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+    }
+}

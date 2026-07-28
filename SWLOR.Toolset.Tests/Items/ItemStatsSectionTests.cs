@@ -93,7 +93,8 @@ namespace SWLOR.Toolset.Tests.Items
             store.GetPropertyValue(133, 1).Should().Be(12);
 
             fireResistance.Number = 0;
-            store.GetPropertyValue(133, 1).Should().BeNull("zero removes the property just like the store itself does");
+            store.GetPropertyValue(133, 1).Should().Be(0,
+                "zero is a real stored CostValue now - only clearing the box removes the property");
         }
 
         [Test]

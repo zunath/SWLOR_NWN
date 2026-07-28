@@ -77,7 +77,7 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void SetPropertyValue_NullOrZeroRemovesTheEntry()
+        public void SetPropertyValue_OnlyNullRemovesTheEntry()
         {
             var store = new ItemValueStore(UtiDocument.Load(AdrenHarnessPath).Fields);
 
@@ -87,12 +87,15 @@ namespace SWLOR.Toolset.Tests.Items
             store.Properties.Should().HaveCount(4);
 
             store.SetPropertyValue(120, -1, 45, 0);
-            store.HasProperty(120).Should().BeFalse("zero removes the entry just like null");
-            store.Properties.Should().HaveCount(3);
+            store.HasProperty(120).Should().BeTrue(
+                "zero is a real stored CostValue - subtype-keyed properties like WeaponDamageType " +
+                "legitimately store 0, so only null may remove");
+            store.GetPropertyValue(120, -1).Should().Be(0);
+            store.Properties.Should().HaveCount(4);
         }
 
         [Test]
-        public void SetExclusiveProperty_WritesCostValueZeroWhichSetPropertyValueCanNeverWrite()
+        public void SetExclusiveProperty_WritesACostValueZeroEntry()
         {
             var store = new ItemValueStore(UtiDocument.Load(AdrenHarnessPath).Fields);
 

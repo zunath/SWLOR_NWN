@@ -51,6 +51,11 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             },
             new BehaviorFieldDefinition
             {
+                Label = "Charges", Name = "Charges", Kind = BehaviorFieldKind.Integer,
+                FieldType = GffFieldType.Byte
+            },
+            new BehaviorFieldDefinition
+            {
                 Label = "Additional Cost", Name = "AddCost", Kind = BehaviorFieldKind.Integer,
                 FieldType = GffFieldType.Dword
             },
@@ -59,6 +64,16 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             {
                 Label = "Total Cost", Name = "Cost", Kind = BehaviorFieldKind.Integer,
                 FieldType = GffFieldType.Dword, IsReadOnly = true
+            },
+            new BehaviorFieldDefinition
+            {
+                Label = "Description", Name = "Description", Kind = BehaviorFieldKind.Paragraph,
+                FieldType = GffFieldType.CExoLocString
+            },
+            new BehaviorFieldDefinition
+            {
+                Label = "Comment", Name = "Comment", Kind = BehaviorFieldKind.Paragraph,
+                FieldType = GffFieldType.CExoString
             },
             new BehaviorFieldDefinition
             {

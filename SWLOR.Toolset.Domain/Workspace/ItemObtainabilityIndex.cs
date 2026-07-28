@@ -18,15 +18,11 @@ namespace SWLOR.Toolset.Domain.Workspace
     /// the game considers it obtainable.
     /// </para>
     /// <para>
-    /// Deliberately skipped: area .git placeable/creature inventories. Unlike
-    /// <see cref="ModuleTagIndex"/> (which only reads two small lists per .git for tag resolution),
-    /// nothing in this package already parses a .git's full placeable/creature inventory cheaply -
-    /// doing so here would mean a second, bespoke full-corpus GIT scan. Also skipped, for the same
-    /// "not already cheap" reason and because the deliverable this index was built for scoped
-    /// obtainability to stores + C# sources: NPC carried droppable items (.utc) and placed treasure
-    /// container default inventories (.utp), both of which <c>ReadObtainableResrefs</c> also counts
-    /// as obtainable. An item whose only source is one of these three reads as unobtainable here even
-    /// though the game-code test would pass it - a known gap for whoever integrates this index.
+    /// Deliberately skipped: area .git placeable/creature instance inventories.
+    /// <c>ReadObtainableResrefs</c> does not count them either - a .git instance inherits its
+    /// blueprint's default inventory, and an instance-only inventory edit is not an acquisition
+    /// shape the contract recognizes - so skipping them here keeps the two in agreement rather
+    /// than opening a gap.
     /// </para>
     /// </remarks>
     public sealed class ItemObtainabilityIndex
@@ -71,6 +67,8 @@ namespace SWLOR.Toolset.Domain.Workspace
             var sources = new Dictionary<string, List<ItemSourceEntry>>(StringComparer.OrdinalIgnoreCase);
 
             IndexStores(workspace, sources);
+            IndexCreatureDroppables(workspace, sources);
+            IndexPlacedContainers(workspace, sources);
 
             if (!string.IsNullOrWhiteSpace(gameSourceRoot) && Directory.Exists(gameSourceRoot))
                 IndexGameCode(gameSourceRoot, sources);
@@ -131,6 +129,132 @@ namespace SWLOR.Toolset.Domain.Workspace
                         Add(sources, item.GetStringOrNull("InventoryRes"), entry);
                 }
             }
+        }
+
+        // ---------------------------------------------------------------------------------------
+        // (a2) NPC droppables and placed containers. Mirrors ReadObtainableResrefs's "NPC carried
+        // droppable items" (.utc ItemList entries with Dropable=1) and "placed treasure containers"
+        // (.utp ItemList entries, no Dropable requirement) blocks, parsed with the same
+        // System.Text.Json shapes so the two extractions cannot drift.
+        // ---------------------------------------------------------------------------------------
+
+        private static void IndexCreatureDroppables(
+            ModuleWorkspace workspace, Dictionary<string, List<ItemSourceEntry>> sources)
+        {
+            ScanInventoryBlueprints(workspace, ResourceType.Utc, (root, resRef) =>
+            {
+                var display = LocalizedFirst(root, "FirstName") ?? resRef;
+                var entry = new ItemSourceEntry(ItemSourceKind.Npc, display, resRef, resRef);
+
+                if (!TryGetArray(root, "ItemList", out var items))
+                    return Enumerable.Empty<(string?, ItemSourceEntry)>();
+
+                return items.EnumerateArray()
+                    .Where(item => GetInt(item, "Dropable") == 1)
+                    .Select(item => (GetString(item, "InventoryRes"), entry));
+            }, sources);
+        }
+
+        private static void IndexPlacedContainers(
+            ModuleWorkspace workspace, Dictionary<string, List<ItemSourceEntry>> sources)
+        {
+            ScanInventoryBlueprints(workspace, ResourceType.Utp, (root, resRef) =>
+            {
+                var display = LocalizedFirst(root, "LocName") ?? resRef;
+                var entry = new ItemSourceEntry(ItemSourceKind.Container, display, resRef, resRef);
+
+                if (!TryGetArray(root, "ItemList", out var items))
+                    return Enumerable.Empty<(string?, ItemSourceEntry)>();
+
+                return items.EnumerateArray()
+                    .Select(item => (GetString(item, "InventoryRes"), entry));
+            }, sources);
+        }
+
+        private static void ScanInventoryBlueprints(
+            ModuleWorkspace workspace,
+            ResourceType type,
+            Func<System.Text.Json.JsonElement, string, IEnumerable<(string? ResRef, ItemSourceEntry Entry)>> extract,
+            Dictionary<string, List<ItemSourceEntry>> sources)
+        {
+            foreach (var resRef in workspace.EnumerateResRefs(type))
+            {
+                string text;
+                try
+                {
+                    text = File.ReadAllText(workspace.GetResourcePath(type, resRef));
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+
+                // Same cheap pre-filter as the coverage test: most blueprints carry no inventory
+                // at all, and skipping them before the JSON parse is what keeps a full-corpus
+                // sweep affordable.
+                if (!text.Contains("InventoryRes"))
+                    continue;
+
+                try
+                {
+                    using var doc = System.Text.Json.JsonDocument.Parse(text);
+                    foreach (var (itemResRef, entry) in extract(doc.RootElement, resRef))
+                        Add(sources, itemResRef, entry);
+                }
+                catch (Exception)
+                {
+                    // A malformed blueprint must not cost every other one its item index.
+                }
+            }
+        }
+
+        private static bool TryGetArray(
+            System.Text.Json.JsonElement element, string property, out System.Text.Json.JsonElement array)
+        {
+            array = default;
+            return element.TryGetProperty(property, out var wrapper) &&
+                   wrapper.TryGetProperty("value", out array) &&
+                   array.ValueKind == System.Text.Json.JsonValueKind.Array;
+        }
+
+        private static string? GetString(System.Text.Json.JsonElement element, string property)
+        {
+            if (element.TryGetProperty(property, out var wrapper) &&
+                wrapper.TryGetProperty("value", out var value) &&
+                value.ValueKind == System.Text.Json.JsonValueKind.String)
+            {
+                return value.GetString();
+            }
+
+            return null;
+        }
+
+        private static int GetInt(System.Text.Json.JsonElement element, string property)
+        {
+            if (element.TryGetProperty(property, out var wrapper) &&
+                wrapper.TryGetProperty("value", out var value) &&
+                value.ValueKind == System.Text.Json.JsonValueKind.Number)
+            {
+                return value.GetInt32();
+            }
+
+            return -1;
+        }
+
+        /// <summary>The English ("0") entry of a cexolocstring field, or null when absent/blank.</summary>
+        private static string? LocalizedFirst(System.Text.Json.JsonElement element, string property)
+        {
+            if (element.TryGetProperty(property, out var wrapper) &&
+                wrapper.TryGetProperty("value", out var value) &&
+                value.ValueKind == System.Text.Json.JsonValueKind.Object &&
+                value.TryGetProperty("0", out var first) &&
+                first.ValueKind == System.Text.Json.JsonValueKind.String &&
+                !string.IsNullOrWhiteSpace(first.GetString()))
+            {
+                return first.GetString();
+            }
+
+            return null;
         }
 
         // ---------------------------------------------------------------------------------------

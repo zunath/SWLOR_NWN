@@ -18,7 +18,9 @@ namespace SWLOR.Toolset.Editors.Items
     /// <remarks>
     /// The one document whose save can rename its file: the ResRef row is editable, and a resref
     /// IS the file name, so a save under a changed resref writes the new file, deletes the old,
-    /// and rebinds the session rather than letting the field and the file drift apart.
+    /// and rebinds the session rather than letting the field and the file drift apart. A rename is
+    /// refused while other content (loot tables, palettes, stores, instances) still names the old
+    /// resref - deleting the file those references point at would break each of them silently.
     /// </remarks>
     public partial class ItemDocumentViewModel : Document, IEditorDocument
     {
@@ -27,6 +29,9 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly DocumentSession _session;
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
+
+        /// <summary>(old resref, own file path) -> files still referencing that resref.</summary>
+        private readonly Func<string, string, IReadOnlyList<string>>? _findReferences;
         private string _resRef;
         private bool _closeApproved;
         private bool _closePromptOpen;
@@ -69,11 +74,13 @@ namespace SWLOR.Toolset.Editors.Items
             Func<int, int?>? costTableMax = null,
             Func<JsonGffStruct, RenderModel?>? resolveModel = null,
             ResourceIndex? resourceIndex = null,
-            ArmorDyeSwatchService? armorDyeSwatches = null)
+            ArmorDyeSwatchService? armorDyeSwatches = null,
+            Func<string, string, IReadOnlyList<string>>? findReferences = null)
         {
             _log = log;
             _prompts = prompts;
             _resRef = resRef;
+            _findReferences = findReferences;
             Id = $"item:{filePath}";
             _session = DocumentSession.Open(filePath);
 
@@ -167,6 +174,8 @@ namespace SWLOR.Toolset.Editors.Items
                 var newPath = _session.FilePath;
                 if (renaming && !TryResolveRenameTarget(targetResRef, out newPath))
                     return false;
+                if (renaming && IsStillReferenced(targetResRef))
+                    return false;
 
                 SaveService.WriteAtomic(newPath, _session.ToBytes());
 
@@ -203,6 +212,26 @@ namespace SWLOR.Toolset.Editors.Items
                 _log.AppendLine($"Save failed for {_session.FilePath}: {ex.Message}");
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Refuses the rename while other module or game-code files still name the old resref:
+        /// the save would delete the file every one of those references points at. The scan runs
+        /// only on an actual rename, so an ordinary save never pays for it.
+        /// </summary>
+        private bool IsStillReferenced(string targetResRef)
+        {
+            var references = _findReferences?.Invoke(_resRef, _session.FilePath)
+                             ?? Array.Empty<string>();
+            if (references.Count == 0)
+                return false;
+
+            var shown = string.Join(", ", references.Take(5));
+            var more = references.Count > 5 ? $" (+{references.Count - 5} more)" : string.Empty;
+            _log.AppendLine(
+                $"Cannot rename {_resRef} to {targetResRef}: {references.Count} file(s) still " +
+                $"reference '{_resRef}' - {shown}{more}. Update those references first, then rename.");
+            return true;
         }
 
         /// <summary>

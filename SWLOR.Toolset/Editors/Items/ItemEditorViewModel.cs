@@ -119,9 +119,14 @@ namespace SWLOR.Toolset.Editors.Items
             _ => Family.ToString()
         };
 
-        /// <summary>Variables stays behind Custom, and equipment families have no roles at all.</summary>
+        /// <summary>
+        /// Variables stays behind Custom where roles exist. Equipment families have no roles and
+        /// therefore no Behavior tab to reach Custom through, so they always expose it - without
+        /// this, a weapon's locals (the new-item template's NO_ECONOMY opt-out among them) would
+        /// be uneditable anywhere in the toolset.
+        /// </summary>
         public bool ShowsVariablesTab =>
-            Role.AllowsVariables && ItemRoleCatalog.RolesFor(Family).Count > 0;
+            ItemRoleCatalog.RolesFor(Family).Count == 0 || Role.AllowsVariables;
 
         /// <summary>Equipment is what its base type says; only the carriable families choose a role.</summary>
         public bool ShowsBehaviorTab => ItemRoleCatalog.RolesFor(Family).Count > 0;
@@ -361,6 +366,11 @@ namespace SWLOR.Toolset.Editors.Items
                     Roles.Rebuild(Family, Role, FamilyDisplay);
                     OnPropertyChanged(nameof(ShowsVariablesTab));
                 }
+
+                // The base type is the only Basic row that changes the artwork; re-rendering
+                // the icon and 3D scene per keystroke of Name/Tag/ResRef would decode every
+                // texture layer on the UI thread for fields that never touch them.
+                UpdatePreview();
             }
 
             foreach (var row in AllBasicRows())
@@ -368,7 +378,6 @@ namespace SWLOR.Toolset.Editors.Items
 
             OnHeaderFieldsChanged();
             RefreshCompleteness();
-            UpdatePreview();
         }
 
         private void OnHeaderFieldsChanged()

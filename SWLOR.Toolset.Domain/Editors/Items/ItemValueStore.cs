@@ -46,15 +46,18 @@ namespace SWLOR.Toolset.Domain.Editors.Items
 
         /// <summary>
         /// Adds, updates, or removes the PropertiesList entry for <paramref name="propertyId"/> /
-        /// <paramref name="subtypeId"/>. A null or zero <paramref name="value"/> removes the entry;
-        /// otherwise a new entry is written with Param1=255, Param1Value=0, and ChanceAppear=100,
-        /// matching every entry in the corpus (none of those three fields vary today).
+        /// <paramref name="subtypeId"/>. Only a null <paramref name="value"/> removes the entry -
+        /// zero is a real stored CostValue, because a subtype-carrying property's meaning lives in
+        /// the subtype (imp_molytex_3 stores WeaponDamageType with CostValue 0, and the runtime
+        /// reads its subtype). New entries are written with Param1=255, Param1Value=0, and
+        /// ChanceAppear=100, matching every entry in the corpus (none of those three fields vary
+        /// today).
         /// </summary>
         public void SetPropertyValue(int propertyId, int subtypeId, int costTableId, int? value)
         {
             var entry = FindEntry(propertyId, subtypeId);
 
-            if (value is null or 0)
+            if (value is null)
             {
                 if (entry != null)
                     RemoveEntry(entry);
@@ -75,8 +78,8 @@ namespace SWLOR.Toolset.Domain.Editors.Items
         /// Writes the one PropertiesList entry an exclusive property (WeaponDamageType, 134) may
         /// carry: every existing entry of <paramref name="propertyId"/> is removed first, then a
         /// fresh one is added with CostValue 0. <see cref="SetPropertyValue"/> cannot do this
-        /// directly - it treats a null-or-zero value as "remove the entry", and an exclusive
-        /// property's real stored value IS zero.
+        /// directly - it only ever touches the entry matching its subtype, and exclusivity means
+        /// switching subtypes must also remove the previously selected one.
         /// </summary>
         public void SetExclusiveProperty(int propertyId, int subtypeId, int costTableId)
         {

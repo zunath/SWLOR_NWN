@@ -147,6 +147,7 @@ namespace SWLOR.Toolset.Domain.Conversations
             ApplyToSatisfy(opening, candidate);
 
             var protectedQuests = QuestsConstrainedBy(opening);
+            var questStatePins = QuestStatePinsOf(opening);
             var budget = NonQuestConstraintsOf(opening);
             var earlier = _document.Openings.Take(order - 1).ToList();
 
@@ -158,7 +159,7 @@ namespace SWLOR.Toolset.Domain.Conversations
                 if (blocking == null)
                     return _evaluator.Evaluate(opening, candidate).IsOpen;
 
-                if (!TryBreak(blocking, protectedQuests, budget, candidate))
+                if (!TryBreak(blocking, protectedQuests, questStatePins, budget, candidate))
                     return false;
             }
 
@@ -177,7 +178,11 @@ namespace SWLOR.Toolset.Domain.Conversations
         /// granting exactly what it says the player must not have.
         /// </remarks>
         private static bool TryBreak(
-            DlgLink blocking, ISet<string> protectedQuests, GuardBudget budget, PretendPlayer player)
+            DlgLink blocking,
+            ISet<string> protectedQuests,
+            IReadOnlyDictionary<string, int?> questStatePins,
+            GuardBudget budget,
+            PretendPlayer player)
         {
             foreach (var condition in blocking.Conditions)
             {
@@ -187,7 +192,6 @@ namespace SWLOR.Toolset.Domain.Conversations
                 switch (condition.SnippetKey)
                 {
                     case "condition-has-quest":
-                    case "condition-on-quest-state":
                     case "condition-completed-quest":
                     {
                         if (condition.IsNegated)
@@ -221,16 +225,74 @@ namespace SWLOR.Toolset.Domain.Conversations
                         return true;
                     }
 
+                    // Only the first argument is a quest id; the rest are step numbers, not more
+                    // quests - treating them as quest ids (the bug this case fixes) creates bogus
+                    // quests and leaves the real one unmoved.
+                    case "condition-on-quest-state":
+                    {
+                        if (arguments.Length < 2)
+                            continue;
+
+                        var questId = arguments[0];
+                        if (string.IsNullOrEmpty(questId))
+                            continue;
+
+                        var states = arguments.Skip(1)
+                            .Select(argument => int.TryParse(argument, out var parsed) ? (int?)parsed : null)
+                            .Where(parsed => parsed != null)
+                            .Select(parsed => parsed!.Value)
+                            .ToList();
+                        if (states.Count == 0)
+                            continue;
+
+                        if (condition.IsNegated)
+                        {
+                            // Passes today because the quest sits outside every listed state;
+                            // breaking it means landing on ANY one of them - "not on state 3 or 4"
+                            // only needs one of the two to hold to fail.
+                            if (protectedQuests.Contains(questId))
+                                continue;
+
+                            player.WithQuest(questId, QuestProgress.OnStep(states[0]));
+                            return true;
+                        }
+
+                        // A positive guard needs the quest off every listed state to fail.
+                        if (protectedQuests.Contains(questId))
+                        {
+                            // Only a quest the target merely needs "in progress" - no pinned step
+                            // of its own from a condition-on-quest-state - can be nudged to a
+                            // different step. Completed, not-yet-accepted, or a pinned step of its
+                            // own means there is nowhere left to move it without breaking the
+                            // target too; and if that pinned step already avoided this guard's
+                            // list, this condition would never have blocked in the first place.
+                            if (!questStatePins.TryGetValue(questId, out var pinnedState) || pinnedState != null)
+                                continue;
+
+                            var candidate = 1;
+                            while (states.Contains(candidate))
+                                candidate++;
+
+                            player.WithQuest(questId, QuestProgress.OnStep(candidate));
+                            return true;
+                        }
+
+                        player.WithQuest(questId, QuestProgress.None);
+                        return true;
+                    }
+
                     case "condition-can-accept-quest" when !condition.IsNegated:
                     {
                         var questId = arguments.FirstOrDefault();
                         if (string.IsNullOrEmpty(questId) || protectedQuests.Contains(questId))
                             continue;
 
-                        // Someone who has already finished it can no longer be offered it. This is
-                        // what breaks an earlier rung of a quest chain without disturbing the rung
-                        // the target situation sits on.
-                        player.WithQuest(questId, QuestProgress.Completed);
+                        // Being in progress makes CanAcceptQuest false for both repeatable and
+                        // one-shot quests. Marking it merely Completed left a repeatable quest
+                        // re-offerable on every retry pass, since both the runtime and
+                        // ReachabilityEvaluator.CanAcceptQuest let a completed repeatable quest be
+                        // accepted again.
+                        player.WithQuest(questId, QuestProgress.OnStep(1));
                         return true;
                     }
 
@@ -320,10 +382,6 @@ namespace SWLOR.Toolset.Domain.Conversations
                             continue;
 
                         var isStanding = condition.SnippetKey == "condition-has-faction-standing";
-                        if (isStanding
-                                ? budget.FactionStandings.Contains(factionId)
-                                : budget.FactionPoints.Contains(factionId))
-                            continue;
 
                         // Faction points floor at zero and standing is clamped to the runtime's
                         // range, the same as Faction.AdjustPlayerFactionStanding/Points - a
@@ -331,29 +389,47 @@ namespace SWLOR.Toolset.Domain.Conversations
                         var floor = isStanding ? Game.Server.Service.Faction.MinimumFaction : 0;
                         var ceiling = isStanding ? Game.Server.Service.Faction.MaximumFaction : int.MaxValue;
 
+                        // The target's own guards on this same faction may still leave room to
+                        // move within - identifier-only protection refused any move at all, even
+                        // one that stays inside the interval the target still allows.
+                        var ranges = isStanding ? budget.FactionStandingRanges : budget.FactionPointRanges;
+                        var allowedMin = floor;
+                        var allowedMax = ceiling;
+                        if (ranges.TryGetValue(factionId, out var allowed))
+                        {
+                            allowedMin = Math.Max(allowedMin, allowed.Min);
+                            allowedMax = Math.Min(allowedMax, allowed.Max);
+                        }
+
+                        if (allowedMin > allowedMax)
+                            continue;
+
                         if (satisfy)
                         {
-                            // Currently at or above the requirement; drop just below it.
-                            var below = required - 1;
-                            if (below < floor)
+                            // Currently at or above the requirement; drop just below it, but no
+                            // lower than the target's own guards on this faction still allow.
+                            var value = Math.Min(required - 1, allowedMax);
+                            if (value < allowedMin)
                                 continue;
 
                             if (isStanding)
-                                player.WithFactionStanding(factionId, below);
+                                player.WithFactionStanding(factionId, value);
                             else
-                                player.WithFactionPoints(factionId, below);
+                                player.WithFactionPoints(factionId, value);
                             return true;
                         }
                         else
                         {
-                            // Currently below the requirement; raise it to exactly meet it.
-                            if (required > ceiling)
+                            // Currently below the requirement; raise it to exactly meet it, but no
+                            // higher than the target's own guards on this faction still allow.
+                            var value = Math.Max(required, allowedMin);
+                            if (value > allowedMax)
                                 continue;
 
                             if (isStanding)
-                                player.WithFactionStanding(factionId, required);
+                                player.WithFactionStanding(factionId, value);
                             else
-                                player.WithFactionPoints(factionId, required);
+                                player.WithFactionPoints(factionId, value);
                             return true;
                         }
                     }
@@ -372,8 +448,8 @@ namespace SWLOR.Toolset.Domain.Conversations
         {
             var keyItems = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var skills = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var factionStandings = new HashSet<int>();
-            var factionPoints = new HashSet<int>();
+            var factionStandingRanges = new Dictionary<int, (int Min, int Max)>();
+            var factionPointRanges = new Dictionary<int, (int Min, int Max)>();
             var tutorial = false;
 
             foreach (var condition in opening.Conditions)
@@ -396,14 +472,19 @@ namespace SWLOR.Toolset.Domain.Conversations
                             skills.Add(arguments[i]);
                         break;
 
-                    case "condition-has-faction-standing" when arguments.Length > 0:
-                        if (int.TryParse(arguments[0], out var standingFaction))
-                            factionStandings.Add(standingFaction);
+                    case "condition-has-faction-standing" when arguments.Length > 1:
+                        if (int.TryParse(arguments[0], out var standingFaction)
+                            && int.TryParse(arguments[1], out var standingRequired))
+                            IntersectFactionRange(factionStandingRanges, standingFaction, standingRequired,
+                                condition.IsNegated,
+                                Game.Server.Service.Faction.MinimumFaction, Game.Server.Service.Faction.MaximumFaction);
                         break;
 
-                    case "condition-has-faction-points" when arguments.Length > 0:
-                        if (int.TryParse(arguments[0], out var pointsFaction))
-                            factionPoints.Add(pointsFaction);
+                    case "condition-has-faction-points" when arguments.Length > 1:
+                        if (int.TryParse(arguments[0], out var pointsFaction)
+                            && int.TryParse(arguments[1], out var pointsRequired))
+                            IntersectFactionRange(factionPointRanges, pointsFaction, pointsRequired,
+                                condition.IsNegated, 0, int.MaxValue);
                         break;
 
                     case "condition-can-accept-quest" when arguments.Length > 0:
@@ -424,10 +505,31 @@ namespace SWLOR.Toolset.Domain.Conversations
             {
                 KeyItems = keyItems,
                 Skills = skills,
-                FactionStandings = factionStandings,
-                FactionPoints = factionPoints,
+                FactionStandingRanges = factionStandingRanges,
+                FactionPointRanges = factionPointRanges,
                 Tutorial = tutorial
             };
+        }
+
+        /// <summary>
+        /// Narrows the allowed interval for one faction to what a single guard on it permits — at
+        /// least <paramref name="required"/> for a positive guard, below it for a negated one — and
+        /// intersects that with whatever this opening's other guards on the same faction already
+        /// allow, since every guard on a link must pass at once.
+        /// </summary>
+        private static void IntersectFactionRange(
+            Dictionary<int, (int Min, int Max)> ranges, int factionId, int required, bool isNegated,
+            int floor, int ceiling)
+        {
+            var (min, max) = isNegated ? (floor, required - 1) : (required, ceiling);
+
+            if (ranges.TryGetValue(factionId, out var existing))
+            {
+                min = Math.Max(min, existing.Min);
+                max = Math.Min(max, existing.Max);
+            }
+
+            ranges[factionId] = (min, max);
         }
 
         /// <summary>The non-quest state one opening's own guards require, so <see cref="TryBreak"/> can avoid it.</summary>
@@ -435,9 +537,46 @@ namespace SWLOR.Toolset.Domain.Conversations
         {
             public required ISet<string> KeyItems { get; init; }
             public required ISet<string> Skills { get; init; }
-            public required ISet<int> FactionStandings { get; init; }
-            public required ISet<int> FactionPoints { get; init; }
+            public required IReadOnlyDictionary<int, (int Min, int Max)> FactionStandingRanges { get; init; }
+            public required IReadOnlyDictionary<int, (int Min, int Max)> FactionPointRanges { get; init; }
             public required bool Tutorial { get; init; }
+        }
+
+        /// <summary>
+        /// For quests this opening's own guards need in progress, the exact step
+        /// <see cref="ApplyToSatisfy"/> gave them — a specific step from a non-negated
+        /// condition-on-quest-state, or null when only condition-has-quest asked for "in progress"
+        /// and any step will do. Lets <see cref="TryBreak"/> nudge a protected quest's step to
+        /// dodge an earlier guard's list instead of refusing to touch it at all.
+        /// </summary>
+        private static IReadOnlyDictionary<string, int?> QuestStatePinsOf(DlgLink opening)
+        {
+            var pins = new Dictionary<string, int?>(StringComparer.Ordinal);
+
+            foreach (var condition in opening.Conditions)
+            {
+                if (condition.IsNegated || condition.SnippetKey != "condition-has-quest")
+                    continue;
+
+                var questId = condition.Arguments.FirstOrDefault();
+                if (!string.IsNullOrEmpty(questId))
+                    pins.TryAdd(questId, null);
+            }
+
+            // A pinned step is more specific than a bare "in progress", so it always wins,
+            // regardless of which order the two conditions appear in.
+            foreach (var condition in opening.Conditions)
+            {
+                if (condition.IsNegated || condition.SnippetKey != "condition-on-quest-state"
+                    || condition.Arguments.Length < 2)
+                    continue;
+
+                var questId = condition.Arguments[0];
+                if (!string.IsNullOrEmpty(questId) && int.TryParse(condition.Arguments[1], out var state))
+                    pins[questId] = state;
+            }
+
+            return pins;
         }
 
         /// <summary>Quest ids this opening's own guards pin down, which a breaker must not touch.</summary>

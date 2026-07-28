@@ -3,7 +3,7 @@ namespace SWLOR.Toolset.Domain.Workspace
     /// <summary>
     /// How a player can obtain an item, as classified by <see cref="ItemObtainabilityIndex"/>.
     /// Ordering here is also the Source tab's fixed display order (Store, Recipe, Loot, Quest,
-    /// Container, Other).
+    /// Npc, Container, Other).
     /// </summary>
     public enum ItemSourceKind
     {
@@ -18,6 +18,9 @@ namespace SWLOR.Toolset.Domain.Workspace
 
         /// <summary>Granted as a quest reward.</summary>
         Quest,
+
+        /// <summary>Carried as a droppable inventory item by a spawnable NPC (.utc).</summary>
+        Npc,
 
         /// <summary>Found in a placed container's default inventory.</summary>
         Container,

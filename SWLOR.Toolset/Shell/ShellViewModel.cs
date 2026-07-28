@@ -84,6 +84,9 @@ namespace SWLOR.Toolset.Shell
         private readonly ProblemsViewModel? _problems;
         private readonly AreaContentsViewModel? _areaContents;
 
+        /// <summary>Guards against a second rescan starting while one is already reopening the catalog.</summary>
+        private bool _isRescanningAfterWatcherOverflow;
+
         public ShellViewModel(
             ToolsetSettings settings,
             WorkspaceContext workspaceContext,
@@ -123,6 +126,10 @@ namespace SWLOR.Toolset.Shell
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _fileWatcher = fileWatcher ?? throw new ArgumentNullException(nameof(fileWatcher));
+            // A watcher error most often means its native buffer overflowed and dropped events (a
+            // bulk Git checkout is the ordinary trigger) - the catalog and indexes can only be trusted
+            // again after the same full rescan InitializeAsync runs at startup.
+            _fileWatcher.RescanRequested += OnFileWatcherRescanRequested;
             _explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
             _search = search ?? throw new ArgumentNullException(nameof(search));
             _palette = palette ?? throw new ArgumentNullException(nameof(palette));
@@ -736,6 +743,72 @@ namespace SWLOR.Toolset.Shell
                     // Previews last: it is the longest job and the only one the builder can work
                     // through, so it starts once everything they might click is already usable.
                     _ = RunPreviewCacheBuildAsync(fromScratch: false);
+                });
+            });
+        }
+
+        /// <summary>
+        /// Reopens the current module root and rebuilds the catalog and its dependent panels after
+        /// the file watcher reports a lost event (almost always its native buffer overflowing). Some
+        /// create/delete/rename notifications are gone by the time this runs, so patching individual
+        /// catalog entries has nothing reliable to patch from - only the same full rescan
+        /// <see cref="InitializeAsync"/> performs at startup can be trusted again.
+        /// </summary>
+        private async void OnFileWatcherRescanRequested()
+        {
+            if (_isRescanningAfterWatcherOverflow)
+                return;
+
+            var moduleRoot = _workspaceContext.Workspace?.ModuleRoot;
+            if (moduleRoot == null)
+                return;
+
+            _isRescanningAfterWatcherOverflow = true;
+            _log.AppendLine(
+                "File watcher lost events (buffer overflow) - rescanning the module to resynchronize the catalog.");
+            StatusText = "Resynchronizing after a file watcher overflow...";
+
+            try
+            {
+                await Task.Run(() => _workspaceContext.Open(moduleRoot)).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _isRescanningAfterWatcherOverflow = false;
+                StatusText = "Rescan failed - see Output.";
+                _log.AppendLine($"Rescan after file watcher overflow failed: {ex.Message}");
+                return;
+            }
+
+            var catalog = _workspaceContext.Catalog;
+            if (catalog == null)
+            {
+                _isRescanningAfterWatcherOverflow = false;
+                return;
+            }
+
+            _ = catalog.BuildTask.ContinueWith(task =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    _isRescanningAfterWatcherOverflow = false;
+
+                    if (task.IsFaulted)
+                    {
+                        var reason = task.Exception?.GetBaseException().Message ?? "unknown error";
+                        _explorer.Initialize();
+                        _palette.Refresh();
+                        StatusText = $"Rescan failed: {reason}. Search and Module Contents may be incomplete.";
+                        _log.AppendLine($"Rescan after file watcher overflow failed: {reason}");
+                        return;
+                    }
+
+                    _explorer.RefreshFromCatalog(catalog);
+                    _search.Refresh();
+                    _palette.Refresh();
+                    StatusText = $"Rescan complete: {catalog.Entries.Count} entries indexed.";
+                    _log.AppendLine(
+                        $"Rescan after file watcher overflow complete: {catalog.Entries.Count} entries indexed.");
                 });
             });
         }

@@ -38,6 +38,16 @@ namespace SWLOR.Toolset.Tests
         private static DlgDocument DantHerbs() =>
             DlgDocument.Load(Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dantherbs.dlg.json"));
 
+        /// <summary>A conversation with no openings at all, for testing one guard shape in isolation.</summary>
+        private static DlgDocument Blank()
+        {
+            var document = DantHerbs();
+            foreach (var opening in document.Openings.ToList())
+                document.RemoveLink(opening);
+
+            return document;
+        }
+
         private static SituationModel Model(DlgDocument document) =>
             new(document, Evaluator, GameCode);
 
@@ -309,6 +319,36 @@ namespace SWLOR.Toolset.Tests
             var after = Evaluator.ApplyActions(advance, player);
 
             after.GetQuest("harvest_herbs").IsCompleted.Should().BeTrue();
+        }
+
+        [Test]
+        public void AKeyItemGivenByNameIsRecognizedWhenCheckedByItsNumericId()
+        {
+            // CZ220ShuttlePass is KeyItemType 5. An imported conversation may give a key item by its
+            // enum member name and later check the same item by numeric id - the runtime resolves
+            // both to the same KeyItemType (KeyItem.GetKeyItemTypeById/GetKeyItemTypeByName), so a
+            // walk that stored the raw strings instead would see two different key items and report
+            // the later guard as failing when the game would not.
+            var document = DantHerbs();
+            var reply = document.AddReply("Take the shuttle pass, named.");
+            reply.AddAction("action-give-key-items", "CZ220ShuttlePass");
+
+            var after = Evaluator.ApplyActions(reply, new PretendPlayer());
+
+            after.HasKeyItem("5").Should().BeTrue();
+        }
+
+        [Test]
+        public void AKeyItemGivenByNumericIdIsRecognizedWhenCheckedByName()
+        {
+            // The same canonicalization the other direction: given by id, checked by name.
+            var document = DantHerbs();
+            var reply = document.AddReply("Take the shuttle pass, by id.");
+            reply.AddAction("action-give-key-items", "5");
+
+            var after = Evaluator.ApplyActions(reply, new PretendPlayer());
+
+            after.HasKeyItem("CZ220ShuttlePass").Should().BeTrue();
         }
 
         [Test]
@@ -625,6 +665,117 @@ namespace SWLOR.Toolset.Tests
             player.Should().NotBeNull();
             player!.GetFactionPoints(7).Should().Be(50);
             Evaluator.ResolveOpening(document, player!)!.Struct.Should().BeSameAs(catchAll.Struct);
+        }
+
+        [Test]
+        public void ANegatedQuestStateGuardCanBeBrokenByLandingOnOneOfItsListedSteps()
+        {
+            // !condition-on-quest-state q 3 4 used to be broken by treating "3" and "4" as bogus
+            // quest ids of their own, each set to step 1 - q itself was never moved, the guard kept
+            // passing on every retry, and the solver exhausted its budget reporting the catch-all
+            // unreachable. Only q is a quest id here; 3 and 4 are the steps that break it.
+            var document = Blank();
+
+            var guardedEntry = document.AddEntry("Not on the right step yet.");
+            var guarded = document.AddOpening(guardedEntry);
+            guarded.AddCondition("!condition-on-quest-state", "q 3 4");
+
+            var catchAllEntry = document.AddEntry("Everyone else.");
+            var catchAll = document.AddOpening(catchAllEntry);
+
+            var model = Model(document);
+            var situation = model.Situations().Single(s => s.Opening.Struct == catchAll.Struct);
+            situation.State.Should().Be(SituationState.Written);
+
+            var player = model.PlayerFor(situation);
+            player.Should().NotBeNull();
+            player!.GetQuest("q").CurrentState.Should().BeOneOf(3, 4);
+            Evaluator.ResolveOpening(document, player!)!.Struct.Should().BeSameAs(catchAll.Struct);
+        }
+
+        [Test]
+        public void APositiveQuestStateGuardCanBeMovedToADifferentStepWhenTheTargetOnlyNeedsInProgress()
+        {
+            // The earlier opening requires q on step 1 specifically. The target only asks for q "in
+            // progress" via condition-has-quest, so ApplyToSatisfy defaults it to step 1 too -
+            // coinciding with the earlier guard. Because q is protected, the old breaker skipped it
+            // and tried to clear the state argument "1" as if it were a second quest id, which did
+            // nothing to either quest, so the earlier guard kept passing.
+            var document = Blank();
+
+            var firstEntry = document.AddEntry("Still on the very first step.");
+            var first = document.AddOpening(firstEntry);
+            first.AddCondition("condition-on-quest-state", "q 1");
+
+            var secondEntry = document.AddEntry("Doing it, whatever the step.");
+            var second = document.AddOpening(secondEntry);
+            second.AddCondition("condition-has-quest", "q");
+
+            var model = Model(document);
+            var situation = model.Situations().Single(s => s.Opening.Struct == second.Struct);
+            situation.State.Should().Be(SituationState.Written);
+
+            var player = model.PlayerFor(situation);
+            player.Should().NotBeNull();
+            player!.GetQuest("q").IsInProgress.Should().BeTrue();
+            player.GetQuest("q").CurrentState.Should().NotBe(1);
+            Evaluator.ResolveOpening(document, player!)!.Struct.Should().BeSameAs(second.Struct);
+        }
+
+        [Test]
+        public void AQuestOfferGuardCanBeBrokenForARepeatableQuestByPuttingItInProgress()
+        {
+            // condition-can-accept-quest used to be broken by marking the quest Completed - but
+            // CanAcceptQuest (both the runtime and ReachabilityEvaluator) still lets a completed
+            // REPEATABLE quest be accepted again, so harvest_herbs's offer stayed open on every
+            // retry and the solver exhausted its budget reporting the catch-all unreachable.
+            var document = Blank();
+
+            var offerEntry = document.AddEntry("Care to help me gather herbs?");
+            var offer = document.AddOpening(offerEntry);
+            offer.AddCondition("condition-can-accept-quest", "harvest_herbs");
+
+            var catchAllEntry = document.AddEntry("Everyone else.");
+            var catchAll = document.AddOpening(catchAllEntry);
+
+            var model = Model(document);
+            var situation = model.Situations().Single(s => s.Opening.Struct == catchAll.Struct);
+            situation.State.Should().Be(SituationState.Written);
+
+            var player = model.PlayerFor(situation);
+            player.Should().NotBeNull();
+            player!.GetQuest("harvest_herbs").IsInProgress.Should().BeTrue(
+                "in progress makes CanAcceptQuest false whether or not the quest is repeatable");
+            Evaluator.ResolveOpening(document, player!)!.Struct.Should().BeSameAs(catchAll.Struct);
+        }
+
+        [Test]
+        public void AFactionGuardCanBeBrokenWithinTheTargetsOwnAllowedRange()
+        {
+            // The earlier opening requires standing >= 10 (blocking below that). The target itself
+            // requires standing < 20 - reachable anywhere from the runtime minimum through 19,
+            // which includes 0-9. Identifier-only protection used to refuse touching faction 7 at
+            // all just because the target also names it, even though dropping below 10 stays
+            // entirely inside the range the target still allows.
+            var document = DantHerbs();
+            document.RemoveLink(document.Openings.Single(o => o.Conditions.Count == 0));
+
+            var firstEntry = document.AddEntry("Only the well-regarded may pass.");
+            var first = document.AddOpening(firstEntry);
+            first.AddCondition("condition-has-faction-standing", "7 10");
+
+            var secondEntry = document.AddEntry("Not fully trusted, but welcome.");
+            var second = document.AddOpening(secondEntry);
+            second.AddCondition("!condition-has-faction-standing", "7 20");
+
+            var model = Model(document);
+            var situation = model.Situations().Single(s => s.Opening.Struct == second.Struct);
+            situation.State.Should().Be(SituationState.Written);
+
+            var player = model.PlayerFor(situation);
+            player.Should().NotBeNull();
+            player!.GetFactionStanding(7).Should().BeLessThan(10);
+            Evaluator.ResolveOpening(document, player!)!.Struct.Should().BeSameAs(second.Struct);
         }
 
         [Test]

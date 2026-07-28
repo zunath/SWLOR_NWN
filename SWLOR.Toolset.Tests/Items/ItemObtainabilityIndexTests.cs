@@ -87,6 +87,64 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public void NpcDroppableItemNamesItsCarryingCreature()
+        {
+            // equ_ferraille's only source is being carried droppable by ext_jawa003 - the exact
+            // corpus case where a store-and-C#-only index wrongly reported "no player source".
+            var sources = SharedIndex.Value.SourcesFor("equ_ferraille");
+
+            sources.Should().Contain(entry =>
+                entry.Kind == ItemSourceKind.Npc && entry.SourceResRef == "ext_jawa003");
+        }
+
+        [Test]
+        public void PlacedContainerDefaultInventoryCountsAsASource()
+        {
+            var (containerResRef, itemResRef) = FirstContainerItem();
+
+            var sources = SharedIndex.Value.SourcesFor(itemResRef);
+
+            sources.Should().Contain(entry =>
+                entry.Kind == ItemSourceKind.Container && entry.SourceResRef == containerResRef);
+        }
+
+        /// <summary>
+        /// The first .utp in the corpus carrying a default ItemList entry, read independently of
+        /// the index's own parser.
+        /// </summary>
+        private static (string ContainerResRef, string ItemResRef) FirstContainerItem()
+        {
+            foreach (var file in Directory.EnumerateFiles(
+                         Path.Combine(CorpusLocator.ModuleDirectory, "utp"), "*.utp.json"))
+            {
+                var text = File.ReadAllText(file);
+                if (!text.Contains("InventoryRes"))
+                    continue;
+
+                using var doc = JsonDocument.Parse(text);
+                if (!doc.RootElement.TryGetProperty("ItemList", out var wrapper) ||
+                    !wrapper.TryGetProperty("value", out var items) ||
+                    items.ValueKind != JsonValueKind.Array)
+                {
+                    continue;
+                }
+
+                foreach (var item in items.EnumerateArray())
+                {
+                    if (item.TryGetProperty("InventoryRes", out var res) &&
+                        res.TryGetProperty("value", out var value) &&
+                        value.ValueKind == JsonValueKind.String)
+                    {
+                        var resRef = Path.GetFileName(file).Replace(".utp.json", string.Empty);
+                        return (resRef, value.GetString()!);
+                    }
+                }
+            }
+
+            throw new InvalidOperationException("No .utp with a default inventory found in the corpus.");
+        }
+
+        [Test]
         public void UnknownResRefHasNoSourcesAndIsNotObtainable()
         {
             var index = SharedIndex.Value;
@@ -108,7 +166,7 @@ namespace SWLOR.Toolset.Tests.Items
             section.Verdict.Should().Be(
                 $"✓ Obtainable — {index.SourcesFor(obtainableResRef).Count} sources in the module");
 
-            var expectedOrder = new[] { "Store", "Recipe", "Loot", "Quest", "Container", "Other" };
+            var expectedOrder = new[] { "Store", "Recipe", "Loot", "Quest", "Npc", "Container", "Other" };
             var groupTitles = section.Groups.Select(group => group.Title).ToList();
             groupTitles.Select(title => Array.IndexOf(expectedOrder, title))
                 .Should().BeInAscendingOrder();
@@ -130,7 +188,7 @@ namespace SWLOR.Toolset.Tests.Items
             section.IsObtainable.Should().BeFalse();
             section.Verdict.Should().Be("No player source grants this item");
             section.Groups.Should().BeEmpty();
-            section.EmptyKinds.Should().HaveCount(6);
+            section.EmptyKinds.Should().HaveCount(7);
         }
 
         [Test]

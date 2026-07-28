@@ -257,9 +257,6 @@ namespace SWLOR.Toolset.Domain.Conversations
             DlgNode? node,
             List<ConversationProblem> problems)
         {
-            if (_gameCode == null)
-                return;
-
             QuestDefinitionInfo? quest = null;
             for (var i = 0; i < arguments.Length; i++)
             {
@@ -272,9 +269,11 @@ namespace SWLOR.Toolset.Domain.Conversations
                 {
                     // Quests and quest steps come from the source scan, so they need it available;
                     // key items, factions and skills are read via reflection and stay populated even
-                    // when the scan is not.
+                    // when the scan is not. Purely numeric arguments (quest steps, ranks, amounts)
+                    // are parse-checked with no game code at all - the runtime int-parses them and
+                    // fails the guard on garbage, so a non-numeric value is Broken either way.
                     case SnippetArgumentType.QuestId:
-                        if (!_gameCode.IsSourceScanAvailable)
+                        if (_gameCode == null || !_gameCode.IsSourceScanAvailable)
                             break;
 
                         quest = _gameCode.FindQuest(value);
@@ -288,7 +287,15 @@ namespace SWLOR.Toolset.Domain.Conversations
                         break;
 
                     case SnippetArgumentType.QuestState:
-                        if (!_gameCode.IsSourceScanAvailable || quest == null || !int.TryParse(value, out var state))
+                        if (!int.TryParse(value, out var state))
+                        {
+                            problems.Add(Make("not-a-number", ProblemSeverity.Broken,
+                                $"“{value}” is not a number, so this step can never match.",
+                                anchor, link, node));
+                            break;
+                        }
+
+                        if (_gameCode == null || !_gameCode.IsSourceScanAvailable || quest == null)
                             break;
 
                         if (state < 1 || state > quest.StateCount)
@@ -301,10 +308,24 @@ namespace SWLOR.Toolset.Domain.Conversations
 
                         break;
 
+                    case SnippetArgumentType.SkillRank:
+                    case SnippetArgumentType.Amount:
+                        if (!int.TryParse(value, out _))
+                        {
+                            problems.Add(Make("not-a-number", ProblemSeverity.Broken,
+                                $"“{value}” is not a number, so this can never match.",
+                                anchor, link, node));
+                        }
+
+                        break;
+
                     // Key items are stored as their integer enum value or their KeyItemType member
                     // name - the runtime accepts both (KeyItem.GetKeyItemTypeByName resolves names
                     // case-sensitively), so validation must too.
                     case SnippetArgumentType.KeyItemId:
+                        if (_gameCode == null)
+                            break;
+
                         var isKnownKeyItem =
                             (int.TryParse(value, out var keyItemId) && _gameCode.KeyItems.ContainsKey(keyItemId))
                             || (Enum.TryParse<Game.Server.Service.KeyItemService.KeyItemType>(value, out var keyItemByName)
@@ -320,6 +341,9 @@ namespace SWLOR.Toolset.Domain.Conversations
                         break;
 
                     case SnippetArgumentType.FactionId:
+                        if (_gameCode == null)
+                            break;
+
                         if (!(int.TryParse(value, out var factionId) && _gameCode.Factions.ContainsKey(factionId)))
                         {
                             problems.Add(Make("unknown-faction", ProblemSeverity.Broken,
@@ -332,6 +356,9 @@ namespace SWLOR.Toolset.Domain.Conversations
                     // Skills are stored either as their integer enum value or by their C# member
                     // name - both are what SkillType.TryParse accepts at runtime.
                     case SnippetArgumentType.SkillId:
+                        if (_gameCode == null)
+                            break;
+
                         var isKnownSkill = (int.TryParse(value, out var skillId) && _gameCode.Skills.ContainsKey(skillId))
                             || _gameCode.SkillEnumNames.Values.Any(name =>
                                 string.Equals(name, value, StringComparison.OrdinalIgnoreCase));

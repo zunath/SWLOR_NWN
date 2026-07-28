@@ -91,9 +91,14 @@ namespace SWLOR.Toolset.Editors.Items
             if (role.Id == previous.Id)
                 return;
 
+            // A property both roles own (Meal and Enhancement share 108) survives the switch: the
+            // prompt promises to clear only what is "not part of" the target role, and deleting a
+            // shared property would empty the incoming card of the very value it exists to show.
             var owned = ItemRoleOwnership.OwnedProperties(previous.Id);
+            var kept = ItemRoleOwnership.OwnedProperties(role.Id);
             var losing = _store.Properties
-                .Where(property => owned.Contains(property.PropertyId))
+                .Where(property => owned.Contains(property.PropertyId) &&
+                                   !kept.Contains(property.PropertyId))
                 .ToList();
 
             if (losing.Count > 0 && _prompts != null)

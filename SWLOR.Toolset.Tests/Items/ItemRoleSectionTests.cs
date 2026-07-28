@@ -217,6 +217,26 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public async Task SwitchingKeepsAPropertyTheTargetRoleAlsoOwns()
+        {
+            // Meal and Enhancement both own property 108 (HP bonus territory): switching between
+            // them must neither prompt for it nor delete it, or the incoming card arrives empty.
+            var store = NewStore();
+            store.SetPropertyValue(108, -1, 1, 5);
+            var prompts = new StubPromptService(answer: true);
+
+            var section = NewSection(store, prompts);
+            section.Rebuild(
+                ItemFamily.Miscellaneous, ItemRoleCatalog.Get(ItemRoleCatalog.MealId), "Misc Medium");
+
+            await section.ChooseRoleAsync(ItemRoleCatalog.Get(ItemRoleCatalog.EnhancementId));
+
+            prompts.Calls.Should().Be(0, "nothing exclusive to Meal is being lost");
+            store.GetPropertyValue(108, -1).Should().Be(5, "the shared property survives the switch");
+            section.Role.Id.Should().Be(ItemRoleCatalog.EnhancementId);
+        }
+
+        [Test]
         public async Task SwitchingToTheAlreadyCurrentRoleIsANoOp()
         {
             var store = NewStore();

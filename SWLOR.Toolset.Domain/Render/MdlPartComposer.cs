@@ -108,6 +108,47 @@ namespace SWLOR.Toolset.Domain.Render
             return composed;
         }
 
+        /// <summary>
+        /// Merges independently positioned part models - a composite item's bottom/middle/top - under
+        /// one synthetic root, with no skeleton, no seam correction, and no texture stamping: composite
+        /// item parts are authored in a shared item space with their own bitmaps, so each part keeps
+        /// its placement and textures as-is. Returns null when no part resolves to real geometry.
+        /// </summary>
+        public MdlModel? ComposeFlat(IEnumerable<string> partResRefs, string name)
+        {
+            ArgumentNullException.ThrowIfNull(partResRefs);
+
+            var root = new MdlNode { Name = name };
+            var composed = new MdlModel { Name = name, GeometryRoot = root };
+            var attached = 0;
+            var partCount = 0;
+
+            foreach (var resRef in partResRefs)
+            {
+                if (++partCount > MaximumParts)
+                    throw new InvalidDataException($"A composed MDL may contain at most {MaximumParts} parts.");
+                if (string.IsNullOrWhiteSpace(resRef))
+                    continue;
+
+                var partSource = Load(resRef, withSupermodelAnimations: false);
+                if (partSource?.GeometryRoot == null)
+                    continue;
+
+                var partRoot = CloneNodeTree(partSource.GeometryRoot);
+                if (partRoot == null)
+                    continue;
+
+                Attach(root, partRoot);
+                attached++;
+            }
+
+            if (attached == 0)
+                return null;
+
+            RecalculateBounds(composed);
+            return composed;
+        }
+
         private MdlModel? Load(string resRef, bool withSupermodelAnimations)
         {
             var key = (resRef.Trim(), withSupermodelAnimations);

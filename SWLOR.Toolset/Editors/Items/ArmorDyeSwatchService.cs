@@ -1,4 +1,3 @@
-using Radoub.Formats.Plt;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 
@@ -13,20 +12,19 @@ namespace SWLOR.Toolset.Editors.Items
     /// Per the Aurora item format, each material shares ONE palette texture between its two dye
     /// slots: Metal1/Metal2 both read <c>pal_armor01</c>, Cloth1/Cloth2 read <c>pal_cloth01</c>,
     /// Leather1/Leather2 read <c>pal_leath01</c> (the "1"/"2" split is which PLT layer uses the
-    /// looked-up index, not a separate file - confirmed against <c>PltLayers.GetPaletteResRef</c>).
+    /// looked-up index, not a separate file).
     /// </para>
     /// <para>
-    /// A palette texture is 256 columns (grayscale) by up to 176 rows (dye index), per
-    /// <c>PltReader.Render</c>: X is the grayscale value, Y is the color index. This samples a fixed
-    /// mid-tone column so the returned color reads as the row's hue rather than its shadow or
-    /// highlight extreme.
+    /// Sampling mirrors <see cref="TextureLoader.LoadPlt"/>'s own palette math exactly - row is the
+    /// color index, column is the grayscale intensity scaled across the palette's width - at a fixed
+    /// mid-tone intensity, so the swatch reads as the row's hue rather than its shadow or highlight
+    /// extreme, and can never disagree with what the PLT decoder renders.
     /// </para>
     /// <para>
     /// Decoded palettes are cached for the life of the service - they never change while a session
     /// runs. A palette texture this build can't resolve or decode (this dev/test corpus ships no
-    /// base-game palette TGAs at all, only SWLOR's own hak content - see
-    /// <c>RenderPipelineTests.TextureLoader_LoadPlt_ForKnownCorpusTexture_DecodesToReportedDimensions</c>)
-    /// degrades to null, so the caller renders a neutral chip instead of throwing.
+    /// base-game palette TGAs at all, only SWLOR's own hak content) degrades to null, so the caller
+    /// renders a neutral chip instead of throwing.
     /// </para>
     /// </remarks>
     public sealed class ArmorDyeSwatchService
@@ -39,12 +37,12 @@ namespace SWLOR.Toolset.Editors.Items
             Metal
         }
 
-        /// <summary>Grayscale column sampled to stand in for a palette row's hue (mid-tone).</summary>
-        private const int SwatchGrayscale = 128;
+        /// <summary>Grayscale intensity sampled to stand in for a palette row's hue (mid-tone).</summary>
+        private const int SwatchIntensity = 128;
 
         private readonly ResourceIndex? _resourceIndex;
 
-        private readonly Dictionary<string, PaletteData?> _paletteCache =
+        private readonly Dictionary<string, TextureImage?> _paletteCache =
             new(StringComparer.OrdinalIgnoreCase);
 
         public ArmorDyeSwatchService(ResourceIndex? resourceIndex)
@@ -59,11 +57,19 @@ namespace SWLOR.Toolset.Editors.Items
         public (byte R, byte G, byte B)? GetColor(DyeMaterial material, int index)
         {
             var palette = GetPalette(PaletteResRef(material));
-            if (palette == null)
+            if (palette == null || palette.Width <= 0 || palette.Height <= 0 ||
+                palette.Pixels.Length < palette.Width * palette.Height * 4)
+            {
                 return null;
+            }
 
-            var (r, g, b, _) = palette.GetColor(SwatchGrayscale, index);
-            return (r, g, b);
+            var row = Math.Clamp(index, 0, palette.Height - 1);
+            var column = palette.Width == 1
+                ? 0
+                : SwatchIntensity * (palette.Width - 1) / 255;
+            var offset = (row * palette.Width + column) * 4;
+
+            return (palette.Pixels[offset], palette.Pixels[offset + 1], palette.Pixels[offset + 2]);
         }
 
         private static string PaletteResRef(DyeMaterial material) => material switch
@@ -74,13 +80,12 @@ namespace SWLOR.Toolset.Editors.Items
             _ => throw new ArgumentOutOfRangeException(nameof(material))
         };
 
-        private PaletteData? GetPalette(string resRef)
+        private TextureImage? GetPalette(string resRef)
         {
             if (_paletteCache.TryGetValue(resRef, out var cached))
                 return cached;
 
-            var decoded = _resourceIndex == null ? null : TextureLoader.LoadTga(_resourceIndex, resRef);
-            var palette = decoded == null ? null : new PaletteData(decoded.Width, decoded.Height, decoded.Pixels);
+            var palette = _resourceIndex == null ? null : TextureLoader.LoadTga(_resourceIndex, resRef);
             _paletteCache[resRef] = palette;
             return palette;
         }

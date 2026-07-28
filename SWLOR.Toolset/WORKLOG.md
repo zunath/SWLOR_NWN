@@ -1968,3 +1968,36 @@ the `.claude/worktrees/*` checkouts, which are entire second copies of the repos
 commits. One still on a pre-Radoub-removal branch reported
 `SWLOR.Toolset.Domain -> Radoub.Formats` against a tree that references Radoub nowhere. Scoped the
 scan to the tree under test.
+
+## Area viewport - 2026-07-27 - Triggers and sounds now render as Aurora renders them
+
+Trigger outlines were orange and used the stored per-vertex heights; sounds were a cyan kind-pyramid.
+Both now match the reference toolset, verified against pixel samples taken from the live Aurora
+window on the same areas.
+
+- **Why the placement was wrong.** A trigger's Geometry PointZ is whatever height each vertex
+  happened to be clicked at, and the corpus mixes floor heights inside one flat polygon -
+  manda_facility's rest triggers mix 0.025 and 6.025 in single-storey rooms. Drawing the stored Z
+  faithfully produced tilted outlines floating through the air; Aurora ignores stored Z and drapes
+  every vertex onto the walkmesh.
+- **Decision.** `AreaWalkmesh.GroundHeightAt` (topmost walkable face at an X/Y, non-walkable
+  fallback, only the tile whose cell contains the point tested) drapes each vertex at scene build,
+  and `RebuildPolygonBuffer` subdivides each edge into 1m samples and drapes those too, so an
+  outline crossing a slope hugs it. Colour is Aurora's #6666CC, sampled identical in a lit interior
+  and full daylight - the reference draws these unlit.
+- **Sounds.** Aurora's graphic is a billboarded musical note (red head, black stem/flag) plus, for
+  positional sounds, a dotted lat/long sphere and solid equator ring at MinDistance and a flat
+  circle at MaxDistance in #66B1FD, all depth-off so a 50m audible radius stays readable across
+  terrain. `InstanceMarker` now carries MinDistance/MaxDistance/Positional for sounds.
+- **Verification.** `GroundHeightAt` unit coverage in `AreaWalkmeshTests` (flat floor, outside-cell
+  null, walkable-over-wall-top, non-walkable fallback, two-storey topmost); WaterPoolSmall
+  (min 5, max 50) against the Aurora capture for the radius semantics.
+
+## Area editor - 2026-07-27 - Turn menu entries removed; tile paints refresh immediately
+
+- **Turn entries.** The right-click object menu loses Turn anticlockwise/clockwise/random - rotation
+  stays on the toolbar and Alt+drag. The now-unreferenced rotate-step commands went with it.
+- **Paint latency.** Viewport tile edits (terrain paint, stamp, raise/lower) skip the 220ms
+  scene-refresh debounce. The debounce exists for keyboard-repeat edit streams - a NumericUpDown
+  drag, held Ctrl+Z - and those still take it; a paint click is a single deliberate act the
+  reference toolset answers instantly.

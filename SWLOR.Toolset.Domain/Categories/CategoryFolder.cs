@@ -22,6 +22,21 @@ namespace SWLOR.Toolset.Domain.Categories
 
         public string Name { get; private set; }
 
+        /// <summary>
+        /// True when this folder's <see cref="Name"/> is an unresolved "Category N" placeholder
+        /// <see cref="Categories.ItpCategoryImporter"/> wrote because no TLK was available to look up
+        /// the real name at import time.
+        /// </summary>
+        /// <remarks>
+        /// Set only by the importer at the point it invents the placeholder text - never inferred
+        /// elsewhere from the shape of <see cref="Name"/>. A builder can deliberately name a folder
+        /// "Category 7", and that name is textually indistinguishable from a real placeholder; only
+        /// this explicit marker tells <c>CategoryService.RepairPlaceholderNames</c> which folders it
+        /// is safe to rename. Cleared by <see cref="Rename"/>, since any rename - whether that repair
+        /// or a builder's own - resolves the name and the folder is no longer a pending placeholder.
+        /// </remarks>
+        public bool IsUnresolvedPlaceholder { get; set; }
+
         public IReadOnlyList<CategoryFolder> Children => _children;
 
         /// <summary>Resrefs filed directly in this folder, in insertion order, without duplicates.</summary>
@@ -41,7 +56,11 @@ namespace SWLOR.Toolset.Domain.Categories
             }
         }
 
-        public void Rename(string name) => Name = Normalize(name);
+        public void Rename(string name)
+        {
+            Name = Normalize(name);
+            IsUnresolvedPlaceholder = false;
+        }
 
         /// <summary>
         /// True when <paramref name="name"/> is free among this folder's children, ignoring

@@ -82,6 +82,10 @@ namespace SWLOR.Toolset.Services
             var restored = new List<string>();
             var protectedBackups = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var protectedTransactionIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            // A manifest whose group could not be fully restored (a locked backup or target, most
+            // often) is collected here rather than silently left "incomplete": every entry describes
+            // exactly which files are still at risk, so the exception thrown below can name them.
+            var incompleteTransactions = new List<string>();
 
             foreach (var manifestPath in Directory.EnumerateFiles(
                          moduleRoot, "*" + TransactionSuffix, SearchOption.AllDirectories))
@@ -121,6 +125,7 @@ namespace SWLOR.Toolset.Services
                 }
 
                 var recovered = true;
+                var unrecoveredTargets = new List<string>();
                 foreach (var entry in manifest.Entries.AsEnumerable().Reverse())
                 {
                     if (!IsPathUnderRoot(moduleRoot, entry.TargetPath) ||
@@ -128,6 +133,7 @@ namespace SWLOR.Toolset.Services
                         !IsPathUnderRoot(moduleRoot, entry.BackupPath))
                     {
                         recovered = false;
+                        unrecoveredTargets.Add(entry.TargetPath);
                         continue;
                     }
 
@@ -143,6 +149,7 @@ namespace SWLOR.Toolset.Services
                             else if (!File.Exists(entry.TargetPath))
                             {
                                 recovered = false;
+                                unrecoveredTargets.Add(entry.TargetPath);
                             }
                         }
                         else if (File.Exists(entry.TargetPath))
@@ -156,6 +163,7 @@ namespace SWLOR.Toolset.Services
                     catch (Exception)
                     {
                         recovered = false;
+                        unrecoveredTargets.Add(entry.TargetPath);
                     }
                 }
 
@@ -175,6 +183,14 @@ namespace SWLOR.Toolset.Services
                 {
                     foreach (var entry in manifest.Entries)
                         protectedBackups.Add(entry.BackupPath);
+
+                    // A group whose entries could not all be put back leaves the ARE/GIT/GIC at mixed
+                    // generations if opening proceeds anyway. Naming the specific files here - rather
+                    // than only marking the transaction incomplete and moving on - is what lets
+                    // WorkspaceContext.Open refuse to open instead of exposing the half-recovered group.
+                    incompleteTransactions.Add(unrecoveredTargets.Count > 0
+                        ? $"{manifestPath} (unrecovered: {string.Join(", ", unrecoveredTargets.Distinct())})"
+                        : $"{manifestPath} (manifest could not be removed after recovery)");
                 }
             }
 
@@ -218,6 +234,13 @@ namespace SWLOR.Toolset.Services
                     // unrecoverable move available here.
                 }
             }
+
+            // Refuse to report success when a group is still incomplete. WorkspaceContext.Open does
+            // not catch this - it propagates to the same "failed to open" handling every other fatal
+            // open error already uses - so the module stays unopened rather than exposing an area
+            // whose ARE/GIT/GIC files are at mixed generations.
+            if (incompleteTransactions.Count > 0)
+                throw new SaveRecoveryException(incompleteTransactions);
 
             return restored;
         }
@@ -504,4 +527,5 @@ namespace SWLOR.Toolset.Services
             public bool HadOriginal { get; set; }
         }
     }
+
 }

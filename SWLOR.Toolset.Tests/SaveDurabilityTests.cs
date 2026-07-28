@@ -122,6 +122,65 @@ namespace SWLOR.Toolset.Tests
             File.Exists(gitBackup).Should().BeFalse();
         }
 
+        /// <summary>
+        /// If the GIT half of a group cannot be put back (its target is blocked here by an
+        /// obstruction standing where the file should go, standing in for a locked file in
+        /// practice) recovery must not report success. Silently continuing left the ARE at its new
+        /// generation and the GIT missing, with nothing telling WorkspaceContext.Open to refuse -
+        /// so the area opened at mixed generations instead of failing loudly.
+        /// </summary>
+        [Test]
+        public void ARecoveryFailureForOneMemberThrowsInsteadOfReportingSuccess()
+        {
+            var transactionId = Guid.NewGuid().ToString("N");
+            var areTarget = Path.Combine(_root, "are", "cantina.are.json");
+            var gitTarget = Path.Combine(_root, "git", "cantina.git.json");
+            var areBackup = areTarget + "." + transactionId + SaveService.BackupSuffix;
+            var gitBackup = gitTarget + "." + transactionId + SaveService.BackupSuffix;
+
+            File.WriteAllText(areTarget, "{\"generation\":\"new\"}");
+            File.WriteAllText(areBackup, "{\"generation\":\"old-are\"}");
+            File.WriteAllText(gitBackup, "{\"generation\":\"old-git\"}");
+
+            // Stands in the GIT target's way: File.Move onto an existing directory throws, the way
+            // a locked file would, without depending on platform-specific file-locking behavior.
+            Directory.CreateDirectory(gitTarget);
+
+            var manifestPath = Path.Combine(
+                _root, "." + transactionId + SaveService.TransactionSuffix);
+            File.WriteAllText(
+                manifestPath,
+                JsonSerializer.Serialize(new
+                {
+                    Entries = new[]
+                    {
+                        new
+                        {
+                            TargetPath = areTarget,
+                            TemporaryPath = areTarget + ".tmp",
+                            BackupPath = areBackup,
+                            HadOriginal = true
+                        },
+                        new
+                        {
+                            TargetPath = gitTarget,
+                            TemporaryPath = gitTarget + ".tmp",
+                            BackupPath = gitBackup,
+                            HadOriginal = true
+                        }
+                    }
+                }));
+
+            Action act = () => SaveService.RecoverInterruptedSaves(_root);
+
+            act.Should().Throw<SaveRecoveryException>()
+                .Which.Message.Should().Contain(gitTarget);
+
+            File.Exists(manifestPath).Should().BeTrue(
+                "the group is still incomplete, so startup must roll it back again next time");
+            File.Exists(gitBackup).Should().BeTrue("the only copy of the GIT generation must survive");
+        }
+
         [Test]
         public void AnUnreadableManifestShieldsItsTransactionBackupsFromTheOrphanSweep()
         {

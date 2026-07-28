@@ -362,6 +362,27 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void IncludeSwappedUnderAPreservedMTime_MarksTheDependentStale()
+        {
+            var sharedTime = DateTime.UtcNow.AddHours(-2);
+            Source("a", "#include \"swap_inc\"\nvoid main() { Helper(); }", sharedTime);
+            Source("swap_inc", "int Helper() { return 1; }", sharedTime);
+            Compiled("a", DateTime.UtcNow);
+
+            // First sight records the baseline over the entry point AND its include set.
+            Scan().Should().BeEmpty();
+
+            // The include's content changes but its mtime is forced back - the dependent's own
+            // source and artifact are untouched, so every timestamp still says fresh, yet the
+            // shipped bytecode was compiled against the old include.
+            Source("swap_inc", "int Helper() { return 2; }", sharedTime);
+
+            var finding = Scan().Should().ContainSingle().Which;
+            finding.Reason.Should().Be(StaleReason.SourceReplaced);
+            finding.ResRef.Should().Be("a");
+        }
+
+        [Test]
         public void FreshCheckoutWithNoCache_DoesNotReportUntouchedScriptsStale()
         {
             // No prior Scan() has run in this test, so ScriptFingerprintStore has nothing persisted -

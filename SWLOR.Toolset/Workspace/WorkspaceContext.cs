@@ -47,6 +47,12 @@ namespace SWLOR.Toolset.Workspace
             // an original aside and installing its replacement leaves the canonical ARE, GIT, or
             // GIC missing and its only copy sitting beside it under a .save-backup name; opening
             // the area then fails on a file that is, in fact, right there.
+            //
+            // Deliberately not caught here: if a member of the group cannot be restored (a locked
+            // backup or target), RecoverInterruptedSaves throws SaveRecoveryException instead of
+            // returning partial success, and that must propagate out of Open so the caller's
+            // existing "failed to open" handling refuses the module rather than opening it with an
+            // area at mixed ARE/GIT/GIC generations.
             foreach (var recovered in Services.SaveService.RecoverInterruptedSaves(moduleRoot))
                 _log.AppendLine($"Recovered '{recovered}' from an interrupted save.");
 

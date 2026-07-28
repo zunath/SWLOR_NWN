@@ -84,6 +84,36 @@ namespace SWLOR.Toolset.Tests
                 because: "an unresolved category still has to be visible and renameable");
         }
 
+        /// <summary>
+        /// CategoryService.RepairPlaceholderNames must be able to tell a real unresolved placeholder
+        /// apart from a folder a builder happened to name "Category 7" - and the name text alone cannot
+        /// do that, since both look identical. This marker is the only place that distinction is made.
+        /// </summary>
+        [Test]
+        public void An_Unresolved_StrRef_Category_Is_Marked_As_A_Placeholder()
+        {
+            var section = ItpCategoryImporter.Import(RealisticPalette(), _ => null);
+
+            section.Find("Category 6688")!.IsUnresolvedPlaceholder.Should().BeTrue();
+        }
+
+        [Test]
+        public void A_Resolved_StrRef_Category_Is_Not_Marked_As_A_Placeholder()
+        {
+            var section = ItpCategoryImporter.Import(
+                RealisticPalette(), strRef => strRef == 6688 ? "Special" : null);
+
+            section.Find("Special")!.IsUnresolvedPlaceholder.Should().BeFalse();
+        }
+
+        [Test]
+        public void A_Category_Named_Directly_Is_Never_Marked_As_A_Placeholder()
+        {
+            var section = ItpCategoryImporter.Import(RealisticPalette(), _ => null);
+
+            section.Find("Bulkheads")!.IsUnresolvedPlaceholder.Should().BeFalse();
+        }
+
         [Test]
         public void Empty_Categories_Are_Not_Imported()
         {

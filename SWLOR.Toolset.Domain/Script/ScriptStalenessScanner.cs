@@ -19,10 +19,11 @@ namespace SWLOR.Toolset.Domain.Script
         ObsoleteIncludeArtifact,
 
         /// <summary>
-        /// The .ncs mtime still looks fresh against the source's mtime, but the source's content no
-        /// longer matches the fingerprint recorded the last time that comparison held - the source was
-        /// swapped for different content while its mtime was preserved, or a coarse filesystem clock
-        /// let the two writes land in the same timestamp bucket.
+        /// The .ncs mtime still looks fresh against every source mtime, but the combined content of
+        /// the entry point and its transitive includes no longer matches the fingerprint recorded
+        /// the last time that comparison held - some source file was swapped for different content
+        /// while its mtime was preserved, or a coarse filesystem clock let the writes land in the
+        /// same timestamp bucket.
         /// </summary>
         SourceReplaced
     }
@@ -40,7 +41,7 @@ namespace SWLOR.Toolset.Domain.Script
             StaleReason.ObsoleteIncludeArtifact =>
                 $"{ResRef}.ncs is obsolete - {ResRef}.nss is an include with no entry point",
             StaleReason.SourceReplaced =>
-                $"{ResRef}.nss changed without its modification time moving past {ResRef}.ncs's",
+                $"{ResRef}.nss or one of its includes changed without a modification time moving past {ResRef}.ncs's",
             _ => $"{ResRef}.ncs is older than included {TriggerResRef}.nss"
         };
     }
@@ -141,26 +142,6 @@ namespace SWLOR.Toolset.Domain.Script
                     continue;
                 }
 
-                // The mtime check above says fresh, which is not enough on its own: a source replaced
-                // while preserving its mtime, or a source/artifact write landing in the same coarse
-                // filesystem timestamp bucket, would pass it despite shipping stale bytecode. The
-                // persisted fingerprint disambiguates by content hash - but only once one exists. A
-                // script's first sight (no cache entry, e.g. right after a fresh checkout) trusts the
-                // mtime comparison alone, so an untouched module does not report everything stale.
-                if (hasOwnTime && TryHashSource(resRef) is { } currentHash)
-                {
-                    if (fingerprints.TryGet(resRef, out var known) &&
-                        known.CompiledMTimeUtc == compiledTime &&
-                        known.SourceMTimeUtc == ownTime &&
-                        known.SourceHash != currentHash)
-                    {
-                        stale.Add(new StaleScript(resRef, StaleReason.SourceReplaced, null));
-                        continue;
-                    }
-
-                    fingerprints.Record(resRef, new ScriptFingerprint(ownTime, currentHash, compiledTime));
-                }
-
                 // The include dimension: any header in the transitive set being newer is enough.
                 string? trigger = null;
                 foreach (var include in graph.TransitiveIncludes(resRef))
@@ -173,26 +154,74 @@ namespace SWLOR.Toolset.Domain.Script
                 }
 
                 if (trigger != null)
+                {
                     stale.Add(new StaleScript(resRef, StaleReason.IncludeNewer, trigger));
+                    continue;
+                }
+
+                // Every mtime says fresh, which is not enough on its own: a source OR include
+                // replaced while preserving its mtime, or writes landing in the same coarse
+                // filesystem timestamp bucket, would pass those checks despite shipping stale
+                // bytecode. The persisted fingerprint disambiguates by hashing the entry point
+                // together with its whole transitive include set, compared against the baseline
+                // recorded the last time the artifact passed with this same compiled mtime - but
+                // only once one exists. A script's first sight (no cache entry, e.g. right after
+                // a fresh checkout) trusts the mtime comparisons alone, so an untouched module
+                // does not report everything stale.
+                if (hasOwnTime && TryHashSources(resRef, graph) is { } currentHash)
+                {
+                    if (fingerprints.TryGet(resRef, out var known) &&
+                        known.CompiledMTimeUtc == compiledTime &&
+                        known.SourceHash != currentHash)
+                    {
+                        stale.Add(new StaleScript(resRef, StaleReason.SourceReplaced, null));
+                        continue;
+                    }
+
+                    fingerprints.Record(resRef, new ScriptFingerprint(ownTime, currentHash, compiledTime));
+                }
             }
 
             fingerprints.SaveIfDirty();
             return stale;
         }
 
-        /// <summary>Hashes a source file for the fingerprint check, or null if it cannot be read.</summary>
-        private string? TryHashSource(string resRef)
+        /// <summary>
+        /// Hashes an entry point's source together with every transitive include (sorted, with the
+        /// resref folded in so file boundaries cannot alias), or null if any file cannot be read -
+        /// a swap inside an include must invalidate the dependent exactly as one in its own source
+        /// does, because both compile into the same bytecode.
+        /// </summary>
+        private string? TryHashSources(string resRef, ScriptIncludeGraph graph)
         {
-            var path = Path.Combine(_nssDirectory, resRef + ".nss");
             try
             {
-                var hash = System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(path));
-                return Convert.ToHexString(hash);
+                using var hash = System.Security.Cryptography.IncrementalHash.CreateHash(
+                    System.Security.Cryptography.HashAlgorithmName.SHA256);
+
+                AppendFile(hash, resRef);
+                foreach (var include in graph.TransitiveIncludes(resRef)
+                             .OrderBy(name => name, StringComparer.OrdinalIgnoreCase))
+                {
+                    // An include named by the graph but absent on disk contributes only its name:
+                    // the compiler would fail on it anyway, and the mtime dimension owns that story.
+                    var path = Path.Combine(_nssDirectory, include + ".nss");
+                    if (File.Exists(path))
+                        AppendFile(hash, include);
+                }
+
+                return Convert.ToHexString(hash.GetHashAndReset());
             }
             catch (IOException)
             {
                 return null;
             }
+        }
+
+        private void AppendFile(System.Security.Cryptography.IncrementalHash hash, string resRef)
+        {
+            hash.AppendData(System.Text.Encoding.UTF8.GetBytes(resRef + "\n"));
+            hash.AppendData(File.ReadAllBytes(Path.Combine(_nssDirectory, resRef + ".nss")));
         }
     }
 }

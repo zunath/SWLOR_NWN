@@ -84,6 +84,38 @@ namespace SWLOR.Toolset.Tests
                 "a rejected edit must not remain live and leak into a later save");
         }
 
+        /// <summary>
+        /// Mtime alone misses an external replacement that preserves the timestamp (or two writes that
+        /// land in the same coarse bucket): the conflict check has to fall back to a content
+        /// fingerprint, the way DocumentSession's own external-change check does, or the next edit here
+        /// silently overwrites the externally changed arrangement.
+        /// </summary>
+        [Test]
+        public void ExternalContentChangeUnderAnUnchangedTimestampIsStillDetected()
+        {
+            var service = OpenService();
+            var section = service.Section(ResourceType.Utp)!;
+            section.AddFolder("Original");
+            service.SaveChanges().Saved.Should().BeTrue();
+
+            var sidecar = CategoryCatalog.DefaultPathFor(_module);
+            var mtime = File.GetLastWriteTimeUtc(sidecar);
+
+            // An external tool (or a second process) replaces the bytes but leaves the mtime exactly as
+            // it was - the one case a timestamp-only comparison cannot see.
+            File.WriteAllText(sidecar, """
+                { "version": 1, "sections": { "utp": {
+                    "seeded": true, "folders": [ { "name": "ExternallyChanged" } ] } } }
+                """);
+            File.SetLastWriteTimeUtc(sidecar, mtime);
+
+            section.AddFolder("AttemptedAfterExternalChange");
+            var result = service.SaveChanges();
+
+            result.Saved.Should().BeFalse("the bytes changed even though the timestamp did not");
+            result.Problem.Should().Contain("changed outside");
+        }
+
         [Test]
         public void ReadOnlySidecarRollsBackRejectedInMemoryEdits()
         {
@@ -116,10 +148,12 @@ namespace SWLOR.Toolset.Tests
 
             var sidecar = CategoryCatalog.DefaultPathFor(_module);
             Directory.CreateDirectory(Path.GetDirectoryName(sidecar)!);
+            // "placeholder": true is what ItpCategoryImporter itself now writes for an unresolved name;
+            // without it, repair must not touch this folder at all (see the test below).
             File.WriteAllText(sidecar, $$"""
                 { "version": 1, "sections": { "utp": {
                     "pinned": [ "Category {{StrRef}}" ],
-                    "folders": [ { "name": "Category {{StrRef}}", "members": [ "crate01" ] } ] } } }
+                    "folders": [ { "name": "Category {{StrRef}}", "placeholder": true, "members": [ "crate01" ] } ] } } }
                 """);
 
             var service = OpenService(Tlk(42, "Skin/Hide"));
@@ -130,6 +164,33 @@ namespace SWLOR.Toolset.Tests
             folder.Members.Should().Contain("crate01", "repairing the name must not lose the contents");
             section.Pinned.Should().Equal(new[] { "Skin-Hide" },
                 because: "a pin is stored by path, so it has to move with the name");
+        }
+
+        /// <summary>
+        /// A folder named "Category 7" is textually identical whether it is an unresolved import
+        /// placeholder or a name a builder typed on purpose. Provenance has to come from an explicit
+        /// marker rather than the text - and a sidecar with no marker at all (either legacy, predating
+        /// the flag, or a builder's deliberate name) must never be auto-renamed just because the name
+        /// happens to also resolve against the TLK.
+        /// </summary>
+        [Test]
+        public void ACategoryNamedLikeAPlaceholderSurvivesWithoutAnExplicitMarker()
+        {
+            const uint StrRef = TlkService.CustomTlkBase + 7;
+
+            var sidecar = CategoryCatalog.DefaultPathFor(_module);
+            Directory.CreateDirectory(Path.GetDirectoryName(sidecar)!);
+            File.WriteAllText(sidecar, $$"""
+                { "version": 1, "sections": { "utp": {
+                    "folders": [ { "name": "Category {{StrRef}}", "members": [ "crate01" ] } ] } } }
+                """);
+
+            var service = OpenService(Tlk(7, "Resolved Name"));
+
+            var section = service.Section(ResourceType.Utp)!;
+            var folder = section.Folders.Should().ContainSingle().Subject;
+            folder.Name.Should().Be($"Category {StrRef}",
+                "no marker means no provenance to act on, whether this is a deliberate name or a legacy placeholder");
         }
 
         private static TlkService Tlk(int entryId, string text) =>

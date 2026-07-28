@@ -222,6 +222,30 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public async Task AFailedDeleteOfTheOriginalRollsTheRenameBack()
+        {
+            var document = OpenScratch("adren_harness");
+            SetResRef(document, "adren_mk5");
+
+            // Holding the original open without FileShare.Delete makes File.Delete throw - the
+            // "another process has the blueprint open" case. The new file must not survive it,
+            // or every retry would be refused because the target path already exists.
+            using (File.Open(Scratch("adren_harness"), FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                Assert.That(await document.TrySaveAsync(), Is.False);
+            }
+
+            Assert.That(File.Exists(Scratch("adren_harness")), Is.True);
+            Assert.That(File.Exists(Scratch("adren_mk5")), Is.False, "the new file was rolled back");
+            Assert.That(document.ResRef, Is.EqualTo("adren_harness"));
+
+            // With the lock gone the very same save succeeds - nothing was left to collide with.
+            Assert.That(await document.TrySaveAsync(), Is.True);
+            Assert.That(File.Exists(Scratch("adren_mk5")), Is.True);
+            Assert.That(File.Exists(Scratch("adren_harness")), Is.False);
+        }
+
+        [Test]
         public async Task SaveRefusesARenameWhileOtherFilesStillReferenceTheOldResRef()
         {
             var document = new ItemDocumentViewModel(

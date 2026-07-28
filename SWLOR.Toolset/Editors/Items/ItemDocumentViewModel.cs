@@ -183,8 +183,12 @@ namespace SWLOR.Toolset.Editors.Items
                 var oldResRef = _resRef;
                 if (renaming)
                 {
-                    if (!string.Equals(oldPath, newPath, StringComparison.OrdinalIgnoreCase))
-                        File.Delete(oldPath);
+                    if (!string.Equals(oldPath, newPath, StringComparison.OrdinalIgnoreCase) &&
+                        !TryDeleteRenamedOriginal(oldPath, newPath))
+                    {
+                        return false;
+                    }
+
                     _session.MoveTo(newPath);
                     _resRef = targetResRef;
                     Id = $"item:{newPath}";
@@ -210,6 +214,39 @@ namespace SWLOR.Toolset.Editors.Items
             catch (Exception ex)
             {
                 _log.AppendLine($"Save failed for {_session.FilePath}: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Deletes the pre-rename file after the new one was written, rolling the new file back
+        /// when the delete fails (another process holding the original open, denied permissions).
+        /// Without the rollback the failed save would leave BOTH blueprints on disk, and every
+        /// retry would then be refused because the target path already exists.
+        /// </summary>
+        private bool TryDeleteRenamedOriginal(string oldPath, string newPath)
+        {
+            try
+            {
+                File.Delete(oldPath);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    File.Delete(newPath);
+                }
+                catch (Exception rollback)
+                {
+                    _log.AppendLine(
+                        $"Could not roll back {newPath} after the failed rename: {rollback.Message}. " +
+                        "Delete it by hand before retrying.");
+                }
+
+                _log.AppendLine(
+                    $"Rename failed: could not delete {oldPath} ({ex.Message}). " +
+                    "The save was rolled back; the blueprint keeps its original resref.");
                 return false;
             }
         }

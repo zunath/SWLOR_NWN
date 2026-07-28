@@ -56,6 +56,9 @@ namespace SWLOR.Toolset.Domain.Workspace
             }
             catch (Exception)
             {
+                // Fail closed: a folder this scan cannot even enumerate may hold a reference, and
+                // "could not check" must block the rename the same way "found one" does.
+                hits.Add("Module/" + Path.GetFileName(directory) + " (unscannable — treated as a reference)");
                 return;
             }
 
@@ -68,8 +71,16 @@ namespace SWLOR.Toolset.Domain.Workspace
                     continue;
                 }
 
-                if (FileContains(file, quoted))
-                    hits.Add("Module/" + Path.GetRelativePath(moduleRoot, file).Replace('\\', '/'));
+                var display = "Module/" + Path.GetRelativePath(moduleRoot, file).Replace('\\', '/');
+                switch (FileContains(file, quoted))
+                {
+                    case true:
+                        hits.Add(display);
+                        break;
+                    case null:
+                        hits.Add(display + " (unreadable — treated as a reference)");
+                        break;
+                }
             }
         }
 
@@ -82,6 +93,9 @@ namespace SWLOR.Toolset.Domain.Workspace
             }
             catch (Exception)
             {
+                // Same fail-closed rule as the module sweep: an unenumerable source tree blocks
+                // the rename instead of silently vouching for it.
+                hits.Add("SWLOR.Game.Server (unscannable — treated as a reference)");
                 return;
             }
 
@@ -93,12 +107,24 @@ namespace SWLOR.Toolset.Domain.Workspace
                 if (relative.Contains(".claude/worktrees/"))
                     continue;
 
-                if (FileContains(file, quoted))
-                    hits.Add("SWLOR.Game.Server/" + relative);
+                switch (FileContains(file, quoted))
+                {
+                    case true:
+                        hits.Add("SWLOR.Game.Server/" + relative);
+                        break;
+                    case null:
+                        hits.Add("SWLOR.Game.Server/" + relative + " (unreadable — treated as a reference)");
+                        break;
+                }
             }
         }
 
-        private static bool FileContains(string file, string quoted)
+        /// <summary>
+        /// Null when the file cannot be read. This scan exists to stop a rename from deleting a
+        /// blueprint something still points at, so an unreadable candidate must fail closed - it
+        /// counts as a reference and blocks the rename - rather than silently passing as "no match".
+        /// </summary>
+        private static bool? FileContains(string file, string quoted)
         {
             try
             {
@@ -106,7 +132,7 @@ namespace SWLOR.Toolset.Domain.Workspace
             }
             catch (Exception)
             {
-                return false;
+                return null;
             }
         }
     }

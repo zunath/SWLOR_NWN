@@ -4,11 +4,13 @@ using System.Text.Json;
 namespace SWLOR.Toolset.Domain.Script
 {
     /// <summary>
-    /// One entry point's last confirmed-fresh signature: what its source looked like, by mtime and
-    /// content hash, at the moment its compiled artifact's own mtime last passed the plain timestamp
-    /// check. Recording only at that moment (not on every scan) is what lets a later scan notice a
-    /// source swapped back onto the same mtime - the persisted hash still names the old content even
-    /// though neither file's mtime has moved.
+    /// One entry point's last confirmed-fresh signature: a content hash over its source plus every
+    /// transitive include, taken at the moment its compiled artifact last passed all the timestamp
+    /// checks. Recording only at that moment (not on every scan) is what lets a later scan notice
+    /// any of those files swapped back onto the same mtime - the persisted hash still names the old
+    /// content even though no mtime has moved. <c>SourceMTimeUtc</c> is informational; only the
+    /// compiled mtime gates the comparison, since a content change under ANY unchanged-looking
+    /// timestamp is exactly what the hash exists to catch.
     /// </summary>
     internal sealed record ScriptFingerprint(DateTime SourceMTimeUtc, string SourceHash, DateTime CompiledMTimeUtc);
 

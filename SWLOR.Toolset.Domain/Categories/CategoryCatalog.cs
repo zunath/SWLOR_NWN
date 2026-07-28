@@ -274,7 +274,8 @@ namespace SWLOR.Toolset.Domain.Categories
         {
             Name = folder.Name,
             Children = folder.Children.Count == 0 ? null : folder.Children.Select(ToDto).ToList(),
-            Members = folder.Members.Count == 0 ? null : folder.Members.ToList()
+            Members = folder.Members.Count == 0 ? null : folder.Members.ToList(),
+            Placeholder = folder.IsUnresolvedPlaceholder
         };
 
         private static CategorySection CloneSection(CategorySection source)
@@ -296,7 +297,7 @@ namespace SWLOR.Toolset.Domain.Categories
 
         private static CategoryFolder CloneFolder(CategoryFolder source)
         {
-            var clone = new CategoryFolder(source.Name);
+            var clone = new CategoryFolder(source.Name) { IsUnresolvedPlaceholder = source.IsUnresolvedPlaceholder };
             foreach (var member in source.Members)
                 clone.AddMember(member);
             foreach (var child in source.Children)
@@ -356,7 +357,10 @@ namespace SWLOR.Toolset.Domain.Categories
             if (CategoryFolder.Sanitize(stored) is not { } name)
                 return null;
 
-            var folder = new CategoryFolder(name);
+            // Absent in every sidecar written before this marker existed - which is exactly the
+            // legacy case that must not be auto-renamed from name text alone (see
+            // CategoryFolder.IsUnresolvedPlaceholder and CategoryService.RepairPlaceholderNames).
+            var folder = new CategoryFolder(name) { IsUnresolvedPlaceholder = dto.Placeholder };
             var storedPath = storedParentPath == null
                 ? stored!
                 : storedParentPath + CategorySection.PathSeparator + stored;

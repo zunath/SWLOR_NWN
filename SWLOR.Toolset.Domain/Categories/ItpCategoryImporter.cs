@@ -87,7 +87,7 @@ namespace SWLOR.Toolset.Domain.Categories
                 if (children.Count == 0)
                     continue;
 
-                var name = ResolveName(node, resolveStrRef);
+                var name = ResolveName(node, resolveStrRef, out var isPlaceholder);
                 if (name == null)
                 {
                     // Transparent wrapper: hoist rather than create a folder nobody can name or find.
@@ -95,7 +95,7 @@ namespace SWLOR.Toolset.Domain.Categories
                     continue;
                 }
 
-                var folder = new CategoryFolder(name);
+                var folder = new CategoryFolder(name) { IsUnresolvedPlaceholder = isPlaceholder };
                 var members = new List<string>();
                 foreach (var child in ImportChildren(children, resolveStrRef, members, names))
                     folder.AddChild(child);
@@ -121,8 +121,20 @@ namespace SWLOR.Toolset.Domain.Categories
         /// "Crafting/Tradeskill Material", and importing those verbatim threw. Repairing here is what keeps
         /// the seeder from writing a name the reader would then have to repair again.
         /// </remarks>
-        private static string? ResolveName(PaletteNode node, Func<uint, string?>? resolveStrRef)
+        private static string? ResolveName(PaletteNode node, Func<uint, string?>? resolveStrRef) =>
+            ResolveName(node, resolveStrRef, out _);
+
+        /// <summary>
+        /// As above, and also reports whether the returned name is the "Category N" placeholder text
+        /// invented because <paramref name="resolveStrRef"/> had nothing to offer. This is the one place
+        /// that fact is known for certain - the caller only sees the resulting string - so the marker is
+        /// set here rather than reconstructed later from the text.
+        /// </summary>
+        private static string? ResolveName(
+            PaletteNode node, Func<uint, string?>? resolveStrRef, out bool isPlaceholder)
         {
+            isPlaceholder = false;
+
             if (!string.IsNullOrWhiteSpace(node.Name))
                 return CategoryFolder.Sanitize(node.Name);
 
@@ -130,9 +142,12 @@ namespace SWLOR.Toolset.Domain.Categories
                 return null;
 
             var resolved = resolveStrRef?.Invoke(strRef);
-            return string.IsNullOrWhiteSpace(resolved)
-                ? $"Category {strRef}"
-                : CategoryFolder.Sanitize(resolved) ?? $"Category {strRef}";
+            var sanitized = string.IsNullOrWhiteSpace(resolved) ? null : CategoryFolder.Sanitize(resolved);
+            if (sanitized != null)
+                return sanitized;
+
+            isPlaceholder = true;
+            return $"Category {strRef}";
         }
     }
 }

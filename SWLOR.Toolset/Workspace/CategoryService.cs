@@ -81,6 +81,7 @@ namespace SWLOR.Toolset.Workspace
                 _sidecarStateKnown = true;
                 _sidecarExistedWhenLoaded = File.Exists(path);
                 _sidecarWrittenUtc = LastWriteUtc(path);
+                _sidecarContentHash = ComputeHash(path);
                 _seeded.Clear();
 
                 if (warning != null)
@@ -133,8 +134,9 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
-        /// Placeholder folder names left in the sidecar match <c>Category 1234</c> and nothing else a
-        /// person would type.
+        /// The shape a "Category N" placeholder name takes, used only to recover the strref number
+        /// back out of a folder <see cref="CategoryFolder.IsUnresolvedPlaceholder"/> already marked as
+        /// one - never to decide whether a folder is a placeholder in the first place.
         /// </summary>
         private static readonly System.Text.RegularExpressions.Regex PlaceholderName =
             new(@"^Category (\d+)$", System.Text.RegularExpressions.RegexOptions.Compiled);
@@ -147,7 +149,21 @@ namespace SWLOR.Toolset.Workspace
         /// without the base game's dialog.tlk has "Category 6782" written into its sidecar permanently,
         /// and simply supplying the TLK later fixes nothing. Repairing on load is preferable to bumping
         /// the sidecar version and re-seeding, which would also discard every category a builder made.
-        /// Names that are not placeholders are never touched, so a deliberate "Category 7" survives.
+        /// <para>
+        /// Provenance comes from <see cref="CategoryFolder.IsUnresolvedPlaceholder"/>, set only by
+        /// <see cref="ItpCategoryImporter"/> at the moment it invents the placeholder text, never
+        /// inferred here from the name matching <see cref="PlaceholderName"/>. A builder can deliberately
+        /// name a folder "Category 7", and that name is textually identical to a real placeholder;
+        /// matching on text alone used to rename (and immediately save over) exactly that deliberate
+        /// name the moment TLK resolution next succeeded.
+        /// </para>
+        /// <para>
+        /// Tradeoff: a sidecar written before this marker existed carries no such flag, so its
+        /// placeholders are never picked up here - they stay "Category N" until a builder renames them
+        /// by hand. That is intentional. Silently re-inferring provenance for old files from the name
+        /// alone would reintroduce the same bug for the "Category 7" case; a deliberate name surviving
+        /// is worth more than auto-repairing every legacy placeholder.
+        /// </para>
         /// </remarks>
         private void RepairPlaceholderNames(CategorySection section)
         {
@@ -157,6 +173,9 @@ namespace SWLOR.Toolset.Workspace
             var repaired = 0;
             foreach (var folder in section.AllFolders().ToList())
             {
+                if (!folder.IsUnresolvedPlaceholder)
+                    continue;
+
                 var match = PlaceholderName.Match(folder.Name);
                 if (!match.Success || !uint.TryParse(match.Groups[1].Value, out var strRef))
                     continue;
@@ -170,6 +189,7 @@ namespace SWLOR.Toolset.Workspace
 
                 // A pin is stored by path, and a path is built from names. Renaming a folder therefore
                 // moves every pin at or below it and the stored keys need to move with the folder.
+                // TryRenameFolder -> CategoryFolder.Rename also clears IsUnresolvedPlaceholder.
                 if (section.TryRenameFolder(folder, resolved))
                     repaired++;
             }
@@ -281,6 +301,7 @@ namespace SWLOR.Toolset.Workspace
                 _sidecarStateKnown = true;
                 _sidecarExistedWhenLoaded = true;
                 _sidecarWrittenUtc = LastWriteUtc(catalog.FilePath);
+                _sidecarContentHash = ComputeHash(catalog.FilePath);
                 _persistedCatalog = catalog.DeepClone();
                 Changed?.Invoke();
                 return CategorySaveResult.Ok();
@@ -310,6 +331,16 @@ namespace SWLOR.Toolset.Workspace
 
         /// <summary>When this session last read or wrote the sidecar; null when it has never existed.</summary>
         private DateTime? _sidecarWrittenUtc;
+
+        /// <summary>
+        /// Content fingerprint of the sidecar as of the last load or save, alongside
+        /// <see cref="_sidecarWrittenUtc"/> - the same pairing <c>DocumentSession</c> keeps for its
+        /// external-change check. Mtime alone misses an external tool that replaces the file while
+        /// preserving its timestamp, or two writes landing in the same coarse timestamp bucket; either
+        /// way the mtime compares equal while the bytes differ, and the next edit here would overwrite
+        /// the external arrangement despite the conflict check reporting nothing changed.
+        /// </summary>
+        private byte[]? _sidecarContentHash;
         private bool _sidecarStateKnown;
         private bool _sidecarExistedWhenLoaded;
 
@@ -328,7 +359,18 @@ namespace SWLOR.Toolset.Workspace
             if (_sidecarWrittenUtc == null || current == null)
                 return false;
 
-            return current != _sidecarWrittenUtc;
+            if (current != _sidecarWrittenUtc)
+                return true;
+
+            // Timestamps agree, but that is not proof nothing changed - fall back to the fingerprint.
+            var currentHash = ComputeHash(catalog.FilePath);
+
+            // An unreadable fingerprint is not evidence of a conflict, matching the timestamp fallback
+            // above; a locked or transiently unreadable file must not itself refuse the next save.
+            if (_sidecarContentHash == null || currentHash == null)
+                return false;
+
+            return !currentHash.AsSpan().SequenceEqual(_sidecarContentHash);
         }
 
         private static DateTime? LastWriteUtc(string? path)
@@ -340,6 +382,21 @@ namespace SWLOR.Toolset.Workspace
             catch (Exception)
             {
                 // An unreadable timestamp is not evidence of a conflict.
+                return null;
+            }
+        }
+
+        private static byte[]? ComputeHash(string? path)
+        {
+            try
+            {
+                return path != null && File.Exists(path)
+                    ? System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(path))
+                    : null;
+            }
+            catch (Exception)
+            {
+                // An unreadable file is not evidence of a conflict, matching LastWriteUtc above.
                 return null;
             }
         }

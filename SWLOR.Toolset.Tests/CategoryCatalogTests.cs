@@ -134,6 +134,40 @@ namespace SWLOR.Toolset.Tests
             catalog.Section(ResourceType.Utp).Find("Cargo").Should().NotBeNull();
         }
 
+        /// <summary>
+        /// Whether a folder's name is an unresolved import placeholder is explicit sidecar state, not
+        /// something re-derived from the name text on every load - so it has to round-trip through
+        /// Save/Load like any other field, and a sidecar predating the flag has to default it false
+        /// rather than fail to parse.
+        /// </summary>
+        [Test]
+        public void The_Unresolved_Placeholder_Marker_Round_Trips()
+        {
+            var catalog = CategoryCatalog.Load(SidecarPath);
+            var folder = catalog.Section(ResourceType.Utp).AddFolder("Category 12345");
+            folder.IsUnresolvedPlaceholder = true;
+
+            catalog.Save();
+
+            var reloaded = CategoryCatalog.Load(SidecarPath).Section(ResourceType.Utp).Find("Category 12345")!;
+            reloaded.IsUnresolvedPlaceholder.Should().BeTrue();
+        }
+
+        [Test]
+        public void A_Sidecar_Written_Before_The_Placeholder_Marker_Existed_Defaults_To_Not_A_Placeholder()
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(SidecarPath)!);
+            File.WriteAllText(SidecarPath, """
+                { "version": 1, "sections": { "utp": { "folders": [
+                    { "name": "Category 7" } ] } } }
+                """);
+
+            var folder = CategoryCatalog.Load(SidecarPath).Section(ResourceType.Utp).Find("Category 7")!;
+
+            folder.IsUnresolvedPlaceholder.Should().BeFalse(
+                "a legacy sidecar carries no marker at all, and that must not be read as 'yes, placeholder'");
+        }
+
         [Test]
         public void Nameless_Folders_Are_Dropped()
         {

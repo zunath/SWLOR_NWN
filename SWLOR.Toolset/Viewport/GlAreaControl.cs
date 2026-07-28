@@ -203,6 +203,9 @@ vec3 PerturbNormal(vec3 geomNormal, vec2 uv)
 
     float invMax = inversesqrt(maxLenSq);
     mat3 tbn = mat3(tangent * invMax, bitangent * invMax, geomNormal);
+    // The content's normal maps are OpenGL-convention (green = +V), which is exactly what this
+    // frame expects: the bitangent axis above is the +V direction, so the sample is used
+    // unflipped. Only a DirectX-authored map (green = -V) would need mapNormal.y negated here.
     vec3 mapNormal = texture(normalTexture, uv).xyz * 2.0 - 1.0;
     return normalize(tbn * mapNormal);
 }

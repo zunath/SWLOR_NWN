@@ -559,6 +559,30 @@ void main()
             }
         }
 
+        private bool _tilePlacementTargetsVertex;
+
+        /// <summary>
+        /// Whether the armed palette entry paints a terrain VERTEX rather than stamping whole cells.
+        /// This is how the reference toolset paints terrain: the cursor snaps to the nearest 10m grid
+        /// vertex, the highlight is a red wireframe square centred on that vertex (straddling the up
+        /// to four cells the paint will re-solve), and the picked coordinates reported through
+        /// <see cref="TileCellPicked"/> are the VERTEX column/row (0..Width, 0..Height inclusive),
+        /// not a cell.
+        /// </summary>
+        public bool TilePlacementTargetsVertex
+        {
+            get => _tilePlacementTargetsVertex;
+            set
+            {
+                if (_tilePlacementTargetsVertex == value)
+                    return;
+
+                _tilePlacementTargetsVertex = value;
+                _tileHoverCell = null; // cell coords and vertex coords must never mix in one hover
+                RequestNextFrameRendering();
+            }
+        }
+
         /// <summary>
         /// The footprint in cells that the armed palette entry will write - (1,1) for a single tile,
         /// larger for a group. The clicked cell is the footprint's BOTTOM-LEFT corner (its lowest
@@ -585,9 +609,12 @@ void main()
         /// <summary>
         /// Raised when tile placement is active and a plain click (not a camera drag) lands in the
         /// viewport: the anchor cell's column and row (the footprint's bottom-left - see
-        /// <see cref="TilePlacementFootprint"/>). Clears <see cref="IsTilePlacementActive"/> before
-        /// raising. Not raised when the footprint would not fit inside the area grid, since the host
-        /// has no way to tell a rejected stamp from a legal one.
+        /// <see cref="TilePlacementFootprint"/>), or the VERTEX column/row when
+        /// <see cref="TilePlacementTargetsVertex"/> is on. A stamp pick clears
+        /// <see cref="IsTilePlacementActive"/> before raising; a vertex paint leaves it armed, so
+        /// the brush keeps dabbing the way the reference toolset's does. Not raised when a stamp
+        /// footprint would not fit inside the area grid (the host has no way to tell a rejected
+        /// stamp from a legal one), nor for a vertex outside the grid's vertex range.
         /// </summary>
         public event Action<int, int>? TileCellPicked;
 
@@ -1559,7 +1586,7 @@ void main()
             if (point is not { } hit)
                 return;
 
-            var cell = WorldPointToCell(hit);
+            var cell = _tilePlacementTargetsVertex ? WorldPointToVertex(hit) : WorldPointToCell(hit);
             if (_tileHoverCell == cell)
                 return; // Most mouse moves stay inside the same 10m cell; only a crossing changes the picture.
 
@@ -1582,6 +1609,19 @@ void main()
             if (point is not { } hit)
                 return;
 
+            if (_tilePlacementTargetsVertex)
+            {
+                var (vertexColumn, vertexRow) = WorldPointToVertex(hit);
+                // Any vertex inside 0..Width / 0..Height touches at least one real cell; outside it
+                // touches none and the paint could only refuse. The reference keeps painting armed
+                // between clicks, and so does this - terrain is dabbed repeatedly.
+                if (vertexColumn < 0 || vertexRow < 0 || vertexColumn > scene.Width || vertexRow > scene.Height)
+                    return;
+
+                TileCellPicked?.Invoke(vertexColumn, vertexRow);
+                return;
+            }
+
             var (column, row) = WorldPointToCell(hit);
 
             // A stamp that would run off the grid is refused here rather than reported: the host only
@@ -1600,6 +1640,11 @@ void main()
         private static (int Column, int Row) WorldPointToCell(Vector3 world) => (
             (int)MathF.Floor(world.X / AreaSceneBuilder.TileSize),
             (int)MathF.Floor(world.Y / AreaSceneBuilder.TileSize));
+
+        /// <summary>The 10m grid vertex nearest a world point - the terrain paint target, exactly as the reference toolset snaps it.</summary>
+        private static (int Column, int Row) WorldPointToVertex(Vector3 world) => (
+            (int)MathF.Round(world.X / AreaSceneBuilder.TileSize),
+            (int)MathF.Round(world.Y / AreaSceneBuilder.TileSize));
 
         /// <summary>Whether the armed footprint, anchored bottom-left at the given cell, lies entirely inside the area's tile grid.</summary>
         private bool FootprintFitsGrid(AreaScene scene, int column, int row) =>
@@ -3254,6 +3299,12 @@ void main()
             if (_isPlacementActive || !_isTilePlacementActive || _tileHoverCell is not { } anchor || _gl == null)
                 return;
 
+            if (_tilePlacementTargetsVertex)
+            {
+                DrawVertexPaintCursor(scene, anchor.Column, anchor.Row);
+                return;
+            }
+
             var vertices = BuildFootprintQuadVertices(scene, anchor.Column, anchor.Row);
             if (vertices.Length == 0)
                 return;
@@ -3293,6 +3344,69 @@ void main()
             _gl.DepthMask(true);
             _gl.Disable(EnableCap.Blend);
             SetUniformFloat("flatAlpha", 1f);
+        }
+
+        /// <summary>
+        /// The terrain paint cursor's colour: pure red, sampled off the reference toolset's paint
+        /// mode (its Select-mode counterpart is pure green). Deliberately NOT tinted by validity -
+        /// the reference does not pre-validate a paint; an unsolvable dab is simply a silent no-op.
+        /// </summary>
+        private static readonly Vector3 TerrainVertexCursorColor = new(1f, 0f, 0f);
+
+        /// <summary>
+        /// Draws the terrain paint cursor the way the reference toolset does: a red wireframe
+        /// square, one tile wide, CENTRED on the target grid vertex - straddling the up-to-four
+        /// cells the paint will re-solve. Each corner sits just above the floor of the cell it lies
+        /// in, so the square reads as draped over a height seam rather than buried in it. Depth
+        /// test off, like every other cursor here.
+        /// </summary>
+        private void DrawVertexPaintCursor(AreaScene scene, int vertexColumn, int vertexRow)
+        {
+            if (_gl == null)
+                return;
+
+            const float half = AreaSceneBuilder.TileSize / 2f;
+            var cx = vertexColumn * AreaSceneBuilder.TileSize;
+            var cy = vertexRow * AreaSceneBuilder.TileSize;
+
+            float CornerZ(float x, float y)
+            {
+                var column = Math.Clamp((int)MathF.Floor(x / AreaSceneBuilder.TileSize), 0, scene.Width - 1);
+                var row = Math.Clamp((int)MathF.Floor(y / AreaSceneBuilder.TileSize), 0, scene.Height - 1);
+                return CellFloorHeight(scene, column, row) + TileCellHighlightHeightOffset;
+            }
+
+            var vertices = new List<float>(4 * FloatsPerVertex);
+            AppendCellQuadVertex(vertices, cx - half, cy - half, CornerZ(cx - half, cy - half));
+            AppendCellQuadVertex(vertices, cx + half, cy - half, CornerZ(cx + half, cy - half));
+            AppendCellQuadVertex(vertices, cx + half, cy + half, CornerZ(cx + half, cy + half));
+            AppendCellQuadVertex(vertices, cx - half, cy + half, CornerZ(cx - half, cy + half));
+            var data = vertices.ToArray();
+
+            EnsureHighlightBuffer();
+            if (!_hasHighlightBuffer)
+                return;
+
+            _gl.Disable(EnableCap.DepthTest);
+            _gl.DepthMask(false);
+
+            _gl.BindVertexArray(_highlightVao);
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _highlightVbo);
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(data.Length * sizeof(float)),
+                new ReadOnlySpan<float>(data), BufferUsageARB.DynamicDraw);
+            SetVertexAttribPointers();
+
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("flatAlpha", 1f);
+            SetUniformVec3("flatColor", TerrainVertexCursorColor);
+            SetUniformMatrix4("model", Matrix4x4.Identity);
+
+            _gl.DrawArrays(PrimitiveType.LineLoop, 0, (uint)(data.Length / FloatsPerVertex));
+
+            _gl.Enable(EnableCap.DepthTest);
+            _gl.DepthMask(true);
         }
 
         /// <summary>

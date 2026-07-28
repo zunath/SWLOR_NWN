@@ -237,6 +237,128 @@ namespace SWLOR.Toolset.Tests
             TilePainter.PaintTerrain(ts, 2, 2, reader, 0, 0, "Lava").Should().BeEmpty("no tile presents 'Lava'");
         }
 
+        // ---- Vertex painting (the reference toolset's terrain model) -----------------------
+        // Verified against Aurora live: a terrain click names a grid VERTEX; exactly the cells
+        // sharing that vertex are re-solved, each ending with the painted terrain on the corner
+        // facing the vertex - no wider ring.
+
+        private static Func<int, int, PlacedTileState?> States(
+            IReadOnlyDictionary<(int, int), TileCandidate> cells, int width, int height)
+        {
+            var reader = Grid(cells, width, height);
+            return (c, r) => reader(c, r) is { } tile ? new PlacedTileState(tile.TileId, tile.Orientation, 0) : null;
+        }
+
+        private static string CornerAt(TilesetDefinition ts, TileCandidate tile, TileCorner corner) =>
+            TileAdjacency.WorldCornerTerrain(ts.Tiles[tile.TileId], tile.Orientation, corner);
+
+        [Test]
+        public void PaintTerrainVertex_RewritesExactlyTheFourCellsSharingTheVertex()
+        {
+            var ts = Synthetic();
+            var cells = Filled(4, 4, SolidGrass);
+
+            var changes = TilePainter.PaintTerrainVertex(ts, 4, 4, States(cells, 4, 4), 2, 2, "Dirt");
+
+            changes.Should().NotBeEmpty();
+            changes.Select(c => (c.Col, c.Row)).Should().BeSubsetOf(new[] { (1, 1), (2, 1), (1, 2), (2, 2) },
+                "only the four cells sharing the painted vertex may change - the reference rewrites no wider ring");
+
+            Apply(cells, changes);
+
+            // Each touched cell carries Dirt exactly on the corner facing vertex (2,2), Grass elsewhere.
+            var expectations = new (int Col, int Row, TileCorner TowardVertex)[]
+            {
+                (1, 1, TileCorner.NorthEast),
+                (2, 1, TileCorner.NorthWest),
+                (1, 2, TileCorner.SouthEast),
+                (2, 2, TileCorner.SouthWest)
+            };
+            foreach (var (col, row, toward) in expectations)
+            {
+                foreach (var corner in new[]
+                         {
+                             TileCorner.NorthWest, TileCorner.NorthEast, TileCorner.SouthWest, TileCorner.SouthEast
+                         })
+                {
+                    CornerAt(ts, cells[(col, row)], corner).Should().Be(
+                        corner == toward ? "Dirt" : "Grass",
+                        $"cell ({col},{row}) blends only its {toward} corner to the painted vertex");
+                }
+            }
+
+            // Everything outside the four vertex cells is untouched.
+            for (var r = 0; r < 4; r++)
+            for (var c = 0; c < 4; c++)
+            {
+                if ((c is 1 or 2) && (r is 1 or 2))
+                    continue;
+                cells[(c, r)].Should().Be(new TileCandidate(SolidGrass, 0), $"cell ({c},{r}) does not touch the vertex");
+            }
+        }
+
+        [Test]
+        public void PaintTerrainVertex_CornerVertexTouchesOnlyItsOneCell()
+        {
+            var ts = Synthetic();
+            var cells = Filled(2, 2, SolidGrass);
+
+            var changes = TilePainter.PaintTerrainVertex(ts, 2, 2, States(cells, 2, 2), 0, 0, "Dirt");
+
+            changes.Should().HaveCount(1);
+            changes[0].Col.Should().Be(0);
+            changes[0].Row.Should().Be(0);
+            Apply(cells, changes);
+            CornerAt(ts, cells[(0, 0)], TileCorner.SouthWest).Should().Be("Dirt",
+                "the area's south-west corner vertex is cell (0,0)'s SW corner");
+        }
+
+        [Test]
+        public void PaintTerrainVertex_IsIdempotent()
+        {
+            var ts = Synthetic();
+            var cells = Filled(4, 4, SolidGrass);
+
+            Apply(cells, TilePainter.PaintTerrainVertex(ts, 4, 4, States(cells, 4, 4), 2, 2, "Dirt"));
+
+            TilePainter.PaintTerrainVertex(ts, 4, 4, States(cells, 4, 4), 2, 2, "Dirt")
+                .Should().BeEmpty("re-painting a vertex with its own terrain is a fixed point");
+        }
+
+        [Test]
+        public void PaintTerrainVertex_RefusesAtomicallyWhenNoTransitionTileExists()
+        {
+            // Solid tiles only - no corner transitions - so a mid-field vertex paint cannot blend.
+            var ts = new TilesetDefinition
+            {
+                Terrains = new[]
+                {
+                    new TerrainDefinition("Grass", null, null),
+                    new TerrainDefinition("Dirt", null, null)
+                },
+                Tiles = new[]
+                {
+                    Tile("Grass", "Grass", "Grass", "Grass"),
+                    Tile("Dirt", "Dirt", "Dirt", "Dirt")
+                }
+            };
+            var cells = Filled(4, 4, 0);
+
+            TilePainter.PaintTerrainVertex(ts, 4, 4, States(cells, 4, 4), 2, 2, "Dirt")
+                .Should().BeEmpty("an unsolvable vertex paint is a silent, atomic no-op - exactly the reference behavior");
+        }
+
+        [Test]
+        public void PaintTerrainVertex_OutOfRangeAndBlankTerrainReturnEmpty()
+        {
+            var ts = Synthetic();
+            var reader = States(Filled(2, 2, SolidGrass), 2, 2);
+
+            TilePainter.PaintTerrainVertex(ts, 2, 2, reader, 3, 0, "Dirt").Should().BeEmpty("vertex past the grid");
+            TilePainter.PaintTerrainVertex(ts, 2, 2, reader, -1, 0, "Dirt").Should().BeEmpty("negative vertex");
+            TilePainter.PaintTerrainVertex(ts, 2, 2, reader, 1, 1, " ").Should().BeEmpty("blank terrain");
+        }
+
         [Test]
         public void PaintTerrain_WhenAnyPopulatedNeighbourCannotBlend_RejectsTheWholePaint()
         {

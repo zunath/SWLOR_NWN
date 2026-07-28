@@ -4,11 +4,17 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
     public readonly record struct TilePaintChange(int Col, int Row, int TileId, int Orientation);
 
     /// <summary>
-    /// The terrain paint engine. A paint "fills" one cell with a chosen terrain (all four
-    /// corners) and then re-solves the eight surrounding cells so the boundary blends, driving the
-    /// <see cref="SetRuleMatcher"/> throughout. It is a pure function of the current grid,
-    /// tileset, and brush - it returns the set of cells that would change (never mutating anything),
-    /// so the caller can apply them as a single transaction.
+    /// The terrain paint engine, driving the <see cref="SetRuleMatcher"/> throughout. Two paint
+    /// models share its machinery, both pure functions of the current grid, tileset, and brush
+    /// (each returns the set of cells that would change, never mutating anything, so the caller
+    /// applies them as one transaction):
+    /// <list type="bullet">
+    /// <item><see cref="PaintTerrainVertex"/> - the editor's brush, matching the reference
+    /// toolset: one grid VERTEX takes the terrain and only the up-to-four cells sharing it
+    /// re-solve.</item>
+    /// <item><see cref="PaintTerrain"/> - a whole-cell fill (all four corners) with an
+    /// eight-neighbour blend, kept for programmatic fills and the corpus idempotency gate.</item>
+    /// </list>
     ///
     /// Two properties make repeated painting well-behaved:
     /// <list type="bullet">
@@ -207,6 +213,79 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                     // is valid. The caller applies this result as one transaction, so an empty result
                     // is the atomic "this terrain cannot be painted here" outcome.
                     return Array.Empty<TilePaintChange>();
+            }
+
+            return changes;
+        }
+
+        /// <summary>
+        /// Computes the cells a VERTEX terrain paint would rewrite - the way the reference toolset
+        /// paints: the click names a 10m grid vertex, that one vertex's terrain becomes
+        /// <paramref name="terrain"/>, and ONLY the (up to) four cells sharing the vertex are
+        /// re-solved against it. Verified against Aurora live: painting Gentle Dunes at one ztd01
+        /// vertex rewrote exactly the four surrounding cells to the same corner-transition tile at
+        /// four orientations, each transition corner facing the painted vertex - no wider ring.
+        /// </summary>
+        /// <remarks>
+        /// Returns an empty list when any touched cell has no legal tile - the whole paint is
+        /// refused atomically, and silently, which is also what the reference does (painting a
+        /// terrain the tileset cannot blend produces no change and no error). A vertex ranges over
+        /// 0..<paramref name="width"/> columns and 0..<paramref name="height"/> rows inclusive;
+        /// edge and corner vertices simply touch fewer cells. Cells keep their current tile
+        /// whenever it is still legal under the repainted vertex, so re-painting a vertex with its
+        /// own terrain is a fixed point.
+        /// </remarks>
+        public static IReadOnlyList<TilePaintChange> PaintTerrainVertex(
+            TilesetDefinition tileset, int width, int height,
+            Func<int, int, PlacedTileState?> currentAt,
+            int vertexColumn, int vertexRow, string terrain,
+            Func<int, int>? tileRank = null)
+        {
+            ArgumentNullException.ThrowIfNull(tileset);
+            ArgumentNullException.ThrowIfNull(currentAt);
+
+            if (string.IsNullOrWhiteSpace(terrain) ||
+                vertexColumn < 0 || vertexRow < 0 || vertexColumn > width || vertexRow > height)
+                return Array.Empty<TilePaintChange>();
+
+            var overlay = new Dictionary<(int, int), PlacedTileState>();
+            PlacedTileState? WorkingAt(int c, int r) =>
+                overlay.TryGetValue((c, r), out var v) ? v : currentAt(c, r);
+
+            var changes = new List<TilePaintChange>();
+
+            // The four cells sharing vertex (vc, vr), with the corner each presents AT that vertex.
+            // Rows grow north (+y), so the cell north-east of the vertex holds it as its SW corner.
+            var touched = new (int Col, int Row, TileCorner Corner)[]
+            {
+                (vertexColumn - 1, vertexRow - 1, TileCorner.NorthEast),
+                (vertexColumn, vertexRow - 1, TileCorner.NorthWest),
+                (vertexColumn - 1, vertexRow, TileCorner.SouthEast),
+                (vertexColumn, vertexRow, TileCorner.SouthWest)
+            };
+
+            foreach (var (col, row, corner) in touched)
+            {
+                if (col < 0 || row < 0 || col >= width || row >= height)
+                    continue;
+                if (WorkingAt(col, row) is null)
+                    continue; // never fill a cell that has no tile yet
+
+                var constraint = ConstraintFromVertices(tileset, col, row, currentAt, overlay)
+                    .WithCorner(corner, terrain);
+                var candidates = WithMatchingCrossers(
+                    tileset, SetRuleMatcher.FindMatchingTiles(tileset, constraint),
+                    col, row, currentAt, overlay);
+                var choice = SelectCandidate(
+                    tileset, candidates, WorkingAt(col, row)?.Candidate, tileRank, preferBlankEdges: false);
+
+                if (choice is not { } chosen)
+                    return Array.Empty<TilePaintChange>(); // atomic, silent refusal
+
+                var before = WorkingAt(col, row);
+                overlay[(col, row)] = new PlacedTileState(chosen.TileId, chosen.Orientation, before?.HeightLevel ?? 0);
+                if (before is not { } prev || prev.Candidate != chosen)
+                    changes.Add(new TilePaintChange(col, row, chosen.TileId, chosen.Orientation));
             }
 
             return changes;

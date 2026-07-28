@@ -94,6 +94,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
             AreaView.PlacementGhost = _viewModel.PlacementGhost;
             AreaView.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
+            AreaView.TilePlacementTargetsVertex = _viewModel.TilePlacementTargetsVertex;
             AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
             AreaView.TilePlacementModels = _viewModel.TilePlacementModels;
             AreaView.TilePlacementValidator = _viewModel.CanPlaceArmedTileAt;
@@ -122,6 +123,8 @@ namespace SWLOR.Toolset.Editors
                 AreaView.PlacementGhost = _viewModel.PlacementGhost;
             else if (e.PropertyName == nameof(AreaEditorViewModel.IsTilePlacementPending))
                 AreaView.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
+            else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementTargetsVertex))
+                AreaView.TilePlacementTargetsVertex = _viewModel.TilePlacementTargetsVertex;
             else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementFootprint))
                 AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
             else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementModels))

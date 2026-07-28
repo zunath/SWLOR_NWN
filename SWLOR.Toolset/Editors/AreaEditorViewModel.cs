@@ -537,6 +537,15 @@ namespace SWLOR.Toolset.Editors
         public (int Columns, int Rows) TilePlacementFootprint =>
             _pendingTile is { } entry ? (entry.Columns, entry.Rows) : (1, 1);
 
+        /// <summary>
+        /// True while the armed palette entry is a terrain - which paints grid VERTICES, the way the
+        /// reference toolset does, rather than stamping cells. Drives
+        /// GlAreaControl.TilePlacementTargetsVertex: the viewport then snaps its cursor to the
+        /// nearest vertex, draws the red vertex-centred paint square, and reports vertex
+        /// coordinates through the pick event.
+        /// </summary>
+        public bool TilePlacementTargetsVertex => _pendingTile?.Terrain is { Length: > 0 };
+
         private IReadOnlyList<RenderModel?> _tilePlacementModels = Array.Empty<RenderModel?>();
 
         /// <summary>
@@ -638,6 +647,7 @@ namespace SWLOR.Toolset.Editors
             InvalidateTilePlacementValidity();
             _tilePlacementModels = ResolveTileModels(entry);
             OnPropertyChanged(nameof(IsTilePlacementPending));
+            OnPropertyChanged(nameof(TilePlacementTargetsVertex));
             OnPropertyChanged(nameof(TilePlacementFootprint));
             OnPropertyChanged(nameof(TilePlacementModels));
             OnPropertyChanged(nameof(CanRotatePendingTile));
@@ -657,6 +667,7 @@ namespace SWLOR.Toolset.Editors
             _tilePlacementModels = Array.Empty<RenderModel?>();
             InvalidateTilePlacementValidity();
             OnPropertyChanged(nameof(IsTilePlacementPending));
+            OnPropertyChanged(nameof(TilePlacementTargetsVertex));
             OnPropertyChanged(nameof(TilePlacementModels));
             OnPropertyChanged(nameof(PlacementStatus));
             OnPropertyChanged(nameof(HasViewportHud));
@@ -674,20 +685,23 @@ namespace SWLOR.Toolset.Editors
         /// </remarks>
         public void CommitTilePlacement(int anchorColumn, int anchorRow)
         {
+            // A terrain brush stays armed across clicks - the reference toolset dabs terrain
+            // repeatedly until the builder switches tools - and its anchor is a VERTEX, not a cell.
+            if (_pendingTile is { } terrainEntry && terrainEntry.Terrain is { Length: > 0 } terrain)
+            {
+                CommitTerrainPaint(anchorColumn, anchorRow, terrainEntry, terrain);
+                return;
+            }
+
             var entry = _pendingTile;
             _pendingTile = null;
             OnPropertyChanged(nameof(IsTilePlacementPending));
+            OnPropertyChanged(nameof(TilePlacementTargetsVertex));
             OnPropertyChanged(nameof(PlacementStatus));
             OnPropertyChanged(nameof(HasViewportHud));
 
             if (entry == null)
                 return;
-
-            if (entry.Terrain is { Length: > 0 } terrain)
-            {
-                CommitTerrainPaint(anchorColumn, anchorRow, entry, terrain);
-                return;
-            }
 
             var are = new AreDocument(_areSession.Document);
             var width = AreaTiles.Width(are);
@@ -866,37 +880,32 @@ namespace SWLOR.Toolset.Editors
             var width = AreaTiles.Width(are);
             var height = AreaTiles.Height(are);
 
+            // A terrain paints a VERTEX (inclusive upper bound), and the reference toolset does not
+            // pre-validate a paint - the cursor is red regardless, and an unsolvable dab is a silent
+            // no-op at click time. Answering by dry-running the solver here made hovering pay a full
+            // solve per cell for a verdict the reference never shows.
+            if (entry.Terrain is { Length: > 0 })
+                return column >= 0 && row >= 0 && column <= width && row <= height;
+
             if (column < 0 || row < 0 || column >= width || row >= height)
                 return false;
 
             // A fixed stamp only has to fit the grid: every one of its cells must be a real cell.
-            if (string.IsNullOrWhiteSpace(entry.Terrain))
-            {
-                return column + entry.Columns <= width && row + entry.Rows <= height;
-            }
-
-            if (_tilesetCatalog == null ||
-                string.IsNullOrWhiteSpace(TilesetResRef) ||
-                !_tilesetCatalog.TryGetTileset(TilesetResRef, out var tileset))
-            {
-                return false;
-            }
-
-            return TilePainter.PaintTerrain(
-                tileset, width, height, AreaTiles.StateReader(are), column, row, entry.Terrain).Count > 0;
+            return column + entry.Columns <= width && row + entry.Rows <= height;
         }
 
         /// <summary>
-        /// Fills the clicked cell with a terrain and re-blends its eight neighbours, as ONE undo step.
+        /// Paints one grid VERTEX with a terrain and re-solves the up-to-four cells that share it,
+        /// as ONE undo step - the reference toolset's terrain model, verified against it live.
         /// </summary>
         /// <remarks>
-        /// This is the brush half of the Tiles palette: <see cref="TilePainter.PaintTerrain"/> picks
-        /// tiles whose corners and edge crossers agree with what is already around the cell, which is
-        /// what makes a hand-laid area read as continuous ground rather than a patchwork. It can
-        /// legitimately decline - a boundary whose neighbours cannot all be solved has no answer - and
-        /// says so rather than writing a partial blend.
+        /// This is the brush half of the Tiles palette: <see cref="TilePainter.PaintTerrainVertex"/>
+        /// picks tiles whose corners and edge crossers agree with the repainted vertex and with what
+        /// already surrounds each touched cell. It can legitimately decline - a vertex whose cells
+        /// cannot all be solved has no answer - and declines the way the reference does: silently,
+        /// with no partial write. Only the output log records the refusal.
         /// </remarks>
-        private void CommitTerrainPaint(int column, int row, TilePaletteEntry entry, string terrain)
+        private void CommitTerrainPaint(int vertexColumn, int vertexRow, TilePaletteEntry entry, string terrain)
         {
             if (_tilesetCatalog == null)
             {
@@ -913,22 +922,23 @@ namespace SWLOR.Toolset.Editors
             }
 
             var are = new AreDocument(_areSession.Document);
-            var changes = TilePainter.PaintTerrain(
+            var changes = TilePainter.PaintTerrainVertex(
                 tileset,
                 AreaTiles.Width(are),
                 AreaTiles.Height(are),
                 AreaTiles.StateReader(are),
-                column,
-                row,
+                vertexColumn,
+                vertexRow,
                 terrain);
 
             if (changes.Count == 0)
             {
-                SceneStatus = $"'{entry.Label}' does not fit at ({column},{row}).";
+                _log.AppendLine(
+                    $"Terrain '{entry.Label}' cannot blend at vertex ({vertexColumn},{vertexRow}); nothing painted.");
                 return;
             }
 
-            RunAreEdit($"Paint {entry.Label} at ({column},{row})", () =>
+            RunAreEdit($"Paint {entry.Label} at vertex ({vertexColumn},{vertexRow})", () =>
             {
                 foreach (var change in changes)
                     AreaTiles.SetTile(are, change.Col, change.Row, change.TileId, change.Orientation);

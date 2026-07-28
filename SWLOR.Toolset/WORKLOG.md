@@ -2001,7 +2001,7 @@ window on the same areas.
   scene-refresh debounce. The debounce exists for keyboard-repeat edit streams - a NumericUpDown
   drag, held Ctrl+Z - and those still take it; a paint click is a single deliberate act the
   reference toolset answers instantly.
-=======
+
 ## Viewport - 2026-07-27 - Normal, specular and roughness maps
 
 Textured meshes (tiles and model-drawn instances) now render with their NWN:EE material maps: a
@@ -2026,3 +2026,31 @@ toggle (`ShowMaterialMaps`, persisted, on by default) drops the viewport back to
   app on anchor_road_est (ttd01, mtr-mapped): scene renders with maps on, the toolbar toggle changes
   the rendered pixels (mean channel diff 0.83 over the viewport) and toggling back reproduces the
   baseline frame byte-for-byte.
+
+## Area editor - 2026-07-28 - Terrain painting is now vertex-based, matching the reference toolset
+
+The Tiles palette's terrain brush painted a whole cell (all four corners) and re-blended the eight
+surrounding cells. The reference toolset does something structurally different, and this was verified
+against it live - by painting a prefab desert area in Aurora and diffing the saved module binary
+against the canonical JSON:
+
+- **What Aurora actually does.** A terrain click names the nearest 10m grid VERTEX; that one vertex
+  takes the terrain, and ONLY the (up to) four cells sharing it are re-solved. Painting Gentle Dunes
+  at one ztd01 vertex rewrote exactly four cells to the same corner-transition tile at four
+  orientations, each transition corner facing the painted vertex; a feature tile in one of those
+  cells was replaced outright. No wider ring.
+- **Decision.** `TilePainter.PaintTerrainVertex` implements that model on the existing
+  corner/crosser machinery (stability and atomic refusal retained; refusal is now SILENT, which is
+  also the reference behavior - an unblendable dab does nothing, no error). The editor's terrain
+  brush commits vertices and stays armed across clicks, so terrain is dabbed repeatedly. The
+  cell-based `PaintTerrain` remains for programmatic fills and the corpus idempotency gate.
+- **Cursor.** The paint cursor is now the reference's: a pure red (255,0,0) wireframe square, one
+  tile wide, CENTRED on the target vertex - straddling the four cells the paint will touch - with
+  corners draped per cell floor. No validity tinting: the reference does not pre-validate, and the
+  per-hover solver dry-run that powered the old green/red verdict is gone with it. Select-mode green
+  and paint-mode red are Aurora's own pairing (both sampled at 255 purity off the live toolset).
+- **Verification.** Five new `TilePainterTests` pin the vertex model: exactly-four-cells scope with
+  per-corner rotation checks, corner-vertex touching one cell, idempotency, atomic silent refusal,
+  bounds. The measured Aurora behavior (colors, tile ids, orientations) is recorded in the session
+  notes that produced this entry.
+

@@ -18,7 +18,7 @@ namespace SWLOR.Toolset.Domain.Editing
         private byte[]? _loadedContentHash;
         private bool _disposed;
 
-        public string FilePath { get; }
+        public string FilePath { get; private set; }
 
         public JsonGffDocument Document { get; }
 
@@ -141,6 +141,23 @@ namespace SWLOR.Toolset.Domain.Editing
                 _loadedContentHash = _loadedMTimeUtc != null
                     ? System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(FilePath))
                     : null;
+            }
+        }
+
+        /// <summary>
+        /// Rebinds this session to a new path after its file has been renamed on disk. The document
+        /// and undo history carry over unchanged; only the identity and the external-change baseline
+        /// move, so a save that renames stays one operation rather than a close-and-reopen that
+        /// discards history.
+        /// </summary>
+        public void MoveTo(string newPath)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(newPath);
+
+            lock (_syncRoot)
+            {
+                FilePath = newPath;
+                _loadedMTimeUtc = File.Exists(newPath) ? File.GetLastWriteTimeUtc(newPath) : null;
             }
         }
 

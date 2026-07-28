@@ -202,8 +202,14 @@ namespace SWLOR.Toolset.Workspace
             };
         }
 
-        private IconImage? RenderItemIcon(Domain.Gff.JsonGffStruct root)
+        /// <summary>
+        /// Renders the inventory icon for a live item struct. Public because an open item editor
+        /// previews its own unsaved document; the disk-loading <see cref="Render"/> path cannot see
+        /// edits that have not been saved yet.
+        /// </summary>
+        public IconImage? RenderItemIcon(Domain.Gff.JsonGffStruct root)
         {
+            ArgumentNullException.ThrowIfNull(root);
             if (_baseItems == null || _resourceIndex == null)
                 return null;
 

@@ -96,6 +96,10 @@ namespace SWLOR.Toolset.Editors
         private readonly HashSet<string> _openingWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Doors.DoorDocumentViewModel> _openDoorEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice>? _doorAppearances;
+        private readonly Dictionary<string, Items.ItemDocumentViewModel> _openItemEditors = new(StringComparer.OrdinalIgnoreCase);
+        private BaseItemRowService? _baseItemRowService;
+        private BaseItemIconService? _baseItemIconService;
+        private ItemObtainabilityIndex? _itemSources;
         private readonly Dictionary<string, Sounds.SoundDocumentViewModel> _openSoundEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<string>? _soundResources;
         private Services.SoundPreviewService? _soundPreviews;
@@ -232,10 +236,18 @@ namespace SWLOR.Toolset.Editors
             {
                 _choiceSets.Clear();
                 _doorAppearances = null;
+                _itemSources = null;
                 _behaviorValues?.InvalidateModuleSources();
             };
-            _workspaceContext.CatalogEntryRefreshed += (_, _) =>
+            _workspaceContext.CatalogEntryRefreshed += (type, _) =>
+            {
                 _behaviorValues?.InvalidateModuleSources();
+
+                // A saved store or item can change where items are obtainable; the index is cheap
+                // to rebuild, so it is dropped rather than patched.
+                if (type is ResourceType.Utm or ResourceType.Uti)
+                    _itemSources = null;
+            };
             _workspaceContext.PaletteChoicesInvalidated += InvalidatePaletteChoices;
         }
 
@@ -492,6 +504,12 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            if (_openItemEditors.TryGetValue(filePath, out var existingItem))
+            {
+                _factory.ActivateDocument(existingItem);
+                return;
+            }
+
             try
             {
                 if (!CanRepresentEveryValue(filePath, resRef, schema))
@@ -522,6 +540,14 @@ namespace SWLOR.Toolset.Editors
                 if (type == ResourceType.Utw)
                 {
                     OpenWaypointEditor(filePath, resRef);
+                    return;
+                }
+
+                // Items get the behavior editor: the base type chosen on Basic decides which
+                // roles and stat groups the item even has, which a flat schema form cannot say.
+                if (type == ResourceType.Uti)
+                {
+                    OpenItemEditor(filePath, resRef);
                     return;
                 }
 
@@ -729,6 +755,7 @@ namespace SWLOR.Toolset.Editors
                    || _openWaypointEditors.ContainsKey(path)
                    || _openDoorEditors.ContainsKey(path)
                    || _openSoundEditors.ContainsKey(path)
+                   || _openItemEditors.ContainsKey(path)
                    || _openConversations.ContainsKey(path);
         }
 
@@ -763,6 +790,12 @@ namespace SWLOR.Toolset.Editors
             }
 
             foreach (var editor in _openSoundEditors.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
+            foreach (var editor in _openItemEditors.Values.ToList())
             {
                 if (!await editor.TrySaveAsync().ConfigureAwait(true))
                     return false;
@@ -810,6 +843,7 @@ namespace SWLOR.Toolset.Editors
                 !_openWaypointEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openDoorEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openSoundEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openItemEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openAreaEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openScriptEditors.Values.Any(editor => editor.IsDirty || editor.HasPendingCompileFailure) &&
                 !_openConversations.Values.Any(editor => editor.IsDirty))
@@ -831,6 +865,8 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openDoorEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openSoundEditors.Values)
+                editor.ApproveApplicationClose();
+            foreach (var editor in _openItemEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openAreaEditors.Values)
                 editor.ApproveApplicationClose();
@@ -934,6 +970,167 @@ namespace SWLOR.Toolset.Editors
             _factory.OpenDocument(editor);
         }
 
+        /// <summary>Item blueprints open in the behavior-shaped item editor, as a document tab.</summary>
+        private void OpenItemEditor(string filePath, string resRef)
+        {
+            var editor = new Items.ItemDocumentViewModel(
+                filePath,
+                resRef,
+                _gameCodeIndex,
+                _log,
+                _prompts,
+                ResolveItemChoices,
+                BaseItemRows(),
+                _previewRenderer != null ? _previewRenderer.RenderItemIcon : null,
+                ChoicePreviews(),
+                BaseItemIcons(),
+                _resourceIndex == null ? null : ItemTextureExists,
+                ItemSourcesFor);
+            editor.Closed += closed => _openItemEditors.Remove(closed.FilePath);
+            editor.CloseRequested += _ => _factory.CloseDocument(editor);
+            editor.CatalogEntryChanged += () =>
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Uti, editor.ResRef);
+            editor.Renamed += OnItemRenamed;
+            _openItemEditors[filePath] = editor;
+            _factory.OpenDocument(editor);
+        }
+
+        /// <summary>
+        /// Follows a rename-on-save: re-keys the open map so reopening by either path behaves, and
+        /// swaps the catalog entry so Explorer and Search stop offering the old resref.
+        /// </summary>
+        private void OnItemRenamed(Items.ItemDocumentViewModel editor, string oldResRef, string oldPath)
+        {
+            _openItemEditors.Remove(oldPath);
+            _openItemEditors[editor.FilePath] = editor;
+            _workspaceContext.RemoveCatalogEntry(ResourceType.Uti, oldResRef);
+            _workspaceContext.RefreshCatalogEntry(ResourceType.Uti, editor.ResRef);
+        }
+
+        private Func<int, BaseItemRow?>? BaseItemRows()
+        {
+            if (_twoDaService == null)
+                return null;
+
+            _baseItemRowService ??= new BaseItemRowService(_twoDaService);
+            return _baseItemRowService.GetOrNull;
+        }
+
+        private Func<int, BaseItemIconRow?>? BaseItemIcons()
+        {
+            if (_twoDaService == null)
+                return null;
+
+            _baseItemIconService ??= new BaseItemIconService(_twoDaService);
+            return _baseItemIconService.GetOrNull;
+        }
+
+        /// <summary>
+        /// Where a player can obtain an item, from the workspace index — built on the first Source
+        /// lookup and dropped whenever a store or item saves.
+        /// </summary>
+        private IReadOnlyList<ItemSourceEntry> ItemSourcesFor(string resRef)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<ItemSourceEntry>();
+
+            if (_itemSources == null)
+            {
+                try
+                {
+                    var repoRoot = Path.GetDirectoryName(Path.GetFullPath(workspace.ModuleRoot));
+                    var gameSourceRoot = repoRoot == null
+                        ? null
+                        : Path.Combine(repoRoot, "SWLOR.Game.Server");
+                    _itemSources = ItemObtainabilityIndex.Build(workspace, gameSourceRoot);
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine($"Could not build the item source index: {ex.Message}");
+                    return Array.Empty<ItemSourceEntry>();
+                }
+            }
+
+            return _itemSources.SourcesFor(resRef);
+        }
+
+        /// <summary>
+        /// Whether artwork exists for an icon resref, probed in the same tga/dds/plt order
+        /// TextureLoader decodes in - a lookup, never a decode.
+        /// </summary>
+        private bool ItemTextureExists(string resRef)
+        {
+            var index = _resourceIndex;
+            if (index == null || string.IsNullOrWhiteSpace(resRef))
+                return false;
+
+            return index.TryLookup(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("tga")), out _)
+                || index.TryLookup(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("dds")), out _)
+                || index.TryLookup(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("plt")), out _);
+        }
+
+        private IReadOnlyList<BehaviorChoice> ResolveItemChoices(string key) =>
+            Cached("item", key, BuildItemChoices);
+
+        private IReadOnlyList<BehaviorChoice> BuildItemChoices(string key)
+        {
+            if (key == Domain.Editors.Items.ItemChoiceKeys.PaletteCategories)
+                return ResolveItemCategories();
+
+            if (key == Domain.Editors.Items.ItemChoiceKeys.Spells)
+            {
+                var tlk = _tlkService;
+                return Domain.Editors.Items.ItemSpellChoiceCatalog.Read(
+                    _twoDaService,
+                    tlk == null ? null : id => tlk.GetString((uint)id));
+            }
+
+            // Subtype pickers name their table in the key ("item.subtypes:iprp_foodtype"), so one
+            // case serves every multi-subtype property and each table is still cached separately.
+            const string subtypePrefix = "item.subtypes:";
+            if (key.StartsWith(subtypePrefix, StringComparison.Ordinal))
+            {
+                var tlk = _tlkService;
+                return Domain.Editors.Items.ItemSubtypeChoiceCatalog.Read(
+                    _twoDaService,
+                    key[subtypePrefix.Length..],
+                    tlk == null ? null : id => tlk.GetString((uint)id));
+            }
+
+            if (key == Domain.Editors.Items.ItemChoiceKeys.BaseItems)
+            {
+                return _lookups.GetOptions(LookupKeys.BaseItems)
+                    .Select(option => new BehaviorChoice(option.Id, option.Display))
+                    .ToList();
+            }
+
+            return Array.Empty<BehaviorChoice>();
+        }
+
+        private IReadOnlyList<BehaviorChoice> ResolveItemCategories()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<BehaviorChoice>();
+
+            try
+            {
+                var path = Path.Combine(workspace.ModuleRoot, "itp", "itempalcus.itp.json");
+                if (!File.Exists(path))
+                    return Array.Empty<BehaviorChoice>();
+
+                return PaletteCategoryReader.Read(
+                    Domain.Documents.ItpDocument.Load(path),
+                    _tlkService != null ? _tlkService.GetString : null);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not read the item palette categories: {ex.Message}");
+                return Array.Empty<BehaviorChoice>();
+            }
+        }
+
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice> DoorAppearances() =>
             _doorAppearances ??= Domain.Editors.Doors.DoorAppearanceCatalog.Read(_doorTypes);
 
@@ -995,6 +1192,12 @@ namespace SWLOR.Toolset.Editors
                     _choiceSets.Remove(
                         "waypoint:" + Domain.Editors.Waypoints.WaypointChoiceKeys.PaletteCategories);
                     foreach (var editor in _openWaypointEditors.Values)
+                        editor.Editor.RefreshPaletteChoices();
+                    break;
+                case "itempalcus":
+                    _choiceSets.Remove(
+                        "item:" + Domain.Editors.Items.ItemChoiceKeys.PaletteCategories);
+                    foreach (var editor in _openItemEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     break;
             }

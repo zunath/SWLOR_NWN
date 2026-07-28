@@ -1,0 +1,435 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:items="using:SWLOR.Toolset.Editors.Items"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:dworkspace="using:SWLOR.Toolset.Domain.Workspace"
+             x:Class="SWLOR.Toolset.Editors.Items.ItemEditorView"
+             x:DataType="items:ItemEditorViewModel">
+
+  <UserControl.DataTemplates>
+    <!-- One stat's value box. A blank box means the property is absent from the item. -->
+    <DataTemplate DataType="items:ItemStatCellViewModel">
+      <Grid ColumnDefinitions="*,64" ColumnSpacing="8" Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                   Foreground="{DynamicResource InkSecondaryBrush}"
+                   TextTrimming="CharacterEllipsis" />
+        <TextBox Grid.Column="1" Text="{Binding Value, Mode=TwoWay}" />
+      </Grid>
+    </DataTemplate>
+
+    <!-- One stored entry of a multi-subtype property: what it is, its value, and its removal. -->
+    <DataTemplate DataType="items:ItemPropertyEntryViewModel">
+      <Grid ColumnDefinitions="*,64,24" ColumnSpacing="6" Margin="0,2">
+        <TextBlock Text="{Binding SubtypeDisplay}" VerticalAlignment="Center"
+                   Foreground="{DynamicResource InkSecondaryBrush}"
+                   TextTrimming="CharacterEllipsis" />
+        <TextBox Grid.Column="1" Text="{Binding Value, Mode=TwoWay}" />
+        <Button Grid.Column="2" Content="&#x00D7;" Classes="close"
+                Command="{Binding RemoveCommand}" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="items:ItemPropertyEntryListViewModel">
+      <StackPanel Margin="0,6,0,2">
+        <TextBlock Text="{Binding Label}" Classes="section" Margin="0,0,0,4" />
+        <ItemsControl ItemsSource="{Binding Entries}" />
+        <TextBox Text="{Binding AddSearchText, Mode=TwoWay}"
+                 Watermark="{Binding Label, StringFormat='Add {0}'}" Margin="0,4,0,0" />
+        <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
+                ClipToBounds="True" Margin="0,4,0,0"
+                IsVisible="{Binding !!AddChoices.Count}">
+          <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding AddChoices}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+                  <Button Classes="behavior" Margin="2" Padding="8,4"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                          Content="{Binding Display}"
+                          Command="{Binding $parent[ItemsControl].((items:ItemPropertyEntryListViewModel)DataContext).AddCommand}"
+                          CommandParameter="{Binding}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </Border>
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="items:ItemStatGroupViewModel">
+      <Border Classes="card" Width="300" Margin="0,0,10,10" Padding="12,9,12,11"
+              VerticalAlignment="Top">
+        <StackPanel>
+          <TextBlock Text="{Binding Title}" Classes="section" Margin="0,0,0,6" />
+          <ItemsControl ItemsSource="{Binding Cells}" />
+          <ItemsControl ItemsSource="{Binding EntryLists}" />
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+
+    <!-- One picture tile of an appearance gallery. -->
+    <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+      <StackPanel Width="72">
+        <Border Height="64" Background="{DynamicResource FieldBrush}"
+                BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
+          <Panel>
+            <Image Source="{Binding Thumbnail}" Stretch="Uniform" Margin="4"
+                   IsVisible="{Binding Thumbnail, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            <TextBlock Text="{Binding Glyph}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Classes="dim"
+                       IsVisible="{Binding Thumbnail, Converter={x:Static ObjectConverters.IsNull}}" />
+          </Panel>
+        </Border>
+        <TextBlock Text="{Binding Display}" Classes="count" HorizontalAlignment="Center"
+                   Margin="0,2,0,0" />
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="items:GalleryViewModel">
+      <ListBox ItemsSource="{Binding Options}" SelectedItem="{Binding Selected, Mode=TwoWay}"
+               Background="Transparent" BorderThickness="0">
+        <ListBox.ItemsPanel>
+          <ItemsPanelTemplate>
+            <WrapPanel />
+          </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+      </ListBox>
+    </DataTemplate>
+
+    <DataTemplate DataType="items:CompositePartViewModel">
+      <StackPanel>
+        <TextBlock Text="{Binding Label}" Classes="section" Margin="0,0,0,4" />
+        <ListBox ItemsSource="{Binding Options}" SelectedItem="{Binding Selected, Mode=TwoWay}"
+                 Background="Transparent" BorderThickness="0" MaxHeight="200"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+          <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel />
+            </ItemsPanelTemplate>
+          </ListBox.ItemsPanel>
+        </ListBox>
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="items:ItemFieldCellViewModel">
+      <Grid ColumnDefinitions="*,64" ColumnSpacing="8" Margin="0,2,16,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                   Foreground="{DynamicResource InkSecondaryBrush}"
+                   TextTrimming="CharacterEllipsis" />
+        <TextBox Grid.Column="1" Text="{Binding Value, Mode=TwoWay}" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="items:ArmorPartsViewModel">
+      <StackPanel Spacing="10">
+        <Border Classes="card" Padding="12,9,12,11">
+          <StackPanel>
+            <TextBlock Text="Body parts" Classes="section" Margin="0,0,0,6" />
+            <ItemsControl>
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel ItemWidth="240" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ContentControl Content="{Binding Neck}" />
+              <ContentControl Content="{Binding Torso}" />
+              <ContentControl Content="{Binding Belt}" />
+              <ContentControl Content="{Binding Pelvis}" />
+              <ContentControl Content="{Binding Robe}" />
+            </ItemsControl>
+            <CheckBox IsChecked="{Binding MirrorRightFromLeft, Mode=TwoWay}"
+                      Content="Mirror right from left" Margin="0,8,0,4" />
+            <ItemsControl>
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel ItemWidth="240" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ContentControl Content="{Binding LeftShoulder}" />
+              <ContentControl Content="{Binding LeftBicep}" />
+              <ContentControl Content="{Binding LeftForearm}" />
+              <ContentControl Content="{Binding LeftHand}" />
+              <ContentControl Content="{Binding LeftThigh}" />
+              <ContentControl Content="{Binding LeftShin}" />
+              <ContentControl Content="{Binding LeftFoot}" />
+            </ItemsControl>
+            <ItemsControl IsVisible="{Binding ShowsRightCells}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel ItemWidth="240" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ContentControl Content="{Binding RightShoulder}" />
+              <ContentControl Content="{Binding RightBicep}" />
+              <ContentControl Content="{Binding RightForearm}" />
+              <ContentControl Content="{Binding RightHand}" />
+              <ContentControl Content="{Binding RightThigh}" />
+              <ContentControl Content="{Binding RightShin}" />
+              <ContentControl Content="{Binding RightFoot}" />
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+        <Border Classes="card" Padding="12,9,12,11">
+          <StackPanel>
+            <TextBlock Text="Colors" Classes="section" Margin="0,0,0,6" />
+            <ItemsControl>
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel ItemWidth="240" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ContentControl Content="{Binding Cloth1}" />
+              <ContentControl Content="{Binding Cloth2}" />
+              <ContentControl Content="{Binding Leather1}" />
+              <ContentControl Content="{Binding Leather2}" />
+              <ContentControl Content="{Binding Metal1}" />
+              <ContentControl Content="{Binding Metal2}" />
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="items:ItemRequirementGroupViewModel">
+      <Border Classes="card" Margin="0,0,0,10" Padding="12,9,12,11">
+        <StackPanel>
+          <TextBlock Text="{Binding Title}" Classes="section" Margin="0,0,0,6" />
+          <ItemsControl ItemsSource="{Binding Cells}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel ItemWidth="260" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="items:ItemStatCellViewModel">
+                <Grid ColumnDefinitions="*,52" ColumnSpacing="8" Margin="0,2,16,2">
+                  <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                             Foreground="{DynamicResource InkSecondaryBrush}"
+                             TextTrimming="CharacterEllipsis" />
+                  <TextBox Grid.Column="1" Text="{Binding Value, Mode=TwoWay}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+  </UserControl.DataTemplates>
+
+  <DockPanel>
+    <behaviors:BehaviorEditorHeader DockPanel.Dock="Top"
+                                    BehaviorName="{Binding HeaderName}"
+                                    Kind="{Binding HeaderKind}"
+                                    Owner="{Binding HeaderOwner}"
+                                    IsDirty="{Binding IsDirty}" />
+
+    <Grid ColumnDefinitions="190,*">
+      <Border Grid.Column="0" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0"
+              Padding="10">
+        <Grid RowDefinitions="Auto,Auto">
+          <!-- An item's picture is its inventory icon, not a world model, so the preview is a
+               plain image rather than the orbiting viewport the door editor carries. -->
+          <Border Grid.Row="0" Height="170" Background="{DynamicResource PanelRaisedBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
+            <Image Source="{Binding PreviewImage}" Stretch="Uniform" Margin="14"
+                   IsVisible="{Binding PreviewImage, Converter={x:Static ObjectConverters.IsNotNull}}" />
+          </Border>
+          <StackPanel Grid.Row="1" Margin="0,9,0,0" Spacing="3">
+            <TextBlock Text="{Binding FamilyDisplay}" Classes="mono" FontSize="10.5"
+                       TextWrapping="Wrap" />
+            <TextBlock Text="{Binding TemplateResRef}" Classes="resref" FontSize="10.5" />
+            <TextBlock Text="{Binding ItemTag}" Classes="dim" FontSize="10.5" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <TabControl Grid.Column="1">
+        <TabItem Header="Basic">
+          <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding BasicRows}" Margin="14,10" />
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Appearance" IsVisible="{Binding ShowsAppearanceTab}">
+          <ScrollViewer>
+            <StackPanel Margin="14,10" Spacing="12"
+                        DataContext="{Binding Appearance}"
+                        x:DataType="items:ItemAppearanceSectionViewModel">
+              <ContentControl Content="{Binding Gallery}"
+                              IsVisible="{Binding Gallery, Converter={x:Static ObjectConverters.IsNotNull}}" />
+              <ContentControl Content="{Binding Top}"
+                              IsVisible="{Binding Top, Converter={x:Static ObjectConverters.IsNotNull}}" />
+              <ContentControl Content="{Binding Middle}"
+                              IsVisible="{Binding Middle, Converter={x:Static ObjectConverters.IsNotNull}}" />
+              <ContentControl Content="{Binding Bottom}"
+                              IsVisible="{Binding Bottom, Converter={x:Static ObjectConverters.IsNotNull}}" />
+              <ContentControl Content="{Binding Armor}"
+                              IsVisible="{Binding Armor, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Behavior" IsVisible="{Binding ShowsBehaviorTab}">
+          <Grid ColumnDefinitions="210,*">
+            <behaviors:BehaviorRailView Grid.Column="0" Items="{Binding Roles.RoleList}"
+                                        ChooseCommand="{Binding Roles.ChooseRoleCommand}" />
+
+            <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}"
+                          BorderThickness="1,0,0,0">
+              <Border Classes="card" Margin="8,12"
+                      DataContext="{Binding Roles.Card}" x:DataType="items:ItemRoleCardViewModel"
+                      IsVisible="{Binding, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <StackPanel>
+                  <TextBlock Text="{Binding Title}" Classes="section" Margin="16,12,16,2" />
+                  <TextBlock Text="{Binding Summary}" Classes="dim" Margin="16,0,16,8"
+                             TextWrapping="Wrap"
+                             IsVisible="{Binding Summary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <ItemsControl ItemsSource="{Binding Statements}" Margin="16,0,16,10">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="x:String">
+                        <TextBlock Text="{Binding}" Classes="mono" FontSize="11" Margin="0,2" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <StackPanel IsVisible="{Binding ShowsSpellPicker}" Margin="16,0,16,12" Spacing="6">
+                    <TextBox Text="{Binding SpellSearchText, Mode=TwoWay}" Watermark="Search spells" />
+                    <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                            CornerRadius="2" ClipToBounds="True">
+                      <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding SpellChoices}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+                              <Button Classes="behavior" Classes.on="{Binding IsSelected}"
+                                      Margin="2" Padding="8,5"
+                                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                      Content="{Binding Display}"
+                                      Command="{Binding $parent[ItemsControl].((items:ItemRoleCardViewModel)DataContext).SelectSpellCommand}"
+                                      CommandParameter="{Binding}" />
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </ScrollViewer>
+                    </Border>
+                  </StackPanel>
+                </StackPanel>
+              </Border>
+            </ScrollViewer>
+          </Grid>
+        </TabItem>
+
+        <TabItem Header="Stats">
+          <ScrollViewer>
+            <StackPanel Margin="14,10">
+              <ItemsControl ItemsSource="{Binding Stats.Groups}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+              </ItemsControl>
+
+              <!-- Everything the base type does not usually carry, one collapsed row away. -->
+              <StackPanel IsVisible="{Binding Stats.HasSecondary}">
+                <ToggleButton IsChecked="{Binding Stats.IsSecondaryExpanded, Mode=TwoWay}"
+                              Classes="behavior" HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Left" Margin="0,2,10,10">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Not used by this base type" Classes="section"
+                               VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Stats.SecondarySummary}" Classes="count"
+                               VerticalAlignment="Center" />
+                  </StackPanel>
+                </ToggleButton>
+                <ItemsControl ItemsSource="{Binding Stats.SecondaryGroups}"
+                              IsVisible="{Binding Stats.IsSecondaryExpanded}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <WrapPanel />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                </ItemsControl>
+              </StackPanel>
+
+              <!-- Base-game properties older items still carry: visible and removable, never added. -->
+              <Border Classes="card" MaxWidth="620" HorizontalAlignment="Left"
+                      Padding="12,9,12,11" Margin="0,2,10,10"
+                      DataContext="{Binding Stats.Engine}"
+                      x:DataType="items:ItemEngineLegacySectionViewModel"
+                      IsVisible="{Binding HasEntries, FallbackValue=False}">
+                <StackPanel>
+                  <TextBlock Text="Engine — base game" Classes="section" Margin="0,0,0,6" />
+                  <ItemsControl ItemsSource="{Binding Entries}" />
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Requirements">
+          <ScrollViewer>
+            <StackPanel Margin="14,10">
+              <ItemsControl ItemsSource="{Binding Requirements.Groups}" />
+              <Border Classes="card" Padding="12,9,12,11" Margin="0,0,0,10">
+                <StackPanel>
+                  <TextBlock Text="Other requirements" Classes="section" Margin="0,0,0,2" />
+                  <ItemsControl ItemsSource="{Binding Requirements.EntryLists}" />
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Source" IsVisible="{Binding ShowsSourceTab}">
+          <ScrollViewer>
+            <StackPanel Margin="14,10" Spacing="8"
+                        DataContext="{Binding Source}"
+                        x:DataType="items:ItemSourceSectionViewModel">
+              <TextBlock Text="{Binding Verdict}" FontSize="12.5"
+                         Foreground="{DynamicResource GreenBrush}"
+                         IsVisible="{Binding IsObtainable}" />
+              <TextBlock Text="{Binding Verdict}" FontSize="12.5"
+                         Foreground="{DynamicResource AmberBrush}"
+                         IsVisible="{Binding !IsObtainable}" />
+              <ItemsControl ItemsSource="{Binding Groups}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="items:ItemSourceGroupViewModel">
+                    <Border Classes="card" Margin="0,0,0,8" Padding="12,9,12,11" MaxWidth="560"
+                            HorizontalAlignment="Left">
+                      <StackPanel>
+                        <TextBlock Text="{Binding Title}" Classes="section" Margin="0,0,0,6" />
+                        <ItemsControl ItemsSource="{Binding Entries}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="dworkspace:ItemSourceEntry">
+                              <StackPanel Margin="0,2,0,4">
+                                <TextBlock Text="{Binding Display}" />
+                                <TextBlock Text="{Binding Detail}" Classes="resref"
+                                           IsVisible="{Binding Detail, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                              </StackPanel>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </StackPanel>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+              <ItemsControl ItemsSource="{Binding EmptyKinds}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="x:String">
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="12,1">
+                      <TextBlock Text="{Binding}" Classes="section" />
+                      <TextBlock Text="none" Classes="dim" FontSize="11.5" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
+          <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
+        </TabItem>
+      </TabControl>
+    </Grid>
+  </DockPanel>
+</UserControl>

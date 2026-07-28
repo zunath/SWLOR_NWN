@@ -760,8 +760,9 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>
         /// Copies straight-alpha BGRA into a bitmap row by row, because a locked framebuffer's stride is
         /// allowed to exceed its row width and a single block copy would shear the image when it does.
+        /// Internal because the item editor converts its live icon previews through the same path.
         /// </summary>
-        private static Bitmap ToBitmap(IconImage image)
+        internal static Bitmap ToBitmap(IconImage image)
         {
             var bitmap = new WriteableBitmap(
                 new Avalonia.PixelSize(image.Width, image.Height),

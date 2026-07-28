@@ -892,7 +892,11 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>Drops the memoised answers - the grid they were computed against has changed.</summary>
-        private void InvalidateTilePlacementValidity() => _tileValidity.Clear();
+        private void InvalidateTilePlacementValidity()
+        {
+            _tileValidity.Clear();
+            _edgeValidity.Clear();
+        }
 
         private bool SolveTilePlacementValidity(int column, int row, TilePaletteEntry entry)
         {
@@ -900,19 +904,60 @@ namespace SWLOR.Toolset.Editors
             var width = AreaTiles.Width(are);
             var height = AreaTiles.Height(are);
 
-            // A terrain paints a VERTEX (inclusive upper bound) and a crosser an EDGE, and the
-            // reference toolset does not pre-validate a paint - the cursor is red regardless, and
-            // an unsolvable dab is a silent no-op at click time. Answering by dry-running the
-            // solver here made hovering pay a full solve per cell for a verdict the reference
-            // never shows.
-            if (entry.Terrain is { Length: > 0 } || entry.Crosser != null)
-                return column >= 0 && row >= 0 && column <= width && row <= height;
+            // A terrain paints a VERTEX (inclusive upper bound), and its verdict is the real
+            // solver's: the reference toolset colours the paint cursor by whether the dab would be
+            // accepted, and only a dry run of the same solve the click will perform can answer
+            // that honestly. The solve touches at most four cells and the answer is memoised per
+            // vertex until the grid changes, so hovering stays cheap.
+            if (entry.Terrain is { Length: > 0 } terrain)
+            {
+                if (column < 0 || row < 0 || column > width || row > height)
+                    return false;
+
+                return _tilesetCatalog != null &&
+                       TilesetResRef is { Length: > 0 } tilesetResRef &&
+                       _tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset) &&
+                       TilePainter.CanPaintTerrainVertex(
+                           tileset, width, height, AreaTiles.StateReader(are), column, row, terrain);
+            }
 
             if (column < 0 || row < 0 || column >= width || row >= height)
                 return false;
 
             // A fixed stamp only has to fit the grid: every one of its cells must be a real cell.
             return column + entry.Columns <= width && row + entry.Rows <= height;
+        }
+
+        private readonly Dictionary<(int Column, int Row, bool Vertical), bool> _edgeValidity = new();
+
+        /// <summary>
+        /// Whether the armed crosser would actually paint at this edge - the question the paint
+        /// cursor's green/red colour answers, dry-running the same two-cell solve the click will
+        /// perform. Memoised per edge until the grid changes.
+        /// </summary>
+        public bool CanPlaceArmedCrosserAt(int edgeColumn, int edgeRow, bool verticalEdge)
+        {
+            if (_pendingTile is not { Crosser: { } crosser })
+                return false;
+
+            if (_edgeValidity.TryGetValue((edgeColumn, edgeRow, verticalEdge), out var memo))
+                return memo;
+
+            var are = new AreDocument(_areSession.Document);
+            var valid = _tilesetCatalog != null &&
+                        TilesetResRef is { Length: > 0 } tilesetResRef &&
+                        _tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset) &&
+                        TilePainter.CanPaintCrosserEdge(
+                            tileset,
+                            AreaTiles.Width(are),
+                            AreaTiles.Height(are),
+                            AreaTiles.StateReader(are),
+                            edgeColumn,
+                            edgeRow,
+                            verticalEdge,
+                            crosser);
+            _edgeValidity[(edgeColumn, edgeRow, verticalEdge)] = valid;
+            return valid;
         }
 
         /// <summary>
@@ -954,8 +999,16 @@ namespace SWLOR.Toolset.Editors
 
             if (changes.Count == 0)
             {
-                _log.AppendLine(
-                    $"Terrain '{entry.Label}' cannot blend at vertex ({vertexColumn},{vertexRow}); nothing painted.");
+                // A repaint that is already satisfied returns no changes too - only a real refusal
+                // is worth a log line.
+                if (!TilePainter.CanPaintTerrainVertex(
+                        tileset, AreaTiles.Width(are), AreaTiles.Height(are), AreaTiles.StateReader(are),
+                        vertexColumn, vertexRow, terrain))
+                {
+                    _log.AppendLine(
+                        $"Terrain '{entry.Label}' cannot blend at vertex ({vertexColumn},{vertexRow}); nothing painted.");
+                }
+
                 return;
             }
 
@@ -1005,9 +1058,24 @@ namespace SWLOR.Toolset.Editors
 
             if (changes.Count == 0)
             {
-                _log.AppendLine(
-                    $"Crosser '{entry.Label}' cannot blend at {(verticalEdge ? "vertical" : "horizontal")} " +
-                    $"edge ({edgeColumn},{edgeRow}); nothing painted.");
+                // Distinguish "already satisfied" (a valid no-op) from a refusal, and describe the
+                // refused cells - a refusal report is only actionable when it names what blocked it.
+                if (!TilePainter.CanPaintCrosserEdge(
+                        tileset, AreaTiles.Width(are), AreaTiles.Height(are), AreaTiles.StateReader(are),
+                        edgeColumn, edgeRow, verticalEdge, crosser))
+                {
+                    string CellInfo(int c, int r) =>
+                        AreaTiles.StateAt(are, c, r) is { } s
+                            ? $"({c},{r})=tile {s.TileId}:{s.Orientation}"
+                            : $"({c},{r})=empty";
+                    var cells = verticalEdge
+                        ? $"{CellInfo(edgeColumn - 1, edgeRow)} {CellInfo(edgeColumn, edgeRow)}"
+                        : $"{CellInfo(edgeColumn, edgeRow - 1)} {CellInfo(edgeColumn, edgeRow)}";
+                    _log.AppendLine(
+                        $"Crosser '{entry.Label}' cannot blend at {(verticalEdge ? "vertical" : "horizontal")} " +
+                        $"edge ({edgeColumn},{edgeRow}); nothing painted. Cells: {cells}.");
+                }
+
                 return;
             }
 

@@ -521,6 +521,71 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PaintCrosserEdge_ToleratesALegacyOneSidedCrosserBesideThePaint()
+        {
+            // A tileset with no corner piece: only the solid and the single-edge stub. Hand-place a
+            // one-sided road: cell (1,1) carries Road on its North edge while (1,2) is plain solid -
+            // the asymmetric boundary the corpus genuinely contains. Strict symmetry would demand
+            // any repaint of (1,1) keep Road on North AND take Road on East, which no tile offers;
+            // the tolerant retry must still accept painting the East edge.
+            var ts = new TilesetDefinition
+            {
+                Terrains = new[] { new TerrainDefinition("Grass", null, null) },
+                Crossers = new[] { new CrosserDefinition("Road", null, null) },
+                Tiles = new[]
+                {
+                    Tile("Grass", "Grass", "Grass", "Grass"),
+                    Tile("Grass", "Grass", "Grass", "Grass", top: "Road")
+                }
+            };
+            var cells = Filled(3, 3, 0);
+            cells[(1, 1)] = new TileCandidate(1, 0); // Road on North, neighbour (1,2) blank - one-sided
+
+            var changes = TilePainter.PaintCrosserEdge(ts, 3, 3, States(cells, 3, 3), 2, 1, true, "Road");
+
+            changes.Should().NotBeEmpty(
+                "the tolerant retry accepts the paint despite the unmatched legacy crosser next door");
+            Apply(cells, changes);
+            EdgeOf(ts, cells[(1, 1)], TileEdge.East).Should().Be("Road");
+            EdgeOf(ts, cells[(2, 1)], TileEdge.West).Should().Be("Road");
+        }
+
+        [Test]
+        public void CanPaintCrosserEdge_DistinguishesRefusalFromNoChange()
+        {
+            var ts = RoadSet();
+            var cells = Filled(3, 3, RoadSolid);
+
+            TilePainter.CanPaintCrosserEdge(ts, 3, 3, States(cells, 3, 3), 2, 1, true, "Road")
+                .Should().BeTrue("a plain field accepts a road");
+
+            Apply(cells, TilePainter.PaintCrosserEdge(ts, 3, 3, States(cells, 3, 3), 2, 1, true, "Road"));
+            TilePainter.CanPaintCrosserEdge(ts, 3, 3, States(cells, 3, 3), 2, 1, true, "Road")
+                .Should().BeTrue("repainting an existing road changes nothing but is still a valid paint");
+
+            TilePainter.CanPaintCrosserEdge(Synthetic(), 3, 3, States(Filled(3, 3, SolidGrass), 3, 3), 1, 1, true, "Road")
+                .Should().BeFalse("no tile carries the crosser - the cursor must show red");
+            TilePainter.CanPaintCrosserEdge(ts, 3, 3, States(cells, 3, 3), 5, 1, true, "Road")
+                .Should().BeFalse("out-of-range edge");
+        }
+
+        [Test]
+        public void CanPaintTerrainVertex_DistinguishesRefusalFromNoChange()
+        {
+            var ts = Synthetic();
+            var cells = Filled(4, 4, SolidGrass);
+
+            TilePainter.CanPaintTerrainVertex(ts, 4, 4, States(cells, 4, 4), 2, 2, "Dirt")
+                .Should().BeTrue();
+            TilePainter.CanPaintTerrainVertex(ts, 4, 4, States(cells, 4, 4), 2, 2, "Grass")
+                .Should().BeTrue("repainting the terrain already there is a valid no-op");
+            TilePainter.CanPaintTerrainVertex(ts, 4, 4, States(cells, 4, 4), 2, 2, "Lava")
+                .Should().BeFalse("no tile presents 'Lava'");
+            TilePainter.CanPaintTerrainVertex(ts, 4, 4, States(cells, 4, 4), 5, 2, "Dirt")
+                .Should().BeFalse("vertex out of range");
+        }
+
+        [Test]
         public void PaintTerrain_WhenAnyPopulatedNeighbourCannotBlend_RejectsTheWholePaint()
         {
             var ts = new TilesetDefinition

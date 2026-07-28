@@ -2081,3 +2081,23 @@ strict symmetric-crosser rule is what turns repeated dabs into connected runs.
   edges verified empty elsewhere, second-dab corner promotion, eraser round-trip, border-edge
   single-cell reach with fixed-point repaint, atomic refusal, and crosser discovery. The palette
   corpus tests now assert the combined brush contract.
+
+## Area editor - 2026-07-28 - The paint cursor answers with green/red, and crossers tolerate legacy edges
+
+Live use surfaced two corrections to the brush work above:
+
+- **The cursor colour IS the validity verdict.** The always-red cursor came from over-generalising a
+  single observation - the one reference-toolset paint hover that was measured happened to be over
+  an UNSOLVABLE paint. In use, the reference colours the paint square by whether the dab would be
+  accepted; red is the refusal warning, not the brush colour. The cursor now dry-runs the same
+  vertex/edge solve the click performs (memoised per target until the grid changes) and shows
+  green/red accordingly. New `CanPaintTerrainVertex`/`CanPaintCrosserEdge` answer that question,
+  distinct from an accepted no-change repaint - which is valid, green, and no longer logs a bogus
+  "cannot blend" line.
+- **Crossers meet the corpus's one-sided edges.** Painting Road on live areas refused where the
+  neighbouring cells carried a crosser on one side only - boundaries the corpus genuinely contains,
+  and which the strict symmetric-edge pass cannot satisfy. The crosser solve now retries
+  blank-tolerantly (the engine's own edge rule) when the strict pass fails, mirroring the vertex
+  brush's stale-crosser retry; the strict pass still runs first, so the measured stub-to-corner
+  promotion is unchanged. A real refusal now logs the touched cells' tile ids, so the next report
+  diagnoses itself.

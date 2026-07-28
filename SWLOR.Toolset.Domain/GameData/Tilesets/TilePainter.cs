@@ -285,9 +285,20 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
             ArgumentNullException.ThrowIfNull(tileset);
             ArgumentNullException.ThrowIfNull(currentAt);
 
+            return SolveTerrainVertex(tileset, width, height, currentAt, vertexColumn, vertexRow, terrain, tileRank)
+                   ?? (IReadOnlyList<TilePaintChange>)Array.Empty<TilePaintChange>();
+        }
+
+        /// <summary>The vertex-paint solve: null when refused, otherwise the (possibly empty) change set.</summary>
+        private static List<TilePaintChange>? SolveTerrainVertex(
+            TilesetDefinition tileset, int width, int height,
+            Func<int, int, PlacedTileState?> currentAt,
+            int vertexColumn, int vertexRow, string terrain,
+            Func<int, int>? tileRank)
+        {
             if (string.IsNullOrWhiteSpace(terrain) ||
                 vertexColumn < 0 || vertexRow < 0 || vertexColumn > width || vertexRow > height)
-                return Array.Empty<TilePaintChange>();
+                return null;
 
             // The four cells sharing vertex (vc, vr), with the corner each presents AT that vertex.
             // Rows grow north (+y), so the cell north-east of the vertex holds it as its SW corner.
@@ -310,11 +321,10 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                     touchedSet.Add((col, row));
             }
 
-            var solved = TrySolveVertexPaint(tileset, width, height, currentAt, touched, touchedSet,
-                             terrain, tileRank, preferStaleCrossers: true)
-                         ?? TrySolveVertexPaint(tileset, width, height, currentAt, touched, touchedSet,
-                             terrain, tileRank, preferStaleCrossers: false);
-            return solved ?? (IReadOnlyList<TilePaintChange>)Array.Empty<TilePaintChange>();
+            return TrySolveVertexPaint(tileset, width, height, currentAt, touched, touchedSet,
+                       terrain, tileRank, preferStaleCrossers: true)
+                   ?? TrySolveVertexPaint(tileset, width, height, currentAt, touched, touchedSet,
+                       terrain, tileRank, preferStaleCrossers: false);
         }
 
         /// <summary>One greedy vertex-paint pass, or null when any touched cell has no legal tile.</summary>
@@ -391,16 +401,49 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
             ArgumentNullException.ThrowIfNull(currentAt);
             ArgumentNullException.ThrowIfNull(crosser);
 
+            return SolveCrosserEdge(tileset, width, height, currentAt, edgeColumn, edgeRow, verticalEdge, crosser, tileRank)
+                   ?? (IReadOnlyList<TilePaintChange>)Array.Empty<TilePaintChange>();
+        }
+
+        /// <summary>
+        /// Whether a crosser paint at this edge would be accepted - the answer the paint cursor's
+        /// green/red colour shows, distinguished from <see cref="PaintCrosserEdge"/> returning an
+        /// empty list, which also happens for an accepted paint that changes nothing (repainting an
+        /// existing road is valid and a no-op, and its cursor is green).
+        /// </summary>
+        public static bool CanPaintCrosserEdge(
+            TilesetDefinition tileset, int width, int height,
+            Func<int, int, PlacedTileState?> currentAt,
+            int edgeColumn, int edgeRow, bool verticalEdge, string crosser,
+            Func<int, int>? tileRank = null)
+        {
+            ArgumentNullException.ThrowIfNull(tileset);
+            ArgumentNullException.ThrowIfNull(currentAt);
+            ArgumentNullException.ThrowIfNull(crosser);
+
+            return SolveCrosserEdge(tileset, width, height, currentAt, edgeColumn, edgeRow, verticalEdge, crosser, tileRank) != null;
+        }
+
+        /// <summary>
+        /// The crosser-paint solve: null when refused, otherwise the (possibly empty) change set.
+        /// Two attempts, mirroring the vertex brush: the strict pass holds every non-painted edge to
+        /// exact symmetry with its neighbour - which is what promotes a stub to a corner piece when
+        /// a second edge of the same cell is painted - and the tolerant retry falls back to the
+        /// engine's blank-tolerant edge rule, so a legacy one-sided crosser on a neighbouring cell
+        /// (the corpus genuinely has them) cannot make a paintable edge unpaintable.
+        /// </summary>
+        private static List<TilePaintChange>? SolveCrosserEdge(
+            TilesetDefinition tileset, int width, int height,
+            Func<int, int, PlacedTileState?> currentAt,
+            int edgeColumn, int edgeRow, bool verticalEdge, string crosser,
+            Func<int, int>? tileRank)
+        {
             // Bounds: a vertical edge ranges over columns 0..width and rows 0..height-1; a
             // horizontal edge over columns 0..width-1 and rows 0..height.
             if (verticalEdge
                     ? edgeColumn < 0 || edgeColumn > width || edgeRow < 0 || edgeRow >= height
                     : edgeColumn < 0 || edgeColumn >= width || edgeRow < 0 || edgeRow > height)
-                return Array.Empty<TilePaintChange>();
-
-            var overlay = new Dictionary<(int, int), PlacedTileState>();
-            PlacedTileState? WorkingAt(int c, int r) =>
-                overlay.TryGetValue((c, r), out var v) ? v : currentAt(c, r);
+                return null;
 
             // The two cells sharing the edge, with the edge each presents at it.
             var touched = verticalEdge
@@ -415,6 +458,23 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                     (edgeColumn, edgeRow, TileEdge.South)
                 };
 
+            return TrySolveCrosserPaint(tileset, width, height, currentAt, touched, crosser, tileRank, strictEdges: true)
+                   ?? TrySolveCrosserPaint(tileset, width, height, currentAt, touched, crosser, tileRank, strictEdges: false);
+        }
+
+        /// <summary>One greedy crosser-paint pass, or null when any touched cell has no legal tile.</summary>
+        private static List<TilePaintChange>? TrySolveCrosserPaint(
+            TilesetDefinition tileset, int width, int height,
+            Func<int, int, PlacedTileState?> currentAt,
+            IReadOnlyList<(int Col, int Row, TileEdge Edge)> touched,
+            string crosser,
+            Func<int, int>? tileRank,
+            bool strictEdges)
+        {
+            var overlay = new Dictionary<(int, int), PlacedTileState>();
+            PlacedTileState? WorkingAt(int c, int r) =>
+                overlay.TryGetValue((c, r), out var v) ? v : currentAt(c, r);
+
             var changes = new List<TilePaintChange>();
 
             foreach (var (col, row, paintedEdge) in touched)
@@ -427,12 +487,12 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 var constraint = ConstraintFromVertices(tileset, col, row, currentAt, overlay);
                 var candidates = WithRequiredEdges(
                     tileset, SetRuleMatcher.FindMatchingTiles(tileset, constraint),
-                    col, row, currentAt, overlay, paintedEdge, crosser);
+                    col, row, currentAt, overlay, paintedEdge, crosser, strictEdges);
                 var choice = SelectCandidate(
                     tileset, candidates, WorkingAt(col, row)?.Candidate, tileRank, preferBlankEdges: false);
 
                 if (choice is not { } chosen)
-                    return Array.Empty<TilePaintChange>(); // atomic, silent refusal
+                    return null; // atomic, silent refusal
 
                 var before = WorkingAt(col, row);
                 overlay[(col, row)] = new PlacedTileState(chosen.TileId, chosen.Orientation, before?.HeightLevel ?? 0);
@@ -444,19 +504,40 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         }
 
         /// <summary>
+        /// Whether a vertex terrain paint would be accepted - the paint cursor's green/red verdict,
+        /// distinguished from <see cref="PaintTerrainVertex"/>'s empty list, which an accepted
+        /// no-change repaint also returns.
+        /// </summary>
+        public static bool CanPaintTerrainVertex(
+            TilesetDefinition tileset, int width, int height,
+            Func<int, int, PlacedTileState?> currentAt,
+            int vertexColumn, int vertexRow, string terrain,
+            Func<int, int>? tileRank = null)
+        {
+            ArgumentNullException.ThrowIfNull(tileset);
+            ArgumentNullException.ThrowIfNull(currentAt);
+
+            return SolveTerrainVertex(tileset, width, height, currentAt, vertexColumn, vertexRow, terrain, tileRank) != null;
+        }
+
+        /// <summary>
         /// <see cref="WithMatchingCrossers"/> with one edge's requirement overridden by the paint:
         /// the painted edge must carry exactly <paramref name="paintedCrosser"/> (blank meaning
         /// "must carry nothing" - the eraser), regardless of what the neighbour across it holds
         /// right now - that neighbour is the other cell of the same paint and is about to agree.
-        /// Among the survivors, tiles carrying no crosser on UNCONSTRAINED edges (grid border, empty
-        /// neighbour) are preferred, so a road stub never drags a wall off the map with it.
+        /// With <paramref name="strictEdges"/> the other edges must mirror their neighbours exactly
+        /// (the pass that promotes a stub to a corner when its neighbour now carries the crosser);
+        /// without it they follow the engine's blank-tolerant rule, so a legacy one-sided crosser
+        /// beside the paint cannot make it unsolvable. Among the survivors, tiles carrying no
+        /// crosser on UNCONSTRAINED edges (grid border, empty neighbour) are preferred, so a road
+        /// stub never drags a wall off the map with it.
         /// </summary>
         private static IReadOnlyList<TileCandidate> WithRequiredEdges(
             TilesetDefinition tileset, IReadOnlyList<TileCandidate> candidates,
             int col, int row,
             Func<int, int, PlacedTileState?> currentAt,
             IReadOnlyDictionary<(int, int), PlacedTileState> overlay,
-            TileEdge paintedEdge, string paintedCrosser)
+            TileEdge paintedEdge, string paintedCrosser, bool strictEdges)
         {
             string? Required(TileEdge edge, int dc, int dr)
             {
@@ -485,8 +566,15 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 required,
                 StringComparison.OrdinalIgnoreCase);
 
+            bool EdgeSatisfies(TileCandidate candidate, TileEdge edge, string required) =>
+                edge == paintedEdge || strictEdges
+                    ? EdgeIs(candidate, edge, required)
+                    : TileAdjacency.EdgeCrossersMatch(
+                        TileAdjacency.WorldEdgeCrosser(tileset.Tiles[candidate.TileId], candidate.Orientation, edge),
+                        required);
+
             var kept = candidates.Where(candidate => requirements.All(r =>
-                r.Crosser == null || EdgeIs(candidate, r.Edge, r.Crosser))).ToList();
+                r.Crosser == null || EdgeSatisfies(candidate, r.Edge, r.Crosser))).ToList();
 
             return Narrow(kept, candidate => requirements.All(r =>
                 r.Crosser != null || EdgeIs(candidate, r.Edge, string.Empty))).ToList();

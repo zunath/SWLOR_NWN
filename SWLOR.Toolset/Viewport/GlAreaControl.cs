@@ -624,6 +624,13 @@ void main()
         public event Action<int, int, bool>? TileEdgePicked;
 
         /// <summary>
+        /// Whether the armed crosser would paint at an edge - the paint cursor's green/red verdict,
+        /// answered by the host's solver dry-run the same way <see cref="TilePlacementValidator"/>
+        /// answers for cells and vertices.
+        /// </summary>
+        public Func<int, int, bool, bool>? TilePlacementEdgeValidator { get; set; }
+
+        /// <summary>
         /// The footprint in cells that the armed palette entry will write - (1,1) for a single tile,
         /// larger for a group. The clicked cell is the footprint's BOTTOM-LEFT corner (its lowest
         /// column and row) and the footprint extends toward increasing column and row; the highlight
@@ -3390,7 +3397,8 @@ void main()
                     const float half = AreaSceneBuilder.TileSize / 2f;
                     DrawPaintCursorSquare(scene,
                         edge.Column * AreaSceneBuilder.TileSize + (edge.Vertical ? 0f : half),
-                        edge.Row * AreaSceneBuilder.TileSize + (edge.Vertical ? half : 0f));
+                        edge.Row * AreaSceneBuilder.TileSize + (edge.Vertical ? half : 0f),
+                        TilePlacementEdgeValidator?.Invoke(edge.Column, edge.Row, edge.Vertical) ?? true);
                 }
 
                 return;
@@ -3403,7 +3411,8 @@ void main()
             {
                 DrawPaintCursorSquare(scene,
                     anchor.Column * AreaSceneBuilder.TileSize,
-                    anchor.Row * AreaSceneBuilder.TileSize);
+                    anchor.Row * AreaSceneBuilder.TileSize,
+                    TilePlacementValidator?.Invoke(anchor.Column, anchor.Row) ?? true);
                 return;
             }
 
@@ -3449,20 +3458,24 @@ void main()
         }
 
         /// <summary>
-        /// The terrain paint cursor's colour: pure red, sampled off the reference toolset's paint
-        /// mode (its Select-mode counterpart is pure green). Deliberately NOT tinted by validity -
-        /// the reference does not pre-validate a paint; an unsolvable dab is simply a silent no-op.
+        /// The paint cursor's two colours, both sampled off the reference toolset at full purity:
+        /// green when the dab under the cursor would be accepted, red when the solver would refuse
+        /// it (the refusal itself stays a silent no-op at click time, exactly as the reference
+        /// behaves - the colour is the only warning).
         /// </summary>
-        private static readonly Vector3 TerrainVertexCursorColor = new(1f, 0f, 0f);
+        private static readonly Vector3 PaintCursorValidColor = new(0f, 1f, 0f);
+
+        private static readonly Vector3 PaintCursorInvalidColor = new(1f, 0f, 0f);
 
         /// <summary>
-        /// Draws the paint cursor the way the reference toolset does: a red wireframe square, one
-        /// tile wide, centred on the paint target - a grid VERTEX for terrain (straddling the up to
-        /// four cells that re-solve) or an EDGE midpoint for a crosser (straddling its two). Each
-        /// corner sits just above the floor of the cell it lies in, so the square reads as draped
-        /// over a height seam rather than buried in it. Depth test off, like every other cursor here.
+        /// Draws the paint cursor the way the reference toolset does: a wireframe square, one tile
+        /// wide, centred on the paint target - a grid VERTEX for terrain (straddling the up to four
+        /// cells that re-solve) or an EDGE midpoint for a crosser (straddling its two) - green when
+        /// the paint would land, red when it would refuse. Each corner sits just above the floor of
+        /// the cell it lies in, so the square reads as draped over a height seam rather than buried
+        /// in it. Depth test off, like every other cursor here.
         /// </summary>
-        private void DrawPaintCursorSquare(AreaScene scene, float cx, float cy)
+        private void DrawPaintCursorSquare(AreaScene scene, float cx, float cy, bool valid)
         {
             if (_gl == null)
                 return;
@@ -3500,7 +3513,7 @@ void main()
             SetUniformBool("unlit", true);
             SetUniformFloat("alphaCutoff", 0f);
             SetUniformFloat("flatAlpha", 1f);
-            SetUniformVec3("flatColor", TerrainVertexCursorColor);
+            SetUniformVec3("flatColor", valid ? PaintCursorValidColor : PaintCursorInvalidColor);
             SetUniformMatrix4("model", Matrix4x4.Identity);
 
             _gl.DrawArrays(PrimitiveType.LineLoop, 0, (uint)(data.Length / FloatsPerVertex));

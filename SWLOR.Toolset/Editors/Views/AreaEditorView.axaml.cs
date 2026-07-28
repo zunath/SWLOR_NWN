@@ -100,6 +100,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
             AreaView.TilePlacementModels = _viewModel.TilePlacementModels;
             AreaView.TilePlacementValidator = _viewModel.CanPlaceArmedTileAt;
+            AreaView.TilePlacementEdgeValidator = _viewModel.CanPlaceArmedCrosserAt;
             AreaView.SelectedTileCell = _viewModel.SelectedTile;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
             _viewModel.CameraFocusRequested += OnCameraFocusRequested;

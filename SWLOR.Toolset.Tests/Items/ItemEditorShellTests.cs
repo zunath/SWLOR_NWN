@@ -84,6 +84,21 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public void IntegerRowRejectsFractionalInputInsteadOfTruncating()
+        {
+            using var editor = Open("adren_harness");
+            var stack = editor.BasicRows.Single(row => row.Definition.Name == "StackSize");
+
+            stack.Number = 5;
+            Assert.That(stack.Number, Is.EqualTo(5));
+
+            // "5.9" must not silently store 5 while the box keeps showing 5.9 - the edit is
+            // rejected and the box snaps back to what the document holds.
+            stack.Number = 5.9m;
+            Assert.That(stack.Number, Is.EqualTo(5));
+        }
+
+        [Test]
         public void EquipmentExposesVariablesForItsLocals()
         {
             using var editor = Open("adren_harness");

@@ -527,6 +527,25 @@ namespace SWLOR.Toolset.Editors.Behaviors
             if (_loading || IsReadOnly)
                 return;
 
+            // An integral GFF field must never silently truncate: the NumericUpDown accepts
+            // "12.9" even on an Integer row, and the (long) cast in WriteNumber would store 12
+            // while the box keeps showing 12.9. The edit is rejected instead - the box snaps
+            // back to what the document actually stores.
+            if (Definition.Kind == BehaviorFieldKind.Integer && decimal.Truncate(value) != value)
+            {
+                _loading = true;
+                try
+                {
+                    Number = Store.GetInteger(Definition.Storage, Definition.Name) ?? 0;
+                }
+                finally
+                {
+                    _loading = false;
+                }
+
+                return;
+            }
+
             Apply(() => WriteNumber(value));
         }
 

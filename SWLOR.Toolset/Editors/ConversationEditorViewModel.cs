@@ -248,6 +248,12 @@ namespace SWLOR.Toolset.Editors
             if (choice == null)
                 return;
 
+            if (choice.IsDangling)
+            {
+                WalkStatus = "That choice points at a line that no longer exists, so it goes nowhere.";
+                return;
+            }
+
             _player = _evaluator.ApplyActions(choice.Target, _player);
             SyncPillsFromPlayer();
 
@@ -370,7 +376,7 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand]
         private void AddFollowUp(ChoiceRowViewModel? choice)
         {
-            if (choice == null || choice.Target.Links.Count != 0)
+            if (choice == null || choice.IsDangling || choice.Target.Links.Count != 0)
                 return;
 
             RunEdit("Add a follow-up line", () =>
@@ -389,6 +395,18 @@ namespace SWLOR.Toolset.Editors
         {
             if (choice == null)
                 return;
+
+            // Removing a dangling route IS its repair: there is no target node to weigh the cost
+            // of, only the broken link itself to detach.
+            if (choice.IsDangling)
+            {
+                if (ReferenceEquals(EditingChoice, choice))
+                    CloseRulesEditor();
+
+                RunEdit("Remove a choice", () => _dialog.RemoveLink(choice.Link));
+                WalkStatus = "Removed a broken route that pointed at a missing line.";
+                return;
+            }
 
             var link = choice.Link;
             var target = choice.Target;
@@ -505,6 +523,10 @@ namespace SWLOR.Toolset.Editors
                 CloseRulesEditor();
                 return;
             }
+
+            // A dangling route has no target node to hang actions on; removal is its one repair.
+            if (choice.IsDangling)
+                return;
 
             EditingChoice = choice;
             _editingLink = choice.Link;
@@ -857,6 +879,19 @@ namespace SWLOR.Toolset.Editors
             var number = 1;
             foreach (var link in _currentLine.Links)
             {
+                // An imported or externally edited DLG can carry a link whose index is outside
+                // ReplyList; dereferencing Target would throw before the tab could render at all.
+                // The row is shown (never hidden) so the builder can see the broken route and
+                // remove it.
+                if (!_dialog.HasNode(link.TargetKind, link.TargetIndex))
+                {
+                    Choices.Add(new ChoiceRowViewModel(
+                        link, "!",
+                        $"broken route — reply #{link.TargetIndex} does not exist",
+                        null, isDangling: true));
+                    continue;
+                }
+
                 var reachability = _evaluator.Evaluate(link, _player);
                 var hiddenBecause = reachability.IsOpen
                     ? null

@@ -1710,7 +1710,16 @@ namespace SWLOR.Toolset.Editors
         {
             try
             {
+                var positionBefore = session.UndoStack.Position;
                 session.Execute(description, mutation);
+
+                // An operation that captured no mutation (stamping the tile ID and orientation
+                // already present, say) pushed no undo entry. Recording it in _editOrder anyway
+                // would make this session look newest, so the next shell-level Ctrl+Z could undo
+                // an older edit from here instead of the other session's actual latest one - and
+                // a no-op has no business clearing anyone's redo history either.
+                if (session.UndoStack.Position == positionBefore)
+                    return true;
 
                 // A fresh edit invalidates the redo side of both histories, exactly as each
                 // session's own undo stack does. Clearing _undoneOrder only drops the shell's ordering;

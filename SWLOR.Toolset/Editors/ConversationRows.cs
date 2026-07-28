@@ -103,22 +103,34 @@ namespace SWLOR.Toolset.Editors
     /// <summary>One numbered choice under the NPC's line, as the player would see it.</summary>
     public sealed class ChoiceRowViewModel
     {
-        public ChoiceRowViewModel(DlgLink link, string number, string consequence, string? hiddenBecause)
+        public ChoiceRowViewModel(
+            DlgLink link, string number, string consequence, string? hiddenBecause,
+            bool isDangling = false)
         {
             Link = link;
             Number = number;
             Consequence = consequence;
             HiddenBecause = hiddenBecause;
+            IsDangling = isDangling;
         }
 
         public DlgLink Link { get; }
+
+        /// <summary>
+        /// True when the link's target index is outside the document - an imported or externally
+        /// edited route pointing at a line that no longer exists. <see cref="Target"/> throws for
+        /// such a row, so every dereference checks this first.
+        /// </summary>
+        public bool IsDangling { get; }
 
         public DlgNode Target => Link.Target;
 
         /// <summary>"1." for a visible choice, an em dash for one this player cannot see.</summary>
         public string Number { get; }
 
-        public string Text => Target.Text;
+        public string Text => IsDangling
+            ? "(this choice points at a line that no longer exists)"
+            : Target.Text;
 
         /// <summary>What picking this does, in plain English, or where it leads when it does nothing.</summary>
         public string Consequence { get; }
@@ -130,7 +142,7 @@ namespace SWLOR.Toolset.Editors
 
         public bool IsVisible => HiddenBecause == null;
 
-        public bool CanAddFollowUp => Target.Links.Count == 0;
+        public bool CanAddFollowUp => !IsDangling && Target.Links.Count == 0;
     }
 
     /// <summary>One finding, shown against the thing it is about.</summary>

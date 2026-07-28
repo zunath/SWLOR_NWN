@@ -164,7 +164,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "action"
+          "value": "actions"
         },
         "Sound": {
           "type": "resref",

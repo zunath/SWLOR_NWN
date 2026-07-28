@@ -84,6 +84,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.BleedingStatusExpiredNextSkillAbilityWindowSeconds, "30");
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.AbilityDamageToBleedingTargetSkillType, "(int)SkillType.Throwing");
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.AbilityDamageToBleedingTargetBonus, "12");
+        AssertSourceStat("ThrowingPerkDefinition.cs", StatType.SkillAbilityBleedingTargetStaminaRestoreSkillType, "(int)SkillType.Throwing");
+        AssertSourceStat("ThrowingPerkDefinition.cs", StatType.SkillAbilityBleedingTargetStaminaRestoreChance, "100");
+        AssertSourceStat("ThrowingPerkDefinition.cs", StatType.SkillAbilityBleedingTargetStaminaRestore, "2");
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.BleedingTargetAbilityBleedDurationExtensionSeconds, "6");
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.TargetLowHPStatusDamageThresholdPercent, "50");
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.TargetLowHPStatusDamageStatusCategory, "(int)StatusEffectCategory.Bleeding");
@@ -93,6 +96,10 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("TwinBladePerkDefinition.cs", StatType.BleedingTargetAbilityBleedSpreadDurationSeconds, "30");
         AssertSourceStat("TwinBladePerkDefinition.cs", StatType.DefeatedBleedingEnemyNearbyBleedDurationSeconds, "30");
         AssertSourceStat("TwinBladePerkDefinition.cs", StatType.TargetStatusCriticalRateStatusCategory, "(int)StatusEffectCategory.Bleeding");
+        AssertSourceStat("TwinBladePerkDefinition.cs", StatType.SkillDamageBleedingTargetStaminaRestoreSkillType, "(int)SkillType.TwinBlade");
+        AssertSourceStat("TwinBladePerkDefinition.cs", StatType.SkillDamageBleedingTargetStaminaRestoreChance, "100");
+        AssertSourceStat("TwinBladePerkDefinition.cs", StatType.SkillDamageBleedingTargetStaminaRestore, "1");
+        AssertSourceStat("TwinBladePerkDefinition.cs", StatType.SkillDamageBleedingTargetStaminaRestoreCooldownSeconds, "4");
 
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityStaminaCostFPRestorePercentSkillType, "(int)SkillType.Saberstaff");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityStaminaCostFPRestorePercent, "35");
@@ -571,17 +578,18 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyHostileAbilitySequenceEffects(activator, feat, ability)");
         combatSource.Should().Contain("ApplySameTargetHostileAbilityHitEffects(activator, target, ability)");
         combatSource.Should().Contain("ApplyNextDamageDealtBleedEffect(attacker, defender, damageType)");
-        combatSource.Should().Contain("ApplyBleedingTargetAbilityBleedSpread(attacker, defender, skillType, damageType)");
-        combatSource.Should().Contain("ApplyRangedHitSuppressionStack(activator, target, skillType, damageType)");
+        combatSource.Should().Contain("ApplyBleedingTargetAbilityBleedSpread(activator, target, skillType, damageType)");
+        combatSource.Should().Contain("ApplyRangedHitSuppressionStack(attacker, defender, skillType, damageType)");
         combatSource.Should().Contain("ApplySameTargetPressureDamageEffects(attacker, defender, skillType)");
         combatSource.Should().Contain("GetSameTargetPressureWeaponAbilityDamageBonus");
         combatSource.Should().Contain("ConsumeSameTargetPressureWeaponAbilityDamageBonus");
         combatSource.Should().Contain("typeof(SpottersRhythmStatusEffect)");
         var consumePressureIndex = abilitySource.IndexOf("ConsumeSameTargetPressureWeaponAbilityDamageBonus", StringComparison.Ordinal);
-        var applyDamageDealtIndex = abilitySource.IndexOf("ApplyDamageDealtEffects(activator, target, damage, skillType, damageType)", StringComparison.Ordinal);
+        var applyDamageDealtIndex = abilitySource.IndexOf("Combat.ApplyDamageDealtEffects(", StringComparison.Ordinal);
         consumePressureIndex.Should().BeGreaterThanOrEqualTo(0);
         applyDamageDealtIndex.Should().BeGreaterThanOrEqualTo(0);
         consumePressureIndex.Should().BeLessThan(applyDamageDealtIndex);
+        abilitySource.Should().Contain("isAbilityDamage: true");
         combatSource.Should().Contain("SuppressionStackEvasionPenaltyPercentAdjustment");
         combatSource.Should().Contain("if (adjustedEvasionPenaltyPercent <= 0)");
         combatSource.Should().Contain("TrackSuppressionAbilityUse(activator, now)");

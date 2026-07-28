@@ -1453,8 +1453,26 @@ def description_stat_entries(row, base):
             add_stat(stats, "TwinBladeAreaAbilityStaminaRestoreMax", stamina * 3)
 
     if "restore" in lowered and "bleeding target" in lowered and "STM" in description:
-        add_stat(stats, "DamageDealtBleedingTargetStaminaRestoreChance", 100)
-        add_stat(stats, "DamageDealtBleedingTargetStaminaRestore", parse_count(r"restore[s]? (\d+) STM", description))
+        stamina_restore = parse_count(r"restore[s]? (\d+) STM", description)
+        if row["Tab"] == "Throwing" and "ability" in lowered:
+            add_stat(stats, "SkillAbilityBleedingTargetStaminaRestoreSkillType", skill_expr)
+            add_stat(stats, "SkillAbilityBleedingTargetStaminaRestoreChance", 100)
+            add_stat(stats, "SkillAbilityBleedingTargetStaminaRestore", stamina_restore)
+            add_stat(
+                stats,
+                "SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds",
+                parse_cooldown(description))
+        elif row["Tab"] == "Twin Blade":
+            add_stat(stats, "SkillDamageBleedingTargetStaminaRestoreSkillType", skill_expr)
+            add_stat(stats, "SkillDamageBleedingTargetStaminaRestoreChance", 100)
+            add_stat(stats, "SkillDamageBleedingTargetStaminaRestore", stamina_restore)
+            add_stat(
+                stats,
+                "SkillDamageBleedingTargetStaminaRestoreCooldownSeconds",
+                parse_cooldown(description))
+        else:
+            add_stat(stats, "DamageDealtBleedingTargetStaminaRestoreChance", 100)
+            add_stat(stats, "DamageDealtBleedingTargetStaminaRestore", stamina_restore)
 
     if "Critical hits deal" in description and (
         "debuffed or controlled targets" in lowered or

@@ -128,6 +128,50 @@ public class CrossSkillPerkInteractionSafetyTests
     }
 
     [Test]
+    public void DirectDamageRiders_RunOnlyForTheirIntendedDeliveryPath()
+    {
+        var root = FindRepositoryRoot();
+        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var ability = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
+
+        var damageEffects = ExtractMethod(combat, "public static void ApplyDamageDealtEffects(");
+        damageEffects.Should().Contain("bool isAbilityDamage = false");
+        damageEffects.Should().Contain("if (isAbilityDamage)");
+        damageEffects.Should().Contain("ApplyPredatorsMarkEffects(attacker, defender, skillType);");
+        damageEffects.Should().Contain("else");
+        damageEffects.Should().Contain(
+            "ApplyAutoAttackSuppressionStack(attacker, defender, skillType, damageType);");
+        damageEffects.Should().Contain(
+            "ApplyRangedHitSuppressionStack(attacker, defender, skillType, damageType);");
+        damageEffects.Should().Contain(
+            "ApplyBleedingTargetStaminaRestore(attacker, defender, skillType, isAbilityDamage);");
+        damageEffects.Should().NotContain("ApplyBleedingTargetAbilityBleedRefresh(");
+        damageEffects.Should().NotContain("ApplyBleedingTargetAbilityBleedSpread(");
+
+        var abilityDamageRiders = ExtractMethod(combat, "private static void ApplyAbilityDamageRiders(");
+        abilityDamageRiders.Should().Contain(
+            "ApplyBleedingTargetAbilityBleedRefresh(activator, target, skillType);");
+        abilityDamageRiders.Should().Contain(
+            "ApplyBleedingTargetAbilityBleedSpread(activator, target, skillType, damageType);");
+        abilityDamageRiders.Should().NotContain("ApplyRangedHitSuppressionStack(",
+            "the shared direct-damage path already applies ranged-hit Suppression once");
+        abilityDamageRiders.Should().NotContain("ApplyAutoAttackSuppressionStack(");
+
+        var bleedingRestore = ExtractMethod(
+            combat,
+            "private static void ApplyBleedingTargetStaminaRestore(");
+        bleedingRestore.Should().Contain("SkillDamageBleedingTargetStaminaRestoreSkillType");
+        bleedingRestore.Should().Contain("SkillAbilityBleedingTargetStaminaRestoreSkillType");
+        bleedingRestore.Should().Contain("if (!isAbilityDamage)");
+        bleedingRestore.Should().Contain(
+            "SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds");
+
+        var hostileImpact = ExtractMethod(ability, "public static int ApplyHostileCombatImpact(");
+        hostileImpact.Should().Contain("isAbilityDamage: true",
+            "ability impacts must select ability-only riders and exclude auto-attack procs");
+    }
+
+    [Test]
     public void DamageSharingAndRedirects_HaveNoRecursiveTransferCycle()
     {
         var root = FindRepositoryRoot();

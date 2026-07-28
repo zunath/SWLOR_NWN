@@ -385,8 +385,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SanguineTempoTrait)
                 .Description("Attacking a bleeding target restores 1 STM. This can trigger once every 4 seconds.")
-                .IncreasesStat(StatType.DamageDealtBleedingTargetStaminaRestoreChance, 100)
-                .IncreasesStat(StatType.DamageDealtBleedingTargetStaminaRestore, 1)
+                .IncreasesStat(StatType.SkillDamageBleedingTargetStaminaRestoreSkillType, (int)SkillType.TwinBlade)
+                .IncreasesStat(StatType.SkillDamageBleedingTargetStaminaRestoreChance, 100)
+                .IncreasesStat(StatType.SkillDamageBleedingTargetStaminaRestore, 1)
+                .IncreasesStat(StatType.SkillDamageBleedingTargetStaminaRestoreCooldownSeconds, 4)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 25);
         }

@@ -289,12 +289,6 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 vertexColumn < 0 || vertexRow < 0 || vertexColumn > width || vertexRow > height)
                 return Array.Empty<TilePaintChange>();
 
-            var overlay = new Dictionary<(int, int), PlacedTileState>();
-            PlacedTileState? WorkingAt(int c, int r) =>
-                overlay.TryGetValue((c, r), out var v) ? v : currentAt(c, r);
-
-            var changes = new List<TilePaintChange>();
-
             // The four cells sharing vertex (vc, vr), with the corner each presents AT that vertex.
             // Rows grow north (+y), so the cell north-east of the vertex holds it as its SW corner.
             var touched = new (int Col, int Row, TileCorner Corner)[]
@@ -304,6 +298,40 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 (vertexColumn - 1, vertexRow, TileCorner.SouthEast),
                 (vertexColumn, vertexRow, TileCorner.SouthWest)
             };
+
+            // Same two-attempt shape as PaintTerrain: edges BETWEEN the touched cells are jointly
+            // mutable, so a stale pre-paint crosser between them is a kept-when-possible
+            // preference, retried without it when the valid final blend needs both sides to drop
+            // or change it together.
+            var touchedSet = new HashSet<(int, int)>();
+            foreach (var (col, row, _) in touched)
+            {
+                if (col >= 0 && row >= 0 && col < width && row < height && currentAt(col, row) is not null)
+                    touchedSet.Add((col, row));
+            }
+
+            var solved = TrySolveVertexPaint(tileset, width, height, currentAt, touched, touchedSet,
+                             terrain, tileRank, preferStaleCrossers: true)
+                         ?? TrySolveVertexPaint(tileset, width, height, currentAt, touched, touchedSet,
+                             terrain, tileRank, preferStaleCrossers: false);
+            return solved ?? (IReadOnlyList<TilePaintChange>)Array.Empty<TilePaintChange>();
+        }
+
+        /// <summary>One greedy vertex-paint pass, or null when any touched cell has no legal tile.</summary>
+        private static List<TilePaintChange>? TrySolveVertexPaint(
+            TilesetDefinition tileset, int width, int height,
+            Func<int, int, PlacedTileState?> currentAt,
+            IReadOnlyList<(int Col, int Row, TileCorner Corner)> touched,
+            IReadOnlySet<(int, int)> touchedSet,
+            string terrain,
+            Func<int, int>? tileRank,
+            bool preferStaleCrossers)
+        {
+            var overlay = new Dictionary<(int, int), PlacedTileState>();
+            PlacedTileState? WorkingAt(int c, int r) =>
+                overlay.TryGetValue((c, r), out var v) ? v : currentAt(c, r);
+
+            var changes = new List<TilePaintChange>();
 
             foreach (var (col, row, corner) in touched)
             {
@@ -316,12 +344,12 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                     .WithCorner(corner, terrain);
                 var candidates = WithMatchingCrossers(
                     tileset, SetRuleMatcher.FindMatchingTiles(tileset, constraint),
-                    col, row, currentAt, overlay);
+                    col, row, currentAt, overlay, touchedSet, preferStaleCrossers);
                 var choice = SelectCandidate(
                     tileset, candidates, WorkingAt(col, row)?.Candidate, tileRank, preferBlankEdges: false);
 
                 if (choice is not { } chosen)
-                    return Array.Empty<TilePaintChange>(); // atomic, silent refusal
+                    return null; // atomic, silent refusal
 
                 var before = WorkingAt(col, row);
                 overlay[(col, row)] = new PlacedTileState(chosen.TileId, chosen.Orientation, before?.HeightLevel ?? 0);

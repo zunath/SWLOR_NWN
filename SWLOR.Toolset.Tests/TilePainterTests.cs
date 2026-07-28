@@ -314,6 +314,53 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PaintTerrainVertex_DropsACrosserBothTouchedCellsMustAbandonTogether()
+        {
+            // Two of the four cells sharing the painted vertex also share a Wall crosser, and no
+            // dirt-corner tile carries one - the valid final blend drops the wall on BOTH sides.
+            // Filtering the first cell hard against the second's stale pre-paint edge refused this
+            // vertex paint outright.
+            var tileset = new TilesetDefinition
+            {
+                Floor = "Grass",
+                Terrains = new[]
+                {
+                    new TerrainDefinition("Grass", null, null),
+                    new TerrainDefinition("Dirt", null, null)
+                },
+                Tiles = new[]
+                {
+                    Tile("Grass", "Grass", "Grass", "Grass"),               // 0 solid grass
+                    Tile("Dirt", "Dirt", "Dirt", "Dirt"),                   // 1 solid dirt
+                    Tile("Grass", "Grass", "Dirt", "Dirt"),                 // 2 half blend
+                    Tile("Dirt", "Grass", "Grass", "Grass"),                // 3 one-corner blend
+                    Tile("Grass", "Dirt", "Dirt", "Dirt"),                  // 4 three-corner blend
+                    Tile("Grass", "Grass", "Grass", "Grass", right: "Wall"),// 5 walled east edge
+                    Tile("Grass", "Grass", "Grass", "Grass", left: "Wall")  // 6 walled west edge
+                }
+            };
+
+            var cells = Filled(2, 2, SolidGrass);
+            cells[(0, 0)] = new TileCandidate(5, 0);
+            cells[(1, 0)] = new TileCandidate(6, 0);
+
+            var changes = TilePainter.PaintTerrainVertex(tileset, 2, 2, States(cells, 2, 2), 1, 1, "Dirt");
+
+            changes.Should().NotBeEmpty(
+                "the vertex paint is legal when both sides of the walled edge drop the crosser together");
+            Apply(cells, changes);
+
+            var west = cells[(0, 0)];
+            var east = cells[(1, 0)];
+            CornerAt(tileset, west, TileCorner.NorthEast).Should().Be("Dirt");
+            CornerAt(tileset, east, TileCorner.NorthWest).Should().Be("Dirt");
+            (TileAdjacency.WorldEdgeCrosser(tileset.Tiles[west.TileId], west.Orientation, TileEdge.East) ?? "")
+                .Should().BeEmpty("no dirt-corner tile can carry the wall, so it must be gone");
+            (TileAdjacency.WorldEdgeCrosser(tileset.Tiles[east.TileId], east.Orientation, TileEdge.West) ?? "")
+                .Should().BeEmpty("the far side must agree with the near side");
+        }
+
+        [Test]
         public void PaintTerrainVertex_IsIdempotent()
         {
             var ts = Synthetic();

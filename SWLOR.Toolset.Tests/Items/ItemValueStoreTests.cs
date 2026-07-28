@@ -90,5 +90,40 @@ namespace SWLOR.Toolset.Tests.Items
             store.HasProperty(120).Should().BeFalse("zero removes the entry just like null");
             store.Properties.Should().HaveCount(3);
         }
+
+        [Test]
+        public void SetExclusiveProperty_WritesCostValueZeroWhichSetPropertyValueCanNeverWrite()
+        {
+            var store = new ItemValueStore(UtiDocument.Load(AdrenHarnessPath).Fields);
+
+            store.SetExclusiveProperty(134, 3, 0);
+
+            store.HasProperty(134).Should().BeTrue();
+            store.GetPropertyValue(134, 3).Should().Be(0, "WeaponDamageType's real stored value is 0, not absent");
+        }
+
+        [Test]
+        public void SetExclusiveProperty_ReplacesAnyExistingEntryOfThatPropertyRatherThanAddingASecondOne()
+        {
+            var store = new ItemValueStore(UtiDocument.Load(AdrenHarnessPath).Fields);
+            store.SetExclusiveProperty(134, 3, 0);
+
+            store.SetExclusiveProperty(134, 5, 0);
+
+            store.Properties.Count(p => p.PropertyId == 134).Should().Be(1);
+            store.GetPropertyValue(134, 5).Should().Be(0);
+            store.GetPropertyValue(134, 3).Should().BeNull("the old subtype's entry is gone, not left behind");
+        }
+
+        [Test]
+        public void ClearProperty_RemovesEveryEntryOfThatPropertyRegardlessOfSubtype()
+        {
+            var store = new ItemValueStore(UtiDocument.Load(AdrenHarnessPath).Fields);
+            store.SetExclusiveProperty(134, 3, 0);
+
+            store.ClearProperty(134);
+
+            store.HasProperty(134).Should().BeFalse();
+        }
     }
 }

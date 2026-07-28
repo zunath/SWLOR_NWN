@@ -7,9 +7,9 @@ namespace SWLOR.Toolset.Editors.Items
 {
     /// <summary>
     /// The item editor's Stats tab: a family- and role-driven set of primary
-    /// <see cref="ItemStatGroupViewModel"/> cards, plus every other group tucked behind a "show more"
-    /// summary until the builder actually asks for it; and the family-independent engine-legacy
-    /// sweep (<see cref="Engine"/>).
+    /// <see cref="ItemStatGroupViewModel"/> cards, and the family-independent engine-legacy sweep
+    /// (<see cref="Engine"/>). Stats outside a family's primary groups are simply not shown - there
+    /// is no secondary/"not used by this base type" section to expand.
     /// </summary>
     public sealed partial class ItemStatsSectionViewModel : ObservableObject
     {
@@ -20,22 +20,11 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action? _valueChanged;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
+        private readonly Func<int, int?>? _costTableMax;
 
         private ItemFamily _family;
-        private IReadOnlyList<ItemStatGroup> _secondaryGroupIds = Array.Empty<ItemStatGroup>();
 
         public ObservableCollection<ItemStatGroupViewModel> Groups { get; } = new();
-
-        public ObservableCollection<ItemStatGroupViewModel> SecondaryGroups { get; } = new();
-
-        public bool HasSecondary => _secondaryGroupIds.Count > 0;
-
-        /// <summary>"Crafting · Bonuses · Droid · ..." - the titles of the groups tucked away.</summary>
-        public string SecondarySummary =>
-            string.Join(" · ", _secondaryGroupIds.Select(ItemStatGroupViewModel.TitleFor));
-
-        [ObservableProperty]
-        private bool _isSecondaryExpanded;
 
         /// <summary>The base-game engine properties the corpus still carries - built by <see cref="Rebuild"/>.</summary>
         public ItemEngineLegacySectionViewModel? Engine { get; private set; }
@@ -44,12 +33,14 @@ namespace SWLOR.Toolset.Editors.Items
             ItemValueStore store,
             Func<string, Action, bool> runEdit,
             Action? valueChanged = null,
-            Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null)
+            Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
+            Func<int, int?>? costTableMax = null)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _valueChanged = valueChanged;
             _resolveChoices = resolveChoices;
+            _costTableMax = costTableMax;
         }
 
         /// <summary>
@@ -76,28 +67,13 @@ namespace SWLOR.Toolset.Editors.Items
             foreach (var groupId in primaryIds)
                 Groups.Add(BuildGroup(groupId));
 
-            _secondaryGroupIds = Enum.GetValues<ItemStatGroup>()
-                .Where(group => !primaryIds.Contains(group))
-                .ToList();
-
-            // The secondary set changed shape, so any previously expanded view no longer applies -
-            // it is rebuilt from scratch the next time the builder opens it.
-            IsSecondaryExpanded = false;
-            SecondaryGroups.Clear();
-
-            OnPropertyChanged(nameof(HasSecondary));
-            OnPropertyChanged(nameof(SecondarySummary));
-
-            Engine = new ItemEngineLegacySectionViewModel(_store, _runEdit, _resolveChoices);
+            Engine = new ItemEngineLegacySectionViewModel(_store, _runEdit, _resolveChoices, _costTableMax);
         }
 
-        /// <summary>Re-reads every built cell/entry list (primary, and secondary once expanded), and the engine rows.</summary>
+        /// <summary>Re-reads every built cell/entry list/exclusive choice, and the engine rows.</summary>
         public void ReloadFromDocument()
         {
             foreach (var group in Groups)
-                ReloadGroup(group);
-
-            foreach (var group in SecondaryGroups)
                 ReloadGroup(group);
 
             Engine?.Rebuild();
@@ -110,15 +86,9 @@ namespace SWLOR.Toolset.Editors.Items
 
             foreach (var entryList in group.EntryLists)
                 entryList.Reload();
-        }
 
-        partial void OnIsSecondaryExpandedChanged(bool value)
-        {
-            if (!value || SecondaryGroups.Count > 0)
-                return;
-
-            foreach (var groupId in _secondaryGroupIds)
-                SecondaryGroups.Add(BuildGroup(groupId));
+            foreach (var exclusiveChoice in group.ExclusiveChoices)
+                exclusiveChoice.Reload();
         }
 
         private ItemStatGroupViewModel BuildGroup(ItemStatGroup group)
@@ -127,15 +97,29 @@ namespace SWLOR.Toolset.Editors.Items
                 ? ItemStatVisibility.CombatStatsFor(_family)
                 : ItemStatCatalog.ByGroup(group);
 
-            var entryLists = ItemMultiEntryCatalog.All
+            var contextDefinitions = ItemMultiEntryCatalog.All
                 .Where(definition => definition.Context == group)
+                .ToList();
+
+            var entryLists = contextDefinitions
+                .Where(definition => !definition.IsExclusive)
                 .Select(BuildEntryList)
                 .ToList();
 
-            return new ItemStatGroupViewModel(group, definitions, _store, _runEdit, _valueChanged, entryLists);
+            var exclusiveChoices = contextDefinitions
+                .Where(definition => definition.IsExclusive)
+                .Select(BuildExclusiveChoice)
+                .ToList();
+
+            return new ItemStatGroupViewModel(
+                group, definitions, _store, _runEdit, _valueChanged, entryLists, exclusiveChoices, _costTableMax);
         }
 
         private ItemPropertyEntryListViewModel BuildEntryList(ItemMultiEntryDefinition definition) =>
+            new(definition, _store, _runEdit, ResolveSubtypeChoices(definition.SubtypeTableResRef), _valueChanged,
+                _costTableMax);
+
+        private ItemExclusiveChoiceViewModel BuildExclusiveChoice(ItemMultiEntryDefinition definition) =>
             new(definition, _store, _runEdit, ResolveSubtypeChoices(definition.SubtypeTableResRef), _valueChanged);
 
         private IReadOnlyList<BehaviorChoice> ResolveSubtypeChoices(string tableResRef) =>

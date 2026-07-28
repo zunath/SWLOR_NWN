@@ -104,11 +104,11 @@ namespace SWLOR.Toolset.Editors.Items
                     .ToList();
 
                 var confirmed = await _prompts.ConfirmDestructiveAsync(
-                    $"Change role to {role.DisplayName}?",
+                    $"Change behavior to {role.DisplayName}?",
                     $"This clears {string.Join(", ", labels)}, which " +
                     $"{(labels.Count == 1 ? "is" : "are")} not part of {role.DisplayName}. " +
                     "Undo will put it back until the item is saved.",
-                    "Change role").ConfigureAwait(true);
+                    "Change behavior").ConfigureAwait(true);
 
                 if (!confirmed)
                 {
@@ -119,7 +119,7 @@ namespace SWLOR.Toolset.Editors.Items
 
             if (losing.Count > 0)
             {
-                var applied = _runEdit($"Change role to {role.DisplayName}", () =>
+                var applied = _runEdit($"Change behavior to {role.DisplayName}", () =>
                 {
                     foreach (var property in losing)
                         _store.SetPropertyValue(property.PropertyId, property.SubtypeId, 0, null);
@@ -144,7 +144,7 @@ namespace SWLOR.Toolset.Editors.Items
             if (roles.Count == 0)
                 return;
 
-            RoleList.Add(BehaviorListItemViewModel.Header($"{_familyDisplay} roles"));
+            RoleList.Add(BehaviorListItemViewModel.Header($"{_familyDisplay} behaviors"));
             foreach (var role in roles.Where(role => role.Id != ItemRoleCatalog.CustomId))
                 RoleList.Add(BehaviorListItemViewModel.For(role));
 

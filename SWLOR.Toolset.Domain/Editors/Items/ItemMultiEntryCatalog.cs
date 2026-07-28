@@ -7,8 +7,8 @@ namespace SWLOR.Toolset.Domain.Editors.Items
     /// subs), ArmorEnhancement/WeaponEnhancement/StructureEnhancement/FoodEnhancement/
     /// StarshipEnhancement/ModuleEnhancement/DroidEnhancement (101/102/107/108/109/110/116, each
     /// subtyped), DroidPartType (122, 1-5), DroidInstruction (123, 40 subs), DNAType (128, 30 subs),
-    /// EnzymeColor (129, 1-8), NPCSkill (125), UseLimitationPerk (100, perk id sub + level
-    /// CostValue), and UseLimitationRacial (64).
+    /// EnzymeColor (129, 1-8), NPCSkill (125), WeaponDamageType (134, exclusive - at most one entry
+    /// per item), UseLimitationPerk (100, perk id sub + level CostValue), and UseLimitationRacial (64).
     /// </summary>
     /// <remarks>
     /// The *Enhancement properties (101/102/107/108/109/110/116) mark an item AS an enhancement
@@ -50,8 +50,17 @@ namespace SWLOR.Toolset.Domain.Editors.Items
 
             new ItemMultiEntryDefinition("NPC Skill", 125, "iprp_skill", 48, ItemStatGroup.Npc),
 
-            new ItemMultiEntryDefinition("Required Perk", 100, "iprp_resperk", 33, Context: null, IsRequirement: true),
-            new ItemMultiEntryDefinition("Required Race", 64, "racialtypes", -1, Context: null, IsRequirement: true)
+            // WeaponDamageType (134): the corpus never carries more than one entry of this property
+            // per item, CostValue always 0 - a single exclusive choice, not an add/remove list.
+            // itempropdef.2da declares no CostTableResRef for this property ("****"); the corpus's
+            // own entries store CostTable 0, matching every other no-cost-table property.
+            new ItemMultiEntryDefinition(
+                "Weapon Damage Type", 134, "iprp_c_dmgtype", 0, ItemStatGroup.Combat, IsExclusive: true),
+
+            new ItemMultiEntryDefinition(
+                "Required Perk", 100, "iprp_resperk", 33, Context: null, IsRequirement: true, SearchNoun: "Perks"),
+            new ItemMultiEntryDefinition(
+                "Required Race", 64, "racialtypes", -1, Context: null, IsRequirement: true, SearchNoun: "Races")
         };
     }
 }

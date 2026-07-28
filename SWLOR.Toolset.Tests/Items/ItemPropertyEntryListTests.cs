@@ -35,6 +35,14 @@ namespace SWLOR.Toolset.Tests.Items
                 FakeFoodTypes);
 
         [Test]
+        public void WatermarkFallsBackToTheLabelWhenNoSearchNounIsDeclared()
+        {
+            var list = OpenFoodBonusList(OpenStore());
+
+            list.AddWatermark.Should().Be("Search Food Bonus");
+        }
+
+        [Test]
         public void AddingAChoiceWritesTheStoreAddsAnEntryAndDropsItFromAddChoices()
         {
             var store = OpenStore();
@@ -69,19 +77,18 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void GarbageValueRefusesTheWriteAndRestoresTheShownValue()
+        public void EditingAnEntrysNumberRoundTrips()
         {
             var store = OpenStore();
             var list = OpenFoodBonusList(store);
             list.AddCommand.Execute(new BehaviorChoiceViewModel(FakeFoodTypes[0]));
             var entry = list.Entries.Single(e => e.SubtypeId == 5);
 
-            entry.Value = "7";
-            entry.Value = "not a number";
+            entry.Number = 7;
 
-            store.GetPropertyValue(106, 5).Should().Be(7, "the invalid input must never reach the store");
-            entry.Value.Should().Be("7", "the shown value is put back to what is actually stored");
-            list.Entries.Should().ContainSingle("garbage input must not remove the entry");
+            store.GetPropertyValue(106, 5).Should().Be(7);
+            entry.Number.Should().Be(7);
+            list.Entries.Should().ContainSingle();
         }
 
         [Test]
@@ -95,7 +102,7 @@ namespace SWLOR.Toolset.Tests.Items
 
             list.Reload();
 
-            list.Entries.Should().ContainSingle(entry => entry.SubtypeId == 9 && entry.Value == "4");
+            list.Entries.Should().ContainSingle(entry => entry.SubtypeId == 9 && entry.Number == 4);
         }
     }
 }

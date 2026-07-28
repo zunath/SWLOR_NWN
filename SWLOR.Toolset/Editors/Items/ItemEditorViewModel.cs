@@ -1,13 +1,17 @@
 using System.Collections.ObjectModel;
+using System.Numerics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Render.Icons;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Triggers;
+using SWLOR.Toolset.Viewport;
 
 namespace SWLOR.Toolset.Editors.Items
 {
@@ -16,7 +20,7 @@ namespace SWLOR.Toolset.Editors.Items
     /// it: which family the item belongs to, which roles its Behavior rail offers, and which stat
     /// groups its Stats tab shows.
     /// </summary>
-    public sealed partial class ItemEditorViewModel : ObservableObject, IDisposable
+    public sealed partial class ItemEditorViewModel : ObservableObject, IModelPreviewSource, IDisposable
     {
         private readonly ItemValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
@@ -24,9 +28,14 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly Func<int, BaseItemRow?>? _baseItemRows;
         private readonly Func<JsonGffStruct, IconImage?>? _renderIcon;
+        private readonly Func<JsonGffStruct, RenderModel?>? _resolveModel;
+        private ModelPreviewControl? _previewView;
         private bool _disposed;
 
         public ObservableCollection<BehaviorRowViewModel> BasicRows { get; } = new();
+
+        /// <summary>The Check-kind Basic rows (Plot, Stolen, Cursed, Identified, No Economy), shown in their own Flags card.</summary>
+        public ObservableCollection<BehaviorRowViewModel> FlagRows { get; } = new();
 
         public ItemStatsSectionViewModel Stats { get; }
 
@@ -54,6 +63,32 @@ namespace SWLOR.Toolset.Editors.Items
 
         [ObservableProperty]
         private Avalonia.Media.Imaging.Bitmap? _previewImage;
+
+        /// <summary>Null unless a resolver was supplied and the item's base type has a world model to preview.</summary>
+        public AreaScene? PreviewScene { get; private set; }
+
+        /// <summary>Whether the orbitable 3D viewport has anything to show alongside the 2D icon.</summary>
+        public bool HasModelPreview => PreviewScene != null;
+
+        public ResourceIndex? ResourceIndex { get; }
+
+        public string? PreviewAnimationName => null;
+
+        public bool IsAnimationPlaying => false;
+
+        /// <summary>The reusable one-model viewport, lazily created the first time it is bound.</summary>
+        public Avalonia.Controls.Control PreviewView
+        {
+            get
+            {
+                if (_previewView != null)
+                    return _previewView;
+
+                _previewView = new ModelPreviewControl { DataContext = this };
+                _previewView.SetHostVisible(true);
+                return _previewView;
+            }
+        }
 
         public ItemFamily Family { get; private set; }
 
@@ -91,6 +126,13 @@ namespace SWLOR.Toolset.Editors.Items
         /// <summary>Equipment is what its base type says; only the carriable families choose a role.</summary>
         public bool ShowsBehaviorTab => ItemRoleCatalog.RolesFor(Family).Count > 0;
 
+        /// <summary>
+        /// A family/role combination with no stat groups hides the tab outright; the engine card is
+        /// the one reason a group-less item still warrants it.
+        /// </summary>
+        public bool ShowsStatsTab =>
+            Stats.Groups.Count > 0 || (Stats.Engine?.HasEntries ?? false);
+
         public string? Incomplete { get; private set; }
 
         public bool IsIncomplete => Incomplete != null;
@@ -108,7 +150,11 @@ namespace SWLOR.Toolset.Editors.Items
             Func<int, BaseItemIconRow?>? baseItemIcons = null,
             Func<string, bool>? textureExists = null,
             Func<string, IReadOnlyList<Domain.Workspace.ItemSourceEntry>>? sourceLookup = null,
-            bool isDirty = false)
+            bool isDirty = false,
+            Func<int, int?>? costTableMax = null,
+            Func<JsonGffStruct, RenderModel?>? resolveModel = null,
+            ResourceIndex? resourceIndex = null,
+            ArmorDyeSwatchService? armorDyeSwatches = null)
         {
             ArgumentNullException.ThrowIfNull(item);
 
@@ -118,6 +164,8 @@ namespace SWLOR.Toolset.Editors.Items
             _resolveChoices = resolveChoices;
             _baseItemRows = baseItemRows;
             _renderIcon = renderIcon;
+            _resolveModel = resolveModel;
+            ResourceIndex = resourceIndex;
             _choicePreviews = choicePreviews;
             HeaderOwner = headerOwner;
             IsDirty = isDirty;
@@ -125,15 +173,15 @@ namespace SWLOR.Toolset.Editors.Items
             ReclassifyFamily();
             Role = ItemRoleCatalog.Classify(_store, Family);
             BuildBasicRows();
-            Stats = new ItemStatsSectionViewModel(_store, RunEdit, null, resolveChoices);
+            Stats = new ItemStatsSectionViewModel(_store, RunEdit, null, resolveChoices, costTableMax);
             Stats.Rebuild(Family, Role.Id);
-            Requirements = new ItemRequirementsSectionViewModel(_store, RunEdit, null, resolveChoices);
+            Requirements = new ItemRequirementsSectionViewModel(_store, RunEdit, null, resolveChoices, costTableMax);
             Roles = new ItemRoleSectionViewModel(_store, RunEdit, resolveChoices, prompts, OnRoleChosen);
             Roles.Rebuild(Family, Role, FamilyDisplay);
             if (baseItemIcons != null && textureExists != null)
             {
                 Appearance = new ItemAppearanceSectionViewModel(
-                    _store, RunEdit, baseItemIcons, textureExists, choicePreviews, UpdatePreview);
+                    _store, RunEdit, baseItemIcons, textureExists, choicePreviews, UpdatePreview, armorDyeSwatches);
             }
             Source = new ItemSourceSectionViewModel(headerOwner, sourceLookup);
             _lastAppearanceBaseItem = CurrentBaseItem();
@@ -149,6 +197,7 @@ namespace SWLOR.Toolset.Editors.Items
             RebuildVariablesSection();
             Stats.Rebuild(Family, role.Id);
             OnPropertyChanged(nameof(ShowsVariablesTab));
+            OnPropertyChanged(nameof(ShowsStatsTab));
         }
 
         private readonly ChoicePreviewService? _choicePreviews;
@@ -204,18 +253,19 @@ namespace SWLOR.Toolset.Editors.Items
                 RebuildVariablesSection();
             }
 
-            foreach (var row in BasicRows)
+            foreach (var row in AllBasicRows())
                 row.Reload();
             if (previousFamily != Family || previousRole != Role.Id)
                 Stats.Rebuild(Family, Role.Id);
             else
                 Stats.ReloadFromDocument();
+            OnPropertyChanged(nameof(ShowsStatsTab));
             Requirements.ReloadFromDocument();
             Roles.Rebuild(Family, Role, FamilyDisplay);
             RefreshAppearanceForBaseItem();
             Appearance?.ReloadFromDocument();
             Variables?.RefreshFromDocument();
-            foreach (var row in BasicRows)
+            foreach (var row in AllBasicRows())
                 row.RefreshStatus();
 
             OnHeaderFieldsChanged();
@@ -252,8 +302,17 @@ namespace SWLOR.Toolset.Editors.Items
         private void BuildBasicRows()
         {
             foreach (var definition in ItemEditorLayout.Basic)
-                BasicRows.Add(CreateRow(definition));
+            {
+                var row = CreateRow(definition);
+                if (definition.Kind == BehaviorFieldKind.Check)
+                    FlagRows.Add(row);
+                else
+                    BasicRows.Add(row);
+            }
         }
+
+        /// <summary>Every Basic-tab row, split or not - Reload/RefreshStatus/Dispose sweep both collections.</summary>
+        private IEnumerable<BehaviorRowViewModel> AllBasicRows() => BasicRows.Concat(FlagRows);
 
         private BehaviorRowViewModel CreateRow(BehaviorFieldDefinition definition)
         {
@@ -283,7 +342,11 @@ namespace SWLOR.Toolset.Editors.Items
         {
             if (definition.Name == "BaseItem")
             {
-                RefreshAppearanceForBaseItem();
+                // Only a real user-driven base-type change should pick a default appearance for
+                // the builder - never the initial construction/reload paths, which must leave
+                // whatever the document already stores untouched (the byte-stability audit sweep
+                // constructs the editor over every corpus blueprint and asserts nothing is written).
+                RefreshAppearanceForBaseItem(ensureSelection: true);
                 var previous = Family;
                 ReclassifyFamily();
                 if (previous != Family)
@@ -300,7 +363,7 @@ namespace SWLOR.Toolset.Editors.Items
                 }
             }
 
-            foreach (var row in BasicRows)
+            foreach (var row in AllBasicRows())
                 row.RefreshStatus();
 
             OnHeaderFieldsChanged();
@@ -322,7 +385,7 @@ namespace SWLOR.Toolset.Editors.Items
         private int CurrentBaseItem() =>
             (int)(_store.GetInteger(BehaviorFieldStorage.Field, "BaseItem") ?? -1);
 
-        private void RefreshAppearanceForBaseItem()
+        private void RefreshAppearanceForBaseItem(bool ensureSelection = false)
         {
             var baseItem = CurrentBaseItem();
             if (baseItem == _lastAppearanceBaseItem)
@@ -330,6 +393,8 @@ namespace SWLOR.Toolset.Editors.Items
 
             _lastAppearanceBaseItem = baseItem;
             Appearance?.Rebuild();
+            if (ensureSelection)
+                Appearance?.EnsureSelection();
         }
 
         private void ReclassifyFamily()
@@ -343,6 +408,7 @@ namespace SWLOR.Toolset.Editors.Items
             OnPropertyChanged(nameof(FamilyDisplay));
             OnPropertyChanged(nameof(ShowsVariablesTab));
             OnPropertyChanged(nameof(ShowsBehaviorTab));
+            OnPropertyChanged(nameof(ShowsStatsTab));
         }
 
         private void RebuildVariablesSection()
@@ -355,7 +421,7 @@ namespace SWLOR.Toolset.Editors.Items
 
         private void RefreshCompleteness()
         {
-            var missing = BasicRows
+            var missing = AllBasicRows()
                 .Where(row => row.IsRequired && !row.HasValue)
                 .Select(row => row.Label)
                 .ToList();
@@ -374,6 +440,49 @@ namespace SWLOR.Toolset.Editors.Items
 
             var icon = _renderIcon?.Invoke(_store.Item);
             PreviewImage = icon == null ? null : Workspace.ThumbnailService.ToBitmap(icon);
+            UpdatePreviewScene();
+        }
+
+        /// <summary>
+        /// Rebuilds the orbitable 3D scene alongside the 2D icon, so both refresh together on every
+        /// appearance/base-type edit. Null when no resolver was supplied (construction-only callers,
+        /// which must never resolve or render anything) or the base type has no world model worth
+        /// showing (<see cref="Domain.Render.BlueprintModelResolver"/> decides that).
+        /// </summary>
+        private void UpdatePreviewScene()
+        {
+            if (_disposed)
+                return;
+
+            var model = _resolveModel?.Invoke(_store.Item);
+            PreviewScene = model == null
+                ? null
+                : new AreaScene
+                {
+                    Tileset = string.Empty,
+                    Width = 1,
+                    Height = 1,
+                    Tiles = Array.Empty<TilePlacement>(),
+                    Instances = new[]
+                    {
+                        new InstanceMarker
+                        {
+                            Kind = InstanceMarkerKind.Item,
+                            TemplateResRef = TemplateResRef,
+                            Tag = ItemTag,
+                            Position = new Vector3(
+                                AreaSceneBuilder.TileSize / 2f,
+                                AreaSceneBuilder.TileSize / 2f,
+                                0f),
+                            Orientation = new Vector2(1f, 0f),
+                            Model = model
+                        }
+                    },
+                    Diagnostics = new AreaSceneDiagnostics()
+                };
+
+            OnPropertyChanged(nameof(PreviewScene));
+            OnPropertyChanged(nameof(HasModelPreview));
         }
 
         public void Dispose()
@@ -382,9 +491,12 @@ namespace SWLOR.Toolset.Editors.Items
                 return;
 
             _disposed = true;
-            foreach (var row in BasicRows)
+            foreach (var row in AllBasicRows())
                 row.Dispose();
             PreviewImage = null;
+            _previewView?.Dispose();
+            _previewView = null;
+            PreviewScene = null;
         }
     }
 }

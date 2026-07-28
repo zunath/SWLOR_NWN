@@ -15,7 +15,7 @@ namespace SWLOR.Toolset.Tests.Items
         {
             RoleIds(ItemFamily.Miscellaneous).Should().BeEquivalentTo(new[]
             {
-                ItemRoleCatalog.ConsumableId, ItemRoleCatalog.MealId, ItemRoleCatalog.GrenadeId,
+                ItemRoleCatalog.ConsumableId, ItemRoleCatalog.MealId,
                 ItemRoleCatalog.DeployedDeviceId, ItemRoleCatalog.DroidPartId,
                 ItemRoleCatalog.IncubationSampleId, ItemRoleCatalog.SchematicId,
                 ItemRoleCatalog.KeyItemId, ItemRoleCatalog.CustomId

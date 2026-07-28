@@ -1,13 +1,13 @@
-using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Toolset.Domain.Editors.Items;
 
 namespace SWLOR.Toolset.Editors.Items
 {
     /// <summary>
-    /// One stat's value box: a single itemprop.2da property (and subtype) shown as a plain integer
-    /// text field. An empty box means the property is absent from PropertiesList; any other value is
-    /// its CostValue.
+    /// One stat's value box: a single itemprop.2da property (and subtype) shown as a capped
+    /// NumericUpDown. A null <see cref="Number"/> means the property is absent from PropertiesList;
+    /// any other value is its CostValue. Garbage input is impossible - the control itself only
+    /// accepts a number within <see cref="Minimum"/>/<see cref="Maximum"/>.
     /// </summary>
     public sealed partial class ItemStatCellViewModel : ObservableObject
     {
@@ -19,19 +19,26 @@ namespace SWLOR.Toolset.Editors.Items
 
         public string Label => _definition.Label;
 
+        public int Minimum => 0;
+
+        /// <summary>The stat's real engine cap, resolved from its CostTableId; 255 when unresolved.</summary>
+        public int Maximum { get; }
+
         [ObservableProperty]
-        private string _value = string.Empty;
+        private decimal? _number;
 
         public ItemStatCellViewModel(
             ItemStatDefinition definition,
             ItemValueStore store,
             Func<string, Action, bool> runEdit,
-            Action? valueChanged = null)
+            Action? valueChanged = null,
+            Func<int, int?>? costTableMax = null)
         {
             _definition = definition ?? throw new ArgumentNullException(nameof(definition));
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _valueChanged = valueChanged;
+            Maximum = costTableMax?.Invoke(definition.CostTableId) ?? ItemCostTableRanges.DefaultMax;
             Reload();
         }
 
@@ -41,8 +48,7 @@ namespace SWLOR.Toolset.Editors.Items
             _loading = true;
             try
             {
-                var stored = _store.GetPropertyValue(_definition.PropertyId, _definition.SubtypeId);
-                Value = stored?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
+                Number = _store.GetPropertyValue(_definition.PropertyId, _definition.SubtypeId);
             }
             finally
             {
@@ -50,27 +56,12 @@ namespace SWLOR.Toolset.Editors.Items
             }
         }
 
-        partial void OnValueChanged(string value)
+        partial void OnNumberChanged(decimal? value)
         {
             if (_loading)
                 return;
 
-            // A blank box is a deliberate clear; a non-numeric one is a typo. Only the former reaches
-            // the store - the latter refuses the write outright and puts the stored value back, so a
-            // stray keystroke can never overwrite or erase a real number.
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                Write(null);
-                return;
-            }
-
-            if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed))
-            {
-                Reload();
-                return;
-            }
-
-            Write(parsed);
+            Write(value.HasValue ? (int)value.Value : null);
         }
 
         private void Write(int? parsed)

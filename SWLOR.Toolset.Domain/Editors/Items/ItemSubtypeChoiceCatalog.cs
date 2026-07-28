@@ -36,7 +36,16 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                 if (string.IsNullOrWhiteSpace(label))
                     continue; // Blank rows are unused 2da slots, not real choices.
 
-                choices.Add(new BehaviorChoice(row, ResolveDisplay(table, row, tlk) ?? label));
+                var resolved = ResolveDisplay(table, row, tlk);
+
+                // A row with a real TLK Name always stays, whatever its label says - racialtypes.2da
+                // and similar tables only ever leave a placeholder label ("Bio_reserved",
+                // "cep_reserved", "Padding") on a row nobody wired a Name strref to. A row whose
+                // display would fall back to that same placeholder label is not a real choice.
+                if (resolved == null && IsReservedLabelShape(label))
+                    continue;
+
+                choices.Add(new BehaviorChoice(row, resolved ?? label));
             }
 
             return choices;
@@ -53,6 +62,26 @@ namespace SWLOR.Toolset.Domain.Editors.Items
 
             var text = tlk(strRef.Value);
             return string.IsNullOrWhiteSpace(text) ? null : text;
+        }
+
+        /// <summary>
+        /// True for a placeholder label a 2da leaves on an unused/reserved row rather than a real
+        /// subtype name: blank, "****", or (after stripping spaces/underscores so "Bio_reserved" and
+        /// "cep_reserved" both match) containing "reserved", "padding", or "deleted".
+        /// </summary>
+        private static bool IsReservedLabelShape(string label)
+        {
+            if (string.IsNullOrWhiteSpace(label))
+                return true;
+
+            var trimmed = label.Trim();
+            if (trimmed == "****")
+                return true;
+
+            var normalized = trimmed.Replace(" ", string.Empty).Replace("_", string.Empty);
+            return normalized.Contains("reserved", StringComparison.OrdinalIgnoreCase)
+                || normalized.Contains("padding", StringComparison.OrdinalIgnoreCase)
+                || normalized.Contains("deleted", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

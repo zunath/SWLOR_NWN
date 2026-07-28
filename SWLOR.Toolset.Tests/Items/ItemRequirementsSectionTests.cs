@@ -27,7 +27,7 @@ namespace SWLOR.Toolset.Tests.Items
             var section = OpenSection(OpenStore());
 
             var combat = section.Groups.Single(group => group.Title == "Combat skills");
-            combat.Cells.Single(cell => cell.Label == "Armor").Value.Should().Be("45");
+            combat.Cells.Single(cell => cell.Label == "Armor").Number.Should().Be(45);
         }
 
         [Test]
@@ -69,6 +69,15 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public void PerkAndRaceAddSearchBoxesNameWhatTheySearch()
+        {
+            var section = OpenSection(OpenStore());
+
+            section.EntryLists.Single(list => list.Label == "Required Perk").AddWatermark.Should().Be("Search Perks");
+            section.EntryLists.Single(list => list.Label == "Required Race").AddWatermark.Should().Be("Search Races");
+        }
+
+        [Test]
         public void AddingAPerkRequirementRoundTripsAsSubtypeAndLevel()
         {
             var store = OpenStore();
@@ -89,8 +98,8 @@ namespace SWLOR.Toolset.Tests.Items
             var entry = perkList.Entries.Single(e => e.SubtypeId == 12);
             entry.SubtypeDisplay.Should().Be("Weapon Focus");
 
-            entry.Value = "3";
-            store.GetPropertyValue(100, 12).Should().Be(3, "the required level round-trips through Value");
+            entry.Number = 3;
+            store.GetPropertyValue(100, 12).Should().Be(3, "the required level round-trips through Number");
         }
 
         [Test]
@@ -103,13 +112,13 @@ namespace SWLOR.Toolset.Tests.Items
                 .Single(group => group.Title == "Crafting skills")
                 .Cells.Single(cell => cell.Label == "Smithery");
 
-            smithery.Value.Should().Be(string.Empty, "the corpus item has no Smithery requirement");
+            smithery.Number.Should().BeNull("the corpus item has no Smithery requirement");
 
-            smithery.Value = "20";
+            smithery.Number = 20;
 
             store.GetPropertyValue(131, 9).Should().Be(20, "Smithery is SkillType 9");
 
-            smithery.Value = string.Empty;
+            smithery.Number = null;
             store.GetPropertyValue(131, 9).Should().BeNull();
         }
     }

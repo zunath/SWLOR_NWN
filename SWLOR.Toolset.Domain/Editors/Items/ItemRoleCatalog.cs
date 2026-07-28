@@ -5,7 +5,6 @@ namespace SWLOR.Toolset.Domain.Editors.Items
     {
         public const string ConsumableId = "consumable";
         public const string MealId = "meal";
-        public const string GrenadeId = "grenade";
         public const string DeployedDeviceId = "deployed_device";
         public const string DroidPartId = "droid_part";
         public const string IncubationSampleId = "incubation_sample";
@@ -31,7 +30,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
         {
             ItemFamily.Miscellaneous => new[]
             {
-                Get(ConsumableId), Get(MealId), Get(GrenadeId), Get(DeployedDeviceId), Get(DroidPartId),
+                Get(ConsumableId), Get(MealId), Get(DeployedDeviceId), Get(DroidPartId),
                 Get(IncubationSampleId), Get(SchematicId), Get(KeyItemId), Custom
             },
             ItemFamily.Essence => new[] { Get(ComponentId), Get(EnhancementId), Custom },
@@ -97,11 +96,6 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             },
             new ItemRole
             {
-                Id = GrenadeId, DisplayName = "Grenade",
-                Summary = "A thrown device. Not yet distinguishable from Consumable by stored data alone."
-            },
-            new ItemRole
-            {
                 Id = DeployedDeviceId, DisplayName = "Deployed Device",
                 Summary = "Placed in the world rather than consumed or worn."
             },
@@ -112,7 +106,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             },
             new ItemRole
             {
-                Id = IncubationSampleId, DisplayName = "Incubation Sample",
+                Id = IncubationSampleId, DisplayName = "Incubation DNA",
                 Summary = "DNA used to incubate a beast."
             },
             new ItemRole
@@ -143,7 +137,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             new ItemRole
             {
                 Id = CustomId, DisplayName = "Custom", AllowsVariables = true,
-                Summary = "No recognized role; every property is exposed for direct editing."
+                Summary = "No recognized behavior; every property is exposed for direct editing."
             }
         };
     }

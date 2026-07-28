@@ -26,11 +26,22 @@ namespace SWLOR.Toolset.Domain.Editors.Items
     /// rather than contribute a stat, so they surface through the Requirements section instead of
     /// a stat group.
     /// </param>
+    /// <param name="IsExclusive">
+    /// True for WeaponDamageType (134) - the corpus carries at most one entry of this property per
+    /// item, so it is offered as a single "pick one, or none" choice rather than an add/remove list
+    /// of entries the other multi-subtype properties use.
+    /// </param>
+    /// <param name="SearchNoun">
+    /// What the add-search box's watermark calls the thing being searched ("Perks", "Races") -
+    /// null falls back to <see cref="Label"/>.
+    /// </param>
     public sealed record ItemMultiEntryDefinition(
         string Label,
         int PropertyId,
         string SubtypeTableResRef,
         int CostTableId,
         ItemStatGroup? Context,
-        bool IsRequirement = false);
+        bool IsRequirement = false,
+        bool IsExclusive = false,
+        string? SearchNoun = null);
 }

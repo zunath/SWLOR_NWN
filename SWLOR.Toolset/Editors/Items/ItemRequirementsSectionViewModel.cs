@@ -26,6 +26,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action? _valueChanged;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
+        private readonly Func<int, int?>? _costTableMax;
 
         public ObservableCollection<ItemRequirementGroupViewModel> Groups { get; } = new();
 
@@ -37,12 +38,14 @@ namespace SWLOR.Toolset.Editors.Items
             ItemValueStore store,
             Func<string, Action, bool> runEdit,
             Action? valueChanged = null,
-            Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null)
+            Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
+            Func<int, int?>? costTableMax = null)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _valueChanged = valueChanged;
             _resolveChoices = resolveChoices;
+            _costTableMax = costTableMax;
 
             Build();
         }
@@ -90,7 +93,8 @@ namespace SWLOR.Toolset.Editors.Items
         }
 
         private ItemPropertyEntryListViewModel BuildEntryList(ItemMultiEntryDefinition definition) =>
-            new(definition, _store, _runEdit, ResolveSubtypeChoices(definition.SubtypeTableResRef), _valueChanged);
+            new(definition, _store, _runEdit, ResolveSubtypeChoices(definition.SubtypeTableResRef), _valueChanged,
+                _costTableMax);
 
         private IReadOnlyList<BehaviorChoice> ResolveSubtypeChoices(string tableResRef) =>
             _resolveChoices?.Invoke($"{SubtypeKeyPrefix}{tableResRef}") ?? Array.Empty<BehaviorChoice>();
@@ -110,7 +114,7 @@ namespace SWLOR.Toolset.Editors.Items
                 requirement.CostTableId,
                 requirement.DisplayOrder);
 
-            return new ItemStatCellViewModel(definition, _store, _runEdit, _valueChanged);
+            return new ItemStatCellViewModel(definition, _store, _runEdit, _valueChanged, _costTableMax);
         }
     }
 }

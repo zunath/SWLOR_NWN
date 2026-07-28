@@ -25,8 +25,12 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<string, Action, bool> _runEdit;
         private readonly IReadOnlyList<BehaviorChoice> _subtypeChoices;
         private readonly Action? _valueChanged;
+        private readonly Func<int, int?>? _costTableMax;
 
         public string Label => _definition.Label;
+
+        /// <summary>Watermark for the add-search box - "Search Perks", "Search Races", or a generic fallback.</summary>
+        public string AddWatermark => $"Search {_definition.SearchNoun ?? Label}";
 
         public ObservableCollection<ItemPropertyEntryViewModel> Entries { get; } = new();
 
@@ -42,13 +46,15 @@ namespace SWLOR.Toolset.Editors.Items
             ItemValueStore store,
             Func<string, Action, bool> runEdit,
             IReadOnlyList<BehaviorChoice> subtypeChoices,
-            Action? valueChanged = null)
+            Action? valueChanged = null,
+            Func<int, int?>? costTableMax = null)
         {
             _definition = definition ?? throw new ArgumentNullException(nameof(definition));
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _subtypeChoices = subtypeChoices ?? Array.Empty<BehaviorChoice>();
             _valueChanged = valueChanged;
+            _costTableMax = costTableMax;
 
             AddCommand = new RelayCommand<BehaviorChoiceViewModel>(Add);
 
@@ -92,7 +98,7 @@ namespace SWLOR.Toolset.Editors.Items
 
         private ItemPropertyEntryViewModel BuildEntry(int subtypeId) =>
             new(_definition.PropertyId, subtypeId, DisplayFor(subtypeId), _definition.CostTableId,
-                _store, _runEdit, OnEntryValueChanged, OnEntryRemoved);
+                _store, _runEdit, OnEntryValueChanged, OnEntryRemoved, _costTableMax);
 
         private string DisplayFor(int subtypeId)
         {

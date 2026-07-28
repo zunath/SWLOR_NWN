@@ -64,9 +64,19 @@ namespace SWLOR.Toolset.Tests.Items
         {
             using var editor = Open("adren_harness");
 
+            // The Check-kind rows (Plot, Stolen, Cursed, Identified, No Economy) split off into
+            // FlagRows for the Basic tab's Flags card; BasicRows+FlagRows back together still cover
+            // ItemEditorLayout.Basic in its original order, flags at the end.
             Assert.That(
-                editor.BasicRows.Select(row => row.Definition.Name),
+                editor.BasicRows.Select(row => row.Definition.Name)
+                    .Concat(editor.FlagRows.Select(row => row.Definition.Name)),
                 Is.EqualTo(ItemEditorLayout.Basic.Select(definition => definition.Name)));
+
+            Assert.That(editor.FlagRows.Select(row => row.Definition.Name), Is.EqualTo(new[]
+            {
+                "Plot", "Stolen", "Cursed", "Identified", "NO_ECONOMY"
+            }));
+            Assert.That(editor.BasicRows.Any(row => row.Definition.Kind == BehaviorFieldKind.Check), Is.False);
 
             var totalCost = editor.BasicRows.Single(row => row.Definition.Name == "Cost");
             Assert.That(totalCost.IsReadOnly, Is.True);
@@ -91,6 +101,18 @@ namespace SWLOR.Toolset.Tests.Items
             Assert.That(editor.Role.Id, Is.EqualTo(ItemRoleCatalog.CustomId));
             Assert.That(editor.ShowsVariablesTab, Is.True);
             Assert.That(editor.Variables, Is.Not.Null);
+        }
+
+        [Test]
+        public void StatsTabHidesWhenNoGroupOrEngineEntryApplies()
+        {
+            using var armor = Open("adren_harness");
+            Assert.That(armor.ShowsStatsTab, Is.True);
+
+            // A group-less Custom miscellaneous item with no engine-legacy entries has nothing the
+            // tab could show.
+            using var trophy = Open("ark_dragon_troph");
+            Assert.That(trophy.ShowsStatsTab, Is.False);
         }
     }
 

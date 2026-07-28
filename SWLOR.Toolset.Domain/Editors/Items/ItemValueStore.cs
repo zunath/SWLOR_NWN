@@ -71,6 +71,31 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             AddEntry(propertyId, subtypeId, costTableId, value.Value);
         }
 
+        /// <summary>
+        /// Writes the one PropertiesList entry an exclusive property (WeaponDamageType, 134) may
+        /// carry: every existing entry of <paramref name="propertyId"/> is removed first, then a
+        /// fresh one is added with CostValue 0. <see cref="SetPropertyValue"/> cannot do this
+        /// directly - it treats a null-or-zero value as "remove the entry", and an exclusive
+        /// property's real stored value IS zero.
+        /// </summary>
+        public void SetExclusiveProperty(int propertyId, int subtypeId, int costTableId)
+        {
+            ClearProperty(propertyId);
+            AddEntry(propertyId, subtypeId, costTableId, 0);
+        }
+
+        /// <summary>Removes every PropertiesList entry of <paramref name="propertyId"/>, regardless of subtype.</summary>
+        public void ClearProperty(int propertyId)
+        {
+            foreach (var entry in Owner.GetListOrEmpty(PropertiesListName)
+                         .Where(entry => entry.TryGet("PropertyName", out var name) &&
+                                         (int)name.GetInteger() == propertyId)
+                         .ToList())
+            {
+                RemoveEntry(entry);
+            }
+        }
+
         private JsonGffStruct? FindEntry(int propertyId, int subtypeId)
         {
             foreach (var entry in Owner.GetListOrEmpty(PropertiesListName))

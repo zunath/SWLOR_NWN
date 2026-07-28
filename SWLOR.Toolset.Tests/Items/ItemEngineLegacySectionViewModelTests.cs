@@ -57,7 +57,7 @@ namespace SWLOR.Toolset.Tests.Items
             var section = new ItemEngineLegacySectionViewModel(store, (_, mutation) => { mutation(); return true; });
 
             var attackBonus = section.Entries.Single(entry => entry.SubtypeDisplay == "AttackBonus");
-            attackBonus.Value = "9";
+            attackBonus.Number = 9;
             store.GetPropertyValue(56, 0).Should().Be(9);
 
             var countBefore = section.Entries.Count;

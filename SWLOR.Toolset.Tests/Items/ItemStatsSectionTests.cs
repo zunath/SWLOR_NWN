@@ -1,7 +1,10 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
+using SWLOR.Toolset.Domain.GameData.TwoDa;
+using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Items;
 
 namespace SWLOR.Toolset.Tests.Items
@@ -12,6 +15,9 @@ namespace SWLOR.Toolset.Tests.Items
     {
         private static string AdrenHarnessPath =>
             Path.Combine(CorpusLocator.ModuleDirectory, "uti", "adren_harness.uti.json");
+
+        private static string Sw2DaDirectory =>
+            Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks", "sw_2da");
 
         private static ItemValueStore OpenStore() =>
             new(UtiDocument.Load(AdrenHarnessPath).Fields);
@@ -41,15 +47,15 @@ namespace SWLOR.Toolset.Tests.Items
             var section = OpenArmorSection(OpenStore());
 
             var defense = section.Groups.Single(group => group.Group == ItemStatGroup.Defense);
-            defense.Cells.Single(cell => cell.Label == "Physical Defense").Value.Should().Be("26");
-            defense.Cells.Single(cell => cell.Label == "Force Defense").Value.Should().Be("21");
+            defense.Cells.Single(cell => cell.Label == "Physical Defense").Number.Should().Be(26);
+            defense.Cells.Single(cell => cell.Label == "Force Defense").Number.Should().Be(21);
 
             var vitals = section.Groups.Single(group => group.Group == ItemStatGroup.Vitals);
-            vitals.Cells.Single(cell => cell.Label == "HP").Value.Should().Be("92");
-            vitals.Cells.Single(cell => cell.Label == "STM Regen").Value.Should().Be("1");
+            vitals.Cells.Single(cell => cell.Label == "HP").Number.Should().Be(92);
+            vitals.Cells.Single(cell => cell.Label == "STM Regen").Number.Should().Be(1);
 
             var resistance = section.Groups.Single(group => group.Group == ItemStatGroup.Resistance);
-            resistance.Cells.Single(cell => cell.Label == "Fire Resistance").Value.Should().Be(string.Empty);
+            resistance.Cells.Single(cell => cell.Label == "Fire Resistance").Number.Should().BeNull();
         }
 
         [Test]
@@ -77,52 +83,28 @@ namespace SWLOR.Toolset.Tests.Items
                 .Single(group => group.Group == ItemStatGroup.Resistance)
                 .Cells.Single(cell => cell.Label == "Fire Resistance");
 
-            fireResistance.Value = "12";
+            fireResistance.Number = 12;
             store.GetPropertyValue(133, 1).Should().Be(12);
 
-            fireResistance.Value = string.Empty;
-            store.GetPropertyValue(133, 1).Should().BeNull("an empty box clears the property");
+            fireResistance.Number = null;
+            store.GetPropertyValue(133, 1).Should().BeNull("a cleared box removes the property");
 
-            fireResistance.Value = "12";
+            fireResistance.Number = 12;
             store.GetPropertyValue(133, 1).Should().Be(12);
 
-            fireResistance.Value = "0";
+            fireResistance.Number = 0;
             store.GetPropertyValue(133, 1).Should().BeNull("zero removes the property just like the store itself does");
         }
 
         [Test]
-        public void GarbageInputRefusesTheWriteAndRestoresTheShownValue()
-        {
-            var store = OpenStore();
-            var section = OpenArmorSection(store);
-            var fireResistance = section.Groups
-                .Single(group => group.Group == ItemStatGroup.Resistance)
-                .Cells.Single(cell => cell.Label == "Fire Resistance");
-
-            fireResistance.Value = "12";
-
-            fireResistance.Value = "abc";
-
-            store.GetPropertyValue(133, 1).Should().Be(12, "the invalid input must never reach the store");
-            fireResistance.Value.Should().Be("12", "the shown value is put back to what is actually stored");
-        }
-
-        [Test]
-        public void SecondaryGroupsAreSummarizedButBuiltOnlyOnceExpanded()
+        public void SecondaryGroupsAreSimplyNotShown()
         {
             var section = OpenArmorSection(OpenStore());
 
-            section.HasSecondary.Should().BeTrue();
-            section.SecondarySummary.Should().Contain("Crafting");
-            section.SecondaryGroups.Should().BeEmpty("nothing is built until the builder expands it");
-
-            section.IsSecondaryExpanded = true;
-
-            section.SecondaryGroups.Select(group => group.Group).Should().BeEquivalentTo(new[]
-            {
-                ItemStatGroup.Crafting, ItemStatGroup.Bonuses, ItemStatGroup.Droid,
-                ItemStatGroup.Incubation, ItemStatGroup.Npc, ItemStatGroup.Enhancements
-            });
+            // There is no "not used by this base type" section anymore - a stat outside the
+            // family's primary groups is simply absent from Groups, with nothing to expand.
+            section.Groups.Should().NotContain(group => group.Group == ItemStatGroup.Crafting);
+            section.Groups.Should().NotContain(group => group.Group == ItemStatGroup.Droid);
         }
 
         [Test]
@@ -170,6 +152,81 @@ namespace SWLOR.Toolset.Tests.Items
             var section = OpenArmorSection(OpenStore());
 
             section.Groups.Should().NotContain(group => group.Group == ItemStatGroup.Enhancements);
+        }
+
+        [Test]
+        public void WeaponCombatGroupExposesTheWeaponDamageTypeExclusiveChoice()
+        {
+            var section = new ItemStatsSectionViewModel(
+                OpenStore(), (_, mutation) => { mutation(); return true; });
+
+            section.Rebuild(ItemFamily.MeleeWeapon, ItemRoleCatalog.CustomId);
+
+            var combat = section.Groups.Single(group => group.Group == ItemStatGroup.Combat);
+            combat.ExclusiveChoices.Select(choice => choice.Label).Should().BeEquivalentTo(new[] { "Weapon Damage Type" });
+            combat.Cells.Should().NotContain(cell => cell.Label.StartsWith("Weapon Damage Type"));
+            combat.Cells.Should().NotContain(cell => cell.Label.StartsWith("Damage Stat"));
+        }
+
+        [Test]
+        public void WeaponDamageTypeExclusiveChoicePicksWritesAndClears()
+        {
+            var store = OpenStore();
+            var section = new ItemStatsSectionViewModel(store, (_, mutation) => { mutation(); return true; });
+            section.Rebuild(ItemFamily.MeleeWeapon, ItemRoleCatalog.CustomId);
+
+            var choice = section.Groups.Single(group => group.Group == ItemStatGroup.Combat)
+                .ExclusiveChoices.Single(c => c.Label == "Weapon Damage Type");
+
+            choice.Selected.Should().Be(choice.Options[0], "nothing is stored yet, so 'none' is selected");
+
+            var fire = new BehaviorChoiceViewModel(new BehaviorChoice(3, "Fire"));
+            var electrical = new BehaviorChoiceViewModel(new BehaviorChoice(5, "Electrical"));
+            var withRealOptions = new ItemStatGroupViewModel(
+                ItemStatGroup.Combat, ItemStatVisibility.CombatStatsFor(ItemFamily.MeleeWeapon), store,
+                (_, mutation) => { mutation(); return true; }, null, null,
+                new[]
+                {
+                    new ItemExclusiveChoiceViewModel(
+                        ItemMultiEntryCatalog.ByPropertyId(134)!, store,
+                        (_, mutation) => { mutation(); return true; }, new[] { fire.Choice, electrical.Choice })
+                });
+            var realChoice = withRealOptions.ExclusiveChoices.Single();
+
+            realChoice.Selected = realChoice.Options.Single(o => o.Value == 3);
+            store.GetPropertyValue(134, 3).Should().Be(0, "WeaponDamageType always stores CostValue 0");
+
+            realChoice.Selected = realChoice.Options.Single(o => o.Value == 5);
+            store.GetPropertyValue(134, 3).Should().BeNull("switching subtype clears the old one, not adds a second");
+            store.GetPropertyValue(134, 5).Should().Be(0);
+
+            realChoice.Selected = realChoice.Options[0];
+            store.HasProperty(134).Should().BeFalse("the leading 'none' option clears the property");
+        }
+
+        [Test]
+        public void MaximumReflectsTheRealCostTableWhenOneIsSupplied()
+        {
+            var ranges = new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory));
+            var section = new ItemStatsSectionViewModel(
+                OpenStore(), (_, mutation) => { mutation(); return true; }, costTableMax: ranges.MaxFor);
+            section.Rebuild(ItemFamily.Armor, ItemRoleCatalog.CustomId);
+
+            var defense = section.Groups.Single(group => group.Group == ItemStatGroup.Defense);
+            var physicalDefense = defense.Cells.Single(cell => cell.Label == "Physical Defense");
+
+            // Defense's CostTableId is 35 -> iprp_defense.2da, whose highest row is 1000.
+            physicalDefense.Maximum.Should().Be(1000);
+        }
+
+        [Test]
+        public void MaximumFallsBackToTheDefaultWhenNoCostTableResolverIsSupplied()
+        {
+            var section = OpenArmorSection(OpenStore());
+
+            var defense = section.Groups.Single(group => group.Group == ItemStatGroup.Defense);
+            defense.Cells.Single(cell => cell.Label == "Physical Defense").Maximum
+                .Should().Be(ItemCostTableRanges.DefaultMax);
         }
 
         [Test]

@@ -30,17 +30,19 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void Combat_DamageStatAndWeaponDamageTypeEachExpandToTheirSixSubtypeRows()
+        public void Combat_DamageStatAndWeaponDamageTypeAreNotInTheFlatCatalogAnymore()
         {
             var combat = ItemStatCatalog.ByGroup(ItemStatGroup.Combat);
 
-            var damageStat = combat.Where(stat => stat.PropertyId == 103).ToList();
-            damageStat.Should().HaveCount(6);
-            damageStat.Select(stat => stat.SubtypeId).Should().BeEquivalentTo(new[] { 0, 1, 2, 3, 4, 5 });
+            // DamageStat (103) was removed from the editor by owner decision; WeaponDamageType (134)
+            // is a single exclusive choice modeled through ItemMultiEntryCatalog instead of six rows.
+            combat.Should().NotContain(stat => stat.PropertyId == 103);
+            combat.Should().NotContain(stat => stat.PropertyId == 134);
 
-            var weaponDamageType = combat.Where(stat => stat.PropertyId == 134).ToList();
-            weaponDamageType.Should().HaveCount(6);
-            weaponDamageType.Select(stat => stat.SubtypeId).Should().BeEquivalentTo(new[] { 1, 2, 3, 4, 5, 6 });
+            var weaponDamageType = ItemMultiEntryCatalog.ByPropertyId(134);
+            weaponDamageType.Should().NotBeNull();
+            weaponDamageType!.IsExclusive.Should().BeTrue();
+            weaponDamageType.Context.Should().Be(ItemStatGroup.Combat);
         }
 
         [Test]
@@ -80,15 +82,22 @@ namespace SWLOR.Toolset.Tests.Items
         [Test]
         public void ItemEngineLegacyCatalog_ContainsEveryDeclaredEngineProperty()
         {
+            // DamageImmunity (20), Immunity (37), and Regeneration (51) were removed from this
+            // catalog by owner decision - the Engine card never shows them, though the corpus's
+            // entries for all three are preserved (ItemCombinationAuditTests' allowlist).
             var expected = new[]
             {
-                0, 1, 6, 10, 11, 12, 16, 18, 20, 21, 22, 23, 24, 26, 32, 35, 37, 40, 43, 44, 45, 47, 48,
-                51, 56, 58, 61, 67, 72, 74, 75, 77, 79, 81, 82, 83, 87
+                0, 1, 6, 10, 11, 12, 16, 18, 21, 22, 23, 24, 26, 32, 35, 40, 43, 44, 45, 47, 48,
+                56, 58, 61, 67, 72, 74, 75, 77, 79, 81, 82, 83, 87
             };
 
-            expected.Should().HaveCount(37);
+            expected.Should().HaveCount(34);
             foreach (var propertyId in expected)
                 ItemEngineLegacyCatalog.Contains(propertyId).Should().BeTrue($"property {propertyId} should be covered");
+
+            foreach (var removedPropertyId in new[] { 20, 37, 51 })
+                ItemEngineLegacyCatalog.Contains(removedPropertyId).Should().BeFalse(
+                    $"property {removedPropertyId} was removed from the Engine card by owner decision");
 
             ItemEngineLegacyCatalog.Contains(9999).Should().BeFalse();
         }
@@ -128,7 +137,7 @@ namespace SWLOR.Toolset.Tests.Items
             weaponCombat.Should().Contain(stat => stat.PropertyId == 98, "Delay belongs on a weapon");
 
             var armorCombat = ItemStatVisibility.CombatStatsFor(ItemFamily.Armor);
-            armorCombat.Should().NotContain(stat => new[] { 93, 98, 103, 134 }.Contains(stat.PropertyId));
+            armorCombat.Should().NotContain(stat => new[] { 93, 98 }.Contains(stat.PropertyId));
             armorCombat.Should().Contain(stat => stat.PropertyId == 117, "Evasion still applies off a weapon");
         }
 

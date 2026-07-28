@@ -19,7 +19,14 @@ namespace SWLOR.Toolset.Domain.Render
         /// A segmented player-body model: a skeleton (<see cref="BlueprintModelReference.SkeletonResRef"/>) plus
         /// per-bone body parts (<see cref="BlueprintModelReference.Parts"/>), composed at render time.
         /// </summary>
-        Segmented
+        Segmented,
+
+        /// <summary>
+        /// A composite item's fixed-position part models (a ModelType 2 weapon's bottom/middle/top,
+        /// <see cref="BlueprintModelReference.Parts"/>), merged with no skeleton at render time -
+        /// <c>MdlPartComposer.ComposeFlat</c>.
+        /// </summary>
+        ItemComposite
     }
 
     /// <summary>One resolved body part of a segmented creature: the MdlPartComposer bone-part type and its MDL resref.</summary>
@@ -126,7 +133,12 @@ namespace SWLOR.Toolset.Domain.Render
         /// </param>
         /// <param name="partModelExists">
         /// Tests whether a body-part MDL resref exists. Only consulted for robe activation (a robe that
-        /// doesn't resolve must not suppress the body parts it would have covered). Null = assume exists.
+        /// doesn't resolve must not suppress the body parts it would have covered) and for a
+        /// ModelType 0/1 item's single ground model. Null = assume exists.
+        /// </param>
+        /// <param name="baseItems">
+        /// baseitems.2da row lookup by BaseItem id, for <see cref="ResourceType.Uti"/>. Null = no item
+        /// preview (the caller has no 2DA layer loaded).
         /// </param>
         public static BlueprintModelReference Resolve(
             ResourceType type,
@@ -136,7 +148,8 @@ namespace SWLOR.Toolset.Domain.Render
             DoorTypeService? doors,
             Func<string, JsonGffStruct?>? itemBlueprintLoader = null,
             Func<string, bool>? partModelExists = null,
-            WaypointAppearanceService? waypoints = null)
+            WaypointAppearanceService? waypoints = null,
+            Func<int, BaseItemIconRow?>? baseItems = null)
         {
             ArgumentNullException.ThrowIfNull(root);
 
@@ -146,8 +159,84 @@ namespace SWLOR.Toolset.Domain.Render
                 ResourceType.Utp => ResolvePlaceable(root, placeables),
                 ResourceType.Utd => ResolveDoor(root, doors),
                 ResourceType.Utw => ResolveWaypoint(root, waypoints),
+                ResourceType.Uti => ResolveItem(root, baseItems, partModelExists),
                 _ => BlueprintModelReference.NoneWith("No model preview for this blueprint type.")
             };
+        }
+
+        /// <summary>
+        /// Resolves an item's preview model by its base item's ModelType. A ModelType 2 (composite)
+        /// weapon resolves to its three fixed-position bottom/middle/top parts, named
+        /// <c>{ItemClass}_b_{ModelPart1:D3}</c> / <c>_m_{ModelPart2:D3}</c> / <c>_t_{ModelPart3:D3}</c> -
+        /// the same naming <see cref="Icons.ItemIconResolver"/> uses for the composite icon, minus its
+        /// leading "i" (verified against the corpus: <c>wswls_b_015.mdl</c> sits beside
+        /// <c>iwswls_b_015.tga</c> in sw_weapon). A ModelType 0/1 item resolves to a single ground
+        /// model <c>{ItemClass}_{ModelPart1:D3}</c> when <paramref name="partModelExists"/> confirms it
+        /// (also corpus-verified: <c>it_torch_015.mdl</c>, <c>helm_001.mdl</c>). ModelType 3 (armor) has
+        /// no world model of its own - previewing it means posing a mannequin, which is future work -
+        /// and an unrecognised ModelType degrades the same way.
+        /// </summary>
+        private static BlueprintModelReference ResolveItem(
+            JsonGffStruct root,
+            Func<int, BaseItemIconRow?>? baseItems,
+            Func<string, bool>? partModelExists)
+        {
+            if (baseItems == null)
+                return BlueprintModelReference.NoneWith("Item preview unavailable (base item data not loaded).");
+
+            var baseItem = root.GetIntOrNull("BaseItem") ?? -1;
+            var row = baseItem < 0 ? null : baseItems(baseItem);
+            if (row == null)
+                return BlueprintModelReference.NoneWith($"Unknown base item {baseItem}.");
+
+            var itemClass = row.ItemClass;
+            if (string.IsNullOrWhiteSpace(itemClass))
+                return BlueprintModelReference.NoneWith($"Base item {baseItem}: no item class in baseitems.2da.");
+
+            switch (row.ModelType)
+            {
+                case 2:
+                {
+                    var part1 = root.GetIntOrNull("ModelPart1") ?? 0;
+                    var part2 = root.GetIntOrNull("ModelPart2") ?? 0;
+                    var part3 = root.GetIntOrNull("ModelPart3") ?? 0;
+
+                    return new BlueprintModelReference
+                    {
+                        Kind = BlueprintModelKind.ItemComposite,
+                        Status = $"{itemClass} (composite {part1}-{part2}-{part3})",
+                        Parts = new[]
+                        {
+                            new BlueprintModelPart("bottom", $"{itemClass}_b_{part1:D3}"),
+                            new BlueprintModelPart("middle", $"{itemClass}_m_{part2:D3}"),
+                            new BlueprintModelPart("top", $"{itemClass}_t_{part3:D3}")
+                        }
+                    };
+                }
+
+                case 0:
+                case 1:
+                {
+                    var part1 = root.GetIntOrNull("ModelPart1") ?? 0;
+                    var modelResRef = $"{itemClass}_{part1:D3}";
+                    if (partModelExists != null && !partModelExists(modelResRef))
+                        return BlueprintModelReference.NoneWith($"{itemClass}: no ground model '{modelResRef}'.");
+
+                    return new BlueprintModelReference
+                    {
+                        Kind = BlueprintModelKind.Simple,
+                        Status = $"{modelResRef}.mdl",
+                        ModelResRef = modelResRef
+                    };
+                }
+
+                case 3:
+                    return BlueprintModelReference.NoneWith($"{itemClass}: armor preview not yet available.");
+
+                default:
+                    return BlueprintModelReference.NoneWith(
+                        $"{itemClass}: unsupported model type {row.ModelType}.");
+            }
         }
 
         private static BlueprintModelReference ResolveCreature(

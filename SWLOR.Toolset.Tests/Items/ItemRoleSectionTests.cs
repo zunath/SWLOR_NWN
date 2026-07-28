@@ -54,13 +54,13 @@ namespace SWLOR.Toolset.Tests.Items
 
             section.HasRoles.Should().BeTrue();
             section.RoleList[0].IsHeader.Should().BeTrue();
-            section.RoleList[0].Text.Should().Be("Misc Medium roles");
+            section.RoleList[0].Text.Should().Be("Misc Medium behaviors");
 
             var behaviorRows = section.RoleList.Where(row => row.IsSelectable).ToList();
-            behaviorRows.Should().HaveCount(9, "8 non-Custom misc roles plus Custom");
+            behaviorRows.Should().HaveCount(8, "7 non-Custom misc behaviors plus Custom");
             behaviorRows.Select(row => ((ItemRole)row.Behavior!).Id).Should().BeEquivalentTo(new[]
             {
-                ItemRoleCatalog.ConsumableId, ItemRoleCatalog.MealId, ItemRoleCatalog.GrenadeId,
+                ItemRoleCatalog.ConsumableId, ItemRoleCatalog.MealId,
                 ItemRoleCatalog.DeployedDeviceId, ItemRoleCatalog.DroidPartId,
                 ItemRoleCatalog.IncubationSampleId, ItemRoleCatalog.SchematicId,
                 ItemRoleCatalog.KeyItemId, ItemRoleCatalog.CustomId
@@ -239,7 +239,6 @@ namespace SWLOR.Toolset.Tests.Items
         public void OwnedProperties_MatchesTheSpecPerRole()
         {
             ItemRoleOwnership.OwnedProperties(ItemRoleCatalog.ConsumableId).Should().BeEquivalentTo(new[] { 15 });
-            ItemRoleOwnership.OwnedProperties(ItemRoleCatalog.GrenadeId).Should().BeEquivalentTo(new[] { 15 });
             ItemRoleOwnership.OwnedProperties(ItemRoleCatalog.MealId).Should().BeEquivalentTo(new[] { 106, 108 });
             ItemRoleOwnership.OwnedProperties(ItemRoleCatalog.DroidPartId)
                 .Should().BeEquivalentTo(new[] { 121, 122, 123, 124 });

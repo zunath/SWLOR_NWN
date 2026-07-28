@@ -1,0 +1,69 @@
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Toolset.Domain.Editors.Items;
+using SWLOR.Toolset.Domain.GameData.TwoDa;
+
+namespace SWLOR.Toolset.Tests.Items
+{
+    /// <summary>
+    /// <see cref="ItemCostTableRanges"/>: resolving an itempropdef.2da CostTableResRef id to the real
+    /// engine cap that cost table offers, against both a fabricated registry and the real
+    /// SWLOR_Haks/sw_2da corpus.
+    /// </summary>
+    [TestFixture]
+    public class ItemCostTableRangesTests
+    {
+        private static string Sw2DaDirectory =>
+            Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks", "sw_2da");
+
+        [Test]
+        public void DefensesRealCostTableResolvesToItsHighestRow()
+        {
+            var ranges = new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory));
+
+            // Defense (property 94) uses CostTableId 35 -> iprp_costtable.2da row 35's Name column
+            // is "IPRP_DEFENSE" -> iprp_defense.2da, whose highest labeled row is 1000 (verified
+            // against the corpus - rows 0-1000, a plain contiguous ladder).
+            ranges.MaxFor(35).Should().Be(1000);
+        }
+
+        [Test]
+        public void AnUnresolvableCostTableIdReturnsNull()
+        {
+            var ranges = new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory));
+
+            ranges.MaxFor(-1).Should().BeNull();
+            ranges.MaxFor(99999).Should().BeNull();
+        }
+
+        [Test]
+        public void FabricatedRegistryResolvesThroughToItsTargetTablesRowCount()
+        {
+            var scratch = Path.Combine(Path.GetTempPath(), "swlor-cost-table-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "iprp_costtable.2da"),
+                    "2DA V2.0\r\n\r\nName\r\n0 FIXTURE_TABLE\r\n");
+                File.WriteAllText(
+                    Path.Combine(scratch, "fixture_table.2da"),
+                    "2DA V2.0\r\n\r\nName\r\n0 a\r\n1 b\r\n2 c\r\n");
+
+                var ranges = new ItemCostTableRanges(new TwoDaService(scratch));
+
+                ranges.MaxFor(0).Should().Be(2, "fixture_table.2da has rows 0-2");
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
+        public void DefaultMaxIsTwoHundredFiftyFive()
+        {
+            ItemCostTableRanges.DefaultMax.Should().Be(255);
+        }
+    }
+}

@@ -52,23 +52,12 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             Add(ItemStatGroup.Combat, "Combat Readiness", 118, costTableId: 42);
             Add(ItemStatGroup.Combat, "Enhancement Level", 104, costTableId: 45);
 
-            // DamageStat (103) carries the IPRP_ABILITIES subtype table - all 6 labeled rows,
-            // named the way iprp_reqstat.2da/ItemRequirementCatalog already name them.
-            var abilityStats = new (int Subtype, string Label)[]
-            {
-                (0, "Might"), (1, "Perception"), (2, "Vitality"),
-                (3, "Agility"), (4, "Willpower"), (5, "Social")
-            };
-            foreach (var (subtype, label) in abilityStats)
-                Add(ItemStatGroup.Combat, $"Damage Stat ({label})", 103, subtype);
+            // DamageStat (103) was removed from the editor by owner decision - the corpus's 9
+            // entries are preserved-only (ItemCombinationAuditTests' allowlist), never offered here.
 
-            // WeaponDamageType (134) carries the iprp_c_dmgtype subtype table - all 6 labeled rows.
-            var weaponDamageTypes = new (int Subtype, string Label)[]
-            {
-                (1, "Physical"), (2, "Force"), (3, "Fire"), (4, "Poison"), (5, "Electrical"), (6, "Ice")
-            };
-            foreach (var (subtype, label) in weaponDamageTypes)
-                Add(ItemStatGroup.Combat, $"Weapon Damage Type ({label})", 134, subtype);
+            // WeaponDamageType (134) is a single exclusive choice, not six numeric rows - the
+            // corpus carries at most one entry per item, CostValue always 0. Modeled as an
+            // ItemMultiEntryDefinition (IsExclusive) in ItemMultiEntryCatalog instead.
 
             // Crafting - iprp_crafttype (properties 88 Control, 89 Craftsmanship, 115 CPBonus),
             // plus the two flat crafting stats that have no subtype of their own.

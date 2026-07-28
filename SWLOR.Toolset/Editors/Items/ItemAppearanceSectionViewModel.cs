@@ -27,6 +27,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<string, bool> _textureExists;
         private readonly ChoicePreviewService? _previews;
         private readonly Action? _appearanceChanged;
+        private readonly ArmorDyeSwatchService? _armorDyes;
 
         [ObservableProperty]
         private ItemAppearanceKind _kind = ItemAppearanceKind.None;
@@ -52,7 +53,8 @@ namespace SWLOR.Toolset.Editors.Items
             Func<int, BaseItemIconRow?> baseItems,
             Func<string, bool> textureExists,
             ChoicePreviewService? previews = null,
-            Action? appearanceChanged = null)
+            Action? appearanceChanged = null,
+            ArmorDyeSwatchService? armorDyes = null)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
@@ -60,6 +62,7 @@ namespace SWLOR.Toolset.Editors.Items
             _textureExists = textureExists ?? throw new ArgumentNullException(nameof(textureExists));
             _previews = previews;
             _appearanceChanged = appearanceChanged;
+            _armorDyes = armorDyes;
 
             Rebuild();
         }
@@ -103,13 +106,47 @@ namespace SWLOR.Toolset.Editors.Items
 
                 case 3:
                     Kind = ItemAppearanceKind.ArmorParts;
-                    Armor = new ArmorPartsViewModel(_store, _runEdit, _appearanceChanged);
+                    Armor = new ArmorPartsViewModel(_store, _runEdit, _appearanceChanged, _armorDyes);
                     break;
 
                 default:
                     Kind = ItemAppearanceKind.None;
                     break;
             }
+        }
+
+        /// <summary>
+        /// Picks a default appearance for whatever is currently built, when nothing is selected yet
+        /// and real options exist: the first offered tile for a Gallery, the first offered part for
+        /// each of a Composite's three layers. A no-op for Armor (left alone) and for a build that
+        /// already has a selection or has no options to offer.
+        /// </summary>
+        public void EnsureSelection()
+        {
+            switch (Kind)
+            {
+                case ItemAppearanceKind.Gallery:
+                    EnsureFirstSelected(Gallery);
+                    break;
+
+                case ItemAppearanceKind.Composite:
+                    EnsureFirstSelected(Top);
+                    EnsureFirstSelected(Middle);
+                    EnsureFirstSelected(Bottom);
+                    break;
+            }
+        }
+
+        private static void EnsureFirstSelected(GalleryViewModel? gallery)
+        {
+            if (gallery != null && gallery.Selected == null && gallery.Options.Count > 0)
+                gallery.Selected = gallery.Options[0];
+        }
+
+        private static void EnsureFirstSelected(CompositePartViewModel? part)
+        {
+            if (part != null && part.Selected == null && part.Options.Count > 0)
+                part.Selected = part.Options[0];
         }
 
         /// <summary>Re-reads whatever is currently built, without re-probing for artwork.</summary>

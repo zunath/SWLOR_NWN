@@ -13,7 +13,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
 
         public static IReadOnlyList<int> OwnedProperties(string roleId) => roleId switch
         {
-            ItemRoleCatalog.ConsumableId or ItemRoleCatalog.GrenadeId => new[] { 15 },
+            ItemRoleCatalog.ConsumableId => new[] { 15 },
             ItemRoleCatalog.MealId => new[] { 106, 108 },
             ItemRoleCatalog.DroidPartId => new[] { 121, 122, 123, 124 },
             ItemRoleCatalog.IncubationSampleId => new[] { 127, 128, 129 },

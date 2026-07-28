@@ -99,7 +99,9 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, Items.ItemDocumentViewModel> _openItemEditors = new(StringComparer.OrdinalIgnoreCase);
         private BaseItemRowService? _baseItemRowService;
         private BaseItemIconService? _baseItemIconService;
+        private Domain.Editors.Items.ItemCostTableRanges? _itemCostTableRanges;
         private ItemObtainabilityIndex? _itemSources;
+        private Items.ArmorDyeSwatchService? _armorDyeSwatches;
         private readonly Dictionary<string, Sounds.SoundDocumentViewModel> _openSoundEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<string>? _soundResources;
         private Services.SoundPreviewService? _soundPreviews;
@@ -985,7 +987,13 @@ namespace SWLOR.Toolset.Editors
                 ChoicePreviews(),
                 BaseItemIcons(),
                 _resourceIndex == null ? null : ItemTextureExists,
-                ItemSourcesFor);
+                ItemSourcesFor,
+                ItemCostTableMax(),
+                resolveModel: _previewRenderer != null
+                    ? item => _previewRenderer.BuildModel(ResourceType.Uti, item)
+                    : null,
+                resourceIndex: _resourceIndex,
+                armorDyeSwatches: ArmorDyeSwatches());
             editor.Closed += closed => _openItemEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -1023,6 +1031,27 @@ namespace SWLOR.Toolset.Editors
 
             _baseItemIconService ??= new BaseItemIconService(_twoDaService);
             return _baseItemIconService.GetOrNull;
+        }
+
+        /// <summary>The armor Colors panel's dye swatches; null when there is no resource layer to
+        /// decode palette textures from - the panel still shows neutral chips.</summary>
+        private Items.ArmorDyeSwatchService? ArmorDyeSwatches()
+        {
+            if (_resourceIndex == null)
+                return null;
+
+            _armorDyeSwatches ??= new Items.ArmorDyeSwatchService(_resourceIndex);
+            return _armorDyeSwatches;
+        }
+
+        /// <summary>A stat/requirement/appearance cell's real engine cap, by CostTableId.</summary>
+        private Func<int, int?>? ItemCostTableMax()
+        {
+            if (_twoDaService == null)
+                return null;
+
+            _itemCostTableRanges ??= new Domain.Editors.Items.ItemCostTableRanges(_twoDaService);
+            return _itemCostTableRanges.MaxFor;
         }
 
         /// <summary>
@@ -1073,7 +1102,10 @@ namespace SWLOR.Toolset.Editors
         private IReadOnlyList<BehaviorChoice> ResolveItemChoices(string key) =>
             Cached("item", key, BuildItemChoices);
 
-        private IReadOnlyList<BehaviorChoice> BuildItemChoices(string key)
+        private IReadOnlyList<BehaviorChoice> BuildItemChoices(string key) =>
+            SortByDisplay(BuildItemChoicesUnsorted(key));
+
+        private IReadOnlyList<BehaviorChoice> BuildItemChoicesUnsorted(string key)
         {
             if (key == Domain.Editors.Items.ItemChoiceKeys.PaletteCategories)
                 return ResolveItemCategories();
@@ -1100,13 +1132,37 @@ namespace SWLOR.Toolset.Editors
 
             if (key == Domain.Editors.Items.ItemChoiceKeys.BaseItems)
             {
-                return _lookups.GetOptions(LookupKeys.BaseItems)
+                var options = _lookups.GetOptions(LookupKeys.BaseItems);
+                var rows = BaseItemRows();
+                var icons = BaseItemIcons();
+
+                // Filtering needs both services' own view of the row (label from one, ItemClass
+                // from the other); either being unavailable falls back to the unfiltered list rather
+                // than guessing.
+                if (rows == null || icons == null)
+                {
+                    return options.Select(option => new BehaviorChoice(option.Id, option.Display)).ToList();
+                }
+
+                return options
+                    .Where(option => Domain.Editors.Items.BaseItemChoicePolicy.IsOffered(
+                        rows((int)option.Id)?.Label, icons((int)option.Id)?.ItemClass, option.Display))
                     .Select(option => new BehaviorChoice(option.Id, option.Display))
                     .ToList();
             }
 
             return Array.Empty<BehaviorChoice>();
         }
+
+        /// <summary>
+        /// Every item-editor choice list (Base Types, Palette Categories, Spells, and every
+        /// "item.subtypes:&lt;table&gt;" subtype set) is offered alphabetically by its display text -
+        /// one central sort here rather than one per source, so a new source never has to remember
+        /// to do it itself. Category displays are hierarchical strings ("Armor &gt; Clothing"); a
+        /// plain ordinal sort of the whole string is what "alphabetical" means for those too.
+        /// </summary>
+        private static IReadOnlyList<BehaviorChoice> SortByDisplay(IReadOnlyList<BehaviorChoice> choices) =>
+            choices.OrderBy(choice => choice.Display, StringComparer.OrdinalIgnoreCase).ToList();
 
         private IReadOnlyList<BehaviorChoice> ResolveItemCategories()
         {

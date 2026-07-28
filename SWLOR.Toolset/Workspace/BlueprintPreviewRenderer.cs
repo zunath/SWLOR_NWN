@@ -191,12 +191,13 @@ namespace SWLOR.Toolset.Workspace
             var reference = BlueprintModelResolver.Resolve(
                 type, root, _appearances, _placeables, _doors,
                 itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
-                PartModelExists, _waypoints);
+                PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull);
 
             return reference.Kind switch
             {
                 BlueprintModelKind.Simple when reference.ModelResRef != null => BuildRenderModel(reference.ModelResRef),
                 BlueprintModelKind.Segmented => ComposeSegmented(reference),
+                BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
                 _ => null
             };
         }
@@ -284,12 +285,13 @@ namespace SWLOR.Toolset.Workspace
             var reference = BlueprintModelResolver.Resolve(
                 type, root, _appearances, _placeables, _doors,
                 itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
-                PartModelExists, _waypoints);
+                PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull);
 
             var model = reference.Kind switch
             {
                 BlueprintModelKind.Simple when reference.ModelResRef != null => BuildRenderModel(reference.ModelResRef),
                 BlueprintModelKind.Segmented => ComposeSegmented(reference),
+                BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
                 _ => null
             };
 
@@ -393,6 +395,35 @@ namespace SWLOR.Toolset.Workspace
             // The idle comes off the skeleton, which is why the composer loads it with its supermodel
             // animations - a body part carries geometry, never keyframes.
             return MdlMeshBuilder.Build(composed, IdleFrames(composed));
+        }
+
+        /// <summary>
+        /// Composes a composite item's three fixed-position part models (a weapon's bottom/middle/top)
+        /// with no skeleton, via <c>MdlPartComposer.ComposeFlat</c> - the same merge path composite
+        /// weapons already use nowhere else in this file, but a sibling operation to
+        /// <see cref="ComposeSegmented"/>'s skeleton-attached compose.
+        /// </summary>
+        private RenderModel? ComposeItemParts(BlueprintModelReference reference)
+        {
+            if (_partComposer == null)
+                return null;
+
+            var partResRefs = reference.Parts.Select(part => part.ModelResRef).ToList();
+            if (partResRefs.Count == 0)
+                return null;
+
+            MdlModel? composed;
+            lock (_composerGate)
+            {
+                // _partTextures is filled as LoadComposerModel loads each part (see its remarks), but
+                // ComposeFlat never overrides a mesh's authored Bitmap the way TryAddBodyPart does, so
+                // there is nothing for ComposedPartTextures.Restore to undo here - clearing keeps the
+                // shared field's state honest for whichever compose runs next.
+                _partTextures.Clear();
+                composed = _partComposer.ComposeFlat(partResRefs, "item");
+            }
+
+            return composed == null ? null : MdlMeshBuilder.Build(composed, IdleFrames(composed));
         }
 
         /// <summary>

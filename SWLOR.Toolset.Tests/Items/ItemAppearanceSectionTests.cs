@@ -58,8 +58,8 @@ namespace SWLOR.Toolset.Tests.Items
             {
                 var section = OpenArmor();
 
-                Assert.That(section.Armor!.Torso.Value, Is.EqualTo("156"));
-                Assert.That(section.Armor.Cloth1.Value, Is.EqualTo("23"));
+                Assert.That(section.Armor!.Torso.Number, Is.EqualTo(156));
+                Assert.That(section.Armor.Cloth1.Number, Is.EqualTo(23));
             }
 
             [Test]
@@ -76,10 +76,10 @@ namespace SWLOR.Toolset.Tests.Items
                 var store = OpenStore("adren_harness");
                 var section = Open(store, ArmorRow, new HashSet<string>());
 
-                section.Armor!.LeftBicep.Value = "8";
+                section.Armor!.LeftBicep.Number = 8;
 
-                Assert.That(section.Armor.LeftBicep.Value, Is.EqualTo("8"));
-                Assert.That(section.Armor.RightBicep.Value, Is.EqualTo("8"), "mirror carries the edit across");
+                Assert.That(section.Armor.LeftBicep.Number, Is.EqualTo(8));
+                Assert.That(section.Armor.RightBicep.Number, Is.EqualTo(8), "mirror carries the edit across");
                 Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ArmorPart_LBicep"), Is.EqualTo(8));
                 Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ArmorPart_RBicep"), Is.EqualTo(8));
                 Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "xArmorPart_LBice"), Is.EqualTo(8),
@@ -95,24 +95,43 @@ namespace SWLOR.Toolset.Tests.Items
                 var section = Open(store, ArmorRow, new HashSet<string>());
 
                 section.Armor!.MirrorRightFromLeft = false;
-                section.Armor.LeftBicep.Value = "9";
+                section.Armor.LeftBicep.Number = 9;
 
                 Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ArmorPart_LBicep"), Is.EqualTo(9));
                 Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ArmorPart_RBicep"), Is.EqualTo(7),
                     "the right side must be untouched once mirroring is off");
-                Assert.That(section.Armor.RightBicep.Value, Is.EqualTo("7"));
+                Assert.That(section.Armor.RightBicep.Number, Is.EqualTo(7));
             }
 
             [Test]
-            public void MirrorOffExposesTheRightCells()
+            public void RightCellsStayVisibleButAreReadOnlyWhileMirrored()
             {
                 var section = OpenArmor();
 
-                Assert.That(section.Armor!.ShowsRightCells, Is.False, "mirrored by default: right is redundant");
+                Assert.That(section.Armor!.RightBicep.IsReadOnly, Is.True, "mirrored by default: right cannot diverge");
+                Assert.That(section.Armor.RightBicep.IsEnabled, Is.False);
 
                 section.Armor.MirrorRightFromLeft = false;
 
-                Assert.That(section.Armor.ShowsRightCells, Is.True);
+                Assert.That(section.Armor.RightBicep.IsReadOnly, Is.False);
+                Assert.That(section.Armor.RightBicep.IsEnabled, Is.True);
+            }
+
+            [Test]
+            public void TurningMirrorBackOnWritesRightFromLeftImmediately()
+            {
+                var store = OpenStore("adren_harness");
+                var section = Open(store, ArmorRow, new HashSet<string>());
+
+                section.Armor!.MirrorRightFromLeft = false;
+                section.Armor.LeftBicep.Number = 9;
+                Assert.That(section.Armor.RightBicep.Number, Is.EqualTo(7), "unmirrored: right stays put");
+
+                section.Armor.MirrorRightFromLeft = true;
+
+                Assert.That(section.Armor.RightBicep.Number, Is.EqualTo(9), "re-mirroring writes right from left");
+                Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ArmorPart_RBicep"), Is.EqualTo(9));
+                Assert.That(section.Armor.RightBicep.IsReadOnly, Is.True);
             }
 
             [Test]
@@ -121,9 +140,9 @@ namespace SWLOR.Toolset.Tests.Items
                 var store = OpenStore("adren_harness");
                 var section = Open(store, ArmorRow, new HashSet<string>());
 
-                section.Armor!.Cloth1.Value = "50";
+                section.Armor!.Cloth1.Number = 50;
 
-                Assert.That(section.Armor.Cloth1.Value, Is.EqualTo("50"));
+                Assert.That(section.Armor.Cloth1.Number, Is.EqualTo(50));
                 Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "Cloth1Color"), Is.EqualTo(50));
             }
 
@@ -133,9 +152,9 @@ namespace SWLOR.Toolset.Tests.Items
                 var store = OpenStore("adren_harness");
                 var section = Open(store, ArmorRow, new HashSet<string>());
 
-                section.Armor!.Cloth1.Value = "176";
+                section.Armor!.Cloth1.Number = 176;
 
-                Assert.That(section.Armor.Cloth1.Value, Is.EqualTo("23"), "the refused edit restores what is stored");
+                Assert.That(section.Armor.Cloth1.Number, Is.EqualTo(23), "the refused edit restores what is stored");
                 Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "Cloth1Color"), Is.EqualTo(23));
             }
         }
@@ -277,6 +296,105 @@ namespace SWLOR.Toolset.Tests.Items
                 });
 
                 Assert.That(calls, Is.LessThanOrEqualTo(1600));
+            }
+        }
+
+        [TestFixture]
+        public class EnsureSelectionAfterABaseTypeChange
+        {
+            [Test]
+            public void GalleryPicksTheFirstOfferedTileWhenNothingIsSelectedAfterASwitch()
+            {
+                var store = OpenStore("abdamaryllia");
+                var ess2Row = new BaseItemIconRow(516, 0, "it_ess2", "iinvalid_2x2");
+                var ess3Row = new BaseItemIconRow(517, 0, "it_ess3", "iinvalid_2x2");
+                BaseItemIconRow currentRow = ess2Row;
+                ISet<string> currentTextures = new HashSet<string> { "iit_ess2_001", "iit_ess2_003", "iit_ess2_005" };
+
+                var section = new ItemAppearanceSectionViewModel(
+                    store, RunEdit, _ => currentRow, resRef => currentTextures.Contains(resRef));
+
+                // Stored ModelPart1 is 5 - matches the ess2 gallery's "005" tile.
+                Assert.That(section.Gallery!.Selected!.Display, Is.EqualTo("005"));
+
+                // Simulate the base-type change: a different row, a different set of textures whose
+                // only part number (10) never matches the still-stored ModelPart1 (5).
+                currentRow = ess3Row;
+                currentTextures = new HashSet<string> { "iit_ess3_010" };
+                section.Rebuild();
+
+                Assert.That(section.Gallery!.Selected, Is.Null, "nothing offered by the new row matches the old stored part");
+
+                section.EnsureSelection();
+
+                Assert.That(section.Gallery!.Selected, Is.Not.Null);
+                Assert.That(section.Gallery.Selected!.Display, Is.EqualTo("010"));
+                Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ModelPart1"), Is.EqualTo(10),
+                    "EnsureSelection writes through the same path a manual tile pick would");
+            }
+
+            [Test]
+            public void EnsuredCompositeDefaultsResolveToARealIcon()
+            {
+                var store = OpenStore("bobsaber");
+                var vibrobladeRow = new BaseItemIconRow(0, 2, "WSwVibro", "iwswvibro");
+                var textures = new HashSet<string>
+                {
+                    "iWSwVibro_b_001", "iWSwVibro_m_001", "iWSwVibro_t_001"
+                };
+
+                var section = new ItemAppearanceSectionViewModel(
+                    store, RunEdit, _ => vibrobladeRow, resRef => textures.Contains(resRef));
+                section.EnsureSelection();
+
+                // Defaulted parts must compose a real inventory icon - non-null part numbers that
+                // resolve to nothing would leave the preview empty after a base-type switch.
+                var stacks = SWLOR.Toolset.Domain.Render.Icons.ItemIconResolver.Resolve(
+                    store.Item, _ => vibrobladeRow);
+                Assert.That(
+                    stacks.Any(stack => stack.Layers.All(textures.Contains)),
+                    Is.True,
+                    "the ensured defaults must resolve to existing icon artwork");
+            }
+
+            [Test]
+            public void CompositePicksTheFirstOfferedPartForEachLayerWhenNothingIsSelected()
+            {
+                var store = OpenStore("bobsaber");
+                var lightsaberRow = new BaseItemIconRow(512, 2, "WSwGlsbr", "iwswglsbr");
+                var vibrobladeRow = new BaseItemIconRow(0, 2, "WSwVibro", "iwswvibro");
+                BaseItemIconRow currentRow = lightsaberRow;
+                ISet<string> currentTextures = new HashSet<string>
+                {
+                    "iWSwGlsbr_b_032", "iWSwGlsbr_m_011", "iWSwGlsbr_t_014"
+                };
+
+                var section = new ItemAppearanceSectionViewModel(
+                    store, RunEdit, _ => currentRow, resRef => currentTextures.Contains(resRef));
+
+                Assert.That(section.Bottom!.Selected, Is.Not.Null);
+
+                // A different composite base type whose only offered parts (1) never match the
+                // still-stored ModelPart1/2/3 (32/11/14).
+                currentRow = vibrobladeRow;
+                currentTextures = new HashSet<string>
+                {
+                    "iWSwVibro_b_001", "iWSwVibro_m_001", "iWSwVibro_t_001"
+                };
+                section.Rebuild();
+
+                Assert.That(section.Bottom!.Selected, Is.Null);
+                Assert.That(section.Middle!.Selected, Is.Null);
+                Assert.That(section.Top!.Selected, Is.Null);
+
+                section.EnsureSelection();
+
+                Assert.That(section.Bottom!.Selected!.Value, Is.EqualTo(1));
+                Assert.That(section.Middle!.Selected!.Value, Is.EqualTo(1));
+                Assert.That(section.Top!.Selected!.Value, Is.EqualTo(1));
+                Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ModelPart1"), Is.EqualTo(1));
+                Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ModelPart2"), Is.EqualTo(1));
+                Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ModelPart3"), Is.EqualTo(1));
             }
         }
 

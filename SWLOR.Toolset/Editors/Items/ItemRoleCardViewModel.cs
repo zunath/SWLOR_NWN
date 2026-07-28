@@ -40,7 +40,7 @@ namespace SWLOR.Toolset.Editors.Items
         public string? Summary => _role.Summary;
 
         public bool ShowsSpellPicker =>
-            _role.Id is ItemRoleCatalog.ConsumableId or ItemRoleCatalog.GrenadeId;
+            _role.Id is ItemRoleCatalog.ConsumableId;
 
         public ObservableCollection<BehaviorChoiceViewModel> SpellChoices { get; } = new();
 

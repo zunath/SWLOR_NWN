@@ -560,11 +560,9 @@ namespace SWLOR.Toolset.Editors.Behaviors
         {
             OnPropertyChanged(nameof(SelectedChoiceDisplay));
 
-            if (!IsGallery)
-                return;
-
-            // The grid marks what is stored rather than restating it underneath, so the tile a
-            // builder is looking at is the answer to "which one is this".
+            // Every choice presentation marks what is stored rather than restating it underneath -
+            // a gallery tile, and equally a searchable list's row - so the option a builder is
+            // looking at is the answer to "which one is this", on load and after every pick.
             foreach (var choice in Choices)
                 choice.IsSelected = ReferenceEquals(choice, value);
 

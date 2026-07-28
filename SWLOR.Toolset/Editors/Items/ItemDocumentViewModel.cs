@@ -5,7 +5,9 @@ using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Render.Icons;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
@@ -63,7 +65,11 @@ namespace SWLOR.Toolset.Editors.Items
             Behaviors.ChoicePreviewService? choicePreviews = null,
             Func<int, BaseItemIconRow?>? baseItemIcons = null,
             Func<string, bool>? textureExists = null,
-            Func<string, IReadOnlyList<Domain.Workspace.ItemSourceEntry>>? sourceLookup = null)
+            Func<string, IReadOnlyList<Domain.Workspace.ItemSourceEntry>>? sourceLookup = null,
+            Func<int, int?>? costTableMax = null,
+            Func<JsonGffStruct, RenderModel?>? resolveModel = null,
+            ResourceIndex? resourceIndex = null,
+            ArmorDyeSwatchService? armorDyeSwatches = null)
         {
             _log = log;
             _prompts = prompts;
@@ -83,7 +89,12 @@ namespace SWLOR.Toolset.Editors.Items
                 prompts,
                 baseItemIcons,
                 textureExists,
-                sourceLookup);
+                sourceLookup,
+                isDirty: false,
+                costTableMax,
+                resolveModel: resolveModel,
+                resourceIndex: resourceIndex,
+                armorDyeSwatches: armorDyeSwatches);
             UpdateTitle();
         }
 

@@ -39,9 +39,12 @@ namespace SWLOR.Toolset.Tests.Items
 
         /// <summary>
         /// Property ids that are themselves blank/reserved itempropdef.2da rows (146, 148) - any
-        /// subtype the corpus carries for them is preserved-only.
+        /// subtype the corpus carries for them is preserved-only. 103 (DamageStat), 20
+        /// (DamageImmunity), 37 (Immunity), and 51 (Regeneration) were removed from the editor by
+        /// owner decision; data preserved - the corpus's entries for all four stay untouched, just
+        /// no longer offered by any catalog.
         /// </summary>
-        private static readonly HashSet<int> AllowlistedProperties = new() { 146, 148 };
+        private static readonly HashSet<int> AllowlistedProperties = new() { 146, 148, 103, 20, 37, 51 };
 
         private static string Sw2DaDirectory =>
             Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks", "sw_2da");
@@ -104,8 +107,12 @@ namespace SWLOR.Toolset.Tests.Items
         // ------------------------------------------------------------------
 
         [Test]
-        public void SubtypeTablesMatchTwoDa_ResistanceDroidStatWeaponDamageTypeAndDamageStat()
+        public void SubtypeTablesMatchTwoDa_ResistanceAndDroidStat()
         {
+            // DamageStat (103) and WeaponDamageType (134) no longer expand inline in ItemStatCatalog
+            // - 103 was removed from the editor by owner decision, and 134 moved to
+            // ItemMultiEntryCatalog as an exclusive choice - so neither has a fixed subtype-id list
+            // to check here anymore.
             var twoDa = new TwoDaService(Sw2DaDirectory);
 
             AssertSubtypeIdsMatch(
@@ -117,17 +124,25 @@ namespace SWLOR.Toolset.Tests.Items
                 twoDa, "iprp_droidstat",
                 ItemStatCatalog.ByGroup(ItemStatGroup.Droid)
                     .Where(stat => stat.PropertyId == 121).Select(stat => stat.SubtypeId));
+        }
 
-            AssertSubtypeIdsMatch(
-                twoDa, "iprp_c_dmgtype",
-                ItemStatCatalog.ByGroup(ItemStatGroup.Combat)
-                    .Where(stat => stat.PropertyId == 134).Select(stat => stat.SubtypeId));
+        [Test]
+        public void WeaponDamageTypeExclusiveChoiceSubtypeTableMatchesTwoDaExactly()
+        {
+            var twoDa = new TwoDaService(Sw2DaDirectory);
+            var definition = ItemMultiEntryCatalog.ByPropertyId(134)!;
+            definition.IsExclusive.Should().BeTrue();
 
-            // DamageStat (103) uses IPRP_ABILITIES.
-            AssertSubtypeIdsMatch(
-                twoDa, "iprp_abilities",
-                ItemStatCatalog.ByGroup(ItemStatGroup.Combat)
-                    .Where(stat => stat.PropertyId == 103).Select(stat => stat.SubtypeId));
+            var choices = ItemSubtypeChoiceCatalog.Read(twoDa, definition.SubtypeTableResRef, tlk: null);
+            var table = twoDa.GetTable(definition.SubtypeTableResRef);
+            var labeledRows = new List<int>();
+            for (var row = 0; row < table.RowCount; row++)
+            {
+                if (!string.IsNullOrWhiteSpace(table.GetString(row, "Label")))
+                    labeledRows.Add(row);
+            }
+
+            choices.Select(choice => (int)choice.Value).Should().BeEquivalentTo(labeledRows);
         }
 
         private static void AssertSubtypeIdsMatch(
@@ -284,7 +299,7 @@ namespace SWLOR.Toolset.Tests.Items
             // The four role-driven families match the role catalog's own declared sets.
             ItemRoleCatalog.RolesFor(ItemFamily.Miscellaneous).Select(role => role.Id).Should().BeEquivalentTo(new[]
             {
-                ItemRoleCatalog.ConsumableId, ItemRoleCatalog.MealId, ItemRoleCatalog.GrenadeId,
+                ItemRoleCatalog.ConsumableId, ItemRoleCatalog.MealId,
                 ItemRoleCatalog.DeployedDeviceId, ItemRoleCatalog.DroidPartId,
                 ItemRoleCatalog.IncubationSampleId, ItemRoleCatalog.SchematicId,
                 ItemRoleCatalog.KeyItemId, ItemRoleCatalog.CustomId
@@ -306,8 +321,11 @@ namespace SWLOR.Toolset.Tests.Items
             foreach (var family in new[] { ItemFamily.MeleeWeapon, ItemFamily.RangedWeapon, ItemFamily.Lightsaber })
                 ItemStatVisibility.PrimaryGroups(family).Should().NotContain(ItemStatGroup.Crafting);
 
-            // Only weapon families see the weapon-only Combat stats (DMG/Delay/DamageStat/WeaponDamageType).
-            var weaponOnlyPropertyIds = new[] { 93, 98, 103, 134 };
+            // Only weapon families see the weapon-only Combat stats (DMG/Delay). DamageStat (103) was
+            // removed from the editor by owner decision and WeaponDamageType (134) moved to
+            // ItemMultiEntryCatalog as an exclusive choice, so neither is an ItemStatDefinition here
+            // anymore - the ids stay in this list only as documentation of what used to be checked.
+            var weaponOnlyPropertyIds = new[] { 93, 98 };
             foreach (var family in Enum.GetValues<ItemFamily>())
             {
                 var combatStats = ItemStatVisibility.CombatStatsFor(family);

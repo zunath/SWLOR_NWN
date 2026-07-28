@@ -13,15 +13,19 @@ namespace SWLOR.Toolset.Editors.Items
     /// A pair defaults to mirrored when the document already carries matching left/right values -
     /// which is every shipped armor blueprint, since nothing before this editor could set them apart.
     /// While mirrored, editing the left cell writes both sides (and each side's "x" twin, when the
-    /// document carries one); turning mirroring off exposes the right cells so they can diverge, and
-    /// editing either side then writes only that side.
+    /// document carries one); the right cell stays visible but read-only, always showing the left
+    /// side's current value. Turning mirroring off makes the right cells editable again so they can
+    /// diverge; turning it back on immediately writes the right side from the left (the mockup's "the
+    /// mirror check writes the right side from the left"), as one undoable edit.
     /// </remarks>
     public sealed partial class ArmorPartsViewModel : ObservableObject
     {
         private readonly ItemValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action? _appearanceChanged;
+        private readonly ArmorDyeSwatchService? _dyes;
         private readonly List<ItemFieldCellViewModel> _allCells = new();
+        private readonly List<ItemFieldCellViewModel> _rightCells = new();
 
         public ItemFieldCellViewModel Neck { get; }
         public ItemFieldCellViewModel Torso { get; }
@@ -58,15 +62,16 @@ namespace SWLOR.Toolset.Editors.Items
         [ObservableProperty]
         private bool _mirrorRightFromLeft;
 
-        /// <summary>Whether the right-side cells should be shown at all - only once mirroring is off.</summary>
-        public bool ShowsRightCells => !MirrorRightFromLeft;
-
         public ArmorPartsViewModel(
-            ItemValueStore store, Func<string, Action, bool> runEdit, Action? appearanceChanged = null)
+            ItemValueStore store,
+            Func<string, Action, bool> runEdit,
+            Action? appearanceChanged = null,
+            ArmorDyeSwatchService? dyes = null)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _appearanceChanged = appearanceChanged;
+            _dyes = dyes;
 
             _mirrorRightFromLeft = DetectMirror();
 
@@ -84,12 +89,12 @@ namespace SWLOR.Toolset.Editors.Items
             (LeftShin, RightShin) = CreatePair(ItemAppearanceFieldNames.Shin);
             (LeftFoot, RightFoot) = CreatePair(ItemAppearanceFieldNames.Foot);
 
-            Cloth1 = CreateDye("Cloth 1", ItemAppearanceFieldNames.Cloth1Color);
-            Cloth2 = CreateDye("Cloth 2", ItemAppearanceFieldNames.Cloth2Color);
-            Leather1 = CreateDye("Leather 1", ItemAppearanceFieldNames.Leather1Color);
-            Leather2 = CreateDye("Leather 2", ItemAppearanceFieldNames.Leather2Color);
-            Metal1 = CreateDye("Metal 1", ItemAppearanceFieldNames.Metal1Color);
-            Metal2 = CreateDye("Metal 2", ItemAppearanceFieldNames.Metal2Color);
+            Cloth1 = CreateDye("Cloth 1", ItemAppearanceFieldNames.Cloth1Color, ArmorDyeSwatchService.DyeMaterial.Cloth);
+            Cloth2 = CreateDye("Cloth 2", ItemAppearanceFieldNames.Cloth2Color, ArmorDyeSwatchService.DyeMaterial.Cloth);
+            Leather1 = CreateDye("Leather 1", ItemAppearanceFieldNames.Leather1Color, ArmorDyeSwatchService.DyeMaterial.Leather);
+            Leather2 = CreateDye("Leather 2", ItemAppearanceFieldNames.Leather2Color, ArmorDyeSwatchService.DyeMaterial.Leather);
+            Metal1 = CreateDye("Metal 1", ItemAppearanceFieldNames.Metal1Color, ArmorDyeSwatchService.DyeMaterial.Metal);
+            Metal2 = CreateDye("Metal 2", ItemAppearanceFieldNames.Metal2Color, ArmorDyeSwatchService.DyeMaterial.Metal);
 
             _allCells.AddRange(new[]
             {
@@ -107,7 +112,36 @@ namespace SWLOR.Toolset.Editors.Items
                 cell.Reload();
         }
 
-        partial void OnMirrorRightFromLeftChanged(bool value) => OnPropertyChanged(nameof(ShowsRightCells));
+        /// <summary>
+        /// Turning mirroring off just makes the right cells editable again - whatever they already
+        /// stored stands. Turning it on is the mockup's "the mirror check writes the right side from
+        /// the left": every pair's right field (and its "x" twin) is written from the left field's
+        /// current stored value, as one undoable edit, and every right cell reloads to show it
+        /// immediately rather than waiting for the next left-side edit.
+        /// </summary>
+        partial void OnMirrorRightFromLeftChanged(bool value)
+        {
+            foreach (var right in _rightCells)
+                right.IsReadOnly = value;
+
+            if (!value)
+                return;
+
+            var applied = _runEdit("Mirror right from left", () =>
+            {
+                foreach (var pair in ItemAppearanceFieldNames.Pairs)
+                {
+                    var leftValue = (int)(_store.GetInteger(BehaviorFieldStorage.Field, pair.LeftField) ?? 0);
+                    WriteArmorField(pair.RightField, pair.RightTwinField, leftValue);
+                }
+            });
+
+            if (applied)
+                _appearanceChanged?.Invoke();
+
+            foreach (var right in _rightCells)
+                right.Reload();
+        }
 
         /// <summary>True only when every pair's left and right value already match.</summary>
         private bool DetectMirror()
@@ -130,13 +164,14 @@ namespace SWLOR.Toolset.Editors.Items
                 value => Apply(label, () => WriteArmorField(field, twinField, value)),
                 0, 255);
 
-        private ItemFieldCellViewModel CreateDye(string label, string field) =>
+        private ItemFieldCellViewModel CreateDye(string label, string field, ArmorDyeSwatchService.DyeMaterial material) =>
             new(
                 label,
                 () => (int?)_store.GetInteger(BehaviorFieldStorage.Field, field),
                 value => Apply(
                     label, () => _store.SetInteger(BehaviorFieldStorage.Field, field, GffFieldType.Byte, value)),
-                0, 175);
+                0, 175,
+                _dyes == null ? null : index => _dyes.GetColor(material, index));
 
         /// <summary>
         /// Builds a mirrored pair. The left cell's write closure decides at write time - not at
@@ -173,7 +208,11 @@ namespace SWLOR.Toolset.Editors.Items
                 () => (int?)_store.GetInteger(BehaviorFieldStorage.Field, pair.RightField),
                 value => Apply(
                     $"Right {pair.Label}", () => WriteArmorField(pair.RightField, pair.RightTwinField, value)),
-                0, 255);
+                0, 255)
+            {
+                IsReadOnly = MirrorRightFromLeft
+            };
+            _rightCells.Add(right);
 
             return (left, right);
         }

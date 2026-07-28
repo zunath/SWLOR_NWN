@@ -28,6 +28,13 @@ namespace SWLOR.Toolset.Editors.Items
         /// </summary>
         public IReadOnlyList<ItemPropertyEntryListViewModel> EntryLists { get; }
 
+        /// <summary>
+        /// The exclusive multi-subtype properties (<see cref="ItemMultiEntryDefinition.IsExclusive"/>)
+        /// whose Context matches this group - a single pick-one-or-none dropdown each, rendered
+        /// separately from <see cref="EntryLists"/>' add/remove lists.
+        /// </summary>
+        public IReadOnlyList<ItemExclusiveChoiceViewModel> ExclusiveChoices { get; }
+
         public bool IsMatrix => false;
 
         public ItemStatGroupViewModel(
@@ -36,16 +43,19 @@ namespace SWLOR.Toolset.Editors.Items
             ItemValueStore store,
             Func<string, Action, bool> runEdit,
             Action? valueChanged,
-            IReadOnlyList<ItemPropertyEntryListViewModel>? entryLists = null)
+            IReadOnlyList<ItemPropertyEntryListViewModel>? entryLists = null,
+            IReadOnlyList<ItemExclusiveChoiceViewModel>? exclusiveChoices = null,
+            Func<int, int?>? costTableMax = null)
         {
             ArgumentNullException.ThrowIfNull(definitions);
 
             Group = group;
             Title = TitleFor(group);
             Cells = definitions
-                .Select(definition => new ItemStatCellViewModel(definition, store, runEdit, valueChanged))
+                .Select(definition => new ItemStatCellViewModel(definition, store, runEdit, valueChanged, costTableMax))
                 .ToList();
             EntryLists = entryLists ?? Array.Empty<ItemPropertyEntryListViewModel>();
+            ExclusiveChoices = exclusiveChoices ?? Array.Empty<ItemExclusiveChoiceViewModel>();
         }
 
         /// <summary>Splits the enum's PascalCase name into words and sentence-cases them.</summary>

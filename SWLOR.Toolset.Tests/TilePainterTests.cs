@@ -570,6 +570,53 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PaintTerrainVertex_DoesNotBuildWallsTheBuilderDidNotPaint()
+        {
+            // An interior-shaped tileset: a plain floor tile, and a floor tile that also carries a
+            // wall on one edge. Both satisfy an all-floor corner constraint, and the engine's edge
+            // rule is blank-tolerant, so the wall tile is *legal* beside plain floor - which is how
+            // a terrain dab came to surround itself with walls in a scifi-base interior.
+            var ts = new TilesetDefinition
+            {
+                Terrains = new[]
+                {
+                    new TerrainDefinition("Floor", null, null),
+                    new TerrainDefinition("Rock", null, null)
+                },
+                Crossers = new[] { new CrosserDefinition("Wall", null, null) },
+                Tiles = new[]
+                {
+                    Tile("Rock", "Rock", "Rock", "Rock"),                        // 0 solid rock
+                    Tile("Floor", "Floor", "Floor", "Floor", top: "Wall"),       // 1 floor + wall (lower id: wins on rank)
+                    Tile("Floor", "Floor", "Floor", "Floor"),                    // 2 plain floor
+                    Tile("Floor", "Rock", "Rock", "Rock"),                       // 3 one-corner floor
+                    Tile("Floor", "Floor", "Rock", "Rock")                       // 4 half floor
+                }
+            };
+            var cells = Filled(4, 4, 2); // an open floor field, no crossers anywhere
+
+            var changes = TilePainter.PaintTerrainVertex(ts, 4, 4, States(cells, 4, 4), 2, 2, "Floor");
+
+            changes.Should().BeEmpty(
+                "every touched cell already shows Floor on the painted corner, so the stable choice " +
+                "is the tile already there - not the equally legal wall-carrying one");
+
+            // And when the cells must change, the wall tile still must not be volunteered: repaint
+            // a rock field's vertex to Floor and check no edge gains a crosser.
+            var rocky = Filled(4, 4, 0);
+            var rockChanges = TilePainter.PaintTerrainVertex(ts, 4, 4, States(rocky, 4, 4), 2, 2, "Floor");
+            Apply(rocky, rockChanges);
+            foreach (var (col, row) in new[] { (1, 1), (2, 1), (1, 2), (2, 2) })
+            {
+                foreach (var edge in new[] { TileEdge.North, TileEdge.East, TileEdge.South, TileEdge.West })
+                {
+                    TileAdjacency.WorldEdgeCrosser(ts.Tiles[rocky[(col, row)].TileId], rocky[(col, row)].Orientation, edge)
+                        .Should().BeEmpty($"cell ({col},{row}) had no wall before the paint and asked for none");
+                }
+            }
+        }
+
+        [Test]
         public void CanPaintTerrainVertex_DistinguishesRefusalFromNoChange()
         {
             var ts = Synthetic();

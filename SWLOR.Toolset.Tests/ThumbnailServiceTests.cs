@@ -247,6 +247,9 @@ namespace SWLOR.Toolset.Tests
             public IconImage? Render(ResourceType type, string resRef, bool useIndexedBlueprint = false) =>
                 Image();
 
+            public IconImage? RenderTileGroup(IReadOnlyList<string> slotModelResRefs, int columns, int rows) =>
+                RenderModel(slotModelResRefs.FirstOrDefault(slot => !string.IsNullOrWhiteSpace(slot)) ?? string.Empty);
+
             public IconImage? RenderModel(string modelResRef)
             {
                 _gate.Wait(TimeSpan.FromSeconds(5));

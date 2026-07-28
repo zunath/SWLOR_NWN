@@ -38,6 +38,12 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>A model by resref, with no blueprint involved — how a tile gets its picture.</summary>
         IconImage? RenderModel(string modelResRef);
 
+        /// <summary>
+        /// A multi-tile palette group laid out on the grid, so its thumbnail shows the footprint it
+        /// stamps rather than only its first tile. One model resref per slot, row-major.
+        /// </summary>
+        IconImage? RenderTileGroup(IReadOnlyList<string> slotModelResRefs, int columns, int rows);
+
         /// <summary>One <c>appearance.2da</c> row, for the creature appearance grid.</summary>
         IconImage? RenderCreatureAppearance(int appearanceId);
     }

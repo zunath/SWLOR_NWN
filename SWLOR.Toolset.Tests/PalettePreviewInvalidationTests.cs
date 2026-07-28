@@ -102,6 +102,8 @@ namespace SWLOR.Toolset.Tests
 
             public IconImage? RenderModel(string modelResRef) => null;
 
+            public IconImage? RenderTileGroup(IReadOnlyList<string> slotModelResRefs, int columns, int rows) => null;
+
             public IconImage? RenderCreatureAppearance(int appearanceId) => null;
         }
     }

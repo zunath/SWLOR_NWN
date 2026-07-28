@@ -1433,7 +1433,12 @@ namespace SWLOR.Toolset.Shell.Panels
 
             if (tile.IsTile)
             {
-                _thumbnails?.RequestTileAsync(tile.ResRef, bitmap => tile.Preview = bitmap);
+                _thumbnails?.RequestTileAsync(
+                    tile.ResRef,
+                    bitmap => tile.Preview = bitmap,
+                    tile.Tile?.FootprintModelResRefs,
+                    tile.Tile?.Columns ?? 1,
+                    tile.Tile?.Rows ?? 1);
                 return;
             }
 

@@ -298,7 +298,10 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                     group.TileIndices,
                     group.Columns,
                     group.Rows,
-                    PreviewModelFor(tileset, group.TileIndices)));
+                    PreviewModelFor(tileset, group.TileIndices),
+                    Terrain: null,
+                    Crosser: null,
+                    FootprintModelResRefs: FootprintModelsFor(tileset, group.TileIndices)));
             }
 
             return entries;
@@ -413,6 +416,25 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         /// tiles declares a model, so this only comes back empty for a group that is nothing but
         /// holes - which the caller treats as unplaceable.
         /// </summary>
+        /// <summary>
+        /// Every footprint slot's model, in the group's own row-major order, blank where the slot is
+        /// a hole or its tile declares no model - what the thumbnail composes the group's shape from.
+        /// </summary>
+        private static IReadOnlyList<string> FootprintModelsFor(
+            TilesetDefinition tileset, IReadOnlyList<int> tileIndices)
+        {
+            var models = new string[tileIndices.Count];
+            for (var slot = 0; slot < tileIndices.Count; slot++)
+            {
+                var tileId = tileIndices[slot];
+                models[slot] = tileId == EmptyGroupSlot || tileId < 0 || tileId >= tileset.Tiles.Count
+                    ? string.Empty
+                    : tileset.Tiles[tileId].Model ?? string.Empty;
+            }
+
+            return models;
+        }
+
         private static string PreviewModelFor(TilesetDefinition tileset, IReadOnlyList<int> tileIndices)
         {
             foreach (var tileId in tileIndices)

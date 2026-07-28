@@ -324,6 +324,31 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
+        /// Renders a multi-tile palette group as one picture: every slot's model laid out on the
+        /// grid, so the thumbnail shows the group's footprint instead of its first tile.
+        /// </summary>
+        public IconImage? RenderTileGroup(IReadOnlyList<string> slotModelResRefs, int columns, int rows)
+        {
+            if (!IsAvailable || slotModelResRefs == null || slotModelResRefs.Count == 0)
+                return null;
+
+            var slots = new RenderModel?[slotModelResRefs.Count];
+            for (var slot = 0; slot < slotModelResRefs.Count; slot++)
+            {
+                slots[slot] = string.IsNullOrWhiteSpace(slotModelResRefs[slot])
+                    ? null
+                    : BuildRenderModel(slotModelResRefs[slot]);
+            }
+
+            var pixels = ThumbnailRenderer.Render(
+                TileGroupPreview.Compose(slots, columns, rows), ModelRenderSize,
+                palette: null,
+                resolveTexture: _textures == null ? null : texture => _textures.Get(texture));
+
+            return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
+        }
+
+        /// <summary>
         /// Renders one <c>appearance.2da</c> row on its own, with no creature involved — what the
         /// creature editor's appearance grid shows.
         /// </summary>

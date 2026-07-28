@@ -355,6 +355,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 var candidates = WithMatchingCrossers(
                     tileset, SetRuleMatcher.FindMatchingTiles(tileset, constraint),
                     col, row, currentAt, overlay, touchedSet, preferStaleCrossers);
+                candidates = PreferNoNewCrossers(tileset, candidates, WorkingAt(col, row));
                 var choice = SelectCandidate(
                     tileset, candidates, WorkingAt(col, row)?.Candidate, tileRank, preferBlankEdges: false);
 
@@ -488,6 +489,9 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 var candidates = WithRequiredEdges(
                     tileset, SetRuleMatcher.FindMatchingTiles(tileset, constraint),
                     col, row, currentAt, overlay, paintedEdge, crosser, strictEdges);
+                // The painted edge is exempt - it is the crosser being asked for; this only stops
+                // the OTHER edges gaining walls the builder did not paint.
+                candidates = PreferNoNewCrossers(tileset, candidates, WorkingAt(col, row), paintedEdge);
                 var choice = SelectCandidate(
                     tileset, candidates, WorkingAt(col, row)?.Candidate, tileRank, preferBlankEdges: false);
 
@@ -877,6 +881,44 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         {
             var kept = pool.Where(preferred).ToList();
             return kept.Count > 0 ? kept : pool;
+        }
+
+        /// <summary>
+        /// Prefers candidates that put no crosser on an edge the cell does not already have one on -
+        /// a terrain dab must not build walls, corridors or doorways the builder did not ask for.
+        /// </summary>
+        /// <remarks>
+        /// The edge rule the engine matches with (<see cref="TileAdjacency.EdgeCrossersMatch"/>) is
+        /// blank-tolerant, so a tile carrying a wall passes beside a neighbour carrying none - which
+        /// is right for validation and wrong for selection: left to the ranking, an interior paint
+        /// happily picked wall-and-corridor pieces to satisfy a plain floor corner, and walls
+        /// appeared around every dab. Crossers already on the cell are untouched, so a floor painted
+        /// beside a corridor still meets it; this only bars NEW ones. A preference, not a filter -
+        /// where every legal tile carries a crosser, the cell still solves.
+        /// </remarks>
+        private static IReadOnlyList<TileCandidate> PreferNoNewCrossers(
+            TilesetDefinition tileset, IReadOnlyList<TileCandidate> candidates, PlacedTileState? current,
+            TileEdge? exemptEdge = null)
+        {
+            if (current is not { } placed || placed.TileId < 0 || placed.TileId >= tileset.Tiles.Count)
+                return candidates;
+
+            var currentDefinition = tileset.Tiles[placed.TileId];
+            var edges = new[] { TileEdge.North, TileEdge.East, TileEdge.South, TileEdge.West };
+
+            return Narrow(candidates, candidate => edges.All(edge =>
+            {
+                if (edge == exemptEdge)
+                    return true; // this edge is the crosser being painted, not an unasked-for one
+
+                var already = TileAdjacency.WorldEdgeCrosser(currentDefinition, placed.Orientation, edge);
+                if (!string.IsNullOrEmpty(already))
+                    return true; // the cell already carries one here - keeping it is not "new"
+
+                var proposed = TileAdjacency.WorldEdgeCrosser(
+                    tileset.Tiles[candidate.TileId], candidate.Orientation, edge);
+                return string.IsNullOrEmpty(proposed);
+            })).ToList();
         }
 
         /// <summary>

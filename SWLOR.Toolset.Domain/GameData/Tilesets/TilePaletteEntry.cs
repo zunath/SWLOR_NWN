@@ -30,6 +30,12 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
     /// adjacent cells against - the reference toolset's model, verified against it live. Never set
     /// together with <paramref name="Terrain"/>.
     /// </param>
+    /// <param name="FootprintModelResRefs">
+    /// One model resref per footprint slot, ROW-MAJOR over <paramref name="Columns"/> and empty for a
+    /// hole - what a multi-tile group's thumbnail composes so it shows its real shape rather than
+    /// its first tile. Empty for a single tile or a brush, where
+    /// <paramref name="PreviewModelResRef"/> already says everything.
+    /// </param>
     public sealed record TilePaletteEntry(
         string Label,
         IReadOnlyList<int> TileIds,
@@ -37,5 +43,6 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         int Rows,
         string PreviewModelResRef,
         string? Terrain = null,
-        string? Crosser = null);
+        string? Crosser = null,
+        IReadOnlyList<string>? FootprintModelResRefs = null);
 }

@@ -291,14 +291,24 @@ namespace SWLOR.Toolset.Workspace
         /// under their own key prefix - a tileset's few hundred models are cheap to re-render on the next
         /// launch, and never writing them to the module's preview cache keeps that cache honest.
         /// </remarks>
-        public void RequestTileAsync(string modelResRef, Action<Bitmap> onReady)
+        public void RequestTileAsync(
+            string modelResRef,
+            Action<Bitmap> onReady,
+            IReadOnlyList<string>? footprintModelResRefs = null,
+            int columns = 1,
+            int rows = 1)
         {
             ArgumentNullException.ThrowIfNull(onReady);
 
             if (!IsAvailable || string.IsNullOrWhiteSpace(modelResRef))
                 return;
 
-            var key = "tile:" + modelResRef;
+            // A multi-slot group renders its whole footprint, and caches under every slot it is made
+            // of - two groups can share a first tile and still look nothing alike.
+            var composite = footprintModelResRefs is { Count: > 1 } && columns * rows > 1;
+            var key = composite
+                ? "tilegroup:" + columns + "x" + rows + ":" + string.Join(",", footprintModelResRefs!)
+                : "tile:" + modelResRef;
             if (_memory.TryGet(key, out var known))
             {
                 if (known != null)
@@ -315,7 +325,10 @@ namespace SWLOR.Toolset.Workspace
                 Bitmap? bitmap = null;
                 try
                 {
-                    var image = _renderer.RenderModel(modelResRef);
+                    var image = composite
+                        ? _renderer.RenderTileGroup(footprintModelResRefs!, columns, rows)
+                          ?? _renderer.RenderModel(modelResRef)
+                        : _renderer.RenderModel(modelResRef);
                     if (image != null)
                         bitmap = ToBitmap(image);
                 }

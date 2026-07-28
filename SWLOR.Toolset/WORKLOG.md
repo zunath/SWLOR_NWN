@@ -2146,3 +2146,25 @@ it: a builder is watching the area, not the log, so the click read as dead.
   feedback could not be re-measured either - its renderer was wedged - so the flash is a
   deliberate addition for clarity rather than a copied behaviour; the red cursor remains the part
   that is confirmed against it.
+
+## Area editor - 2026-07-28 - Group previews show their footprint, and a paint stops building walls
+
+Two things reported from live use:
+
+- **A group's thumbnail was its first tile.** A 1x2 road or a 2x2 ruin drew one square that looked
+  like every other square in the palette; the footprint was in the subtitle and nowhere else.
+  `TileGroupPreview.Compose` now lays every slot's model out on the grid and centres the result, so
+  the picture is the shape that will be stamped. Cheap: NWN tile models are origin-centred on their
+  own cell, so a slot only needs a translation, and mesh arrays are shared by reference - only the
+  per-mesh transform differs. Group thumbnails cache under all their slots, since two groups can
+  share a first tile and look nothing alike. The write order was checked against the corpus first
+  and is right as it stands: matching every multi-row group against every module area places
+  row 0 at the area's LOW row 174 times against 28 the other way.
+- **A terrain dab built walls nobody asked for.** In an interior tileset (zsf01, the CZ-220 bay) a
+  paint could come back with wall and corridor pieces around it. The engine's edge rule is
+  blank-tolerant by design - a tile carrying a wall is *legal* beside one carrying none - so
+  nothing stopped the ranking from volunteering one. `PreferNoNewCrossers` now prefers candidates
+  that add no crosser on an edge the cell does not already have one on. Crossers already there are
+  untouched, so a floor painted beside a corridor still meets it, and the crosser brush exempts the
+  edge it is painting. A preference, not a filter: where every legal tile carries one, the cell
+  still solves.

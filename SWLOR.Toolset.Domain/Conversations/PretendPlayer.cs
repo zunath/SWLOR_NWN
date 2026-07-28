@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Toolset.Domain.Conversations
 {
@@ -68,7 +69,7 @@ namespace SWLOR.Toolset.Domain.Conversations
 
         public PretendPlayer WithSkill(string skill, int rank)
         {
-            _skillRanks[skill] = rank;
+            _skillRanks[CanonicalizeSkill(skill)] = rank;
             return this;
         }
 
@@ -118,7 +119,29 @@ namespace SWLOR.Toolset.Domain.Conversations
         }
 
         public int GetSkillRank(string skill) =>
-            _skillRanks.TryGetValue(skill, out var rank) ? rank : 0;
+            _skillRanks.TryGetValue(CanonicalizeSkill(skill), out var rank) ? rank : 0;
+
+        /// <summary>
+        /// A conversation may set or check a skill by its <c>SkillType</c> member name and later by
+        /// numeric id, or the reverse - <c>action-give-skill-rank Devices 5</c> alongside
+        /// <c>condition-any-skill 33 5</c> is a real shape a guard could take. The runtime resolves
+        /// both forms to the same enum value via <c>Enum.TryParse(typeof(SkillType), skillId, true,
+        /// out _)</c> in <c>SkillSnippetDefinition</c>, so storing and comparing the raw strings would
+        /// make a preview walk see them as two different skills and let mixed-format guards assign
+        /// incompatible ranks to what is actually one runtime skill. Mirrors
+        /// <see cref="Canonicalize(string)"/> for key items exactly, except the runtime's own parse
+        /// here is case-INsensitive (<c>ignoreCase: true</c>), unlike <c>GetKeyItemTypeByName</c>.
+        /// </summary>
+        private static string CanonicalizeSkill(string skill)
+        {
+            if (int.TryParse(skill, out var id) && Enum.IsDefined(typeof(SkillType), id))
+                return id.ToString();
+
+            if (Enum.TryParse<SkillType>(skill, ignoreCase: true, out var parsed) && parsed != SkillType.Invalid)
+                return ((int)parsed).ToString();
+
+            return skill;
+        }
 
         public int GetFactionStanding(int factionId) =>
             _factionStanding.TryGetValue(factionId, out var standing) ? standing : 0;

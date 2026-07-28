@@ -202,6 +202,31 @@ namespace SWLOR.Toolset.Tests
             impossible.Should().BeEmpty();
         }
 
+        /// <summary>
+        /// the_manda_leader (ViscaraQuestDefinition.TheMandalorianLeader) calls .HasRewardSelection()
+        /// on its builder chain. ReachabilityEvaluator reads this flag to avoid marking the quest
+        /// completed the moment its final action-advance-quest runs, since QuestDetail.Advance instead
+        /// opens QuestRewardSelectionDialog and leaves it on its final state until the player actually
+        /// picks a reward.
+        /// </summary>
+        [Test]
+        public void AQuestWithRewardSelectionReportsSo()
+        {
+            var quest = Index.FindQuest("the_manda_leader");
+
+            quest.Should().NotBeNull();
+            quest!.HasRewardSelection.Should().BeTrue();
+        }
+
+        [Test]
+        public void AQuestWithoutRewardSelectionReportsSo()
+        {
+            var quest = Index.FindQuest("field_tinctures");
+
+            quest.Should().NotBeNull();
+            quest!.HasRewardSelection.Should().BeFalse();
+        }
+
         [Test]
         public void FactionsAndSkillsResolveToNames()
         {

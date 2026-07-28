@@ -18,8 +18,12 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
             },
             new BehaviorFieldDefinition
             {
+                // Read-only: the document's TrySaveAsync always writes the blueprint back to its
+                // original file and never renames it, so an edited ResRef here would leave the file's
+                // internal identity disagreeing with its filename. The generic waypoint schema
+                // (UtwSchema) keeps this field read-only for the same reason.
                 Label = "ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
-                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength
+                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsReadOnly = true
             },
             new BehaviorFieldDefinition
             {

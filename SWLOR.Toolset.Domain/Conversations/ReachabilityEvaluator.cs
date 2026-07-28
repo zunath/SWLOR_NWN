@@ -325,9 +325,21 @@ namespace SWLOR.Toolset.Domain.Conversations
             // known state count the step still moves, which keeps a walk usable when the source
             // scan is unavailable.
             if (quest != null && next > quest.StateCount)
+            {
+                // QuestDetail.Advance only completes the quest immediately when reward selection is
+                // disabled. When the quest calls .HasRewardSelection(), reaching the final state
+                // instead opens QuestRewardSelectionDialog and leaves the quest on its final state -
+                // not completed - until the player actually chooses a reward, which this walk does not
+                // simulate. Reporting Completed here would let condition-completed-quest pass, and
+                // post-completion routes appear reachable, before the runtime has actually finished
+                // the quest.
+                if (quest.HasRewardSelection)
+                    return QuestProgress.OnStep(quest.StateCount);
+
                 return quest.IsRepeatable
                     ? new QuestProgress { IsCompleted = true }
                     : QuestProgress.Completed;
+            }
 
             return QuestProgress.OnStep(next);
         }

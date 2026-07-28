@@ -116,6 +116,37 @@ namespace SWLOR.Toolset.Tests
             result.Problem.Should().Contain("changed outside");
         }
 
+        /// <summary>
+        /// A read failure is not proof the file is unchanged - it is proof the file could not be
+        /// compared. If an external process (or a transient lock) makes the sidecar unreadable while
+        /// its directory stays writable, the save must refuse rather than let the atomic
+        /// <c>File.Move</c> replace a file whose current contents were never actually checked.
+        /// </summary>
+        [Test]
+        public void UnreadableSidecarContentRefusesTheSaveInsteadOfAssumingNoConflict()
+        {
+            var service = OpenService();
+            var section = service.Section(ResourceType.Utp)!;
+            section.AddFolder("Original");
+            service.SaveChanges().Saved.Should().BeTrue();
+
+            var sidecar = CategoryCatalog.DefaultPathFor(_module);
+
+            section.AddFolder("AttemptedWhileUnreadable");
+
+            CategorySaveResult result;
+            // Hold an exclusive lock so the sidecar's bytes cannot be read (ComputeHash fails) even
+            // though its timestamp is untouched and still matches the recorded baseline - the one case
+            // a timestamp-only comparison would wrongly call "no conflict".
+            using (new FileStream(sidecar, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                result = service.SaveChanges();
+            }
+
+            result.Saved.Should().BeFalse("an unreadable fingerprint must not be treated as proof nothing changed");
+            result.Problem.Should().Contain("changed outside");
+        }
+
         [Test]
         public void ReadOnlySidecarRollsBackRejectedInMemoryEdits()
         {

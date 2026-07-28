@@ -301,8 +301,11 @@ namespace SWLOR.Toolset.Tests
 
             WaypointEditorLayout.Basic.Select(field => field.Name).Should().BeEquivalentTo(
                 "LocalizedName", "TemplateResRef", "PaletteID");
-            WaypointEditorLayout.Basic.Single(field => field.Name == "TemplateResRef").Label
-                .Should().Be("ResRef");
+            var resRef = WaypointEditorLayout.Basic.Single(field => field.Name == "TemplateResRef");
+            resRef.Label.Should().Be("ResRef");
+            resRef.IsReadOnly.Should().BeTrue(
+                "the document save path never renames the file, so an edited ResRef here would " +
+                "leave the blueprint's identity disagreeing with its filename");
         }
 
         [Test]

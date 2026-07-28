@@ -232,6 +232,20 @@ namespace SWLOR.Toolset.Tests
             DoorBehaviorCatalog.Classify(door).Id.Should().Be(DoorBehaviorCatalog.SealedDoorId);
         }
 
+        /// <summary>
+        /// The door document's save path always writes back to its original file and never renames
+        /// it, so an edited ResRef here would leave the blueprint's on-disk identity disagreeing with
+        /// its filename - the same reason the generic door schema (UtdSchema) keeps this field
+        /// read-only.
+        /// </summary>
+        [Test]
+        public void TheResRefRowIsReadOnly()
+        {
+            var resRef = DoorEditorLayout.Basic.Single(row => row.Name == "TemplateResRef");
+            resRef.Label.Should().Be("ResRef");
+            resRef.IsReadOnly.Should().BeTrue();
+        }
+
         [Test]
         public void VariablesExistOnlyUnderCustom()
         {

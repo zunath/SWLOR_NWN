@@ -355,9 +355,18 @@ namespace SWLOR.Toolset.Workspace
 
             var current = LastWriteUtc(catalog.FilePath);
 
-            // An unreadable timestamp is not evidence of a conflict.
-            if (_sidecarWrittenUtc == null || current == null)
-                return false;
+            // The sidecar exists but its timestamp could not be read right now (e.g. an external
+            // process changed its read ACL while the parent directory stayed writable, or the file is
+            // transiently locked). Treating an unreadable timestamp as "nothing changed" would let the
+            // atomic File.Move below replace a file whose current contents were never actually
+            // compared - fail closed and refuse the save instead of assuming no conflict.
+            if (current == null)
+                return true;
+
+            // No trustworthy baseline to compare against (e.g. the baseline read itself failed
+            // earlier) - refuse rather than assume nothing changed.
+            if (_sidecarWrittenUtc == null)
+                return true;
 
             if (current != _sidecarWrittenUtc)
                 return true;
@@ -365,10 +374,13 @@ namespace SWLOR.Toolset.Workspace
             // Timestamps agree, but that is not proof nothing changed - fall back to the fingerprint.
             var currentHash = ComputeHash(catalog.FilePath);
 
-            // An unreadable fingerprint is not evidence of a conflict, matching the timestamp fallback
-            // above; a locked or transiently unreadable file must not itself refuse the next save.
-            if (_sidecarContentHash == null || currentHash == null)
-                return false;
+            // Same fail-closed reasoning as the timestamp check above: an unreadable fingerprint must
+            // refuse the save rather than wave it through.
+            if (currentHash == null)
+                return true;
+
+            if (_sidecarContentHash == null)
+                return true;
 
             return !currentHash.AsSpan().SequenceEqual(_sidecarContentHash);
         }

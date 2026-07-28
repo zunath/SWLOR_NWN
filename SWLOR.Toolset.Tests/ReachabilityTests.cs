@@ -322,6 +322,27 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AdvancingTheFinalStepOfARewardSelectionQuestLeavesItInProgress()
+        {
+            // the_manda_leader calls .HasRewardSelection() (ViscaraQuestDefinition.TheMandalorianLeader).
+            // At runtime, QuestDetail.Advance on its final state opens QuestRewardSelectionDialog
+            // instead of completing the quest outright - the quest stays on its final state until the
+            // player actually picks a reward, which this dialog's own action-advance-quest reply does
+            // not simulate. A walk that marked it Completed here would let condition-completed-quest
+            // pass on "the_manda_leader" before the runtime ever would.
+            var document = DlgDocument.Load(
+                Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "talgarmeyne.dlg.json"));
+            var advance = document.Replies.Single(r => r.Text == "Thank you. [Select reward]");
+
+            var player = new PretendPlayer().WithQuest("the_manda_leader", QuestProgress.OnStep(2));
+            var after = Evaluator.ApplyActions(advance, player);
+
+            after.GetQuest("the_manda_leader").IsCompleted.Should().BeFalse(
+                "reward selection has not been simulated, so the quest cannot be completed yet");
+            after.GetQuest("the_manda_leader").IsInProgress.Should().BeTrue();
+        }
+
+        [Test]
         public void AKeyItemGivenByNameIsRecognizedWhenCheckedByItsNumericId()
         {
             // CZ220ShuttlePass is KeyItemType 5. An imported conversation may give a key item by its
@@ -349,6 +370,39 @@ namespace SWLOR.Toolset.Tests
             var after = Evaluator.ApplyActions(reply, new PretendPlayer());
 
             after.HasKeyItem("CZ220ShuttlePass").Should().BeTrue();
+        }
+
+        [Test]
+        public void ASkillGivenByNameIsRecognizedWhenCheckedByItsNumericId()
+        {
+            // Devices is SkillType 33. A guard may set a skill by its enum member name and later be
+            // checked by numeric id - the runtime resolves both to the same SkillType via
+            // Enum.TryParse(typeof(SkillType), skillId, ignoreCase: true, out _) in
+            // SkillSnippetDefinition, so storing the raw strings instead would let a walk see two
+            // different skills and assign incompatible ranks to what is actually one runtime skill.
+            var player = new PretendPlayer().WithSkill("Devices", 5);
+
+            player.GetSkillRank("33").Should().Be(5);
+        }
+
+        [Test]
+        public void ASkillGivenByNumericIdIsRecognizedWhenCheckedByName()
+        {
+            // The same canonicalization the other direction: given by id, checked by name.
+            var player = new PretendPlayer().WithSkill("33", 5);
+
+            player.GetSkillRank("Devices").Should().Be(5);
+        }
+
+        [Test]
+        public void ASkillNameIsRecognizedRegardlessOfCase()
+        {
+            // Unlike key items, the runtime's own skill parse is case-insensitive
+            // (Enum.TryParse(typeof(SkillType), skillId, ignoreCase: true, out _)), so "devices" and
+            // "Devices" must canonicalize to the same skill too.
+            var player = new PretendPlayer().WithSkill("devices", 5);
+
+            player.GetSkillRank("DEVICES").Should().Be(5);
         }
 
         [Test]

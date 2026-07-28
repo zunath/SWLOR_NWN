@@ -681,7 +681,16 @@ namespace SWLOR.Toolset.Shell
 
             try
             {
-                await Task.Run(() => _workspaceContext.Open(moduleRoot)).ConfigureAwait(true);
+                // WorkspaceContext.Open synchronously raises WorkspaceOpened before returning, and
+                // subscribers (e.g. EditorService) mutate plain, non-concurrent collections from that
+                // handler. Open itself is cheap - ModuleWorkspace only does lazy/directory-listing
+                // enumeration, and BlueprintCatalog kicks its own heavy build off via an internal
+                // Task.Run - so running the whole call on the UI thread (rather than on a background
+                // thread via Task.Run, which would publish WorkspaceOpened off-thread) keeps every
+                // WorkspaceOpened subscriber's assumption that it only ever runs on the UI thread true,
+                // without blocking the UI for the actual catalog build. See the matching comment in
+                // OnFileWatcherRescanRequested, which must publish on the same thread.
+                await Dispatcher.UIThread.InvokeAsync(() => _workspaceContext.Open(moduleRoot));
             }
             catch (Exception ex)
             {
@@ -778,7 +787,15 @@ namespace SWLOR.Toolset.Shell
 
             try
             {
-                await Task.Run(() => _workspaceContext.Open(moduleRoot)).ConfigureAwait(true);
+                // Publish on the UI thread, matching InitializeAsync above: Open synchronously raises
+                // WorkspaceOpened, and EditorService's handler clears _choiceSets (a plain Dictionary,
+                // not concurrent-safe) on whatever thread invokes it. The old Task.Run here ran Open -
+                // and therefore that publish - on a worker thread while the UI thread could be
+                // concurrently opening an editor and reading/populating the same dictionary. Open is
+                // cheap enough for the UI thread: ModuleWorkspace only does lazy/directory-listing
+                // enumeration, and BlueprintCatalog's actual (slow) build already runs on its own
+                // Task.Run-backed BuildTask regardless of which thread constructs it.
+                await Dispatcher.UIThread.InvokeAsync(() => _workspaceContext.Open(moduleRoot));
             }
             catch (Exception ex)
             {

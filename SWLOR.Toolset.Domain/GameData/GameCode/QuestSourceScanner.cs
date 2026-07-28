@@ -24,6 +24,16 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
 
         public required bool IsRepeatable { get; init; }
 
+        /// <summary>
+        /// True when the quest's builder chain calls <c>.HasRewardSelection()</c>. Such a quest does
+        /// not complete the moment its final action-advance-quest runs: <c>QuestDetail.Advance</c>
+        /// instead opens <c>QuestRewardSelectionDialog</c> and leaves the quest on its final state
+        /// (<see cref="StateCount"/>, not completed) until the player actually chooses a reward - a
+        /// step this walk does not simulate. <see cref="Conversations.ReachabilityEvaluator"/> reads
+        /// this to avoid reporting such a quest completed from the walk alone.
+        /// </summary>
+        public required bool HasRewardSelection { get; init; }
+
         public required IReadOnlyList<string> PrerequisiteQuestIds { get; init; }
 
         public required IReadOnlyList<string> PrerequisiteKeyItems { get; init; }
@@ -80,6 +90,9 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             RegexOptions.Compiled);
 
         private static readonly Regex RepeatableRegex = new(@"\.IsRepeatable\(\s*\)", RegexOptions.Compiled);
+
+        private static readonly Regex RewardSelectionRegex = new(
+            @"\.HasRewardSelection\(\s*\)", RegexOptions.Compiled);
 
         private static readonly Regex PrerequisiteQuestRegex = new(
             @"\.PrerequisiteQuest\(\s*(?:""(?<literal>(?:[^""\\]|\\.)*)""|(?<identifier>[A-Za-z_]\w*))",
@@ -236,6 +249,7 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
                 StateCount = stateCount,
                 JournalTextByState = journalByState,
                 IsRepeatable = RepeatableRegex.IsMatch(chain),
+                HasRewardSelection = RewardSelectionRegex.IsMatch(chain),
                 PrerequisiteQuestIds = prerequisiteQuests,
                 PrerequisiteKeyItems = prerequisiteKeyItems,
                 PrerequisiteSkills = prerequisiteSkills,

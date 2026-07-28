@@ -144,6 +144,14 @@ namespace SWLOR.CLI
                 return;
             }
 
+            // The same preflight packing runs, for the inverse hazard: unpacking recursively
+            // deletes every resource directory first, which would erase an interrupted save's
+            // .save-backup files (leaving a manifest that can never restore them - the next
+            // toolset open then throws SaveRecoveryException) and would leave a new-area
+            // .pending marker pointing at nothing, failing every subsequent pack. Refusing here
+            // lets the toolset recover the transaction before the evidence is destroyed.
+            RequireNoInterruptedSaves();
+            RequireNoInterruptedAreaCreation();
 
             var folders = GetModuleFolders();
             // Create any missing folders and clear out any files in existing folders.

@@ -2001,3 +2001,28 @@ window on the same areas.
   scene-refresh debounce. The debounce exists for keyboard-repeat edit streams - a NumericUpDown
   drag, held Ctrl+Z - and those still take it; a paint click is a single deliberate act the
   reference toolset answers instantly.
+=======
+## Viewport - 2026-07-27 - Normal, specular and roughness maps
+
+Textured meshes (tiles and model-drawn instances) now render with their NWN:EE material maps: a
+tangent-space normal map perturbs the lit normal, a specular map adds a Blinn-Phong half-vector
+highlight, and a roughness map reshapes that highlight's exponent per fragment. A quick-access-bar
+toggle (`ShowMaterialMaps`, persisted, on by default) drops the viewport back to plain diffuse.
+
+- **Resolution.** `MaterialResolver.ResolveMaterialMaps`: an `.mtr` decides everything
+  (`texture0`/`texture1`/`texture2`/`texture3`; blank or the literal `null` placeholder means none,
+  no guessing); without one, NWN:EE's automatic companion convention probes `<diffuse>_n`/`_s`/`_r`
+  as TGA/DDS. Both shapes ship in the corpus - sw_t_tatooine/wildland/wildwood and the SWTOR
+  placeables carry `.mtr` sets, while loose art like `heavy_repeater_s.dds` is suffix-only.
+- **No tangent attribute.** The shared 8-float vertex layout is untouched: the tangent frame is
+  derived per-fragment from screen-space position/UV derivatives (Schueler's cotangent frame), with
+  a degenerate-UV guard falling back to the geometric normal. Specular uses abs on the half-dot for
+  the same two-sided reason as the diffuse term; roughness maps to a 2..256 exponent, 32 without one.
+- **Binding.** Maps ride texture units 1-3 with the diffuse bound last so unit 0 stays the active
+  unit for every other draw path. Map textures cache by their own resref; the raw-name memo caches
+  the whole material, and the toggle gates only the shader flags so flipping it costs nothing.
+- **Verification.** `RenderPipelineTests` covers the mtr trio (fishing_rod), the literal-null slot
+  (c_n_thranta), suffix fallback (heavy_repeater) and the no-map passthrough. Driven in the running
+  app on anchor_road_est (ttd01, mtr-mapped): scene renders with maps on, the toolbar toggle changes
+  the rendered pixels (mean channel diff 0.83 over the viewport) and toggling back reproduces the
+  baseline frame byte-for-byte.

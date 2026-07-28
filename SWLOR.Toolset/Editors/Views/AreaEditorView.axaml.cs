@@ -73,6 +73,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.ShowAreaLighting = _display.ShowAreaLighting;
             AreaView.ShowFog = _display.ShowFog;
             AreaView.ShowCeilings = _display.ShowCeilings;
+            AreaView.ShowMaterialMaps = _display.ShowMaterialMaps;
         }
 
         private void AttachViewModel()

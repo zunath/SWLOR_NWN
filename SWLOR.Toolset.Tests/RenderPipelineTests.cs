@@ -358,5 +358,65 @@ namespace SWLOR.Toolset.Tests
 
             resolved.Should().Be("zde01_wall9k1");
         }
+
+        [Test]
+        public void MaterialResolver_ResolveMaterialMaps_MtrDeclaresNormalAndSpecular_ReturnsAllThree()
+        {
+            var index = BuildHakOnlyIndex();
+
+            // fishing_rod.mtr ships in the haks declaring texture0 fishing_rod,
+            // texture1 fishing_rod_n, texture2 fishing_rod_s, texture3 fishing_rod_r
+            // (plus literal "null" placeholders in texture4/5, which must be ignored).
+            var maps = MaterialResolver.ResolveMaterialMaps(index, "fishing_rod");
+
+            maps.Diffuse.Should().Be("fishing_rod");
+            maps.Normal.Should().Be("fishing_rod_n");
+            maps.Specular.Should().Be("fishing_rod_s");
+            maps.Roughness.Should().Be("fishing_rod_r");
+        }
+
+        [Test]
+        public void MaterialResolver_ResolveMaterialMaps_MtrNullSlot_MeansNoMapAndNoSuffixGuessing()
+        {
+            var index = BuildHakOnlyIndex();
+
+            // c_n_thranta.mtr declares "texture1 null" alongside real texture2/texture3 slots -
+            // the literal null placeholder must come back as no normal map, not a texture
+            // named "null".
+            var maps = MaterialResolver.ResolveMaterialMaps(index, "c_n_thranta");
+
+            maps.Diffuse.Should().Be("c_n_thrant");
+            maps.Normal.Should().BeNull();
+            maps.Specular.Should().Be("Aegis_specular");
+            maps.Roughness.Should().Be("Aegis_specular");
+        }
+
+        [Test]
+        public void MaterialResolver_ResolveMaterialMaps_NoMtr_FindsSuffixCompanions()
+        {
+            var index = BuildHakOnlyIndex();
+
+            // heavy_repeater has no .mtr; heavy_repeater_s.dds ships beside heavy_repeater.dds
+            // (and no _n/_r companions exist), exercising NWN:EE's automatic suffix convention.
+            var maps = MaterialResolver.ResolveMaterialMaps(index, "heavy_repeater");
+
+            maps.Diffuse.Should().Be("heavy_repeater");
+            maps.Normal.Should().BeNull();
+            maps.Specular.Should().Be("heavy_repeater_s");
+            maps.Roughness.Should().BeNull();
+        }
+
+        [Test]
+        public void MaterialResolver_ResolveMaterialMaps_NoMtrAndNoCompanions_ReturnsDiffuseOnly()
+        {
+            var index = BuildHakOnlyIndex();
+
+            var maps = MaterialResolver.ResolveMaterialMaps(index, "zde01_wall9k1");
+
+            maps.Diffuse.Should().Be("zde01_wall9k1");
+            maps.Normal.Should().BeNull();
+            maps.Specular.Should().BeNull();
+            maps.Roughness.Should().BeNull();
+        }
     }
 }

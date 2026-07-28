@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -60,6 +60,11 @@ namespace SWLOR.Toolset.Settings
         [JsonPropertyName("showCeilings")]
         public bool ShowCeilings { get; set; }
 
+        // Defaults true, unlike the other display switches: material maps are what the game
+        // renders, so a settings file from before the switch existed keeps them on.
+        [JsonPropertyName("showMaterialMaps")]
+        public bool ShowMaterialMaps { get; set; } = true;
+
         [JsonPropertyName("dockProportions")]
         public Dictionary<string, double> DockProportions { get; set; } = new();
 
@@ -96,6 +101,7 @@ namespace SWLOR.Toolset.Settings
         private bool _showAreaLighting;
         private bool _showFog;
         private bool _showCeilings;
+        private bool _showMaterialMaps = true;
         private Dictionary<string, double> _dockProportions = new(StringComparer.Ordinal);
         private double _paletteCategoryProportion;
         private bool _suppressSave;
@@ -279,6 +285,20 @@ namespace SWLOR.Toolset.Settings
             }
         }
 
+        /// <summary>Whether the viewport renders normal/specular/roughness material maps.</summary>
+        public bool ShowMaterialMaps
+        {
+            get => _showMaterialMaps;
+            set
+            {
+                if (_showMaterialMaps == value)
+                    return;
+
+                _showMaterialMaps = value;
+                Save();
+            }
+        }
+
         /// <summary>
         /// Which Module Contents tab was open, as a resource extension; empty when none was saved.
         /// </summary>
@@ -426,6 +446,7 @@ namespace SWLOR.Toolset.Settings
                         settings._showAreaLighting = data.ShowAreaLighting;
                         settings._showFog = data.ShowFog;
                         settings._showCeilings = data.ShowCeilings;
+                        settings._showMaterialMaps = data.ShowMaterialMaps;
                         settings._paletteCategoryProportion =
                             data.PaletteCategoryProportion > 0 && data.PaletteCategoryProportion < 1
                                 ? data.PaletteCategoryProportion
@@ -520,6 +541,7 @@ namespace SWLOR.Toolset.Settings
                     ShowAreaLighting = _showAreaLighting,
                     ShowFog = _showFog,
                     ShowCeilings = _showCeilings,
+                    ShowMaterialMaps = _showMaterialMaps,
                     DockProportions = new Dictionary<string, double>(_dockProportions, StringComparer.Ordinal),
                     PaletteCategoryProportion = Finite(_paletteCategoryProportion) ?? 0
                 };

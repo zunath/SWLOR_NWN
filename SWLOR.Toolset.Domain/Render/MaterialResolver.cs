@@ -101,18 +101,77 @@ namespace SWLOR.Toolset.Domain.Render
             if (string.IsNullOrWhiteSpace(textureOrMaterialName))
                 return textureOrMaterialName;
 
-            var identity = new ResourceIdentity(textureOrMaterialName, ResourceIdentity.TypeFromExtension("mtr"));
-            if (!index.TryLookup(identity, out var handle))
+            var material = TryParseMaterial(index, textureOrMaterialName);
+            if (material == null)
                 return textureOrMaterialName;
 
-            var bytes = handle.GetBytes();
-            if (bytes.Length == 0)
-                return textureOrMaterialName;
-
-            var material = Parse(Encoding.ASCII.GetString(bytes));
             var diffuse = material.GetTexture(0);
             return string.IsNullOrWhiteSpace(diffuse) ? textureOrMaterialName : diffuse;
         }
+
+        /// <summary>
+        /// Resolve the full map set for <paramref name="textureOrMaterialName"/>. With an .mtr
+        /// present, its slots decide everything: <c>texture0</c> is the diffuse (falling back to
+        /// the input name), <c>texture1</c> the normal map, <c>texture2</c> the specular map,
+        /// <c>texture3</c> the roughness map - a blank slot or the literal <c>null</c> placeholder
+        /// means the material has none, and no further guessing happens. Without an .mtr, NWN:EE's
+        /// automatic companion-texture convention applies: a TGA or DDS named
+        /// <c>&lt;diffuse&gt;_n</c> is the normal map, <c>&lt;diffuse&gt;_s</c> the specular map
+        /// and <c>&lt;diffuse&gt;_r</c> the roughness map, when such a resource exists.
+        /// </summary>
+        public static MaterialMaps ResolveMaterialMaps(ResourceIndex index, string textureOrMaterialName)
+        {
+            if (string.IsNullOrWhiteSpace(textureOrMaterialName))
+                return new MaterialMaps { Diffuse = textureOrMaterialName };
+
+            var material = TryParseMaterial(index, textureOrMaterialName);
+            if (material != null)
+            {
+                return new MaterialMaps
+                {
+                    Diffuse = EffectiveSlot(material.GetTexture(0)) ?? textureOrMaterialName,
+                    Normal = EffectiveSlot(material.GetTexture(1)),
+                    Specular = EffectiveSlot(material.GetTexture(2)),
+                    Roughness = EffectiveSlot(material.GetTexture(3))
+                };
+            }
+
+            return new MaterialMaps
+            {
+                Diffuse = textureOrMaterialName,
+                Normal = FindCompanionTexture(index, textureOrMaterialName, "_n"),
+                Specular = FindCompanionTexture(index, textureOrMaterialName, "_s"),
+                Roughness = FindCompanionTexture(index, textureOrMaterialName, "_r")
+            };
+        }
+
+        private static MtrMaterial? TryParseMaterial(ResourceIndex index, string materialName)
+        {
+            var identity = new ResourceIdentity(materialName, ResourceIdentity.TypeFromExtension("mtr"));
+            if (!index.TryLookup(identity, out var handle))
+                return null;
+
+            var bytes = handle.GetBytes();
+            return bytes.Length == 0 ? null : Parse(Encoding.ASCII.GetString(bytes));
+        }
+
+        /// <summary>A declared slot value, where blank and the literal <c>null</c> placeholder both mean absent.</summary>
+        private static string? EffectiveSlot(string? declared) =>
+            string.IsNullOrWhiteSpace(declared) || declared.Equals("null", StringComparison.OrdinalIgnoreCase)
+                ? null
+                : declared;
+
+        private static string? FindCompanionTexture(ResourceIndex index, string diffuse, string suffix)
+        {
+            var candidate = diffuse + suffix;
+            return TextureResourceExists(index, candidate) ? candidate : null;
+        }
+
+        // PLT is deliberately absent: companion maps are plain TGA/DDS artwork, never
+        // palette-layered textures.
+        private static bool TextureResourceExists(ResourceIndex index, string resRef) =>
+            index.TryLookup(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("tga")), out _) ||
+            index.TryLookup(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("dds")), out _);
 
         private static readonly char[] WhitespaceChars = { ' ', '\t' };
     }

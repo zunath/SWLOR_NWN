@@ -26,6 +26,7 @@ namespace SWLOR.Toolset.Viewport
                 _showAreaLighting = settings?.ShowAreaLighting ?? false;
                 _showFog = settings?.ShowFog ?? false;
                 _showCeilings = settings?.ShowCeilings ?? false;
+                _showMaterialMaps = settings?.ShowMaterialMaps ?? true;
             }
             finally
             {
@@ -61,6 +62,18 @@ namespace SWLOR.Toolset.Viewport
         private bool _showCeilings;
 
         /// <summary>
+        /// Render normal/specular/roughness material maps on textured meshes.
+        /// </summary>
+        /// <remarks>
+        /// On by default - it is what the game itself renders. One switch for all three map kinds
+        /// rather than one each: NWN:EE treats them as a single material feature (the
+        /// <c>NormalAndSpecMapped</c> renderhint), and the reason to turn them off - judging base
+        /// diffuse artwork without relief and glint over it - applies to all of them at once.
+        /// </remarks>
+        [ObservableProperty]
+        private bool _showMaterialMaps = true;
+
+        /// <summary>
         /// Reserved for the shadow pass, which the viewport renderer does not have yet. The bar shows
         /// the control disabled rather than omitting it, so it is clear the switch is missing rather
         /// than hidden.
@@ -76,6 +89,8 @@ namespace SWLOR.Toolset.Viewport
 
         partial void OnShowCeilingsChanged(bool value) => Persist();
 
+        partial void OnShowMaterialMapsChanged(bool value) => Persist();
+
         private void Persist()
         {
             if (_loading || _settings == null)
@@ -84,6 +99,7 @@ namespace SWLOR.Toolset.Viewport
             _settings.ShowAreaLighting = ShowAreaLighting;
             _settings.ShowFog = ShowFog;
             _settings.ShowCeilings = ShowCeilings;
+            _settings.ShowMaterialMaps = ShowMaterialMaps;
         }
     }
 }

@@ -155,7 +155,13 @@ in vec2 TexCoord;
 in vec3 WorldPos;
 
 uniform sampler2D diffuseTexture;
+uniform sampler2D normalTexture;
+uniform sampler2D specularTexture;
+uniform sampler2D roughnessTexture;
 uniform bool hasTexture;
+uniform bool hasNormalMap;
+uniform bool hasSpecularMap;
+uniform bool hasRoughnessMap;
 uniform vec3 flatColor;
 uniform bool unlit;
 uniform float alphaCutoff;
@@ -167,6 +173,39 @@ uniform vec3 ambientColor;
 uniform vec3 fogColor;
 uniform float fogDensity;
 uniform vec3 cameraPos;
+
+// Blinn-Phong exponent for a specular-mapped highlight when the material carries no
+// roughness map. One shared value rather than a material parameter: MTR files carry no
+// shininess figure of their own.
+const float DefaultSpecularShininess = 32.0;
+
+// Apply the tangent-space normal map to the interpolated geometric normal. The tangent basis
+// is derived per-fragment from screen-space position/UV derivatives (Schueler's cotangent
+// frame) because the shared 8-float vertex layout carries no tangent attribute - this keeps
+// every mesh-building and batching path untouched.
+vec3 PerturbNormal(vec3 geomNormal, vec2 uv)
+{
+    vec3 dp1 = dFdx(WorldPos);
+    vec3 dp2 = dFdy(WorldPos);
+    vec2 duv1 = dFdx(uv);
+    vec2 duv2 = dFdy(uv);
+
+    vec3 dp2perp = cross(dp2, geomNormal);
+    vec3 dp1perp = cross(geomNormal, dp1);
+    vec3 tangent = dp2perp * duv1.x + dp1perp * duv2.x;
+    vec3 bitangent = dp2perp * duv1.y + dp1perp * duv2.y;
+
+    // Degenerate UVs (a mesh face with no UV area) would make inversesqrt blow up to NaN;
+    // fall back to the unperturbed normal instead.
+    float maxLenSq = max(dot(tangent, tangent), dot(bitangent, bitangent));
+    if (maxLenSq <= 0.0)
+        return geomNormal;
+
+    float invMax = inversesqrt(maxLenSq);
+    mat3 tbn = mat3(tangent * invMax, bitangent * invMax, geomNormal);
+    vec3 mapNormal = texture(normalTexture, uv).xyz * 2.0 - 1.0;
+    return normalize(tbn * mapNormal);
+}
 
 void main()
 {
@@ -184,9 +223,34 @@ void main()
     }
 
     vec3 norm = normalize(Normal);
+    // Gated on hasTexture as well as the map flags: draw paths that render flat-colored lit
+    // geometry (fallback cubes) never touch the map uniforms, so only the textured mesh path -
+    // which sets them on every bind - can turn these on.
+    if (hasTexture && hasNormalMap)
+        norm = PerturbNormal(norm, TexCoord);
+
     // Two-sided lighting (abs, not max) - NWN tile/prop meshes have inconsistent winding.
     float diff = abs(dot(norm, lightDir));
     vec3 result = (ambientColor + diff * lightColor) * texColor.rgb;
+
+    if (hasTexture && hasSpecularMap)
+    {
+        // Blinn-Phong half-vector highlight, tinted by the specular map. abs on the half-dot
+        // for the same two-sided reason as the diffuse term. A roughness map reshapes the
+        // exponent per-fragment: rough (1.0) spreads the highlight wide and dull, smooth (0.0)
+        // tightens it toward a sharp gleam.
+        float shininess = DefaultSpecularShininess;
+        if (hasRoughnessMap)
+        {
+            float roughness = clamp(texture(roughnessTexture, TexCoord).r, 0.0, 1.0);
+            shininess = exp2(mix(8.0, 1.0, roughness)); // 256 at mirror-smooth down to 2 at fully rough
+        }
+
+        vec3 viewDir = normalize(cameraPos - WorldPos);
+        vec3 halfDir = normalize(lightDir + viewDir);
+        float spec = pow(abs(dot(norm, halfDir)), shininess);
+        result += spec * texture(specularTexture, TexCoord).rgb * lightColor;
+    }
 
     if (fogDensity > 0.0)
     {
@@ -251,6 +315,13 @@ void main()
             public int IndexCount { get; }
         }
 
+        /// <summary>
+        /// The GL-side textures one mesh material binds: the diffuse (with its alpha cutoff) plus
+        /// optional normal, specular and roughness maps, each 0 when absent or unloadable.
+        /// </summary>
+        private readonly record struct MeshMaterial(
+            uint TexId, float AlphaCutoff, uint NormalTexId, uint SpecularTexId, uint RoughnessTexId);
+
         private GL? _gl;
         private uint _shaderProgram;
 
@@ -258,10 +329,17 @@ void main()
         private readonly Dictionary<string, (uint TexId, float AlphaCutoff)> _textureCache =
             new(StringComparer.OrdinalIgnoreCase);
 
+        // Normal/specular map textures by their own resref, separate from _textureCache because a
+        // map resref is a different resource than a diffuse and needs no alpha-cutoff resolution.
+        // 0 memoizes a failed load. Cleared alongside the other caches on GL teardown.
+        private readonly Dictionary<string, uint> _mapTextureCache =
+            new(StringComparer.OrdinalIgnoreCase);
+
         // Memoize the raw-mesh-texture-name -> resolved result so the per-draw path
         // (thousands of BindMeshTexture calls per frame) skips MaterialResolver's string resolution.
-        // Points at the same GL texture ids as _textureCache; cleared alongside it on GL teardown.
-        private readonly Dictionary<string, (uint TexId, float AlphaCutoff)> _rawTextureCache =
+        // Points at the same GL texture ids as _textureCache/_mapTextureCache; cleared alongside
+        // them on GL teardown.
+        private readonly Dictionary<string, MeshMaterial> _rawTextureCache =
             new(StringComparer.OrdinalIgnoreCase);
 
         private StaticMeshBuffer? _fallbackCubeBuffer;
@@ -607,6 +685,27 @@ void main()
 
         /// <summary>Whether <paramref name="scene"/>'s ceilings are cut out of the tile pass.</summary>
         private bool HidesCeilings(AreaScene scene) => !_showCeilings && scene.IsInteriorTileset;
+
+        /// <summary>
+        /// Whether textured meshes render with their normal/specular/roughness maps (from an .mtr
+        /// or NWN:EE's <c>_n</c>/<c>_s</c>/<c>_r</c> companion-texture convention). On by default -
+        /// it is what the game itself renders - with a quick-access-bar switch to drop back to
+        /// plain diffuse when the extra relief and glint get in the way of judging base artwork.
+        /// </summary>
+        private bool _showMaterialMaps = true;
+
+        public bool ShowMaterialMaps
+        {
+            get => _showMaterialMaps;
+            set
+            {
+                if (_showMaterialMaps == value)
+                    return;
+
+                _showMaterialMaps = value;
+                RequestNextFrameRendering();
+            }
+        }
 
         private bool _showAreaLighting;
 
@@ -1926,6 +2025,10 @@ void main()
                         if (texId != 0)
                             _gl.DeleteTexture(texId);
                     _textureCache.Clear();
+                    foreach (var texId in _mapTextureCache.Values)
+                        if (texId != 0)
+                            _gl.DeleteTexture(texId);
+                    _mapTextureCache.Clear();
                     _rawTextureCache.Clear();
 
                     foreach (var buffer in _modelBuffers.Values)
@@ -2276,6 +2379,12 @@ void main()
             SetUniformVec3("fogColor", scene.Lighting.FogColor);
             SetUniformFloat("fogDensity", _showFog ? scene.Lighting.FogDensity : 0f);
             SetUniformInt("diffuseTexture", 0);
+            SetUniformInt("normalTexture", 1);
+            SetUniformInt("specularTexture", 2);
+            SetUniformInt("roughnessTexture", 3);
+            SetUniformBool("hasNormalMap", false);
+            SetUniformBool("hasSpecularMap", false);
+            SetUniformBool("hasRoughnessMap", false);
             SetUniformVec2("uvScale", Vector2.One);
             SetUniformVec2("uvOffset", Vector2.Zero);
             SetUniformBool("useTextureAlpha", false);
@@ -2641,7 +2750,8 @@ void main()
             if (string.IsNullOrWhiteSpace(textureName))
                 return false;
 
-            var (texId, _) = ResolveTexture(textureName);
+            // Particles draw unlit, so only the diffuse matters here.
+            var texId = ResolveTexture(textureName).TexId;
             if (texId == 0)
                 return false;
 
@@ -3601,53 +3711,109 @@ void main()
 
         private void BindMeshTexture(string? textureName)
         {
-            var (texId, alphaCutoff) = string.IsNullOrWhiteSpace(textureName)
-                ? (0u, 0f)
+            var material = string.IsNullOrWhiteSpace(textureName)
+                ? default
                 : ResolveTexture(textureName);
 
             SetUniformBool("unlit", false);
 
-            if (texId != 0)
+            if (material.TexId != 0)
             {
                 SetUniformBool("hasTexture", true);
-                SetUniformFloat("alphaCutoff", alphaCutoff);
-                _gl!.ActiveTexture(TextureUnit.Texture0);
-                _gl.BindTexture(TextureTarget.Texture2D, texId);
+                SetUniformFloat("alphaCutoff", material.AlphaCutoff);
+
+                // The display toggle gates the flags rather than the caches, so flipping it is
+                // instant - the map textures stay resident and just stop being sampled.
+                var useMaps = _showMaterialMaps;
+                SetUniformBool("hasNormalMap", useMaps && material.NormalTexId != 0);
+                SetUniformBool("hasSpecularMap", useMaps && material.SpecularTexId != 0);
+                SetUniformBool("hasRoughnessMap", useMaps && material.RoughnessTexId != 0);
+                _gl!.ActiveTexture(TextureUnit.Texture1);
+                _gl.BindTexture(TextureTarget.Texture2D, material.NormalTexId);
+                _gl.ActiveTexture(TextureUnit.Texture2);
+                _gl.BindTexture(TextureTarget.Texture2D, material.SpecularTexId);
+                _gl.ActiveTexture(TextureUnit.Texture3);
+                _gl.BindTexture(TextureTarget.Texture2D, material.RoughnessTexId);
+
+                // Unit 0 last, so every other draw path (particles, markers) that assumes the
+                // active unit is Texture0 keeps working untouched.
+                _gl.ActiveTexture(TextureUnit.Texture0);
+                _gl.BindTexture(TextureTarget.Texture2D, material.TexId);
             }
             else
             {
                 SetUniformBool("hasTexture", false);
+                SetUniformBool("hasNormalMap", false);
+                SetUniformBool("hasSpecularMap", false);
+                SetUniformBool("hasRoughnessMap", false);
                 SetUniformFloat("alphaCutoff", 0f);
                 SetUniformVec3("flatColor", UntexturedTileColor);
             }
         }
 
-        private (uint TexId, float AlphaCutoff) ResolveTexture(string rawTextureName)
+        private MeshMaterial ResolveTexture(string rawTextureName)
         {
             if (ResourceIndex == null)
-                return (0, 0f);
+                return default;
 
             if (_rawTextureCache.TryGetValue(rawTextureName, out var memo))
                 return memo;
 
-            string resolvedName;
+            MaterialMaps maps;
             try
             {
-                resolvedName = MaterialResolver.ResolveDiffuseTextureName(ResourceIndex, rawTextureName);
+                maps = MaterialResolver.ResolveMaterialMaps(ResourceIndex, rawTextureName);
             }
             catch (Exception)
             {
-                resolvedName = rawTextureName;
+                maps = new MaterialMaps { Diffuse = rawTextureName };
             }
 
-            if (!_textureCache.TryGetValue(resolvedName, out var cached))
+            if (!_textureCache.TryGetValue(maps.Diffuse, out var cached))
             {
-                cached = LoadAndUploadTexture(resolvedName);
-                _textureCache[resolvedName] = cached;
+                cached = LoadAndUploadTexture(maps.Diffuse);
+                _textureCache[maps.Diffuse] = cached;
             }
 
-            _rawTextureCache[rawTextureName] = cached;
-            return cached;
+            // A mesh whose diffuse failed to resolve draws flat-colored; loading its maps
+            // anyway would waste GPU memory on textures the shader never samples.
+            var material = cached.TexId == 0
+                ? new MeshMaterial(0, 0f, 0, 0, 0)
+                : new MeshMaterial(
+                    cached.TexId,
+                    cached.AlphaCutoff,
+                    ResolveMapTexture(maps.Normal),
+                    ResolveMapTexture(maps.Specular),
+                    ResolveMapTexture(maps.Roughness));
+
+            _rawTextureCache[rawTextureName] = material;
+            return material;
+        }
+
+        private uint ResolveMapTexture(string? mapName)
+        {
+            if (string.IsNullOrWhiteSpace(mapName))
+                return 0;
+
+            if (_mapTextureCache.TryGetValue(mapName, out var texId))
+                return texId;
+
+            texId = LoadAndUploadMapTexture(mapName);
+            _mapTextureCache[mapName] = texId;
+            return texId;
+        }
+
+        private uint LoadAndUploadMapTexture(string mapName)
+        {
+            try
+            {
+                var image = TextureLoader.Load(ResourceIndex!, mapName);
+                return image == null ? 0u : UploadTexture(image.Width, image.Height, image.Pixels);
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
         }
 
         private (uint TexId, float AlphaCutoff) LoadAndUploadTexture(string resolvedName)

@@ -2054,3 +2054,30 @@ against the canonical JSON:
   bounds. The measured Aurora behavior (colors, tile ids, orientations) is recorded in the session
   notes that produced this entry.
 
+
+## Area editor - 2026-07-28 - Crosser painting completes the reference toolset's terrain brush set
+
+The Terrain palette now carries the reference toolset's full brush set: terrains (vertex paints),
+crossers - roads, bridges, walls, painted onto grid EDGES - and the (Eraser). Verified against
+Aurora live on ztd01 before implementing: each road dab re-solved exactly the two cells sharing the
+clicked edge into single-edge stub tiles (ttd01_g05_04, road on one edge), and a second dab on
+another edge of the same cell re-solved it into the two-edge corner piece (ttd01_g01_03) - the
+strict symmetric-crosser rule is what turns repeated dabs into connected runs.
+
+- **Engine.** `TilePainter.PaintCrosserEdge`: the painted edge must carry the crosser EXACTLY (the
+  blank-tolerant corpus rule would let a "Road" requirement accept a roadless tile); the other
+  edges keep the strict symmetry rule against their neighbours, with unconstrained edges (grid
+  border, empty neighbour) preferring blank so a stub never drags another crosser off the map. A
+  border edge touches one cell - a road may run off the map. Refusal silent and atomic; repaint a
+  fixed point. The eraser is the same paint with a blank crosser.
+- **Palette.** `PaintableCrossers` offers each crosser some tile actually carries, labelled by the
+  same name-first/strref-second rule as terrains, preceded by "(Eraser)"; all file under the
+  Terrain category like the reference's Terrain tree.
+- **Viewport.** A crosser brush snaps the cursor to the nearest grid edge and draws the same red
+  paint square centred on the edge midpoint - straddling the two cells the paint touches, the edge
+  analogue of the vertex cursor (cursor geometry inferred; the solver behavior is what was
+  measured). Picks report through `TileEdgePicked`; the brush stays armed.
+- **Verification.** Six new `TilePainterTests` pin the model: exactly-two-cells scope with stub
+  edges verified empty elsewhere, second-dab corner promotion, eraser round-trip, border-edge
+  single-cell reach with fixed-point repaint, atomic refusal, and crosser discovery. The palette
+  corpus tests now assert the combined brush contract.

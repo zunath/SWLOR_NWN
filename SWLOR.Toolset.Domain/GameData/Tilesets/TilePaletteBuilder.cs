@@ -56,11 +56,14 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 var categories = new List<TilePaletteCategory>(3);
 
                 // Terrain leads because it is the brush: a builder lays ground first and reaches for a
-                // specific piece afterwards. Only terrains the tileset can actually present as a solid
-                // full tile are offered - the rest have nothing to fill a cell with.
-                var terrains = BuildTerrainEntries(tileset, resolveStrRef);
-                if (terrains.Count > 0)
-                    categories.Add(new TilePaletteCategory(TerrainCategoryName, terrains));
+                // specific piece afterwards. Crossers (roads, bridges, walls - painted onto grid
+                // edges) file under the same category, before the terrains, matching the reference
+                // toolset's Terrain tree. Only brushes the tileset can actually satisfy are offered -
+                // a terrain needs a solid full tile, a crosser needs some tile carrying it.
+                var brushes = BuildCrosserEntries(tileset, resolveStrRef);
+                brushes.AddRange(BuildTerrainEntries(tileset, resolveStrRef));
+                if (brushes.Count > 0)
+                    categories.Add(new TilePaletteCategory(TerrainCategoryName, brushes));
 
                 var allGroups = BuildGroupEntries(tileset, resolveStrRef, reportProblem);
                 var features = allGroups.Where(IsFeature).ToList();
@@ -148,6 +151,81 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 return resolved;
 
             return terrain.Name;
+        }
+
+        /// <summary>
+        /// One brush per crosser the tileset can actually paint - each has at least one tile
+        /// carrying it on some edge, which is the same reachability test the terrains get. The
+        /// entry's representative tile (thumbnail) is the first tile carrying the crosser.
+        /// </summary>
+        /// <summary>
+        /// The eraser brush's label, and its sentinel: a crosser entry whose crosser is the empty
+        /// string paints "nothing" onto an edge, which is how a road or wall is dissolved back to
+        /// plain ground. Named like the reference toolset's own entry.
+        /// </summary>
+        public const string EraserLabel = "(Eraser)";
+
+        private static List<TilePaletteEntry> BuildCrosserEntries(
+            TilesetDefinition tileset,
+            Func<uint, string?>? resolveStrRef)
+        {
+            var entries = new List<TilePaletteEntry>();
+
+            var paintable = TilePainter.PaintableCrossers(tileset);
+            if (paintable.Count > 0)
+            {
+                entries.Add(new TilePaletteEntry(
+                    EraserLabel,
+                    Array.Empty<int>(),
+                    Columns: 1,
+                    Rows: 1,
+                    PreviewModelResRef: string.Empty,
+                    Terrain: null,
+                    Crosser: string.Empty));
+            }
+
+            foreach (var crosserName in paintable)
+            {
+                var representative = -1;
+                for (var id = 0; id < tileset.Tiles.Count && representative < 0; id++)
+                {
+                    var tile = tileset.Tiles[id];
+                    if (string.Equals(tile.Top, crosserName, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(tile.Right, crosserName, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(tile.Bottom, crosserName, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(tile.Left, crosserName, StringComparison.OrdinalIgnoreCase))
+                        representative = id;
+                }
+
+                if (representative < 0)
+                    continue;
+
+                var definition = tileset.Crossers.FirstOrDefault(candidate =>
+                    string.Equals(candidate.Name, crosserName, StringComparison.OrdinalIgnoreCase));
+
+                entries.Add(new TilePaletteEntry(
+                    CrosserLabel(definition, crosserName, resolveStrRef),
+                    new[] { representative },
+                    Columns: 1,
+                    Rows: 1,
+                    tileset.Tiles[representative].Model ?? string.Empty,
+                    Terrain: null,
+                    Crosser: crosserName));
+            }
+
+            return entries;
+        }
+
+        /// <summary>Same name-first, strref-second rule as <see cref="TerrainLabel"/>.</summary>
+        private static string CrosserLabel(
+            CrosserDefinition? crosser, string fallbackName, Func<uint, string?>? resolveStrRef)
+        {
+            if (crosser?.StrRef is { } strRef && strRef >= 0 &&
+                resolveStrRef?.Invoke((uint)strRef) is { } resolved &&
+                !string.IsNullOrWhiteSpace(resolved))
+                return resolved;
+
+            return crosser?.Name ?? fallbackName;
         }
 
         /// <summary>

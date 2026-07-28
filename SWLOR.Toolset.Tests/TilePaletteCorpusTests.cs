@@ -131,26 +131,40 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
-        /// The Terrain category is the brush half of this palette, so every entry it offers must be
-        /// one the painter can actually resolve: a terrain the .set declares, backed by a real tile.
-        /// An entry that named a terrain with no solid tile would arm a brush whose every click did
-        /// nothing at all.
+        /// The Terrain category is the brush half of this palette: terrain brushes (vertex paints),
+        /// crosser brushes (edge paints) and the eraser file together there, matching the reference
+        /// toolset's Terrain tree. Every entry must be one the painter can actually resolve - a
+        /// declared terrain backed by a solid tile, or a declared crosser some tile carries. An
+        /// entry the tileset cannot satisfy would arm a brush whose every click did nothing at all.
         /// </summary>
         [Test]
         [TestCase("shp02")]
         [TestCase("ttd01")]
-        public void Terrain_Entries_Name_A_Terrain_The_Tileset_Declares(string resref)
+        public void Terrain_Entries_Name_A_Terrain_Or_Crosser_The_Tileset_Declares(string resref)
         {
             var (palette, _) = Data.Build(resref);
             Data.Tilesets.TryGetTileset(resref, out var tileset).Should().BeTrue();
 
-            var terrains = CategoryOf(palette, TilePaletteBuilder.TerrainCategoryName);
-            terrains.Should().NotBeEmpty(because: $"'{resref}' declares {tileset.Terrains.Count} terrains");
+            var brushes = CategoryOf(palette, TilePaletteBuilder.TerrainCategoryName);
+            brushes.Should().NotBeEmpty(because: $"'{resref}' declares {tileset.Terrains.Count} terrains");
 
-            var declared = tileset.Terrains.Select(terrain => terrain.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            terrains.Should().OnlyContain(entry => entry.Terrain != null && declared.Contains(entry.Terrain!));
-            terrains.Should().OnlyContain(entry => entry.Rows == 1 && entry.Columns == 1);
-            terrains.Should().OnlyContain(entry => entry.TileIds.Count == 1);
+            var declaredTerrains = tileset.Terrains.Select(terrain => terrain.Name)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var declaredCrossers = tileset.Crossers.Select(crosser => crosser.Name)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            brushes.Should().OnlyContain(entry => entry.Terrain == null || entry.Crosser == null,
+                "an entry is one brush, never a terrain and a crosser at once");
+            brushes.Should().OnlyContain(entry => entry.Terrain != null || entry.Crosser != null,
+                "every entry in the brush category paints something");
+            brushes.Where(entry => entry.Terrain != null).Should().NotBeEmpty();
+            brushes.Should().OnlyContain(entry =>
+                entry.Terrain == null || declaredTerrains.Contains(entry.Terrain!));
+            brushes.Should().OnlyContain(entry =>
+                entry.Crosser == null || entry.Crosser.Length == 0 || declaredCrossers.Contains(entry.Crosser!));
+            brushes.Should().OnlyContain(entry => entry.Rows == 1 && entry.Columns == 1);
+            brushes.Where(entry => entry.Terrain != null)
+                .Should().OnlyContain(entry => entry.TileIds.Count == 1);
         }
 
         /// <summary>
@@ -168,6 +182,22 @@ namespace SWLOR.Toolset.Tests
 
             foreach (var entry in CategoryOf(palette, TilePaletteBuilder.TerrainCategoryName))
             {
+                if (entry.Crosser != null)
+                {
+                    // A crosser brush's representative tile must actually carry the crosser it
+                    // advertises (the eraser, painting "nothing", has no representative at all).
+                    if (entry.Crosser.Length > 0)
+                    {
+                        var carrier = tileset.Tiles[entry.TileIds[0]];
+                        new[] { carrier.Top, carrier.Right, carrier.Bottom, carrier.Left }
+                            .Should().Contain(edge => string.Equals(
+                                    edge, entry.Crosser, StringComparison.OrdinalIgnoreCase),
+                                because: $"'{entry.Label}' is advertised by a tile carrying it");
+                    }
+
+                    continue;
+                }
+
                 var tile = tileset.Tiles[entry.TileIds[0]];
 
                 tile.TopLeft.Should().BeEquivalentTo(entry.Terrain);
@@ -195,6 +225,9 @@ namespace SWLOR.Toolset.Tests
 
             var previewless = palette.Categories
                 .SelectMany(category => category.Entries)
+                // The eraser paints "nothing" and so has nothing to preview - the one entry with
+                // no representative tile by design.
+                .Where(entry => entry.Label != TilePaletteBuilder.EraserLabel)
                 .Where(entry => entry.PreviewModelResRef.Length == 0)
                 .Select(entry => entry.Label)
                 .ToList();

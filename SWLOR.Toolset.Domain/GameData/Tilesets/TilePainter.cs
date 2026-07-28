@@ -292,6 +292,162 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         }
 
         /// <summary>
+        /// Computes the cells a CROSSER paint (road, bridge, wall, ...) would rewrite - the
+        /// reference toolset's model, verified against it live: the click names one grid EDGE, and
+        /// exactly the (up to) two cells sharing that edge are re-solved so each carries
+        /// <paramref name="crosser"/> on the shared edge. Corner terrains are untouched; the other
+        /// edges of each cell keep the strict symmetric-crosser rule against their neighbours,
+        /// which is what turns repeated dabs into connected runs - painting a second edge of the
+        /// same cell re-solves it into the corner/junction piece (measured on ztd01: two road dabs
+        /// produced two single-edge stubs and one two-edge corner tile).
+        /// </summary>
+        /// <remarks>
+        /// A VERTICAL edge (<paramref name="verticalEdge"/> true) lies at x = <paramref name="edgeColumn"/>
+        /// tiles, between cells (<paramref name="edgeColumn"/>-1, <paramref name="edgeRow"/>) and
+        /// (<paramref name="edgeColumn"/>, <paramref name="edgeRow"/>); a horizontal edge lies at
+        /// y = <paramref name="edgeRow"/> tiles, between cells (<paramref name="edgeColumn"/>,
+        /// <paramref name="edgeRow"/>-1) and (<paramref name="edgeColumn"/>, <paramref name="edgeRow"/>).
+        /// A border edge touches one cell, which is how a road runs off the map. Painting a blank
+        /// <paramref name="crosser"/> ("") is the eraser: it requires the shared edge to carry
+        /// nothing, dissolving a crosser back to plain ground. Refusal is silent and atomic, and a
+        /// cell keeps its tile when it already satisfies the paint, so repainting is a fixed point.
+        /// </remarks>
+        public static IReadOnlyList<TilePaintChange> PaintCrosserEdge(
+            TilesetDefinition tileset, int width, int height,
+            Func<int, int, PlacedTileState?> currentAt,
+            int edgeColumn, int edgeRow, bool verticalEdge, string crosser,
+            Func<int, int>? tileRank = null)
+        {
+            ArgumentNullException.ThrowIfNull(tileset);
+            ArgumentNullException.ThrowIfNull(currentAt);
+            ArgumentNullException.ThrowIfNull(crosser);
+
+            // Bounds: a vertical edge ranges over columns 0..width and rows 0..height-1; a
+            // horizontal edge over columns 0..width-1 and rows 0..height.
+            if (verticalEdge
+                    ? edgeColumn < 0 || edgeColumn > width || edgeRow < 0 || edgeRow >= height
+                    : edgeColumn < 0 || edgeColumn >= width || edgeRow < 0 || edgeRow > height)
+                return Array.Empty<TilePaintChange>();
+
+            var overlay = new Dictionary<(int, int), PlacedTileState>();
+            PlacedTileState? WorkingAt(int c, int r) =>
+                overlay.TryGetValue((c, r), out var v) ? v : currentAt(c, r);
+
+            // The two cells sharing the edge, with the edge each presents at it.
+            var touched = verticalEdge
+                ? new (int Col, int Row, TileEdge Edge)[]
+                {
+                    (edgeColumn - 1, edgeRow, TileEdge.East),
+                    (edgeColumn, edgeRow, TileEdge.West)
+                }
+                : new (int Col, int Row, TileEdge Edge)[]
+                {
+                    (edgeColumn, edgeRow - 1, TileEdge.North),
+                    (edgeColumn, edgeRow, TileEdge.South)
+                };
+
+            var changes = new List<TilePaintChange>();
+
+            foreach (var (col, row, paintedEdge) in touched)
+            {
+                if (col < 0 || row < 0 || col >= width || row >= height)
+                    continue;
+                if (WorkingAt(col, row) is null)
+                    continue;
+
+                var constraint = ConstraintFromVertices(tileset, col, row, currentAt, overlay);
+                var candidates = WithRequiredEdges(
+                    tileset, SetRuleMatcher.FindMatchingTiles(tileset, constraint),
+                    col, row, currentAt, overlay, paintedEdge, crosser);
+                var choice = SelectCandidate(
+                    tileset, candidates, WorkingAt(col, row)?.Candidate, tileRank, preferBlankEdges: false);
+
+                if (choice is not { } chosen)
+                    return Array.Empty<TilePaintChange>(); // atomic, silent refusal
+
+                var before = WorkingAt(col, row);
+                overlay[(col, row)] = new PlacedTileState(chosen.TileId, chosen.Orientation, before?.HeightLevel ?? 0);
+                if (before is not { } prev || prev.Candidate != chosen)
+                    changes.Add(new TilePaintChange(col, row, chosen.TileId, chosen.Orientation));
+            }
+
+            return changes;
+        }
+
+        /// <summary>
+        /// <see cref="WithMatchingCrossers"/> with one edge's requirement overridden by the paint:
+        /// the painted edge must carry exactly <paramref name="paintedCrosser"/> (blank meaning
+        /// "must carry nothing" - the eraser), regardless of what the neighbour across it holds
+        /// right now - that neighbour is the other cell of the same paint and is about to agree.
+        /// Among the survivors, tiles carrying no crosser on UNCONSTRAINED edges (grid border, empty
+        /// neighbour) are preferred, so a road stub never drags a wall off the map with it.
+        /// </summary>
+        private static IReadOnlyList<TileCandidate> WithRequiredEdges(
+            TilesetDefinition tileset, IReadOnlyList<TileCandidate> candidates,
+            int col, int row,
+            Func<int, int, PlacedTileState?> currentAt,
+            IReadOnlyDictionary<(int, int), PlacedTileState> overlay,
+            TileEdge paintedEdge, string paintedCrosser)
+        {
+            string? Required(TileEdge edge, int dc, int dr)
+            {
+                if (edge == paintedEdge)
+                    return paintedCrosser;
+
+                var key = (col + dc, row + dr);
+                var neighbour = overlay.TryGetValue(key, out var fresh) ? fresh : currentAt(key.Item1, key.Item2);
+                if (neighbour is not { } tile || tile.TileId < 0 || tile.TileId >= tileset.Tiles.Count)
+                    return null;
+
+                return TileAdjacency.WorldEdgeCrosser(
+                    tileset.Tiles[tile.TileId], tile.Orientation, TileAdjacency.OppositeEdge(edge)) ?? string.Empty;
+            }
+
+            var requirements = new (TileEdge Edge, string? Crosser)[]
+            {
+                (TileEdge.North, Required(TileEdge.North, 0, 1)),
+                (TileEdge.East, Required(TileEdge.East, 1, 0)),
+                (TileEdge.South, Required(TileEdge.South, 0, -1)),
+                (TileEdge.West, Required(TileEdge.West, -1, 0))
+            };
+
+            bool EdgeIs(TileCandidate candidate, TileEdge edge, string required) => string.Equals(
+                TileAdjacency.WorldEdgeCrosser(tileset.Tiles[candidate.TileId], candidate.Orientation, edge) ?? string.Empty,
+                required,
+                StringComparison.OrdinalIgnoreCase);
+
+            var kept = candidates.Where(candidate => requirements.All(r =>
+                r.Crosser == null || EdgeIs(candidate, r.Edge, r.Crosser))).ToList();
+
+            return Narrow(kept, candidate => requirements.All(r =>
+                r.Crosser != null || EdgeIs(candidate, r.Edge, string.Empty))).ToList();
+        }
+
+        /// <summary>
+        /// The crossers this tileset can actually paint: each has at least one tile carrying it on
+        /// some edge, in declaration order. For the paint palette, beside <see cref="FillableTerrains"/>.
+        /// </summary>
+        public static IReadOnlyList<string> PaintableCrossers(TilesetDefinition tileset)
+        {
+            ArgumentNullException.ThrowIfNull(tileset);
+
+            var carried = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var tile in tileset.Tiles)
+            {
+                foreach (var edge in new[] { tile.Top, tile.Right, tile.Bottom, tile.Left })
+                {
+                    if (!string.IsNullOrWhiteSpace(edge))
+                        carried.Add(edge);
+                }
+            }
+
+            return tileset.Crossers
+                .Select(crosser => crosser.Name)
+                .Where(name => !string.IsNullOrWhiteSpace(name) && carried.Contains(name))
+                .ToList();
+        }
+
+        /// <summary>
         /// The tile that best fills a whole cell with <paramref name="terrain"/> (all four corners),
         /// preferring a crosser-free tile, then the caller's ranking, then lowest id - or null when
         /// the tileset has no such tile. Used by the new-area wizard to pick its blank-canvas fill.

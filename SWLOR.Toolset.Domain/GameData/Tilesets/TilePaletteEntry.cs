@@ -19,11 +19,16 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
     /// recognizable, and every corpus group's first real tile is a distinctive piece of it.
     /// </param>
     /// <param name="Terrain">
-    /// The terrain this entry paints, or null when it is a fixed stamp. A terrain entry does not
-    /// write <paramref name="TileIds"/> literally: it hands the clicked cell to
-    /// <see cref="TilePainter.PaintTerrain"/>, which fills it and re-blends the eight neighbours so
-    /// the edges match. <paramref name="TileIds"/> then holds only a representative tile, used for
-    /// the thumbnail.
+    /// The terrain this entry paints, or null when it is a fixed stamp or a crosser. A terrain
+    /// entry does not write <paramref name="TileIds"/> literally: it names a grid VERTEX that
+    /// <see cref="TilePainter.PaintTerrainVertex"/> re-solves the surrounding cells against.
+    /// <paramref name="TileIds"/> then holds only a representative tile, used for the thumbnail.
+    /// </param>
+    /// <param name="Crosser">
+    /// The edge crosser this entry paints (road, bridge, wall, ...), or null otherwise. A crosser
+    /// entry names a grid EDGE that <see cref="TilePainter.PaintCrosserEdge"/> re-solves the two
+    /// adjacent cells against - the reference toolset's model, verified against it live. Never set
+    /// together with <paramref name="Terrain"/>.
     /// </param>
     public sealed record TilePaletteEntry(
         string Label,
@@ -31,5 +36,6 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         int Columns,
         int Rows,
         string PreviewModelResRef,
-        string? Terrain = null);
+        string? Terrain = null,
+        string? Crosser = null);
 }

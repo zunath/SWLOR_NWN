@@ -546,6 +546,14 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public bool TilePlacementTargetsVertex => _pendingTile?.Terrain is { Length: > 0 };
 
+        /// <summary>
+        /// True while the armed palette entry is a crosser brush (road, bridge, wall - or the
+        /// eraser, whose crosser is the empty string). Crossers paint grid EDGES: the viewport
+        /// snaps to the nearest edge, draws the red edge-centred paint square, and reports edge
+        /// coordinates through GlAreaControl.TileEdgePicked.
+        /// </summary>
+        public bool TilePlacementTargetsEdge => _pendingTile?.Crosser != null;
+
         private IReadOnlyList<RenderModel?> _tilePlacementModels = Array.Empty<RenderModel?>();
 
         /// <summary>
@@ -648,6 +656,7 @@ namespace SWLOR.Toolset.Editors
             _tilePlacementModels = ResolveTileModels(entry);
             OnPropertyChanged(nameof(IsTilePlacementPending));
             OnPropertyChanged(nameof(TilePlacementTargetsVertex));
+            OnPropertyChanged(nameof(TilePlacementTargetsEdge));
             OnPropertyChanged(nameof(TilePlacementFootprint));
             OnPropertyChanged(nameof(TilePlacementModels));
             OnPropertyChanged(nameof(CanRotatePendingTile));
@@ -668,6 +677,7 @@ namespace SWLOR.Toolset.Editors
             InvalidateTilePlacementValidity();
             OnPropertyChanged(nameof(IsTilePlacementPending));
             OnPropertyChanged(nameof(TilePlacementTargetsVertex));
+            OnPropertyChanged(nameof(TilePlacementTargetsEdge));
             OnPropertyChanged(nameof(TilePlacementModels));
             OnPropertyChanged(nameof(PlacementStatus));
             OnPropertyChanged(nameof(HasViewportHud));
@@ -693,10 +703,16 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            // A crosser's picks arrive through CommitCrosserPaint as EDGES; a cell pick reaching
+            // here with a crosser armed is a stale event and must not stamp the representative tile.
+            if (_pendingTile?.Crosser != null)
+                return;
+
             var entry = _pendingTile;
             _pendingTile = null;
             OnPropertyChanged(nameof(IsTilePlacementPending));
             OnPropertyChanged(nameof(TilePlacementTargetsVertex));
+            OnPropertyChanged(nameof(TilePlacementTargetsEdge));
             OnPropertyChanged(nameof(PlacementStatus));
             OnPropertyChanged(nameof(HasViewportHud));
 
@@ -880,11 +896,12 @@ namespace SWLOR.Toolset.Editors
             var width = AreaTiles.Width(are);
             var height = AreaTiles.Height(are);
 
-            // A terrain paints a VERTEX (inclusive upper bound), and the reference toolset does not
-            // pre-validate a paint - the cursor is red regardless, and an unsolvable dab is a silent
-            // no-op at click time. Answering by dry-running the solver here made hovering pay a full
-            // solve per cell for a verdict the reference never shows.
-            if (entry.Terrain is { Length: > 0 })
+            // A terrain paints a VERTEX (inclusive upper bound) and a crosser an EDGE, and the
+            // reference toolset does not pre-validate a paint - the cursor is red regardless, and
+            // an unsolvable dab is a silent no-op at click time. Answering by dry-running the
+            // solver here made hovering pay a full solve per cell for a verdict the reference
+            // never shows.
+            if (entry.Terrain is { Length: > 0 } || entry.Crosser != null)
                 return column >= 0 && row >= 0 && column <= width && row <= height;
 
             if (column < 0 || row < 0 || column >= width || row >= height)
@@ -939,6 +956,58 @@ namespace SWLOR.Toolset.Editors
             }
 
             RunAreEdit($"Paint {entry.Label} at vertex ({vertexColumn},{vertexRow})", () =>
+            {
+                foreach (var change in changes)
+                    AreaTiles.SetTile(are, change.Col, change.Row, change.TileId, change.Orientation);
+            }, immediateSceneRefresh: true);
+        }
+
+        /// <summary>
+        /// Paints the armed crosser onto one grid EDGE, re-solving the two cells that share it, as
+        /// ONE undo step - the reference toolset's crosser model, verified against it live (two
+        /// road dabs on ztd01 produced two single-edge stubs and re-solved the shared cell into the
+        /// two-edge corner piece). The eraser is the same paint with a blank crosser. Refusal is
+        /// silent, and the brush stays armed.
+        /// </summary>
+        public void CommitCrosserPaint(int edgeColumn, int edgeRow, bool verticalEdge)
+        {
+            if (_pendingTile is not { Crosser: { } crosser } entry)
+                return;
+
+            if (_tilesetCatalog == null)
+            {
+                SceneStatus = "Crosser painting is unavailable (tileset data not loaded).";
+                return;
+            }
+
+            var tilesetResRef = TilesetResRef;
+            if (string.IsNullOrWhiteSpace(tilesetResRef) ||
+                !_tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset))
+            {
+                SceneStatus = "Crosser painting is unavailable (this area's tileset could not be read).";
+                return;
+            }
+
+            var are = new AreDocument(_areSession.Document);
+            var changes = TilePainter.PaintCrosserEdge(
+                tileset,
+                AreaTiles.Width(are),
+                AreaTiles.Height(are),
+                AreaTiles.StateReader(are),
+                edgeColumn,
+                edgeRow,
+                verticalEdge,
+                crosser);
+
+            if (changes.Count == 0)
+            {
+                _log.AppendLine(
+                    $"Crosser '{entry.Label}' cannot blend at {(verticalEdge ? "vertical" : "horizontal")} " +
+                    $"edge ({edgeColumn},{edgeRow}); nothing painted.");
+                return;
+            }
+
+            RunAreEdit($"Paint {entry.Label} at edge ({edgeColumn},{edgeRow})", () =>
             {
                 foreach (var change in changes)
                     AreaTiles.SetTile(are, change.Col, change.Row, change.TileId, change.Orientation);

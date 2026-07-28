@@ -555,6 +555,7 @@ void main()
                 // cell highlight off the map, and re-arming must not flash the previous cursor
                 // position before the pointer moves again.
                 _tileHoverCell = null;
+                _tileHoverEdge = null;
                 RequestNextFrameRendering();
             }
         }
@@ -579,9 +580,45 @@ void main()
 
                 _tilePlacementTargetsVertex = value;
                 _tileHoverCell = null; // cell coords and vertex coords must never mix in one hover
+                _tileHoverEdge = null;
                 RequestNextFrameRendering();
             }
         }
+
+        private bool _tilePlacementTargetsEdge;
+
+        /// <summary>The grid edge the pointer is over while a crosser brush is armed, or null.</summary>
+        private (int Column, int Row, bool Vertical)? _tileHoverEdge;
+
+        /// <summary>
+        /// Whether the armed palette entry paints a crosser onto a grid EDGE (road, bridge, wall -
+        /// the reference toolset's model, verified live): the cursor snaps to the nearest edge, the
+        /// highlight is the red paint square centred on that edge's midpoint (straddling the two
+        /// cells the paint will re-solve), and picks are reported through
+        /// <see cref="TileEdgePicked"/>. Takes precedence over
+        /// <see cref="TilePlacementTargetsVertex"/> if both are somehow set.
+        /// </summary>
+        public bool TilePlacementTargetsEdge
+        {
+            get => _tilePlacementTargetsEdge;
+            set
+            {
+                if (_tilePlacementTargetsEdge == value)
+                    return;
+
+                _tilePlacementTargetsEdge = value;
+                _tileHoverCell = null;
+                _tileHoverEdge = null;
+                RequestNextFrameRendering();
+            }
+        }
+
+        /// <summary>
+        /// Raised when a crosser brush is armed and a click lands on a grid edge: the edge's
+        /// column/row and whether it is a vertical edge (see <c>TilePainter.PaintCrosserEdge</c>
+        /// for the coordinate convention). The brush stays armed, like the terrain brush.
+        /// </summary>
+        public event Action<int, int, bool>? TileEdgePicked;
 
         /// <summary>
         /// The footprint in cells that the armed palette entry will write - (1,1) for a single tile,
@@ -1564,6 +1601,7 @@ void main()
 
             _isTilePlacementActive = false;
             _tileHoverCell = null;
+            _tileHoverEdge = null;
             RequestNextFrameRendering();
             TilePlacementCancelled?.Invoke();
         }
@@ -1585,6 +1623,17 @@ void main()
                         ?? AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, 0f);
             if (point is not { } hit)
                 return;
+
+            if (_tilePlacementTargetsEdge)
+            {
+                var edge = WorldPointToEdge(hit);
+                if (_tileHoverEdge == edge)
+                    return;
+
+                _tileHoverEdge = edge;
+                RequestNextFrameRendering();
+                return;
+            }
 
             var cell = _tilePlacementTargetsVertex ? WorldPointToVertex(hit) : WorldPointToCell(hit);
             if (_tileHoverCell == cell)
@@ -1608,6 +1657,21 @@ void main()
                         ?? AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, 0f);
             if (point is not { } hit)
                 return;
+
+            if (_tilePlacementTargetsEdge)
+            {
+                var (edgeColumn, edgeRow, vertical) = WorldPointToEdge(hit);
+                // The two bounds mirror TilePainter.PaintCrosserEdge's convention; a border edge is
+                // legal (a road may run off the map). The brush stays armed, like terrain.
+                var inRange = vertical
+                    ? edgeColumn >= 0 && edgeColumn <= scene.Width && edgeRow >= 0 && edgeRow < scene.Height
+                    : edgeColumn >= 0 && edgeColumn < scene.Width && edgeRow >= 0 && edgeRow <= scene.Height;
+                if (!inRange)
+                    return;
+
+                TileEdgePicked?.Invoke(edgeColumn, edgeRow, vertical);
+                return;
+            }
 
             if (_tilePlacementTargetsVertex)
             {
@@ -1645,6 +1709,23 @@ void main()
         private static (int Column, int Row) WorldPointToVertex(Vector3 world) => (
             (int)MathF.Round(world.X / AreaSceneBuilder.TileSize),
             (int)MathF.Round(world.Y / AreaSceneBuilder.TileSize));
+
+        /// <summary>
+        /// The grid edge nearest a world point - the crosser paint target. Whichever grid line
+        /// (vertical at a column boundary, horizontal at a row boundary) lies closer wins;
+        /// coordinates follow <c>TilePainter.PaintCrosserEdge</c>'s convention.
+        /// </summary>
+        private static (int Column, int Row, bool Vertical) WorldPointToEdge(Vector3 world)
+        {
+            var tileX = world.X / AreaSceneBuilder.TileSize;
+            var tileY = world.Y / AreaSceneBuilder.TileSize;
+            var nearestColumnLine = MathF.Round(tileX);
+            var nearestRowLine = MathF.Round(tileY);
+
+            return MathF.Abs(tileX - nearestColumnLine) <= MathF.Abs(tileY - nearestRowLine)
+                ? ((int)nearestColumnLine, (int)MathF.Floor(tileY), true)
+                : ((int)MathF.Floor(tileX), (int)nearestRowLine, false);
+        }
 
         /// <summary>Whether the armed footprint, anchored bottom-left at the given cell, lies entirely inside the area's tile grid.</summary>
         private bool FootprintFitsGrid(AreaScene scene, int column, int row) =>
@@ -3296,12 +3377,30 @@ void main()
         {
             // Object placement wins when both modes are somehow armed - see the precedence note on
             // the tile-placement fields.
-            if (_isPlacementActive || !_isTilePlacementActive || _tileHoverCell is not { } anchor || _gl == null)
+            if (_isPlacementActive || !_isTilePlacementActive || _gl == null)
+                return;
+
+            if (_tilePlacementTargetsEdge)
+            {
+                if (_tileHoverEdge is { } edge)
+                {
+                    const float half = AreaSceneBuilder.TileSize / 2f;
+                    DrawPaintCursorSquare(scene,
+                        edge.Column * AreaSceneBuilder.TileSize + (edge.Vertical ? 0f : half),
+                        edge.Row * AreaSceneBuilder.TileSize + (edge.Vertical ? half : 0f));
+                }
+
+                return;
+            }
+
+            if (_tileHoverCell is not { } anchor)
                 return;
 
             if (_tilePlacementTargetsVertex)
             {
-                DrawVertexPaintCursor(scene, anchor.Column, anchor.Row);
+                DrawPaintCursorSquare(scene,
+                    anchor.Column * AreaSceneBuilder.TileSize,
+                    anchor.Row * AreaSceneBuilder.TileSize);
                 return;
             }
 
@@ -3354,20 +3453,18 @@ void main()
         private static readonly Vector3 TerrainVertexCursorColor = new(1f, 0f, 0f);
 
         /// <summary>
-        /// Draws the terrain paint cursor the way the reference toolset does: a red wireframe
-        /// square, one tile wide, CENTRED on the target grid vertex - straddling the up-to-four
-        /// cells the paint will re-solve. Each corner sits just above the floor of the cell it lies
-        /// in, so the square reads as draped over a height seam rather than buried in it. Depth
-        /// test off, like every other cursor here.
+        /// Draws the paint cursor the way the reference toolset does: a red wireframe square, one
+        /// tile wide, centred on the paint target - a grid VERTEX for terrain (straddling the up to
+        /// four cells that re-solve) or an EDGE midpoint for a crosser (straddling its two). Each
+        /// corner sits just above the floor of the cell it lies in, so the square reads as draped
+        /// over a height seam rather than buried in it. Depth test off, like every other cursor here.
         /// </summary>
-        private void DrawVertexPaintCursor(AreaScene scene, int vertexColumn, int vertexRow)
+        private void DrawPaintCursorSquare(AreaScene scene, float cx, float cy)
         {
             if (_gl == null)
                 return;
 
             const float half = AreaSceneBuilder.TileSize / 2f;
-            var cx = vertexColumn * AreaSceneBuilder.TileSize;
-            var cy = vertexRow * AreaSceneBuilder.TileSize;
 
             float CornerZ(float x, float y)
             {

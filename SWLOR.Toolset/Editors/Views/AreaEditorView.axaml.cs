@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.PlacementPointPicked += OnPlacementPointPicked;
             AreaView.PlacementCancelled += OnPlacementCancelled;
             AreaView.TileCellPicked += OnTileCellPicked;
+            AreaView.TileEdgePicked += OnTileEdgePicked;
             AreaView.TileSelected += OnTileSelected;
             AreaView.TilePlacementCancelled += OnTilePlacementCancelled;
             AreaView.TileRotateRequested += OnTileRotateRequested;
@@ -95,6 +96,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.PlacementGhost = _viewModel.PlacementGhost;
             AreaView.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
             AreaView.TilePlacementTargetsVertex = _viewModel.TilePlacementTargetsVertex;
+            AreaView.TilePlacementTargetsEdge = _viewModel.TilePlacementTargetsEdge;
             AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
             AreaView.TilePlacementModels = _viewModel.TilePlacementModels;
             AreaView.TilePlacementValidator = _viewModel.CanPlaceArmedTileAt;
@@ -125,6 +127,8 @@ namespace SWLOR.Toolset.Editors
                 AreaView.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
             else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementTargetsVertex))
                 AreaView.TilePlacementTargetsVertex = _viewModel.TilePlacementTargetsVertex;
+            else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementTargetsEdge))
+                AreaView.TilePlacementTargetsEdge = _viewModel.TilePlacementTargetsEdge;
             else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementFootprint))
                 AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
             else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementModels))
@@ -253,6 +257,9 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>An armed tile stamp resolved to a grid cell - the anchor is its bottom-left corner.</summary>
         private void OnTileCellPicked(int column, int row) => _viewModel?.CommitTilePlacement(column, row);
+
+        private void OnTileEdgePicked(int column, int row, bool vertical) =>
+            _viewModel?.CommitCrosserPaint(column, row, vertical);
 
         /// <summary>A click on open ground selected a grid cell (or cleared the selection).</summary>
         private void OnTileSelected((int Column, int Row)? cell) => _viewModel?.SelectTile(cell);

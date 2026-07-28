@@ -359,6 +359,120 @@ namespace SWLOR.Toolset.Tests
             TilePainter.PaintTerrainVertex(ts, 2, 2, reader, 1, 1, " ").Should().BeEmpty("blank terrain");
         }
 
+        // ---- Crosser painting (the reference toolset's edge model) -------------------------
+        // Verified against Aurora live on ztd01: each road dab re-solved exactly the two cells
+        // sharing the clicked edge into single-edge stub tiles, and a second dab on another edge of
+        // the same cell re-solved it into the two-edge corner piece.
+
+        private const int RoadSolid = 0;   // plain grass, no crosser
+        private const int RoadStub = 1;    // road on the North edge only
+        private const int RoadCorner = 2;  // road on North + East
+
+        private static TilesetDefinition RoadSet() => new()
+        {
+            Terrains = new[] { new TerrainDefinition("Grass", null, null) },
+            Crossers = new[] { new CrosserDefinition("Road", null, null) },
+            Tiles = new[]
+            {
+                Tile("Grass", "Grass", "Grass", "Grass"),
+                Tile("Grass", "Grass", "Grass", "Grass", top: "Road"),
+                Tile("Grass", "Grass", "Grass", "Grass", top: "Road", right: "Road")
+            }
+        };
+
+        private static string EdgeOf(TilesetDefinition ts, TileCandidate tile, TileEdge edge) =>
+            TileAdjacency.WorldEdgeCrosser(ts.Tiles[tile.TileId], tile.Orientation, edge);
+
+        [Test]
+        public void PaintCrosserEdge_RewritesExactlyTheTwoCellsSharingTheEdge()
+        {
+            var ts = RoadSet();
+            var cells = Filled(3, 3, RoadSolid);
+
+            // Vertical edge between (1,1) and (2,1): edge column 2, row 1.
+            var changes = TilePainter.PaintCrosserEdge(ts, 3, 3, States(cells, 3, 3), 2, 1, verticalEdge: true, "Road");
+
+            changes.Select(c => (c.Col, c.Row)).Should().BeEquivalentTo(new[] { (1, 1), (2, 1) },
+                "only the two cells sharing the painted edge may change");
+
+            Apply(cells, changes);
+            EdgeOf(ts, cells[(1, 1)], TileEdge.East).Should().Be("Road");
+            EdgeOf(ts, cells[(2, 1)], TileEdge.West).Should().Be("Road");
+            // The stubs face each other and carry nothing else - measured Aurora behavior.
+            foreach (var (cell, painted) in new[] { ((1, 1), TileEdge.East), ((2, 1), TileEdge.West) })
+            {
+                foreach (var edge in new[] { TileEdge.North, TileEdge.East, TileEdge.South, TileEdge.West })
+                {
+                    if (edge != painted)
+                        EdgeOf(ts, cells[cell], edge).Should().BeEmpty(
+                            $"cell {cell} carries the road only on its painted {painted} edge");
+                }
+            }
+        }
+
+        [Test]
+        public void PaintCrosserEdge_SecondDabTurnsTheSharedCellIntoACorner()
+        {
+            var ts = RoadSet();
+            var cells = Filled(3, 3, RoadSolid);
+
+            Apply(cells, TilePainter.PaintCrosserEdge(ts, 3, 3, States(cells, 3, 3), 2, 1, true, "Road"));
+            // North edge of the same cell (1,1): horizontal edge column 1, row 2.
+            Apply(cells, TilePainter.PaintCrosserEdge(ts, 3, 3, States(cells, 3, 3), 1, 2, false, "Road"));
+
+            // (1,1) must now carry the road on BOTH its East and North edges - the corner piece.
+            EdgeOf(ts, cells[(1, 1)], TileEdge.East).Should().Be("Road");
+            EdgeOf(ts, cells[(1, 1)], TileEdge.North).Should().Be("Road");
+            cells[(1, 1)].TileId.Should().Be(RoadCorner);
+        }
+
+        [Test]
+        public void PaintCrosserEdge_EraserDissolvesTheRoadBack()
+        {
+            var ts = RoadSet();
+            var cells = Filled(3, 3, RoadSolid);
+
+            Apply(cells, TilePainter.PaintCrosserEdge(ts, 3, 3, States(cells, 3, 3), 2, 1, true, "Road"));
+            Apply(cells, TilePainter.PaintCrosserEdge(ts, 3, 3, States(cells, 3, 3), 2, 1, true, ""));
+
+            cells[(1, 1)].TileId.Should().Be(RoadSolid, "erasing the edge returns the cell to plain ground");
+            cells[(2, 1)].TileId.Should().Be(RoadSolid);
+        }
+
+        [Test]
+        public void PaintCrosserEdge_BorderEdgeTouchesOneCellAndRepaintIsAFixedPoint()
+        {
+            var ts = RoadSet();
+            var cells = Filled(2, 2, RoadSolid);
+
+            // West border of the grid: vertical edge column 0 touches only cell (0, row).
+            var changes = TilePainter.PaintCrosserEdge(ts, 2, 2, States(cells, 2, 2), 0, 0, true, "Road");
+            changes.Select(c => (c.Col, c.Row)).Should().BeEquivalentTo(new[] { (0, 0) },
+                "a border edge has one cell - the road runs off the map");
+            Apply(cells, changes);
+            EdgeOf(ts, cells[(0, 0)], TileEdge.West).Should().Be("Road");
+
+            TilePainter.PaintCrosserEdge(ts, 2, 2, States(cells, 2, 2), 0, 0, true, "Road")
+                .Should().BeEmpty("repainting the same crosser on the same edge is a fixed point");
+        }
+
+        [Test]
+        public void PaintCrosserEdge_RefusesAtomicallyWhenNoCrosserTileExists()
+        {
+            var ts = Synthetic(); // no crosser-carrying tiles at all
+            var cells = Filled(3, 3, SolidGrass);
+
+            TilePainter.PaintCrosserEdge(ts, 3, 3, States(cells, 3, 3), 1, 1, true, "Road")
+                .Should().BeEmpty("an unsolvable crosser paint is a silent, atomic no-op");
+        }
+
+        [Test]
+        public void PaintableCrossers_ListsOnlyCrossersSomeTileCarries()
+        {
+            TilePainter.PaintableCrossers(RoadSet()).Should().BeEquivalentTo(new[] { "Road" });
+            TilePainter.PaintableCrossers(Synthetic()).Should().BeEmpty();
+        }
+
         [Test]
         public void PaintTerrain_WhenAnyPopulatedNeighbourCannotBlend_RejectsTheWholePaint()
         {

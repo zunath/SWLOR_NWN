@@ -1710,9 +1710,13 @@ void main()
 
             // A stamp that would run off the grid is refused here rather than reported: the host only
             // learns the anchor cell, so it could not tell a clipped write from a clean one. Placement
-            // stays armed so the next click can land somewhere it fits.
+            // stays armed so the next click can land somewhere it fits, and the refusal answers on
+            // the map rather than passing as a dead click.
             if (!FootprintFitsGrid(scene, column, row))
+            {
+                FlashStampRejection((column, row));
                 return;
+            }
 
             _isTilePlacementActive = false;
             _tileHoverCell = null;
@@ -3459,31 +3463,19 @@ void main()
             if (_isPlacementActive || !_isTilePlacementActive || _gl == null)
                 return;
 
-            if (_tilePlacementTargetsEdge)
-            {
-                if (_tileHoverEdge is { } edge)
-                {
-                    const float half = AreaSceneBuilder.TileSize / 2f;
-                    DrawPaintCursorSquare(scene,
-                        edge.Column * AreaSceneBuilder.TileSize + (edge.Vertical ? 0f : half),
-                        edge.Row * AreaSceneBuilder.TileSize + (edge.Vertical ? half : 0f),
-                        TilePlacementEdgeValidator?.Invoke(edge.Column, edge.Row, edge.Vertical) ?? true);
-                }
+            // The refusal wash goes down first so the cursor outline stays legible on top of it, and
+            // unconditionally - a refusal must finish fading even if the pointer has since left the
+            // map or the hover has not resolved a target this frame.
+            DrawPaintRejectionFlash(scene);
 
+            if (PaintTargetCenter() is { } target)
+            {
+                DrawPaintCursorSquare(scene, target.X, target.Y, IsPaintTargetValid());
                 return;
             }
 
             if (_tileHoverCell is not { } anchor)
                 return;
-
-            if (_tilePlacementTargetsVertex)
-            {
-                DrawPaintCursorSquare(scene,
-                    anchor.Column * AreaSceneBuilder.TileSize,
-                    anchor.Row * AreaSceneBuilder.TileSize,
-                    TilePlacementValidator?.Invoke(anchor.Column, anchor.Row) ?? true);
-                return;
-            }
 
             var vertices = BuildFootprintQuadVertices(scene, anchor.Column, anchor.Row);
             if (vertices.Length == 0)
@@ -3529,12 +3521,182 @@ void main()
         /// <summary>
         /// The paint cursor's two colours, both sampled off the reference toolset at full purity:
         /// green when the dab under the cursor would be accepted, red when the solver would refuse
-        /// it (the refusal itself stays a silent no-op at click time, exactly as the reference
-        /// behaves - the colour is the only warning).
+        /// it. The colour is the standing warning; <see cref="DrawPaintRejectionFlash"/> is what
+        /// answers a click that lands on a red one.
         /// </summary>
         private static readonly Vector3 PaintCursorValidColor = new(0f, 1f, 0f);
 
         private static readonly Vector3 PaintCursorInvalidColor = new(1f, 0f, 0f);
+
+        /// <summary>
+        /// Where the armed brush would paint, as the world-space centre of its cursor square: a grid
+        /// vertex for a terrain brush, an edge midpoint for a crosser. Null when no brush is armed
+        /// or the pointer has not been over the map yet.
+        /// </summary>
+        private (float X, float Y)? PaintTargetCenter()
+        {
+            const float half = AreaSceneBuilder.TileSize / 2f;
+
+            if (_tilePlacementTargetsEdge)
+            {
+                return _tileHoverEdge is { } edge
+                    ? (edge.Column * AreaSceneBuilder.TileSize + (edge.Vertical ? 0f : half),
+                       edge.Row * AreaSceneBuilder.TileSize + (edge.Vertical ? half : 0f))
+                    : null;
+            }
+
+            if (_tilePlacementTargetsVertex)
+            {
+                return _tileHoverCell is { } vertex
+                    ? (vertex.Column * AreaSceneBuilder.TileSize, vertex.Row * AreaSceneBuilder.TileSize)
+                    : null;
+            }
+
+            return null;
+        }
+
+        /// <summary>Whether the armed brush's current target would be accepted, per the host's solver dry-run.</summary>
+        private bool IsPaintTargetValid() =>
+            _tilePlacementTargetsEdge
+                ? _tileHoverEdge is { } edge &&
+                  (TilePlacementEdgeValidator?.Invoke(edge.Column, edge.Row, edge.Vertical) ?? true)
+                : _tileHoverCell is { } vertex &&
+                  (TilePlacementValidator?.Invoke(vertex.Column, vertex.Row) ?? true);
+
+        /// <summary>How long a refused paint stays lit under the cursor.</summary>
+        /// <remarks>
+        /// Long enough to register as an answer to the click even while the pointer keeps moving,
+        /// short enough that a builder dabbing along a boundary is not left reading stale warnings.
+        /// </remarks>
+        private static readonly TimeSpan PaintRejectionFlashDuration = TimeSpan.FromMilliseconds(500);
+
+        private long _paintRejectionTicks;
+        private (float X, float Y)? _paintRejectionCenter;
+
+        /// <summary>The refused stamp's anchor cell, when the flash is answering a stamp rather than a brush.</summary>
+        private (int Column, int Row)? _paintRejectionAnchor;
+
+        /// <summary>Lights the refusal flash over a stamp footprint that would not fit the grid.</summary>
+        private void FlashStampRejection((int Column, int Row) anchor)
+        {
+            _paintRejectionCenter = null;
+            _paintRejectionAnchor = anchor;
+            _paintRejectionTicks = System.Diagnostics.Stopwatch.GetTimestamp();
+            RequestNextFrameRendering();
+        }
+
+        /// <summary>
+        /// Marks a refused paint for the flash: the click landed but the solver declined it.
+        /// </summary>
+        /// <remarks>
+        /// A refusal has to answer visibly or it reads as a dead click - the cursor is already red
+        /// under the pointer, but a builder watching the map rather than the cursor sees nothing
+        /// happen at all. The flash fills the same square the cursor outlines, so the warning is
+        /// where the click was, and fades out on its own.
+        /// </remarks>
+        public void FlashPaintRejection()
+        {
+            _paintRejectionCenter = PaintTargetCenter();
+            if (_paintRejectionCenter == null)
+                return;
+
+            _paintRejectionAnchor = null;
+            _paintRejectionTicks = System.Diagnostics.Stopwatch.GetTimestamp();
+            RequestNextFrameRendering();
+        }
+
+        /// <summary>
+        /// Fills the refused square with fading red over the cursor outline, and keeps frames coming
+        /// until it has faded. A no-op once the flash has expired or none is pending.
+        /// </summary>
+        private void DrawPaintRejectionFlash(AreaScene scene)
+        {
+            if (_gl == null || (_paintRejectionCenter == null && _paintRejectionAnchor == null))
+                return;
+
+            var elapsed = (System.Diagnostics.Stopwatch.GetTimestamp() - _paintRejectionTicks)
+                          / (double)System.Diagnostics.Stopwatch.Frequency;
+            if (elapsed >= PaintRejectionFlashDuration.TotalSeconds)
+            {
+                _paintRejectionCenter = null;
+                _paintRejectionAnchor = null;
+                return;
+            }
+
+            var fade = (float)(1.0 - elapsed / PaintRejectionFlashDuration.TotalSeconds);
+            const float half = AreaSceneBuilder.TileSize / 2f;
+
+            float CornerZ(float x, float y)
+            {
+                var column = Math.Clamp((int)MathF.Floor(x / AreaSceneBuilder.TileSize), 0, scene.Width - 1);
+                var row = Math.Clamp((int)MathF.Floor(y / AreaSceneBuilder.TileSize), 0, scene.Height - 1);
+                return CellFloorHeight(scene, column, row) + TileCellHighlightHeightOffset;
+            }
+
+            float[] vertices;
+            if (_paintRejectionAnchor is { } anchor)
+            {
+                // A stamp is refused as a whole footprint, so the flash covers what the cursor
+                // outlined. Cells outside the grid contribute nothing, exactly as the hover does.
+                vertices = BuildFootprintQuadVertices(scene, anchor.Column, anchor.Row);
+                if (vertices.Length == 0)
+                {
+                    _paintRejectionAnchor = null;
+                    return;
+                }
+            }
+            else
+            {
+                var centre = _paintRejectionCenter!.Value;
+                var minX = centre.X - half;
+                var maxX = centre.X + half;
+                var minY = centre.Y - half;
+                var maxY = centre.Y + half;
+
+                var data = new List<float>(6 * FloatsPerVertex);
+                AppendCellQuadVertex(data, minX, minY, CornerZ(minX, minY));
+                AppendCellQuadVertex(data, maxX, minY, CornerZ(maxX, minY));
+                AppendCellQuadVertex(data, maxX, maxY, CornerZ(maxX, maxY));
+                AppendCellQuadVertex(data, minX, minY, CornerZ(minX, minY));
+                AppendCellQuadVertex(data, maxX, maxY, CornerZ(maxX, maxY));
+                AppendCellQuadVertex(data, minX, maxY, CornerZ(minX, maxY));
+                vertices = data.ToArray();
+            }
+
+            EnsureHighlightBuffer();
+            if (!_hasHighlightBuffer)
+                return;
+
+            _gl.Enable(EnableCap.Blend);
+            _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            _gl.Disable(EnableCap.DepthTest);
+            _gl.DepthMask(false);
+
+            _gl.BindVertexArray(_highlightVao);
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _highlightVbo);
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(vertices.Length * sizeof(float)),
+                new ReadOnlySpan<float>(vertices), BufferUsageARB.DynamicDraw);
+            SetVertexAttribPointers();
+
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("flatAlpha", PaintRejectionFlashAlpha * fade);
+            SetUniformVec3("flatColor", PaintCursorInvalidColor);
+            SetUniformMatrix4("model", Matrix4x4.Identity);
+
+            _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint)(vertices.Length / FloatsPerVertex));
+
+            _gl.Enable(EnableCap.DepthTest);
+            _gl.DepthMask(true);
+            _gl.Disable(EnableCap.Blend);
+            SetUniformFloat("flatAlpha", 1f);
+
+            RequestNextFrameRendering(); // keep the fade animating
+        }
+
+        /// <summary>Peak opacity of the refusal flash - a clear wash, still translucent enough to read the ground through.</summary>
+        private const float PaintRejectionFlashAlpha = 0.55f;
 
         /// <summary>
         /// Draws the paint cursor the way the reference toolset does: a wireframe square, one tile

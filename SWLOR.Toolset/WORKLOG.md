@@ -2101,7 +2101,6 @@ Live use surfaced two corrections to the brush work above:
   brush's stale-crosser retry; the strict pass still runs first, so the measured stub-to-corner
   promotion is unchanged. A real refusal now logs the touched cells' tile ids, so the next report
   diagnoses itself.
-=======
 ## Area viewport - 2026-07-28 - Interiors were sealed under their own ceilings
 
 Mon Cala - Coral Isles - Facility rendered as flat slabs of bare tile texture with all 789 of its
@@ -2128,3 +2127,22 @@ readable from above.
 - **Verification.** Driven in the running app: the facility now renders sand, kelp, room interiors,
   machinery and the magenta-striped room, matching Aurora's view of the same area; tat_anc_cantina
   (interior) draws its floor, bar, pillars and props with no holes where the near walls cull away.
+
+## Area editor - 2026-07-28 - A refused paint answers on the map, not in the log
+
+A declined paint wrote a line to the Output pane and did nothing visible. That is the wrong place for
+it: a builder is watching the area, not the log, so the click read as dead.
+
+- **Decision.** The refusal now flashes: the square the cursor outlines fills with fading red for
+  half a second at the spot that was clicked, and the Output lines are gone. Stamps answer the same
+  way - a footprint refused for hanging off the grid flashes its own outline rather than silently
+  swallowing the click. The standing signal is still the cursor colour (green where the dab lands,
+  red where it will not); the flash is what answers a click that lands on a red one.
+- **Not raised for a no-op.** Repainting terrain or a crosser that is already there is a success
+  with no work to do; only a genuine solver refusal flashes.
+- **Verification gap, stated plainly.** The flash is compiled and reviewed but NOT seen running:
+  synthetic mouse input does not reach this Avalonia app (the same limitation that blocks driving
+  the reference toolset), so the live check has to be a human one. The reference's own click-time
+  feedback could not be re-measured either - its renderer was wedged - so the flash is a
+  deliberate addition for clarity rather than a copied behaviour; the red cursor remains the part
+  that is confirmed against it.

@@ -56,6 +56,7 @@ namespace SWLOR.Toolset.Editors
             {
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
                 _viewModel.CameraFocusRequested -= OnCameraFocusRequested;
+                _viewModel.PaintRejected -= OnPaintRejected;
             }
 
             _viewModel = null;
@@ -83,6 +84,7 @@ namespace SWLOR.Toolset.Editors
             {
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
                 _viewModel.CameraFocusRequested -= OnCameraFocusRequested;
+                _viewModel.PaintRejected -= OnPaintRejected;
             }
 
             _viewModel = DataContext as AreaEditorViewModel;
@@ -104,6 +106,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.SelectedTileCell = _viewModel.SelectedTile;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
             _viewModel.CameraFocusRequested += OnCameraFocusRequested;
+            _viewModel.PaintRejected += OnPaintRejected;
 
             // Opening an area shows its map. Not gated on the 3D View tab being selected: it always is
             // (it is the first tab), and reading IsSelected here raced the TabControl's own setup - the
@@ -261,6 +264,9 @@ namespace SWLOR.Toolset.Editors
 
         private void OnTileEdgePicked(int column, int row, bool vertical) =>
             _viewModel?.CommitCrosserPaint(column, row, vertical);
+
+        /// <summary>A paint click the solver declined - answer it on the map, where the builder is looking.</summary>
+        private void OnPaintRejected() => AreaView.FlashPaintRejection();
 
         /// <summary>A click on open ground selected a grid cell (or cleared the selection).</summary>
         private void OnTileSelected((int Column, int Row)? cell) => _viewModel?.SelectTile(cell);

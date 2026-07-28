@@ -537,6 +537,13 @@ namespace SWLOR.Toolset.Editors
         /// <summary>True while a tile or group is armed - drives GlAreaControl.IsTilePlacementActive.</summary>
         public bool IsTilePlacementPending => _pendingTile != null;
 
+        /// <summary>
+        /// Raised when a paint click was declined by the solver, so the viewport can answer it where
+        /// the builder is looking. Not raised for a paint that legitimately changes nothing (a
+        /// repaint of what is already there), which is a success with no work to do.
+        /// </summary>
+        public event Action? PaintRejected;
+
         /// <summary>The armed stamp's footprint in cells, for the viewport's cell highlight.</summary>
         public (int Columns, int Rows) TilePlacementFootprint =>
             _pendingTile is { } entry ? (entry.Columns, entry.Rows) : (1, 1);
@@ -999,14 +1006,14 @@ namespace SWLOR.Toolset.Editors
 
             if (changes.Count == 0)
             {
-                // A repaint that is already satisfied returns no changes too - only a real refusal
-                // is worth a log line.
+                // A repaint that is already satisfied returns no changes too, and that is not a
+                // refusal - only a genuine one is answered, and it is answered on the map rather
+                // than in the log, where a builder watching the area would never see it.
                 if (!TilePainter.CanPaintTerrainVertex(
                         tileset, AreaTiles.Width(are), AreaTiles.Height(are), AreaTiles.StateReader(are),
                         vertexColumn, vertexRow, terrain))
                 {
-                    _log.AppendLine(
-                        $"Terrain '{entry.Label}' cannot blend at vertex ({vertexColumn},{vertexRow}); nothing painted.");
+                    PaintRejected?.Invoke();
                 }
 
                 return;
@@ -1058,22 +1065,13 @@ namespace SWLOR.Toolset.Editors
 
             if (changes.Count == 0)
             {
-                // Distinguish "already satisfied" (a valid no-op) from a refusal, and describe the
-                // refused cells - a refusal report is only actionable when it names what blocked it.
+                // As for terrain: an already-satisfied repaint is not a refusal, and a real refusal
+                // is answered on the map.
                 if (!TilePainter.CanPaintCrosserEdge(
                         tileset, AreaTiles.Width(are), AreaTiles.Height(are), AreaTiles.StateReader(are),
                         edgeColumn, edgeRow, verticalEdge, crosser))
                 {
-                    string CellInfo(int c, int r) =>
-                        AreaTiles.StateAt(are, c, r) is { } s
-                            ? $"({c},{r})=tile {s.TileId}:{s.Orientation}"
-                            : $"({c},{r})=empty";
-                    var cells = verticalEdge
-                        ? $"{CellInfo(edgeColumn - 1, edgeRow)} {CellInfo(edgeColumn, edgeRow)}"
-                        : $"{CellInfo(edgeColumn, edgeRow - 1)} {CellInfo(edgeColumn, edgeRow)}";
-                    _log.AppendLine(
-                        $"Crosser '{entry.Label}' cannot blend at {(verticalEdge ? "vertical" : "horizontal")} " +
-                        $"edge ({edgeColumn},{edgeRow}); nothing painted. Cells: {cells}.");
+                    PaintRejected?.Invoke();
                 }
 
                 return;

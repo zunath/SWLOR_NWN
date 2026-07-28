@@ -728,7 +728,7 @@ namespace SWLOR.Toolset.Editors
             {
                 foreach (var (column, row, tileId) in writes)
                     AreaTiles.SetTile(are, column, row, tileId, orientation);
-            });
+            }, immediateSceneRefresh: true);
         }
 
 
@@ -853,7 +853,8 @@ namespace SWLOR.Toolset.Editors
             var verb = delta > 0 ? "Raise" : "Lower";
             RunAreEdit(
                 $"{verb} tile at ({column},{row})",
-                () => AreaTiles.TryAdjustHeightLevel(are, column, row, delta));
+                () => AreaTiles.TryAdjustHeightLevel(are, column, row, delta),
+                immediateSceneRefresh: true);
         }
 
         /// <summary>Drops the memoised answers - the grid they were computed against has changed.</summary>
@@ -931,7 +932,7 @@ namespace SWLOR.Toolset.Editors
             {
                 foreach (var change in changes)
                     AreaTiles.SetTile(are, change.Col, change.Row, change.TileId, change.Orientation);
-            });
+            }, immediateSceneRefresh: true);
         }
         /// <summary>
         /// Arms placement for a blueprint chosen in the Palette panel: the object then follows the
@@ -1245,12 +1246,6 @@ namespace SWLOR.Toolset.Editors
             return true;
         }
 
-        /// <summary>
-        /// How far one press of the rotate buttons turns the selection. A quarter of a right angle:
-        /// coarse enough to square something up in three presses, fine enough to angle a chair.
-        /// </summary>
-        private const float RotateStepRadians = MathF.PI / 8f;
-
         /// <summary>True when there is a selected instance this editor can actually rotate.</summary>
         /// <remarks>
         /// Ambient sounds are excluded even though they have an instance-list section like everything
@@ -1264,12 +1259,6 @@ namespace SWLOR.Toolset.Editors
             instance.Kind != InstanceMarkerKind.Sound &&
             instance.Kind != InstanceMarkerKind.Door &&
             SectionForKind(instance.Kind) != null;
-
-        [RelayCommand]
-        private void RotateSelectionClockwise() => RotateSelectionBy(-RotateStepRadians);
-
-        [RelayCommand]
-        private void RotateSelectionCounterClockwise() => RotateSelectionBy(RotateStepRadians);
 
         /// <summary>
         /// Turns the selection to a random heading. Aurora has this because a row of identically
@@ -1353,7 +1342,8 @@ namespace SWLOR.Toolset.Editors
             _gicSession = DocumentSession.Open(gicPath);
             _savedGicBytes = _gicSession.ToBytes();
 
-            var areContext = new EditorFieldContext(_areSession.Document, RunAreEdit);
+            var areContext = new EditorFieldContext(
+                _areSession.Document, (description, mutation) => RunAreEdit(description, mutation));
             foreach (var group in AreSchema.Build().Groups)
             {
                 var fields = group.Fields.Select(descriptor => CreateFieldViewModel(descriptor, areContext, lookups, scriptSlotHost)).ToList();
@@ -1525,7 +1515,7 @@ namespace SWLOR.Toolset.Editors
         /// the delay elapses their build has either finished or is in flight for the same revision,
         /// and <see cref="IsSceneCurrent"/> drops the duplicate.
         /// </remarks>
-        private void RequestSceneRefresh()
+        private void RequestSceneRefresh(bool immediate = false)
         {
             // Whatever changed the grid also invalidated every answer about where a tile may go.
             // Hooked here rather than at each edit site because this is the one thing every path
@@ -1537,6 +1527,19 @@ namespace SWLOR.Toolset.Editors
 
             _sceneRefreshCts?.Cancel();
             _sceneRefreshCts?.Dispose();
+
+            // A viewport tile edit skips the debounce entirely: the reference toolset repaints the
+            // grid the moment the click lands, and a fifth of a second of dead air after every dab
+            // of terrain is what made painting feel laggy by comparison. The delay exists for
+            // keyboard-repeat edit streams (NumericUpDown drags, held Ctrl+Z), which still take it.
+            if (immediate)
+            {
+                _sceneRefreshCts = null;
+                if (!IsSceneCurrent())
+                    _ = BuildSceneAsync(CaptureReselectKey());
+                return;
+            }
+
             var cts = new CancellationTokenSource();
             _sceneRefreshCts = cts;
 
@@ -1692,7 +1695,8 @@ namespace SWLOR.Toolset.Editors
             };
         }
 
-        private bool RunAreEdit(string description, Action mutation) => RunEdit(_areSession, description, mutation);
+        private bool RunAreEdit(string description, Action mutation, bool immediateSceneRefresh = false) =>
+            RunEdit(_areSession, description, mutation, immediateSceneRefresh);
 
         private bool RunGitEdit(string description, Action mutation)
         {
@@ -1701,7 +1705,8 @@ namespace SWLOR.Toolset.Editors
             return result;
         }
 
-        private bool RunEdit(DocumentSession session, string description, Action mutation)
+        private bool RunEdit(DocumentSession session, string description, Action mutation,
+            bool immediateSceneRefresh = false)
         {
             try
             {
@@ -1720,7 +1725,7 @@ namespace SWLOR.Toolset.Editors
                 }
 
                 Interlocked.Increment(ref _sceneInputRevision);
-                RequestSceneRefresh();
+                RequestSceneRefresh(immediateSceneRefresh);
                 AfterHistoryChange();
                 return true;
             }

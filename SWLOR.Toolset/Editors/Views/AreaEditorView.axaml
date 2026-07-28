@@ -58,16 +58,6 @@
                 <MenuItem Header="Edit object..."
                           Command="{Binding EditSelectedBlueprintCommand}"
                           ToolTip.Tip="Open the blueprint this was placed from" />
-                <Separator />
-                <MenuItem Header="Turn anticlockwise"
-                          Command="{Binding RotateSelectionCounterClockwiseCommand}"
-                          IsEnabled="{Binding CanRotateSelection}" />
-                <MenuItem Header="Turn clockwise"
-                          Command="{Binding RotateSelectionClockwiseCommand}"
-                          IsEnabled="{Binding CanRotateSelection}" />
-                <MenuItem Header="Turn to a random angle"
-                          Command="{Binding RotateSelectionRandomlyCommand}"
-                          IsEnabled="{Binding CanRotateSelection}" />
               </ContextMenu>
             </Border.ContextMenu>
           </Border>

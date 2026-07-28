@@ -32,6 +32,13 @@ namespace SWLOR.Toolset.Editors.Items
 
         /// <summary>(old resref, own file path) -> files still referencing that resref.</summary>
         private readonly Func<string, string, IReadOnlyList<string>>? _findReferences;
+
+        /// <summary>
+        /// Old resref -> whether its category-folder membership (if any) can be carried over to the new
+        /// resref. Checked in the rename preflight so a sidecar that cannot be saved refuses the rename
+        /// instead of the save going ahead and leaving the sidecar naming a resref that no longer exists.
+        /// </summary>
+        private readonly Func<string, bool>? _canRefileCategories;
         private string _resRef;
         private bool _closeApproved;
         private bool _closePromptOpen;
@@ -76,12 +83,14 @@ namespace SWLOR.Toolset.Editors.Items
             Func<JsonGffStruct, bool, RenderModel?>? resolveModel = null,
             ResourceIndex? resourceIndex = null,
             ArmorDyeSwatchService? armorDyeSwatches = null,
-            Func<string, string, IReadOnlyList<string>>? findReferences = null)
+            Func<string, string, IReadOnlyList<string>>? findReferences = null,
+            Func<string, bool>? canRefileCategories = null)
         {
             _log = log;
             _prompts = prompts;
             _resRef = resRef;
             _findReferences = findReferences;
+            _canRefileCategories = canRefileCategories;
             Id = $"item:{filePath}";
             _session = DocumentSession.Open(filePath);
 
@@ -177,6 +186,8 @@ namespace SWLOR.Toolset.Editors.Items
                 if (renaming && !TryResolveRenameTarget(targetResRef, out newPath))
                     return false;
                 if (renaming && IsStillReferenced(targetResRef))
+                    return false;
+                if (renaming && !CanRefileCategories(targetResRef))
                     return false;
 
                 // A rename installs its destination with no-overwrite semantics: the existence
@@ -278,6 +289,23 @@ namespace SWLOR.Toolset.Editors.Items
                 $"Cannot rename {_resRef} to {targetResRef}: {references.Count} file(s) still " +
                 $"reference '{_resRef}' - {shown}{more}. Update those references first, then rename.");
             return true;
+        }
+
+        /// <summary>
+        /// Refuses the rename when the item's custom-category membership cannot be carried over to
+        /// the new resref: a rename that goes ahead anyway would leave the sidecar naming a resref
+        /// that no longer exists, and the renamed item would read as unfiled once the module is
+        /// reopened. Runs only on an actual rename, mirroring <see cref="IsStillReferenced"/>.
+        /// </summary>
+        private bool CanRefileCategories(string targetResRef)
+        {
+            if (_canRefileCategories == null || _canRefileCategories(_resRef))
+                return true;
+
+            _log.AppendLine(
+                $"Cannot rename {_resRef} to {targetResRef}: its category could not be updated. " +
+                "Resolve the category conflict, then rename again.");
+            return false;
         }
 
         /// <summary>

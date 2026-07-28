@@ -315,6 +315,53 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
+        /// Whether a rename's category membership could be carried over by <see cref="RefileMember"/>,
+        /// without moving anything or writing the sidecar.
+        /// </summary>
+        /// <remarks>
+        /// A blueprint rename preflights this before touching any file, the same way
+        /// <see cref="Shell.Panels.PaletteViewModel"/> preflights <see cref="CanSaveChanges"/> before a
+        /// blueprint delete: the resref is about to stop existing under its old name, and finding out the
+        /// sidecar cannot be saved only after the file is already gone would leave a dangling member with
+        /// no file left to check against. A resref filed in no folder has nothing to carry, so this only
+        /// refuses when the sidecar itself cannot be saved.
+        /// </remarks>
+        public bool CanRefileMember(ResourceType type, string resRef)
+        {
+            var section = Section(type);
+            return section == null || !section.FoldersContaining(resRef).Any() || CanSaveChanges().Saved;
+        }
+
+        /// <summary>
+        /// Moves a resref's category membership from an old identity to a new one, in every folder that
+        /// held it, and saves the sidecar.
+        /// </summary>
+        /// <remarks>
+        /// Called after a file rename has already succeeded on disk. A category folder is stored outside
+        /// every directory a rename's reference scan sweeps, so without this the sidecar would keep
+        /// naming the pre-rename resref forever - reopening the module would leave that member dangling
+        /// and the renamed blueprint unfiled, with nothing to notice either half of that.
+        /// </remarks>
+        public CategorySaveResult RefileMember(ResourceType type, string oldResRef, string newResRef)
+        {
+            var section = Section(type);
+            if (section == null)
+                return CategorySaveResult.Ok();
+
+            var folders = section.FoldersContaining(oldResRef).ToList();
+            if (folders.Count == 0)
+                return CategorySaveResult.Ok();
+
+            foreach (var folder in folders)
+            {
+                folder.RemoveMember(oldResRef);
+                folder.AddMember(newResRef);
+            }
+
+            return SaveChanges();
+        }
+
+        /// <summary>
         /// Discards mutations made since the last successful load or save.
         /// </summary>
         /// <remarks>

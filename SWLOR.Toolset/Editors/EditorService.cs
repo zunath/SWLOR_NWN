@@ -104,6 +104,24 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>The in-flight background index build, so concurrent callers share one scan.</summary>
         private Task? _itemSourcesBuild;
+
+        /// <summary>
+        /// Bumped every time <see cref="_itemSources"/> is invalidated (a module opens, or a store,
+        /// item, creature, or placeable is saved). <see cref="BuildItemSourcesAsync"/> captures this at
+        /// the start of a scan and compares again when the scan finishes; a mismatch means content
+        /// changed mid-scan, so the just-finished result reflects stale, pre-save data and must not be
+        /// published - a fresh build is queued instead. Read and written only from the UI thread (the
+        /// events that bump it and the completion check that reads it all run there), so no lock is
+        /// needed.
+        /// </summary>
+        private int _itemSourcesGeneration;
+
+        /// <summary>
+        /// Optional: without it, item renames skip the category-membership preflight and swap, so a
+        /// module using no custom item categories never notices, and one that does has to refile the
+        /// renamed item by hand.
+        /// </summary>
+        private readonly CategoryService? _categories;
         private Items.ArmorDyeSwatchService? _armorDyeSwatches;
         private readonly Dictionary<string, Sounds.SoundDocumentViewModel> _openSoundEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<string>? _soundResources;
@@ -189,8 +207,10 @@ namespace SWLOR.Toolset.Editors
             Placeables.VfxPreviewService? vfxPreviews = null,
             PortraitService? portraits = null,
             AppearanceService? appearances = null,
-            Services.ModuleMutationLock? mutationLock = null)
+            Services.ModuleMutationLock? mutationLock = null,
+            CategoryService? categories = null)
         {
+            _categories = categories;
             _mutationLock = mutationLock;
             _placeableModels = placeableModels;
             _thumbnails = thumbnails;
@@ -242,6 +262,7 @@ namespace SWLOR.Toolset.Editors
                 _choiceSets.Clear();
                 _doorAppearances = null;
                 _itemSources = null;
+                _itemSourcesGeneration++;
                 _behaviorValues?.InvalidateModuleSources();
 
                 // Pay the obtainability scan's cost here, in the background, rather than on
@@ -257,6 +278,7 @@ namespace SWLOR.Toolset.Editors
                 if (type is ResourceType.Utm or ResourceType.Uti or ResourceType.Utc or ResourceType.Utp)
                 {
                     _itemSources = null;
+                    _itemSourcesGeneration++;
                     _ = WarmItemSourcesAsync();
                 }
             };
@@ -1006,7 +1028,8 @@ namespace SWLOR.Toolset.Editors
                     : null,
                 resourceIndex: _resourceIndex,
                 armorDyeSwatches: ArmorDyeSwatches(),
-                findReferences: FindItemReferences);
+                findReferences: FindItemReferences,
+                canRefileCategories: CanRefileItemCategories);
             editor.Closed += closed => _openItemEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -1017,8 +1040,9 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Follows a rename-on-save: re-keys the open map so reopening by either path behaves, and
-        /// swaps the catalog entry so Explorer and Search stop offering the old resref.
+        /// Follows a rename-on-save: re-keys the open map so reopening by either path behaves, swaps
+        /// the catalog entry so Explorer and Search stop offering the old resref, and carries the
+        /// item's custom-category membership (if any) over to the new resref.
         /// </summary>
         private void OnItemRenamed(Items.ItemDocumentViewModel editor, string oldResRef, string oldPath)
         {
@@ -1026,7 +1050,27 @@ namespace SWLOR.Toolset.Editors
             _openItemEditors[editor.FilePath] = editor;
             _workspaceContext.RemoveCatalogEntry(ResourceType.Uti, oldResRef);
             _workspaceContext.RefreshCatalogEntry(ResourceType.Uti, editor.ResRef);
+
+            // The rename's preflight (CanRefileItemCategories) already confirmed the sidecar could be
+            // saved, but the file rename and this save are not atomic with each other - the sidecar
+            // can still change on disk in between. A failure here has to be loud rather than silently
+            // leaving the category pointing at a resref that no longer exists.
+            var result = _categories?.RefileMember(ResourceType.Uti, oldResRef, editor.ResRef);
+            if (result is { Saved: false })
+            {
+                _log.AppendLine(
+                    $"Renamed {oldResRef} to {editor.ResRef}, but its category could not be updated: " +
+                    $"{result.Value.Problem} It may still be filed under '{oldResRef}' until this is " +
+                    "fixed by hand.");
+            }
         }
+
+        /// <summary>
+        /// Whether an item rename's custom-category membership can be carried over, checked before
+        /// the file rename writes anything. See <see cref="CategoryService.CanRefileMember"/>.
+        /// </summary>
+        private bool CanRefileItemCategories(string oldResRef) =>
+            _categories == null || _categories.CanRefileMember(ResourceType.Uti, oldResRef);
 
         private Func<int, BaseItemRow?>? BaseItemRows()
         {
@@ -1121,6 +1165,13 @@ namespace SWLOR.Toolset.Editors
 
         private async Task BuildItemSourcesAsync(Domain.Workspace.ModuleWorkspace workspace)
         {
+            // Captured before the scan starts and compared again after it finishes. A save that
+            // lands mid-scan bumps this through WorkspaceOpened/CatalogEntryRefreshed above (and
+            // already reset _itemSources to null), so a mismatch here is the signal that the result
+            // about to be published reflects pre-save content, even though nothing else distinguishes
+            // it from a clean scan.
+            var generation = _itemSourcesGeneration;
+            var staleGeneration = false;
             try
             {
                 var repoRoot = Path.GetDirectoryName(Path.GetFullPath(workspace.ModuleRoot));
@@ -1131,10 +1182,20 @@ namespace SWLOR.Toolset.Editors
                 var index = await Task.Run(
                     () => ItemObtainabilityIndex.Build(workspace, gameSourceRoot)).ConfigureAwait(true);
 
-                // Dropped mid-build by a save or a workspace change: that invalidation wins, and the
-                // next lookup starts a fresh build rather than publishing a stale scan.
+                // Dropped mid-build by a workspace change: that invalidation already started its own
+                // warm for the new workspace, so nothing further is queued from here.
                 if (!ReferenceEquals(_workspaceContext.Workspace, workspace))
                     return;
+
+                if (_itemSourcesGeneration != generation)
+                {
+                    // Something changed while the scan was running. Publishing this result would
+                    // keep an item's Source tab reporting pre-save obtainability until the next
+                    // unrelated save happened to trigger another rebuild - queue a fresh one now
+                    // instead of leaving that to chance.
+                    staleGeneration = true;
+                    return;
+                }
 
                 _itemSources = index;
                 foreach (var editor in _openItemEditors.Values.ToList())
@@ -1148,6 +1209,14 @@ namespace SWLOR.Toolset.Editors
             {
                 _itemSourcesBuild = null;
             }
+
+            // Queued only after _itemSourcesBuild is cleared above, so this starts a genuinely new
+            // build instead of WarmItemSourcesAsync seeing this just-finished task still cached and
+            // handing back a no-op. One queued rebuild per stale generation is enough: if another save
+            // invalidates again while this retry is running, that retry detects the same mismatch and
+            // queues its own single follow-up, so a rapid save storm converges instead of looping.
+            if (staleGeneration)
+                _ = WarmItemSourcesAsync();
         }
 
         /// <summary>

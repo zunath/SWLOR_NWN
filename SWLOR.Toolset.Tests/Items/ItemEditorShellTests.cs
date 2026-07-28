@@ -304,6 +304,29 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public async Task SaveRefusesARenameWhenTheCategoryPreflightSaysNo()
+        {
+            // Stands in for CategoryService.CanRefileMember reporting a locked or externally changed
+            // sidecar: whatever the reason, the rename must not proceed while the category membership
+            // cannot be carried over, or the sidecar is left naming a resref that no longer exists.
+            var document = new ItemDocumentViewModel(
+                Scratch("adren_harness"), "adren_harness", null, new OutputLogService(), new StubPrompts(),
+                canRefileCategories: _ => false);
+            SetResRef(document, "adren_mk7");
+
+            Assert.That(await document.TrySaveAsync(), Is.False);
+            Assert.That(File.Exists(Scratch("adren_harness")), Is.True);
+            Assert.That(File.Exists(Scratch("adren_mk7")), Is.False);
+            Assert.That(document.ResRef, Is.EqualTo("adren_harness"));
+
+            // A save that does not rename never consults the category preflight.
+            SetResRef(document, "adren_harness");
+            var tagRow = document.Editor.BasicRows.Single(row => row.Definition.Name == "Tag");
+            tagRow.Text = "adren_harness_d";
+            Assert.That(await document.TrySaveAsync(), Is.True);
+        }
+
+        [Test]
         public async Task SaveWithoutARenameStaysInPlace()
         {
             var document = OpenScratch("adren_harness");

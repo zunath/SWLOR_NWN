@@ -224,6 +224,78 @@ namespace SWLOR.Toolset.Tests
                 "no marker means no provenance to act on, whether this is a deliberate name or a legacy placeholder");
         }
 
+        /// <summary>
+        /// A blueprint rename must carry its category membership with it, in every folder that filed
+        /// it - otherwise reopening the module leaves a dangling member under the old resref and the
+        /// renamed item unfiled, with nothing to notice either half of that.
+        /// </summary>
+        [Test]
+        public void RefileMemberMovesMembershipInEveryFolderThatHeldTheOldResRef()
+        {
+            var sidecar = CategoryCatalog.DefaultPathFor(_module);
+            Directory.CreateDirectory(Path.GetDirectoryName(sidecar)!);
+            File.WriteAllText(sidecar, """
+                { "version": 1, "sections": { "utc": {
+                    "seeded": true, "folders": [
+                        { "name": "Beasts", "members": [ "womp_rat", "nexu" ] },
+                        { "name": "Dathomir", "members": [ "womp_rat" ] }
+                    ] } } }
+                """);
+            var service = OpenService();
+
+            var result = service.RefileMember(ResourceType.Utc, "womp_rat", "womp_rat_2");
+
+            result.Saved.Should().BeTrue();
+            var section = service.Section(ResourceType.Utc)!;
+            section.Find("Beasts")!.Members.Should().Equal(new[] { "nexu", "womp_rat_2" });
+            section.Find("Dathomir")!.Members.Should().Equal(new[] { "womp_rat_2" });
+        }
+
+        /// <summary>
+        /// A resref filed nowhere has nothing to carry, so this is a no-op that still reports success -
+        /// the common case for an item with no custom category, which must not block its rename.
+        /// </summary>
+        [Test]
+        public void RefileMemberOfAnUnfiledResRefIsANoOpThatSucceeds()
+        {
+            var service = OpenService();
+            service.Section(ResourceType.Utc)!.AddFolder("Beasts").AddMember("nexu");
+
+            var result = service.RefileMember(ResourceType.Utc, "womp_rat", "womp_rat_2");
+
+            result.Saved.Should().BeTrue();
+            service.Section(ResourceType.Utc)!.Find("Beasts")!.Members.Should().Equal(new[] { "nexu" });
+        }
+
+        /// <summary>
+        /// The preflight a rename runs before touching any file: refuses only when the resref is
+        /// actually filed somewhere AND the sidecar itself cannot be saved, mirroring the delete
+        /// preflight <see cref="Shell.Panels.PaletteViewModel"/> already runs.
+        /// </summary>
+        [Test]
+        public void CanRefileMemberRefusesOnlyWhenAFiledResRefsSidecarCannotBeSaved()
+        {
+            var sidecar = CategoryCatalog.DefaultPathFor(_module);
+            Directory.CreateDirectory(Path.GetDirectoryName(sidecar)!);
+            File.WriteAllText(sidecar, """
+                { "version": 1, "sections": { "utc": {
+                    "seeded": true, "folders": [ { "name": "Beasts", "members": [ "womp_rat" ] } ] } } }
+                """);
+            var service = OpenService();
+
+            // Unfiled: nothing to carry, so this is allowed even though the sidecar below is unreadable.
+            service.CanRefileMember(ResourceType.Utc, "nexu").Should().BeTrue();
+
+            using (new FileStream(sidecar, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                service.CanRefileMember(ResourceType.Utc, "womp_rat").Should().BeFalse(
+                    "the resref is filed, and the sidecar cannot be verified unchanged while locked");
+            }
+
+            service.CanRefileMember(ResourceType.Utc, "womp_rat").Should().BeTrue(
+                "the lock is gone and nothing else changed");
+        }
+
         private static TlkService Tlk(int entryId, string text) =>
             new(TlkJsonFile.Parse($$"""
                 { "language": 0, "entries": [ { "id": {{entryId}}, "text": "{{text}}" } ] }

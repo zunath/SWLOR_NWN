@@ -252,6 +252,107 @@ namespace SWLOR.Toolset.Tests
         }
 
         // ------------------------------------------------------------------------------------
+        // GroundHeightAt (trigger-outline draping)
+        // ------------------------------------------------------------------------------------
+
+        [Test]
+        public void GroundHeightAt_PointOverFlatQuad_ReturnsFloorHeight()
+        {
+            var tile = MakeTilePlacement(Matrix4x4.Identity, FlatQuadAt(z: 2f));
+
+            var height = AreaWalkmesh.GroundHeightAt(new[] { tile }, 5f, 5f);
+
+            height.Should().NotBeNull();
+            height!.Value.Should().BeApproximately(2f, 0.0001f);
+        }
+
+        [Test]
+        public void GroundHeightAt_PointOutsideEveryTileCell_ReturnsNull()
+        {
+            var tile = MakeTilePlacement(Matrix4x4.Identity, FlatQuadAt(z: 2f));
+
+            AreaWalkmesh.GroundHeightAt(new[] { tile }, 25f, 5f).Should().BeNull(
+                "the point is more than half a tile away from the only tile's centre, so no floor covers it");
+        }
+
+        [Test]
+        public void GroundHeightAt_PrefersTopmostWalkableOverHigherNonWalkable()
+        {
+            // A non-walkable wall top at z=8 above a walkable floor at z=2: draping must pick the
+            // floor, not the wall top, or a trigger vertex near a wall climbs onto it.
+            var walkmesh = new WalkMesh
+            {
+                Vertices = new[]
+                {
+                    new Vector3(0f, 0f, 8f), new Vector3(10f, 0f, 8f), new Vector3(10f, 10f, 8f), new Vector3(0f, 10f, 8f),
+                    new Vector3(0f, 0f, 2f), new Vector3(10f, 0f, 2f), new Vector3(10f, 10f, 2f), new Vector3(0f, 10f, 2f)
+                },
+                Faces = new[]
+                {
+                    new WalkFace { A = 0, B = 1, C = 2, Material = 7, Walkable = false },
+                    new WalkFace { A = 0, B = 2, C = 3, Material = 7, Walkable = false },
+                    new WalkFace { A = 4, B = 5, C = 6, Material = 1, Walkable = true },
+                    new WalkFace { A = 4, B = 6, C = 7, Material = 1, Walkable = true }
+                }
+            };
+            var tile = MakeTilePlacement(Matrix4x4.Identity, walkmesh);
+
+            var height = AreaWalkmesh.GroundHeightAt(new[] { tile }, 5f, 5f);
+
+            height.Should().NotBeNull();
+            height!.Value.Should().BeApproximately(2f, 0.0001f);
+        }
+
+        [Test]
+        public void GroundHeightAt_OnlyNonWalkableFaces_FallsBackToTheirTopmost()
+        {
+            var walkmesh = new WalkMesh
+            {
+                Vertices = new[]
+                {
+                    new Vector3(0f, 0f, 4f), new Vector3(10f, 0f, 4f), new Vector3(10f, 10f, 4f), new Vector3(0f, 10f, 4f)
+                },
+                Faces = new[]
+                {
+                    new WalkFace { A = 0, B = 1, C = 2, Material = 7, Walkable = false },
+                    new WalkFace { A = 0, B = 2, C = 3, Material = 7, Walkable = false }
+                }
+            };
+            var tile = MakeTilePlacement(Matrix4x4.Identity, walkmesh);
+
+            var height = AreaWalkmesh.GroundHeightAt(new[] { tile }, 5f, 5f);
+
+            height.Should().NotBeNull();
+            height!.Value.Should().BeApproximately(4f, 0.0001f);
+        }
+
+        [Test]
+        public void GroundHeightAt_TwoWalkableStoreys_ReturnsTheTopmost()
+        {
+            var walkmesh = new WalkMesh
+            {
+                Vertices = new[]
+                {
+                    new Vector3(0f, 0f, 8f), new Vector3(10f, 0f, 8f), new Vector3(10f, 10f, 8f), new Vector3(0f, 10f, 8f),
+                    new Vector3(0f, 0f, 2f), new Vector3(10f, 0f, 2f), new Vector3(10f, 10f, 2f), new Vector3(0f, 10f, 2f)
+                },
+                Faces = new[]
+                {
+                    new WalkFace { A = 0, B = 1, C = 2, Material = 1, Walkable = true },
+                    new WalkFace { A = 0, B = 2, C = 3, Material = 1, Walkable = true },
+                    new WalkFace { A = 4, B = 5, C = 6, Material = 1, Walkable = true },
+                    new WalkFace { A = 4, B = 6, C = 7, Material = 1, Walkable = true }
+                }
+            };
+            var tile = MakeTilePlacement(Matrix4x4.Identity, walkmesh);
+
+            var height = AreaWalkmesh.GroundHeightAt(new[] { tile }, 5f, 5f);
+
+            height.Should().NotBeNull();
+            height!.Value.Should().BeApproximately(8f, 0.0001f);
+        }
+
+        // ------------------------------------------------------------------------------------
         // Builder integration
         // ------------------------------------------------------------------------------------
 

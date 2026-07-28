@@ -119,6 +119,26 @@ namespace SWLOR.Toolset.Domain.Render
         public RenderModel? Model { get; init; }
 
         /// <summary>
+        /// A sound instance's MinDistance in metres - the range it plays at full volume, which
+        /// Aurora draws as the dotted sphere around the marker. Null for every other kind and for
+        /// sounds that carry no such field.
+        /// </summary>
+        public float? SoundMinDistance { get; init; }
+
+        /// <summary>
+        /// A sound instance's MaxDistance in metres - the range it is audible at all, which Aurora
+        /// draws as the large circle around the marker. Null for every other kind and for sounds
+        /// that carry no such field.
+        /// </summary>
+        public float? SoundMaxDistance { get; init; }
+
+        /// <summary>
+        /// Whether a sound instance is positional (Positional=1). Area-wide sounds get no distance
+        /// rings - range means nothing for a sound that plays everywhere. Always false for other kinds.
+        /// </summary>
+        public bool IsPositionalSound { get; init; }
+
+        /// <summary>
         /// This marker moved and/or turned, with everything else - kind, tag, resolved model, EE
         /// visual transform - carried across unchanged.
         /// </summary>
@@ -155,7 +175,10 @@ namespace SWLOR.Toolset.Domain.Render
                 Orientation = orientation,
                 VisualTransform = VisualTransform,
                 Geometry = geometry,
-                Model = Model
+                Model = Model,
+                SoundMinDistance = SoundMinDistance,
+                SoundMaxDistance = SoundMaxDistance,
+                IsPositionalSound = IsPositionalSound
             };
         }
     }

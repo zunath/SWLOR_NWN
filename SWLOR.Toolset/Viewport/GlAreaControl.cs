@@ -86,7 +86,19 @@ namespace SWLOR.Toolset.Viewport
         private static readonly Vector3 ViewportBackground = new(0.12f, 0.14f, 0.18f);
         private static readonly Vector3 UntexturedTileColor = new(0.6f, 0.6f, 0.6f);
         private static readonly Vector3 FallbackTileColor = new(0.95f, 0.15f, 0.55f);
-        private static readonly Vector3 PolygonOverlayColor = new(1f, 0.65f, 0.15f);
+        // Aurora draws trigger outlines unlit at #6666CC (sampled off the reference toolset in
+        // both a lit interior and full daylight - the colour does not vary with area lighting).
+        private static readonly Vector3 PolygonOverlayColor = new(0.4f, 0.4f, 0.8f);
+
+        // Aurora's sound-range blue (#66B1FD, sampled the same way), shared by the dotted
+        // MinDistance sphere, its solid equator ring, and the flat MaxDistance circle.
+        private static readonly Vector3 SoundRangeColor = new(0.40f, 0.69f, 0.99f);
+
+        // The reference toolset marks a sound with a small upright musical note: red head,
+        // black stem and flag.
+        private static readonly Vector3 SoundNoteHeadColor = new(0.80f, 0.06f, 0.06f);
+        private static readonly Vector3 SoundNoteStemColor = new(0.05f, 0.05f, 0.05f);
+        private const float SoundNoteHeightMeters = 1.6f;
         private static readonly Vector3 SelectionHighlightColor = new(1f, 0.95f, 0.2f);
 
         // Transform gizmo. Axis colours follow the convention every 3D tool shares (X red, Y green,
@@ -255,6 +267,15 @@ void main()
         private StaticMeshBuffer? _fallbackCubeBuffer;
         private StaticMeshBuffer? _markerMeshBuffer;
         private StaticMeshBuffer? _particleQuadBuffer;
+
+        // Sound marker geometry: a billboarded musical note (indices split into a red head range
+        // followed by a black stem/flag range) plus unit-radius range graphics scaled per sound.
+        private StaticMeshBuffer? _soundNoteBuffer;
+        private int _soundNoteHeadIndexCount;
+        private uint _soundCircleVao, _soundCircleVbo;
+        private uint _soundSphereVao, _soundSphereVbo;
+        private int _soundCircleVertexCount, _soundSphereVertexCount;
+        private bool _hasSoundRangeBuffers;
 
         private uint _polygonVao;
         private uint _polygonVbo;
@@ -1170,7 +1191,10 @@ void main()
             Orientation = orientation,
             VisualTransform = source.VisualTransform,
             Geometry = source.Geometry,
-            Model = source.Model
+            Model = source.Model,
+            SoundMinDistance = source.SoundMinDistance,
+            SoundMaxDistance = source.SoundMaxDistance,
+            IsPositionalSound = source.IsPositionalSound
         };
 
         /// <summary>
@@ -1915,6 +1939,18 @@ void main()
                     if (_particleQuadBuffer is { } particle)
                         DeleteBuffer(particle.Vao, particle.Vbo, particle.Ebo);
                     _particleQuadBuffer = null;
+                    if (_soundNoteBuffer is { } note)
+                        DeleteBuffer(note.Vao, note.Vbo, note.Ebo);
+                    _soundNoteBuffer = null;
+
+                    if (_hasSoundRangeBuffers)
+                    {
+                        _gl.DeleteVertexArray(_soundCircleVao);
+                        _gl.DeleteBuffer(_soundCircleVbo);
+                        _gl.DeleteVertexArray(_soundSphereVao);
+                        _gl.DeleteBuffer(_soundSphereVbo);
+                        _hasSoundRangeBuffers = false;
+                    }
 
                     DeletePolygonBuffer();
                     DeleteWalkmeshBuffer();
@@ -2249,6 +2285,7 @@ void main()
             DrawWalkmeshOverlay();
             DrawInstanceMarkers(scene);
             DrawPolygonOverlays();
+            DrawSoundOverlays(scene);
             DrawSelectionHighlight();
             DrawTransformGizmo();
             DrawDoorAnchors();
@@ -2465,6 +2502,11 @@ void main()
 
                 var instance = Displayed(raw);
 
+                // Sounds draw as Aurora's musical-note billboard in DrawSoundOverlays instead of
+                // the generic kind pyramid.
+                if (instance.Kind == InstanceMarkerKind.Sound)
+                    continue;
+
                 SetUniformMatrix4("model", AreaPicking.ComputeInstanceTransform(instance));
                 SetUniformVec3("flatColor", MarkerColor(instance.Kind));
 
@@ -2674,6 +2716,96 @@ void main()
 
             foreach (var (start, count) in _polygonRanges)
                 _gl.DrawArrays(PrimitiveType.LineLoop, start, (uint)count);
+        }
+
+        /// <summary>
+        /// Draws every sound instance the way the reference toolset does: a billboarded musical
+        /// note at the position (red head, black stem - depth-tested like the other kind markers),
+        /// and for positional sounds its range graphics in <see cref="SoundRangeColor"/> - a dotted
+        /// sphere plus solid equator ring at MinDistance and a flat circle at MaxDistance, drawn
+        /// with depth testing off so a range is visible through terrain exactly as Aurora shows it.
+        /// </summary>
+        private void DrawSoundOverlays(AreaScene scene)
+        {
+            if (_gl == null)
+                return;
+
+            var cameraDirection = _target - _cameraEye;
+            var cameraForward = cameraDirection.LengthSquared() > 0.000001f
+                ? Vector3.Normalize(cameraDirection)
+                : Vector3.UnitY;
+
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("flatAlpha", 1f);
+
+            if (_soundNoteBuffer is { } note)
+            {
+                _gl.BindVertexArray(note.Vao);
+
+                foreach (var raw in scene.Instances)
+                {
+                    if (raw.Kind != InstanceMarkerKind.Sound)
+                        continue;
+
+                    var instance = Displayed(raw);
+                    var billboard = Matrix4x4.CreateBillboard(
+                        instance.Position, _cameraEye, Vector3.UnitZ, cameraForward);
+                    SetUniformMatrix4("model", Matrix4x4.CreateScale(SoundNoteHeightMeters) * billboard);
+
+                    unsafe
+                    {
+                        SetUniformVec3("flatColor", SoundNoteHeadColor);
+                        _gl.DrawElements(PrimitiveType.Triangles, (uint)_soundNoteHeadIndexCount,
+                            DrawElementsType.UnsignedInt, (void*)0);
+
+                        SetUniformVec3("flatColor", SoundNoteStemColor);
+                        _gl.DrawElements(PrimitiveType.Triangles,
+                            (uint)(note.IndexCount - _soundNoteHeadIndexCount),
+                            DrawElementsType.UnsignedInt, (void*)(_soundNoteHeadIndexCount * sizeof(uint)));
+                    }
+                }
+            }
+
+            if (!_hasSoundRangeBuffers)
+                return;
+
+            // Range graphics ignore the depth buffer: Aurora keeps a sound's rings visible across
+            // (and through) terrain, which is what makes a 50m audible radius readable at a glance.
+            _gl.Disable(EnableCap.DepthTest);
+            _gl.DepthMask(false);
+            SetUniformVec3("flatColor", SoundRangeColor);
+            _gl.PointSize(2f);
+
+            foreach (var raw in scene.Instances)
+            {
+                if (raw.Kind != InstanceMarkerKind.Sound || !raw.IsPositionalSound)
+                    continue;
+
+                var instance = Displayed(raw);
+                var translation = Matrix4x4.CreateTranslation(instance.Position);
+
+                if (instance.SoundMinDistance is { } min && min > 0.05f)
+                {
+                    SetUniformMatrix4("model", Matrix4x4.CreateScale(min) * translation);
+                    _gl.BindVertexArray(_soundSphereVao);
+                    _gl.DrawArrays(PrimitiveType.Points, 0, (uint)_soundSphereVertexCount);
+                    _gl.BindVertexArray(_soundCircleVao);
+                    _gl.DrawArrays(PrimitiveType.LineLoop, 0, (uint)_soundCircleVertexCount);
+                }
+
+                if (instance.SoundMaxDistance is { } max && max > 0.05f)
+                {
+                    SetUniformMatrix4("model", Matrix4x4.CreateScale(max) * translation);
+                    _gl.BindVertexArray(_soundCircleVao);
+                    _gl.DrawArrays(PrimitiveType.LineLoop, 0, (uint)_soundCircleVertexCount);
+                }
+            }
+
+            _gl.PointSize(1f);
+            _gl.Enable(EnableCap.DepthTest);
+            _gl.DepthMask(true);
         }
 
         /// <summary>
@@ -3611,6 +3743,152 @@ void main()
 
             var (particleVertices, particleIndices) = BuildParticleQuadMesh();
             _particleQuadBuffer = UploadStaticMesh(particleVertices, particleIndices);
+
+            var (noteVertices, noteIndices, noteHeadIndexCount) = BuildSoundNoteMesh();
+            _soundNoteBuffer = UploadStaticMesh(noteVertices, noteIndices);
+            _soundNoteHeadIndexCount = noteHeadIndexCount;
+
+            BuildSoundRangeBuffers();
+        }
+
+        /// <summary>
+        /// Aurora's sound marker: an upright musical note billboard, unit height in local Y with
+        /// its head bottom at the local origin. Indices are ordered head first so the draw can
+        /// tint the leading <see cref="_soundNoteHeadIndexCount"/> indices red and the rest black.
+        /// </summary>
+        private static (float[] Vertices, uint[] Indices, int HeadIndexCount) BuildSoundNoteMesh()
+        {
+            var vertices = new List<float>();
+            var indices = new List<uint>();
+
+            uint AddVertex(float x, float y)
+            {
+                var index = (uint)(vertices.Count / FloatsPerVertex);
+                vertices.Add(x);
+                vertices.Add(y);
+                vertices.Add(0f);
+                vertices.Add(0f);
+                vertices.Add(0f);
+                vertices.Add(1f);
+                vertices.Add(0f);
+                vertices.Add(0f);
+                return index;
+            }
+
+            // Head: a slightly tilted ellipse fanned about its centre.
+            const int headSegments = 14;
+            const float headCenterX = 0f, headCenterY = 0.12f;
+            const float headRadiusX = 0.17f, headRadiusY = 0.12f;
+            var headCenter = AddVertex(headCenterX, headCenterY);
+            var rim = new uint[headSegments];
+            for (var i = 0; i < headSegments; i++)
+            {
+                var angle = MathF.Tau * i / headSegments;
+                rim[i] = AddVertex(
+                    headCenterX + MathF.Cos(angle) * headRadiusX,
+                    headCenterY + MathF.Sin(angle) * headRadiusY);
+            }
+
+            for (var i = 0; i < headSegments; i++)
+            {
+                indices.Add(headCenter);
+                indices.Add(rim[i]);
+                indices.Add(rim[(i + 1) % headSegments]);
+            }
+
+            var headIndexCount = indices.Count;
+
+            // Stem: thin rectangle rising from the head's right edge.
+            var s0 = AddVertex(0.13f, 0.16f);
+            var s1 = AddVertex(0.20f, 0.16f);
+            var s2 = AddVertex(0.20f, 0.97f);
+            var s3 = AddVertex(0.13f, 0.97f);
+            indices.AddRange(new[] { s0, s1, s2, s0, s2, s3 });
+
+            // Flag: a wedge sweeping down-right from the stem top.
+            var f0 = AddVertex(0.20f, 1.00f);
+            var f1 = AddVertex(0.46f, 0.66f);
+            var f2 = AddVertex(0.36f, 0.58f);
+            var f3 = AddVertex(0.20f, 0.78f);
+            indices.AddRange(new[] { f0, f1, f2, f0, f2, f3 });
+
+            return (vertices.ToArray(), indices.ToArray(), headIndexCount);
+        }
+
+        /// <summary>
+        /// Unit-radius sound-range geometry, scaled per sound at draw time: a 64-segment line-loop
+        /// circle (the MaxDistance ring, and the sphere's solid equator), and a dotted sphere -
+        /// points at every latitude/longitude crossing, matching the dot grid the reference
+        /// toolset draws for MinDistance.
+        /// </summary>
+        private void BuildSoundRangeBuffers()
+        {
+            const int circleSegments = 64;
+            var circle = new List<float>(circleSegments * FloatsPerVertex);
+            for (var i = 0; i < circleSegments; i++)
+            {
+                var angle = MathF.Tau * i / circleSegments;
+                AppendOverlayVertex(circle, new Vector3(MathF.Cos(angle), MathF.Sin(angle), 0f));
+            }
+
+            const int longitudes = 24;
+            const int latitudes = 17; // every ~10 degrees, poles excluded
+            var sphere = new List<float>(longitudes * latitudes * FloatsPerVertex);
+            for (var lat = 1; lat <= latitudes; lat++)
+            {
+                var pitch = MathF.PI * lat / (latitudes + 1) - MathF.PI / 2f;
+                var ringRadius = MathF.Cos(pitch);
+                var z = MathF.Sin(pitch);
+                for (var lon = 0; lon < longitudes; lon++)
+                {
+                    var angle = MathF.Tau * lon / longitudes;
+                    sphere.Add(MathF.Cos(angle) * ringRadius);
+                    sphere.Add(MathF.Sin(angle) * ringRadius);
+                    sphere.Add(z);
+                    sphere.Add(0f);
+                    sphere.Add(0f);
+                    sphere.Add(1f);
+                    sphere.Add(0f);
+                    sphere.Add(0f);
+                }
+            }
+
+            _soundCircleVertexCount = circle.Count / FloatsPerVertex;
+            _soundSphereVertexCount = sphere.Count / FloatsPerVertex;
+
+            _soundCircleVao = _gl!.GenVertexArray();
+            _soundCircleVbo = _gl.GenBuffer();
+            _gl.BindVertexArray(_soundCircleVao);
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _soundCircleVbo);
+            var circleData = circle.ToArray();
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(circleData.Length * sizeof(float)),
+                new ReadOnlySpan<float>(circleData), BufferUsageARB.StaticDraw);
+            SetVertexAttribPointers();
+
+            _soundSphereVao = _gl.GenVertexArray();
+            _soundSphereVbo = _gl.GenBuffer();
+            _gl.BindVertexArray(_soundSphereVao);
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _soundSphereVbo);
+            var sphereData = sphere.ToArray();
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(sphereData.Length * sizeof(float)),
+                new ReadOnlySpan<float>(sphereData), BufferUsageARB.StaticDraw);
+            SetVertexAttribPointers();
+            _gl.BindVertexArray(0);
+
+            _hasSoundRangeBuffers = true;
+        }
+
+        /// <summary>Appends one position-only vertex in the shared 8-float layout (up normal, zero UV).</summary>
+        private static void AppendOverlayVertex(List<float> target, Vector3 position)
+        {
+            target.Add(position.X);
+            target.Add(position.Y);
+            target.Add(position.Z);
+            target.Add(0f);
+            target.Add(0f);
+            target.Add(1f);
+            target.Add(0f);
+            target.Add(0f);
         }
 
         private StaticMeshBuffer UploadStaticMesh(float[] vertices, uint[] indices)
@@ -3832,6 +4110,13 @@ void main()
             _walkmeshBlockedVertexCount = 0;
         }
 
+        /// <summary>
+        /// How far apart the draped samples along a trigger outline's edges sit. Fine enough that
+        /// an edge crossing a terrain rise visibly follows the ground the way Aurora's outlines
+        /// do, coarse enough that a whole area's triggers stay a trivial vertex count.
+        /// </summary>
+        private const float PolygonDrapeStepMeters = 1f;
+
         private void RebuildPolygonBuffer(AreaScene scene)
         {
             DeletePolygonBuffer();
@@ -3845,19 +4130,41 @@ void main()
                     continue;
 
                 var start = vertexFloats.Count / FloatsPerVertex;
-                foreach (var point in marker.Geometry)
+
+                // Each edge (including the loop-closing one) is subdivided and every sample draped
+                // onto the walkmesh under it, so the outline hugs the floor across slopes and
+                // height seams the way the reference toolset draws it. Off the walkmesh the sample
+                // keeps the edge's own interpolated height.
+                var count = 0;
+                for (var i = 0; i < marker.Geometry.Count; i++)
                 {
-                    vertexFloats.Add(point.X);
-                    vertexFloats.Add(point.Y);
-                    vertexFloats.Add(point.Z + PolygonHeightOffset);
-                    vertexFloats.Add(0f);
-                    vertexFloats.Add(0f);
-                    vertexFloats.Add(1f);
-                    vertexFloats.Add(0f);
-                    vertexFloats.Add(0f);
+                    var from = marker.Geometry[i];
+                    var to = marker.Geometry[(i + 1) % marker.Geometry.Count];
+                    var steps = Math.Max(1, (int)MathF.Ceiling(
+                        Vector2.Distance(new Vector2(from.X, from.Y), new Vector2(to.X, to.Y)) /
+                        PolygonDrapeStepMeters));
+
+                    // The end point is skipped: it is the next edge's start sample, and LineLoop
+                    // closes the final edge back to the first sample.
+                    for (var step = 0; step < steps; step++)
+                    {
+                        var t = step / (float)steps;
+                        var sample = Vector3.Lerp(from, to, t);
+                        var z = AreaWalkmesh.GroundHeightAt(scene.Tiles, sample.X, sample.Y) ?? sample.Z;
+
+                        vertexFloats.Add(sample.X);
+                        vertexFloats.Add(sample.Y);
+                        vertexFloats.Add(z + PolygonHeightOffset);
+                        vertexFloats.Add(0f);
+                        vertexFloats.Add(0f);
+                        vertexFloats.Add(1f);
+                        vertexFloats.Add(0f);
+                        vertexFloats.Add(0f);
+                        count++;
+                    }
                 }
 
-                ranges.Add((start, marker.Geometry.Count));
+                ranges.Add((start, count));
             }
 
             _polygonRanges = ranges;

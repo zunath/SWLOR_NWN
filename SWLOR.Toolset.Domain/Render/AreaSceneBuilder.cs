@@ -60,7 +60,7 @@ namespace SWLOR.Toolset.Domain.Render
 
             var tiles = BuildTiles(are, tileset, tilesetResRef, width, modelCache, diagnostics, walkmeshes);
             var instances = BuildInstances(
-                git, modelCache, placeableAppearances, doorTypes, waypointAppearances, resolveCreatureModel);
+                git, modelCache, placeableAppearances, doorTypes, waypointAppearances, resolveCreatureModel, tiles);
             var doorAnchors = BuildDoorAnchors(tiles, tileset);
 
             return new AreaScene
@@ -219,7 +219,8 @@ namespace SWLOR.Toolset.Domain.Render
             PlaceableAppearanceService? placeableAppearances,
             DoorTypeService? doorTypes,
             WaypointAppearanceService? waypointAppearances,
-            Func<JsonGffStruct, RenderModel?>? resolveCreatureModel)
+            Func<JsonGffStruct, RenderModel?>? resolveCreatureModel,
+            IReadOnlyList<TilePlacement>? tiles = null)
         {
             var markers = new List<InstanceMarker>();
 
@@ -235,7 +236,8 @@ namespace SWLOR.Toolset.Domain.Render
                 resolveModel: instance => ResolvePlaceableModel(instance, placeableAppearances, modelCache));
             AddMarkers(markers, git.Sounds, InstanceMarkerKind.Sound, ResourceType.Uts);
             AddMarkers(markers, git.Stores, InstanceMarkerKind.Store, ResourceType.Utm);
-            AddMarkers(markers, git.Triggers, InstanceMarkerKind.Trigger, ResourceType.Utt, includeGeometry: true);
+            AddMarkers(markers, git.Triggers, InstanceMarkerKind.Trigger, ResourceType.Utt, includeGeometry: true,
+                tiles: tiles);
             AddMarkers(markers, git.Waypoints, InstanceMarkerKind.Waypoint, ResourceType.Utw,
                 resolveModel: instance => ResolveWaypointModel(instance, waypointAppearances, modelCache),
                 modelCorrection: WaypointMarkerModel.ForwardCorrection);
@@ -250,7 +252,8 @@ namespace SWLOR.Toolset.Domain.Render
             ResourceType type,
             bool includeGeometry = false,
             Func<JsonGffStruct, RenderModel?>? resolveModel = null,
-            Matrix4x4? modelCorrection = null)
+            Matrix4x4? modelCorrection = null,
+            IReadOnlyList<TilePlacement>? tiles = null)
         {
             foreach (var instance in instances)
             {
@@ -261,9 +264,21 @@ namespace SWLOR.Toolset.Domain.Render
                 var position = new Vector3(x, y, z);
                 var geometry = includeGeometry ? ReadGeometry(instance) : null;
 
-                // Trigger Geometry is stored as offsets from X/Y/ZPosition.
+                // Trigger Geometry is stored as offsets from X/Y/ZPosition. The stored PointZ is
+                // whatever height each vertex happened to be clicked at and the corpus mixes floor
+                // heights inside one flat polygon, so each vertex is draped onto the walkmesh under
+                // it - the same thing Aurora does - keeping the stored Z only when no floor covers
+                // that point (off-grid vertices, tiles with no resolvable .wok).
                 if (geometry != null)
-                    geometry = geometry.Select(point => point + position).ToArray();
+                {
+                    geometry = geometry.Select(point =>
+                    {
+                        var world = point + position;
+                        if (tiles != null && AreaWalkmesh.GroundHeightAt(tiles, world.X, world.Y) is { } floor)
+                            world = new Vector3(world.X, world.Y, floor);
+                        return world;
+                    }).ToArray();
+                }
 
                 markers.Add(new InstanceMarker
                 {
@@ -278,7 +293,10 @@ namespace SWLOR.Toolset.Domain.Render
                         ? correction * InstanceFieldMap.GetVisualTransform(instance)
                         : InstanceFieldMap.GetVisualTransform(instance),
                     Geometry = geometry,
-                    Model = resolveModel?.Invoke(instance)
+                    Model = resolveModel?.Invoke(instance),
+                    SoundMinDistance = kind == InstanceMarkerKind.Sound ? instance.GetSingleOrNull("MinDistance") : null,
+                    SoundMaxDistance = kind == InstanceMarkerKind.Sound ? instance.GetSingleOrNull("MaxDistance") : null,
+                    IsPositionalSound = kind == InstanceMarkerKind.Sound && (instance.GetIntOrNull("Positional") ?? 0) != 0
                 });
             }
         }

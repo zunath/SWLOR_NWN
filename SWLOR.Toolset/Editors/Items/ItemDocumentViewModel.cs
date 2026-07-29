@@ -1,3 +1,4 @@
+using SWLOR.Toolset.Domain.Editors.Items;
 using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
@@ -82,7 +83,7 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, bool>? textureExists = null,
             Func<string, IReadOnlyList<Domain.Workspace.ItemSourceEntry>>? sourceLookup = null,
             Func<bool>? itemSourcesReady = null,
-            Func<int, int?>? costTableMax = null,
+            ItemCostTableRanges? costTables = null,
             Func<JsonGffStruct, bool, RenderModel?>? resolveModel = null,
             ResourceIndex? resourceIndex = null,
             ArmorDyeSwatchService? armorDyeSwatches = null,
@@ -115,7 +116,7 @@ namespace SWLOR.Toolset.Editors.Items
                 sourceLookup,
                 itemSourcesReady,
                 isDirty: false,
-                costTableMax,
+                costTables,
                 resolveModel: resolveModel,
                 resourceIndex: resourceIndex,
                 armorDyeSwatches: armorDyeSwatches,

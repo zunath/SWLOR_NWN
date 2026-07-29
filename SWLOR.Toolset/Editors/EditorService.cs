@@ -1022,7 +1022,7 @@ namespace SWLOR.Toolset.Editors
                 _resourceIndex == null ? null : ItemTextureExists,
                 ItemSourcesFor,
                 AreItemSourcesReady,
-                ItemCostTableMax(),
+                ItemCostTables(),
                 resolveModel: _previewRenderer != null
                     ? (item, female) => _previewRenderer.BuildModel(
                         ResourceType.Uti, item, armorPreviewFemale: female)
@@ -1121,13 +1121,13 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>A stat/requirement/appearance cell's real engine cap, by CostTableId.</summary>
-        private Func<int, int?>? ItemCostTableMax()
+        private Domain.Editors.Items.ItemCostTableRanges? ItemCostTables()
         {
             if (_twoDaService == null)
                 return null;
 
             _itemCostTableRanges ??= new Domain.Editors.Items.ItemCostTableRanges(_twoDaService);
-            return _itemCostTableRanges.MaxFor;
+            return _itemCostTableRanges;
         }
 
         /// <summary>

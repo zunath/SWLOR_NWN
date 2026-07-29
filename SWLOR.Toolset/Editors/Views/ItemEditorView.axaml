@@ -49,8 +49,14 @@
         <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
                    Foreground="{DynamicResource InkSecondaryBrush}"
                    TextTrimming="CharacterEllipsis" />
+        <!-- A cost table of coded choices (Delay) lists its real rows; a plain numeric ladder
+             (DMG) keeps the number box, capped at what the table actually reaches. -->
+        <ComboBox Grid.Column="1" ItemsSource="{Binding Options}"
+                  SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                  HorizontalAlignment="Stretch" IsVisible="{Binding HasOptions}" />
         <NumericUpDown Grid.Column="1" Value="{Binding Number, Mode=TwoWay}"
                        Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                       IsVisible="{Binding !HasOptions}"
                        Increment="1" FormatString="0" />
       </Grid>
     </DataTemplate>

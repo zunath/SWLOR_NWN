@@ -21,7 +21,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action? _valueChanged;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
-        private readonly Func<int, int?>? _costTableMax;
+        private readonly ItemCostTableRanges? _costTables;
 
         private ItemFamily _family;
 
@@ -51,13 +51,13 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, Action, bool> runEdit,
             Action? valueChanged = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
-            Func<int, int?>? costTableMax = null)
+            ItemCostTableRanges? costTables = null)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _valueChanged = valueChanged;
             _resolveChoices = resolveChoices;
-            _costTableMax = costTableMax;
+            _costTables = costTables;
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace SWLOR.Toolset.Editors.Items
             foreach (var groupId in primaryIds)
                 Groups.Add(BuildGroup(groupId));
 
-            Engine = new ItemEngineLegacySectionViewModel(_store, _runEdit, _resolveChoices, _costTableMax);
+            Engine = new ItemEngineLegacySectionViewModel(_store, _runEdit, _resolveChoices, _costTables);
 
             LayOutColumns();
         }
@@ -217,12 +217,12 @@ namespace SWLOR.Toolset.Editors.Items
                 .ToList();
 
             return new ItemStatGroupViewModel(
-                group, definitions, _store, _runEdit, _valueChanged, entryLists, exclusiveChoices, _costTableMax);
+                group, definitions, _store, _runEdit, _valueChanged, entryLists, exclusiveChoices, _costTables);
         }
 
         private ItemPropertyEntryListViewModel BuildEntryList(ItemMultiEntryDefinition definition) =>
             new(definition, _store, _runEdit, ResolveSubtypeChoices(definition.SubtypeTableResRef), _valueChanged,
-                _costTableMax);
+                _costTables);
 
         private ItemExclusiveChoiceViewModel BuildExclusiveChoice(ItemMultiEntryDefinition definition) =>
             new(definition, _store, _runEdit, ResolveSubtypeChoices(definition.SubtypeTableResRef), _valueChanged);

@@ -26,7 +26,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action? _valueChanged;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
-        private readonly Func<int, int?>? _costTableMax;
+        private readonly ItemCostTableRanges? _costTables;
 
         public ObservableCollection<ItemRequirementGroupViewModel> Groups { get; } = new();
 
@@ -39,13 +39,13 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, Action, bool> runEdit,
             Action? valueChanged = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
-            Func<int, int?>? costTableMax = null)
+            ItemCostTableRanges? costTables = null)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _valueChanged = valueChanged;
             _resolveChoices = resolveChoices;
-            _costTableMax = costTableMax;
+            _costTables = costTables;
 
             Build();
         }
@@ -94,7 +94,7 @@ namespace SWLOR.Toolset.Editors.Items
 
         private ItemPropertyEntryListViewModel BuildEntryList(ItemMultiEntryDefinition definition) =>
             new(definition, _store, _runEdit, ResolveSubtypeChoices(definition.SubtypeTableResRef), _valueChanged,
-                _costTableMax);
+                _costTables);
 
         private IReadOnlyList<BehaviorChoice> ResolveSubtypeChoices(string tableResRef) =>
             _resolveChoices?.Invoke($"{SubtypeKeyPrefix}{tableResRef}") ?? Array.Empty<BehaviorChoice>();
@@ -114,7 +114,7 @@ namespace SWLOR.Toolset.Editors.Items
                 requirement.CostTableId,
                 requirement.DisplayOrder);
 
-            return new ItemStatCellViewModel(definition, _store, _runEdit, _valueChanged, _costTableMax);
+            return new ItemStatCellViewModel(definition, _store, _runEdit, _valueChanged, _costTables);
         }
     }
 }

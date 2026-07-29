@@ -45,7 +45,7 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, Action, bool> runEdit,
             Action? valueChanged = null,
             Action? removed = null,
-            Func<int, int?>? costTableMax = null)
+            ItemCostTableRanges? costTables = null)
         {
             _propertyId = propertyId;
             _costTableId = costTableId;
@@ -56,7 +56,7 @@ namespace SWLOR.Toolset.Editors.Items
 
             SubtypeId = subtypeId;
             SubtypeDisplay = subtypeDisplay ?? throw new ArgumentNullException(nameof(subtypeDisplay));
-            Maximum = costTableMax?.Invoke(costTableId) ?? ItemCostTableRanges.DefaultMax;
+            Maximum = costTables?.MaxFor(costTableId) ?? ItemCostTableRanges.DefaultMax;
 
             RemoveCommand = new RelayCommand(Remove);
 

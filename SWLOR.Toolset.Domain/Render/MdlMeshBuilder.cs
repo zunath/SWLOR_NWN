@@ -121,6 +121,19 @@ namespace SWLOR.Toolset.Domain.Render
         public string? DefaultAnimationName { get; init; }
 
         /// <summary>
+        /// The palette index each PLT layer is dyed with (skin, hair, metal, cloth, leather, tattoo),
+        /// or empty for a model with no dyed textures.
+        /// </summary>
+        /// <remarks>
+        /// Carried on the model rather than passed alongside it because a PLT is not a picture until
+        /// its layers are coloured - a renderer that loads one without these gets the palette's
+        /// default row, which is why the armor preview ignored every dye channel in the viewport
+        /// while the 2D icon beside it honoured them.
+        /// </remarks>
+        public IReadOnlyDictionary<int, int> LayerColorIndices { get; init; } =
+            new Dictionary<int, int>();
+
+        /// <summary>
         /// The model's world-space bounding box at rest, or null when it has no drawable vertices.
         /// Uses each mesh's settled <see cref="RenderMesh.Transform"/> (the last idle frame), which
         /// is what the viewport draws when nothing is animating.

@@ -188,7 +188,7 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, IReadOnlyList<Domain.Workspace.ItemSourceEntry>>? sourceLookup = null,
             Func<bool>? itemSourcesReady = null,
             bool isDirty = false,
-            Func<int, int?>? costTableMax = null,
+            ItemCostTableRanges? costTables = null,
             Func<JsonGffStruct, bool, RenderModel?>? resolveModel = null,
             ResourceIndex? resourceIndex = null,
             ArmorDyeSwatchService? armorDyeSwatches = null,
@@ -211,9 +211,9 @@ namespace SWLOR.Toolset.Editors.Items
             ReclassifyFamily();
             Role = ItemRoleCatalog.Classify(_store, Family);
             BuildBasicRows();
-            Stats = new ItemStatsSectionViewModel(_store, RunEdit, null, resolveChoices, costTableMax);
+            Stats = new ItemStatsSectionViewModel(_store, RunEdit, null, resolveChoices, costTables);
             Stats.Rebuild(Family, Role.Id);
-            Requirements = new ItemRequirementsSectionViewModel(_store, RunEdit, null, resolveChoices, costTableMax);
+            Requirements = new ItemRequirementsSectionViewModel(_store, RunEdit, null, resolveChoices, costTables);
             Roles = new ItemRoleSectionViewModel(_store, RunEdit, resolveChoices, prompts, OnRoleChosen);
             Roles.Rebuild(Family, Role, FamilyDisplay);
             if (baseItemIcons != null && textureExists != null)

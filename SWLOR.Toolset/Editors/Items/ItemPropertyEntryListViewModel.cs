@@ -22,7 +22,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<string, Action, bool> _runEdit;
         private readonly IReadOnlyList<BehaviorChoice> _subtypeChoices;
         private readonly Action? _valueChanged;
-        private readonly Func<int, int?>? _costTableMax;
+        private readonly ItemCostTableRanges? _costTables;
 
         public string Label => _definition.Label;
 
@@ -44,14 +44,14 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, Action, bool> runEdit,
             IReadOnlyList<BehaviorChoice> subtypeChoices,
             Action? valueChanged = null,
-            Func<int, int?>? costTableMax = null)
+            ItemCostTableRanges? costTables = null)
         {
             _definition = definition ?? throw new ArgumentNullException(nameof(definition));
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _subtypeChoices = subtypeChoices ?? Array.Empty<BehaviorChoice>();
             _valueChanged = valueChanged;
-            _costTableMax = costTableMax;
+            _costTables = costTables;
 
             AddCommand = new RelayCommand<BehaviorChoiceViewModel>(Add);
 
@@ -95,7 +95,7 @@ namespace SWLOR.Toolset.Editors.Items
 
         private ItemPropertyEntryViewModel BuildEntry(int subtypeId) =>
             new(_definition.PropertyId, subtypeId, DisplayFor(subtypeId), _definition.CostTableId,
-                _store, _runEdit, OnEntryValueChanged, OnEntryRemoved, _costTableMax);
+                _store, _runEdit, OnEntryValueChanged, OnEntryRemoved, _costTables);
 
         private string DisplayFor(int subtypeId)
         {

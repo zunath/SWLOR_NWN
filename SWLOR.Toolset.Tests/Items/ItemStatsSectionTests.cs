@@ -278,11 +278,32 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public void ACodedCostTableIsOfferedAsItsRealRowsRatherThanAsANumber()
+        {
+            // iprp_delay starts at row 11 and labels that row "110". A number box therefore offered
+            // rows 0-10, which do not exist, and displayed a row index as though it were the delay.
+            var ranges = new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory));
+            var section = new ItemStatsSectionViewModel(
+                OpenStore(), (_, mutation) => { mutation(); return true; }, costTables: ranges);
+            section.Rebuild(ItemFamily.MeleeWeapon, ItemRoleCatalog.CustomId);
+
+            var combat = section.Groups.Single(group => group.Group == ItemStatGroup.Combat);
+            var delay = combat.Cells.Single(cell => cell.Label == "Delay");
+
+            delay.HasOptions.Should().BeTrue("Delay's rows are codes, not quantities");
+            delay.Options.Should().NotContain(option => option.Value < 11, "rows 0-10 are blank");
+            delay.Options.Should().Contain(option => option.Value == 11 && option.Label == "110");
+
+            // DMG's table is a dense 1..N ladder labelled with its own row numbers - a number.
+            combat.Cells.Single(cell => cell.Label == "DMG").HasOptions.Should().BeFalse();
+        }
+
+        [Test]
         public void MaximumReflectsTheRealCostTableWhenOneIsSupplied()
         {
             var ranges = new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory));
             var section = new ItemStatsSectionViewModel(
-                OpenStore(), (_, mutation) => { mutation(); return true; }, costTableMax: ranges.MaxFor);
+                OpenStore(), (_, mutation) => { mutation(); return true; }, costTables: ranges);
             section.Rebuild(ItemFamily.Armor, ItemRoleCatalog.CustomId);
 
             var defense = section.Groups.Single(group => group.Group == ItemStatGroup.Defense);

@@ -195,12 +195,35 @@ namespace SWLOR.Toolset.Workspace
                 PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull,
                 armorPreviewFemale);
 
-            return reference.Kind switch
+            var model = reference.Kind switch
             {
                 BlueprintModelKind.Simple when reference.ModelResRef != null => BuildRenderModel(reference.ModelResRef),
                 BlueprintModelKind.Segmented => ComposeSegmented(reference),
                 BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
                 _ => null
+            };
+
+            return WithLayerColors(model, reference);
+        }
+
+        /// <summary>
+        /// Hands the blueprint's dye choices to the model so the viewport can colour its PLT layers.
+        /// The software thumbnail path passes them to the texture cache directly; the GL viewport
+        /// only sees the model, so without this it drew every dyed surface at the palette default.
+        /// </summary>
+        private static RenderModel? WithLayerColors(RenderModel? model, BlueprintModelReference reference)
+        {
+            if (model == null || reference.LayerColorIndices.Count == 0)
+                return model;
+
+            return new RenderModel
+            {
+                Name = model.Name,
+                Meshes = model.Meshes,
+                Animations = model.Animations,
+                Emitters = model.Emitters,
+                DefaultAnimationName = model.DefaultAnimationName,
+                LayerColorIndices = reference.LayerColorIndices,
             };
         }
 

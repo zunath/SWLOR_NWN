@@ -45,14 +45,14 @@ namespace SWLOR.Toolset.Editors.Items
             Action? valueChanged,
             IReadOnlyList<ItemPropertyEntryListViewModel>? entryLists = null,
             IReadOnlyList<ItemExclusiveChoiceViewModel>? exclusiveChoices = null,
-            Func<int, int?>? costTableMax = null)
+            ItemCostTableRanges? costTables = null)
         {
             ArgumentNullException.ThrowIfNull(definitions);
 
             Group = group;
             Title = TitleFor(group);
             Cells = definitions
-                .Select(definition => new ItemStatCellViewModel(definition, store, runEdit, valueChanged, costTableMax))
+                .Select(definition => new ItemStatCellViewModel(definition, store, runEdit, valueChanged, costTables))
                 .ToList();
             EntryLists = entryLists ?? Array.Empty<ItemPropertyEntryListViewModel>();
             ExclusiveChoices = exclusiveChoices ?? Array.Empty<ItemExclusiveChoiceViewModel>();

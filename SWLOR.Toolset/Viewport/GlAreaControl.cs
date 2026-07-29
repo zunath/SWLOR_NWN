@@ -332,6 +332,12 @@ void main()
         private readonly Dictionary<string, (uint TexId, float AlphaCutoff)> _textureCache =
             new(StringComparer.OrdinalIgnoreCase);
 
+        // The dye indices of the model currently being drawn, and a stable string form of them for
+        // cache keys. A PLT is only a picture once its layers are coloured, so these decide what the
+        // texture actually looks like; empty for everything that carries no dyed surfaces.
+        private IReadOnlyDictionary<int, int>? _layerColors;
+        private string _layerColorKey = string.Empty;
+
         // Normal/specular map textures by their own resref, separate from _textureCache because a
         // map resref is a different resource than a diffuse and needs no alpha-cutoff resolution.
         // 0 memoizes a failed load. Cleared alongside the other caches on GL teardown.
@@ -2800,6 +2806,7 @@ void main()
                                           animation.IsPlayable);
                 _gl!.BindVertexArray(buffer.Vao);
                 SetUniformBool("unlit", false);
+                UseLayerColors(raw.Model);
 
                 foreach (var meshRange in buffer.MeshRanges)
                 {
@@ -4202,6 +4209,26 @@ void main()
 
         // ----- Textures -----
 
+        /// <summary>
+        /// Makes a model's dye choices current for the texture loads its meshes are about to
+        /// trigger. PLT surfaces are only coloured at load, so this has to be set before the first
+        /// BindMeshTexture of the model and stays set for the rest of its draw.
+        /// </summary>
+        private void UseLayerColors(RenderModel? model)
+        {
+            var colors = model?.LayerColorIndices;
+            if (colors == null || colors.Count == 0)
+            {
+                _layerColors = null;
+                _layerColorKey = string.Empty;
+                return;
+            }
+
+            _layerColors = colors;
+            _layerColorKey = "|" + string.Join(
+                ",", colors.OrderBy(pair => pair.Key).Select(pair => $"{pair.Key}:{pair.Value}"));
+        }
+
         private void BindMeshTexture(string? textureName)
         {
             var material = string.IsNullOrWhiteSpace(textureName)
@@ -4249,7 +4276,7 @@ void main()
             if (ResourceIndex == null)
                 return default;
 
-            if (_rawTextureCache.TryGetValue(rawTextureName, out var memo))
+            if (_rawTextureCache.TryGetValue(rawTextureName + _layerColorKey, out var memo))
                 return memo;
 
             MaterialMaps maps;
@@ -4262,10 +4289,13 @@ void main()
                 maps = new MaterialMaps { Diffuse = rawTextureName };
             }
 
-            if (!_textureCache.TryGetValue(maps.Diffuse, out var cached))
+            // Keyed by the dye set as well as the resref: one PLT dyed two ways is two different
+            // pictures, and caching on the name alone handed the first item's colours to the second.
+            var diffuseKey = maps.Diffuse + _layerColorKey;
+            if (!_textureCache.TryGetValue(diffuseKey, out var cached))
             {
                 cached = LoadAndUploadTexture(maps.Diffuse);
-                _textureCache[maps.Diffuse] = cached;
+                _textureCache[diffuseKey] = cached;
             }
 
             // A mesh whose diffuse failed to resolve draws flat-colored; loading its maps
@@ -4279,7 +4309,7 @@ void main()
                     ResolveMapTexture(maps.Specular),
                     ResolveMapTexture(maps.Roughness));
 
-            _rawTextureCache[rawTextureName] = material;
+            _rawTextureCache[rawTextureName + _layerColorKey] = material;
             return material;
         }
 
@@ -4313,7 +4343,7 @@ void main()
         {
             try
             {
-                var image = TextureLoader.Load(ResourceIndex!, resolvedName);
+                var image = TextureLoader.Load(ResourceIndex!, resolvedName, _layerColors);
                 if (image == null)
                     return (0, 0f);
 

@@ -27,18 +27,55 @@ namespace SWLOR.Toolset.Editors.Items
         [ObservableProperty]
         private decimal? _number;
 
+        /// <summary>
+        /// The rows this stat's cost table actually offers, when it is a set of coded choices rather
+        /// than a range of numbers; empty when a number box is right.
+        /// </summary>
+        /// <remarks>
+        /// Delay is the clearest case: iprp_delay's rows start at 11 and row 11 is labelled "110",
+        /// so a spinner both offered rows that do not exist and displayed a row index as if it were
+        /// the delay.
+        /// </remarks>
+        public IReadOnlyList<ItemCostTableOption> Options { get; }
+
+        public bool HasOptions => Options.Count > 0;
+
+        /// <summary>The stored CostValue as a row of <see cref="Options"/>; null when it matches none.</summary>
+        public ItemCostTableOption? SelectedOption
+        {
+            get
+            {
+                if (Number is not { } number)
+                    return null;
+                var value = (int)number;
+                foreach (var option in Options)
+                {
+                    if (option.Value == value)
+                        return option;
+                }
+
+                return null;
+            }
+            set
+            {
+                if (value is { } chosen)
+                    Number = chosen.Value;
+            }
+        }
+
         public ItemStatCellViewModel(
             ItemStatDefinition definition,
             ItemValueStore store,
             Func<string, Action, bool> runEdit,
             Action? valueChanged = null,
-            Func<int, int?>? costTableMax = null)
+            ItemCostTableRanges? costTables = null)
         {
             _definition = definition ?? throw new ArgumentNullException(nameof(definition));
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _valueChanged = valueChanged;
-            Maximum = costTableMax?.Invoke(definition.CostTableId) ?? ItemCostTableRanges.DefaultMax;
+            Maximum = costTables?.MaxFor(definition.CostTableId) ?? ItemCostTableRanges.DefaultMax;
+            Options = costTables?.OptionsFor(definition.CostTableId) ?? Array.Empty<ItemCostTableOption>();
             Reload();
         }
 
@@ -58,6 +95,8 @@ namespace SWLOR.Toolset.Editors.Items
 
         partial void OnNumberChanged(decimal? value)
         {
+            OnPropertyChanged(nameof(SelectedOption));
+
             if (_loading)
                 return;
 

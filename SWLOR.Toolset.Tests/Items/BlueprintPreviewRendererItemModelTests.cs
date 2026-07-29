@@ -1,5 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.Formats.Plt;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
+using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
@@ -66,6 +69,31 @@ namespace SWLOR.Toolset.Tests.Items
 
             model.Should().NotBeNull("bobsaber's composite parts (wswglsbr_b_032/_m_011/_t_014) exist in sw_weapon");
             model!.Meshes.Should().NotBeEmpty();
+        }
+
+        [Test]
+        public void ArmorCarriesItsDyeChoicesOnTheModelSoTheViewportCanColourThem()
+        {
+            // A PLT is not a picture until its layers are coloured. The 2D icon passed the dye
+            // indices straight to the texture cache, but the 3D viewport only ever sees the model -
+            // so with nothing on the model, every dyed surface drew at the palette's default row and
+            // changing a dye channel did nothing at all in the viewport.
+            var root = CorpusItem("adren_harness");
+            var renderer = BuildRenderer();
+
+            var store = new ItemValueStore(root);
+            store.SetInteger(BehaviorFieldStorage.Field, "Cloth1Color", Domain.Gff.GffFieldType.Byte, 3);
+            store.SetInteger(BehaviorFieldStorage.Field, "Metal1Color", Domain.Gff.GffFieldType.Byte, 7);
+            var model = renderer.BuildModel(ResourceType.Uti, root);
+
+            model.Should().NotBeNull();
+            model!.LayerColorIndices.Should().NotBeEmpty("the mannequin's dyed layers need their palette rows");
+            model.LayerColorIndices[PltLayers.Cloth1].Should().Be(3);
+            model.LayerColorIndices[PltLayers.Metal1].Should().Be(7);
+
+            store.SetInteger(BehaviorFieldStorage.Field, "Cloth1Color", Domain.Gff.GffFieldType.Byte, 11);
+            renderer.BuildModel(ResourceType.Uti, root)!
+                .LayerColorIndices[PltLayers.Cloth1].Should().Be(11, "a dye edit reaches the model");
         }
 
         private static Domain.Gff.JsonGffStruct CorpusItem(string resRef) =>

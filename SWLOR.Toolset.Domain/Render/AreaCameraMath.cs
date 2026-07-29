@@ -143,6 +143,38 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         private const float ModelFramingSlack = 1.1f;
 
+        /// <summary>
+        /// Initial framing for any scene: a single-model preview (one instance carrying geometry,
+        /// no tiles) frames that model where it actually stands, and everything else frames the
+        /// tile grid.
+        /// </summary>
+        /// <remarks>
+        /// The instance offset is the whole reason this lives here rather than at the two call
+        /// sites: a preview scene parks its one instance at the centre of its nominal tile, so
+        /// framing the model's LOCAL bounds aims the camera metres away from the geometry and the
+        /// preview box renders empty. Bounds are a box in model space; adding the instance
+        /// position puts them where the renderer will draw them.
+        /// </remarks>
+        public static (Vector3 Target, float Distance) ComputeSceneFraming(
+            AreaScene scene,
+            float tileSize,
+            float verticalFovRadians,
+            float aspectRatio)
+        {
+            ArgumentNullException.ThrowIfNull(scene);
+
+            if (scene.Tiles.Count == 0 && scene.Instances.Count == 1 &&
+                scene.Instances[0].Model?.ComputeBounds() is { } bounds)
+            {
+                var offset = scene.Instances[0].Position;
+                return ComputeModelFraming(
+                    bounds.Minimum + offset, bounds.Maximum + offset, verticalFovRadians, aspectRatio);
+            }
+
+            return ComputeInitialFraming(
+                scene.Width, scene.Height, tileSize, verticalFovRadians, aspectRatio);
+        }
+
         /// <summary>Clamps an orbit elevation angle to the allowed range (never flat, never straight overhead).</summary>
         public static float ClampElevation(float elevationRadians) =>
             Math.Clamp(elevationRadians, MinElevationRadians, MaxElevationRadians);

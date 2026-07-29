@@ -43,6 +43,80 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ComputeSceneFraming_AimsAtWhereThePreviewInstanceActuallyStands()
+        {
+            // A preview scene parks its one instance at the centre of its nominal tile, so framing
+            // the model's LOCAL bounds pointed the camera metres away from the geometry and the
+            // preview box rendered empty - a 1.9m mannequin drawn at (5,5,0) with the camera
+            // looking at (0,0,0.95).
+            var model = new RenderModel
+            {
+                Meshes = new[]
+                {
+                    new RenderMesh
+                    {
+                        NodeName = "body",
+                        TextureName = string.Empty,
+                        Positions = new[] { -0.3f, -0.15f, 0f, 0.3f, 0.15f, 1.9f },
+                        Normals = new[] { 0f, 0f, 1f, 0f, 0f, 1f },
+                        TexCoords = new[] { 0f, 0f, 1f, 1f },
+                        Indices = new[] { 0, 1, 0 },
+                        Transform = Matrix4x4.Identity
+                    }
+                }
+            };
+            var scene = new AreaScene
+            {
+                Tileset = string.Empty,
+                Width = 1,
+                Height = 1,
+                Tiles = Array.Empty<TilePlacement>(),
+                Instances = new[]
+                {
+                    new InstanceMarker
+                    {
+                        Kind = InstanceMarkerKind.Item,
+                        TemplateResRef = "armor",
+                        Tag = "armor",
+                        Position = new Vector3(5f, 5f, 0f),
+                        Orientation = new Vector2(1f, 0f),
+                        Model = model
+                    }
+                },
+                Diagnostics = new AreaSceneDiagnostics()
+            };
+
+            var (target, distance) = AreaCameraMath.ComputeSceneFraming(
+                scene, tileSize: 10f, verticalFovRadians: MathF.PI / 4f, aspectRatio: 1.4f);
+
+            target.X.Should().BeApproximately(5f, 0.01f, "the model is drawn at the instance position");
+            target.Y.Should().BeApproximately(5f, 0.01f);
+            target.Z.Should().BeApproximately(0.95f, 0.01f, "and the camera looks at its middle height");
+            distance.Should().BeLessThan(6f, "a mannequin is framed close, not from across the tile");
+        }
+
+        [Test]
+        public void ComputeSceneFraming_FallsBackToTheGridForARealArea()
+        {
+            var scene = new AreaScene
+            {
+                Tileset = "tcn01",
+                Width = 8,
+                Height = 8,
+                // No single instance carrying geometry, so this is an ordinary area rather than a
+                // model preview - which is the only distinction the framing choice turns on.
+                Tiles = Array.Empty<TilePlacement>(),
+                Instances = Array.Empty<InstanceMarker>(),
+                Diagnostics = new AreaSceneDiagnostics()
+            };
+
+            var (target, _) = AreaCameraMath.ComputeSceneFraming(
+                scene, tileSize: 10f, verticalFovRadians: MathF.PI / 4f, aspectRatio: 1f);
+
+            target.Should().Be(new Vector3(40f, 40f, 0f), "an area still frames its whole footprint");
+        }
+
+        [Test]
         public void ComputeModelFraming_NarrowViewportPullsBackSoNothingIsClipped()
         {
             var (_, square) = AreaCameraMath.ComputeModelFraming(

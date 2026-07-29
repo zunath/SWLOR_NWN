@@ -377,6 +377,11 @@ namespace SWLOR.Toolset.Editors.Items
                     Stats.Rebuild(Family, Role.Id);
                     Roles.Rebuild(Family, Role, FamilyDisplay);
                     OnPropertyChanged(nameof(ShowsVariablesTab));
+
+                    // Raised again AFTER the rebuild: ReclassifyFamily above already announced it,
+                    // but at that moment Stats still held the outgoing family's groups, so the tab
+                    // read as populated and then quietly emptied - a Stats tab with nothing in it.
+                    OnPropertyChanged(nameof(ShowsStatsTab));
                 }
 
                 // The base type is the only Basic row that changes the artwork; re-rendering

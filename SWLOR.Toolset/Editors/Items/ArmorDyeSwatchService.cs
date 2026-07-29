@@ -72,6 +72,36 @@ namespace SWLOR.Toolset.Editors.Items
             return (palette.Pixels[offset], palette.Pixels[offset + 1], palette.Pixels[offset + 2]);
         }
 
+        /// <summary>
+        /// Every color the material's palette offers, in index order - what the Colors panel's
+        /// picker shows. Empty when the palette texture cannot be resolved or decoded, which is
+        /// the caller's cue to fall back to plain index entry rather than an unusable grid of
+        /// identical chips.
+        /// </summary>
+        /// <remarks>
+        /// The row count IS the color count: a dye palette is one row per selectable color, each
+        /// row a grayscale-to-color ramp (see <see cref="GetColor"/>). Reading it from the texture
+        /// rather than assuming NWN's 176 keeps a re-authored or hak-overridden palette honest.
+        /// </remarks>
+        public IReadOnlyList<(byte R, byte G, byte B)> GetPaletteColors(DyeMaterial material)
+        {
+            var palette = GetPalette(PaletteResRef(material));
+            if (palette == null || palette.Width <= 0 || palette.Height <= 0 ||
+                palette.Pixels.Length < palette.Width * palette.Height * 4)
+            {
+                return Array.Empty<(byte, byte, byte)>();
+            }
+
+            var colors = new List<(byte R, byte G, byte B)>(palette.Height);
+            for (var index = 0; index < palette.Height; index++)
+            {
+                var color = GetColor(material, index);
+                colors.Add(color ?? default);
+            }
+
+            return colors;
+        }
+
         private static string PaletteResRef(DyeMaterial material) => material switch
         {
             DyeMaterial.Cloth => "pal_cloth01",

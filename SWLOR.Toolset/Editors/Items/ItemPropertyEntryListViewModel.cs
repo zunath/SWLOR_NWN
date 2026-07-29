@@ -17,9 +17,6 @@ namespace SWLOR.Toolset.Editors.Items
     /// </summary>
     public sealed partial class ItemPropertyEntryListViewModel : ObservableObject
     {
-        /// <summary>Matches the cap <see cref="ItemRoleCardViewModel"/>'s spell search already uses.</summary>
-        private const int MaxAddChoicesShown = 50;
-
         private readonly ItemMultiEntryDefinition _definition;
         private readonly ItemValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
@@ -130,7 +127,10 @@ namespace SWLOR.Toolset.Editors.Items
                     choice.Display.Contains(AddSearchText, StringComparison.OrdinalIgnoreCase));
             }
 
-            foreach (var choice in BehaviorChoiceViewModel.From(candidates.Take(MaxAddChoicesShown).ToList()))
+            // Every match, not a first page: the list is virtualized in the template, and a cap
+            // here was invisible to the builder - scrolling a 600-perk list simply stopped at 50
+            // with nothing to say why or any way to reach the rest.
+            foreach (var choice in BehaviorChoiceViewModel.From(candidates.ToList()))
                 AddChoices.Add(choice);
         }
     }

@@ -26,6 +26,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly ArmorDyeSwatchService? _dyes;
         private readonly List<ItemFieldCellViewModel> _allCells = new();
         private readonly List<ItemFieldCellViewModel> _rightCells = new();
+        private readonly List<ItemDyeCellViewModel> _dyeCells = new();
 
         public ItemFieldCellViewModel Neck { get; }
         public ItemFieldCellViewModel Torso { get; }
@@ -48,12 +49,12 @@ namespace SWLOR.Toolset.Editors.Items
         public ItemFieldCellViewModel LeftFoot { get; }
         public ItemFieldCellViewModel RightFoot { get; }
 
-        public ItemFieldCellViewModel Cloth1 { get; }
-        public ItemFieldCellViewModel Cloth2 { get; }
-        public ItemFieldCellViewModel Leather1 { get; }
-        public ItemFieldCellViewModel Leather2 { get; }
-        public ItemFieldCellViewModel Metal1 { get; }
-        public ItemFieldCellViewModel Metal2 { get; }
+        public ItemDyeCellViewModel Cloth1 { get; }
+        public ItemDyeCellViewModel Cloth2 { get; }
+        public ItemDyeCellViewModel Leather1 { get; }
+        public ItemDyeCellViewModel Leather2 { get; }
+        public ItemDyeCellViewModel Metal1 { get; }
+        public ItemDyeCellViewModel Metal2 { get; }
 
         /// <summary>
         /// Whether the seven left/right pairs are edited together. Defaults to whatever the document
@@ -100,9 +101,9 @@ namespace SWLOR.Toolset.Editors.Items
             {
                 Neck, Torso, Belt, Pelvis, Robe,
                 LeftShoulder, RightShoulder, LeftBicep, RightBicep, LeftForearm, RightForearm,
-                LeftHand, RightHand, LeftThigh, RightThigh, LeftShin, RightShin, LeftFoot, RightFoot,
-                Cloth1, Cloth2, Leather1, Leather2, Metal1, Metal2
+                LeftHand, RightHand, LeftThigh, RightThigh, LeftShin, RightShin, LeftFoot, RightFoot
             });
+            _dyeCells.AddRange(new[] { Cloth1, Cloth2, Leather1, Leather2, Metal1, Metal2 });
         }
 
         /// <summary>Re-reads every cell after an undo, redo, or external reload.</summary>
@@ -110,6 +111,8 @@ namespace SWLOR.Toolset.Editors.Items
         {
             foreach (var cell in _allCells)
                 cell.Reload();
+            foreach (var dye in _dyeCells)
+                dye.Reload();
         }
 
         /// <summary>
@@ -227,14 +230,13 @@ namespace SWLOR.Toolset.Editors.Items
                 value => Apply(label, () => WriteArmorField(field, twinField, value)),
                 0, 255);
 
-        private ItemFieldCellViewModel CreateDye(string label, string field, ArmorDyeSwatchService.DyeMaterial material) =>
+        private ItemDyeCellViewModel CreateDye(string label, string field, ArmorDyeSwatchService.DyeMaterial material) =>
             new(
                 label,
                 () => (int?)_store.GetInteger(BehaviorFieldStorage.Field, field),
                 value => Apply(
                     label, () => _store.SetInteger(BehaviorFieldStorage.Field, field, GffFieldType.Byte, value)),
-                0, 175,
-                _dyes == null ? null : index => _dyes.GetColor(material, index));
+                _dyes?.GetPaletteColors(material) ?? Array.Empty<(byte, byte, byte)>());
 
         /// <summary>
         /// Builds a mirrored pair. The left cell's write closure decides at write time - not at

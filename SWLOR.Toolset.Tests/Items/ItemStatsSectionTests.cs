@@ -98,6 +98,50 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public void ArmorShowsNeitherEnhancementLevelNorWeaponDamageType()
+        {
+            // Corpus-verified: of EnhancementLevel's 812 entries and WeaponDamageType's 311, not
+            // one sits on an armor - they belong to enhancement modules and weapons respectively.
+            var section = OpenArmorSection(OpenStore());
+
+            var combat = section.Groups.SingleOrDefault(group => group.Group == ItemStatGroup.Combat);
+            if (combat == null)
+                return;
+
+            combat.Cells.Should().NotContain(cell => cell.Label == "Enhancement Level");
+            combat.ExclusiveChoices.Should().NotContain(choice => choice.Label == "Weapon Damage Type");
+        }
+
+        [Test]
+        public void AWeaponStillShowsBoth()
+        {
+            var section = new ItemStatsSectionViewModel(
+                OpenStore(), (_, mutation) => { mutation(); return true; });
+            section.Rebuild(ItemFamily.MeleeWeapon, ItemRoleCatalog.CustomId);
+
+            var combat = section.Groups.Single(group => group.Group == ItemStatGroup.Combat);
+            combat.Cells.Should().Contain(cell => cell.Label == "Enhancement Level");
+            combat.ExclusiveChoices.Should().Contain(choice => choice.Label == "Weapon Damage Type");
+        }
+
+        [Test]
+        public void GroupsAreDealtIntoTwoBalancedColumns()
+        {
+            var section = OpenArmorSection(OpenStore());
+
+            var columns = section.LeftColumn.Concat(section.RightColumn).ToList();
+            columns.Should().BeEquivalentTo(section.Groups, "every group lands in exactly one column");
+
+            static int Rows(IEnumerable<ItemStatGroupViewModel> column) =>
+                column.Sum(group => group.Cells.Count + group.EntryLists.Count + group.ExclusiveChoices.Count);
+
+            var tallest = Math.Max(Rows(section.LeftColumn), Rows(section.RightColumn));
+            var shortest = Math.Min(Rows(section.LeftColumn), Rows(section.RightColumn));
+            (tallest - shortest).Should().BeLessThan(tallest,
+                "the columns are packed independently rather than one holding everything");
+        }
+
+        [Test]
         public void SecondaryGroupsAreSimplyNotShown()
         {
             var section = OpenArmorSection(OpenStore());

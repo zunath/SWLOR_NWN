@@ -116,7 +116,11 @@ namespace SWLOR.Toolset.Editors.Items
             RefreshSpellChoices();
         }
 
-        /// <summary>Capped at 50 so a search that matches almost everything still renders a list.</summary>
+        /// <summary>
+        /// Every match, not a first page. The list is virtualized in the template, and a cap here
+        /// was invisible to the builder: scrolling simply stopped partway with nothing to say why
+        /// or any way to reach the rest.
+        /// </summary>
         private void RefreshSpellChoices()
         {
             SpellChoices.Clear();
@@ -126,7 +130,7 @@ namespace SWLOR.Toolset.Editors.Items
                 : _allSpells.Where(spell =>
                     spell.Display.Contains(SpellSearchText, StringComparison.OrdinalIgnoreCase));
 
-            foreach (var spell in filtered.Take(50))
+            foreach (var spell in filtered)
                 SpellChoices.Add(spell);
         }
 

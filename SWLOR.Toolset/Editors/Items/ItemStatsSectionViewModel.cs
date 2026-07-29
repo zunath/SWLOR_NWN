@@ -26,6 +26,16 @@ namespace SWLOR.Toolset.Editors.Items
 
         public ObservableCollection<ItemStatGroupViewModel> Groups { get; } = new();
 
+        /// <summary>
+        /// <see cref="Groups"/> dealt into two columns of roughly equal height. A uniform-row
+        /// layout sized every row to its tallest card, so a two-row Defense card beside an
+        /// eight-row Resistance card left a hole the size of six rows underneath it; packing each
+        /// column independently closes those.
+        /// </summary>
+        public ObservableCollection<ItemStatGroupViewModel> LeftColumn { get; } = new();
+
+        public ObservableCollection<ItemStatGroupViewModel> RightColumn { get; } = new();
+
         /// <summary>The base-game engine properties the corpus still carries - built by <see cref="Rebuild"/>.</summary>
         public ItemEngineLegacySectionViewModel? Engine { get; private set; }
 
@@ -67,7 +77,37 @@ namespace SWLOR.Toolset.Editors.Items
             foreach (var groupId in primaryIds)
                 Groups.Add(BuildGroup(groupId));
 
+            LayOutColumns();
+
             Engine = new ItemEngineLegacySectionViewModel(_store, _runEdit, _resolveChoices, _costTableMax);
+        }
+
+        /// <summary>
+        /// Deals the built groups into the two columns, next card always going to whichever column
+        /// is currently shorter. Height is estimated by row count (cells plus entry lists plus
+        /// exclusive choices), which is what actually drives a card's height.
+        /// </summary>
+        private void LayOutColumns()
+        {
+            LeftColumn.Clear();
+            RightColumn.Clear();
+
+            var leftRows = 0;
+            var rightRows = 0;
+            foreach (var group in Groups)
+            {
+                var rows = group.Cells.Count + group.EntryLists.Count + group.ExclusiveChoices.Count;
+                if (leftRows <= rightRows)
+                {
+                    LeftColumn.Add(group);
+                    leftRows += rows;
+                }
+                else
+                {
+                    RightColumn.Add(group);
+                    rightRows += rows;
+                }
+            }
         }
 
         /// <summary>Re-reads every built cell/entry list/exclusive choice, and the engine rows.</summary>
@@ -97,9 +137,7 @@ namespace SWLOR.Toolset.Editors.Items
                 ? ItemStatVisibility.CombatStatsFor(_family)
                 : ItemStatCatalog.ByGroup(group);
 
-            var contextDefinitions = ItemMultiEntryCatalog.All
-                .Where(definition => definition.Context == group)
-                .ToList();
+            var contextDefinitions = ItemStatVisibility.MultiEntryFor(_family, group);
 
             var entryLists = contextDefinitions
                 .Where(definition => !definition.IsExclusive)

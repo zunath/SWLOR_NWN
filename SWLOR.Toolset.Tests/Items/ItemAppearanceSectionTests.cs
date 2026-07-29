@@ -1,3 +1,4 @@
+using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
@@ -180,16 +181,63 @@ namespace SWLOR.Toolset.Tests.Items
             }
 
             [Test]
-            public void OutOfRangeDyeValueIsRefused()
+            public void OutOfRangeDyeValueIsClampedToThePalette()
             {
                 var store = OpenStore("adren_harness");
                 var section = Open(store, ArmorRow, new HashSet<string>());
 
-                section.Armor!.Cloth1.Number = 176;
+                section.Armor!.Cloth1.Number = 999;
 
-                Assert.That(section.Armor.Cloth1.Number, Is.EqualTo(23), "the refused edit restores what is stored");
-                Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "Cloth1Color"), Is.EqualTo(23));
+                Assert.That(section.Armor.Cloth1.Number, Is.EqualTo(section.Armor.Cloth1.Maximum),
+                    "a value past the palette's last colour lands on it rather than being stored raw");
+                Assert.That(
+                    store.GetInteger(BehaviorFieldStorage.Field, "Cloth1Color"),
+                    Is.EqualTo(section.Armor.Cloth1.Maximum));
             }
+
+            [Test]
+            public void WithoutPaletteArtworkTheDyeCellFallsBackToIndexEntry()
+            {
+                // This fixture has no ArmorDyeSwatchService, so there are no colours to draw - the
+                // template shows the numeric box instead of an unusable grid of blank chips.
+                var section = Open(OpenStore("adren_harness"), ArmorRow, new HashSet<string>());
+
+                Assert.That(section.Armor!.Cloth1.HasPalette, Is.False);
+                Assert.That(section.Armor.Cloth1.Swatches, Is.Empty);
+                Assert.That(section.Armor.Cloth1.Maximum, Is.EqualTo(175), "NWN's dye range stands in");
+            }
+
+            [Test]
+            public void PickingASwatchWritesItsIndexAndMarksItSelected()
+            {
+                var store = OpenStore("adren_harness");
+                var palette = new[]
+                {
+                    ((byte)10, (byte)20, (byte)30),
+                    ((byte)40, (byte)50, (byte)60),
+                    ((byte)70, (byte)80, (byte)90)
+                };
+                var written = -1;
+                var cell = new ItemDyeCellViewModel(
+                    "Cloth 1",
+                    () => written < 0 ? 0 : written,
+                    value => { written = value; return true; },
+                    palette);
+
+                cell.HasPalette.Should().BeTrue();
+                cell.Swatches.Should().HaveCount(3);
+                cell.Swatches[0].IsSelected.Should().BeTrue("index 0 is what the field holds");
+
+                cell.PickCommand.Execute(cell.Swatches[2]);
+
+                written.Should().Be(2, "the swatch's palette index is what the field stores");
+                cell.Number.Should().Be(2);
+                cell.Swatches[2].IsSelected.Should().BeTrue();
+                cell.Swatches[0].IsSelected.Should().BeFalse();
+                cell.SelectedBrush.Should().NotBeNull("the row's chip shows the chosen colour");
+                cell.IsPickerOpen.Should().BeFalse("picking closes the popup");
+            }
+
         }
 
         [TestFixture]

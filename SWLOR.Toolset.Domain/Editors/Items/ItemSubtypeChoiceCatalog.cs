@@ -66,8 +66,10 @@ namespace SWLOR.Toolset.Domain.Editors.Items
 
         /// <summary>
         /// True for a placeholder label a 2da leaves on an unused/reserved row rather than a real
-        /// subtype name: blank, "****", or (after stripping spaces/underscores so "Bio_reserved" and
-        /// "cep_reserved" both match) containing "reserved", "padding", or "deleted".
+        /// subtype name: blank, "****", or (after stripping spaces/underscores so "Bio_reserved",
+        /// "cep_reserved" and "INVALID_RACE" all match) containing "reserved", "padding",
+        /// "deleted", or "invalid". Only ever consulted for a row with no TLK name of its own, so
+        /// a real choice that happens to contain one of these words is never at risk.
         /// </summary>
         private static bool IsReservedLabelShape(string label)
         {
@@ -81,7 +83,8 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             var normalized = trimmed.Replace(" ", string.Empty).Replace("_", string.Empty);
             return normalized.Contains("reserved", StringComparison.OrdinalIgnoreCase)
                 || normalized.Contains("padding", StringComparison.OrdinalIgnoreCase)
-                || normalized.Contains("deleted", StringComparison.OrdinalIgnoreCase);
+                || normalized.Contains("deleted", StringComparison.OrdinalIgnoreCase)
+                || normalized.Contains("invalid", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

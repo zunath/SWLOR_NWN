@@ -6,6 +6,13 @@
              x:Class="SWLOR.Toolset.Editors.Items.ItemEditorView"
              x:DataType="items:ItemEditorViewModel">
 
+
+  <UserControl.Styles>
+    <Style Selector="Border.selected">
+      <Setter Property="BorderBrush" Value="{DynamicResource InkBrush}" />
+    </Style>
+  </UserControl.Styles>
+
   <UserControl.DataTemplates>
     <!-- One stat's value box. A blank box means the property is absent from the item; Minimum/
          Maximum are the property's real engine cap, so garbage or out-of-range input is impossible
@@ -46,6 +53,13 @@
                 IsVisible="{Binding !!AddChoices.Count}">
           <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding AddChoices}">
+              <!-- Virtualized: the list publishes every match (hundreds of perks), and only the
+                   rows actually on screen are realized. -->
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
                   <Button Classes="behavior" Margin="2" Padding="8,4"
@@ -151,6 +165,56 @@
                        Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
                        IsEnabled="{Binding IsEnabled}"
                        Increment="1" FormatString="0" />
+      </Grid>
+    </DataTemplate>
+
+    <!-- One dye channel: the colour itself is the control. A dye value is an index into a palette
+         texture, so a number tells a builder nothing - the chip shows what is stored and the popup
+         offers the material's real palette. The numeric box behind HasPalette is the fallback for a
+         session with no base-game artwork, where there are no colours to draw. -->
+    <DataTemplate DataType="items:ItemDyeCellViewModel">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                   Foreground="{DynamicResource InkSecondaryBrush}"
+                   TextTrimming="CharacterEllipsis" />
+
+        <Button Grid.Column="1" Padding="3" Command="{Binding TogglePickerCommand}"
+                IsVisible="{Binding HasPalette}"
+                ToolTip.Tip="Pick a colour">
+          <Border Width="46" Height="18" CornerRadius="2"
+                  Background="{Binding SelectedBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" />
+          <Button.Flyout>
+            <Flyout Placement="Bottom" ShowMode="Standard">
+              <ScrollViewer MaxHeight="260" HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding Swatches}" Width="272">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <WrapPanel />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="items:ItemDyeSwatchViewModel">
+                      <Button Padding="0" Margin="1" Background="Transparent"
+                              Command="{Binding $parent[ItemsControl].((items:ItemDyeCellViewModel)DataContext).PickCommand}"
+                              CommandParameter="{Binding}"
+                              ToolTip.Tip="{Binding Tooltip}">
+                        <Border Classes.selected="{Binding IsSelected}"
+                                Width="20" Height="20" CornerRadius="2"
+                                Background="{Binding Brush}" BorderThickness="2" />
+                      </Button>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+            </Flyout>
+          </Button.Flyout>
+        </Button>
+
+        <NumericUpDown Grid.Column="1" Value="{Binding Number, Mode=TwoWay}"
+                       Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                       Increment="1" FormatString="0" Width="116"
+                       IsVisible="{Binding !HasPalette}" />
       </Grid>
     </DataTemplate>
 
@@ -294,8 +358,11 @@
                                     Owner="{Binding HeaderOwner}"
                                     IsDirty="{Binding IsDirty}" />
 
-    <Grid ColumnDefinitions="190,*">
-      <Border Grid.Column="0" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0"
+    <Grid ColumnDefinitions="Auto,*">
+      <!-- An Auto column, not a fixed one, so the styles below can narrow or drop the preview
+           rail on a small window and give every pixel back to the fields. -->
+      <Border Grid.Column="0" Name="PreviewRail" Width="190"
+              BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0"
               Padding="10">
         <Grid RowDefinitions="Auto,Auto,Auto,Auto">
           <!-- The inventory icon always shows. Underneath it, an orbitable 3D view of the item's
@@ -336,9 +403,11 @@
       <TabControl Grid.Column="1">
         <TabItem Header="Basic">
           <ScrollViewer>
-            <Grid ColumnDefinitions="*,250" Margin="14,10,22,10" ColumnSpacing="12">
-              <ItemsControl Grid.Column="0" ItemsSource="{Binding BasicRows}" />
-              <Border Grid.Column="1" Classes="card" Padding="12,9,12,11" VerticalAlignment="Top">
+            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto"
+                  Margin="14,10,22,10" ColumnSpacing="12">
+              <ItemsControl Grid.Column="0" Grid.Row="0" ItemsSource="{Binding BasicRows}" />
+              <Border Grid.Column="1" Grid.Row="0" Name="FlagsCard" Width="250"
+                      Classes="card" Padding="12,9,12,11" VerticalAlignment="Top">
                 <StackPanel>
                   <TextBlock Text="Flags" Classes="section" Margin="0,0,0,6" />
                   <ItemsControl ItemsSource="{Binding FlagRows}">
@@ -375,8 +444,9 @@
         </TabItem>
 
         <TabItem Header="Behavior" IsVisible="{Binding ShowsBehaviorTab}">
-          <Grid ColumnDefinitions="210,*">
-            <behaviors:BehaviorRailView Grid.Column="0" Items="{Binding Roles.RoleList}"
+          <Grid ColumnDefinitions="Auto,*">
+            <behaviors:BehaviorRailView Grid.Column="0" Name="BehaviorRail" Width="210"
+                                        Items="{Binding Roles.RoleList}"
                                         ChooseCommand="{Binding Roles.ChooseRoleCommand}" />
 
             <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}"
@@ -402,6 +472,13 @@
                             CornerRadius="2" ClipToBounds="True">
                       <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
                         <ItemsControl ItemsSource="{Binding SpellChoices}">
+                          <!-- Virtualized: every matching spell is published, and only the rows
+                               on screen are realized. -->
+                          <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                              <VirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                          </ItemsControl.ItemsPanel>
                           <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
                               <Button Classes="behavior" Classes.on="{Binding IsSelected}"
@@ -425,13 +502,13 @@
         <TabItem Header="Stats" IsVisible="{Binding ShowsStatsTab}">
           <ScrollViewer>
             <StackPanel Margin="14,10,22,10">
-              <ItemsControl ItemsSource="{Binding Stats.Groups}">
-                <ItemsControl.ItemsPanel>
-                  <ItemsPanelTemplate>
-                    <WrapPanel />
-                  </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-              </ItemsControl>
+              <!-- Two independently packed columns rather than one wrapping row: a wrap sizes
+                   every row to its tallest card, which left a six-row hole under Defense beside
+                   the much taller Resistance card. -->
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <ItemsControl Grid.Column="0" ItemsSource="{Binding Stats.LeftColumn}" />
+                <ItemsControl Grid.Column="1" ItemsSource="{Binding Stats.RightColumn}" />
+              </Grid>
 
               <!-- Base-game properties older items still carry: visible and removable, never added. -->
               <Border Classes="card" MaxWidth="620" HorizontalAlignment="Left"

@@ -57,6 +57,60 @@ namespace SWLOR.Toolset.Tests.Items
             GC.KeepAlive(editor);
         }
 
+        /// <summary>
+        /// A small window must not squeeze the fields between the preview rail and the Flags card
+        /// until their content renders as ellipses - the rails shrink and the card reflows below
+        /// instead.
+        /// </summary>
+        [AvaloniaTest]
+        public void ASmallWindowGivesTheFieldsTheSpaceTheFixedCompanionsWereHolding()
+        {
+            var editor = new SWLOR.Toolset.Editors.Items.ItemEditorViewModel(
+                Item(), "keyanzioneclothi", (_, mutation) => { mutation(); return true; });
+            var view = new SWLOR.Toolset.Editors.Items.ItemEditorView { DataContext = editor };
+            var window = new Window { Width = 1400, Height = 700, Content = view };
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            var rail = view.GetVisualDescendants().OfType<Border>()
+                .Single(border => border.Name == "PreviewRail");
+            var flags = view.GetVisualDescendants().OfType<Border>()
+                .Single(border => border.Name == "FlagsCard");
+
+            rail.IsVisible.Should().BeTrue("a wide window has room for everything");
+            Grid.GetColumn(flags).Should().Be(1, "the Flags card sits beside the fields when it fits");
+
+            // A laptop-sized pane: the card reflows under the fields and the rails give up width.
+            window.Width = 820;
+            Dispatcher.UIThread.RunJobs();
+
+            Grid.GetColumn(flags).Should().Be(0, "the card moves out of the fields' column");
+            Grid.GetRow(flags).Should().Be(1, "and onto its own row beneath them");
+            rail.Bounds.Width.Should().BeLessThan(190, "the preview rail gives up width first");
+            FieldsWidth(view).Should().BeGreaterThan((820 - rail.Bounds.Width) * 0.8,
+                "the fields take what is left of the pane rather than sharing it with the card");
+
+            // Smaller still: the preview rail is the last thing left to give.
+            window.Width = 620;
+            Dispatcher.UIThread.RunJobs();
+
+            rail.IsVisible.Should().BeFalse();
+            FieldsWidth(view).Should().BeGreaterThan(620 * 0.85,
+                "with nothing fixed left beside them, the fields own the whole pane");
+
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+            GC.KeepAlive(editor);
+        }
+
+        /// <summary>The rendered width of the Basic tab's field column.</summary>
+        private static double FieldsWidth(Control view) =>
+            view.GetVisualDescendants().OfType<ItemsControl>()
+                .Where(items => items.Bounds.Width > 0)
+                .Select(items => items.Bounds.Width)
+                .DefaultIfEmpty(0)
+                .Max();
+
         private static JsonGffStruct Item() =>
             JsonGffDocument.Parse(Encoding.UTF8.GetBytes("""
             {

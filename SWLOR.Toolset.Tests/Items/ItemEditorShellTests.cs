@@ -121,6 +121,28 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public void SwitchingBaseTypeUpdatesTheStatsTabInBothDirections()
+        {
+            // The tab's visibility was announced while the OUTGOING family's stats were still
+            // loaded, so switching to a base type with no stats left the tab on screen with
+            // nothing in it.
+            using var editor = Open("ark_dragon_troph");
+            Assert.That(editor.ShowsStatsTab, Is.False, "a trophy has no stats to show");
+
+            var baseType = editor.BasicRows.Single(row => row.Definition.Name == "BaseItem");
+            baseType.Choice = baseType.Choices.Single(choice => choice.Value == 16);
+
+            Assert.That(editor.Family, Is.EqualTo(ItemFamily.Armor));
+            Assert.That(editor.ShowsStatsTab, Is.True, "armor has defense, resistance and vitals");
+
+            baseType.Choice = baseType.Choices.Single(choice => choice.Value == 29);
+
+            Assert.That(editor.Family, Is.EqualTo(ItemFamily.Miscellaneous));
+            Assert.That(editor.ShowsStatsTab, Is.False,
+                "the tab goes away again rather than staying on screen empty");
+        }
+
+        [Test]
         public void StatsTabHidesWhenNoGroupOrEngineEntryApplies()
         {
             using var armor = Open("adren_harness");

@@ -347,13 +347,13 @@ namespace SWLOR.Toolset.Shell
         {
             if (_erfArchiveService == null || _workspaceContext.Workspace == null)
             {
-                StatusText = "ERF Archives needs an open module.";
+                StatusText = "ERF Manager needs an open module.";
                 return;
             }
 
             if (ScriptCompileService.AnyCompilationActive)
             {
-                StatusText = "ERF Archives will be available after the active script compile finishes.";
+                StatusText = "ERF Manager will be available after the active script compile finishes.";
                 return;
             }
 
@@ -364,14 +364,14 @@ namespace SWLOR.Toolset.Shell
                 {
                     if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
                     {
-                        StatusText = "ERF Archives cancelled: an open editor could not be saved.";
+                        StatusText = "ERF Manager cancelled: an open editor could not be saved.";
                         return;
                     }
                 }
 
-                StatusText = "Opening ERF Archives...";
+                StatusText = "Opening ERF Manager...";
                 await ErfArchiveWindow.ShowAsync(_erfArchiveService, _settings).ConfigureAwait(true);
-                StatusText = "ERF Archives closed.";
+                StatusText = "ERF Manager closed.";
             }
             finally
             {

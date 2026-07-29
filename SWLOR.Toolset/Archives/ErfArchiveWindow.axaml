@@ -7,7 +7,7 @@
         d:DesignWidth="1180" d:DesignHeight="760"
         x:Class="SWLOR.Toolset.Archives.ErfArchiveWindow"
         x:DataType="archives:ErfArchiveViewModel"
-        Title="ERF Archives · SWLOR Toolset"
+        Title="ERF Manager · SWLOR Toolset"
         Icon="/Assets/swlor-logo.png"
         Width="1180" Height="760"
         MinWidth="920" MinHeight="620"
@@ -48,7 +48,7 @@
             Padding="18,12">
       <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
         <StackPanel>
-          <TextBlock Classes="pageTitle" Text="ERF Archives" />
+          <TextBlock Classes="pageTitle" Text="ERF Manager" />
           <TextBlock Classes="dim"
                      Text="Move selected Aurora resources into or out of the open module." />
         </StackPanel>

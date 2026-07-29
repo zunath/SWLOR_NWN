@@ -39,6 +39,36 @@ namespace SWLOR.Toolset.Tests
                 window.GetVisualDescendants().Should().NotBeEmpty();
 
                 viewModel.Mode = ErfArchiveMode.Export;
+                var selectableAsset = new ErfAssetRow(new ModuleArchiveAsset(
+                    "render_test.nss",
+                    "render_test",
+                    "nss",
+                    Path.Combine(Path.GetTempPath(), "render_test.nss"),
+                    1,
+                    "Script source"));
+                viewModel.Assets.Add(selectableAsset);
+                viewModel.CurrentStep = 1;
+                Dispatcher.UIThread.RunJobs();
+
+                var headerCheckbox = window.GetVisualDescendants()
+                    .OfType<CheckBox>()
+                    .SingleOrDefault(checkBox =>
+                        checkBox.Name == "VisibleSelectionCheckBox");
+                headerCheckbox.Should().NotBeNull();
+                headerCheckbox!.IsVisible.Should().BeTrue();
+                headerCheckbox.Bounds.Width.Should().BeGreaterThan(0);
+                headerCheckbox.Bounds.Height.Should().BeGreaterThan(0);
+                headerCheckbox.IsEnabled.Should().BeTrue();
+                headerCheckbox.Command.Should().NotBeNull();
+                headerCheckbox.Command!.Execute(headerCheckbox.CommandParameter);
+                Dispatcher.UIThread.RunJobs();
+                selectableAsset.IsSelected.Should().BeTrue();
+                headerCheckbox.IsChecked.Should().BeTrue();
+                window.GetVisualDescendants()
+                    .OfType<Button>()
+                    .Select(button => button.Content?.ToString())
+                    .Should().NotContain(new[] { "Select shown", "Clear shown" });
+
                 viewModel.CurrentStep = 2;
                 viewModel.IsValidatingSelection = true;
                 Dispatcher.UIThread.RunJobs();

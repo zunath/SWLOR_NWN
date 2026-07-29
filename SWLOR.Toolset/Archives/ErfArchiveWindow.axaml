@@ -194,15 +194,20 @@
                       IsReadOnly="False"
                       SelectionMode="Single">
               <DataGrid.Columns>
-                <DataGridTemplateColumn Width="42">
-                  <DataGridTemplateColumn.Header>
-                    <CheckBox HorizontalAlignment="Center"
-                              IsThreeState="True"
-                              IsChecked="{Binding $parent[DataGrid].((archives:ErfArchiveViewModel)DataContext).VisibleSelectionState, Mode=OneWay}"
-                              IsEnabled="{Binding $parent[DataGrid].((archives:ErfArchiveViewModel)DataContext).CanToggleVisibleAssets}"
-                              Command="{Binding $parent[DataGrid].((archives:ErfArchiveViewModel)DataContext).ToggleVisibleSelectionCommand}"
-                              ToolTip.Tip="Select or clear shown assets" />
-                  </DataGridTemplateColumn.Header>
+                <DataGridTemplateColumn Header="Select shown assets" Width="42">
+                  <DataGridTemplateColumn.HeaderTemplate>
+                    <DataTemplate>
+                      <CheckBox x:Name="VisibleSelectionCheckBox"
+                                HorizontalAlignment="Center"
+                                Width="18"
+                                Height="18"
+                                IsThreeState="True"
+                                IsChecked="{Binding $parent[DataGrid].((archives:ErfArchiveViewModel)DataContext).VisibleSelectionState, Mode=OneWay}"
+                                IsEnabled="{Binding $parent[DataGrid].((archives:ErfArchiveViewModel)DataContext).CanToggleVisibleAssets}"
+                                Command="{Binding $parent[DataGrid].((archives:ErfArchiveViewModel)DataContext).ToggleVisibleSelectionCommand}"
+                                ToolTip.Tip="Select or clear shown assets" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.HeaderTemplate>
                   <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate x:DataType="archives:ErfAssetRow">
                       <CheckBox HorizontalAlignment="Center"

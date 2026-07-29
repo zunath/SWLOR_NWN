@@ -310,8 +310,6 @@
                   <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap" />
                 </StackPanel>
               </Border>
-              <TextBlock IsVisible="{Binding IsImport}" Classes="dim" TextWrapping="Wrap"
-                         Text="There is no later File → Save step. Import to Module is the durable, transactional save." />
               <TextBlock IsVisible="{Binding IsExport}" Classes="dim" TextWrapping="Wrap"
                          Text="Save ERF As opens the operating system file picker, confirms overwrite, writes a temporary archive beside the destination, validates it, then replaces the destination." />
             </StackPanel>

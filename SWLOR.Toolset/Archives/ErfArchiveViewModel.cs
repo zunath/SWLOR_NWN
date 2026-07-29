@@ -422,7 +422,10 @@ namespace SWLOR.Toolset.Archives
         public bool IsStepTwo => CurrentStep == 1;
         public bool IsStepThree => CurrentStep == 2;
         public bool IsStepFour => CurrentStep == 3;
-        public bool CanGoBack => !IsBusy && CurrentStep > 0;
+        public bool CanGoBack =>
+            !IsBusy &&
+            CurrentStep > 0 &&
+            !(IsExport && CurrentStep == 1);
         public bool ShowNext => CurrentStep < 3 && !IsValidatingSelection;
         public bool ShowImportAction => IsImport && CurrentStep == 3;
         public bool ShowExportAction => IsExport && CurrentStep == 3;
@@ -598,6 +601,7 @@ namespace SWLOR.Toolset.Archives
                 StatusText =
                     $"{Assets.Count:N0} module asset(s) are ready to export.";
                 BeginModuleResourceNameLoading();
+                CurrentStep = 1;
             }
             catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
             {

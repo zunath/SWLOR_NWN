@@ -151,7 +151,8 @@ namespace SWLOR.Toolset.Tests
                 Path.Combine(_root, "optional-references-settings.json"));
             using var viewModel = new ErfArchiveViewModel(_service, settings);
             await viewModel.StartExportCommand.ExecuteAsync(null);
-            await viewModel.NextCommand.ExecuteAsync(null);
+            viewModel.CurrentStep.Should().Be(1);
+            viewModel.CanGoBack.Should().BeFalse();
 
             var area = viewModel.Assets.Should().ContainSingle(row => row.IsArea).Subject;
             var dialog = viewModel.Assets.Should().ContainSingle(
@@ -212,6 +213,8 @@ namespace SWLOR.Toolset.Tests
                 Path.Combine(_root, "export-settings.json"));
             using var exportViewModel = new ErfArchiveViewModel(_service, exportSettings);
             await exportViewModel.StartExportCommand.ExecuteAsync(null);
+            exportViewModel.CurrentStep.Should().Be(1);
+            exportViewModel.CanGoBack.Should().BeFalse();
 
             var exportArea = exportViewModel.Assets.Should().ContainSingle().Subject;
             exportArea.IsArea.Should().BeTrue();
@@ -229,7 +232,6 @@ namespace SWLOR.Toolset.Tests
                 "Selected");
 
             var archivePath = Path.Combine(_root, "logical-area.erf");
-            await exportViewModel.NextCommand.ExecuteAsync(null);
             exportArea.IsSelected = true;
             var showedValidationProgress = false;
             exportViewModel.PropertyChanged += (_, args) =>
@@ -322,7 +324,8 @@ namespace SWLOR.Toolset.Tests
                 Path.Combine(_root, "failed-validation-settings.json"));
             using var viewModel = new ErfArchiveViewModel(_service, settings);
             await viewModel.StartExportCommand.ExecuteAsync(null);
-            await viewModel.NextCommand.ExecuteAsync(null);
+            viewModel.CurrentStep.Should().Be(1);
+            viewModel.CanGoBack.Should().BeFalse();
 
             var asset = viewModel.Assets.Should().ContainSingle().Subject;
             asset.IsSelected = true;

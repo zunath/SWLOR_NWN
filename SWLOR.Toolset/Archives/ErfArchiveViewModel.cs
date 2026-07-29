@@ -321,7 +321,7 @@ namespace SWLOR.Toolset.Archives
             (ErfArchiveMode.Import, 2) =>
                 "Identical resources are skipped. Choose whether different resources stay, are replaced, or are renamed with imported references updated.",
             (ErfArchiveMode.Import, 3) =>
-                "Import to Module stages and validates every file, backs up replacements, then commits the complete plan. This is the save.",
+                string.Empty,
             (ErfArchiveMode.Export, 0) =>
                 "All open editors were saved before this modal opened. Export reads only that stable on-disk snapshot.",
             (ErfArchiveMode.Export, 1) =>

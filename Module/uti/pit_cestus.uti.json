@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Pit-Forged Cestus"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A brutal cestus forged in the pit’s own furnace."
+      "0": ""
     }
   },
   "Identified": {

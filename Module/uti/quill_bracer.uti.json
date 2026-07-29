@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Quilled Bracer"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A quill-studded bracer that sharpens ranged strikes."
+      "0": ""
     }
   },
   "Identified": {

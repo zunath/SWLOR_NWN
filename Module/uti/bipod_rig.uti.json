@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Marksman Bipod Rig"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A stabilized bipod harness that steadies aim and footing."
+      "0": ""
     }
   },
   "Identified": {

@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Apex Bracer"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Battle-worn bracer recovered from Tarn Apex Maw."
+      "0": ""
     }
   },
   "Identified": {

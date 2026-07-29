@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 90753,
     "type": "cexolocstring",
     "value": {
-      "0": "Barrier Salvage"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A layered aquatic scale used in Tideguard gear and coastal cooking recipes."
+      "0": ""
     }
   },
   "Identified": {

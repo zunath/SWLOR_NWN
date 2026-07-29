@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Beacon Visor"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crafted visor salvaged from Beacon Marksman Rell."
+      "0": ""
     }
   },
   "Identified": {

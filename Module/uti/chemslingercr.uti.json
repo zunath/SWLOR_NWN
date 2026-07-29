@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Chem Visor"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crafted visor salvaged from Chem Slinger Ovo."
+      "0": ""
     }
   },
   "Identified": {

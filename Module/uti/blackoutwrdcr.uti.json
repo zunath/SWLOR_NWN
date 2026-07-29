@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blackout Cuirass"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crafted cuirass salvaged from Blackout Warden."
+      "0": ""
     }
   },
   "Identified": {

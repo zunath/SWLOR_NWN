@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Use this on a resource to identify its contents. Use it on a location to identify where the nearest resource is.\n\nScanners grant XP when used for the first time on resources. They also increase the XP gained for each subsequent harvesting attempt performed by the player who scanned it. Finally, they improve the chance to receive a bonus item property on harvested resources."
     }
   },
   "Identified": {

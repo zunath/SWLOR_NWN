@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Deadeye Visor"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crafted visor salvaged from Deadeye of the Dunes."
+      "0": ""
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ruptor Visor"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crafted visor salvaged from Ruptor Vane."
+      "0": ""
     }
   },
   "Identified": {

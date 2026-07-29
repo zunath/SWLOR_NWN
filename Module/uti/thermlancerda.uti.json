@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Thermal Bracer"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Battle-worn bracer recovered from Thermal Lancer Qel."
+      "0": ""
     }
   },
   "Identified": {

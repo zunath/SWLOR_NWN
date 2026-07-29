@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Padded Longcoat"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A padded coat that keeps a shooter light and covered."
+      "0": ""
     }
   },
   "Identified": {

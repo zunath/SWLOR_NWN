@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Using this item will add one rebuild to your character. Rebuilds may be performed by using a training device. Each rebuild costs one token."
     }
   },
   "Identified": {

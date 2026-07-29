@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Slag-Forged Crusher"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A brutal fist-blade of cooled slag and crusher teeth."
+      "0": ""
     }
   },
   "Identified": {

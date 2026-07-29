@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Using this tome will add a Reconditioning Token to your currencies list.\n\nYou may spend this token by using any Retraining Terminal. This will let you change your starting stats and it refunds your spent AP. In addition, it will refund your starting racial bonus stat. Please access the Retraining Terminal to learn more."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Riot Control Harness"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A padded riot harness that keeps its wearer standing and mobile."
+      "0": ""
     }
   },
   "Identified": {

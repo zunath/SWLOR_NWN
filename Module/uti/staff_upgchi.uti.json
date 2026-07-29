@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This kit upgrades a tier 5 saberstaff to tier 5.5, the pinnacle of saberstaff engineering. The saberstaff must be unequipped."
     }
   },
   "Identified": {

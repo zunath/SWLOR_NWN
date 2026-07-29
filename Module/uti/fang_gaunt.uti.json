@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Alpha-Fang Gauntlet"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A gauntlet set with apex fangs that rend on contact."
+      "0": ""
     }
   },
   "Identified": {

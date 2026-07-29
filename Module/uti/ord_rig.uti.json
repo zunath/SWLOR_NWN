@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Ordnance Targeting Rig"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A targeting rig that sharpens aim and keeps the wearer light on their feet."
+      "0": ""
     }
   },
   "Identified": {

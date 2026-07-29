@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Load-Bearing Servo Frame"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A reinforced exo-frame that shrugs off blows while keeping the wearer swinging."
+      "0": ""
     }
   },
   "Identified": {

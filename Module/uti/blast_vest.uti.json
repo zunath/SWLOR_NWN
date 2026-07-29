@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blast-Plated Vest"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A reinforced vest layered against shrapnel and concussion."
+      "0": ""
     }
   },
   "Identified": {

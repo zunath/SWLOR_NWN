@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Beasthide Wrap"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Supple beasthide that keeps a hunter mobile."
+      "0": ""
     }
   },
   "Identified": {

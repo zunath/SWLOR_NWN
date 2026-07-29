@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Rhydel Cuirass"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crafted cuirass salvaged from Rhydel Alpha-Matriarch."
+      "0": ""
     }
   },
   "Identified": {

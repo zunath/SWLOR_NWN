@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This item can create a DMFI Bed Roll, a rest placeable."
     }
   },
   "Identified": {

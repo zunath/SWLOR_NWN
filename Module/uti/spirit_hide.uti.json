@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Spirit-Bound Hide"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rite-marked hide that steadies body and will."
+      "0": ""
     }
   },
   "Identified": {

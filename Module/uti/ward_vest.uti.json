@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Warding Vestments"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Charm-warded vestments that keep the wearer standing."
+      "0": ""
     }
   },
   "Identified": {

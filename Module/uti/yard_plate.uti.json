@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ablative Yard Plating"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Layered ablative plating; heavy, but it turns aside a great deal of punishment."
+      "0": ""
     }
   },
   "Identified": {

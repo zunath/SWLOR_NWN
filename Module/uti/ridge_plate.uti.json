@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ridgebone Plate"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Layered ridgebone that turns aside tooth and claw."
+      "0": ""
     }
   },
   "Identified": {

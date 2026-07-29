@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Jammer Mesh"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A woven jammer mesh that hardens the wearer and scrambles foes."
+      "0": ""
     }
   },
   "Identified": {

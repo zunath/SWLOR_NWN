@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Hexweave Shawl"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A charm-threaded shawl that sharpens the wearer while rattling foes."
+      "0": ""
     }
   },
   "Identified": {

@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Beacon Bracer"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Battle-worn bracer recovered from Beacon Marksman Rell."
+      "0": ""
     }
   },
   "Identified": {

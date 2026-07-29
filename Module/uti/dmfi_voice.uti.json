@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "<UNRECOGNIZED TOKEN> represents something that can be \"recorded\" in game.\n\nThere are two ways to set up the voice wand.  One is to write a script to load up the conversions (yuck) and the other way is to record them live using the DM client.\n\nRecorded phrases are set as campaign variable and therefore have persistence - travel to new modules etc.  IF you record them in game,  then they are ALSO set as Tokens so you will see the text show up in the conversation to help your memory of what was recorded where.\n\nBoth tokens AND the recorded phrases are persistent - Recording them in game is recommended for easiest set-up.\n\n~~\nBy Hahnsoo (hahns_shin@hotmail.com)"
     }
   },
   "Identified": {

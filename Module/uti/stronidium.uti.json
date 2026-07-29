@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Stronidium is used to reinforce control tower defenses. It is only consumed by the tower when the tower is in reinforced mode. This occurs when another player attacks the tower and the shields reach 25% shield levels."
     }
   },
   "Identified": {

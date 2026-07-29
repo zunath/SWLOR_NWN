@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Thornhide Vest"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A barbed hide vest that punishes the careless."
+      "0": ""
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "DeadHand Cuirass"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crafted cuirass salvaged from Dead Hand Zeph."
+      "0": ""
     }
   },
   "Identified": {

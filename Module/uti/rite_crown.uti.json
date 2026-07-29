@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Rite-Marked Crown"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A rite-marked crown that sharpens instinct and focus."
+      "0": ""
     }
   },
   "Identified": {

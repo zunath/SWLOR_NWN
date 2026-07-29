@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Use this anywhere within a claimable area sector to identify which materials can be retrieved with a base drill."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Bane Cuirass"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crafted cuirass salvaged from Banecaller Vex."
+      "0": ""
     }
   },
   "Identified": {

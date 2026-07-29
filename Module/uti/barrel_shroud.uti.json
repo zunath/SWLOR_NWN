@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Vented Barrel Shroud"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vented shroud that keeps a heavy weapon fast and true."
+      "0": ""
     }
   },
   "Identified": {

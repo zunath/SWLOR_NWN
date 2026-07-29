@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Barrier Cuirass"
+      "0": ""
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crafted cuirass salvaged from Barrier Overseer."
+      "0": ""
     }
   },
   "Identified": {

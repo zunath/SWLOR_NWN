@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Use this on a resource to identify its contents. Use it on a location to identify where the nearest resource is."
     }
   },
   "Identified": {

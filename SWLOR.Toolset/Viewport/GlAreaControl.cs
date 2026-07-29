@@ -2806,7 +2806,7 @@ void main()
                                           animation.IsPlayable);
                 _gl!.BindVertexArray(buffer.Vao);
                 SetUniformBool("unlit", false);
-                UseLayerColors(raw.Model);
+                UseLayerColors(instance.LayerColorIndices, raw.Model);
 
                 foreach (var meshRange in buffer.MeshRanges)
                 {
@@ -4214,9 +4214,10 @@ void main()
         /// trigger. PLT surfaces are only coloured at load, so this has to be set before the first
         /// BindMeshTexture of the model and stays set for the rest of its draw.
         /// </summary>
-        private void UseLayerColors(RenderModel? model)
+        private void UseLayerColors(IReadOnlyDictionary<int, int>? instanceColors, RenderModel? model)
         {
-            var colors = model?.LayerColorIndices;
+            // The instance wins: it can change dye without the model being rebuilt.
+            var colors = instanceColors is { Count: > 0 } ? instanceColors : model?.LayerColorIndices;
             if (colors == null || colors.Count == 0)
             {
                 _layerColors = null;

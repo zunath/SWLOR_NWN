@@ -95,6 +95,19 @@ namespace SWLOR.Toolset.Domain.Render
 
         public string? Tag { get; init; }
 
+        /// <summary>
+        /// Dye indices for this instance's PLT layers, overriding whatever the model carries. Empty
+        /// for everything undyed.
+        /// </summary>
+        /// <remarks>
+        /// Here as well as on the model so that changing a dye does not have to produce new geometry:
+        /// re-resolving the model meant re-reading 19 part files, re-composing them and re-uploading
+        /// every vertex buffer on each click of a colour swatch, which is most of what made picking a
+        /// colour feel slow. The geometry is the same body; only its colours changed.
+        /// </remarks>
+        public IReadOnlyDictionary<int, int> LayerColorIndices { get; init; } =
+            new Dictionary<int, int>();
+
         public required Vector3 Position { get; init; }
 
         /// <summary>Heading as a (cos, sin) unit vector - XOrientation/YOrientation, or Bearing converted for placeables/doors. (1,0) when the instance carries no heading (ambient sounds).</summary>

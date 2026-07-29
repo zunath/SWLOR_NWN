@@ -385,55 +385,26 @@ namespace SWLOR.Toolset.Services
                 cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IReadOnlyList<ErfDependency>> FindExportDependenciesAsync(
-            IReadOnlyCollection<string> selectedFileNames,
+        public Task ValidateExportSelectionAsync(
+            IReadOnlyCollection<ModuleArchiveAsset> selectedAssets,
             CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(selectedFileNames);
-            return await Task.Run(
-                    async () =>
+            ArgumentNullException.ThrowIfNull(selectedAssets);
+            return Task.Run(
+                    () =>
                     {
-                        var assets = EnumerateModuleAssets();
-                        var byFile = assets.ToDictionary(
-                            asset => asset.FileName,
-                            StringComparer.OrdinalIgnoreCase);
-                        var byResRef = assets
-                            .GroupBy(asset => asset.ResRef, StringComparer.OrdinalIgnoreCase)
-                            .ToDictionary(
-                                group => group.Key,
-                                group => group.ToList(),
-                                StringComparer.OrdinalIgnoreCase);
-
-                        return await FindDependenciesAsync(
-                                selectedFileNames,
-                                fileName => byFile.TryGetValue(fileName, out var asset)
-                                    ? asset.Extension
-                                    : null,
-                                fileName => byFile.TryGetValue(fileName, out var asset)
-                                    ? asset.ResRef
-                                    : null,
-                                resRef => byResRef.TryGetValue(resRef, out var matches)
-                                    ? matches.Select(asset => asset.FileName)
-                                    : Array.Empty<string>(),
-                                fileName =>
-                                {
-                                    cancellationToken.ThrowIfCancellationRequested();
-                                    var asset = byFile[fileName];
-                                    IReadOnlyList<string> references =
-                                        GffExtensions.Contains(asset.Extension)
-                                            ? FindJsonResRefs(asset.SourcePath)
-                                            : asset.Extension.Equals(
-                                                "nss",
-                                                StringComparison.OrdinalIgnoreCase)
-                                                ? FindScriptIncludes(asset.SourcePath)
-                                                : Array.Empty<string>();
-                                    return Task.FromResult(references);
-                                },
-                                cancellationToken)
-                            .ConfigureAwait(false);
+                        foreach (var asset in selectedAssets.DistinctBy(
+                                     candidate => candidate.FileName,
+                                     StringComparer.OrdinalIgnoreCase))
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+                            if (GffExtensions.Contains(asset.Extension))
+                                _ = JsonGffDocument.Load(asset.SourcePath);
+                            else
+                                _ = File.ReadAllBytes(asset.SourcePath);
+                        }
                     },
-                    cancellationToken)
-                .ConfigureAwait(false);
+                    cancellationToken);
         }
 
         public async Task<IReadOnlyList<ErfPreparedImport>> PrepareImportAsync(

@@ -59,7 +59,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public async Task ExportDependencyScanAndImportRoundTripScripts()
+        public async Task ExportValidationAndImportRoundTripScripts()
         {
             var sourceDirectory = Path.Combine(_firstModule, "nss");
             File.WriteAllText(
@@ -69,10 +69,9 @@ namespace SWLOR.Toolset.Tests
                 Path.Combine(sourceDirectory, "shared_inc.nss"),
                 "int SharedValue() { return 7; }\n");
 
-            var dependencies = await _service.FindExportDependenciesAsync(new[] { "entry.nss" });
-            dependencies.Should().ContainSingle(dependency =>
-                dependency.FileName == "shared_inc.nss" &&
-                dependency.Reason.Contains("entry.nss", StringComparison.Ordinal));
+            var entryAsset = _service.EnumerateModuleAssets()
+                .Single(asset => asset.FileName == "entry.nss");
+            await _service.ValidateExportSelectionAsync(new[] { entryAsset });
 
             var archivePath = Path.Combine(_root, "scripts.erf");
             var exported = await _service.ExportAsync(
@@ -122,6 +121,58 @@ namespace SWLOR.Toolset.Tests
                 .Select(asset => asset.FileName)
                 .Should()
                 .BeEquivalentTo(Enumerable.Range(0, 10).Select(index => $"batch_{index:00}.nss"));
+        }
+
+        [Test]
+        public async Task ExportLeavesReferencedAssetsOptional()
+        {
+            const string areaResRef = "reference_area";
+            const string dialogResRef = "optional_dlg";
+
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "are", $"{areaResRef}.are.json"),
+                new JsonGffDocument("ARE ", new JsonGffStruct()).ToBytes());
+
+            var gitRoot = new JsonGffStruct();
+            gitRoot.Add(
+                "Conversation",
+                JsonGffField.CreateScalar(
+                    GffFieldType.ResRef,
+                    System.Text.Encoding.UTF8.GetBytes($"\"{dialogResRef}\"")));
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "git", $"{areaResRef}.git.json"),
+                new JsonGffDocument("GIT ", gitRoot).ToBytes());
+
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "dlg", $"{dialogResRef}.dlg.json"),
+                new JsonGffDocument("DLG ", new JsonGffStruct()).ToBytes());
+
+            var settings = ToolsetSettings.Load(
+                Path.Combine(_root, "optional-references-settings.json"));
+            using var viewModel = new ErfArchiveViewModel(_service, settings);
+            await viewModel.StartExportCommand.ExecuteAsync(null);
+            await viewModel.NextCommand.ExecuteAsync(null);
+
+            var area = viewModel.Assets.Should().ContainSingle(row => row.IsArea).Subject;
+            var dialog = viewModel.Assets.Should().ContainSingle(
+                row => row.FileName == $"{dialogResRef}.dlg").Subject;
+            area.IsSelected = true;
+
+            await viewModel.NextCommand.ExecuteAsync(null);
+
+            dialog.IsSelected.Should().BeFalse();
+            dialog.IsRequired.Should().BeFalse();
+            viewModel.Assets.Should().NotContain(row => row.IsRequired);
+
+            await viewModel.NextCommand.ExecuteAsync(null);
+            var archivePath = Path.Combine(_root, "optional-references.erf");
+            (await viewModel.ExportAsync(archivePath)).Should().BeTrue();
+
+            using var archive = await _service.OpenArchiveAsync(archivePath);
+            archive.Assets.Select(asset => asset.FileName)
+                .Should().BeEquivalentTo(
+                    $"{areaResRef}.are",
+                    $"{areaResRef}.git");
         }
 
         [Test]
@@ -175,8 +226,7 @@ namespace SWLOR.Toolset.Tests
             exportViewModel.TypeFilters.Should().Equal("All types", "Area");
             exportViewModel.StatusFilters.Should().Equal(
                 "All assets",
-                "Selected",
-                "Added automatically");
+                "Selected");
 
             var archivePath = Path.Combine(_root, "logical-area.erf");
             await exportViewModel.NextCommand.ExecuteAsync(null);

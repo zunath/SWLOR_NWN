@@ -309,7 +309,7 @@
                 <StackPanel Grid.Column="1" Spacing="4">
                   <TextBlock Text="All selected GFF JSON parsed successfully." />
                   <TextBlock Text="All resource names fit Aurora's 16-character resref rules." />
-                  <TextBlock Text="Required referenced assets and script includes are selected." />
+                  <TextBlock Text="Anything else needed by the selected assets has been included." />
                   <TextBlock Text="Archive format will be ERF V1.0." />
                 </StackPanel>
               </Grid>

@@ -146,7 +146,7 @@ namespace SWLOR.Toolset.Archives
             get
             {
                 if (!IsPrepared)
-                    return IsSupported ? "Ready" : "Unsupported";
+                    return IsSupported ? "Ready" : "Can't import";
                 if (_preparedImports.All(item => item.Conflict == ErfConflictKind.New))
                     return "New";
                 if (_preparedImports.All(item => item.Conflict == ErfConflictKind.Identical))
@@ -198,9 +198,9 @@ namespace SWLOR.Toolset.Archives
             get
             {
                 if (!IsSupported)
-                    return "Unsupported";
+                    return "Can't import";
                 if (IsRequired)
-                    return $"Required · {RequiredReason}";
+                    return $"Added automatically · {RequiredReason}";
                 return !IsPrepared ? (IsSelected ? "Selected" : "Available") : ConflictLabel;
             }
         }
@@ -307,6 +307,11 @@ namespace SWLOR.Toolset.Archives
 
     public partial class ErfArchiveViewModel : ObservableObject, IDisposable
     {
+        private static readonly IReadOnlyList<string> ImportStatusFilters =
+            new[] { "All assets", "Selected", "Added automatically", "Can't import" };
+        private static readonly IReadOnlyList<string> ExportStatusFilters =
+            new[] { "All assets", "Selected", "Added automatically" };
+
         private readonly ErfArchiveService _service;
         private readonly ToolsetSettings _settings;
         private readonly Dictionary<string, ErfAssetRow> _areaRows =
@@ -319,8 +324,9 @@ namespace SWLOR.Toolset.Archives
         public ObservableCollection<ErfAssetRow> Assets { get; } = new();
         public ObservableCollection<string> RecentArchives { get; } = new();
         public ObservableCollection<string> TypeFilters { get; } = new() { "All types" };
-        public IReadOnlyList<string> StatusFilters { get; } =
-            new[] { "All statuses", "Selected", "Required", "Conflicts", "Unsupported" };
+        public IReadOnlyList<string> StatusFilters => IsImport
+            ? ImportStatusFilters
+            : ExportStatusFilters;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsImport))]
@@ -335,6 +341,7 @@ namespace SWLOR.Toolset.Archives
         [NotifyPropertyChangedFor(nameof(StepTwoLabel))]
         [NotifyPropertyChangedFor(nameof(StepThreeLabel))]
         [NotifyPropertyChangedFor(nameof(StepFourLabel))]
+        [NotifyPropertyChangedFor(nameof(StatusFilters))]
         private ErfArchiveMode _mode = ErfArchiveMode.Import;
 
         [ObservableProperty]
@@ -393,7 +400,7 @@ namespace SWLOR.Toolset.Archives
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(FilteredAssets))]
-        private string _selectedStatusFilter = "All statuses";
+        private string _selectedStatusFilter = "All assets";
 
         [ObservableProperty]
         private string _completionTitle = string.Empty;
@@ -460,7 +467,7 @@ namespace SWLOR.Toolset.Archives
             (ErfArchiveMode.Import, 0) =>
                 "Browse, drop, or reopen a recent .erf. The scan uses a private read-only snapshot.",
             (ErfArchiveMode.Import, 1) =>
-                "Select assets to import. Required referenced assets and script includes are added automatically.",
+                "Select assets to import. Anything else they need will be added automatically.",
             (ErfArchiveMode.Import, 2) =>
                 "Identical resources are skipped. Choose whether different resources stay, are replaced, or are renamed with imported references updated.",
             (ErfArchiveMode.Import, 3) =>
@@ -468,7 +475,7 @@ namespace SWLOR.Toolset.Archives
             (ErfArchiveMode.Export, 0) =>
                 "We're finding the module assets you can include in the ERF.",
             (ErfArchiveMode.Export, 1) =>
-                "Select assets to export. Required referenced assets and script includes are added automatically.",
+                "Select assets to export. Anything else they need will be added automatically.",
             (ErfArchiveMode.Export, 2) =>
                 "The selected JSON, resource names, and dependency closure are checked before a destination can be chosen.",
             _ =>
@@ -491,9 +498,8 @@ namespace SWLOR.Toolset.Archives
                 result = SelectedStatusFilter switch
                 {
                     "Selected" => result.Where(row => row.IsSelected),
-                    "Required" => result.Where(row => row.IsRequired),
-                    "Conflicts" => result.Where(row => row.HasConflict),
-                    "Unsupported" => result.Where(row => !row.IsSupported),
+                    "Added automatically" => result.Where(row => row.IsRequired),
+                    "Can't import" => result.Where(row => !row.IsSupported),
                     _ => result
                 };
                 return result;
@@ -861,7 +867,7 @@ namespace SWLOR.Toolset.Archives
             TypeFilters.Add("All types");
 
             SelectedTypeFilter = "All types";
-            SelectedStatusFilter = "All statuses";
+            SelectedStatusFilter = "All assets";
             SearchText = string.Empty;
             OnPropertyChanged(nameof(FilteredAssets));
         }

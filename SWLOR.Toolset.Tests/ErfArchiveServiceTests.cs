@@ -173,6 +173,10 @@ namespace SWLOR.Toolset.Tests
             exportArea.ResourceName.Should().Be(displayName);
             exportArea.MatchesSearch("remains available in full").Should().BeTrue();
             exportViewModel.TypeFilters.Should().Equal("All types", "Area");
+            exportViewModel.StatusFilters.Should().Equal(
+                "All assets",
+                "Selected",
+                "Added automatically");
 
             var archivePath = Path.Combine(_root, "logical-area.erf");
             await exportViewModel.NextCommand.ExecuteAsync(null);
@@ -217,6 +221,11 @@ namespace SWLOR.Toolset.Tests
             }
             importArea.ResourceName.Should().Be(displayName);
             importViewModel.TypeFilters.Should().Equal("All types", "Area");
+            importViewModel.StatusFilters.Should().Equal(
+                "All assets",
+                "Selected",
+                "Added automatically",
+                "Can't import");
 
             await importViewModel.NextCommand.ExecuteAsync(null);
             importViewModel.CurrentStep.Should().Be(1, importViewModel.StatusText);
@@ -335,6 +344,33 @@ namespace SWLOR.Toolset.Tests
             area.ToImportChoices().Should().OnlyContain(choice =>
                 choice.Action == ErfConflictAction.Rename &&
                 choice.RenameResRef == "renamed_area");
+        }
+
+        [Test]
+        public void AssetStatusesExplainWhatTheUserCanDo()
+        {
+            var supported = new ErfAssetRow(new ErfArchiveAsset(
+                "shared.nss",
+                "shared",
+                "nss",
+                Size: 12,
+                IsSupported: true,
+                TypeName: "Script source",
+                UnsupportedReason: null));
+            supported.RequiredReason = "Included by entry.nss";
+            supported.IsRequired = true;
+            supported.StatusLabel.Should().Be(
+                "Added automatically · Included by entry.nss");
+
+            var unsupported = new ErfAssetRow(new ErfArchiveAsset(
+                "texture.tga",
+                "texture",
+                "tga",
+                Size: 12,
+                IsSupported: false,
+                TypeName: ".tga resource",
+                UnsupportedReason: "This resource cannot be stored in the module."));
+            unsupported.StatusLabel.Should().Be("Can't import");
         }
 
         [Test]

@@ -230,6 +230,27 @@
             </DataGrid>
           </Grid>
 
+          <!-- Selection validation starts on its own screen so long dependency scans never look
+               like an ignored click. The footer repeats the live status for consistency. -->
+          <Border x:Name="SelectionValidationProgress"
+                  IsVisible="{Binding ShowSelectionValidationProgress}"
+                  BorderBrush="{DynamicResource RuleBrush}"
+                  BorderThickness="1"
+                  CornerRadius="4"
+                  Padding="28"
+                  MaxWidth="880"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Top"
+                  Background="{DynamicResource PanelRaisedBrush}">
+            <StackPanel Spacing="16" HorizontalAlignment="Stretch">
+              <TextBlock FontSize="16" FontWeight="SemiBold"
+                         Text="{Binding StepTitle}" />
+              <ProgressBar Height="8" IsIndeterminate="True" />
+              <TextBlock Classes="dim" TextWrapping="Wrap"
+                         Text="{Binding StatusText}" />
+            </StackPanel>
+          </Border>
+
           <!-- Import conflicts. -->
           <Grid IsVisible="{Binding ShowImportConflicts}">
             <Grid RowDefinitions="Auto,*">

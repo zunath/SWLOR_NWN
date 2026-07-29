@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -36,6 +37,18 @@ namespace SWLOR.Toolset.Tests
                 window.Width.Should().Be(1180);
                 window.Content.Should().NotBeNull();
                 window.GetVisualDescendants().Should().NotBeEmpty();
+
+                viewModel.Mode = ErfArchiveMode.Export;
+                viewModel.CurrentStep = 2;
+                viewModel.IsValidatingSelection = true;
+                Dispatcher.UIThread.RunJobs();
+
+                var validationProgress =
+                    window.FindControl<Border>("SelectionValidationProgress");
+                validationProgress.Should().NotBeNull();
+                validationProgress!.IsVisible.Should().BeTrue();
+                viewModel.StepTitle.Should().Be("Validating selected assets");
+                viewModel.ShowExportValidation.Should().BeFalse();
             }
             finally
             {

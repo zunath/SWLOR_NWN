@@ -390,31 +390,50 @@ namespace SWLOR.Toolset.Services
             CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(selectedFileNames);
-            var assets = EnumerateModuleAssets();
-            var byFile = assets.ToDictionary(asset => asset.FileName, StringComparer.OrdinalIgnoreCase);
-            var byResRef = assets
-                .GroupBy(asset => asset.ResRef, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(group => group.Key, group => group.ToList(), StringComparer.OrdinalIgnoreCase);
+            return await Task.Run(
+                    async () =>
+                    {
+                        var assets = EnumerateModuleAssets();
+                        var byFile = assets.ToDictionary(
+                            asset => asset.FileName,
+                            StringComparer.OrdinalIgnoreCase);
+                        var byResRef = assets
+                            .GroupBy(asset => asset.ResRef, StringComparer.OrdinalIgnoreCase)
+                            .ToDictionary(
+                                group => group.Key,
+                                group => group.ToList(),
+                                StringComparer.OrdinalIgnoreCase);
 
-            return await FindDependenciesAsync(
-                selectedFileNames,
-                fileName => byFile.TryGetValue(fileName, out var asset) ? asset.Extension : null,
-                fileName => byFile.TryGetValue(fileName, out var asset) ? asset.ResRef : null,
-                resRef => byResRef.TryGetValue(resRef, out var matches)
-                    ? matches.Select(asset => asset.FileName)
-                    : Array.Empty<string>(),
-                fileName =>
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    var asset = byFile[fileName];
-                    IReadOnlyList<string> references = GffExtensions.Contains(asset.Extension)
-                        ? FindJsonResRefs(asset.SourcePath)
-                        : asset.Extension.Equals("nss", StringComparison.OrdinalIgnoreCase)
-                            ? FindScriptIncludes(asset.SourcePath)
-                            : Array.Empty<string>();
-                    return Task.FromResult(references);
-                },
-                cancellationToken).ConfigureAwait(false);
+                        return await FindDependenciesAsync(
+                                selectedFileNames,
+                                fileName => byFile.TryGetValue(fileName, out var asset)
+                                    ? asset.Extension
+                                    : null,
+                                fileName => byFile.TryGetValue(fileName, out var asset)
+                                    ? asset.ResRef
+                                    : null,
+                                resRef => byResRef.TryGetValue(resRef, out var matches)
+                                    ? matches.Select(asset => asset.FileName)
+                                    : Array.Empty<string>(),
+                                fileName =>
+                                {
+                                    cancellationToken.ThrowIfCancellationRequested();
+                                    var asset = byFile[fileName];
+                                    IReadOnlyList<string> references =
+                                        GffExtensions.Contains(asset.Extension)
+                                            ? FindJsonResRefs(asset.SourcePath)
+                                            : asset.Extension.Equals(
+                                                "nss",
+                                                StringComparison.OrdinalIgnoreCase)
+                                                ? FindScriptIncludes(asset.SourcePath)
+                                                : Array.Empty<string>();
+                                    return Task.FromResult(references);
+                                },
+                                cancellationToken)
+                            .ConfigureAwait(false);
+                    },
+                    cancellationToken)
+                .ConfigureAwait(false);
         }
 
         public async Task<IReadOnlyList<ErfPreparedImport>> PrepareImportAsync(

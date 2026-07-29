@@ -327,6 +327,7 @@ namespace SWLOR.Toolset.Archives
         [NotifyPropertyChangedFor(nameof(IsExport))]
         [NotifyPropertyChangedFor(nameof(ShowImportFile))]
         [NotifyPropertyChangedFor(nameof(ShowExportSnapshot))]
+        [NotifyPropertyChangedFor(nameof(ShowSelectionValidationProgress))]
         [NotifyPropertyChangedFor(nameof(ShowImportConflicts))]
         [NotifyPropertyChangedFor(nameof(ShowExportValidation))]
         [NotifyPropertyChangedFor(nameof(ModeTitle))]
@@ -343,6 +344,7 @@ namespace SWLOR.Toolset.Archives
         [NotifyPropertyChangedFor(nameof(IsStepFour))]
         [NotifyPropertyChangedFor(nameof(ShowImportFile))]
         [NotifyPropertyChangedFor(nameof(ShowExportSnapshot))]
+        [NotifyPropertyChangedFor(nameof(ShowSelectionValidationProgress))]
         [NotifyPropertyChangedFor(nameof(ShowImportConflicts))]
         [NotifyPropertyChangedFor(nameof(ShowExportValidation))]
         [NotifyPropertyChangedFor(nameof(CanGoBack))]
@@ -358,6 +360,15 @@ namespace SWLOR.Toolset.Archives
         [NotifyPropertyChangedFor(nameof(CanGoNext))]
         [NotifyPropertyChangedFor(nameof(CanCommit))]
         private bool _isBusy;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowSelectionValidationProgress))]
+        [NotifyPropertyChangedFor(nameof(ShowImportConflicts))]
+        [NotifyPropertyChangedFor(nameof(ShowExportValidation))]
+        [NotifyPropertyChangedFor(nameof(ShowNext))]
+        [NotifyPropertyChangedFor(nameof(StepTitle))]
+        [NotifyPropertyChangedFor(nameof(StepDescription))]
+        private bool _isValidatingSelection;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CanCommit))]
@@ -405,13 +416,17 @@ namespace SWLOR.Toolset.Archives
         public bool IsStepThree => CurrentStep == 2;
         public bool IsStepFour => CurrentStep == 3;
         public bool CanGoBack => !IsBusy && CurrentStep > 0;
-        public bool ShowNext => CurrentStep < 3;
+        public bool ShowNext => CurrentStep < 3 && !IsValidatingSelection;
         public bool ShowImportAction => IsImport && CurrentStep == 3;
         public bool ShowExportAction => IsExport && CurrentStep == 3;
         public bool ShowImportFile => IsImport && CurrentStep == 0;
         public bool ShowExportSnapshot => IsExport && CurrentStep == 0;
-        public bool ShowImportConflicts => IsImport && CurrentStep == 2;
-        public bool ShowExportValidation => IsExport && CurrentStep == 2;
+        public bool ShowSelectionValidationProgress =>
+            CurrentStep == 2 && IsValidatingSelection;
+        public bool ShowImportConflicts =>
+            IsImport && CurrentStep == 2 && !IsValidatingSelection;
+        public bool ShowExportValidation =>
+            IsExport && CurrentStep == 2 && !IsValidatingSelection;
         public bool CanCommit => !IsBusy && !IsComplete;
         public bool CanGoNext => !IsBusy && CurrentStep < 3 && (CurrentStep != 0 || !IsImport || _session != null);
         public string ModeTitle => IsImport ? "Import ERF" : "Export ERF";
@@ -420,7 +435,11 @@ namespace SWLOR.Toolset.Archives
         public string StepThreeLabel => IsImport ? "3  Resolve conflicts" : "3  Validate";
         public string StepFourLabel => IsImport ? "4  Save to Module" : "4  Save ERF As";
 
-        public string StepTitle => (Mode, CurrentStep) switch
+        public string StepTitle => IsValidatingSelection && CurrentStep == 2
+            ? IsImport
+                ? "Preparing selected assets"
+                : "Validating selected assets"
+            : (Mode, CurrentStep) switch
         {
             (ErfArchiveMode.Import, 0) => "Select an ERF file",
             (ErfArchiveMode.Import, 1) => "Choose assets to import",
@@ -432,7 +451,11 @@ namespace SWLOR.Toolset.Archives
             _ => "Save ERF As"
         };
 
-        public string StepDescription => (Mode, CurrentStep) switch
+        public string StepDescription => IsValidatingSelection && CurrentStep == 2
+            ? IsImport
+                ? "Checking the selected assets and preparing any choices that need your attention."
+                : "Checking the selected assets and finding anything else the archive needs."
+            : (Mode, CurrentStep) switch
         {
             (ErfArchiveMode.Import, 0) =>
                 "Browse, drop, or reopen a recent .erf. The scan uses a private read-only snapshot.",
@@ -610,7 +633,13 @@ namespace SWLOR.Toolset.Archives
                     return;
                 }
 
+                IsValidatingSelection = true;
+                CurrentStep = 2;
                 IsBusy = true;
+                StatusText = IsImport
+                    ? "Preparing selected assets..."
+                    : "Validating selected assets...";
+                await Task.Yield();
                 try
                 {
                     if (IsImport)
@@ -621,12 +650,17 @@ namespace SWLOR.Toolset.Archives
                 catch (Exception ex)
                 {
                     StatusText = $"Could not prepare selection: {ex.GetBaseException().Message}";
+                    CurrentStep = 1;
                     return;
                 }
                 finally
                 {
+                    IsValidatingSelection = false;
                     IsBusy = false;
                 }
+
+                UpdateReviewSummary();
+                return;
             }
             else if (IsImport && CurrentStep == 2 && !ValidateConflictChoices())
             {
@@ -725,12 +759,12 @@ namespace SWLOR.Toolset.Archives
             var session = _session
                 ?? throw new InvalidOperationException("Select an ERF file first.");
             var explicitSelection = SelectedFileNames();
-            StatusText = "Finding required dependencies...";
+            StatusText = "Finding anything else the import needs...";
             var dependencies = await _service.FindImportDependenciesAsync(session, explicitSelection)
                 .ConfigureAwait(true);
             ApplyDependencies(dependencies);
 
-            StatusText = "Converting selected GFF resources and comparing Module destinations...";
+            StatusText = "Comparing the selected assets with the open module...";
             var selection = SelectedFileNames();
             var prepared = await _service.PrepareImportAsync(session, selection).ConfigureAwait(true);
             var byFile = RowsByPhysicalFileName();
@@ -744,7 +778,7 @@ namespace SWLOR.Toolset.Archives
 
         private async Task PrepareExportSelectionAsync()
         {
-            StatusText = "Finding required dependencies...";
+            StatusText = "Finding anything else the export needs...";
             var explicitSelection = SelectedFileNames();
             var dependencies = await _service.FindExportDependenciesAsync(explicitSelection)
                 .ConfigureAwait(true);

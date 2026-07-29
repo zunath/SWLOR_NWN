@@ -177,7 +177,21 @@ namespace SWLOR.Toolset.Tests
             var archivePath = Path.Combine(_root, "logical-area.erf");
             await exportViewModel.NextCommand.ExecuteAsync(null);
             exportArea.IsSelected = true;
+            var showedValidationProgress = false;
+            exportViewModel.PropertyChanged += (_, args) =>
+            {
+                if ((args.PropertyName is nameof(ErfArchiveViewModel.IsValidatingSelection)
+                        or nameof(ErfArchiveViewModel.CurrentStep)) &&
+                    exportViewModel.IsValidatingSelection &&
+                    exportViewModel.CurrentStep == 2)
+                {
+                    showedValidationProgress = true;
+                }
+            };
             await exportViewModel.NextCommand.ExecuteAsync(null);
+            showedValidationProgress.Should().BeTrue();
+            exportViewModel.IsValidatingSelection.Should().BeFalse();
+            exportViewModel.ShowExportValidation.Should().BeTrue();
             await exportViewModel.NextCommand.ExecuteAsync(null);
             (await exportViewModel.ExportAsync(archivePath)).Should().BeTrue();
 
@@ -208,7 +222,20 @@ namespace SWLOR.Toolset.Tests
             importViewModel.CurrentStep.Should().Be(1, importViewModel.StatusText);
             importArea.IsSelected = true;
             importArea.IsSelected.Should().BeTrue();
+            var showedImportPreparation = false;
+            importViewModel.PropertyChanged += (_, args) =>
+            {
+                if ((args.PropertyName is nameof(ErfArchiveViewModel.IsValidatingSelection)
+                        or nameof(ErfArchiveViewModel.CurrentStep)) &&
+                    importViewModel.IsValidatingSelection &&
+                    importViewModel.CurrentStep == 2)
+                {
+                    showedImportPreparation = true;
+                }
+            };
             await importViewModel.NextCommand.ExecuteAsync(null);
+            showedImportPreparation.Should().BeTrue();
+            importViewModel.IsValidatingSelection.Should().BeFalse();
             importViewModel.CurrentStep.Should().Be(2, importViewModel.StatusText);
             importViewModel.ConflictAssets.Should().ContainSingle().Which.Should().BeSameAs(importArea);
             await importViewModel.NextCommand.ExecuteAsync(null);
@@ -222,6 +249,30 @@ namespace SWLOR.Toolset.Tests
                     extension,
                     $"{resRef}.{extension}.json")).Should().BeTrue();
             }
+        }
+
+        [Test]
+        public async Task FailedExportValidationReturnsToAssetSelection()
+        {
+            const string resRef = "broken_asset";
+            File.WriteAllText(
+                Path.Combine(_firstModule, "utc", $"{resRef}.utc.json"),
+                "{ this is not valid GFF JSON");
+
+            var settings = ToolsetSettings.Load(
+                Path.Combine(_root, "failed-validation-settings.json"));
+            using var viewModel = new ErfArchiveViewModel(_service, settings);
+            await viewModel.StartExportCommand.ExecuteAsync(null);
+            await viewModel.NextCommand.ExecuteAsync(null);
+
+            var asset = viewModel.Assets.Should().ContainSingle().Subject;
+            asset.IsSelected = true;
+            await viewModel.NextCommand.ExecuteAsync(null);
+
+            viewModel.CurrentStep.Should().Be(1);
+            viewModel.IsValidatingSelection.Should().BeFalse();
+            viewModel.IsBusy.Should().BeFalse();
+            viewModel.StatusText.Should().StartWith("Could not prepare selection:");
         }
 
         [Test]

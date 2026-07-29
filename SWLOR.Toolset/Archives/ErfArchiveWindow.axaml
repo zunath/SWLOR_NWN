@@ -89,18 +89,6 @@
               <TextBlock Text="{Binding StepFourLabel}" TextWrapping="Wrap" />
             </Border>
           </StackPanel>
-          <Border Grid.Row="2"
-                  Background="{DynamicResource PanelBrush}"
-                  BorderBrush="{DynamicResource RuleBrush}"
-                  BorderThickness="1"
-                  CornerRadius="3"
-                  Padding="10">
-            <StackPanel Spacing="4">
-              <TextBlock Classes="kicker" Text="SAVE GUARANTEE" />
-              <TextBlock Classes="dim" TextWrapping="Wrap"
-                         Text="Import commits only after the full plan validates. Export validates a temporary archive before replacing the destination." />
-            </StackPanel>
-          </Border>
         </Grid>
       </Border>
 
@@ -139,9 +127,8 @@
                         CornerRadius="3"
                         Padding="18"
                         Background="{DynamicResource PanelBrush}">
-                  <StackPanel HorizontalAlignment="Center" Spacing="4">
+                  <StackPanel HorizontalAlignment="Center">
                     <TextBlock HorizontalAlignment="Center" FontSize="18" Text="Drop ERF file here" />
-                    <TextBlock Classes="dim" Text="A private snapshot is scanned; the source file is never modified." />
                   </StackPanel>
                 </Border>
                 <TextBlock Classes="kicker" Text="RECENT ERF ARCHIVES" />

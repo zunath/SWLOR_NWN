@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -39,7 +40,8 @@ namespace SWLOR.Toolset.Services
         string Extension,
         string SourcePath,
         long Size,
-        string TypeName);
+        string TypeName,
+        string? ResourceName = null);
 
     public sealed record ErfDependency(string FileName, string Reason);
 
@@ -129,6 +131,8 @@ namespace SWLOR.Toolset.Services
         private readonly OutputLogService _log;
         private readonly string? _erfToolOverride;
         private readonly string? _gffToolOverride;
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _gffConversionLocks =
+            new(StringComparer.OrdinalIgnoreCase);
 
         public ErfArchiveService(
             WorkspaceContext workspaceContext,
@@ -268,6 +272,78 @@ namespace SWLOR.Toolset.Services
 
                 yield return batch;
             }
+        }
+
+        public async Task<IReadOnlyDictionary<string, string>> ReadModuleResourceNamesAsync(
+            CancellationToken cancellationToken = default)
+        {
+            var catalog = _workspaceContext.Catalog;
+            if (catalog == null)
+                return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            await catalog.BuildTask.WaitAsync(cancellationToken).ConfigureAwait(false);
+            return await Task.Run(
+                    () => catalog.Entries
+                        .Where(entry => !string.IsNullOrWhiteSpace(entry.Name))
+                        .ToDictionary(
+                            entry => $"{entry.ResRef}.{entry.ResourceType.Extension()}",
+                            entry => entry.Name!,
+                            StringComparer.OrdinalIgnoreCase),
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        public async Task<IReadOnlyDictionary<string, string>> ReadImportResourceNamesAsync(
+            ErfArchiveSession session,
+            IReadOnlyCollection<ErfArchiveAsset> assets,
+            CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(session);
+            ArgumentNullException.ThrowIfNull(assets);
+
+            var catalog = _workspaceContext.Catalog;
+            if (catalog == null)
+                return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            var tools = ResolveTools();
+            var names = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var asset in assets)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!ResourceTypeExtensions.TryFromExtension(asset.Extension, out var type) ||
+                    (type != ResourceType.Area && !ModuleWorkspace.BlueprintTypes.Contains(type)))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    var jsonPath = await ConvertImportedGffAsync(
+                            session,
+                            asset,
+                            tools,
+                            cancellationToken)
+                        .ConfigureAwait(false);
+                    var name = await Task.Run(
+                            () => catalog.ReadDisplayName(type, File.ReadAllBytes(jsonPath)),
+                            cancellationToken)
+                        .ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(name))
+                        names[asset.FileName] = name;
+                }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine(
+                        $"Could not read the display name for '{asset.FileName}': " +
+                        ex.GetBaseException().Message);
+                }
+            }
+
+            return names;
         }
 
         public async Task<IReadOnlyList<ErfDependency>> FindImportDependenciesAsync(
@@ -705,15 +781,29 @@ namespace SWLOR.Toolset.Services
             if (File.Exists(output))
                 return output;
 
-            await RunToolAsync(
-                tools.Gff,
-                session.StagingDirectory,
-                cancellationToken,
-                "-i", asset.FileName,
-                "-o", relativeOutput,
-                "-p").ConfigureAwait(false);
-            _ = JsonGffDocument.Load(output);
-            return output;
+            var conversionLock = _gffConversionLocks.GetOrAdd(
+                output,
+                _ => new SemaphoreSlim(1, 1));
+            await conversionLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                if (File.Exists(output))
+                    return output;
+
+                await RunToolAsync(
+                    tools.Gff,
+                    session.StagingDirectory,
+                    cancellationToken,
+                    "-i", asset.FileName,
+                    "-o", relativeOutput,
+                    "-p").ConfigureAwait(false);
+                _ = JsonGffDocument.Load(output);
+                return output;
+            }
+            finally
+            {
+                conversionLock.Release();
+            }
         }
 
         private static async Task<IReadOnlyList<ErfDependency>> FindDependenciesAsync(
@@ -810,7 +900,7 @@ namespace SWLOR.Toolset.Services
                 .ToList();
         }
 
-        private static IEnumerable<ModuleArchiveAsset> EnumerateModuleAssetsCore(
+        private IEnumerable<ModuleArchiveAsset> EnumerateModuleAssetsCore(
             string moduleRoot,
             CancellationToken cancellationToken)
         {
@@ -849,9 +939,20 @@ namespace SWLOR.Toolset.Services
                         extension,
                         path,
                         new FileInfo(path).Length,
-                        DisplayType(extension));
+                        DisplayType(extension),
+                        KnownModuleResourceName(extension, resRef));
                 }
             }
+        }
+
+        private string? KnownModuleResourceName(string extension, string resRef)
+        {
+            if (!ResourceTypeExtensions.TryFromExtension(extension, out var type))
+                return null;
+
+            return _workspaceContext.Catalog?.TryGetEntry(type, resRef, out var entry) == true
+                ? entry.Name
+                : null;
         }
 
         private static Dictionary<string, string> ValidateImportPlan(

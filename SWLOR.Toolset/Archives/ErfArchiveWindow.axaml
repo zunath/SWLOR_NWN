@@ -179,7 +179,7 @@
             <Grid Grid.Row="0" ColumnDefinitions="*,190,170,Auto,Auto" ColumnSpacing="8"
                   Margin="0,0,0,10">
               <TextBox Grid.Column="0" Text="{Binding SearchText}"
-                       Watermark="Search filename or resource type..." />
+                       Watermark="Search filename, name, or resource type..." />
               <ComboBox Grid.Column="1" ItemsSource="{Binding TypeFilters}"
                         SelectedItem="{Binding SelectedTypeFilter}" />
               <ComboBox Grid.Column="2" ItemsSource="{Binding StatusFilters}"
@@ -207,15 +207,24 @@
                     </DataTemplate>
                   </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Asset" Width="2*"
+                <DataGridTextColumn Header="Asset" Width="1.5*"
                                     Binding="{Binding FileName}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Type" Width="1.2*"
+                <DataGridTemplateColumn Header="Name" Width="1.8*">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate x:DataType="archives:ErfAssetRow">
+                      <TextBlock Text="{Binding ResourceNameDisplay}"
+                                 TextTrimming="CharacterEllipsis"
+                                 ToolTip.Tip="{Binding ResourceName}" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Type" Width="1.1*"
                                     Binding="{Binding TypeName}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Destination / source" Width="2.3*"
+                <DataGridTextColumn Header="Destination / source" Width="1.8*"
                                     Binding="{Binding Detail}" IsReadOnly="True" />
                 <DataGridTextColumn Header="Size" Width="90"
                                     Binding="{Binding SizeLabel}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Status" Width="1.5*"
+                <DataGridTextColumn Header="Status" Width="1.3*"
                                     Binding="{Binding StatusLabel}" IsReadOnly="True" />
               </DataGrid.Columns>
             </DataGrid>

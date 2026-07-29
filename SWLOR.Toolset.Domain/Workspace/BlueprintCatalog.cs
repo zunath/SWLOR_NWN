@@ -102,6 +102,19 @@ namespace SWLOR.Toolset.Domain.Workspace
             return _indexedEntries.TryGetValue(IdentityKey(type, resRef), out entry!);
         }
 
+        /// <summary>
+        /// Reads the same user-facing name used by catalog entries from resource JSON that does not
+        /// belong to the open module, such as a resource staged from an ERF archive.
+        /// </summary>
+        public string? ReadDisplayName(ResourceType type, byte[] content)
+        {
+            ArgumentNullException.ThrowIfNull(content);
+            if (type != ResourceType.Area && !ModuleWorkspace.BlueprintTypes.Contains(type))
+                return null;
+
+            return ExtractNameAndTag(type, content).Name;
+        }
+
         /// <summary>Every indexed entry of one type, without filtering the whole snapshot.</summary>
         public IReadOnlyList<CatalogEntry> EntriesOfType(ResourceType type)
         {

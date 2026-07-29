@@ -128,20 +128,34 @@ namespace SWLOR.Toolset.Tests
         public async Task AreaIsOneAssetInExportAndImportViews()
         {
             const string resRef = "logical_area";
+            const string displayName =
+                "A Very Long Area Name That Remains Available In Full When The Table Truncates It";
             foreach (var extension in new[] { "are", "git", "gic" })
             {
                 var root = new JsonGffStruct();
-                root.Add(
-                    "TestValue",
-                    JsonGffField.CreateScalar(
-                        GffFieldType.Int,
-                        System.Text.Encoding.ASCII.GetBytes("1")));
+                if (extension == "are")
+                {
+                    var name = JsonGffField.CreateLocString();
+                    var english = new LocStringEntry("0", Array.Empty<byte>());
+                    name.AddLocStringEntry(english);
+                    english.SetText(displayName);
+                    root.Add("Name", name);
+                }
+                else
+                {
+                    root.Add(
+                        "TestValue",
+                        JsonGffField.CreateScalar(
+                            GffFieldType.Int,
+                            System.Text.Encoding.ASCII.GetBytes("1")));
+                }
                 File.WriteAllBytes(
                     Path.Combine(_firstModule, extension, $"{resRef}.{extension}.json"),
                     new JsonGffDocument(
                         extension.ToUpperInvariant() + " ",
                         root).ToBytes());
             }
+            _workspace.RefreshCatalogEntry(ResourceType.Area, resRef);
 
             var exportSettings = ToolsetSettings.Load(
                 Path.Combine(_root, "export-settings.json"));
@@ -156,6 +170,8 @@ namespace SWLOR.Toolset.Tests
                 $"{resRef}.are",
                 $"{resRef}.git",
                 $"{resRef}.gic");
+            exportArea.ResourceName.Should().Be(displayName);
+            exportArea.MatchesSearch("remains available in full").Should().BeTrue();
             exportViewModel.TypeFilters.Should().Equal("All types", "Area");
 
             var archivePath = Path.Combine(_root, "logical-area.erf");
@@ -176,6 +192,16 @@ namespace SWLOR.Toolset.Tests
             importArea.FileName.Should().Be(resRef);
             importArea.TypeName.Should().Be("Area");
             importArea.FileNames.Should().BeEquivalentTo(exportArea.FileNames);
+            for (var attempt = 0;
+                 attempt < 200 && !string.Equals(
+                     importArea.ResourceName,
+                     displayName,
+                     StringComparison.Ordinal);
+                 attempt++)
+            {
+                await Task.Delay(25);
+            }
+            importArea.ResourceName.Should().Be(displayName);
             importViewModel.TypeFilters.Should().Equal("All types", "Area");
 
             await importViewModel.NextCommand.ExecuteAsync(null);

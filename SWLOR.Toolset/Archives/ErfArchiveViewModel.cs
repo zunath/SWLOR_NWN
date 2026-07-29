@@ -31,6 +31,7 @@ namespace SWLOR.Toolset.Archives
         private string _requiredReason = string.Empty;
         private string _conflictActionLabel = string.Empty;
         private string _renameResRef = string.Empty;
+        private string _resourceName = string.Empty;
 
         public ErfAssetRow(ErfArchiveAsset asset)
         {
@@ -65,6 +66,7 @@ namespace SWLOR.Toolset.Archives
                 : Path.GetRelativePath(
                     Directory.GetParent(Path.GetDirectoryName(asset.SourcePath)!)!.FullName,
                     asset.SourcePath);
+            _resourceName = asset.ResourceName ?? string.Empty;
             _fileNames.Add(asset.FileName);
             _moduleAssets.Add(asset);
         }
@@ -81,6 +83,17 @@ namespace SWLOR.Toolset.Archives
         public long Size => _size;
         public bool IsSupported => _isSupported;
         public string Detail => _detail;
+        public string ResourceName
+        {
+            get => _resourceName;
+            set
+            {
+                if (SetProperty(ref _resourceName, value ?? string.Empty))
+                    OnPropertyChanged(nameof(ResourceNameDisplay));
+            }
+        }
+        public string ResourceNameDisplay =>
+            string.IsNullOrWhiteSpace(ResourceName) ? "—" : ResourceName;
         public string SizeLabel => Size < 1024 ? $"{Size} B" : $"{Size / 1024d:N1} KB";
         public bool CanToggle => IsSupported && !IsRequired;
         public bool IsPrepared => _preparedImports.Count > 0;
@@ -194,6 +207,7 @@ namespace SWLOR.Toolset.Archives
 
         public bool MatchesSearch(string searchText) =>
             FileName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+            ResourceName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
             TypeName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
             _fileNames.Any(fileName =>
                 fileName.Contains(searchText, StringComparison.OrdinalIgnoreCase));
@@ -216,6 +230,11 @@ namespace SWLOR.Toolset.Archives
             _moduleAssets.AddRange(companion._moduleAssets);
             _size += companion._size;
             _isSupported &= companion._isSupported;
+            if (string.IsNullOrWhiteSpace(ResourceName) &&
+                !string.IsNullOrWhiteSpace(companion.ResourceName))
+            {
+                ResourceName = companion.ResourceName;
+            }
 
             OnPropertyChanged(nameof(FileNames));
             OnPropertyChanged(nameof(ArchiveAssets));
@@ -294,6 +313,7 @@ namespace SWLOR.Toolset.Archives
             new(StringComparer.OrdinalIgnoreCase);
         private ErfArchiveSession? _session;
         private CancellationTokenSource? _exportLoadCts;
+        private CancellationTokenSource? _resourceNameLoadCts;
         private bool _disposed;
 
         public ObservableCollection<ErfAssetRow> Assets { get; } = new();
@@ -467,6 +487,7 @@ namespace SWLOR.Toolset.Archives
             if (IsBusy)
                 return false;
 
+            CancelResourceNameLoading();
             IsBusy = true;
             StatusText = "Scanning ERF header and resource table...";
             try
@@ -481,6 +502,7 @@ namespace SWLOR.Toolset.Archives
                 RecentArchives.Insert(0, opened.SourcePath);
 
                 SetRows(opened.Assets.Select(asset => new ErfAssetRow(asset)));
+                BeginImportResourceNameLoading(opened);
                 StatusText =
                     $"{Assets.Count} asset(s) found; {Assets.Count(row => row.IsSupported)} can be imported.";
                 OnPropertyChanged(nameof(CanGoNext));
@@ -513,6 +535,8 @@ namespace SWLOR.Toolset.Archives
             IsComplete = false;
             SetRows(_session?.Assets.Select(asset => new ErfAssetRow(asset))
                 ?? Enumerable.Empty<ErfAssetRow>());
+            if (_session != null)
+                BeginImportResourceNameLoading(_session);
             StatusText = _session == null
                 ? "Choose an ERF file to begin."
                 : $"{Assets.Count} asset(s) found.";
@@ -544,6 +568,7 @@ namespace SWLOR.Toolset.Archives
 
                 StatusText =
                     $"{Assets.Count:N0} module asset(s) are ready to export.";
+                BeginModuleResourceNameLoading();
             }
             catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
             {
@@ -793,6 +818,7 @@ namespace SWLOR.Toolset.Archives
 
         private void ResetRows()
         {
+            CancelResourceNameLoading();
             foreach (var row in Assets)
                 row.PropertyChanged -= OnRowPropertyChanged;
             Assets.Clear();
@@ -804,6 +830,102 @@ namespace SWLOR.Toolset.Archives
             SelectedStatusFilter = "All statuses";
             SearchText = string.Empty;
             OnPropertyChanged(nameof(FilteredAssets));
+        }
+
+        private void BeginModuleResourceNameLoading()
+        {
+            StartResourceNameLoading(async cancellationToken =>
+            {
+                var names = await _service.ReadModuleResourceNamesAsync(cancellationToken)
+                    .ConfigureAwait(true);
+                foreach (var batch in Assets.ToList().Chunk(128))
+                {
+                    foreach (var row in batch)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        var name = row.ModuleAssets
+                            .Select(asset => names.GetValueOrDefault(asset.FileName))
+                            .FirstOrDefault(value => !string.IsNullOrWhiteSpace(value));
+                        if (!string.IsNullOrWhiteSpace(name))
+                            row.ResourceName = name;
+                    }
+                    OnPropertyChanged(nameof(FilteredAssets));
+                    await Task.Yield();
+                }
+            });
+        }
+
+        private void BeginImportResourceNameLoading(ErfArchiveSession session)
+        {
+            StartResourceNameLoading(async cancellationToken =>
+            {
+                var rows = Assets.ToList();
+                foreach (var batch in rows.Chunk(12))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var physicalAssets = batch
+                        .Select(row => row.IsArea
+                            ? row.ArchiveAssets.FirstOrDefault(asset =>
+                                asset.Extension.Equals("are", StringComparison.OrdinalIgnoreCase))
+                            : row.ArchiveAssets.FirstOrDefault())
+                        .Where(asset => asset != null)
+                        .Cast<ErfArchiveAsset>()
+                        .ToList();
+                    var names = await _service.ReadImportResourceNamesAsync(
+                            session,
+                            physicalAssets,
+                            cancellationToken)
+                        .ConfigureAwait(true);
+                    foreach (var row in batch)
+                    {
+                        var name = row.ArchiveAssets
+                            .Select(asset => names.GetValueOrDefault(asset.FileName))
+                            .FirstOrDefault(value => !string.IsNullOrWhiteSpace(value));
+                        if (!string.IsNullOrWhiteSpace(name) && Assets.Contains(row))
+                            row.ResourceName = name;
+                    }
+                    OnPropertyChanged(nameof(FilteredAssets));
+                }
+            });
+        }
+
+        private void StartResourceNameLoading(Func<CancellationToken, Task> load)
+        {
+            CancelResourceNameLoading();
+            var cancellation = new CancellationTokenSource();
+            _resourceNameLoadCts = cancellation;
+            _ = RunResourceNameLoadingAsync(load, cancellation);
+        }
+
+        private async Task RunResourceNameLoadingAsync(
+            Func<CancellationToken, Task> load,
+            CancellationTokenSource cancellation)
+        {
+            try
+            {
+                await load(cancellation.Token).ConfigureAwait(true);
+            }
+            catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+            {
+                // Switching modes, choosing another archive, or closing the window stops optional
+                // name discovery without changing the workflow status.
+            }
+            catch
+            {
+                // A resource name is optional. The asset remains usable by its file name.
+            }
+            finally
+            {
+                if (ReferenceEquals(_resourceNameLoadCts, cancellation))
+                    _resourceNameLoadCts = null;
+                cancellation.Dispose();
+            }
+        }
+
+        private void CancelResourceNameLoading()
+        {
+            _resourceNameLoadCts?.Cancel();
+            _resourceNameLoadCts = null;
         }
 
         private void AppendRows(IEnumerable<ErfAssetRow> rows)
@@ -874,6 +996,7 @@ namespace SWLOR.Toolset.Archives
                 return;
             _disposed = true;
             _exportLoadCts?.Cancel();
+            CancelResourceNameLoading();
             _session?.Dispose();
             _session = null;
         }

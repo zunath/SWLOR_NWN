@@ -321,7 +321,9 @@ namespace SWLOR.Toolset.Tests.Items
             foreach (var family in new[] { ItemFamily.MeleeWeapon, ItemFamily.RangedWeapon, ItemFamily.Lightsaber })
                 ItemStatVisibility.PrimaryGroups(family).Should().NotContain(ItemStatGroup.Crafting);
 
-            // Only weapon families see the weapon-only Combat stats (DMG/Delay). DamageStat (103) was
+            // Only families that swing something see the weapon-only Combat stats (DMG/Delay) - the
+            // three player weapon families plus creature items, whose base types 69-72 are creature
+            // weapons. DamageStat (103) was
             // removed from the editor by owner decision and WeaponDamageType (134) moved to
             // ItemMultiEntryCatalog as an exclusive choice, so neither is an ItemStatDefinition here
             // anymore - the ids stay in this list only as documentation of what used to be checked.
@@ -329,7 +331,7 @@ namespace SWLOR.Toolset.Tests.Items
             foreach (var family in Enum.GetValues<ItemFamily>())
             {
                 var combatStats = ItemStatVisibility.CombatStatsFor(family);
-                if (family is ItemFamily.MeleeWeapon or ItemFamily.RangedWeapon or ItemFamily.Lightsaber)
+                if (ItemStatVisibility.CarriesWeaponCombatStats(family))
                     combatStats.Should().Contain(stat => weaponOnlyPropertyIds.Contains(stat.PropertyId));
                 else
                     combatStats.Should().NotContain(stat => weaponOnlyPropertyIds.Contains(stat.PropertyId));

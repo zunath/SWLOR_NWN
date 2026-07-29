@@ -160,7 +160,31 @@ namespace SWLOR.Toolset.Tests.Items
 
             section.Rebuild(ItemFamily.Miscellaneous, ItemRoleCatalog.DroidPartId);
 
-            section.Groups.Select(group => group.Group).Should().BeEquivalentTo(new[] { ItemStatGroup.Droid });
+            // Miscellaneous has no primary groups of its own, so the role contributes Droid and the
+            // rest is whatever this blueprint stores - it holds HP and STM Regen (Vitals) and both
+            // defenses. Its RequiresSkill entry belongs to the Requirements tab and adds no group.
+            section.Groups.Select(group => group.Group).Should().BeEquivalentTo(new[]
+            {
+                ItemStatGroup.Droid, ItemStatGroup.Vitals, ItemStatGroup.Defense
+            });
+        }
+
+        [Test]
+        public void AGroupTheFamilyWouldHideIsShownAnywayWhenTheItemStoresAValueInIt()
+        {
+            // Hiding a group the item has a value in would leave that value invisible but still
+            // saved - so a stored value always wins over the family's usual surface.
+            var section = new ItemStatsSectionViewModel(
+                OpenStore(), (_, mutation) => { mutation(); return true; });
+
+            section.Rebuild(ItemFamily.Miscellaneous, ItemRoleCatalog.CustomId);
+
+            section.Groups.Select(group => group.Group).Should().BeEquivalentTo(new[]
+            {
+                ItemStatGroup.Vitals, ItemStatGroup.Defense
+            });
+            section.Groups.Single(group => group.Group == ItemStatGroup.Defense)
+                .Cells.Should().Contain(cell => cell.Label.StartsWith("Physical Defense"));
         }
 
         [Test]

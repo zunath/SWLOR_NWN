@@ -6,10 +6,11 @@ using SWLOR.Toolset.Domain.Editors.Items;
 namespace SWLOR.Toolset.Editors.Items
 {
     /// <summary>
-    /// The item editor's Stats tab: a family- and role-driven set of primary
-    /// <see cref="ItemStatGroupViewModel"/> cards, and the family-independent engine-legacy sweep
-    /// (<see cref="Engine"/>). Stats outside a family's primary groups are simply not shown - there
-    /// is no secondary/"not used by this base type" section to expand.
+    /// The item editor's Stats tab: a set of <see cref="ItemStatGroupViewModel"/> cards chosen by
+    /// family, role, and what the open blueprint actually stores, plus the family-independent
+    /// engine-legacy sweep (<see cref="Engine"/>). A group the item has no value in and its family
+    /// does not use is simply absent - there is no secondary "not used by this base type" section
+    /// to expand.
     /// </summary>
     public sealed partial class ItemStatsSectionViewModel : ObservableObject
     {
@@ -23,6 +24,12 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<int, int?>? _costTableMax;
 
         private ItemFamily _family;
+
+        /// <summary>
+        /// The properties the open blueprint carries, snapshotted at the start of each
+        /// <see cref="Rebuild"/> - every group built in that pass sees the same set.
+        /// </summary>
+        private IReadOnlySet<int> _storedProperties = new HashSet<int>();
 
         public ObservableCollection<ItemStatGroupViewModel> Groups { get; } = new();
 
@@ -60,6 +67,7 @@ namespace SWLOR.Toolset.Editors.Items
         public void Rebuild(ItemFamily family, string roleId)
         {
             _family = family;
+            _storedProperties = _store.Properties.Select(property => property.PropertyId).ToHashSet();
 
             var primaryIds = ItemStatVisibility.PrimaryGroups(family)
                 .Concat(ItemRoleCatalog.GroupsUnlockedBy(roleId))
@@ -72,6 +80,18 @@ namespace SWLOR.Toolset.Editors.Items
             // stays untouched; this is purely local to how the Stats tab decides what to show.
             if (family == ItemFamily.Essence && !primaryIds.Contains(ItemStatGroup.Enhancements))
                 primaryIds.Add(ItemStatGroup.Enhancements);
+
+            // The family decides what a blueprint of this kind USUALLY has; what this blueprint
+            // actually carries decides the rest. A cook's armor holds Crafting stats, an armor-based
+            // enhancement module holds Enhancements, an essence holds weapon DMG - none of which the
+            // family alone would show, leaving real stored values invisible and uneditable. Only
+            // groups with a value on THIS item are added, so nothing empty appears: this is not the
+            // "stats your base type doesn't use" list, it is "the stats this item has".
+            foreach (var group in StoredGroups())
+            {
+                if (!primaryIds.Contains(group))
+                    primaryIds.Add(group);
+            }
 
             Groups.Clear();
             foreach (var groupId in primaryIds)
@@ -131,13 +151,40 @@ namespace SWLOR.Toolset.Editors.Items
                 exclusiveChoice.Reload();
         }
 
+        /// <summary>Every stat group this item already stores at least one property in.</summary>
+        private IReadOnlyList<ItemStatGroup> StoredGroups()
+        {
+            if (_storedProperties.Count == 0)
+                return Array.Empty<ItemStatGroup>();
+
+            var groups = new List<ItemStatGroup>();
+            foreach (var stat in ItemStatCatalog.All)
+            {
+                if (_storedProperties.Contains(stat.PropertyId) && !groups.Contains(stat.Group))
+                    groups.Add(stat.Group);
+            }
+
+            foreach (var definition in ItemMultiEntryCatalog.All)
+            {
+                // A requirement has no stat group of its own - it lives on the Requirements tab,
+                // which every family shows anyway.
+                if (definition.IsRequirement || definition.Context is not { } context)
+                    continue;
+
+                if (_storedProperties.Contains(definition.PropertyId) && !groups.Contains(context))
+                    groups.Add(context);
+            }
+
+            return groups;
+        }
+
         private ItemStatGroupViewModel BuildGroup(ItemStatGroup group)
         {
             var definitions = group == ItemStatGroup.Combat
-                ? ItemStatVisibility.CombatStatsFor(_family)
+                ? ItemStatVisibility.CombatStatsFor(_family, _storedProperties)
                 : ItemStatCatalog.ByGroup(group);
 
-            var contextDefinitions = ItemStatVisibility.MultiEntryFor(_family, group);
+            var contextDefinitions = ItemStatVisibility.MultiEntryFor(_family, group, _storedProperties);
 
             var entryLists = contextDefinitions
                 .Where(definition => !definition.IsExclusive)

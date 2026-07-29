@@ -76,6 +76,35 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void ACachedGroupLookupMustBeAskedWithItsOwnFootprintOrItMissesTheGroupsRender()
+        {
+            // A multi-slot group renders and caches under a composite key of its whole footprint
+            // (RequestTileAsync), not under its first model's plain key - two groups can share a
+            // first tile and still look nothing alike. A lookup that omits the footprint therefore
+            // must not return the group's render; it can only ever answer for that one model on its
+            // own, which is a different cache entry.
+            var source = new CountingSource();
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+            var footprint = new[] { "shared_a", "shared_b" };
+
+            service.RequestTileAsync("shared_a", _ => { });
+            Drain();
+            var single = service.CachedTile("shared_a");
+            single.Should().NotBeNull();
+
+            service.RequestTileAsync("shared_a", _ => { }, footprint, columns: 2, rows: 1);
+            Drain();
+            source.ModelCalls.Should().Be(2, "the group is a second, distinct render - not answered from " +
+                "the single tile's cache entry");
+
+            service.CachedTile("shared_a", footprint, columns: 2, rows: 1)
+                .Should().NotBeSameAs(single, "the group's own cache entry, not the single tile's");
+            service.CachedTile("shared_a")
+                .Should().BeSameAs(single, "a footprint-less lookup must still answer only for the plain key");
+        }
+
+        [AvaloniaTest]
         public void AnAppearanceRowIsCachedUnderItsOwnKeyRatherThanColliding()
         {
             var source = new CountingSource();

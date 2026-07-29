@@ -1413,7 +1413,8 @@ namespace SWLOR.Toolset.Shell.Panels
             Tiles.Add(tile);
 
             tile.Preview = tile.IsTile
-                ? _thumbnails?.CachedTile(tile.ResRef)
+                ? _thumbnails?.CachedTile(
+                    tile.ResRef, tile.Tile?.FootprintModelResRefs, tile.Tile?.Columns ?? 1, tile.Tile?.Rows ?? 1)
                 : _thumbnails?.Cached(SelectedType, tile.ResRef, tile.Source == PaletteSource.Standard);
 
             if (tile.Preview != null)

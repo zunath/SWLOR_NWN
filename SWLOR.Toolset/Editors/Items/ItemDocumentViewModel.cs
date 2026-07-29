@@ -33,6 +33,9 @@ namespace SWLOR.Toolset.Editors.Items
         /// <summary>(old resref, own file path) -> files still referencing that resref.</summary>
         private readonly Func<string, string, IReadOnlyList<string>>? _findReferences;
 
+        /// <summary>(old resref, new resref) -> whether the category sidecar now names the new one.</summary>
+        private readonly Func<string, string, bool>? _refileCategories;
+
         /// <summary>
         /// Old resref -> whether its category-folder membership (if any) can be carried over to the new
         /// resref. Checked in the rename preflight so a sidecar that cannot be saved refuses the rename
@@ -84,13 +87,15 @@ namespace SWLOR.Toolset.Editors.Items
             ResourceIndex? resourceIndex = null,
             ArmorDyeSwatchService? armorDyeSwatches = null,
             Func<string, string, IReadOnlyList<string>>? findReferences = null,
-            Func<string, bool>? canRefileCategories = null)
+            Func<string, bool>? canRefileCategories = null,
+            Func<string, string, bool>? refileCategories = null)
         {
             _log = log;
             _prompts = prompts;
             _resRef = resRef;
             _findReferences = findReferences;
             _canRefileCategories = canRefileCategories;
+            _refileCategories = refileCategories;
             Id = $"item:{filePath}";
             _session = DocumentSession.Open(filePath);
 
@@ -190,6 +195,18 @@ namespace SWLOR.Toolset.Editors.Items
                 if (renaming && !CanRefileCategories(targetResRef))
                     return false;
 
+                // Everything above - the reference sweep and the category preflight - reads the disk
+                // and can take seconds. Another tool may have written the original in that window,
+                // and a rename is about to DELETE it, so the external-change question is asked again
+                // here against the file as it stands rather than trusted from before the scans.
+                if (renaming && _session.HasExternalChange())
+                {
+                    _log.AppendLine(
+                        $"Cannot rename {_resRef}: the file changed on disk while the rename was being " +
+                        "checked. Nothing was written - reload or save again to pick that change up.");
+                    return false;
+                }
+
                 // A rename installs its destination with no-overwrite semantics: the existence
                 // check above ran before the (potentially long) reference scan, and a blueprint
                 // another process created in that window must fail this save rather than be
@@ -203,9 +220,19 @@ namespace SWLOR.Toolset.Editors.Items
                 var oldResRef = _resRef;
                 if (renaming)
                 {
-                    if (!string.Equals(oldPath, newPath, StringComparison.OrdinalIgnoreCase) &&
-                        !TryDeleteRenamedOriginal(oldPath, newPath))
+                    var moving = !string.Equals(oldPath, newPath, StringComparison.OrdinalIgnoreCase);
+
+                    // The sidecar commits BEFORE the original is deleted, so a sidecar that turned
+                    // unwritable since the preflight costs nothing: the destination is removed
+                    // again and the original - still on disk, still filed - stands.
+                    if (moving && !RefileCategories(oldResRef, targetResRef, newPath))
+                        return false;
+
+                    if (moving && !TryDeleteRenamedOriginal(oldPath, newPath))
                     {
+                        // The delete failed after the sidecar already moved: put the sidecar back so
+                        // it keeps naming the blueprint that actually exists.
+                        RefileCategories(targetResRef, oldResRef, null);
                         return false;
                     }
 
@@ -236,6 +263,34 @@ namespace SWLOR.Toolset.Editors.Items
                 _log.AppendLine($"Save failed for {_session.FilePath}: {ex.Message}");
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Moves the category membership onto the renamed blueprint, removing the just-written
+        /// destination when the sidecar refuses. True when there is nothing to refile.
+        /// </summary>
+        private bool RefileCategories(string fromResRef, string toResRef, string? rollbackPath)
+        {
+            if (_refileCategories == null || _refileCategories(fromResRef, toResRef))
+                return true;
+
+            if (rollbackPath != null)
+            {
+                try
+                {
+                    File.Delete(rollbackPath);
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine(
+                        $"Could not remove {rollbackPath} after the category update failed: {ex.Message}");
+                }
+            }
+
+            _log.AppendLine(
+                $"Cannot rename {fromResRef} to {toResRef}: its category could not be updated, so the " +
+                "rename was rolled back rather than leaving the category naming a deleted blueprint.");
+            return false;
         }
 
         /// <summary>

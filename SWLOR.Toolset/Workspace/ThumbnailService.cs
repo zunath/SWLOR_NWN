@@ -303,12 +303,8 @@ namespace SWLOR.Toolset.Workspace
             if (!IsAvailable || string.IsNullOrWhiteSpace(modelResRef))
                 return;
 
-            // A multi-slot group renders its whole footprint, and caches under every slot it is made
-            // of - two groups can share a first tile and still look nothing alike.
-            var composite = footprintModelResRefs is { Count: > 1 } && columns * rows > 1;
-            var key = composite
-                ? "tilegroup:" + columns + "x" + rows + ":" + string.Join(",", footprintModelResRefs!)
-                : "tile:" + modelResRef;
+            var composite = IsCompositeFootprint(footprintModelResRefs, columns, rows);
+            var key = TileKey(modelResRef, footprintModelResRefs, columns, rows);
             if (_memory.TryGet(key, out var known))
             {
                 if (known != null)
@@ -509,9 +505,42 @@ namespace SWLOR.Toolset.Workspace
                    ReferenceEquals(active, operation);
         }
 
-        /// <summary>The cached tile thumbnail if it is already decoded, else null.</summary>
-        public Bitmap? CachedTile(string modelResRef) =>
-            _memory.TryGet("tile:" + modelResRef, out var bitmap) ? bitmap : null;
+        /// <summary>
+        /// The cached tile thumbnail if it is already decoded, else null.
+        /// </summary>
+        /// <remarks>
+        /// Must be called with the same footprint, columns and rows <see cref="RequestTileAsync"/>
+        /// was (or will be) called with, or this looks up the wrong slot: a multi-slot group renders
+        /// and caches under a composite key of its whole footprint, not under
+        /// <paramref name="modelResRef"/> alone, because two groups can share a first tile and still
+        /// look nothing alike. Passing only <paramref name="modelResRef"/> for a real group would
+        /// return whatever that one model rendered to on its own - a single tile's image standing in
+        /// for the group's - if that happened to already be cached under the plain key.
+        /// </remarks>
+        public Bitmap? CachedTile(
+            string modelResRef,
+            IReadOnlyList<string>? footprintModelResRefs = null,
+            int columns = 1,
+            int rows = 1) =>
+            _memory.TryGet(TileKey(modelResRef, footprintModelResRefs, columns, rows), out var bitmap)
+                ? bitmap
+                : null;
+
+        /// <summary>Whether a footprint is a genuine multi-slot group rather than a single tile.</summary>
+        private static bool IsCompositeFootprint(
+            IReadOnlyList<string>? footprintModelResRefs, int columns, int rows) =>
+            footprintModelResRefs is { Count: > 1 } && columns * rows > 1;
+
+        /// <summary>
+        /// The memory-cache key for a tile's preview. A multi-slot group is keyed by its whole
+        /// footprint plus shape, so two groups that happen to share a first tile still cache and look
+        /// distinct; anything else is keyed by its own model resref.
+        /// </summary>
+        private static string TileKey(
+            string modelResRef, IReadOnlyList<string>? footprintModelResRefs, int columns, int rows) =>
+            IsCompositeFootprint(footprintModelResRefs, columns, rows)
+                ? "tilegroup:" + columns + "x" + rows + ":" + string.Join(",", footprintModelResRefs!)
+                : "tile:" + modelResRef;
 
         /// <summary>
         /// The shared symbol for a blueprint type, drawn on first use. Shared rather than per-blueprint

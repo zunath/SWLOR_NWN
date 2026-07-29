@@ -410,6 +410,11 @@ void main()
         /// <summary>Whether this control has ever framed a scene - see the <c>Scene</c> setter.</summary>
         private bool _cameraFramed;
 
+        /// <summary>What the camera was last fitted to, so <see cref="NeedsRefit"/> can tell a
+        /// same-size rebuild from a genuinely different model.</summary>
+        private Vector3 _framedTarget;
+        private float? _framedDistance;
+
         private enum DragMode { None, Orbit, Pan, Move, Rotate, Select }
         private DragMode _dragMode = DragMode.None;
         private Point _lastPointerPos;
@@ -962,10 +967,14 @@ void main()
                     StartPreviewClockIfNeededLocked();
                 }
 
-                // Framed once per control, not once per non-null scene. The host clears the scene
-                // while it rebuilds, so keying off "there was no scene a moment ago" re-framed the
-                // camera after every rebuild and threw away the orbit and zoom the builder had set.
-                if (value != null && !_cameraFramed)
+                // Framed on the first scene, and again only when the new one needs a materially
+                // different camera. The host clears the scene while it rebuilds, so re-framing on
+                // every non-null scene threw away the orbit and zoom the builder had set; but
+                // never re-framing left a preview control that had fitted a 0.9m sword holding
+                // that distance when the base type changed to a 1.9m mannequin (and the reverse
+                // showing an item as a speck). An appearance edit rebuilds geometry of about the
+                // same size, so it compares equal here and keeps the builder's view.
+                if (value != null && (!_cameraFramed || NeedsRefit(value)))
                 {
                     _cameraFramed = true;
                     ResetCameraForScene(value);
@@ -995,6 +1004,29 @@ void main()
                 Dispatcher.UIThread.Post(() => RenderStatusChanged?.Invoke(this, message));
         }
 
+        /// <summary>
+        /// Whether a newly assigned scene wants a different camera than the one currently framed.
+        /// Compares the framing the scene ASKS for rather than model identity: an appearance edit
+        /// produces a brand-new RenderModel instance of practically the same size (identity says
+        /// "different", the builder's view should survive), while a base-type change produces one
+        /// of a different scale entirely.
+        /// </summary>
+        private bool NeedsRefit(AreaScene scene)
+        {
+            if (_framedDistance is not { } framedDistance)
+                return true;
+
+            var aspect = _viewportWidth > 0 && _viewportHeight > 0
+                ? (float)_viewportWidth / _viewportHeight
+                : 1.5f;
+            var (target, distance) = AreaCameraMath.ComputeSceneFraming(
+                scene, AreaSceneBuilder.TileSize, VerticalFovRadians, aspect);
+
+            var ratio = distance / MathF.Max(framedDistance, 0.0001f);
+            return ratio is < 0.8f or > 1.25f ||
+                   Vector3.Distance(target, _framedTarget) > distance * 0.25f;
+        }
+
         private void ResetCameraForScene(AreaScene scene)
         {
             var aspect = _viewportWidth > 0 && _viewportHeight > 0
@@ -1010,6 +1042,8 @@ void main()
             _target = target;
             _distance = distance;
             _initialDistance = distance;
+            _framedTarget = target;
+            _framedDistance = distance;
             _azimuth = MathF.PI * 1.25f;
             _elevation = AreaCameraMath.DefaultElevationRadians;
         }

@@ -208,6 +208,25 @@ namespace SWLOR.Toolset.Tests.Items
             }
 
             [Test]
+            public void AFractionalDyeIndexIsRefusedRatherThanTruncated()
+            {
+                var written = new List<int>();
+                var stored = 7;
+                var cell = new ItemDyeCellViewModel(
+                    "Cloth 1",
+                    () => stored,
+                    value => { written.Add(value); stored = value; return true; },
+                    Array.Empty<(byte, byte, byte)>());
+
+                cell.HasPalette.Should().BeFalse("this is the numeric fallback path");
+
+                cell.Number = 12.9m;
+
+                written.Should().BeEmpty("a dye index is a whole number - 12.9 is not silently stored as 12");
+                cell.Number.Should().Be(7, "the box goes back to what the document holds");
+            }
+
+            [Test]
             public void PickingASwatchWritesItsIndexAndMarksItSelected()
             {
                 var store = OpenStore("adren_harness");

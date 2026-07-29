@@ -99,7 +99,7 @@ namespace SWLOR.Toolset.Editors.Sounds
             var applied = RunEdit($"Set behavior to {behavior.DisplayName}", () =>
             {
                 if (!entersRawEditing)
-                    _store.Clear(previous);
+                    _store.Clear(previous, behavior);
 
                 foreach (var value in behavior.Manages)
                     _store.Apply(value, _isInstance);

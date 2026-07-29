@@ -102,13 +102,19 @@ namespace SWLOR.Toolset.Editors.Items
             if (_loading)
                 return;
 
-            // The numeric fallback path (no palette artwork): the same clamp-and-write the picker
-            // performs, so both entry routes leave the document in the same shape.
+            // The numeric fallback path (no palette artwork). A dye index is a whole number, so
+            // "12.9" is refused outright rather than silently stored as 12 - the same rule the
+            // shared integer rows follow. Reload puts the box back to what the document holds,
+            // whether the write was refused here or by the store.
+            if (value.HasValue && decimal.Truncate(value.Value) != value.Value)
+            {
+                Reload();
+                return;
+            }
+
             var index = value.HasValue ? Math.Clamp((int)value.Value, Minimum, Maximum) : Minimum;
-            if (_write(index))
-                Reload();
-            else
-                Reload();
+            _write(index);
+            Reload();
         }
 
         private void SyncSelection()

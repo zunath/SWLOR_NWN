@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Conversations;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
@@ -40,8 +41,11 @@ namespace SWLOR.Toolset.Tests
             var editor = new ConversationEditorViewModel(
                 path, "dantherbs", Snippets, null, new OutputLogService(), new StubPrompts());
 
-            // The unguarded opening targets entry 0, whose first reply link was corrupted.
-            var anyone = editor.Situations.Single(row => row.Situation.Opening.TargetIndex == 0);
+            // The "Hold a moment..." offer targets the corrupted entry and stays reachable
+            // regardless of dantherbs' own guard content - see CorruptedDantHerbs for why the
+            // greeting this used to target no longer works for that.
+            var anyone = editor.Situations.Single(row =>
+                row.Situation.Opening.Target.Text.StartsWith("Hold a moment."));
             editor.SelectSituationCommand.Execute(anyone);
 
             var broken = editor.Choices.Single(choice => choice.IsDangling);
@@ -57,16 +61,31 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
-        /// A scratch copy of the corpus dantherbs dialog with entry 0's first reply link pointed at
-        /// reply #9999, which does not exist - the exact shape an external edit leaves behind.
+        /// A scratch copy of the corpus dantherbs dialog with the "Hold a moment..." offer's entry's
+        /// first reply link pointed at reply #9999, which does not exist - the exact shape an
+        /// external edit leaves behind.
         /// </summary>
+        /// <remarks>
+        /// This used to corrupt entry 0, the plain greeting's entry, because that opening was
+        /// unguarded and therefore always reachable. It no longer is: dantherbs' Field Tinctures
+        /// offer carries a duplicate guard key that
+        /// <see cref="ReachabilityTests.ADuplicateGuardKeyOnlyEvaluatesItsNegatedForm"/> made
+        /// ReachabilityEvaluator stop over-enforcing, and the corrected offer now swallows the
+        /// greeting along with every harvest_herbs-only opening beneath it. Selecting a now-dead
+        /// situation renders no choices at all, so the corruption has to sit under something that is
+        /// still reachable - the offer itself, which every real player is guaranteed to see.
+        /// </remarks>
         private string CorruptedDantHerbs()
         {
             Directory.CreateDirectory(_root);
             var source = Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dantherbs.dlg.json");
-            var dialog = JsonNode.Parse(File.ReadAllText(source))!;
 
-            dialog["EntryList"]!["value"]![0]!["RepliesList"]!["value"]![0]!["Index"]!["value"] = 9999;
+            var entryIndex = DlgDocument.Load(source).Openings
+                .Single(opening => opening.Target.Text.StartsWith("Hold a moment."))
+                .TargetIndex;
+
+            var dialog = JsonNode.Parse(File.ReadAllText(source))!;
+            dialog["EntryList"]!["value"]![entryIndex]!["RepliesList"]!["value"]![0]!["Index"]!["value"] = 9999;
 
             var path = Path.Combine(_root, "dantherbs.dlg.json");
             File.WriteAllText(path, dialog.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));

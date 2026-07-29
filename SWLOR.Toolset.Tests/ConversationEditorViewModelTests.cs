@@ -132,8 +132,11 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void SelectingTheDeadSituationSaysSoInsteadOfShowingSomethingElse()
         {
+            // dantherbs now has four dead situations (see
+            // ReachabilityTests.ADuplicateGuardKeyOnlyEvaluatesItsNegatedForm), so pick one by name
+            // rather than assuming there is only one.
             using var editor = new Disposable(Open());
-            var dead = editor.Value.Situations.Single(row => row.IsUnreachable);
+            var dead = editor.Value.Situations.Single(row => row.Title == "Finished Harvesting Herbs");
 
             editor.Value.SelectSituationCommand.Execute(dead);
 
@@ -560,9 +563,12 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void MovingTheDeadSituationUpBringsItBackToLife()
         {
-            // The fix the design offers for an unreachable opening, exercised end to end.
+            // The fix the design offers for an unreachable opening, exercised end to end. dantherbs
+            // now has four dead situations (see
+            // ReachabilityTests.ADuplicateGuardKeyOnlyEvaluatesItsNegatedForm), so pick this one by
+            // name rather than assuming it is the only one.
             using var editor = new Disposable(Open());
-            var dead = editor.Value.Situations.Single(row => row.IsUnreachable);
+            var dead = editor.Value.Situations.Single(row => row.Title == "Finished Harvesting Herbs");
 
             for (var i = dead.Order; i > 1; i--)
             {

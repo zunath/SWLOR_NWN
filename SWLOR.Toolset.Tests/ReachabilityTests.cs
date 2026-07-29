@@ -54,13 +54,21 @@ namespace SWLOR.Toolset.Tests
         // ---------- which opening wins ----------
 
         [Test]
-        public void ANewPlayerGetsTheGreeting()
+        public void ANewPlayerGetsTheFieldTincturesOfferInsteadOfTheGreeting()
         {
+            // A real finding, not a fixture: the Field Tinctures offer ("Hold a moment...") carries
+            // condition-completed-quest harvest_herbs beside !condition-completed-quest
+            // field_tinctures. Snippet.ProcessConditions is keyed by bare snippet name, so only the
+            // negated form of that key is ever read at runtime - the positive harvest_herbs
+            // requirement never actually gates this offer (see
+            // ADuplicateGuardKeyOnlyEvaluatesItsNegatedForm). A player who has done nothing at all
+            // still satisfies "has not finished" and "is not doing" Field Tinctures, so this offer -
+            // sitting above the greeting - catches them before "Greetings, traveler." ever can.
             var document = DantHerbs();
             var opening = Evaluator.ResolveOpening(document, new PretendPlayer());
 
             opening.Should().NotBeNull();
-            opening!.Target.Text.Should().StartWith("Greetings, traveler.");
+            opening!.Target.Text.Should().StartWith("Hold a moment.");
         }
 
         [Test]
@@ -154,12 +162,44 @@ namespace SWLOR.Toolset.Tests
             var document = DantHerbs();
             var offer = document.Openings.Single(o => o.Target.Text.StartsWith("Hold a moment."));
 
-            // Satisfies the negated pair but not the prerequisite quest.
-            var result = Evaluator.Evaluate(offer, new PretendPlayer());
+            // Of this offer's three conditions, one (condition-completed-quest harvest_herbs) is
+            // shadowed by the negated form of the same key - see
+            // ADuplicateGuardKeyOnlyEvaluatesItsNegatedForm - so only its other two guards actually
+            // gate anything. Passing "not completed Field Tinctures" but failing "not doing Field
+            // Tinctures" still has to close the offer: one real guard failing is enough, even with
+            // the other satisfied.
+            var result = Evaluator.Evaluate(
+                offer, new PretendPlayer().WithQuest("field_tinctures", QuestProgress.OnStep(1)));
 
             result.Guards.Should().HaveCount(3);
-            result.Guards.Count(guard => guard.Outcome == GuardOutcome.Passes).Should().Be(2);
+            result.Guards.Count(guard => guard.Outcome == GuardOutcome.Passes).Should().Be(1);
+            result.Guards.Count(guard => guard.Outcome == GuardOutcome.Fails).Should().Be(1);
+            result.Guards.Count(guard => guard.Outcome == GuardOutcome.NotSimulated).Should().Be(1);
             result.IsOpen.Should().BeFalse();
+        }
+
+        [Test]
+        public void ADuplicateGuardKeyOnlyEvaluatesItsNegatedForm()
+        {
+            // dantherbs' Field Tinctures offer carries both condition-completed-quest harvest_herbs
+            // and !condition-completed-quest field_tinctures. Snippet.ProcessConditions keys its
+            // condition dictionary by the bare snippet name, so a node carrying both forms of one
+            // key is only ever looked at once: it checks whether "!condition-completed-quest" is set
+            // first and, if so, evaluates only that param - the plain "condition-completed-quest"
+            // param is never read at all. A player who has never touched harvest_herbs still has to
+            // see this offer, because the live server never actually enforces that requirement.
+            var document = DantHerbs();
+            var offer = document.Openings.Single(o => o.Target.Text.StartsWith("Hold a moment."));
+
+            var result = Evaluator.Evaluate(offer, new PretendPlayer());
+
+            result.IsOpen.Should().BeTrue(
+                "!condition-completed-quest field_tinctures takes precedence over the shadowed " +
+                "condition-completed-quest harvest_herbs on the same node");
+
+            var shadowed = result.Guards.Single(guard => guard.Key == "condition-completed-quest");
+            shadowed.Outcome.Should().Be(GuardOutcome.NotSimulated);
+            shadowed.Sentence.Should().Contain("never reads this");
         }
 
         [Test]
@@ -536,12 +576,18 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void AShippedConversationCarriesAnOpeningNoPlayerCanEverReach()
+        public void AShippedConversationCarriesOpeningsNoPlayerCanEverReach()
         {
-            // A real finding, not a fixture. "Thanks for your help!" is guarded on having finished
-            // Harvesting Herbs - but the offer above it catches every such player who has not
-            // engaged with Field Tinctures, and the three above THAT catch everyone who has. No
-            // combination of quest states reaches it, so nobody has ever seen this line.
+            // A real finding, not a fixture, and a bigger one than it first looks. "Thanks for your
+            // help!" is guarded on having finished Harvesting Herbs - but the offer above it
+            // ("Hold a moment...") carries condition-completed-quest harvest_herbs beside
+            // !condition-completed-quest field_tinctures on the same node, and the runtime's
+            // dictionary-keyed ProcessConditions only ever reads the negated one (see
+            // ADuplicateGuardKeyOnlyEvaluatesItsNegatedForm). So the offer really only requires
+            // "has not finished/started Field Tinctures" - true for anyone who has not touched
+            // Field Tinctures, harvest_herbs status or not - and it swallows every harvest_herbs-only
+            // opening beneath it (5-7) along with the plain greeting (8, no guard at all). No
+            // combination of quest states reaches any of them.
             var document = DantHerbs();
             var model = Model(document);
 
@@ -549,10 +595,12 @@ namespace SWLOR.Toolset.Tests
                 .Where(situation => situation.State == SituationState.Unreachable)
                 .ToList();
 
-            unreachable.Should().ContainSingle();
-            unreachable[0].Order.Should().Be(5);
+            unreachable.Select(situation => situation.Order).Should().Equal(5, 6, 7, 8);
             unreachable[0].Opening.Target.Text.Should().StartWith("Thanks for your help!");
-            model.PlayerFor(unreachable[0]).Should().BeNull();
+            unreachable[1].Opening.Target.Text.Should().StartWith("Ah, wonderful!");
+            unreachable[2].Opening.Target.Text.Should().StartWith("Have you've collected");
+            unreachable[3].Opening.Target.Text.Should().StartWith("Greetings, traveler.");
+            unreachable.Should().OnlyContain(situation => model.PlayerFor(situation) == null);
         }
 
         [Test]
@@ -561,7 +609,7 @@ namespace SWLOR.Toolset.Tests
             var document = DantHerbs();
 
             Model(document).Situations()
-                .Where(situation => situation.Order != 5)
+                .Where(situation => situation.Order <= 4)
                 .Should().OnlyContain(situation => situation.State == SituationState.Written);
         }
 
@@ -584,11 +632,12 @@ namespace SWLOR.Toolset.Tests
         public void AnEmptyOpeningIsReportedAsNotYetWritten()
         {
             // Isolating "empty" takes some care, because unreachable is reported first as the more
-            // urgent fact. The catch-all has to go, and the new guard has to be one no earlier
-            // opening already claims - reusing an existing quest guard would make this genuinely
-            // unreachable rather than merely unwritten.
-            var document = DantHerbs();
-            document.RemoveLink(document.Openings.Single(opening => opening.Conditions.Count == 0));
+            // urgent fact. Starting from Blank rather than DantHerbs keeps this test clear of
+            // dantherbs' own real openings entirely - its Field Tinctures offer now swallows every
+            // quest state once the shadowed harvest_herbs guard is dropped (see
+            // ADuplicateGuardKeyOnlyEvaluatesItsNegatedForm), which would make anything appended
+            // after it genuinely unreachable rather than merely unwritten.
+            var document = Blank();
 
             var entry = document.AddEntry();
             var opening = document.AddOpening(entry);
@@ -632,8 +681,7 @@ namespace SWLOR.Toolset.Tests
             // earlier opening guarded only by "!condition-all-key-items K" reported the unguarded
             // opening below it as Unreachable even though a player who is given K bypasses the
             // first route and reaches the second in game.
-            var document = DantHerbs();
-            document.RemoveLink(document.Openings.Single(o => o.Conditions.Count == 0));
+            var document = Blank();
 
             var guardedEntry = document.AddEntry("Only for those without the token.");
             var guarded = document.AddOpening(guardedEntry);
@@ -655,8 +703,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void ATutorialGuardCanBeBrokenSoALaterUnguardedOpeningIsReachable()
         {
-            var document = DantHerbs();
-            document.RemoveLink(document.Openings.Single(o => o.Conditions.Count == 0));
+            var document = Blank();
 
             var guardedEntry = document.AddEntry("New to town?");
             var guarded = document.AddOpening(guardedEntry);
@@ -678,8 +725,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void ASkillGuardCanBeBrokenSoALaterUnguardedOpeningIsReachable()
         {
-            var document = DantHerbs();
-            document.RemoveLink(document.Openings.Single(o => o.Conditions.Count == 0));
+            var document = Blank();
 
             var guardedEntry = document.AddEntry("Not trained enough to hear this yet.");
             var guarded = document.AddOpening(guardedEntry);
@@ -701,8 +747,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void AFactionGuardCanBeBrokenSoALaterUnguardedOpeningIsReachable()
         {
-            var document = DantHerbs();
-            document.RemoveLink(document.Openings.Single(o => o.Conditions.Count == 0));
+            var document = Blank();
 
             var guardedEntry = document.AddEntry("Not trusted enough to hear this yet.");
             var guarded = document.AddOpening(guardedEntry);
@@ -811,8 +856,7 @@ namespace SWLOR.Toolset.Tests
             // which includes 0-9. Identifier-only protection used to refuse touching faction 7 at
             // all just because the target also names it, even though dropping below 10 stays
             // entirely inside the range the target still allows.
-            var document = DantHerbs();
-            document.RemoveLink(document.Openings.Single(o => o.Conditions.Count == 0));
+            var document = Blank();
 
             var firstEntry = document.AddEntry("Only the well-regarded may pass.");
             var first = document.AddOpening(firstEntry);
@@ -874,12 +918,17 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void AFullyWrittenQuestIsFullyCovered()
+        public void FieldTincturesIsFullyCoveredButHarvestHerbsNoLongerIs()
         {
+            // Real fallout from the Field Tinctures offer's duplicate-key bug (see
+            // ADuplicateGuardKeyOnlyEvaluatesItsNegatedForm): it now swallows every opening that
+            // talks about harvest_herbs (orders 5-7), so nothing in this conversation exercises
+            // those quest states any more even though the lines are still there, unreachable.
             var document = DantHerbs();
             var coverage = Model(document).Coverage();
 
-            coverage.Should().OnlyContain(quest => quest.IsComplete);
+            coverage.Single(quest => quest.QuestId == "field_tinctures").IsComplete.Should().BeTrue();
+            coverage.Single(quest => quest.QuestId == "harvest_herbs").IsComplete.Should().BeFalse();
         }
 
         [Test]
@@ -900,8 +949,12 @@ namespace SWLOR.Toolset.Tests
         /// <list type="bullet">
         /// <item>a second unguarded greeting — the first answers everybody, so nothing below it
         /// fires. Four conversations do this, <c>dmfi_universal</c> twenty times;</item>
-        /// <item><c>dantherbs</c> opening 5, where no combination of quest states escapes the
-        /// openings above it.</item>
+        /// <item><c>dantherbs</c> openings 5-8: its Field Tinctures offer carries both
+        /// <c>condition-completed-quest harvest_herbs</c> and <c>!condition-completed-quest
+        /// field_tinctures</c>, and the runtime only ever reads the negated one on a duplicate key
+        /// (see <see cref="ADuplicateGuardKeyOnlyEvaluatesItsNegatedForm"/>), so the offer really
+        /// requires nothing about harvest_herbs at all - no combination of quest states escapes it
+        /// or the openings above it.</item>
         /// </list>
         /// Pinned as a set so it cannot drift quietly in either direction: a new entry means
         /// someone shipped a dead line, and a vanished one means the detector stopped seeing
@@ -910,6 +963,9 @@ namespace SWLOR.Toolset.Tests
         private static IEnumerable<string> KnownUnreachableOpenings()
         {
             yield return "dantherbs.dlg.json: opening 5 (Finished Harvesting Herbs)";
+            yield return "dantherbs.dlg.json: opening 6 (On step 2 of Harvesting Herbs)";
+            yield return "dantherbs.dlg.json: opening 7 (Doing Harvesting Herbs)";
+            yield return "dantherbs.dlg.json: opening 8 (First meeting)";
             yield return "dt_doc_velpo.dlg.json: opening 2 (First meeting)";
 
             foreach (var order in new[] { 2, 3 })

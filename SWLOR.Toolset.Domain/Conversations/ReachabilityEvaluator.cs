@@ -69,13 +69,41 @@ namespace SWLOR.Toolset.Domain.Conversations
         }
 
         /// <summary>Whether this route is open to the given player, and what each guard decided.</summary>
+        /// <remarks>
+        /// <c>Snippet.ProcessConditions</c> keys its condition dictionary by the bare snippet name, so
+        /// a node carrying both <c>key</c> and <c>!key</c> is only ever looked at once per key: it
+        /// checks whether <c>!key</c> is set first and, if so, evaluates only that param — the plain
+        /// <c>key</c> param is never read at all. dantherbs ships exactly this on its Field Tinctures
+        /// offer (<c>condition-completed-quest harvest_herbs</c> beside
+        /// <c>!condition-completed-quest field_tinctures</c>); ANDing both, as a naive per-condition
+        /// loop would, claims the offer needs the harvest quest when the live server does not check it
+        /// at all. The positive form is reported as <see cref="GuardOutcome.NotSimulated"/> instead —
+        /// it does not block <see cref="LinkReachability.IsOpen"/>, but the sentence says why it is
+        /// listed without mattering, rather than silently vanishing from the guard list.
+        /// </remarks>
         public LinkReachability Evaluate(DlgLink link, PretendPlayer player)
         {
+            var negatedKeys = new HashSet<string>(
+                link.Conditions.Where(condition => condition.IsNegated).Select(condition => condition.SnippetKey),
+                StringComparer.Ordinal);
+
             var guards = new List<GuardResult>();
             foreach (var condition in link.Conditions)
             {
                 var snippet = _snippets.Find(condition.Key);
                 var sentence = Describe(condition, snippet);
+
+                if (!condition.IsNegated && negatedKeys.Contains(condition.SnippetKey))
+                {
+                    guards.Add(new GuardResult
+                    {
+                        Outcome = GuardOutcome.NotSimulated,
+                        Sentence = $"{sentence} (the game never reads this: "
+                            + $"!{condition.SnippetKey} is also set on this node, and that takes precedence)",
+                        Key = condition.Key
+                    });
+                    continue;
+                }
 
                 if (snippet == null)
                 {

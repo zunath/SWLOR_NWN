@@ -1029,7 +1029,8 @@ namespace SWLOR.Toolset.Editors
                 resourceIndex: _resourceIndex,
                 armorDyeSwatches: ArmorDyeSwatches(),
                 findReferences: FindItemReferences,
-                canRefileCategories: CanRefileItemCategories);
+                canRefileCategories: CanRefileItemCategories,
+                refileCategories: RefileItemCategories);
             editor.Closed += closed => _openItemEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -1051,18 +1052,24 @@ namespace SWLOR.Toolset.Editors
             _workspaceContext.RemoveCatalogEntry(ResourceType.Uti, oldResRef);
             _workspaceContext.RefreshCatalogEntry(ResourceType.Uti, editor.ResRef);
 
-            // The rename's preflight (CanRefileItemCategories) already confirmed the sidecar could be
-            // saved, but the file rename and this save are not atomic with each other - the sidecar
-            // can still change on disk in between. A failure here has to be loud rather than silently
-            // leaving the category pointing at a resref that no longer exists.
-            var result = _categories?.RefileMember(ResourceType.Uti, oldResRef, editor.ResRef);
-            if (result is { Saved: false })
-            {
-                _log.AppendLine(
-                    $"Renamed {oldResRef} to {editor.ResRef}, but its category could not be updated: " +
-                    $"{result.Value.Problem} It may still be filed under '{oldResRef}' until this is " +
-                    "fixed by hand.");
-            }
+            // The membership already moved during the save itself (see RefileItemCategories),
+            // before the original was deleted, so there is nothing left to reconcile here beyond
+            // the catalog re-keying above.
+        }
+
+        /// <summary>
+        /// Moves an item's category membership as part of its rename. Called mid-save, before the
+        /// original blueprint is deleted, so a sidecar that cannot be written aborts the whole
+        /// rename instead of stranding the category on a resref about to disappear.
+        /// </summary>
+        private bool RefileItemCategories(string oldResRef, string newResRef)
+        {
+            var result = _categories?.RefileMember(ResourceType.Uti, oldResRef, newResRef);
+            if (result is not { Saved: false })
+                return true;
+
+            _log.AppendLine($"Could not move the category of {oldResRef} to {newResRef}: {result.Value.Problem}");
+            return false;
         }
 
         /// <summary>
@@ -1191,15 +1198,16 @@ namespace SWLOR.Toolset.Editors
                 {
                     // Something changed while the scan was running. Publishing this result would
                     // keep an item's Source tab reporting pre-save obtainability until the next
-                    // unrelated save happened to trigger another rebuild - queue a fresh one now
-                    // instead of leaving that to chance.
+                    // unrelated save happened to trigger another rebuild - the retry below starts
+                    // a fresh one instead of leaving that to chance.
                     staleGeneration = true;
-                    return;
                 }
-
-                _itemSources = index;
-                foreach (var editor in _openItemEditors.Values.ToList())
-                    editor.Editor.RefreshSource();
+                else
+                {
+                    _itemSources = index;
+                    foreach (var editor in _openItemEditors.Values.ToList())
+                        editor.Editor.RefreshSource();
+                }
             }
             catch (Exception ex)
             {
@@ -1210,11 +1218,13 @@ namespace SWLOR.Toolset.Editors
                 _itemSourcesBuild = null;
             }
 
-            // Queued only after _itemSourcesBuild is cleared above, so this starts a genuinely new
-            // build instead of WarmItemSourcesAsync seeing this just-finished task still cached and
-            // handing back a no-op. One queued rebuild per stale generation is enough: if another save
-            // invalidates again while this retry is running, that retry detects the same mismatch and
-            // queues its own single follow-up, so a rapid save storm converges instead of looping.
+            // Deliberately NOT reached by an early return above: a `return` inside the try would
+            // run the finally and then leave the method, skipping this entirely and stranding
+            // _itemSources at null until some unrelated save happened to warm it again. The retry
+            // has to start after the finally has cleared _itemSourcesBuild, or WarmItemSourcesAsync
+            // would hand back this just-finished task instead of starting a new scan. One queued
+            // rebuild per stale generation is enough: a retry that is itself invalidated queues its
+            // own single follow-up, so a save storm converges rather than looping.
             if (staleGeneration)
                 _ = WarmItemSourcesAsync();
         }

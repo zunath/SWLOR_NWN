@@ -50,9 +50,14 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void TheDeadOpeningIsReportedAsAConsequenceNotARuleName()
         {
+            // dantherbs' Field Tinctures offer carries a duplicate guard key (see
+            // ReachabilityTests.ADuplicateGuardKeyOnlyEvaluatesItsNegatedForm), which swallows every
+            // harvest_herbs-only opening beneath it - four dead openings, not one. This asserts the
+            // message shape on the first of them.
             var problems = Analyzer.Analyze(DantHerbs());
 
-            var dead = problems.Single(problem => problem.RuleId == "unreachable-opening");
+            var dead = problems.Single(problem =>
+                problem.RuleId == "unreachable-opening" && problem.Situation!.Title == "Finished Harvesting Herbs");
             dead.Severity.Should().Be(ProblemSeverity.Broken);
             dead.Message.Should().StartWith("“Finished Harvesting Herbs” can never happen.");
             dead.Anchor.Should().Be(ProblemAnchor.Situation);
@@ -284,10 +289,13 @@ namespace SWLOR.Toolset.Tests
         public void AShippedConversationIsNotDrownedInFindings()
         {
             // If a clean-ish file produces a wall of findings, the panel gets ignored. dantherbs has
-            // one real break and a handful of style hints, and that ratio is the point.
+            // four real breaks (its Field Tinctures offer's duplicate guard key swallows every
+            // harvest_herbs-only opening beneath it - see
+            // ReachabilityTests.ADuplicateGuardKeyOnlyEvaluatesItsNegatedForm) and a handful of style
+            // hints, and that ratio is the point.
             var problems = Analyzer.Analyze(DantHerbs());
 
-            problems.Count(problem => problem.Severity == ProblemSeverity.Broken).Should().Be(1);
+            problems.Count(problem => problem.Severity == ProblemSeverity.Broken).Should().Be(4);
             problems.Should().OnlyContain(problem =>
                 problem.Severity != ProblemSeverity.Untidy || problem.RuleId == "quest-beat-missing");
         }

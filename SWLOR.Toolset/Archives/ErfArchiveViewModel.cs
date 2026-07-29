@@ -15,6 +15,17 @@ namespace SWLOR.Toolset.Archives
 
     public sealed class ErfAssetRow : ObservableObject
     {
+        private static readonly HashSet<string> AreaExtensions = new(
+            new[] { "are", "git", "gic" },
+            StringComparer.OrdinalIgnoreCase);
+
+        private readonly List<string> _fileNames = new();
+        private readonly List<ErfArchiveAsset> _archiveAssets = new();
+        private readonly List<ModuleArchiveAsset> _moduleAssets = new();
+        private readonly List<ErfPreparedImport> _preparedImports = new();
+        private readonly string _detail;
+        private long _size;
+        private bool _isSupported;
         private bool _isSelected;
         private bool _isRequired;
         private string _requiredReason = string.Empty;
@@ -23,42 +34,64 @@ namespace SWLOR.Toolset.Archives
 
         public ErfAssetRow(ErfArchiveAsset asset)
         {
-            ArchiveAsset = asset;
-            FileName = asset.FileName;
+            ArgumentNullException.ThrowIfNull(asset);
+            IsArea = AreaExtensions.Contains(asset.Extension);
+            FileName = IsArea ? asset.ResRef : asset.FileName;
             ResRef = asset.ResRef;
-            Extension = asset.Extension;
-            TypeName = asset.TypeName;
-            Size = asset.Size;
-            IsSupported = asset.IsSupported;
-            Detail = asset.UnsupportedReason ?? $"Module/{asset.Extension}/{DestinationFileName(asset.Extension, asset.ResRef)}";
+            Extension = IsArea ? "area" : asset.Extension;
+            TypeName = IsArea ? "Area" : asset.TypeName;
+            _size = asset.Size;
+            _isSupported = asset.IsSupported;
+            _detail = IsArea
+                ? "Module area"
+                : asset.UnsupportedReason ??
+                  $"Module/{asset.Extension}/{DestinationFileName(asset.Extension, asset.ResRef)}";
+            _fileNames.Add(asset.FileName);
+            _archiveAssets.Add(asset);
         }
 
         public ErfAssetRow(ModuleArchiveAsset asset)
         {
-            ModuleAsset = asset;
-            FileName = asset.FileName;
+            ArgumentNullException.ThrowIfNull(asset);
+            IsArea = AreaExtensions.Contains(asset.Extension);
+            FileName = IsArea ? asset.ResRef : asset.FileName;
             ResRef = asset.ResRef;
-            Extension = asset.Extension;
-            TypeName = asset.TypeName;
-            Size = asset.Size;
-            IsSupported = true;
-            Detail = Path.GetRelativePath(
-                Directory.GetParent(Path.GetDirectoryName(asset.SourcePath)!)!.FullName,
-                asset.SourcePath);
+            Extension = IsArea ? "area" : asset.Extension;
+            TypeName = IsArea ? "Area" : asset.TypeName;
+            _size = asset.Size;
+            _isSupported = true;
+            _detail = IsArea
+                ? "Module area"
+                : Path.GetRelativePath(
+                    Directory.GetParent(Path.GetDirectoryName(asset.SourcePath)!)!.FullName,
+                    asset.SourcePath);
+            _fileNames.Add(asset.FileName);
+            _moduleAssets.Add(asset);
         }
 
-        public ErfArchiveAsset? ArchiveAsset { get; }
-        public ModuleArchiveAsset? ModuleAsset { get; }
-        public ErfPreparedImport? Prepared { get; set; }
+        public IReadOnlyList<string> FileNames => _fileNames;
+        public IReadOnlyList<ErfArchiveAsset> ArchiveAssets => _archiveAssets;
+        public IReadOnlyList<ModuleArchiveAsset> ModuleAssets => _moduleAssets;
+        public IReadOnlyList<ErfPreparedImport> PreparedImports => _preparedImports;
         public string FileName { get; }
         public string ResRef { get; }
         public string Extension { get; }
         public string TypeName { get; }
-        public long Size { get; }
-        public bool IsSupported { get; }
-        public string Detail { get; }
+        public bool IsArea { get; }
+        public long Size => _size;
+        public bool IsSupported => _isSupported;
+        public string Detail => _detail;
         public string SizeLabel => Size < 1024 ? $"{Size} B" : $"{Size / 1024d:N1} KB";
         public bool CanToggle => IsSupported && !IsRequired;
+        public bool IsPrepared => _preparedImports.Count > 0;
+        public bool HasConflict =>
+            _preparedImports.Any(item => item.Conflict == ErfConflictKind.Different) ||
+            (_preparedImports.Any(item => item.Conflict == ErfConflictKind.New) &&
+             _preparedImports.Any(item => item.Conflict != ErfConflictKind.New));
+        public bool WillWriteImport => ToImportChoices().Any(choice =>
+            choice.Action is ErfConflictAction.Add
+                or ErfConflictAction.Replace
+                or ErfConflictAction.Rename);
 
         public bool IsSelected
         {
@@ -95,21 +128,35 @@ namespace SWLOR.Toolset.Archives
             }
         }
 
-        public string ConflictLabel => Prepared?.Conflict switch
+        public string ConflictLabel
         {
-            ErfConflictKind.New => "New",
-            ErfConflictKind.Identical => "Identical",
-            ErfConflictKind.Different => "Different",
-            _ => IsSupported ? "Ready" : "Unsupported"
-        };
+            get
+            {
+                if (!IsPrepared)
+                    return IsSupported ? "Ready" : "Unsupported";
+                if (_preparedImports.All(item => item.Conflict == ErfConflictKind.New))
+                    return "New";
+                if (_preparedImports.All(item => item.Conflict == ErfConflictKind.Identical))
+                    return "Identical";
+                if (_preparedImports.Any(item => item.Conflict == ErfConflictKind.Different))
+                    return "Different";
+                return "Partially exists";
+            }
+        }
 
-        public IReadOnlyList<string> AvailableActions => Prepared?.Conflict switch
+        public IReadOnlyList<string> AvailableActions
         {
-            ErfConflictKind.New => new[] { "Add", "Rename imported", "Skip" },
-            ErfConflictKind.Identical => new[] { "Skip", "Replace" },
-            ErfConflictKind.Different => new[] { "Keep existing", "Replace", "Rename imported" },
-            _ => Array.Empty<string>()
-        };
+            get
+            {
+                if (!IsPrepared)
+                    return Array.Empty<string>();
+                if (_preparedImports.All(item => item.Conflict == ErfConflictKind.New))
+                    return new[] { "Add", "Rename imported", "Skip" };
+                if (_preparedImports.All(item => item.Conflict == ErfConflictKind.Identical))
+                    return new[] { "Skip", "Replace" };
+                return new[] { "Keep existing", "Replace", "Rename imported" };
+            }
+        }
 
         public string ConflictActionLabel
         {
@@ -117,7 +164,10 @@ namespace SWLOR.Toolset.Archives
             set
             {
                 if (SetProperty(ref _conflictActionLabel, value))
+                {
                     OnPropertyChanged(nameof(CanRename));
+                    OnPropertyChanged(nameof(WillWriteImport));
+                }
             }
         }
 
@@ -138,41 +188,89 @@ namespace SWLOR.Toolset.Archives
                     return "Unsupported";
                 if (IsRequired)
                     return $"Required · {RequiredReason}";
-                return Prepared == null ? (IsSelected ? "Selected" : "Available") : ConflictLabel;
+                return !IsPrepared ? (IsSelected ? "Selected" : "Available") : ConflictLabel;
             }
         }
 
-        public void ApplyPrepared(ErfPreparedImport prepared)
+        public bool MatchesSearch(string searchText) =>
+            FileName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+            TypeName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+            _fileNames.Any(fileName =>
+                fileName.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+
+        public void MergeArea(ErfAssetRow companion)
         {
-            Prepared = prepared;
-            ConflictActionLabel = prepared.DefaultAction switch
+            ArgumentNullException.ThrowIfNull(companion);
+            if (!IsArea || !companion.IsArea ||
+                !ResRef.Equals(companion.ResRef, StringComparison.OrdinalIgnoreCase))
             {
-                ErfConflictAction.Add => "Add",
-                ErfConflictAction.Skip => "Skip",
-                ErfConflictAction.KeepExisting => "Keep existing",
-                ErfConflictAction.Replace => "Replace",
-                ErfConflictAction.Rename => "Rename imported",
-                _ => "Skip"
-            };
-            RenameResRef = SuggestedRename(prepared.Asset.ResRef);
+                throw new InvalidOperationException("Only companions from the same area can be grouped.");
+            }
+
+            foreach (var fileName in companion._fileNames)
+            {
+                if (!_fileNames.Contains(fileName, StringComparer.OrdinalIgnoreCase))
+                    _fileNames.Add(fileName);
+            }
+            _archiveAssets.AddRange(companion._archiveAssets);
+            _moduleAssets.AddRange(companion._moduleAssets);
+            _size += companion._size;
+            _isSupported &= companion._isSupported;
+
+            OnPropertyChanged(nameof(FileNames));
+            OnPropertyChanged(nameof(ArchiveAssets));
+            OnPropertyChanged(nameof(ModuleAssets));
+            OnPropertyChanged(nameof(Size));
+            OnPropertyChanged(nameof(SizeLabel));
+            OnPropertyChanged(nameof(IsSupported));
+            OnPropertyChanged(nameof(CanToggle));
+            OnPropertyChanged(nameof(StatusLabel));
+        }
+
+        public void ApplyPrepared(IEnumerable<ErfPreparedImport> prepared)
+        {
+            ArgumentNullException.ThrowIfNull(prepared);
+            _preparedImports.Clear();
+            _preparedImports.AddRange(prepared);
+            if (_preparedImports.Count == 0)
+                return;
+
+            ConflictActionLabel = _preparedImports.All(
+                item => item.Conflict == ErfConflictKind.New)
+                ? "Add"
+                : _preparedImports.All(item => item.Conflict == ErfConflictKind.Identical)
+                    ? "Skip"
+                    : "Keep existing";
+            RenameResRef = SuggestedRename(ResRef);
+            OnPropertyChanged(nameof(PreparedImports));
+            OnPropertyChanged(nameof(IsPrepared));
+            OnPropertyChanged(nameof(HasConflict));
+            OnPropertyChanged(nameof(WillWriteImport));
             OnPropertyChanged(nameof(ConflictLabel));
             OnPropertyChanged(nameof(AvailableActions));
             OnPropertyChanged(nameof(StatusLabel));
         }
 
-        public ErfImportChoice ToImportChoice()
+        public IReadOnlyList<ErfImportChoice> ToImportChoices()
         {
-            var prepared = Prepared
-                ?? throw new InvalidOperationException($"'{FileName}' has not been prepared for import.");
-            var action = ConflictActionLabel switch
-            {
-                "Add" => ErfConflictAction.Add,
-                "Replace" => ErfConflictAction.Replace,
-                "Rename imported" => ErfConflictAction.Rename,
-                "Keep existing" => ErfConflictAction.KeepExisting,
-                _ => ErfConflictAction.Skip
-            };
-            return new ErfImportChoice(prepared, action, RenameResRef);
+            return _preparedImports
+                .Select(prepared =>
+                {
+                    var action = ConflictActionLabel switch
+                    {
+                        "Add" => ErfConflictAction.Add,
+                        "Replace" => prepared.Conflict == ErfConflictKind.New
+                            ? ErfConflictAction.Add
+                            : ErfConflictAction.Replace,
+                        "Rename imported" => ErfConflictAction.Rename,
+                        "Keep existing" => IsArea
+                            ? ErfConflictAction.Skip
+                            : ErfConflictAction.KeepExisting,
+                        _ => ErfConflictAction.Skip
+                    };
+                    return new ErfImportChoice(prepared, action, RenameResRef);
+                })
+                .ToList();
         }
 
         private static string SuggestedRename(string resRef)
@@ -192,10 +290,11 @@ namespace SWLOR.Toolset.Archives
     {
         private readonly ErfArchiveService _service;
         private readonly ToolsetSettings _settings;
+        private readonly Dictionary<string, ErfAssetRow> _areaRows =
+            new(StringComparer.OrdinalIgnoreCase);
         private ErfArchiveSession? _session;
         private CancellationTokenSource? _exportLoadCts;
         private bool _disposed;
-        private bool _synchronizingAreaRename;
 
         public ObservableCollection<ErfAssetRow> Assets { get; } = new();
         public ObservableCollection<string> RecentArchives { get; } = new();
@@ -318,7 +417,7 @@ namespace SWLOR.Toolset.Archives
             (ErfArchiveMode.Import, 0) =>
                 "Browse, drop, or reopen a recent .erf. The scan uses a private read-only snapshot.",
             (ErfArchiveMode.Import, 1) =>
-                "Select explicit assets. Required area companions, referenced resources, and script includes are added automatically.",
+                "Select assets to import. Required referenced assets and script includes are added automatically.",
             (ErfArchiveMode.Import, 2) =>
                 "Identical resources are skipped. Choose whether different resources stay, are replaced, or are renamed with imported references updated.",
             (ErfArchiveMode.Import, 3) =>
@@ -326,7 +425,7 @@ namespace SWLOR.Toolset.Archives
             (ErfArchiveMode.Export, 0) =>
                 "We're finding the module assets you can include in the ERF.",
             (ErfArchiveMode.Export, 1) =>
-                "Select module assets. Area companions, matching resource references, and script includes are added before validation.",
+                "Select assets to export. Required referenced assets and script includes are added automatically.",
             (ErfArchiveMode.Export, 2) =>
                 "The selected JSON, resource names, and dependency closure are checked before a destination can be chosen.",
             _ =>
@@ -340,9 +439,7 @@ namespace SWLOR.Toolset.Archives
                 IEnumerable<ErfAssetRow> result = Assets;
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
-                    result = result.Where(row =>
-                        row.FileName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                        row.TypeName.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+                    result = result.Where(row => row.MatchesSearch(SearchText));
                 }
 
                 if (SelectedTypeFilter != "All types")
@@ -352,8 +449,7 @@ namespace SWLOR.Toolset.Archives
                 {
                     "Selected" => result.Where(row => row.IsSelected),
                     "Required" => result.Where(row => row.IsRequired),
-                    "Conflicts" => result.Where(row =>
-                        row.Prepared?.Conflict == ErfConflictKind.Different),
+                    "Conflicts" => result.Where(row => row.HasConflict),
                     "Unsupported" => result.Where(row => !row.IsSupported),
                     _ => result
                 };
@@ -362,7 +458,7 @@ namespace SWLOR.Toolset.Archives
         }
 
         public IEnumerable<ErfAssetRow> ConflictAssets =>
-            Assets.Where(row => row.IsSelected && row.Prepared != null);
+            Assets.Where(row => row.IsSelected && row.IsPrepared);
 
         public async Task<bool> LoadArchiveAsync(
             string path,
@@ -386,7 +482,7 @@ namespace SWLOR.Toolset.Archives
 
                 SetRows(opened.Assets.Select(asset => new ErfAssetRow(asset)));
                 StatusText =
-                    $"{Assets.Count} resource(s) scanned; {Assets.Count(row => row.IsSupported)} can be imported.";
+                    $"{Assets.Count} asset(s) found; {Assets.Count(row => row.IsSupported)} can be imported.";
                 OnPropertyChanged(nameof(CanGoNext));
                 NextCommand.NotifyCanExecuteChanged();
                 return true;
@@ -419,7 +515,7 @@ namespace SWLOR.Toolset.Archives
                 ?? Enumerable.Empty<ErfAssetRow>());
             StatusText = _session == null
                 ? "Choose an ERF file to begin."
-                : $"{Assets.Count} resource(s) scanned.";
+                : $"{Assets.Count} asset(s) found.";
         }
 
         [RelayCommand]
@@ -539,15 +635,15 @@ namespace SWLOR.Toolset.Archives
             StatusText = "Staging and validating import...";
             try
             {
-                var choices = Assets
-                    .Where(row => row.IsSelected && row.Prepared != null)
-                    .Select(row => row.ToImportChoice())
+                var selectedRows = Assets
+                    .Where(row => row.IsSelected && row.IsPrepared)
+                    .ToList();
+                var choices = selectedRows
+                    .SelectMany(row => row.ToImportChoices())
                     .ToList();
                 var result = await _service.ImportAsync(choices, cancellationToken).ConfigureAwait(true);
                 CompletionTitle = "Import complete";
-                CompletionDetail =
-                    $"{result.Imported} resource(s) saved to Module; {result.Replaced} replaced, " +
-                    $"{result.Renamed} renamed, {result.Skipped} skipped." +
+                CompletionDetail = $"{selectedRows.Count(row => row.WillWriteImport)} asset(s) saved to Module." +
                     (result.BackupDirectory == null
                         ? string.Empty
                         : $" Backups: {result.BackupDirectory}");
@@ -577,12 +673,13 @@ namespace SWLOR.Toolset.Archives
             StatusText = "Converting assets and writing temporary ERF...";
             try
             {
-                var selected = Assets.Where(row => row.IsSelected).Select(row => row.FileName).ToList();
+                var selectedRows = Assets.Where(row => row.IsSelected).ToList();
+                var selected = selectedRows.SelectMany(row => row.FileNames).ToList();
                 var result = await _service.ExportAsync(selected, destinationPath, cancellationToken)
                     .ConfigureAwait(true);
                 CompletionTitle = "Export complete";
                 CompletionDetail =
-                    $"{result.Exported} resource(s) saved to {result.DestinationPath}.";
+                    $"{selectedRows.Count} asset(s) saved to {result.DestinationPath}.";
                 StatusText = CompletionDetail;
                 IsComplete = true;
                 return true;
@@ -602,28 +699,28 @@ namespace SWLOR.Toolset.Archives
         {
             var session = _session
                 ?? throw new InvalidOperationException("Select an ERF file first.");
-            var explicitSelection = Assets.Where(row => row.IsSelected).Select(row => row.FileName).ToList();
+            var explicitSelection = SelectedFileNames();
             StatusText = "Finding required dependencies...";
             var dependencies = await _service.FindImportDependenciesAsync(session, explicitSelection)
                 .ConfigureAwait(true);
             ApplyDependencies(dependencies);
 
             StatusText = "Converting selected GFF resources and comparing Module destinations...";
-            var selection = Assets.Where(row => row.IsSelected).Select(row => row.FileName).ToList();
+            var selection = SelectedFileNames();
             var prepared = await _service.PrepareImportAsync(session, selection).ConfigureAwait(true);
-            var byFile = Assets.ToDictionary(row => row.FileName, StringComparer.OrdinalIgnoreCase);
-            foreach (var item in prepared)
-                byFile[item.Asset.FileName].ApplyPrepared(item);
+            var byFile = RowsByPhysicalFileName();
+            foreach (var group in prepared.GroupBy(item => byFile[item.Asset.FileName]))
+                group.Key.ApplyPrepared(group);
 
             StatusText =
-                $"{prepared.Count} resource(s) prepared; " +
-                $"{prepared.Count(item => item.Conflict == ErfConflictKind.Different)} conflict(s) need a choice.";
+                $"{Assets.Count(row => row.IsSelected && row.IsPrepared)} asset(s) prepared; " +
+                $"{Assets.Count(row => row.IsSelected && row.HasConflict)} conflict(s) need a choice.";
         }
 
         private async Task PrepareExportSelectionAsync()
         {
             StatusText = "Finding required dependencies...";
-            var explicitSelection = Assets.Where(row => row.IsSelected).Select(row => row.FileName).ToList();
+            var explicitSelection = SelectedFileNames();
             var dependencies = await _service.FindExportDependenciesAsync(explicitSelection)
                 .ConfigureAwait(true);
             ApplyDependencies(dependencies);
@@ -631,12 +728,12 @@ namespace SWLOR.Toolset.Archives
             // Dependency traversal parses every selected GFF JSON and reads every selected script.
             // Reaching here is therefore the validation pass, not a decorative review page.
             StatusText =
-                $"Validation passed for {Assets.Count(row => row.IsSelected)} resource(s). ERF format: V1.0.";
+                $"Validation passed for {Assets.Count(row => row.IsSelected)} asset(s). ERF format: V1.0.";
         }
 
         private void ApplyDependencies(IEnumerable<ErfDependency> dependencies)
         {
-            var byFile = Assets.ToDictionary(row => row.FileName, StringComparer.OrdinalIgnoreCase);
+            var byFile = RowsByPhysicalFileName();
             foreach (var dependency in dependencies)
             {
                 if (!byFile.TryGetValue(dependency.FileName, out var row))
@@ -649,7 +746,7 @@ namespace SWLOR.Toolset.Archives
 
         private bool ValidateConflictChoices()
         {
-            foreach (var row in Assets.Where(row => row.IsSelected && row.Prepared != null))
+            foreach (var row in Assets.Where(row => row.IsSelected && row.IsPrepared))
             {
                 if (row.ConflictActionLabel != "Rename imported")
                     continue;
@@ -675,17 +772,16 @@ namespace SWLOR.Toolset.Archives
             var selected = Assets.Count(row => row.IsSelected);
             if (IsImport && CurrentStep == 3)
             {
-                var writes = Assets.Count(row => row.IsSelected &&
-                    row.ConflictActionLabel is "Add" or "Replace" or "Rename imported");
+                var writes = Assets.Count(row => row.IsSelected && row.WillWriteImport);
                 var skipped = selected - writes;
                 StatusText =
-                    $"Ready to save {writes} resource(s) to Module; {skipped} will be skipped. " +
+                    $"Ready to save {writes} asset(s) to Module; {skipped} will be skipped. " +
                     "No files have been changed yet.";
             }
             else if (IsExport && CurrentStep == 3)
             {
                 StatusText =
-                    $"Ready to write and validate {selected} resource(s) as an ERF V1.0 archive.";
+                    $"Ready to save {selected} asset(s) to an ERF.";
             }
         }
 
@@ -700,6 +796,7 @@ namespace SWLOR.Toolset.Archives
             foreach (var row in Assets)
                 row.PropertyChanged -= OnRowPropertyChanged;
             Assets.Clear();
+            _areaRows.Clear();
             TypeFilters.Clear();
             TypeFilters.Add("All types");
 
@@ -713,8 +810,17 @@ namespace SWLOR.Toolset.Archives
         {
             foreach (var row in rows)
             {
+                if (row.IsArea &&
+                    _areaRows.TryGetValue(row.ResRef, out var existingArea))
+                {
+                    existingArea.MergeArea(row);
+                    continue;
+                }
+
                 row.PropertyChanged += OnRowPropertyChanged;
                 Assets.Add(row);
+                if (row.IsArea)
+                    _areaRows.Add(row.ResRef, row);
                 if (!TypeFilters.Contains(row.TypeName))
                     TypeFilters.Add(row.TypeName);
             }
@@ -722,68 +828,26 @@ namespace SWLOR.Toolset.Archives
             OnPropertyChanged(nameof(FilteredAssets));
         }
 
+        private List<string> SelectedFileNames() =>
+            Assets
+                .Where(row => row.IsSelected)
+                .SelectMany(row => row.FileNames)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+        private Dictionary<string, ErfAssetRow> RowsByPhysicalFileName() =>
+            Assets
+                .SelectMany(row => row.FileNames.Select(fileName => (fileName, row)))
+                .ToDictionary(pair => pair.fileName, pair => pair.row, StringComparer.OrdinalIgnoreCase);
+
         private void OnRowPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (!_synchronizingAreaRename &&
-                sender is ErfAssetRow changed &&
-                changed.Extension is "are" or "git" or "gic" &&
-                e.PropertyName is nameof(ErfAssetRow.ConflictActionLabel)
-                    or nameof(ErfAssetRow.RenameResRef))
-            {
-                SynchronizeAreaRename(changed, e.PropertyName);
-            }
-
             if (e.PropertyName is nameof(ErfAssetRow.IsSelected)
                 or nameof(ErfAssetRow.IsRequired)
                 or nameof(ErfAssetRow.ConflictActionLabel))
             {
                 OnPropertyChanged(nameof(FilteredAssets));
                 OnPropertyChanged(nameof(ConflictAssets));
-            }
-        }
-
-        private void SynchronizeAreaRename(ErfAssetRow changed, string? propertyName)
-        {
-            var companions = Assets.Where(row =>
-                    row.IsSelected &&
-                    row.Prepared != null &&
-                    row.ResRef.Equals(changed.ResRef, StringComparison.OrdinalIgnoreCase) &&
-                    row.Extension is "are" or "git" or "gic")
-                .ToList();
-            if (companions.Count <= 1)
-                return;
-
-            _synchronizingAreaRename = true;
-            try
-            {
-                if (changed.ConflictActionLabel == "Rename imported")
-                {
-                    foreach (var companion in companions)
-                    {
-                        companion.ConflictActionLabel = "Rename imported";
-                        companion.RenameResRef = changed.RenameResRef;
-                    }
-                }
-                else if (propertyName == nameof(ErfAssetRow.ConflictActionLabel) &&
-                         companions.Any(row => row.ConflictActionLabel == "Rename imported"))
-                {
-                    // Cancelling the grouped rename returns each companion to the safe default for
-                    // its own comparison state; one area can never be split across two resrefs.
-                    foreach (var companion in companions)
-                    {
-                        companion.ConflictActionLabel = companion.Prepared!.DefaultAction switch
-                        {
-                            ErfConflictAction.Add => "Add",
-                            ErfConflictAction.Replace => "Replace",
-                            ErfConflictAction.KeepExisting => "Keep existing",
-                            _ => "Skip"
-                        };
-                    }
-                }
-            }
-            finally
-            {
-                _synchronizingAreaRename = false;
             }
         }
 

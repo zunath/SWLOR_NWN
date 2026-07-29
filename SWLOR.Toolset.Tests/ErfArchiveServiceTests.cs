@@ -1,10 +1,12 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System.Text.Json;
+using SWLOR.Toolset.Archives;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
+using SWLOR.Toolset.Settings;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -120,6 +122,142 @@ namespace SWLOR.Toolset.Tests
                 .Select(asset => asset.FileName)
                 .Should()
                 .BeEquivalentTo(Enumerable.Range(0, 10).Select(index => $"batch_{index:00}.nss"));
+        }
+
+        [Test]
+        public async Task AreaIsOneAssetInExportAndImportViews()
+        {
+            const string resRef = "logical_area";
+            foreach (var extension in new[] { "are", "git", "gic" })
+            {
+                var root = new JsonGffStruct();
+                root.Add(
+                    "TestValue",
+                    JsonGffField.CreateScalar(
+                        GffFieldType.Int,
+                        System.Text.Encoding.ASCII.GetBytes("1")));
+                File.WriteAllBytes(
+                    Path.Combine(_firstModule, extension, $"{resRef}.{extension}.json"),
+                    new JsonGffDocument(
+                        extension.ToUpperInvariant() + " ",
+                        root).ToBytes());
+            }
+
+            var exportSettings = ToolsetSettings.Load(
+                Path.Combine(_root, "export-settings.json"));
+            using var exportViewModel = new ErfArchiveViewModel(_service, exportSettings);
+            await exportViewModel.StartExportCommand.ExecuteAsync(null);
+
+            var exportArea = exportViewModel.Assets.Should().ContainSingle().Subject;
+            exportArea.IsArea.Should().BeTrue();
+            exportArea.FileName.Should().Be(resRef);
+            exportArea.TypeName.Should().Be("Area");
+            exportArea.FileNames.Should().BeEquivalentTo(
+                $"{resRef}.are",
+                $"{resRef}.git",
+                $"{resRef}.gic");
+            exportViewModel.TypeFilters.Should().Equal("All types", "Area");
+
+            var archivePath = Path.Combine(_root, "logical-area.erf");
+            await exportViewModel.NextCommand.ExecuteAsync(null);
+            exportArea.IsSelected = true;
+            await exportViewModel.NextCommand.ExecuteAsync(null);
+            await exportViewModel.NextCommand.ExecuteAsync(null);
+            (await exportViewModel.ExportAsync(archivePath)).Should().BeTrue();
+
+            _workspace.Open(_secondModule);
+            var importSettings = ToolsetSettings.Load(
+                Path.Combine(_root, "import-settings.json"));
+            using var importViewModel = new ErfArchiveViewModel(_service, importSettings);
+            (await importViewModel.LoadArchiveAsync(archivePath)).Should().BeTrue();
+
+            var importArea = importViewModel.Assets.Should().ContainSingle().Subject;
+            importArea.IsArea.Should().BeTrue();
+            importArea.FileName.Should().Be(resRef);
+            importArea.TypeName.Should().Be("Area");
+            importArea.FileNames.Should().BeEquivalentTo(exportArea.FileNames);
+            importViewModel.TypeFilters.Should().Equal("All types", "Area");
+
+            await importViewModel.NextCommand.ExecuteAsync(null);
+            importViewModel.CurrentStep.Should().Be(1, importViewModel.StatusText);
+            importArea.IsSelected = true;
+            importArea.IsSelected.Should().BeTrue();
+            await importViewModel.NextCommand.ExecuteAsync(null);
+            importViewModel.CurrentStep.Should().Be(2, importViewModel.StatusText);
+            importViewModel.ConflictAssets.Should().ContainSingle().Which.Should().BeSameAs(importArea);
+            await importViewModel.NextCommand.ExecuteAsync(null);
+            importViewModel.CurrentStep.Should().Be(3, importViewModel.StatusText);
+            (await importViewModel.ImportAsync()).Should().BeTrue();
+
+            foreach (var extension in new[] { "are", "git", "gic" })
+            {
+                File.Exists(Path.Combine(
+                    _secondModule,
+                    extension,
+                    $"{resRef}.{extension}.json")).Should().BeTrue();
+            }
+        }
+
+        [Test]
+        public void OneAreaConflictChoiceControlsEveryPhysicalMember()
+        {
+            const string resRef = "mixed_area";
+            var rows = new List<ErfAssetRow>();
+            var prepared = new List<ErfPreparedImport>();
+            var conflicts = new[]
+            {
+                ErfConflictKind.Different,
+                ErfConflictKind.New,
+                ErfConflictKind.Identical
+            };
+            var extensions = new[] { "are", "git", "gic" };
+            for (var index = 0; index < extensions.Length; index++)
+            {
+                var extension = extensions[index];
+                var asset = new ErfArchiveAsset(
+                    $"{resRef}.{extension}",
+                    resRef,
+                    extension,
+                    Size: index + 1,
+                    IsSupported: true,
+                    TypeName: "Area",
+                    UnsupportedReason: null);
+                rows.Add(new ErfAssetRow(asset));
+                prepared.Add(new ErfPreparedImport(
+                    asset,
+                    Path.Combine(_root, $"source.{extension}.json"),
+                    Path.Combine(_root, $"destination.{extension}.json"),
+                    conflicts[index],
+                    conflicts[index] switch
+                    {
+                        ErfConflictKind.New => ErfConflictAction.Add,
+                        ErfConflictKind.Identical => ErfConflictAction.Skip,
+                        _ => ErfConflictAction.KeepExisting
+                    }));
+            }
+
+            var area = rows[0];
+            area.MergeArea(rows[1]);
+            area.MergeArea(rows[2]);
+            area.ApplyPrepared(prepared);
+
+            area.ConflictLabel.Should().Be("Different");
+            area.ConflictActionLabel.Should().Be("Keep existing");
+            area.ToImportChoices().Should().OnlyContain(
+                choice => choice.Action == ErfConflictAction.Skip);
+
+            area.ConflictActionLabel = "Replace";
+            area.ToImportChoices().Select(choice => choice.Action)
+                .Should().Equal(
+                    ErfConflictAction.Replace,
+                    ErfConflictAction.Add,
+                    ErfConflictAction.Replace);
+
+            area.ConflictActionLabel = "Rename imported";
+            area.RenameResRef = "renamed_area";
+            area.ToImportChoices().Should().OnlyContain(choice =>
+                choice.Action == ErfConflictAction.Rename &&
+                choice.RenameResRef == "renamed_area");
         }
 
         [Test]

@@ -121,10 +121,19 @@ namespace SWLOR.Toolset.Tests.Items
         /// Top-level GFF fields the editor never offers because nothing should type them by hand:
         /// the engine or the save path owns each one.
         /// </summary>
+        /// <remarks>
+        /// "Description" is the odd one out - it is the UNIDENTIFIED description, and it is listed
+        /// here because nothing reads it. NWScript's GetDescription defaults to the identified
+        /// string, and every examine surface in the server takes that default, so DescIdentified is
+        /// what players see and what the editor's single Description box binds to. The unidentified
+        /// field is preserved exactly as it sits on disk rather than being given a box of its own,
+        /// which would be an editable field that could never change anything in game.
+        /// </remarks>
         private static readonly IReadOnlyDictionary<string, string> EngineOwnedFields =
             new Dictionary<string, string>
             {
                 ["__data_type"] = "the GFF file-type marker",
+                ["Description"] = "the unidentified description - dead data, see the note below",
                 ["Identified"] = "every blueprint ships identified; the flag is set on creation",
                 ["PropertiesList"] = "the Stats and Requirements tabs, checked by the sweep above",
                 ["VarTable"] = "the Variables tab",

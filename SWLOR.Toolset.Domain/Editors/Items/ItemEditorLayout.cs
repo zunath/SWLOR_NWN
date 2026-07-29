@@ -65,20 +65,16 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                 Label = "Total Cost", Name = "Cost", Kind = BehaviorFieldKind.Integer,
                 FieldType = GffFieldType.Dword, IsReadOnly = true
             },
-            // Two descriptions, and the identified one is the one that matters: the engine hands
-            // GetDescription the identified text whenever the item is identified, which in this
-            // module is essentially always. 1,390 blueprints carry it - 441 of them carry ONLY it -
-            // so leaving it off the layout meant the description players actually read could not be
-            // seen or edited here at all.
+            // A uti carries two descriptions, and only the identified one is live here. GetDescription
+            // defaults to bIdentifiedDescription, and every examine surface in the server - market,
+            // property storage, the contract board - takes that default, so DescIdentified is the
+            // text players read. SWLOR does not play the identification game, and nothing on the
+            // server ever asks for the unidentified string, so it is preserved as it sits on disk
+            // rather than given a second box that would only ever be dead data.
             new BehaviorFieldDefinition
             {
                 Label = "Description", Name = "DescIdentified", Kind = BehaviorFieldKind.Paragraph,
                 FieldType = GffFieldType.CExoLocString
-            },
-            new BehaviorFieldDefinition
-            {
-                Label = "Unidentified Description", Name = "Description",
-                Kind = BehaviorFieldKind.Paragraph, FieldType = GffFieldType.CExoLocString
             },
             new BehaviorFieldDefinition
             {

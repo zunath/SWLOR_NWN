@@ -124,6 +124,45 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task HeaderSelectionTogglesOnlyShownAssets()
+        {
+            var sourceDirectory = Path.Combine(_firstModule, "nss");
+            foreach (var resRef in new[] { "shown_first", "shown_second", "other" })
+            {
+                File.WriteAllText(
+                    Path.Combine(sourceDirectory, $"{resRef}.nss"),
+                    "void main() {}\n");
+            }
+
+            var settings = ToolsetSettings.Load(
+                Path.Combine(_root, "header-selection-settings.json"));
+            using var viewModel = new ErfArchiveViewModel(_service, settings);
+            await viewModel.StartExportCommand.ExecuteAsync(null);
+            viewModel.SearchText = "shown_";
+
+            viewModel.CanToggleVisibleAssets.Should().BeTrue();
+            viewModel.VisibleSelectionState.Should().BeFalse();
+
+            viewModel.ToggleVisibleSelectionCommand.Execute(null);
+
+            viewModel.Assets.Where(row => row.ResRef.StartsWith("shown_"))
+                .Should().OnlyContain(row => row.IsSelected);
+            viewModel.Assets.Single(row => row.ResRef == "other")
+                .IsSelected.Should().BeFalse();
+            viewModel.VisibleSelectionState.Should().BeTrue();
+
+            viewModel.Assets.Single(row => row.ResRef == "shown_first").IsSelected = false;
+            viewModel.VisibleSelectionState.Should().BeNull();
+
+            viewModel.ToggleVisibleSelectionCommand.Execute(null);
+            viewModel.VisibleSelectionState.Should().BeTrue();
+
+            viewModel.ToggleVisibleSelectionCommand.Execute(null);
+            viewModel.FilteredAssets.Should().OnlyContain(row => !row.IsSelected);
+            viewModel.VisibleSelectionState.Should().BeFalse();
+        }
+
+        [Test]
         public async Task ExportLeavesReferencedAssetsOptional()
         {
             const string areaResRef = "reference_area";

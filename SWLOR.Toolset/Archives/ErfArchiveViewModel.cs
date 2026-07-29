@@ -392,14 +392,20 @@ namespace SWLOR.Toolset.Archives
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(FilteredAssets))]
+        [NotifyPropertyChangedFor(nameof(VisibleSelectionState))]
+        [NotifyPropertyChangedFor(nameof(CanToggleVisibleAssets))]
         private string _searchText = string.Empty;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(FilteredAssets))]
+        [NotifyPropertyChangedFor(nameof(VisibleSelectionState))]
+        [NotifyPropertyChangedFor(nameof(CanToggleVisibleAssets))]
         private string _selectedTypeFilter = "All types";
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(FilteredAssets))]
+        [NotifyPropertyChangedFor(nameof(VisibleSelectionState))]
+        [NotifyPropertyChangedFor(nameof(CanToggleVisibleAssets))]
         private string _selectedStatusFilter = "All assets";
 
         [ObservableProperty]
@@ -511,6 +517,20 @@ namespace SWLOR.Toolset.Archives
 
         public IEnumerable<ErfAssetRow> ConflictAssets =>
             Assets.Where(row => row.IsSelected && row.IsPrepared);
+
+        public bool? VisibleSelectionState
+        {
+            get
+            {
+                var rows = FilteredAssets.Where(row => row.CanToggle).ToList();
+                if (rows.Count == 0 || rows.All(row => !row.IsSelected))
+                    return false;
+                return rows.All(row => row.IsSelected) ? true : null;
+            }
+        }
+
+        public bool CanToggleVisibleAssets =>
+            FilteredAssets.Any(row => row.CanToggle);
 
         public async Task<bool> LoadArchiveAsync(
             string path,
@@ -682,17 +702,15 @@ namespace SWLOR.Toolset.Archives
         }
 
         [RelayCommand]
-        private void SelectVisible()
+        private void ToggleVisibleSelection()
         {
-            foreach (var row in FilteredAssets.Where(row => row.CanToggle))
-                row.IsSelected = true;
-        }
+            var rows = FilteredAssets.Where(row => row.CanToggle).ToList();
+            var shouldSelect = rows.Any(row => !row.IsSelected);
+            foreach (var row in rows)
+                row.IsSelected = shouldSelect;
 
-        [RelayCommand]
-        private void ClearVisible()
-        {
-            foreach (var row in FilteredAssets.Where(row => row.CanToggle))
-                row.IsSelected = false;
+            OnPropertyChanged(nameof(VisibleSelectionState));
+            OnPropertyChanged(nameof(CanToggleVisibleAssets));
         }
 
         public async Task<bool> ImportAsync(CancellationToken cancellationToken = default)
@@ -874,6 +892,8 @@ namespace SWLOR.Toolset.Archives
             SelectedStatusFilter = "All assets";
             SearchText = string.Empty;
             OnPropertyChanged(nameof(FilteredAssets));
+            OnPropertyChanged(nameof(VisibleSelectionState));
+            OnPropertyChanged(nameof(CanToggleVisibleAssets));
         }
 
         private void BeginModuleResourceNameLoading()
@@ -992,6 +1012,8 @@ namespace SWLOR.Toolset.Archives
             }
 
             OnPropertyChanged(nameof(FilteredAssets));
+            OnPropertyChanged(nameof(VisibleSelectionState));
+            OnPropertyChanged(nameof(CanToggleVisibleAssets));
         }
 
         private List<string> SelectedFileNames() =>
@@ -1014,6 +1036,8 @@ namespace SWLOR.Toolset.Archives
             {
                 OnPropertyChanged(nameof(FilteredAssets));
                 OnPropertyChanged(nameof(ConflictAssets));
+                OnPropertyChanged(nameof(VisibleSelectionState));
+                OnPropertyChanged(nameof(CanToggleVisibleAssets));
             }
         }
 

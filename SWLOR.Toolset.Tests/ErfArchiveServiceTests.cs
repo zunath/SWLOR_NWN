@@ -143,6 +143,15 @@ namespace SWLOR.Toolset.Tests
             viewModel.CanToggleVisibleAssets.Should().BeTrue();
             viewModel.VisibleSelectionState.Should().BeFalse();
 
+            var filteredAssetRefreshes = 0;
+            var headerStateRefreshes = 0;
+            viewModel.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName == nameof(ErfArchiveViewModel.FilteredAssets))
+                    filteredAssetRefreshes++;
+                if (args.PropertyName == nameof(ErfArchiveViewModel.VisibleSelectionState))
+                    headerStateRefreshes++;
+            };
             viewModel.ToggleVisibleSelectionCommand.Execute(null);
 
             viewModel.Assets.Where(row => row.ResRef.StartsWith("shown_"))
@@ -150,6 +159,8 @@ namespace SWLOR.Toolset.Tests
             viewModel.Assets.Single(row => row.ResRef == "other")
                 .IsSelected.Should().BeFalse();
             viewModel.VisibleSelectionState.Should().BeTrue();
+            filteredAssetRefreshes.Should().Be(0);
+            headerStateRefreshes.Should().Be(1);
 
             viewModel.Assets.Single(row => row.ResRef == "shown_first").IsSelected = false;
             viewModel.VisibleSelectionState.Should().BeNull();

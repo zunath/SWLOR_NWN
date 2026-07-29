@@ -113,7 +113,8 @@ namespace SWLOR.Toolset.Archives
             {
                 if (!IsSupported || IsRequired)
                     return;
-                SetProperty(ref _isSelected, value);
+                if (SetProperty(ref _isSelected, value))
+                    OnPropertyChanged(nameof(StatusLabel));
             }
         }
 
@@ -319,6 +320,7 @@ namespace SWLOR.Toolset.Archives
         private ErfArchiveSession? _session;
         private CancellationTokenSource? _exportLoadCts;
         private CancellationTokenSource? _resourceNameLoadCts;
+        private bool _isUpdatingVisibleSelection;
         private bool _disposed;
 
         public ObservableCollection<ErfAssetRow> Assets { get; } = new();
@@ -706,11 +708,21 @@ namespace SWLOR.Toolset.Archives
         {
             var rows = FilteredAssets.Where(row => row.CanToggle).ToList();
             var shouldSelect = rows.Any(row => !row.IsSelected);
-            foreach (var row in rows)
-                row.IsSelected = shouldSelect;
+            _isUpdatingVisibleSelection = true;
+            try
+            {
+                foreach (var row in rows)
+                    row.IsSelected = shouldSelect;
+            }
+            finally
+            {
+                _isUpdatingVisibleSelection = false;
+            }
 
+            if (SelectedStatusFilter == "Selected")
+                OnPropertyChanged(nameof(FilteredAssets));
+            OnPropertyChanged(nameof(ConflictAssets));
             OnPropertyChanged(nameof(VisibleSelectionState));
-            OnPropertyChanged(nameof(CanToggleVisibleAssets));
         }
 
         public async Task<bool> ImportAsync(CancellationToken cancellationToken = default)
@@ -1030,15 +1042,29 @@ namespace SWLOR.Toolset.Archives
 
         private void OnRowPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName is nameof(ErfAssetRow.IsSelected)
-                or nameof(ErfAssetRow.IsRequired)
-                or nameof(ErfAssetRow.ConflictActionLabel))
+            if (e.PropertyName == nameof(ErfAssetRow.IsSelected))
+            {
+                if (_isUpdatingVisibleSelection)
+                    return;
+
+                if (SelectedStatusFilter == "Selected")
+                    OnPropertyChanged(nameof(FilteredAssets));
+                OnPropertyChanged(nameof(ConflictAssets));
+                OnPropertyChanged(nameof(VisibleSelectionState));
+                return;
+            }
+
+            if (e.PropertyName == nameof(ErfAssetRow.IsRequired))
             {
                 OnPropertyChanged(nameof(FilteredAssets));
                 OnPropertyChanged(nameof(ConflictAssets));
                 OnPropertyChanged(nameof(VisibleSelectionState));
                 OnPropertyChanged(nameof(CanToggleVisibleAssets));
+                return;
             }
+
+            if (e.PropertyName == nameof(ErfAssetRow.ConflictActionLabel))
+                OnPropertyChanged(nameof(ConflictAssets));
         }
 
         partial void OnCurrentStepChanged(int value)

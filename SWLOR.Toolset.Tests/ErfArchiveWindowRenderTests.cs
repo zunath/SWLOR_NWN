@@ -56,14 +56,18 @@ namespace SWLOR.Toolset.Tests
                         checkBox.Name == "VisibleSelectionCheckBox");
                 headerCheckbox.Should().NotBeNull();
                 headerCheckbox!.IsVisible.Should().BeTrue();
-                headerCheckbox.Bounds.Width.Should().BeGreaterThan(0);
-                headerCheckbox.Bounds.Height.Should().BeGreaterThan(0);
+                headerCheckbox.Bounds.X.Should().BeGreaterThanOrEqualTo(0);
                 headerCheckbox.IsEnabled.Should().BeTrue();
                 headerCheckbox.Command.Should().NotBeNull();
                 headerCheckbox.Command!.Execute(headerCheckbox.CommandParameter);
                 Dispatcher.UIThread.RunJobs();
                 selectableAsset.IsSelected.Should().BeTrue();
                 headerCheckbox.IsChecked.Should().BeTrue();
+                var rowCheckbox = window.GetVisualDescendants()
+                    .OfType<CheckBox>()
+                    .Single(checkBox => checkBox != headerCheckbox);
+                headerCheckbox.Bounds.Width.Should().Be(rowCheckbox.Bounds.Width);
+                headerCheckbox.Bounds.Height.Should().Be(rowCheckbox.Bounds.Height);
                 window.GetVisualDescendants()
                     .OfType<Button>()
                     .Select(button => button.Content?.ToString())

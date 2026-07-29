@@ -12,33 +12,64 @@
       <Setter Property="BorderBrush" Value="{DynamicResource InkBrush}" />
     </Style>
 
-    <!-- A two-halves segmented picker: one outlined box split down the middle, the chosen half
-         filled. Styled off RadioButton so the two options stay mutually exclusive without the
-         radio dot, which reads as a list rather than a switch. -->
     <Style Selector="Border.seg">
       <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="3" />
       <Setter Property="ClipToBounds" Value="True" />
     </Style>
-    <Style Selector="RadioButton.seg">
+  </UserControl.Styles>
+
+  <UserControl.Resources>
+    <!-- A part cell's value control on its own, no label: a list of the variants that actually have
+         a model, falling back to a number box only when no such list could be built (no game data).
+         Shared so the mirrored left/right rows cannot drift from the single rows again. -->
+    <DataTemplate x:Key="PartValueTemplate" DataType="items:ItemFieldCellViewModel">
+      <Panel>
+        <ComboBox ItemsSource="{Binding Options}"
+                  SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                  IsEnabled="{Binding IsEnabled}" HorizontalAlignment="Stretch"
+                  IsVisible="{Binding HasOptions}" />
+        <NumericUpDown Value="{Binding Number, Mode=TwoWay}"
+                       Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                       IsEnabled="{Binding IsEnabled}" IsVisible="{Binding !HasOptions}"
+                       Increment="1" FormatString="0" />
+      </Panel>
+    </DataTemplate>
+
+    <!-- A two-halves segmented picker: one outlined box split down the middle, the chosen half
+         filled. This is a whole ControlTheme rather than a Style with a Template setter, because
+         RadioButton's built-in ControlTheme brings its own background, border, padding and hover
+         brushes with it - overriding only the template left the stock chrome painting a pale fill
+         behind the selected half. Replacing the theme means nothing but what is written here draws. -->
+    <ControlTheme x:Key="SegmentedRadioTheme" TargetType="RadioButton">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="Cursor" Value="Hand" />
       <Setter Property="Template">
         <ControlTemplate>
-          <Border Name="Fill" Background="Transparent" Padding="0,4">
-            <TextBlock Text="{TemplateBinding Content}" FontSize="11"
-                       HorizontalAlignment="Center"
+          <Border Name="Fill" Background="Transparent" Padding="0,3">
+            <TextBlock Name="Caption" Text="{TemplateBinding Content}" FontSize="11"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
                        Foreground="{DynamicResource InkTertiaryBrush}" />
           </Border>
         </ControlTemplate>
       </Setter>
-    </Style>
-    <Style Selector="RadioButton.seg:checked /template/ Border#Fill">
-      <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
-    </Style>
-    <Style Selector="RadioButton.seg:checked /template/ TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource AccentInkBrush}" />
-    </Style>
-  </UserControl.Styles>
+
+      <Style Selector="^:pointerover /template/ Border#Fill">
+        <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+      </Style>
+      <Style Selector="^:checked /template/ Border#Fill">
+        <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+      </Style>
+      <Style Selector="^:checked /template/ TextBlock#Caption">
+        <Setter Property="Foreground" Value="{DynamicResource AccentInkBrush}" />
+      </Style>
+    </ControlTheme>
+  </UserControl.Resources>
 
   <UserControl.DataTemplates>
     <!-- One stat's value box. A blank box means the property is absent from the item; Minimum/
@@ -294,66 +325,52 @@
                   ColumnSpacing="10" RowSpacing="5">
               <TextBlock Grid.Row="0" Grid.Column="0" Text="Shoulder" VerticalAlignment="Center"
                          Foreground="{DynamicResource InkSecondaryBrush}" />
-              <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding LeftShoulder.Number, Mode=TwoWay}"
-                             Minimum="{Binding LeftShoulder.Minimum}" Maximum="{Binding LeftShoulder.Maximum}"
-                             Increment="1" FormatString="0" />
-              <NumericUpDown Grid.Row="0" Grid.Column="2" Value="{Binding RightShoulder.Number, Mode=TwoWay}"
-                             Minimum="{Binding RightShoulder.Minimum}" Maximum="{Binding RightShoulder.Maximum}"
-                             IsEnabled="{Binding RightShoulder.IsEnabled}" Increment="1" FormatString="0" />
+              <ContentControl Grid.Row="0" Grid.Column="1" Content="{Binding LeftShoulder}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="0" Grid.Column="2" Content="{Binding RightShoulder}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
 
               <TextBlock Grid.Row="1" Grid.Column="0" Text="Bicep" VerticalAlignment="Center"
                          Foreground="{DynamicResource InkSecondaryBrush}" />
-              <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding LeftBicep.Number, Mode=TwoWay}"
-                             Minimum="{Binding LeftBicep.Minimum}" Maximum="{Binding LeftBicep.Maximum}"
-                             Increment="1" FormatString="0" />
-              <NumericUpDown Grid.Row="1" Grid.Column="2" Value="{Binding RightBicep.Number, Mode=TwoWay}"
-                             Minimum="{Binding RightBicep.Minimum}" Maximum="{Binding RightBicep.Maximum}"
-                             IsEnabled="{Binding RightBicep.IsEnabled}" Increment="1" FormatString="0" />
+              <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding LeftBicep}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="1" Grid.Column="2" Content="{Binding RightBicep}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
 
               <TextBlock Grid.Row="2" Grid.Column="0" Text="Forearm" VerticalAlignment="Center"
                          Foreground="{DynamicResource InkSecondaryBrush}" />
-              <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding LeftForearm.Number, Mode=TwoWay}"
-                             Minimum="{Binding LeftForearm.Minimum}" Maximum="{Binding LeftForearm.Maximum}"
-                             Increment="1" FormatString="0" />
-              <NumericUpDown Grid.Row="2" Grid.Column="2" Value="{Binding RightForearm.Number, Mode=TwoWay}"
-                             Minimum="{Binding RightForearm.Minimum}" Maximum="{Binding RightForearm.Maximum}"
-                             IsEnabled="{Binding RightForearm.IsEnabled}" Increment="1" FormatString="0" />
+              <ContentControl Grid.Row="2" Grid.Column="1" Content="{Binding LeftForearm}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="2" Grid.Column="2" Content="{Binding RightForearm}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
 
               <TextBlock Grid.Row="3" Grid.Column="0" Text="Hand" VerticalAlignment="Center"
                          Foreground="{DynamicResource InkSecondaryBrush}" />
-              <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding LeftHand.Number, Mode=TwoWay}"
-                             Minimum="{Binding LeftHand.Minimum}" Maximum="{Binding LeftHand.Maximum}"
-                             Increment="1" FormatString="0" />
-              <NumericUpDown Grid.Row="3" Grid.Column="2" Value="{Binding RightHand.Number, Mode=TwoWay}"
-                             Minimum="{Binding RightHand.Minimum}" Maximum="{Binding RightHand.Maximum}"
-                             IsEnabled="{Binding RightHand.IsEnabled}" Increment="1" FormatString="0" />
+              <ContentControl Grid.Row="3" Grid.Column="1" Content="{Binding LeftHand}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="3" Grid.Column="2" Content="{Binding RightHand}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
 
               <TextBlock Grid.Row="4" Grid.Column="0" Text="Thigh" VerticalAlignment="Center"
                          Foreground="{DynamicResource InkSecondaryBrush}" />
-              <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding LeftThigh.Number, Mode=TwoWay}"
-                             Minimum="{Binding LeftThigh.Minimum}" Maximum="{Binding LeftThigh.Maximum}"
-                             Increment="1" FormatString="0" />
-              <NumericUpDown Grid.Row="4" Grid.Column="2" Value="{Binding RightThigh.Number, Mode=TwoWay}"
-                             Minimum="{Binding RightThigh.Minimum}" Maximum="{Binding RightThigh.Maximum}"
-                             IsEnabled="{Binding RightThigh.IsEnabled}" Increment="1" FormatString="0" />
+              <ContentControl Grid.Row="4" Grid.Column="1" Content="{Binding LeftThigh}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="4" Grid.Column="2" Content="{Binding RightThigh}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
 
               <TextBlock Grid.Row="5" Grid.Column="0" Text="Shin" VerticalAlignment="Center"
                          Foreground="{DynamicResource InkSecondaryBrush}" />
-              <NumericUpDown Grid.Row="5" Grid.Column="1" Value="{Binding LeftShin.Number, Mode=TwoWay}"
-                             Minimum="{Binding LeftShin.Minimum}" Maximum="{Binding LeftShin.Maximum}"
-                             Increment="1" FormatString="0" />
-              <NumericUpDown Grid.Row="5" Grid.Column="2" Value="{Binding RightShin.Number, Mode=TwoWay}"
-                             Minimum="{Binding RightShin.Minimum}" Maximum="{Binding RightShin.Maximum}"
-                             IsEnabled="{Binding RightShin.IsEnabled}" Increment="1" FormatString="0" />
+              <ContentControl Grid.Row="5" Grid.Column="1" Content="{Binding LeftShin}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="5" Grid.Column="2" Content="{Binding RightShin}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
 
               <TextBlock Grid.Row="6" Grid.Column="0" Text="Foot" VerticalAlignment="Center"
                          Foreground="{DynamicResource InkSecondaryBrush}" />
-              <NumericUpDown Grid.Row="6" Grid.Column="1" Value="{Binding LeftFoot.Number, Mode=TwoWay}"
-                             Minimum="{Binding LeftFoot.Minimum}" Maximum="{Binding LeftFoot.Maximum}"
-                             Increment="1" FormatString="0" />
-              <NumericUpDown Grid.Row="6" Grid.Column="2" Value="{Binding RightFoot.Number, Mode=TwoWay}"
-                             Minimum="{Binding RightFoot.Minimum}" Maximum="{Binding RightFoot.Maximum}"
-                             IsEnabled="{Binding RightFoot.IsEnabled}" Increment="1" FormatString="0" />
+              <ContentControl Grid.Row="6" Grid.Column="1" Content="{Binding LeftFoot}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="6" Grid.Column="2" Content="{Binding RightFoot}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
             </Grid>
 
             <CheckBox IsChecked="{Binding MirrorRightFromLeft, Mode=TwoWay}"
@@ -440,9 +457,11 @@
           <Border Grid.Row="2" Classes="seg" Margin="0,8,0,0"
                   IsVisible="{Binding ShowsMannequinToggle}">
             <Grid ColumnDefinitions="*,*">
-              <RadioButton Grid.Column="0" Classes="seg" Content="Male" GroupName="MannequinBody"
+              <RadioButton Grid.Column="0" Theme="{StaticResource SegmentedRadioTheme}"
+                           Content="Male" GroupName="MannequinBody"
                            IsChecked="{Binding PreviewMale, Mode=TwoWay}" />
-              <RadioButton Grid.Column="1" Classes="seg" Content="Female" GroupName="MannequinBody"
+              <RadioButton Grid.Column="1" Theme="{StaticResource SegmentedRadioTheme}"
+                           Content="Female" GroupName="MannequinBody"
                            IsChecked="{Binding PreviewFemale, Mode=TwoWay}" />
             </Grid>
           </Border>

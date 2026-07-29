@@ -279,7 +279,7 @@
                       </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
-                  <DataGridTemplateColumn Header="New resref" Width="1.4*">
+                  <DataGridTemplateColumn Header="New ResRef" Width="1.4*">
                     <DataGridTemplateColumn.CellTemplate>
                       <DataTemplate x:DataType="archives:ErfAssetRow">
                         <TextBox Text="{Binding RenameResRef, Mode=TwoWay}"

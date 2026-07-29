@@ -30,6 +30,8 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<JsonGffStruct, IconImage?>? _renderIcon;
         private readonly Func<JsonGffStruct, bool, RenderModel?>? _resolveModel;
         private ModelPreviewControl? _previewView;
+        private RenderModel? _cachedModel;
+        private string? _cachedModelSignature;
         private bool _disposed;
 
         public ObservableCollection<BehaviorRowViewModel> BasicRows { get; } = new();
@@ -503,7 +505,7 @@ namespace SWLOR.Toolset.Editors.Items
             if (_disposed)
                 return;
 
-            var model = _resolveModel?.Invoke(_store.Item, PreviewFemale);
+            var model = ResolveCachedModel();
             PreviewScene = model == null
                 ? null
                 : new AreaScene
@@ -524,6 +526,7 @@ namespace SWLOR.Toolset.Editors.Items
                                 AreaSceneBuilder.TileSize / 2f,
                                 0f),
                             Orientation = new Vector2(1f, 0f),
+                            LayerColorIndices = CurrentLayerColors(),
                             Model = model
                         }
                     },
@@ -533,6 +536,71 @@ namespace SWLOR.Toolset.Editors.Items
             OnPropertyChanged(nameof(PreviewScene));
             OnPropertyChanged(nameof(HasModelPreview));
         }
+
+        /// <summary>
+        /// The composed preview model, reused while nothing about the item's GEOMETRY has changed.
+        /// </summary>
+        /// <remarks>
+        /// Resolving it means reading every body-part model, composing them onto a skeleton and
+        /// rebuilding the viewport's vertex buffers. Dye edits do none of that - they only recolour
+        /// textures - so doing the whole job on each swatch click is what made picking a colour lag.
+        /// </remarks>
+        private RenderModel? ResolveCachedModel()
+        {
+            if (_resolveModel == null)
+                return null;
+
+            var signature = GeometrySignature();
+            if (_cachedModelSignature == signature)
+                return _cachedModel;
+
+            _cachedModel = _resolveModel(_store.Item, PreviewFemale);
+            _cachedModelSignature = signature;
+            return _cachedModel;
+        }
+
+        /// <summary>Everything that changes the shape of the preview, and nothing that only recolours it.</summary>
+        private string GeometrySignature()
+        {
+            var parts = new System.Text.StringBuilder();
+            parts.Append(PreviewFemale ? 'f' : 'm');
+            parts.Append(':').Append(CurrentBaseItem());
+
+            foreach (var field in GeometryFields)
+                parts.Append(':').Append(_store.GetInteger(BehaviorFieldStorage.Field, field) ?? -1);
+
+            return parts.ToString();
+        }
+
+        private static readonly string[] GeometryFields =
+        {
+            "ModelPart1", "ModelPart2", "ModelPart3",
+            "ArmorPart_Neck", "ArmorPart_Torso", "ArmorPart_Belt", "ArmorPart_Pelvis", "ArmorPart_Robe",
+            "ArmorPart_LShoul", "ArmorPart_RShoul", "ArmorPart_LBicep", "ArmorPart_RBicep",
+            "ArmorPart_LFArm", "ArmorPart_RFArm", "ArmorPart_LHand", "ArmorPart_RHand",
+            "ArmorPart_LThigh", "ArmorPart_RThigh", "ArmorPart_LShin", "ArmorPart_RShin",
+            "ArmorPart_LFoot", "ArmorPart_RFoot"
+        };
+
+        /// <summary>The item's dye choices, which travel on the scene instance rather than the model.</summary>
+        private IReadOnlyDictionary<int, int> CurrentLayerColors()
+        {
+            var colors = new Dictionary<int, int>();
+            foreach (var (layer, field) in DyeFields)
+                colors[layer] = (int)(_store.GetInteger(BehaviorFieldStorage.Field, field) ?? 0);
+
+            return colors;
+        }
+
+        private static readonly (int Layer, string Field)[] DyeFields =
+        {
+            (SWLOR.NWN.Formats.Plt.PltLayers.Cloth1, "Cloth1Color"),
+            (SWLOR.NWN.Formats.Plt.PltLayers.Cloth2, "Cloth2Color"),
+            (SWLOR.NWN.Formats.Plt.PltLayers.Leather1, "Leather1Color"),
+            (SWLOR.NWN.Formats.Plt.PltLayers.Leather2, "Leather2Color"),
+            (SWLOR.NWN.Formats.Plt.PltLayers.Metal1, "Metal1Color"),
+            (SWLOR.NWN.Formats.Plt.PltLayers.Metal2, "Metal2Color"),
+        };
 
         public void Dispose()
         {

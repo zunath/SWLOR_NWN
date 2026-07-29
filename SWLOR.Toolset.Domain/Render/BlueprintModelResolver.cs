@@ -118,6 +118,21 @@ namespace SWLOR.Toolset.Domain.Render
             "forel", "forer", "handl", "handr", "shinl", "shinr",
         };
 
+        /// <summary>
+        /// What ANY robe replaces, full-length or not. A robe is worn instead of the chest and hips,
+        /// never over them, so these come off whatever the robe's own length turns out to be.
+        /// </summary>
+        /// <remarks>
+        /// Robes used to suppress nothing at all unless they measured full-body, which left the
+        /// armor's own torso and pelvis inside the robe - a corset showing straight through the
+        /// gown. The longer robes additionally replace the limbs, which is what
+        /// <see cref="RobeCoveredParts"/> covers.
+        /// </remarks>
+        public static readonly IReadOnlySet<string> RobeAlwaysCoveredParts = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "chest", "belt", "pelvis",
+        };
+
         /// <summary>Equip_ItemList struct id for the chest slot (bit flags per the Aurora UTC format).</summary>
         private const int ChestSlotStructId = 2;
 

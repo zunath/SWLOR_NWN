@@ -521,11 +521,12 @@ namespace SWLOR.Toolset.Workspace
                 return parts;
 
             var robeModel = LoadMdl(robe.ModelResRef, withSupermodelAnims: false);
-            if (robeModel == null || !RobeCoverage.IsFullBodyRobe(robeModel))
-                return parts;
+            var covered = robeModel != null && RobeCoverage.IsFullBodyRobe(robeModel)
+                ? BlueprintModelResolver.RobeCoveredParts
+                : BlueprintModelResolver.RobeAlwaysCoveredParts;
 
             return parts
-                .Where(part => !BlueprintModelResolver.RobeCoveredParts.Contains(part.PartType))
+                .Where(part => !covered.Contains(part.PartType))
                 .ToList();
         }
 

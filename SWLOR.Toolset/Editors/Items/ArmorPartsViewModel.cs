@@ -24,6 +24,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action? _appearanceChanged;
         private readonly ArmorDyeSwatchService? _dyes;
+        private readonly ArmorPartCatalog? _partModels;
         private readonly List<ItemFieldCellViewModel> _allCells = new();
         private readonly List<ItemFieldCellViewModel> _rightCells = new();
         private readonly List<ItemDyeCellViewModel> _dyeCells = new();
@@ -67,28 +68,30 @@ namespace SWLOR.Toolset.Editors.Items
             ItemValueStore store,
             Func<string, Action, bool> runEdit,
             Action? appearanceChanged = null,
-            ArmorDyeSwatchService? dyes = null)
+            ArmorDyeSwatchService? dyes = null,
+            ArmorPartCatalog? partModels = null)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _appearanceChanged = appearanceChanged;
             _dyes = dyes;
+            _partModels = partModels;
 
             _mirrorRightFromLeft = DetectMirror();
 
-            Neck = CreateSingle("Neck", ItemAppearanceFieldNames.Neck, ItemAppearanceFieldNames.NeckTwin);
-            Torso = CreateSingle("Torso", ItemAppearanceFieldNames.Torso, ItemAppearanceFieldNames.TorsoTwin);
-            Belt = CreateSingle("Belt", ItemAppearanceFieldNames.Belt, ItemAppearanceFieldNames.BeltTwin);
-            Pelvis = CreateSingle("Pelvis", ItemAppearanceFieldNames.Pelvis, ItemAppearanceFieldNames.PelvisTwin);
-            Robe = CreateSingle("Robe", ItemAppearanceFieldNames.Robe, ItemAppearanceFieldNames.RobeTwin);
+            Neck = CreateSingle("Neck", ItemAppearanceFieldNames.Neck, ItemAppearanceFieldNames.NeckTwin, "neck");
+            Torso = CreateSingle("Torso", ItemAppearanceFieldNames.Torso, ItemAppearanceFieldNames.TorsoTwin, "chest");
+            Belt = CreateSingle("Belt", ItemAppearanceFieldNames.Belt, ItemAppearanceFieldNames.BeltTwin, "belt");
+            Pelvis = CreateSingle("Pelvis", ItemAppearanceFieldNames.Pelvis, ItemAppearanceFieldNames.PelvisTwin, "pelvis");
+            Robe = CreateSingle("Robe", ItemAppearanceFieldNames.Robe, ItemAppearanceFieldNames.RobeTwin, "robe");
 
-            (LeftShoulder, RightShoulder) = CreatePair(ItemAppearanceFieldNames.Shoulder);
-            (LeftBicep, RightBicep) = CreatePair(ItemAppearanceFieldNames.Bicep);
-            (LeftForearm, RightForearm) = CreatePair(ItemAppearanceFieldNames.Forearm);
-            (LeftHand, RightHand) = CreatePair(ItemAppearanceFieldNames.Hand);
-            (LeftThigh, RightThigh) = CreatePair(ItemAppearanceFieldNames.Thigh);
-            (LeftShin, RightShin) = CreatePair(ItemAppearanceFieldNames.Shin);
-            (LeftFoot, RightFoot) = CreatePair(ItemAppearanceFieldNames.Foot);
+            (LeftShoulder, RightShoulder) = CreatePair(ItemAppearanceFieldNames.Shoulder, "shol");
+            (LeftBicep, RightBicep) = CreatePair(ItemAppearanceFieldNames.Bicep, "bicepl");
+            (LeftForearm, RightForearm) = CreatePair(ItemAppearanceFieldNames.Forearm, "forel");
+            (LeftHand, RightHand) = CreatePair(ItemAppearanceFieldNames.Hand, "handl");
+            (LeftThigh, RightThigh) = CreatePair(ItemAppearanceFieldNames.Thigh, "legl");
+            (LeftShin, RightShin) = CreatePair(ItemAppearanceFieldNames.Shin, "shinl");
+            (LeftFoot, RightFoot) = CreatePair(ItemAppearanceFieldNames.Foot, "footl");
 
             Cloth1 = CreateDye("Cloth 1", ItemAppearanceFieldNames.Cloth1Color, ArmorDyeSwatchService.DyeMaterial.Cloth);
             Cloth2 = CreateDye("Cloth 2", ItemAppearanceFieldNames.Cloth2Color, ArmorDyeSwatchService.DyeMaterial.Cloth);
@@ -223,12 +226,24 @@ namespace SWLOR.Toolset.Editors.Items
             return true;
         }
 
-        private ItemFieldCellViewModel CreateSingle(string label, string field, string? twinField) =>
+        private ItemFieldCellViewModel CreateSingle(
+            string label, string field, string? twinField, string partType) =>
             new(
                 label,
                 () => (int?)_store.GetInteger(BehaviorFieldStorage.Field, field),
                 value => Apply(label, () => WriteArmorField(field, twinField, value)),
-                0, 255);
+                0, 255,
+                options: PartNumbers(partType));
+
+        /// <summary>The variants that exist for a part, plus 0 - "this armor covers nothing here".</summary>
+        private IReadOnlyList<int> PartNumbers(string partType)
+        {
+            var numbers = _partModels?.Numbers(partType) ?? Array.Empty<int>();
+            if (numbers.Count == 0)
+                return numbers;
+
+            return numbers[0] == 0 ? numbers : new[] { 0 }.Concat(numbers).ToList();
+        }
 
         private ItemDyeCellViewModel CreateDye(string label, string field, ArmorDyeSwatchService.DyeMaterial material) =>
             new(
@@ -243,7 +258,8 @@ namespace SWLOR.Toolset.Editors.Items
         /// construction - whether mirroring is on, so toggling <see cref="MirrorRightFromLeft"/>
         /// changes what the very next left-side edit does without rebuilding either cell.
         /// </summary>
-        private (ItemFieldCellViewModel Left, ItemFieldCellViewModel Right) CreatePair(ItemArmorPartFieldPair pair)
+        private (ItemFieldCellViewModel Left, ItemFieldCellViewModel Right) CreatePair(
+            ItemArmorPartFieldPair pair, string partType)
         {
             ItemFieldCellViewModel? right = null;
 
@@ -266,14 +282,16 @@ namespace SWLOR.Toolset.Editors.Items
 
                     return applied;
                 },
-                0, 255);
+                0, 255,
+                options: PartNumbers(partType));
 
             right = new ItemFieldCellViewModel(
                 $"Right {pair.Label}",
                 () => (int?)_store.GetInteger(BehaviorFieldStorage.Field, pair.RightField),
                 value => Apply(
                     $"Right {pair.Label}", () => WriteArmorField(pair.RightField, pair.RightTwinField, value)),
-                0, 255)
+                0, 255,
+                options: PartNumbers(partType))
             {
                 IsReadOnly = MirrorRightFromLeft
             };

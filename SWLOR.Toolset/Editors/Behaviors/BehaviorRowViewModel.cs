@@ -96,6 +96,33 @@ namespace SWLOR.Toolset.Editors.Behaviors
         public bool IsParagraph => Definition.Kind == BehaviorFieldKind.Paragraph;
         public bool IsNumber => Definition.Kind is BehaviorFieldKind.Integer or BehaviorFieldKind.Float;
 
+        /// <summary>
+        /// The lowest value the spinner will offer, from the field's own floor when it declares one
+        /// and otherwise from what its GFF storage type can hold.
+        /// </summary>
+        /// <remarks>
+        /// Without this the spinner ran into negative numbers that the unsigned storage types cannot
+        /// hold, so the edit was rejected at the GFF layer and the only sign of it was a line in the
+        /// output log - the box showed -1 and the file kept its old value.
+        /// </remarks>
+        public decimal NumberMinimum =>
+            Definition.Minimum ?? (IsUnsigned ? 0m : decimal.MinValue);
+
+        public decimal NumberMaximum =>
+            Definition.Maximum ?? Definition.FieldType switch
+            {
+                GffFieldType.Byte => byte.MaxValue,
+                GffFieldType.Char => sbyte.MaxValue,
+                GffFieldType.Word => ushort.MaxValue,
+                GffFieldType.Short => short.MaxValue,
+                GffFieldType.Dword => uint.MaxValue,
+                GffFieldType.Int => int.MaxValue,
+                _ => decimal.MaxValue
+            };
+
+        private bool IsUnsigned => Definition.FieldType
+            is GffFieldType.Byte or GffFieldType.Word or GffFieldType.Dword or GffFieldType.Dword64;
+
         /// <summary>A read-only number (Total Cost) is a fact to display, not a control - no spinner chrome.</summary>
         public bool IsEditableNumber => IsNumber && !IsReadOnly;
         public bool IsReadOnlyNumber => IsNumber && IsReadOnly;

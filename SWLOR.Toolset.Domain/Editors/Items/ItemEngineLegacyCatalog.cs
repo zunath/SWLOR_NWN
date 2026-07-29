@@ -6,7 +6,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
     /// BonusFeats, Damage, DamageRacialGroup, DamagePenalty, DamageReduced,
     /// DamageResist, Damage_Vulnerability, Darkvision, EnhancedContainer_Weight, Haste,
     /// ImprovedSavingThrows, Keen, Light, Mighty, DamageNone, OnHit, AttackBonus,
-    /// AttackBonusRacialGroup, UnlimitedAmmo, VampiricRegeneration, OnMonsterHit,
+    /// AttackBonusRacialGroup, VampiricRegeneration, OnMonsterHit,
     /// Massive_Criticals, Freedom_of_Movement, Monster_damage, Special_Walk, Weight_Increase,
     /// OnHitCastSpell, VisualEffect, and Additional_Property. Property ids, labels, subtype
     /// tables, and CostTableResRef ids below are read straight off
@@ -50,7 +50,9 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             new("OnHit", 48, "IPRP_ONHIT", 24),
             new("AttackBonus", 56, null, 2),
             new("AttackBonusRacialGroup", 58, "racialtypes", 2),
-            new("UnlimitedAmmo", 61, "IPRP_AMMOTYPE", 14),
+            // UnlimitedAmmo (61) is deliberately absent: every ranged weapon in this game has
+            // unlimited ammunition, so the property decides nothing and a per-item field for it is
+            // a question with one answer. Existing values are preserved, just not offered.
             new("VampiricRegeneration", 67, null, 2),
             new("OnMonsterHit", 72, "IPRP_MONSTERHIT", 0),
             new("Massive_Criticals", 74, null, 4),

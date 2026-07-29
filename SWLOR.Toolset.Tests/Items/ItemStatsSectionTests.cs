@@ -130,10 +130,14 @@ namespace SWLOR.Toolset.Tests.Items
             var section = OpenArmorSection(OpenStore());
 
             var columns = section.LeftColumn.Concat(section.RightColumn).ToList();
-            columns.Should().BeEquivalentTo(section.Groups, "every group lands in exactly one column");
+            columns.OfType<ItemStatGroupViewModel>()
+                .Should().BeEquivalentTo(section.Groups, "every group lands in exactly one column");
 
-            static int Rows(IEnumerable<ItemStatGroupViewModel> column) =>
-                column.Sum(group => group.Cells.Count + group.EntryLists.Count + group.ExclusiveChoices.Count);
+            // The engine sweep is dealt in alongside the groups, so a column can hold either kind.
+            static int Rows(IEnumerable<object> column) =>
+                column.OfType<ItemStatGroupViewModel>()
+                    .Sum(group => group.Cells.Count + group.EntryLists.Count + group.ExclusiveChoices.Count)
+                + column.OfType<ItemEngineLegacySectionViewModel>().Sum(engine => engine.Entries.Count + 1);
 
             var tallest = Math.Max(Rows(section.LeftColumn), Rows(section.RightColumn));
             var shortest = Math.Min(Rows(section.LeftColumn), Rows(section.RightColumn));

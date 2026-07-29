@@ -125,10 +125,11 @@ namespace SWLOR.Toolset.Domain.Render
 
             var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var current = model;
+            var bindPose = BindPose(model);
 
             for (var depth = 0; current != null && depth < maxDepth; depth++)
             {
-                var posed = Sample(FindIdle(current), seconds);
+                var posed = Sample(FindIdle(current), seconds, bindPose);
                 if (posed.Count > 0)
                     return depth == 0
                         ? posed
@@ -162,14 +163,15 @@ namespace SWLOR.Toolset.Domain.Render
         public static IReadOnlyList<AnimationFrame> SampleFrames(
             MdlAnimation? animation,
             int framesPerSecond = 20,
-            int maxFrames = 60)
+            int maxFrames = 60,
+            IReadOnlyDictionary<string, MdlNode>? bindPose = null)
         {
             if (animation == null)
                 return Array.Empty<AnimationFrame>();
 
             var length = animation.Length;
             if (length <= 0f || framesPerSecond <= 0)
-                return new[] { new AnimationFrame(Sample(animation, 0f), 0f) };
+                return new[] { new AnimationFrame(Sample(animation, 0f, bindPose), 0f) };
 
             var count = Math.Clamp(
                 (int)MathF.Ceiling(length * framesPerSecond) + 1,
@@ -180,7 +182,7 @@ namespace SWLOR.Toolset.Domain.Render
             for (var i = 0; i < count; i++)
             {
                 var seconds = length * i / (count - 1);
-                frames.Add(new AnimationFrame(Sample(animation, seconds), seconds));
+                frames.Add(new AnimationFrame(Sample(animation, seconds, bindPose), seconds));
             }
 
             return frames;
@@ -216,7 +218,7 @@ namespace SWLOR.Toolset.Domain.Render
             var inheritedScale = ReferenceEquals(owner, model)
                 ? 1f
                 : AnimationScale(model);
-            return SampleFrames(animation, framesPerSecond, maxFrames)
+            return SampleFrames(animation, framesPerSecond, maxFrames, BindPose(model))
                 .Select(frame => new IdleFrame(
                     ScaleTranslations(frame.Pose, inheritedScale),
                     frame.Seconds))
@@ -254,46 +256,83 @@ namespace SWLOR.Toolset.Domain.Render
         /// Every animated node's local transform at <paramref name="seconds"/>, keyed by node name.
         /// Nodes the animation does not touch are absent, and the caller keeps their static values.
         /// </summary>
-        public static IReadOnlyDictionary<string, PosedNode> Sample(MdlAnimation? animation, float seconds)
+        public static IReadOnlyDictionary<string, PosedNode> Sample(
+            MdlAnimation? animation,
+            float seconds,
+            IReadOnlyDictionary<string, MdlNode>? bindPose = null)
         {
             var posed = new Dictionary<string, PosedNode>(StringComparer.OrdinalIgnoreCase);
             if (animation?.GeometryRoot == null)
                 return posed;
 
-            Walk(animation.GeometryRoot, seconds, posed);
+            Walk(animation.GeometryRoot, seconds, posed, bindPose);
             return posed;
         }
 
-        private static void Walk(MdlNode node, float seconds, Dictionary<string, PosedNode> posed)
+        /// <summary>
+        /// Every geometry node of a model by name - the bind pose an animation samples against.
+        /// </summary>
+        /// <remarks>
+        /// Needed because an animation's nodes are stubs: they carry the tracks they animate and
+        /// nothing else, so an untracked channel read off the stub is a zero, not a value. Sampling
+        /// <c>a_ba</c>'s pause1 against nothing gave every bone position &lt;0,0,0&gt; and folded the
+        /// whole skeleton onto the origin - a body rendered as one blob at its own navel.
+        /// </remarks>
+        public static IReadOnlyDictionary<string, MdlNode> BindPose(MdlModel? model)
+        {
+            var bind = new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase);
+            Collect(model?.GeometryRoot, bind);
+            return bind;
+
+            static void Collect(MdlNode? node, Dictionary<string, MdlNode> into)
+            {
+                if (node == null)
+                    return;
+                if (!string.IsNullOrEmpty(node.Name))
+                    into.TryAdd(node.Name, node);
+                foreach (var child in node.Children)
+                    Collect(child, into);
+            }
+        }
+
+        private static void Walk(
+            MdlNode node,
+            float seconds,
+            Dictionary<string, PosedNode> posed,
+            IReadOnlyDictionary<string, MdlNode>? bindPose)
         {
             var animated =
                 node.PositionTimes.Length > 0 || node.OrientationTimes.Length > 0 || node.ScaleTimes.Length > 0;
 
             if (animated && !string.IsNullOrEmpty(node.Name))
             {
+                // An animation node is a stub carrying only the tracks it animates - its own
+                // Position/Orientation are almost always zero and identity. The value for an
+                // untracked channel is the SKELETON's authored bind pose, not the stub's blank.
+                var bind = bindPose != null && bindPose.TryGetValue(node.Name, out var bound) ? bound : node;
                 posed[node.Name] = new PosedNode(
-                    SamplePosition(node, seconds),
-                    SampleOrientation(node, seconds),
-                    SampleScale(node, seconds));
+                    SamplePosition(node, seconds, bind),
+                    SampleOrientation(node, seconds, bind),
+                    SampleScale(node, seconds, bind));
             }
 
             foreach (var child in node.Children)
-                Walk(child, seconds, posed);
+                Walk(child, seconds, posed, bindPose);
         }
 
-        private static Vector3 SamplePosition(MdlNode node, float seconds)
+        private static Vector3 SamplePosition(MdlNode node, float seconds, MdlNode bind)
         {
             if (node.PositionTimes.Length == 0 || node.PositionValues.Length == 0)
-                return node.Position;
+                return bind.Position;
 
             var (before, after, blend) = Bracket(node.PositionTimes, seconds, node.PositionValues.Length);
             return Vector3.Lerp(node.PositionValues[before], node.PositionValues[after], blend);
         }
 
-        private static Quaternion SampleOrientation(MdlNode node, float seconds)
+        private static Quaternion SampleOrientation(MdlNode node, float seconds, MdlNode bind)
         {
             if (node.OrientationTimes.Length == 0 || node.OrientationValues.Length == 0)
-                return node.Orientation;
+                return bind.Orientation;
 
             var (before, after, blend) = Bracket(node.OrientationTimes, seconds, node.OrientationValues.Length);
 
@@ -302,10 +341,10 @@ namespace SWLOR.Toolset.Domain.Render
             return Quaternion.Slerp(node.OrientationValues[before], node.OrientationValues[after], blend);
         }
 
-        private static float SampleScale(MdlNode node, float seconds)
+        private static float SampleScale(MdlNode node, float seconds, MdlNode bind)
         {
             if (node.ScaleTimes.Length == 0 || node.ScaleValues.Length == 0)
-                return node.Scale;
+                return bind.Scale;
 
             var (before, after, blend) = Bracket(node.ScaleTimes, seconds, node.ScaleValues.Length);
             return node.ScaleValues[before] + (node.ScaleValues[after] - node.ScaleValues[before]) * blend;

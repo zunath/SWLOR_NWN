@@ -46,8 +46,9 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             },
             new BehaviorFieldDefinition
             {
+                // A stack of nothing is not a thing - new items are created holding one.
                 Label = "Stack Size", Name = "StackSize", Kind = BehaviorFieldKind.Integer,
-                FieldType = GffFieldType.Word
+                FieldType = GffFieldType.Word, Minimum = 1
             },
             new BehaviorFieldDefinition
             {
@@ -75,11 +76,6 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             {
                 Label = "Description", Name = "DescIdentified", Kind = BehaviorFieldKind.Paragraph,
                 FieldType = GffFieldType.CExoLocString
-            },
-            new BehaviorFieldDefinition
-            {
-                Label = "Comment", Name = "Comment", Kind = BehaviorFieldKind.Paragraph,
-                FieldType = GffFieldType.CExoString
             },
             new BehaviorFieldDefinition
             {

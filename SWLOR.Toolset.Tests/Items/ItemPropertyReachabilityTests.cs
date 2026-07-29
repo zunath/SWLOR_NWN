@@ -53,7 +53,12 @@ namespace SWLOR.Toolset.Tests.Items
         /// Preserve-only properties no family edits: dangling legacy data the editor keeps but never
         /// offers. Mirrors <see cref="ItemCombinationAuditTests"/>'s own allowlist.
         /// </summary>
-        private static readonly HashSet<int> PreserveOnlyProperties = new() { 20, 37, 51, 103, 146, 148 };
+        /// <remarks>
+        /// UnlimitedAmmo (61) joined them by decision rather than by decay: every ranged weapon in
+        /// this game has unlimited ammunition, so the property decides nothing. Stored values stay
+        /// on disk; the editor just does not ask a question with one answer.
+        /// </remarks>
+        private static readonly HashSet<int> PreserveOnlyProperties = new() { 20, 37, 51, 61, 103, 146, 148 };
 
         private const int CastSpellPropertyId = 15;
 
@@ -133,6 +138,7 @@ namespace SWLOR.Toolset.Tests.Items
             new Dictionary<string, string>
             {
                 ["__data_type"] = "the GFF file-type marker",
+                ["Comment"] = "a builder's note to itself; dropped from the layout by owner decision",
                 ["Description"] = "the unidentified description - dead data, see the note below",
                 ["Identified"] = "every blueprint ships identified; the flag is set on creation",
                 ["PropertiesList"] = "the Stats and Requirements tabs, checked by the sweep above",

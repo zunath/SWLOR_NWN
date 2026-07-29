@@ -101,6 +101,28 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ModuleAssetsAreEnumeratedInBoundedProgressiveBatches()
+        {
+            var sourceDirectory = Path.Combine(_firstModule, "nss");
+            for (var index = 0; index < 10; index++)
+            {
+                File.WriteAllText(
+                    Path.Combine(sourceDirectory, $"batch_{index:00}.nss"),
+                    "void main() {}\n");
+            }
+
+            var batches = new List<IReadOnlyList<ModuleArchiveAsset>>();
+            await foreach (var batch in _service.EnumerateModuleAssetBatchesAsync(batchSize: 3))
+                batches.Add(batch);
+
+            batches.Select(batch => batch.Count).Should().Equal(3, 3, 3, 1);
+            batches.SelectMany(batch => batch)
+                .Select(asset => asset.FileName)
+                .Should()
+                .BeEquivalentTo(Enumerable.Range(0, 10).Select(index => $"batch_{index:00}.nss"));
+        }
+
+        [Test]
         public async Task OpeningAnArchiveDoesNotWriteIntoModule()
         {
             File.WriteAllText(Path.Combine(_firstModule, "nss", "only.nss"), "void main() {}\n");

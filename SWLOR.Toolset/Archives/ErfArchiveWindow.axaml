@@ -158,6 +158,17 @@
               <TextBlock FontSize="16" FontWeight="SemiBold" Text="On-disk snapshot ready" />
               <TextBlock TextWrapping="Wrap"
                          Text="All open documents were saved before ERF Archives opened. The exporter will read those files from Module and will not serialize live editor buffers." />
+              <Border IsVisible="{Binding IsBusy}"
+                      Background="{DynamicResource PanelBrush}"
+                      BorderBrush="{DynamicResource RuleBrush}"
+                      BorderThickness="1"
+                      CornerRadius="3"
+                      Padding="12">
+                <StackPanel Spacing="8">
+                  <ProgressBar IsIndeterminate="True" />
+                  <TextBlock Classes="dim" Text="{Binding StatusText}" />
+                </StackPanel>
+              </Border>
               <Border Background="{DynamicResource PanelBrush}"
                       BorderBrush="{DynamicResource RuleBrush}"
                       BorderThickness="1"

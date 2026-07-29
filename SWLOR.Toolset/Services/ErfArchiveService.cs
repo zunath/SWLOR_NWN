@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using SWLOR.Toolset.Domain.Gff;
@@ -230,44 +231,43 @@ namespace SWLOR.Toolset.Services
         public IReadOnlyList<ModuleArchiveAsset> EnumerateModuleAssets()
         {
             var workspace = RequireWorkspace();
-            var assets = new List<ModuleArchiveAsset>();
-
-            foreach (var extension in GffExtensions.Concat(PlainExtensions))
-            {
-                var directory = Path.Combine(workspace.ModuleRoot, extension);
-                if (!Directory.Exists(directory))
-                    continue;
-
-                var pattern = GffExtensions.Contains(extension)
-                    ? $"*.{extension}.json"
-                    : $"*.{extension}";
-                foreach (var path in Directory.EnumerateFiles(directory, pattern, SearchOption.TopDirectoryOnly))
-                {
-                    var fileName = Path.GetFileName(path);
-                    var suffix = GffExtensions.Contains(extension)
-                        ? $".{extension}.json"
-                        : $".{extension}";
-                    if (!fileName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    var resRef = fileName[..^suffix.Length];
-                    if (!IsValidResRef(resRef))
-                        continue;
-
-                    assets.Add(new ModuleArchiveAsset(
-                        $"{resRef}.{extension}",
-                        resRef,
-                        extension,
-                        path,
-                        new FileInfo(path).Length,
-                        DisplayType(extension)));
-                }
-            }
-
-            return assets
+            return EnumerateModuleAssetsCore(workspace.ModuleRoot, CancellationToken.None)
                 .OrderBy(asset => asset.TypeName, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(asset => asset.ResRef, StringComparer.OrdinalIgnoreCase)
                 .ToList();
+        }
+
+        public async IAsyncEnumerable<IReadOnlyList<ModuleArchiveAsset>> EnumerateModuleAssetBatchesAsync(
+            int batchSize = 64,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            if (batchSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(batchSize), "Batch size must be positive.");
+
+            var workspace = RequireWorkspace();
+            using var enumerator = EnumerateModuleAssetsCore(
+                    workspace.ModuleRoot,
+                    cancellationToken)
+                .GetEnumerator();
+
+            while (true)
+            {
+                var batch = await Task.Run(
+                        () =>
+                        {
+                            var discovered = new List<ModuleArchiveAsset>(batchSize);
+                            while (discovered.Count < batchSize && enumerator.MoveNext())
+                                discovered.Add(enumerator.Current);
+                            return discovered;
+                        },
+                        cancellationToken)
+                    .ConfigureAwait(false);
+
+                if (batch.Count == 0)
+                    yield break;
+
+                yield return batch;
+            }
         }
 
         public async Task<IReadOnlyList<ErfDependency>> FindImportDependenciesAsync(
@@ -808,6 +808,50 @@ namespace SWLOR.Toolset.Services
                 .Select(match => match.Groups["resref"].Value)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
+        }
+
+        private static IEnumerable<ModuleArchiveAsset> EnumerateModuleAssetsCore(
+            string moduleRoot,
+            CancellationToken cancellationToken)
+        {
+            var extensions = GffExtensions
+                .Concat(PlainExtensions)
+                .OrderBy(DisplayType, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(extension => extension, StringComparer.OrdinalIgnoreCase);
+
+            foreach (var extension in extensions)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var directory = Path.Combine(moduleRoot, extension);
+                if (!Directory.Exists(directory))
+                    continue;
+
+                var isGff = GffExtensions.Contains(extension);
+                var suffix = isGff ? $".{extension}.json" : $".{extension}";
+                var pattern = isGff ? $"*.{extension}.json" : $"*.{extension}";
+                foreach (var path in Directory.EnumerateFiles(
+                             directory,
+                             pattern,
+                             SearchOption.TopDirectoryOnly))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var fileName = Path.GetFileName(path);
+                    if (!fileName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    var resRef = fileName[..^suffix.Length];
+                    if (!IsValidResRef(resRef))
+                        continue;
+
+                    yield return new ModuleArchiveAsset(
+                        $"{resRef}.{extension}",
+                        resRef,
+                        extension,
+                        path,
+                        new FileInfo(path).Length,
+                        DisplayType(extension));
+                }
+            }
         }
 
         private static Dictionary<string, string> ValidateImportPlan(

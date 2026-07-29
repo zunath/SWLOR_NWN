@@ -193,6 +193,7 @@ namespace SWLOR.Toolset.Archives
         private readonly ErfArchiveService _service;
         private readonly ToolsetSettings _settings;
         private ErfArchiveSession? _session;
+        private CancellationTokenSource? _exportLoadCts;
         private bool _disposed;
         private bool _synchronizingAreaRename;
 
@@ -422,15 +423,49 @@ namespace SWLOR.Toolset.Archives
         }
 
         [RelayCommand]
-        private void StartExport()
+        private async Task StartExport()
         {
             if (IsBusy || IsExport)
                 return;
+
             Mode = ErfArchiveMode.Export;
             CurrentStep = 0;
             IsComplete = false;
-            SetRows(_service.EnumerateModuleAssets().Select(asset => new ErfAssetRow(asset)));
-            StatusText = $"Saved snapshot ready: {Assets.Count} module resource(s) available.";
+            ResetRows();
+
+            var cancellation = new CancellationTokenSource();
+            _exportLoadCts = cancellation;
+            IsBusy = true;
+            StatusText = "Finding module resources...";
+            try
+            {
+                await foreach (var batch in _service.EnumerateModuleAssetBatchesAsync(
+                                   cancellationToken: cancellation.Token))
+                {
+                    AppendRows(batch.Select(asset => new ErfAssetRow(asset)));
+                    StatusText = $"Loading module resources... {Assets.Count:N0} found.";
+                }
+
+                StatusText =
+                    $"Saved snapshot ready: {Assets.Count:N0} module resource(s) available.";
+            }
+            catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+            {
+                if (!_disposed)
+                    StatusText = "Module resource loading was canceled.";
+            }
+            catch (Exception ex)
+            {
+                StatusText =
+                    $"Could not load module resources: {ex.GetBaseException().Message}";
+            }
+            finally
+            {
+                if (ReferenceEquals(_exportLoadCts, cancellation))
+                    _exportLoadCts = null;
+                cancellation.Dispose();
+                IsBusy = false;
+            }
         }
 
         [RelayCommand(CanExecute = nameof(CanGoBack))]
@@ -656,12 +691,26 @@ namespace SWLOR.Toolset.Archives
 
         private void SetRows(IEnumerable<ErfAssetRow> rows)
         {
+            ResetRows();
+            AppendRows(rows);
+        }
+
+        private void ResetRows()
+        {
             foreach (var row in Assets)
                 row.PropertyChanged -= OnRowPropertyChanged;
             Assets.Clear();
             TypeFilters.Clear();
             TypeFilters.Add("All types");
 
+            SelectedTypeFilter = "All types";
+            SelectedStatusFilter = "All statuses";
+            SearchText = string.Empty;
+            OnPropertyChanged(nameof(FilteredAssets));
+        }
+
+        private void AppendRows(IEnumerable<ErfAssetRow> rows)
+        {
             foreach (var row in rows)
             {
                 row.PropertyChanged += OnRowPropertyChanged;
@@ -670,9 +719,6 @@ namespace SWLOR.Toolset.Archives
                     TypeFilters.Add(row.TypeName);
             }
 
-            SelectedTypeFilter = "All types";
-            SelectedStatusFilter = "All statuses";
-            SearchText = string.Empty;
             OnPropertyChanged(nameof(FilteredAssets));
         }
 
@@ -763,6 +809,7 @@ namespace SWLOR.Toolset.Archives
             if (_disposed)
                 return;
             _disposed = true;
+            _exportLoadCts?.Cancel();
             _session?.Dispose();
             _session = null;
         }

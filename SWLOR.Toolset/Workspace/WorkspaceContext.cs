@@ -43,6 +43,9 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public void Open(string moduleRoot)
         {
+            foreach (var recovered in Services.ErfArchiveService.RecoverInterruptedImports(moduleRoot))
+                _log.AppendLine($"Recovered '{recovered}' from an interrupted ERF import.");
+
             // Before anything reads the folder. A grouped save that was interrupted between moving
             // an original aside and installing its replacement leaves the canonical ARE, GIT, or
             // GIC missing and its only copy sitting beside it under a .save-backup name; opening

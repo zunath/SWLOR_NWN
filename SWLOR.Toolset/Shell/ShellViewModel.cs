@@ -3,6 +3,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Controls;
+using SWLOR.Toolset.Archives;
 using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
@@ -51,7 +52,11 @@ namespace SWLOR.Toolset.Shell
         [ObservableProperty]
         private bool _isBuildingScripts;
 
-        public bool IsModuleMutationLocked => IsPacking || IsValidationRunning || IsBuildingScripts;
+        [ObservableProperty]
+        private bool _isManagingErfArchives;
+
+        public bool IsModuleMutationLocked =>
+            IsPacking || IsValidationRunning || IsBuildingScripts || IsManagingErfArchives;
 
         /// <summary>
         /// The shared answer to <see cref="IsModuleMutationLocked"/>, published for the panels and
@@ -83,6 +88,7 @@ namespace SWLOR.Toolset.Shell
         private readonly ScriptReferenceViewModel? _scriptReference;
         private readonly ProblemsViewModel? _problems;
         private readonly AreaContentsViewModel? _areaContents;
+        private readonly ErfArchiveService? _erfArchiveService;
 
         /// <summary>Guards against a second rescan starting while one is already reopening the catalog.</summary>
         private bool _isRescanningAfterWatcherOverflow;
@@ -108,9 +114,11 @@ namespace SWLOR.Toolset.Shell
             ProblemsViewModel? problems = null,
             AreaContentsViewModel? areaContents = null,
             StartupNotice? startupNotice = null,
-            ModuleMutationLock? mutationLock = null)
+            ModuleMutationLock? mutationLock = null,
+            ErfArchiveService? erfArchiveService = null)
         {
             _areaContents = areaContents;
+            _erfArchiveService = erfArchiveService;
             _mutationLock = mutationLock ?? new ModuleMutationLock();
 
             // Every module write is checked against this, wherever it comes from. The eight editor
@@ -327,6 +335,45 @@ namespace SWLOR.Toolset.Shell
 
         [RelayCommand]
         private void FocusValidation() => _factory.Focus(_validation);
+
+        /// <summary>
+        /// Saves every open document before entering the modal archive workflow. That makes export's
+        /// "saved snapshot" literal, and prevents an import from replacing a file while an older
+        /// unsaved generation remains open in an editor tab.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanMutateModule))]
+        private async Task ErfArchives()
+        {
+            if (_erfArchiveService == null || _workspaceContext.Workspace == null)
+            {
+                StatusText = "ERF Archives needs an open module.";
+                return;
+            }
+
+            if (ScriptCompileService.AnyCompilationActive)
+            {
+                StatusText = "ERF Archives will be available after the active script compile finishes.";
+                return;
+            }
+
+            if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
+            {
+                StatusText = "ERF Archives cancelled: an open editor could not be saved.";
+                return;
+            }
+
+            StatusText = "Opening ERF Archives from a saved module snapshot...";
+            IsManagingErfArchives = true;
+            try
+            {
+                await ErfArchiveWindow.ShowAsync(_erfArchiveService, _settings).ConfigureAwait(true);
+                StatusText = "ERF Archives closed.";
+            }
+            finally
+            {
+                IsManagingErfArchives = false;
+            }
+        }
 
         // ----- scripts -----
 
@@ -634,6 +681,11 @@ namespace SWLOR.Toolset.Shell
             NotifyMutationStateChanged();
         }
 
+        partial void OnIsManagingErfArchivesChanged(bool value)
+        {
+            NotifyMutationStateChanged();
+        }
+
         private void NotifyMutationStateChanged()
         {
             OnPropertyChanged(nameof(IsModuleMutationLocked));
@@ -642,6 +694,7 @@ namespace SWLOR.Toolset.Shell
             // The palette, explorer, validation panel and script tabs all subscribe to it.
             _mutationLock.Set(IsModuleMutationLocked);
             SaveAllCommand.NotifyCanExecuteChanged();
+            ErfArchivesCommand.NotifyCanExecuteChanged();
             PackModuleCommand.NotifyCanExecuteChanged();
             BuildAllScriptsCommand.NotifyCanExecuteChanged();
             NotifyActiveEditorCommandsChanged();

@@ -268,6 +268,7 @@ namespace SWLOR.Toolset
 
             services.AddSingleton<Services.SaveService>();
             services.AddSingleton<Services.PackService>();
+            services.AddSingleton<Services.ErfArchiveService>();
             services.AddSingleton<PropertiesViewModel>();
             services.AddSingleton(sp => new ModuleExplorerViewModel(
                 sp.GetRequiredService<WorkspaceContext>(),

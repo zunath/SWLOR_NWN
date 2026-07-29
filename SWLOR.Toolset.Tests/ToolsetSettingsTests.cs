@@ -55,6 +55,20 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void RecentErfArchivesSurviveARestartAndMoveBackToTheFront()
+        {
+            var settings = ToolsetSettings.Load(_file);
+            var first = Path.Combine(_directory, "first.erf");
+            var second = Path.Combine(_directory, "second.erf");
+
+            settings.AddRecentErfArchive(first);
+            settings.AddRecentErfArchive(second);
+            settings.AddRecentErfArchive(first);
+
+            Reload().RecentErfArchives.Should().Equal(first, second);
+        }
+
+        [Test]
         public void FailedSettingsReplacementPreservesTheLastValidFile()
         {
             var settings = ToolsetSettings.Load(_file);

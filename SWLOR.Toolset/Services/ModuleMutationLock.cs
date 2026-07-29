@@ -2,7 +2,8 @@ namespace SWLOR.Toolset.Services
 {
     /// <summary>
     /// Whether a module-wide operation that reads or rewrites the whole module - packing, validation,
-    /// Build All Scripts - is in flight, and a notification for when that changes.
+    /// Build All Scripts, or the modal ERF archive workflow - is in flight, and a notification for
+    /// when that changes.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -104,8 +105,8 @@ namespace SWLOR.Toolset.Services
         }
     }
 
-    /// <summary>Raised when a write is attempted while the module is being packed, validated or built.</summary>
+    /// <summary>Raised when a write is attempted while a module-wide operation owns the module.</summary>
     public sealed class ModuleLockedException()
         : InvalidOperationException(
-            "The module is being packed, validated, or built. Try again when that finishes.");
+            "A module-wide operation is running. Try again when it finishes.");
 }

@@ -44,6 +44,8 @@
         <MenuItem Header="_Pack Module" Command="{Binding PackModuleCommand}" />
       </MenuItem>
       <MenuItem Header="_Tools">
+        <MenuItem Header="ERF _Archives..." Command="{Binding ErfArchivesCommand}" />
+        <Separator />
         <MenuItem Header="Run Validation" Command="{Binding FocusValidationCommand}" />
         <Separator />
         <MenuItem Header="Build _Preview Cache" Command="{Binding BuildPreviewCacheCommand}" />

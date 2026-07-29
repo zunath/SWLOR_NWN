@@ -18,6 +18,9 @@ namespace SWLOR.Toolset.Settings
         [JsonPropertyName("recentModules")]
         public List<string> RecentModules { get; set; } = new();
 
+        [JsonPropertyName("recentErfArchives")]
+        public List<string> RecentErfArchives { get; set; } = new();
+
         [JsonPropertyName("windowWidth")]
         public double WindowWidth { get; set; }
 
@@ -92,6 +95,7 @@ namespace SWLOR.Toolset.Settings
         private string _moduleRoot = string.Empty;
         private string _nwnInstallOverride = string.Empty;
         private List<string> _recentModules = new();
+        private List<string> _recentErfArchives = new();
         private WindowPlacement _window = WindowPlacement.Unset;
         private double _palettePreviewSize;
         private string _paletteSelection = string.Empty;
@@ -408,6 +412,32 @@ namespace SWLOR.Toolset.Settings
             Save();
         }
 
+        /// <summary>Most-recently-opened ERF archives, most recent first.</summary>
+        public IReadOnlyList<string> RecentErfArchives => _recentErfArchives;
+
+        /// <summary>
+        /// Records an ERF source after it has been scanned successfully. A cancelled or invalid file
+        /// never enters the recent list, so every item remains a useful one-click choice.
+        /// </summary>
+        public void AddRecentErfArchive(string archivePath)
+        {
+            if (string.IsNullOrWhiteSpace(archivePath))
+                return;
+
+            _recentErfArchives.RemoveAll(path =>
+                string.Equals(path, archivePath, StringComparison.OrdinalIgnoreCase));
+            _recentErfArchives.Insert(0, archivePath);
+
+            if (_recentErfArchives.Count > MaxRecentModules)
+            {
+                _recentErfArchives.RemoveRange(
+                    MaxRecentModules,
+                    _recentErfArchives.Count - MaxRecentModules);
+            }
+
+            Save();
+        }
+
         /// <summary>
         /// Loads settings from <see cref="SettingsFilePath"/>, or returns defaults (with
         /// <see cref="ModuleRoot"/> auto-detected) if no settings file exists yet or it fails to
@@ -434,6 +464,7 @@ namespace SWLOR.Toolset.Settings
                         settings._moduleRoot = data.ModuleRoot ?? string.Empty;
                         settings._nwnInstallOverride = data.NwnInstallOverride ?? string.Empty;
                         settings._recentModules = data.RecentModules ?? new List<string>();
+                        settings._recentErfArchives = data.RecentErfArchives ?? new List<string>();
                         settings._window = new WindowPlacement(
                             data.WindowWidth, data.WindowHeight,
                             data.WindowLeft ?? double.NaN, data.WindowTop ?? double.NaN,
@@ -525,6 +556,7 @@ namespace SWLOR.Toolset.Settings
                     ModuleRoot = _moduleRoot,
                     NwnInstallOverride = _nwnInstallOverride,
                     RecentModules = _recentModules,
+                    RecentErfArchives = _recentErfArchives,
                     // Every double on the way out is filtered: System.Text.Json throws on NaN and
                     // infinity, Save() swallows that, and one bad number would take every other setting
                     // in the file down with it silently.

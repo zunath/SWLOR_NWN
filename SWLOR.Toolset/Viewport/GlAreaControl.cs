@@ -5,6 +5,7 @@ using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Avalonia.Threading;
 using Silk.NET.OpenGL;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 
@@ -161,7 +162,10 @@ uniform sampler2D normalTexture;
 uniform sampler2D specularTexture;
 uniform sampler2D roughnessTexture;
 uniform sampler2D environmentTexture;
+uniform sampler2D tintMapTexture;
+uniform sampler2D tintPaletteTexture;
 uniform bool hasTexture;
+uniform bool hasTintMap;
 uniform bool hasNormalMap;
 uniform bool hasSpecularMap;
 uniform bool hasRoughnessMap;
@@ -178,6 +182,26 @@ uniform vec3 fogColor;
 uniform float fogDensity;
 uniform vec3 cameraPos;
 uniform mat4 view;
+uniform vec4 tintColor0;
+uniform vec4 tintColor1;
+uniform vec4 tintColor2;
+uniform vec4 tintColor3;
+uniform vec4 tintColor4;
+uniform vec4 tintColor5;
+uniform vec4 tintColor6;
+uniform vec4 tintColor7;
+uniform vec4 tintColor8;
+uniform vec4 tintColor9;
+uniform float tintPaletteRow0;
+uniform float tintPaletteRow1;
+uniform float tintPaletteRow2;
+uniform float tintPaletteRow3;
+uniform float tintPaletteRow4;
+uniform float tintPaletteRow5;
+uniform float tintPaletteRow6;
+uniform float tintPaletteRow7;
+uniform float tintPaletteRow8;
+uniform float tintPaletteRow9;
 
 // Blinn-Phong exponent for a specular-mapped highlight when the material carries no
 // roughness map. One shared value rather than a material parameter: MTR files carry no
@@ -231,9 +255,39 @@ vec3 SampleEnvironmentMap(vec3 worldNormal)
     return texture(environmentTexture, sphereUv).rgb;
 }
 
+vec4 ResolveTintMapColor()
+{
+    vec2 size = vec2(textureSize(tintMapTexture, 0));
+    vec2 wrappedUv = fract(TexCoord);
+    vec2 nearestUv = (floor(wrappedUv * size) + vec2(0.5)) / max(size, vec2(1.0));
+    float shade = textureLod(tintMapTexture, wrappedUv, 0.0).r;
+    float encodedLayer = textureLod(tintMapTexture, nearestUv, 0.0).g;
+    float layer = floor(clamp(encodedLayer, 0.0, 0.9999) * 10.0);
+
+    vec4 custom = tintColor0;
+    float paletteRow = tintPaletteRow0;
+    if      (layer > 8.5) { custom = tintColor9; paletteRow = tintPaletteRow9; }
+    else if (layer > 7.5) { custom = tintColor8; paletteRow = tintPaletteRow8; }
+    else if (layer > 6.5) { custom = tintColor7; paletteRow = tintPaletteRow7; }
+    else if (layer > 5.5) { custom = tintColor6; paletteRow = tintPaletteRow6; }
+    else if (layer > 4.5) { custom = tintColor5; paletteRow = tintPaletteRow5; }
+    else if (layer > 3.5) { custom = tintColor4; paletteRow = tintPaletteRow4; }
+    else if (layer > 2.5) { custom = tintColor3; paletteRow = tintPaletteRow3; }
+    else if (layer > 1.5) { custom = tintColor2; paletteRow = tintPaletteRow2; }
+    else if (layer > 0.5) { custom = tintColor1; paletteRow = tintPaletteRow1; }
+
+    if (custom.a > 0.5)
+        return vec4(custom.rgb * shade, 1.0);
+
+    float paletteU = (shade * 255.0 + 0.5) / 256.0;
+    return textureLod(tintPaletteTexture, vec2(paletteU, paletteRow), 0.0);
+}
+
 void main()
 {
-    vec4 texColor = hasTexture ? texture(diffuseTexture, TexCoord) : vec4(flatColor, 1.0);
+    vec4 texColor = hasTintMap
+        ? ResolveTintMapColor()
+        : hasTexture ? texture(diffuseTexture, TexCoord) : vec4(flatColor, 1.0);
 
     if (alphaCutoff > 0.0 && texColor.a < alphaCutoff)
         discard;
@@ -364,7 +418,9 @@ void main()
             uint NormalTexId,
             uint SpecularTexId,
             uint RoughnessTexId,
-            uint EnvironmentTexId);
+            uint EnvironmentTexId,
+            uint TintMapTexId,
+            uint TintPaletteTexId);
 
         private readonly record struct UploadedDiffuse(
             uint TexId,
@@ -2626,6 +2682,14 @@ void main()
                 gl.Uniform3(location, value.X, value.Y, value.Z);
         }
 
+        private void SetUniformVec4(string name, Vector4 value)
+        {
+            var location = GetUniformLocationCached(name);
+            var gl = _gl;
+            if (location >= 0 && gl != null)
+                gl.Uniform4(location, value.X, value.Y, value.Z, value.W);
+        }
+
         private void SetUniformVec2(string name, Vector2 value)
         {
             var location = GetUniformLocationCached(name);
@@ -2734,6 +2798,9 @@ void main()
             SetUniformInt("specularTexture", 2);
             SetUniformInt("roughnessTexture", 3);
             SetUniformInt("environmentTexture", 4);
+            SetUniformInt("tintMapTexture", 5);
+            SetUniformInt("tintPaletteTexture", 6);
+            SetUniformBool("hasTintMap", false);
             SetUniformBool("hasNormalMap", false);
             SetUniformBool("hasSpecularMap", false);
             SetUniformBool("hasRoughnessMap", false);
@@ -2981,7 +3048,10 @@ void main()
                     SetUniformMatrix4(
                         "model",
                         PreviewMeshTransform(meshRange, buffer, preview, idleElapsed) * instanceTransform);
-                    BindMeshTexture(meshRange.TextureName);
+                    BindMeshTexture(
+                        meshRange.TextureName,
+                        instance.LayerColorIndices,
+                        instance.TintMapOverrides);
 
                     unsafe
                     {
@@ -4423,7 +4493,10 @@ void main()
                 ",", colors.OrderBy(pair => pair.Key).Select(pair => $"{pair.Key}:{pair.Value}"));
         }
 
-        private void BindMeshTexture(string? textureName)
+        private void BindMeshTexture(
+            string? textureName,
+            IReadOnlyDictionary<int, int>? layerColorIndices = null,
+            IReadOnlyDictionary<string, int>? tintMapOverrides = null)
         {
             var material = string.IsNullOrWhiteSpace(textureName)
                 ? default
@@ -4434,6 +4507,10 @@ void main()
             if (material.TexId != 0)
             {
                 SetUniformBool("hasTexture", true);
+                var activeLayerColors = layerColorIndices is { Count: > 0 }
+                    ? layerColorIndices
+                    : _layerColors;
+                BindTintMapState(textureName!, material, activeLayerColors, tintMapOverrides);
                 SetUniformFloat("alphaCutoff", material.AlphaCutoff);
 
                 // The display toggle gates the flags rather than the caches, so flipping it is
@@ -4460,6 +4537,7 @@ void main()
             else
             {
                 SetUniformBool("hasTexture", false);
+                SetUniformBool("hasTintMap", false);
                 SetUniformBool("hasNormalMap", false);
                 SetUniformBool("hasSpecularMap", false);
                 SetUniformBool("hasRoughnessMap", false);
@@ -4478,12 +4556,15 @@ void main()
                 return memo;
 
             MaterialMaps maps;
+            MtrMaterial? parsedMaterial;
             try
             {
+                parsedMaterial = MaterialResolver.TryParseMaterial(ResourceIndex, rawTextureName);
                 maps = MaterialResolver.ResolveMaterialMaps(ResourceIndex, rawTextureName);
             }
             catch (Exception)
             {
+                parsedMaterial = null;
                 maps = new MaterialMaps { Diffuse = rawTextureName };
             }
 
@@ -4499,17 +4580,88 @@ void main()
             // A mesh whose diffuse failed to resolve draws flat-colored; loading its maps
             // anyway would waste GPU memory on textures the shader never samples.
             var material = cached.TexId == 0
-                ? new MeshMaterial(0, 0f, 0, 0, 0, 0)
+                ? new MeshMaterial(0, 0f, 0, 0, 0, 0, 0, 0)
                 : new MeshMaterial(
                     cached.TexId,
                     cached.AlphaCutoff,
                     ResolveMapTexture(maps.Normal),
                     ResolveMapTexture(maps.Specular),
                     ResolveMapTexture(maps.Roughness),
-                    ResolveMapTexture(cached.EnvironmentMapTexture));
+                    ResolveMapTexture(cached.EnvironmentMapTexture),
+                    IsTintMapMaterial(parsedMaterial)
+                        ? ResolveMapTexture(parsedMaterial!.GetTexture(7))
+                        : 0,
+                    IsTintMapMaterial(parsedMaterial)
+                        ? ResolveMapTexture(parsedMaterial!.GetTexture(10))
+                        : 0);
 
             _rawTextureCache[rawTextureName + _layerColorKey] = material;
             return material;
+        }
+
+        private static bool IsTintMapMaterial(MtrMaterial? material)
+        {
+            return material != null &&
+                   material.CustomShaders.Values.Any(shader =>
+                       shader.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private void BindTintMapState(
+            string materialName,
+            MeshMaterial material,
+            IReadOnlyDictionary<int, int>? layerColorIndices,
+            IReadOnlyDictionary<string, int>? tintMapOverrides)
+        {
+            var hasTintMap = material.TintMapTexId != 0 && material.TintPaletteTexId != 0;
+            SetUniformBool("hasTintMap", hasTintMap);
+            if (!hasTintMap)
+                return;
+
+            _gl!.ActiveTexture(TextureUnit.Texture5);
+            _gl.BindTexture(TextureTarget.Texture2D, material.TintMapTexId);
+            _gl.ActiveTexture(TextureUnit.Texture6);
+            _gl.BindTexture(TextureTarget.Texture2D, material.TintPaletteTexId);
+            _gl.ActiveTexture(TextureUnit.Texture0);
+
+            for (var layerValue = 0; layerValue < 10; layerValue++)
+            {
+                var layer = (TintMapLayerType)layerValue;
+                var variableName = TintMapVariable.GetName(materialName, layer);
+                var savedValue = tintMapOverrides != null &&
+                                 tintMapOverrides.TryGetValue(variableName, out var saved)
+                    ? saved
+                    : 0;
+
+                if (TintMapColor.TryFromStoredValue(savedValue, out var custom))
+                {
+                    SetUniformVec4(
+                        $"tintColor{layerValue}",
+                        new Vector4(
+                            custom.Red / 255f,
+                            custom.Green / 255f,
+                            custom.Blue / 255f,
+                            1f));
+                }
+                else
+                {
+                    SetUniformVec4($"tintColor{layerValue}", Vector4.Zero);
+                }
+
+                var paletteColor = savedValue > 0 &&
+                                   savedValue <= TintMapMaterialRegistry.PaletteColorCount
+                    ? savedValue - 1
+                    : layerColorIndices != null &&
+                      layerColorIndices.TryGetValue(layerValue, out var standardColor)
+                        ? standardColor
+                        : 0;
+                var paletteCoordinate = TintMapMaterialRegistry.GetPaletteCoordinate(
+                    layer,
+                    Math.Clamp(
+                        paletteColor,
+                        0,
+                        TintMapMaterialRegistry.PaletteColorCount - 1));
+                SetUniformFloat($"tintPaletteRow{layerValue}", paletteCoordinate);
+            }
         }
 
         private uint ResolveMapTexture(string? mapName)

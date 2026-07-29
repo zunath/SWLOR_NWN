@@ -13,7 +13,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 {
     public static class TintMapService
     {
-        private const string LocalVariablePrefix = "TM_";
         private const float RefreshDelaySeconds = 0.2f;
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
@@ -96,13 +95,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             uint creature,
             TintMapMaterialSelection selection,
             TintMapLayerType layer,
-            int colorId)
+            TintMapColor color)
         {
-            colorId = Math.Clamp(colorId, 0, TintMapMaterialRegistry.PaletteColorCount - 1);
-            var variableName = GetLocalVariableName(selection.Material.Resref, layer);
-            SetLocalInt(selection.PaletteSource, variableName, colorId + 1);
-            SaveDroidOverride(creature, selection, variableName, colorId + 1);
-            ApplyColor(creature, selection, layer, colorId);
+            var savedColor = color.ToStoredValue();
+            var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
+            SetLocalInt(selection.PaletteSource, variableName, savedColor);
+            SaveDroidOverride(creature, selection, variableName, savedColor);
+            ApplyColor(
+                creature,
+                selection,
+                layer,
+                new TintMapColorSelection(GetStandardColor(creature, selection, layer), color));
         }
 
         public static void ResetColor(
@@ -110,10 +113,25 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapMaterialSelection selection,
             TintMapLayerType layer)
         {
-            var variableName = GetLocalVariableName(selection.Material.Resref, layer);
+            var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
             DeleteLocalInt(selection.PaletteSource, variableName);
             SaveDroidOverride(creature, selection, variableName, 0);
-            ApplyColor(creature, selection, layer, GetStandardColor(creature, selection, layer));
+            ApplyColor(
+                creature,
+                selection,
+                layer,
+                new TintMapColorSelection(GetStandardColor(creature, selection, layer), null));
+        }
+
+        public static bool TryGetCustomColor(
+            TintMapMaterialSelection selection,
+            TintMapLayerType layer,
+            out TintMapColor color)
+        {
+            var savedColor = GetLocalInt(
+                selection.PaletteSource,
+                TintMapVariable.GetName(selection.Material.Resref, layer));
+            return TintMapColor.TryFromStoredValue(savedColor, out color);
         }
 
         public static void RestoreDroidOverrides(
@@ -170,18 +188,24 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 () => Gui.PublishRefreshEvent(player, new AppearanceChangedRefreshEvent()));
         }
 
-        private static int GetEffectiveColor(
+        private static TintMapColorSelection GetEffectiveColor(
             uint creature,
             TintMapMaterialSelection selection,
             TintMapLayerType layer)
         {
             var savedColor = GetLocalInt(
                 selection.PaletteSource,
-                GetLocalVariableName(selection.Material.Resref, layer));
+                TintMapVariable.GetName(selection.Material.Resref, layer));
 
-            return savedColor > 0
+            var standardColor = GetStandardColor(creature, selection, layer);
+            if (TintMapColor.TryFromStoredValue(savedColor, out var customColor))
+                return new TintMapColorSelection(standardColor, customColor);
+
+            // Values 1-176 are the palette-index format used by the original tint-map branch.
+            var paletteColor = savedColor > 0 && savedColor <= TintMapMaterialRegistry.PaletteColorCount
                 ? savedColor - 1
-                : GetStandardColor(creature, selection, layer);
+                : standardColor;
+            return new TintMapColorSelection(paletteColor, null);
         }
 
         private static int GetStandardColor(
@@ -245,15 +269,24 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             uint creature,
             TintMapMaterialSelection selection,
             TintMapLayerType layer,
-            int colorId)
+            TintMapColorSelection color)
         {
             var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
-            var paletteCoordinate = TintMapMaterialRegistry.GetPaletteCoordinate(layer, colorId);
+            var paletteCoordinate = TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId);
             SetMaterialShaderUniformVec4(
                 creature,
                 selection.Material.Resref,
                 layerDefinition.UniformName,
                 paletteCoordinate);
+            var customColor = color.CustomColor;
+            SetMaterialShaderUniformVec4(
+                creature,
+                selection.Material.Resref,
+                layerDefinition.ColorUniformName,
+                (customColor?.Red ?? 0) / 255f,
+                (customColor?.Green ?? 0) / 255f,
+                (customColor?.Blue ?? 0) / 255f,
+                customColor.HasValue ? 1f : 0f);
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)
@@ -264,7 +297,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             {
                 var variable = ObjectPlugin.GetLocalVariable(item, index);
                 if (variable.Type != LocalVariableType.Int ||
-                    !variable.Key.StartsWith(LocalVariablePrefix, StringComparison.Ordinal))
+                    !variable.Key.StartsWith(TintMapVariable.Prefix, StringComparison.Ordinal))
                 {
                     continue;
                 }
@@ -273,11 +306,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             return tintOverrides;
-        }
-
-        private static string GetLocalVariableName(string materialResref, TintMapLayerType layer)
-        {
-            return $"{LocalVariablePrefix}{materialResref}_{(int)layer}";
         }
 
         private static void SaveDroidOverride(

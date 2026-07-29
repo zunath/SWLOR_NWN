@@ -1,4 +1,5 @@
 using SWLOR.NWN.Formats.Mdl;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
@@ -329,9 +330,10 @@ namespace SWLOR.Toolset.Workspace
                 _ => null
             };
 
+            var tintMapOverrides = TintMapOverrides.Read(new VarTable(root));
             Func<string, TextureImage?>? resolveTexture = _textures == null
                 ? null
-                : texture => _textures.Get(texture, reference.LayerColorIndices);
+                : texture => _textures.Get(texture, reference.LayerColorIndices, tintMapOverrides);
             var pixels = ThumbnailRenderer.Render(
                 model, ModelRenderSize, palette: null, resolveTexture: resolveTexture);
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);

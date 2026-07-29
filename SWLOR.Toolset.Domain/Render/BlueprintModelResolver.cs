@@ -395,7 +395,8 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 Kind = BlueprintModelKind.Simple,
                 Status = $"{row.DisplayName} ({modelResRef}.mdl)",
-                ModelResRef = modelResRef
+                ModelResRef = modelResRef,
+                LayerColorIndices = ResolveLayerColors(root, null)
             };
         }
 

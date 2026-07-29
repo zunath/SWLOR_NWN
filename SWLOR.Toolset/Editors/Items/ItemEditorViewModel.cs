@@ -11,6 +11,7 @@ using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Render.Icons;
 using SWLOR.Toolset.Editors.Behaviors;
+using SWLOR.Toolset.Editors.TintMaps;
 using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Viewport;
 
@@ -55,6 +56,8 @@ namespace SWLOR.Toolset.Editors.Items
         public ItemAppearanceSectionViewModel? Appearance { get; }
 
         public bool ShowsAppearanceTab => Appearance != null;
+
+        public TintMapEditorViewModel? TintMapEditor { get; }
 
         public ItemSourceSectionViewModel Source { get; }
 
@@ -204,7 +207,8 @@ namespace SWLOR.Toolset.Editors.Items
             Func<JsonGffStruct, bool, RenderModel?>? resolveModel = null,
             ResourceIndex? resourceIndex = null,
             ArmorDyeSwatchService? armorDyeSwatches = null,
-            ArmorPartCatalog? armorPartModels = null)
+            ArmorPartCatalog? armorPartModels = null,
+            TintMapCatalog? tintMapCatalog = null)
         {
             ArgumentNullException.ThrowIfNull(item);
 
@@ -238,6 +242,15 @@ namespace SWLOR.Toolset.Editors.Items
                 Appearance = new ItemAppearanceSectionViewModel(
                     _store, RunEdit, baseItemIcons, textureExists, choicePreviews, QueuePreviewUpdate,
                     armorDyeSwatches, armorPartModels);
+            }
+            if (tintMapCatalog != null)
+            {
+                TintMapEditor = new TintMapEditorViewModel(
+                    _store.Locals,
+                    RunEdit,
+                    tintMapCatalog,
+                    colorChanged: UpdatePreview);
+                Appearance?.SetTintMapEditor(TintMapEditor);
             }
             Source = new ItemSourceSectionViewModel(headerOwner, sourceLookup, itemSourcesReady);
             _lastAppearanceBaseItem = CurrentBaseItem();
@@ -720,6 +733,7 @@ namespace SWLOR.Toolset.Editors.Items
 
         private void ApplyPreviewScene(RenderModel? model)
         {
+            TintMapEditor?.Reload(model);
             PreviewScene = model == null
                 ? null
                 : new AreaScene
@@ -744,7 +758,8 @@ namespace SWLOR.Toolset.Editors.Items
                             // so an unrotated mannequin presented its back on every load.
                             Orientation = new Vector2(-1f, 0f),
                             LayerColorIndices = CurrentLayerColors(),
-                            Model = model
+                            Model = model,
+                            TintMapOverrides = TintMapOverrides.Read(_store.Locals)
                         }
                     },
                     Diagnostics = new AreaSceneDiagnostics()

@@ -93,7 +93,8 @@ namespace SWLOR.Toolset.Editors.Items
             ArmorPartCatalog? armorPartModels = null,
             Func<string, string, IReadOnlyList<string>>? findReferences = null,
             Func<string, bool>? canRefileCategories = null,
-            Func<string, string, CategorySaveResult>? refileCategories = null)
+            Func<string, string, CategorySaveResult>? refileCategories = null,
+            TintMapCatalog? tintMapCatalog = null)
         {
             _log = log;
             _prompts = prompts;
@@ -123,7 +124,8 @@ namespace SWLOR.Toolset.Editors.Items
                 resolveModel: resolveModel,
                 resourceIndex: resourceIndex,
                 armorDyeSwatches: armorDyeSwatches,
-                armorPartModels: armorPartModels);
+                armorPartModels: armorPartModels,
+                tintMapCatalog: tintMapCatalog);
             UpdateTitle();
         }
 

@@ -145,7 +145,8 @@ namespace SWLOR.Toolset.Domain.Render
             };
         }
 
-        private static MtrMaterial? TryParseMaterial(ResourceIndex index, string materialName)
+        /// <summary>Returns the parsed MTR resource, or null when the name has no material.</summary>
+        public static MtrMaterial? TryParseMaterial(ResourceIndex index, string materialName)
         {
             var identity = new ResourceIdentity(materialName, ResourceIdentity.TypeFromExtension("mtr"));
             if (!index.TryLookup(identity, out var handle))

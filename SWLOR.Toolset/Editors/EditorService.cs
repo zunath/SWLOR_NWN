@@ -129,6 +129,7 @@ namespace SWLOR.Toolset.Editors
         private readonly CategoryService? _categories;
         private Items.ArmorDyeSwatchService? _armorDyeSwatches;
         private Items.ArmorPartCatalog? _armorPartModels;
+        private TintMapCatalog? _tintMapCatalog;
         private readonly Dictionary<string, Sounds.SoundDocumentViewModel> _openSoundEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<string>? _soundResources;
         private Services.SoundPreviewService? _soundPreviews;
@@ -604,7 +605,8 @@ namespace SWLOR.Toolset.Editors
                     CreateScriptSlotHost($"{type.SingularDisplayName()} '{resRef}'"),
                     type == ResourceType.Utp ? CreatePlaceableSections : null,
                     () => _workspaceContext.Workspace,
-                    type == ResourceType.Utc ? CreateCreatureAppearanceGallery : null);
+                    type == ResourceType.Utc ? CreateCreatureAppearanceGallery : null,
+                    type == ResourceType.Utc ? CreateCreatureTintMapEditor : null);
                 editor.Closed += _ => _openEditors.Remove(filePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
@@ -734,6 +736,21 @@ namespace SWLOR.Toolset.Editors
                     $"Change appearance to {option.Caption}",
                     () => WriteCreatureAppearance(context, option)),
                 noun: "appearance");
+        }
+
+        private TintMaps.TintMapEditorViewModel? CreateCreatureTintMapEditor(
+            EditorFieldContext context,
+            Func<string, Action, bool> runEdit)
+        {
+            var catalog = GetTintMapCatalog();
+            if (catalog == null || _previewRenderer == null)
+                return null;
+
+            return new TintMaps.TintMapEditorViewModel(
+                new VarTable(context.Document.Root),
+                runEdit,
+                catalog,
+                () => _previewRenderer.BuildModel(ResourceType.Utc, context.Document.Root));
         }
 
         private static void WriteCreatureAppearance(
@@ -1042,7 +1059,8 @@ namespace SWLOR.Toolset.Editors
                 armorPartModels: ArmorPartModels(),
                 findReferences: FindItemReferences,
                 canRefileCategories: CanRefileItemCategories,
-                refileCategories: RefileItemCategories);
+                refileCategories: RefileItemCategories,
+                tintMapCatalog: GetTintMapCatalog());
             editor.Closed += closed => _openItemEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -1129,6 +1147,15 @@ namespace SWLOR.Toolset.Editors
 
             _armorPartModels ??= new Items.ArmorPartCatalog(_resourceIndex);
             return _armorPartModels;
+        }
+
+        private TintMapCatalog? GetTintMapCatalog()
+        {
+            if (_resourceIndex == null)
+                return null;
+
+            _tintMapCatalog ??= TintMapCatalog.Load(_resourceIndex);
+            return _tintMapCatalog;
         }
 
         /// <summary>A stat/requirement/appearance cell's real engine cap, by CostTableId.</summary>

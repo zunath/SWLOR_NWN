@@ -4,6 +4,7 @@ using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -417,6 +418,32 @@ namespace SWLOR.Toolset.Tests
             maps.Normal.Should().BeNull();
             maps.Specular.Should().BeNull();
             maps.Roughness.Should().BeNull();
+        }
+
+        [Test]
+        public void PreviewTextureCache_TintMapMaterial_AppliesRgbOverride()
+        {
+            var index = BuildHakOnlyIndex();
+            var cache = new PreviewTextureCache(index);
+            var overrides = new Dictionary<string, int>
+            {
+                [TintMapVariable.GetName("pmo0_footl10", TintMapLayerType.Leather1)] =
+                    new TintMapColor(220, 20, 10).ToStoredValue()
+            };
+
+            var image = cache.Get(
+                "pmo0_footl10",
+                new Dictionary<int, int>(),
+                overrides);
+
+            image.Should().NotBeNull();
+            Enumerable.Range(0, image!.Pixels.Length / 4)
+                .Select(pixel => pixel * 4)
+                .Should()
+                .Contain(offset =>
+                    image.Pixels[offset] > 40 &&
+                    image.Pixels[offset] > image.Pixels[offset + 1] * 4 &&
+                    image.Pixels[offset] > image.Pixels[offset + 2] * 4);
         }
     }
 }

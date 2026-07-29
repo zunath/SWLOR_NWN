@@ -132,6 +132,13 @@ namespace SWLOR.Toolset.Domain.Render
         public RenderModel? Model { get; init; }
 
         /// <summary>
+        /// Stored TM_* local ints for tint-map materials. RGB marker values and legacy palette
+        /// values are both retained so the renderer can mirror the game fallback behavior.
+        /// </summary>
+        public IReadOnlyDictionary<string, int> TintMapOverrides { get; init; } =
+            new Dictionary<string, int>(StringComparer.Ordinal);
+
+        /// <summary>
         /// A sound instance's MinDistance in metres - the range it plays at full volume, which
         /// Aurora draws as the dotted sphere around the marker. Null for every other kind and for
         /// sounds that carry no such field.
@@ -189,6 +196,8 @@ namespace SWLOR.Toolset.Domain.Render
                 VisualTransform = VisualTransform,
                 Geometry = geometry,
                 Model = Model,
+                LayerColorIndices = LayerColorIndices,
+                TintMapOverrides = TintMapOverrides,
                 SoundMinDistance = SoundMinDistance,
                 SoundMaxDistance = SoundMaxDistance,
                 IsPositionalSound = IsPositionalSound

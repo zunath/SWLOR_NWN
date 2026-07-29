@@ -266,6 +266,26 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public async Task ARenameIsRefusedByAnUnsavedScriptBufferJustAsByADiskReference()
+        {
+            // Save All writes item editors before script editors, so a rename that only consulted
+            // disk could delete the blueprint and then save a script still naming it. The preflight
+            // delegate is where the open buffers are folded in, so refusing from one is the shape
+            // this test pins.
+            var document = new ItemDocumentViewModel(
+                Scratch("adren_harness"), "adren_harness", null, new OutputLogService(), new StubPrompts(),
+                findReferences: (resRef, _) => resRef == "adren_harness"
+                    ? new[] { "Module/nss/some_script.nss (unsaved editor buffer)" }
+                    : Array.Empty<string>());
+            SetResRef(document, "adren_mk7");
+
+            Assert.That(await document.TrySaveAsync(), Is.False);
+            Assert.That(File.Exists(Scratch("adren_harness")), Is.True, "the blueprint the script names stays");
+            Assert.That(File.Exists(Scratch("adren_mk7")), Is.False);
+            Assert.That(document.ResRef, Is.EqualTo("adren_harness"));
+        }
+
+        [Test]
         public async Task AFailedDeleteOfTheOriginalRollsTheRenameBack()
         {
             var document = OpenScratch("adren_harness");

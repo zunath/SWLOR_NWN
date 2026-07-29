@@ -80,16 +80,31 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         /// carries nwn_base.key and nwn_retail.key. Loading only the base archive made everything the
         /// others hold look absent, so Standard palette entries were filtered out by ResolvableMembers
         /// and their models and textures failed to resolve.
+        ///
+        /// The list is deliberately every archive NWN:EE ships rather than the ones a particular
+        /// install happens to have - the patch and localization archives (xp1patch, *_loc) hold real
+        /// resources on the installs that carry them, and an install without one simply skips it via
+        /// the File.Exists check below. A missing archive is invisible; a missing ENTRY resolves to
+        /// an older override or to nothing at all, which is the failure this list exists to avoid.
         /// </remarks>
         private static readonly string[] KeyArchivesInPrecedenceOrder =
         {
             "nwn_base.key",
             "nwn_base_loc.key",
             "nwn_retail.key",
+            "nwn_retail_loc.key",
             "xp1.key",
+            "xp1_loc.key",
+            "xp1patch.key",
+            "xp1patch_loc.key",
             "xp2.key",
+            "xp2_loc.key",
+            "xp2patch.key",
+            "xp2patch_loc.key",
             "xp3.key",
-            "xp2patch.key"
+            "xp3_loc.key",
+            "xp3patch.key",
+            "xp3patch_loc.key"
         };
 
         /// <summary>

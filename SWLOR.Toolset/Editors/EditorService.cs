@@ -1131,8 +1131,24 @@ namespace SWLOR.Toolset.Editors
 
             var repoRoot = Path.GetDirectoryName(Path.GetFullPath(workspace.ModuleRoot));
             var gameSourceRoot = repoRoot == null ? null : Path.Combine(repoRoot, "SWLOR.Game.Server");
-            return ItemReferenceScanner.FindReferences(
-                workspace.ModuleRoot, gameSourceRoot, resRef, selfFilePath);
+            var references = ItemReferenceScanner.FindReferences(
+                workspace.ModuleRoot, gameSourceRoot, resRef, selfFilePath).ToList();
+
+            // The scan reads disk, but an open script's unsaved buffer can already name this resref
+            // - and SaveAll writes item editors before script editors, so a rename that only
+            // consulted disk could delete the blueprint and then save a script that references it.
+            // Editors whose buffer no longer names it still count from their on-disk copy above:
+            // this preflight fails closed, and an unsaved deletion is not a reference removed yet.
+            var quoted = $"\"{resRef}\"";
+            foreach (var (scriptResRef, text) in SnapshotOpenScriptSources())
+            {
+                if (text.Contains(quoted, StringComparison.OrdinalIgnoreCase))
+                    references.Add($"Module/nss/{scriptResRef}.nss (unsaved editor buffer)");
+            }
+
+            return references
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
         }
 
         /// <summary>

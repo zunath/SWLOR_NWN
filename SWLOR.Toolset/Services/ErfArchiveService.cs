@@ -3,7 +3,10 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 
@@ -183,6 +186,7 @@ namespace SWLOR.Toolset.Services
 
             foreach (var fileName in fileNames)
                 ValidateArchiveFileName(fileName);
+            ValidateAreaTriplets(fileNames);
 
             var stagingDirectory = CreateTemporaryDirectory("import");
             try
@@ -471,6 +475,7 @@ namespace SWLOR.Toolset.Services
             Directory.CreateDirectory(rollbackRoot);
 
             var plan = new List<ImportPlanEntry>();
+            byte[]? moduleIfoBaseline = null;
             string? recoveryManifestPath = null;
             try
             {
@@ -492,10 +497,21 @@ namespace SWLOR.Toolset.Services
                     if (GffExtensions.Contains(asset.Extension))
                     {
                         var document = JsonGffDocument.Load(choice.Prepared.ContentPath);
-                        RewriteResRefs(document.Root, renameMap);
+                        RewriteOwnResRef(
+                            document.Root,
+                            asset.Extension,
+                            asset.ResRef,
+                            targetResRef);
                         File.WriteAllBytes(stagedPath, document.ToBytes());
                         // Reparse the exact bytes that would be installed, not the pre-rewrite source.
                         _ = JsonGffDocument.Load(stagedPath);
+                    }
+                    else if (asset.Extension.Equals("nss", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var script = ScriptTextDocument.Load(choice.Prepared.ContentPath);
+                        File.WriteAllBytes(
+                            stagedPath,
+                            script.ToBytes(RewriteScriptIncludes(script.Text, renameMap)));
                     }
                     else
                     {
@@ -508,7 +524,51 @@ namespace SWLOR.Toolset.Services
                         asset.Extension,
                         targetResRef,
                         File.Exists(destination),
-                        !string.Equals(targetResRef, asset.ResRef, StringComparison.OrdinalIgnoreCase)));
+                        !string.Equals(targetResRef, asset.ResRef, StringComparison.OrdinalIgnoreCase),
+                        IsMetadata: false,
+                        ExpectedOriginalContent: null));
+                }
+
+                var importedAreas = plan
+                    .Where(entry => entry.Extension.Equals("are", StringComparison.OrdinalIgnoreCase))
+                    .Select(entry => entry.ResRef)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+                if (importedAreas.Count > 0)
+                {
+                    var ifoPath = ModuleDestination(workspace.ModuleRoot, "ifo", "module");
+                    if (!File.Exists(ifoPath))
+                        throw new FileNotFoundException(
+                            "module.ifo.json was not found; imported areas cannot be registered.",
+                            ifoPath);
+
+                    moduleIfoBaseline = File.ReadAllBytes(ifoPath);
+                    var ifo = IfoDocument.Parse(moduleIfoBaseline);
+                    var ifoChanged = false;
+                    using (var ifoSession = new DocumentSession(ifoPath, ifo.Document))
+                    using (var transaction = ifoSession.Begin("Register imported areas"))
+                    {
+                        foreach (var areaResRef in importedAreas)
+                            ifoChanged |= AreaTemplateFactory.AddAreaToModule(ifo, areaResRef);
+                        transaction.Commit();
+                    }
+
+                    if (ifoChanged)
+                    {
+                        var stagedIfo = Path.Combine(stagedRoot, "ifo", "module.ifo.json");
+                        Directory.CreateDirectory(Path.GetDirectoryName(stagedIfo)!);
+                        File.WriteAllBytes(stagedIfo, ifo.ToBytes());
+                        _ = IfoDocument.Load(stagedIfo);
+                        plan.Add(new ImportPlanEntry(
+                            stagedIfo,
+                            ifoPath,
+                            "ifo",
+                            "module",
+                            ReplacesExisting: true,
+                            IsRename: false,
+                            IsMetadata: true,
+                            ExpectedOriginalContent: moduleIfoBaseline));
+                    }
                 }
 
                 var duplicate = plan
@@ -553,6 +613,16 @@ namespace SWLOR.Toolset.Services
                         cancellationToken.ThrowIfCancellationRequested();
                         Directory.CreateDirectory(Path.GetDirectoryName(entry.DestinationPath)!);
 
+                        if (entry.ExpectedOriginalContent != null)
+                        {
+                            var current = File.ReadAllBytes(entry.DestinationPath);
+                            if (!current.AsSpan().SequenceEqual(entry.ExpectedOriginalContent))
+                            {
+                                throw new IOException(
+                                    "module.ifo.json changed while the ERF import was being prepared. Try again.");
+                            }
+                        }
+
                         File.Move(entry.StagedPath, entry.DestinationPath, overwrite: true);
                     }
                 }
@@ -578,16 +648,18 @@ namespace SWLOR.Toolset.Services
                 recoveryManifestPath = null;
 
                 var changed = plan
+                    .Where(entry => !entry.IsMetadata)
                     .Select(entry => (entry.Extension, entry.ResRef))
                     .ToList();
                 foreach (var (extension, resRef) in changed)
                     RefreshWorkspace(extension, resRef);
 
-                var skipped = normalizedChoices.Count - plan.Count;
+                var importedPlan = plan.Where(entry => !entry.IsMetadata).ToList();
+                var skipped = normalizedChoices.Count - importedPlan.Count;
                 var result = new ErfImportResult(
-                    plan.Count,
-                    plan.Count(entry => entry.ReplacesExisting),
-                    plan.Count(entry => entry.IsRename),
+                    importedPlan.Count,
+                    importedPlan.Count(entry => entry.ReplacesExisting),
+                    importedPlan.Count(entry => entry.IsRename),
                     skipped,
                     backupDirectory,
                     changed);
@@ -1086,33 +1158,53 @@ namespace SWLOR.Toolset.Services
             return normalized;
         }
 
-        private static void RewriteResRefs(
-            JsonGffStruct current,
+        private static void RewriteOwnResRef(
+            JsonGffStruct root,
+            string extension,
+            string sourceResRef,
+            string targetResRef)
+        {
+            if (string.Equals(sourceResRef, targetResRef, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            var identityField = extension.ToLowerInvariant() switch
+            {
+                "are" or "utm" => "ResRef",
+                "utc" or "utd" or "uti" or "utp" or "uts" or "utt" or "utw" =>
+                    "TemplateResRef",
+                _ => null
+            };
+            if (identityField == null || root.GetOrNull(identityField) is not { } field ||
+                field.Type != GffFieldType.ResRef ||
+                !string.Equals(field.GetString(), sourceResRef, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            // Only the resource's own identity is rewritten here. A bare GFF ResRef carries no
+            // target type, so matching by text alone can turn a creature reference into an item
+            // rename when both types happen to share a resref.
+            field.SetString(targetResRef);
+        }
+
+        private static string RewriteScriptIncludes(
+            string source,
             IReadOnlyDictionary<string, string> renameMap)
         {
-            foreach (var (_, field) in current.Entries)
+            return IncludePattern.Replace(source, match =>
             {
-                if (field.Type == GffFieldType.ResRef)
+                var group = match.Groups["resref"];
+                if (!renameMap.TryGetValue(
+                        ArchiveKey("nss", group.Value),
+                        out var replacement))
                 {
-                    var value = field.GetString();
-                    var replacements = renameMap
-                        .Where(pair => pair.Key.EndsWith("|" + value, StringComparison.OrdinalIgnoreCase))
-                        .Select(pair => pair.Value)
-                        .Distinct(StringComparer.OrdinalIgnoreCase)
-                        .ToList();
-                    if (replacements.Count == 1)
-                        field.SetString(replacements[0]);
+                    return match.Value;
                 }
-                else if (field.Type == GffFieldType.Struct && field.Struct != null)
-                {
-                    RewriteResRefs(field.Struct, renameMap);
-                }
-                else if (field.Type == GffFieldType.List && field.Elements != null)
-                {
-                    foreach (var element in field.Elements)
-                        RewriteResRefs(element, renameMap);
-                }
-            }
+
+                var relativeStart = group.Index - match.Index;
+                return match.Value[..relativeStart] + replacement +
+                       match.Value[(relativeStart + group.Length)..];
+            });
         }
 
         private static bool FilesEqual(string left, string right)
@@ -1444,6 +1536,34 @@ namespace SWLOR.Toolset.Services
             }
         }
 
+        private static void ValidateAreaTriplets(IReadOnlyCollection<string> fileNames)
+        {
+            var areaExtensions = new HashSet<string>(
+                new[] { "are", "git", "gic" },
+                StringComparer.OrdinalIgnoreCase);
+            var groups = fileNames
+                .Select(fileName => (
+                    FileName: fileName,
+                    ResRef: Path.GetFileNameWithoutExtension(fileName),
+                    Extension: Path.GetExtension(fileName).TrimStart('.')))
+                .Where(item => areaExtensions.Contains(item.Extension))
+                .GroupBy(item => item.ResRef, StringComparer.OrdinalIgnoreCase);
+
+            foreach (var group in groups)
+            {
+                var present = group
+                    .Select(item => item.Extension)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                var missing = areaExtensions.Where(extension => !present.Contains(extension)).ToList();
+                if (missing.Count > 0)
+                {
+                    throw new InvalidDataException(
+                        $"Area '{group.Key}' is incomplete; the ERF is missing " +
+                        string.Join(", ", missing.Select(extension => "." + extension)) + ".");
+                }
+            }
+        }
+
         private static bool IsSupportedExtension(string extension) =>
             GffExtensions.Contains(extension) || PlainExtensions.Contains(extension);
 
@@ -1505,7 +1625,9 @@ namespace SWLOR.Toolset.Services
             string Extension,
             string ResRef,
             bool ReplacesExisting,
-            bool IsRename);
+            bool IsRename,
+            bool IsMetadata,
+            byte[]? ExpectedOriginalContent);
     }
 
     public sealed class ErfImportRecoveryException(string message, Exception innerException)

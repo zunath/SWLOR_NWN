@@ -43,6 +43,9 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public void Open(string moduleRoot)
         {
+            foreach (var recovered in Services.ItemRenameRecovery.RecoverInterruptedRenames(moduleRoot))
+                _log.AppendLine($"Recovered '{recovered}' from an interrupted item rename.");
+
             foreach (var recovered in Services.ErfArchiveService.RecoverInterruptedImports(moduleRoot))
                 _log.AppendLine($"Recovered '{recovered}' from an interrupted ERF import.");
 

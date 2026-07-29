@@ -1,8 +1,13 @@
+using FluentAssertions;
 using NUnit.Framework;
+using System.Security.Cryptography;
+using System.Text.Json;
+using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Items;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
@@ -159,13 +164,19 @@ namespace SWLOR.Toolset.Tests.Items
     [TestFixture]
     public class ItemDocumentRenameTests
     {
+        private string _testRoot = string.Empty;
         private string _root = string.Empty;
 
         [SetUp]
         public void CreateScratchModule()
         {
-            _root = Path.Combine(Path.GetTempPath(), "swlor-item-rename-" + Guid.NewGuid().ToString("N"));
+            _testRoot = Path.Combine(
+                Path.GetTempPath(),
+                "swlor-item-rename-" + Guid.NewGuid().ToString("N"));
+            _root = Path.Combine(_testRoot, "Module");
             Directory.CreateDirectory(Path.Combine(_root, "uti"));
+            Directory.CreateDirectory(Path.Combine(_root, "are"));
+            Directory.CreateDirectory(Path.Combine(_root, "utc"));
             File.Copy(
                 Path.Combine(CorpusLocator.ModuleDirectory, "uti", "adren_harness.uti.json"),
                 Scratch("adren_harness"));
@@ -174,8 +185,8 @@ namespace SWLOR.Toolset.Tests.Items
         [TearDown]
         public void DeleteScratchModule()
         {
-            if (Directory.Exists(_root))
-                Directory.Delete(_root, recursive: true);
+            if (Directory.Exists(_testRoot))
+                Directory.Delete(_testRoot, recursive: true);
         }
 
         private string Scratch(string resRef) => Path.Combine(_root, "uti", $"{resRef}.uti.json");
@@ -209,6 +220,57 @@ namespace SWLOR.Toolset.Tests.Items
 
             var saved = UtiDocument.Load(Scratch("adren_mk2"));
             Assert.That(saved.TemplateResRef, Is.EqualTo("adren_mk2"));
+            Assert.That(
+                Directory.EnumerateFiles(
+                    _root,
+                    ".swlor-toolset-item-rename-*.pending.json",
+                    SearchOption.TopDirectoryOnly),
+                Is.Empty);
+        }
+
+        [Test]
+        public void OpeningAWorkspaceRecoversAnInterruptedItemRenameAndItsCategories()
+        {
+            var oldPath = Scratch("adren_harness");
+            var oldBytes = File.ReadAllBytes(oldPath);
+            var newPath = Scratch("adren_mk8");
+            File.Copy(oldPath, newPath);
+            File.Delete(oldPath);
+
+            var categoryPath = CategoryCatalog.DefaultPathFor(_root);
+            Directory.CreateDirectory(Path.GetDirectoryName(categoryPath)!);
+            File.WriteAllText(categoryPath, "new category generation");
+
+            var transactionName = ".swlor-toolset-item-rename-" + Guid.NewGuid().ToString("N");
+            var transactionRoot = Path.Combine(_root, transactionName);
+            Directory.CreateDirectory(transactionRoot);
+            var itemBackup = Path.Combine(transactionRoot, "item.original");
+            File.WriteAllBytes(itemBackup, oldBytes);
+            var categoryBackup = Path.Combine(transactionRoot, "categories.original");
+            File.WriteAllText(categoryBackup, "old category generation");
+            var markerPath = transactionRoot + ".pending.json";
+            File.WriteAllText(markerPath, JsonSerializer.Serialize(new
+            {
+                TransactionRoot = transactionRoot,
+                OldPath = oldPath,
+                NewPath = newPath,
+                ItemBackupPath = itemBackup,
+                CategoryPath = categoryPath,
+                CategoryBackupPath = categoryBackup,
+                CategoryExisted = true,
+                NewContentSha256 = Convert.ToHexString(
+                    SHA256.HashData(File.ReadAllBytes(newPath)))
+            }));
+
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(path => new ModuleWorkspace(path), log);
+            workspace.Open(_root);
+
+            File.ReadAllBytes(oldPath).Should().Equal(oldBytes);
+            File.Exists(newPath).Should().BeFalse();
+            File.ReadAllText(categoryPath).Should().Be("old category generation");
+            File.Exists(markerPath).Should().BeFalse();
+            Directory.Exists(transactionRoot).Should().BeFalse();
         }
 
         [Test]

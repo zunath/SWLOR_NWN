@@ -25,9 +25,10 @@
     "value": 0
   },
   "DescIdentified": {
+    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "A bound totem that focuses the wearer while rattling prey."
+      "0": "Totem Charm"
     }
   },
   "Description": {

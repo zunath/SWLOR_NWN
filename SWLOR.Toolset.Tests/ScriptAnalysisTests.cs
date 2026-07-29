@@ -488,6 +488,24 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void MissingDirectAndTransitiveIncludesBlockPacking()
+        {
+            var old = DateTime.UtcNow.AddHours(-2);
+            Source("direct", "#include \"missing_direct\"\nvoid main() {}", old);
+            Source("transitive", "#include \"middle_inc\"\nvoid main() {}", old);
+            Source("middle_inc", "#include \"missing_deep\"\nint Middle() { return 1; }", old);
+            Compiled("direct", DateTime.UtcNow);
+            Compiled("transitive", DateTime.UtcNow);
+
+            var stale = Scan();
+
+            stale.Select(finding => finding.ResRef)
+                .Should().BeEquivalentTo("direct", "transitive");
+            stale.Should().OnlyContain(finding => finding.Reason == StaleReason.MissingInclude);
+            ScriptPackReadiness.Evaluate(stale).Should().NotBeNull();
+        }
+
+        [Test]
         public void StartingConditional_CountsAsAnEntryPoint()
         {
             Source("cond", "int StartingConditional() { return TRUE; }");

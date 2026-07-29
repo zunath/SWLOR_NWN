@@ -1135,11 +1135,9 @@ namespace SWLOR.Toolset.Editors
                     }
                 }
 
-                // The word count is a text-derived field the rest of the corpus keeps current, and it
-                // only writes when it actually moves - so a save that changed no dialogue leaves the
-                // line alone. It goes through a transaction because the session guards every
-                // mutation: recomputing it directly throws, which used to fail the whole save.
-                _session.Execute("Update the word count", () => _dialog.RecomputeWordCount());
+                // NumWords is saved metadata derived entirely from the authored lines. Updating it
+                // must not create a second Undo entry after the user's actual dialogue edit.
+                _session.ExecuteDerived(() => _dialog.RecomputeWordCount());
 
                 SaveService.WriteAtomic(_session.FilePath, _session.ToBytes());
                 _session.UndoStack.MarkSaved();

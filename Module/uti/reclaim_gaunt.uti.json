@@ -25,9 +25,10 @@
     "value": 0
   },
   "DescIdentified": {
+    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "A salvage gauntlet with servo-boosted strikes."
+      "0": "Reclamation Gauntlet"
     }
   },
   "Description": {

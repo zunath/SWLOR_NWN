@@ -25,9 +25,10 @@
     "value": 0
   },
   "DescIdentified": {
+    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Crafted gauntlets salvaged from Trialmaster Sabrae."
+      "0": "Sabrae Gauntlets"
     }
   },
   "Description": {

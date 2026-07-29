@@ -25,9 +25,10 @@
     "value": 0
   },
   "DescIdentified": {
+    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "A detonite-charged knuckle that adds a blast to every blow."
+      "0": "Detonite Knuckle"
     }
   },
   "Description": {

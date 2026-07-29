@@ -92,6 +92,7 @@ namespace SWLOR.Toolset.Shell
 
         /// <summary>Guards against a second rescan starting while one is already reopening the catalog.</summary>
         private bool _isRescanningAfterWatcherOverflow;
+        private bool _rescanRequestedWhileRunning;
 
         public ShellViewModel(
             ToolsetSettings settings,
@@ -356,16 +357,19 @@ namespace SWLOR.Toolset.Shell
                 return;
             }
 
-            if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
-            {
-                StatusText = "ERF Archives cancelled: an open editor could not be saved.";
-                return;
-            }
-
-            StatusText = "Opening ERF Archives from a saved module snapshot...";
             IsManagingErfArchives = true;
             try
             {
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
+                    {
+                        StatusText = "ERF Archives cancelled: an open editor could not be saved.";
+                        return;
+                    }
+                }
+
+                StatusText = "Opening ERF Archives...";
                 await ErfArchiveWindow.ShowAsync(_erfArchiveService, _settings).ConfigureAwait(true);
                 StatusText = "ERF Archives closed.";
             }
@@ -827,7 +831,10 @@ namespace SWLOR.Toolset.Shell
         private async void OnFileWatcherRescanRequested()
         {
             if (_isRescanningAfterWatcherOverflow)
+            {
+                _rescanRequestedWhileRunning = true;
                 return;
+            }
 
             var moduleRoot = _workspaceContext.Workspace?.ModuleRoot;
             if (moduleRoot == null)
@@ -853,8 +860,12 @@ namespace SWLOR.Toolset.Shell
             catch (Exception ex)
             {
                 _isRescanningAfterWatcherOverflow = false;
+                var runAgain = _rescanRequestedWhileRunning;
+                _rescanRequestedWhileRunning = false;
                 StatusText = "Rescan failed - see Output.";
                 _log.AppendLine($"Rescan after file watcher overflow failed: {ex.Message}");
+                if (runAgain)
+                    OnFileWatcherRescanRequested();
                 return;
             }
 
@@ -862,6 +873,10 @@ namespace SWLOR.Toolset.Shell
             if (catalog == null)
             {
                 _isRescanningAfterWatcherOverflow = false;
+                var runAgain = _rescanRequestedWhileRunning;
+                _rescanRequestedWhileRunning = false;
+                if (runAgain)
+                    OnFileWatcherRescanRequested();
                 return;
             }
 
@@ -872,13 +887,19 @@ namespace SWLOR.Toolset.Shell
                     // Reset first, and unconditionally: a future rescan must not stay blocked just
                     // because this build turns out to be superseded below.
                     _isRescanningAfterWatcherOverflow = false;
+                    var runAgain = _rescanRequestedWhileRunning;
+                    _rescanRequestedWhileRunning = false;
 
                     // Symmetric with the startup continuation above: if the module root was reopened
                     // again after this rescan started, this build's catalog is no longer
                     // _workspaceContext.Catalog, and publishing it would stomp whatever the newer build
                     // already reported (or is about to).
                     if (!ReferenceEquals(catalog, _workspaceContext.Catalog))
+                    {
+                        if (runAgain)
+                            OnFileWatcherRescanRequested();
                         return;
+                    }
 
                     if (task.IsFaulted)
                     {
@@ -887,6 +908,8 @@ namespace SWLOR.Toolset.Shell
                         _palette.Refresh();
                         StatusText = $"Rescan failed: {reason}. Search and Module Contents may be incomplete.";
                         _log.AppendLine($"Rescan after file watcher overflow failed: {reason}");
+                        if (runAgain)
+                            OnFileWatcherRescanRequested();
                         return;
                     }
 
@@ -896,6 +919,8 @@ namespace SWLOR.Toolset.Shell
                     StatusText = $"Rescan complete: {catalog.Entries.Count} entries indexed.";
                     _log.AppendLine(
                         $"Rescan after file watcher overflow complete: {catalog.Entries.Count} entries indexed.");
+                    if (runAgain)
+                        OnFileWatcherRescanRequested();
                 });
             });
         }

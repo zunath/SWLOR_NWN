@@ -1,23 +1,18 @@
 #!/usr/bin/env python3
-"""Reconcile the two description fields on every item blueprint.
+"""Repair unambiguous description drift on item blueprints.
 
 A uti carries both Description (unidentified) and DescIdentified. Only the second
 is live: NWScript's GetDescription defaults to the identified string and every
 examine surface on the server takes that default. The corpus had drifted anyway,
-so the two rules below put both fields in agreement:
+so the rules below repair only cases where the intended result is certain:
 
   1. Ignore a field that holds nothing but the item's own name. An item described
      as itself has no description there, and echoing the name under the name is
      not worth keeping.
-  2. Whatever real description is left goes in both fields. If rule 1 ate the only
-     text there was, both fields end up blank.
-
-No blueprint holds two different real descriptions, so rule 2 never has to choose
-between them.
-
-Rule 1 discards a field, not an item. 195 blueprints have the name in one field and
-authored prose in the other - "Crafted cuirass salvaged from Banecaller Vex" on the
-Bane Cuirass - and that prose is the description; only the name-echo is dropped.
+  2. A single real description with an empty companion is copied to the empty field.
+  3. Two different non-empty values are left untouched. In particular, a name echo
+     beside different prose is ambiguous: the prose may belong to another item, so
+     this script must not promote it into the identified description.
 
 Any StringRef ("id") on a field this script writes is dropped. A CExoLocString
 with a StringRef can resolve through the TLK instead of its inline text, so
@@ -126,6 +121,11 @@ def plan(path):
     # Rule 1: a field holding only the item's name is not a description.
     real = [field for field in FIELDS if values[field] and values[field] != name]
 
+    # Conflicting non-empty fields require an author to decide which value is right.
+    # Never copy one over the other, even when one is only a name echo.
+    if all(values[field] for field in FIELDS) and values[FIELDS[0]] != values[FIELDS[1]]:
+        return None
+
     if not real:
         if not echoes_name:
             return None
@@ -138,7 +138,7 @@ def plan(path):
     if not edits:
         return None
 
-    return "name-echo-replaced" if echoes_name else "one-sided", edits
+    return "one-sided", edits
 
 
 def main():
@@ -162,12 +162,11 @@ def main():
             handle.write(text.encode("utf-8", "surrogateescape"))
 
     counts = {reason: sum(1 for _, r in changed if r == reason)
-              for reason in ("name-only", "name-echo-replaced", "one-sided")}
+              for reason in ("name-only", "one-sided")}
     verb = "need" if check else "updated:"
     print("%d blueprint(s) %s %d blanked (nothing but the item's name), "
-          "%d name-echo replaced with the real description, %d copied across"
-          % (len(changed), verb, counts["name-only"], counts["name-echo-replaced"],
-             counts["one-sided"]))
+          "%d unambiguous one-sided descriptions copied across"
+          % (len(changed), verb, counts["name-only"], counts["one-sided"]))
 
     if check and changed:
         for name, reason in changed[:10]:

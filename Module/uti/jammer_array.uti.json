@@ -25,9 +25,10 @@
     "value": 0
   },
   "DescIdentified": {
+    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "A worn jammer array that sharpens strikes while scrambling foes."
+      "0": "Signal Jammer Array"
     }
   },
   "Description": {

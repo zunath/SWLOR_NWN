@@ -210,21 +210,31 @@ namespace SWLOR.Toolset.Editors.Items
                     return false;
                 }
 
+                var oldPath = _session.FilePath;
+                var oldResRef = _resRef;
+                var moving = renaming &&
+                             !string.Equals(oldPath, newPath, StringComparison.OrdinalIgnoreCase);
+                var moduleRoot = moving
+                    ? Directory.GetParent(Path.GetDirectoryName(oldPath)!)?.FullName
+                      ?? throw new InvalidOperationException(
+                          $"Could not determine the module root for '{oldPath}'.")
+                    : null;
+                var saveBytes = _session.ToBytes();
+                using var renameRecovery = moving
+                    ? ItemRenameRecovery.Begin(moduleRoot!, oldPath, newPath, saveBytes)
+                    : null;
+
                 // A rename installs its destination with no-overwrite semantics: the existence
                 // check above ran before the (potentially long) reference scan, and a blueprint
                 // another process created in that window must fail this save rather than be
                 // silently replaced and then orphaned by the delete below.
                 if (renaming && !string.Equals(_session.FilePath, newPath, StringComparison.OrdinalIgnoreCase))
-                    SaveService.WriteAtomicNew(newPath, _session.ToBytes());
+                    SaveService.WriteAtomicNew(newPath, saveBytes);
                 else
-                    SaveService.WriteAtomic(newPath, _session.ToBytes());
+                    SaveService.WriteAtomic(newPath, saveBytes);
 
-                var oldPath = _session.FilePath;
-                var oldResRef = _resRef;
                 if (renaming)
                 {
-                    var moving = !string.Equals(oldPath, newPath, StringComparison.OrdinalIgnoreCase);
-
                     // The sidecar commits BEFORE the original is deleted, so a sidecar that turned
                     // unwritable since the preflight costs nothing: the destination is removed
                     // again and the original - still on disk, still filed - stands.
@@ -239,6 +249,7 @@ namespace SWLOR.Toolset.Editors.Items
                         return false;
                     }
 
+                    renameRecovery?.Complete();
                     _session.MoveTo(newPath);
                     _resRef = targetResRef;
                     Id = $"item:{newPath}";

@@ -214,6 +214,7 @@ namespace SWLOR.Toolset.Services
             // stripping whatever extension is there and reappending its own, so "foo.<guid>.ncs.tmp"
             // comes back out as "foo.<guid>.ncs.ncs" rather than landing on the path actually given.
             var temporaryOutput = Path.Combine(ncsDirectory, $"{resRef}.{Guid.NewGuid():N}.ncs");
+            var compileInputs = CaptureCompileInputs(workspace, resRef);
 
             ScriptCompileResult result;
             try
@@ -233,6 +234,14 @@ namespace SWLOR.Toolset.Services
 
             if (result.Succeeded)
             {
+                if (!CompileInputsAreUnchanged(compileInputs))
+                {
+                    DeleteTempOutput(temporaryOutput);
+                    _log.AppendLine(
+                        $"Did not install {resRef}.ncs because its source or an included script changed during compilation. Compile again.");
+                    return new CompileOutcome(false, diagnostics);
+                }
+
                 // Installed only now that the compiler reported success - the previous valid artifact
                 // is never visible in a partially-written state.
                 File.Move(temporaryOutput, output, overwrite: true);
@@ -250,6 +259,80 @@ namespace SWLOR.Toolset.Services
                 _log.AppendLine($"  {diagnostic.File}({diagnostic.Line}): {diagnostic.Message}");
 
             return new CompileOutcome(false, diagnostics);
+        }
+
+        private static IReadOnlyDictionary<string, byte[]?> CaptureCompileInputs(
+            ModuleWorkspace workspace,
+            string resRef)
+        {
+            var nssDirectory = Path.Combine(workspace.ModuleRoot, "nss");
+            var inputs = new Dictionary<string, byte[]?>(StringComparer.OrdinalIgnoreCase);
+            var pending = new Queue<(string ResRef, int Depth)>();
+            var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            pending.Enqueue((resRef, 0));
+
+            while (pending.Count > 0)
+            {
+                var (inputResRef, depth) = pending.Dequeue();
+                if (!visited.Add(inputResRef))
+                    continue;
+
+                var path = Path.Combine(nssDirectory, inputResRef + ".nss");
+                if (!File.Exists(path))
+                {
+                    inputs[path] = null;
+                    continue;
+                }
+
+                var bytes = File.ReadAllBytes(path);
+                inputs[path] = System.Security.Cryptography.SHA256.HashData(bytes);
+                if (depth >= ScriptIncludeGraph.MaxIncludeDepth)
+                    continue;
+
+                foreach (var include in ScriptOutline.Build(
+                             ScriptTextDocument.FromBytes(bytes).Text).Includes)
+                {
+                    pending.Enqueue((include, depth + 1));
+                }
+            }
+
+            return inputs;
+        }
+
+        private static bool CompileInputsAreUnchanged(
+            IReadOnlyDictionary<string, byte[]?> expected)
+        {
+            foreach (var (path, expectedHash) in expected)
+            {
+                var exists = File.Exists(path);
+                if (expectedHash == null)
+                {
+                    if (exists)
+                        return false;
+                    continue;
+                }
+
+                if (!exists)
+                    return false;
+
+                try
+                {
+                    var currentHash = System.Security.Cryptography.SHA256.HashData(
+                        File.ReadAllBytes(path));
+                    if (!currentHash.AsSpan().SequenceEqual(expectedHash))
+                        return false;
+                }
+                catch (IOException)
+                {
+                    return false;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>Compile-checks one script without writing, for diagnostics.</summary>

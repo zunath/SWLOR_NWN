@@ -83,6 +83,21 @@ namespace SWLOR.Toolset.Domain.Editing
         }
 
         /// <summary>
+        /// Applies derived metadata without adding an undo step. The caller must use this only for
+        /// values fully determined by the document's authored content, such as a saved word count.
+        /// </summary>
+        public void ExecuteDerived(Action mutation)
+        {
+            ArgumentNullException.ThrowIfNull(mutation);
+
+            lock (_syncRoot)
+            {
+                using (EditScope.EnterReplay())
+                    mutation();
+            }
+        }
+
+        /// <summary>
         /// True if the file at FilePath changed since this session loaded or last saved (deleted,
         /// newly created, different last-write time, or - because timestamp granularity can be
         /// coarse and external tools may preserve mtimes - different content under the same

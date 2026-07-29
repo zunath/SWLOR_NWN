@@ -1972,9 +1972,16 @@ namespace SWLOR.Toolset.Editors
                     return false;
                 areReloadedEarly = true;
                 arePlan = SavePlan.Nothing;
+                RefreshAreaPropertyFields();
+                if (_sceneBuildRequested)
+                    _ = BuildSceneAsync(CaptureReselectKey());
+                if (!string.Equals(tilesetBefore, TilesetResRef, StringComparison.OrdinalIgnoreCase))
+                    TilesetChanged?.Invoke();
+                AfterHistoryChange();
+                CatalogEntryChanged?.Invoke();
             }
 
-            if (!CommitStagedWrites(staged))
+            if (!CommitStagedWrites(staged, arePlan, gitPlan, gicPlan))
                 return false;
 
             var areResult = ApplySavePlan(_areSession, arePlan);
@@ -1997,9 +2004,10 @@ namespace SWLOR.Toolset.Editors
 
             if (areResult.Reloaded)
                 RefreshAreaPropertyFields();
-            if (gitResult.Reloaded || gicResult.Reloaded)
+            if (gitResult.Reloaded || gicResult.Reloaded || instancePairReloaded)
                 RefreshInstanceSections();
-            if ((areResult.Reloaded || gitResult.Reloaded || gicResult.Reloaded) && _sceneBuildRequested)
+            if ((areResult.Reloaded || gitResult.Reloaded || gicResult.Reloaded ||
+                 instancePairReloaded) && _sceneBuildRequested)
                 _ = BuildSceneAsync(CaptureReselectKey());
 
             // Reloading the .are can bring in a different tileset, and the Tiles palette lists the
@@ -2059,6 +2067,13 @@ namespace SWLOR.Toolset.Editors
             }
 
             var choice = await _prompts.ConfirmExternalChangeAsync(session.FilePath).ConfigureAwait(true);
+            if (choice == ExternalChangeChoice.Overwrite)
+            {
+                // The builder accepted the version currently on disk. Make that the compare-and-swap
+                // baseline so the final pre-commit recheck catches only a later change.
+                session.RecordCurrentFileState();
+            }
+
             return choice switch
             {
                 ExternalChangeChoice.Cancel => SavePlan.Cancel,
@@ -2112,10 +2127,31 @@ namespace SWLOR.Toolset.Editors
         /// Replaces every staged file as one logical save, rolling all earlier replacements back if a
         /// later destination cannot be replaced.
         /// </summary>
-        private bool CommitStagedWrites(List<Services.SaveService.StagedWrite> staged)
+        private bool CommitStagedWrites(
+            List<Services.SaveService.StagedWrite> staged,
+            SavePlan arePlan,
+            SavePlan gitPlan,
+            SavePlan gicPlan)
         {
             try
             {
+                foreach (var (session, plan) in new[]
+                         {
+                             (_areSession, arePlan),
+                             (_gitSession, gitPlan),
+                             (_gicSession, gicPlan)
+                         })
+                {
+                    if (plan == SavePlan.Write && session.HasExternalChange())
+                    {
+                        foreach (var write in staged)
+                            Services.SaveService.Discard(write);
+                        _log.AppendLine(
+                            $"Area save stopped because {session.FilePath} changed while the save was being prepared.");
+                        return false;
+                    }
+                }
+
                 Services.SaveService.CommitAll(staged);
                 return true;
             }

@@ -31,7 +31,7 @@ namespace SWLOR.Toolset.Domain.Editors
 
             var locString = new LocString(field);
             var text = locString.Text;
-            if (!string.IsNullOrEmpty(text))
+            if (text != null)
                 return text;
 
             // Only when there is no override to show. An empty override that a builder typed

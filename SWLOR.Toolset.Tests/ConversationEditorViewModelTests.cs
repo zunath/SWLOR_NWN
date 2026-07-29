@@ -299,6 +299,24 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task SavingDerivedWordCountsDoesNotAddAnUndoStep()
+        {
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            var original = editor.Value.LineText;
+
+            editor.Value.LineText = "A deliberately different line.";
+            editor.Value.CommitLineCommand.Execute(null);
+            await editor.Value.TrySaveAsync();
+            editor.Value.UndoCommand.Execute(null);
+
+            editor.Value.LineText.Should().Be(original);
+            editor.Value.CanUndo.Should().BeFalse(
+                "the save-time NumWords refresh is derived data, not a user edit");
+        }
+
+        [Test]
         public void AddingAChoiceAppearsUnderTheCurrentLine()
         {
             using var editor = new Disposable(Open());

@@ -167,8 +167,20 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
                     new ResourceProvenance(ResourceLayerKind.Hak, name, path),
                     () =>
                     {
-                        catalog.TryGetBytes(identity, out var bytes);
-                        return bytes;
+                        var message =
+                            $"The indexed resource '{identity.ResRef}' could not be read from '{path}'.";
+                        try
+                        {
+                            if (catalog.TryGetBytes(identity, out var bytes))
+                                return bytes;
+                        }
+                        catch (Exception exception) when (
+                            exception is IOException or UnauthorizedAccessException)
+                        {
+                            throw new IOException(message, exception);
+                        }
+
+                        throw new IOException(message);
                     });
                 return true;
             }
@@ -180,8 +192,20 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
                     new ResourceProvenance(ResourceLayerKind.BaseGame, "nwn_base", "nwn_base.key"),
                     () =>
                     {
-                        _baseLayer.TryGetBytes(identity, out var bytes);
-                        return bytes;
+                        var message =
+                            $"The KEY index contains '{identity.ResRef}', but its BIF payload could not be read.";
+                        try
+                        {
+                            if (_baseLayer.TryGetBytes(identity, out var bytes))
+                                return bytes;
+                        }
+                        catch (Exception exception) when (
+                            exception is IOException or UnauthorizedAccessException)
+                        {
+                            throw new IOException(message, exception);
+                        }
+
+                        throw new IOException(message);
                     });
                 return true;
             }

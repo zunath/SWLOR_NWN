@@ -272,7 +272,11 @@ namespace SWLOR.Toolset.Workspace
                 watcher.Deleted += (_, e) =>
                 {
                     if (!includeSubdirectories)
+                    {
                         RemoveWatcher(e.FullPath);
+                        // A bare directory event cannot name every resource that vanished with it.
+                        ScheduleRescan();
+                    }
 
                     Report($"External file deleted: {e.FullPath}", deleted: true, e.FullPath);
                 };
@@ -281,6 +285,7 @@ namespace SWLOR.Toolset.Workspace
                     if (!includeSubdirectories)
                     {
                         RemoveWatcher(e.OldFullPath);
+                        ScheduleRescan();
                         if (Directory.Exists(e.FullPath))
                             TryAddTopLevelDirectoryWatcher(e.FullPath);
                     }

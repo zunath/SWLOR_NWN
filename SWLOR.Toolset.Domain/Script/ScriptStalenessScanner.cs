@@ -33,7 +33,13 @@ namespace SWLOR.Toolset.Domain.Script
         /// production. Only detectable through the fingerprint store: an artifact never
         /// fingerprinted never had a source here and is an intentional compiled-only script.
         /// </summary>
-        SourceDeleted
+        SourceDeleted,
+
+        /// <summary>
+        /// The source names a direct or transitive include that is absent from the module. Existing
+        /// bytecode cannot be proven to represent a source tree the compiler can still resolve.
+        /// </summary>
+        MissingInclude
     }
 
     /// <summary>One compiled script that would ship stale.</summary>
@@ -52,6 +58,8 @@ namespace SWLOR.Toolset.Domain.Script
                 $"{ResRef}.nss or one of its includes changed without a modification time moving past {ResRef}.ncs's",
             StaleReason.SourceDeleted =>
                 $"{ResRef}.ncs is orphaned - its source {ResRef}.nss was deleted",
+            StaleReason.MissingInclude =>
+                $"{ResRef}.nss includes missing {TriggerResRef}.nss",
             _ => $"{ResRef}.ncs is older than included {TriggerResRef}.nss"
         };
     }
@@ -136,6 +144,14 @@ namespace SWLOR.Toolset.Domain.Script
 
             foreach (var resRef in entryPoints)
             {
+                var missingInclude = graph.TransitiveIncludes(resRef).FirstOrDefault(include =>
+                    !File.Exists(Path.Combine(_nssDirectory, include + ".nss")));
+                if (missingInclude != null)
+                {
+                    stale.Add(new StaleScript(resRef, StaleReason.MissingInclude, missingInclude));
+                    continue;
+                }
+
                 var compiled = Path.Combine(_ncsDirectory, resRef + ".ncs");
                 if (!File.Exists(compiled))
                 {
@@ -263,11 +279,7 @@ namespace SWLOR.Toolset.Domain.Script
                 foreach (var include in graph.TransitiveIncludes(resRef)
                              .OrderBy(name => name, StringComparer.OrdinalIgnoreCase))
                 {
-                    // An include named by the graph but absent on disk contributes only its name:
-                    // the compiler would fail on it anyway, and the mtime dimension owns that story.
-                    var path = Path.Combine(_nssDirectory, include + ".nss");
-                    if (File.Exists(path))
-                        AppendFile(hash, include);
+                    AppendFile(hash, include);
                 }
 
                 return Convert.ToHexString(hash.GetHashAndReset());

@@ -25,9 +25,10 @@
     "value": 0
   },
   "DescIdentified": {
+    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Weighted hand-wraps that add teeth to every blow."
+      "0": "Brawler’s Wraps"
     }
   },
   "Description": {

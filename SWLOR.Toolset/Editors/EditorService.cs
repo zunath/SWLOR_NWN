@@ -1158,6 +1158,18 @@ namespace SWLOR.Toolset.Editors
                     references.Add($"Module/nss/{scriptResRef}.nss (unsaved editor buffer)");
             }
 
+            foreach (var area in _openAreaEditors.Values)
+            {
+                var itemSection = area.Sections.FirstOrDefault(section =>
+                    section.BlueprintType == ResourceType.Uti);
+                if (itemSection?.Rows.Any(row =>
+                        string.Equals(row.TemplateResRef, resRef, StringComparison.OrdinalIgnoreCase)) == true)
+                {
+                    references.Add(
+                        $"Module/git/{area.AreaResRef}.git.json (unsaved area editor)");
+                }
+            }
+
             return references
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();

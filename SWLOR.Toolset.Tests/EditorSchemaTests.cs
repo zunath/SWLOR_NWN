@@ -55,6 +55,34 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void Accessor_ExplicitEmptyLocalizedOverride_WinsOverTlkText()
+        {
+            var document = JsonGffDocument.Parse(Encoding.UTF8.GetBytes(
+                """
+                {
+                  "__data_type": "UTP ",
+                  "LocName": {
+                    "id": 123,
+                    "type": "cexolocstring",
+                    "value": {
+                      "0": ""
+                    }
+                  }
+                }
+                """));
+            var descriptor = new FieldDescriptor
+            {
+                Label = "Name",
+                FieldName = "LocName",
+                Kind = EditorKind.LocString,
+                FieldType = GffFieldType.CExoLocString
+            };
+
+            SchemaFieldAccessor.GetText(document, descriptor, _ => "TLK fallback")
+                .Should().BeEmpty("an explicit empty language override is still the authored value");
+        }
+
+        [Test]
         public void Accessor_EditThroughTransaction_UndoRestoresExactBytes()
         {
             var original = File.ReadAllBytes(UtcPath);

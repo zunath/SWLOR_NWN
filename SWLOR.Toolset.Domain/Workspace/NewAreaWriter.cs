@@ -161,6 +161,17 @@ namespace SWLOR.Toolset.Domain.Workspace
                 return false;
             }
 
+            byte[] ifoBaseline;
+            try
+            {
+                ifoBaseline = File.ReadAllBytes(ifoPath);
+            }
+            catch (Exception ex)
+            {
+                error = $"Could not read module.ifo.json before creating '{resRef}': {ex.Message}";
+                return false;
+            }
+
             var createdPaths = new List<string>();
             var markerCreated = false;
             try
@@ -177,7 +188,7 @@ namespace SWLOR.Toolset.Domain.Workspace
                         are, resRef, displayName, tilesetResRef, width, height, fill.TileId, fill.Orientation);
                 }
 
-                var ifo = IfoDocument.Load(ifoPath);
+                var ifo = IfoDocument.Parse(ifoBaseline);
                 using (var ifoSession = new DocumentSession(ifoPath, ifo.Document))
                 using (ifoSession.Begin($"Register area '{resRef}'"))
                     AreaTemplateFactory.AddAreaToModule(ifo, resRef);
@@ -204,6 +215,14 @@ namespace SWLOR.Toolset.Domain.Workspace
                 if (!File.Exists(gicPath))
                     createdPaths.Add(gicPath);
                 File.Copy(templateGic, gicPath, overwrite: false);
+
+                var currentIfo = File.ReadAllBytes(ifoPath);
+                if (!currentIfo.AsSpan().SequenceEqual(ifoBaseline))
+                {
+                    throw new IOException(
+                        "module.ifo.json changed while the area was being created. Try again.");
+                }
+
                 WriteAtomic(ifoPath, ifo.ToBytes(), overwrite: true);
                 try
                 {

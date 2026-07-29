@@ -25,9 +25,10 @@
     "value": 0
   },
   "DescIdentified": {
+    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "A charged cestus that turns each strike into a small blast."
+      "0": "Detonation Cestus"
     }
   },
   "Description": {

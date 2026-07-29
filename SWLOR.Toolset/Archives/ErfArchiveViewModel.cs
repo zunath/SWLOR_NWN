@@ -317,6 +317,7 @@ namespace SWLOR.Toolset.Archives
         private readonly ToolsetSettings _settings;
         private readonly Dictionary<string, ErfAssetRow> _areaRows =
             new(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<ErfAssetRow> _explicitImportSelection = new();
         private ErfArchiveSession? _session;
         private CancellationTokenSource? _exportLoadCts;
         private CancellationTokenSource? _resourceNameLoadCts;
@@ -647,8 +648,13 @@ namespace SWLOR.Toolset.Archives
         [RelayCommand(CanExecute = nameof(CanGoBack))]
         private void Back()
         {
-            if (CanGoBack)
-                CurrentStep--;
+            if (!CanGoBack)
+                return;
+
+            if (IsImport && CurrentStep == 2)
+                ClearPreparedImportSelection();
+
+            CurrentStep--;
         }
 
         [RelayCommand(CanExecute = nameof(CanGoNext))]
@@ -799,6 +805,9 @@ namespace SWLOR.Toolset.Archives
             var session = _session
                 ?? throw new InvalidOperationException("Select an ERF file first.");
             var explicitSelection = SelectedFileNames();
+            _explicitImportSelection.Clear();
+            foreach (var row in Assets.Where(row => row.IsSelected))
+                _explicitImportSelection.Add(row);
             StatusText = "Finding anything else the import needs...";
             var dependencies = await _service.FindImportDependenciesAsync(session, explicitSelection)
                 .ConfigureAwait(true);
@@ -814,6 +823,24 @@ namespace SWLOR.Toolset.Archives
             StatusText =
                 $"{Assets.Count(row => row.IsSelected && row.IsPrepared)} asset(s) prepared; " +
                 $"{Assets.Count(row => row.IsSelected && row.HasConflict)} conflict(s) need a choice.";
+        }
+
+        private void ClearPreparedImportSelection()
+        {
+            foreach (var row in Assets)
+            {
+                var wasAddedAutomatically = row.IsRequired && !_explicitImportSelection.Contains(row);
+                row.IsRequired = false;
+                row.RequiredReason = string.Empty;
+                row.ApplyPrepared(Array.Empty<ErfPreparedImport>());
+                if (wasAddedAutomatically)
+                    row.IsSelected = false;
+            }
+
+            _explicitImportSelection.Clear();
+            OnPropertyChanged(nameof(FilteredAssets));
+            OnPropertyChanged(nameof(ConflictAssets));
+            OnPropertyChanged(nameof(VisibleSelectionState));
         }
 
         private async Task PrepareExportSelectionAsync()

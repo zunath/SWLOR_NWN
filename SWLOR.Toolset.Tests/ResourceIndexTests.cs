@@ -112,6 +112,39 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AHandleThrowsWhenItsIndexedPayloadCanNoLongerBeRead()
+        {
+            var tempRoot = Path.Combine(
+                Path.GetTempPath(),
+                "SWLOR.Toolset.Tests",
+                Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempRoot);
+            var resourcePath = Path.Combine(tempRoot, "vanishing.2da");
+            File.WriteAllText(resourcePath, "2DA V2.0\r\n");
+
+            try
+            {
+                var index = new ResourceIndex(
+                    baseLayer: null,
+                    hakLayersInOrder: new[] { new ResourceIndex.HakLayer("fixture", tempRoot) });
+                var identity = new ResourceIdentity(
+                    "vanishing",
+                    ResourceIdentity.TypeFromExtension("2da"));
+                index.TryLookup(identity, out var handle).Should().BeTrue();
+
+                File.Delete(resourcePath);
+
+                var read = () => handle.GetBytes();
+                read.Should().Throw<IOException>()
+                    .WithMessage("*indexed resource*could not be read*");
+            }
+            finally
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
         public void FromHakBuilderConfig_OverRealCorpus_FindsTde01SetAndDungeonModel_AndScansQuickly()
         {
             var index = ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory);

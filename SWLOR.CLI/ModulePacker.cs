@@ -23,6 +23,7 @@ namespace SWLOR.CLI
         // reference that one (see RequireNoInterruptedAreaCreation), so the literal is duplicated.
         private const string NewAreaPendingMarkerPrefix = ".swlor-toolset-new-area-";
         private const string NewAreaPendingMarkerSuffix = ".pending";
+        private const string ErfImportPendingMarkerPattern = ".swlor-toolset-erf-import-*.pending.json";
 
         public void PackModule(string filePath, bool noPrompt = false)
         {
@@ -36,6 +37,7 @@ namespace SWLOR.CLI
             {
                 RequireNoInterruptedSaves();
                 RequireNoInterruptedAreaCreation();
+                RequireNoInterruptedErfImport();
                 RecreateDirectory(PackingDirectory);
                 DeleteFileWithRetry(temporaryModuleFileName);
 
@@ -152,6 +154,7 @@ namespace SWLOR.CLI
             // lets the toolset recover the transaction before the evidence is destroyed.
             RequireNoInterruptedSaves();
             RequireNoInterruptedAreaCreation();
+            RequireNoInterruptedErfImport();
 
             var folders = GetModuleFolders();
             // Create any missing folders and clear out any files in existing folders.
@@ -570,6 +573,19 @@ namespace SWLOR.CLI
                 "module.ifo entry. Open the module in the SWLOR Toolset and use New Area with the " +
                 "same ResRef to complete or roll back the interrupted creation, then pack again. " +
                 $"Pending area(s): {string.Join(", ", pendingResRefs)}" +
+                Environment.NewLine +
+                string.Join(Environment.NewLine, markers));
+        }
+
+        private static void RequireNoInterruptedErfImport()
+        {
+            var markers = Directory.GetFiles(".", ErfImportPendingMarkerPattern);
+            if (markers.Length == 0)
+                return;
+
+            throw new InvalidOperationException(
+                "Interrupted ERF import detected. Open the module in the SWLOR Toolset to recover " +
+                "the import before packing or unpacking." +
                 Environment.NewLine +
                 string.Join(Environment.NewLine, markers));
         }

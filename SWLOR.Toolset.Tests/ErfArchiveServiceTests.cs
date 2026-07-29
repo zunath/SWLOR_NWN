@@ -102,6 +102,41 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ReturningFromPreparedImportClearsAutomaticallyAddedIncludes()
+        {
+            File.WriteAllText(
+                Path.Combine(_firstModule, "nss", "entry.nss"),
+                "#include \"shared_inc\"\nvoid main() {}\n");
+            File.WriteAllText(
+                Path.Combine(_firstModule, "nss", "shared_inc.nss"),
+                "int SharedValue() { return 7; }\n");
+            var archivePath = Path.Combine(_root, "back-from-import.erf");
+            await _service.ExportAsync(new[] { "entry.nss", "shared_inc.nss" }, archivePath);
+
+            _workspace.Open(_secondModule);
+            using var viewModel = new ErfArchiveViewModel(
+                _service,
+                ToolsetSettings.Load(Path.Combine(_root, "back-from-import-settings.json")));
+            (await viewModel.LoadArchiveAsync(archivePath)).Should().BeTrue();
+            await viewModel.NextCommand.ExecuteAsync(null);
+            var entry = viewModel.Assets.Single(row => row.FileName == "entry.nss");
+            var include = viewModel.Assets.Single(row => row.FileName == "shared_inc.nss");
+            entry.IsSelected = true;
+
+            await viewModel.NextCommand.ExecuteAsync(null);
+            include.IsRequired.Should().BeTrue();
+            include.IsSelected.Should().BeTrue();
+
+            viewModel.BackCommand.Execute(null);
+
+            viewModel.CurrentStep.Should().Be(1);
+            include.IsRequired.Should().BeFalse();
+            include.RequiredReason.Should().BeEmpty();
+            include.IsSelected.Should().BeFalse();
+            entry.IsSelected.Should().BeTrue("the user's explicit selection is retained");
+        }
+
+        [Test]
         public async Task ModuleAssetsAreEnumeratedInBoundedProgressiveBatches()
         {
             var sourceDirectory = Path.Combine(_firstModule, "nss");
@@ -192,6 +227,9 @@ namespace SWLOR.Toolset.Tests
             File.WriteAllBytes(
                 Path.Combine(_firstModule, "git", $"{areaResRef}.git.json"),
                 new JsonGffDocument("GIT ", gitRoot).ToBytes());
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "gic", $"{areaResRef}.gic.json"),
+                new JsonGffDocument("GIC ", new JsonGffStruct()).ToBytes());
 
             File.WriteAllBytes(
                 Path.Combine(_firstModule, "dlg", $"{dialogResRef}.dlg.json"),
@@ -223,7 +261,8 @@ namespace SWLOR.Toolset.Tests
             archive.Assets.Select(asset => asset.FileName)
                 .Should().BeEquivalentTo(
                     $"{areaResRef}.are",
-                    $"{areaResRef}.git");
+                    $"{areaResRef}.git",
+                    $"{areaResRef}.gic");
         }
 
         [Test]
@@ -301,6 +340,7 @@ namespace SWLOR.Toolset.Tests
             await exportViewModel.NextCommand.ExecuteAsync(null);
             (await exportViewModel.ExportAsync(archivePath)).Should().BeTrue();
 
+            EnsureModuleIfo(_secondModule);
             _workspace.Open(_secondModule);
             var importSettings = ToolsetSettings.Load(
                 Path.Combine(_root, "import-settings.json"));
@@ -558,6 +598,124 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task RenamingOneResourceTypeDoesNotRenameAnotherTypesIdentity()
+        {
+            _workspace.Open(_secondModule);
+            var itemSource = Path.Combine(_root, "shared.uti.json");
+            File.WriteAllBytes(
+                itemSource,
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Uti, "shared", "Shared Item"));
+            var creatureSource = Path.Combine(_root, "shared.utc.json");
+            File.WriteAllBytes(
+                creatureSource,
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utc, "shared", "Shared Creature"));
+
+            var choices = new List<ErfImportChoice>
+            {
+                Choice(itemSource, "uti", ErfConflictAction.Rename, "renamed_item"),
+                Choice(creatureSource, "utc", ErfConflictAction.Add, null)
+            };
+
+            await _service.ImportAsync(choices);
+
+            JsonGffDocument.Load(Path.Combine(_secondModule, "uti", "renamed_item.uti.json"))
+                .Root.Get("TemplateResRef").GetString().Should().Be("renamed_item");
+            JsonGffDocument.Load(Path.Combine(_secondModule, "utc", "shared.utc.json"))
+                .Root.Get("TemplateResRef").GetString().Should().Be("shared");
+
+            ErfImportChoice Choice(
+                string source,
+                string extension,
+                ErfConflictAction action,
+                string? renamed)
+            {
+                var asset = new ErfArchiveAsset(
+                    $"shared.{extension}",
+                    "shared",
+                    extension,
+                    new FileInfo(source).Length,
+                    IsSupported: true,
+                    TypeName: extension,
+                    UnsupportedReason: null);
+                return new ErfImportChoice(
+                    new ErfPreparedImport(
+                        asset,
+                        source,
+                        Path.Combine(_secondModule, extension, $"shared.{extension}.json"),
+                        ErfConflictKind.New,
+                        ErfConflictAction.Add),
+                    action,
+                    renamed);
+            }
+        }
+
+        [Test]
+        public async Task RenamingAScriptIncludeUpdatesIncludeDirectives()
+        {
+            _workspace.Open(_secondModule);
+            var entrySource = Path.Combine(_root, "entry.nss");
+            var includeSource = Path.Combine(_root, "old_inc.nss");
+            File.WriteAllText(entrySource, "#include \"old_inc\"\nvoid main() {}\n");
+            File.WriteAllText(includeSource, "int SharedValue() { return 1; }\n");
+
+            ErfImportChoice Choice(
+                string source,
+                string resRef,
+                ErfConflictAction action,
+                string? renamed)
+            {
+                var asset = new ErfArchiveAsset(
+                    $"{resRef}.nss",
+                    resRef,
+                    "nss",
+                    new FileInfo(source).Length,
+                    IsSupported: true,
+                    TypeName: "Script source",
+                    UnsupportedReason: null);
+                return new ErfImportChoice(
+                    new ErfPreparedImport(
+                        asset,
+                        source,
+                        Path.Combine(_secondModule, "nss", $"{resRef}.nss"),
+                        ErfConflictKind.New,
+                        ErfConflictAction.Add),
+                    action,
+                    renamed);
+            }
+
+            await _service.ImportAsync(new[]
+            {
+                Choice(entrySource, "entry", ErfConflictAction.Add, null),
+                Choice(includeSource, "old_inc", ErfConflictAction.Rename, "new_inc")
+            });
+
+            File.ReadAllText(Path.Combine(_secondModule, "nss", "entry.nss"))
+                .Should().Contain("#include \"new_inc\"");
+            File.Exists(Path.Combine(_secondModule, "nss", "new_inc.nss")).Should().BeTrue();
+        }
+
+        [Test]
+        public async Task OpeningAnArchiveRejectsAnIncompleteArea()
+        {
+            const string resRef = "orphan_area";
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "are", $"{resRef}.are.json"),
+                new JsonGffDocument("ARE ", new JsonGffStruct()).ToBytes());
+            var archivePath = Path.Combine(_root, "incomplete-area.erf");
+            await _service.ExportAsync(new[] { $"{resRef}.are" }, archivePath);
+
+            Func<Task> action = async () =>
+            {
+                using var archive = await _service.OpenArchiveAsync(archivePath);
+            };
+
+            await action.Should().ThrowAsync<InvalidDataException>()
+                .WithMessage("*incomplete*missing*.git*.gic*");
+        }
+
+        [Test]
         public void StartupRecoveryRestoresReplacementsAndRemovesPartlyAddedFiles()
         {
             var destination = Path.Combine(_secondModule, "nss", "existing.nss");
@@ -609,6 +767,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task RenamingAnAreaKeepsAllThreeCompanionsOnTheSameResRef()
         {
+            EnsureModuleIfo(_secondModule);
             _workspace.Open(_secondModule);
             var choices = new List<ErfImportChoice>();
             foreach (var extension in new[] { "are", "git", "gic" })
@@ -644,6 +803,8 @@ namespace SWLOR.Toolset.Tests
                 File.Exists(Path.Combine(
                     _secondModule, extension, $"old_area.{extension}.json")).Should().BeFalse();
             }
+            IfoDocument.Load(Path.Combine(_secondModule, "ifo", "module.ifo.json"))
+                .AreaResRefs.Should().Contain("new_area");
         }
 
         private static void CreateModuleFolders(string moduleRoot)
@@ -656,6 +817,15 @@ namespace SWLOR.Toolset.Tests
             {
                 Directory.CreateDirectory(Path.Combine(moduleRoot, extension));
             }
+
+        }
+
+        private static void EnsureModuleIfo(string moduleRoot)
+        {
+            File.Copy(
+                Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"),
+                Path.Combine(moduleRoot, "ifo", "module.ifo.json"),
+                overwrite: true);
         }
 
         private static string FindToolsDirectory()

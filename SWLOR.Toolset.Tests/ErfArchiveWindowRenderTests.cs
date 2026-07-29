@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using Avalonia.Threading;
@@ -47,6 +48,7 @@ namespace SWLOR.Toolset.Tests
                     1,
                     "Script source"));
                 viewModel.Assets.Add(selectableAsset);
+                viewModel.SearchText = "render_test";
                 viewModel.CurrentStep = 1;
                 Dispatcher.UIThread.RunJobs();
 
@@ -56,8 +58,19 @@ namespace SWLOR.Toolset.Tests
                         checkBox.Name == "VisibleSelectionCheckBox");
                 headerCheckbox.Should().NotBeNull();
                 headerCheckbox!.IsVisible.Should().BeTrue();
-                headerCheckbox.Bounds.X.Should().BeGreaterThanOrEqualTo(0);
                 headerCheckbox.IsEnabled.Should().BeTrue();
+                var assetTableHost = window.FindControl<Grid>("AssetTableHost");
+                assetTableHost.Should().NotBeNull();
+                var headerPosition = headerCheckbox.TranslatePoint(
+                    new Point(0, 0),
+                    assetTableHost);
+                headerPosition.Should().NotBeNull();
+                headerPosition!.Value.X.Should().BeApproximately(
+                    (42 - headerCheckbox.Bounds.Width) / 2,
+                    0.5);
+                headerPosition.Value.Y.Should().BeApproximately(
+                    (42 - headerCheckbox.Bounds.Height) / 2,
+                    0.5);
                 headerCheckbox.Command.Should().NotBeNull();
                 headerCheckbox.Command!.Execute(headerCheckbox.CommandParameter);
                 Dispatcher.UIThread.RunJobs();

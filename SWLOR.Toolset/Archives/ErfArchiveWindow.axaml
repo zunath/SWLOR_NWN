@@ -185,61 +185,62 @@
               <ComboBox Grid.Column="2" ItemsSource="{Binding StatusFilters}"
                         SelectedItem="{Binding SelectedStatusFilter}" />
             </Grid>
-            <DataGrid Grid.Row="1"
-                      ItemsSource="{Binding FilteredAssets}"
-                      AutoGenerateColumns="False"
-                      CanUserResizeColumns="True"
-                      CanUserSortColumns="True"
-                      GridLinesVisibility="Horizontal"
-                      IsReadOnly="False"
-                      SelectionMode="Single">
-              <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Select shown assets"
-                                        Width="42"
-                                        CanUserSort="False">
-                  <DataGridTemplateColumn.HeaderTemplate>
-                    <DataTemplate>
-                      <Grid Width="42" Height="32">
-                        <CheckBox x:Name="VisibleSelectionCheckBox"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  IsThreeState="True"
-                                  IsChecked="{Binding $parent[DataGrid].((archives:ErfArchiveViewModel)DataContext).VisibleSelectionState, Mode=OneWay}"
-                                  IsEnabled="{Binding $parent[DataGrid].((archives:ErfArchiveViewModel)DataContext).CanToggleVisibleAssets}"
-                                  Command="{Binding $parent[DataGrid].((archives:ErfArchiveViewModel)DataContext).ToggleVisibleSelectionCommand}"
-                                  ToolTip.Tip="Select or clear shown assets" />
-                      </Grid>
-                    </DataTemplate>
-                  </DataGridTemplateColumn.HeaderTemplate>
-                  <DataGridTemplateColumn.CellTemplate>
-                    <DataTemplate x:DataType="archives:ErfAssetRow">
-                      <CheckBox HorizontalAlignment="Center"
-                                IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                IsEnabled="{Binding CanToggle}" />
-                    </DataTemplate>
-                  </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Asset" Width="1.5*"
-                                    Binding="{Binding FileName}" IsReadOnly="True" />
-                <DataGridTemplateColumn Header="Name" Width="1.8*">
-                  <DataGridTemplateColumn.CellTemplate>
-                    <DataTemplate x:DataType="archives:ErfAssetRow">
-                      <TextBlock Text="{Binding ResourceNameDisplay}"
-                                 TextTrimming="CharacterEllipsis"
-                                 ToolTip.Tip="{Binding ResourceName}" />
-                    </DataTemplate>
-                  </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Type" Width="1.1*"
-                                    Binding="{Binding TypeName}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Destination / source" Width="1.8*"
-                                    Binding="{Binding Detail}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Size" Width="90"
-                                    Binding="{Binding SizeLabel}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Status" Width="1.3*"
-                                    Binding="{Binding StatusLabel}" IsReadOnly="True" />
-              </DataGrid.Columns>
-            </DataGrid>
+            <Grid x:Name="AssetTableHost" Grid.Row="1">
+              <DataGrid x:Name="AssetGrid"
+                        ItemsSource="{Binding FilteredAssets}"
+                        AutoGenerateColumns="False"
+                        CanUserResizeColumns="True"
+                        CanUserSortColumns="True"
+                        ColumnHeaderHeight="42"
+                        GridLinesVisibility="Horizontal"
+                        IsReadOnly="False"
+                        SelectionMode="Single">
+                <DataGrid.Columns>
+                  <DataGridTemplateColumn Header="" Width="42" CanUserSort="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate x:DataType="archives:ErfAssetRow">
+                        <CheckBox HorizontalAlignment="Center"
+                                  IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                  IsEnabled="{Binding CanToggle}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTextColumn Header="Asset" Width="1.5*"
+                                      Binding="{Binding FileName}" IsReadOnly="True" />
+                  <DataGridTemplateColumn Header="Name" Width="1.8*">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate x:DataType="archives:ErfAssetRow">
+                        <TextBlock Text="{Binding ResourceNameDisplay}"
+                                   TextTrimming="CharacterEllipsis"
+                                   ToolTip.Tip="{Binding ResourceName}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTextColumn Header="Type" Width="1.1*"
+                                      Binding="{Binding TypeName}" IsReadOnly="True" />
+                  <DataGridTextColumn Header="Destination / source" Width="1.8*"
+                                      Binding="{Binding Detail}" IsReadOnly="True" />
+                  <DataGridTextColumn Header="Size" Width="90"
+                                      Binding="{Binding SizeLabel}" IsReadOnly="True" />
+                  <DataGridTextColumn Header="Status" Width="1.3*"
+                                      Binding="{Binding StatusLabel}" IsReadOnly="True" />
+                </DataGrid.Columns>
+              </DataGrid>
+
+              <Grid Width="42"
+                    Height="42"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top">
+                <CheckBox x:Name="VisibleSelectionCheckBox"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          IsThreeState="True"
+                          IsChecked="{Binding VisibleSelectionState, Mode=OneWay}"
+                          IsEnabled="{Binding CanToggleVisibleAssets}"
+                          Command="{Binding ToggleVisibleSelectionCommand}"
+                          ToolTip.Tip="Select or clear shown assets" />
+              </Grid>
+            </Grid>
           </Grid>
 
           <!-- Selection validation starts on its own screen so long dependency scans never look

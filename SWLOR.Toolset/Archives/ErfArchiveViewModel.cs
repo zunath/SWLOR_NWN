@@ -310,7 +310,7 @@ namespace SWLOR.Toolset.Archives
         private static readonly IReadOnlyList<string> ImportStatusFilters =
             new[] { "All assets", "Selected", "Added automatically", "Can't import" };
         private static readonly IReadOnlyList<string> ExportStatusFilters =
-            new[] { "All assets", "Selected", "Added automatically" };
+            new[] { "All assets", "Selected" };
 
         private readonly ErfArchiveService _service;
         private readonly ToolsetSettings _settings;
@@ -461,7 +461,7 @@ namespace SWLOR.Toolset.Archives
         public string StepDescription => IsValidatingSelection && CurrentStep == 2
             ? IsImport
                 ? "Checking the selected assets and preparing any choices that need your attention."
-                : "Checking the selected assets and finding anything else the archive needs."
+                : "Checking only the assets you selected."
             : (Mode, CurrentStep) switch
         {
             (ErfArchiveMode.Import, 0) =>
@@ -475,9 +475,9 @@ namespace SWLOR.Toolset.Archives
             (ErfArchiveMode.Export, 0) =>
                 "We're finding the module assets you can include in the ERF.",
             (ErfArchiveMode.Export, 1) =>
-                "Select assets to export. Anything else they need will be added automatically.",
+                "Select exactly what the ERF should contain. Area files stay grouped together.",
             (ErfArchiveMode.Export, 2) =>
-                "The selected JSON, resource names, and dependency closure are checked before a destination can be chosen.",
+                "The selected assets are checked before a destination can be chosen.",
             _ =>
                 "Choose a destination in the native Save As dialog. The archive is written and validated beside it before an atomic replace."
         };
@@ -784,14 +784,14 @@ namespace SWLOR.Toolset.Archives
 
         private async Task PrepareExportSelectionAsync()
         {
-            StatusText = "Finding anything else the export needs...";
-            var explicitSelection = SelectedFileNames();
-            var dependencies = await _service.FindExportDependenciesAsync(explicitSelection)
+            StatusText = "Checking the selected assets...";
+            var selectedAssets = Assets
+                .Where(row => row.IsSelected)
+                .SelectMany(row => row.ModuleAssets)
+                .ToList();
+            await _service.ValidateExportSelectionAsync(selectedAssets)
                 .ConfigureAwait(true);
-            ApplyDependencies(dependencies);
 
-            // Dependency traversal parses every selected GFF JSON and reads every selected script.
-            // Reaching here is therefore the validation pass, not a decorative review page.
             StatusText =
                 $"Validation passed for {Assets.Count(row => row.IsSelected)} asset(s). ERF format: V1.0.";
         }

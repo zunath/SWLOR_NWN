@@ -144,7 +144,7 @@
             </Border>
           </Grid>
 
-          <!-- Export step 1: the shell saved every open editor before showing this modal. -->
+          <!-- Export step 1: discover the assets available for export. -->
           <Border IsVisible="{Binding ShowExportSnapshot}"
                   BorderBrush="{DynamicResource RuleBrush}"
                   BorderThickness="1"
@@ -155,32 +155,21 @@
                   VerticalAlignment="Top"
                   Background="{DynamicResource PanelRaisedBrush}">
             <StackPanel Spacing="10">
-              <TextBlock FontSize="16" FontWeight="SemiBold" Text="On-disk snapshot ready" />
-              <TextBlock TextWrapping="Wrap"
-                         Text="All open documents were saved before ERF Archives opened. The exporter will read those files from Module and will not serialize live editor buffers." />
+              <TextBlock FontSize="16" FontWeight="SemiBold" Text="Module assets" />
               <Border IsVisible="{Binding IsBusy}"
                       Background="{DynamicResource PanelBrush}"
                       BorderBrush="{DynamicResource RuleBrush}"
                       BorderThickness="1"
                       CornerRadius="3"
                       Padding="12">
-                <StackPanel Spacing="8">
-                  <ProgressBar IsIndeterminate="True" />
-                  <TextBlock Classes="dim" Text="{Binding StatusText}" />
-                </StackPanel>
+                <ProgressBar IsIndeterminate="True" />
               </Border>
               <Border Background="{DynamicResource PanelBrush}"
                       BorderBrush="{DynamicResource RuleBrush}"
                       BorderThickness="1"
                       CornerRadius="3"
                       Padding="12">
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                  <TextBlock Text="✓" FontSize="18" Foreground="{DynamicResource GreenBrush}" />
-                  <StackPanel Grid.Column="1">
-                    <TextBlock FontWeight="SemiBold" Text="Stable saved generation" />
-                    <TextBlock Classes="dim" Text="Continue to select module assets and required dependencies." />
-                  </StackPanel>
-                </Grid>
+                <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap" />
               </Border>
             </StackPanel>
           </Border>

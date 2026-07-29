@@ -296,7 +296,7 @@ namespace SWLOR.Toolset.Archives
         public bool CanCommit => !IsBusy && !IsComplete;
         public bool CanGoNext => !IsBusy && CurrentStep < 3 && (CurrentStep != 0 || !IsImport || _session != null);
         public string ModeTitle => IsImport ? "Import ERF" : "Export ERF";
-        public string StepOneLabel => IsImport ? "1  Select ERF file" : "1  Saved workspace";
+        public string StepOneLabel => IsImport ? "1  Select ERF file" : "1  Prepare export";
         public string StepTwoLabel => "2  Choose assets";
         public string StepThreeLabel => IsImport ? "3  Resolve conflicts" : "3  Validate";
         public string StepFourLabel => IsImport ? "4  Save to Module" : "4  Save ERF As";
@@ -307,7 +307,7 @@ namespace SWLOR.Toolset.Archives
             (ErfArchiveMode.Import, 1) => "Choose assets to import",
             (ErfArchiveMode.Import, 2) => "Resolve conflicts",
             (ErfArchiveMode.Import, 3) => "Save the import to Module",
-            (ErfArchiveMode.Export, 0) => "Saved module snapshot",
+            (ErfArchiveMode.Export, 0) => "Prepare your export",
             (ErfArchiveMode.Export, 1) => "Choose assets to export",
             (ErfArchiveMode.Export, 2) => "Validate the archive plan",
             _ => "Save ERF As"
@@ -324,7 +324,7 @@ namespace SWLOR.Toolset.Archives
             (ErfArchiveMode.Import, 3) =>
                 string.Empty,
             (ErfArchiveMode.Export, 0) =>
-                "All open editors were saved before this modal opened. Export reads only that stable on-disk snapshot.",
+                "We're finding the module assets you can include in the ERF.",
             (ErfArchiveMode.Export, 1) =>
                 "Select module assets. Area companions, matching resource references, and script includes are added before validation.",
             (ErfArchiveMode.Export, 2) =>
@@ -436,28 +436,28 @@ namespace SWLOR.Toolset.Archives
             var cancellation = new CancellationTokenSource();
             _exportLoadCts = cancellation;
             IsBusy = true;
-            StatusText = "Finding module resources...";
+            StatusText = "Finding module assets...";
             try
             {
                 await foreach (var batch in _service.EnumerateModuleAssetBatchesAsync(
                                    cancellationToken: cancellation.Token))
                 {
                     AppendRows(batch.Select(asset => new ErfAssetRow(asset)));
-                    StatusText = $"Loading module resources... {Assets.Count:N0} found.";
+                    StatusText = $"Found {Assets.Count:N0} module asset(s)...";
                 }
 
                 StatusText =
-                    $"Saved snapshot ready: {Assets.Count:N0} module resource(s) available.";
+                    $"{Assets.Count:N0} module asset(s) are ready to export.";
             }
             catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
             {
                 if (!_disposed)
-                    StatusText = "Module resource loading was canceled.";
+                    StatusText = "Loading module assets was canceled.";
             }
             catch (Exception ex)
             {
                 StatusText =
-                    $"Could not load module resources: {ex.GetBaseException().Message}";
+                    $"Could not load module assets: {ex.GetBaseException().Message}";
             }
             finally
             {

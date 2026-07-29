@@ -105,6 +105,18 @@
       </Border>
     </DataTemplate>
 
+    <!-- Base-game properties older items still carry: visible and removable, never added.
+         Templated rather than placed, so it can be dealt into a stats column like any other card. -->
+    <DataTemplate DataType="items:ItemEngineLegacySectionViewModel">
+      <Border Classes="card" Width="300" Margin="0,0,10,10" Padding="12,9,12,11"
+              VerticalAlignment="Top" IsVisible="{Binding HasEntries, FallbackValue=False}">
+        <StackPanel>
+          <TextBlock Text="Engine — base game" Classes="section" Margin="0,0,0,6" />
+          <ItemsControl ItemsSource="{Binding Entries}" />
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+
     <!-- One picture tile of an appearance gallery. -->
     <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
       <StackPanel Width="72">
@@ -501,27 +513,15 @@
 
         <TabItem Header="Stats" IsVisible="{Binding ShowsStatsTab}">
           <ScrollViewer>
-            <StackPanel Margin="14,10,22,10">
-              <!-- Two independently packed columns rather than one wrapping row: a wrap sizes
-                   every row to its tallest card, which left a six-row hole under Defense beside
-                   the much taller Resistance card. -->
-              <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                <ItemsControl Grid.Column="0" ItemsSource="{Binding Stats.LeftColumn}" />
-                <ItemsControl Grid.Column="1" ItemsSource="{Binding Stats.RightColumn}" />
-              </Grid>
-
-              <!-- Base-game properties older items still carry: visible and removable, never added. -->
-              <Border Classes="card" MaxWidth="620" HorizontalAlignment="Left"
-                      Padding="12,9,12,11" Margin="0,2,10,10"
-                      DataContext="{Binding Stats.Engine}"
-                      x:DataType="items:ItemEngineLegacySectionViewModel"
-                      IsVisible="{Binding HasEntries, FallbackValue=False}">
-                <StackPanel>
-                  <TextBlock Text="Engine — base game" Classes="section" Margin="0,0,0,6" />
-                  <ItemsControl ItemsSource="{Binding Entries}" />
-                </StackPanel>
-              </Border>
-            </StackPanel>
+            <!-- Two independently packed columns rather than one wrapping row: a wrap sizes
+                 every row to its tallest card, which left a six-row hole under Defense beside
+                 the much taller Resistance card. The engine sweep is dealt into the columns with
+                 everything else - as its own block below the grid it began under the TALLER
+                 column, so the shorter one just stopped and left the difference blank. -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="14,10,22,10">
+              <ItemsControl Grid.Column="0" ItemsSource="{Binding Stats.LeftColumn}" />
+              <ItemsControl Grid.Column="1" ItemsSource="{Binding Stats.RightColumn}" />
+            </Grid>
           </ScrollViewer>
         </TabItem>
 

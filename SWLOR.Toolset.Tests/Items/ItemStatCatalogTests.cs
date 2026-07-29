@@ -82,20 +82,21 @@ namespace SWLOR.Toolset.Tests.Items
         [Test]
         public void ItemEngineLegacyCatalog_ContainsEveryDeclaredEngineProperty()
         {
-            // DamageImmunity (20), Immunity (37), and Regeneration (51) were removed from this
-            // catalog by owner decision - the Engine card never shows them, though the corpus's
-            // entries for all three are preserved (ItemCombinationAuditTests' allowlist).
+            // DamageImmunity (20), Immunity (37), Regeneration (51), and UnlimitedAmmo (61) were
+            // removed from this catalog by owner decision - the Engine card never shows them, though
+            // the corpus's entries for all four are preserved (ItemCombinationAuditTests' allowlist).
+            // Unlimited ammunition is assumed for every ranged weapon, so 61 decides nothing.
             var expected = new[]
             {
                 0, 1, 6, 10, 11, 12, 16, 18, 21, 22, 23, 24, 26, 32, 35, 40, 43, 44, 45, 47, 48,
-                56, 58, 61, 67, 72, 74, 75, 77, 79, 81, 82, 83, 87
+                56, 58, 67, 72, 74, 75, 77, 79, 81, 82, 83, 87
             };
 
-            expected.Should().HaveCount(34);
+            expected.Should().HaveCount(33);
             foreach (var propertyId in expected)
                 ItemEngineLegacyCatalog.Contains(propertyId).Should().BeTrue($"property {propertyId} should be covered");
 
-            foreach (var removedPropertyId in new[] { 20, 37, 51 })
+            foreach (var removedPropertyId in new[] { 20, 37, 51, 61 })
                 ItemEngineLegacyCatalog.Contains(removedPropertyId).Should().BeFalse(
                     $"property {removedPropertyId} was removed from the Engine card by owner decision");
 

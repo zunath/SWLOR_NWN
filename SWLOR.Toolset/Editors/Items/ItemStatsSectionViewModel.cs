@@ -39,9 +39,9 @@ namespace SWLOR.Toolset.Editors.Items
         /// eight-row Resistance card left a hole the size of six rows underneath it; packing each
         /// column independently closes those.
         /// </summary>
-        public ObservableCollection<ItemStatGroupViewModel> LeftColumn { get; } = new();
+        public ObservableCollection<object> LeftColumn { get; } = new();
 
-        public ObservableCollection<ItemStatGroupViewModel> RightColumn { get; } = new();
+        public ObservableCollection<object> RightColumn { get; } = new();
 
         /// <summary>The base-game engine properties the corpus still carries - built by <see cref="Rebuild"/>.</summary>
         public ItemEngineLegacySectionViewModel? Engine { get; private set; }
@@ -97,9 +97,9 @@ namespace SWLOR.Toolset.Editors.Items
             foreach (var groupId in primaryIds)
                 Groups.Add(BuildGroup(groupId));
 
-            LayOutColumns();
-
             Engine = new ItemEngineLegacySectionViewModel(_store, _runEdit, _resolveChoices, _costTableMax);
+
+            LayOutColumns();
         }
 
         /// <summary>
@@ -114,20 +114,40 @@ namespace SWLOR.Toolset.Editors.Items
 
             var leftRows = 0;
             var rightRows = 0;
-            foreach (var group in Groups)
+            foreach (var (card, rows) in Cards())
             {
-                var rows = group.Cells.Count + group.EntryLists.Count + group.ExclusiveChoices.Count;
                 if (leftRows <= rightRows)
                 {
-                    LeftColumn.Add(group);
+                    LeftColumn.Add(card);
                     leftRows += rows;
                 }
                 else
                 {
-                    RightColumn.Add(group);
+                    RightColumn.Add(card);
                     rightRows += rows;
                 }
             }
+        }
+
+        /// <summary>
+        /// Every card the columns have to place, tallest first, with the row count that drives its
+        /// height. Dealing in size order matters: taking them in declaration order let a tall card
+        /// arrive last with nowhere balanced to go.
+        /// </summary>
+        private IEnumerable<(object Card, int Rows)> Cards()
+        {
+            var cards = Groups
+                .Select(group => ((object)group,
+                    group.Cells.Count + group.EntryLists.Count + group.ExclusiveChoices.Count))
+                .ToList();
+
+            // The engine sweep is a card like any other. It used to sit below the whole grid, so
+            // the space under the shorter column stayed empty and the sweep began below the taller
+            // one - a hole the size of the difference, with the answer to it directly underneath.
+            if (Engine is { HasEntries: true } engine)
+                cards.Add((engine, engine.Entries.Count + 1));
+
+            return cards.OrderByDescending(card => card.Item2);
         }
 
         /// <summary>Re-reads every built cell/entry list/exclusive choice, and the engine rows.</summary>

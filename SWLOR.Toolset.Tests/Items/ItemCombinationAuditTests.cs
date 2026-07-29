@@ -44,7 +44,9 @@ namespace SWLOR.Toolset.Tests.Items
         /// owner decision; data preserved - the corpus's entries for all four stay untouched, just
         /// no longer offered by any catalog.
         /// </summary>
-        private static readonly HashSet<int> AllowlistedProperties = new() { 146, 148, 103, 20, 37, 51 };
+        // 61 is UnlimitedAmmo: every ranged weapon here has unlimited ammunition, so the property
+        // decides nothing and the editor stopped offering it. Its 228 stored entries stay on disk.
+        private static readonly HashSet<int> AllowlistedProperties = new() { 146, 148, 103, 20, 37, 51, 61 };
 
         private static string Sw2DaDirectory =>
             Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks", "sw_2da");

@@ -77,9 +77,29 @@ namespace SWLOR.Toolset.Editors.Items
         [ObservableProperty]
         private bool _previewFemale;
 
+        /// <summary>
+        /// The other half of the body picker. The two halves are one choice, so this is simply the
+        /// inverse - it exists because a segmented control binds each half to its own IsChecked,
+        /// and a one-way negation would leave the male half unable to select itself.
+        /// </summary>
+        public bool PreviewMale
+        {
+            get => !PreviewFemale;
+            set
+            {
+                if (value == !PreviewFemale)
+                    return;
+                PreviewFemale = !value;
+            }
+        }
+
         public bool ShowsMannequinToggle => Family == ItemFamily.Armor && _resolveModel != null;
 
-        partial void OnPreviewFemaleChanged(bool value) => UpdatePreview();
+        partial void OnPreviewFemaleChanged(bool value)
+        {
+            OnPropertyChanged(nameof(PreviewMale));
+            UpdatePreview();
+        }
 
         public ResourceIndex? ResourceIndex { get; }
 
@@ -171,7 +191,8 @@ namespace SWLOR.Toolset.Editors.Items
             Func<int, int?>? costTableMax = null,
             Func<JsonGffStruct, bool, RenderModel?>? resolveModel = null,
             ResourceIndex? resourceIndex = null,
-            ArmorDyeSwatchService? armorDyeSwatches = null)
+            ArmorDyeSwatchService? armorDyeSwatches = null,
+            ArmorPartCatalog? armorPartModels = null)
         {
             ArgumentNullException.ThrowIfNull(item);
 
@@ -198,7 +219,8 @@ namespace SWLOR.Toolset.Editors.Items
             if (baseItemIcons != null && textureExists != null)
             {
                 Appearance = new ItemAppearanceSectionViewModel(
-                    _store, RunEdit, baseItemIcons, textureExists, choicePreviews, UpdatePreview, armorDyeSwatches);
+                    _store, RunEdit, baseItemIcons, textureExists, choicePreviews, UpdatePreview,
+                    armorDyeSwatches, armorPartModels);
             }
             Source = new ItemSourceSectionViewModel(headerOwner, sourceLookup, itemSourcesReady);
             _lastAppearanceBaseItem = CurrentBaseItem();

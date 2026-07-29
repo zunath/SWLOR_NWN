@@ -123,6 +123,7 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         private readonly CategoryService? _categories;
         private Items.ArmorDyeSwatchService? _armorDyeSwatches;
+        private Items.ArmorPartCatalog? _armorPartModels;
         private readonly Dictionary<string, Sounds.SoundDocumentViewModel> _openSoundEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<string>? _soundResources;
         private Services.SoundPreviewService? _soundPreviews;
@@ -1028,6 +1029,7 @@ namespace SWLOR.Toolset.Editors
                     : null,
                 resourceIndex: _resourceIndex,
                 armorDyeSwatches: ArmorDyeSwatches(),
+                armorPartModels: ArmorPartModels(),
                 findReferences: FindItemReferences,
                 canRefileCategories: CanRefileItemCategories,
                 refileCategories: RefileItemCategories);
@@ -1106,6 +1108,16 @@ namespace SWLOR.Toolset.Editors
 
             _armorDyeSwatches ??= new Items.ArmorDyeSwatchService(_resourceIndex);
             return _armorDyeSwatches;
+        }
+
+        /// <summary>Which numbered body-part models exist, so the armor rows list real variants.</summary>
+        private Items.ArmorPartCatalog? ArmorPartModels()
+        {
+            if (_resourceIndex == null)
+                return null;
+
+            _armorPartModels ??= new Items.ArmorPartCatalog(_resourceIndex);
+            return _armorPartModels;
         }
 
         /// <summary>A stat/requirement/appearance cell's real engine cap, by CostTableId.</summary>

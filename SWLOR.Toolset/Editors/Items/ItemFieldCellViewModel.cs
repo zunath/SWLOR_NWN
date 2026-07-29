@@ -49,13 +49,49 @@ namespace SWLOR.Toolset.Editors.Items
         [ObservableProperty]
         private IBrush? _swatchBrush;
 
+        /// <summary>
+        /// The values that actually exist for this field, ascending; empty when the caller has no
+        /// such list and the cell stays a plain number box.
+        /// </summary>
+        /// <remarks>
+        /// A body part's numbering is sparse, so a spinner walks through numbers with no model
+        /// behind them - and a part with no model just vanishes off the body, which reads as the
+        /// armor not covering it rather than as a bad value.
+        /// </remarks>
+        public IReadOnlyList<int> Options { get; }
+
+        /// <summary>Whether to render this cell as a list of real values rather than a number box.</summary>
+        public bool HasOptions => Options.Count > 0;
+
+        /// <summary>
+        /// <see cref="Number"/> as a list selection. Null when the stored value is not one of the
+        /// real variants, which leaves the list blank rather than silently moving the item onto a
+        /// neighbouring part.
+        /// </summary>
+        public int? SelectedOption
+        {
+            get
+            {
+                if (Number is not { } number)
+                    return null;
+                var value = (int)number;
+                return Options.Contains(value) ? value : null;
+            }
+            set
+            {
+                if (value is { } chosen)
+                    Number = chosen;
+            }
+        }
+
         public ItemFieldCellViewModel(
             string label,
             Func<int?> read,
             Func<int, bool> write,
             int min,
             int max,
-            Func<int, (byte R, byte G, byte B)?>? sampleColor = null)
+            Func<int, (byte R, byte G, byte B)?>? sampleColor = null,
+            IReadOnlyList<int>? options = null)
         {
             Label = label ?? throw new ArgumentNullException(nameof(label));
             _read = read ?? throw new ArgumentNullException(nameof(read));
@@ -63,6 +99,7 @@ namespace SWLOR.Toolset.Editors.Items
             _sampleColor = sampleColor;
             Minimum = min;
             Maximum = max;
+            Options = options ?? Array.Empty<int>();
 
             Reload();
         }
@@ -84,6 +121,8 @@ namespace SWLOR.Toolset.Editors.Items
 
         partial void OnNumberChanged(decimal? value)
         {
+            OnPropertyChanged(nameof(SelectedOption));
+
             if (_loading)
                 return;
 

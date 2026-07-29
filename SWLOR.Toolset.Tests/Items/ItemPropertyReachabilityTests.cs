@@ -138,6 +138,7 @@ namespace SWLOR.Toolset.Tests.Items
             new Dictionary<string, string>
             {
                 ["__data_type"] = "the GFF file-type marker",
+                ["Comment"] = "a builder's note to itself; dropped from the layout by owner decision",
                 ["Description"] = "the unidentified description - dead data, see the note below",
                 ["Identified"] = "every blueprint ships identified; the flag is set on creation",
                 ["PropertiesList"] = "the Stats and Requirements tabs, checked by the sweep above",

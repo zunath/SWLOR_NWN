@@ -20,6 +20,15 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         /// <summary>GFF type used when a Field-stored value has to be created on first write.</summary>
         public GffFieldType FieldType { get; init; } = GffFieldType.Int;
 
+        /// <summary>
+        /// A tighter numeric floor than <see cref="FieldType"/> alone implies, when the field has one
+        /// (a stack of zero items is not a stack). Null leaves the storage type's own range.
+        /// </summary>
+        public long? Minimum { get; init; }
+
+        /// <summary>A tighter numeric ceiling than the storage type's, or null for the type's own.</summary>
+        public long? Maximum { get; init; }
+
         /// <summary>Marked "required" in the editor, and reported when left empty.</summary>
         public bool IsRequired { get; init; }
 

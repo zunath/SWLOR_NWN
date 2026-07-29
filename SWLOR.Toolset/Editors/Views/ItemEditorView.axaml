@@ -11,6 +11,33 @@
     <Style Selector="Border.selected">
       <Setter Property="BorderBrush" Value="{DynamicResource InkBrush}" />
     </Style>
+
+    <!-- A two-halves segmented picker: one outlined box split down the middle, the chosen half
+         filled. Styled off RadioButton so the two options stay mutually exclusive without the
+         radio dot, which reads as a list rather than a switch. -->
+    <Style Selector="Border.seg">
+      <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="3" />
+      <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+    <Style Selector="RadioButton.seg">
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Name="Fill" Background="Transparent" Padding="0,4">
+            <TextBlock Text="{TemplateBinding Content}" FontSize="11"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource InkTertiaryBrush}" />
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="RadioButton.seg:checked /template/ Border#Fill">
+      <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+    </Style>
+    <Style Selector="RadioButton.seg:checked /template/ TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource AccentInkBrush}" />
+    </Style>
   </UserControl.Styles>
 
   <UserControl.DataTemplates>
@@ -173,9 +200,16 @@
         <TextBlock Grid.Column="1" Text="{Binding Label}" VerticalAlignment="Center"
                    Foreground="{DynamicResource InkSecondaryBrush}"
                    TextTrimming="CharacterEllipsis" />
+        <!-- A part with a known set of real variants lists them; anything else (a dye index, or
+             any cell built without a variant list) stays a number box. -->
+        <ComboBox Grid.Column="2" ItemsSource="{Binding Options}"
+                  SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                  IsEnabled="{Binding IsEnabled}" HorizontalAlignment="Stretch"
+                  IsVisible="{Binding HasOptions}" />
         <NumericUpDown Grid.Column="2" Value="{Binding Number, Mode=TwoWay}"
                        Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
                        IsEnabled="{Binding IsEnabled}"
+                       IsVisible="{Binding !HasOptions}"
                        Increment="1" FormatString="0" />
       </Grid>
     </DataTemplate>
@@ -394,11 +428,18 @@
             <ContentControl Content="{Binding PreviewView}" />
           </Border>
 
-          <!-- Armor is previewed worn; the mannequin's body is the one thing to choose. -->
-          <ToggleSwitch Grid.Row="2" Margin="0,6,0,0"
-                        OnContent="Female" OffContent="Male"
-                        IsChecked="{Binding PreviewFemale, Mode=TwoWay}"
-                        IsVisible="{Binding ShowsMannequinToggle}" />
+          <!-- Armor is previewed worn; the mannequin's body is the one thing to choose. Two halves
+               of one control rather than a switch: both bodies are named and either can be picked
+               directly, which is what the approved design shows. -->
+          <Border Grid.Row="2" Classes="seg" Margin="0,8,0,0"
+                  IsVisible="{Binding ShowsMannequinToggle}">
+            <Grid ColumnDefinitions="*,*">
+              <RadioButton Grid.Column="0" Classes="seg" Content="Male" GroupName="MannequinBody"
+                           IsChecked="{Binding PreviewMale, Mode=TwoWay}" />
+              <RadioButton Grid.Column="1" Classes="seg" Content="Female" GroupName="MannequinBody"
+                           IsChecked="{Binding PreviewFemale, Mode=TwoWay}" />
+            </Grid>
+          </Border>
 
           <StackPanel Grid.Row="3" Margin="0,9,0,0" Spacing="3">
             <TextBlock Text="{Binding FamilyDisplay}" Classes="mono" FontSize="10.5"

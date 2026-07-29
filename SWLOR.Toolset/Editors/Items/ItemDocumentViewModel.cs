@@ -86,6 +86,7 @@ namespace SWLOR.Toolset.Editors.Items
             Func<JsonGffStruct, bool, RenderModel?>? resolveModel = null,
             ResourceIndex? resourceIndex = null,
             ArmorDyeSwatchService? armorDyeSwatches = null,
+            ArmorPartCatalog? armorPartModels = null,
             Func<string, string, IReadOnlyList<string>>? findReferences = null,
             Func<string, bool>? canRefileCategories = null,
             Func<string, string, bool>? refileCategories = null)
@@ -117,7 +118,8 @@ namespace SWLOR.Toolset.Editors.Items
                 costTableMax,
                 resolveModel: resolveModel,
                 resourceIndex: resourceIndex,
-                armorDyeSwatches: armorDyeSwatches);
+                armorDyeSwatches: armorDyeSwatches,
+                armorPartModels: armorPartModels);
             UpdateTitle();
         }
 

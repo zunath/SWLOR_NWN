@@ -97,6 +97,31 @@ namespace SWLOR.Toolset.Tests
             var render = MdlMeshBuilder.Build(model);
             render.Meshes.Should().NotBeEmpty();
             render.Meshes.Sum(mesh => mesh.Indices.Count()).Should().BeGreaterThan(0);
+
+            AssertTheBodyStandsUp(model, superModel => Load(superModel, isSkeleton: true));
+        }
+
+        /// <summary>
+        /// A composed body posed by its idle has to occupy a body's worth of space. Attaching every
+        /// part to the right bone is not enough on its own: the idle poses those bones, and when the
+        /// pose reported a blank position for each one the whole skeleton folded onto the origin and
+        /// the model rendered as a single blob - parts correctly attached to bones that were all in
+        /// the same place.
+        /// </summary>
+        private static void AssertTheBodyStandsUp(MdlModel model, Func<string, MdlModel?> loadSuperModel)
+        {
+            var frames = MdlAnimationPose.SampleIdleFrames(model, loadSuperModel);
+            frames.Should().NotBeEmpty("the human skeleton's supermodel carries the idle");
+
+            var pose = frames[^1].Pose;
+            var heights = model.GetMeshNodes()
+                .Select(mesh => MdlMeshBuilder.ComposeNodeTransform(mesh, pose).M43)
+                .ToList();
+
+            heights.Should().NotBeEmpty();
+            (heights.Max() - heights.Min()).Should().BeGreaterThan(1.0f,
+                "a posed humanoid spans well over a metre from foot to head, and collapsed to " +
+                "roughly zero when the pose overwrote every bone position with a blank");
         }
 
         private static void AssertAttachedTo(MdlModel model, string meshName, string boneName)

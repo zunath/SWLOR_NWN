@@ -28,6 +28,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly ChoicePreviewService? _previews;
         private readonly Action? _appearanceChanged;
         private readonly ArmorDyeSwatchService? _armorDyes;
+        private readonly ArmorPartCatalog? _armorPartModels;
 
         [ObservableProperty]
         private ItemAppearanceKind _kind = ItemAppearanceKind.None;
@@ -54,7 +55,8 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, bool> textureExists,
             ChoicePreviewService? previews = null,
             Action? appearanceChanged = null,
-            ArmorDyeSwatchService? armorDyes = null)
+            ArmorDyeSwatchService? armorDyes = null,
+            ArmorPartCatalog? armorPartModels = null)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
@@ -63,6 +65,7 @@ namespace SWLOR.Toolset.Editors.Items
             _previews = previews;
             _appearanceChanged = appearanceChanged;
             _armorDyes = armorDyes;
+            _armorPartModels = armorPartModels;
 
             Rebuild();
         }
@@ -106,7 +109,8 @@ namespace SWLOR.Toolset.Editors.Items
 
                 case 3:
                     Kind = ItemAppearanceKind.ArmorParts;
-                    Armor = new ArmorPartsViewModel(_store, _runEdit, _appearanceChanged, _armorDyes);
+                    Armor = new ArmorPartsViewModel(
+                        _store, _runEdit, _appearanceChanged, _armorDyes, _armorPartModels);
                     break;
 
                 default:

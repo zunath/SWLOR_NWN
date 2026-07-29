@@ -6,13 +6,18 @@ is live: NWScript's GetDescription defaults to the identified string and every
 examine surface on the server takes that default. The corpus had drifted anyway,
 so the two rules below put both fields in agreement:
 
-  1. If either field holds nothing but the item's own name, blank both. An item
-     whose description is its own name has no description; saying so honestly is
-     better than echoing the name under the name.
-  2. Otherwise, if exactly one field holds a description, copy it to the other.
+  1. Ignore a field that holds nothing but the item's own name. An item described
+     as itself has no description there, and echoing the name under the name is
+     not worth keeping.
+  2. Whatever real description is left goes in both fields. If rule 1 ate the only
+     text there was, both fields end up blank.
 
 No blueprint holds two different real descriptions, so rule 2 never has to choose
 between them.
+
+Rule 1 discards a field, not an item. 195 blueprints have the name in one field and
+authored prose in the other - "Crafted cuirass salvaged from Banecaller Vex" on the
+Bane Cuirass - and that prose is the description; only the name-echo is dropped.
 
 Any StringRef ("id") on a field this script writes is dropped. A CExoLocString
 with a StringRef can resolve through the TLK instead of its inline text, so
@@ -116,19 +121,24 @@ def plan(path):
 
     name = plain(document.get("LocalizedName"))
     values = {field: plain(document.get(field)) for field in FIELDS}
+    echoes_name = name and name in values.values()
 
-    if name and name in values.values():
-        if not any(values.values()):
+    # Rule 1: a field holding only the item's name is not a description.
+    real = [field for field in FIELDS if values[field] and values[field] != name]
+
+    if not real:
+        if not echoes_name:
             return None
-        return "name-as-description", {field: "" for field in FIELDS if values[field]}
+        return "name-only", {field: "" for field in FIELDS if values[field]}
 
-    populated = [field for field in FIELDS if values[field]]
-    if len(populated) != 1:
+    # Rule 2: the surviving description goes in both fields.
+    source = real[0]
+    escaped = escaped_lang0(text, source)
+    edits = {field: escaped for field in FIELDS if values[field] != values[source]}
+    if not edits:
         return None
 
-    source = populated[0]
-    target = next(field for field in FIELDS if field != source)
-    return "one-sided", {target: escaped_lang0(text, source)}
+    return "name-echo-replaced" if echoes_name else "one-sided", edits
 
 
 def main():
@@ -151,11 +161,13 @@ def main():
         with open(path, "wb") as handle:
             handle.write(text.encode("utf-8", "surrogateescape"))
 
-    blanked = sum(1 for _, reason in changed if reason == "name-as-description")
-    copied = len(changed) - blanked
+    counts = {reason: sum(1 for _, r in changed if r == reason)
+              for reason in ("name-only", "name-echo-replaced", "one-sided")}
     verb = "need" if check else "updated:"
-    print("%d blueprint(s) %s %d blanked (description was the item's name), %d copied across"
-          % (len(changed), verb, blanked, copied))
+    print("%d blueprint(s) %s %d blanked (nothing but the item's name), "
+          "%d name-echo replaced with the real description, %d copied across"
+          % (len(changed), verb, counts["name-only"], counts["name-echo-replaced"],
+             counts["one-sided"]))
 
     if check and changed:
         for name, reason in changed[:10]:

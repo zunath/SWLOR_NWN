@@ -169,6 +169,7 @@ namespace SWLOR.Toolset.Tests
             var root = BlueprintRoot(ResourceType.Utc, "agr_guildmaster");
             var robeArmor = BlueprintRoot(ResourceType.Uti, "noble_gr");
             robeArmor.Get("ArmorPart_Robe").SetInteger(7);
+            robeArmor.Get("xArmorPart_Robe").SetInteger(7);
 
             var withRobe = BlueprintModelResolver.Resolve(
                 ResourceType.Utc, root, Appearances(), null, null, _ => robeArmor, _ => true);

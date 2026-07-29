@@ -211,12 +211,11 @@ namespace SWLOR.Toolset.Tests
         {
             var index = BuildHakOnlyIndex();
 
-            // Palette TGAs (pal_skin01 etc.) ship only in the base game BIF, not in SWLOR_Haks,
-            // so this hak-only index will fall back to grayscale for every layer - PltReader.Render
-            // still succeeds and yields non-empty RGBA of the reported dimensions, which is all
-            // this test asserts (color-accurate palette resolution is exercised separately, see
-            // the WORKLOG note on this dev machine's local NWN:EE install for future coverage).
-            var image = TextureLoader.LoadPlt(index, "cpex_direwolf");
+            // 3D material PLTs are converted to tint maps, while dynamic inventory icons remain
+            // PLTs so their colors continue to follow the item's palette rows. Palette TGAs
+            // (pal_skin01 etc.) ship only in the base game BIF, not in SWLOR_Haks, so this
+            // hak-only index falls back to grayscale; decoding and dimensions are asserted here.
+            var image = TextureLoader.LoadPlt(index, "ihelm_015");
 
             image.Should().NotBeNull();
             image!.Width.Should().BeGreaterThan(0);

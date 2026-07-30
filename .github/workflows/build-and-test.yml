@@ -11,12 +11,23 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
-      - name: Checkout (with SWLOR_Haks submodule - the unit suite scans hak sources)
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: true
+
+      # The full SWLOR_Haks working tree is ~13 GB (models, music, textures) and
+      # does not fit on a hosted runner. The unit suite only reads the data
+      # folders below (~750 MB), so clone the submodule blob-filtered and
+      # sparse-checkout just those. If a future test reads a new SWLOR_Haks
+      # folder, add it to the sparse-checkout list here.
+      - name: Sparse-checkout SWLOR_Haks data folders
+        run: |
+          SUBMODULE_SHA=$(git rev-parse HEAD:SWLOR_Haks)
+          git clone --filter=blob:none --no-checkout https://github.com/zunath/SWLOR_Haks SWLOR_Haks
+          cd SWLOR_Haks
+          git sparse-checkout set sw_2da sw_ability sw_item sw_tlk sw_ui sw_weapon
+          git checkout "$SUBMODULE_SHA"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4

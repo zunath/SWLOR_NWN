@@ -198,7 +198,9 @@ namespace SWLOR.Toolset.Workspace
             var model = reference.Kind switch
             {
                 BlueprintModelKind.Simple when reference.ModelResRef != null => BuildRenderModel(reference.ModelResRef),
-                BlueprintModelKind.Segmented => ComposeSegmented(reference),
+                BlueprintModelKind.Segmented => ComposeSegmented(
+                    reference,
+                    useIdlePose: type != ResourceType.Uti),
                 BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
                 _ => null
             };
@@ -315,7 +317,9 @@ namespace SWLOR.Toolset.Workspace
             var model = reference.Kind switch
             {
                 BlueprintModelKind.Simple when reference.ModelResRef != null => BuildRenderModel(reference.ModelResRef),
-                BlueprintModelKind.Segmented => ComposeSegmented(reference),
+                BlueprintModelKind.Segmented => ComposeSegmented(
+                    reference,
+                    useIdlePose: type != ResourceType.Uti),
                 BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
                 _ => null
             };
@@ -417,7 +421,9 @@ namespace SWLOR.Toolset.Workspace
             }
         }
 
-        private RenderModel? ComposeSegmented(BlueprintModelReference reference)
+        private RenderModel? ComposeSegmented(
+            BlueprintModelReference reference,
+            bool useIdlePose)
         {
             if (_partComposer == null || reference.SkeletonResRef == null)
                 return null;
@@ -442,9 +448,14 @@ namespace SWLOR.Toolset.Workspace
             if (composed == null)
                 return null;
 
-            // The idle comes off the skeleton, which is why the composer loads it with its supermodel
-            // animations - a body part carries geometry, never keyframes.
-            return MdlMeshBuilder.Build(composed, IdleFrames(composed));
+            // Creature previews stand in the skeleton's idle. Aurora's item-property preview does
+            // not: it draws armor on the authored, symmetric reference mannequin. Applying pause1
+            // to an item twists the segmented limbs and then asks a separately authored skinmesh to
+            // follow them, which is why robe sleeves appeared detached from the arms even though the
+            // same item is continuous in the original Toolset.
+            return MdlMeshBuilder.Build(
+                composed,
+                useIdlePose ? IdleFrames(composed) : null);
         }
 
         /// <summary>

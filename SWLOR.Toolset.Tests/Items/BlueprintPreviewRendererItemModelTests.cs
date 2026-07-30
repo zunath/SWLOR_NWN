@@ -119,7 +119,7 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void ChimedClothesRobeIsSkinnedIntoTheMannequinsIdlePose()
+        public void ChimedClothesRobeUsesAurorasSymmetricItemReferencePose()
         {
             var renderer = BuildRenderer();
 
@@ -132,12 +132,9 @@ namespace SWLOR.Toolset.Tests.Items
                     mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase))
                 .Subject;
             renderedRobe.Transform.Should().Be(Matrix4x4.Identity,
-                "a skinned mesh is baked into composed-model space rather than moved as one rigid panel");
-            renderedRobe.PoseFrames.Should().NotBeEmpty("the mannequin has a standing idle");
-            renderedRobe.PoseFrames.Should().OnlyContain(transform => transform == Matrix4x4.Identity);
-            model.Meshes.Where(mesh => mesh.PoseFrames.Count > 0)
-                .Should().OnlyContain(mesh => mesh.PoseFrames.Count == 1,
-                    "rigid body parts and weighted clothing must be held in the same final pose");
+                "a skinmesh is baked into composed-model space rather than moved as one rigid panel");
+            model.Meshes.Should().OnlyContain(mesh => mesh.PoseFrames.Count == 0,
+                "Aurora's armor item window uses the authored symmetric mannequin, not a creature idle");
 
             var source = new MdlReader().Parse(File.ReadAllBytes(
                 Path.Combine(RepoRoot, "SWLOR_Haks", "sw_pt_robe", "pmh0_robe010.mdl")));
@@ -147,22 +144,21 @@ namespace SWLOR.Toolset.Tests.Items
             sourceRobe.Vertices.Should().HaveCount(renderedRobe.VertexCount);
 
             var bindTransform = MdlMeshBuilder.ComposeNodeTransform(sourceRobe);
-            var maximumDeformation = sourceRobe.Vertices
+            var maximumDisplacement = sourceRobe.Vertices
                 .Select((vertex, index) =>
                 {
                     var bindPosition = Vector3.Transform(vertex, bindTransform);
-                    var posedPosition = new Vector3(
+                    var renderedPosition = new Vector3(
                         renderedRobe.Positions[index * 3],
                         renderedRobe.Positions[index * 3 + 1],
                         renderedRobe.Positions[index * 3 + 2]);
-                    return Vector3.Distance(bindPosition, posedPosition);
+                    return Vector3.Distance(bindPosition, renderedPosition);
                 })
                 .Max();
 
-            maximumDeformation.Should().BeGreaterThan(0.1f,
-                "the weighted sleeves and coat panels must follow the lowered arm bones instead of " +
-                "remaining detached in their arms-out bind pose");
-            maximumDeformation.Should().BeLessThan(2f, "an idle pose cannot move clothing metres away");
+            maximumDisplacement.Should().BeLessThan(0.0001f,
+                "the robe and segmented mannequin share this authored reference pose, so deforming " +
+                "the garment through pause1 would pull its sleeves away from the rigid arms");
             renderedRobe.Positions.Should().OnlyContain(value =>
                 float.IsFinite(value) && MathF.Abs(value) < 3f);
         }

@@ -444,7 +444,7 @@
                    IsVisible="{Binding PreviewImage, Converter={x:Static ObjectConverters.IsNotNull}}" />
           </Border>
 
-          <Border Grid.Row="1" MinHeight="170" Margin="0,8,0,0"
+          <Border Grid.Row="1" MinHeight="260" Margin="0,8,0,0"
                   Background="{DynamicResource PanelRaisedBrush}"
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3"
                   IsVisible="{Binding HasModelPreview}">

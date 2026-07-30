@@ -306,13 +306,6 @@ namespace SWLOR.Toolset.Domain.Render
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
             IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationSamples)
         {
-            // "render 0" means the artist marked this mesh as not drawn - shadow casters, collision
-            // hulls and other helper geometry that exists to be computed against, never looked at.
-            // Drawing them puts solid duplicates of limbs and torsos inside the model. A node that
-            // says nothing about render defaults to drawn, which is what ASCII models rely on.
-            if (!mesh.Render)
-                return null;
-
             var vertexCount = mesh.Vertices.Length;
             if (vertexCount == 0 || mesh.Faces.Length == 0)
                 return null;

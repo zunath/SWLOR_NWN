@@ -15,13 +15,16 @@ SERVER_ROOT="$VOLUME_ROOT/nwn-server"
 COMPOSE_FILE="$SERVER_ROOT/docker-compose.yml"
 
 DEPLOYMENT_ROOT="$VOLUME_ROOT/deployment/$DEPLOYMENT_NAME"
-RELEASE_ROOT="$DEPLOYMENT_ROOT/releases"
 STATE_ROOT="$DEPLOYMENT_ROOT/state"
 CACHE_ROOT="$VOLUME_ROOT/deployment/cache"
 
-NWSYNC_WRITE="$NWSYNC_ROOT/nwsync_write"
-NWSYNC_DESCRIPTION="SWLOR v2"
+# Build outputs are written into the existing NWSync repository. The build
+# script activates the new manifest only after all HAK/TLK/module files exist.
+NWSYNC_BUILD_SCRIPT="$NWSYNC_ROOT/build.sh"
+NWSYNC_DOTNET_ROOT="$NWSYNC_ROOT/dotnet"
+SERVER_DOTNET_ROOT="$SERVER_ROOT/dotnet"
 MODULE_NAME="Star Wars LOR v2.mod"
+HAKS_SUBMODULE_PATH=SWLOR_Haks
 
 SERVER_SERVICE=swlor-server
 SERVER_IMAGE=zunath/nwn-dotnet:8193.37.15-2
@@ -29,14 +32,17 @@ DEPENDENCY_SERVICES="redis influxdb grafana redis-commander background-services"
 # Leave blank to let Compose derive the project name from SERVER_ROOT.
 COMPOSE_PROJECT_NAME=""
 
+# "bind" requires SERVER_ROOT/{hak,modules,tlk} to be bind-mounted from
+# NWSYNC_ROOT. Use "copy" only on a host that keeps separate server directories.
+SERVER_CONTENT_MODE=bind
+
 STOP_TIMEOUT_SECONDS=120
 HEALTH_TIMEOUT_SECONDS=300
 HEALTH_STABLE_SECONDS=30
 HEALTH_LOG_MARKER="Server: Module loaded"
 
-# The build begins only when this much space is free on RELEASE_ROOT's
-# filesystem. A second, lower guard is checked after the full build and
-# NWSync generation, before any live files are changed.
+# Both guards check NWSYNC_ROOT's filesystem. The second runs after the full
+# in-place build and NWSync generation, before the server is stopped.
 MIN_FREE_GIB_BEFORE_BUILD=20
 MIN_FREE_GIB_BEFORE_CUTOVER=8
 

@@ -69,7 +69,7 @@ fi
 source "$config_path"
 
 required_settings=(
-    DEPLOYMENT_NAME SOURCE_ROOT RELEASE_ROOT STATE_ROOT CACHE_ROOT LOG_FILE
+    DEPLOYMENT_NAME SOURCE_ROOT STATE_ROOT CACHE_ROOT LOG_FILE
 )
 for required_setting in "${required_settings[@]}"; do
     [[ -n "${!required_setting:-}" ]] || {
@@ -91,7 +91,7 @@ done
 
 chmod 0750 "$SOURCE_ROOT"
 install -d -o root -g root -m 0750 \
-    "$RELEASE_ROOT" "$STATE_ROOT" "$CACHE_ROOT"
+    "$STATE_ROOT" "$CACHE_ROOT"
 
 install -d -o root -g root -m 0755 "$systemd_unit_directory"
 install -o root -g root -m 0644 \
@@ -116,6 +116,5 @@ printf 'Deployment:    %s\n' "$DEPLOYMENT_NAME"
 printf 'Configuration: %s\n' "$config_path"
 printf 'Manual deploy: %s\n' "$command_path"
 printf 'Status:        %s --status\n' "$command_path"
-printf 'Rollback:      %s --rollback\n' "$command_path"
 printf '\nPolling remains disabled. Enable it later with:\n'
 printf '  systemctl enable --now swlor-deploy.timer\n'

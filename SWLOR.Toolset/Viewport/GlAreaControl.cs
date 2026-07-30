@@ -2698,8 +2698,13 @@ void main()
             // whether a painting can be told from the wall it hangs on.
             var farPlane = MathF.Max(_distance, _initialDistance) * 25f + 100f;
             var aspect = (float)width / height;
-            var projection = Matrix4x4.CreatePerspectiveFieldOfView(
-                VerticalFovRadians, aspect, AreaCameraMath.NearPlaneFor(_distance), farPlane);
+            var projection = AreaCameraMath.CreateProjection(
+                IsSingleModelPreview(scene),
+                _distance,
+                VerticalFovRadians,
+                aspect,
+                AreaCameraMath.NearPlaneFor(_distance),
+                farPlane);
 
             var eye = _target + AreaCameraMath.OrbitEyeOffset(_azimuth, _elevation, _distance);
             _cameraEye = eye;

@@ -317,6 +317,48 @@ namespace SWLOR.Toolset.Tests
             far.Should().BeGreaterThan(near);
         }
 
+        [Test]
+        public void CreateProjection_ModelPreviewUsesOrthographicLensAtEquivalentFramingScale()
+        {
+            const float distance = 10f;
+            const float verticalFov = MathF.PI / 4f;
+            const float aspect = 1.5f;
+            var projection = AreaCameraMath.CreateProjection(
+                isSingleModelPreview: true,
+                distance,
+                verticalFov,
+                aspect,
+                nearPlane: 0.5f,
+                farPlane: 100f);
+
+            projection.M34.Should().Be(0f, "orthographic projection does not divide X/Y by depth");
+            projection.M44.Should().Be(1f);
+
+            var equivalentHalfHeight = distance * MathF.Tan(verticalFov / 2f);
+            var topAtTargetScale = Vector4.Transform(
+                new Vector4(0f, equivalentHalfHeight, -distance, 1f),
+                projection);
+            (topAtTargetScale.Y / topAtTargetScale.W).Should().BeApproximately(
+                1f,
+                0.0001f,
+                "switching lenses must not change the existing preview framing or zoom scale");
+        }
+
+        [Test]
+        public void CreateProjection_AreaViewRetainsPerspectiveLens()
+        {
+            var projection = AreaCameraMath.CreateProjection(
+                isSingleModelPreview: false,
+                distance: 10f,
+                verticalFovRadians: MathF.PI / 4f,
+                aspectRatio: 1.5f,
+                nearPlane: 0.5f,
+                farPlane: 100f);
+
+            projection.M34.Should().Be(-1f);
+            projection.M44.Should().Be(0f);
+        }
+
         // ----- WP5.1: ScreenPointToRay (picking) -----
 
         private static (Matrix4x4 View, Matrix4x4 Projection) BuildTestCamera()
@@ -359,6 +401,36 @@ namespace SWLOR.Toolset.Tests
             var ray = AreaCameraMath.ScreenPointToRay(screenPoint, width, height, view, projection);
 
             DistanceFromRay(ray, worldPoint).Should().BeLessThan(0.01f);
+        }
+
+        [Test]
+        public void ScreenPointToRay_OrthographicModelPreview_LiesOnProjectedWorldPoint()
+        {
+            const float distance = 30f;
+            const int width = 900;
+            const int height = 600;
+            var target = new Vector3(20f, 20f, 3f);
+            var eye = target + new Vector3(0f, distance, 0f);
+            var view = Matrix4x4.CreateLookAt(eye, target, Vector3.UnitZ);
+            var projection = AreaCameraMath.CreateProjection(
+                isSingleModelPreview: true,
+                distance,
+                verticalFovRadians: MathF.PI / 4f,
+                aspectRatio: (float)width / height,
+                nearPlane: 0.1f,
+                farPlane: 500f);
+            var worldPoint = new Vector3(22f, 18f, 4f);
+
+            var screenPoint = ProjectToScreen(worldPoint, view, projection, width, height);
+            var ray = AreaCameraMath.ScreenPointToRay(
+                screenPoint,
+                width,
+                height,
+                view,
+                projection);
+
+            DistanceFromRay(ray, worldPoint).Should().BeLessThan(0.01f,
+                "model picking and drag controls use the same projection as the rendered preview");
         }
 
         [Test]

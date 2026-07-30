@@ -263,6 +263,41 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         /// <summary>
+        /// Builds the viewport projection. Area editing retains its perspective view, while a
+        /// single-model preview uses the orthographic lens from Aurora's item-property viewer.
+        /// </summary>
+        /// <remarks>
+        /// The orthographic height is the perspective frustum's height at the orbit target. That
+        /// keeps the existing model fit, wheel zoom, and pixel-to-world pan scale unchanged while
+        /// removing depth foreshortening. Without it, garment details that project toward the
+        /// camera (such as a robe's diagonal sash end) appear enlarged and displaced over adjacent
+        /// rigid chest pieces even though their model-space vertices are correct.
+        /// </remarks>
+        public static Matrix4x4 CreateProjection(
+            bool isSingleModelPreview,
+            float distance,
+            float verticalFovRadians,
+            float aspectRatio,
+            float nearPlane,
+            float farPlane)
+        {
+            if (!isSingleModelPreview)
+            {
+                return Matrix4x4.CreatePerspectiveFieldOfView(
+                    verticalFovRadians, aspectRatio, nearPlane, farPlane);
+            }
+
+            var orthographicHeight =
+                2f * MathF.Max(MathF.Abs(distance), MinDistance) *
+                MathF.Tan(verticalFovRadians / 2f);
+            return Matrix4x4.CreateOrthographic(
+                orthographicHeight * MathF.Max(aspectRatio, 0.001f),
+                orthographicHeight,
+                nearPlane,
+                farPlane);
+        }
+
+        /// <summary>
         /// Unprojects a logical-pixel screen point (Y-down, origin top-left - matching Avalonia
         /// pointer coordinates) into a world-space <see cref="PickRay"/>, using the exact same
         /// <paramref name="view"/>/<paramref name="projection"/> matrices <c>GlAreaControl.DrawScene</c>

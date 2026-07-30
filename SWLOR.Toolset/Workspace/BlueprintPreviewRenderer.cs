@@ -50,6 +50,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly WaypointAppearanceService? _waypoints;
         private readonly BaseItemIconService? _baseItems;
         private readonly PortraitService? _portraits;
+        private readonly TwoDaService? _twoDa;
 
         /// <summary>Authored part textures for the compose run in flight; guarded by _composerGate.</summary>
         private readonly Domain.Render.ComposedPartTextures _partTextures = new();
@@ -86,6 +87,7 @@ namespace SWLOR.Toolset.Workspace
             _waypoints = waypoints;
             _baseItems = baseItems;
             _portraits = portraits;
+            _twoDa = twoDa;
 
             if (resourceIndex != null)
             {
@@ -555,8 +557,8 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
-        /// Only a robe whose geometry spans the whole body replaces the parts it covers; SWLOR's partial
-        /// robes (loincloths, tabards) render alongside the full body, exactly as the game draws them.
+        /// Applies NWN's per-appearance robe concealment flags. Geometry classification remains the
+        /// fallback for installations where <c>parts_robe.2da</c> is unavailable.
         /// </summary>
         private IReadOnlyList<BlueprintModelPart> ApplyRobeCoverage(IReadOnlyList<BlueprintModelPart> parts)
         {
@@ -564,14 +566,19 @@ namespace SWLOR.Toolset.Workspace
             if (robe == default)
                 return parts;
 
+            if (RobePartVisibility.TryGetHiddenParts(_twoDa, robe.ModelResRef, out var hiddenParts))
+            {
+                return hiddenParts.Count == 0
+                    ? parts
+                    : parts.Where(part => !hiddenParts.Contains(part.PartType)).ToList();
+            }
+
             var robeModel = LoadMdl(robe.ModelResRef, withSupermodelAnims: false);
             if (robeModel == null || !RobeCoverage.IsFullBodyRobe(robeModel))
                 return parts;
 
-            // Only a classic full robe replaces the body. Aurora draws every part alongside a coat
-            // like chimedclothes - sleeves and flesh hands included - and both attempts to suppress
-            // more than this took limbs off the model: measuring the robe's span claimed the arms,
-            // and a blanket chest/belt/pelvis rule amputated the torso off short robes.
+            // Legacy fallback when the authoritative table is absent: only a classic full robe
+            // replaces the broad body-part set. Partial robes remain additive.
             return parts
                 .Where(part => !BlueprintModelResolver.RobeCoveredParts.Contains(part.PartType))
                 .ToList();

@@ -157,6 +157,17 @@ namespace SWLOR.Toolset.Tests.Items
                 "weighted sleeves and coat panels must advance instead of remaining frozen");
             renderedRobe.PosePositions.SelectMany(frame => frame).Should().OnlyContain(value =>
                 float.IsFinite(value) && MathF.Abs(value) < 3f);
+
+            model.Meshes.Should().NotContain(mesh =>
+                    mesh.NodeName.Contains("bicep", StringComparison.OrdinalIgnoreCase) ||
+                    mesh.NodeName.Contains("forearm", StringComparison.OrdinalIgnoreCase),
+                "parts_robe.2da row 10 replaces the ordinary arm segments with the coat sleeves");
+            model.Meshes.Should().Contain(mesh =>
+                    mesh.NodeName.Contains("hand", StringComparison.OrdinalIgnoreCase),
+                "row 10 keeps the hands visible below the sleeves");
+            model.Meshes.Should().Contain(mesh =>
+                    mesh.TextureName.Equals("pmh0_chest186", StringComparison.OrdinalIgnoreCase),
+                "row 10 keeps the selected armor chest instead of treating the coat as a full-body robe");
         }
 
         private static Domain.Gff.JsonGffStruct CorpusItem(string resRef) =>

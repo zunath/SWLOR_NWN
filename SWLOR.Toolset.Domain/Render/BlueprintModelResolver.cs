@@ -239,6 +239,13 @@ namespace SWLOR.Toolset.Domain.Render
                 case 1:
                 {
                     var part1 = root.GetIntOrNull("ModelPart1") ?? 0;
+
+                    // A cloak's own model is a skinmesh weighted to the skeleton's cloak chain - drawn
+                    // by itself it is a flat sheet in mid-air. Worn on the mannequin it hangs where it
+                    // is meant to, which is the only way to judge one.
+                    if (string.Equals(itemClass, CloakItemClass, StringComparison.OrdinalIgnoreCase))
+                        return ResolveCapeMannequin(root, itemClass, armorPreviewFemale, partModelExists, part1);
+
                     var modelResRef = $"{itemClass}_{part1:D3}";
                     if (partModelExists != null && !partModelExists(modelResRef))
                         return LootBagFallback(itemClass, partModelExists, $"no ground model '{modelResRef}'");
@@ -331,6 +338,48 @@ namespace SWLOR.Toolset.Domain.Render
                 Parts = parts,
                 // The item struct carries no Color_* creature fields, so skin/hair fall to palette
                 // row 0; the armor dye channels come from the blueprint itself.
+                LayerColorIndices = ResolveLayerColors(root, root)
+            };
+        }
+
+        /// <summary>baseitems.2da's ItemClass for a cloak - the same string ItemFamilyClassifier reads.</summary>
+        private const string CloakItemClass = "cloak";
+
+        /// <summary>
+        /// A cape dressed on a plain mannequin: the bare body, plus the cloak at the number the
+        /// blueprint names. Cloak part resources are spelled with an underscore before the number
+        /// (pmh0_cloak_001, seven of them), unlike every other body part.
+        /// </summary>
+        private static BlueprintModelReference ResolveCapeMannequin(
+            JsonGffStruct root,
+            string itemClass,
+            bool female,
+            Func<string, bool>? partModelExists,
+            int cloakNumber)
+        {
+            var prefix = female ? "pfh0" : "pmh0";
+            var cloakResRef = $"{prefix}_cloak_{cloakNumber:D3}";
+            if (partModelExists != null && !partModelExists(cloakResRef))
+                return LootBagFallback(itemClass, partModelExists, $"no cloak model '{cloakResRef}'");
+
+            var parts = new List<BlueprintModelPart> { new("cloak", cloakResRef) };
+            parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", 1)));
+            foreach (var (_, _, partType) in BodyPartFields)
+            {
+                // The body is here to hang the cape on, so it stays plain: part 1 everywhere it
+                // exists, and shoulders (which have no bare-body piece) left off.
+                if (partType is "shol" or "shor")
+                    continue;
+
+                parts.Add(new BlueprintModelPart(partType, BuildPartName(prefix, partType, 1)));
+            }
+
+            return new BlueprintModelReference
+            {
+                Kind = BlueprintModelKind.Segmented,
+                Status = $"{itemClass} on a {(female ? "female" : "male")} mannequin ({prefix})",
+                SkeletonResRef = prefix,
+                Parts = parts,
                 LayerColorIndices = ResolveLayerColors(root, root)
             };
         }

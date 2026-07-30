@@ -35,6 +35,10 @@ namespace SWLOR.Toolset.Domain.Render
                 ["footl"] = ["lfoot_g", "lfoot"],
                 ["footr"] = ["rfoot_g", "rfoot"],
                 ["robe"] = ["torso_g", "pelvis_g", "torso", "pelvis"],
+
+                // A cloak hangs from the skeleton's own Cloak_g, which sits under torso_g and carries
+                // the CL*/CM*/CR* chain the cloak's skinmesh is weighted to. Verified against pmh0.
+                ["cloak"] = ["Cloak_g", "cloak_g", "torso_g"],
             };
 
         /// <summary>All supported part categories and their preferred skeleton bone.</summary>

@@ -1033,6 +1033,12 @@ void main()
                    Vector3.Distance(target, _framedTarget) > distance * 0.25f;
         }
 
+        /// <summary>
+        /// Barely above level, for a single-model preview: enough to read the top of a shoulder
+        /// without the foreshortening a survey angle puts on a standing figure.
+        /// </summary>
+        private const float PreviewElevationRadians = 0.09f;
+
         private void ResetCameraForScene(AreaScene scene)
         {
             var aspect = _viewportWidth > 0 && _viewportHeight > 0
@@ -1050,8 +1056,15 @@ void main()
             _initialDistance = distance;
             _framedTarget = target;
             _framedDistance = distance;
-            _azimuth = MathF.PI * 1.25f;
-            _elevation = AreaCameraMath.DefaultElevationRadians;
+            // A single-model preview is looked at, not surveyed. Aurora shows an item's wearer
+            // straight on and near level; the area editor's raised three-quarter view is for reading
+            // a floor plan and puts a mannequin at a diagonal seen from above. The eye sits at
+            // (cos, sin) from the target, so 270 degrees is directly in front of a model facing -Y.
+            var isSingleModelPreview = scene.Tiles.Count == 0 && scene.Instances.Count == 1;
+            _azimuth = isSingleModelPreview ? MathF.PI * 1.5f : MathF.PI * 1.25f;
+            _elevation = isSingleModelPreview
+                ? PreviewElevationRadians
+                : AreaCameraMath.DefaultElevationRadians;
         }
 
         // ----- Pointer input: middle orbits, middle+left pans, wheel zooms -----

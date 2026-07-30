@@ -44,6 +44,68 @@ namespace SWLOR.Toolset.Domain.Render
             return hasGeometry && minZ < FullBodyMinZ && maxZ > FullBodyMaxZ;
         }
 
+        /// <summary>
+        /// Roughly where each body part sits on a standing human, measured off a composed pmh0 in the
+        /// idle pose (head 1.72m, shoulders 1.54m, chest 1.19m, feet 0.14m).
+        /// </summary>
+        private static readonly (string PartType, float Height)[] PartHeights =
+        {
+            ("chest", 1.19f),
+            ("belt", 1.05f),
+            ("pelvis", 1.00f),
+            ("legl", 0.90f), ("legr", 0.90f),
+            ("shinl", 0.50f), ("shinr", 0.50f),
+            ("footl", 0.15f), ("footr", 0.15f),
+            ("bicepl", 1.45f), ("bicepr", 1.45f),
+            ("forel", 1.25f), ("forer", 1.25f),
+            ("handl", 0.96f), ("handr", 0.96f),
+            ("shol", 1.54f), ("shor", 1.54f),
+        };
+
+        /// <summary>
+        /// The body parts this robe's own geometry actually reaches, and so replaces. Empty when the
+        /// robe has no renderable geometry.
+        /// </summary>
+        /// <remarks>
+        /// Coverage is measured rather than decided by a full-body/partial flag. That flag could only
+        /// be wrong in one of two ways: a gown whose geometry stopped just short of the threshold left
+        /// the armor's own torso showing through it, and treating every robe as full-length instead
+        /// amputated the torso off short ones. Comparing the robe's vertical span against where each
+        /// part sits answers both - a skirt covers hips and thighs, a gown covers those and the chest,
+        /// and neither has to be classified in advance.
+        /// </remarks>
+        public static IReadOnlySet<string> CoveredParts(MdlModel robeModel)
+        {
+            ArgumentNullException.ThrowIfNull(robeModel);
+
+            var covered = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (robeModel.GeometryRoot == null)
+                return covered;
+
+            var minZ = float.MaxValue;
+            var maxZ = float.MinValue;
+            var hasGeometry = false;
+            Walk(robeModel.GeometryRoot, System.Numerics.Matrix4x4.Identity, ref minZ, ref maxZ, ref hasGeometry);
+            if (!hasGeometry)
+                return covered;
+
+            foreach (var (partType, height) in PartHeights)
+            {
+                if (height >= minZ && height <= maxZ)
+                    covered.Add(partType);
+            }
+
+            // Sleeves only exist on a robe that reaches the shoulders; a skirt spanning the arms'
+            // height range does not cover them.
+            if (maxZ <= FullBodyMaxZ)
+            {
+                foreach (var sleeve in new[] { "bicepl", "bicepr", "forel", "forer", "handl", "handr", "shol", "shor" })
+                    covered.Remove(sleeve);
+            }
+
+            return covered;
+        }
+
         private static void Walk(
             MdlNode node,
             System.Numerics.Matrix4x4 parentTransform,

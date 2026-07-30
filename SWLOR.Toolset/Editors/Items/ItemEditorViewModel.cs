@@ -525,7 +525,10 @@ namespace SWLOR.Toolset.Editors.Items
                                 AreaSceneBuilder.TileSize / 2f,
                                 AreaSceneBuilder.TileSize / 2f,
                                 0f),
-                            Orientation = new Vector2(1f, 0f),
+                            // Turned to face the camera. The default view sits at azimuth 225 - on
+                            // the -Y side - and a body's front is +Y (its cloak hangs at negative Y),
+                            // so an unrotated mannequin presented its back on every load.
+                            Orientation = new Vector2(-1f, 0f),
                             LayerColorIndices = CurrentLayerColors(),
                             Model = model
                         }

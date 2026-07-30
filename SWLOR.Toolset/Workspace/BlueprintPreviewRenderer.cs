@@ -521,10 +521,12 @@ namespace SWLOR.Toolset.Workspace
                 return parts;
 
             var robeModel = LoadMdl(robe.ModelResRef, withSupermodelAnims: false);
-            var covered = robeModel != null && RobeCoverage.IsFullBodyRobe(robeModel)
-                ? BlueprintModelResolver.RobeCoveredParts
-                : BlueprintModelResolver.RobeAlwaysCoveredParts;
+            if (robeModel == null)
+                return parts;
 
+            // Measured coverage, not a full-body/partial verdict: the robe replaces the parts its own
+            // geometry actually reaches.
+            var covered = RobeCoverage.CoveredParts(robeModel);
             return parts
                 .Where(part => !covered.Contains(part.PartType))
                 .ToList();

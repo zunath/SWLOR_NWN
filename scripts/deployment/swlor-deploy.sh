@@ -45,13 +45,18 @@ for required_setting in "${required_settings[@]}"; do
     }
 done
 
-DEPENDENCY_SERVICES="${DEPENDENCY_SERVICES:-}"
 COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-}"
 HAKS_SUBMODULE_PATH="${HAKS_SUBMODULE_PATH:-SWLOR_Haks}"
 NWSYNC_BUILD_SCRIPT="${NWSYNC_BUILD_SCRIPT:-$NWSYNC_ROOT/build.sh}"
-NWSYNC_DOTNET_ROOT="${NWSYNC_DOTNET_ROOT:-$NWSYNC_ROOT/dotnet}"
+NWSYNC_HAK_ROOT="${NWSYNC_HAK_ROOT:-$NWSYNC_ROOT/hak}"
+NWSYNC_TLK_ROOT="${NWSYNC_TLK_ROOT:-$NWSYNC_ROOT/tlk}"
+NWSYNC_MODULE_ROOT="${NWSYNC_MODULE_ROOT:-$NWSYNC_ROOT/modules}"
+SERVER_HAK_ROOT="${SERVER_HAK_ROOT:-$SERVER_ROOT/hak}"
+SERVER_TLK_ROOT="${SERVER_TLK_ROOT:-$SERVER_ROOT/tlk}"
+SERVER_MODULE_ROOT="${SERVER_MODULE_ROOT:-$SERVER_ROOT/modules}"
 SERVER_DOTNET_ROOT="${SERVER_DOTNET_ROOT:-$SERVER_ROOT/dotnet}"
-SERVER_CONTENT_MODE="${SERVER_CONTENT_MODE:-bind}"
+SERVER_ENV_FILE="${SERVER_ENV_FILE:-$SERVER_ROOT/swlor.env}"
+NWSYNC_HASH_VARIABLE="${NWSYNC_HASH_VARIABLE:-NWN_NWSYNCHASH}"
 
 # A host config can set these directly. Environment overrides win when supplied
 # for an individual invocation.
@@ -136,7 +141,7 @@ require_command()
 for required_command in \
     awk basename chown chmod cp curl date df docker dotnet find findmnt flock \
     git grep install jq ln mktemp mv realpath rm rsync sed sha256sum sleep \
-    stat tail tee tr unzip wc
+    sort stat tail tee tr unzip wc
 do
     require_command "$required_command"
 done
@@ -152,7 +157,9 @@ done
 for absolute_path in \
     "$SOURCE_ROOT" "$NWSYNC_ROOT" "$SERVER_ROOT" "$COMPOSE_FILE" \
     "$STATE_ROOT" "$CACHE_ROOT" "$NWSYNC_BUILD_SCRIPT" \
-    "$NWSYNC_DOTNET_ROOT" "$SERVER_DOTNET_ROOT"
+    "$NWSYNC_HAK_ROOT" "$NWSYNC_TLK_ROOT" "$NWSYNC_MODULE_ROOT" \
+    "$SERVER_HAK_ROOT" "$SERVER_TLK_ROOT" "$SERVER_MODULE_ROOT" \
+    "$SERVER_DOTNET_ROOT" "$SERVER_ENV_FILE"
 do
     [[ "$absolute_path" == /* ]] ||
         die "Configured paths must be absolute: $absolute_path"
@@ -173,10 +180,8 @@ if [[ -n "$COMPOSE_PROJECT_NAME" &&
 then
     die "COMPOSE_PROJECT_NAME contains unsupported characters: $COMPOSE_PROJECT_NAME"
 fi
-case "$SERVER_CONTENT_MODE" in
-    bind|copy) ;;
-    *) die "SERVER_CONTENT_MODE must be either 'bind' or 'copy'." ;;
-esac
+[[ "$NWSYNC_HASH_VARIABLE" =~ ^[A-Z][A-Z0-9_]*$ ]] ||
+    die "NWSYNC_HASH_VARIABLE contains unsupported characters."
 
 install -d -o root -g root -m 0750 "$STATE_ROOT" "$CACHE_ROOT"
 
@@ -253,11 +258,126 @@ safe_remove_under()
     rm -rf --one-file-system -- "$resolved_target"
 }
 
+same_object()
+{
+    local first_path="$1"
+    local second_path="$2"
+
+    [[ -e "$first_path" && -e "$second_path" ]] &&
+        [[ "$(stat -Lc '%d:%i' "$first_path")" == \
+           "$(stat -Lc '%d:%i' "$second_path")" ]]
+}
+
+same_filesystem()
+{
+    [[ "$(stat -Lc '%d' "$1")" == "$(stat -Lc '%d' "$2")" ]]
+}
+
+separation_status()
+{
+    if same_object "$1" "$2"; then
+        printf 'STILL linked'
+    else
+        printf 'separate'
+    fi
+}
+
+wait_for_server_health()
+{
+    local started_at="$1"
+    local deadline=$(( $(date +%s) + HEALTH_TIMEOUT_SECONDS ))
+    local container_id
+    local restart_count
+    local state
+    local current_id
+
+    container_id="$(compose ps -q "$SERVER_SERVICE")"
+    [[ -n "$container_id" ]] || return 1
+    restart_count="$(docker inspect --format '{{.RestartCount}}' "$container_id")"
+
+    log "Waiting up to ${HEALTH_TIMEOUT_SECONDS}s for '$HEALTH_LOG_MARKER'."
+    while (( $(date +%s) < deadline )); do
+        state="$(docker inspect --format '{{.State.Status}}' "$container_id" 2>/dev/null || true)"
+        [[ "$state" == running ]] || return 1
+
+        if compose logs --no-color --since "$started_at" "$SERVER_SERVICE" 2>&1 |
+            grep -F "$HEALTH_LOG_MARKER" >/dev/null
+        then
+            break
+        fi
+        sleep 5
+    done
+
+    if ! compose logs --no-color --since "$started_at" "$SERVER_SERVICE" 2>&1 |
+        grep -F "$HEALTH_LOG_MARKER" >/dev/null
+    then
+        return 1
+    fi
+
+    log "Startup marker found; checking ${HEALTH_STABLE_SECONDS}s of stability."
+    local stable_deadline=$(( $(date +%s) + HEALTH_STABLE_SECONDS ))
+    while (( $(date +%s) < stable_deadline )); do
+        current_id="$(compose ps -q "$SERVER_SERVICE")"
+        [[ "$current_id" == "$container_id" ]] || return 1
+        [[ "$(docker inspect --format '{{.State.Status}}' "$container_id")" == running ]] ||
+            return 1
+        [[ "$(docker inspect --format '{{.RestartCount}}' "$container_id")" == "$restart_count" ]] ||
+            return 1
+        sleep 5
+    done
+
+    return 0
+}
+
+write_manifest_hash()
+{
+    local manifest_id="$1"
+    server_env_temporary="${SERVER_ENV_FILE}.new.$$"
+
+    awk \
+        -v key="$NWSYNC_HASH_VARIABLE" \
+        -v value="$manifest_id" \
+        '
+          index($0, key "=") == 1 {
+              print key "=" value
+              next
+          }
+          { print }
+        ' \
+        "$SERVER_ENV_FILE" > "$server_env_temporary"
+    chown --reference="$SERVER_ENV_FILE" "$server_env_temporary"
+    chmod --reference="$SERVER_ENV_FILE" "$server_env_temporary"
+    mv -f "$server_env_temporary" "$SERVER_ENV_FILE"
+    server_env_temporary=
+
+    grep -Fqx "${NWSYNC_HASH_VARIABLE}=${manifest_id}" "$SERVER_ENV_FILE" ||
+        die "Failed to update $NWSYNC_HASH_VARIABLE in $SERVER_ENV_FILE."
+}
+
+restore_directory()
+{
+    local rollback_path="$1"
+    local server_path="$2"
+    local nwsync_path="$3"
+    local nwsync_parent="$4"
+
+    [[ -d "$rollback_path" ]] || return 0
+
+    if [[ -d "$server_path" ]]; then
+        if [[ -e "$nwsync_path" ]]; then
+            safe_remove_under "$nwsync_parent" "$nwsync_path"
+        fi
+        mv "$server_path" "$nwsync_path"
+    fi
+    mv "$rollback_path" "$server_path"
+}
+
 show_status()
 {
     local active_commit
     local previous_commit
     local active_manifest
+    local configured_manifest
 
     active_commit="$(state_value active-commit)"
     previous_commit="$(state_value previous-commit)"
@@ -266,6 +386,10 @@ show_status()
     else
         active_manifest=not-present
     fi
+    configured_manifest="$(
+        sed -n "s/^${NWSYNC_HASH_VARIABLE}=//p" "$SERVER_ENV_FILE" 2>/dev/null |
+            tail -n 1
+    )"
 
     printf 'Source:           %s\n' "$SOURCE_ROOT"
     printf 'Branch:           %s/%s\n' "$GIT_REMOTE" "$BRANCH"
@@ -273,7 +397,15 @@ show_status()
     printf 'Previous commit:  %s\n' "${previous_commit:-not recorded}"
     printf 'NWSync root:      %s\n' "$NWSYNC_ROOT"
     printf 'NWSync manifest:  %s\n' "$active_manifest"
-    printf 'Server content:   %s\n' "$SERVER_CONTENT_MODE"
+    printf 'Server manifest:  %s\n' "${configured_manifest:-not configured}"
+    printf 'Server env:       %s\n' "$SERVER_ENV_FILE"
+    printf 'Server dotnet:     %s\n' "$SERVER_DOTNET_ROOT"
+    printf 'HAK paths:         %s\n' \
+        "$(separation_status "$NWSYNC_HAK_ROOT" "$SERVER_HAK_ROOT")"
+    printf 'TLK paths:         %s\n' \
+        "$(separation_status "$NWSYNC_TLK_ROOT" "$SERVER_TLK_ROOT")"
+    printf 'Module paths:      %s\n' \
+        "$(separation_status "$NWSYNC_MODULE_ROOT" "$SERVER_MODULE_ROOT")"
     compose ps
     df -h "$NWSYNC_ROOT"
 }
@@ -288,23 +420,67 @@ fi
 [[ -d "$NWSYNC_ROOT" ]] || die "NWSync root does not exist: $NWSYNC_ROOT"
 [[ -d "$SERVER_ROOT" ]] || die "Server root does not exist: $SERVER_ROOT"
 [[ -f "$COMPOSE_FILE" ]] || die "Compose file does not exist: $COMPOSE_FILE"
+[[ -f "$SERVER_ENV_FILE" && ! -L "$SERVER_ENV_FILE" ]] ||
+    die "Server environment file does not exist or is a symlink: $SERVER_ENV_FILE"
 [[ -x "$NWSYNC_BUILD_SCRIPT" ]] ||
     die "NWSync build script is not executable: $NWSYNC_BUILD_SCRIPT"
 [[ "$(stat -c '%u:%g' "$SOURCE_ROOT")" == 0:0 ]] ||
     die "Deployment source must be owned by root:root."
 
-for content_directory in hak modules tlk; do
-    [[ -d "$NWSYNC_ROOT/$content_directory" ]] ||
-        die "NWSync content directory is missing: $NWSYNC_ROOT/$content_directory"
+for content_directory in \
+    "$NWSYNC_HAK_ROOT" "$NWSYNC_TLK_ROOT" "$NWSYNC_MODULE_ROOT"
+do
+    [[ -d "$content_directory" && ! -L "$content_directory" ]] ||
+        die "NWSync content directory is missing or is a symlink: $content_directory"
 done
-install -d -o root -g root -m 0755 "$NWSYNC_DOTNET_ROOT"
 
-if [[ "$SERVER_CONTENT_MODE" == bind ]]; then
-    for content_directory in hak modules tlk; do
-        server_content_path="$SERVER_ROOT/$content_directory"
-        [[ "$(findmnt -T "$server_content_path" -n -o TARGET)" == "$server_content_path" ]] ||
-            die "$server_content_path is not a dedicated bind mount. Set SERVER_CONTENT_MODE=copy if this host does not bind NWSync content into the server tree."
-    done
+for content_directory in \
+    "$SERVER_HAK_ROOT" "$SERVER_TLK_ROOT" "$SERVER_MODULE_ROOT" \
+    "$SERVER_DOTNET_ROOT"
+do
+    [[ -d "$content_directory" && ! -L "$content_directory" ]] ||
+        die "Server content directory is missing or is a symlink: $content_directory"
+done
+
+for path_pair in \
+    "$NWSYNC_HAK_ROOT|$SERVER_HAK_ROOT|HAK" \
+    "$NWSYNC_TLK_ROOT|$SERVER_TLK_ROOT|TLK" \
+    "$NWSYNC_MODULE_ROOT|$SERVER_MODULE_ROOT|module"
+do
+    IFS='|' read -r nwsync_path server_path content_name <<< "$path_pair"
+    ! same_object "$nwsync_path" "$server_path" ||
+        die "$content_name paths are still linked. Remove the bind mount before deploying."
+    [[ "$(findmnt -T "$server_path" -n -o TARGET)" != "$server_path" ]] ||
+        die "$server_path is still a dedicated mount point. Unmount it before deploying."
+done
+log "Verified HAK, TLK, and module build paths are separate from the server."
+
+same_filesystem "$NWSYNC_ROOT" "$SERVER_ROOT" ||
+    die "NWSync and server roots must be on the same filesystem for atomic moves."
+same_filesystem "$CACHE_ROOT" "$SERVER_ROOT" ||
+    die "CACHE_ROOT and SERVER_ROOT must be on the same filesystem for rollback."
+for artifact_path in \
+    "$NWSYNC_HAK_ROOT" "$NWSYNC_TLK_ROOT" "$NWSYNC_MODULE_ROOT" \
+    "$SERVER_HAK_ROOT" "$SERVER_TLK_ROOT" "$SERVER_MODULE_ROOT" \
+    "$SERVER_DOTNET_ROOT"
+do
+    same_filesystem "$artifact_path" "$CACHE_ROOT" ||
+        die "$artifact_path must share a filesystem with CACHE_ROOT for atomic cutover and rollback."
+done
+
+hash_line_count="$(
+    grep -Ec "^${NWSYNC_HASH_VARIABLE}=" "$SERVER_ENV_FILE" || true
+)"
+[[ "$hash_line_count" == 1 ]] ||
+    die "$SERVER_ENV_FILE must contain exactly one ${NWSYNC_HASH_VARIABLE}= line."
+configured_server_manifest="$(
+    sed -n "s/^${NWSYNC_HASH_VARIABLE}=//p" "$SERVER_ENV_FILE" |
+        tr -d '\r\n'
+)"
+if [[ -n "$configured_server_manifest" &&
+      ! "$configured_server_manifest" =~ ^[0-9a-fA-F]{40}$ ]]
+then
+    die "$NWSYNC_HASH_VARIABLE must be empty or a 40-character manifest hash."
 fi
 
 compose config --quiet
@@ -384,9 +560,61 @@ remote_haks_commit="$(
 log "Verified $HAKS_SUBMODULE_PATH $BRANCH at $checked_out_haks_commit."
 
 work_directory="$(mktemp -d "$CACHE_ROOT/work.XXXXXXXX")"
+staged_dotnet="$work_directory/dotnet"
+rollback_directory="$work_directory/rollback"
 module_temporary=
+server_env_temporary=
+server_env_restore_temporary=
 cutover_started=0
-deployment_succeeded=0
+preserve_work_directory=0
+
+rollback_cutover()
+{
+    local rollback_started_at
+
+    log "Restoring the pre-deployment server files and manifest hash."
+    compose down --timeout "$STOP_TIMEOUT_SECONDS" || return 1
+
+    restore_directory \
+        "$rollback_directory/hak" \
+        "$SERVER_HAK_ROOT" \
+        "$NWSYNC_HAK_ROOT" \
+        "$NWSYNC_ROOT" ||
+        return 1
+    restore_directory \
+        "$rollback_directory/tlk" \
+        "$SERVER_TLK_ROOT" \
+        "$NWSYNC_TLK_ROOT" \
+        "$NWSYNC_ROOT" ||
+        return 1
+    restore_directory \
+        "$rollback_directory/modules" \
+        "$SERVER_MODULE_ROOT" \
+        "$NWSYNC_MODULE_ROOT" \
+        "$NWSYNC_ROOT" ||
+        return 1
+    restore_directory \
+        "$rollback_directory/dotnet" \
+        "$SERVER_DOTNET_ROOT" \
+        "$staged_dotnet" \
+        "$work_directory" ||
+        return 1
+
+    if [[ -f "$rollback_directory/swlor.env" ]]; then
+        server_env_restore_temporary="${SERVER_ENV_FILE}.restore.$$"
+        cp -a \
+            "$rollback_directory/swlor.env" \
+            "$server_env_restore_temporary" ||
+            return 1
+        mv -f "$server_env_restore_temporary" "$SERVER_ENV_FILE" ||
+            return 1
+        server_env_restore_temporary=
+    fi
+
+    rollback_started_at="$(timestamp)"
+    compose up -d || return 1
+    wait_for_server_health "$rollback_started_at"
+}
 
 cleanup_on_exit()
 {
@@ -394,31 +622,38 @@ cleanup_on_exit()
     trap - EXIT INT TERM
     set +e
 
-    if [[ -n "${work_directory:-}" && -e "$work_directory" ]]; then
-        safe_remove_under "$CACHE_ROOT" "$work_directory"
+    if (( exit_status != 0 && cutover_started == 1 )); then
+        log "Deployment failed during cutover; starting automatic rollback."
+        if rollback_cutover; then
+            log "Automatic rollback passed its health check."
+        else
+            preserve_work_directory=1
+            log "CRITICAL: rollback failed. Preserving recovery files at $work_directory."
+        fi
     fi
+
     if [[ -n "${module_temporary:-}" && -e "$module_temporary" ]]; then
-        safe_remove_under "$NWSYNC_ROOT/modules" "$module_temporary"
+        safe_remove_under "$NWSYNC_MODULE_ROOT" "$module_temporary"
+    fi
+    if [[ -n "${server_env_temporary:-}" && -e "$server_env_temporary" ]]; then
+        safe_remove_under "$SERVER_ROOT" "$server_env_temporary"
+    fi
+    if [[ -n "${server_env_restore_temporary:-}" &&
+          -e "$server_env_restore_temporary" ]]
+    then
+        safe_remove_under "$SERVER_ROOT" "$server_env_restore_temporary"
     fi
     if [[ -d "$SOURCE_ROOT/Module/packing" ]]; then
         safe_remove_under "$SOURCE_ROOT/Module" "$SOURCE_ROOT/Module/packing"
     fi
-
-    if (( exit_status != 0 && cutover_started == 1 )); then
-        log "WARNING: deployment failed after server restart began. No local HAK/TLK rollback copy is retained."
-        container_id="$(compose ps -q "$SERVER_SERVICE" 2>/dev/null || true)"
-        container_state=
-        if [[ -n "$container_id" ]]; then
-            container_state="$(
-                docker inspect --format '{{.State.Status}}' "$container_id" 2>/dev/null ||
-                    true
-            )"
-        fi
-        if [[ "$container_state" != running ]]; then
-            log "Attempting to leave $SERVER_SERVICE running for diagnosis."
-            compose up -d --no-deps "$SERVER_SERVICE" ||
-                log "CRITICAL: $SERVER_SERVICE could not be started."
-        fi
+    if [[ -f "$SOURCE_ROOT/Module/$MODULE_NAME" ]]; then
+        safe_remove_under "$SOURCE_ROOT/Module" \
+            "$SOURCE_ROOT/Module/$MODULE_NAME"
+    fi
+    if (( preserve_work_directory == 0 )) &&
+       [[ -n "${work_directory:-}" && -e "$work_directory" ]]
+    then
+        safe_remove_under "$CACHE_ROOT" "$work_directory"
     fi
 
     exit "$exit_status"
@@ -429,12 +664,18 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 install -d -o root -g root -m 0750 \
-    "$CACHE_ROOT/nuget" "$CACHE_ROOT/dotnet-home" "$CACHE_ROOT/tmp"
+    "$CACHE_ROOT/nuget" "$CACHE_ROOT/dotnet-home" "$CACHE_ROOT/tmp" \
+    "$staged_dotnet" "$rollback_directory"
 export NUGET_PACKAGES="$CACHE_ROOT/nuget"
 export DOTNET_CLI_HOME="$CACHE_ROOT/dotnet-home"
 export TMPDIR="$CACHE_ROOT/tmp"
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export DOTNET_NOLOGO=1
+
+log "Refreshing the temporary NWSync artifact workspace from the running server."
+rsync --archive --delete "$SERVER_HAK_ROOT/" "$NWSYNC_HAK_ROOT/"
+rsync --archive --delete "$SERVER_TLK_ROOT/" "$NWSYNC_TLK_ROOT/"
+rsync --archive --delete "$SERVER_MODULE_ROOT/" "$NWSYNC_MODULE_ROOT/"
 
 log "Building SWLOR.CLI and the production game server for commit $target_commit."
 dotnet build "$SOURCE_ROOT/SWLOR.CLI/SWLOR.CLI.csproj" \
@@ -470,6 +711,13 @@ for tool_name in nwn_erf nwn_gff nwn_tlk; do
     ln -sfn "$tools_directory/$tool_name" "$cli_directory/$tool_name.exe"
 done
 
+log "Staging production .NET assemblies in temporary workspace."
+rsync \
+    --archive \
+    --delete \
+    "$SOURCE_ROOT/SWLOR.Game.Server/bin/Release/net10.0/" \
+    "$staged_dotnet/"
+
 # HakBuilder uses the existing .hak/.md5 pairs in NWSYNC_ROOT and rebuilds only
 # changed HAKs. It also installs the current TLK directly into NWSYNC_ROOT/tlk.
 jq \
@@ -501,23 +749,13 @@ log "Packing $MODULE_NAME."
     cd "$SOURCE_ROOT/Module"
     dotnet "$cli_directory/SWLOR.CLI.dll" --pack "./$MODULE_NAME"
 )
-module_temporary="$NWSYNC_ROOT/modules/.${MODULE_NAME}.new.$$"
+module_temporary="$NWSYNC_MODULE_ROOT/.${MODULE_NAME}.new.$$"
 install -o root -g root -m 0644 \
     "$SOURCE_ROOT/Module/$MODULE_NAME" \
     "$module_temporary"
-mv -f "$module_temporary" "$NWSYNC_ROOT/modules/$MODULE_NAME"
+mv -f "$module_temporary" "$NWSYNC_MODULE_ROOT/$MODULE_NAME"
 
-log "Installing production .NET assemblies into $NWSYNC_DOTNET_ROOT."
-rsync \
-    --archive \
-    --delete \
-    "$SOURCE_ROOT/SWLOR.Game.Server/bin/Release/net10.0/" \
-    "$NWSYNC_DOTNET_ROOT/"
-
-previous_manifest=
-if [[ -s "$NWSYNC_ROOT/latest" ]]; then
-    previous_manifest="$(tr -d '\r\n' < "$NWSYNC_ROOT/latest")"
-fi
+previous_manifest="$configured_server_manifest"
 
 log "Running the existing NWSync build script from $NWSYNC_ROOT."
 (
@@ -525,13 +763,13 @@ log "Running the existing NWSync build script from $NWSYNC_ROOT."
     "$NWSYNC_BUILD_SCRIPT"
 )
 
-[[ -s "$NWSYNC_DOTNET_ROOT/SWLOR.Game.Server.dll" ]] ||
-    die "NWSync dotnet directory does not contain SWLOR.Game.Server.dll."
-[[ -s "$NWSYNC_DOTNET_ROOT/SWLOR.Game.Server.runtimeconfig.json" ]] ||
-    die "NWSync dotnet directory does not contain the server runtime configuration."
-[[ -s "$NWSYNC_ROOT/modules/$MODULE_NAME" ]] ||
+[[ -s "$staged_dotnet/SWLOR.Game.Server.dll" ]] ||
+    die "Temporary .NET output does not contain SWLOR.Game.Server.dll."
+[[ -s "$staged_dotnet/SWLOR.Game.Server.runtimeconfig.json" ]] ||
+    die "Temporary .NET output does not contain the server runtime configuration."
+[[ -s "$NWSYNC_MODULE_ROOT/$MODULE_NAME" ]] ||
     die "NWSync modules directory does not contain the packed module."
-[[ -s "$NWSYNC_ROOT/tlk/sw_tlk.tlk" ]] ||
+[[ -s "$NWSYNC_TLK_ROOT/sw_tlk.tlk" ]] ||
     die "NWSync tlk directory does not contain sw_tlk.tlk."
 
 expected_hak_count="$(
@@ -539,7 +777,7 @@ expected_hak_count="$(
         "$SOURCE_ROOT/Build/hakbuilder.json"
 )"
 while IFS= read -r hak_name; do
-    [[ -s "$NWSYNC_ROOT/hak/$hak_name.hak" ]] ||
+    [[ -s "$NWSYNC_HAK_ROOT/$hak_name.hak" ]] ||
         die "NWSync is missing expected HAK: $hak_name.hak"
 done < <(
     jq -r \
@@ -547,7 +785,7 @@ done < <(
         "$SOURCE_ROOT/Build/hakbuilder.json"
 )
 actual_hak_count="$(
-    find "$NWSYNC_ROOT/hak" -maxdepth 1 -type f -name '*.hak' |
+    find "$NWSYNC_HAK_ROOT" -maxdepth 1 -type f -name '*.hak' |
         wc -l |
         tr -d '[:space:]'
 )"
@@ -574,95 +812,46 @@ if ! docker image inspect "$SERVER_IMAGE" >/dev/null 2>&1; then
     log "Building the missing server container image before downtime."
     compose build "$SERVER_SERVICE"
 fi
+while IFS= read -r compose_image; do
+    [[ -n "$compose_image" ]] || continue
+    if ! docker image inspect "$compose_image" >/dev/null 2>&1; then
+        log "Pulling missing Compose image $compose_image before downtime."
+        docker pull "$compose_image"
+    fi
+done < <(compose config --images | sort -u)
 
-read -r -a dependency_services <<< "$DEPENDENCY_SERVICES"
-if (( ${#dependency_services[@]} > 0 )); then
-    for dependency_service in "${dependency_services[@]}"; do
-        [[ "$dependency_service" =~ ^[A-Za-z0-9._-]+$ ]] ||
-            die "DEPENDENCY_SERVICES contains an invalid service name."
-    done
-    log "Ensuring supporting Compose services are running before server downtime."
-    compose up -d "${dependency_services[@]}"
-fi
-
+cp -a "$SERVER_ENV_FILE" "$rollback_directory/swlor.env"
 cutover_started=1
-log "Stopping $SERVER_SERVICE with a ${STOP_TIMEOUT_SECONDS}s graceful timeout."
-compose stop --timeout "$STOP_TIMEOUT_SECONDS" "$SERVER_SERVICE"
+log "Stopping and removing the Compose stack with a ${STOP_TIMEOUT_SECONDS}s timeout."
+compose down --timeout "$STOP_TIMEOUT_SECONDS"
 
-log "Publishing .NET assemblies to $SERVER_DOTNET_ROOT."
-install -d -o root -g root -m 0755 "$SERVER_DOTNET_ROOT"
-rsync \
-    --archive \
-    --delete \
-    "$NWSYNC_DOTNET_ROOT/" \
-    "$SERVER_DOTNET_ROOT/"
+log "Setting $NWSYNC_HASH_VARIABLE to $manifest_id."
+write_manifest_hash "$manifest_id"
 
-if [[ "$SERVER_CONTENT_MODE" == copy ]]; then
-    for content_directory in hak modules tlk; do
-        log "Publishing $content_directory to $SERVER_ROOT/$content_directory."
-        install -d -o root -g root -m 0755 "$SERVER_ROOT/$content_directory"
-        rsync \
-            --archive \
-            --delete \
-            "$NWSYNC_ROOT/$content_directory/" \
-            "$SERVER_ROOT/$content_directory/"
-    done
-fi
+log "Moving the completed HAK, TLK, module, and .NET artifacts into the server."
+mv "$SERVER_HAK_ROOT" "$rollback_directory/hak"
+mv "$NWSYNC_HAK_ROOT" "$SERVER_HAK_ROOT"
+install -d -o root -g root -m 0755 "$NWSYNC_HAK_ROOT"
+
+mv "$SERVER_TLK_ROOT" "$rollback_directory/tlk"
+mv "$NWSYNC_TLK_ROOT" "$SERVER_TLK_ROOT"
+install -d -o root -g root -m 0755 "$NWSYNC_TLK_ROOT"
+
+mv "$SERVER_MODULE_ROOT" "$rollback_directory/modules"
+mv "$NWSYNC_MODULE_ROOT" "$SERVER_MODULE_ROOT"
+install -d -o root -g root -m 0755 "$NWSYNC_MODULE_ROOT"
+
+mv "$SERVER_DOTNET_ROOT" "$rollback_directory/dotnet"
+mv "$staged_dotnet" "$SERVER_DOTNET_ROOT"
 
 server_started_at="$(timestamp)"
-compose up -d --no-deps "$SERVER_SERVICE"
-
-wait_for_server_health()
-{
-    local started_at="$1"
-    local deadline=$(( $(date +%s) + HEALTH_TIMEOUT_SECONDS ))
-    local container_id
-    local restart_count
-    local state
-    local current_id
-
-    container_id="$(compose ps -q "$SERVER_SERVICE")"
-    [[ -n "$container_id" ]] || return 1
-    restart_count="$(docker inspect --format '{{.RestartCount}}' "$container_id")"
-
-    log "Waiting up to ${HEALTH_TIMEOUT_SECONDS}s for '$HEALTH_LOG_MARKER'."
-    while (( $(date +%s) < deadline )); do
-        state="$(docker inspect --format '{{.State.Status}}' "$container_id" 2>/dev/null || true)"
-        [[ "$state" == running ]] || return 1
-
-        if compose logs --no-color --since "$started_at" "$SERVER_SERVICE" 2>&1 |
-            grep -Fq "$HEALTH_LOG_MARKER"
-        then
-            break
-        fi
-        sleep 5
-    done
-
-    if ! compose logs --no-color --since "$started_at" "$SERVER_SERVICE" 2>&1 |
-        grep -Fq "$HEALTH_LOG_MARKER"
-    then
-        return 1
-    fi
-
-    log "Startup marker found; checking ${HEALTH_STABLE_SECONDS}s of stability."
-    local stable_deadline=$(( $(date +%s) + HEALTH_STABLE_SECONDS ))
-    while (( $(date +%s) < stable_deadline )); do
-        current_id="$(compose ps -q "$SERVER_SERVICE")"
-        [[ "$current_id" == "$container_id" ]] || return 1
-        [[ "$(docker inspect --format '{{.State.Status}}' "$container_id")" == running ]] ||
-            return 1
-        [[ "$(docker inspect --format '{{.RestartCount}}' "$container_id")" == "$restart_count" ]] ||
-            return 1
-        sleep 5
-    done
-
-    return 0
-}
+compose up -d
 
 if ! wait_for_server_health "$server_started_at"; then
     compose logs --no-color --tail 200 "$SERVER_SERVICE" || true
     die "The deployed server failed its health check."
 fi
+log "Health check passed; the superseded live artifact set can now be removed."
 
 if [[ -n "$active_commit" ]]; then
     record_state previous-commit "$active_commit"
@@ -675,7 +864,6 @@ record_state active-manifest "$manifest_id"
 record_state deployed-at "$(timestamp)"
 
 cutover_started=0
-deployment_succeeded=1
 
 if [[ "$PRUNE_DANGLING_DOCKER_IMAGES" == true ]]; then
     docker image prune --force >/dev/null ||

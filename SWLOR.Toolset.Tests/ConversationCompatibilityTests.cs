@@ -23,10 +23,10 @@ namespace SWLOR.Toolset.Tests
             Path.GetFileName(path).Replace(".dlg.json", string.Empty, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
-        /// The hand-authored conversations Play-it declines — 15 of 354, about 4%. Every one decides
-        /// what to SHOW with its own NWScript rather than with snippets: the DMFI DM menus, the
-        /// pazaak card games, and a handful of imported dialogs. The editor could not predict a
-        /// single branch of them, so it opens nothing and changes nothing.
+        /// The hand-authored conversations Play-it declines — 9 of 346, about 3%. Every one decides
+        /// what to SHOW with its own NWScript rather than with snippets: the DMFI DM menus and a
+        /// handful of imported dialogs. The editor could not predict a single branch of them, so it
+        /// opens nothing and changes nothing.
         /// </summary>
         /// <remarks>
         /// An earlier version of the rule also refused a custom action script and turned away 28,
@@ -36,10 +36,9 @@ namespace SWLOR.Toolset.Tests
         /// </remarks>
         private static readonly string[] KnownUnsupported =
         {
-            "d1_cardchal", "d1_cardpvp", "d1_cardspec", "d_deckmanage", "d_gamedeckman",
             "dmfi_universal", "dt_barman_gen", "dt_cntr_magasin", "dt_doc_velpo",
-            "q1_nikka_larson", "quest_example", "red_journal_mand", "rimer_cpu",
-            "spawn_banner", "zomb_telconv"
+            "q1_nikka_larson", "quest_example", "red_journal_mand", "spawn_banner",
+            "zomb_telconv"
         };
 
         [Test]
@@ -56,7 +55,7 @@ namespace SWLOR.Toolset.Tests
             }
 
             refused.Should().BeEquivalentTo(KnownUnsupported);
-            total.Should().Be(354, "the hand-authored conversations, generated shells excluded");
+            total.Should().Be(346, "the hand-authored conversations, generated shells excluded");
         }
 
         [Test]

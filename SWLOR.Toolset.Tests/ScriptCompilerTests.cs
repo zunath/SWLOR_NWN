@@ -125,6 +125,8 @@ namespace SWLOR.Toolset.Tests
 
             // 19 of the module's 87 scripts are includes; treating them as failures would make the
             // Build All command permanently red.
+            result.Succeeded.Should().BeTrue(result.Output);
+            result.Skipped.Should().BeTrue(result.Output);
             result.HasErrors.Should().BeFalse(result.Output);
         }
 

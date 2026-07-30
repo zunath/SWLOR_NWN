@@ -114,11 +114,11 @@ namespace SWLOR.Toolset.Domain.Script.Compile
 
             // Exit code 623 / "skipped" is the compiler's way of saying the file declares no main()
             // and so is an include. That is a normal outcome, not a failure.
-            var skipped = output.Contains("skipped", StringComparison.OrdinalIgnoreCase) &&
+            var skipped = output.Contains("1 skipped", StringComparison.OrdinalIgnoreCase) &&
                 !output.Contains("1 successful", StringComparison.OrdinalIgnoreCase);
 
             var diagnostics = ParseDiagnostics(output);
-            var succeeded = exitCode == 0 && !diagnostics.Any(d => d.IsError);
+            var succeeded = (exitCode == 0 || skipped) && !diagnostics.Any(d => d.IsError);
 
             return new ScriptCompileResult(succeeded, diagnostics, output, skipped);
         }

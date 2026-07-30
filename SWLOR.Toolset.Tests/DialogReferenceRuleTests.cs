@@ -58,9 +58,9 @@ namespace SWLOR.Toolset.Tests
             var issues = new UnreferencedConversationRule().Validate(Context()).ToList();
 
             // Every one is a hand-authored conversation: the generated shells are excluded by
-            // design, and if they were not this would be 295 findings instead of 40 and nobody
+            // design, and if they were not this would be 287 findings instead of 32 and nobody
             // would read any of them.
-            issues.Should().HaveCount(40);
+            issues.Should().HaveCount(32);
             issues.Should().OnlyContain(issue => issue.Severity == ValidationSeverity.Warning);
             issues.Select(issue => issue.ResRef).Should().Contain("trooperquest");
             issues.Select(issue => issue.ResRef).Should().NotContain("dmfi_universal",

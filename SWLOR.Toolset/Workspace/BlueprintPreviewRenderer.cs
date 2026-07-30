@@ -198,9 +198,7 @@ namespace SWLOR.Toolset.Workspace
             var model = reference.Kind switch
             {
                 BlueprintModelKind.Simple when reference.ModelResRef != null => BuildRenderModel(reference.ModelResRef),
-                BlueprintModelKind.Segmented => ComposeSegmented(
-                    reference,
-                    useIdlePose: type != ResourceType.Uti),
+                BlueprintModelKind.Segmented => ComposeSegmented(reference),
                 BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
                 _ => null
             };
@@ -317,9 +315,7 @@ namespace SWLOR.Toolset.Workspace
             var model = reference.Kind switch
             {
                 BlueprintModelKind.Simple when reference.ModelResRef != null => BuildRenderModel(reference.ModelResRef),
-                BlueprintModelKind.Segmented => ComposeSegmented(
-                    reference,
-                    useIdlePose: type != ResourceType.Uti),
+                BlueprintModelKind.Segmented => ComposeSegmented(reference),
                 BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
                 _ => null
             };
@@ -421,9 +417,7 @@ namespace SWLOR.Toolset.Workspace
             }
         }
 
-        private RenderModel? ComposeSegmented(
-            BlueprintModelReference reference,
-            bool useIdlePose)
+        private RenderModel? ComposeSegmented(BlueprintModelReference reference)
         {
             if (_partComposer == null || reference.SkeletonResRef == null)
                 return null;
@@ -448,14 +442,10 @@ namespace SWLOR.Toolset.Workspace
             if (composed == null)
                 return null;
 
-            // Creature previews stand in the skeleton's idle. Aurora's item-property preview does
-            // not: it draws armor on the authored, symmetric reference mannequin. Applying pause1
-            // to an item twists the segmented limbs and then asks a separately authored skinmesh to
-            // follow them, which is why robe sleeves appeared detached from the arms even though the
-            // same item is continuous in the original Toolset.
-            return MdlMeshBuilder.Build(
-                composed,
-                useIdlePose ? IdleFrames(composed) : null);
+            // Aurora's creature and equipped-item previews both play the mannequin idle. Weighted
+            // robe geometry needs its own coat supermodel's extra pose nodes (coat tails, panels)
+            // merged into those same frames; shared body bones continue to come from the mannequin.
+            return MdlMeshBuilder.Build(composed, IdleFrames(composed, parts));
         }
 
         /// <summary>
@@ -488,20 +478,63 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
-        /// The model's standing pose, or null when it has no idle to stand in.
+        /// The model's sampled idle, enriched with any attached skinmesh supermodel pose nodes.
         /// </summary>
         /// <remarks>
-        /// Sampled at the first frame rather than played: the pose is what makes a creature read as a
-        /// creature instead of the arms-out bind pose its geometry is stored in, and it costs one
-        /// evaluation at build time. Animating it would mean re-posing and re-uploading every composed
-        /// body each frame, which is a different piece of work - the sampler already takes a time, so
-        /// that is a matter of driving it rather than rewriting it.
+        /// A robe such as <c>pmh0_robe010</c> inherits <c>a_ba_coat</c>, which adds animated coat
+        /// bones absent from the ordinary <c>a_ba</c> skeleton idle. Those nodes are sampled at the
+        /// same normalized progress, while shared arm/torso bones keep the mannequin values, so
+        /// rigid body parts and weighted garment vertices advance together.
         /// </remarks>
-        private IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> IdleFrames(MdlModel model) =>
-            MdlAnimationPose
-                .SampleIdleFrames(model, superModel => LoadMdl(superModel, withSupermodelAnims: true))
-                .Select(frame => frame.Pose)
+        private IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> IdleFrames(
+            MdlModel model,
+            IReadOnlyList<(string PartType, string ModelResRef)>? parts = null)
+        {
+            var frames = MdlAnimationPose.SampleIdleFrames(
+                model,
+                superModel => LoadMdl(superModel, withSupermodelAnims: true));
+            if (frames.Count == 0 || parts == null)
+                return frames.Select(frame => frame.Pose).ToList();
+
+            var skinFrameSets = parts
+                .Select(part => part.ModelResRef)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Select(resRef => LoadMdl(resRef, withSupermodelAnims: false))
+                .Where(candidate => candidate != null && MdlMeshBuilder.ContainsNamedSkinWeights(candidate))
+                .Cast<MdlModel>()
+                .Select(skinModel => MdlAnimationPose.SampleIdleFrames(
+                    skinModel,
+                    superModel => LoadMdl(superModel, withSupermodelAnims: true)))
+                .Where(skinFrames => skinFrames.Count > 0)
                 .ToList();
+            if (skinFrameSets.Count == 0)
+                return frames.Select(frame => frame.Pose).ToList();
+
+            var mergedFrames = new List<IReadOnlyDictionary<string, PosedNode>>(frames.Count);
+            for (var frameIndex = 0; frameIndex < frames.Count; frameIndex++)
+            {
+                var frame = frames[frameIndex];
+                var merged = new Dictionary<string, PosedNode>(
+                    frame.Pose,
+                    StringComparer.OrdinalIgnoreCase);
+                foreach (var skinFrames in skinFrameSets)
+                {
+                    // Supermodel idles normally share a duration, but choose by normalized progress
+                    // so an authored coat with a different length still stays in phase.
+                    var skinFrameIndex = frames.Count == 1
+                        ? 0
+                        : (int)MathF.Round(
+                            frameIndex * (skinFrames.Count - 1f) / (frames.Count - 1f));
+                    var skinPose = skinFrames[Math.Clamp(skinFrameIndex, 0, skinFrames.Count - 1)].Pose;
+                    foreach (var (name, node) in skinPose)
+                        merged.TryAdd(name, node);
+                }
+
+                mergedFrames.Add(merged);
+            }
+
+            return mergedFrames;
+        }
 
         /// <summary>Whether a texture name resolves to a real resource, in any of NWN's texture formats.</summary>
         private bool TextureExists(string name)

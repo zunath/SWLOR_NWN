@@ -73,6 +73,20 @@ namespace SWLOR.Toolset.Domain.Render
         /// rest - so anything that wants the settled model rather than the playback uses that.
         /// </summary>
         public IReadOnlyList<Matrix4x4> PoseFrames { get; init; } = Array.Empty<Matrix4x4>();
+
+        /// <summary>
+        /// Model-space vertex positions for each idle frame of a skinned mesh. Empty for rigid
+        /// meshes. Each entry is parallel to <see cref="Positions"/>, whose values remain the final
+        /// resting frame used by still thumbnails, bounds, and non-animated draws.
+        /// </summary>
+        public IReadOnlyList<float[]> PosePositions { get; init; } = Array.Empty<float[]>();
+
+        /// <summary>
+        /// Model-space vertex normals parallel to <see cref="PosePositions"/>. A frame may be empty
+        /// when the source skinmesh has no complete normal array.
+        /// </summary>
+        public IReadOnlyList<float[]> PoseNormals { get; init; } = Array.Empty<float[]>();
+
         public IReadOnlyDictionary<string, IReadOnlyList<Matrix4x4>> AnimationFrames { get; init; } =
             new Dictionary<string, IReadOnlyList<Matrix4x4>>(StringComparer.OrdinalIgnoreCase);
 
@@ -265,16 +279,6 @@ namespace SWLOR.Toolset.Domain.Render
             var emitterNodes = includePlaceableMetadata
                 ? EnumerateNodes(model.GeometryRoot).OfType<MdlEmitterNode>().Where(IsPersistentEmitter).ToList()
                 : new List<MdlEmitterNode>();
-            var renderedPoseFrames = poseFrames;
-            if (poseFrames is { Count: > 0 } && ContainsNamedSkinWeights(model))
-            {
-                // RenderMesh stores one transform per frame, which is enough for rigid segmented
-                // bodies but cannot carry a different vertex buffer for every skin pose. Skin the
-                // garment at the final idle and hold the entire mannequin there so the two never
-                // pass through different poses during the intro.
-                renderedPoseFrames = new[] { poseFrames[^1] };
-            }
-
             var renderMeshes = new List<RenderMesh>();
             foreach (var mesh in EnumerateNodes(model.GeometryRoot).OfType<MdlTrimeshNode>())
             {
@@ -286,7 +290,7 @@ namespace SWLOR.Toolset.Domain.Render
                 if (mesh.IsWalkmesh || !mesh.Render || PlaceholderNames.Contains(mesh.Name))
                     continue;
 
-                var built = BuildMesh(mesh, renderedPoseFrames, animationSamples);
+                var built = BuildMesh(mesh, poseFrames, animationSamples);
                 if (built != null)
                     renderMeshes.Add(built);
             }
@@ -338,8 +342,16 @@ namespace SWLOR.Toolset.Domain.Render
 
             var skinnedPositions = Array.Empty<Vector3>();
             var skinnedNormals = Array.Empty<Vector3>();
+            IReadOnlyList<float[]> skinnedPosePositions = Array.Empty<float[]>();
+            IReadOnlyList<float[]> skinnedPoseNormals = Array.Empty<float[]>();
             var skinned = mesh is MdlSkinmeshNode skin &&
-                          TrySkinAtRest(skin, poseFrames, out skinnedPositions, out skinnedNormals);
+                          TrySkinPoses(
+                              skin,
+                              poseFrames,
+                              out skinnedPositions,
+                              out skinnedNormals,
+                              out skinnedPosePositions,
+                              out skinnedPoseNormals);
             var positions = skinned
                 ? Flatten(skinnedPositions)
                 : Flatten(mesh.Vertices.Select(FiniteOrZero));
@@ -399,13 +411,15 @@ namespace SWLOR.Toolset.Domain.Render
                 Indices = indices.ToArray(),
                 Transform = renderedPoseFrames.Length > 0 ? renderedPoseFrames[^1] : staticTransform,
                 PoseFrames = renderedPoseFrames,
+                PosePositions = skinnedPosePositions,
+                PoseNormals = skinnedPoseNormals,
                 AnimationFrames = animationFrames,
                 TileFade = mesh.TileFade
             };
         }
 
         /// <summary>
-        /// Deforms an ASCII skinmesh into the final requested pose.
+        /// Deforms an ASCII skinmesh into every requested pose, retaining the final one as rest.
         /// </summary>
         /// <remarks>
         /// Aurora stores a skin vertex in the skin node's bind space and names the bones that
@@ -419,14 +433,18 @@ namespace SWLOR.Toolset.Domain.Render
         /// SWLOR's robe and cloak parts are ASCII and carry the named influence rows used here.
         /// </para>
         /// </remarks>
-        private static bool TrySkinAtRest(
+        private static bool TrySkinPoses(
             MdlSkinmeshNode skin,
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
             out Vector3[] positions,
-            out Vector3[] normals)
+            out Vector3[] normals,
+            out IReadOnlyList<float[]> renderedPositions,
+            out IReadOnlyList<float[]> renderedNormals)
         {
             positions = Array.Empty<Vector3>();
             normals = Array.Empty<Vector3>();
+            renderedPositions = Array.Empty<float[]>();
+            renderedNormals = Array.Empty<float[]>();
 
             if (skin.VertexInfluences.Length != skin.Vertices.Length ||
                 skin.VertexInfluences.Length == 0)
@@ -438,8 +456,37 @@ namespace SWLOR.Toolset.Domain.Render
             if (bones.Bind.Count == 0)
                 return false;
 
-            var pose = poseFrames is { Count: > 0 } ? poseFrames[^1] : null;
             var meshBind = ComposeNodeTransform(skin);
+            if (poseFrames is not { Count: > 0 })
+                return TrySkinPose(skin, bones, meshBind, pose: null, out positions, out normals);
+
+            var positionFrames = new List<float[]>(poseFrames.Count);
+            var normalFrames = new List<float[]>(poseFrames.Count);
+            foreach (var pose in poseFrames)
+            {
+                if (!TrySkinPose(skin, bones, meshBind, pose, out positions, out normals))
+                    return false;
+
+                positionFrames.Add(Flatten(positions));
+                normalFrames.Add(normals.Length == 0 ? Array.Empty<float>() : Flatten(normals));
+            }
+
+            renderedPositions = positionFrames;
+            renderedNormals = normalFrames;
+            return true;
+        }
+
+        private static bool TrySkinPose(
+            MdlSkinmeshNode skin,
+            SkinBones bones,
+            Matrix4x4 meshBind,
+            IReadOnlyDictionary<string, PosedNode>? pose,
+            out Vector3[] positions,
+            out Vector3[] normals)
+        {
+            positions = Array.Empty<Vector3>();
+            normals = Array.Empty<Vector3>();
+
             var transforms = new Dictionary<string, Matrix4x4>(StringComparer.OrdinalIgnoreCase);
             foreach (var (name, bindBone) in bones.Bind)
             {

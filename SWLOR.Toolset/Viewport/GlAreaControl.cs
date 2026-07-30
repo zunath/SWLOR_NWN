@@ -279,6 +279,12 @@ void main()
             /// </summary>
             public IReadOnlyList<Matrix4x4> PoseFrames { get; init; } = Array.Empty<Matrix4x4>();
 
+            /// <summary>
+            /// Byte offsets into the shared index buffer for the matching skinned idle frames.
+            /// Empty for rigid meshes, whose geometry never changes between poses.
+            /// </summary>
+            public IReadOnlyList<int> PoseIndexOffsets { get; init; } = Array.Empty<int>();
+
             public IReadOnlyDictionary<string, IReadOnlyList<Matrix4x4>> AnimationFrames { get; init; } =
                 new Dictionary<string, IReadOnlyList<Matrix4x4>>(StringComparer.OrdinalIgnoreCase);
 
@@ -1904,6 +1910,12 @@ void main()
         private long? _idlePlaybackStartedTicks;
 
         /// <summary>
+        /// A single-model preview keeps its idle alive like Aurora's item/creature property window.
+        /// Area scenes still play once and settle so a busy area does not animate forever.
+        /// </summary>
+        private bool _idlePlaybackLoops;
+
+        /// <summary>
         /// How far through the idle the scene is, or null when it has settled. Drives which pose frame
         /// each animated mesh draws with, and keeps asking for another frame until it is done.
         /// </summary>
@@ -1914,6 +1926,9 @@ void main()
 
             var elapsed = (float)((System.Diagnostics.Stopwatch.GetTimestamp() - started)
                 / (double)System.Diagnostics.Stopwatch.Frequency);
+
+            if (_idlePlaybackLoops)
+                return elapsed % IdlePlaybackSeconds;
 
             if (elapsed >= IdlePlaybackSeconds)
             {
@@ -1930,12 +1945,39 @@ void main()
         /// </summary>
         private static Matrix4x4 PosedMeshTransform(MeshRange mesh, float? elapsed)
         {
-            if (elapsed is not { } seconds || mesh.PoseFrames.Count == 0)
+            var frame = IdleFrameIndex(mesh.PoseFrames.Count, elapsed);
+            if (frame < 0)
                 return mesh.MeshTransform;
 
-            var through = Math.Clamp(seconds / IdlePlaybackSeconds, 0f, 1f);
-            var frame = Math.Clamp((int)(through * (mesh.PoseFrames.Count - 1)), 0, mesh.PoseFrames.Count - 1);
             return mesh.PoseFrames[frame];
+        }
+
+        private static int IdleFrameIndex(int frameCount, float? elapsed)
+        {
+            if (elapsed is not { } seconds || frameCount == 0)
+                return -1;
+
+            var through = Math.Clamp(seconds / IdlePlaybackSeconds, 0f, 1f);
+            return Math.Clamp((int)(through * (frameCount - 1)), 0, frameCount - 1);
+        }
+
+        private static int PreviewMeshIndexOffset(
+            MeshRange mesh,
+            PreviewAnimationSnapshot preview,
+            float? idleElapsed)
+        {
+            // Explicit placeable-state animations currently carry transform frames only. Their
+            // static vertex range remains correct; idle skin frames apply only when no state has
+            // taken over the mesh.
+            if (preview.Name is { } name &&
+                mesh.AnimationFrames.TryGetValue(name, out var animationFrames) &&
+                animationFrames.Count > 0)
+            {
+                return mesh.IndexOffset;
+            }
+
+            var frame = IdleFrameIndex(mesh.PoseIndexOffsets.Count, idleElapsed);
+            return frame < 0 ? mesh.IndexOffset : mesh.PoseIndexOffsets[frame];
         }
 
         private static Matrix4x4 PreviewMeshTransform(
@@ -2371,6 +2413,20 @@ void main()
 
                 if (sceneState.Version != _renderedSceneVersion)
                 {
+                    var isSingleModelPreview = scene.Tiles.Count == 0 && scene.Instances.Count == 1;
+                    if (isSingleModelPreview)
+                    {
+                        // Preview controls reuse Array.Empty<TilePlacement>() for every model, so a
+                        // tile-list identity check cannot detect replacements. Restart on every
+                        // preview scene assignment and loop it for as long as the view is visible.
+                        _idlePlaybackStartedTicks = System.Diagnostics.Stopwatch.GetTimestamp();
+                        _idlePlaybackLoops = true;
+                    }
+                    else
+                    {
+                        _idlePlaybackLoops = false;
+                    }
+
                     // Trigger volumes live on the instances, so this follows any scene change.
                     RebuildPolygonBuffer(scene);
 
@@ -2383,9 +2439,10 @@ void main()
                         RebuildWalkmeshBuffer(scene);
                         _tileBatches = AreaDrawBatcher.GroupByModel(scene.Tiles);
 
-                        // A new scene starts the idle again, so opening an area - or rebuilding it
-                        // after an edit - shows its creatures move and then settle.
-                        _idlePlaybackStartedTicks = System.Diagnostics.Stopwatch.GetTimestamp();
+                        // A new area starts its idle again and then settles. Single-model previews
+                        // already started above and keep looping instead.
+                        if (!isSingleModelPreview)
+                            _idlePlaybackStartedTicks = System.Diagnostics.Stopwatch.GetTimestamp();
                         _batchedTiles = scene.Tiles;
                     }
 
@@ -2871,7 +2928,8 @@ void main()
                     unsafe
                     {
                         _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
-                            DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
+                            DrawElementsType.UnsignedInt,
+                            (void*)PreviewMeshIndexOffset(meshRange, preview, idleElapsed));
                     }
                 }
             }
@@ -4195,26 +4253,51 @@ void main()
                 if (vertexCount == 0 || mesh.Indices.Length == 0)
                     continue;
 
-                var hasNormals = mesh.Normals.Length == vertexCount * 3;
                 var hasUvs = mesh.TexCoords.Length == vertexCount * 2;
 
-                for (var i = 0; i < vertexCount; i++)
+                void AppendVertices(float[] positions, float[] normals)
                 {
-                    vertices.Add(mesh.Positions[i * 3]);
-                    vertices.Add(mesh.Positions[i * 3 + 1]);
-                    vertices.Add(mesh.Positions[i * 3 + 2]);
+                    var hasNormals = normals.Length == vertexCount * 3;
+                    for (var i = 0; i < vertexCount; i++)
+                    {
+                        vertices.Add(positions[i * 3]);
+                        vertices.Add(positions[i * 3 + 1]);
+                        vertices.Add(positions[i * 3 + 2]);
 
-                    vertices.Add(hasNormals ? mesh.Normals[i * 3] : 0f);
-                    vertices.Add(hasNormals ? mesh.Normals[i * 3 + 1] : 0f);
-                    vertices.Add(hasNormals ? mesh.Normals[i * 3 + 2] : 1f);
+                        vertices.Add(hasNormals ? normals[i * 3] : 0f);
+                        vertices.Add(hasNormals ? normals[i * 3 + 1] : 0f);
+                        vertices.Add(hasNormals ? normals[i * 3 + 2] : 1f);
 
-                    vertices.Add(hasUvs ? mesh.TexCoords[i * 2] : 0f);
-                    vertices.Add(hasUvs ? mesh.TexCoords[i * 2 + 1] : 0f);
+                        vertices.Add(hasUvs ? mesh.TexCoords[i * 2] : 0f);
+                        vertices.Add(hasUvs ? mesh.TexCoords[i * 2 + 1] : 0f);
+                    }
                 }
 
+                AppendVertices(mesh.Positions, mesh.Normals);
                 var indexOffset = indices.Count * sizeof(uint);
                 foreach (var index in mesh.Indices)
                     indices.Add(baseVertex + (uint)index);
+                baseVertex += (uint)vertexCount;
+
+                var poseIndexOffsets = new List<int>();
+                var hasPoseVertices =
+                    mesh.PosePositions.Count == mesh.PoseFrames.Count &&
+                    mesh.PosePositions.All(frame => frame.Length == vertexCount * 3);
+                if (hasPoseVertices)
+                {
+                    for (var frame = 0; frame < mesh.PosePositions.Count; frame++)
+                    {
+                        var frameNormals = frame < mesh.PoseNormals.Count
+                            ? mesh.PoseNormals[frame]
+                            : Array.Empty<float>();
+                        AppendVertices(mesh.PosePositions[frame], frameNormals);
+
+                        poseIndexOffsets.Add(indices.Count * sizeof(uint));
+                        foreach (var index in mesh.Indices)
+                            indices.Add(baseVertex + (uint)index);
+                        baseVertex += (uint)vertexCount;
+                    }
+                }
 
                 meshRanges.Add(new MeshRange
                 {
@@ -4222,12 +4305,11 @@ void main()
                     IndexCount = mesh.Indices.Length,
                     MeshTransform = mesh.Transform,
                     PoseFrames = mesh.PoseFrames,
+                    PoseIndexOffsets = poseIndexOffsets,
                     AnimationFrames = mesh.AnimationFrames,
                     TextureName = string.IsNullOrEmpty(mesh.TextureName) ? null : mesh.TextureName,
                     TileFade = mesh.TileFade
                 });
-
-                baseVertex += (uint)vertexCount;
             }
 
             var vao = _gl!.GenVertexArray();

@@ -57,19 +57,28 @@ namespace SWLOR.Toolset.Tests
             };
             root.Children.Add(skin);
 
-            var pose = new Dictionary<string, PosedNode>(StringComparer.OrdinalIgnoreCase)
+            var firstPose = new Dictionary<string, PosedNode>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["forearm_g"] = new(new Vector3(1f, 1f, 0f), Quaternion.Identity, 1f)
+            };
+            var finalPose = new Dictionary<string, PosedNode>(StringComparer.OrdinalIgnoreCase)
             {
                 ["forearm_g"] = new(new Vector3(1f, 3f, 0f), Quaternion.Identity, 1f)
             };
 
             var rendered = MdlMeshBuilder.Build(
                 new MdlModel { Name = "coat", GeometryRoot = root },
-                [pose]);
+                [firstPose, finalPose]);
 
             var mesh = rendered.Meshes.Should().ContainSingle().Subject;
             mesh.Transform.Should().Be(Matrix4x4.Identity);
-            mesh.PoseFrames.Should().Equal(Matrix4x4.Identity);
+            mesh.PoseFrames.Should().Equal(Matrix4x4.Identity, Matrix4x4.Identity);
+            mesh.PosePositions.Should().HaveCount(2);
+            mesh.PosePositions[0].Take(3).Should().Equal(2f, 1f, 0f);
+            mesh.PosePositions[1].Take(3).Should().Equal(2f, 3f, 0f);
             mesh.Positions.Take(3).Should().Equal(2f, 3f, 0f);
+            mesh.Positions.Should().Equal(mesh.PosePositions[^1],
+                "the static buffer remains the settled final frame");
         }
 
         [Test]

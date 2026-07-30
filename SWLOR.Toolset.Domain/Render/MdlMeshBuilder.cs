@@ -435,19 +435,29 @@ namespace SWLOR.Toolset.Domain.Render
             }
 
             var bones = FindSkinBones(skin);
-            if (bones.Count == 0)
+            if (bones.Bind.Count == 0)
                 return false;
 
             var pose = poseFrames is { Count: > 0 } ? poseFrames[^1] : null;
             var meshBind = ComposeNodeTransform(skin);
             var transforms = new Dictionary<string, Matrix4x4>(StringComparer.OrdinalIgnoreCase);
-            foreach (var (name, bone) in bones)
+            foreach (var (name, bindBone) in bones.Bind)
             {
-                var bind = ComposeNodeTransform(bone);
+                var bind = ComposeNodeTransform(bindBone);
                 if (!Matrix4x4.Invert(bind, out var inverseBind))
                     continue;
 
-                var posed = pose == null ? bind : ComposeNodeTransform(bone, pose);
+                // The robe's private bone is inverse-bind data; the mannequin's corresponding
+                // skeleton bone is the deformation target. They are not interchangeable. In
+                // particular, the player skeleton carries shoulder nodes that several robe bind
+                // skeletons omit. Re-applying the mannequin's local bicep/forearm pose through the
+                // robe's shorter hierarchy drops those shoulder transforms and collapses sleeves
+                // inward at the elbow.
+                var posed = bones.Target.TryGetValue(name, out var targetBone)
+                    ? ComposeNodeTransform(targetBone, pose)
+                    : pose == null
+                        ? bind
+                        : ComposeNodeTransform(bindBone, pose);
                 transforms[name] = inverseBind * posed;
             }
 
@@ -505,11 +515,16 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         /// <summary>
-        /// Finds the nearest ancestor subtree containing every named influence. In a composed body
-        /// this selects the robe's own bind skeleton instead of an identically named bone on the
-        /// mannequin beside it.
+        /// Finds the robe's nearest complete bind skeleton and the matching bones on the composed
+        /// mannequin outside that subtree.
         /// </summary>
-        private static IReadOnlyDictionary<string, MdlNode> FindSkinBones(MdlSkinmeshNode skin)
+        /// <remarks>
+        /// A robe model carries a private copy of the bones needed to interpret its weighted
+        /// vertices. Those bones define the inverse bind matrices only. Once the robe is grafted
+        /// into a segmented body, Aurora deforms it toward the outer mannequin skeleton, whose
+        /// hierarchy can include joints (notably shoulders) absent from the robe copy.
+        /// </remarks>
+        private static SkinBones FindSkinBones(MdlSkinmeshNode skin)
         {
             var required = skin.VertexInfluences
                 .SelectMany(row => row)
@@ -519,28 +534,59 @@ namespace SWLOR.Toolset.Domain.Render
                 .Select(influence => influence.BoneName)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
             if (required.Count == 0)
-                return new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase);
+                return SkinBones.Empty;
 
             for (var scope = skin.Parent; scope != null; scope = scope.Parent)
             {
                 var indexed = IndexNodes(scope);
                 if (required.All(indexed.ContainsKey))
-                    return indexed;
+                {
+                    var modelRoot = scope;
+                    while (modelRoot.Parent != null)
+                        modelRoot = modelRoot.Parent;
+
+                    var target = ReferenceEquals(modelRoot, scope)
+                        ? new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase)
+                        : IndexNodes(modelRoot, scope);
+                    return new SkinBones(indexed, target);
+                }
             }
 
-            return new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase);
+            return SkinBones.Empty;
         }
 
-        private static IReadOnlyDictionary<string, MdlNode> IndexNodes(MdlNode root)
+        private static IReadOnlyDictionary<string, MdlNode> IndexNodes(
+            MdlNode root,
+            MdlNode? excludedSubtree = null)
         {
             var result = new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase);
-            foreach (var node in EnumerateNodes(root))
+            var pending = new Stack<MdlNode>();
+            pending.Push(root);
+            while (pending.Count > 0)
             {
+                var node = pending.Pop();
+                if (ReferenceEquals(node, excludedSubtree))
+                    continue;
+
                 if (!string.IsNullOrWhiteSpace(node.Name))
                     result.TryAdd(node.Name, node);
+
+                // Push in reverse so traversal remains source-order and a skeleton parent wins
+                // over any identically named mesh nested in a subsequently attached body part.
+                for (var index = node.Children.Count - 1; index >= 0; index--)
+                    pending.Push(node.Children[index]);
             }
 
             return result;
+        }
+
+        private readonly record struct SkinBones(
+            IReadOnlyDictionary<string, MdlNode> Bind,
+            IReadOnlyDictionary<string, MdlNode> Target)
+        {
+            public static SkinBones Empty { get; } = new(
+                new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase),
+                new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase));
         }
 
         private static Vector3 TransformDirection(Vector3 value, Matrix4x4 transform) =>

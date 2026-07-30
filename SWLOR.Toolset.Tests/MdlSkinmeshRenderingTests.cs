@@ -73,16 +73,23 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void NearestBindSkeletonWinsWhenAComposedModelRepeatsBoneNames()
+        public void RobeBindBoneDeformsTowardTheOuterMannequinSkeleton()
         {
             var composite = new MdlNode { Name = "composite" };
+            var mannequinShoulder = new MdlNode
+            {
+                Name = "shoulder_g",
+                Parent = composite,
+                Position = new Vector3(10f, 0f, 0f)
+            };
+            composite.Children.Add(mannequinShoulder);
             var mannequinBone = new MdlNode
             {
                 Name = "forearm_g",
-                Parent = composite,
-                Position = new Vector3(100f, 0f, 0f)
+                Parent = mannequinShoulder,
+                Position = new Vector3(1f, 0f, 0f)
             };
-            composite.Children.Add(mannequinBone);
+            mannequinShoulder.Children.Add(mannequinBone);
 
             var robeRoot = new MdlNode { Name = "robe", Parent = composite };
             composite.Children.Add(robeRoot);
@@ -107,9 +114,9 @@ namespace SWLOR.Toolset.Tests
 
             var firstVertex = rendered.Meshes.Should().ContainSingle()
                 .Which.Positions.Take(3).ToArray();
-            firstVertex.Should().Equal(2f, 2f, 0f);
-            firstVertex[0].Should().BeLessThan(10f,
-                "the robe's bind skeleton must be used, not the identically named mannequin sibling at X=100");
+            firstVertex.Should().Equal([12f, 2f, 0f],
+                "the robe bone supplies inverse bind X=1, while the target includes the mannequin's " +
+                "otherwise-missing shoulder X=10 and posed forearm local transform (1,2,0)");
         }
 
         private static MdlSkinmeshNode TriangleSkin(MdlNode parent) =>

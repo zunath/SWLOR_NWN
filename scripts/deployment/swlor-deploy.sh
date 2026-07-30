@@ -665,28 +665,54 @@ git -C "$haks_root" ls-files -z '*.set' |
 
 validated_set_count=0
 while IFS= read -r -d '' set_relative_path; do
+    set_path="$haks_root/$set_relative_path"
+    allow_unterminated_final_line=0
+    if [[ "$(
+        tail -c 1 "$set_path" |
+            wc -l |
+            tr -d '[:space:]'
+    )" == 0 ]]
+    then
+        allow_unterminated_final_line=1
+    fi
+
     if ! awk \
-        'BEGIN { lines = 0 }
-         {
-             lines++
-             if (substr($0, length($0), 1) != "\r") {
-                 exit 1
-             }
+        -v allow_unterminated_final_line="$allow_unterminated_final_line" \
+        'BEGIN {
+             lines = 0
+             invalid_lines = 0
+             invalid_line = 0
          }
-         END {
+         {
+             lines += 1
+             if (substr($0, length($0), 1) != "\r") {
+                 invalid_lines += 1
+                 invalid_line = lines
+             }
+          }
+          END {
              if (lines == 0) {
                  exit 1
              }
-         }' \
-        "$haks_root/$set_relative_path"
+             if (invalid_lines == 0) {
+                 exit 0
+             }
+             if (allow_unterminated_final_line == 1 &&
+                 invalid_lines == 1 &&
+                 invalid_line == lines) {
+                 exit 0
+             }
+             exit 1
+          }' \
+        "$set_path"
     then
-        die "$HAKS_SUBMODULE_PATH/$set_relative_path is not fully CRLF encoded."
+        die "$HAKS_SUBMODULE_PATH/$set_relative_path contains a non-CRLF line ending."
     fi
     (( validated_set_count += 1 ))
 done < <(git -C "$haks_root" ls-files -z '*.set')
 (( validated_set_count == tracked_set_count )) ||
     die "Validated $validated_set_count of $tracked_set_count tracked .set files."
-log "Verified CRLF encoding for all $validated_set_count tracked .set resources."
+log "Verified CRLF line endings for all $validated_set_count tracked .set resources."
 
 if [[ -n "$(git -C "$SOURCE_ROOT" status --porcelain --untracked-files=all)" ]]; then
     die "Deployment source became dirty while materializing .set resources."

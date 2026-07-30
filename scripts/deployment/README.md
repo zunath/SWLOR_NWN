@@ -24,7 +24,8 @@ The deployment:
    10 server in the deployment cache, and updates changed HAKs, the TLK, and
    packed module under `NWSYNC_ROOT`. It never replaces that workspace from
    the running server.
-   The Haks checkout enforces CRLF for every `.set` resource; the deployer
+   The Haks checkout enforces CRLF for every terminated line in each `.set`
+   resource while preserving an optional unterminated final line; the deployer
    materializes and verifies all of them before packaging, then extracts every
    packaged `.set` and byte-compares it with its source.
 3. Runs `NWSYNC_ROOT/build.sh` from `NWSYNC_ROOT`. This is the operation that

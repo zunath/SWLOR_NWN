@@ -1064,14 +1064,15 @@ namespace SWLOR.Toolset.Editors
         /// original blueprint is deleted, so a sidecar that cannot be written aborts the whole
         /// rename instead of stranding the category on a resref about to disappear.
         /// </summary>
-        private bool RefileItemCategories(string oldResRef, string newResRef)
+        private CategorySaveResult RefileItemCategories(string oldResRef, string newResRef)
         {
-            var result = _categories?.RefileMember(ResourceType.Uti, oldResRef, newResRef);
-            if (result is not { Saved: false })
-                return true;
+            var result = _categories?.RefileMember(ResourceType.Uti, oldResRef, newResRef)
+                         ?? CategorySaveResult.Ok();
+            if (result.Saved)
+                return result;
 
-            _log.AppendLine($"Could not move the category of {oldResRef} to {newResRef}: {result.Value.Problem}");
-            return false;
+            _log.AppendLine($"Could not move the category of {oldResRef} to {newResRef}: {result.Problem}");
+            return result;
         }
 
         /// <summary>

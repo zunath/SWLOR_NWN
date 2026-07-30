@@ -40,7 +40,10 @@ namespace SWLOR.Toolset.Domain.Editing
         /// <summary>Loads and parses the file at the given path into a new session.</summary>
         public static DocumentSession Open(string filePath)
         {
-            return new DocumentSession(filePath, JsonGffDocument.Load(filePath));
+            var content = File.ReadAllBytes(filePath);
+            var session = new DocumentSession(filePath, JsonGffDocument.Parse(content));
+            session.RecordCurrentFileState(content);
+            return session;
         }
 
         /// <summary>Begins a transaction on this session's undo stack.</summary>
@@ -158,7 +161,8 @@ namespace SWLOR.Toolset.Domain.Editing
         /// </summary>
         public void ReloadFromDisk()
         {
-            ReloadFrom(JsonGffDocument.Load(FilePath));
+            var content = File.ReadAllBytes(FilePath);
+            ReloadFrom(JsonGffDocument.Parse(content), content);
         }
 
         /// <summary>
@@ -168,15 +172,31 @@ namespace SWLOR.Toolset.Domain.Editing
         /// </summary>
         public void ReloadFrom(JsonGffDocument document)
         {
+            ReloadFrom(document, document.ToBytes());
+        }
+
+        /// <summary>
+        /// Replaces this session's content and ties the baseline to the exact bytes that produced it.
+        /// If the file changes after those bytes were read, the next external-change check sees the
+        /// mismatch instead of accepting the newer disk generation as this document's baseline.
+        /// </summary>
+        public void ReloadFrom(JsonGffDocument document, byte[] loadedContent)
+        {
+            ArgumentNullException.ThrowIfNull(document);
+            ArgumentNullException.ThrowIfNull(loadedContent);
             lock (_syncRoot)
             {
                 Document.ReplaceWith(document);
                 UndoStack.Reset();
-                RecordCurrentFileState();
+                RecordCurrentFileState(loadedContent);
             }
         }
 
-        /// <summary>Records the current on-disk state after this session successfully saves.</summary>
+        /// <summary>
+        /// Accepts the current on-disk generation as a compare-and-swap baseline, such as after the
+        /// user explicitly chooses Overwrite. Successful saves should use the byte[] overload so a
+        /// replacement racing the post-save bookkeeping cannot be adopted accidentally.
+        /// </summary>
         public void RecordCurrentFileState()
         {
             lock (_syncRoot)
@@ -185,6 +205,23 @@ namespace SWLOR.Toolset.Domain.Editing
                 _loadedContentHash = _loadedMTimeUtc != null
                     ? System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(FilePath))
                     : null;
+            }
+        }
+
+        /// <summary>
+        /// Records a successful save while keeping the baseline hash tied to the exact bytes written.
+        /// The timestamp is still sampled from disk, but a replacement that lands before that sample
+        /// cannot hide because its content will differ from this immutable hash.
+        /// </summary>
+        public void RecordCurrentFileState(byte[] savedContent)
+        {
+            ArgumentNullException.ThrowIfNull(savedContent);
+            lock (_syncRoot)
+            {
+                _loadedMTimeUtc = File.Exists(FilePath)
+                    ? File.GetLastWriteTimeUtc(FilePath)
+                    : DateTime.MinValue;
+                _loadedContentHash = System.Security.Cryptography.SHA256.HashData(savedContent);
             }
         }
 
@@ -249,7 +286,7 @@ namespace SWLOR.Toolset.Domain.Editing
                 if (UndoStack.RestoreSaved())
                     return;
 
-                ReloadFrom(JsonGffDocument.Load(FilePath));
+                ReloadFromDisk();
             }
         }
 

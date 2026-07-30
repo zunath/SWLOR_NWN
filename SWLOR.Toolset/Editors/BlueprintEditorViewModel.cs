@@ -380,9 +380,10 @@ namespace SWLOR.Toolset.Editors
                     return false;
                 }
 
-                Services.SaveService.WriteAtomic(_session.FilePath, _session.ToBytes());
+                var saveBytes = _session.ToBytes();
+                Services.SaveService.WriteAtomic(_session.FilePath, saveBytes);
                 _session.UndoStack.MarkSaved();
-                _session.RecordCurrentFileState();
+                _session.RecordCurrentFileState(saveBytes);
                 PlaceableSections?.Behavior.MarkSavedBaseline();
                 AfterHistoryChange();
                 CatalogEntryChanged?.Invoke();

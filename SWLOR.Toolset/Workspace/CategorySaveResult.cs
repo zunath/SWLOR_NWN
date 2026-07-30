@@ -9,10 +9,15 @@ namespace SWLOR.Toolset.Workspace
     /// Toolset produced it, and it declines to clobber an external edit - and a caller that cannot tell
     /// the difference tells the builder their arrangement is saved when it is not.
     /// </remarks>
-    public readonly record struct CategorySaveResult(bool Saved, string? Problem)
+    public readonly record struct CategorySaveResult(
+        bool Saved,
+        string? Problem,
+        string? ContentSha256)
     {
-        public static CategorySaveResult Ok() => new(true, null);
+        public static CategorySaveResult Ok(string? contentSha256 = null) =>
+            new(true, null, contentSha256);
 
-        public static CategorySaveResult Failed(string problem) => new(false, problem);
+        public static CategorySaveResult Failed(string problem) =>
+            new(false, problem, null);
     }
 }

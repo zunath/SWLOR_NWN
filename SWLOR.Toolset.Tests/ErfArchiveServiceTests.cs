@@ -567,6 +567,55 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ReplacedItemsHaveEconomyRestrictionsReapplied()
+        {
+            _workspace.Open(_secondModule);
+            const string resRef = "replaced_item";
+            var sourcePath = Path.Combine(_root, resRef + ".uti.json");
+            var source = JsonGffDocument.Parse(
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Uti,
+                    resRef,
+                    "Imported Replacement"));
+            new VarTable(source.Root).Remove(BlueprintTemplateFactory.NoEconomyVariable);
+            File.WriteAllBytes(sourcePath, source.ToBytes());
+
+            var destination = Path.Combine(_secondModule, "uti", resRef + ".uti.json");
+            File.WriteAllBytes(
+                destination,
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Uti,
+                    resRef,
+                    "Existing Item"));
+            var asset = new ErfArchiveAsset(
+                resRef + ".uti",
+                resRef,
+                "uti",
+                new FileInfo(sourcePath).Length,
+                IsSupported: true,
+                TypeName: "Item",
+                UnsupportedReason: null);
+
+            await _service.ImportAsync(new[]
+            {
+                new ErfImportChoice(
+                    new ErfPreparedImport(
+                        asset,
+                        sourcePath,
+                        destination,
+                        ErfConflictKind.Different,
+                        ErfConflictAction.Replace),
+                    ErfConflictAction.Replace,
+                    RenameResRef: null)
+            });
+
+            var replaced = JsonGffDocument.Load(destination);
+            new VarTable(replaced.Root)
+                .GetInt(BlueprintTemplateFactory.NoEconomyVariable)
+                .Should().Be(1, "replacement imports must not clear runtime economy restrictions");
+        }
+
+        [Test]
         public async Task StagedStoresCountAsPlayerSourcesBeforeNoEconomyIsApplied()
         {
             _workspace.Open(_secondModule);
@@ -690,6 +739,85 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ScriptSourceRequiresItsCompiledCompanion()
+        {
+            File.WriteAllText(
+                Path.Combine(_firstModule, "nss", "compiled_pair.nss"),
+                "void main() {}\n");
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "ncs", "compiled_pair.ncs"),
+                new byte[] { 0x4e, 0x43, 0x53, 0x20 });
+            var archivePath = Path.Combine(_root, "compiled-pair.erf");
+            await _service.ExportAsync(
+                new[] { "compiled_pair.nss", "compiled_pair.ncs" },
+                archivePath);
+            using var archive = await _service.OpenArchiveAsync(archivePath);
+
+            var dependencies = await _service.FindImportDependenciesAsync(
+                archive,
+                new[] { "compiled_pair.nss" });
+
+            dependencies.Should().ContainSingle(dependency =>
+                dependency.FileName == "compiled_pair.ncs" &&
+                dependency.Reason.Contains("compiled script companion"));
+        }
+
+        [Test]
+        public async Task ImportingScriptSourceReplacesAStaleCompiledCompanion()
+        {
+            _workspace.Open(_secondModule);
+            var sourceNss = Path.Combine(_root, "compiled_pair.nss");
+            var sourceNcs = Path.Combine(_root, "compiled_pair.ncs");
+            File.WriteAllText(sourceNss, "void main() {}\n");
+            var compiledGeneration = new byte[] { 0x4e, 0x43, 0x53, 0x20, 0x02 };
+            File.WriteAllBytes(sourceNcs, compiledGeneration);
+            var destinationNss = Path.Combine(_secondModule, "nss", "compiled_pair.nss");
+            var destinationNcs = Path.Combine(_secondModule, "ncs", "compiled_pair.ncs");
+            File.WriteAllBytes(destinationNcs, new byte[] { 0x4e, 0x43, 0x53, 0x20, 0x01 });
+
+            ErfPreparedImport Prepared(
+                string source,
+                string destination,
+                string extension,
+                ErfConflictKind conflict)
+            {
+                var asset = new ErfArchiveAsset(
+                    $"compiled_pair.{extension}",
+                    "compiled_pair",
+                    extension,
+                    new FileInfo(source).Length,
+                    IsSupported: true,
+                    TypeName: extension,
+                    UnsupportedReason: null);
+                return new ErfPreparedImport(
+                    asset,
+                    source,
+                    destination,
+                    conflict,
+                    conflict == ErfConflictKind.New
+                        ? ErfConflictAction.Add
+                        : ErfConflictAction.KeepExisting);
+            }
+
+            await _service.ImportAsync(new[]
+            {
+                new ErfImportChoice(
+                    Prepared(sourceNss, destinationNss, "nss", ErfConflictKind.New),
+                    ErfConflictAction.Add,
+                    RenameResRef: null),
+                new ErfImportChoice(
+                    Prepared(sourceNcs, destinationNcs, "ncs", ErfConflictKind.Different),
+                    ErfConflictAction.KeepExisting,
+                    RenameResRef: null)
+            });
+
+            File.Exists(destinationNss).Should().BeTrue();
+            File.ReadAllBytes(destinationNcs).Should().Equal(
+                compiledGeneration,
+                "the runtime must execute the generation that belongs to the imported source");
+        }
+
+        [Test]
         public async Task RenameWritesANewResourceAndRewritesImportedResRefs()
         {
             _workspace.Open(_secondModule);
@@ -801,7 +929,12 @@ namespace SWLOR.Toolset.Tests
             File.WriteAllBytes(
                 dialogSource,
                 new JsonGffDocument("DLG ", new JsonGffStruct()).ToBytes());
-            File.WriteAllText(scriptSource, "void main() {}\n");
+            File.WriteAllText(
+                scriptSource,
+                "void main() {\n" +
+                "    CreateItemOnObject(\"shared\", OBJECT_SELF);\n" +
+                "    CreateObject(OBJECT_TYPE_CREATURE, \"shared\", GetLocation(OBJECT_SELF));\n" +
+                "}\n");
 
             var creature = SyntheticGit.Instance(
                 ("TemplateResRef", GffFieldType.ResRef, "shared"),
@@ -855,6 +988,11 @@ namespace SWLOR.Toolset.Tests
             importedCreature.Get("Conversation").GetString().Should().Be("renamed_dialog");
             importedCreature.Get("ScriptSpawn").GetString().Should().Be("renamed_script");
             importedCreature.Get("TemplateResRef").GetString().Should().NotBe("renamed_item");
+            var importedScript = File.ReadAllText(
+                Path.Combine(_secondModule, "nss", "renamed_script.nss"));
+            importedScript.Should().Contain("CreateItemOnObject(\"renamed_item\"");
+            importedScript.Should().Contain(
+                "CreateObject(OBJECT_TYPE_CREATURE, \"renamed_creature\"");
         }
 
         [Test]
@@ -989,14 +1127,16 @@ namespace SWLOR.Toolset.Tests
                     {
                         DestinationPath = destination,
                         RollbackPath = rollback,
-                        OriginalExisted = true
+                        OriginalExisted = true,
+                        InstalledContent = Fingerprint("new generation")
                     },
                     new
                     {
                         DestinationPath = added,
                         RollbackPath = Path.Combine(
                             transactionRoot, "rollback", "nss", "partly_added.nss"),
-                        OriginalExisted = false
+                        OriginalExisted = false,
+                        InstalledContent = Fingerprint("partial import")
                     }
                 }
             }));
@@ -1008,6 +1148,48 @@ namespace SWLOR.Toolset.Tests
             File.Exists(added).Should().BeFalse();
             File.Exists(manifestPath).Should().BeFalse();
             Directory.Exists(transactionRoot).Should().BeFalse();
+        }
+
+        [Test]
+        public void StartupRecoveryPreservesAResourceChangedAfterTheInterruptedImport()
+        {
+            var destination = Path.Combine(_secondModule, "nss", "existing.nss");
+            File.WriteAllText(destination, "new generation");
+
+            var transactionId = Guid.NewGuid().ToString("N");
+            var transactionRoot = Path.Combine(
+                Path.GetDirectoryName(_secondModule)!,
+                ".swlor-toolset-erf-import-" + transactionId);
+            var rollback = Path.Combine(transactionRoot, "rollback", "nss", "existing.nss");
+            Directory.CreateDirectory(Path.GetDirectoryName(rollback)!);
+            File.WriteAllText(rollback, "old generation");
+            var manifestPath = Path.Combine(
+                _secondModule,
+                ".swlor-toolset-erf-import-" + transactionId + ".pending.json");
+            File.WriteAllText(manifestPath, JsonSerializer.Serialize(new
+            {
+                TransactionRoot = transactionRoot,
+                Entries = new[]
+                {
+                    new
+                    {
+                        DestinationPath = destination,
+                        RollbackPath = rollback,
+                        OriginalExisted = true,
+                        InstalledContent = Fingerprint("new generation")
+                    }
+                }
+            }));
+            File.WriteAllText(destination, "newer external generation");
+
+            var action = () => ErfArchiveService.RecoverInterruptedImports(_secondModule);
+
+            action.Should().Throw<ErfImportRecoveryException>()
+                .Which.InnerException!.Message.Should()
+                .Contain("changed after the interrupted ERF import");
+            File.ReadAllText(destination).Should().Be("newer external generation");
+            File.Exists(manifestPath).Should().BeTrue();
+            Directory.Exists(transactionRoot).Should().BeTrue();
         }
 
         [Test]
@@ -1072,6 +1254,14 @@ namespace SWLOR.Toolset.Tests
                 Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"),
                 Path.Combine(moduleRoot, "ifo", "module.ifo.json"),
                 overwrite: true);
+        }
+
+        private static ErfDestinationFingerprint Fingerprint(string content)
+        {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(content);
+            return new ErfDestinationFingerprint(
+                bytes.LongLength,
+                Convert.ToHexString(SHA256.HashData(bytes)));
         }
 
         private static string FindToolsDirectory()

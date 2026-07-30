@@ -301,10 +301,12 @@ namespace SWLOR.Toolset.Workspace
                 _sidecarStateKnown = true;
                 _sidecarExistedWhenLoaded = true;
                 _sidecarWrittenUtc = LastWriteUtc(catalog.FilePath);
-                _sidecarContentHash = ComputeHash(catalog.FilePath);
+                _sidecarContentHash = ComputeHash(catalog.FilePath)
+                    ?? throw new IOException(
+                        $"Could not fingerprint the saved category sidecar '{catalog.FilePath}'.");
                 _persistedCatalog = catalog.DeepClone();
                 Changed?.Invoke();
-                return CategorySaveResult.Ok();
+                return CategorySaveResult.Ok(Convert.ToHexString(_sidecarContentHash));
             }
             catch (Exception ex)
             {

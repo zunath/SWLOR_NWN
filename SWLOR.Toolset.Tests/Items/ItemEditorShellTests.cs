@@ -258,6 +258,8 @@ namespace SWLOR.Toolset.Tests.Items
                 CategoryPath = categoryPath,
                 CategoryBackupPath = categoryBackup,
                 CategoryExisted = true,
+                CategoryOriginalContentSha256 = Hash("old category generation"),
+                CategoryInstalledContentSha256 = Hash("new category generation"),
                 NewContentSha256 = Convert.ToHexString(
                     SHA256.HashData(File.ReadAllBytes(newPath)))
             }));
@@ -271,6 +273,56 @@ namespace SWLOR.Toolset.Tests.Items
             File.ReadAllText(categoryPath).Should().Be("old category generation");
             File.Exists(markerPath).Should().BeFalse();
             Directory.Exists(transactionRoot).Should().BeFalse();
+        }
+
+        [Test]
+        public void InterruptedRenameRecoveryPreservesANewerCategorySidecar()
+        {
+            var oldPath = Scratch("adren_harness");
+            var oldBytes = File.ReadAllBytes(oldPath);
+            var newPath = Scratch("adren_mk8");
+            File.Copy(oldPath, newPath);
+            File.Delete(oldPath);
+
+            var categoryPath = CategoryCatalog.DefaultPathFor(_root);
+            Directory.CreateDirectory(Path.GetDirectoryName(categoryPath)!);
+            File.WriteAllText(categoryPath, "newer external category generation");
+
+            var transactionName = ".swlor-toolset-item-rename-" + Guid.NewGuid().ToString("N");
+            var transactionRoot = Path.Combine(_root, transactionName);
+            Directory.CreateDirectory(transactionRoot);
+            var itemBackup = Path.Combine(transactionRoot, "item.original");
+            File.WriteAllBytes(itemBackup, oldBytes);
+            var categoryBackup = Path.Combine(transactionRoot, "categories.original");
+            File.WriteAllText(categoryBackup, "old category generation");
+            var markerPath = transactionRoot + ".pending.json";
+            File.WriteAllText(markerPath, JsonSerializer.Serialize(new
+            {
+                TransactionRoot = transactionRoot,
+                OldPath = oldPath,
+                NewPath = newPath,
+                ItemBackupPath = itemBackup,
+                CategoryPath = categoryPath,
+                CategoryBackupPath = categoryBackup,
+                CategoryExisted = true,
+                CategoryOriginalContentSha256 = Hash("old category generation"),
+                CategoryInstalledContentSha256 = Hash("renamed category generation"),
+                NewContentSha256 = Convert.ToHexString(
+                    SHA256.HashData(File.ReadAllBytes(newPath)))
+            }));
+
+            var workspace = new WorkspaceContext(
+                path => new ModuleWorkspace(path),
+                new OutputLogService());
+            var action = () => workspace.Open(_root);
+
+            action.Should().Throw<IOException>()
+                .WithMessage("*category sidecar*changed after the interrupted item rename*");
+            File.ReadAllText(categoryPath).Should().Be("newer external category generation");
+            File.Exists(oldPath).Should().BeFalse("validation happens before any rollback write");
+            File.Exists(newPath).Should().BeTrue("the interrupted destination is preserved with the evidence");
+            File.Exists(markerPath).Should().BeTrue();
+            Directory.Exists(transactionRoot).Should().BeTrue();
         }
 
         [Test]
@@ -387,7 +439,7 @@ namespace SWLOR.Toolset.Tests.Items
                     // immediately before the original delete. It deterministically exercises the
                     // race where an external editor saves during that window.
                     File.WriteAllText(Scratch("adren_harness"), externalGeneration);
-                    return true;
+                    return CategorySaveResult.Ok();
                 });
             SetResRef(document, "adren_mk9");
 
@@ -475,6 +527,10 @@ namespace SWLOR.Toolset.Tests.Items
             Assert.That(document.FilePath, Is.EqualTo(Scratch("adren_harness")));
             Assert.That(UtiDocument.Load(Scratch("adren_harness")).Tag, Is.EqualTo("adren_harness_b"));
         }
+
+        private static string Hash(string content) =>
+            Convert.ToHexString(
+                SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(content)));
 
         private sealed class StubPrompts : IEditorPromptService
         {

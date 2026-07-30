@@ -55,9 +55,10 @@ namespace SWLOR.Toolset.Tests
             // Save a real edit to disk, then undo past it and branch: the saved history is gone.
             using (session.Begin("edit A"))
                 field.SetInteger(initialValue + 1);
-            File.WriteAllBytes(_path, session.ToBytes());
+            var savedBytes = session.ToBytes();
+            File.WriteAllBytes(_path, savedBytes);
             session.UndoStack.MarkSaved();
-            session.RecordCurrentFileState();
+            session.RecordCurrentFileState(savedBytes);
 
             session.Undo();
             using (session.Begin("edit B"))
@@ -101,12 +102,57 @@ namespace SWLOR.Toolset.Tests
             using (session.Begin("edit"))
                 field.SetInteger(field.GetInteger() + 1);
 
-            File.WriteAllBytes(_path, session.ToBytes());
+            var savedBytes = session.ToBytes();
+            File.WriteAllBytes(_path, savedBytes);
             session.UndoStack.MarkSaved();
-            session.RecordCurrentFileState();
+            session.RecordCurrentFileState(savedBytes);
 
             session.HasExternalChange().Should().BeFalse();
             session.UndoStack.IsDirty.Should().BeFalse();
+        }
+
+        [Test]
+        public void RecordCurrentFileState_DoesNotAdoptAReplacementAfterTheSave()
+        {
+            using var session = DocumentSession.Open(_path);
+            var field = CorpusFiles.FindFirstMutableInteger(session.Document.Root)!;
+            using (session.Begin("edit"))
+                field.SetInteger(field.GetInteger() + 1);
+            var savedBytes = session.ToBytes();
+
+            File.WriteAllBytes(_path, savedBytes);
+            File.WriteAllText(_path, "external replacement after save");
+
+            session.RecordCurrentFileState(savedBytes);
+
+            session.HasExternalChange().Should().BeTrue(
+                "the baseline hash belongs to the bytes the session saved, not a later disk read");
+        }
+
+        [Test]
+        public void ReloadFrom_DoesNotAdoptAReplacementReadAfterTheDocument()
+        {
+            var first = JsonGffDocument.Load(_path);
+            var firstField = CorpusFiles.FindFirstMutableInteger(first.Root)!;
+            var originalValue = firstField.GetInteger();
+            firstField.SetInteger(originalValue + 1);
+            var firstBytes = first.ToBytes();
+
+            var second = JsonGffDocument.Load(_path);
+            CorpusFiles.FindFirstMutableInteger(second.Root)!.SetInteger(originalValue + 2);
+            var secondBytes = second.ToBytes();
+
+            using var session = DocumentSession.Open(_path);
+            File.WriteAllBytes(_path, firstBytes);
+            var parsedFirst = JsonGffDocument.Parse(firstBytes);
+            File.WriteAllBytes(_path, secondBytes);
+
+            session.ReloadFrom(parsedFirst, firstBytes);
+
+            CorpusFiles.FindFirstMutableInteger(session.Document.Root)!.GetInteger()
+                .Should().Be(originalValue + 1);
+            session.HasExternalChange().Should().BeTrue(
+                "the document and baseline must remain tied to the first reload generation");
         }
 
         [Test]

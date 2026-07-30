@@ -56,6 +56,9 @@ namespace SWLOR.Toolset.Services
                 var categoryExisted = File.Exists(categoryPath);
                 if (categoryExisted)
                     File.Copy(categoryPath, categoryBackupPath);
+                var categoryOriginalHash = categoryExisted
+                    ? Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(categoryBackupPath)))
+                    : string.Empty;
 
                 var manifest = new Manifest
                 {
@@ -66,6 +69,7 @@ namespace SWLOR.Toolset.Services
                     CategoryPath = categoryPath,
                     CategoryBackupPath = categoryBackupPath,
                     CategoryExisted = categoryExisted,
+                    CategoryOriginalContentSha256 = categoryOriginalHash,
                     OriginalContentSha256 = Convert.ToHexString(expectedOriginalContentHash),
                     NewContentSha256 = Convert.ToHexString(SHA256.HashData(newContent))
                 };
@@ -112,7 +116,7 @@ namespace SWLOR.Toolset.Services
                     JsonSerializer.Serialize(
                         manifest,
                         new JsonSerializerOptions { WriteIndented = true }));
-                File.Move(temporaryPath, markerPath);
+                File.Move(temporaryPath, markerPath, overwrite: true);
             }
             finally
             {
@@ -176,6 +180,22 @@ namespace SWLOR.Toolset.Services
                 throw new InvalidDataException(
                     $"Item rename recovery marker '{markerPath}' has an invalid original fingerprint.");
             }
+
+            foreach (var (value, description) in new[]
+                     {
+                         (manifest.CategoryOriginalContentSha256, "original category"),
+                         (manifest.CategoryInstalledContentSha256, "installed category")
+                     })
+            {
+                if (value.Length != 0 &&
+                    (value.Length != 64 ||
+                     value.Any(character =>
+                         character is not (>= '0' and <= '9' or >= 'A' and <= 'F'))))
+                {
+                    throw new InvalidDataException(
+                        $"Item rename recovery marker '{markerPath}' has an invalid {description} fingerprint.");
+                }
+            }
         }
 
         private static void RequirePathUnder(string root, string path, string description)
@@ -200,6 +220,8 @@ namespace SWLOR.Toolset.Services
                     throw new FileNotFoundException(
                         "The original item backup is missing.",
                         manifest.ItemBackupPath);
+
+                ValidateCategoryGeneration(manifest);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(manifest.OldPath)!);
                 var preserveExternallyChangedOriginal =
@@ -227,15 +249,16 @@ namespace SWLOR.Toolset.Services
 
                 if (manifest.CategoryExisted)
                 {
-                    if (!File.Exists(manifest.CategoryBackupPath))
-                        throw new FileNotFoundException(
-                            "The original category sidecar backup is missing.",
-                            manifest.CategoryBackupPath);
-                    Directory.CreateDirectory(Path.GetDirectoryName(manifest.CategoryPath)!);
-                    File.Copy(
-                        manifest.CategoryBackupPath,
-                        manifest.CategoryPath,
-                        overwrite: true);
+                    var currentHash = ContentHash(manifest.CategoryPath);
+                    var originalHash = CategoryOriginalHash(manifest);
+                    if (!string.Equals(currentHash, originalHash, StringComparison.Ordinal))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(manifest.CategoryPath)!);
+                        File.Copy(
+                            manifest.CategoryBackupPath,
+                            manifest.CategoryPath,
+                            overwrite: true);
+                    }
                 }
                 else
                 {
@@ -254,6 +277,59 @@ namespace SWLOR.Toolset.Services
                     exception);
             }
         }
+
+        private static void ValidateCategoryGeneration(Manifest manifest)
+        {
+            if (manifest.CategoryExisted && !File.Exists(manifest.CategoryBackupPath))
+            {
+                throw new FileNotFoundException(
+                    "The original category sidecar backup is missing.",
+                    manifest.CategoryBackupPath);
+            }
+
+            if (!File.Exists(manifest.CategoryPath))
+            {
+                if (manifest.CategoryExisted)
+                {
+                    throw new IOException(
+                        $"The category sidecar '{manifest.CategoryPath}' disappeared after the " +
+                        "interrupted rename. Recovery was refused.");
+                }
+
+                return;
+            }
+
+            var currentHash = ContentHash(manifest.CategoryPath);
+            if (manifest.CategoryExisted &&
+                string.Equals(
+                    currentHash,
+                    CategoryOriginalHash(manifest),
+                    StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            if (manifest.CategoryInstalledContentSha256.Length != 0 &&
+                string.Equals(
+                    currentHash,
+                    manifest.CategoryInstalledContentSha256,
+                    StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            throw new IOException(
+                $"The category sidecar '{manifest.CategoryPath}' changed after the interrupted " +
+                "item rename. Recovery was refused so the newer file is preserved.");
+        }
+
+        private static string CategoryOriginalHash(Manifest manifest) =>
+            manifest.CategoryOriginalContentSha256.Length != 0
+                ? manifest.CategoryOriginalContentSha256
+                : ContentHash(manifest.CategoryBackupPath);
+
+        private static string ContentHash(string path) =>
+            Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
 
         private static void DeleteDirectoryBestEffort(string path)
         {
@@ -308,6 +384,53 @@ namespace SWLOR.Toolset.Services
                     StringComparison.Ordinal);
             }
 
+            public void RecordCategoryGeneration(string? installedContentSha256)
+            {
+                if (_completed)
+                    throw new InvalidOperationException("The item rename transaction is already complete.");
+
+                if (installedContentSha256 != null &&
+                    (installedContentSha256.Length != 64 ||
+                     installedContentSha256.Any(character =>
+                         character is not (>= '0' and <= '9' or >= 'A' and <= 'F'))))
+                {
+                    throw new InvalidDataException(
+                        "The installed category fingerprint must be uppercase SHA-256.");
+                }
+
+                var categoryExists = File.Exists(_manifest.CategoryPath);
+                var currentHash = categoryExists
+                    ? ContentHash(_manifest.CategoryPath)
+                    : string.Empty;
+                if (installedContentSha256 != null)
+                {
+                    if (!string.Equals(
+                            currentHash,
+                            installedContentSha256,
+                            StringComparison.Ordinal))
+                    {
+                        throw new IOException(
+                            $"The category sidecar '{_manifest.CategoryPath}' changed after it was " +
+                            "refiled. The item rename was not committed.");
+                    }
+                }
+                else if ((_manifest.CategoryExisted &&
+                          (!categoryExists ||
+                           !string.Equals(
+                               currentHash,
+                               CategoryOriginalHash(_manifest),
+                               StringComparison.Ordinal))) ||
+                         (!_manifest.CategoryExisted && categoryExists))
+                {
+                    throw new IOException(
+                        $"The category sidecar '{_manifest.CategoryPath}' changed during the item rename.");
+                }
+
+                _manifest.CategoryInstalledContentSha256 =
+                    installedContentSha256 ?? string.Empty;
+                WriteMarker(_markerPath, _manifest);
+            }
+
             public void Dispose()
             {
                 if (!_completed && File.Exists(_markerPath))
@@ -324,6 +447,8 @@ namespace SWLOR.Toolset.Services
             public string CategoryPath { get; set; } = string.Empty;
             public string CategoryBackupPath { get; set; } = string.Empty;
             public bool CategoryExisted { get; set; }
+            public string CategoryOriginalContentSha256 { get; set; } = string.Empty;
+            public string CategoryInstalledContentSha256 { get; set; } = string.Empty;
             public string OriginalContentSha256 { get; set; } = string.Empty;
             public string NewContentSha256 { get; set; } = string.Empty;
         }

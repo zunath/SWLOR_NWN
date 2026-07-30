@@ -34,8 +34,10 @@ namespace SWLOR.Toolset.Editors.Items
         /// <summary>(old resref, own file path) -> files still referencing that resref.</summary>
         private readonly Func<string, string, IReadOnlyList<string>>? _findReferences;
 
-        /// <summary>(old resref, new resref) -> whether the category sidecar now names the new one.</summary>
-        private readonly Func<string, string, bool>? _refileCategories;
+        /// <summary>
+        /// (old resref, new resref) -> save result and the exact installed sidecar fingerprint.
+        /// </summary>
+        private readonly Func<string, string, CategorySaveResult>? _refileCategories;
 
         /// <summary>
         /// Old resref -> whether its category-folder membership (if any) can be carried over to the new
@@ -90,7 +92,7 @@ namespace SWLOR.Toolset.Editors.Items
             ArmorPartCatalog? armorPartModels = null,
             Func<string, string, IReadOnlyList<string>>? findReferences = null,
             Func<string, bool>? canRefileCategories = null,
-            Func<string, string, bool>? refileCategories = null)
+            Func<string, string, CategorySaveResult>? refileCategories = null)
         {
             _log = log;
             _prompts = prompts;
@@ -245,8 +247,17 @@ namespace SWLOR.Toolset.Editors.Items
                     // The sidecar commits BEFORE the original is deleted, so a sidecar that turned
                     // unwritable since the preflight costs nothing: the destination is removed
                     // again and the original - still on disk, still filed - stands.
-                    if (moving && !RefileCategories(oldResRef, targetResRef, newPath))
-                        return false;
+                    if (moving)
+                    {
+                        var refileResult = RefileCategories(
+                            oldResRef,
+                            targetResRef,
+                            newPath);
+                        if (!refileResult.Saved)
+                            return false;
+                        renameRecovery!.RecordCategoryGeneration(
+                            refileResult.ContentSha256);
+                    }
 
                     if (moving && !TryDeleteRenamedOriginal(oldPath, newPath, renameRecovery!))
                     {
@@ -264,7 +275,7 @@ namespace SWLOR.Toolset.Editors.Items
                 }
 
                 _session.UndoStack.MarkSaved();
-                _session.RecordCurrentFileState();
+                _session.RecordCurrentFileState(saveBytes);
                 AfterHistoryChange();
                 if (renaming)
                 {
@@ -290,10 +301,15 @@ namespace SWLOR.Toolset.Editors.Items
         /// Moves the category membership onto the renamed blueprint, removing the just-written
         /// destination when the sidecar refuses. True when there is nothing to refile.
         /// </summary>
-        private bool RefileCategories(string fromResRef, string toResRef, string? rollbackPath)
+        private CategorySaveResult RefileCategories(
+            string fromResRef,
+            string toResRef,
+            string? rollbackPath)
         {
-            if (_refileCategories == null || _refileCategories(fromResRef, toResRef))
-                return true;
+            var result = _refileCategories?.Invoke(fromResRef, toResRef)
+                         ?? CategorySaveResult.Ok();
+            if (result.Saved)
+                return result;
 
             if (rollbackPath != null)
             {
@@ -311,7 +327,7 @@ namespace SWLOR.Toolset.Editors.Items
             _log.AppendLine(
                 $"Cannot rename {fromResRef} to {toResRef}: its category could not be updated, so the " +
                 "rename was rolled back rather than leaving the category naming a deleted blueprint.");
-            return false;
+            return result;
         }
 
         /// <summary>

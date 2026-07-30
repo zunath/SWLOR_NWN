@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Security.Cryptography;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -791,6 +792,18 @@ namespace SWLOR.Toolset.Shell.Panels
                 }
             }
 
+            byte[] expectedBlueprintHash;
+            try
+            {
+                expectedBlueprintHash = SHA256.HashData(File.ReadAllBytes(path));
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"'{tile.Name}' was not deleted: could not fingerprint its blueprint ({ex.Message}).";
+                _log.AppendLine($"Deleting blueprint '{tile.ResRef}' was refused: {ex.Message}");
+                return;
+            }
+
             var confirmed = await _prompts.ConfirmDestructiveAsync(
                 $"Delete the {kind} '{tile.Name}'?",
                 $"This deletes {Path.GetFileName(path)} from the module. Any area that already placed " +
@@ -835,8 +848,17 @@ namespace SWLOR.Toolset.Shell.Panels
                 // recheck above, which still leaves a race between it and the file operation.
                 Services.ModuleMutationLock.ThrowIfModuleLocked();
 
-                if (File.Exists(path))
-                    File.Delete(path);
+                if (!File.Exists(path) ||
+                    !SHA256.HashData(File.ReadAllBytes(path))
+                        .AsSpan()
+                        .SequenceEqual(expectedBlueprintHash))
+                {
+                    throw new IOException(
+                        $"{Path.GetFileName(path)} changed while the delete confirmation was open. " +
+                        "Reload the palette and try again.");
+                }
+
+                File.Delete(path);
             }
             catch (Exception ex)
             {

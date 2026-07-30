@@ -259,6 +259,66 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        [Test]
+        public async Task DeletingABlueprintPreservesAFileChangedWhileConfirmationIsOpen()
+        {
+            var moduleRoot = Path.Combine(
+                Path.GetTempPath(),
+                $"swlor_palette_delete_{Guid.NewGuid():N}");
+            foreach (var folder in new[] { "are", "utc", "utp" })
+                Directory.CreateDirectory(Path.Combine(moduleRoot, folder));
+
+            var blueprintPath = Path.Combine(moduleRoot, "utp", "testplc.utp.json");
+            File.WriteAllText(blueprintPath, "{\"generation\":\"original\"}");
+
+            try
+            {
+                var log = new OutputLogService();
+                var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+                workspace.Open(moduleRoot);
+                var mutationLock = new ModuleMutationLock();
+                const string externalGeneration = "{\"generation\":\"external\"}";
+                var prompts = new ReplaceDuringConfirmationPrompts(
+                    blueprintPath,
+                    externalGeneration);
+                var previousAmbient = ModuleMutationLock.ModuleWrites;
+                ModuleMutationLock.ModuleWrites = mutationLock;
+
+                var palette = new PaletteViewModel(
+                    workspace,
+                    new CategoryService(workspace, log),
+                    log,
+                    prompts: prompts,
+                    mutationLock: mutationLock)
+                {
+                    SelectedType = ResourceType.Utp
+                };
+                var tile = new PaletteTileViewModel(
+                    "testplc",
+                    "Test Placeable",
+                    categoryPath: null);
+
+                try
+                {
+                    await palette.DeleteTileCommand.ExecuteAsync(tile);
+                }
+                finally
+                {
+                    ModuleMutationLock.ModuleWrites = previousAmbient;
+                }
+
+                File.ReadAllText(blueprintPath).Should().Be(
+                    externalGeneration,
+                    "the confirmation applies only to the generation the builder reviewed");
+                palette.StatusMessage.Should().Contain("changed while the delete confirmation was open");
+            }
+            finally
+            {
+                if (Directory.Exists(moduleRoot))
+                    Directory.Delete(moduleRoot, recursive: true);
+            }
+        }
+
         /// <summary>Baseline for the test above: with no module-wide operation in the way, deletion still works.</summary>
         [Test]
         public async Task DeletingABlueprintStillWorksWhenTheModuleIsNotLocked()
@@ -349,6 +409,30 @@ namespace SWLOR.Toolset.Tests
                 // The builder clicked Delete before anything else started, so the confirmation
                 // resumes true - but a module-wide operation began while it was on screen.
                 mutationLock.Set(true);
+                return Task.FromResult(true);
+            }
+        }
+
+        private sealed class ReplaceDuringConfirmationPrompts(
+            string path,
+            string replacement) : IEditorPromptService
+        {
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string name) =>
+                Task.FromResult(UnsavedChangesChoice.Cancel);
+
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) =>
+                Task.FromResult(ExternalChangeChoice.Cancel);
+
+            public Task<string?> PromptForTextAsync(
+                string headline, string message, string initialValue, string confirmLabel) =>
+                Task.FromResult<string?>(null);
+
+            public Task<bool> ConfirmDestructiveAsync(
+                string headline,
+                string message,
+                string confirmLabel)
+            {
+                File.WriteAllText(path, replacement);
                 return Task.FromResult(true);
             }
         }

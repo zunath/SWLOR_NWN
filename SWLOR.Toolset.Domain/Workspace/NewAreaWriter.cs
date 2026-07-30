@@ -1,4 +1,6 @@
 using System.Text.RegularExpressions;
+using System.Security.Cryptography;
+using System.Text.Json;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
@@ -148,13 +150,13 @@ namespace SWLOR.Toolset.Domain.Workspace
 
                     if (!registered)
                     {
-                        // A marker means this writer owned the incomplete triplet. Removing only
-                        // those exact destinations makes a power-loss retry safe.
-                        foreach (var path in new[] { arePath, gitPath, gicPath })
-                        {
+                        var pending = ReadPendingManifest(markerPath, resRef);
+                        var destinations = PendingDestinations(
+                            arePath, gitPath, gicPath, pending);
+                        ValidatePendingDestinations(destinations);
+                        foreach (var (path, _) in destinations)
                             if (File.Exists(path))
                                 File.Delete(path);
-                        }
                     }
 
                     File.Delete(markerPath);
@@ -186,6 +188,7 @@ namespace SWLOR.Toolset.Domain.Workspace
 
             var createdPaths = new List<string>();
             var markerCreated = false;
+            PendingAreaManifest? pendingManifest = null;
             try
             {
                 var are = AreDocument.Load(templateAre);
@@ -207,16 +210,28 @@ namespace SWLOR.Toolset.Domain.Workspace
                 using (ifoSession.Begin($"Register area '{resRef}'"))
                     AreaTemplateFactory.AddAreaToModule(ifo, resRef);
 
+                var areBytes = are.ToBytes();
+                pendingManifest = new PendingAreaManifest
+                {
+                    ResRef = resRef,
+                    Are = Fingerprint(areBytes),
+                    Git = Fingerprint(templateGitBytes),
+                    Gic = Fingerprint(templateGicBytes)
+                };
+
                 // Persist intent before the first destination write. If the process or machine stops
                 // before module.ifo is committed, the next retry recognizes and removes only this
                 // writer's partial triplet.
-                WriteAtomic(markerPath, System.Text.Encoding.UTF8.GetBytes(resRef), overwrite: true);
+                WriteAtomic(
+                    markerPath,
+                    JsonSerializer.SerializeToUtf8Bytes(pendingManifest),
+                    overwrite: true);
                 markerCreated = true;
 
                 // Write the area triplet first, then the module index: the marker makes an orphaned
                 // partial triplet recoverable, while an index entry pointing at missing files would
                 // break module load.
-                WriteAtomic(arePath, are.ToBytes(), overwrite: false);
+                WriteAtomic(arePath, areBytes, overwrite: false);
                 createdPaths.Add(arePath);
                 // Stage each companion beside its destination, then install it atomically without
                 // overwrite. Ownership begins only after the move succeeds: if another editor wins
@@ -249,19 +264,27 @@ namespace SWLOR.Toolset.Domain.Workspace
             catch (Exception ex)
             {
                 var cleanupComplete = true;
-                for (var index = createdPaths.Count - 1; index >= 0; index--)
+                try
                 {
-                    try
+                    if (pendingManifest != null)
                     {
+                        var destinations = PendingDestinations(
+                                arePath, gitPath, gicPath, pendingManifest)
+                            .Where(item => createdPaths.Contains(
+                                item.Path,
+                                StringComparer.OrdinalIgnoreCase))
+                            .ToList();
+                        ValidatePendingDestinations(destinations);
+                    }
+
+                    for (var index = createdPaths.Count - 1; index >= 0; index--)
                         File.Delete(createdPaths[index]);
-                    }
-                    catch
-                    {
-                        cleanupComplete = false;
-                        // Preserve the original failure. The error below still identifies the
-                        // create as failed, and a later retry's destination preflight will name
-                        // any path that could not be rolled back.
-                    }
+                }
+                catch
+                {
+                    cleanupComplete = false;
+                    // Preserve the original failure. A changed destination and the marker remain
+                    // so a later recovery cannot mistake somebody else's file for writer-owned data.
                 }
 
                 if (markerCreated && cleanupComplete)
@@ -290,6 +313,65 @@ namespace SWLOR.Toolset.Domain.Workspace
         private static string PendingMarkerPath(ModuleWorkspace workspace, string resRef) =>
             Path.Combine(workspace.ModuleRoot, PendingMarkerPrefix + resRef + ".pending");
 
+        private static PendingAreaManifest ReadPendingManifest(
+            string markerPath,
+            string expectedResRef)
+        {
+            var manifest = JsonSerializer.Deserialize<PendingAreaManifest>(
+                File.ReadAllBytes(markerPath));
+            if (manifest == null ||
+                !string.Equals(manifest.ResRef, expectedResRef, StringComparison.OrdinalIgnoreCase) ||
+                !IsValidFingerprint(manifest.Are) ||
+                !IsValidFingerprint(manifest.Git) ||
+                !IsValidFingerprint(manifest.Gic))
+            {
+                throw new InvalidDataException(
+                    $"The pending marker '{Path.GetFileName(markerPath)}' is incomplete.");
+            }
+
+            return manifest;
+        }
+
+        private static List<(string Path, AreaFileFingerprint Fingerprint)> PendingDestinations(
+            string arePath,
+            string gitPath,
+            string gicPath,
+            PendingAreaManifest manifest) =>
+            new()
+            {
+                (arePath, manifest.Are),
+                (gitPath, manifest.Git),
+                (gicPath, manifest.Gic)
+            };
+
+        private static void ValidatePendingDestinations(
+            IEnumerable<(string Path, AreaFileFingerprint Fingerprint)> destinations)
+        {
+            foreach (var (path, expected) in destinations)
+            {
+                if (!File.Exists(path))
+                    continue;
+
+                var actual = Fingerprint(File.ReadAllBytes(path));
+                if (actual != expected)
+                {
+                    throw new IOException(
+                        $"'{Path.GetFileName(path)}' changed after the interrupted area creation. " +
+                        "Recovery was refused so the newer file is preserved.");
+                }
+            }
+        }
+
+        private static AreaFileFingerprint Fingerprint(byte[] content) =>
+            new(content.LongLength, Convert.ToHexString(SHA256.HashData(content)));
+
+        private static bool IsValidFingerprint(AreaFileFingerprint? fingerprint) =>
+            fingerprint != null &&
+            fingerprint.Length >= 0 &&
+            fingerprint.Sha256.Length == 64 &&
+            fingerprint.Sha256.All(character =>
+                character is >= '0' and <= '9' or >= 'A' and <= 'F');
+
         private static void WriteAtomic(string path, byte[] bytes, bool overwrite)
         {
             var temporaryPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
@@ -304,5 +386,15 @@ namespace SWLOR.Toolset.Domain.Workspace
                     File.Delete(temporaryPath);
             }
         }
+
+        private sealed class PendingAreaManifest
+        {
+            public string ResRef { get; set; } = string.Empty;
+            public AreaFileFingerprint Are { get; set; } = new();
+            public AreaFileFingerprint Git { get; set; } = new();
+            public AreaFileFingerprint Gic { get; set; } = new();
+        }
+
+        private sealed record AreaFileFingerprint(long Length = -1, string Sha256 = "");
     }
 }

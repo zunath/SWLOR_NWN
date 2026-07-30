@@ -1140,9 +1140,10 @@ namespace SWLOR.Toolset.Editors
                 // must not create a second Undo entry after the user's actual dialogue edit.
                 _session.ExecuteDerived(() => _dialog.RecomputeWordCount());
 
-                SaveService.WriteAtomic(_session.FilePath, _session.ToBytes());
+                var saveBytes = _session.ToBytes();
+                SaveService.WriteAtomic(_session.FilePath, saveBytes);
                 _session.UndoStack.MarkSaved();
-                _session.RecordCurrentFileState();
+                _session.RecordCurrentFileState(saveBytes);
                 AfterHistoryChange();
                 CatalogEntryChanged?.Invoke();
                 _log.AppendLine($"Saved {_session.FilePath}.");

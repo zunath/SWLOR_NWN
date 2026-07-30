@@ -1,5 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
+using System.Security.Cryptography;
+using System.Text.Json;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.GameData.Lookups;
@@ -276,7 +278,15 @@ namespace SWLOR.Toolset.Tests
             var marker = Path.Combine(
                 _moduleRoot,
                 ".swlor-toolset-new-area-interrupted.pending");
-            File.WriteAllText(marker, "interrupted");
+            File.WriteAllText(marker, JsonSerializer.Serialize(new
+            {
+                ResRef = "interrupted",
+                Are = Fingerprint(File.ReadAllBytes(partialAre)),
+                Git = Fingerprint(File.ReadAllBytes(Path.Combine(
+                    _moduleRoot, "git", "area_template.git.json"))),
+                Gic = Fingerprint(File.ReadAllBytes(Path.Combine(
+                    _moduleRoot, "gic", "area_template.gic.json")))
+            }));
 
             NewAreaWriter.TryCreate(
                     workspace,
@@ -293,6 +303,47 @@ namespace SWLOR.Toolset.Tests
             workspace.LoadArea("interrupted").Are.Name.Text.Should().Be("Recovered");
             IfoDocument.Load(Path.Combine(_moduleRoot, "ifo", "module.ifo.json"))
                 .AreaResRefs.Should().Contain("interrupted");
+        }
+
+        [Test]
+        public void TryCreate_PreservesAnIndependentlyRestoredPendingArea()
+        {
+            var workspace = new ModuleWorkspace(_moduleRoot);
+            var partialAre = workspace.GetResourcePath(ResourceType.Area, "interrupted");
+            File.Copy(
+                workspace.GetResourcePath(ResourceType.Area, NewAreaWriter.TemplateResRef),
+                partialAre);
+            var marker = Path.Combine(
+                _moduleRoot,
+                ".swlor-toolset-new-area-interrupted.pending");
+            File.WriteAllText(marker, JsonSerializer.Serialize(new
+            {
+                ResRef = "interrupted",
+                Are = Fingerprint(File.ReadAllBytes(partialAre)),
+                Git = Fingerprint(File.ReadAllBytes(Path.Combine(
+                    _moduleRoot, "git", "area_template.git.json"))),
+                Gic = Fingerprint(File.ReadAllBytes(Path.Combine(
+                    _moduleRoot, "gic", "area_template.gic.json")))
+            }));
+            var restored = System.Text.Encoding.UTF8.GetBytes("independently restored generation");
+            File.WriteAllBytes(partialAre, restored);
+
+            NewAreaWriter.TryCreate(
+                    workspace,
+                    SyntheticTilesets(),
+                    "interrupted",
+                    "Recovered",
+                    "synthetic",
+                    2,
+                    2,
+                    out var error)
+                .Should().BeFalse();
+
+            error.Should().Contain("changed after the interrupted area creation");
+            File.ReadAllBytes(partialAre).Should().Equal(restored);
+            File.Exists(marker).Should().BeTrue("the marker remains as recovery evidence");
+            IfoDocument.Load(Path.Combine(_moduleRoot, "ifo", "module.ifo.json"))
+                .AreaResRefs.Should().NotContain("interrupted");
         }
 
         [Test]
@@ -409,5 +460,36 @@ namespace SWLOR.Toolset.Tests
             IfoDocument.Load(Path.Combine(_moduleRoot, "ifo", "module.ifo.json"))
                 .AreaResRefs.Should().Contain(new[] { "concurrent_a", "concurrent_b" });
         }
+
+        private static NewAreaWriter.TilesetResolver SyntheticTilesets()
+        {
+            var tileset = new TilesetDefinition
+            {
+                Floor = "Grass",
+                Terrains = new[] { new TerrainDefinition("Grass", null, null) },
+                Tiles = new[]
+                {
+                    new TileDefinition
+                    {
+                        TopLeft = "Grass",
+                        TopRight = "Grass",
+                        BottomLeft = "Grass",
+                        BottomRight = "Grass",
+                        PathNode = "A"
+                    }
+                }
+            };
+            return (string _, out TilesetDefinition resolved) =>
+            {
+                resolved = tileset;
+                return true;
+            };
+        }
+
+        private static object Fingerprint(byte[] content) => new
+        {
+            Length = content.LongLength,
+            Sha256 = Convert.ToHexString(SHA256.HashData(content))
+        };
     }
 }

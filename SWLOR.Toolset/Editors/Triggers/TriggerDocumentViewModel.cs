@@ -118,9 +118,10 @@ namespace SWLOR.Toolset.Editors.Triggers
                     }
                 }
 
-                SaveService.WriteAtomic(_session.FilePath, _session.ToBytes());
+                var saveBytes = _session.ToBytes();
+                SaveService.WriteAtomic(_session.FilePath, saveBytes);
                 _session.UndoStack.MarkSaved();
-                _session.RecordCurrentFileState();
+                _session.RecordCurrentFileState(saveBytes);
                 AfterHistoryChange();
                 CatalogEntryChanged?.Invoke();
                 _log.AppendLine($"Saved {_session.FilePath}.");

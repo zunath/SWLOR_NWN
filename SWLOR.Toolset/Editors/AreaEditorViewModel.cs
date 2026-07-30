@@ -2180,7 +2180,7 @@ namespace SWLOR.Toolset.Editors
                         // The bytes are already on disk - TryStageWrites/CommitStagedWrites put them
                         // there before this ran. All that is left is to agree that they are.
                         session.UndoStack.MarkSaved();
-                        session.RecordCurrentFileState();
+                        session.RecordCurrentFileState(session.ToBytes());
                         _log.AppendLine($"Saved {session.FilePath}.");
                         return (true, false);
                 }
@@ -2455,10 +2455,12 @@ namespace SWLOR.Toolset.Editors
                 // Parse both externals before replacing either session: GIT instances and GIC
                 // comments correspond by index, and a malformed or vanished GIC must not leave an
                 // external GIT sitting beside the old locally edited comments.
-                var externalGit = JsonGffDocument.Load(_gitSession.FilePath);
-                var externalGic = JsonGffDocument.Load(_gicSession.FilePath);
-                _gitSession.ReloadFrom(externalGit);
-                _gicSession.ReloadFrom(externalGic);
+                var externalGitBytes = File.ReadAllBytes(_gitSession.FilePath);
+                var externalGicBytes = File.ReadAllBytes(_gicSession.FilePath);
+                var externalGit = JsonGffDocument.Parse(externalGitBytes);
+                var externalGic = JsonGffDocument.Parse(externalGicBytes);
+                _gitSession.ReloadFrom(externalGit, externalGitBytes);
+                _gicSession.ReloadFrom(externalGic, externalGicBytes);
                 _savedGicBytes = _gicSession.ToBytes();
                 _gicDirty = false;
                 RefreshInstanceSections();

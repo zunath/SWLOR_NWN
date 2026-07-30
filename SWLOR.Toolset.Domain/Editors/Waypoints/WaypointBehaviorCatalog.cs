@@ -21,6 +21,12 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
         public const string RebuildId = "rebuild";
         public const string CustomId = "custom";
 
+        /// <summary>
+        /// Toolset metadata that preserves a transition destination selected before any inbound
+        /// door or trigger exists. Runtime behavior still comes entirely from the waypoint's tag.
+        /// </summary>
+        public const string PersistedBehaviorLocal = "SWLOR_TOOLSET_BEHAVIOR";
+
         public const string StuckWaypointTag = "STUCK_WAYPOINT";
         public const string StarshipDockTag = "STARSHIP_DOCKPOINT";
         public const string PropertyEntranceTag = "PROPERTY_ENTRANCE";
@@ -66,6 +72,14 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
         public WaypointBehavior Classify(JsonGffStruct waypoint)
         {
             ArgumentNullException.ThrowIfNull(waypoint);
+
+            if (string.Equals(
+                    new VarTable(waypoint).GetString(PersistedBehaviorLocal),
+                    TransitionDestinationId,
+                    StringComparison.Ordinal))
+            {
+                return Get(TransitionDestinationId);
+            }
 
             if ((waypoint.GetIntOrNull("HasMapNote") ?? 0) == 1)
                 return Get(MapNoteId);
@@ -197,7 +211,7 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                     Summary = "Where a trigger or door area transition puts the player down.",
                     Fields = new[]
                     {
-                        StringText("Destination tag", "Tag", WaypointEditorLayout.MaxTagLength),
+                        StringText("Destination tag", "Tag"),
                         Statement("Marker", "Blue")
                     },
                     Manages = new[] { blue }
@@ -341,16 +355,14 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
 
         private static BehaviorFieldDefinition StringText(
             string label,
-            string name,
-            int maxLength) =>
+            string name) =>
             new()
             {
                 Label = label,
                 Name = name,
                 Kind = BehaviorFieldKind.Text,
                 FieldType = GffFieldType.CExoString,
-                IsRequired = true,
-                MaxLength = maxLength
+                IsRequired = true
             };
 
         private static BehaviorFieldDefinition StringChoice(

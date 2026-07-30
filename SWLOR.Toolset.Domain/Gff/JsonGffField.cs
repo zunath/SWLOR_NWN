@@ -275,6 +275,25 @@ namespace SWLOR.Toolset.Domain.Gff
                 : uint.Parse(Encoding.ASCII.GetString(RawLocStringId), CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Removes the field-level TLK reference from a localized string. Inline authored text must
+        /// stand on its own: leaving the old strref in place makes the game prefer the TLK entry and
+        /// hides the text the builder just entered.
+        /// </summary>
+        public void ClearLocStringId()
+        {
+            if (Type != GffFieldType.CExoLocString)
+                throw new InvalidOperationException($"Field type {Type} is not a CExoLocString.");
+            if (RawLocStringId == null)
+                return;
+
+            EditScope.EnsureMutationAllowed();
+            var oldValue = RawValue;
+            var oldLocId = RawLocStringId;
+            RawLocStringId = null;
+            EditScope.Capture(new FieldValueEdit(this, oldValue, oldLocId, RawValue, RawLocStringId));
+        }
+
         public uint? GetStructId()
         {
             return RawFieldStructId == null

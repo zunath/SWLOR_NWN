@@ -91,6 +91,7 @@ namespace SWLOR.Toolset.Editors
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> _openingAreaEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Triggers.TriggerDocumentViewModel> _openTriggerEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Waypoints.WaypointDocumentViewModel> _openWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _openingWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -1780,7 +1781,7 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>Areas open in the composite editor (.are properties + .git instance lists).</summary>
-        private void OpenAreaEditor(Domain.Workspace.ModuleWorkspace workspace, string resRef)
+        private async void OpenAreaEditor(Domain.Workspace.ModuleWorkspace workspace, string resRef)
         {
             if (_openAreaEditors.TryGetValue(resRef, out var existing))
             {
@@ -1788,16 +1789,33 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
-            var arePath = workspace.GetResourcePath(ResourceType.Area, resRef);
-            var gitPath = Path.Combine(workspace.ModuleRoot, "git", resRef + ".git.json");
-            if (!File.Exists(arePath) || !File.Exists(gitPath))
-            {
-                _log.AppendLine($"Area files not found for '{resRef}' (.are/.git pair required).");
+            if (!_openingAreaEditors.Add(resRef))
                 return;
-            }
 
             try
             {
+                var arePath = workspace.GetResourcePath(ResourceType.Area, resRef);
+                var gitPath = Path.Combine(workspace.ModuleRoot, "git", resRef + ".git.json");
+                if (!File.Exists(arePath) || !File.Exists(gitPath))
+                {
+                    _log.AppendLine($"Area files not found for '{resRef}' (.are/.git pair required).");
+                    return;
+                }
+
+                // Placed waypoints use the same transition classifier as blueprint waypoints. Its
+                // module-wide GIT scan is warmed in the background so opening a large area does not
+                // freeze Avalonia's UI thread.
+                var transitionDestinationTags =
+                    await workspace.TagIndex.GetTransitionDestinationTagsAsync().ConfigureAwait(true);
+                if (!ReferenceEquals(workspace, _workspaceContext.Workspace))
+                    return;
+
+                if (_openAreaEditors.TryGetValue(resRef, out existing))
+                {
+                    _factory.ActivateDocument(existing);
+                    return;
+                }
+
                 var editor = new AreaEditorViewModel(
                     resRef, workspace, _lookups, _gameCodeIndex, _log,
                     _tilesetCatalog, _tileModelCache, _resourceIndex,
@@ -1823,6 +1841,13 @@ namespace SWLOR.Toolset.Editors
                             : null,
                         _thumbnails,
                         ChoicePreviews()),
+                    new Waypoints.WaypointEditorServices(
+                        resRef,
+                        new Domain.Editors.Waypoints.WaypointBehaviorCatalog(
+                            _gameCodeIndex,
+                            transitionDestinationTags),
+                        ResolveWaypointChoices,
+                        ChoicePreviews()),
                     ResolveSoundChoices,
                     SoundResources(),
                     SoundPreviews());
@@ -1837,6 +1862,10 @@ namespace SWLOR.Toolset.Editors
             catch (Exception ex)
             {
                 _log.AppendLine($"Failed to open area editor for {resRef}: {ex.Message}");
+            }
+            finally
+            {
+                _openingAreaEditors.Remove(resRef);
             }
         }
 

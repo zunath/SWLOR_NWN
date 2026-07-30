@@ -320,6 +320,78 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TransitionDestinationIdentityPersistsBeforeAnInboundLinkExists()
+        {
+            var catalog = new WaypointBehaviorCatalog(null, Array.Empty<string>());
+            var waypoint = Waypoint("new_destination");
+            var editor = new WaypointEditorViewModel(
+                waypoint,
+                "new_destination",
+                isInstance: false,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                },
+                catalog);
+
+            editor.ChooseBehavior(catalog.Get(WaypointBehaviorCatalog.TransitionDestinationId));
+            editor.BehaviorRows.Single(row => row.Definition.Name == "Tag").Text =
+                "destination_authored_before_link";
+
+            new VarTable(waypoint)
+                .GetString(WaypointBehaviorCatalog.PersistedBehaviorLocal)
+                .Should().Be(WaypointBehaviorCatalog.TransitionDestinationId);
+            catalog.Classify(waypoint).Id.Should().Be(
+                WaypointBehaviorCatalog.TransitionDestinationId,
+                "the free-text destination must remain a transition until its inbound link is authored");
+
+            var reopened = new WaypointEditorViewModel(
+                waypoint,
+                "new_destination",
+                isInstance: false,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                },
+                catalog);
+            reopened.Behavior.Id.Should().Be(WaypointBehaviorCatalog.TransitionDestinationId);
+        }
+
+        [Test]
+        public void WaypointNamesAndTagsHaveNoArtificialCapsBelowTheGffFormat()
+        {
+            var catalog = new WaypointBehaviorCatalog(null, null);
+            var waypoint = Waypoint("unrecognized");
+            var store = new BehaviorValueStore(waypoint);
+            var editor = new WaypointEditorViewModel(
+                waypoint,
+                "long_fields",
+                isInstance: false,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                },
+                catalog);
+            var longName = new string('N', 96);
+            var longTag = new string('T', 96);
+
+            editor.BasicRows.Single(row => row.Definition.Name == "LocalizedName").Text = longName;
+            editor.BehaviorRows.Single(row => row.Definition.Name == "Tag").Text = longTag;
+
+            store.GetLocalizedText("LocalizedName").Should().Be(longName);
+            store.GetString(BehaviorFieldStorage.Field, "Tag").Should().Be(longTag);
+            editor.BasicRows.Single(row => row.Definition.Name == "LocalizedName")
+                .MaxLength.Should().Be(0);
+            editor.BehaviorRows.Single(row => row.Definition.Name == "Tag")
+                .MaxLength.Should().Be(0);
+            catalog.Get(WaypointBehaviorCatalog.TransitionDestinationId).Fields
+                .Single(row => row.Name == "Tag").MaxLength.Should().Be(0);
+        }
+
+        [Test]
         public void DeathAndRebuildExposeOnlyTheirOwnDestinations()
         {
             var deathChoices = Catalog().Get(WaypointBehaviorCatalog.DeathRespawnId).Fields
@@ -376,7 +448,7 @@ namespace SWLOR.Toolset.Tests
 
             foreach (var view in new[]
                      {
-                         "WaypointDocumentView.axaml", "TriggerDocumentView.axaml",
+                         "WaypointEditorView.axaml", "TriggerDocumentView.axaml",
                          "DoorEditorView.axaml", "SoundEditorView.axaml"
                      })
             {
@@ -539,6 +611,32 @@ namespace SWLOR.Toolset.Tests
             editor.PrepareForSave().Should().BeTrue();
 
             store.GetInteger(BehaviorFieldStorage.Field, "MapNoteEnabled").Should().Be(1);
+            editor.NeedsSaveNormalization.Should().BeFalse();
+        }
+
+        [Test]
+        public void PreparingForSaveEnforcesEveryManagedWaypointValue()
+        {
+            var waypoint = Waypoint(WaypointBehaviorCatalog.StarshipDockTag);
+            var store = new BehaviorValueStore(waypoint);
+            store.SetInteger(BehaviorFieldStorage.Field, "Appearance", GffFieldType.Byte, 4);
+            var editor = new WaypointEditorViewModel(
+                waypoint,
+                "starship_dockpoi",
+                isInstance: false,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                },
+                Catalog());
+
+            editor.Behavior.Id.Should().Be(WaypointBehaviorCatalog.StarshipDockId);
+            editor.NeedsSaveNormalization.Should().BeTrue();
+
+            editor.PrepareForSave().Should().BeTrue();
+
+            store.GetInteger(BehaviorFieldStorage.Field, "Appearance").Should().Be(1);
             editor.NeedsSaveNormalization.Should().BeFalse();
         }
 

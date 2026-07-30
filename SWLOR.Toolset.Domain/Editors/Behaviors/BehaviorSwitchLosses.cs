@@ -108,7 +108,10 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
 
             return type switch
             {
-                GffFieldType.CExoLocString or GffFieldType.ResRef or GffFieldType.CExoString =>
+                GffFieldType.CExoLocString =>
+                    !string.IsNullOrWhiteSpace(store.GetLocalizedText(name)) ||
+                    store.GetLocalizedStringRef(name) != null,
+                GffFieldType.ResRef or GffFieldType.CExoString =>
                     !string.IsNullOrWhiteSpace(store.GetString(storage, name)),
                 GffFieldType.Float => store.GetFloat(storage, name) is not (null or 0d),
                 GffFieldType.List => store.ValueStruct.GetOrNull(name)?.Elements is { Count: > 0 },

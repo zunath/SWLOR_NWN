@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
 
@@ -178,6 +179,46 @@ namespace SWLOR.Toolset.Tests
 
             document.ToBytes().AsSpan().SequenceEqual(original).Should().BeTrue(
                 "undoing both locstring entry edits must restore the exact original bytes");
+        }
+
+        [Test]
+        public void AuthoringInlineLocStringTextClearsStrRefAndUndoRestoresBothExactly()
+        {
+            var original = System.Text.Encoding.UTF8.GetBytes("""
+            {
+              "__data_type": "UTI ",
+              "LocalizedName": {
+                "id": 12843,
+                "type": "cexolocstring",
+                "value": {
+                  "0": "TLK-backed name"
+                }
+              }
+            }
+            """);
+            var document = JsonGffDocument.Parse(original);
+            using var session = new DocumentSession("locstring-test.uti.json", document);
+            var name = new UtiDocument(document).LocalizedName;
+
+            using (session.Begin("author localized name"))
+                name.Text = "Authored inline";
+
+            name.StrRef.Should().BeNull(
+                "inline text must not retain a TLK reference that can override it in game");
+            name.Text.Should().Be("Authored inline");
+            var authored = document.ToBytes();
+
+            session.UndoStack.Undo();
+
+            name.StrRef.Should().Be(12843);
+            name.Text.Should().Be("TLK-backed name");
+            document.ToBytes().Should().Equal(original);
+
+            session.UndoStack.Redo();
+
+            name.StrRef.Should().BeNull();
+            name.Text.Should().Be("Authored inline");
+            document.ToBytes().Should().Equal(authored);
         }
     }
 }

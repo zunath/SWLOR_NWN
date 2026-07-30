@@ -6,15 +6,13 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
     public static class WaypointEditorLayout
     {
         public const int MaxResRefLength = 16;
-        public const int MaxTagLength = 32;
-        public const int MaxNameLength = 64;
 
         public static IReadOnlyList<BehaviorFieldDefinition> Basic { get; } = new[]
         {
             new BehaviorFieldDefinition
             {
                 Label = "Name", Name = "LocalizedName", Kind = BehaviorFieldKind.LocalizedText,
-                FieldType = GffFieldType.CExoLocString, MaxLength = MaxNameLength
+                FieldType = GffFieldType.CExoLocString
             },
             new BehaviorFieldDefinition
             {
@@ -42,7 +40,7 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
             new BehaviorFieldDefinition
             {
                 Label = "Tag", Name = "Tag", Kind = BehaviorFieldKind.Text,
-                FieldType = GffFieldType.CExoString, MaxLength = MaxTagLength
+                FieldType = GffFieldType.CExoString
             },
             new BehaviorFieldDefinition
             {

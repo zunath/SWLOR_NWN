@@ -5,9 +5,11 @@ using NUnit.Framework;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
+using SWLOR.Toolset.Domain.Editors.Waypoints;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
+using SWLOR.Toolset.Editors.Waypoints;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -185,6 +187,45 @@ namespace SWLOR.Toolset.Tests
             InstanceFieldMap.GetTemplateResRef(ResourceType.Utw, instance)
                 .Should().Be(selectedResRef);
             instance.Get("TemplateResRef").Type.Should().Be(GffFieldType.ResRef);
+        }
+
+        [Test]
+        public void SelectingAPlacedWaypointUsesTheWaypointBehaviorEditor()
+        {
+            const string area = "apartment_2";
+            var gitPath = Path.Combine(CorpusLocator.ModuleDirectory, "git", area + ".git.json");
+            var gicPath = Path.Combine(CorpusLocator.ModuleDirectory, "gic", area + ".gic.json");
+            using var gitSession = DocumentSession.Open(gitPath);
+            using var gicSession = DocumentSession.Open(gicPath);
+            using var section = new InstanceListSectionViewModel(
+                "Waypoints",
+                "WaypointList",
+                ResourceType.Utw,
+                gitSession,
+                gicSession,
+                new ModuleWorkspace(CorpusLocator.ModuleDirectory),
+                (description, edit) =>
+                {
+                    using (gitSession.Begin(description))
+                        edit();
+                    return true;
+                },
+                null,
+                new OutputLogService(),
+                new StubPrompts(),
+                waypointEditorServices: new WaypointEditorServices(
+                    area,
+                    new WaypointBehaviorCatalog(null, null)));
+
+            section.SelectedRow = section.Rows.First();
+
+            section.HasWaypointBehaviorEditor.Should().BeTrue();
+            section.UsesGenericDetailEditor.Should().BeFalse();
+            section.WaypointEditor.Should().NotBeNull();
+            section.WaypointEditor!.HeaderKind.Should().Be("instance");
+            section.WaypointEditor.HeaderOwner.Should().Be(area);
+            section.VarTableSection.Should().BeNull(
+                "waypoint variables are owned by the behavior editor's Custom tab");
         }
 
         [Test]

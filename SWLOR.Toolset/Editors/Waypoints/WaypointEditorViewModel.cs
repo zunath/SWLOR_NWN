@@ -17,6 +17,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly ChoicePreviewService? _previews;
+        private readonly Services.IEditorPromptService? _prompts;
         private readonly bool _isInstance;
 
         public ObservableCollection<BehaviorListItemViewModel> BehaviorList { get; } = new();
@@ -34,8 +35,8 @@ namespace SWLOR.Toolset.Editors.Waypoints
         public string HeaderOwner { get; }
         public bool ShowsVariablesTab => Behavior.AllowsVariables;
         public bool NeedsSaveNormalization =>
-            Behavior.Id == WaypointBehaviorCatalog.MapNoteId &&
-            _store.GetInteger(BehaviorFieldStorage.Field, "MapNoteEnabled") != 1;
+            Behavior.Manages.Any(value => !_store.Matches(value, _isInstance)) ||
+            !HasExpectedPersistedBehavior();
         public string? Incomplete { get; private set; }
         public bool IsIncomplete => Incomplete != null;
 
@@ -47,7 +48,8 @@ namespace SWLOR.Toolset.Editors.Waypoints
             WaypointBehaviorCatalog catalog,
             IGameCodeIndex? gameCodeIndex = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
-            ChoicePreviewService? previews = null)
+            ChoicePreviewService? previews = null,
+            Services.IEditorPromptService? prompts = null)
         {
             ArgumentNullException.ThrowIfNull(waypoint);
             _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
@@ -56,6 +58,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
             _gameCodeIndex = gameCodeIndex;
             _resolveChoices = resolveChoices;
             _previews = previews;
+            _prompts = prompts;
             _isInstance = isInstance;
             HeaderOwner = headerOwner;
             _behavior = _catalog.Classify(waypoint);
@@ -71,7 +74,19 @@ namespace SWLOR.Toolset.Editors.Waypoints
             if (descriptor is not WaypointBehavior behavior || behavior.Id == Behavior.Id)
                 return;
 
+            _ = ChooseBehaviorAsync(behavior);
+        }
+
+        /// <summary>
+        /// Switches behavior after confirming any custom fields the incoming preset would clear.
+        /// </summary>
+        public async Task ChooseBehaviorAsync(WaypointBehavior behavior)
+        {
+            ArgumentNullException.ThrowIfNull(behavior);
+
             var previous = Behavior;
+            if (behavior.Id == previous.Id)
+                return;
 
             // Entering Custom clears nothing. Custom is the raw editor for these very fields, so
             // wiping them on the way in leaves the panel that exists to expose the configuration
@@ -81,6 +96,27 @@ namespace SWLOR.Toolset.Editors.Waypoints
             // of it either, which is what makes the clear pure loss rather than a swap.
             var entersRawEditing = behavior.AllowsVariables;
 
+            var losses = entersRawEditing
+                ? Array.Empty<string>()
+                : BehaviorSwitchLosses.Describe(
+                    _store, previous.Manages, previous.Fields, behavior.Manages);
+
+            if (losses.Count > 0 && _prompts != null)
+            {
+                var confirmed = await _prompts.ConfirmDestructiveAsync(
+                    $"Change behavior to {behavior.DisplayName}?",
+                    $"This clears {Describe(losses)}, which {(losses.Count == 1 ? "is" : "are")} " +
+                    $"not part of {behavior.DisplayName}. Undo will put {(losses.Count == 1 ? "it" : "them")} back " +
+                    "until the waypoint is saved.",
+                    "Change behavior").ConfigureAwait(true);
+
+                if (!confirmed)
+                {
+                    BehaviorListItemViewModel.Select(BehaviorList, previous.Id);
+                    return;
+                }
+            }
+
             var applied = _runEdit($"Set behavior to {behavior.DisplayName}", () =>
             {
                 if (!entersRawEditing)
@@ -88,14 +124,28 @@ namespace SWLOR.Toolset.Editors.Waypoints
 
                 foreach (var value in behavior.Manages)
                     _store.Apply(value, _isInstance);
+
+                PersistBehavior(behavior);
             });
 
             if (!applied)
+            {
+                BehaviorListItemViewModel.Select(BehaviorList, previous.Id);
                 return;
+            }
 
             Behavior = behavior;
             RebuildBehaviorSection();
             ReloadRowsFromDocument();
+        }
+
+        private static string Describe(IReadOnlyList<string> losses)
+        {
+            const int shown = 6;
+            var named = string.Join(", ", losses.Take(shown));
+            return losses.Count <= shown
+                ? named
+                : $"{named} and {losses.Count - shown} more";
         }
 
         public void ReloadFromDocument()
@@ -134,16 +184,43 @@ namespace SWLOR.Toolset.Editors.Waypoints
                 return true;
 
             var applied = _runEdit(
-                "Enable map note on the area map",
-                () => _store.SetInteger(
-                    BehaviorFieldStorage.Field,
-                    "MapNoteEnabled",
-                    GffFieldType.Byte,
-                    1));
+                $"Normalize {Behavior.DisplayName} waypoint behavior",
+                () =>
+                {
+                    foreach (var value in Behavior.Manages)
+                        _store.Apply(value, _isInstance);
+
+                    PersistBehavior(Behavior);
+                });
             if (applied)
                 ReloadRowsFromDocument();
 
             return applied;
+        }
+
+        private bool HasExpectedPersistedBehavior()
+        {
+            var persisted = _store.Locals.GetString(WaypointBehaviorCatalog.PersistedBehaviorLocal);
+            return Behavior.Id == WaypointBehaviorCatalog.TransitionDestinationId
+                ? string.Equals(
+                    persisted,
+                    WaypointBehaviorCatalog.TransitionDestinationId,
+                    StringComparison.Ordinal)
+                : persisted == null;
+        }
+
+        private void PersistBehavior(WaypointBehavior behavior)
+        {
+            if (behavior.Id == WaypointBehaviorCatalog.TransitionDestinationId)
+            {
+                _store.Locals.SetString(
+                    WaypointBehaviorCatalog.PersistedBehaviorLocal,
+                    WaypointBehaviorCatalog.TransitionDestinationId);
+            }
+            else
+            {
+                _store.Locals.Remove(WaypointBehaviorCatalog.PersistedBehaviorLocal);
+            }
         }
 
         private void ReloadRowsFromDocument()

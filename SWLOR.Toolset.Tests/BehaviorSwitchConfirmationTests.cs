@@ -4,10 +4,12 @@ using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Doors;
 using SWLOR.Toolset.Domain.Editors.Triggers;
+using SWLOR.Toolset.Domain.Editors.Waypoints;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Placeables;
 using SWLOR.Toolset.Editors.Doors;
 using SWLOR.Toolset.Editors.Triggers;
+using SWLOR.Toolset.Editors.Waypoints;
 using SWLOR.Toolset.Services;
 
 namespace SWLOR.Toolset.Tests
@@ -146,6 +148,41 @@ namespace SWLOR.Toolset.Tests
             new VarTable(door).GetString("SOME_QUEST_HOOK").Should().BeNull();
         }
 
+        // ----- waypoints -----
+
+        [Test]
+        public async Task DecliningTheWaypointPromptKeepsCustomMapNoteText()
+        {
+            var waypoint = MapNoteStruct();
+            var prompts = new RecordingPrompts(answer: false);
+            var catalog = new WaypointBehaviorCatalog(null, null);
+            var editor = new WaypointEditorViewModel(
+                waypoint, "wp_test", isInstance: true, Accept, catalog, prompts: prompts);
+
+            await editor.ChooseBehaviorAsync(catalog.Get(WaypointBehaviorCatalog.StuckRescuePointId));
+
+            prompts.Asked.Should().ContainSingle();
+            prompts.Asked[0].Message.Should().Contain("MapNote");
+            editor.Behavior.Id.Should().Be(WaypointBehaviorCatalog.MapNoteId);
+            new BehaviorValueStore(waypoint).GetLocalizedText("MapNote")
+                .Should().Be("Builder-authored destination");
+        }
+
+        [Test]
+        public async Task AcceptingTheWaypointPromptClearsTheOutgoingCustomFields()
+        {
+            var waypoint = MapNoteStruct();
+            var prompts = new RecordingPrompts(answer: true);
+            var catalog = new WaypointBehaviorCatalog(null, null);
+            var editor = new WaypointEditorViewModel(
+                waypoint, "wp_test", isInstance: true, Accept, catalog, prompts: prompts);
+
+            await editor.ChooseBehaviorAsync(catalog.Get(WaypointBehaviorCatalog.StuckRescuePointId));
+
+            editor.Behavior.Id.Should().Be(WaypointBehaviorCatalog.StuckRescuePointId);
+            new BehaviorValueStore(waypoint).GetLocalizedText("MapNote").Should().BeEmpty();
+        }
+
         // ----- placeables -----
 
         /// <summary>
@@ -200,6 +237,17 @@ namespace SWLOR.Toolset.Tests
 
         private static JsonGffStruct DoorStruct() =>
             JsonGffDocument.Parse(System.Text.Encoding.UTF8.GetBytes("""{"__data_type":"UTD "}""")).Root;
+
+        private static JsonGffStruct MapNoteStruct()
+        {
+            var waypoint = JsonGffDocument.Parse(
+                System.Text.Encoding.UTF8.GetBytes("""{"__data_type":"UTW "}""")).Root;
+            var store = new BehaviorValueStore(waypoint);
+            store.SetInteger(BehaviorFieldStorage.Field, "HasMapNote", GffFieldType.Byte, 1);
+            store.SetInteger(BehaviorFieldStorage.Field, "MapNoteEnabled", GffFieldType.Byte, 1);
+            store.SetLocalizedText("MapNote", "Builder-authored destination");
+            return waypoint;
+        }
 
         private sealed record Ask(string Headline, string Message);
 

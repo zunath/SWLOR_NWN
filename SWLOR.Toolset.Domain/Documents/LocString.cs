@@ -28,7 +28,11 @@ namespace SWLOR.Toolset.Domain.Documents
         public string? Text
         {
             get => FindEntry(DefaultLanguageKey)?.GetText();
-            set => GetOrAddEntry(DefaultLanguageKey).SetText(value ?? string.Empty);
+            set
+            {
+                _field.ClearLocStringId();
+                GetOrAddEntry(DefaultLanguageKey).SetText(value ?? string.Empty);
+            }
         }
 
         /// <summary>The text for an arbitrary language key, or null if no such entry exists.</summary>
@@ -40,6 +44,7 @@ namespace SWLOR.Toolset.Domain.Documents
         /// <summary>Sets the text for an arbitrary language key, creating the entry if needed.</summary>
         public void SetText(string languageKey, string value)
         {
+            _field.ClearLocStringId();
             GetOrAddEntry(languageKey).SetText(value);
         }
 

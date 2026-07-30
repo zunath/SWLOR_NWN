@@ -43,7 +43,7 @@ namespace SWLOR.Toolset.Tests
                 Accept,
                 new WaypointBehaviorCatalog(gameCodeIndex: null, transitionDestinationTags: null));
 
-            AssertRenders(new WaypointDocumentView { DataContext = null }, editor.BehaviorList);
+            AssertRenders(new WaypointEditorView { DataContext = editor }, editor.BehaviorList);
         }
 
         [AvaloniaTest]
@@ -166,6 +166,7 @@ namespace SWLOR.Toolset.Tests
                 Items = waypoint.BehaviorList,
                 ChooseCommand = waypoint.ChooseBehaviorCommand
             };
+            yield return new WaypointEditorView { DataContext = waypoint };
 
             var trigger = new TriggerEditorViewModel(
                 Struct("UTT "), "trg_test", isInstance: false, Accept);

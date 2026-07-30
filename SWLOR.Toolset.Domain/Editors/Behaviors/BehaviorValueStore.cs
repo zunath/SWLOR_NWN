@@ -33,6 +33,10 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         public string GetLocalizedText(string name) =>
             _valueStruct.GetLocStringOrNull(name)?.Text ?? string.Empty;
 
+        /// <summary>The field-level TLK reference of a CExoLocString field, if one is present.</summary>
+        public uint? GetLocalizedStringRef(string name) =>
+            _valueStruct.GetLocStringOrNull(name)?.StrRef;
+
         public void SetLocalizedText(string name, string value) =>
             _valueStruct.GetOrAddLocString(name).Text = value;
 

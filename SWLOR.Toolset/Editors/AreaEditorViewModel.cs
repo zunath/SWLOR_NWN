@@ -1460,6 +1460,7 @@ namespace SWLOR.Toolset.Editors
             IScriptSlotHost? scriptSlotHost = null,
             Func<JsonGffStruct, RenderModel?>? resolvePlacedCreatureModel = null,
             Doors.DoorEditorServices? doorEditorServices = null,
+            Waypoints.WaypointEditorServices? waypointEditorServices = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveSoundChoices = null,
             IReadOnlyList<string>? audioResources = null,
             Services.SoundPreviewService? soundPreview = null)
@@ -1505,6 +1506,7 @@ namespace SWLOR.Toolset.Editors
                     config.Title, config.ListFieldName, config.BlueprintType,
                     _gitSession, _gicSession, workspace, RunGitEdit, gameCodeIndex, log, _prompts, resolveStrRef,
                     config.BlueprintType == ResourceType.Utd ? doorEditorServices : null,
+                    config.BlueprintType == ResourceType.Utw ? waypointEditorServices : null,
                     areResRef,
                     resolveSoundChoices,
                     audioResources,
@@ -1909,6 +1911,15 @@ namespace SWLOR.Toolset.Editors
         /// </remarks>
         public async Task<bool> TrySaveAsync()
         {
+            // A Map Note instance requires MapNoteEnabled before it is written. The blueprint
+            // editor already performs this normalization; embedded waypoint editors must get the
+            // same save hook or the area silently writes an incomplete placement.
+            foreach (var section in Sections)
+            {
+                if (!section.PrepareForSave())
+                    return false;
+            }
+
             var catalogEntryChanged =
                 _areSession.UndoStack.IsDirty ||
                 _gitSession.UndoStack.IsDirty;

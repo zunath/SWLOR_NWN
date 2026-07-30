@@ -229,6 +229,31 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public async Task OverwritingAnExternalGenerationCanStillRenameTheItem()
+        {
+            var document = new ItemDocumentViewModel(
+                Scratch("adren_harness"),
+                "adren_harness",
+                null,
+                new OutputLogService(),
+                new StubPrompts(ExternalChangeChoice.Overwrite));
+            SetResRef(document, "adren_mk10");
+
+            var oldPath = Scratch("adren_harness");
+            File.WriteAllText(
+                oldPath,
+                File.ReadAllText(oldPath).Replace(
+                    "adren_harness",
+                    "adren_harnesx",
+                    StringComparison.Ordinal));
+
+            Assert.That(await document.TrySaveAsync(), Is.True);
+            Assert.That(File.Exists(Scratch("adren_mk10")), Is.True);
+            Assert.That(File.Exists(Scratch("adren_harness")), Is.False);
+            Assert.That(document.ResRef, Is.EqualTo("adren_mk10"));
+        }
+
+        [Test]
         public void OpeningAWorkspaceRecoversAnInterruptedItemRenameAndItsCategories()
         {
             var oldPath = Scratch("adren_harness");
@@ -532,10 +557,12 @@ namespace SWLOR.Toolset.Tests.Items
             Convert.ToHexString(
                 SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(content)));
 
-        private sealed class StubPrompts : IEditorPromptService
+        private sealed class StubPrompts(
+            ExternalChangeChoice externalChangeChoice = ExternalChangeChoice.Cancel)
+            : IEditorPromptService
         {
             public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) =>
-                Task.FromResult(ExternalChangeChoice.Cancel);
+                Task.FromResult(externalChangeChoice);
 
             public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) =>
                 Task.FromResult(UnsavedChangesChoice.Cancel);

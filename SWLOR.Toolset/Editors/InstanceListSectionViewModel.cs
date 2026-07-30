@@ -5,10 +5,12 @@ using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Sounds;
+using SWLOR.Toolset.Domain.Editors.Waypoints;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Sounds;
+using SWLOR.Toolset.Editors.Waypoints;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
@@ -106,6 +108,7 @@ namespace SWLOR.Toolset.Editors
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
         private readonly Doors.DoorEditorServices? _doorEditorServices;
+        private readonly WaypointEditorServices? _waypointEditorServices;
         private readonly string _soundHeaderOwner;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveSoundChoices;
         private readonly IReadOnlyList<string> _audioResources;
@@ -156,10 +159,18 @@ namespace SWLOR.Toolset.Editors
 
         public bool UsesDoorEditor => _blueprintType == ResourceType.Utd;
 
-        public bool UsesGenericDetailEditor => !UsesDoorEditor && !HasSoundBehaviorEditor;
+        public bool UsesGenericDetailEditor =>
+            !UsesDoorEditor && !HasWaypointBehaviorEditor && !HasSoundBehaviorEditor;
 
         [ObservableProperty]
         private Doors.DoorEditorViewModel? _doorEditor;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasWaypointBehaviorEditor))]
+        [NotifyPropertyChangedFor(nameof(UsesGenericDetailEditor))]
+        private WaypointEditorViewModel? _waypointEditor;
+
+        public bool HasWaypointBehaviorEditor => WaypointEditor != null;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasSoundBehaviorEditor))]
@@ -187,6 +198,7 @@ namespace SWLOR.Toolset.Editors
             IEditorPromptService prompts,
             Func<uint, string?>? resolveStrRef = null,
             Doors.DoorEditorServices? doorEditorServices = null,
+            WaypointEditorServices? waypointEditorServices = null,
             string? soundHeaderOwner = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveSoundChoices = null,
             IReadOnlyList<string>? audioResources = null,
@@ -204,6 +216,7 @@ namespace SWLOR.Toolset.Editors
             _prompts = prompts;
             _resolveStrRef = resolveStrRef;
             _doorEditorServices = doorEditorServices;
+            _waypointEditorServices = waypointEditorServices;
             _soundHeaderOwner = soundHeaderOwner ?? string.Empty;
             _resolveSoundChoices = resolveSoundChoices;
             _audioResources = audioResources ?? Array.Empty<string>();
@@ -223,12 +236,16 @@ namespace SWLOR.Toolset.Editors
         /// </remarks>
         public event Action? RowsRefreshed;
 
-        /// <summary>Refreshes a selected door or sound instance's category picker after its ITP changes.</summary>
+        /// <summary>Refreshes a selected specialized instance editor after its ITP changes.</summary>
         public void RefreshPaletteChoices()
         {
             DoorEditor?.RefreshPaletteChoices();
+            WaypointEditor?.RefreshPaletteChoices();
             SoundEditor?.RefreshPaletteChoices();
         }
+
+        /// <summary>Applies save-time normalization required by the selected specialized editor.</summary>
+        public bool PrepareForSave() => WaypointEditor?.PrepareForSave() ?? true;
 
         /// <summary>Rebuilds the grid rows from the current document state for initial load,
         /// structural edits, and undo/redo. Detail-field edits update the selected row in place
@@ -269,6 +286,7 @@ namespace SWLOR.Toolset.Editors
             {
                 DoorEditor?.Dispose();
                 DoorEditor = null;
+                WaypointEditor = null;
                 VarTableSection = null;
                 SoundEditor = null;
                 return;
@@ -278,6 +296,7 @@ namespace SWLOR.Toolset.Editors
 
             DoorEditor?.Dispose();
             DoorEditor = null;
+            WaypointEditor = null;
             SoundEditor = null;
 
             if (UsesDoorEditor)
@@ -298,6 +317,20 @@ namespace SWLOR.Toolset.Editors
                     _doorEditorServices?.ChoicePreviews,
                     _prompts);
                 VarTableSection = null;
+            }
+            else if (_blueprintType == ResourceType.Utw && _waypointEditorServices != null)
+            {
+                VarTableSection = null;
+                WaypointEditor = new WaypointEditorViewModel(
+                    element,
+                    _waypointEditorServices.HeaderOwner,
+                    isInstance: true,
+                    RunWaypointEdit,
+                    _waypointEditorServices.Catalog,
+                    _gameCodeIndex,
+                    _waypointEditorServices.ResolveChoices,
+                    _waypointEditorServices.ChoicePreviews,
+                    _prompts);
             }
             else if (_blueprintType == ResourceType.Uts)
             {
@@ -327,6 +360,16 @@ namespace SWLOR.Toolset.Editors
         }
 
         private bool RunDoorEdit(string description, Action mutation)
+        {
+            return RunSpecializedEdit(description, mutation);
+        }
+
+        private bool RunWaypointEdit(string description, Action mutation)
+        {
+            return RunSpecializedEdit(description, mutation);
+        }
+
+        private bool RunSpecializedEdit(string description, Action mutation)
         {
             if (!_runEdit(description, mutation))
                 return false;
@@ -507,6 +550,7 @@ namespace SWLOR.Toolset.Editors
         {
             DoorEditor?.Dispose();
             DoorEditor = null;
+            WaypointEditor = null;
             ActivePaletteBrowser = null;
         }
 

@@ -3,6 +3,7 @@
              xmlns:editors="using:SWLOR.Toolset.Editors"
              xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
              xmlns:sounds="using:SWLOR.Toolset.Editors.Sounds"
+             xmlns:waypoints="using:SWLOR.Toolset.Editors.Waypoints"
              xmlns:viewport="using:SWLOR.Toolset.Viewport"
              x:Class="SWLOR.Toolset.Editors.AreaEditorView"
              x:DataType="editors:AreaEditorViewModel">
@@ -316,6 +317,13 @@
                                    IsVisible="{Binding ValidationHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                       </StackPanel>
                     </Expander>
+                    </StackPanel>
+
+                    <!-- Waypoint placements carry their behavior fields directly in the area's
+                         GIT. Transform remains an area concern; every other field belongs to the
+                         same editor used by a UTW blueprint. -->
+                    <StackPanel IsVisible="{Binding HasWaypointBehaviorEditor}" Spacing="8">
+                      <waypoints:WaypointEditorView DataContext="{Binding WaypointEditor}" Height="620" />
                     </StackPanel>
 
                     <!-- A placed sound owns all UTS behavior fields itself. World position remains

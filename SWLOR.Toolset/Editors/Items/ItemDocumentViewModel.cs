@@ -185,6 +185,10 @@ namespace SWLOR.Toolset.Editors.Items
                         _log.AppendLine($"Reloaded externally changed file {_session.FilePath}.");
                         return true;
                     }
+
+                    // The builder accepted the generation that is on disk now. Adopt that exact
+                    // generation so the rename's final capture rejects only a later external write.
+                    _session.RecordCurrentFileState();
                 }
 
                 // The field may carry stray case or whitespace the shape check already tolerated

@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace SWLOR.Game.Server.Core.Extensions
+namespace SWLOR.Game.Server.Extension
 {
     internal static class ReflectionExtensions
     {

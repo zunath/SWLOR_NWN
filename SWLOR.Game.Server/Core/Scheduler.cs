@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
-using SWLOR.Game.Server.Core.Extensions;
+using SWLOR.Game.Server.Extension;
 
 namespace SWLOR.Game.Server.Core
 {

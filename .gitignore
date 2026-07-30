@@ -6,7 +6,10 @@
 *.user
 *.userosscache
 *.sln.docstates
-SWLOR.Game.Server/SWLOR.Game.Server.csproj
+
+# Local container runtime state (never commit)
+SWLOR.Game.Server/Docker/redis/
+SWLOR.Game.Server/Docker/influxdb/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

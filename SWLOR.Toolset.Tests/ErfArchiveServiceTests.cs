@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using SWLOR.Toolset.Archives;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
@@ -563,6 +564,129 @@ namespace SWLOR.Toolset.Tests
             new VarTable(imported.Root)
                 .GetInt(BlueprintTemplateFactory.NoEconomyVariable)
                 .Should().Be(1, "a newly imported item with no player source must stay out of economy searches");
+        }
+
+        [Test]
+        public async Task StagedStoresCountAsPlayerSourcesBeforeNoEconomyIsApplied()
+        {
+            _workspace.Open(_secondModule);
+            const string itemResRef = "staged_item";
+            const string storeResRef = "staged_store";
+            var itemSource = Path.Combine(_root, itemResRef + ".uti.json");
+            var item = JsonGffDocument.Parse(
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Uti,
+                    itemResRef,
+                    "Staged Item"));
+            new VarTable(item.Root).Remove(BlueprintTemplateFactory.NoEconomyVariable);
+            File.WriteAllBytes(itemSource, item.ToBytes());
+
+            var storeSource = Path.Combine(_root, storeResRef + ".utm.json");
+            using (EditScope.EnterConstruction())
+            {
+                var storeRoot = SyntheticGit.Instance(
+                    ("ResRef", GffFieldType.ResRef, storeResRef));
+                var storeName = JsonGffField.CreateLocString();
+                var englishName = new LocStringEntry("0", Array.Empty<byte>());
+                storeName.AddLocStringEntry(englishName);
+                englishName.SetText("Staged Store");
+                storeRoot.Add("LocName", storeName);
+                var inventoryItem = SyntheticGit.Instance(
+                    ("InventoryRes", GffFieldType.ResRef, itemResRef));
+                var page = new JsonGffStruct();
+                page.Add("ItemList", SyntheticGit.ListOf(inventoryItem));
+                storeRoot.Add("StoreList", SyntheticGit.ListOf(page));
+                File.WriteAllBytes(
+                    storeSource,
+                    new JsonGffDocument("UTM ", storeRoot).ToBytes());
+            }
+
+            ErfImportChoice Choice(string sourcePath, string resRef, string extension)
+            {
+                var asset = new ErfArchiveAsset(
+                    $"{resRef}.{extension}",
+                    resRef,
+                    extension,
+                    new FileInfo(sourcePath).Length,
+                    IsSupported: true,
+                    TypeName: extension,
+                    UnsupportedReason: null);
+                return new ErfImportChoice(
+                    new ErfPreparedImport(
+                        asset,
+                        sourcePath,
+                        Path.Combine(_secondModule, extension, $"{resRef}.{extension}.json"),
+                        ErfConflictKind.New,
+                        ErfConflictAction.Add),
+                    ErfConflictAction.Add,
+                    RenameResRef: null);
+            }
+
+            await _service.ImportAsync(new[]
+            {
+                Choice(itemSource, itemResRef, "uti"),
+                Choice(storeSource, storeResRef, "utm")
+            });
+
+            var importedItem = JsonGffDocument.Load(
+                Path.Combine(_secondModule, "uti", itemResRef + ".uti.json"));
+            new VarTable(importedItem.Root)
+                .GetInt(BlueprintTemplateFactory.NoEconomyVariable)
+                .Should().NotBe(1, "the staged store makes the item obtainable in the same transaction");
+        }
+
+        [Test]
+        public async Task ImportDependenciesMatchBothResRefAndResourceType()
+        {
+            const string areaResRef = "typed_deps";
+            const string sharedResRef = "shared";
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "are", areaResRef + ".are.json"),
+                new JsonGffDocument("ARE ", new JsonGffStruct()).ToBytes());
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "gic", areaResRef + ".gic.json"),
+                new JsonGffDocument("GIC ", new JsonGffStruct()).ToBytes());
+
+            var creatureInstance = SyntheticGit.Instance(
+                ("TemplateResRef", GffFieldType.ResRef, sharedResRef));
+            var git = new JsonGffDocument("GIT ", new JsonGffStruct());
+            git.Root.Add("Creature List", SyntheticGit.ListOf(creatureInstance));
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "git", areaResRef + ".git.json"),
+                git.ToBytes());
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "utc", sharedResRef + ".utc.json"),
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utc,
+                    sharedResRef,
+                    "Shared Creature"));
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "uti", sharedResRef + ".uti.json"),
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Uti,
+                    sharedResRef,
+                    "Shared Item"));
+
+            var archivePath = Path.Combine(_root, "typed-dependencies.erf");
+            await _service.ExportAsync(
+                new[]
+                {
+                    $"{areaResRef}.are",
+                    $"{areaResRef}.git",
+                    $"{areaResRef}.gic",
+                    $"{sharedResRef}.utc",
+                    $"{sharedResRef}.uti"
+                },
+                archivePath);
+            using var archive = await _service.OpenArchiveAsync(archivePath);
+
+            var dependencies = await _service.FindImportDependenciesAsync(
+                archive,
+                new[] { $"{areaResRef}.git" });
+
+            dependencies.Select(dependency => dependency.FileName)
+                .Should().Contain($"{sharedResRef}.utc")
+                .And.NotContain($"{sharedResRef}.uti");
         }
 
         [Test]

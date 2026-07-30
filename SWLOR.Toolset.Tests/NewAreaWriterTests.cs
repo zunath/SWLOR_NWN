@@ -341,5 +341,73 @@ namespace SWLOR.Toolset.Tests
             NewAreaWriter.TryCreate(workspace, RealTilesets(), "wp73_zero", "Zero", "tms01", 0, 2, out _)
                 .Should().BeFalse();
         }
+
+        [Test]
+        public async Task TryCreate_SerializesConcurrentModuleIfoUpdates()
+        {
+            var tileset = new TilesetDefinition
+            {
+                Floor = "Grass",
+                Terrains = new[] { new TerrainDefinition("Grass", null, null) },
+                Tiles = new[]
+                {
+                    new TileDefinition
+                    {
+                        TopLeft = "Grass",
+                        TopRight = "Grass",
+                        BottomLeft = "Grass",
+                        BottomRight = "Grass",
+                        PathNode = "A"
+                    }
+                }
+            };
+            NewAreaWriter.TilesetResolver resolver =
+                (string _, out TilesetDefinition resolved) =>
+                {
+                    resolved = tileset;
+                    return true;
+                };
+
+            var started = new CountdownEvent(2);
+            Task<(bool Success, string Error)> StartCreate(string resRef)
+            {
+                return Task.Run(() =>
+                {
+                    started.Signal();
+                    var success = NewAreaWriter.TryCreate(
+                        new ModuleWorkspace(_moduleRoot),
+                        resolver,
+                        resRef,
+                        resRef,
+                        "synthetic",
+                        2,
+                        2,
+                        out var error);
+                    return (success, error);
+                });
+            }
+
+            var heldLock = ModuleIfoUpdateLock.Acquire(_moduleRoot);
+            Task<(bool Success, string Error)> first;
+            Task<(bool Success, string Error)> second;
+            try
+            {
+                first = StartCreate("concurrent_a");
+                second = StartCreate("concurrent_b");
+                started.Wait(TimeSpan.FromSeconds(2)).Should().BeTrue();
+                await Task.Delay(100);
+                first.IsCompleted.Should().BeFalse("the external module.ifo lock is still held");
+                second.IsCompleted.Should().BeFalse("the external module.ifo lock is still held");
+            }
+            finally
+            {
+                heldLock.Dispose();
+            }
+
+            var results = await Task.WhenAll(first!, second!);
+            results.Should().OnlyContain(result => result.Success, string.Join("; ", results.Select(r => r.Error)));
+            IfoDocument.Load(Path.Combine(_moduleRoot, "ifo", "module.ifo.json"))
+                .AreaResRefs.Should().Contain(new[] { "concurrent_a", "concurrent_b" });
+        }
     }
 }

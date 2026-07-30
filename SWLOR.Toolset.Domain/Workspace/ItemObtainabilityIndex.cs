@@ -60,15 +60,27 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// The SWLOR.Game.Server project directory (the one containing a "Feature" subfolder), or
         /// null/missing to build store-only data.
         /// </param>
-        public static ItemObtainabilityIndex Build(ModuleWorkspace workspace, string? gameSourceRoot)
+        public static ItemObtainabilityIndex Build(
+            ModuleWorkspace workspace,
+            string? gameSourceRoot,
+            IEnumerable<(ResourceType Type, string ResRef, string SourcePath)>? blueprintOverrides = null)
         {
             ArgumentNullException.ThrowIfNull(workspace);
 
             var sources = new Dictionary<string, List<ItemSourceEntry>>(StringComparer.OrdinalIgnoreCase);
+            var overrides = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (blueprintOverrides != null)
+            {
+                foreach (var (type, resRef, sourcePath) in blueprintOverrides)
+                {
+                    if (!string.IsNullOrWhiteSpace(resRef) && !string.IsNullOrWhiteSpace(sourcePath))
+                        overrides[BlueprintKey(type, resRef)] = sourcePath;
+                }
+            }
 
-            IndexStores(workspace, sources);
-            IndexCreatureDroppables(workspace, sources);
-            IndexPlacedContainers(workspace, sources);
+            IndexStores(workspace, sources, overrides);
+            IndexCreatureDroppables(workspace, sources, overrides);
+            IndexPlacedContainers(workspace, sources, overrides);
 
             if (!string.IsNullOrWhiteSpace(gameSourceRoot) && Directory.Exists(gameSourceRoot))
                 IndexGameCode(gameSourceRoot, sources);
@@ -102,14 +114,19 @@ namespace SWLOR.Toolset.Domain.Workspace
         // ---------------------------------------------------------------------------------------
 
         private static void IndexStores(
-            ModuleWorkspace workspace, Dictionary<string, List<ItemSourceEntry>> sources)
+            ModuleWorkspace workspace,
+            Dictionary<string, List<ItemSourceEntry>> sources,
+            IReadOnlyDictionary<string, string> overrides)
         {
-            foreach (var resRef in workspace.EnumerateResRefs(ResourceType.Utm))
+            foreach (var (resRef, sourcePath) in EnumerateBlueprintSources(
+                         workspace,
+                         ResourceType.Utm,
+                         overrides))
             {
                 UtmDocument store;
                 try
                 {
-                    store = UtmDocument.Load(workspace.GetResourcePath(ResourceType.Utm, resRef));
+                    store = UtmDocument.Load(sourcePath);
                 }
                 catch (Exception)
                 {
@@ -139,7 +156,9 @@ namespace SWLOR.Toolset.Domain.Workspace
         // ---------------------------------------------------------------------------------------
 
         private static void IndexCreatureDroppables(
-            ModuleWorkspace workspace, Dictionary<string, List<ItemSourceEntry>> sources)
+            ModuleWorkspace workspace,
+            Dictionary<string, List<ItemSourceEntry>> sources,
+            IReadOnlyDictionary<string, string> overrides)
         {
             ScanInventoryBlueprints(workspace, ResourceType.Utc, (root, resRef) =>
             {
@@ -152,11 +171,13 @@ namespace SWLOR.Toolset.Domain.Workspace
                 return items.EnumerateArray()
                     .Where(item => GetInt(item, "Dropable") == 1)
                     .Select(item => (GetString(item, "InventoryRes"), entry));
-            }, sources);
+            }, sources, overrides);
         }
 
         private static void IndexPlacedContainers(
-            ModuleWorkspace workspace, Dictionary<string, List<ItemSourceEntry>> sources)
+            ModuleWorkspace workspace,
+            Dictionary<string, List<ItemSourceEntry>> sources,
+            IReadOnlyDictionary<string, string> overrides)
         {
             ScanInventoryBlueprints(workspace, ResourceType.Utp, (root, resRef) =>
             {
@@ -168,21 +189,22 @@ namespace SWLOR.Toolset.Domain.Workspace
 
                 return items.EnumerateArray()
                     .Select(item => (GetString(item, "InventoryRes"), entry));
-            }, sources);
+            }, sources, overrides);
         }
 
         private static void ScanInventoryBlueprints(
             ModuleWorkspace workspace,
             ResourceType type,
             Func<System.Text.Json.JsonElement, string, IEnumerable<(string? ResRef, ItemSourceEntry Entry)>> extract,
-            Dictionary<string, List<ItemSourceEntry>> sources)
+            Dictionary<string, List<ItemSourceEntry>> sources,
+            IReadOnlyDictionary<string, string> overrides)
         {
-            foreach (var resRef in workspace.EnumerateResRefs(type))
+            foreach (var (resRef, sourcePath) in EnumerateBlueprintSources(workspace, type, overrides))
             {
                 string text;
                 try
                 {
-                    text = File.ReadAllText(workspace.GetResourcePath(type, resRef));
+                    text = File.ReadAllText(sourcePath);
                 }
                 catch (Exception)
                 {
@@ -207,6 +229,38 @@ namespace SWLOR.Toolset.Domain.Workspace
                 }
             }
         }
+
+        private static IEnumerable<(string ResRef, string SourcePath)> EnumerateBlueprintSources(
+            ModuleWorkspace workspace,
+            ResourceType type,
+            IReadOnlyDictionary<string, string> overrides)
+        {
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var resRef in workspace.EnumerateResRefs(type))
+            {
+                seen.Add(resRef);
+                var key = BlueprintKey(type, resRef);
+                yield return (
+                    resRef,
+                    overrides.TryGetValue(key, out var overridePath)
+                        ? overridePath
+                        : workspace.GetResourcePath(type, resRef));
+            }
+
+            var prefix = ((int)type).ToString(System.Globalization.CultureInfo.InvariantCulture) + ":";
+            foreach (var (key, sourcePath) in overrides)
+            {
+                if (!key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var resRef = key[prefix.Length..];
+                if (seen.Add(resRef))
+                    yield return (resRef, sourcePath);
+            }
+        }
+
+        private static string BlueprintKey(ResourceType type, string resRef) =>
+            ((int)type).ToString(System.Globalization.CultureInfo.InvariantCulture) + ":" + resRef;
 
         private static bool TryGetArray(
             System.Text.Json.JsonElement element, string property, out System.Text.Json.JsonElement array)

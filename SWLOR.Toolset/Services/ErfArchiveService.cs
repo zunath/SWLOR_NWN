@@ -363,16 +363,20 @@ namespace SWLOR.Toolset.Services
             ArgumentNullException.ThrowIfNull(selectedFileNames);
             var tools = ResolveTools();
             var byFile = session.Assets.ToDictionary(asset => asset.FileName, StringComparer.OrdinalIgnoreCase);
-            var byResRef = session.Assets
+            var byResource = session.Assets
                 .Where(asset => asset.IsSupported)
-                .GroupBy(asset => asset.ResRef, StringComparer.OrdinalIgnoreCase)
+                .GroupBy(
+                    asset => ArchiveKey(asset.Extension, asset.ResRef),
+                    StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(group => group.Key, group => group.ToList(), StringComparer.OrdinalIgnoreCase);
 
             return await FindDependenciesAsync(
                 selectedFileNames,
                 fileName => byFile.TryGetValue(fileName, out var asset) ? asset.Extension : null,
                 fileName => byFile.TryGetValue(fileName, out var asset) ? asset.ResRef : null,
-                resRef => byResRef.TryGetValue(resRef, out var matches)
+                (extension, resRef) => byResource.TryGetValue(
+                    ArchiveKey(extension, resRef),
+                    out var matches)
                     ? matches.Select(asset => asset.FileName)
                     : Array.Empty<string>(),
                 async fileName =>
@@ -382,13 +386,17 @@ namespace SWLOR.Toolset.Services
                     {
                         var jsonPath = await ConvertImportedGffAsync(session, asset, tools, cancellationToken)
                             .ConfigureAwait(false);
-                        return FindJsonResRefs(jsonPath);
+                        return FindJsonResourceReferences(jsonPath);
                     }
 
                     if (asset.Extension.Equals("nss", StringComparison.OrdinalIgnoreCase))
-                        return FindScriptIncludes(session.ExtractedPath(asset));
+                    {
+                        return FindScriptIncludes(session.ExtractedPath(asset))
+                            .Select(resRef => new ErfResourceReference("nss", resRef))
+                            .ToList();
+                    }
 
-                    return Array.Empty<string>();
+                    return Array.Empty<ErfResourceReference>();
                 },
                 cancellationToken).ConfigureAwait(false);
         }
@@ -497,9 +505,9 @@ namespace SWLOR.Toolset.Services
             Directory.CreateDirectory(rollbackRoot);
 
             var plan = new List<ImportPlanEntry>();
-            ItemObtainabilityIndex? itemSources = null;
             byte[]? moduleIfoBaseline = null;
             string? recoveryManifestPath = null;
+            ModuleIfoUpdateLock? ifoUpdateLock = null;
             try
             {
                 foreach (var choice in active)
@@ -528,23 +536,6 @@ namespace SWLOR.Toolset.Services
                                 asset.ResRef,
                                 targetResRef);
                             RewriteTypedReferences(document.Root, renameMap);
-                            if (asset.Extension.Equals("uti", StringComparison.OrdinalIgnoreCase) &&
-                                !File.Exists(destination))
-                            {
-                                var variables = new VarTable(document.Root);
-                                if (variables.GetInt(BlueprintTemplateFactory.NoEconomyVariable) != 1)
-                                {
-                                    itemSources ??= ItemObtainabilityIndex.Build(
-                                        workspace,
-                                        GameSourceRoot(workspace.ModuleRoot));
-                                    if (!itemSources.IsObtainable(targetResRef))
-                                    {
-                                        variables.SetInt(
-                                            BlueprintTemplateFactory.NoEconomyVariable,
-                                            1);
-                                    }
-                                }
-                            }
 
                             File.WriteAllBytes(stagedPath, document.ToBytes());
                         }
@@ -590,6 +581,8 @@ namespace SWLOR.Toolset.Services
                         ExpectedDestination: expectedDestination));
                 }
 
+                ApplyEconomyRestrictions(plan, workspace);
+
                 var importedAreas = plan
                     .Where(entry => entry.Extension.Equals("are", StringComparison.OrdinalIgnoreCase))
                     .Select(entry => entry.ResRef)
@@ -597,6 +590,7 @@ namespace SWLOR.Toolset.Services
                     .ToList();
                 if (importedAreas.Count > 0)
                 {
+                    ifoUpdateLock = ModuleIfoUpdateLock.Acquire(workspace.ModuleRoot);
                     var ifoPath = ModuleDestination(workspace.ModuleRoot, "ifo", "module");
                     if (!File.Exists(ifoPath))
                         throw new FileNotFoundException(
@@ -734,6 +728,8 @@ namespace SWLOR.Toolset.Services
             }
             finally
             {
+                ifoUpdateLock?.Dispose();
+
                 // A surviving marker means rollback did not finish. Its transaction directory holds
                 // the only guaranteed copy of a pre-import generation and must remain for startup
                 // recovery instead of being treated as ordinary temp debris.
@@ -934,8 +930,8 @@ namespace SWLOR.Toolset.Services
             IReadOnlyCollection<string> selectedFileNames,
             Func<string, string?> extensionOf,
             Func<string, string?> resRefOf,
-            Func<string, IEnumerable<string>> filesForResRef,
-            Func<string, Task<IReadOnlyList<string>>> referencesOf,
+            Func<string, string, IEnumerable<string>> filesForResource,
+            Func<string, Task<IReadOnlyList<ErfResourceReference>>> referencesOf,
             CancellationToken cancellationToken)
         {
             var selected = new HashSet<string>(selectedFileNames, StringComparer.OrdinalIgnoreCase);
@@ -964,17 +960,15 @@ namespace SWLOR.Toolset.Services
                 {
                     foreach (var companionExtension in new[] { "git", "gic" })
                     {
-                        var companion = filesForResRef(resRef).FirstOrDefault(candidate =>
-                            string.Equals(extensionOf(candidate), companionExtension,
-                                StringComparison.OrdinalIgnoreCase));
+                        var companion = filesForResource(companionExtension, resRef).FirstOrDefault();
                         if (companion != null)
                             Add(companion, $"{fileName} area companion");
                     }
                 }
 
-                foreach (var referencedResRef in await referencesOf(fileName).ConfigureAwait(false))
+                foreach (var reference in await referencesOf(fileName).ConfigureAwait(false))
                 {
-                    foreach (var referencedFile in filesForResRef(referencedResRef))
+                    foreach (var referencedFile in filesForResource(reference.Extension, reference.ResRef))
                         Add(referencedFile, $"Referenced by {fileName}");
                 }
             }
@@ -985,32 +979,39 @@ namespace SWLOR.Toolset.Services
                 .ToList();
         }
 
-        private static IReadOnlyList<string> FindJsonResRefs(string path)
+        private static IReadOnlyList<ErfResourceReference> FindJsonResourceReferences(string path)
         {
             var document = JsonGffDocument.Load(path);
-            var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            CollectResRefs(document.Root, result);
-            return result.ToList();
+            var result = new Dictionary<string, ErfResourceReference>(StringComparer.OrdinalIgnoreCase);
+            CollectResourceReferences(document.Root, result);
+            return result.Values.ToList();
         }
 
-        private static void CollectResRefs(JsonGffStruct current, ISet<string> result)
+        private static void CollectResourceReferences(
+            JsonGffStruct current,
+            IDictionary<string, ErfResourceReference> result,
+            string? containingList = null)
         {
-            foreach (var (_, field) in current.Entries)
+            foreach (var (name, field) in current.Entries)
             {
                 if (field.Type == GffFieldType.ResRef)
                 {
                     var value = field.GetString();
-                    if (IsValidResRef(value))
-                        result.Add(value);
+                    var extension = ReferencedExtension(name, containingList);
+                    if (extension != null && IsValidResRef(value))
+                    {
+                        result[ArchiveKey(extension, value)] =
+                            new ErfResourceReference(extension, value);
+                    }
                 }
                 else if (field.Type == GffFieldType.Struct && field.Struct != null)
                 {
-                    CollectResRefs(field.Struct, result);
+                    CollectResourceReferences(field.Struct, result, containingList);
                 }
                 else if (field.Type == GffFieldType.List && field.Elements != null)
                 {
                     foreach (var element in field.Elements)
-                        CollectResRefs(element, result);
+                        CollectResourceReferences(element, result, name);
                 }
             }
         }
@@ -1330,6 +1331,52 @@ namespace SWLOR.Toolset.Services
 
             var candidate = Path.Combine(repositoryRoot, "SWLOR.Game.Server");
             return Directory.Exists(candidate) ? candidate : null;
+        }
+
+        private static void ApplyEconomyRestrictions(
+            IReadOnlyList<ImportPlanEntry> plan,
+            ModuleWorkspace workspace)
+        {
+            var newItems = plan
+                .Where(entry =>
+                    entry.Extension.Equals("uti", StringComparison.OrdinalIgnoreCase) &&
+                    !entry.ReplacesExisting)
+                .ToList();
+            if (newItems.Count == 0)
+                return;
+
+            var sourceOverrides = new List<(ResourceType Type, string ResRef, string SourcePath)>();
+            foreach (var entry in plan)
+            {
+                if (!ResourceTypeExtensions.TryFromExtension(entry.Extension, out var type) ||
+                    type is not (ResourceType.Utm or ResourceType.Utc or ResourceType.Utp))
+                {
+                    continue;
+                }
+
+                sourceOverrides.Add((type, entry.ResRef, entry.StagedPath));
+            }
+
+            var itemSources = ItemObtainabilityIndex.Build(
+                workspace,
+                GameSourceRoot(workspace.ModuleRoot),
+                sourceOverrides);
+            foreach (var item in newItems)
+            {
+                using (EditScope.EnterConstruction())
+                {
+                    var document = JsonGffDocument.Load(item.StagedPath);
+                    var variables = new VarTable(document.Root);
+                    if (variables.GetInt(BlueprintTemplateFactory.NoEconomyVariable) != 1 &&
+                        !itemSources.IsObtainable(item.ResRef))
+                    {
+                        variables.SetInt(BlueprintTemplateFactory.NoEconomyVariable, 1);
+                        File.WriteAllBytes(item.StagedPath, document.ToBytes());
+                    }
+                }
+
+                _ = JsonGffDocument.Load(item.StagedPath);
+            }
         }
 
         private static string RewriteScriptIncludes(
@@ -1816,6 +1863,8 @@ namespace SWLOR.Toolset.Services
             bool IsRename,
             bool IsMetadata,
             ErfDestinationFingerprint? ExpectedDestination);
+
+        private sealed record ErfResourceReference(string Extension, string ResRef);
     }
 
     public sealed class ErfImportRecoveryException(string message, Exception innerException)

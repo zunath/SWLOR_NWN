@@ -317,7 +317,7 @@ namespace SWLOR.Toolset.Services
             // own filter exists to survive rather than something to hand it.
             ModuleMutationLock.ThrowIfModuleLocked();
 
-            var temporaryPath = path + ".tmp";
+            var temporaryPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
             File.WriteAllBytes(temporaryPath, bytes);
             return new StagedWrite(path, temporaryPath);
         }

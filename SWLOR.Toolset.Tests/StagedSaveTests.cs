@@ -93,26 +93,23 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void TheSecondFileFailingToStageLeavesBothOriginals()
+        public void ConcurrentStagingForTheSameTargetUsesIndependentTemporaryFiles()
         {
-            // The .are stages fine and the .git cannot be written - the case that used to leave the area
-            // half-saved. Both files must still read as they did.
-            var are = FileWith("area.are.json", "are-original");
-            var git = Path.Combine(_directory, "locked.git.json");
-            File.WriteAllText(git, "git-original");
+            var path = FileWith("area.are.json", "original");
 
-            var staged = SaveService.Stage(are, Encoding.UTF8.GetBytes("are-new"));
+            var first = SaveService.Stage(path, Encoding.UTF8.GetBytes("first"));
+            var second = SaveService.Stage(path, Encoding.UTF8.GetBytes("second"));
 
-            using (var hold = new FileStream(git + ".tmp", FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                var act = () => SaveService.Stage(git, Encoding.UTF8.GetBytes("git-new"));
-                act.Should().Throw<IOException>("the staging write is what fails, before any commit");
-            }
+            first.TemporaryPath.Should().NotBe(
+                second.TemporaryPath,
+                "each save transaction must own bytes that another process cannot overwrite");
+            File.ReadAllText(first.TemporaryPath).Should().Be("first");
+            File.ReadAllText(second.TemporaryPath).Should().Be("second");
+            File.ReadAllText(path).Should().Be("original");
 
-            SaveService.Discard(staged);
-
-            File.ReadAllText(are).Should().Be("are-original");
-            File.ReadAllText(git).Should().Be("git-original");
+            SaveService.Commit(first);
+            SaveService.Discard(second);
+            File.ReadAllText(path).Should().Be("first");
         }
 
         [Test]

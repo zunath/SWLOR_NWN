@@ -127,6 +127,18 @@ namespace SWLOR.Toolset.Domain.Workspace
                 return false;
             }
 
+            ModuleIfoUpdateLock ifoUpdateLock;
+            try
+            {
+                ifoUpdateLock = ModuleIfoUpdateLock.Acquire(workspace.ModuleRoot);
+            }
+            catch (Exception ex)
+            {
+                error = $"Could not reserve module.ifo.json while creating '{resRef}': {ex.Message}";
+                return false;
+            }
+            using var heldIfoUpdateLock = ifoUpdateLock;
+
             try
             {
                 if (File.Exists(markerPath))

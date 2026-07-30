@@ -1,0 +1,54 @@
+# SWLOR deployment configuration.
+# Copy this file once per host, change the values for that host, and pass the
+# customized file to install.sh. The same deploy executable is used everywhere.
+
+DEPLOYMENT_NAME=swlor-test
+VOLUME_ROOT=/mnt/swlor-web-vol
+
+SOURCE_ROOT="$VOLUME_ROOT/deployment-source"
+REPOSITORY_URL=https://github.com/zunath/SWLOR_NWN
+GIT_REMOTE=origin
+BRANCH=feature/combat-upgrade
+
+NWSYNC_ROOT="$VOLUME_ROOT/nwsync"
+SERVER_ROOT="$VOLUME_ROOT/nwn-server"
+COMPOSE_FILE="$SERVER_ROOT/docker-compose.yml"
+
+DEPLOYMENT_ROOT="$VOLUME_ROOT/deployment/$DEPLOYMENT_NAME"
+RELEASE_ROOT="$DEPLOYMENT_ROOT/releases"
+STATE_ROOT="$DEPLOYMENT_ROOT/state"
+CACHE_ROOT="$VOLUME_ROOT/deployment/cache"
+
+NWSYNC_WRITE="$NWSYNC_ROOT/nwsync_write"
+NWSYNC_DESCRIPTION="SWLOR v2"
+MODULE_NAME="Star Wars LOR v2.mod"
+
+SERVER_SERVICE=swlor-server
+SERVER_IMAGE=zunath/nwn-dotnet:8193.37.15-2
+DEPENDENCY_SERVICES="redis influxdb grafana redis-commander background-services"
+# Leave blank to let Compose derive the project name from SERVER_ROOT.
+COMPOSE_PROJECT_NAME=""
+
+STOP_TIMEOUT_SECONDS=120
+HEALTH_TIMEOUT_SECONDS=300
+HEALTH_STABLE_SECONDS=30
+HEALTH_LOG_MARKER="Server: Module loaded"
+
+# The build begins only when this much space is free on RELEASE_ROOT's
+# filesystem. A second, lower guard is checked after the full build and
+# NWSync generation, before any live files are changed.
+MIN_FREE_GIB_BEFORE_BUILD=20
+MIN_FREE_GIB_BEFORE_CUTOVER=8
+
+NEVERWINTER_NIM_VERSION=2.1.2
+NEVERWINTER_NIM_RELEASE_URL=https://github.com/niv/neverwinter.nim/releases/download/2.1.2/neverwinter-x86_64-linux-gnu.zip
+NEVERWINTER_NIM_SHA256=f9cc2e50fbe6f750954d11b824434a92b12913cc0a3442e95dcc5eefd4ddc387
+
+# These may also be overridden for one invocation through the
+# SWLOR_DEPLOY_LOG and SWLOR_DEPLOY_LOCK environment variables.
+LOG_FILE="/var/log/$DEPLOYMENT_NAME-deploy.log"
+LOCK_FILE="/run/lock/$DEPLOYMENT_NAME-deploy.lock"
+
+# Removes only dangling Docker images after a successful deployment.
+# Images referenced by any container are never removed.
+PRUNE_DANGLING_DOCKER_IMAGES=true

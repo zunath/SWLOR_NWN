@@ -1,0 +1,12 @@
+[Unit]
+Description=Poll GitHub for a new SWLOR server release
+
+[Timer]
+OnBootSec=15min
+OnUnitActiveSec=5min
+RandomizedDelaySec=30
+Persistent=true
+Unit=swlor-deploy.service
+
+[Install]
+WantedBy=timers.target

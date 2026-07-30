@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Service
                 _npcGroups[npcGroupType] = npcGroupDetail;
             }
 
-            Console.WriteLine($"Loaded {_npcGroups.Count} NPC groups.");
+            Log.Write(LogGroup.Server, $"Loaded {_npcGroups.Count} NPC groups.", true);
         }
     }
 }

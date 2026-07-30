@@ -566,7 +566,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         foreach (var activeSpawn in _activeSpawnsByArea[area])
                         {
-                            ExecuteScript("spawn_despawn", activeSpawn.SpawnObject);
+                            ExecuteScript(ScriptName.OnSpawnDespawn, activeSpawn.SpawnObject);
                             DestroyObject(activeSpawn.SpawnObject);
                         }
                     }
@@ -619,7 +619,7 @@ namespace SWLOR.Game.Server.Service
                 if (now > resourceDespawn.DespawnTime)
                 {
                     // Execute the despawn script for cleanup (props, etc.)
-                    ExecuteScript("spawn_despawn", resourceDespawn.ResourceObject);
+                    ExecuteScript(ScriptName.OnSpawnDespawn, resourceDespawn.ResourceObject);
 
                     // Remove from active spawns
                     var spawnDetail = _spawns[resourceDespawn.SpawnDetailId];
@@ -670,7 +670,7 @@ namespace SWLOR.Game.Server.Service
                 // already on the creature, we need to run the normal spawn script to ensure it gets created appropriately.
                 if (string.IsNullOrWhiteSpace(originalSpawnScript))
                 {
-                    ExecuteScript("x2_def_spawn", spawn);
+                    ExecuteScript(ScriptName.DefaultCreatureSpawn, spawn);
                 }
             }
             else if (type == ObjectType.Placeable)

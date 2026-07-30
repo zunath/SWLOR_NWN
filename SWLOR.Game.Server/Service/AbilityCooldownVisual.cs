@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -263,7 +264,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _isCached = true;
-            Console.WriteLine($"Loaded {_texturesByRecastGroup.Values.Sum(x => x.Count)} ability cooldown texture mappings.");
+            Log.Write(LogGroup.Server, $"Loaded {_texturesByRecastGroup.Values.Sum(x => x.Count)} ability cooldown texture mappings.", true);
         }
 
         private static void EnsureCached()

@@ -702,5 +702,24 @@ namespace SWLOR.Game.Server.Core
         // NWNX Events - Scroll learn events
         public const string OnItemScrollLearnBefore = "scroll_lrn_bef";
         public const string OnItemScrollLearnAfter = "scroll_lrn_aft";
+
+        // Base-game and community scripts referenced by SWLOR code
+        // These are chained via ExecuteScript to preserve default henchman/creature AI and
+        // community (DMFI) behavior underneath SWLOR's own event handlers.
+        public const string DefaultHenchmanBlocked = "x0_ch_hen_block";
+        public const string DefaultHenchmanCombatRound = "x0_ch_hen_combat";
+        public const string DefaultHenchmanConversation = "x0_ch_hen_conv";
+        public const string DefaultHenchmanDamaged = "x0_ch_hen_damage";
+        public const string DefaultHenchmanDeath = "x2_hen_death";
+        public const string DefaultHenchmanDisturbed = "x0_ch_hen_distrb";
+        public const string DefaultHenchmanHeartbeat = "x0_ch_hen_heart";
+        public const string DefaultHenchmanPerception = "x0_ch_hen_percep";
+        public const string DefaultHenchmanAttacked = "x0_ch_hen_attack";
+        public const string DefaultHenchmanRested = "x0_ch_hen_rest";
+        public const string DefaultHenchmanSpawn = "x0_ch_hen_spawn";
+        public const string DefaultHenchmanSpellCastAt = "x2_hen_spell";
+        public const string DefaultHenchmanUserDefined = "x0_ch_hen_usrdef";
+        public const string DefaultCreatureSpawn = "x2_def_spawn";
+        public const string DMFIOnPlayerChat = "dmfi_onplychat";
     }
 }

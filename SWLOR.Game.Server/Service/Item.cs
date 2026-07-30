@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_items.Count} items.");
+            Log.Write(LogGroup.Server, $"Loaded {_items.Count} items.", true);
 
             // Cache 2da values that we need.  Create a new array for each row, otherwise they
             // end up pointing to the same array object (and get overwritten).
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Service
                 _2daCache[row] = values;
             }
 
-            Console.WriteLine($"Loaded {_2daCache.Count} base items.");
+            Log.Write(LogGroup.Server, $"Loaded {_2daCache.Count} base items.", true);
         }
 
         private static void LoadItemToDamageStatMapping()
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Service
                 _itemToDamageAbilityMapping[itemType] = AbilityType.Perception;
             }
 
-            Console.WriteLine($"Loaded {_itemToDamageAbilityMapping.Count} item to damage ability mappings.");
+            Log.Write(LogGroup.Server, $"Loaded {_itemToDamageAbilityMapping.Count} item to damage ability mappings.", true);
         }
 
         private static void LoadItemToAccuracyStatMapping()
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Service
                 _itemToAccuracyAbilityMapping[itemType] = AbilityType.Agility;
             }
 
-            Console.WriteLine($"Loaded {_itemToAccuracyAbilityMapping.Count} item to accuracy ability mappings.");
+            Log.Write(LogGroup.Server, $"Loaded {_itemToAccuracyAbilityMapping.Count} item to accuracy ability mappings.", true);
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -192,7 +193,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_chatCommands.Count} chat commands.");
+            Log.Write(LogGroup.Server, $"Loaded {_chatCommands.Count} chat commands.", true);
         }
 
         /// <summary>

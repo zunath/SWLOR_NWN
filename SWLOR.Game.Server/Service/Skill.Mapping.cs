@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -98,7 +99,7 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.ThrowingAxe] = SkillType.Throwing;
             _itemToSkillMapping[BaseItem.Dart] = SkillType.Throwing;
 
-            Console.WriteLine($"Loaded {_itemToSkillMapping.Count} item to skill mappings.");
+            Log.Write(LogGroup.Server, $"Loaded {_itemToSkillMapping.Count} item to skill mappings.", true);
         }
 
         /// <summary>

@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_abilities.Count} abilities.");
+            Log.Write(LogGroup.Server, $"Loaded {_abilities.Count} abilities.", true);
             AbilityTargeting.CacheData(_abilities);
         }
 

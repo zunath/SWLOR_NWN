@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -96,9 +97,9 @@ namespace SWLOR.Game.Server.Service
             CachePortraitsById();
             CacheSoundSets();
 
-            Console.WriteLine($"Loaded {ItemNamesByResref.Count} item names by resref.");
-            Console.WriteLine($"Loaded {PortraitIdsByInternalId.Count} portraits by Id.");
-            Console.WriteLine($"Loaded {SoundSets.Count} soundsets.");
+            Log.Write(LogGroup.Server, $"Loaded {ItemNamesByResref.Count} item names by resref.", true);
+            Log.Write(LogGroup.Server, $"Loaded {PortraitIdsByInternalId.Count} portraits by Id.", true);
+            Log.Write(LogGroup.Server, $"Loaded {SoundSets.Count} soundsets.", true);
         }
 
         /// <summary>

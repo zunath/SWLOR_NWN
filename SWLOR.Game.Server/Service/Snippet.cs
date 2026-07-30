@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.NWN.API.NWNX;
 
@@ -41,8 +42,8 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_actionsTakenCommands.Count} action snippets.");
-            Console.WriteLine($"Loaded {_appearsWhenCommands.Count} condition snippets.");
+            Log.Write(LogGroup.Server, $"Loaded {_actionsTakenCommands.Count} action snippets.", true);
+            Log.Write(LogGroup.Server, $"Loaded {_appearsWhenCommands.Count} condition snippets.", true);
         }
         /// <summary>
         /// When a conversation node with this script assigned in the "Appears When" event is run,

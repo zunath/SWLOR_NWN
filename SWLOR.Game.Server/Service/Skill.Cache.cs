@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 
@@ -112,8 +113,8 @@ namespace SWLOR.Game.Server.Service
             OrganizeSkillsForDisplay();
 
             EventsPlugin.SignalEvent("SWLOR_CACHE_SKILLS_LOADED", GetModule());
-            Console.WriteLine($"Loaded {_activeCategories.Count} skill categories.");
-            Console.WriteLine($"Loaded {_allSkills.Count} skills.");
+            Log.Write(LogGroup.Server, $"Loaded {_activeCategories.Count} skill categories.", true);
+            Log.Write(LogGroup.Server, $"Loaded {_allSkills.Count} skills.", true);
         }
 
         private static void OrganizeSkillsForDisplay()

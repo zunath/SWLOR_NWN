@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Service.AIService
                 }
             }
 
-            Console.WriteLine($"Loaded {_profiles.Count} AI profiles.");
+            Log.Write(LogGroup.AI, $"Loaded {_profiles.Count} AI profiles.", true);
         }
 
         public static void ValidateProfiles()

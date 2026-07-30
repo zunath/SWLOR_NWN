@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Service
             // Fire off an event if this creature isn't currently on
             // any enmity lists already.
             if (enemyList.Count <= 0)
-                ExecuteScript("enmity_acquired", creature);
+                ExecuteScript(ScriptName.OnEnmityAcquired, creature);
 
             // Enemy isn't on the creature's list. Add it now.
             if (!enemyList.Contains(enemy))
@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.Service
 
             AttackHighestEnmityTarget(enemy);
 
-            ExecuteScript("enmity_changed", creature);
+            ExecuteScript(ScriptName.OnEnmityChanged, creature);
         }
 
         /// <summary>
@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Service
             table[creature] = Math.Max(1, currentEnmity - reduction);
 
             AttackHighestEnmityTarget(enemy);
-            ExecuteScript("enmity_changed", creature);
+            ExecuteScript(ScriptName.OnEnmityChanged, creature);
         }
 
         /// <summary>

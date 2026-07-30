@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Service
             DB.Set(serverConfig);
 
             _bakingRan = true;
-            Console.WriteLine($"Baked {_walkmeshesByArea.Count} areas.");
+            Log.Write(LogGroup.Server, $"Baked {_walkmeshesByArea.Count} areas.", true);
         }
 
         /// <summary>
@@ -73,7 +74,7 @@ namespace SWLOR.Game.Server.Service
 
             var serverConfig = DB.Get<ModuleCache>("SWLOR_CACHE");
             _walkmeshesByArea = serverConfig.WalkmeshesByArea;
-            Console.WriteLine($"Loaded {_walkmeshesByArea.Count} area walkmeshes.");
+            Log.Write(LogGroup.Server, $"Loaded {_walkmeshesByArea.Count} area walkmeshes.", true);
         }
 
         // Area baking process

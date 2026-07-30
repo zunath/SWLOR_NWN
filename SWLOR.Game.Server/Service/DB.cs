@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -54,13 +55,13 @@ namespace SWLOR.Game.Server.Service
 
             _multiplexer = ConnectionMultiplexer.Connect(options);
 
-            Console.WriteLine($"Waiting for database connection. If this takes longer than 10 minutes, there's a problem.");
+            Log.Write(LogGroup.Server, "Waiting for database connection. If this takes longer than 10 minutes, there's a problem.", true);
             while (!_multiplexer.IsConnected)
             {
                 // Spin
                 Thread.Sleep(100);
             }
-            Console.WriteLine($"Database connection established.");
+            Log.Write(LogGroup.Server, "Database connection established.", true);
 
             LoadEntities();
 
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.Service
             // Perform an environment variable check to ensure we're in the game server context before executing the event.
             var context = Environment.GetEnvironmentVariable("GAME_SERVER_CONTEXT");
             if (!string.IsNullOrWhiteSpace(context) && context.ToLower() == "true")
-                ExecuteScript("db_loaded", OBJECT_SELF);
+                ExecuteScript(ScriptName.OnDatabaseLoaded, OBJECT_SELF);
         }
 
         public static RedisValue StreamAdd(
@@ -116,17 +117,17 @@ namespace SWLOR.Game.Server.Service
             {
                 // FT.DROPINDEX is used here in lieu of DropIndex() as it does not cause all documents to be lost.
                 _multiplexer.GetDatabase().Execute("FT.DROPINDEX", type.Name);
-                Console.WriteLine($"Dropped index for {type}");
+                Log.Write(LogGroup.Server, $"Dropped index for {type}", true);
             }
             catch (Exception ex)
             {
                 if (ex.Message.Contains("Unknown Index name", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    Console.WriteLine($"Index does not exist for type {type}.");
+                    Log.Write(LogGroup.Server, $"Index does not exist for type {type}.", true);
                 }
                 else
                 {
-                    Console.WriteLine($"Issue dropping index for type {type}. Exception: {ex.ToMessageAndCompleteStacktrace()}");
+                    Log.Write(LogGroup.Error, $"Issue dropping index for type {type}. Exception: {ex.ToMessageAndCompleteStacktrace()}", true);
                 }
 
             }
@@ -163,7 +164,7 @@ namespace SWLOR.Game.Server.Service
             _indexedPropertiesByName[type] = indexedProperties;
 
             _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
-            Console.WriteLine($"Created index for {type}");
+            Log.Write(LogGroup.Server, $"Created index for {type}", true);
             WaitForReindexing(type);
         }
 
@@ -171,7 +172,7 @@ namespace SWLOR.Game.Server.Service
         {
             string indexing;
 
-            Console.WriteLine($"Waiting for Redis to complete indexing of: {type}");
+            Log.Write(LogGroup.Server, $"Waiting for Redis to complete indexing of: {type}", true);
             do
             {
                 Thread.Sleep(100);
@@ -186,7 +187,7 @@ namespace SWLOR.Game.Server.Service
                 catch (Exception ex)
                 {
                     indexing = "0";
-                    Console.WriteLine($"Error during indexing: {ex.ToMessageAndCompleteStacktrace()}");
+                    Log.Write(LogGroup.Error, $"Error during indexing: {ex.ToMessageAndCompleteStacktrace()}", true);
                 }
 
             } while (indexing != "1");
@@ -214,7 +215,7 @@ namespace SWLOR.Game.Server.Service
                 _searchClientsByType[type] = new Client(type.Name, _multiplexer.GetDatabase());
                 ProcessIndex(entity);
 
-                Console.WriteLine($"Registered type '{entity.GetType()}' using key prefix {type.Name}");
+                Log.Write(LogGroup.Server, $"Registered type '{entity.GetType()}' using key prefix {type.Name}", true);
             }
         }
 

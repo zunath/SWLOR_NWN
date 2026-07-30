@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Service
         {
             CacheAreasByResref();
 
-            Console.WriteLine($"Loaded {AreasByResref.Count} areas by resref.");
+            Log.Write(LogGroup.Server, $"Loaded {AreasByResref.Count} areas by resref.", true);
         }
 
         /// <summary>

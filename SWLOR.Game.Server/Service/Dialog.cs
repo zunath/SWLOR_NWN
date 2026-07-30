@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Service
                 _conversations.Add(type.Name, instance);
             }
 
-            Console.WriteLine($"Loaded {_conversations.Count} conversations.");
+            Log.Write(LogGroup.Server, $"Loaded {_conversations.Count} conversations.", true);
         }
 
         [NWNEventHandler(ScriptName.OnModuleLoad)]
@@ -628,7 +628,7 @@ namespace SWLOR.Game.Server.Service
             // Couldn't find an open dialog file. Throw error.
             if (dialog.DialogNumber <= 0)
             {
-                Console.WriteLine("ERROR: Unable to locate a free dialog. Add more dialog files, update their custom tokens, and update Dialog.cs");
+                Log.Write(LogGroup.Error, "ERROR: Unable to locate a free dialog. Add more dialog files, update their custom tokens, and update Dialog.cs", true);
                 return;
             }
 

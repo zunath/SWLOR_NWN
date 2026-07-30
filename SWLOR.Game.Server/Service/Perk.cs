@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _perkFeatCacheLoaded = false;
-            Console.WriteLine($"Loaded {_allPerks.Count} player perks.");
+            Log.Write(LogGroup.Server, $"Loaded {_allPerks.Count} player perks.", true);
         }
 
         private static void CacheStatBonusPerk(PerkType perkType, PerkDetail perkDetail)
@@ -353,7 +353,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _perkFeatCacheLoaded = true;
-            Console.WriteLine($"Loaded active ability feat lookups for {_allActiveAbilityFeatsByPerk.Count} perks.");
+            Log.Write(LogGroup.Server, $"Loaded active ability feat lookups for {_allActiveAbilityFeatsByPerk.Count} perks.", true);
         }
 
         private static Dictionary<int, List<FeatType>> BuildActiveAbilityFeatsByLevel(
@@ -481,7 +481,7 @@ namespace SWLOR.Game.Server.Service
                 _characterTypes[type] = characterTypeDetail;
             }
 
-            Console.WriteLine($"Loaded {_characterTypes.Count} character types.");
+            Log.Write(LogGroup.Server, $"Loaded {_characterTypes.Count} character types.", true);
         }
 
         /// <summary>

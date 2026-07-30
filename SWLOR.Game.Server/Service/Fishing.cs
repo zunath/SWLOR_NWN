@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.Service
                 _fish[fish] = fishDetail;
             }
 
-            Console.WriteLine($"Loaded {_fish.Count} fish.");
+            Log.Write(LogGroup.Server, $"Loaded {_fish.Count} fish.", true);
         }
 
         private static void LoadRods()
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.Service
                 _rodsByResref[rodDetail.Resref] = rod;
             }
 
-            Console.WriteLine($"Loaded {_rods.Count} fishing rods.");
+            Log.Write(LogGroup.Server, $"Loaded {_rods.Count} fishing rods.", true);
         }
 
         private static void LoadBaits()
@@ -89,7 +90,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_baits.Count} fishing baits.");
+            Log.Write(LogGroup.Server, $"Loaded {_baits.Count} fishing baits.", true);
         }
 
         private static void LoadFishingLocations()
@@ -143,7 +144,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_fishingLocations.Count} fishing locations.");
+            Log.Write(LogGroup.Server, $"Loaded {_fishingLocations.Count} fishing locations.", true);
         }
 
         /// <summary>

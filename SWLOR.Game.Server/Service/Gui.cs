@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -53,7 +54,7 @@ namespace SWLOR.Game.Server.Service
                 _windowTypesByKey[BuildWindowId(constructedWindow.Type)] = constructedWindow.Type;
             }
 
-            Console.WriteLine($"Loaded {_windowTemplates.Count} GUI window templates.");
+            Log.Write(LogGroup.Server, $"Loaded {_windowTemplates.Count} GUI window templates.", true);
         }
 
         /// <summary>

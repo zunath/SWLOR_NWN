@@ -54,9 +54,9 @@ namespace SWLOR.Game.Server.Service
             LoadShipModules();
             LoadShipEnemies();
 
-            Console.WriteLine($"Loaded {_shipTypes.Count} ships.");
-            Console.WriteLine($"Loaded {_shipModules.Count} ship modules.");
-            Console.WriteLine($"Loaded {_spaceObjects.Count} space objects.");
+            Log.Write(LogGroup.Space, $"Loaded {_shipTypes.Count} ships.", true);
+            Log.Write(LogGroup.Space, $"Loaded {_shipModules.Count} ship modules.", true);
+            Log.Write(LogGroup.Space, $"Loaded {_spaceObjects.Count} space objects.", true);
 
             Scheduler.ScheduleRepeating(ProcessSpaceNPCAI, TimeSpan.FromSeconds(1));
             Scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(100d));
@@ -783,7 +783,7 @@ namespace SWLOR.Game.Server.Service
             if(!_playersInSpace.Contains(player))
                 _playersInSpace.Add(player);
 
-            ExecuteScript("space_enter", player);
+            ExecuteScript(ScriptName.OnSpaceEnter, player);
         }
 
         /// <summary>
@@ -946,7 +946,7 @@ namespace SWLOR.Game.Server.Service
             if (_playersInSpace.Contains(player))
                 _playersInSpace.Remove(player);
 
-            ExecuteScript("space_exit", player);
+            ExecuteScript(ScriptName.OnSpaceExit, player);
         }
 
         private static void CloneShip(uint player)
@@ -1243,7 +1243,7 @@ namespace SWLOR.Game.Server.Service
                 dbShip.Status = activatorShipStatus;
 
                 DB.Set(dbShip);
-                ExecuteScript("pc_target_upd", activator);
+                ExecuteScript(ScriptName.OnPlayerTargetUpdated, activator);
             }
 
             if (GetIsPC(target))
@@ -1254,7 +1254,7 @@ namespace SWLOR.Game.Server.Service
                 dbShip.Status = targetShipStatus;
 
                 DB.Set(dbShip);
-                ExecuteScript("pc_target_upd", target);
+                ExecuteScript(ScriptName.OnPlayerTargetUpdated, target);
             }
         }
 
@@ -1276,7 +1276,7 @@ namespace SWLOR.Game.Server.Service
             RestoreCapacitor(player, shipStatus, 1);
 
             if(GetIsPC(player))
-                ExecuteScript("pc_target_upd", player);
+                ExecuteScript(ScriptName.OnPlayerTargetUpdated, player);
         }
 
         /// <summary>
@@ -1307,7 +1307,7 @@ namespace SWLOR.Game.Server.Service
             if (shipStatus.Shield > shipStatus.MaxShield)
                 shipStatus.Shield = shipStatus.MaxShield;
 
-            ExecuteScript("pc_shld_adjusted", creature);
+            ExecuteScript(ScriptName.OnPlayerShieldAdjusted, creature);
         }
 
         public static void ReduceShield(uint creature, ShipStatus shipStatus, int amount)
@@ -1316,7 +1316,7 @@ namespace SWLOR.Game.Server.Service
             if (shipStatus.Shield < 0)
                 shipStatus.Shield = 0;
 
-            ExecuteScript("pc_shld_adjusted", creature);
+            ExecuteScript(ScriptName.OnPlayerShieldAdjusted, creature);
         }
 
         public static void RestoreHull(uint creature, ShipStatus shipStatus, int amount)
@@ -1325,7 +1325,7 @@ namespace SWLOR.Game.Server.Service
             if (shipStatus.Hull > shipStatus.MaxHull)
                 shipStatus.Hull = shipStatus.MaxHull;
 
-            ExecuteScript("pc_hull_adjusted", creature);
+            ExecuteScript(ScriptName.OnPlayerHullAdjusted, creature);
         }
 
         public static void ReduceHull(uint creature, ShipStatus shipStatus, int amount)
@@ -1339,7 +1339,7 @@ namespace SWLOR.Game.Server.Service
                 AssignCommand(OBJECT_SELF, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature));
             }
 
-            ExecuteScript("pc_hull_adjusted", creature);
+            ExecuteScript(ScriptName.OnPlayerHullAdjusted, creature);
         }
 
         public static void RestoreCapacitor(uint creature, ShipStatus shipStatus, int amount)
@@ -1348,7 +1348,7 @@ namespace SWLOR.Game.Server.Service
             if (shipStatus.Capacitor > shipStatus.MaxCapacitor)
                 shipStatus.Capacitor = shipStatus.MaxCapacitor;
 
-            ExecuteScript("pc_cap_adjusted", creature);
+            ExecuteScript(ScriptName.OnPlayerCapAdjusted, creature);
         }
 
         public static void ReduceCapacitor(uint creature, ShipStatus shipStatus, int amount)
@@ -1357,7 +1357,7 @@ namespace SWLOR.Game.Server.Service
             if (shipStatus.Capacitor < 0)
                 shipStatus.Capacitor = 0;
 
-            ExecuteScript("pc_cap_adjusted", creature);
+            ExecuteScript(ScriptName.OnPlayerCapAdjusted, creature);
         }
 
         /// <summary>
@@ -1720,8 +1720,8 @@ namespace SWLOR.Game.Server.Service
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
 
                     DB.Set(dbPlayerShip);
-                    ExecuteScript("pc_shld_adjusted", target);
-                    ExecuteScript("pc_hull_adjusted", target);
+                    ExecuteScript(ScriptName.OnPlayerShieldAdjusted, target);
+                    ExecuteScript(ScriptName.OnPlayerHullAdjusted, target);
                 }
                 else
                 {
@@ -1736,7 +1736,7 @@ namespace SWLOR.Game.Server.Service
                 receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage to {PlayerName.GetDisplayName(receiver, target)}.");
 
             if(GetIsPC(attacker))
-                ExecuteScript("pc_target_upd", attacker);
+                ExecuteScript(ScriptName.OnPlayerTargetUpdated, attacker);
 
         }
 
@@ -1791,8 +1791,8 @@ namespace SWLOR.Game.Server.Service
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
 
                     DB.Set(dbPlayerShip);
-                    ExecuteScript("pc_shld_adjusted", target);
-                    ExecuteScript("pc_hull_adjusted", target);
+                    ExecuteScript(ScriptName.OnPlayerShieldAdjusted, target);
+                    ExecuteScript(ScriptName.OnPlayerHullAdjusted, target);
                 }
                 else
                 {
@@ -1807,7 +1807,7 @@ namespace SWLOR.Game.Server.Service
                 receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage directly to hull of {PlayerName.GetDisplayName(receiver, target)}.");
 
             if (GetIsPC(attacker))
-                ExecuteScript("pc_target_upd", attacker);
+                ExecuteScript(ScriptName.OnPlayerTargetUpdated, attacker);
 
         }
 

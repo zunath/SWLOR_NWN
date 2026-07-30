@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_allCategories.Count} recipe category types.");
+            Log.Write(LogGroup.Crafting, $"Loaded {_allCategories.Count} recipe category types.", true);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_recipes.Count} recipes.");
+            Log.Write(LogGroup.Crafting, $"Loaded {_recipes.Count} recipes.", true);
         }
 
         private static bool IsResearchableRecipe(RecipeDetail recipe)
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Service
                 _enhancementSubTypes[type] = detail;
             }
 
-            Console.WriteLine($"Loaded {_enhancementSubTypes.Count} enhancement sub types.");
+            Log.Write(LogGroup.Crafting, $"Loaded {_enhancementSubTypes.Count} enhancement sub types.", true);
         }
 
         /// <summary>

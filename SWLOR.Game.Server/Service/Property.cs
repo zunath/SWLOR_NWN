@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_activeLayouts.Count} property layouts.");
+            Log.Write(LogGroup.Property, $"Loaded {_activeLayouts.Count} property layouts.", true);
         }
 
         private static void CachePermissions()

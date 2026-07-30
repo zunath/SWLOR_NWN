@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_quests.Count} quests.");
+            Log.Write(LogGroup.Server, $"Loaded {_quests.Count} quests.", true);
             ExecuteScript(ScriptName.OnQuestsRegistered, GetModule());
         }
 

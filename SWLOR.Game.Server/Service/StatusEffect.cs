@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
@@ -198,7 +199,7 @@ namespace SWLOR.Game.Server.Service
                     effect.Categories);
             }
 
-            Console.WriteLine($"Loaded {_statusEffects.Count} status effects.");
+            Log.Write(LogGroup.Server, $"Loaded {_statusEffects.Count} status effects.", true);
         }
 
         private static bool TryCreateStatusEffect(Type statusEffectClass, out IStatusEffect statusEffect)

@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Service
                 _statTypeAttributes[statType] = statType.GetAttribute<StatType, StatTypeAttribute>();
             }
 
-            Console.WriteLine($"Loaded {_statTypeAttributes.Count} stat type metadata entries.");
+            Log.Write(LogGroup.Server, $"Loaded {_statTypeAttributes.Count} stat type metadata entries.", true);
         }
 
         private static void EnsureStatTypeAttributesCached()
@@ -320,7 +320,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(creature, "FP", fp);
             }
 
-            ExecuteScript("pc_fp_adjusted", creature);
+            ExecuteScript(ScriptName.OnPlayerFPAdjusted, creature);
         }
 
         /// <summary>
@@ -359,7 +359,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(creature, "FP", fp);
             }
 
-            ExecuteScript("pc_fp_adjusted", creature);
+            ExecuteScript(ScriptName.OnPlayerFPAdjusted, creature);
         }
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(creature, "STAMINA", fp);
             }
 
-            ExecuteScript("pc_stm_adjusted", creature);
+            ExecuteScript(ScriptName.OnPlayerStaminaAdjusted, creature);
         }
 
         /// <summary>
@@ -441,7 +441,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(creature, "STAMINA", stamina);
             }
 
-            ExecuteScript("pc_stm_adjusted", creature);
+            ExecuteScript(ScriptName.OnPlayerStaminaAdjusted, creature);
         }
 
         /// <summary>

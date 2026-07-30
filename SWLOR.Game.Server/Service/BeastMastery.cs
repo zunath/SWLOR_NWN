@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
@@ -71,7 +72,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_beasts.Count} beasts.");
+            Log.Write(LogGroup.Server, $"Loaded {_beasts.Count} beasts.", true);
         }
 
         private static void LoadBeastRoles()
@@ -454,7 +455,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastBlocked)]
         public static void BeastOnBlocked()
         {
-            ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanBlocked, OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastRoundEnd)]
@@ -463,7 +464,7 @@ namespace SWLOR.Game.Server.Service
             var beast = OBJECT_SELF;
             if (!Activity.IsBusy(beast))
             {
-                ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
+                ExecuteScript(ScriptName.DefaultHenchmanCombatRound, OBJECT_SELF);
                 AI.ProcessTrigger(beast, AITriggerType.CombatRound);
             }
         }
@@ -471,20 +472,20 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastConversation)]
         public static void BeastOnConversation()
         {
-            ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanConversation, OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastDamaged)]
         public static void BeastOnDamaged()
         {
-            ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanDamaged, OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastDeath)]
         public static void BeastOnDeath()
         {
             var beast = OBJECT_SELF;
-            ExecuteScript("x2_hen_death", beast);
+            ExecuteScript(ScriptName.DefaultHenchmanDeath, beast);
 
             var beastId = GetBeastId(beast);
             var dbBeast = DB.Get<Beast>(beastId);
@@ -499,27 +500,27 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastDisturbed)]
         public static void BeastOnDisturbed()
         {
-            ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanDisturbed, OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastHeartbeat)]
         public static void BeastOnHeartbeat()
         {
-            ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanHeartbeat, OBJECT_SELF);
             Stat.RestoreNPCStats(false);
         }
 
         [NWNEventHandler(ScriptName.OnBeastPerception)]
         public static void BeastOnPerception()
         {
-            ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanPerception, OBJECT_SELF);
 
         }
 
         [NWNEventHandler(ScriptName.OnBeastAttacked)]
         public static void BeastOnPhysicalAttacked()
         {
-            ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanAttacked, OBJECT_SELF);
 
         }
 
@@ -527,7 +528,7 @@ namespace SWLOR.Game.Server.Service
         public static void BeastOnRested()
         {
             var beast = OBJECT_SELF;
-            ExecuteScript("x0_ch_hen_rest", beast);
+            ExecuteScript(ScriptName.DefaultHenchmanRested, beast);
 
             AssignCommand(beast, () => ClearAllActions());
 
@@ -538,7 +539,7 @@ namespace SWLOR.Game.Server.Service
         public static void BeastOnSpawn()
         {
             var beast = OBJECT_SELF;
-            ExecuteScript("x0_ch_hen_spawn", beast);
+            ExecuteScript(ScriptName.DefaultHenchmanSpawn, beast);
             AssignCommand(beast, () =>
             {
                 SetIsDestroyable(true, false, false);
@@ -550,14 +551,14 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastSpellCast)]
         public static void BeastOnSpellCastAt()
         {
-            ExecuteScript("x2_hen_spell", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanSpellCastAt, OBJECT_SELF);
 
         }
 
         [NWNEventHandler(ScriptName.OnBeastUserDefined)]
         public static void BeastOnUserDefined()
         {
-            ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanUserDefined, OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastTerminate)]

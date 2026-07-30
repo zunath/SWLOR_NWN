@@ -975,7 +975,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDroidBlocked)]
         public static void DroidOnBlocked()
         {
-            ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanBlocked, OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidRoundEnd)]
@@ -984,7 +984,7 @@ namespace SWLOR.Game.Server.Service
             var droid = OBJECT_SELF;
             if (!Activity.IsBusy(droid))
             {
-                ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
+                ExecuteScript(ScriptName.DefaultHenchmanCombatRound, OBJECT_SELF);
                 AI.ProcessTrigger(droid, AITriggerType.CombatRound);
             }
         }
@@ -992,13 +992,13 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDroidConversation)]
         public static void DroidOnConversation()
         {
-            ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanConversation, OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidDamaged)]
         public static void DroidOnDamaged()
         {
-            ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanDamaged, OBJECT_SELF);
 
         }
 
@@ -1007,7 +1007,7 @@ namespace SWLOR.Game.Server.Service
         {
             var droid = OBJECT_SELF;
             var player = GetMaster(droid);
-            ExecuteScript("x2_hen_death", droid);
+            ExecuteScript(ScriptName.DefaultHenchmanDeath, droid);
 
             var item = GetControllerItem(droid);
             var droidDetail = LoadDroidItemPropertyDetails(item);
@@ -1022,27 +1022,27 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDroidDisturbed)]
         public static void DroidOnDisturbed()
         {
-            ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanDisturbed, OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidHeartbeat)]
         public static void DroidOnHeartbeat()
         {
-            ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanHeartbeat, OBJECT_SELF);
             Stat.RestoreNPCStats(false);
         }
 
         [NWNEventHandler(ScriptName.OnDroidPerception)]
         public static void DroidOnPerception()
         {
-            ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanPerception, OBJECT_SELF);
 
         }
 
         [NWNEventHandler(ScriptName.OnDroidAttacked)]
         public static void DroidOnPhysicalAttacked()
         {
-            ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanAttacked, OBJECT_SELF);
 
         }
 
@@ -1050,7 +1050,7 @@ namespace SWLOR.Game.Server.Service
         public static void DroidOnRested()
         {
             var droid = OBJECT_SELF;
-            ExecuteScript("x0_ch_hen_rest", droid);
+            ExecuteScript(ScriptName.DefaultHenchmanRested, droid);
 
             AssignCommand(droid, () => ClearAllActions());
 
@@ -1061,7 +1061,7 @@ namespace SWLOR.Game.Server.Service
         public static void DroidOnSpawn()
         {
             var droid = OBJECT_SELF;
-            ExecuteScript("x0_ch_hen_spawn", droid);
+            ExecuteScript(ScriptName.DefaultHenchmanSpawn, droid);
             AssignCommand(droid, () =>
             {
                 SetIsDestroyable(true, false, false);
@@ -1073,14 +1073,14 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDroidSpellCast)]
         public static void DroidOnSpellCastAt()
         {
-            ExecuteScript("x2_hen_spell", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanSpellCastAt, OBJECT_SELF);
 
         }
 
         [NWNEventHandler(ScriptName.OnDroidUserDefined)]
         public static void DroidOnUserDefined()
         {
-            ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);
+            ExecuteScript(ScriptName.DefaultHenchmanUserDefined, OBJECT_SELF);
 
         }
 

@@ -4,6 +4,7 @@ using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Service
                 _validResistanceTypes.Add(type);
             }
 
-            Console.WriteLine($"Loaded {_allResistanceTypes.Count} resistance types.");
+            Log.Write(LogGroup.Server, $"Loaded {_allResistanceTypes.Count} resistance types.", true);
         }
 
         public static void AdjustResistance(Player entity, ResistanceType type, int adjustBy)

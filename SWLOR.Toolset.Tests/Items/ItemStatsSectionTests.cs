@@ -387,6 +387,28 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public void ResistanceDropdownShowsActualAmountAndWritesEncodedCostValue()
+        {
+            var store = OpenStore();
+            var ranges = new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory));
+            var section = new ItemStatsSectionViewModel(
+                store, (_, mutation) => { mutation(); return true; }, costTables: ranges);
+            section.Rebuild(ItemFamily.Armor, ItemRoleCatalog.CustomId);
+            var fireResistance = section.Groups
+                .Single(group => group.Group == ItemStatGroup.Resistance)
+                .Cells.Single(cell => cell.Label == "Fire Resistance");
+
+            var vulnerability = fireResistance.Options.Single(option => option.Label == "-1");
+            vulnerability.Value.Should().Be(101, "negative amounts are encoded as non-negative 2DA row ids");
+
+            fireResistance.SelectedOption = vulnerability;
+
+            fireResistance.SelectedOption.Should().Be(vulnerability);
+            fireResistance.Number.Should().Be(101);
+            store.GetPropertyValue(133, 1).Should().Be(101);
+        }
+
+        [Test]
         public void MaximumReflectsTheRealCostTableWhenOneIsSupplied()
         {
             var ranges = new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory));
@@ -441,8 +463,7 @@ namespace SWLOR.Toolset.Tests.Items
                     option => option.Label.Length == 0 || option.Label.All(character => character == '*'),
                     $"{cell.Label} offered a blank row");
 
-                // A decorated ladder ("Resistance_001") reads as a column of identical entries once
-                // truncated, so those labels are shown as the number they carry.
+                // Every listed semantic amount or coded label must identify exactly one stored row.
                 cell.Options.Select(option => option.Label).Should().OnlyHaveUniqueItems(
                     $"{cell.Label} offered the same label twice");
             }

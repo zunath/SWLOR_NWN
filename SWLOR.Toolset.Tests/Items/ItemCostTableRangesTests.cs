@@ -37,6 +37,22 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public void ResistanceOptionsShowActualAmountsWhileKeepingEncodedRows()
+        {
+            var ranges = new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory));
+
+            var options = ranges.OptionsFor(54);
+
+            options.Should().HaveCount(201);
+            options.Single(option => option.Value == 0).Label.Should().Be("0");
+            options.Single(option => option.Value == 15).Label.Should().Be("15");
+            options.Single(option => option.Value == 100).Label.Should().Be("100");
+            options.Single(option => option.Value == 101).Label.Should().Be("-1");
+            options.Single(option => option.Value == 200).Label.Should().Be("-100");
+            options.Should().NotContain(option => option.Label.StartsWith("Resistance_"));
+        }
+
+        [Test]
         public void FabricatedRegistryResolvesThroughToItsTargetTablesRowCount()
         {
             var scratch = Path.Combine(Path.GetTempPath(), "swlor-cost-table-" + Guid.NewGuid().ToString("N"));

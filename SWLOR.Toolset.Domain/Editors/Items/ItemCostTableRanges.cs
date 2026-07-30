@@ -30,6 +30,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
         public const int DefaultMax = ushort.MaxValue;
 
         private const string LabelColumn = "Label";
+        private const string AmountColumn = "Amount";
 
         /// <summary>
         /// Above this many rows a table is offered as a bounded number box even when it could be a
@@ -74,7 +75,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                     continue;
 
                 var options = new List<ItemCostTableOption>();
-                var everyLabelIsItsOwnRow = true;
+                var everyDisplayIsItsOwnRow = true;
                 var previous = -1;
                 var contiguous = true;
 
@@ -91,14 +92,15 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                     if (label.Length == 0 || label.All(character => character == '*'))
                         continue;
 
-                    // The label is shown as authored. Stripping a decorated ladder down to its number
-                    // ("Resistance_001" -> "1") looked tidier and was wrong: that table indexes a
-                    // resistance TYPE as well as an amount, so the numbers repeat and the prefix is
-                    // the part that distinguishes them.
-                    var display = label;
+                    // Cost-table labels are often engine-facing identifiers rather than the value a
+                    // builder needs to choose. When a table publishes an Amount column, that is its
+                    // semantic value: SWLOR resistance row 101, for example, stores CostValue 101
+                    // but means -1 resistance. Fall back to the authored label for coded tables.
+                    var amount = target.GetString(value, AmountColumn)?.Trim();
+                    var display = string.IsNullOrWhiteSpace(amount) ? label : amount;
 
                     if (display != value.ToString(System.Globalization.CultureInfo.InvariantCulture))
-                        everyLabelIsItsOwnRow = false;
+                        everyDisplayIsItsOwnRow = false;
                     if (previous >= 0 && value != previous + 1)
                         contiguous = false;
 
@@ -115,7 +117,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                 // repeat - a list of indistinguishable entries is worse than a number box.
                 if (options.Count == 0 ||
                     distinct != options.Count ||
-                    (everyLabelIsItsOwnRow && contiguous && options.Count > MaximumListedOptions))
+                    (everyDisplayIsItsOwnRow && contiguous && options.Count > MaximumListedOptions))
                 {
                     continue;
                 }

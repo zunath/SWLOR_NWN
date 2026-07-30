@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using SWLOR.Toolset.Domain.Documents;
@@ -53,7 +54,10 @@ namespace SWLOR.Toolset.Services
         string ContentPath,
         string DestinationPath,
         ErfConflictKind Conflict,
-        ErfConflictAction DefaultAction);
+        ErfConflictAction DefaultAction,
+        ErfDestinationFingerprint? DestinationFingerprint = null);
+
+    public sealed record ErfDestinationFingerprint(long Length, string Sha256);
 
     public sealed record ErfImportChoice(
         ErfPreparedImport Prepared,
@@ -434,8 +438,10 @@ namespace SWLOR.Toolset.Services
                     : session.ExtractedPath(asset);
                 var destination = ModuleDestination(workspace.ModuleRoot, asset.Extension, asset.ResRef);
                 var conflict = ErfConflictKind.New;
+                ErfDestinationFingerprint? destinationFingerprint = null;
                 if (File.Exists(destination))
                 {
+                    destinationFingerprint = Fingerprint(destination);
                     conflict = FilesEqual(contentPath, destination)
                         ? ErfConflictKind.Identical
                         : ErfConflictKind.Different;
@@ -447,7 +453,13 @@ namespace SWLOR.Toolset.Services
                     ErfConflictKind.Identical => ErfConflictAction.Skip,
                     _ => ErfConflictAction.KeepExisting
                 };
-                prepared.Add(new ErfPreparedImport(asset, contentPath, destination, conflict, defaultAction));
+                prepared.Add(new ErfPreparedImport(
+                    asset,
+                    contentPath,
+                    destination,
+                    conflict,
+                    defaultAction,
+                    destinationFingerprint));
             }
 
             return prepared;
@@ -459,6 +471,16 @@ namespace SWLOR.Toolset.Services
         {
             ArgumentNullException.ThrowIfNull(choices);
             ModuleMutationLock.ThrowIfModuleLocked();
+            var snapshot = choices.ToList();
+            return Task.Run(
+                () => Import(snapshot, cancellationToken),
+                cancellationToken);
+        }
+
+        private ErfImportResult Import(
+            IReadOnlyCollection<ErfImportChoice> choices,
+            CancellationToken cancellationToken)
+        {
             var workspace = RequireWorkspace();
 
             var normalizedChoices = NormalizeAreaRenameChoices(choices);
@@ -475,6 +497,7 @@ namespace SWLOR.Toolset.Services
             Directory.CreateDirectory(rollbackRoot);
 
             var plan = new List<ImportPlanEntry>();
+            ItemObtainabilityIndex? itemSources = null;
             byte[]? moduleIfoBaseline = null;
             string? recoveryManifestPath = null;
             try
@@ -496,13 +519,35 @@ namespace SWLOR.Toolset.Services
 
                     if (GffExtensions.Contains(asset.Extension))
                     {
-                        var document = JsonGffDocument.Load(choice.Prepared.ContentPath);
-                        RewriteOwnResRef(
-                            document.Root,
-                            asset.Extension,
-                            asset.ResRef,
-                            targetResRef);
-                        File.WriteAllBytes(stagedPath, document.ToBytes());
+                        using (EditScope.EnterConstruction())
+                        {
+                            var document = JsonGffDocument.Load(choice.Prepared.ContentPath);
+                            RewriteOwnResRef(
+                                document.Root,
+                                asset.Extension,
+                                asset.ResRef,
+                                targetResRef);
+                            RewriteTypedReferences(document.Root, renameMap);
+                            if (asset.Extension.Equals("uti", StringComparison.OrdinalIgnoreCase) &&
+                                !File.Exists(destination))
+                            {
+                                var variables = new VarTable(document.Root);
+                                if (variables.GetInt(BlueprintTemplateFactory.NoEconomyVariable) != 1)
+                                {
+                                    itemSources ??= ItemObtainabilityIndex.Build(
+                                        workspace,
+                                        GameSourceRoot(workspace.ModuleRoot));
+                                    if (!itemSources.IsObtainable(targetResRef))
+                                    {
+                                        variables.SetInt(
+                                            BlueprintTemplateFactory.NoEconomyVariable,
+                                            1);
+                                    }
+                                }
+                            }
+
+                            File.WriteAllBytes(stagedPath, document.ToBytes());
+                        }
                         // Reparse the exact bytes that would be installed, not the pre-rewrite source.
                         _ = JsonGffDocument.Load(stagedPath);
                     }
@@ -518,15 +563,31 @@ namespace SWLOR.Toolset.Services
                         File.Copy(choice.Prepared.ContentPath, stagedPath);
                     }
 
+                    var expectedDestination = choice.Action == ErfConflictAction.Rename
+                        ? null
+                        : choice.Prepared.DestinationFingerprint;
+                    if (expectedDestination == null &&
+                        choice.Action != ErfConflictAction.Rename &&
+                        choice.Prepared.Conflict != ErfConflictKind.New &&
+                        File.Exists(destination))
+                    {
+                        // Compatibility for callers that construct a prepared choice directly.
+                        // The wizard always supplies the selection-time fingerprint above.
+                        expectedDestination = Fingerprint(destination);
+                    }
+
                     plan.Add(new ImportPlanEntry(
                         stagedPath,
                         destination,
                         asset.Extension,
                         targetResRef,
-                        File.Exists(destination),
-                        !string.Equals(targetResRef, asset.ResRef, StringComparison.OrdinalIgnoreCase),
+                        ReplacesExisting: expectedDestination != null,
+                        IsRename: !string.Equals(
+                            targetResRef,
+                            asset.ResRef,
+                            StringComparison.OrdinalIgnoreCase),
                         IsMetadata: false,
-                        ExpectedOriginalContent: null));
+                        ExpectedDestination: expectedDestination));
                 }
 
                 var importedAreas = plan
@@ -567,7 +628,7 @@ namespace SWLOR.Toolset.Services
                             ReplacesExisting: true,
                             IsRename: false,
                             IsMetadata: true,
-                            ExpectedOriginalContent: moduleIfoBaseline));
+                            ExpectedDestination: Fingerprint(moduleIfoBaseline)));
                     }
                 }
 
@@ -577,6 +638,9 @@ namespace SWLOR.Toolset.Services
                 if (duplicate != null)
                     throw new InvalidOperationException(
                         $"More than one selected resource would be written to '{duplicate.Key}'.");
+
+                foreach (var entry in plan)
+                    ValidateDestination(entry);
 
                 var backupDirectory = CreateBackupDirectory(plan.Any(entry => entry.ReplacesExisting));
                 foreach (var entry in plan.Where(entry => entry.ReplacesExisting))
@@ -606,31 +670,32 @@ namespace SWLOR.Toolset.Services
                         OriginalExisted = entry.ReplacesExisting
                     }).ToList());
 
+                var installedDestinations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 try
                 {
                     foreach (var entry in plan)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                         Directory.CreateDirectory(Path.GetDirectoryName(entry.DestinationPath)!);
-
-                        if (entry.ExpectedOriginalContent != null)
-                        {
-                            var current = File.ReadAllBytes(entry.DestinationPath);
-                            if (!current.AsSpan().SequenceEqual(entry.ExpectedOriginalContent))
-                            {
-                                throw new IOException(
-                                    "module.ifo.json changed while the ERF import was being prepared. Try again.");
-                            }
-                        }
-
-                        File.Move(entry.StagedPath, entry.DestinationPath, overwrite: true);
+                        ValidateDestination(entry);
+                        File.Move(
+                            entry.StagedPath,
+                            entry.DestinationPath,
+                            overwrite: entry.ReplacesExisting);
+                        installedDestinations.Add(entry.DestinationPath);
                     }
+
+                    File.Delete(recoveryManifestPath);
+                    recoveryManifestPath = null;
                 }
                 catch (Exception importException)
                 {
                     try
                     {
-                        RecoverManifest(workspace.ModuleRoot, recoveryManifestPath);
+                        RecoverManifest(
+                            workspace.ModuleRoot,
+                            recoveryManifestPath!,
+                            installedDestinations);
                         recoveryManifestPath = null;
                     }
                     catch (Exception recoveryException)
@@ -643,9 +708,6 @@ namespace SWLOR.Toolset.Services
 
                     throw;
                 }
-
-                File.Delete(recoveryManifestPath);
-                recoveryManifestPath = null;
 
                 var changed = plan
                     .Where(entry => !entry.IsMetadata)
@@ -668,7 +730,7 @@ namespace SWLOR.Toolset.Services
                     $"{result.Renamed} renamed, {result.Skipped} skipped.");
                 if (backupDirectory != null)
                     _log.AppendLine($"ERF replacement backups: {backupDirectory}");
-                return Task.FromResult(result);
+                return result;
             }
             finally
             {
@@ -1187,6 +1249,89 @@ namespace SWLOR.Toolset.Services
             field.SetString(targetResRef);
         }
 
+        private static void RewriteTypedReferences(
+            JsonGffStruct root,
+            IReadOnlyDictionary<string, string> renameMap,
+            string? containingList = null)
+        {
+            foreach (var (name, field) in root.Entries)
+            {
+                if (field.Type == GffFieldType.ResRef)
+                {
+                    var referencedExtension = ReferencedExtension(name, containingList);
+                    var current = field.GetString();
+                    if (referencedExtension != null &&
+                        renameMap.TryGetValue(
+                            ArchiveKey(referencedExtension, current),
+                            out var replacement))
+                    {
+                        field.SetString(replacement);
+                    }
+                }
+
+                if (field.Type == GffFieldType.Struct && field.Struct != null)
+                {
+                    RewriteTypedReferences(field.Struct, renameMap, containingList);
+                }
+                else if (field.Type == GffFieldType.List && field.Elements != null)
+                {
+                    foreach (var element in field.Elements)
+                        RewriteTypedReferences(element, renameMap, name);
+                }
+            }
+        }
+
+        private static string? ReferencedExtension(string fieldName, string? containingList)
+        {
+            if (fieldName.StartsWith("Script", StringComparison.OrdinalIgnoreCase) ||
+                fieldName.StartsWith("On", StringComparison.OrdinalIgnoreCase))
+            {
+                return "nss";
+            }
+
+            if (fieldName.Equals("Conversation", StringComparison.OrdinalIgnoreCase))
+                return "dlg";
+
+            if (fieldName.Equals("InventoryRes", StringComparison.OrdinalIgnoreCase))
+                return "uti";
+
+            if (fieldName.Equals("Area_Name", StringComparison.OrdinalIgnoreCase))
+                return "are";
+
+            if (fieldName.Equals("TemplateResRef", StringComparison.OrdinalIgnoreCase))
+            {
+                return containingList?.ToLowerInvariant() switch
+                {
+                    "creature list" => "utc",
+                    "door list" => "utd",
+                    "encounter list" => "ute",
+                    "placeable list" => "utp",
+                    "soundlist" => "uts",
+                    "triggerlist" => "utt",
+                    "waypointlist" => "utw",
+                    _ => null
+                };
+            }
+
+            if (fieldName.Equals("ResRef", StringComparison.OrdinalIgnoreCase) &&
+                containingList?.Equals("StoreList", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return "utm";
+            }
+
+            return null;
+        }
+
+        private static string? GameSourceRoot(string moduleRoot)
+        {
+            var repositoryRoot = Path.GetDirectoryName(Path.GetFullPath(moduleRoot));
+            if (repositoryRoot == null)
+                return null;
+
+            var candidate = Path.Combine(repositoryRoot, "SWLOR.Game.Server");
+            return Directory.Exists(candidate) ? candidate : null;
+        }
+
         private static string RewriteScriptIncludes(
             string source,
             IReadOnlyDictionary<string, string> renameMap)
@@ -1229,6 +1374,40 @@ namespace SWLOR.Toolset.Services
                     return true;
                 if (!leftBuffer.AsSpan(0, leftRead).SequenceEqual(rightBuffer.AsSpan(0, rightRead)))
                     return false;
+            }
+        }
+
+        private static ErfDestinationFingerprint Fingerprint(string path)
+        {
+            using var stream = File.OpenRead(path);
+            return new ErfDestinationFingerprint(
+                stream.Length,
+                Convert.ToHexString(SHA256.HashData(stream)));
+        }
+
+        private static ErfDestinationFingerprint Fingerprint(byte[] content) =>
+            new(content.LongLength, Convert.ToHexString(SHA256.HashData(content)));
+
+        private static void ValidateDestination(ImportPlanEntry entry)
+        {
+            if (entry.ExpectedDestination == null)
+            {
+                if (File.Exists(entry.DestinationPath))
+                {
+                    throw new IOException(
+                        $"'{entry.DestinationPath}' was created after the ERF import was prepared. " +
+                        "Nothing was overwritten; review the module and try again.");
+                }
+
+                return;
+            }
+
+            if (!File.Exists(entry.DestinationPath) ||
+                Fingerprint(entry.DestinationPath) != entry.ExpectedDestination)
+            {
+                throw new IOException(
+                    $"'{entry.DestinationPath}' changed after the ERF import was prepared. " +
+                    "Nothing was overwritten; review the newer file and try again.");
             }
         }
 
@@ -1406,7 +1585,10 @@ namespace SWLOR.Toolset.Services
             }
         }
 
-        private static IReadOnlyList<string> RecoverManifest(string moduleRoot, string manifestPath)
+        private static IReadOnlyList<string> RecoverManifest(
+            string moduleRoot,
+            string manifestPath,
+            IReadOnlySet<string>? destinationsToRecover = null)
         {
             moduleRoot = Path.GetFullPath(moduleRoot);
             manifestPath = Path.GetFullPath(manifestPath);
@@ -1452,6 +1634,12 @@ namespace SWLOR.Toolset.Services
                 var rollback = Path.GetFullPath(entry.RollbackPath);
                 RequirePathUnder(moduleRoot, destination, "module destination");
                 RequirePathUnder(transactionRoot, rollback, "rollback file");
+
+                if (destinationsToRecover != null &&
+                    !destinationsToRecover.Contains(destination))
+                {
+                    continue;
+                }
 
                 if (entry.OriginalExisted)
                 {
@@ -1627,7 +1815,7 @@ namespace SWLOR.Toolset.Services
             bool ReplacesExisting,
             bool IsRename,
             bool IsMetadata,
-            byte[]? ExpectedOriginalContent);
+            ErfDestinationFingerprint? ExpectedDestination);
     }
 
     public sealed class ErfImportRecoveryException(string message, Exception innerException)

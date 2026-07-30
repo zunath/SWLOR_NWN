@@ -226,6 +226,38 @@ namespace SWLOR.Toolset.Tests
             result.Guards[^1].Sentence.Should().Contain("unknown rule");
         }
 
+        [TestCase("condition-any-skill", "Devices")]
+        [TestCase("condition-any-skill", "Devices 10 Force")]
+        [TestCase("condition-any-skill", "Devices nope")]
+        [TestCase("condition-on-quest-state", "field_tinctures nope")]
+        public void AMalformedKnownGuardFailsInsteadOfRemainingOpen(string key, string arguments)
+        {
+            var document = Blank();
+            var opening = document.AddOpening(document.AddEntry("Malformed guard"));
+            opening.AddCondition(key, arguments);
+
+            var result = Evaluator.Evaluate(opening, new PretendPlayer());
+
+            result.IsOpen.Should().BeFalse();
+            result.Guards.Should().ContainSingle()
+                .Which.Outcome.Should().Be(GuardOutcome.Fails);
+        }
+
+        [Test]
+        public void ANegatedMalformedKnownGuardStillFails()
+        {
+            var document = Blank();
+            var opening = document.AddOpening(document.AddEntry("Malformed negated guard"));
+            opening.AddCondition("!condition-any-skill", "Devices");
+
+            var result = Evaluator.Evaluate(opening, new PretendPlayer());
+
+            result.IsOpen.Should().BeFalse(
+                "the runtime rejects malformed arguments before applying negation");
+            result.Guards.Should().ContainSingle()
+                .Which.Outcome.Should().Be(GuardOutcome.Fails);
+        }
+
         // ---------- walking ----------
 
         [Test]

@@ -24,6 +24,7 @@ namespace SWLOR.CLI
         private const string NewAreaPendingMarkerPrefix = ".swlor-toolset-new-area-";
         private const string NewAreaPendingMarkerSuffix = ".pending";
         private const string ErfImportPendingMarkerPattern = ".swlor-toolset-erf-import-*.pending.json";
+        private const string ItemRenamePendingMarkerPattern = ".swlor-toolset-item-rename-*.pending.json";
 
         public void PackModule(string filePath, bool noPrompt = false)
         {
@@ -38,6 +39,7 @@ namespace SWLOR.CLI
                 RequireNoInterruptedSaves();
                 RequireNoInterruptedAreaCreation();
                 RequireNoInterruptedErfImport();
+                RequireNoInterruptedItemRename();
                 RecreateDirectory(PackingDirectory);
                 DeleteFileWithRetry(temporaryModuleFileName);
 
@@ -155,6 +157,7 @@ namespace SWLOR.CLI
             RequireNoInterruptedSaves();
             RequireNoInterruptedAreaCreation();
             RequireNoInterruptedErfImport();
+            RequireNoInterruptedItemRename();
 
             var folders = GetModuleFolders();
             // Create any missing folders and clear out any files in existing folders.
@@ -586,6 +589,19 @@ namespace SWLOR.CLI
             throw new InvalidOperationException(
                 "Interrupted ERF import detected. Open the module in the SWLOR Toolset to recover " +
                 "the import before packing or unpacking." +
+                Environment.NewLine +
+                string.Join(Environment.NewLine, markers));
+        }
+
+        private static void RequireNoInterruptedItemRename()
+        {
+            var markers = Directory.GetFiles(".", ItemRenamePendingMarkerPattern);
+            if (markers.Length == 0)
+                return;
+
+            throw new InvalidOperationException(
+                "Interrupted item rename detected. Open the module in the SWLOR Toolset to recover " +
+                "the rename before packing or unpacking." +
                 Environment.NewLine +
                 string.Join(Environment.NewLine, markers));
         }

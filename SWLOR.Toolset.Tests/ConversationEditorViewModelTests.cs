@@ -58,8 +58,14 @@ namespace SWLOR.Toolset.Tests
                 File.Delete(_workingCopy);
         }
 
-        private ConversationEditorViewModel Open() =>
-            new(_workingCopy, "dantherbs", Snippets, GameCode, new OutputLogService(), new StubPrompts());
+        private ConversationEditorViewModel Open(IEditorPromptService? prompts = null) =>
+            new(
+                _workingCopy,
+                "dantherbs",
+                Snippets,
+                GameCode,
+                new OutputLogService(),
+                prompts ?? new StubPrompts());
 
         // ---------- opening ----------
 
@@ -548,6 +554,28 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ReloadingAnExternalChangeClosesTheRulesEditor()
+        {
+            using var editor = new Disposable(Open(new StubPrompts(ExternalChangeChoice.Reload)));
+            var situation = editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures");
+            editor.Value.EditSituationCommand.Execute(situation);
+            editor.Value.GuardToAdd = Snippets.Find("condition-has-completed-tutorial");
+            editor.Value.AddGuardCommand.Execute(null);
+
+            var external = File.ReadAllText(_workingCopy)
+                .Replace(
+                    "The bottles are lined up",
+                    "The bottles were changed outside the toolset",
+                    StringComparison.Ordinal);
+            File.WriteAllText(_workingCopy, external);
+
+            (await editor.Value.TrySaveAsync()).Should().BeTrue();
+            editor.Value.IsEditingRules.Should().BeFalse();
+            editor.Value.Guards.Should().BeEmpty();
+            editor.Value.Consequences.Should().BeEmpty();
+        }
+
+        [Test]
         public void CurrentNpcLineActionsAreShownInTheRulesEditor()
         {
             var document = DlgDocument.Load(_workingCopy);
@@ -670,11 +698,18 @@ namespace SWLOR.Toolset.Tests
 
         private sealed class StubPrompts : IEditorPromptService
         {
+            private readonly ExternalChangeChoice _externalChangeChoice;
+
+            public StubPrompts(ExternalChangeChoice externalChangeChoice = ExternalChangeChoice.Overwrite)
+            {
+                _externalChangeChoice = externalChangeChoice;
+            }
+
             public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) =>
                 Task.FromResult(UnsavedChangesChoice.Discard);
 
             public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) =>
-                Task.FromResult(ExternalChangeChoice.Overwrite);
+                Task.FromResult(_externalChangeChoice);
 
             public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) =>
                 Task.FromResult(true);

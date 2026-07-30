@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service.SnippetService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 
@@ -118,6 +119,21 @@ namespace SWLOR.Toolset.Domain.Conversations
                     continue;
                 }
 
+                // A known runtime condition with malformed arguments fails before negation. The
+                // server refuses these guards rather than treating them as unknown; allowing the
+                // editor's "not simulated" fallback to keep the route open (or inverting a failure
+                // into a pass for !condition-*) would preview a line the game will never select.
+                if (HasMalformedKnownArguments(snippet, condition.Arguments))
+                {
+                    guards.Add(new GuardResult
+                    {
+                        Outcome = GuardOutcome.Fails,
+                        Sentence = sentence + " (invalid arguments)",
+                        Key = condition.Key
+                    });
+                    continue;
+                }
+
                 var outcome = EvaluateSnippet(snippet, condition.Arguments, player);
                 if (outcome != GuardOutcome.NotSimulated && condition.IsNegated)
                     outcome = outcome == GuardOutcome.Passes ? GuardOutcome.Fails : GuardOutcome.Passes;
@@ -126,6 +142,47 @@ namespace SWLOR.Toolset.Domain.Conversations
             }
 
             return new LinkReachability { Guards = guards };
+        }
+
+        private static bool HasMalformedKnownArguments(
+            SnippetDescriptor snippet,
+            IReadOnlyList<string> arguments)
+        {
+            var isSimulated = snippet.Key is
+                "condition-has-quest" or
+                "condition-completed-quest" or
+                "condition-on-quest-state" or
+                "condition-can-accept-quest" or
+                "condition-all-key-items" or
+                "condition-has-completed-tutorial" or
+                "condition-any-skill" or
+                "condition-all-skills" or
+                "condition-has-faction-standing" or
+                "condition-has-faction-points";
+            if (!isSimulated)
+                return false;
+
+            if (snippet.Arguments.Count > 0 && !snippet.HasEnoughArguments(arguments.Count))
+                return true;
+
+            if (snippet.RepeatGroupSize > 0 && !snippet.IsValidArgumentCount(arguments.Count))
+                return true;
+
+            return snippet.Key switch
+            {
+                "condition-on-quest-state" =>
+                    arguments.Skip(1).Any(argument => !int.TryParse(argument, out _)),
+                "condition-any-skill" or "condition-all-skills" =>
+                    arguments.Where((_, index) => index % 2 == 0).Any(skill =>
+                        !Enum.TryParse<SkillType>(skill, ignoreCase: true, out var parsed) ||
+                        parsed == SkillType.Invalid ||
+                        !Enum.IsDefined(parsed)) ||
+                    arguments.Where((_, index) => index % 2 == 1).Any(rank =>
+                        !int.TryParse(rank, out _)),
+                "condition-has-faction-standing" or "condition-has-faction-points" =>
+                    arguments.Take(2).Any(argument => !int.TryParse(argument, out _)),
+                _ => false
+            };
         }
 
         /// <summary>

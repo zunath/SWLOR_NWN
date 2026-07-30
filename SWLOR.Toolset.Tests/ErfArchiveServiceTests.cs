@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using System.Security.Cryptography;
 using System.Text.Json;
 using SWLOR.Toolset.Archives;
 using SWLOR.Toolset.Domain.Documents;
@@ -535,10 +536,11 @@ namespace SWLOR.Toolset.Tests
         public async Task GffJsonIsConvertedBothWaysBeforeItIsCommitted()
         {
             var sourcePath = Path.Combine(_firstModule, "uti", "export_item.uti.json");
-            File.WriteAllBytes(
-                sourcePath,
+            var source = JsonGffDocument.Parse(
                 BlueprintTemplateFactory.CreateFileContent(
                     ResourceType.Uti, "export_item", "Exported Item"));
+            new VarTable(source.Root).Remove(BlueprintTemplateFactory.NoEconomyVariable);
+            File.WriteAllBytes(sourcePath, source.ToBytes());
             var archivePath = Path.Combine(_root, "item.erf");
 
             await _service.ExportAsync(new[] { "export_item.uti" }, archivePath);
@@ -558,6 +560,9 @@ namespace SWLOR.Toolset.Tests
             var imported = JsonGffDocument.Load(importedPath);
             imported.DataType.Should().Be("UTI ");
             imported.Root.Get("TemplateResRef").GetString().Should().Be("export_item");
+            new VarTable(imported.Root)
+                .GetInt(BlueprintTemplateFactory.NoEconomyVariable)
+                .Should().Be(1, "a newly imported item with no player source must stay out of economy searches");
         }
 
         [Test]
@@ -652,6 +657,83 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task RenamingResourcesRewritesOnlyMatchingTypedReferences()
+        {
+            _workspace.Open(_secondModule);
+
+            var creatureSource = Path.Combine(_root, "shared.utc.json");
+            var itemSource = Path.Combine(_root, "shared.uti.json");
+            var dialogSource = Path.Combine(_root, "shared.dlg.json");
+            var scriptSource = Path.Combine(_root, "shared.nss");
+            var gitSource = Path.Combine(_root, "typed_refs.git.json");
+            File.WriteAllBytes(
+                creatureSource,
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utc, "shared", "Imported Creature"));
+            File.WriteAllBytes(
+                itemSource,
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Uti, "shared", "Imported Item"));
+            File.WriteAllBytes(
+                dialogSource,
+                new JsonGffDocument("DLG ", new JsonGffStruct()).ToBytes());
+            File.WriteAllText(scriptSource, "void main() {}\n");
+
+            var creature = SyntheticGit.Instance(
+                ("TemplateResRef", GffFieldType.ResRef, "shared"),
+                ("Conversation", GffFieldType.ResRef, "shared"),
+                ("ScriptSpawn", GffFieldType.ResRef, "shared"));
+            var git = new JsonGffDocument("GIT ", new JsonGffStruct());
+            git.Root.Add("Creature List", SyntheticGit.ListOf(creature));
+            File.WriteAllBytes(gitSource, git.ToBytes());
+
+            ErfImportChoice Choice(
+                string source,
+                string resRef,
+                string extension,
+                ErfConflictAction action,
+                string? renamed)
+            {
+                var asset = new ErfArchiveAsset(
+                    $"{resRef}.{extension}",
+                    resRef,
+                    extension,
+                    new FileInfo(source).Length,
+                    IsSupported: true,
+                    TypeName: extension,
+                    UnsupportedReason: null);
+                return new ErfImportChoice(
+                    new ErfPreparedImport(
+                        asset,
+                        source,
+                        Path.Combine(_secondModule, extension, $"{resRef}.{extension}.json"),
+                        action == ErfConflictAction.Add
+                            ? ErfConflictKind.New
+                            : ErfConflictKind.Different,
+                        action),
+                    action,
+                    renamed);
+            }
+
+            await _service.ImportAsync(new[]
+            {
+                Choice(creatureSource, "shared", "utc", ErfConflictAction.Rename, "renamed_creature"),
+                Choice(itemSource, "shared", "uti", ErfConflictAction.Rename, "renamed_item"),
+                Choice(dialogSource, "shared", "dlg", ErfConflictAction.Rename, "renamed_dialog"),
+                Choice(scriptSource, "shared", "nss", ErfConflictAction.Rename, "renamed_script"),
+                Choice(gitSource, "typed_refs", "git", ErfConflictAction.Add, null)
+            });
+
+            var importedGit = GitDocument.Load(
+                Path.Combine(_secondModule, "git", "typed_refs.git.json"));
+            var importedCreature = importedGit.Creatures.Should().ContainSingle().Subject;
+            importedCreature.Get("TemplateResRef").GetString().Should().Be("renamed_creature");
+            importedCreature.Get("Conversation").GetString().Should().Be("renamed_dialog");
+            importedCreature.Get("ScriptSpawn").GetString().Should().Be("renamed_script");
+            importedCreature.Get("TemplateResRef").GetString().Should().NotBe("renamed_item");
+        }
+
+        [Test]
         public async Task RenamingAScriptIncludeUpdatesIncludeDirectives()
         {
             _workspace.Open(_secondModule);
@@ -694,6 +776,46 @@ namespace SWLOR.Toolset.Tests
             File.ReadAllText(Path.Combine(_secondModule, "nss", "entry.nss"))
                 .Should().Contain("#include \"new_inc\"");
             File.Exists(Path.Combine(_secondModule, "nss", "new_inc.nss")).Should().BeTrue();
+        }
+
+        [Test]
+        public async Task ImportRefusesToReplaceAResourceChangedAfterPreparation()
+        {
+            _workspace.Open(_secondModule);
+            var source = Path.Combine(_root, "replacement.nss");
+            var destination = Path.Combine(_secondModule, "nss", "replacement.nss");
+            File.WriteAllText(source, "void main() { int imported = 1; }\n");
+            var original = System.Text.Encoding.UTF8.GetBytes("void main() { int original = 1; }\n");
+            File.WriteAllBytes(destination, original);
+
+            var asset = new ErfArchiveAsset(
+                "replacement.nss",
+                "replacement",
+                "nss",
+                new FileInfo(source).Length,
+                IsSupported: true,
+                TypeName: "Script source",
+                UnsupportedReason: null);
+            var prepared = new ErfPreparedImport(
+                asset,
+                source,
+                destination,
+                ErfConflictKind.Different,
+                ErfConflictAction.KeepExisting,
+                new ErfDestinationFingerprint(
+                    original.LongLength,
+                    Convert.ToHexString(SHA256.HashData(original))));
+
+            File.WriteAllText(destination, "void main() { int newer = 1; }\n");
+
+            var action = () => _service.ImportAsync(new[]
+            {
+                new ErfImportChoice(prepared, ErfConflictAction.Replace, RenameResRef: null)
+            });
+
+            await action.Should().ThrowAsync<IOException>()
+                .WithMessage("*changed after the ERF import was prepared*");
+            File.ReadAllText(destination).Should().Contain("newer");
         }
 
         [Test]

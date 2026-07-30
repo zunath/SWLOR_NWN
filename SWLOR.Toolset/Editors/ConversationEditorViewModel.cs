@@ -1128,6 +1128,7 @@ namespace SWLOR.Toolset.Editors
                     if (choice == ExternalChangeChoice.Reload)
                     {
                         _session.ReloadFromDisk();
+                        CloseRulesEditor();
                         AfterHistoryChange();
                         CatalogEntryChanged?.Invoke();
                         _log.AppendLine($"Reloaded externally changed file {_session.FilePath}.");

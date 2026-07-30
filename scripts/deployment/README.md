@@ -20,26 +20,35 @@ The deployment:
 
 1. Takes an exclusive `flock`, refuses dirty/diverged source, and performs only
    a fast-forward from the configured GitHub branch.
-2. Builds the .NET 10 server, changed HAKs, TLK, packed module, and NWSync
-   manifest in a versioned staging release while the live server stays online.
-3. Verifies expected artifacts and free space before touching live files.
-4. Pre-publishes immutable NWSync content while leaving the old `latest`
-   manifest active.
+2. Builds the .NET 10 server and updates changed HAKs, the TLK, packed module,
+   and .NET output directly under the existing `NWSYNC_ROOT`.
+3. Runs `NWSYNC_ROOT/build.sh` from `NWSYNC_ROOT`. This is the operation that
+   generates and activates the new NWSync manifest; a build failure never stops
+   the game server.
+4. Verifies every expected HAK, the TLK, module, .NET output, manifest, and free
+   space before server downtime.
 5. Ensures supporting Compose services and the server image exist before
    downtime.
-6. Gives `swlor-server` 120 seconds to stop, switches the complete release, and
-   starts only that service.
+6. Gives `swlor-server` 120 seconds to stop, copies the completed .NET output
+   to the server tree, and starts only that service. HAK/TLK/module files are
+   already visible through the configured bind mounts.
 7. Requires `Server: Module loaded` within five minutes and then 30 seconds
    without a restart.
-8. Automatically restores the prior files and NWSync pointer if cutover or
-   health validation fails.
-9. Retains only the active and previous release. Hard links avoid duplicate
-   storage for unchanged files. Only dangling Docker images are pruned.
+8. Removes temporary build work and prunes only dangling Docker images after a
+   successful deployment.
 
-The live NWSync `data` store is append-only in this workflow. It is not
-automatically pruned because doing so safely depends on the installed
-`nwsync_prune` version and the manifests that must remain available to
-players. Review its help and disk usage separately before enabling pruning.
+HakBuilder uses the `.md5` files beside the existing HAKs, so unchanged HAKs
+are not rebuilt or duplicated. The NWSync `data` store is append-only in this
+workflow. It is not automatically pruned because doing so safely depends on
+the installed `nwsync_prune` version and the manifests that must remain
+available to players. Review its help and disk usage separately before
+enabling pruning.
+
+This low-space design does not retain a second 13 GB HAK tree for local
+artifact rollback. The prior NWSync manifest remains active until `build.sh`
+succeeds, and the game server remains running if any build step fails. After
+manifest activation, recovery is a rebuild from the desired Git commit or a
+restore from the host backup.
 
 ## Initial source checkout
 
@@ -91,9 +100,13 @@ SERVER_ROOT="$VOLUME_ROOT/nwn-server"
 COMPOSE_FILE="$SERVER_ROOT/docker-compose.yml"
 
 DEPLOYMENT_ROOT="$VOLUME_ROOT/deployment/$DEPLOYMENT_NAME"
-RELEASE_ROOT="$DEPLOYMENT_ROOT/releases"
 STATE_ROOT="$DEPLOYMENT_ROOT/state"
 CACHE_ROOT="$VOLUME_ROOT/deployment/cache"
+
+NWSYNC_BUILD_SCRIPT="$NWSYNC_ROOT/build.sh"
+NWSYNC_DOTNET_ROOT="$NWSYNC_ROOT/dotnet"
+SERVER_DOTNET_ROOT="$SERVER_ROOT/dotnet"
+SERVER_CONTENT_MODE=bind
 ```
 
 For production, make another copy of the example and change
@@ -101,6 +114,11 @@ For production, make another copy of the example and change
 `COMPOSE_FILE`, `GIT_REMOTE`, `BRANCH`, `COMPOSE_PROJECT_NAME`, service/image
 names, disk thresholds, and health settings as needed. No changes to
 `swlor-deploy.sh` or `install.sh` are required.
+
+Set `SERVER_CONTENT_MODE=bind` when `SERVER_ROOT/{hak,modules,tlk}` are bind
+mounts backed by `NWSYNC_ROOT`. Set it to `copy` on a host with separate server
+content directories; that mode copies the completed content only after the
+server has stopped.
 
 ## Install
 
@@ -133,7 +151,7 @@ Expected modes are:
 | `/usr/local/sbin/swlor-deploy` | `root:root` | `750` |
 | `/etc/swlor-deploy.conf` | `root:root` | `640` |
 | systemd unit files | `root:root` | `644` |
-| `$RELEASE_ROOT`, `$STATE_ROOT`, `$CACHE_ROOT` | `root:root` | `750` |
+| `$STATE_ROOT`, `$CACHE_ROOT` | `root:root` | `750` |
 | `$LOG_FILE` | `root:root` | `640` |
 
 The installer preserves an existing `/etc/swlor-deploy.conf` and never enables
@@ -148,19 +166,13 @@ the polling timer.
 # Intentionally rebuild the currently active commit:
 /usr/local/sbin/swlor-deploy --force
 
-# Display release pointers, containers, and free space:
+# Display recorded commits, active manifest, containers, and free space:
 /usr/local/sbin/swlor-deploy --status
-
-# Switch to the retained prior release:
-/usr/local/sbin/swlor-deploy --rollback
 
 # Follow the durable deployment log:
 source /etc/swlor-deploy.conf
 tail -F "$LOG_FILE"
 ```
-
-The first deployment captures the pre-automation live files as a hard-linked
-baseline. This makes automatic rollback available during the first cutover.
 
 ## Optional polling
 
@@ -206,10 +218,15 @@ to run if the checked-out branch and configured branch disagree.
 ```bash
 source /etc/swlor-deploy.conf
 
-readlink -f "$STATE_ROOT/current"
-readlink -f "$STATE_ROOT/previous"
+cat "$STATE_ROOT/active-commit"
+cat "$STATE_ROOT/previous-commit"
+cat "$NWSYNC_ROOT/latest"
 docker compose \
   --project-directory "$SERVER_ROOT" \
   --file "$COMPOSE_FILE" \
   logs --tail 200 swlor-server
 ```
+
+To recover from a bad application change, revert it on the configured branch
+and deploy the resulting commit so all artifacts and the manifest are rebuilt.
+For disaster recovery, restore the host backup.

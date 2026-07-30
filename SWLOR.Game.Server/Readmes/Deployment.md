@@ -127,10 +127,10 @@ Logging is handled by Serilog with multiple sinks. The configuration is defined 
 
 The production host uses the guarded, manual-first deployment workflow in
 [`scripts/deployment/README.md`](../../scripts/deployment/README.md). It builds
-and validates a complete versioned release before stopping the live game
-server, generates NWSync content in staging, health-checks startup, and
-automatically rolls back a failed cutover. The generic commands below remain
-useful for local development but are not the production release procedure.
+and validates the complete update directly in the existing NWSync repository
+before stopping the live game server, activates NWSync through that host's
+`build.sh`, and health-checks startup. The generic commands below remain useful
+for local development but are not the production release procedure.
 
 ### 1. Local Development
 

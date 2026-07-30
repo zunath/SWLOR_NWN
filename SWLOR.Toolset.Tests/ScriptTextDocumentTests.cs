@@ -113,13 +113,12 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
-        /// colors_inc.nss and nbde_inc.nss embed raw high bytes inside string literals as NWScript
-        /// colour codes, so they are not valid UTF-8. A strict UTF-8 reader throws on them - this is
+        /// colors_inc.nss embeds raw high bytes inside string literals as NWScript colour codes, so it
+        /// is not valid UTF-8. A strict UTF-8 reader throws on it - this is
         /// the case that forced the Latin-1 fallback, pinned so a future "just use UTF-8" simplification
-        /// fails here rather than silently corrupting two real module files.
+        /// fails here rather than silently corrupting a real module file.
         /// </summary>
         [TestCase("colors_inc.nss")]
-        [TestCase("nbde_inc.nss")]
         public void LegacyScriptWithRawColourBytes_ReadsAsLatin1AndRoundTrips(string name)
         {
             var path = Path.Combine(NssDirectory, name);

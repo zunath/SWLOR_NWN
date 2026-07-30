@@ -7,8 +7,8 @@
 // (often the TALK channel), and the name of the script to run when a line
 // of text is heard.
 //
-// See the file dmfi_getln_cbtbl for a sample template script for processing
-// the heard line.
+// The callback can read the speaker, channel, and message with the PC chat
+// event functions.
 
 #include "dmfi_plychat_inc"
 

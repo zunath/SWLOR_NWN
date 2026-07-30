@@ -1086,16 +1086,12 @@
             "dmfi_cond_dmw",
             "dmfi_db_biow_inc",
             "dmfi_db_inc",
-            "dmfi_db_nbde_inc",
             "dmfi_dmw_inc",
             "dmfi_execute",
-            "dmfi_getln_cbtpl",
             "dmfi_getln_inc",
             "dmfi_init_inc",
             "dmfi_onclienter",
-            "dmfi_onmodhb",
             "dmfi_onplychat",
-            "dmfi_onrest",
             "dmfi_plchlishk_i",
             "dmfi_plychat_exe",
             "dmfi_plychat_inc",
@@ -1122,16 +1118,12 @@
             "dmfi_univ_dmw",
             "dmfi_univ_listen",
             "dmfi_voice1",
-            "dmfi_voice_exe",
-            "dmfi_x_afflict",
-            "dmfi_x_emote",
-            "dmfi_x_fx"
+            "dmfi_voice_exe"
           ]
         },
         {
           "name": "Base game",
           "members": [
-            "nbde_inc",
             "nw_c2_default1",
             "nw_c2_default2",
             "nw_c2_default3",
@@ -1159,23 +1151,15 @@
           "name": "ZEP toolkit",
           "members": [
             "zep_demi_bone_us",
-            "zep_demi_dest",
             "zep_doorkill",
             "zep_doorspawn",
             "zep_g0_convpripl",
             "zep_inc_demi",
-            "zep_inc_main",
             "zep_inc_monster",
             "zep_inc_scrptdlg",
             "zep_onoff",
             "zep_openclose",
-            "zep_pc_has_holyw",
             "zep_restded_resp",
-            "zep_sarcof1use",
-            "zep_scorp_onuser",
-            "zep_scorp_spawn",
-            "zep_stocksuse",
-            "zep_unsecret",
             "zep_use_chair"
           ]
         }

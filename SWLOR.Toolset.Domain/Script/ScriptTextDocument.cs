@@ -39,9 +39,9 @@ namespace SWLOR.Toolset.Domain.Script
     /// and the original style is reapplied on the way out.
     /// </para>
     /// <para>
-    /// <b>Encoding is detected, not assumed.</b> Two files in the module corpus - colors_inc.nss and
-    /// nbde_inc.nss - are not valid UTF-8: they embed raw high bytes (0x80-0x83, 0xA5, 0xC6, 0xF8)
-    /// directly inside string literals as NWScript colour codes. Those bytes are data, not text.
+    /// <b>Encoding is detected, not assumed.</b> The module's colors_inc.nss is not valid UTF-8:
+    /// it embeds raw high bytes directly inside string literals as NWScript colour codes. Those bytes
+    /// are data, not text.
     /// This is the same trap PLAN.md records for GFF <c>void</c> fields ("all handling must be
     /// byte-level, never through .NET strings"), and a strict-UTF-8 reader throws on them.
     /// </para>

@@ -494,16 +494,17 @@ namespace SWLOR.Toolset.Domain.Render
                 if (!Matrix4x4.Invert(bind, out var inverseBind))
                     continue;
 
-                // The skin's own bone hierarchy is both inverse-bind data and the deformation
-                // target. An equipped robe remains its own animated model in Aurora; matching bone
-                // names receive the shared animation, but they do not get rebound to the outer
-                // segmented mannequin. That distinction matters for NWN coats, whose private
-                // torso -> bicep -> forearm hierarchy deliberately omits the mannequin's shoulder
-                // joints. Retargeting to those outer bones adds transforms the sleeve was never
-                // authored against and pulls it away from the arm.
-                var posed = pose == null
-                    ? bind
-                    : ComposeNodeTransform(bindBone, pose);
+                // A garment's private bone supplies its inverse bind, while the matching bone on
+                // the composed mannequin supplies the animated target. They are deliberately
+                // different hierarchies: pmh0_robe010, for example, stores torso -> bicep ->
+                // forearm bind nodes but inherits an idle whose biceps sit below shoulder nodes.
+                // Replaying those local animation values through the shortened private hierarchy
+                // drops the shoulder motion and pulls the sleeves away from the animated hands.
+                var posed = bones.Target.TryGetValue(name, out var targetBone)
+                    ? ComposeNodeTransform(targetBone, pose)
+                    : pose == null
+                        ? bind
+                        : ComposeNodeTransform(bindBone, pose);
                 transforms[name] = inverseBind * posed;
             }
 
@@ -561,13 +562,14 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         /// <summary>
-        /// Finds the skinmesh's nearest complete authored bone hierarchy.
+        /// Finds the skinmesh's nearest complete bind hierarchy and, when composed, the matching
+        /// animated mannequin bones outside that subtree.
         /// </summary>
         /// <remarks>
-        /// A robe model carries the bones needed both to interpret and animate its weighted
-        /// vertices. Composition can place another set of identically named mannequin bones beside
-        /// that subtree; those are intentionally ignored because their hierarchy is not necessarily
-        /// the hierarchy against which the garment was authored.
+        /// The garment copy remains authoritative for inverse-bind transforms. Its supermodel
+        /// animation can use nodes absent from that copy, however, so composed clothing deforms
+        /// toward the outer skeleton that carries the complete animation hierarchy. Standalone
+        /// skins have no outer target and fall back to their authored bones.
         /// </remarks>
         private static SkinBones FindSkinBones(MdlSkinmeshNode skin)
         {
@@ -585,13 +587,24 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 var indexed = IndexNodes(scope);
                 if (required.All(indexed.ContainsKey))
-                    return new SkinBones(indexed);
+                {
+                    var modelRoot = scope;
+                    while (modelRoot.Parent != null)
+                        modelRoot = modelRoot.Parent;
+
+                    var target = ReferenceEquals(modelRoot, scope)
+                        ? new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase)
+                        : IndexNodes(modelRoot, scope);
+                    return new SkinBones(indexed, target);
+                }
             }
 
             return SkinBones.Empty;
         }
 
-        private static IReadOnlyDictionary<string, MdlNode> IndexNodes(MdlNode root)
+        private static IReadOnlyDictionary<string, MdlNode> IndexNodes(
+            MdlNode root,
+            MdlNode? excludedSubtree = null)
         {
             var result = new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase);
             var pending = new Stack<MdlNode>();
@@ -599,6 +612,9 @@ namespace SWLOR.Toolset.Domain.Render
             while (pending.Count > 0)
             {
                 var node = pending.Pop();
+                if (ReferenceEquals(node, excludedSubtree))
+                    continue;
+
                 if (!string.IsNullOrWhiteSpace(node.Name))
                     result.TryAdd(node.Name, node);
 
@@ -611,9 +627,12 @@ namespace SWLOR.Toolset.Domain.Render
             return result;
         }
 
-        private readonly record struct SkinBones(IReadOnlyDictionary<string, MdlNode> Bind)
+        private readonly record struct SkinBones(
+            IReadOnlyDictionary<string, MdlNode> Bind,
+            IReadOnlyDictionary<string, MdlNode> Target)
         {
             public static SkinBones Empty { get; } = new(
+                new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase),
                 new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase));
         }
 

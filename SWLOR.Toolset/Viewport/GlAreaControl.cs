@@ -1822,6 +1822,13 @@ void main()
         private const float OrbitDegreesPerSecondPad = 196f;
 
         /// <summary>
+        /// Model-preview turn sensitivity. Preview drags are distance based, unlike Aurora's
+        /// time-based area-editor orbit gesture, so a given pointer motion always produces the same
+        /// turn regardless of event rate.
+        /// </summary>
+        private const float PreviewOrbitDegreesPerPixel = 1.2f;
+
+        /// <summary>
         /// Aurora's zoom button is not a constant rate: a 150ms press gives 1.415x and a 300ms press
         /// 1.640x, which fits an initial 1.22x on press followed by about 2.7x per second held.
         /// </summary>
@@ -2016,6 +2023,39 @@ void main()
             var radians = OrbitDegreesPerSecondPad * DegreesToRadians * PadStepSeconds();
             _azimuth += azimuthDirection * radians;
             _elevation = AreaCameraMath.ClampElevation(_elevation + elevationDirection * radians);
+
+            RequestNextFrameRendering();
+        }
+
+        /// <summary>
+        /// Pans a single-model preview in the camera's screen plane, keeping the model under the
+        /// pointer horizontally and vertically.
+        /// </summary>
+        public void PanPreviewByPixels(float dxPixels, float dyPixels)
+        {
+            var worldPerPixel = AreaCameraMath.WorldUnitsPerPixel(
+                _distance,
+                VerticalFovRadians,
+                _viewportHeight);
+            _target += AreaCameraMath.ScreenPanDelta(
+                _azimuth,
+                _elevation,
+                dxPixels,
+                dyPixels,
+                worldPerPixel);
+
+            RequestNextFrameRendering();
+        }
+
+        /// <summary>
+        /// Turns a single-model preview by pointer distance so event timing cannot change the result.
+        /// The camera orbits the fixed model; the signs make the displayed model follow the drag.
+        /// </summary>
+        public void OrbitPreviewByPixels(float dxPixels, float dyPixels)
+        {
+            var radiansPerPixel = PreviewOrbitDegreesPerPixel * DegreesToRadians;
+            _azimuth -= dxPixels * radiansPerPixel;
+            _elevation = AreaCameraMath.ClampElevation(_elevation - dyPixels * radiansPerPixel);
 
             RequestNextFrameRendering();
         }

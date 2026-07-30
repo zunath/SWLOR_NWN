@@ -224,6 +224,31 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         /// <summary>
+        /// World-space pan delta for a model preview's screen-pixel drag. Unlike
+        /// <see cref="PanDelta"/>, both axes lie in the camera's screen plane: dragging vertically
+        /// moves the model vertically on screen instead of travelling across an area's ground plane.
+        /// </summary>
+        public static Vector3 ScreenPanDelta(
+            float azimuthRadians,
+            float elevationRadians,
+            float dxPixels,
+            float dyPixels,
+            float worldPerPixel)
+        {
+            var eyeDirection = Vector3.Normalize(OrbitEyeOffset(
+                azimuthRadians,
+                elevationRadians,
+                distance: 1f));
+            var forward = -eyeDirection;
+            var right = Vector3.Normalize(Vector3.Cross(forward, Vector3.UnitZ));
+            var up = Vector3.Normalize(Vector3.Cross(right, forward));
+
+            // Move the camera opposite a horizontal drag and with a downward drag along its screen
+            // up axis. The rendered model consequently follows the pointer in both directions.
+            return right * (-dxPixels * worldPerPixel) + up * (dyPixels * worldPerPixel);
+        }
+
+        /// <summary>
         /// World units covered by one screen pixel at <paramref name="distance"/>, given the
         /// vertical FOV and viewport height in pixels - used to convert pixel-space pan drags into
         /// world-space motion. Returns 0 for a not-yet-laid-out viewport (height &lt;= 0).

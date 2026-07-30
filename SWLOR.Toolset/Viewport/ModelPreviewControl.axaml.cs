@@ -29,19 +29,10 @@ namespace SWLOR.Toolset.Viewport
         private readonly Control? _viewportInput;
         private readonly Control? _emptyNotice;
 
-        /// <summary>
-        /// How much of one pad step a pixel of drag is worth. Tuned so a drag across the preview is
-        /// a bit more than a full turn - enough to see every side without wearing out a wrist.
-        /// </summary>
-        private const float OrbitPerPixel = 0.16f;
-
         private IModelPreviewSource? _viewModel;
         private bool _isAttached;
         private bool _hostVisible;
         private bool _disposed;
-
-        /// <summary>How far a pixel of left-drag slides the camera, in metres.</summary>
-        private const float PanPerPixel = 0.02f;
 
         /// <summary>Where the pointer was last seen during a drag, or null when not dragging.</summary>
         private Avalonia.Point? _dragFrom;
@@ -73,6 +64,7 @@ namespace SWLOR.Toolset.Viewport
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
         {
             _isAttached = false;
+            EndDrag();
             ApplyAnimation();
             base.OnDetachedFromVisualTree(e);
         }
@@ -151,6 +143,7 @@ namespace SWLOR.Toolset.Viewport
                 return;
 
             _disposed = true;
+            EndDrag();
             if (_viewModel != null)
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
             _viewModel = null;
@@ -174,12 +167,15 @@ namespace SWLOR.Toolset.Viewport
             if (_modelView == null)
                 return;
 
-            var point = e.GetCurrentPoint(_viewportInput ?? (Control)_modelView);
-            if (point.Properties.IsLeftButtonPressed || point.Properties.IsRightButtonPressed)
+            var input = _viewportInput ?? (Control)_modelView;
+            var point = e.GetCurrentPoint(input);
+            var press = point.Properties.PointerUpdateKind;
+            if (press is Avalonia.Input.PointerUpdateKind.LeftButtonPressed or
+                         Avalonia.Input.PointerUpdateKind.RightButtonPressed)
             {
-                _dragPans = point.Properties.IsLeftButtonPressed;
+                _dragPans = press == Avalonia.Input.PointerUpdateKind.LeftButtonPressed;
                 _dragFrom = point.Position;
-                e.Pointer.Capture(_viewportInput);
+                e.Pointer.Capture(input);
                 e.Handled = true;
                 return;
             }
@@ -204,10 +200,9 @@ namespace SWLOR.Toolset.Viewport
             _dragFrom = position;
 
             if (_dragPans)
-                _modelView.NudgePan(-deltaX * PanPerPixel, deltaY * PanPerPixel);
+                _modelView.PanPreviewByPixels(deltaX, deltaY);
             else
-                // Negated so the model follows the mouse: dragging right turns its near face right.
-                _modelView.NudgeOrbit(-deltaX * OrbitPerPixel, -deltaY * OrbitPerPixel);
+                _modelView.OrbitPreviewByPixels(deltaX, deltaY);
             e.Handled = true;
         }
 
@@ -215,14 +210,22 @@ namespace SWLOR.Toolset.Viewport
         {
             if (_dragFrom != null)
             {
-                _dragFrom = null;
-                _dragPans = false;
+                EndDrag();
                 e.Pointer.Capture(null);
                 e.Handled = true;
                 return;
             }
 
             _modelView?.HandlePointerReleased(e);
+        }
+
+        private void OnViewportPointerCaptureLost(object? sender, Avalonia.Input.PointerCaptureLostEventArgs e) =>
+            EndDrag();
+
+        private void EndDrag()
+        {
+            _dragFrom = null;
+            _dragPans = false;
         }
 
         private void OnViewportPointerWheel(object? sender, Avalonia.Input.PointerWheelEventArgs e) =>

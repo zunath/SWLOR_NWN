@@ -12,6 +12,7 @@
             PointerPressed="OnViewportPointerPressed"
             PointerMoved="OnViewportPointerMoved"
             PointerReleased="OnViewportPointerReleased"
+            PointerCaptureLost="OnViewportPointerCaptureLost"
             PointerWheelChanged="OnViewportPointerWheel" />
 
     <TextBlock x:Name="EmptyNotice" Text="No model to show"

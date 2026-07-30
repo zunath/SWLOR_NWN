@@ -266,6 +266,42 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ScreenPanDelta_FrontPreview_VerticalDragMovesVertically()
+        {
+            var delta = AreaCameraMath.ScreenPanDelta(
+                azimuthRadians: MathF.PI * 1.5f,
+                elevationRadians: 0f,
+                dxPixels: 0f,
+                dyPixels: 25f,
+                worldPerPixel: 0.01f);
+
+            delta.X.Should().BeApproximately(0f, 0.0001f);
+            delta.Y.Should().BeApproximately(0f, 0.0001f);
+            delta.Z.Should().BeApproximately(0.25f, 0.0001f);
+        }
+
+        [Test]
+        public void ScreenPanDelta_AtElevation_UsesPerpendicularScreenAxes()
+        {
+            var across = AreaCameraMath.ScreenPanDelta(
+                azimuthRadians: 0.9f,
+                elevationRadians: 0.55f,
+                dxPixels: 10f,
+                dyPixels: 0f,
+                worldPerPixel: 1f);
+            var vertical = AreaCameraMath.ScreenPanDelta(
+                azimuthRadians: 0.9f,
+                elevationRadians: 0.55f,
+                dxPixels: 0f,
+                dyPixels: 10f,
+                worldPerPixel: 1f);
+
+            across.Length().Should().BeApproximately(10f, 0.0001f);
+            vertical.Length().Should().BeApproximately(10f, 0.0001f);
+            Vector3.Dot(across, vertical).Should().BeApproximately(0f, 0.0001f);
+        }
+
+        [Test]
         public void WorldUnitsPerPixel_ZeroViewportHeight_ReturnsZero()
         {
             AreaCameraMath.WorldUnitsPerPixel(distance: 50f, verticalFovRadians: MathF.PI / 4f, viewportHeightPixels: 0)

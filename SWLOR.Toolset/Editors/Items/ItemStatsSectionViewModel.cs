@@ -112,27 +112,101 @@ namespace SWLOR.Toolset.Editors.Items
             LeftColumn.Clear();
             RightColumn.Clear();
 
+            var cards = Cards().ToList();
+            if (cards.Count == 0)
+                return;
+
+            // Defense leads, top of the left column, whatever its height: it is the first thing a
+            // builder looks for on a piece of gear.
+            var pinned = cards.FindIndex(card => IsDefense(card));
             var leftRows = 0;
-            var rightRows = 0;
-            foreach (var (card, rows) in Cards())
+            if (pinned >= 0)
             {
-                if (leftRows <= rightRows)
-                {
-                    LeftColumn.Add(card);
-                    leftRows += rows;
-                }
+                LeftColumn.Add(cards[pinned].Card);
+                leftRows = cards[pinned].Rows;
+                cards.RemoveAt(pinned);
+            }
+
+            // Which of the rest go left is chosen by trying every split and keeping the evenest,
+            // rather than by handing each card to whichever column is shorter at the time. Greedy
+            // gets this wrong: it put Combat on the right because the right was momentarily shorter,
+            // and left a six-row hole under the left column. Reading order survives either way -
+            // a split only decides which column a card is in, never where it sits within one.
+            var best = ChooseEvenestSplit(cards, leftRows);
+            for (var index = 0; index < cards.Count; index++)
+            {
+                if ((best & (1 << index)) != 0)
+                    LeftColumn.Add(cards[index].Card);
                 else
-                {
-                    RightColumn.Add(card);
-                    rightRows += rows;
-                }
+                    RightColumn.Add(cards[index].Card);
             }
         }
 
         /// <summary>
-        /// Every card the columns have to place, tallest first, with the row count that drives its
-        /// height. Dealing in size order matters: taking them in declaration order let a tall card
-        /// arrive last with nowhere balanced to go.
+        /// The left/right assignment (one bit per card, set = left) whose two column heights differ
+        /// least. Exhaustive, which a stats tab can afford - it never holds more than a dozen cards -
+        /// and capped so a pathological one falls back to alternating rather than hanging.
+        /// </summary>
+        private static int ChooseEvenestSplit(IReadOnlyList<(object Card, int Rows)> cards, int leftRows)
+        {
+            const int MaximumExhaustiveCards = 14;
+            if (cards.Count > MaximumExhaustiveCards)
+            {
+                var alternating = 0;
+                for (var index = 0; index < cards.Count; index += 2)
+                    alternating |= 1 << index;
+                return alternating;
+            }
+
+            var best = 0;
+            var bestDifference = int.MaxValue;
+            var total = 1 << cards.Count;
+            for (var candidate = 0; candidate < total; candidate++)
+            {
+                var left = leftRows;
+                var right = 0;
+                for (var index = 0; index < cards.Count; index++)
+                {
+                    if ((candidate & (1 << index)) != 0)
+                        left += cards[index].Rows;
+                    else
+                        right += cards[index].Rows;
+                }
+
+                var difference = Math.Abs(left - right);
+                if (difference >= bestDifference)
+                    continue;
+
+                bestDifference = difference;
+                best = candidate;
+            }
+
+            return best;
+        }
+
+        /// <summary>
+        /// The order stat cards are placed in, most-wanted first. This is a reading order, not a
+        /// packing order: a builder looks for Defense before Resistance and Vitals before Utility,
+        /// so size-ordered dealing (which buried the short Defense card under taller ones) gives way
+        /// to it. Anything not named here follows in enum order.
+        /// </summary>
+        private static readonly ItemStatGroup[] DisplayOrder =
+        {
+            ItemStatGroup.Defense, ItemStatGroup.Vitals, ItemStatGroup.Resistance,
+            ItemStatGroup.Combat, ItemStatGroup.Utility,
+        };
+
+        private static int DisplayRank(object card)
+        {
+            if (card is not ItemStatGroupViewModel group)
+                return int.MaxValue; // the engine sweep is filler, placed last
+            var rank = Array.IndexOf(DisplayOrder, group.Group);
+            return rank >= 0 ? rank : DisplayOrder.Length + (int)group.Group;
+        }
+
+        /// <summary>
+        /// Every card the columns have to place, in reading order, with the row count that drives
+        /// its height.
         /// </summary>
         private IEnumerable<(object Card, int Rows)> Cards()
         {
@@ -147,8 +221,11 @@ namespace SWLOR.Toolset.Editors.Items
             if (Engine is { HasEntries: true } engine)
                 cards.Add((engine, engine.Entries.Count + 1));
 
-            return cards.OrderByDescending(card => card.Item2);
+            return cards.OrderBy(card => DisplayRank(card.Item1));
         }
+
+        private static bool IsDefense((object Card, int Rows) card) =>
+            card.Card is ItemStatGroupViewModel { Group: ItemStatGroup.Defense };
 
         /// <summary>Re-reads every built cell/entry list/exclusive choice, and the engine rows.</summary>
         public void ReloadFromDocument()

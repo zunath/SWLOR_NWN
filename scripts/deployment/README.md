@@ -20,9 +20,10 @@ The deployment:
 
 1. Takes an exclusive `flock`, refuses dirty/diverged source, and performs only
    a fast-forward from the configured GitHub branch.
-2. Refreshes the persistent NWSync HAK/TLK/module inputs from the live server,
-   builds the .NET 10 server in the deployment cache, and updates changed
-   HAKs, the TLK, and packed module under `NWSYNC_ROOT`.
+2. Preserves the persistent NWSync HAK/TLK/module workspace, builds the .NET
+   10 server in the deployment cache, and updates changed HAKs, the TLK, and
+   packed module under `NWSYNC_ROOT`. It never replaces that workspace from
+   the running server.
    The Haks checkout enforces CRLF for every `.set` resource; the deployer
    materializes and verifies all of them before packaging, then extracts every
    packaged `.set` and byte-compares it with its source.
@@ -50,12 +51,14 @@ directories, not symlinks or bind mounts. The deployer refuses to proceed
 while a server artifact path is still mounted or resolves to the same object
 as its NWSync counterpart.
 
-HakBuilder uses the `.md5` files refreshed from the live set, so unchanged
-HAKs do not need to be rebuilt. NWSync retains the completed raw HAK/TLK/module
-set needed to build and serve its manifests. The live `nwn-server` set remains
-independent. Immediately before downtime, the deployer creates one additional
-temporary, checksum-verified server set; successful cutover removes the old
-live and temporary rollback sets after the stability check.
+HakBuilder uses the persistent `.hak`/`.md5` pairs under `NWSYNC_ROOT`, so
+unchanged HAKs do not need to be rebuilt. The `.md5` sidecars are build-cache
+metadata and are never copied to or expected in the live server directory.
+NWSync retains the completed raw HAK/TLK/module set needed to build and serve
+its manifests. The live `nwn-server` set remains independent. Immediately
+before downtime, the deployer creates one additional temporary,
+checksum-verified server set; successful cutover removes the old live and
+temporary rollback sets after the stability check.
 
 The NWSync `data` store is append-only in this workflow. It is not
 automatically pruned because doing so safely depends on the installed

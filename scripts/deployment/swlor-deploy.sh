@@ -811,10 +811,7 @@ export TMPDIR="$CACHE_ROOT/tmp"
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export DOTNET_NOLOGO=1
 
-log "Refreshing the persistent NWSync artifact inputs from the running server."
-rsync --archive --delete "$SERVER_HAK_ROOT/" "$NWSYNC_HAK_ROOT/"
-rsync --archive --delete "$SERVER_TLK_ROOT/" "$NWSYNC_TLK_ROOT/"
-rsync --archive --delete "$SERVER_MODULE_ROOT/" "$NWSYNC_MODULE_ROOT/"
+log "Using the persistent NWSync artifact workspace without replacing it from the running server."
 
 log "Building SWLOR.CLI and the production game server for commit $target_commit."
 dotnet build "$SOURCE_ROOT/SWLOR.CLI/SWLOR.CLI.csproj" \
@@ -857,8 +854,10 @@ rsync \
     "$SOURCE_ROOT/SWLOR.Game.Server/bin/Release/net10.0/" \
     "$staged_dotnet/"
 
-# HakBuilder uses the existing .hak/.md5 pairs in NWSYNC_ROOT and rebuilds only
-# changed HAKs. It also installs the current TLK directly into NWSYNC_ROOT/tlk.
+# HakBuilder uses the persistent .hak/.md5 pairs in NWSYNC_ROOT and rebuilds
+# only changed HAKs. The live server intentionally has no .md5 sidecars, so it
+# must never be used to seed this workspace. HakBuilder also installs the
+# current TLK directly into NWSYNC_ROOT/tlk.
 jq \
     --arg source "$SOURCE_ROOT" \
     --arg output "$NWSYNC_ROOT/" \

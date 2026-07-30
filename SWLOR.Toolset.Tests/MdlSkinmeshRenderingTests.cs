@@ -123,9 +123,10 @@ namespace SWLOR.Toolset.Tests
 
             var firstVertex = rendered.Meshes.Should().ContainSingle()
                 .Which.Positions.Take(3).ToArray();
-            firstVertex.Should().Equal([12f, 2f, 0f],
+            firstVertex.Should().Equal([12.004f, 2f, 0f],
                 "the robe bone supplies inverse bind X=1, while its animated target includes the " +
-                "mannequin's otherwise-missing shoulder X=10 and posed forearm (1,2,0)");
+                "mannequin's otherwise-missing shoulder X=10 and posed forearm (1,2,0); the equipped " +
+                "skin then retains a four-millimetre shell clearance along its outward normal");
         }
 
         private static MdlSkinmeshNode TriangleSkin(MdlNode parent) =>

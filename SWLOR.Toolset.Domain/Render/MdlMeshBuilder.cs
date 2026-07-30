@@ -189,6 +189,7 @@ namespace SWLOR.Toolset.Domain.Render
         private const int MaximumNodes = 1_000_000;
         private const int MaximumParentDepth = 4_096;
         private const int MaximumEmitterGrid = 256;
+        private const float EquippedSkinSurfaceClearance = 0.004f;
 
         private static readonly HashSet<string> PlaceholderNames =
             new(StringComparer.OrdinalIgnoreCase) { "sam", "rootdummy" };
@@ -495,11 +496,9 @@ namespace SWLOR.Toolset.Domain.Render
                     continue;
 
                 // A garment's private bone supplies its inverse bind, while the matching bone on
-                // the composed mannequin supplies the animated target. They are deliberately
-                // different hierarchies: pmh0_robe010, for example, stores torso -> bicep ->
-                // forearm bind nodes but inherits an idle whose biceps sit below shoulder nodes.
-                // Replaying those local animation values through the shortened private hierarchy
-                // drops the shoulder motion and pulls the sleeves away from the animated hands.
+                // the composed mannequin supplies the animated target. This keeps the weighted
+                // surface in exactly the same composed hierarchy as the rigid chest, hands, and
+                // other body parts beside it; garment-only bones fall back to the authored subtree.
                 var posed = bones.Target.TryGetValue(name, out var targetBone)
                     ? ComposeNodeTransform(targetBone, pose)
                     : pose == null
@@ -553,9 +552,21 @@ namespace SWLOR.Toolset.Domain.Render
                     normal = bindNormal;
                 }
 
+                var renderedNormal = hasNormals ? NormalizeOrZero(normal) : Vector3.Zero;
+                if (bones.Target.Count > 0 && renderedNormal != Vector3.Zero)
+                {
+                    // Equipped skinmeshes are authored as a shell over independently rendered
+                    // segmented body parts. Linear skinning can put those two surfaces within the
+                    // same few millimetres around blended shoulder, collar, and sash vertices,
+                    // allowing the rigid part to break through as the idle moves. Preserve a small
+                    // shell clearance in the vertex's authored outward direction. Standalone
+                    // skinmeshes have no outer target and retain their exact source geometry.
+                    position += renderedNormal * EquippedSkinSurfaceClearance;
+                }
+
                 positions[index] = FiniteOrZero(position);
                 if (hasNormals)
-                    normals[index] = NormalizeOrZero(normal);
+                    normals[index] = renderedNormal;
             }
 
             return true;

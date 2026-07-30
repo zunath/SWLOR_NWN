@@ -4,7 +4,6 @@ using System.Buffers.Binary;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using Silk.NET.OpenGL;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.NWN.Formats.Plt;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -310,20 +309,6 @@ namespace SWLOR.Toolset.Tests
                 .Subject;
 
             background.Should().Be(new Vector3(0.4f, 0.4f, 0.4f));
-        }
-
-        [Test]
-        public void LayeredCharacterPartsAcceptEqualDepthFragments()
-        {
-            var depthFunction = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
-                .GetField(
-                    "LayeredGeometryDepthFunction",
-                    System.Reflection.BindingFlags.NonPublic |
-                    System.Reflection.BindingFlags.Static)!
-                .GetRawConstantValue();
-
-            Convert.ToInt32(depthFunction).Should().Be((int)DepthFunction.Lequal,
-                "a robe drawn after its rigid chest must win at deliberately coincident texels");
         }
 
         [Test]

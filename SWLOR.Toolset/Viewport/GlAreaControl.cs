@@ -35,7 +35,6 @@ namespace SWLOR.Toolset.Viewport
         private const float VerticalFovRadians = MathF.PI / 4f; // 45 degrees - comfortable for open outdoor areas
         private const int FloatsPerVertex = 8; // position(3) + normal(3) + texcoord(2)
         private const float PolygonHeightOffset = 0.05f; // lift trigger outlines slightly above the tile floor
-        private const DepthFunction LayeredGeometryDepthFunction = DepthFunction.Lequal;
         /// <summary>
         /// How fast a held middle-drag turns the view, in degrees per second.
         /// </summary>
@@ -2443,10 +2442,7 @@ void main()
                 _gl.ClearColor(background.X, background.Y, background.Z, 1f);
                 _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
                 _gl.Enable(EnableCap.DepthTest);
-                // Layered character parts need equal-depth fragments to respect draw order. The
-                // robe skin is drawn after the rigid chest, and deliberately coincident sash/collar
-                // texels must replace the underlying part instead of being rejected as equal depth.
-                _gl.DepthFunc(LayeredGeometryDepthFunction);
+                _gl.DepthFunc(DepthFunction.Less);
                 // Off by default: this is the state the overlay passes (markers, gizmo, walkmesh,
                 // outlines, particle quads) want. The MDL passes turn it on for themselves -
                 // see BeginModelFaceCulling.

@@ -82,7 +82,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void RobeBindBoneDeformsThroughTheMannequinsAnimationHierarchy()
+        public void RobeSkinKeepsItsAuthoredAnimationHierarchy()
         {
             var composite = new MdlNode { Name = "composite" };
             var mannequinShoulder = new MdlNode
@@ -123,9 +123,9 @@ namespace SWLOR.Toolset.Tests
 
             var firstVertex = rendered.Meshes.Should().ContainSingle()
                 .Which.Positions.Take(3).ToArray();
-            firstVertex.Should().Equal([12f, 2f, 0f],
-                "the robe bone supplies inverse bind X=1, while its animated target includes the " +
-                "mannequin's otherwise-missing shoulder X=10 and posed forearm (1,2,0)");
+            firstVertex.Should().Equal([2f, 2f, 0f],
+                "an outer mannequin bone with the same name must not replace the robe's authored " +
+                "bone hierarchy");
         }
 
         private static MdlSkinmeshNode TriangleSkin(MdlNode parent) =>

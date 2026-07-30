@@ -45,21 +45,26 @@ namespace SWLOR.Toolset.Tests.Items
             }
         }
 
-        private static BlueprintPreviewRenderer BuildRenderer()
+        private static BlueprintPreviewRenderer BuildRenderer() => BuildRenderer(out _);
+
+        private static BlueprintPreviewRenderer BuildRenderer(out ResourceIndex index)
         {
             var twoDa = new TwoDaService(Path.Combine(RepoRoot, "SWLOR_Haks", "sw_2da"));
             var tlk = TlkService.Load(Path.Combine(RepoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json"));
-            var index = ResourceIndex.FromHakBuilderConfig(
+            var resourceIndex = ResourceIndex.FromHakBuilderConfig(
                 Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
                 Path.Combine(RepoRoot, "SWLOR_Haks"));
-            index.EnsureInitialized();
+            resourceIndex.EnsureInitialized();
+            index = resourceIndex;
 
             // BuildModel(type, root) never touches the workspace for a Uti - only creature armor
             // resolution does - so the context is never opened.
-            var context = new WorkspaceContext(path => new ModuleWorkspace(path, index), new OutputLogService());
+            var context = new WorkspaceContext(
+                path => new ModuleWorkspace(path, resourceIndex),
+                new OutputLogService());
 
             return new BlueprintPreviewRenderer(
-                context, index, baseItems: new BaseItemIconService(twoDa), twoDa: twoDa, tlk: tlk);
+                context, resourceIndex, baseItems: new BaseItemIconService(twoDa), twoDa: twoDa, tlk: tlk);
         }
 
         [Test]
@@ -119,9 +124,9 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void ChimedClothesRobeAnimatesWithTheMannequin()
+        public void ChimedClothesRobeAnimatesOnItsAuthoredCoatSkeleton()
         {
-            var renderer = BuildRenderer();
+            var renderer = BuildRenderer(out var index);
 
             var model = renderer.BuildModel(ResourceType.Uti, CorpusItem("chimedclothes"));
 
@@ -132,9 +137,9 @@ namespace SWLOR.Toolset.Tests.Items
                     mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase))
                 .Subject;
             renderedRobe.Transform.Should().Be(Matrix4x4.Identity,
-                "a skinmesh is baked into composed-model space rather than moved as one rigid panel");
+                "a skinmesh is baked into model space rather than moved as one rigid panel");
             model.Meshes.Should().OnlyContain(mesh => mesh.PoseFrames.Count > 1,
-                "Aurora's armor item window plays the same idle across every rigid and weighted part");
+                "Aurora's armor item window plays the mannequin and independent coat idles together");
             renderedRobe.PosePositions.Should().HaveCount(renderedRobe.PoseFrames.Count);
             renderedRobe.Positions.Should().Equal(renderedRobe.PosePositions[^1],
                 "the still thumbnail and bounds use the final animated pose");
@@ -145,6 +150,29 @@ namespace SWLOR.Toolset.Tests.Items
                 .OfType<MdlSkinmeshNode>()
                 .Single(mesh => mesh.Name.Equals("Box01", StringComparison.OrdinalIgnoreCase));
             sourceRobe.Vertices.Should().HaveCount(renderedRobe.VertexCount);
+
+            MdlModel? LoadModel(string resRef)
+            {
+                if (!index.TryLookup(ResourceIdentity.FromFileName(resRef + ".mdl"), out var handle))
+                    return null;
+
+                return new MdlReader().Parse(handle.GetBytes());
+            }
+
+            var standaloneFrames = MdlAnimationPose.SampleIdleFrames(source, LoadModel)
+                .Select(frame => frame.Pose)
+                .ToList();
+            var standaloneRobe = MdlMeshBuilder.Build(source, standaloneFrames).Meshes
+                .Single(mesh =>
+                    mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&
+                    mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase));
+            renderedRobe.PosePositions.Should().HaveCount(standaloneRobe.PosePositions.Count);
+            for (var frame = 0; frame < standaloneRobe.PosePositions.Count; frame++)
+            {
+                renderedRobe.PosePositions[frame].Should().Equal(
+                    standaloneRobe.PosePositions[frame],
+                    "the equipped robe must retain the exact deformation produced by its own a_ba_coat hierarchy");
+            }
 
             var firstFrame = renderedRobe.PosePositions[0];
             var maximumAnimatedDisplacement = renderedRobe.PosePositions

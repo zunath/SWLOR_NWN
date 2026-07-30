@@ -4,10 +4,10 @@ using SWLOR.Toolset.Domain.Editors.Items;
 namespace SWLOR.Toolset.Editors.Items
 {
     /// <summary>
-    /// One stat's value box: a single itemprop.2da property (and subtype) shown as a capped
-    /// NumericUpDown. A null <see cref="Number"/> means the property is absent from PropertiesList;
-    /// any other value is its CostValue. Garbage input is impossible - the control itself only
-    /// accepts a number within <see cref="Minimum"/>/<see cref="Maximum"/>.
+    /// One stat's value selector: a single itemprop.2da property (and subtype) shown as the real
+    /// populated rows of its cost table, with a capped number box only when game data is unavailable.
+    /// A null <see cref="Number"/> means the property is absent from PropertiesList; any other value
+    /// is its CostValue.
     /// </summary>
     public sealed partial class ItemStatCellViewModel : ObservableObject
     {
@@ -30,8 +30,8 @@ namespace SWLOR.Toolset.Editors.Items
         private decimal? _number;
 
         /// <summary>
-        /// The rows this stat's cost table actually offers, when it is a set of coded choices rather
-        /// than a range of numbers; empty when a number box is right.
+        /// The populated rows this stat's cost table actually offers; empty only when the table
+        /// cannot be resolved and a number-box fallback is required.
         /// </summary>
         /// <remarks>
         /// Delay is the clearest case: iprp_delay's rows start at 11 and row 11 is labelled "110",

@@ -10,12 +10,10 @@ namespace SWLOR.Toolset.Domain.Editors.Items
     /// SWLOR_Haks/sw_2da).
     /// </summary>
     /// <remarks>
-    /// These tables are NOT all plain 0..N ladders, which is what this class used to assume. Some
-    /// are sparse and some label their rows with something other than the row number: iprp_delay
-    /// leaves rows 0-10 empty and labels row 11 "110". On those, the stored CostValue is a code
-    /// rather than a quantity, and a number box is worse than useless - it lets a builder pick a row
-    /// that does not exist and shows a number that means something else. Those tables are offered
-    /// as <see cref="OptionsFor"/> instead.
+    /// These tables are NOT all plain 0..N ladders. Some are sparse and some label their rows with
+    /// something other than the row number: iprp_delay leaves rows 0-10 empty and labels row 11
+    /// "110". Every populated row is therefore exposed through <see cref="OptionsFor"/> so the item
+    /// editor can offer only legal values and show the row's gameplay meaning.
     /// </remarks>
     /// <remarks>
     /// Mirrors <see cref="SWLOR.Toolset.Domain.GameData.Lookups.BaseItemRowService"/>'s shape: a
@@ -32,13 +30,6 @@ namespace SWLOR.Toolset.Domain.Editors.Items
         private const string LabelColumn = "Label";
         private const string AmountColumn = "Amount";
 
-        /// <summary>
-        /// Above this many rows a table is offered as a bounded number box even when it could be a
-        /// list: iprp_dmg has 1,003 rows labelled "1".."1003", and a thousand-entry dropdown is a
-        /// worse way to type a number than typing it.
-        /// </summary>
-        private const int MaximumListedOptions = 64;
-
         private readonly Lazy<IReadOnlyDictionary<int, int>> _maxByCostTableId;
         private readonly Lazy<IReadOnlyDictionary<int, IReadOnlyList<ItemCostTableOption>>> _optionsByCostTableId;
 
@@ -51,8 +42,8 @@ namespace SWLOR.Toolset.Domain.Editors.Items
         }
 
         /// <summary>
-        /// The rows a builder may actually choose from, when this table is a set of named choices
-        /// rather than a range of numbers; empty when a number box is the right control.
+        /// The rows a builder may actually choose from, with their gameplay-facing values; empty
+        /// only when the cost table cannot be resolved.
         /// </summary>
         public IReadOnlyList<ItemCostTableOption> OptionsFor(int costTableId) =>
             costTableId >= 0 && _optionsByCostTableId.Value.TryGetValue(costTableId, out var options)
@@ -75,10 +66,6 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                     continue;
 
                 var options = new List<ItemCostTableOption>();
-                var everyDisplayIsItsOwnRow = true;
-                var previous = -1;
-                var contiguous = true;
-
                 for (var value = 0; value < target.RowCount; value++)
                 {
                     if (value > ushort.MaxValue)
@@ -99,25 +86,15 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                     var amount = target.GetString(value, AmountColumn)?.Trim();
                     var display = string.IsNullOrWhiteSpace(amount) ? label : amount;
 
-                    if (display != value.ToString(System.Globalization.CultureInfo.InvariantCulture))
-                        everyDisplayIsItsOwnRow = false;
-                    if (previous >= 0 && value != previous + 1)
-                        contiguous = false;
-
-                    previous = value;
                     options.Add(new ItemCostTableOption(value, display));
                 }
 
-                // A dense ladder whose labels are just their row numbers IS a number - typing it is
-                // better than scrolling for it. Anything else is a set of codes and must be listed.
                 var distinct = options.Select(option => option.Label)
                     .Distinct(StringComparer.OrdinalIgnoreCase).Count();
 
-                // Nothing selectable, a dense ladder better typed than scrolled, or labels that
-                // repeat - a list of indistinguishable entries is worse than a number box.
+                // Nothing selectable or repeated display values cannot form an unambiguous list.
                 if (options.Count == 0 ||
-                    distinct != options.Count ||
-                    (everyDisplayIsItsOwnRow && contiguous && options.Count > MaximumListedOptions))
+                    distinct != options.Count)
                 {
                     continue;
                 }

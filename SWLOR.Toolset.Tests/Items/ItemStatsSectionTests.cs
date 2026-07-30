@@ -345,7 +345,7 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void ACodedCostTableIsOfferedAsItsRealRowsRatherThanAsANumber()
+        public void EveryResolvedCostTableIsOfferedAsItsRealRows()
         {
             // iprp_delay starts at row 11 and labels that row "110". A number box therefore offered
             // rows 0-10, which do not exist, and displayed a row index as though it were the delay.
@@ -361,8 +361,45 @@ namespace SWLOR.Toolset.Tests.Items
             delay.Options.Should().NotContain(option => option.Value < 11, "rows 0-10 are blank");
             delay.Options.Should().Contain(option => option.Value == 11 && option.Label == "110");
 
-            // DMG's table is a dense 1..N ladder labelled with its own row numbers - a number.
-            combat.Cells.Single(cell => cell.Label == "DMG").HasOptions.Should().BeFalse();
+            var damage = combat.Cells.Single(cell => cell.Label == "DMG");
+            damage.HasOptions.Should().BeTrue("numeric ladders also list only real table rows");
+            damage.Options.Should().Contain(option => option.Value == 1 && option.Label == "1");
+        }
+
+        [Test]
+        public void CombatAndVitalStatsUseActualNumericOptions()
+        {
+            var ranges = new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory));
+            var section = new ItemStatsSectionViewModel(
+                OpenStore(), (_, mutation) => { mutation(); return true; }, costTables: ranges);
+            section.Rebuild(ItemFamily.Armor, ItemRoleCatalog.CustomId);
+
+            var combat = section.Groups.Single(group => group.Group == ItemStatGroup.Combat);
+            foreach (var label in new[] { "Attack", "Force Attack" })
+            {
+                var cell = combat.Cells.Single(candidate => candidate.Label == label);
+                cell.HasOptions.Should().BeTrue();
+                cell.Options.Should().Contain(option => option.Value == 0 && option.Label == "0");
+                cell.Options.Should().Contain(option => option.Value == 100 && option.Label == "100");
+            }
+
+            var vitals = section.Groups.Single(group => group.Group == ItemStatGroup.Vitals);
+            foreach (var label in new[] { "HP", "FP", "STM" })
+            {
+                var cell = vitals.Cells.Single(candidate => candidate.Label == label);
+                cell.HasOptions.Should().BeTrue();
+                cell.Options.Should().NotContain(option => option.Value == 0, "row 0 is blank in the vitality tables");
+                cell.Options.Should().Contain(option => option.Value == 1 && option.Label == "1");
+                cell.Options.Should().Contain(option => option.Value == 1000 && option.Label == "1000");
+            }
+
+            foreach (var label in new[] { "FP Regen", "STM Regen" })
+            {
+                var cell = vitals.Cells.Single(candidate => candidate.Label == label);
+                cell.HasOptions.Should().BeTrue();
+                cell.Options.Should().Contain(option => option.Value == 0 && option.Label == "0");
+                cell.Options.Should().Contain(option => option.Value == 100 && option.Label == "100");
+            }
         }
 
         [Test]

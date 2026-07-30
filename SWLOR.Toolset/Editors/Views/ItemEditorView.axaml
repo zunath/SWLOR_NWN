@@ -76,16 +76,14 @@
   </UserControl.Resources>
 
   <UserControl.DataTemplates>
-    <!-- One stat's value box. A blank box means the property is absent from the item; Minimum/
-         Maximum are the property's real engine cap, so garbage or out-of-range input is impossible
-         rather than refused after the fact. -->
+    <!-- One stat's value selector. Resolved cost tables list their real populated rows; the number
+         box is retained only as a fallback for sessions where game data is unavailable. -->
     <DataTemplate DataType="items:ItemStatCellViewModel">
       <Grid ColumnDefinitions="*,150" ColumnSpacing="8" Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
                    Foreground="{DynamicResource InkSecondaryBrush}"
                    TextTrimming="CharacterEllipsis" />
-        <!-- A cost table of coded choices (Delay) lists its real rows; a plain numeric ladder
-             (DMG) keeps the number box, capped at what the table actually reaches. -->
+        <!-- Both coded tables and numeric ladders list only their legal gameplay-facing values. -->
         <ComboBox Grid.Column="1" ItemsSource="{Binding SelectableOptions}"
                   SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
                   HorizontalAlignment="Stretch" IsVisible="{Binding HasOptions}" />

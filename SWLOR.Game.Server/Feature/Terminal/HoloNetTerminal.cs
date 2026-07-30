@@ -2,9 +2,9 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Game.Server.Feature.Terminal
 {
-    public class HolonetTerminal
+    public static class HolonetTerminal
     {
         /// <summary>
         /// When a user click the holonet terminal, a UI will open which lets them enter their message

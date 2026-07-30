@@ -1,7 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Game.Server.Feature.Configuration
 {
     public static class DisableDefaultGameWindows
     {

@@ -5,14 +5,14 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Game.Server.Feature.Terminal
 {
     /// <summary>
     /// Spawns the CZ-220 starport flights terminal in the station hangar at module load.
     /// CZ-220 has no builder-placed terminal, so players there previously relied on a direct
     /// point-to-point transport NPC. Placing a terminal lets them use the standard shuttle system.
     /// </summary>
-    public class CZ220FlightsTerminal
+    public static class CZ220FlightsTerminal
     {
         private const string HangarAreaResref = "czs220_hangar";
 

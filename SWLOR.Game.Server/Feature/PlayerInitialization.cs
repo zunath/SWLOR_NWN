@@ -13,7 +13,7 @@ using Race = SWLOR.Game.Server.Service.Race;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public class PlayerInitialization
+    public static class PlayerInitialization
     {
         /// <summary>
         /// Handles

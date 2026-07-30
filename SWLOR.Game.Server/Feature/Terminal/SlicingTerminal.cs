@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SlicingService;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Game.Server.Feature.Terminal
 {
     public static class SlicingTerminal
     {

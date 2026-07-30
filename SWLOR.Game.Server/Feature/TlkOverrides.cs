@@ -6,7 +6,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public class TlkOverrides
+    public static class TlkOverrides
     {
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void OverrideTlks()

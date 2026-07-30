@@ -9,7 +9,7 @@ using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public class RoleplayXP
+    public static class RoleplayXP
     {
         private const string RPTickVariable = "RP_SYSTEM_TICKS";
         private const string RPTimestampVariable = "RP_SYSTEM_LAST_MESSAGE_TIMESTAMP";

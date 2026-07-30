@@ -6,9 +6,9 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using Player = SWLOR.Game.Server.Entity.Player;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Game.Server.Feature.Persistence
 {
-    public class PersistentMapPin
+    public static class PersistentMapPin
     {
         private struct MapPinDetails
         {

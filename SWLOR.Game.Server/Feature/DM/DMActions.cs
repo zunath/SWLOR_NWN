@@ -6,9 +6,9 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Game.Server.Feature.DM
 {
-    public class DMActions
+    public static class DMActions
     {
         [NWNEventHandler(ScriptName.OnDMSpawnObjectAfter)]
         public static void OnDMSpawnObject()

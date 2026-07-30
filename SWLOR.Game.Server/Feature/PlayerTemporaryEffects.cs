@@ -5,7 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public class PlayerTemporaryEffects
+    public static class PlayerTemporaryEffects
     {
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ApplyTemporaryEffects()

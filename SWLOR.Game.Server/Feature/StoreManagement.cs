@@ -9,7 +9,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public class StoreManagement
+    public static class StoreManagement
     {
         private const int IntervalHours = 1; // Determines the interval at which stores are cleaned. 1 = 1 hour
         private static readonly List<uint> _stores = new();

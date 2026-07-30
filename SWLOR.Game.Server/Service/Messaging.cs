@@ -2,7 +2,7 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Messaging
+    public static class Messaging
     {
         public delegate string BuildMessageDelegate(uint receiver);
 

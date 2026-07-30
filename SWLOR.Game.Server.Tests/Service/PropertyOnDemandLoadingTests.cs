@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System.Text.RegularExpressions;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -9,7 +10,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void PropertyTypes_DeclareOnDemandOnlyForPrivatePlayerInstances()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -31,7 +32,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void PrivateAdjustableInstanceProperties_LoadOnDemand()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -48,11 +49,12 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void PersistentLocation_DoesNotJumpToInvalidInstanceArea()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Feature",
+            "Persistence",
             "PersistentLocation.cs")).Replace("\r\n", "\n");
         var loadBody = ExtractMethod(source, "public static void LoadLocation(uint player)");
 
@@ -66,7 +68,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void PropertyEntry_GatesThroughLoadStateBeforeJumping()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -99,7 +101,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void RegisteredInstances_AreNotReadDirectlyOutsidePropertyService()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var serverRoot = Path.Combine(root.FullName, "SWLOR.Game.Server");
         var offenders = Directory
             .GetFiles(serverRoot, "*.cs", SearchOption.AllDirectories)
@@ -112,7 +114,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void LoadedState_WithMissingInstance_IsTreatedAsUnloaded()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -142,7 +144,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void StaffNotify_DoesNotClearWaitersWhileLoadIsInProgress()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -160,7 +162,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void LoadFailures_RecordOperationalContextForStaffDiagnostics()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -178,7 +180,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void PropertyDiagnostics_ExposeOperationalFieldsForRuntimeRepair()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var propertySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -221,7 +223,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void PropertyDiagnostics_ActionsRequireAdminAuthorization()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -244,7 +246,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void PropertyDiagnostics_SelectPropertyBoundsChecksNuiIndex()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -267,7 +269,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void CompletedInteriorLoad_RequeuesExteriorStructure()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -285,7 +287,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void StartupWorldStructureDependencies_QueueUnloadedInstances()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -303,7 +305,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void LoadProperties_ResetsScheduledProcessorFlagBeforeQueueingStartupLoads()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -320,7 +322,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void RetryLoadedProperty_RequeuesExteriorStructureForRuntimeRepair()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -335,7 +337,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void QueueStartupWorldProperty_AlwaysEnsuresProcessorWhenAlreadyPending()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -351,7 +353,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void StartupWorldStructureBatch_HandlesSpawnFailuresWithoutStoppingQueue()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -372,7 +374,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void ExistingWorldStructure_ReplaysStructureChangedAction()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -387,7 +389,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void InstanceSpawnAction_IsTrackedSeparatelyFromAreaRegistration()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -415,7 +417,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void PropertyLoadBatch_StaggersAreaCreationAcrossScheduledPasses()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -434,7 +436,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void StartupPropertyLoadProgress_ReplacesPerPropertyConsoleSpam()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -467,7 +469,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void EmergencyExit_OnlyRunsAfterDestinationResolves()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -486,7 +488,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void PlayerStarportDocking_RequiresLoadedStarport()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -509,7 +511,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void ShipManagement_DoesNotLabelUnloadedDockInstanceAsInSpace()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -534,7 +536,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void PlayerStarportDockpoints_AreRemovedByPropertyId()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var spaceSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -565,7 +567,7 @@ public class PropertyOnDemandLoadingTests
     [Test]
     public void PropertyDiagnostics_AreNotExposedAsChatCommands()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var adminChatSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -625,20 +627,4 @@ public class PropertyOnDemandLoadingTests
             .BeLessThan(body.IndexOf(protectedOperation, StringComparison.Ordinal));
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

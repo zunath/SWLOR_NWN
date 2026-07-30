@@ -5,9 +5,9 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Game.Server.Feature.Persistence
 {
-    public class PersistentMapProgression
+    public static class PersistentMapProgression
     {
         /// <summary>
         /// Saves a player's area map progression when exiting an area.

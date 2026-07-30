@@ -4,9 +4,9 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Game.Server.Feature.Persistence
 {
-    public class PersistentLocation
+    public static class PersistentLocation
     {
         /// <summary>
         /// Saves a player's position to the database.

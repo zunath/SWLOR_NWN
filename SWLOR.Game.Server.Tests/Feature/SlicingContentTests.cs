@@ -464,7 +464,7 @@ public class SlicingContentTests
         var lockboxSource = File.ReadAllText(Path.Combine(
             root, "SWLOR.Game.Server", "Feature", "ItemDefinition", "LockboxItemDefinition.cs"));
         var terminalSource = File.ReadAllText(Path.Combine(
-            root, "SWLOR.Game.Server", "Feature", "SlicingTerminal.cs"));
+            root, "SWLOR.Game.Server", "Feature", "Terminal", "SlicingTerminal.cs"));
 
         lockboxSource.Should().Contain("Gui.TogglePlayerWindow(user, GuiWindowType.Slicing, payload);");
         lockboxSource.Should().NotContain("Gui.TogglePlayerWindow(user, GuiWindowType.Slicing, payload, item);");

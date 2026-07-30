@@ -3,9 +3,9 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Game.Server.Feature.DM
 {
-    public class DMAuthorization
+    public static class DMAuthorization
     {
         /// <summary>
         /// Verifies that a logging in player is an authorized DM.

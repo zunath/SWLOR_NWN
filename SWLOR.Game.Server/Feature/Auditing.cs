@@ -6,7 +6,7 @@ using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public class Auditing
+    public static class Auditing
     {
         /// <summary>
         /// Writes an audit log when a player connects to the server.

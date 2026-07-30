@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.CLI;
 using System.Diagnostics;
+using System.Text;
 
 namespace SWLOR.CLI.Tests;
 
@@ -77,6 +78,59 @@ public sealed class ModulePaletteRefresherTests
         first[1]["STRREF"]!["value"]!.Value<uint>().Should().Be(4242);
 
         Descriptors(categories[2]).Select(ResRef).Should().Equal("moved");
+    }
+
+    [Test]
+    public void Refresh_ReconcilesDescriptorsInsideNestedIdCategories()
+    {
+        WritePalette(
+            "placeablepalcus",
+            Terminal(
+                100,
+                "Parent category",
+                Terminal(
+                    23,
+                    "Nested source",
+                    NamedLeaf("existing", "Old name"),
+                    NamedLeaf("orphan", "Deleted blueprint"),
+                    NamedLeaf("moved", "Old category")),
+                Terminal(24, "Nested destination")));
+
+        WriteBlueprint("utp", "existing", "PaletteID", 23, "LocName", LocString("New name"));
+        WriteBlueprint("utp", "added", "PaletteID", 23, "LocName", LocString("Added"));
+        WriteBlueprint("utp", "moved", "PaletteID", 24, "LocName", LocString("Moved"));
+
+        var refresh = ModulePaletteRefresher.Refresh(_moduleRoot, _outputRoot);
+
+        refresh.Results.Should().ContainSingle().Which.Should().Be(
+            new PaletteRefreshResult(
+                "placeablepalcus",
+                Included: 3,
+                Added: 2,
+                Removed: 2,
+                Updated: 1,
+                MissingCategory: 0));
+        var categories = TerminalCategories(LoadOutput("placeablepalcus"));
+        var source = Descriptors(categories[23]);
+        source.Select(ResRef).Should().Equal("existing", "added");
+        source[0]["NAME"]!["value"]!.Value<string>().Should().Be("New name");
+        Descriptors(categories[24]).Select(ResRef).Should().Equal("moved");
+    }
+
+    [Test]
+    public void Refresh_DecodesWindows1252BlueprintNamesWithoutReplacementCharacters()
+    {
+        WritePalette("placeablepalcus", Terminal(7, "Custom"));
+        var blueprint = Blueprint("PaletteID", 7, "LocName", LocString("Café’s Crate"));
+        WriteNwnJson(
+            Path.Combine(_moduleRoot, "utp", "encoded.utp.json"),
+            blueprint);
+
+        ModulePaletteRefresher.Refresh(_moduleRoot, _outputRoot);
+
+        var descriptor = Descriptors(TerminalCategories(LoadOutput("placeablepalcus"))[7])
+            .Should().ContainSingle().Subject;
+        descriptor["NAME"]!["value"]!.Value<string>().Should().Be("Café’s Crate");
     }
 
     [TestCase("doorpalcus", "utd", "PaletteID", "LocName")]
@@ -364,6 +418,15 @@ public sealed class ModulePaletteRefresherTests
     {
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         File.WriteAllText(path, document.ToString(Formatting.Indented));
+    }
+
+    private static void WriteNwnJson(string path, JObject document)
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllBytes(
+            path,
+            Encoding.GetEncoding(1252).GetBytes(document.ToString(Formatting.Indented)));
     }
 
     private JObject LoadOutput(string paletteName)

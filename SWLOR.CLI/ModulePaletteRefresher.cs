@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -19,6 +20,11 @@ namespace SWLOR.CLI
     /// </remarks>
     public static class ModulePaletteRefresher
     {
+        private static readonly Encoding StrictUtf8 = new UTF8Encoding(
+            encoderShouldEmitUTF8Identifier: false,
+            throwOnInvalidBytes: true);
+        private static readonly Encoding NwnText = CreateNwnTextEncoding();
+
         private static readonly PaletteDefinition[] Definitions =
         {
             new("creaturepalcus", "utc", "PaletteID", "FirstName", IsCreature: true),
@@ -112,7 +118,7 @@ namespace SWLOR.CLI
                 desiredByCategory.TryGetValue(categoryId, out var desired);
                 desired ??= new Dictionary<string, BlueprintDescriptor>(StringComparer.OrdinalIgnoreCase);
 
-                var refreshed = new JArray();
+                var refreshed = new List<JToken>();
                 var emitted = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                 foreach (var token in current)
@@ -126,8 +132,9 @@ namespace SWLOR.CLI
                     {
                         // Defensive preservation for a non-standard terminal. BioWare's format says
                         // terminal lists contain only descriptors, but dropping an unknown node would
-                        // be more destructive than Aurora's refresh behavior.
-                        refreshed.Add(node.DeepClone());
+                        // be more destructive than Aurora's refresh behavior. Keep the original node:
+                        // it can itself be an ID-bearing child category held by the terminals lookup.
+                        refreshed.Add(node);
                         continue;
                     }
 
@@ -158,13 +165,19 @@ namespace SWLOR.CLI
 
                 if (existingListField != null)
                 {
-                    existingListField["value"] = refreshed;
+                    // Rebuild the existing array rather than replacing it with clones. Clearing first
+                    // detaches every retained category node so adding it back preserves object identity;
+                    // later terminal refreshes therefore mutate the live output tree, even when that
+                    // terminal is nested beneath another ID-bearing category.
+                    current.RemoveAll();
+                    foreach (var token in refreshed)
+                        current.Add(token);
                 }
                 else if (refreshed.Count > 0)
                 {
                     // Aurora permits an unused terminal category to omit LIST entirely. It materializes
                     // the list only when a blueprint is assigned to that ID.
-                    var listProperty = new JProperty("LIST", NewField("list", refreshed));
+                    var listProperty = new JProperty("LIST", NewField("list", new JArray(refreshed)));
                     var nextProperty = terminal.Properties()
                         .FirstOrDefault(property =>
                             string.Compare(
@@ -331,12 +344,36 @@ namespace SWLOR.CLI
         {
             try
             {
-                return JObject.Parse(File.ReadAllText(path));
+                var bytes = File.ReadAllBytes(path);
+                var content = bytes.AsSpan();
+                if (content.StartsWith(Encoding.UTF8.Preamble))
+                    content = content[Encoding.UTF8.Preamble.Length..];
+
+                string json;
+                try
+                {
+                    json = StrictUtf8.GetString(content);
+                }
+                catch (DecoderFallbackException)
+                {
+                    // nwn_gff writes text fields as raw Windows-1252, while hand-edited resources
+                    // may be real UTF-8. Match the formats library's strict-UTF-8-first convention
+                    // so valid UTF-8 is preserved and legacy NWN bytes are decoded without damage.
+                    json = NwnText.GetString(content);
+                }
+
+                return JObject.Parse(json);
             }
             catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException)
             {
                 throw new InvalidDataException($"Could not read NWN JSON resource '{path}'.", ex);
             }
+        }
+
+        private static Encoding CreateNwnTextEncoding()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            return Encoding.GetEncoding(1252);
         }
 
         private static JArray RequireListValue(JObject owner, string fieldName, string context)

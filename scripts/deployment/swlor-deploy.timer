@@ -1,10 +1,10 @@
 [Unit]
-Description=Poll GitHub for a new SWLOR server release
+Description=Poll for an owner-authorized SWLOR deployment request
 
 [Timer]
-OnBootSec=15min
-OnUnitActiveSec=5min
-RandomizedDelaySec=30
+OnBootSec=3min
+OnUnitActiveSec=3min
+RandomizedDelaySec=20
 Persistent=true
 Unit=swlor-deploy.service
 

@@ -255,6 +255,24 @@ record_state()
     mv -f "$temporary_file" "$STATE_ROOT/$name"
 }
 
+git_paths_changed()
+{
+    local base_commit="$1"
+    local target_commit="$2"
+    local diff_status=0
+    shift 2
+
+    git -C "$SOURCE_ROOT" diff --quiet \
+        "$base_commit" "$target_commit" -- "$@" ||
+        diff_status=$?
+
+    case "$diff_status" in
+        0) return 1 ;;
+        1) return 0 ;;
+        *) die "Unable to compare deployment inputs between $base_commit and $target_commit." ;;
+    esac
+}
+
 safe_remove_under()
 {
     local parent="$1"
@@ -307,7 +325,7 @@ wait_for_server_health()
     local restart_count
     local state
 
-    container_id="$(compose ps -q "$SERVER_SERVICE")"
+    container_id="$(compose ps -q "$SERVER_SERVICE" 2>/dev/null)"
     [[ -n "$container_id" ]] || return 1
     restart_count="$(docker inspect --format '{{.RestartCount}}' "$container_id")"
     [[ "$restart_count" == 0 ]] || {
@@ -351,8 +369,12 @@ wait_for_server_health()
 
     log "Startup marker found; checking ${HEALTH_STABLE_SECONDS}s of stability."
     local stable_deadline=$(( $(date +%s) + HEALTH_STABLE_SECONDS ))
+    local stable_started_at
+    local stable_elapsed
+    local next_progress=30
+    stable_started_at="$(date +%s)"
     while (( $(date +%s) < stable_deadline )); do
-        current_id="$(compose ps -q "$SERVER_SERVICE")"
+        current_id="$(compose ps -q "$SERVER_SERVICE" 2>/dev/null)"
         [[ "$current_id" == "$container_id" ]] || return 1
         [[ "$(docker inspect --format '{{.State.Status}}' "$container_id")" == running ]] ||
             return 1
@@ -371,10 +393,15 @@ wait_for_server_health()
             log "A fatal server marker appeared during the stability window."
             return 1
         fi
+        stable_elapsed=$(( $(date +%s) - stable_started_at ))
+        if (( stable_elapsed >= next_progress )); then
+            log "Server remains healthy after ${stable_elapsed}s of the ${HEALTH_STABLE_SECONDS}s stability window."
+            next_progress=$(( next_progress + 30 ))
+        fi
         sleep 5
     done
 
-    current_id="$(compose ps -q "$SERVER_SERVICE")"
+    current_id="$(compose ps -q "$SERVER_SERVICE" 2>/dev/null)"
     [[ "$current_id" == "$container_id" ]] || return 1
     [[ "$(docker inspect --format '{{.State.Status}}' "$container_id")" == running ]] ||
         return 1
@@ -463,15 +490,41 @@ verify_directory_payloads()
     fi
 }
 
+verify_hak_payloads()
+{
+    local source_path="$1"
+    local destination_path="$2"
+    local differences
+
+    differences="$(
+        rsync \
+            --recursive \
+            --links \
+            --checksum \
+            --delete \
+            --exclude='*.md5' \
+            --dry-run \
+            --itemize-changes \
+            "$source_path/" \
+            "$destination_path/"
+    )"
+    if [[ -n "$differences" ]]; then
+        printf '%s\n' "$differences"
+        return 1
+    fi
+}
+
 show_status()
 {
     local active_commit
     local previous_commit
     local active_manifest
     local configured_manifest
+    local github_dispatch_run
 
     active_commit="$(state_value active-commit)"
     previous_commit="$(state_value previous-commit)"
+    github_dispatch_run="$(state_value github-dispatch-run)"
     if [[ -s "$NWSYNC_ROOT/latest" ]]; then
         active_manifest="$(tr -d '\r\n' < "$NWSYNC_ROOT/latest")"
     else
@@ -486,6 +539,7 @@ show_status()
     printf 'Branch:           %s/%s\n' "$GIT_REMOTE" "$BRANCH"
     printf 'Active commit:    %s\n' "${active_commit:-not recorded}"
     printf 'Previous commit:  %s\n' "${previous_commit:-not recorded}"
+    printf 'GitHub request:   %s\n' "${github_dispatch_run:-not recorded}"
     printf 'NWSync root:      %s\n' "$NWSYNC_ROOT"
     printf 'NWSync manifest:  %s\n' "$active_manifest"
     printf 'Server manifest:  %s\n' "${configured_manifest:-not configured}"
@@ -650,6 +704,118 @@ remote_haks_commit="$(
     die "$HAKS_SUBMODULE_PATH is not pinned to the tip of $BRANCH (parent=$pinned_haks_commit checkout=$checked_out_haks_commit remote=$remote_haks_commit)."
 log "Verified $HAKS_SUBMODULE_PATH $BRANCH at $checked_out_haks_commit."
 
+haks_inputs_changed=1
+module_inputs_changed=1
+dotnet_inputs_changed=1
+force_full_hak_rebuild=0
+
+if [[ "$MODE" == if-changed &&
+      -n "$active_commit" ]] &&
+   git -C "$SOURCE_ROOT" cat-file -e "${active_commit}^{commit}" 2>/dev/null
+then
+    if ! git_paths_changed \
+        "$active_commit" \
+        "$target_commit" \
+        "$HAKS_SUBMODULE_PATH" \
+        Build/hakbuilder.json \
+        SWLOR.CLI/HakBuilder.cs \
+        SWLOR.CLI/ChecksumUtil.cs \
+        SWLOR.CLI/Model/HakBuilderConfig.cs \
+        SWLOR.CLI/Program.cs \
+        SWLOR.CLI/SWLOR.CLI.csproj \
+        global.json \
+        Directory.Build.props \
+        Directory.Build.targets \
+        Directory.Packages.props \
+        NuGet.config
+    then
+        haks_inputs_changed=0
+    fi
+
+    if ! git_paths_changed \
+        "$active_commit" \
+        "$target_commit" \
+        Module \
+        SWLOR.CLI/ModulePacker.cs \
+        SWLOR.CLI/Program.cs \
+        SWLOR.CLI/SWLOR.CLI.csproj \
+        global.json \
+        Directory.Build.props \
+        Directory.Build.targets \
+        Directory.Packages.props \
+        NuGet.config
+    then
+        module_inputs_changed=0
+    fi
+
+    if ! git_paths_changed \
+        "$active_commit" \
+        "$target_commit" \
+        SWLOR.Game.Server \
+        ':(exclude)SWLOR.Game.Server/Readmes/**' \
+        SWLOR.NWN.API \
+        global.json \
+        Directory.Build.props \
+        Directory.Build.targets \
+        Directory.Packages.props \
+        NuGet.config
+    then
+        dotnet_inputs_changed=0
+    fi
+else
+    log "No usable active-commit baseline exists; all content inputs will be rebuilt."
+fi
+
+neverwinter_tool_key="${NEVERWINTER_NIM_VERSION}:${NEVERWINTER_NIM_SHA256}"
+recorded_neverwinter_tool_key="$(state_value neverwinter-tool-key)"
+if [[ -n "$recorded_neverwinter_tool_key" &&
+      "$recorded_neverwinter_tool_key" != "$neverwinter_tool_key" ]]
+then
+    log "The pinned neverwinter.nim tool changed; forcing HAK/TLK and module rebuilds."
+    haks_inputs_changed=1
+    module_inputs_changed=1
+    force_full_hak_rebuild=1
+fi
+
+nwsync_build_script_sha="$(
+    sha256sum "$NWSYNC_BUILD_SCRIPT" |
+        awk '{ print $1 }'
+)"
+recorded_nwsync_build_script_sha="$(state_value nwsync-build-script-sha)"
+nwsync_tool_changed=0
+if [[ -n "$recorded_nwsync_build_script_sha" &&
+      "$recorded_nwsync_build_script_sha" != "$nwsync_build_script_sha" ]]
+then
+    log "The NWSync build script changed; a new manifest will be generated."
+    nwsync_tool_changed=1
+fi
+
+if [[ "$MODE" == force ]]; then
+    haks_inputs_changed=1
+    module_inputs_changed=1
+    dotnet_inputs_changed=1
+    force_full_hak_rebuild=1
+    nwsync_tool_changed=1
+fi
+
+nwsync_inputs_changed=0
+if (( haks_inputs_changed == 1 ||
+      module_inputs_changed == 1 ||
+      nwsync_tool_changed == 1 ))
+then
+    nwsync_inputs_changed=1
+fi
+
+log "Build plan: HAK/TLK=$(
+    (( haks_inputs_changed == 1 )) && printf rebuild || printf reuse
+), module=$(
+    (( module_inputs_changed == 1 )) && printf repack || printf reuse
+), NWSync=$(
+    (( nwsync_inputs_changed == 1 )) && printf generate || printf reuse
+), .NET=$(
+    (( dotnet_inputs_changed == 1 )) && printf build || printf reuse
+)."
+
 haks_root="$SOURCE_ROOT/$HAKS_SUBMODULE_PATH"
 tracked_set_count="$(
     git -C "$haks_root" ls-files '*.set' |
@@ -659,60 +825,64 @@ tracked_set_count="$(
 (( tracked_set_count > 0 )) ||
     die "$HAKS_SUBMODULE_PATH does not contain any tracked .set files."
 
-log "Materializing $tracked_set_count tracked .set resources with repository-defined line endings."
-git -C "$haks_root" ls-files -z '*.set' |
-    git -C "$haks_root" checkout-index --force --stdin -z
+if (( haks_inputs_changed == 1 )); then
+    log "Materializing $tracked_set_count tracked .set resources with repository-defined line endings."
+    git -C "$haks_root" ls-files -z '*.set' |
+        git -C "$haks_root" checkout-index --force --stdin -z
 
-validated_set_count=0
-while IFS= read -r -d '' set_relative_path; do
-    set_path="$haks_root/$set_relative_path"
-    allow_unterminated_final_line=0
-    if [[ "$(
-        tail -c 1 "$set_path" |
-            wc -l |
-            tr -d '[:space:]'
-    )" == 0 ]]
-    then
-        allow_unterminated_final_line=1
-    fi
+    validated_set_count=0
+    while IFS= read -r -d '' set_relative_path; do
+        set_path="$haks_root/$set_relative_path"
+        allow_unterminated_final_line=0
+        if [[ "$(
+            tail -c 1 "$set_path" |
+                wc -l |
+                tr -d '[:space:]'
+        )" == 0 ]]
+        then
+            allow_unterminated_final_line=1
+        fi
 
-    if ! awk \
-        -v allow_unterminated_final_line="$allow_unterminated_final_line" \
-        'BEGIN {
-             lines = 0
-             invalid_lines = 0
-             invalid_line = 0
-         }
-         {
-             lines += 1
-             if (substr($0, length($0), 1) != "\r") {
-                 invalid_lines += 1
-                 invalid_line = lines
+        if ! awk \
+            -v allow_unterminated_final_line="$allow_unterminated_final_line" \
+            'BEGIN {
+                 lines = 0
+                 invalid_lines = 0
+                 invalid_line = 0
              }
-          }
-          END {
-             if (lines == 0) {
+             {
+                 lines += 1
+                 if (substr($0, length($0), 1) != "\r") {
+                     invalid_lines += 1
+                     invalid_line = lines
+                 }
+              }
+              END {
+                 if (lines == 0) {
+                     exit 1
+                 }
+                 if (invalid_lines == 0) {
+                     exit 0
+                 }
+                 if (allow_unterminated_final_line == 1 &&
+                     invalid_lines == 1 &&
+                     invalid_line == lines) {
+                     exit 0
+                 }
                  exit 1
-             }
-             if (invalid_lines == 0) {
-                 exit 0
-             }
-             if (allow_unterminated_final_line == 1 &&
-                 invalid_lines == 1 &&
-                 invalid_line == lines) {
-                 exit 0
-             }
-             exit 1
-          }' \
-        "$set_path"
-    then
-        die "$HAKS_SUBMODULE_PATH/$set_relative_path contains a non-CRLF line ending."
-    fi
-    (( validated_set_count += 1 ))
-done < <(git -C "$haks_root" ls-files -z '*.set')
-(( validated_set_count == tracked_set_count )) ||
-    die "Validated $validated_set_count of $tracked_set_count tracked .set files."
-log "Verified CRLF line endings for all $validated_set_count tracked .set resources."
+              }' \
+            "$set_path"
+        then
+            die "$HAKS_SUBMODULE_PATH/$set_relative_path contains a non-CRLF line ending."
+        fi
+        (( validated_set_count += 1 ))
+    done < <(git -C "$haks_root" ls-files -z '*.set')
+    (( validated_set_count == tracked_set_count )) ||
+        die "Validated $validated_set_count of $tracked_set_count tracked .set files."
+    log "Verified CRLF line endings for all $validated_set_count tracked .set resources."
+else
+    log "HAK/TLK inputs are unchanged; skipping source materialization and HAK packing."
+fi
 
 if [[ -n "$(git -C "$SOURCE_ROOT" status --porcelain --untracked-files=all)" ]]; then
     die "Deployment source became dirty while materializing .set resources."
@@ -839,46 +1009,64 @@ export DOTNET_NOLOGO=1
 
 log "Using the persistent NWSync artifact workspace without replacing it from the running server."
 
-log "Building SWLOR.CLI and the production game server for commit $target_commit."
-dotnet build "$SOURCE_ROOT/SWLOR.CLI/SWLOR.CLI.csproj" \
-    --configuration Release \
-    --property:OS=Unix \
-    --property:RunPostBuildEvent=Never
+cli_directory="$SOURCE_ROOT/SWLOR.CLI/bin/Release/net10.0"
+cli_build_required=0
+if (( haks_inputs_changed == 1 ||
+      module_inputs_changed == 1 ||
+      dotnet_inputs_changed == 1 ))
+then
+    cli_build_required=1
+fi
+
+if (( cli_build_required == 1 )); then
+    log "Building SWLOR.CLI and the production game server for commit $target_commit."
+    dotnet build "$SOURCE_ROOT/SWLOR.CLI/SWLOR.CLI.csproj" \
+        --configuration Release \
+        --property:OS=Unix \
+        --property:RunPostBuildEvent=Never
+else
+    log "No build inputs changed; skipping the .NET build."
+fi
 
 tools_directory="$CACHE_ROOT/neverwinter/$NEVERWINTER_NIM_VERSION"
-if [[ ! -x "$tools_directory/nwn_erf" ||
-      ! -x "$tools_directory/nwn_gff" ||
-      ! -x "$tools_directory/nwn_tlk" ]]
-then
-    tools_work="$work_directory/neverwinter"
-    install -d -o root -g root -m 0750 "$tools_work" "$tools_directory"
-    log "Downloading pinned neverwinter.nim $NEVERWINTER_NIM_VERSION tools."
-    curl --silent --show-error --location --fail \
-        --output "$tools_work/neverwinter.zip" \
-        "$NEVERWINTER_NIM_RELEASE_URL"
-    printf '%s  %s\n' \
-        "$NEVERWINTER_NIM_SHA256" \
-        "$tools_work/neverwinter.zip" |
-        sha256sum --check --strict
-    unzip -q "$tools_work/neverwinter.zip" -d "$tools_work/unpacked"
+if (( haks_inputs_changed == 1 || module_inputs_changed == 1 )); then
+    if [[ ! -x "$tools_directory/nwn_erf" ||
+          ! -x "$tools_directory/nwn_gff" ||
+          ! -x "$tools_directory/nwn_tlk" ]]
+    then
+        tools_work="$work_directory/neverwinter"
+        install -d -o root -g root -m 0750 "$tools_work" "$tools_directory"
+        log "Downloading pinned neverwinter.nim $NEVERWINTER_NIM_VERSION tools."
+        curl --silent --show-error --location --fail \
+            --output "$tools_work/neverwinter.zip" \
+            "$NEVERWINTER_NIM_RELEASE_URL"
+        printf '%s  %s\n' \
+            "$NEVERWINTER_NIM_SHA256" \
+            "$tools_work/neverwinter.zip" |
+            sha256sum --check --strict
+        unzip -q "$tools_work/neverwinter.zip" -d "$tools_work/unpacked"
+        for tool_name in nwn_erf nwn_gff nwn_tlk; do
+            install -o root -g root -m 0755 \
+                "$tools_work/unpacked/$tool_name" \
+                "$tools_directory/$tool_name"
+        done
+    fi
+
     for tool_name in nwn_erf nwn_gff nwn_tlk; do
-        install -o root -g root -m 0755 \
-            "$tools_work/unpacked/$tool_name" \
-            "$tools_directory/$tool_name"
+        ln -sfn "$tools_directory/$tool_name" "$cli_directory/$tool_name.exe"
     done
 fi
 
-cli_directory="$SOURCE_ROOT/SWLOR.CLI/bin/Release/net10.0"
-for tool_name in nwn_erf nwn_gff nwn_tlk; do
-    ln -sfn "$tools_directory/$tool_name" "$cli_directory/$tool_name.exe"
-done
-
-log "Staging production .NET assemblies in temporary workspace."
-rsync \
-    --archive \
-    --delete \
-    "$SOURCE_ROOT/SWLOR.Game.Server/bin/Release/net10.0/" \
-    "$staged_dotnet/"
+if (( dotnet_inputs_changed == 1 )); then
+    log "Staging production .NET assemblies in temporary workspace."
+    rsync \
+        --archive \
+        --delete \
+        "$SOURCE_ROOT/SWLOR.Game.Server/bin/Release/net10.0/" \
+        "$staged_dotnet/"
+else
+    log "Production .NET inputs are unchanged; reusing the live .NET directory."
+fi
 
 # HakBuilder uses the persistent .hak/.md5 pairs in NWSYNC_ROOT and rebuilds
 # only changed HAKs. The live server intentionally has no .md5 sidecars, so it
@@ -915,81 +1103,109 @@ expected_hak_count="$(
 (( expected_hak_count == configured_hak_count )) ||
     die "Build/hakbuilder.json contains duplicate HAK names."
 
-log "Building changed HAKs and the TLK directly in $NWSYNC_ROOT."
-(
-    cd "$work_directory"
-    dotnet "$cli_directory/SWLOR.CLI.dll" --hak
-)
-
-while IFS= read -r -d '' hak_path; do
-    hak_file_name="$(basename "$hak_path")"
-    hak_name="${hak_file_name%.hak}"
-    if ! grep -Fqx -- "$hak_name" "$expected_haks_file"; then
-        log "Removing obsolete NWSync HAK $hak_file_name."
-        safe_remove_under "$NWSYNC_HAK_ROOT" "$hak_path"
-        if [[ -e "$NWSYNC_HAK_ROOT/$hak_name.md5" ]]; then
-            safe_remove_under \
-                "$NWSYNC_HAK_ROOT" \
-                "$NWSYNC_HAK_ROOT/$hak_name.md5"
-        fi
+if (( haks_inputs_changed == 1 )); then
+    if (( force_full_hak_rebuild == 1 )); then
+        log "Invalidating HAK checksum sidecars for an explicit/tool-driven full rebuild."
+        while IFS= read -r hak_name; do
+            if [[ -e "$NWSYNC_HAK_ROOT/$hak_name.md5" ]]; then
+                safe_remove_under \
+                    "$NWSYNC_HAK_ROOT" \
+                    "$NWSYNC_HAK_ROOT/$hak_name.md5"
+            fi
+        done < "$expected_haks_file"
     fi
-done < <(find "$NWSYNC_HAK_ROOT" -maxdepth 1 -type f -name '*.hak' -print0)
 
-set_validation_root="$work_directory/set-validation"
-install -d -o root -g root -m 0750 "$set_validation_root"
-packaged_set_count=0
-log "Extracting and byte-validating every packaged .set resource."
-while IFS= read -r -d '' set_relative_path; do
-    hak_name="${set_relative_path%%/*}"
-    set_file_name="$(basename "$set_relative_path")"
-    extracted_set_root="$set_validation_root/$hak_name"
-    install -d -o root -g root -m 0750 "$extracted_set_root"
-
+    log "Building changed HAKs and the TLK directly in $NWSYNC_ROOT."
     (
-        cd "$extracted_set_root"
-        "$tools_directory/nwn_erf" \
-            --quiet \
-            -f "$NWSYNC_HAK_ROOT/$hak_name.hak" \
-            -x "$set_file_name"
+        cd "$work_directory"
+        dotnet "$cli_directory/SWLOR.CLI.dll" --hak
     )
-    [[ -s "$extracted_set_root/$set_file_name" ]] ||
-        die "$hak_name.hak does not contain $set_file_name."
-    cmp --silent \
-        "$haks_root/$set_relative_path" \
-        "$extracted_set_root/$set_file_name" ||
-        die "$hak_name.hak contains an altered $set_file_name resource."
-    (( packaged_set_count += 1 ))
-done < <(git -C "$haks_root" ls-files -z '*.set')
-(( packaged_set_count == tracked_set_count )) ||
-    die "Validated $packaged_set_count of $tracked_set_count packaged .set files."
-log "Verified all $packaged_set_count packaged .set resources byte-for-byte."
 
-if [[ -d "$SOURCE_ROOT/Module/packing" ]]; then
-    safe_remove_under "$SOURCE_ROOT/Module" "$SOURCE_ROOT/Module/packing"
+    while IFS= read -r -d '' hak_path; do
+        hak_file_name="$(basename "$hak_path")"
+        hak_name="${hak_file_name%.hak}"
+        if ! grep -Fqx -- "$hak_name" "$expected_haks_file"; then
+            log "Removing obsolete NWSync HAK $hak_file_name."
+            safe_remove_under "$NWSYNC_HAK_ROOT" "$hak_path"
+            if [[ -e "$NWSYNC_HAK_ROOT/$hak_name.md5" ]]; then
+                safe_remove_under \
+                    "$NWSYNC_HAK_ROOT" \
+                    "$NWSYNC_HAK_ROOT/$hak_name.md5"
+            fi
+        fi
+    done < <(find "$NWSYNC_HAK_ROOT" -maxdepth 1 -type f -name '*.hak' -print0)
+
+    set_validation_root="$work_directory/set-validation"
+    install -d -o root -g root -m 0750 "$set_validation_root"
+    packaged_set_count=0
+    log "Extracting and byte-validating every packaged .set resource."
+    while IFS= read -r -d '' set_relative_path; do
+        hak_name="${set_relative_path%%/*}"
+        set_file_name="$(basename "$set_relative_path")"
+        extracted_set_root="$set_validation_root/$hak_name"
+        install -d -o root -g root -m 0750 "$extracted_set_root"
+
+        (
+            cd "$extracted_set_root"
+            "$tools_directory/nwn_erf" \
+                --quiet \
+                -f "$NWSYNC_HAK_ROOT/$hak_name.hak" \
+                -x "$set_file_name"
+        )
+        [[ -s "$extracted_set_root/$set_file_name" ]] ||
+            die "$hak_name.hak does not contain $set_file_name."
+        cmp --silent \
+            "$haks_root/$set_relative_path" \
+            "$extracted_set_root/$set_file_name" ||
+            die "$hak_name.hak contains an altered $set_file_name resource."
+        (( packaged_set_count += 1 ))
+    done < <(git -C "$haks_root" ls-files -z '*.set')
+    (( packaged_set_count == tracked_set_count )) ||
+        die "Validated $packaged_set_count of $tracked_set_count packaged .set files."
+    log "Verified all $packaged_set_count packaged .set resources byte-for-byte."
 fi
-log "Packing $MODULE_NAME."
-(
-    cd "$SOURCE_ROOT/Module"
-    dotnet "$cli_directory/SWLOR.CLI.dll" --pack "./$MODULE_NAME"
-)
-module_temporary="$NWSYNC_MODULE_ROOT/.${MODULE_NAME}.new.$$"
-install -o root -g root -m 0644 \
-    "$SOURCE_ROOT/Module/$MODULE_NAME" \
-    "$module_temporary"
-mv -f "$module_temporary" "$NWSYNC_MODULE_ROOT/$MODULE_NAME"
+
+if (( module_inputs_changed == 1 )); then
+    if [[ -d "$SOURCE_ROOT/Module/packing" ]]; then
+        safe_remove_under "$SOURCE_ROOT/Module" "$SOURCE_ROOT/Module/packing"
+    fi
+    log "Packing $MODULE_NAME."
+    (
+        cd "$SOURCE_ROOT/Module"
+        dotnet "$cli_directory/SWLOR.CLI.dll" --pack "./$MODULE_NAME"
+    )
+    module_temporary="$NWSYNC_MODULE_ROOT/.${MODULE_NAME}.new.$$"
+    install -o root -g root -m 0644 \
+        "$SOURCE_ROOT/Module/$MODULE_NAME" \
+        "$module_temporary"
+    mv -f "$module_temporary" "$NWSYNC_MODULE_ROOT/$MODULE_NAME"
+else
+    log "Module inputs are unchanged; reusing $NWSYNC_MODULE_ROOT/$MODULE_NAME."
+fi
 
 previous_manifest="$configured_server_manifest"
 
-log "Running the existing NWSync build script from $NWSYNC_ROOT."
-(
-    cd "$NWSYNC_ROOT"
-    "$NWSYNC_BUILD_SCRIPT"
-)
+if (( nwsync_inputs_changed == 1 )); then
+    log "Running the existing NWSync build script from $NWSYNC_ROOT."
+    (
+        cd "$NWSYNC_ROOT"
+        "$NWSYNC_BUILD_SCRIPT"
+    )
+else
+    log "Client content is unchanged; reusing the active NWSync manifest."
+fi
 
-[[ -s "$staged_dotnet/SWLOR.Game.Server.dll" ]] ||
-    die "Temporary .NET output does not contain SWLOR.Game.Server.dll."
-[[ -s "$staged_dotnet/SWLOR.Game.Server.runtimeconfig.json" ]] ||
-    die "Temporary .NET output does not contain the server runtime configuration."
+if (( dotnet_inputs_changed == 1 )); then
+    [[ -s "$staged_dotnet/SWLOR.Game.Server.dll" ]] ||
+        die "Temporary .NET output does not contain SWLOR.Game.Server.dll."
+    [[ -s "$staged_dotnet/SWLOR.Game.Server.runtimeconfig.json" ]] ||
+        die "Temporary .NET output does not contain the server runtime configuration."
+else
+    [[ -s "$SERVER_DOTNET_ROOT/SWLOR.Game.Server.dll" ]] ||
+        die "Live .NET directory does not contain SWLOR.Game.Server.dll."
+    [[ -s "$SERVER_DOTNET_ROOT/SWLOR.Game.Server.runtimeconfig.json" ]] ||
+        die "Live .NET directory does not contain the server runtime configuration."
+fi
 [[ -s "$NWSYNC_MODULE_ROOT/$MODULE_NAME" ]] ||
     die "NWSync modules directory does not contain the packed module."
 [[ -s "$NWSYNC_TLK_ROOT/sw_tlk.tlk" ]] ||
@@ -998,6 +1214,8 @@ log "Running the existing NWSync build script from $NWSYNC_ROOT."
 while IFS= read -r hak_name; do
     [[ -s "$NWSYNC_HAK_ROOT/$hak_name.hak" ]] ||
         die "NWSync is missing expected HAK: $hak_name.hak"
+    [[ -s "$NWSYNC_HAK_ROOT/$hak_name.md5" ]] ||
+        die "NWSync is missing expected HAK checksum cache: $hak_name.md5"
 done < "$expected_haks_file"
 actual_hak_count="$(
     find "$NWSYNC_HAK_ROOT" -maxdepth 1 -type f -name '*.hak' |
@@ -1016,10 +1234,56 @@ manifest_id="$(tr -d '\r\n' < "$NWSYNC_ROOT/latest")"
     die "NWSync manifest $manifest_id was not created."
 [[ -n "$(find "$NWSYNC_ROOT/data" -type f -print -quit)" ]] ||
     die "NWSync data directory is empty."
+if (( nwsync_inputs_changed == 0 )) &&
+   [[ "$manifest_id" != "$configured_server_manifest" ]]
+then
+    die "NWSync latest ($manifest_id) and the server manifest ($configured_server_manifest) differ even though client content was unchanged. Run an explicit --force deployment after investigating."
+fi
 log "Validated $expected_hak_count required HAKs ($actual_hak_count total) and manifest $manifest_id."
 
 if [[ -n "$(git -C "$SOURCE_ROOT" status --porcelain --untracked-files=all)" ]]; then
     die "Deployment source has unexpected changes after building."
+fi
+
+dotnet_payload_changed=0
+if (( dotnet_inputs_changed == 1 )); then
+    if verify_directory_payloads \
+        "$SOURCE_ROOT/SWLOR.Game.Server/bin/Release/net10.0" \
+        "$SERVER_DOTNET_ROOT" >/dev/null
+    then
+        log "Production .NET output is unchanged; the live .NET directory will be reused."
+    else
+        dotnet_payload_changed=1
+        log "Production .NET output changed and will be included in the cutover."
+    fi
+else
+    dotnet_payload_changed=0
+fi
+
+manifest_changed=0
+if [[ "$manifest_id" != "$configured_server_manifest" ]]; then
+    manifest_changed=1
+fi
+
+runtime_payload_changed=0
+if (( haks_inputs_changed == 1 ||
+      module_inputs_changed == 1 ||
+      dotnet_payload_changed == 1 ||
+      manifest_changed == 1 ))
+then
+    runtime_payload_changed=1
+fi
+
+if (( runtime_payload_changed == 0 )); then
+    record_state active-commit "$target_commit"
+    record_state active-manifest "$manifest_id"
+    record_state neverwinter-tool-key "$neverwinter_tool_key"
+    record_state nwsync-build-script-sha "$nwsync_build_script_sha"
+    record_state deployed-at "$(timestamp)"
+    log "No deployable artifacts changed; the running Compose stack was left untouched."
+    log "Deployment completed successfully."
+    show_status
+    exit 0
 fi
 
 if ! docker image inspect "$SERVER_IMAGE" >/dev/null 2>&1; then
@@ -1034,12 +1298,24 @@ while IFS= read -r compose_image; do
     fi
 done < <(compose config --images | sort -u)
 
+stage_sources=()
+if (( haks_inputs_changed == 1 )); then
+    stage_sources+=("$NWSYNC_HAK_ROOT" "$NWSYNC_TLK_ROOT")
+fi
+if (( module_inputs_changed == 1 )); then
+    stage_sources+=("$NWSYNC_MODULE_ROOT")
+fi
+if (( dotnet_payload_changed == 1 )); then
+    stage_sources+=("$staged_dotnet")
+fi
+
 stage_bytes="$(
-    du --summarize --block-size=1 \
-        "$NWSYNC_HAK_ROOT" \
-        "$NWSYNC_TLK_ROOT" \
-        "$NWSYNC_MODULE_ROOT" |
-        awk '{ total += $1 } END { print total + 0 }'
+    if (( ${#stage_sources[@]} == 0 )); then
+        printf '0\n'
+    else
+        du --summarize --block-size=1 "${stage_sources[@]}" |
+            awk '{ total += $1 } END { print total + 0 }'
+    fi
 )"
 stage_reserve_bytes=$(( MIN_FREE_GIB_BEFORE_CUTOVER * 1024 * 1024 * 1024 ))
 free_bytes="$(available_bytes)"
@@ -1047,22 +1323,37 @@ if (( free_bytes < stage_bytes + stage_reserve_bytes )); then
     die "Pre-staging requires $(( stage_bytes / 1024 / 1024 / 1024 + MIN_FREE_GIB_BEFORE_CUTOVER )) GiB free, including the configured reserve; only $(( free_bytes / 1024 / 1024 / 1024 )) GiB is available."
 fi
 
-log "Pre-staging an independent server artifact set while the live server remains online."
-rsync --archive --delete "$NWSYNC_HAK_ROOT/" "$staged_hak/"
-rsync --archive --delete "$NWSYNC_TLK_ROOT/" "$staged_tlk/"
-rsync --archive --delete "$NWSYNC_MODULE_ROOT/" "$staged_modules/"
+log "Pre-staging only changed server artifacts while the live server remains online."
+if (( haks_inputs_changed == 1 )); then
+    rsync \
+        --archive \
+        --delete \
+        --exclude='*.md5' \
+        "$NWSYNC_HAK_ROOT/" \
+        "$staged_hak/"
+    rsync --archive --delete "$NWSYNC_TLK_ROOT/" "$staged_tlk/"
+fi
+if (( module_inputs_changed == 1 )); then
+    rsync --archive --delete "$NWSYNC_MODULE_ROOT/" "$staged_modules/"
+fi
 
 log "Verifying every pre-staged artifact by checksum. This can remain silent for several minutes."
-verify_directory_payloads "$NWSYNC_HAK_ROOT" "$staged_hak" ||
-    die "Pre-staged HAK verification failed."
-verify_directory_payloads "$NWSYNC_TLK_ROOT" "$staged_tlk" ||
-    die "Pre-staged TLK verification failed."
-verify_directory_payloads "$NWSYNC_MODULE_ROOT" "$staged_modules" ||
-    die "Pre-staged module verification failed."
-verify_directory_payloads \
-    "$SOURCE_ROOT/SWLOR.Game.Server/bin/Release/net10.0" \
-    "$staged_dotnet" ||
-    die "Pre-staged .NET verification failed."
+if (( haks_inputs_changed == 1 )); then
+    verify_hak_payloads "$NWSYNC_HAK_ROOT" "$staged_hak" ||
+        die "Pre-staged HAK verification failed."
+    verify_directory_payloads "$NWSYNC_TLK_ROOT" "$staged_tlk" ||
+        die "Pre-staged TLK verification failed."
+fi
+if (( module_inputs_changed == 1 )); then
+    verify_directory_payloads "$NWSYNC_MODULE_ROOT" "$staged_modules" ||
+        die "Pre-staged module verification failed."
+fi
+if (( dotnet_payload_changed == 1 )); then
+    verify_directory_payloads \
+        "$SOURCE_ROOT/SWLOR.Game.Server/bin/Release/net10.0" \
+        "$staged_dotnet" ||
+        die "Pre-staged .NET verification failed."
+fi
 check_free_space "$MIN_FREE_GIB_BEFORE_CUTOVER" "Pre-restart"
 
 cp -a "$SERVER_ENV_FILE" "$rollback_directory/swlor.env"
@@ -1070,21 +1361,31 @@ cutover_started=1
 log "Stopping and removing the Compose stack with a ${STOP_TIMEOUT_SECONDS}s timeout."
 compose down --timeout "$STOP_TIMEOUT_SECONDS"
 
-log "Setting $NWSYNC_HASH_VARIABLE to $manifest_id."
-write_manifest_hash "$manifest_id"
+if (( manifest_changed == 1 )); then
+    log "Setting $NWSYNC_HASH_VARIABLE to $manifest_id."
+    write_manifest_hash "$manifest_id"
+else
+    log "$NWSYNC_HASH_VARIABLE is unchanged."
+fi
 
 log "Switching the server to the independently staged artifact set."
-mv "$SERVER_HAK_ROOT" "$rollback_directory/hak"
-mv "$staged_hak" "$SERVER_HAK_ROOT"
+if (( haks_inputs_changed == 1 )); then
+    mv "$SERVER_HAK_ROOT" "$rollback_directory/hak"
+    mv "$staged_hak" "$SERVER_HAK_ROOT"
 
-mv "$SERVER_TLK_ROOT" "$rollback_directory/tlk"
-mv "$staged_tlk" "$SERVER_TLK_ROOT"
+    mv "$SERVER_TLK_ROOT" "$rollback_directory/tlk"
+    mv "$staged_tlk" "$SERVER_TLK_ROOT"
+fi
 
-mv "$SERVER_MODULE_ROOT" "$rollback_directory/modules"
-mv "$staged_modules" "$SERVER_MODULE_ROOT"
+if (( module_inputs_changed == 1 )); then
+    mv "$SERVER_MODULE_ROOT" "$rollback_directory/modules"
+    mv "$staged_modules" "$SERVER_MODULE_ROOT"
+fi
 
-mv "$SERVER_DOTNET_ROOT" "$rollback_directory/dotnet"
-mv "$staged_dotnet" "$SERVER_DOTNET_ROOT"
+if (( dotnet_payload_changed == 1 )); then
+    mv "$SERVER_DOTNET_ROOT" "$rollback_directory/dotnet"
+    mv "$staged_dotnet" "$SERVER_DOTNET_ROOT"
+fi
 
 server_started_at="$(timestamp)"
 compose up -d
@@ -1103,6 +1404,8 @@ if [[ -n "$previous_manifest" ]]; then
 fi
 record_state active-commit "$target_commit"
 record_state active-manifest "$manifest_id"
+record_state neverwinter-tool-key "$neverwinter_tool_key"
+record_state nwsync-build-script-sha "$nwsync_build_script_sha"
 record_state deployed-at "$(timestamp)"
 
 cutover_started=0

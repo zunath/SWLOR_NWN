@@ -10,6 +10,13 @@ REPOSITORY_URL=https://github.com/zunath/SWLOR_NWN
 GIT_REMOTE=origin
 BRANCH=feature/combat-upgrade
 
+# The systemd timer consumes successful manual workflow runs as outbound-only
+# deployment requests. The workflow itself holds no server credentials.
+GITHUB_DEPLOY_REPOSITORY=zunath/SWLOR_NWN
+GITHUB_DEPLOY_WORKFLOW=request-test-deployment.yml
+GITHUB_DEPLOY_WORKFLOW_BRANCH=master
+GITHUB_DEPLOY_ACTOR=zunath
+
 NWSYNC_ROOT="$VOLUME_ROOT/nwsync"
 SERVER_ROOT="$VOLUME_ROOT/nwn-server"
 COMPOSE_FILE="$SERVER_ROOT/docker-compose.yml"

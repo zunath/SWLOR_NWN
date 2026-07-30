@@ -20,29 +20,34 @@ The deployment:
 
 1. Takes an exclusive `flock`, refuses dirty/diverged source, and performs only
    a fast-forward from the configured GitHub branch.
-2. Preserves the persistent NWSync HAK/TLK/module workspace, builds the .NET
-   10 server in the deployment cache, and updates changed HAKs, the TLK, and
-   packed module under `NWSYNC_ROOT`. It never replaces that workspace from
-   the running server.
+2. Compares the last active commit with the requested commit and builds only
+   affected artifact groups. Changes to the Haks submodule or HAK builder
+   rebuild changed HAKs/TLK; changes under `Module` or to the module packer
+   repack the module; server/API changes rebuild .NET. A documentation- or
+   deployment-only commit performs none of those builds.
+3. Preserves the persistent NWSync HAK/TLK/module workspace. HakBuilder uses
+   its persistent `.md5` sidecars to rebuild only HAKs whose source bytes
+   changed. It never replaces that workspace from the running server.
    The Haks checkout enforces CRLF for every terminated line in each `.set`
    resource while preserving an optional unterminated final line; the deployer
    materializes and verifies all of them before packaging, then extracts every
    packaged `.set` and byte-compares it with its source.
-3. Runs `NWSYNC_ROOT/build.sh` from `NWSYNC_ROOT`. This is the operation that
-   generates and activates the new NWSync manifest; a build failure never stops
-   the game server.
-4. Removes obsolete HAKs, verifies the exact configured HAK set, the TLK,
+4. Runs `NWSYNC_ROOT/build.sh` only when HAK/TLK/module content or that build
+   script changed. Otherwise it reuses the active manifest. A manifest build
+   failure never stops the game server.
+5. Removes obsolete HAKs, verifies the exact configured HAK set, the TLK,
    module, .NET output, manifest, and free space before server downtime.
-5. Ensures every required Compose image exists, then pre-stages and
-   checksum-verifies an independent server artifact set while the live server
-   remains online.
-6. Runs `docker compose down`, updates `NWN_NWSYNCHASH` in `swlor.env`, and
-   atomically moves the pre-staged HAK/TLK/module/.NET directories into the
-   server tree. The NWSync raw directories remain untouched and populated.
-7. Requires `Server: Module loaded` within five minutes, rejects any crash
+6. If no runtime payload changed, records the commit and leaves the live
+   Compose stack untouched. Otherwise it ensures every required Compose image
+   exists, then pre-stages and checksum-verifies only the affected server
+   artifact groups while the live server remains online.
+7. Runs `docker compose down`, updates `NWN_NWSYNCHASH` when needed, and
+   atomically moves the affected pre-staged directories into the server tree.
+   The NWSync raw directories remain untouched and populated.
+8. Requires `Server: Module loaded` within five minutes, rejects any crash
    marker or container restart, and then requires 120 seconds of stability
    after bringing the complete Compose project back up.
-8. Retains the previous live artifacts and `swlor.env` in the deployment cache
+9. Retains the previous live artifacts and `swlor.env` in the deployment cache
    until that health check passes. A failed cutover automatically restores
    them and starts the prior stack. A successful cutover removes that rollback
    set and prunes only dangling Docker images.
@@ -55,6 +60,9 @@ as its NWSync counterpart.
 HakBuilder uses the persistent `.hak`/`.md5` pairs under `NWSYNC_ROOT`, so
 unchanged HAKs do not need to be rebuilt. The `.md5` sidecars are build-cache
 metadata and are never copied to or expected in the live server directory.
+Module and NWSync reuse is determined from the active Git commit recorded under
+`STATE_ROOT`, not from timestamps. `--force` intentionally invalidates the HAK
+checksum sidecars and rebuilds every artifact group.
 NWSync retains the completed raw HAK/TLK/module set needed to build and serve
 its manifests. The live `nwn-server` set remains independent. Immediately
 before downtime, the deployer creates one additional temporary,
@@ -111,6 +119,10 @@ DEPLOYMENT_NAME=swlor-test
 VOLUME_ROOT=/mnt/swlor-web-vol
 
 SOURCE_ROOT="$VOLUME_ROOT/deployment-source"
+GITHUB_DEPLOY_REPOSITORY=zunath/SWLOR_NWN
+GITHUB_DEPLOY_WORKFLOW=request-test-deployment.yml
+GITHUB_DEPLOY_WORKFLOW_BRANCH=master
+GITHUB_DEPLOY_ACTOR=zunath
 NWSYNC_ROOT="$VOLUME_ROOT/nwsync"
 SERVER_ROOT="$VOLUME_ROOT/nwn-server"
 COMPOSE_FILE="$SERVER_ROOT/docker-compose.yml"
@@ -135,8 +147,10 @@ COMPOSE_PROJECT_NAME=nwnserver
 For production, make another copy of the example and change
 `DEPLOYMENT_NAME`, `VOLUME_ROOT`, `SOURCE_ROOT`, `NWSYNC_ROOT`, `SERVER_ROOT`,
 `COMPOSE_FILE`, `GIT_REMOTE`, `BRANCH`, `COMPOSE_PROJECT_NAME`, service/image
-names, disk thresholds, and health settings as needed. No changes to
-`swlor-deploy.sh` or `install.sh` are required.
+names, GitHub workflow/branch, disk thresholds, and health settings as needed.
+Use a separate production request workflow so a test deployment request cannot
+also signal production. No changes to `swlor-deploy.sh` or `install.sh` are
+required.
 
 `CACHE_ROOT`, all three NWSync artifact directories, all four server artifact
 directories, and their parent paths must be on the same filesystem. This makes
@@ -250,6 +264,8 @@ Install using that customized configuration:
 BOOTSTRAP_ROOT=/root/swlor-deployment-bootstrap
 HOST_CONFIG="$BOOTSTRAP_ROOT/swlor-test.conf"
 
+# On an existing installation, add/review the four GITHUB_DEPLOY_* settings in
+# /etc/swlor-deploy.conf first; the installer preserves that file.
 bash "$BOOTSTRAP_ROOT/install.sh" "$HOST_CONFIG"
 
 # Load path variables for the verification commands below.
@@ -258,6 +274,7 @@ source /etc/swlor-deploy.conf
 stat -c '%n owner=%U:%G mode=%a' \
   "$SOURCE_ROOT" \
   /usr/local/sbin/swlor-deploy \
+  /usr/local/sbin/swlor-deploy-dispatch \
   /etc/swlor-deploy.conf \
   /etc/systemd/system/swlor-deploy.service \
   /etc/systemd/system/swlor-deploy.timer
@@ -271,13 +288,15 @@ Expected modes are:
 |---|---|---:|
 | `$SOURCE_ROOT` | `root:root` | `750` |
 | `/usr/local/sbin/swlor-deploy` | `root:root` | `750` |
+| `/usr/local/sbin/swlor-deploy-dispatch` | `root:root` | `750` |
 | `/etc/swlor-deploy.conf` | `root:root` | `640` |
 | systemd unit files | `root:root` | `644` |
 | `$STATE_ROOT`, `$CACHE_ROOT` | `root:root` | `750` |
 | `$LOG_FILE` | `root:root` | `640` |
 
-The installer preserves an existing `/etc/swlor-deploy.conf` and never enables
-the polling timer.
+The installer preserves an existing `/etc/swlor-deploy.conf`, creates a
+timestamp baseline that prevents old workflow runs from being replayed, and
+never enables the polling timer.
 
 ## Manual operation
 
@@ -297,24 +316,64 @@ source /etc/swlor-deploy.conf
 tail -F "$LOG_FILE"
 ```
 
-## Optional polling
+## Owner-only GitHub deployment requests
 
-The installed timer is disabled by default.
+The workflow
+`.github/workflows/request-test-deployment.yml` is a credential-free signal.
+It does not connect to the server and receives no SSH key, webhook secret, or
+deployment token. It succeeds only when both GitHub's original actor and
+triggering actor are exactly `zunath`.
+
+The server makes an outbound, unauthenticated request to GitHub's public
+workflow-runs API every three minutes. It accepts only a new, successful
+`workflow_dispatch` run that matches all four configured values:
 
 ```bash
-# Enable five-minute polling:
+GITHUB_DEPLOY_REPOSITORY=zunath/SWLOR_NWN
+GITHUB_DEPLOY_WORKFLOW=request-test-deployment.yml
+GITHUB_DEPLOY_WORKFLOW_BRANCH=master
+GITHUB_DEPLOY_ACTOR=zunath
+```
+
+The server claims a workflow run before deploying. If deployment fails, the
+timer will not retry that request indefinitely; fix the problem and manually
+dispatch a new run.
+
+GitHub exposes a workflow's **Run workflow** button only after the workflow file
+exists on the repository's default branch. Merge this file to `master` before
+trying to use the button. The deployment source may still track a different
+branch, such as `feature/combat-upgrade`; the host's `BRANCH` setting controls
+what is deployed.
+
+After installing the current scripts and configuration, enable the disabled
+timer:
+
+```bash
+# Enable outbound GitHub request polling:
 systemctl enable --now swlor-deploy.timer
 
 # Inspect it:
 systemctl list-timers swlor-deploy.timer --no-pager
 journalctl -u swlor-deploy.service -n 100 --no-pager
 
-# Return to manual-only deployment:
+# Return to SSH/manual-only deployment:
 systemctl disable --now swlor-deploy.timer
 ```
 
-The same deployment lock protects manual and timer-triggered runs from
-overlapping.
+To deploy from GitHub, open **Actions**, select **Request test-server
+deployment**, choose **Run workflow**, leave the workflow ref on `master`, and
+confirm. A successful request is normally consumed within three minutes.
+Follow progress on the host with:
+
+```bash
+source /etc/swlor-deploy.conf
+tail -F "$LOG_FILE"
+journalctl -fu swlor-deploy.service
+```
+
+The same deployment lock protects SSH/manual and GitHub-requested runs from
+overlapping. An accepted request runs `swlor-deploy --if-changed`, so requesting
+an already-active commit is a safe no-op.
 
 ## Branch switch after release
 

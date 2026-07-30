@@ -2,6 +2,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Tests.Support;
 
@@ -135,7 +136,6 @@ public class QuestEncounterTests
             root.FullName,
             "SWLOR.Game.Server",
             "Service",
-            "QuestService",
             "QuestEncounter.cs"));
         var questDetailSource = File.ReadAllText(Path.Combine(
             root.FullName,

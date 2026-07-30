@@ -71,6 +71,11 @@ namespace SWLOR.Game.Server.Service
         private const string VAR_FOG_MOON = "VAR_WH_FOG_MOON";
         private const string VAR_FOG_C_SUN = "VAR_WH_FOG_C_SUN";
         private const string VAR_FOG_C_MOON = "VAR_WH_FOG_C_MOON";
+        private const string VAR_DUST_STORM = "DUST_STORM";
+        private const string VAR_SAND_STORM = "SAND_STORM";
+        private const string VAR_SNOW_STORM = "SNOW_STORM";
+        private const string VAR_SKY_OVERRIDE = "GS_AM_SKY_OVERRIDE";
+        private const string VAR_WEATHER_LAST_HOUR = "WEATHER_LAST_HOUR";
 
 
         public static bool AdjustWeather()
@@ -162,9 +167,9 @@ namespace SWLOR.Game.Server.Service
             var nHumidity = GetHumidity(oArea);
             var nWind = GetWindStrength(oArea);
             var bStormy = GetSkyBox(oArea) == Skybox.GrassStorm;
-            var bDustStorm = (GetLocalInt(oArea, "DUST_STORM") == 1);
-            var bSandStorm = (GetLocalInt(oArea, "SAND_STORM") == 1);
-            var bSnowStorm = (GetLocalInt(oArea, "SNOW_STORM") == 1);
+            var bDustStorm = (GetLocalInt(oArea, VAR_DUST_STORM) == 1);
+            var bSandStorm = (GetLocalInt(oArea, VAR_SAND_STORM) == 1);
+            var bSnowStorm = (GetLocalInt(oArea, VAR_SNOW_STORM) == 1);
 
             //--------------------------------------------------------------------------
             // Process weather rules for this area.
@@ -190,12 +195,12 @@ namespace SWLOR.Game.Server.Service
             {
                 SetSkyBox(Skybox.GrassStorm, oArea);
                 Thunderstorm(oArea);
-                SetLocalInt(oArea, "GS_AM_SKY_OVERRIDE", 1);
+                SetLocalInt(oArea, VAR_SKY_OVERRIDE, 1);
             }
             else
             {
                 SetSkyBox((Skybox)GetLocalInt(oArea, VAR_SKYBOX), oArea);
-                DeleteLocalInt(oArea, "GS_AM_SKY_OVERRIDE");
+                DeleteLocalInt(oArea, VAR_SKY_OVERRIDE);
                 bStormy = false;
             }
 
@@ -210,7 +215,7 @@ namespace SWLOR.Game.Server.Service
                     SetFogAmount(FogType.Sun, 80, oArea);
                     SetFogAmount(FogType.Moon, 80, oArea);
 
-                    SetLocalInt(oArea, "SAND_STORM", 1);
+                    SetLocalInt(oArea, VAR_SAND_STORM, 1);
                 }
                 else if (GetAreaClimate(oArea).HasSnowStorms)
                 {
@@ -219,15 +224,15 @@ namespace SWLOR.Game.Server.Service
                     SetFogAmount(FogType.Sun, 80, oArea);
                     SetFogAmount(FogType.Moon, 80, oArea);
 
-                    SetLocalInt(oArea, "SNOW_STORM", 1);
+                    SetLocalInt(oArea, VAR_SNOW_STORM, 1);
                 }
             }
             else if (bDustStorm || bSandStorm || bSnowStorm)
             {
                 // End the storm.
-                DeleteLocalInt(oArea, "DUST_STORM");
-                DeleteLocalInt(oArea, "SAND_STORM");
-                DeleteLocalInt(oArea, "SNOW_STORM");
+                DeleteLocalInt(oArea, VAR_DUST_STORM);
+                DeleteLocalInt(oArea, VAR_SAND_STORM);
+                DeleteLocalInt(oArea, VAR_SNOW_STORM);
 
                 SetFogColor(FogType.Sun, (FogColor)GetLocalInt(oArea, VAR_FOG_C_SUN), oArea);
                 SetFogColor(FogType.Moon, (FogColor)GetLocalInt(oArea, VAR_FOG_C_MOON), oArea);
@@ -367,10 +372,10 @@ namespace SWLOR.Game.Server.Service
 
                 DelayCommand(6.0f, () => { ApplyAcid(oCreature, oArea); });
             }
-            else if (bIsPC && GetLocalInt(oArea, "DUST_STORM") == 1)
+            else if (bIsPC && GetLocalInt(oArea, VAR_DUST_STORM) == 1)
             {
             }
-            else if (bIsPC && GetLocalInt(oArea, "SAND_STORM") == 1)
+            else if (bIsPC && GetLocalInt(oArea, VAR_SAND_STORM) == 1)
             {
                 var eEffect =
                     EffectLinkEffects(
@@ -383,7 +388,7 @@ namespace SWLOR.Game.Server.Service
 
                 DelayCommand(6.0f, () => { ApplySandstorm(oCreature, oArea); });
             }
-            else if (bIsPC && GetLocalInt(oArea, "SNOW_STORM") == 1)
+            else if (bIsPC && GetLocalInt(oArea, VAR_SNOW_STORM) == 1)
             {
                 var eEffect =
                     EffectLinkEffects(
@@ -618,7 +623,7 @@ namespace SWLOR.Game.Server.Service
 
             var oArea = (OBJECT_SELF);
             var nHour = GetTimeHour();
-            var nLastHour = GetLocalInt(oArea, "WEATHER_LAST_HOUR");
+            var nLastHour = GetLocalInt(oArea, VAR_WEATHER_LAST_HOUR);
 
             if (nHour != nLastHour)
             {
@@ -667,7 +672,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 _areaWeatherPlaceables[oArea] = weatherObjects;
-                SetLocalInt(oArea, "WEATHER_LAST_HOUR", nHour);
+                SetLocalInt(oArea, VAR_WEATHER_LAST_HOUR, nHour);
             }
         }
 
@@ -676,7 +681,7 @@ namespace SWLOR.Game.Server.Service
         {
             var oMod = GetModule();
             var nHour = GetTimeHour();
-            var nLastHour = GetLocalInt(oMod, "WEATHER_LAST_HOUR");
+            var nLastHour = GetLocalInt(oMod, VAR_WEATHER_LAST_HOUR);
 
             if (nHour != nLastHour)
             {
@@ -688,7 +693,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                SetLocalInt(oMod, "WEATHER_LAST_HOUR", nHour);
+                SetLocalInt(oMod, VAR_WEATHER_LAST_HOUR, nHour);
             }
         }
 

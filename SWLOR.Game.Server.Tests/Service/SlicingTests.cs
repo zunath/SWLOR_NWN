@@ -259,7 +259,6 @@ public class SlicingTests
             RepoPaths.FindRepositoryRootPath(),
             "SWLOR.Game.Server",
             "Service",
-            "SlicingService",
             "SlicingSession.cs"));
         var validateAction = Between(source, "private static string ValidateAction", "private static bool TryClaim");
 
@@ -305,7 +304,6 @@ public class SlicingTests
             RepoPaths.FindRepositoryRootPath(),
             "SWLOR.Game.Server",
             "Service",
-            "SlicingService",
             "SlicingSession.cs"));
         var validateAction = Between(source, "private static string ValidateAction", "private static bool TryClaim");
         var swap = Between(source, "public static bool SwapSelectedWith", "public static bool ActivateTool");

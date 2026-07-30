@@ -22,6 +22,19 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Property
     {
+        // Local variable keys.
+        private const string PropertyIdVariable = "PROPERTY_ID";
+        private const string PropertyStoredLocationXVariable = "PROPERTY_STORED_LOCATION_X";
+        private const string PropertyStoredLocationYVariable = "PROPERTY_STORED_LOCATION_Y";
+        private const string PropertyStoredLocationZVariable = "PROPERTY_STORED_LOCATION_Z";
+        private const string PropertyStoredLocationFacingVariable = "PROPERTY_STORED_LOCATION_FACING";
+        private const string PropertyStoredLocationAreaVariable = "PROPERTY_STORED_LOCATION_AREA";
+        private const string PropertyCityHallItemVariable = "PROPERTY_CITY_HALL_ITEM";
+        private const string PropertyCityHallXVariable = "PROPERTY_CITY_HALL_X";
+        private const string PropertyCityHallYVariable = "PROPERTY_CITY_HALL_Y";
+        private const string PropertyCityHallZVariable = "PROPERTY_CITY_HALL_Z";
+        private const string IsBuildableVariable = "IS_BUILDABLE";
+
         private static readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
         private static readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
         private static readonly Dictionary<PropertyLayoutType, PropertyLayout> _activeLayouts = new();
@@ -436,7 +449,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="propertyId">The property Id to assign.</param>
         public static void AssignPropertyId(uint obj, string propertyId)
         {
-            SetLocalString(obj, "PROPERTY_ID", propertyId);
+            SetLocalString(obj, PropertyIdVariable, propertyId);
         }
 
         /// <summary>
@@ -447,7 +460,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The property Id or an empty string if not found.</returns>
         public static string GetPropertyId(uint obj)
         {
-            return GetLocalString(obj, "PROPERTY_ID");
+            return GetLocalString(obj, PropertyIdVariable);
         }
 
         /// <summary>
@@ -2897,11 +2910,11 @@ namespace SWLOR.Game.Server.Service
             var facing = GetFacing(player);
             var area = GetArea(player);
 
-            SetLocalFloat(player, "PROPERTY_STORED_LOCATION_X", position.X);
-            SetLocalFloat(player, "PROPERTY_STORED_LOCATION_Y", position.Y);
-            SetLocalFloat(player, "PROPERTY_STORED_LOCATION_Z", position.Z);
-            SetLocalFloat(player, "PROPERTY_STORED_LOCATION_FACING", facing);
-            SetLocalObject(player, "PROPERTY_STORED_LOCATION_AREA", area);
+            SetLocalFloat(player, PropertyStoredLocationXVariable, position.X);
+            SetLocalFloat(player, PropertyStoredLocationYVariable, position.Y);
+            SetLocalFloat(player, PropertyStoredLocationZVariable, position.Z);
+            SetLocalFloat(player, PropertyStoredLocationFacingVariable, facing);
+            SetLocalObject(player, PropertyStoredLocationAreaVariable, area);
         }
 
         /// <summary>
@@ -2912,20 +2925,20 @@ namespace SWLOR.Game.Server.Service
         public static void JumpToOriginalLocation(uint player)
         {
             var position = Vector3(
-                GetLocalFloat(player, "PROPERTY_STORED_LOCATION_X"),
-                GetLocalFloat(player, "PROPERTY_STORED_LOCATION_Y"),
-                GetLocalFloat(player, "PROPERTY_STORED_LOCATION_Z"));
-            var facing = GetLocalFloat(player, "PROPERTY_STORED_LOCATION_FACING");
-            var area = GetLocalObject(player, "PROPERTY_STORED_LOCATION_AREA");
+                GetLocalFloat(player, PropertyStoredLocationXVariable),
+                GetLocalFloat(player, PropertyStoredLocationYVariable),
+                GetLocalFloat(player, PropertyStoredLocationZVariable));
+            var facing = GetLocalFloat(player, PropertyStoredLocationFacingVariable);
+            var area = GetLocalObject(player, PropertyStoredLocationAreaVariable);
             var location = Location(area, position, facing);
 
             AssignCommand(player, () => ActionJumpToLocation(location));
 
-            DeleteLocalFloat(player, "PROPERTY_STORED_LOCATION_X");
-            DeleteLocalFloat(player, "PROPERTY_STORED_LOCATION_Y");
-            DeleteLocalFloat(player, "PROPERTY_STORED_LOCATION_Z");
-            DeleteLocalFloat(player, "PROPERTY_STORED_LOCATION_FACING");
-            DeleteLocalObject(player, "PROPERTY_STORED_LOCATION_AREA");
+            DeleteLocalFloat(player, PropertyStoredLocationXVariable);
+            DeleteLocalFloat(player, PropertyStoredLocationYVariable);
+            DeleteLocalFloat(player, PropertyStoredLocationZVariable);
+            DeleteLocalFloat(player, PropertyStoredLocationFacingVariable);
+            DeleteLocalObject(player, PropertyStoredLocationAreaVariable);
         }
 
         /// <summary>
@@ -3036,16 +3049,16 @@ namespace SWLOR.Game.Server.Service
             // Special case: City Hall pulls up a menu with details about the land and an option to place it down, claiming the land.
             if (structureType == StructureType.CityHall)
             {
-                if (!GetLocalBool(area, "IS_BUILDABLE"))
+                if (!GetLocalBool(area, IsBuildableVariable))
                 {
                     FloatingTextStringOnCreature("Cities cannot be founded here.", player, false);
                     return;
                 }
 
-                SetLocalObject(player, "PROPERTY_CITY_HALL_ITEM", item);
-                SetLocalFloat(player, "PROPERTY_CITY_HALL_X", position.X);
-                SetLocalFloat(player, "PROPERTY_CITY_HALL_Y", position.Y);
-                SetLocalFloat(player, "PROPERTY_CITY_HALL_Z", position.Z);
+                SetLocalObject(player, PropertyCityHallItemVariable, item);
+                SetLocalFloat(player, PropertyCityHallXVariable, position.X);
+                SetLocalFloat(player, PropertyCityHallYVariable, position.Y);
+                SetLocalFloat(player, PropertyCityHallZVariable, position.Z);
                 Dialog.StartConversation(player, player, nameof(PlaceCityHallDialog));
                 return;
             }

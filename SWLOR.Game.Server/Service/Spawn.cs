@@ -17,6 +17,17 @@ namespace SWLOR.Game.Server.Service
         public const int DespawnMinutes = 20;
         public const int DefaultRespawnMinutes = 5;
 
+        // Local variable keys.
+        private const string VisibilityObjectIdVariable = "VISIBILITY_OBJECT_ID";
+        private const string ResourceSpawnTableIdVariable = "RESOURCE_SPAWN_TABLE_ID";
+        private const string CreatureSpawnTableIdVariable = "CREATURE_SPAWN_TABLE_ID";
+        private const string SlicingTerminalSpawnTableIdVariable = "SLICING_TERMINAL_SPAWN_TABLE_ID";
+        private const string SlicingTerminalSpawnCountVariable = "SLICING_TERMINAL_SPAWN_COUNT";
+        private const string ResourceSpawnCountVariable = "RESOURCE_SPAWN_COUNT";
+        private const string CreatureSpawnCountVariable = "CREATURE_SPAWN_COUNT";
+        private const string SpawnIdVariable = "SPAWN_ID";
+        private const string RespawnQueuedVariable = "RESPAWN_QUEUED";
+
         private class SpawnDetail
         {
             public string SerializedObject { get; set; }
@@ -171,7 +182,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         // Some plot creatures use the Object Visibility service.  This relies on object references so we
                         // should not spawn new instances of those creatures.  Just leave them as they are.
-                        if (!String.IsNullOrEmpty(GetLocalString(obj, "VISIBILITY_OBJECT_ID")))
+                        if (!String.IsNullOrEmpty(GetLocalString(obj, VisibilityObjectIdVariable)))
                         {
                             continue;
                         }
@@ -226,10 +237,10 @@ namespace SWLOR.Game.Server.Service
 
                 // Resource, creature, and slicing-terminal spawn tables can be placed as a local variable on the area.
                 // If one is found, it will be registered.
-                RegisterAreaSpawnTable(area, "RESOURCE_SPAWN_TABLE_ID", CalculateResourceSpawnCount(area));
-                RegisterAreaSpawnTable(area, "CREATURE_SPAWN_TABLE_ID", CalculateCreatureSpawnCount(area));
-                var slicingTerminalCount = Math.Max(1, GetLocalInt(area, "SLICING_TERMINAL_SPAWN_COUNT"));
-                RegisterAreaSpawnTable(area, "SLICING_TERMINAL_SPAWN_TABLE_ID", slicingTerminalCount);
+                RegisterAreaSpawnTable(area, ResourceSpawnTableIdVariable, CalculateResourceSpawnCount(area));
+                RegisterAreaSpawnTable(area, CreatureSpawnTableIdVariable, CalculateCreatureSpawnCount(area));
+                var slicingTerminalCount = Math.Max(1, GetLocalInt(area, SlicingTerminalSpawnCountVariable));
+                RegisterAreaSpawnTable(area, SlicingTerminalSpawnTableIdVariable, slicingTerminalCount);
             }
         }
 
@@ -242,7 +253,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A positive integer indicating the number of resource spawns to use in a given area.</returns>
         private static int CalculateResourceSpawnCount(uint area)
         {
-            var count = GetLocalInt(area, "RESOURCE_SPAWN_COUNT");
+            var count = GetLocalInt(area, ResourceSpawnCountVariable);
 
             // Found the local variable. Use that count.
             if (count > 0) return count;
@@ -271,7 +282,7 @@ namespace SWLOR.Game.Server.Service
 
         private static int CalculateCreatureSpawnCount(uint area)
         {
-            var count = GetLocalInt(area, "CREATURE_SPAWN_COUNT");
+            var count = GetLocalInt(area, CreatureSpawnCountVariable);
 
             // Found the local variable. Use that count.
             if (count > 0) return count;
@@ -421,9 +432,9 @@ namespace SWLOR.Game.Server.Service
         public static void QueueRespawn()
         {
             uint creature = OBJECT_SELF;
-            var spawnId = GetLocalString(creature, "SPAWN_ID");
+            var spawnId = GetLocalString(creature, SpawnIdVariable);
             if (string.IsNullOrWhiteSpace(spawnId)) return;
-            if (GetLocalInt(creature, "RESPAWN_QUEUED") == 1) return;
+            if (GetLocalInt(creature, RespawnQueuedVariable) == 1) return;
 
             var spawnGuid = new Guid(spawnId);
             var detail = _spawns[spawnGuid];
@@ -431,7 +442,7 @@ namespace SWLOR.Game.Server.Service
 
             CreateQueuedSpawn(spawnGuid, respawnTime);
             RemoveActiveSpawn(detail, creature);
-            SetLocalInt(creature, "RESPAWN_QUEUED", 1);
+            SetLocalInt(creature, RespawnQueuedVariable, 1);
         }
 
         /// <summary>
@@ -444,19 +455,19 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(spawnObject))
                 return false;
 
-            var spawnId = GetLocalString(spawnObject, "SPAWN_ID");
+            var spawnId = GetLocalString(spawnObject, SpawnIdVariable);
             if (!Guid.TryParse(spawnId, out var spawnGuid) || !_spawns.TryGetValue(spawnGuid, out var detail))
             {
                 DestroyObject(spawnObject);
                 return false;
             }
 
-            if (GetLocalInt(spawnObject, "RESPAWN_QUEUED") == 1)
+            if (GetLocalInt(spawnObject, RespawnQueuedVariable) == 1)
                 return false;
 
             CreateQueuedSpawn(spawnGuid, GetRespawnTime(detail));
             RemoveActiveSpawn(detail, spawnObject);
-            SetLocalInt(spawnObject, "RESPAWN_QUEUED", 1);
+            SetLocalInt(spawnObject, RespawnQueuedVariable, 1);
             DestroyObject(spawnObject);
             return true;
         }
@@ -794,7 +805,7 @@ namespace SWLOR.Game.Server.Service
 
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 AssignCommand(deserialized, () => SetFacing(facing));
-                SetLocalString(deserialized, "SPAWN_ID", spawnId.ToString());
+                SetLocalString(deserialized, SpawnIdVariable, spawnId.ToString());
                 AI.SetAIFlag(deserialized, AIFlag.ReturnHome);
                 AdjustScripts(deserialized);
                 AdjustStats(deserialized);
@@ -824,7 +835,7 @@ namespace SWLOR.Game.Server.Service
                 var location = Location(detail.Area, position, facing);
 
                 var spawn = CreateObject(spawnObject.Type, spawnObject.Resref, location);
-                SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
+                SetLocalString(spawn, SpawnIdVariable, spawnId.ToString());
 
                 AI.SetAIFlag(spawn, spawnObject.AIFlags);
                 if (spawnObject.AIProfile != AIProfileType.Invalid)

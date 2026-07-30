@@ -94,10 +94,13 @@ Wide but shallow, compiler- or test-verified, each an independent PR. Effort: sm
 5. **Local-variable key constants.** 60 distinct magic strings used as bare NWN local-variable keys
    (`Property.cs` 21 sites, `Weather.cs` 17, `"STAMINA"`/`"FP"` duplicated 8× each). Adopt the
    `AI.cs:20-23` const pattern per service, or a shared `LocalVariableName` class for cross-service keys.
-6. **Migration naming normalization.** Four unnumbered `ServerMigration` files sit beside `_N_`
-   numbered ones, with gaps (`_1_`, `_4_`, `_5_`) and the version duplicated between filename and the
-   `Version` property. Rename to the numbered convention, document the gaps, and add a boot-time (or
-   unit-test) assertion that filename prefix == `Version`.
+6. **Migration naming consistency test.** The version number is duplicated between each numbered
+   migration's filename prefix and its `Version` property, with nothing keeping them in sync; add a
+   unit test asserting filename prefix == `Version` and per-kind version uniqueness.
+   (Correction from the original survey: the four unnumbered `ServerMigration` files are not
+   mis-named migrations — they are `internal static` helper routines invoked from
+   `_22_CombatSystemReplacement` and are deliberately unnumbered; `CombatUpgradeMigrationCoverageTests`
+   references them by name. They stay as they are.)
 7. **Logging consistency.** ~40 `Console.WriteLine` sites (`DB.cs`, `Item.cs`, `Fishing.cs`…) vs 143
    `Log.Write` sites. Convert to Serilog-backed `Log.Write`.
 8. **Encapsulation fixes.** `Space.cs:35` exposes a publicly mutable static `Dictionary` cache;

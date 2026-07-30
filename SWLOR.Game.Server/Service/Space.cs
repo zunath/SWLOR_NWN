@@ -25,6 +25,13 @@ namespace SWLOR.Game.Server.Service
     {
         public const int MaxRegisteredShips = 10;
 
+        // Local variable keys.
+        private const string StarshipDockPointIdVariable = "STARSHIP_DOCKPOINT_ID";
+        private const string SpaceTargetVariable = "SPACE_TARGET";
+        private const string SpaceInstanceLocationVariable = "SPACE_INSTANCE_LOCATION";
+        private const string SpaceInstanceLocationSetVariable = "SPACE_INSTANCE_LOCATION_SET";
+        private const string SpacePilotCloneVariable = "SPACE_PILOT_CLONE";
+
         private static readonly Dictionary<string, ShipDetail> _shipTypes = new();
         private static readonly Dictionary<string, ShipModuleDetail> _shipModules = new();
         private static readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new();
@@ -32,7 +39,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, ShipStatus> _shipNPCs = new();
         private static readonly Dictionary<uint, ShipStatus> _spaceObjectInstances = new();
 
-        public static Dictionary<FeatType, ShipModuleFeat> ShipModuleFeats { get; } = ShipModuleFeat.GetAll();
+        private static readonly Dictionary<FeatType, ShipModuleFeat> _shipModuleFeats = ShipModuleFeat.GetAll();
 
         private static readonly HashSet<string> _shipItemResrefs = new();
         private static readonly HashSet<string> _shipModuleItemTags = new();
@@ -43,6 +50,14 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<PlanetType, Dictionary<string, ShipDockPoint>> _dockPoints = new();
 
         private static readonly HashSet<uint> _playersInSpace = new();
+
+        /// <summary>
+        /// Returns a read-only view of the registered ship module feats.
+        /// </summary>
+        public static IReadOnlyDictionary<FeatType, ShipModuleFeat> GetAllShipModuleFeats()
+        {
+            return _shipModuleFeats;
+        }
 
         /// <summary>
         /// When the module loads, cache all space data into memory.
@@ -112,7 +127,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="propertyId">If specified, references the world property Id of this landing point.</param>
         public static void RegisterLandingPoint(uint waypoint, uint area, bool isNPC, string propertyId)
         {
-            var dockPointId = GetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID");
+            var dockPointId = GetLocalString(waypoint, StarshipDockPointIdVariable);
             var planet = Planet.GetPlanetType(area);
 
             // Only waypoints in recognized planets are tracked.
@@ -127,7 +142,7 @@ namespace SWLOR.Game.Server.Service
                 if (_dockPoints[planet].ContainsKey(dockPointId))
                     return;
 
-                DeleteLocalString(waypoint, "STARSHIP_DOCKPOINT_ID");
+                DeleteLocalString(waypoint, StarshipDockPointIdVariable);
             }
 
             if (!isNPC && !string.IsNullOrWhiteSpace(propertyId))
@@ -144,7 +159,7 @@ namespace SWLOR.Game.Server.Service
 
             _dockPoints[planet][dockPointId] = dockPoint;
 
-            SetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID", dockPointId);
+            SetLocalString(waypoint, StarshipDockPointIdVariable, dockPointId);
         }
 
         /// <summary>
@@ -161,7 +176,7 @@ namespace SWLOR.Game.Server.Service
             if (planet == PlanetType.Invalid)
                 return;
 
-            var dockPointId = GetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID");
+            var dockPointId = GetLocalString(waypoint, StarshipDockPointIdVariable);
             if (_dockPoints.ContainsKey(planet) &&
                 _dockPoints[planet].ContainsKey(dockPointId))
             {
@@ -373,7 +388,7 @@ namespace SWLOR.Game.Server.Service
             {
                 PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffect.Vfx_Target_Marker);
             }
-            SetLocalObject(creature, "SPACE_TARGET", target);
+            SetLocalObject(creature, SpaceTargetVariable, target);
 
             if(GetIsPC(creature) && !Gui.IsWindowOpen(creature, GuiWindowType.TargetStatus) && GetShipStatus(target) != null)
                 Gui.TogglePlayerWindow(creature, GuiWindowType.TargetStatus);
@@ -386,7 +401,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The selected target or OBJECT_INVALID.</returns>
         public static (uint, ShipStatus) GetCurrentTarget(uint player)
         {
-            var target = GetLocalObject(player, "SPACE_TARGET");
+            var target = GetLocalObject(player, SpaceTargetVariable);
             return (target, GetShipStatus(target));
         }
 
@@ -404,7 +419,7 @@ namespace SWLOR.Game.Server.Service
                 PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffect.None);
             }
 
-            DeleteLocalObject(creature, "SPACE_TARGET");
+            DeleteLocalObject(creature, SpaceTargetVariable);
 
             if(GetIsPC(creature) && Gui.IsWindowOpen(creature, GuiWindowType.TargetStatus))
                 Gui.TogglePlayerWindow(creature, GuiWindowType.TargetStatus);
@@ -533,8 +548,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            SetLocalLocation(player, "SPACE_INSTANCE_LOCATION", GetLocation(player));
-            SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);
+            SetLocalLocation(player, SpaceInstanceLocationVariable, GetLocation(player));
+            SetLocalBool(player, SpaceInstanceLocationSetVariable, true);
             EnterSpaceMode(player, dbShip.Id);
 
             var dbProperty = DB.Get<WorldProperty>(propertyId);
@@ -796,16 +811,16 @@ namespace SWLOR.Game.Server.Service
             ExitSpaceMode(player);
             Ability.ReapplyPlayerAuraAOE(player);
 
-            if (!GetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET"))
+            if (!GetLocalBool(player, SpaceInstanceLocationSetVariable))
                 return;
 
-            var location = GetLocalLocation(player, "SPACE_INSTANCE_LOCATION");
+            var location = GetLocalLocation(player, SpaceInstanceLocationVariable);
 
             AssignCommand(player, () => ClearAllActions());
             AssignCommand(player, () => ActionJumpToLocation(location));
 
-            DeleteLocalLocation(player, "SPACE_INSTANCE_LOCATION");
-            DeleteLocalBool(player, "SPACE_INSTANCE_LOCATION_SET");
+            DeleteLocalLocation(player, SpaceInstanceLocationVariable);
+            DeleteLocalBool(player, SpaceInstanceLocationSetVariable);
         }
 
         private static void ClonePlayerAndSit(uint player)
@@ -839,7 +854,7 @@ namespace SWLOR.Game.Server.Service
             });
 
             SetPlotFlag(copy, true);
-            SetLocalObject(player, "SPACE_PILOT_CLONE", copy);
+            SetLocalObject(player, SpacePilotCloneVariable, copy);
         }
 
         /// <summary>
@@ -852,9 +867,9 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyShipModuleFeat(uint player, ShipModuleDetail shipModuleDetail, FeatType feat)
         {
             if (!GetIsObjectValid(player)) return;
-            if (!ShipModuleFeats.ContainsKey(feat)) return;
+            if (!_shipModuleFeats.ContainsKey(feat)) return;
 
-            var shipModuleFeat = ShipModuleFeats[feat];
+            var shipModuleFeat = _shipModuleFeats[feat];
 
             PlayerPlugin.SetTlkOverride(player, shipModuleFeat.NameTlkId, shipModuleFeat.SlotName + ":" + shipModuleDetail.Name);
             PlayerPlugin.SetTlkOverride(player, shipModuleFeat.DescriptionTlkId, shipModuleDetail.Description);
@@ -919,7 +934,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
             // Remove all module feats from the player.
-            foreach (var (feat, _) in ShipModuleFeats)
+            foreach (var (feat, _) in _shipModuleFeats)
             {
                 CreaturePlugin.RemoveFeat(player, feat);
             }
@@ -994,13 +1009,13 @@ namespace SWLOR.Game.Server.Service
 
         private static void DestroyPilotClone(uint player)
         {
-            var copy = GetLocalObject(player, "SPACE_PILOT_CLONE");
+            var copy = GetLocalObject(player, SpacePilotCloneVariable);
             if (GetIsObjectValid(copy))
             {
                 DestroyObject(copy);
             }
 
-            DeleteLocalObject(player, "SPACE_PILOT_CLONE");
+            DeleteLocalObject(player, SpacePilotCloneVariable);
         }
 
         /// <summary>
@@ -1126,7 +1141,7 @@ namespace SWLOR.Game.Server.Service
         {
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
 
-            if (!ShipModuleFeats.ContainsKey(feat)) return;
+            if (!_shipModuleFeats.ContainsKey(feat)) return;
 
             var activator = OBJECT_SELF;
             var activatorShipStatus = GetShipStatus(activator);
@@ -1397,7 +1412,7 @@ namespace SWLOR.Game.Server.Service
             var featCount = 0;
             foreach (var itemTag in registeredEnemyType.HighPoweredModules)
             {
-                var feat = ShipModuleFeats.ElementAt(featCount).Key;
+                var feat = _shipModuleFeats.ElementAt(featCount).Key;
                 var slot = HighFeatToSlot(feat);
                 var shipModule = _shipModules[itemTag];
                 shipStatus.HighPowerModules.Add(slot, new ShipStatus.ShipStatusModule
@@ -1417,7 +1432,7 @@ namespace SWLOR.Game.Server.Service
             }
             foreach (var itemTag in registeredEnemyType.LowPowerModules)
             {
-                var feat = ShipModuleFeats.ElementAt(featCount).Key;
+                var feat = _shipModuleFeats.ElementAt(featCount).Key;
                 var slot = LowFeatToSlot(feat);
                 var shipModule = _shipModules[itemTag];
                 shipStatus.LowPowerModules.Add(slot, new ShipStatus.ShipStatusModule
@@ -1884,7 +1899,7 @@ namespace SWLOR.Game.Server.Service
                 Enmity.RemoveCreatureEnmity(creature);
 
                 // Remove all module feats from the player.
-                foreach (var (feat, _) in ShipModuleFeats)
+                foreach (var (feat, _) in _shipModuleFeats)
                 {
                     CreaturePlugin.RemoveFeat(creature, feat);
                 }

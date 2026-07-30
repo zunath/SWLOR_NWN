@@ -43,6 +43,11 @@ namespace SWLOR.Game.Server.Service
         private const float DeflectionEvasionBoostDurationSeconds = 30f;
         private const float DeflectionEnmityBoostDurationSeconds = 30f;
         private const float DeflectionDefenseBoostDurationSeconds = 30f;
+
+        // Local variable keys.
+        public const string FPVariable = "FP";
+        public const string StaminaVariable = "STAMINA";
+
         private static readonly Dictionary<StatType, StatTypeAttribute> _statTypeAttributes = new();
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
@@ -193,7 +198,7 @@ namespace SWLOR.Game.Server.Service
             // NPCs
             else
             {
-                return GetLocalInt(creature, "FP");
+                return GetLocalInt(creature, FPVariable);
             }
         }
 
@@ -273,7 +278,7 @@ namespace SWLOR.Game.Server.Service
             // NPCs
             else
             {
-                return GetLocalInt(creature, "STAMINA");
+                return GetLocalInt(creature, StaminaVariable);
             }
         }
 
@@ -311,13 +316,13 @@ namespace SWLOR.Game.Server.Service
             // NPCs
             else
             {
-                var fp = GetLocalInt(creature, "FP");
+                var fp = GetLocalInt(creature, FPVariable);
                 fp += amount;
 
                 if (fp > maxFP)
                     fp = maxFP;
 
-                SetLocalInt(creature, "FP", fp);
+                SetLocalInt(creature, FPVariable, fp);
             }
 
             ExecuteScript(ScriptName.OnPlayerFPAdjusted, creature);
@@ -351,12 +356,12 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                var fp = GetLocalInt(creature, "FP");
+                var fp = GetLocalInt(creature, FPVariable);
                 fp -= reduceBy;
                 if (fp < 0)
                     fp = 0;
 
-                SetLocalInt(creature, "FP", fp);
+                SetLocalInt(creature, FPVariable, fp);
             }
 
             ExecuteScript(ScriptName.OnPlayerFPAdjusted, creature);
@@ -393,13 +398,13 @@ namespace SWLOR.Game.Server.Service
             // NPCs
             else
             {
-                var fp = GetLocalInt(creature, "STAMINA");
+                var fp = GetLocalInt(creature, StaminaVariable);
                 fp += amount;
 
                 if (fp > maxSTM)
                     fp = maxSTM;
 
-                SetLocalInt(creature, "STAMINA", fp);
+                SetLocalInt(creature, StaminaVariable, fp);
             }
 
             ExecuteScript(ScriptName.OnPlayerStaminaAdjusted, creature);
@@ -433,12 +438,12 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                var stamina = GetLocalInt(creature, "STAMINA");
+                var stamina = GetLocalInt(creature, StaminaVariable);
                 stamina -= reduceBy;
                 if (stamina < 0)
                     stamina = 0;
 
-                SetLocalInt(creature, "STAMINA", stamina);
+                SetLocalInt(creature, StaminaVariable, stamina);
             }
 
             ExecuteScript(ScriptName.OnPlayerStaminaAdjusted, creature);
@@ -2302,8 +2307,8 @@ namespace SWLOR.Game.Server.Service
                 ObjectPlugin.SetCurrentHitPoints(self, maxHP);
             }
 
-            SetLocalInt(self, "FP", GetMaxFP(self));
-            SetLocalInt(self, "STAMINA", GetMaxStamina(self));
+            SetLocalInt(self, FPVariable, GetMaxFP(self));
+            SetLocalInt(self, StaminaVariable, GetMaxStamina(self));
         }
 
         /// <summary>
@@ -2327,16 +2332,16 @@ namespace SWLOR.Game.Server.Service
 
             var maxFP = GetMaxFP(self);
             var maxSTM = GetMaxStamina(self);
-            var fp = GetLocalInt(self, "FP") + 1;
-            var stm = GetLocalInt(self, "STAMINA") + 1;
+            var fp = GetLocalInt(self, FPVariable) + 1;
+            var stm = GetLocalInt(self, StaminaVariable) + 1;
 
             if (fp > maxFP)
                 fp = maxFP;
             if (stm > maxSTM)
                 stm = maxSTM;
 
-            SetLocalInt(self, "FP", fp);
-            SetLocalInt(self, "STAMINA", stm);
+            SetLocalInt(self, FPVariable, fp);
+            SetLocalInt(self, StaminaVariable, stm);
 
             if (outOfCombatRegen)
             {

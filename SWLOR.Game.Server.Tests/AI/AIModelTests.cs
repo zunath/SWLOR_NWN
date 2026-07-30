@@ -438,7 +438,7 @@ public class AIModelTests
     public void NpcAttackReissue_UsesGuardedEnmityAttackBeforeReattacking()
     {
         var enmitySource = ReadSource("SWLOR.Game.Server", "Service", "Enmity.cs").Replace("\r\n", "\n");
-        var npcAiSource = ReadSource("SWLOR.Game.Server", "Service", "AIService", "NPCAI.cs").Replace("\r\n", "\n");
+        var npcAiSource = ReadSource("SWLOR.Game.Server", "Service", "NPCAI.cs").Replace("\r\n", "\n");
         var processTriggerBody = npcAiSource.Substring(
             npcAiSource.IndexOf("public static bool ProcessTrigger", StringComparison.Ordinal),
             npcAiSource.IndexOf("private static AIState GetState", StringComparison.Ordinal) -

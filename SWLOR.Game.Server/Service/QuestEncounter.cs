@@ -5,12 +5,13 @@ using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.NPCService;
+using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 
-namespace SWLOR.Game.Server.Service.QuestService
+namespace SWLOR.Game.Server.Service
 {
     public static class QuestEncounter
     {

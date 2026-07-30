@@ -331,7 +331,6 @@ public class EspionageSystemTests
         references.Should().Equal(Path.Combine(
             "SWLOR.Game.Server",
             "Service",
-            "SlicingService",
             "SlicingSession.cs"));
     }
 

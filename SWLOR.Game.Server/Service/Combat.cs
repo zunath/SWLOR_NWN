@@ -43,6 +43,10 @@ namespace SWLOR.Game.Server.Service
         public const int StandardCriticalRating = 2;
         public const int BaseAttackDelayMilliseconds = 1750;
 
+        // Local variable keys.
+        private const string AttackOrientationXVariable = "ATTACK_ORIENTATION_X";
+        private const string AttackOrientationYVariable = "ATTACK_ORIENTATION_Y";
+
         // The engine/client cannot play swing animations faster than the base attack delay.
         // Delays below it are honored by resolving multiple attack rolls within a single swing,
         // mirroring the stock engine's flurry behavior for high attacks-per-round builds.
@@ -9442,8 +9446,8 @@ namespace SWLOR.Game.Server.Service
             // Clear combat state.
             if (!GetIsInCombat(player))
             {
-                DeleteLocalFloat(player, "ATTACK_ORIENTATION_X");
-                DeleteLocalFloat(player, "ATTACK_ORIENTATION_Y");
+                DeleteLocalFloat(player, AttackOrientationXVariable);
+                DeleteLocalFloat(player, AttackOrientationYVariable);
             }
         }
 

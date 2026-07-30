@@ -3,13 +3,14 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
-namespace SWLOR.Game.Server.Service.AIService
+namespace SWLOR.Game.Server.Service
 {
     public static class NPCAI
     {

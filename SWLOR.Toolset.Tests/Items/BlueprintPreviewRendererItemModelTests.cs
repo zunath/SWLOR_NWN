@@ -98,21 +98,21 @@ namespace SWLOR.Toolset.Tests.Items
 
 
         [Test]
-        public void AWornPartsSkinLayerIsNotLeftOnThePalettesWhiteRow()
+        public void AnItemsUnspecifiedLayersMatchAuroraAtRowZero()
         {
-            // Every palette runs light to dark, so row 0 is white - pal_skin01's is #FFFEFE. An item
-            // names no skin colour because it has no wearer, and a glove is roughly a third skin
-            // pixels by area (pfh0_handl002: Skin 34%, Tattoo1 7%), so leaving those layers at 0
-            // rendered white patches on the hands that read as a missing texture.
+            // An item names no skin, hair or tattoo colour because it has no wearer, and Aurora's
+            // item preview shows those layers at palette row 0. Substituting a mid-palette row to
+            // make them "nicer" turned the head and hands red: a palette row is a gradient across
+            // its columns, and only the brightest column is the pale tone that choice was based on.
             var root = CorpusItem("adren_harness");
             var renderer = BuildRenderer();
 
             var model = renderer.BuildModel(ResourceType.Uti, root);
 
             model.Should().NotBeNull();
-            model!.LayerColorIndices[PltLayers.Skin].Should().NotBe(0, "row 0 is white");
-            model.LayerColorIndices[PltLayers.Tattoo1].Should().NotBe(0);
-            model.LayerColorIndices[PltLayers.Tattoo2].Should().NotBe(0);
+            model!.LayerColorIndices[PltLayers.Skin].Should().Be(0);
+            model.LayerColorIndices[PltLayers.Hair].Should().Be(0);
+            model.LayerColorIndices[PltLayers.Tattoo1].Should().Be(0);
         }
 
         private static Domain.Gff.JsonGffStruct CorpusItem(string resRef) =>

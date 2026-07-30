@@ -59,8 +59,12 @@
         </ControlTemplate>
       </Setter>
 
+      <!-- A real brush, not a guessed key: an undefined DynamicResource resolves to null, and a
+           null Background is not hit-testable, so hovering dropped the pointer through the control,
+           which cleared :pointerover, which restored the background - the cursor flickered between
+           hand and arrow anywhere except over the glyphs, which hit-test on their own. -->
       <Style Selector="^:pointerover /template/ Border#Fill">
-        <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+        <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
       </Style>
       <Style Selector="^:checked /template/ Border#Fill">
         <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />

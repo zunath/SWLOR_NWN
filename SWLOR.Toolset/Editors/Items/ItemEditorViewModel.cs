@@ -588,15 +588,15 @@ namespace SWLOR.Toolset.Editors.Items
         /// <summary>The item's dye choices, which travel on the scene instance rather than the model.</summary>
         private IReadOnlyDictionary<int, int> CurrentLayerColors()
         {
-            // Skin and tattoo layers have no field on an item and must not be left out: an absent
-            // layer resolves to palette row 0, which is white in every palette, and a glove is a
-            // third skin by area. BlueprintModelResolver applies the same default for the icon path.
+            // Every layer is named, including the ones an item has no field for: leaving a layer out
+            // is not the same as setting it to 0, because the viewport's override replaces the
+            // model's whole set. Row 0 is what Aurora shows for an unspecified layer.
             var colors = new Dictionary<int, int>
             {
-                [SWLOR.NWN.Formats.Plt.PltLayers.Skin] = BlueprintModelResolver.UnwornSkinRow,
+                [SWLOR.NWN.Formats.Plt.PltLayers.Skin] = 0,
                 [SWLOR.NWN.Formats.Plt.PltLayers.Hair] = 0,
-                [SWLOR.NWN.Formats.Plt.PltLayers.Tattoo1] = BlueprintModelResolver.UnwornSkinRow,
-                [SWLOR.NWN.Formats.Plt.PltLayers.Tattoo2] = BlueprintModelResolver.UnwornSkinRow,
+                [SWLOR.NWN.Formats.Plt.PltLayers.Tattoo1] = 0,
+                [SWLOR.NWN.Formats.Plt.PltLayers.Tattoo2] = 0,
             };
 
             foreach (var (layer, field) in DyeFields)

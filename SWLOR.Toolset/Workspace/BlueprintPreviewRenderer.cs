@@ -521,14 +521,15 @@ namespace SWLOR.Toolset.Workspace
                 return parts;
 
             var robeModel = LoadMdl(robe.ModelResRef, withSupermodelAnims: false);
-            if (robeModel == null)
+            if (robeModel == null || !RobeCoverage.IsFullBodyRobe(robeModel))
                 return parts;
 
-            // Measured coverage, not a full-body/partial verdict: the robe replaces the parts its own
-            // geometry actually reaches.
-            var covered = RobeCoverage.CoveredParts(robeModel);
+            // Only a classic full robe replaces the body. Aurora draws every part alongside a coat
+            // like chimedclothes - sleeves and flesh hands included - and both attempts to suppress
+            // more than this took limbs off the model: measuring the robe's span claimed the arms,
+            // and a blanket chest/belt/pelvis rule amputated the torso off short robes.
             return parts
-                .Where(part => !covered.Contains(part.PartType))
+                .Where(part => !BlueprintModelResolver.RobeCoveredParts.Contains(part.PartType))
                 .ToList();
         }
 

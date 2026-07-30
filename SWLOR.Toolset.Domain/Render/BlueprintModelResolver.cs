@@ -327,13 +327,6 @@ namespace SWLOR.Toolset.Domain.Render
             };
         }
 
-        /// <summary>
-        /// The skin palette row a mannequin borrows when no wearer supplies one. Mid-palette rather
-        /// than row 0: these palettes run light to dark, so row 0 is white and the first rows are
-        /// near-white, while the middle is an ordinary flesh tone (#F6D3CC at row 88 of 176).
-        /// </summary>
-        public const int UnwornSkinRow = 88;
-
         /// <summary>baseitems.2da's ItemClass for a cloak - the same string ItemFamilyClassifier reads.</summary>
         private const string CloakItemClass = "cloak";
 
@@ -467,14 +460,14 @@ namespace SWLOR.Toolset.Domain.Render
         {
             var colors = Enumerable.Range(0, 10).ToDictionary(layer => layer, _ => 0);
 
-            // A creature names its own colours. An ITEM does not - it has no wearer - and these
-            // layers must not fall to palette row 0, which is pure white in every palette
-            // (pal_skin01 row 0 is #FFFEFE). A glove is a third skin pixels by area, so row 0 turned
-            // hands into white patches that read as a missing texture.
-            colors[PltLayers.Skin] = creature.GetIntOrNull("Color_Skin") ?? UnwornSkinRow;
+            // Absent means row 0, which is what Aurora shows: its item preview dresses a default
+            // mannequin whose unspecified layers take the palette's first row. Picking a
+            // "nicer" mid-palette row instead turned the head and hands red, because a palette row
+            // is a gradient and only its brightest column is the pale tone I had sampled.
+            colors[PltLayers.Skin] = creature.GetIntOrNull("Color_Skin") ?? 0;
             colors[PltLayers.Hair] = creature.GetIntOrNull("Color_Hair") ?? 0;
-            colors[PltLayers.Tattoo1] = creature.GetIntOrNull("Color_Tattoo1") ?? UnwornSkinRow;
-            colors[PltLayers.Tattoo2] = creature.GetIntOrNull("Color_Tattoo2") ?? UnwornSkinRow;
+            colors[PltLayers.Tattoo1] = creature.GetIntOrNull("Color_Tattoo1") ?? 0;
+            colors[PltLayers.Tattoo2] = creature.GetIntOrNull("Color_Tattoo2") ?? 0;
 
             if (armor != null)
             {

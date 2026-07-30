@@ -224,13 +224,15 @@ namespace SWLOR.Toolset.Editors.Items
                 options.Add(new BehaviorChoiceViewModel(new BehaviorChoice(part, caption, resRef)));
             }
 
-            RequestThumbnails(options);
+            RequestThumbnails(options, cropTransparentCanvas: true);
             return new CompositePartViewModel(label, fieldName, _store, _runEdit, options, _appearanceChanged);
         }
 
         private string? Probe(string resRef) => _textureExists(resRef) ? resRef : null;
 
-        private void RequestThumbnails(IReadOnlyList<BehaviorChoiceViewModel> options)
+        private void RequestThumbnails(
+            IReadOnlyList<BehaviorChoiceViewModel> options,
+            bool cropTransparentCanvas = false)
         {
             if (_previews == null)
                 return;
@@ -240,14 +242,20 @@ namespace SWLOR.Toolset.Editors.Items
                 if (!option.HasArtwork || option.Thumbnail != null)
                     continue;
 
-                if (_previews.Cached(option.Choice, ChoicePreviewService.ThumbnailWidth) is { } cached)
+                if (_previews.Cached(
+                        option.Choice,
+                        ChoicePreviewService.ThumbnailWidth,
+                        cropTransparentCanvas) is { } cached)
                 {
                     option.Thumbnail = cached;
                     continue;
                 }
 
                 _ = _previews.RequestAsync(
-                    option.Choice, ChoicePreviewService.ThumbnailWidth, bitmap => option.Thumbnail = bitmap);
+                    option.Choice,
+                    ChoicePreviewService.ThumbnailWidth,
+                    bitmap => option.Thumbnail = bitmap,
+                    cropTransparentCanvas);
             }
         }
     }

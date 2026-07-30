@@ -181,13 +181,15 @@
       </Border>
     </DataTemplate>
 
-    <!-- One picture tile of an appearance gallery. -->
+    <!-- One picture tile of an appearance gallery. Composite-part artwork is cropped to its
+         visible pixels before it reaches this template, so the larger canvas shows the part
+         itself instead of magnifying the texture's transparent padding. -->
     <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
-      <StackPanel Width="72">
-        <Border Height="64" Background="{DynamicResource FieldBrush}"
+      <StackPanel Width="100">
+        <Border Height="92" Background="{DynamicResource FieldBrush}"
                 BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
           <Panel>
-            <Image Source="{Binding Thumbnail}" Stretch="Uniform" Margin="4"
+            <Image Source="{Binding Thumbnail}" Stretch="Uniform" Margin="3"
                    IsVisible="{Binding Thumbnail, Converter={x:Static ObjectConverters.IsNotNull}}" />
             <TextBlock Text="{Binding Glyph}" HorizontalAlignment="Center" VerticalAlignment="Center"
                        Classes="dim"
@@ -214,7 +216,7 @@
       <StackPanel>
         <TextBlock Text="{Binding Label}" Classes="section" Margin="0,0,0,4" />
         <ListBox ItemsSource="{Binding Options}" SelectedItem="{Binding Selected, Mode=TwoWay}"
-                 Background="Transparent" BorderThickness="0" MaxHeight="200"
+                 Background="Transparent" BorderThickness="0" MaxHeight="240"
                  ScrollViewer.VerticalScrollBarVisibility="Auto">
           <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
@@ -471,7 +473,7 @@
                        TextWrapping="Wrap" />
             <TextBlock Text="{Binding TemplateResRef}" Classes="resref" FontSize="10.5" />
             <TextBlock Text="{Binding ItemTag}" Classes="dim" FontSize="10.5" />
-            <TextBlock Text="Left-drag to turn &#x00B7; right-drag to move &#x00B7; wheel to zoom"
+            <TextBlock Text="Left-drag to move &#x00B7; right-drag to turn &#x00B7; wheel to zoom"
                        Classes="dim" FontSize="10" TextWrapping="Wrap"
                        IsVisible="{Binding HasModelPreview}" />
           </StackPanel>

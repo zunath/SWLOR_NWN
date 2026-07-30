@@ -86,7 +86,7 @@
                        TextWrapping="Wrap" />
             <TextBlock Text="{Binding TemplateResRef}" Classes="resref" FontSize="10.5" />
             <TextBlock Text="{Binding DoorTag}" Classes="dim" FontSize="10.5" />
-            <TextBlock Text="Left-drag to turn &#x00B7; right-drag to move &#x00B7; wheel to zoom"
+            <TextBlock Text="Left-drag to move &#x00B7; right-drag to turn &#x00B7; wheel to zoom"
                        Classes="dim" FontSize="10" TextWrapping="Wrap" />
           </StackPanel>
         </Grid>

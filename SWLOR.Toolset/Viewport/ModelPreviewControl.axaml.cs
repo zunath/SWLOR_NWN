@@ -40,13 +40,13 @@ namespace SWLOR.Toolset.Viewport
         private bool _hostVisible;
         private bool _disposed;
 
-        /// <summary>How far a pixel of right-drag slides the camera, in metres.</summary>
+        /// <summary>How far a pixel of left-drag slides the camera, in metres.</summary>
         private const float PanPerPixel = 0.02f;
 
         /// <summary>Where the pointer was last seen during a drag, or null when not dragging.</summary>
         private Avalonia.Point? _dragFrom;
 
-        /// <summary>True while the drag in flight is a right-button pan rather than a turn.</summary>
+        /// <summary>True while the drag in flight is a left-button pan rather than a turn.</summary>
         private bool _dragPans;
 
         public ModelPreviewControl()
@@ -164,11 +164,10 @@ namespace SWLOR.Toolset.Viewport
         }
 
         /// <summary>
-        /// Left-drag turns the model. The shared viewport reserves left for picking and orbits on
-        /// the middle button, which is right for a map you select things in - but here there is
-        /// nothing to select and only one thing to look at, so the plainest gesture should be the
-        /// one that turns it. Handled here rather than changed in the area control, so the map keeps
-        /// its own semantics.
+        /// Aurora's model viewer uses left-drag to move the camera and right-drag to turn the item.
+        /// The shared viewport has different gestures because its left button also picks and edits
+        /// area objects. Handle the model-viewer mapping here so every blueprint preview matches
+        /// Aurora without changing the area editor's controls.
         /// </summary>
         private void OnViewportPointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
         {
@@ -178,7 +177,7 @@ namespace SWLOR.Toolset.Viewport
             var point = e.GetCurrentPoint(_viewportInput ?? (Control)_modelView);
             if (point.Properties.IsLeftButtonPressed || point.Properties.IsRightButtonPressed)
             {
-                _dragPans = point.Properties.IsRightButtonPressed;
+                _dragPans = point.Properties.IsLeftButtonPressed;
                 _dragFrom = point.Position;
                 e.Pointer.Capture(_viewportInput);
                 e.Handled = true;

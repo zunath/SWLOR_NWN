@@ -51,13 +51,16 @@ namespace SWLOR.Toolset.Editors.Behaviors
         }
 
         /// <summary>The already-resolved picture for a choice, or null. Never starts work.</summary>
-        public Bitmap? Cached(BehaviorChoice choice, int maxWidth)
+        public Bitmap? Cached(
+            BehaviorChoice choice,
+            int maxWidth,
+            bool cropTransparentCanvas = false)
         {
             ArgumentNullException.ThrowIfNull(choice);
 
             return choice.ModelResRef is { Length: > 0 } model
                 ? _models?.CachedTile(model)
-                : Cached(choice.ImageResRef, maxWidth);
+                : Cached(choice.ImageResRef, maxWidth, cropTransparentCanvas);
         }
 
         /// <summary>
@@ -68,7 +71,11 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// on the letter it started with. That is the degrade path on purpose: a gallery that waited
         /// on every unrenderable row would hold the ones that do render behind them.
         /// </remarks>
-        public async Task RequestAsync(BehaviorChoice choice, int maxWidth, Action<Bitmap> onReady)
+        public async Task RequestAsync(
+            BehaviorChoice choice,
+            int maxWidth,
+            Action<Bitmap> onReady,
+            bool cropTransparentCanvas = false)
         {
             ArgumentNullException.ThrowIfNull(choice);
             ArgumentNullException.ThrowIfNull(onReady);
@@ -83,7 +90,10 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 return;
             }
 
-            if (await ResolveAsync(choice.ImageResRef, maxWidth).ConfigureAwait(true) is { } bitmap)
+            if (await ResolveAsync(
+                    choice.ImageResRef,
+                    maxWidth,
+                    cropTransparentCanvas).ConfigureAwait(true) is { } bitmap)
                 onReady(bitmap);
         }
 
@@ -91,12 +101,15 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// The artwork for a resref at the given width, decoding off the UI thread on first use.
         /// Returns null when there is no artwork, none can be decoded, or no resource index exists.
         /// </summary>
-        public async Task<Bitmap?> ResolveAsync(string? resRef, int maxWidth)
+        public async Task<Bitmap?> ResolveAsync(
+            string? resRef,
+            int maxWidth,
+            bool cropTransparentCanvas = false)
         {
             if (_resources == null || string.IsNullOrWhiteSpace(resRef))
                 return null;
 
-            var key = $"{resRef}@{maxWidth}";
+            var key = CacheKey(resRef, maxWidth, cropTransparentCanvas);
             lock (_syncRoot)
             {
                 if (_cache.TryGetValue(key, out var cached))
@@ -104,7 +117,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
             }
 
             // Decode and scale on a worker; only the bitmap handoff needs the UI thread.
-            var scaled = await Task.Run(() => Decode(resRef, maxWidth)).ConfigureAwait(true);
+            var scaled = await Task.Run(
+                () => Decode(resRef, maxWidth, cropTransparentCanvas)).ConfigureAwait(true);
             var bitmap = scaled == null ? null : await ToBitmapAsync(scaled).ConfigureAwait(true);
 
             lock (_syncRoot)
@@ -114,21 +128,30 @@ namespace SWLOR.Toolset.Editors.Behaviors
         }
 
         /// <summary>An already-decoded bitmap, or null. Never starts work — for binding without waiting.</summary>
-        public Bitmap? Cached(string? resRef, int maxWidth)
+        public Bitmap? Cached(
+            string? resRef,
+            int maxWidth,
+            bool cropTransparentCanvas = false)
         {
             if (string.IsNullOrWhiteSpace(resRef))
                 return null;
 
             lock (_syncRoot)
-                return _cache.GetValueOrDefault($"{resRef}@{maxWidth}");
+                return _cache.GetValueOrDefault(CacheKey(resRef, maxWidth, cropTransparentCanvas));
         }
 
-        private ScaledImage? Decode(string resRef, int maxWidth)
+        private static string CacheKey(string resRef, int maxWidth, bool cropTransparentCanvas) =>
+            $"{resRef}@{maxWidth}:{(cropTransparentCanvas ? "cropped" : "full")}";
+
+        private ScaledImage? Decode(string resRef, int maxWidth, bool cropTransparentCanvas)
         {
             try
             {
                 if (TextureLoader.Load(_resources!, resRef) is not { } texture)
                     return null;
+
+                if (cropTransparentCanvas)
+                    texture = CropTransparentCanvas(texture);
 
                 return Downscale(texture, maxWidth);
             }
@@ -138,6 +161,67 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 // degrades to the name the row already shows.
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Removes empty alpha around artwork whose source canvas is much larger than the visible
+        /// subject. Composite item icons deliberately occupy only their top, middle, or bottom
+        /// slice of a full inventory-icon canvas; showing that whole canvas makes small hilts and
+        /// connectors look like dots. The ordinary preview path keeps the authored canvas.
+        /// </summary>
+        private static TextureImage CropTransparentCanvas(TextureImage texture)
+        {
+            const byte visibleAlphaThreshold = 8;
+
+            var left = texture.Width;
+            var top = texture.Height;
+            var right = -1;
+            var bottom = -1;
+
+            for (var y = 0; y < texture.Height; y++)
+            {
+                for (var x = 0; x < texture.Width; x++)
+                {
+                    var alpha = texture.Pixels[(y * texture.Width + x) * 4 + 3];
+                    if (alpha <= visibleAlphaThreshold)
+                        continue;
+
+                    left = Math.Min(left, x);
+                    top = Math.Min(top, y);
+                    right = Math.Max(right, x);
+                    bottom = Math.Max(bottom, y);
+                }
+            }
+
+            if (right < left || bottom < top ||
+                (left == 0 && top == 0 && right == texture.Width - 1 && bottom == texture.Height - 1))
+            {
+                return texture;
+            }
+
+            var width = right - left + 1;
+            var height = bottom - top + 1;
+            var pixels = new byte[checked(width * height * 4)];
+            var rowBytes = width * 4;
+
+            for (var y = 0; y < height; y++)
+            {
+                Buffer.BlockCopy(
+                    texture.Pixels,
+                    ((top + y) * texture.Width + left) * 4,
+                    pixels,
+                    y * rowBytes,
+                    rowBytes);
+            }
+
+            return new TextureImage
+            {
+                Width = width,
+                Height = height,
+                Pixels = pixels,
+                SourceFormat = texture.SourceFormat,
+                AlphaMean = texture.AlphaMean
+            };
         }
 
         /// <summary>

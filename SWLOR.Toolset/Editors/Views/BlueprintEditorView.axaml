@@ -196,7 +196,7 @@
                       Command="{Binding ToggleAnimationCommand}"
                       IsEnabled="{Binding CanAnimateSelected}" MinWidth="62" />
             </Grid>
-            <TextBlock Text="Left-drag to turn &#x00B7; right-drag to move &#x00B7; wheel to zoom"
+            <TextBlock Text="Left-drag to move &#x00B7; right-drag to turn &#x00B7; wheel to zoom"
                        Classes="dim" FontSize="10" TextWrapping="Wrap" />
             <!-- The section flattens the highlight onto itself (HighlightedCaption and friends); the
                  tile it comes from lives on Gallery, so binding through "Highlighted." from here

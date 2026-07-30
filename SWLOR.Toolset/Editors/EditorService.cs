@@ -106,6 +106,10 @@ namespace SWLOR.Toolset.Editors
         /// <summary>The in-flight background index build, so concurrent callers share one scan.</summary>
         private Task? _itemSourcesBuild;
 
+        /// <summary>The background scan implementation; injectable to make generation races testable.</summary>
+        private readonly Func<Domain.Workspace.ModuleWorkspace, string?, ItemObtainabilityIndex>
+            _itemSourcesBuilder;
+
         /// <summary>
         /// Bumped every time <see cref="_itemSources"/> is invalidated (a module opens, or a store,
         /// item, creature, or placeable is saved). <see cref="BuildItemSourcesAsync"/> captures this at
@@ -210,9 +214,14 @@ namespace SWLOR.Toolset.Editors
             PortraitService? portraits = null,
             AppearanceService? appearances = null,
             Services.ModuleMutationLock? mutationLock = null,
-            CategoryService? categories = null)
+            CategoryService? categories = null,
+            Func<Domain.Workspace.ModuleWorkspace, string?, ItemObtainabilityIndex>?
+                itemSourcesBuilder = null)
         {
             _categories = categories;
+            _itemSourcesBuilder = itemSourcesBuilder ??
+                                  ((workspace, gameSourceRoot) =>
+                                      ItemObtainabilityIndex.Build(workspace, gameSourceRoot));
             _mutationLock = mutationLock;
             _placeableModels = placeableModels;
             _thumbnails = thumbnails;
@@ -1220,7 +1229,7 @@ namespace SWLOR.Toolset.Editors
             // about to be published reflects pre-save content, even though nothing else distinguishes
             // it from a clean scan.
             var generation = _itemSourcesGeneration;
-            var staleGeneration = false;
+            var retryNeeded = false;
             try
             {
                 var repoRoot = Path.GetDirectoryName(Path.GetFullPath(workspace.ModuleRoot));
@@ -1229,20 +1238,22 @@ namespace SWLOR.Toolset.Editors
                     : Path.Combine(repoRoot, "SWLOR.Game.Server");
 
                 var index = await Task.Run(
-                    () => ItemObtainabilityIndex.Build(workspace, gameSourceRoot)).ConfigureAwait(true);
+                    () => _itemSourcesBuilder(workspace, gameSourceRoot)).ConfigureAwait(true);
 
-                // Dropped mid-build by a workspace change: that invalidation already started its own
-                // warm for the new workspace, so nothing further is queued from here.
+                // A workspace-open event tries to warm immediately, but while this task is still in
+                // _itemSourcesBuild that call can only reuse this obsolete scan. Queue the replacement
+                // after finally clears the shared task instead of assuming the event started one.
                 if (!ReferenceEquals(_workspaceContext.Workspace, workspace))
-                    return;
-
-                if (_itemSourcesGeneration != generation)
+                {
+                    retryNeeded = true;
+                }
+                else if (_itemSourcesGeneration != generation)
                 {
                     // Something changed while the scan was running. Publishing this result would
                     // keep an item's Source tab reporting pre-save obtainability until the next
                     // unrelated save happened to trigger another rebuild - the retry below starts
                     // a fresh one instead of leaving that to chance.
-                    staleGeneration = true;
+                    retryNeeded = true;
                 }
                 else
                 {
@@ -1260,14 +1271,12 @@ namespace SWLOR.Toolset.Editors
                 _itemSourcesBuild = null;
             }
 
-            // Deliberately NOT reached by an early return above: a `return` inside the try would
-            // run the finally and then leave the method, skipping this entirely and stranding
-            // _itemSources at null until some unrelated save happened to warm it again. The retry
-            // has to start after the finally has cleared _itemSourcesBuild, or WarmItemSourcesAsync
-            // would hand back this just-finished task instead of starting a new scan. One queued
-            // rebuild per stale generation is enough: a retry that is itself invalidated queues its
-            // own single follow-up, so a save storm converges rather than looping.
-            if (staleGeneration)
+            // The retry has to start after finally clears _itemSourcesBuild, or
+            // WarmItemSourcesAsync would hand back this just-finished task instead of starting a
+            // new scan. One queued rebuild per invalidation is enough: a retry that is itself
+            // invalidated queues its own single follow-up, so a save storm converges rather than
+            // looping.
+            if (retryNeeded)
                 _ = WarmItemSourcesAsync();
         }
 

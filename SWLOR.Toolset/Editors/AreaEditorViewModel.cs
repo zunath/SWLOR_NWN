@@ -3,6 +3,7 @@ using System.Numerics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors;
@@ -2146,6 +2147,14 @@ namespace SWLOR.Toolset.Editors
         {
             try
             {
+                // The last fingerprint check and the grouped replacement are one critical section.
+                // Without this outer lease another toolset process can save after HasExternalChange
+                // answers false but before CommitAll acquires its own (re-entrant) module lease,
+                // and this save would silently replace that newer generation.
+                using var moduleWriteLock = staged.Count == 0
+                    ? null
+                    : ModuleWriteLock.AcquireForResourcePath(staged[0].TargetPath);
+
                 foreach (var (session, plan) in new[]
                          {
                              (_areSession, arePlan),

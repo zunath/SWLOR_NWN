@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Workspace
     public sealed class PlaceableIndexService
     {
         private readonly WorkspaceContext _workspaceContext;
+        private readonly Func<ModuleWorkspace, PlaceableAppearanceUsageIndex> _usageBuilder;
         private readonly object _gate = new();
         private string? _builtFor;
         private bool _building;
@@ -39,9 +40,12 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>Cancels the pending rescan when more content changes before it fires.</summary>
         private CancellationTokenSource? _rescanDebounce;
 
-        public PlaceableIndexService(WorkspaceContext workspaceContext)
+        public PlaceableIndexService(
+            WorkspaceContext workspaceContext,
+            Func<ModuleWorkspace, PlaceableAppearanceUsageIndex>? usageBuilder = null)
         {
             _workspaceContext = workspaceContext;
+            _usageBuilder = usageBuilder ?? PlaceableAppearanceUsageIndex.Build;
 
             // A blueprint that was created, deleted, or saved with a different Appearance changes
             // both answers this service holds. Without this the first scan stood as permanently
@@ -156,7 +160,7 @@ namespace SWLOR.Toolset.Workspace
                     // the same answer; touching Tags is what warms its cache off the UI thread.
                     tags = workspace.TagIndex;
                     _ = tags.Tags;
-                    usage = PlaceableAppearanceUsageIndex.Build(workspace);
+                    usage = _usageBuilder(workspace);
                 }
                 catch (Exception)
                 {
@@ -174,10 +178,14 @@ namespace SWLOR.Toolset.Workspace
                     bool rescan;
                     lock (_gate)
                     {
-                        _builtFor = workspace.ModuleRoot;
                         _building = false;
                         rescan = _rescanWhenIdle;
                         _rescanWhenIdle = false;
+
+                        // Invalidate cleared this marker while the scan was running. Do not restore
+                        // it for the stale result: the queued EnsureBuilt must see the root as
+                        // unbuilt or its replacement scan will be skipped.
+                        _builtFor = rescan ? null : workspace.ModuleRoot;
                     }
 
                     Updated?.Invoke();

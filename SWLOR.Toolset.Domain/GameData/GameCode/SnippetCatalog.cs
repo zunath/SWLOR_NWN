@@ -98,24 +98,91 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             if (string.IsNullOrEmpty(template))
                 return negated ? $"not {Key}" : Key;
 
-            // A repeating snippet has more values than placeholders, so each placeholder collects
-            // every value of its argument: three quest ids read as "a, b and c" rather than
-            // repeating the whole sentence three times.
-            var valuesByName = new Dictionary<string, List<string>>(StringComparer.Ordinal);
-            for (var i = 0; i < arguments.Count; i++)
+            string result;
+            if (RepeatGroupSize > 1 && arguments.Count > Arguments.Count)
             {
-                var argument = ArgumentAt(i);
-                if (argument == null)
-                    continue;
+                // A multi-argument repeat is a tuple, not an independent list per placeholder.
+                // Render one complete clause for every tuple so Force/10 and Devices/5 cannot turn
+                // into the ambiguous "Force and Devices at rank 10 and 5".
+                result = RenderRepeatedClauses(template, arguments, negated, display);
+            }
+            else
+            {
+                // A repeating snippet has more values than placeholders, so each placeholder
+                // collects every value of its argument: three quest ids read as "a, b and c"
+                // rather than repeating the whole sentence three times.
+                var valuesByName = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+                for (var i = 0; i < arguments.Count; i++)
+                {
+                    var argument = ArgumentAt(i);
+                    if (argument == null)
+                        continue;
 
-                if (!valuesByName.TryGetValue(argument.Name, out var values))
-                    valuesByName[argument.Name] = values = new List<string>();
+                    if (!valuesByName.TryGetValue(argument.Name, out var values))
+                        valuesByName[argument.Name] = values = new List<string>();
 
-                values.Add(display?.Invoke(argument, arguments[i]) ?? arguments[i]);
+                    values.Add(display?.Invoke(argument, arguments[i]) ?? arguments[i]);
+                }
+
+                result = Substitute(template, valuesByName);
             }
 
-            var result = Substitute(template, valuesByName);
             return negated && string.IsNullOrEmpty(NegatedPhrase) ? $"not: {result}" : result;
+        }
+
+        private string RenderRepeatedClauses(
+            string template,
+            IReadOnlyList<string> values,
+            bool negated,
+            Func<SnippetArgument, string, string?>? display)
+        {
+            var fixedArgumentCount = Arguments.Count - RepeatGroupSize;
+            var repeatedValueCount = Math.Max(0, values.Count - fixedArgumentCount);
+            var groupCount = Math.Max(1, (repeatedValueCount + RepeatGroupSize - 1) / RepeatGroupSize);
+            var clauses = new List<string>(groupCount);
+
+            for (var group = 0; group < groupCount; group++)
+            {
+                var valuesByName = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+                for (var i = 0; i < fixedArgumentCount && i < values.Count; i++)
+                    AddDisplayedValue(valuesByName, Arguments[i], values[i], display);
+
+                var groupStart = fixedArgumentCount + group * RepeatGroupSize;
+                for (var offset = 0; offset < RepeatGroupSize; offset++)
+                {
+                    var valueIndex = groupStart + offset;
+                    if (valueIndex >= values.Count)
+                        break;
+
+                    AddDisplayedValue(
+                        valuesByName,
+                        Arguments[fixedArgumentCount + offset],
+                        values[valueIndex],
+                        display);
+                }
+
+                clauses.Add(Substitute(template, valuesByName));
+            }
+
+            // The two current tuple snippets are the dual any/all skill conditions. Their negated
+            // forms reverse the connective by De Morgan's law; future tuple actions default to
+            // sequencing their clauses with "and".
+            var anyCondition = Kind == SnippetKind.Condition &&
+                               Key.Contains("-any-", StringComparison.Ordinal);
+            var joinWithOr = anyCondition ^ negated;
+            return string.Join(joinWithOr ? " or " : " and ", clauses);
+        }
+
+        private static void AddDisplayedValue(
+            IDictionary<string, List<string>> valuesByName,
+            SnippetArgument argument,
+            string value,
+            Func<SnippetArgument, string, string?>? display)
+        {
+            valuesByName[argument.Name] = new List<string>
+            {
+                display?.Invoke(argument, value) ?? value
+            };
         }
 
         private static string Substitute(string template, IReadOnlyDictionary<string, List<string>> valuesByName)

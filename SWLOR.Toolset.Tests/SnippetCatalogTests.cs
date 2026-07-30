@@ -122,6 +122,30 @@ namespace SWLOR.Toolset.Tests
                 .Should().Be("the player has finished a, b and c");
         }
 
+        [TestCase(
+            "condition-any-skill",
+            false,
+            "the player has Force at rank 10 or better or the player has Devices at rank 5 or better")]
+        [TestCase(
+            "condition-any-skill",
+            true,
+            "the player has no skill in Force at rank 10 and the player has no skill in Devices at rank 5")]
+        [TestCase(
+            "condition-all-skills",
+            false,
+            "the player has every one of Force at rank 10 or better and the player has every one of Devices at rank 5 or better")]
+        [TestCase(
+            "condition-all-skills",
+            true,
+            "the player is short of rank 10 in at least one of Force or the player is short of rank 5 in at least one of Devices")]
+        public void RepeatedSkillRanksStayPaired(string key, bool negated, string expected)
+        {
+            var snippet = Catalog.Find(key)!;
+
+            snippet.ToSentence(new[] { "Force", "10", "Devices", "5" }, negated)
+                .Should().Be(expected);
+        }
+
         [Test]
         public void AMissingArgumentIsMarkedRatherThanSilentlyDropped()
         {

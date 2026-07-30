@@ -1,4 +1,6 @@
 using System.Text;
+using Avalonia.Headless.NUnit;
+using Avalonia.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
@@ -210,6 +212,50 @@ namespace SWLOR.Toolset.Tests
             appearance.Gallery.MatchSummary.Should().Be("1 model");
             appearance.Gallery.Tiles.Should().ContainSingle()
                 .Which.Option.ModelResRef.Should().Be("plc_used");
+        }
+
+        [AvaloniaTest]
+        public void InvalidatingAPlaceableIndexBuildQueuesARealReplacementScan()
+        {
+            var workspace = new SWLOR.Toolset.Workspace.WorkspaceContext(
+                root => new ModuleWorkspace(root),
+                new SWLOR.Toolset.Workspace.OutputLogService());
+            workspace.Open(_root);
+
+            using var firstStarted = new ManualResetEventSlim();
+            using var releaseFirst = new ManualResetEventSlim();
+            var scans = 0;
+            var index = new SWLOR.Toolset.Workspace.PlaceableIndexService(
+                workspace,
+                _ =>
+                {
+                    if (Interlocked.Increment(ref scans) == 1)
+                    {
+                        firstStarted.Set();
+                        releaseFirst.Wait(TimeSpan.FromSeconds(5));
+                    }
+
+                    return PlaceableAppearanceUsageIndex.Empty;
+                });
+            var updates = 0;
+            index.Updated += () => updates++;
+
+            index.EnsureBuilt();
+            firstStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+            index.Invalidate();
+            releaseFirst.Set();
+
+            // The production debounce is two seconds; keep pumping the UI dispatcher so both the
+            // stale completion and the delayed EnsureBuilt callback can land.
+            for (var attempt = 0; attempt < 400 && updates < 2; attempt++)
+            {
+                Dispatcher.UIThread.RunJobs();
+                Thread.Sleep(10);
+            }
+
+            Volatile.Read(ref scans).Should().Be(2,
+                "the stale completion must leave the built marker clear for its queued replacement");
+            updates.Should().Be(2, "both background scans must finish publishing before the test exits");
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -46,7 +47,7 @@ public class EconomyRestrictedItemTests
     [Test]
     public void EveryNpcPrefixedBlueprint_IsFlaggedByTheClassifier()
     {
-        var utiDirectory = Path.Combine(FindRepositoryRoot().FullName, "Module", "uti");
+        var utiDirectory = Path.Combine(RepoPaths.FindRepositoryRoot().FullName, "Module", "uti");
         var offenders = new List<string>();
         var checkedCount = 0;
 
@@ -82,13 +83,4 @@ public class EconomyRestrictedItemTests
         return firstEntry.GetString();
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-            directory = directory.Parent;
-
-        directory.Should().NotBeNull("the repository root should be discoverable from the test directory");
-        return directory!;
-    }
 }

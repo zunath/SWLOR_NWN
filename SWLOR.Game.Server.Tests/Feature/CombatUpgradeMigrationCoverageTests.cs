@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -21,7 +22,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void CombatUpgradeServerMigration_ForcesFullRebuildAndGrantsRebuildToken()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var serverMigrations = Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -82,7 +83,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void LoggedOutStatusEffects_RemainProcessLocalRuntimeState()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var statusEffectService = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -97,7 +98,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void PlayerMigrations_InvokeLiveObjectCombatUpgradeMigrations()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var playerMigrationRoot = Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -123,7 +124,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void EquipmentRequirementMigration_CoversStoredItemSurfaces()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var migration = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -160,7 +161,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void PistolBaseItemMigration_CoversPlayersAndStoredItemSurfaces()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var migrationRoot = Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -205,7 +206,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void ServerMigrationsFrom22_ReportCurrentMigrationStartWithoutOverallProgress()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var migrationService = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -221,7 +222,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void SerializedRequirementMigration_ReportsCurrentMigrationRecordProgress()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var migration = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -269,7 +270,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void EquipmentRequirementMigration_PrefiltersSerializedObjectsBeforeNwnDeserialization()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var migrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -336,7 +337,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void DamageResistanceAndDelayMigrations_CoverStoredItemSurfacesIncludingShips()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var migrationRoot = Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -360,7 +361,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void WeaponDamageMigration_CollapsesConflictingBlueprintElementalDamageBonuses()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var migrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -463,7 +464,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void DroidCpuTemplates_UseArmorAndConcreteWeaponSkillStats()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var cpuFiles = Directory
             .EnumerateFiles(Path.Combine(root.FullName, "Module", "uti"), "d_*cpu*.uti.json")
             .OrderBy(x => x)
@@ -562,7 +563,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void ObsoleteBiblePerkMigration_CoversPlayersBeastsStoredItemsDroidsAndShips()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var serverMigration = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -646,7 +647,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void RemovedPerkMigration_CoversEveryPerkWithoutCurrentDefinition()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var currentPerks = GetCurrentPerkDefinitions(root);
         var cleanupPerks = GetMigrationCleanupPerks(root);
         var enumPerks = GetPerkTypeEnumNames(root);
@@ -680,7 +681,7 @@ public class CombatUpgradeMigrationCoverageTests
     [Test]
     public void SharedItemMigrationServices_RecurseThroughEquippedItemsInventoryAndNestedDroidItems()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var migrationRoot = Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -864,20 +865,4 @@ public class CombatUpgradeMigrationCoverageTests
         return cleanupPerks;
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

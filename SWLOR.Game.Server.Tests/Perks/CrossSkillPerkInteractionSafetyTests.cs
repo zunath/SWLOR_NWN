@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -12,7 +13,7 @@ public class CrossSkillPerkInteractionSafetyTests
     [Test]
     public void ChargedBlows_NextAttackBonusSupportsAbilitiesAndAutoAttacks()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var staff = Read(root, "SWLOR.Game.Server", "Feature", "PerkDefinition", "StaffPerkDefinition.cs");
         staff.Should().Contain("StatType.StatusAppliedNextAttackDamageBonus");
         staff.Should().Contain("StatType.StatusAppliedNextAttackWindowSeconds");
@@ -63,7 +64,7 @@ public class CrossSkillPerkInteractionSafetyTests
     [Test]
     public void SecondaryDamage_CannotReenterDirectDamageProcOrReflectionChains()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
         var statusBase = Read(root, "SWLOR.Game.Server", "Service", "StatusEffectService", "StatusEffectBase.cs");
         var blazingSpikes = Read(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "BlazingSpikesStatusEffect.cs");
@@ -130,7 +131,7 @@ public class CrossSkillPerkInteractionSafetyTests
     [Test]
     public void DamageSharingAndRedirects_HaveNoRecursiveTransferCycle()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
         var modifiers = ExtractMethod(combat, "public static int ApplyDamageTakenModifiers(");
         var share = ExtractMethod(combat, "private static int ApplyDamageTakenShareToStatusSource(");
@@ -173,7 +174,7 @@ public class CrossSkillPerkInteractionSafetyTests
             value => value > 0 && value < 100,
             "a paid ability may cross-convert part of its cost, but cannot restore its entire cost or create a self-feeding resource cycle");
 
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var stamina = Read(root, "SWLOR.Game.Server", "Service", "AbilityService", "AbilityRequirementStamina.cs");
         var force = Read(root, "SWLOR.Game.Server", "Service", "AbilityService", "AbilityRequirementFP.cs");
         var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
@@ -192,7 +193,7 @@ public class CrossSkillPerkInteractionSafetyTests
     [Test]
     public void CooldownReduction_CannotResetCapstonesOrRunPastReady()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var recast = Read(root, "SWLOR.Game.Server", "Service", "Recast.cs");
         var reduction = ExtractMethod(recast, "public static void ReduceRecastDelay(");
 
@@ -206,7 +207,7 @@ public class CrossSkillPerkInteractionSafetyTests
     [Test]
     public void CrossSkillDamageHealing_UsesOneAggregatePerHitCap()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
         var ability = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
         var nativeDamage = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
@@ -291,7 +292,7 @@ public class CrossSkillPerkInteractionSafetyTests
         Enum.IsDefined(typeof(StatType), 778).Should().BeFalse(
             "the superseded shared costly-ability threshold must not remain as usable stat API");
 
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
         var guardedBonuses = ExtractMethod(combat, "private static void ApplyGuardedHitNextSkillAbilityEffects(");
         guardedBonuses.Should().Contain("primary.DamageBonus + secondary.DamageBonus");
@@ -489,12 +490,4 @@ public class CrossSkillPerkInteractionSafetyTests
         return File.ReadAllText(Path.Combine(new[] { root.FullName }.Concat(pathParts).ToArray()));
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-            directory = directory.Parent;
-
-        return directory ?? throw new DirectoryNotFoundException("Could not locate SWLOR.Game.Server.sln from the test directory.");
-    }
 }

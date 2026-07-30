@@ -20,6 +20,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -74,7 +75,7 @@ public class MonCalaSpawnDefinitionTests
     [Test]
     public void MonCalaNamedRareEliteSpawnTables_ArePlacedInOneAreaFile()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var gitFiles = Directory.GetFiles(Path.Combine(root.FullName, "Module", "git"), "*.git.json");
 
         foreach (var spec in NamedRareEliteSpecs)
@@ -94,7 +95,7 @@ public class MonCalaSpawnDefinitionTests
     [Test]
     public void MonCalaNamedRareEliteLoot_DropsOneGuaranteedUniqueRecipeWithLowChanceSecondRoll()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var tables = new MonCalaLootTableDefinition().BuildLootTables();
 
         foreach (var spec in NamedRareEliteSpecs)
@@ -138,7 +139,7 @@ public class MonCalaSpawnDefinitionTests
     [Test]
     public void MonCalaNamedRareEliteRecipeItems_LearnRegisteredRecipes()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var entry in GetNamedRareEliteRecipeEntries())
         {
@@ -185,7 +186,7 @@ public class MonCalaSpawnDefinitionTests
     [Test]
     public void MonCalaNamedRareEliteOutputs_AreNewRecipeCraftedAssets()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var entry in GetNamedRareEliteRecipeEntries())
         {
@@ -272,7 +273,7 @@ public class MonCalaSpawnDefinitionTests
     [Test]
     public void MonCalaRareEliteLootItems_UseReusableNonEliteNaming()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var visibleTexts = new List<(string Source, string Text)>();
 
         void AddItemText(string resref)
@@ -319,7 +320,7 @@ public class MonCalaSpawnDefinitionTests
     [Test]
     public void MonCalaNamedRareEliteRecipes_AreDocumentedInRecipeBible()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var archive = ZipFile.OpenRead(Path.Combine(
             root.FullName,
             "design",
@@ -708,17 +709,6 @@ public class MonCalaSpawnDefinitionTests
             <= 40 => 4m,
             _ => 5m
         };
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        return directory ?? throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 
     private sealed record NamedRareEliteSpec(

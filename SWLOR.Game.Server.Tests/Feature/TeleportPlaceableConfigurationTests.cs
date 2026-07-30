@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -43,7 +44,7 @@ public class TeleportPlaceableConfigurationTests
     [Test]
     public void TeleportScript_UsesObjectRangeAndPlayerFacingNamesForPartyTeleport()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -67,7 +68,7 @@ public class TeleportPlaceableConfigurationTests
 
     private static TeleportObject[] LoadTeleportObjects()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var searchRoots = new[]
         {
             Path.Combine(root.FullName, "Module", "git"),
@@ -187,17 +188,6 @@ public class TeleportPlaceableConfigurationTests
                text.ValueKind == JsonValueKind.String
             ? text.GetString()!
             : string.Empty;
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        return directory ?? throw new DirectoryNotFoundException("Could not locate repository root.");
     }
 
     private sealed record TeleportObject(

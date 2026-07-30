@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -54,7 +55,7 @@ public class EspionageSystemTests
             .Be(0m, "even the strongest NPC must not automatically pierce maximum committed Stealth");
 
         var statSource = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(),
+            RepoPaths.FindRepositoryRootPath(),
             "SWLOR.Game.Server",
             "Service",
             "Stat.cs"));
@@ -89,7 +90,7 @@ public class EspionageSystemTests
             .Should().Be(20);
 
         var statusSource = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(),
+            RepoPaths.FindRepositoryRootPath(),
             "SWLOR.Game.Server",
             "Feature",
             "StatusEffectDefinition",
@@ -114,7 +115,7 @@ public class EspionageSystemTests
     [Test]
     public void StealthPerk_UsesTheNativeActionWithoutGrantingADuplicateAbility()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRootPath();
         var stealth = BuildPerkWithout2daLookup(
             new EspionagePerkDefinition(),
             "Stealth",
@@ -163,7 +164,7 @@ public class EspionageSystemTests
     public void SuccessfulSpotDetection_ExitsPlayerStealth()
     {
         var stealthSource = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(),
+            RepoPaths.FindRepositoryRootPath(),
             "SWLOR.Game.Server",
             "Service",
             "Stealth.cs"));
@@ -252,7 +253,7 @@ public class EspionageSystemTests
     [Test]
     public void InfiltrationXp_IsDrivenByAggroAndDetectionEventsRatherThanElapsedStealthTime()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRootPath();
         var stealthStatusSource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
@@ -318,7 +319,7 @@ public class EspionageSystemTests
     [Test]
     public void SlicingRankGate_IsCentralizedForLockboxesAndTerminals()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRootPath();
         var references = Directory
             .EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server"), "*.cs", SearchOption.AllDirectories)
             .Where(file => !file.EndsWith("EspionagePerkDefinition.cs", StringComparison.Ordinal))
@@ -337,7 +338,7 @@ public class EspionageSystemTests
     [Test]
     public void EspionageActivePayloads_MatchTheReviewedBibleValues()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRootPath();
         var folder = Path.Combine(root, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Espionage");
         var tacticalEscape = File.ReadAllText(Path.Combine(folder, "TacticalEscapeAbilityDefinition.cs"));
         var shadowStep = File.ReadAllText(Path.Combine(folder, "ShadowStepAbilityDefinition.cs"));
@@ -372,20 +373,6 @@ public class EspionageSystemTests
         shockTrap.Should().Contain("private const int StatusDurationSeconds = 30;");
         shockTrap.Should().Contain("CombatDamageType.Electrical");
         shockTrap.Should().Contain("typeof(ShockStatusEffect)");
-    }
-
-    private static string FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory.FullName;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 
     private static decimal CalculateDetectionChance(int detection, int stealth)

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -8,7 +9,7 @@ public class PerkRefundStatusEffectCleanupTests
     [Test]
     public void ConfigureToggle_MarksStatusForPerkRefundCleanup()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -22,7 +23,7 @@ public class PerkRefundStatusEffectCleanupTests
     [Test]
     public void CustomToggleAbilities_MarkStatusForPerkRefundCleanup()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var abilityRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition");
         var failures = Directory
             .EnumerateFiles(abilityRoot, "*.cs", SearchOption.AllDirectories)
@@ -43,7 +44,7 @@ public class PerkRefundStatusEffectCleanupTests
     [Test]
     public void PerkRefundPaths_RemoveMarkedStatusEffects()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var perkSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Perk.cs"));
         var perksViewModelSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -70,7 +71,7 @@ public class PerkRefundStatusEffectCleanupTests
     [Test]
     public void CharacterFullRebuild_RemovesUndefinedPerksWithoutLookingUpDetails()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -89,7 +90,7 @@ public class PerkRefundStatusEffectCleanupTests
     [Test]
     public void PlayerInitialization_ClearsFeatListBeforeRestoringBaselineFeats()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -103,19 +104,4 @@ public class PerkRefundStatusEffectCleanupTests
         source.Should().Contain("GrantBasicFeats(player);");
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -185,7 +186,7 @@ public class LightsaberPerkBehaviorTests
     [Test]
     public void SaberWardConversion_RetypesPhysicalShareToRealForceDamage()
     {
-        var root = FindRepositoryRoot().FullName;
+        var root = RepoPaths.FindRepositoryRoot().FullName;
 
         // The converted share is dealt as a real Force damage instance (Force resistance + combat-log
         // visibility) via ApplyTriggeredDamage, not merely approximated by blending defense.
@@ -219,7 +220,7 @@ public class LightsaberPerkBehaviorTests
     public void Embattled_RefreshesOnEveryAttemptedAttackNotJustLandedHits()
     {
         var resolve = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+            RepoPaths.FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
 
         // Attack resolution refreshes Embattled regardless of hit/miss/deflect outcome.
         resolve.Should().Contain("EmbattledStatusEffect.Refresh(defender.m_idSelf, attacker.m_idSelf)");
@@ -258,7 +259,7 @@ public class LightsaberPerkBehaviorTests
     public void DeflectingReturn_WiredIntoRangedDeflectionResolution()
     {
         var resolve = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+            RepoPaths.FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
 
         // Only a deflected ranged attack reflects, and it does so through the stat-driven helper.
         resolve.Should().Contain("attackType == (uint)AttackType.Ranged");
@@ -282,7 +283,7 @@ public class LightsaberPerkBehaviorTests
     private static void AssertPerkStat(StatType statType, string valueExpression)
     {
         var source = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
+            RepoPaths.FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
             "Feature",
             "PerkDefinition",
@@ -294,7 +295,7 @@ public class LightsaberPerkBehaviorTests
     private static string AbilitySource(string fileName)
     {
         return File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
+            RepoPaths.FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
             "Feature",
             "AbilityDefinition",
@@ -302,16 +303,4 @@ public class LightsaberPerkBehaviorTests
             fileName));
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        directory.Should().NotBeNull("repository root should be discoverable from the test directory");
-        return directory!;
-    }
 }

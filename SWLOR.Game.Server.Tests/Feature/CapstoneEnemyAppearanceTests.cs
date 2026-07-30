@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System.Text.Json;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -77,20 +78,10 @@ public class CapstoneEnemyAppearanceTests
 
     private static int GetAppearance(string resref)
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var doc = JsonDocument.Parse(File.ReadAllText(
             Path.Combine(root.FullName, "Module", "utc", $"{resref}.utc.json")));
         return doc.RootElement.GetProperty("Appearance_Type").GetProperty("value").GetInt32();
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        return directory ?? throw new DirectoryNotFoundException("Could not locate repository root.");
-    }
 }

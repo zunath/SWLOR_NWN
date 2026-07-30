@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -61,7 +62,7 @@ public class FightClubBackroomsPlacementTests
 
     private static System.Text.Json.JsonDocument LoadModuleJson(string folder, string fileName)
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         return System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName,
             "Module",
@@ -156,14 +157,4 @@ public class FightClubBackroomsPlacementTests
         }
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        return directory ?? throw new DirectoryNotFoundException("Could not locate repository root.");
-    }
 }

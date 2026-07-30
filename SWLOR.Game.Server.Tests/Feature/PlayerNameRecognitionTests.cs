@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -10,7 +11,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void PlayerNameOverrides_ObfuscateCommunityNameWhenEnabled()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -28,7 +29,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void PlayerNameOverrides_ApplyImmediatelyOnEnterBeforeDelayedRetry()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -47,7 +48,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void PlayerNameOverrides_PreserveTrueNamesForDMObservers()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -74,7 +75,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void PlayerNameOverrides_SkipRedundantSelfIteration()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -88,7 +89,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void KnownNameStorage_UsesIndexedObserverFieldAndGeneratedEntityId()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var serviceSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -116,7 +117,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void KnownNameStorage_DoesNotRunLegacyKeyMigration()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -132,7 +133,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void KnownNameStorage_CachesObserverRecordsDuringScriptContext()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -153,7 +154,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void KnownNameStorage_ValidatesTargetsBeforePersisting()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -179,7 +180,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void KnownNameStorage_RejectsColorTokensBeforeSanitizing()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -217,7 +218,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void KnownNameStorage_RejectsDuplicateAliasesPerObserver()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -237,7 +238,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void PlayerTells_BlockAmbiguousDisplayNames()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -263,7 +264,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void UnknownNames_UseGrayColorTokens()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -358,7 +359,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void UnknownNames_GenerateStableDescriptorsFromAppearanceAndBaseStats()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var playerNameSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -403,7 +404,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void UnknownNames_AreGeneratedDuringMigrationAndLoginInitialization()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var migrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -460,7 +461,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void Settings_ControlIdentityNameplateAndAccountPrivacyForPlayersOnly()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var definitionSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -514,7 +515,7 @@ public class PlayerNameRecognitionTests
     [Test]
     public void Disguises_UseDisguiseIdentityKeysAndHardDeleteRetiredIdentities()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var disguiseSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -904,17 +905,4 @@ public class PlayerNameRecognitionTests
         return method!.ToFullString();
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

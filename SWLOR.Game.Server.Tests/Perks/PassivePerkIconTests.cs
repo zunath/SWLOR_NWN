@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -13,7 +14,7 @@ public class PassivePerkIconTests
     [Test]
     public void ActivePerks_ResolveAnIconFromGrantedFeatsOrExplicitMetadata()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
@@ -87,7 +88,7 @@ public class PassivePerkIconTests
     [Test]
     public void PassiveTraitFeatRows_AreNonUsableAndHaveGeneratedIcons()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
@@ -162,19 +163,6 @@ public class PassivePerkIconTests
         }
 
         return result;
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        directory.Should().NotBeNull("repository root should be discoverable from the test directory");
-        return directory!;
     }
 
     private static bool HasIcon(IReadOnlyDictionary<string, string> row)

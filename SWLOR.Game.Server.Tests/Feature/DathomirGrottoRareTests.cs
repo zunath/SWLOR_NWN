@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -51,7 +52,7 @@ public class DathomirGrottoRareTests
     [Test]
     public void DathomirGrottoRareSpawnTable_IsReferencedInApexDenOnly()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         Directory.GetFiles(Path.Combine(root.FullName, "Module", "git"), "*.git.json")
             .Where(file => File.ReadAllText(file).Contains($"\"value\": \"{RareSpawnTable}\""))
             .Select(Path.GetFileName).Should().BeEquivalentTo(new[] { "pw_sc_dath_apexd.git.json" });
@@ -74,7 +75,7 @@ public class DathomirGrottoRareTests
     [Test]
     public void DathomirGrottoRareRecipeBlueprints_LearnRegisteredRecipes()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         foreach (var (blueprint, recipe, _, _) in RareRecipes)
         {
             using var uti = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", $"{blueprint}.uti.json")));
@@ -90,11 +91,5 @@ public class DathomirGrottoRareTests
             if (v.GetProperty("Name").GetProperty("value").GetString() == name)
                 return v.GetProperty("Value").GetProperty("value").GetString() ?? string.Empty;
         return string.Empty;
-    }
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var d = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (d != null && !File.Exists(Path.Combine(d.FullName, "SWLOR.Game.Server.sln"))) d = d.Parent;
-        return d ?? throw new DirectoryNotFoundException("Could not locate repository root.");
     }
 }

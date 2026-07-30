@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -91,7 +92,7 @@ public class EspionageDisguisePerkTests
     [Test]
     public void DisguiseWindow_ReportsTheEffectiveDelayRatherThanTheBaseDelay()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRootPath();
         var viewModel = File.ReadAllText(Path.Combine(
             root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "DisguiseViewModel.cs"));
         var definition = File.ReadAllText(Path.Combine(
@@ -111,7 +112,7 @@ public class EspionageDisguisePerkTests
     public void DisguiseService_ReadsThePerkStatsRatherThanCheckingPerksDirectly()
     {
         var source = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(),
+            RepoPaths.FindRepositoryRootPath(),
             "SWLOR.Game.Server",
             "Service",
             "Disguise.cs"));
@@ -158,17 +159,4 @@ public class EspionageDisguisePerkTests
         return perks[perkType];
     }
 
-    private static string FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory.FullName;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

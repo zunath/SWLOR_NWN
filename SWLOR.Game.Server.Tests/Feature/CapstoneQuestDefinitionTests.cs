@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -192,7 +193,7 @@ public class CapstoneQuestDefinitionTests
     [Test]
     public void QuestGivers_AreDedicatedPerLineAndHaveBlueprintDialogueAndPaletteEntries()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var modulePath = Path.Combine(root.FullName, "Module");
         var palettePath = Path.Combine(modulePath, "itp", "creaturepalcus.itp.json");
         using var paletteJson = JsonDocument.Parse(File.ReadAllText(palettePath));
@@ -482,7 +483,7 @@ public class CapstoneQuestDefinitionTests
     [Test]
     public void EnemyBlueprints_MatchQuestGroupsLootTablesAndFinalBossCapstoneFeats()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var modulePath = Path.Combine(root.FullName, "Module");
         var bloodFrenzyOnlyFeats = new[]
         {
@@ -554,7 +555,7 @@ public class CapstoneQuestDefinitionTests
     [Test]
     public void EnemyBlueprints_UseUniqueSpecialAbilityPackages()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var modulePath = Path.Combine(root.FullName, "Module");
         var abilityPackageKeys = new List<string>();
 
@@ -593,7 +594,7 @@ public class CapstoneQuestDefinitionTests
     [Test]
     public void GeneratedNPCSignatureAbilities_AreFirstClassNpcAbilityDefinitions()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var abilityPath = Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -646,7 +647,7 @@ public class CapstoneQuestDefinitionTests
     [Test]
     public void GeneratedSignatureAbilityFeatRows_UseAbilityNames()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var feat2daPath = Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "feat.2da");
 
         var generatedRows = File.ReadLines(feat2daPath)
@@ -675,7 +676,7 @@ public class CapstoneQuestDefinitionTests
     [Test]
     public void EnemyStatSkins_DefineVariedResistanceProfiles()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var modulePath = Path.Combine(root.FullName, "Module");
         var vulnerableFamilies = new HashSet<int>();
 
@@ -786,7 +787,7 @@ public class CapstoneQuestDefinitionTests
     [Test]
     public void WaypointBlueprints_AreAvailableForAreaSpawnsAndOnDemandBossSpawns()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var modulePath = Path.Combine(root.FullName, "Module");
         var palettePath = Path.Combine(modulePath, "itp", "waypointpalcus.itp.json");
         using var paletteJson = JsonDocument.Parse(File.ReadAllText(palettePath));
@@ -922,7 +923,7 @@ public class CapstoneQuestDefinitionTests
 
     private static IEnumerable<string> GetCapstoneQuestDefinitionFiles()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var questPath = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "QuestDefinition");
 
         return Directory.GetFiles(questPath, "*CapstoneQuestDefinition.cs");
@@ -933,17 +934,6 @@ public class CapstoneQuestDefinitionTests
         return string.Join(
             "\n",
             GetCapstoneQuestDefinitionFiles().Select(File.ReadAllText));
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        return directory ?? throw new DirectoryNotFoundException("Could not locate repository root.");
     }
 
     private static string GetTypedValue(JsonElement root, string propertyName)

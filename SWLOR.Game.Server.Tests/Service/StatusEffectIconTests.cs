@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -24,7 +25,7 @@ public class StatusEffectIconTests
     [Test]
     public void PainSuppressantCustomIconRows_DoNotReplaceFoodOrDash()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
@@ -44,7 +45,7 @@ public class StatusEffectIconTests
     [Test]
     public void GameplayIconManifest_StatusEffectsMatchEffectIconsAndGeneratedFiles()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var manifestRows = ReadGameplayIconManifest(root)
             .Where(row => row.Type == "StatusEffect")
             .ToArray();
@@ -76,7 +77,7 @@ public class StatusEffectIconTests
     [Test]
     public void GameplayIconManifest_AbilitiesMatchFeatSpellIconsAndGeneratedFiles()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var manifestRows = ReadGameplayIconManifest(root)
             .Where(row => row.Type == "Ability")
             .ToArray();
@@ -126,7 +127,7 @@ public class StatusEffectIconTests
     [Test]
     public void GameplayIconManifest_CombatAbilityCategoriesMatchGameplayIntent()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var abilityRows = ReadGameplayIconManifest(root)
             .Where(row => row.Type == "Ability")
             .ToDictionary(row => row.Key, StringComparer.OrdinalIgnoreCase);
@@ -140,7 +141,7 @@ public class StatusEffectIconTests
     [Test]
     public void GameplayIconManifest_CoversCustomFeatSpellIcons()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var manifestRows = ReadGameplayIconManifest(root)
             .Where(row => row.Type is "Ability" or "Feat" or "Spell")
             .ToArray();
@@ -178,7 +179,7 @@ public class StatusEffectIconTests
     [Test]
     public void Gameplay2daLabels_DoNotExposeObsoleteRows()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var files = new[]
         {
             "feat.2da",
@@ -212,7 +213,7 @@ public class StatusEffectIconTests
     [Test]
     public void CurrentCustomFeatRows_RetainFeat2daLabels()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
@@ -289,7 +290,7 @@ public class StatusEffectIconTests
     [Test]
     public void RenamedGeneratedIcons_DoNotLeaveOldResourceFiles()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var iconRoot = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability");
         var obsoleteFiles = new[]
         {
@@ -332,7 +333,7 @@ public class StatusEffectIconTests
     [Test]
     public void EffectIconDocumentation_AllowsEffectIconRowsPast255()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var effectFunctions = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.NWN.API",
@@ -351,19 +352,6 @@ public class StatusEffectIconTests
         nwscript.Should().Contain("effecticons.2da rows past 255 are supported");
         nwscript.Should().Contain("Older clients are simply not sent icons past row 255");
         nwscript.Should().NotContain("nIconID is < 1 or > 255");
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        directory.Should().NotBeNull("repository root should be discoverable from the test directory");
-        return directory!;
     }
 
     private static IReadOnlyList<IconManifestRow> ReadGameplayIconManifest(DirectoryInfo root)

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -74,7 +75,7 @@ public class RoleplayXPOOCPenaltyTests
     [Test]
     public void OOCMessageCount_RemainsInvisibleToPlayersAndAdminViews()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var roleplayXpSource = ReadServerSource("Feature", "RoleplayXP.cs");
         var penaltyMethod = ExtractMethod(roleplayXpSource, "private static void ApplyOOCMessagePenalty(uint player, Player dbPlayer)");
         var adminPlayerAdvanced = File.ReadAllText(Path.Combine(
@@ -99,7 +100,7 @@ public class RoleplayXPOOCPenaltyTests
 
     private static string ReadServerSource(params string[] pathSegments)
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         return File.ReadAllText(Path.Combine(
             new[] { root.FullName, "SWLOR.Game.Server" }.Concat(pathSegments).ToArray()));
     }
@@ -130,17 +131,4 @@ public class RoleplayXPOOCPenaltyTests
         throw new InvalidOperationException($"Could not extract method '{signature}'.");
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

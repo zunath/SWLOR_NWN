@@ -4,6 +4,7 @@ using System.Text.Json;
 using SWLOR.Game.Server.Feature;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -181,7 +182,7 @@ public class EquipmentRestrictionsTests
     [Test]
     public void PistolBaseItems_UseOneHandedWieldingAndRightHandOnlySlots()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var rows = Read2daRows(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
@@ -230,7 +231,7 @@ public class EquipmentRestrictionsTests
     [TestCase("blaster_bullets.uti.json")]
     public void PistolAmmunitionBlueprints_UseTheBulletBaseItem(string fileName)
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var path = Path.Combine(root.FullName, "Module", "uti", fileName);
         using var document = JsonDocument.Parse(File.ReadAllText(path));
 
@@ -246,7 +247,7 @@ public class EquipmentRestrictionsTests
     public void CreatureBlueprints_EquipConvertedPistolAmmunitionInTheBulletSlot()
     {
         const int bulletEquipmentStructId = 4096;
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var ammoResrefs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "004",
@@ -290,7 +291,7 @@ public class EquipmentRestrictionsTests
         const int arrowEquipmentStructId = 2048;
         const int bulletEquipmentStructId = 4096;
         const string legacyResref = "blast_se14_d";
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var ammoMatches = new List<string>();
         var legacyMatches = new List<string>();
 
@@ -353,7 +354,7 @@ public class EquipmentRestrictionsTests
     [TestCase("jawaaddit_wp.uti.json")]
     public void LegacySmallArmsBlueprints_UseTheLegacyBaseItem(string fileName)
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var path = Path.Combine(root.FullName, "Module", "uti", fileName);
         using var document = JsonDocument.Parse(File.ReadAllText(path));
 
@@ -416,20 +417,4 @@ public class EquipmentRestrictionsTests
         }
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(directory.FullName, "SWLOR_Haks", "sw_2da", "baseitems.2da")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.NWN.API.NWScript.NWScript;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.AI;
 
@@ -272,7 +273,7 @@ public class AIModelTests
     public void CreatureAggroEnter_EnforcesAggroRangeBeforeAddingProximityEnmity()
     {
         var aiSource = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
+            RepoPaths.FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
             "Service",
             "AI.cs")).Replace("\r\n", "\n");
@@ -292,7 +293,7 @@ public class AIModelTests
     public void CreatureAggroRange_RequiresLineOfSight()
     {
         var aiSource = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
+            RepoPaths.FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
             "Service",
             "AI.cs")).Replace("\r\n", "\n");
@@ -309,7 +310,7 @@ public class AIModelTests
     public void AllyAggroAssist_RequiresLineOfSightBeforeAddingProximityEnmity()
     {
         var aiSource = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
+            RepoPaths.FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
             "Service",
             "AI.cs")).Replace("\r\n", "\n");
@@ -522,7 +523,7 @@ public class AIModelTests
     public void CreatureHeartbeat_DoesNotScanForAggroTargets()
     {
         var aiSource = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
+            RepoPaths.FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
             "Service",
             "AI.cs")).Replace("\r\n", "\n");
@@ -879,7 +880,7 @@ public class AIModelTests
     public void CustomAoePersistentVfx_DefinesCreatureAggroRadius()
     {
         var persistentVfx = File.ReadAllLines(Path.Combine(
-            FindRepositoryRoot().FullName,
+            RepoPaths.FindRepositoryRoot().FullName,
             "SWLOR_Haks",
             "sw_2da",
             "vfx_persistent.2da"));
@@ -942,7 +943,7 @@ public class AIModelTests
 
     private static string ReadSource(params string[] pathParts)
     {
-        var fullPath = Path.Combine(new[] { FindRepositoryRoot().FullName }.Concat(pathParts).ToArray());
+        var fullPath = Path.Combine(new[] { RepoPaths.FindRepositoryRoot().FullName }.Concat(pathParts).ToArray());
         return File.ReadAllText(fullPath);
     }
 
@@ -955,20 +956,4 @@ public class AIModelTests
         return float.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

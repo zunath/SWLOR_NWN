@@ -12,6 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NativeDamageType = NWN.Native.API.DamageType;
 using NWNScriptDamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -149,7 +150,7 @@ public class CombatDamageTests
     [Test]
     public void NPCAbilityScaling_DoesNotFallbackToUnrelatedResistancesForUnresistedDamageTypes()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
 
         abilitySource.Should().NotContain("npcStats.Resistances.Values.Max()");
@@ -158,7 +159,7 @@ public class CombatDamageTests
     [Test]
     public void AbilityCombatImpact_IncludesWeaponDamageAndKeepsPhysicalEffectDamagePhysical()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var damageTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "CombatService", "CombatDamageType.cs"));
@@ -182,7 +183,7 @@ public class CombatDamageTests
     [Test]
     public void DeflectionGrantedSkillBonuses_DoNotInferEquippedWeaponSkillWhenNoSelectorIsDeclared()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
         var applyDeflectionEffects = ExtractMethod(statSource, "public static void ApplyDeflectionEffectsNative");
@@ -204,7 +205,7 @@ public class CombatDamageTests
     [Test]
     public void SkillSpecificCriticalStats_UseAbilitySkillInsteadOfEquippedWeaponPredicates()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
@@ -273,7 +274,7 @@ public class CombatDamageTests
         clone.Icon.Should().Be(EffectIconType.RundownStatusEffect);
         clone.Stacks.Should().Be(3);
 
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         combatSource.Should().Contain("_meleeRepeatedTargetDamageStates.Remove(creature);");
         combatSource.Should().Contain("_meleeAutoAttackCycleCounts.Remove(creature);");
@@ -292,7 +293,7 @@ public class CombatDamageTests
     [Test]
     public void QueuedWeaponAbilityImpacts_DoNotRollSeparateAbilityHit()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
@@ -392,7 +393,7 @@ public class CombatDamageTests
     [Test]
     public void CombatAbilityRiders_AreStatDrivenInsteadOfPerkCategoryDispatch()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var statusEffectSources = Directory
             .EnumerateFiles(
@@ -412,7 +413,7 @@ public class CombatDamageTests
     [Test]
     public void CombatTriggeredDamage_IsAttributedToTheGameplaySource()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
 
@@ -426,7 +427,7 @@ public class CombatDamageTests
     [Test]
     public void GuardRetaliationDMG_UsesCombatDamageRangeAndTriggeredDelivery()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
             .Replace("\r\n", "\n");
         var whirlingGuardSource = File.ReadAllText(Path.Combine(
@@ -461,7 +462,7 @@ public class CombatDamageTests
     [Test]
     public void CombatImpactDamageScaling_IsDeclaredByAbilityImplementationsNotSkillType()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var skillTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "SkillService", "SkillType.cs"));
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
@@ -538,7 +539,7 @@ public class CombatDamageTests
     [Test]
     public void CombatReadiness_AppliesToDirectActivatedHealingButNotStatusTicks()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var healingSources = new[]
         {
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "AbilityEffectScaling.cs"),
@@ -591,7 +592,7 @@ public class CombatDamageTests
     [Test]
     public void GuardedHitModifiers_OnlyRunForPhysicalDamageFromDamageRoll()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
 
@@ -620,7 +621,7 @@ public class CombatDamageTests
     [Test]
     public void MeleeDamageTakenPoisonDamage_UsesTriggeredDamagePath()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var poisonRetaliation = ExtractMethod(combatSource, "private static void ApplyMeleeDamageTakenPoisonDamage");
 
@@ -631,7 +632,7 @@ public class CombatDamageTests
     [Test]
     public void DamageDealtForceErosion_OnlyAppliesFromDirectDamage()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var forceDotSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "ForceDamageOverTimeStatusEffectBase.cs"));
 
@@ -650,7 +651,7 @@ public class CombatDamageTests
     [Test]
     public void TemporaryHitPointDamageFeedback_IsSentBeforeEngineDamageIsApplied()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
@@ -664,7 +665,7 @@ public class CombatDamageTests
     [Test]
     public void IncomingCriticalHitDowngrade_FeedbackIsSentFromStatDrivenMitigationPaths()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
@@ -694,7 +695,7 @@ public class CombatDamageTests
     [Test]
     public void LowHPGuardTrigger_SendsActivationFeedback()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var lowHPGuardTrigger = ExtractMethod(combatSource, "private static void ApplyLowHPGuardEffect(uint thresholdCreature, int damage, uint guardRecipient)");
 
@@ -711,7 +712,7 @@ public class CombatDamageTests
     [Test]
     public void NormalDamageMitigation_IsCappedSeparatelyFromExplicitImmunity()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var invincibleSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "InvincibleStatusEffect.cs"));
 
@@ -754,7 +755,7 @@ public class CombatDamageTests
     [Test]
     public void ResistanceFamilies_UseResistanceScoreForTemporaryImmunity()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Resistance.cs"));
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
         var statTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatService", "StatType.cs"));
@@ -807,7 +808,7 @@ public class CombatDamageTests
     [Test]
     public void DamageRoll_FallsBackToCreatureNaturalWeapons()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
 
         damageRollSource.Should().Contain("weapon = GetFallbackAttackWeapon(attacker);");
@@ -820,7 +821,7 @@ public class CombatDamageTests
     [Test]
     public void ModuleWeaponItems_UseUntypedDmgAndSeparateDamageTypeProperty()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var weaponBaseItems = BuildWeaponBaseItemIds();
         var offenders = new List<string>();
 
@@ -847,7 +848,7 @@ public class CombatDamageTests
     [Test]
     public void ModuleEmbeddedWeaponItems_UseUntypedDmgAndSeparateDamageTypeProperty()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var weaponBaseItems = BuildWeaponBaseItemIds();
         var offenders = new List<string>();
 
@@ -868,7 +869,7 @@ public class CombatDamageTests
     [Test]
     public void WeaponBaseItems_UseStatDescriptionStrRefs()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var expectedDescriptions = BuildWeaponBaseItemStatDescriptionStrRefs();
         var baseItemLines = File.ReadAllLines(Path.Combine(
             root.FullName,
@@ -894,7 +895,7 @@ public class CombatDamageTests
     [Test]
     public void ModuleVibroknifeItems_DoNotUseWeaponDamageTypeOrEmbeddedNwnBaseDescription()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var vibroknifeBaseItems = BuildVibroknifeBaseItemIds();
 
         var offenders = new List<string>();
@@ -915,7 +916,7 @@ public class CombatDamageTests
     [Test]
     public void ModuleCraftedWeaponBlueprints_UseSpeedierDamageAndDelayTable()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var expectedWeaponStats = new (string Resref, int DMG, int Delay)[]
         {
             ("b_knife", 5, 22),
@@ -1008,7 +1009,7 @@ public class CombatDamageTests
     [Test]
     public void CZ220DroidWeapons_UsePhysicalDamageType()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         foreach (var resref in new[]
                  {
                      "patroldroid_wp",
@@ -1035,7 +1036,7 @@ public class CombatDamageTests
     [Test]
     public void ModuleWeaponEnhancements_UseDmgAndSeparateDamageTypeProperty()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var expectedRawDamageAmounts = new Dictionary<string, int>
         {
             ["gimp_tooth"] = 2,
@@ -1135,7 +1136,7 @@ public class CombatDamageTests
     [Test]
     public void ModuleResistanceEnhancements_UseRebalancedAmounts()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var expectedEnhancements = new Dictionary<string, (int PropertyType, int SubType, int Amount)>();
         var armorAndFoodAmounts = new Dictionary<int, int>
         {
@@ -1206,7 +1207,7 @@ public class CombatDamageTests
     [Test]
     public void BlueprintResistanceBonuses_UseRebalancedRanges()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var blueprintBonusesSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1227,7 +1228,7 @@ public class CombatDamageTests
     [Test]
     public void LiveEnhancementDamageDefinitions_DoNotExposeLegacyTypedDamageSubtypes()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var enhancementSubTypeSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1273,7 +1274,7 @@ public class CombatDamageTests
     [Test]
     public void WeaponDamageType2da_IsAvailableOnWeaponsAndEnhancementItems()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var itemPropsLines = File.ReadAllLines(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
@@ -1308,7 +1309,7 @@ public class CombatDamageTests
     [Test]
     public void BlueprintDamageBonuses_UseDmgAndSeparateDamageTypeProperty()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var blueprintBonusesSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1330,7 +1331,7 @@ public class CombatDamageTests
     [Test]
     public void WeaponDamageTypeMigration_CoversLivePlayerInventoryAndSerializedItems()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var playerMigrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1380,7 +1381,7 @@ public class CombatDamageTests
     [Test]
     public void ResistanceMigration_RebalancesStoredEnhancementItems()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var playerMigrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1417,7 +1418,7 @@ public class CombatDamageTests
     [Test]
     public void CombatReadinessMigration_RenamesStoredEnhancementItemsAndRecalculatesPlayers()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var playerMigrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1465,23 +1466,6 @@ public class CombatDamageTests
         Combat.IsWeaponSkillType(SkillType.Force).Should().BeFalse();
         Combat.IsWeaponSkillType(SkillType.Devices).Should().BeFalse();
         Combat.IsWeaponSkillType(SkillType.Invalid).Should().BeFalse();
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 
     private static string ReadJsonText(string file)

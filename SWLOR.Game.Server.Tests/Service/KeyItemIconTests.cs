@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -15,7 +16,7 @@ public class KeyItemIconTests
         KeyItemIcon.Default.Length.Should().BeLessThanOrEqualTo(16,
             "NWN resource names are limited to 16 characters");
 
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var path = Path.Combine(root.FullName, "SWLOR_Haks", "sw_item", $"{KeyItemIcon.Default}.tga");
 
         File.Exists(path).Should().BeTrue($"the Key Items empty state should reference a packaged icon at {path}");
@@ -61,7 +62,7 @@ public class KeyItemIconTests
     [Test]
     public void ActiveKeyItemIcons_ExistAndHaveExpectedTgaFormat()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var iconDirectory = Path.Combine(root.FullName, "SWLOR_Haks", "sw_item");
         var entries = GetActiveEntries();
         var hashes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -117,19 +118,6 @@ public class KeyItemIconTests
             $"{label} should contain its complete pixel payload");
 
         return bytes.AsSpan(pixelOffset, pixelLength).ToArray();
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        directory.Should().NotBeNull("repository root should be discoverable from the test directory");
-        return directory!;
     }
 
     private sealed record KeyItemIconEntry(

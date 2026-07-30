@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -25,7 +26,7 @@ public class PlayerNameChatCommandTests
     [Test]
     public void NameCommands_AuditIdentityMutations()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -51,7 +52,7 @@ public class PlayerNameChatCommandTests
     [Test]
     public void NameCommands_DefinePlayerTargetSelfTargetAndInvalidNameGuardrails()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -76,17 +77,4 @@ public class PlayerNameChatCommandTests
         source.Should().Contain("You cannot forget your own name.");
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

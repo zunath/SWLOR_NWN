@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -57,7 +58,7 @@ public class PlayerSkillPointAccountingTests
     [Test]
     public void FullRebuild_ResetSeedsSpendableSPFromStartingAndEarnedSkillPoints()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -80,7 +81,7 @@ public class PlayerSkillPointAccountingTests
     [Test]
     public void PlayerSPDisplays_UseTotalSpendableSkillPoints()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var characterSheet = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -138,20 +139,4 @@ public class PlayerSkillPointAccountingTests
         throw new InvalidOperationException($"Could not extract method '{signature}'.");
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature
 {
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Tests.Feature
 
         private static HashSet<string> ScanRegisteredPerkNames()
         {
-            var root = FindRepositoryRoot();
+            var root = RepoPaths.FindRepositoryRoot();
             var perkDefinitionDir = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "PerkDefinition");
             var names = new HashSet<string>();
 
@@ -106,7 +107,7 @@ namespace SWLOR.Game.Server.Tests.Feature
             // Static regression guard for the HackingBlade bug: an ability referencing a
             // perk with no definition crashes Perk.GetPerkLevel for NPC activators at runtime.
             var registered = ScanRegisteredPerkNames();
-            var root = FindRepositoryRoot();
+            var root = RepoPaths.FindRepositoryRoot();
             var abilityDefinitionDir = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition");
 
             var badReferences = new List<string>();
@@ -154,21 +155,5 @@ namespace SWLOR.Game.Server.Tests.Feature
             failures.Should().BeEmpty("coverage cases must be internally coherent");
         }
 
-        private static DirectoryInfo FindRepositoryRoot()
-        {
-            var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-            while (directory != null)
-            {
-                if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                    Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-                {
-                    return directory;
-                }
-
-                directory = directory.Parent;
-            }
-
-            throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-        }
     }
 }

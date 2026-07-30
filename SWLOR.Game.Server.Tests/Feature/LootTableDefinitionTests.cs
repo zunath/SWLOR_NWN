@@ -3,6 +3,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.LootService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -16,7 +17,7 @@ public class LootTableDefinitionTests
     [Test]
     public void LootTableItems_ResolveToModuleItemTemplates()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var itemTemplates = ReadModuleItemTemplateResrefs(root);
         var failures = new List<string>();
 
@@ -71,13 +72,4 @@ public class LootTableDefinitionTests
         return resrefs;
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-            directory = directory.Parent;
-
-        directory.Should().NotBeNull("the repository root should be discoverable from the test directory");
-        return directory!;
-    }
 }

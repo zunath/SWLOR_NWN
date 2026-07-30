@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -41,7 +42,7 @@ public class CZ220SpawnDefinitionTests
     [Test]
     public void CZ220RareRecipeBlueprints_LearnRegisteredRecipes()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         foreach (var (blueprint, recipe, _, _) in RareRecipes)
         {
             using var uti = JsonDocument.Parse(File.ReadAllText(
@@ -104,7 +105,7 @@ public class CZ220SpawnDefinitionTests
     [Test]
     public void CZ220RareSpawnTable_IsReferencedInBreakerBayOnly()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var files = Directory.GetFiles(Path.Combine(root.FullName, "Module", "git"), "*.git.json")
             .Where(file => File.ReadAllText(file).Contains($"\"value\": \"{RareSpawnTable}\""))
             .Select(Path.GetFileName)
@@ -112,11 +113,4 @@ public class CZ220SpawnDefinitionTests
         files.Should().BeEquivalentTo(new[] { "cz220shipbreakin.git.json" });
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-            directory = directory.Parent;
-        return directory ?? throw new DirectoryNotFoundException("Could not locate repository root.");
-    }
 }

@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -163,7 +164,7 @@ public class GeneratedWeaponPerkBehaviorTests
     [Test]
     public void SpottersRhythm_UsesSameTargetPressureInsteadOfIdleAbilityStats()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -264,7 +265,7 @@ public class GeneratedWeaponPerkBehaviorTests
         }
 
         var source = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
+            RepoPaths.FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
             "Feature",
             "AbilityDefinition",
@@ -297,7 +298,7 @@ public class GeneratedWeaponPerkBehaviorTests
         Stat.GetStatTypeCategory(StatType.AutoAttackHamstringSkillType).Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.AutoAttackHamstringDurationSeconds).Should().Be(StatTypeCategory.NonBeneficial);
 
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         combatSource.Should().Contain("ApplyAutoAttackHamstringEffect(attacker, defender, skillType, CombatDamageType.Physical)");
         combatSource.Should().Contain("StatType.AutoAttackHamstringSkillType");
@@ -307,7 +308,7 @@ public class GeneratedWeaponPerkBehaviorTests
     [Test]
     public void ReportedQueuedWeaponAndPistolAbilityTargeting_MatchesActivationBehavior()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var featRows = Read2da(root, "SWLOR_Haks", "sw_2da", "feat.2da");
         var spellRows = Read2da(root, "SWLOR_Haks", "sw_2da", "spells.2da");
 
@@ -560,7 +561,7 @@ public class GeneratedWeaponPerkBehaviorTests
         Stat.GetStatTypeCategory(StatType.HostileAbilityUsedEvasionPercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
 
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
@@ -669,7 +670,7 @@ public class GeneratedWeaponPerkBehaviorTests
     [Test]
     public void GeneratedWeaponActiveProfiles_EmitConditionalAndTemporaryRiders()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         AssertAbilitySourceContains(root, "Saberstaff", "FocusedArcAbilityDefinition.cs", "HighResourceExtraDamageThresholdPercent = 60");
         AssertAbilitySourceContains(root, "Saberstaff", "FocusedArcAbilityDefinition.cs", "ExtraDamageIfHighResources = 10");
@@ -716,7 +717,7 @@ public class GeneratedWeaponPerkBehaviorTests
     [Test]
     public void GeneratedFriendlyTargetAbilities_ValidateStatusBeforeReplacingExistingLinks()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -748,7 +749,7 @@ public class GeneratedWeaponPerkBehaviorTests
     [Test]
     public void FriendlyProtectionLinks_MatchBibleRangesAndPreventStacking()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         AssertAbilitySourceContains(root, "Katar", "SteelShoulderAbilityDefinition.cs", "builder.Create(FeatType.TwinGuardStance1, PerkType.TwinGuardStance)");
         AssertAbilitySourceContains(root, "Katar", "SteelShoulderAbilityDefinition.cs", "FriendlyTargetStatusEffectFactory = () => new GuardedStatusEffect(50, 5.0f)");
@@ -791,7 +792,7 @@ public class GeneratedWeaponPerkBehaviorTests
     [Test]
     public void ConditionalInterruptionAbilities_AreGeneratedAsTargetActivityPayoffs()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var spearSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -816,7 +817,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
     private static string ReadPerkDefinition(string fileName)
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         return File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -834,7 +835,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
     private static void AssertSourceContains(string fileName, string expectedSource)
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -950,16 +951,4 @@ public class GeneratedWeaponPerkBehaviorTests
         return result;
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        directory.Should().NotBeNull("repository root should be discoverable from the test directory");
-        return directory!;
-    }
 }

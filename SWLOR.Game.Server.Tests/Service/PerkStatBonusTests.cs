@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -8,7 +9,7 @@ public class PerkStatBonusTests
     [Test]
     public void StatBonusAggregation_DoesNotUseNpcAbilityRankFallback()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Perk.cs"));
         var getStatBonus = ExtractMethod(source, "public static int GetStatBonus(uint creature, StatType stat)");
         var getTargetedStatBonus = ExtractMethod(source, "public static int GetTargetedStatBonus(");
@@ -51,23 +52,6 @@ public class PerkStatBonusTests
         statBonusLevel.Should().NotContain("perkMaxLevel");
 
         getPerkLevel.Should().Contain("return perkLevel > 0 ? perkLevel : perkMaxLevel;");
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 
     private static string ExtractMethod(string source, string signature)

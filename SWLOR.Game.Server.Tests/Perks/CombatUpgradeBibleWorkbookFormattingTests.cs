@@ -4,6 +4,7 @@ using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -16,7 +17,7 @@ public class CombatUpgradeBibleWorkbookFormattingTests
     [Test]
     public void CombatUpgradeBibleWorkbook_UsesCompactReadableFormatting()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var workbookPath = Path.Combine(
             root.FullName,
             "design",
@@ -58,7 +59,7 @@ public class CombatUpgradeBibleWorkbookFormattingTests
     [Test]
     public void CharacterStats_DocumentsRuntimeCombatLimits()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var workbookPath = Path.Combine(
             root.FullName,
             "design",
@@ -394,17 +395,4 @@ public class CombatUpgradeBibleWorkbookFormattingTests
         return string.Join(", ", columns.Select(column => $"{column.Min}:{column.Max}:{column.Width}"));
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate repository root.");
-    }
 }

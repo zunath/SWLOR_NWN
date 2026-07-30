@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -69,7 +70,7 @@ public class DialogPrivacyTests
         guildMasterSource.Should().NotContain("GetName(player)");
         guildMasterSource.Should().NotContain("Welcome to my guild, ");
 
-        foreach (var dialogFile in Directory.GetFiles(Path.Combine(FindRepositoryRoot().FullName, "Module", "dlg"), "*.dlg.json"))
+        foreach (var dialogFile in Directory.GetFiles(Path.Combine(RepoPaths.FindRepositoryRoot().FullName, "Module", "dlg"), "*.dlg.json"))
         {
             var source = File.ReadAllText(dialogFile);
             source.Should().NotContain("<FirstName>", $"{Path.GetFileName(dialogFile)} should not reveal player names in NPC dialogue");
@@ -80,7 +81,7 @@ public class DialogPrivacyTests
 
     private static string ReadSource(params string[] pathParts)
     {
-        var fullPath = Path.Combine(new[] { FindRepositoryRoot().FullName }.Concat(pathParts).ToArray());
+        var fullPath = Path.Combine(new[] { RepoPaths.FindRepositoryRoot().FullName }.Concat(pathParts).ToArray());
         return File.ReadAllText(fullPath);
     }
 
@@ -112,17 +113,4 @@ public class DialogPrivacyTests
         throw new InvalidOperationException($"Method '{signature}' was not closed.");
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-
-        // Walk to the .sln rather than .git: in a git worktree .git is a file, not a directory.
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        directory.Should().NotBeNull("the tests should run inside the repository checkout");
-        return directory!;
-    }
 }

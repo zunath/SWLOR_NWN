@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -16,7 +17,7 @@ public class LightsaberWorkbenchTests
     [Test]
     public void KyberToken_IsCursedPlotSingleStackAndActivatable()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var token = JObject.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", "kyber_token.uti.json")));
 
         token["Tag"]!["value"]!.Value<string>().Should().Be("kyber_token");
@@ -34,7 +35,7 @@ public class LightsaberWorkbenchTests
     [Test]
     public void KyberToken_ConvertsToCurrencyAndBenchConsumesCurrency()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var serverRoot = Path.Combine(root.FullName, "SWLOR.Game.Server");
 
         var currencyType = File.ReadAllText(Path.Combine(serverRoot, "Service", "CurrencyService", "CurrencyType.cs"));
@@ -54,7 +55,7 @@ public class LightsaberWorkbenchTests
     [Test]
     public void WorkbenchSabers_MatchTierOneTrainingSaberStatsAndCarryTierVariable()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var utiRoot = Path.Combine(root.FullName, "Module", "uti");
 
         AssertSaberMatchesTemplate(
@@ -108,7 +109,7 @@ public class LightsaberWorkbenchTests
     [Test]
     public void LegacySaberMigration_AllowlistCoversEveryCraftableSaberResref()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var isCraftable = GetIsCraftableSaberResref();
 
         // Every recipe-produced Lightsaber/Saberstaff base item blueprint must be
@@ -156,7 +157,7 @@ public class LightsaberWorkbenchTests
     [Test]
     public void PlayerMigration15_InvokesLegacySaberMigration()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var migration = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -171,7 +172,7 @@ public class LightsaberWorkbenchTests
     [Test]
     public void SubmissionToken_TransfersStatsExcludingDamageProfile()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var serverRoot = Path.Combine(root.FullName, "SWLOR.Game.Server");
 
         var workbench = File.ReadAllText(Path.Combine(serverRoot, "Service", "LightsaberWorkbench.cs"));
@@ -201,7 +202,7 @@ public class LightsaberWorkbenchTests
     [Test]
     public void SaberMigration_NormalizesLegacySabersAcrossSurfaces()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var migrationRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "MigrationDefinition");
 
         var storedItemMigration = File.ReadAllText(Path.Combine(migrationRoot, "ServerMigration", "StoredItemDataMigration.cs"));
@@ -250,7 +251,7 @@ public class LightsaberWorkbenchTests
     [Test]
     public void WorkbenchPlaceable_ExistsInAllThreeAreas()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         var blueprint = JObject.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "utp", "lightsaber_bench.utp.json")));
         blueprint["OnUsed"]!["value"]!.Value<string>().Should().Be("lsaber_bench");
@@ -277,7 +278,7 @@ public class LightsaberWorkbenchTests
     [Test]
     public void PartCatalog_PreviewTexturesExistAndTopValuesMatchHakModels()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var uiRoot = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ui");
 
         if (!Directory.Exists(uiRoot))
@@ -343,20 +344,4 @@ public class LightsaberWorkbenchTests
         return resref => (bool)method.Invoke(null, new object[] { resref })!;
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

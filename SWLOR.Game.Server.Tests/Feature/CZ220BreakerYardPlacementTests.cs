@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System.Text.Json;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -78,7 +79,7 @@ public class CZ220BreakerYardPlacementTests
 
         using var palette = LoadModuleJson("itp", "placeablepalcus.itp.json");
         var paletteResrefs = EnumerateResrefs(palette.RootElement).ToArray();
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         foreach (var (resref, _, _, _) in expected)
         {
             paletteResrefs.Should().NotContain(resref);
@@ -88,7 +89,7 @@ public class CZ220BreakerYardPlacementTests
 
     private static JsonDocument LoadModuleJson(string folder, string file)
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         return JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", folder, file)));
     }
 
@@ -152,11 +153,4 @@ public class CZ220BreakerYardPlacementTests
         return false;
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-            directory = directory.Parent;
-        return directory ?? throw new DirectoryNotFoundException("Could not locate repository root.");
-    }
 }

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -14,7 +15,7 @@ public class PerksWindowTests
     [Test]
     public void SortOptions_AreEmbeddedInThePerksWindowLayout()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var definitionSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -41,7 +42,7 @@ public class PerksWindowTests
     [Test]
     public void SelectedPerkDetails_ShowVisibleRecastGroupAfterCategory()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var viewModelSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -85,7 +86,7 @@ public class PerksWindowTests
     [Test]
     public void NativeStealthMode_IsAddedAndRemovedAsAModeToggle()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var viewModelSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -155,22 +156,6 @@ public class PerksWindowTests
         var detail = BuildPerkDetail((1, 10), (2, 0), (3, 0));
 
         GetRequiredSkillLevelSortOrder(detail, 3).Should().Be(10);
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 
     private static PerkDetail BuildPerkDetail(params (int Level, int SkillRank)[] levels)

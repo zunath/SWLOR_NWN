@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -9,7 +10,7 @@ public class ShieldDeflectionTests
     [Test]
     public void ShieldDeflectionChance_UsesShieldItemPropertyAndPerkBonusesOnly()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var statSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -32,7 +33,7 @@ public class ShieldDeflectionTests
     [Test]
     public void ShieldDeflectionItemProperty_IsDeclaredForShields()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var itemPropertyTypeSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.NWN.API",
@@ -71,7 +72,7 @@ public class ShieldDeflectionTests
     [Test]
     public void ShieldDeflectionEnhancementSubType_BuildsShieldDeflectionItemProperty()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var enhancementSubTypeSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -97,23 +98,6 @@ public class ShieldDeflectionTests
         enhanceArmorRows[127]["Name"].Should().Be("16859987");
         enhanceArmorRows[127]["Label"].Should().Be("ShieldDeflection");
         enhanceArmorRows[127]["Cost"].Should().Be("0");
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 
     private static Dictionary<int, Dictionary<string, string>> Read2da(string file)

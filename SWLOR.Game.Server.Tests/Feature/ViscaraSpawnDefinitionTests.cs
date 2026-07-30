@@ -21,6 +21,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Text.Json;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -395,7 +396,7 @@ public class ViscaraSpawnDefinitionTests
             item.MaxQuantity == 1 &&
             item.Weight == 1);
 
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName,
             "Module",
@@ -427,7 +428,7 @@ public class ViscaraSpawnDefinitionTests
             item.MaxQuantity == 1 &&
             item.Weight == 1);
 
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName,
             "Module",
@@ -442,7 +443,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void OldScarUniqueRareRecipeItems_LearnOldScarCraftingRecipes()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var item in OldScarUniqueRareRecipes)
         {
@@ -464,7 +465,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void StormplumeUniqueRareRecipeItems_LearnStormplumeCraftingRecipes()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var item in StormplumeUniqueRareRecipes)
         {
@@ -534,7 +535,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void OldScarUniqueRareRecipes_AreDocumentedInSmitheryRecipeBible()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var archive = ZipFile.OpenRead(Path.Combine(
             root.FullName,
             "design",
@@ -573,7 +574,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void StormplumeUniqueRareRecipes_AreDocumentedInSmitheryRecipeBible()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var archive = ZipFile.OpenRead(Path.Combine(
             root.FullName,
             "design",
@@ -612,7 +613,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void OldScarUniqueRareItems_AreLevelAppropriateWearables()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var item in OldScarUniqueRareRecipes)
         {
@@ -649,7 +650,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void StormplumeUniqueRareItems_AreLevelAppropriateWearables()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var item in StormplumeUniqueRareRecipes)
         {
@@ -686,7 +687,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void OldScarUniqueRareItems_HaveUniqueAppearances()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var signatures = new List<string>();
 
         foreach (var item in OldScarUniqueRareRecipes)
@@ -706,7 +707,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void StormplumeUniqueRareItems_HaveUniqueAppearances()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var signatures = new List<string>();
 
         foreach (var item in StormplumeUniqueRareRecipes)
@@ -726,7 +727,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void OldScarTrophy_IsNewCraftingComponent()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName,
             "Module",
@@ -744,7 +745,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void StormplumePlume_IsNewCraftingComponent()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName,
             "Module",
@@ -762,7 +763,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void RareEliteGuaranteedComponents_HaveSpecificCraftingDescriptions()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var component in RareEliteGuaranteedComponents)
         {
@@ -805,7 +806,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void ViscaraNamedRareEliteSpawnTables_ArePlacedInOneAreaFile()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var gitFiles = Directory.GetFiles(Path.Combine(root.FullName, "Module", "git"), "*.git.json");
 
         foreach (var spec in NamedRareEliteSpecs)
@@ -824,7 +825,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void ViscaraNamedRareEliteLoot_DropsOneGuaranteedUniqueRecipeWithLowChanceSecondRoll()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var tables = new ViscaraLootTableDefinition().BuildLootTables();
 
         foreach (var spec in NamedRareEliteSpecs)
@@ -865,7 +866,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void ViscaraNamedRareEliteRecipeItems_LearnRegisteredRecipes()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var entry in GetNamedRareEliteRecipeEntries())
         {
@@ -912,7 +913,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void ViscaraNamedRareEliteOutputs_AreNewRecipeCraftedAssets()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var entry in GetNamedRareEliteRecipeEntries())
         {
@@ -1010,7 +1011,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void ViscaraNamedRareEliteEngineeringTools_UseNonElitePlayerFacingNames()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var craftedNames = new List<string>();
 
         foreach (var entry in GetNamedRareEliteEngineeringRecipeEntries())
@@ -1053,7 +1054,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void ViscaraRareEliteLootItems_UseReusableNonEliteNaming()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var visibleTexts = new List<(string Source, string Text)>();
 
         void AddItemText(string resref)
@@ -1112,7 +1113,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void ViscaraNamedRareEliteComponents_AreNewCraftingComponents()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var spec in NamedRareEliteSpecs)
         {
@@ -1134,7 +1135,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void ViscaraNamedRareEliteRecipes_AreDocumentedInRecipeBible()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var archive = ZipFile.OpenRead(Path.Combine(
             root.FullName,
             "design",
@@ -1232,7 +1233,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void SpawnSystem_RareEntriesUseWeightedSelectionWithAreaTableCap()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var spawnObjectSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1300,7 +1301,7 @@ public class ViscaraSpawnDefinitionTests
 
         tables.Keys.Should().NotContain("SERA_" + "VONN");
 
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var velesInterior = File.ReadAllText(Path.Combine(
             root.FullName,
             "Module",
@@ -1326,7 +1327,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void BloodFrenzySpawnTables_HavePaletteWaypointTemplates()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var paletteResrefs = GetWaypointPaletteResrefs(root)
             .ToArray();
 
@@ -1428,7 +1429,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void BloodFrenzyUniqueDropItems_AreBetweenOphidianAndChiroStats()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var item in BloodFrenzyUniqueDrops)
         {
@@ -1460,7 +1461,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void BloodFrenzyUniqueWearableDrops_AreArmorSkillFortyFiveItems()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var item in BloodFrenzyWearableDrops)
         {
@@ -1490,7 +1491,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void BloodFrenzyUniqueDropItems_HaveUniqueAppearances()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var signatures = new List<string>();
 
         foreach (var resref in BloodFrenzyUniqueDropResrefs)
@@ -1512,7 +1513,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void BloodFrenzyBlasterDrops_UseKnownValidAppearanceTriplets()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var item in BloodFrenzyBlasterAppearances)
         {
@@ -1550,7 +1551,7 @@ public class ViscaraSpawnDefinitionTests
     [Test]
     public void BloodFrenzyCreatureBlueprints_UseSewersDepthsLootTables()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var (resref, lootTableId) in BloodFrenzyLootTables)
         {
@@ -2039,17 +2040,6 @@ public class ViscaraSpawnDefinitionTests
             <= 40 => 4m,
             _ => 5m
         };
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        return directory ?? throw new DirectoryNotFoundException("Could not locate repository root.");
     }
 
     private sealed record NamedRareEliteSpec(

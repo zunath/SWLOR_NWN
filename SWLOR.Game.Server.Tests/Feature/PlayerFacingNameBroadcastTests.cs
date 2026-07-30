@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System.Text.Json;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -9,7 +10,7 @@ public class PlayerFacingNameBroadcastTests
     [Test]
     public void CommsChannel_UsesOneCommsLabelWithoutExposingPlayerNames()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -44,7 +45,7 @@ public class PlayerFacingNameBroadcastTests
     [Test]
     public void CombatAndSpaceBroadcasts_DoNotInterpolateRawPlayerNames()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var paths = new List<string>
         {
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"),
@@ -70,7 +71,7 @@ public class PlayerFacingNameBroadcastTests
     [Test]
     public void HoloComDirectory_UsesObserverSpecificDisplayNames()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -88,7 +89,7 @@ public class PlayerFacingNameBroadcastTests
     [Test]
     public void PublicPlayerFacingSurfaces_DoNotExposeCanonicalPlayerNames()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         var holoNetSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -423,7 +424,7 @@ public class PlayerFacingNameBroadcastTests
     [Test]
     public void CopiedPlayerObjects_UseGenericDisplaySafeNames()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         var holoComSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -666,17 +667,4 @@ public class PlayerFacingNameBroadcastTests
         return false;
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

@@ -7,6 +7,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -367,7 +368,7 @@ public class CombatAttackDelayTests
     [Test]
     public void WeaponDelayMigration_CoversLivePlayerInventoryAndSerializedItems()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var playerMigrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -409,7 +410,7 @@ public class CombatAttackDelayTests
     [Test]
     public void ModuleWeaponDelayProperties_AreNormalized()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var moduleRoot = Path.Combine(root.FullName, "Module");
         var files = Directory.EnumerateFiles(Path.Combine(moduleRoot, "uti"), "*.json")
             .Concat(Directory.EnumerateFiles(Path.Combine(moduleRoot, "git"), "*.json"));
@@ -427,7 +428,7 @@ public class CombatAttackDelayTests
     [Test]
     public void ModuleShieldItems_DoNotHaveDelayProperties()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var moduleRoot = Path.Combine(root.FullName, "Module");
         var files = Directory.EnumerateFiles(Path.Combine(moduleRoot, "uti"), "*.json")
             .Concat(Directory.EnumerateFiles(Path.Combine(moduleRoot, "git"), "*.json"))
@@ -441,16 +442,6 @@ public class CombatAttackDelayTests
         }
 
         findings.Should().BeEmpty(string.Join("\n", findings.Take(25)));
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-            directory = directory.Parent;
-
-        directory.Should().NotBeNull("the repository root should be discoverable from the test directory");
-        return directory!;
     }
 
     private static readonly IReadOnlyDictionary<int, int> WeaponDelayCostByBaseItem = BuildWeaponDelayCostByBaseItem();

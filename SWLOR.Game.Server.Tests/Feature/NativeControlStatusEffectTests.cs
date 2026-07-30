@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -10,7 +11,7 @@ public class NativeControlStatusEffectTests
     [Test]
     public void StatusEffectBase_CentralizesNativeEffectTags()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRootPath();
         var statusEffectBase = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
@@ -38,7 +39,7 @@ public class NativeControlStatusEffectTests
         string fileName,
         string nativeEffect)
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRootPath();
         var source = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
@@ -61,7 +62,7 @@ public class NativeControlStatusEffectTests
         string fileName,
         string immunityType)
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRootPath();
         var source = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
@@ -100,7 +101,7 @@ public class NativeControlStatusEffectTests
     [TestCase("TranquilizedStatusEffect.cs")]
     public void HardControlStatusEffects_RejectSameTypeRefreshBeforeReplacement(string fileName)
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRootPath();
         var source = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
@@ -124,7 +125,7 @@ public class NativeControlStatusEffectTests
     [Test]
     public void RepeatedHardControlRemovals_RestartTheSharedImmunityWindow()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRootPath();
         var abilitySource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
@@ -166,7 +167,7 @@ public class NativeControlStatusEffectTests
     [Test]
     public void PostControlImmunity_AgesTheWindowDuringOfflineReconciliation()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRootPath();
         var abilitySource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
@@ -183,7 +184,7 @@ public class NativeControlStatusEffectTests
     [Test]
     public void StatusEffectDefinitions_DoNotTagNativeEffectsWithTrackerIds()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRootPath();
         var statusEffectDirectory = Path.Combine(
             root,
             "SWLOR.Game.Server",
@@ -195,24 +196,6 @@ public class NativeControlStatusEffectTests
             var source = File.ReadAllText(file);
             source.Should().NotMatchRegex(@"TagEffect\s*\([^;\r\n]+,\s*Id\s*\)");
         }
-    }
-
-    private static string FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            var candidate = directory.FullName;
-            if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(candidate, "SWLOR.Game.Server")))
-            {
-                return candidate;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 
     private static string ExtractMethod(string source, string signature)

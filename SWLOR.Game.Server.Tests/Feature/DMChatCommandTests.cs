@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -26,7 +27,7 @@ public class DMChatCommandTests
     [Test]
     public void LocationTargeting_IsOptInForChatCommands()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var chatCommandSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -53,17 +54,4 @@ public class DMChatCommandTests
         dmChatCommandSource.Should().Contain("ActionJumpToLocation(location)");
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

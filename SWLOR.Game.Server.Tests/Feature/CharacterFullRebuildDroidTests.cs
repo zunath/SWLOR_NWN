@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -9,7 +10,7 @@ public class CharacterFullRebuildDroidTests
     [Test]
     public void FullRebuild_UsesRaceClassPrerequisiteTablesForCharacterTypeOptions()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var raceSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -57,7 +58,7 @@ public class CharacterFullRebuildDroidTests
     [Test]
     public void ClassPrerequisite2DAs_DisableForceSensitiveDroids()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var twoDARoot = Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da");
 
         var classes = Read2DA(Path.Combine(twoDARoot, "classes.2da"));
@@ -103,20 +104,4 @@ public class CharacterFullRebuildDroidTests
                     .ToDictionary(x => x.column, x => x.value));
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

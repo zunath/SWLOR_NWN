@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -53,7 +54,7 @@ public class SkillMappingTests
             .Should()
             .Be(CharacterType.ForceSensitive);
 
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var itemSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Item.cs"));
         var normalizedItemSource = itemSource.Replace("\r\n", "\n");
 
@@ -77,21 +78,4 @@ public class SkillMappingTests
         dmBypassIndex.Should().BeLessThan(playerEntityLookupIndex);
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -12,7 +13,7 @@ public class KeyItemsWindowTests
     [Test]
     public void KeyItemsLayout_UsesDetailsPaneInsteadOfDescriptionTooltips()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var definition = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -138,16 +139,4 @@ public class KeyItemsWindowTests
 
     private sealed record KeyItemEntry(KeyItemType Type, KeyItemAttribute Detail);
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        directory.Should().NotBeNull("repository root should be discoverable from the test directory");
-        return directory!;
-    }
 }

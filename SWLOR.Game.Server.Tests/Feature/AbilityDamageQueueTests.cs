@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -8,7 +9,7 @@ public class AbilityDamageQueueTests
     [Test]
     public void CompletedCastedAbilities_ApplyImpactBeforeDelayedAttackResume()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -34,7 +35,7 @@ public class AbilityDamageQueueTests
     [Test]
     public void TrackedAbilityImpacts_FlushQueuedDamageEffectsTogether()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -65,7 +66,7 @@ public class AbilityDamageQueueTests
     [Test]
     public void FailedAbilityImpacts_AbortTrackedStateForCastAndQueuedPaths()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -105,7 +106,7 @@ public class AbilityDamageQueueTests
     [Test]
     public void TwinFangFlurryTriggeredDamageDuringTrackedAbilityImpact_QueuesWithAbilityDamageEffects()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -140,7 +141,7 @@ public class AbilityDamageQueueTests
     [Test]
     public void DelayedTelegraphedImpacts_PreserveQueuedDefenseIgnoreBonus()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -170,7 +171,7 @@ public class AbilityDamageQueueTests
     [Test]
     public void DelayedTelegraphedImpacts_RetainCostContextAndCleanUpEveryExitPath()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -202,20 +203,4 @@ public class AbilityDamageQueueTests
         combatSource.Should().Contain("state.DeferredImpactCount = Math.Max(0, state.DeferredImpactCount - 1);");
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

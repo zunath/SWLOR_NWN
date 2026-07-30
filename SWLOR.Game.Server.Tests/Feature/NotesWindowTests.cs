@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -249,21 +250,9 @@ public class NotesWindowTests
 
     private static string ReadSource(params string[] relativePath)
     {
-        var segments = new[] { FindRepositoryRoot().FullName }.Concat(relativePath).ToArray();
+        var segments = new[] { RepoPaths.FindRepositoryRoot().FullName }.Concat(relativePath).ToArray();
 
         return File.ReadAllText(Path.Combine(segments));
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        directory.Should().NotBeNull("repository root should be discoverable from the test directory");
-        return directory!;
-    }
 }

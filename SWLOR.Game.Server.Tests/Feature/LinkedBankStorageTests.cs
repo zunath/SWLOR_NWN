@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -86,7 +87,7 @@ public class LinkedBankStorageTests
     [Test]
     public void BankViewModel_DelegatesBankOperationsToBankService()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -125,7 +126,7 @@ public class LinkedBankStorageTests
     [Test]
     public void CityManagement_NoLongerExposesRetiredBankStorageUpgradeUiOrActions()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var definition = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -154,7 +155,7 @@ public class LinkedBankStorageTests
     [Test]
     public void BankBuildingTerminals_UseCityIdOnlyForAccessGate()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -175,7 +176,7 @@ public class LinkedBankStorageTests
     [Test]
     public void BankTerminalsInPaletteAndAreas_DoNotCarryStorageConfiguration()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var bankFiles = new List<string>
         {
             Path.Combine(root.FullName, "Module", "utp", "bank_term.utp.json")
@@ -208,7 +209,7 @@ public class LinkedBankStorageTests
         const int customTlkOffset = 16777216;
         const int bankLoadHintTlkId = 79776;
 
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var loadHints = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
@@ -232,7 +233,7 @@ public class LinkedBankStorageTests
     [Test]
     public void LinkedBankStorageMigration_CleansRetiredUpgradeDataAndMigratesAllInventoryItems()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var migrationRoot = Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -337,16 +338,4 @@ public class LinkedBankStorageTests
         return method!;
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-
-        // Walk to the .sln rather than .git: in a git worktree .git is a file, not a directory.
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        return directory ?? throw new DirectoryNotFoundException("Could not locate repository root.");
-    }
 }

@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -411,7 +412,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void KorribanTemples_KeepFrogBossOutOfAmbientSpawnTable()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -439,7 +440,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void SpawnedAlternateEnemies_HaveCombatUpgradeStats()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var expected in ExpectedAlternateEnemies)
         {
@@ -457,7 +458,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void BloodFrenzyEnemies_HaveBibleGuideStats()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var expected in ExpectedBloodFrenzyEnemies)
         {
@@ -479,7 +480,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void OldScar_UsesWildlandsEliteBibleStats()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var utc = ReadJson(root, "Module", "utc", "oldscar_kath.utc.json");
         using var skin = ReadJson(root, "Module", "uti", "oldscar_k_sk.uti.json");
         using var weapon = ReadJson(root, "Module", "uti", "oldscar_k_wp.uti.json");
@@ -510,7 +511,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void Stormplume_UsesWildlandsEliteBibleStats()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var utc = ReadJson(root, "Module", "utc", "stormplume.utc.json");
         using var skin = ReadJson(root, "Module", "uti", "stormplume_sk.uti.json");
         using var weapon = ReadJson(root, "Module", "uti", "stormplume_wp.uti.json");
@@ -541,7 +542,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void ViscaraNamedRareElites_UseBibleStats()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var expected in ExpectedNamedRareEliteEnemies)
         {
@@ -573,7 +574,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void BloodFrenzyEnemies_UseBibleAbilityPackages()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var expected in ExpectedBloodFrenzyAbilityPackages)
         {
@@ -592,7 +593,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void OldScar_UsesEliteMeleeAbilityPackage()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var utc = ReadJson(root, "Module", "utc", "oldscar_kath.utc.json");
         var expectedFeatIds = new[]
         {
@@ -614,7 +615,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void Stormplume_UsesEliteControllerAbilityPackage()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var utc = ReadJson(root, "Module", "utc", "stormplume.utc.json");
         var expectedFeatIds = new[]
         {
@@ -636,7 +637,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void ViscaraNamedRareElites_UseAuthoredEliteAbilityPackages()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var expected in ExpectedNamedRareEliteAbilityPackages)
         {
@@ -656,7 +657,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void KessDraavo_UsesBloodFrenzyCapstone()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var utc = ReadJson(root, "Module", "utc", "bf_kess.utc.json");
 
         GetCreatureFeats(utc.RootElement)
@@ -670,7 +671,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void KessDraavo_UsesDocumentedTraumaResistanceOverride()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var skin = ReadJson(root, "Module", "uti", "frenzmaster_skin.uti.json");
 
         GetItemPropertyCost(skin.RootElement, ItemPropertyResistance, (int)ResistanceType.Trauma)
@@ -681,7 +682,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void MimicryTechniqueRequirements_CoverEveryRankAndFollowWorldNpcEncounterProgression()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var archive = ZipFile.OpenRead(Path.Combine(
             root.FullName,
             "design",
@@ -826,7 +827,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void WorldNpcsBible_CalculatesResistanceAdjustmentsWithHandEntryColumns()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var archive = ZipFile.OpenRead(Path.Combine(
             root.FullName,
             "design",
@@ -1000,7 +1001,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void WorldNpcsBible_DocumentsGeneratedCapstoneEnemies()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var archive = ZipFile.OpenRead(Path.Combine(
             root.FullName,
             "design",
@@ -1066,7 +1067,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void DualWieldWorldNPCs_TotalRuntimeWeaponDamageMatchesPreset()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var expected in ExpectedDualWieldDamageTotals)
         {
@@ -1096,7 +1097,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void FastCadenceNormalWorldNPCs_UseRestoredPresetWeaponDamage()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var expected in ExpectedRestoredFastCadenceNormalDamage)
         {
@@ -1115,7 +1116,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void NPCResistanceThreats_CoverEveryResistanceFamily()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var templatesByFamily = ResistanceFamilies.ToDictionary(
             family => family,
             _ => new HashSet<string>());
@@ -1141,7 +1142,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void NPCResistanceVulnerabilities_AreCappedAndCoverEveryResistanceFamily()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var resistanceBySubtype = ResistanceFamilies.ToDictionary(type => (int)type, type => type);
         var vulnerableTemplatesByFamily = ResistanceFamilies.ToDictionary(
             family => family,
@@ -1181,7 +1182,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void ResistanceItemProperties_UseResistanceCostTableRows()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var costTableRows = Read2DARows(root, "SWLOR_Haks", "sw_2da", "iprp_costtable.2da");
         var itempropdefRows = Read2DARows(root, "SWLOR_Haks", "sw_2da", "itempropdef.2da");
         var resistanceCostRows = Read2DARows(root, "SWLOR_Haks", "sw_2da", "iprp_swlrescost.2da");
@@ -1243,7 +1244,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void HutlarQionCreatures_PressureIceResistance()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var spawnSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1273,7 +1274,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void NewResistancePressureVariants_AreSpawnedAndHaveAuthoredAbilities()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var expectedVariants = new[]
         {
             (SpawnFile: "CZ220SpawnDefinition.cs", Resref: "czcryo_mynock", Feat: FeatType.FrostSpit),
@@ -1298,7 +1299,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void CZ220CoolantMynock_StaysStarterFriendly()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var baseMynock = ReadJson(root, "Module", "utc", "mynock.utc.json");
         using var coolantMynock = ReadJson(root, "Module", "utc", "czcryo_mynock.utc.json");
         using var baseSkin = ReadJson(root, "Module", "uti", "mynock_sk.uti.json");
@@ -1340,7 +1341,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void CZ220Droids_PressureElectricalResistance()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         AssertCreatureHasFeat(root, "malsecdroid", FeatType.CapacitorSurge);
         AssertCreatureHasFeat(root, "malspiderdroid", FeatType.StaticWeb);
@@ -1351,7 +1352,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void DroidEnemySkins_GrantTraumaImmunityForBleedResistance()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var (resref, skinResref) in ExpectedDroidEnemySkins)
         {
@@ -1370,7 +1371,7 @@ public class NPCEnemyBalanceAuditTests
     [Test]
     public void KorribanForceCasters_PressureDisruptionResistance()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         AssertCreatureHasFeat(root, "vkorrdunsorc", FeatType.ForceSunder);
         AssertCreatureHasFeat(root, "vkorrduninquis", FeatType.NullShock);
@@ -1653,20 +1654,6 @@ public class NPCEnemyBalanceAuditTests
             .SingleOrDefault(candidate => candidate.Attribute("r")?.Value == address)?
             .Attribute("s")?
             .Value ?? string.Empty;
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 
     private sealed record ExpectedEnemy(

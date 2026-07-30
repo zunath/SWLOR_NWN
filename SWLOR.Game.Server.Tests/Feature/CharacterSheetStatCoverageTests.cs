@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -54,7 +55,7 @@ public class CharacterSheetStatCoverageTests
     {
         var viewModel = ReadViewModel();
         var temporaryModifiers = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
+            RepoPaths.FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
             "Service",
             "CombatService",
@@ -91,7 +92,7 @@ public class CharacterSheetStatCoverageTests
     private static string ReadViewModel()
     {
         return File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
+            RepoPaths.FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
             "Feature",
             "GuiDefinition",
@@ -102,23 +103,10 @@ public class CharacterSheetStatCoverageTests
     private static string ReadService(string fileName)
     {
         return File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
+            RepoPaths.FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
             "Service",
             fileName));
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-
-        while (directory != null &&
-               !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        directory.Should().NotBeNull("the repository root containing SWLOR.Game.Server.sln must be discoverable");
-        return directory;
-    }
 }

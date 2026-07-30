@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -73,7 +74,7 @@ public class StoreInventoryTests
     [Test]
     public void PlanetaryGeneralStoreBlueprints_CarryCumulativeWeaponTiers()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
 
         foreach (var store in PlanetaryGeneralStores)
         {
@@ -87,7 +88,7 @@ public class StoreInventoryTests
     [Test]
     public void PlacedPlanetaryGeneralStores_MatchBlueprintInventory()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var expectedItemsByStore = PlanetaryGeneralStores.ToDictionary(
             store => store.Resref,
             store => ReadStoreBlueprintItems(root, store.Resref).ToArray(),
@@ -221,16 +222,6 @@ public class StoreInventoryTests
                wrapper.TryGetProperty("value", out var value)
             ? value.GetString() ?? string.Empty
             : string.Empty;
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-            directory = directory.Parent;
-
-        directory.Should().NotBeNull("the repository root should be discoverable from the test directory");
-        return directory!;
     }
 
     private sealed record StoreWeaponExpectation(string Resref, string Name, int WeaponTierCount);

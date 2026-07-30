@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -31,7 +32,7 @@ public class DantooineHayQuestSourceTests
     [Test]
     public void HayResource_UsesTheRenderableHayBundleAndOriginalRuinFarmNodes()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var blueprint = JsonDocument.Parse(File.ReadAllText(
             Path.Combine(root.FullName, "Module", "utp", "dan_hay.utp.json")));
         blueprint.RootElement.GetProperty("Appearance").GetProperty("value").GetInt32()
@@ -71,12 +72,4 @@ public class DantooineHayQuestSourceTests
     private static string GetString(JsonElement element, string propertyName) =>
         element.GetProperty(propertyName).GetProperty("value").GetString() ?? string.Empty;
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-            directory = directory.Parent;
-
-        return directory ?? throw new DirectoryNotFoundException("Could not locate repository root.");
-    }
 }

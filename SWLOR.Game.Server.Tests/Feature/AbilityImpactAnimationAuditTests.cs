@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -11,7 +12,7 @@ public class AbilityImpactAnimationAuditTests
     [Test]
     public void CastedActionAbilities_DeclareUsageAnimation()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var missingAnimations = new List<string>();
 
         foreach (var (definitionType, abilities) in BuildAbilityDefinitions())
@@ -34,7 +35,7 @@ public class AbilityImpactAnimationAuditTests
     [Test]
     public void CombatImpactAnimation_DoesNotUseSharedDefaultAnimation()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var abilityServiceSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -49,7 +50,7 @@ public class AbilityImpactAnimationAuditTests
     [Test]
     public void QueuedWeaponAbilityImpact_UsesEngineAttackAnimationOnly()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -82,7 +83,7 @@ public class AbilityImpactAnimationAuditTests
     [Test]
     public void ActivationAnimationOverwrite_ReplacesCarrierBeforePlayingAnimation()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -113,7 +114,7 @@ public class AbilityImpactAnimationAuditTests
     [Test]
     public void ImpactAnimationOverwrite_ReplacesCarrierBeforePlayingAnimation()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -192,20 +193,4 @@ public class AbilityImpactAnimationAuditTests
         return File.ReadAllText(path);
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

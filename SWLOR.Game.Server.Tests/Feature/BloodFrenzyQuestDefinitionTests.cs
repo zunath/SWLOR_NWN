@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -132,7 +133,7 @@ public class BloodFrenzyQuestDefinitionTests
     {
         ((int)KeyItemType.ViscaraSewersDepthsKey).Should().Be(81);
 
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var area = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName,
             "Module",
@@ -187,7 +188,7 @@ public class BloodFrenzyQuestDefinitionTests
     [Test]
     public void BloodFrenzyBossActivators_UseExpectedPlaceholderNamesAndGenericQuestEncounterWiring()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var sewersDepths = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName,
             "Module",
@@ -273,7 +274,7 @@ public class BloodFrenzyQuestDefinitionTests
     [Test]
     public void SeraVonnDialogue_DoesNotRequestBloodFrenzyQuestItems()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var dialogue = File.ReadAllText(Path.Combine(
             root.FullName,
             "Module",
@@ -287,7 +288,7 @@ public class BloodFrenzyQuestDefinitionTests
     [Test]
     public void SeraVonnDialogue_OffersLoreAndTacticalBranchesForEachLesson()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         using var dialogue = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName,
             "Module",
@@ -355,7 +356,7 @@ public class BloodFrenzyQuestDefinitionTests
     [Test]
     public void BloodFrenzyPhysicalProofItems_AreNotPaletteBlueprints()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var physicalProofResrefs = new[]
         {
             "redvein_codex",
@@ -390,7 +391,7 @@ public class BloodFrenzyQuestDefinitionTests
 
         questText.Should().Contain(text => text.Contains("Blood Frenzy"));
 
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var contentFiles = new[]
         {
             Path.Combine(root.FullName, "Module", "dlg", "sera_vonn.dlg.json"),
@@ -711,14 +712,4 @@ public class BloodFrenzyQuestDefinitionTests
             .GetString() ?? string.Empty;
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        return directory ?? throw new DirectoryNotFoundException("Could not locate repository root.");
-    }
 }

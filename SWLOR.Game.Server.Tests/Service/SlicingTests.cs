@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SlicingService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -255,7 +256,7 @@ public class SlicingTests
     public void DeferredToolBenefits_RequireThePrimedItemToRemainInInventory()
     {
         var source = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(),
+            RepoPaths.FindRepositoryRootPath(),
             "SWLOR.Game.Server",
             "Service",
             "SlicingService",
@@ -301,7 +302,7 @@ public class SlicingTests
     public void SessionSource_ValidatesClaimsAndProtectedSwapsBeforeMutation()
     {
         var source = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(),
+            RepoPaths.FindRepositoryRootPath(),
             "SWLOR.Game.Server",
             "Service",
             "SlicingService",
@@ -353,17 +354,4 @@ public class SlicingTests
         return source[startIndex..endIndex];
     }
 
-    private static string FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory.FullName;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the repository root.");
-    }
 }

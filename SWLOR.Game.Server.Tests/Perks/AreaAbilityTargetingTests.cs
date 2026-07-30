@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -295,7 +296,7 @@ public class AreaAbilityTargetingTests
         // PerkBuilder.Build() reads 2DAs through the NWN runtime, so perk definitions cannot be
         // instantiated in a unit test. Scan the definition sources for GrantsFeat instead.
         var perkDefinitionRoot = Path.Combine(
-            FindRepositoryRoot().FullName,
+            RepoPaths.FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
             "Feature",
             "PerkDefinition");
@@ -319,7 +320,7 @@ public class AreaAbilityTargetingTests
 
     private static Dictionary<string, Feat2daRow> ReadFeat2da()
     {
-        var path = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks", "sw_2da", "feat.2da");
+        var path = Path.Combine(RepoPaths.FindRepositoryRoot().FullName, "SWLOR_Haks", "sw_2da", "feat.2da");
         var lines = File.ReadAllLines(path);
         var headers = lines[2].Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
@@ -350,7 +351,7 @@ public class AreaAbilityTargetingTests
 
     private static Dictionary<string, string> ReadSpellRowLabels()
     {
-        var path = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks", "sw_2da", "spells.2da");
+        var path = Path.Combine(RepoPaths.FindRepositoryRoot().FullName, "SWLOR_Haks", "sw_2da", "spells.2da");
         var labels = new Dictionary<string, string>();
         foreach (var line in File.ReadAllLines(path).Skip(3))
         {
@@ -364,20 +365,4 @@ public class AreaAbilityTargetingTests
         return labels;
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
-                Directory.Exists(Path.Combine(directory.FullName, "SWLOR_Haks")))
-            {
-                return directory;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -280,7 +281,7 @@ public class CombatUpgradeBibleRecipeParityTests
 
     private static Dictionary<string, WorkbookRecipeRow> ReadWorkbookRecipeRows()
     {
-        var root = FindRepositoryRoot();
+        var root = RepoPaths.FindRepositoryRoot();
         var workbookPath = Path.Combine(
             root.FullName,
             "design",
@@ -540,17 +541,6 @@ public class CombatUpgradeBibleRecipeParityTests
             .Descendants(ns + "si")
             .Select(item => string.Concat(item.Descendants(ns + "t").Select(text => text.Value)))
             .ToArray();
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        return directory ?? throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 
     private sealed record WorkbookRecipeRow(

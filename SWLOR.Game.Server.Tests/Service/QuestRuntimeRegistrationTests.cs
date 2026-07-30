@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -91,7 +92,7 @@ public class QuestRuntimeRegistrationTests
 
     private static string ReadSource(params string[] pathParts)
     {
-        var fullPath = Path.Combine(new[] { FindRepositoryRoot().FullName }.Concat(pathParts).ToArray());
+        var fullPath = Path.Combine(new[] { RepoPaths.FindRepositoryRoot().FullName }.Concat(pathParts).ToArray());
         return File.ReadAllText(fullPath);
     }
 
@@ -123,16 +124,4 @@ public class QuestRuntimeRegistrationTests
         throw new InvalidOperationException($"Method '{signature}' was not closed.");
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-        {
-            directory = directory.Parent;
-        }
-
-        directory.Should().NotBeNull("the tests should run inside the repository checkout");
-        return directory!;
-    }
 }

@@ -252,7 +252,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void LitShaderSourceAlphaBlendsTheDiffuseOverTheSphereMap()
+        public void LitShaderKeepsTheEnvironmentPassOutOfDiffuseLighting()
         {
             var shader = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
                 .GetField(
@@ -267,8 +267,48 @@ namespace SWLOR.Toolset.Tests
             shader.Should().Contain("uniform sampler2D environmentTexture");
             shader.Should().Contain("SampleEnvironmentMap");
             shader.Should().Contain(
-                "surfaceColor = mix(SampleEnvironmentMap(norm), texColor.rgb, texColor.a);",
-                "Aurora draws the environment first and source-alpha blends the diffuse on top");
+                "vec3 result = (ambientColor + diff * lightColor) * texColor.rgb;",
+                "only the diffuse pass is affected by the model lighting");
+            shader.Should().Contain(
+                "result = mix(SampleEnvironmentMap(norm), result, texColor.a);",
+                "Aurora draws an unlit environment pass and source-alpha blends the lit diffuse on top");
+            shader.Should().NotContain(
+                "(ambientColor + diff * lightColor) * surfaceColor",
+                "lighting the combined passes incorrectly darkens reflective PLT regions");
+        }
+
+        [Test]
+        public void SingleModelPreviewUsesAurorasNeutralGreyBackground()
+        {
+            var scene = new AreaScene
+            {
+                Tileset = string.Empty,
+                Width = 0,
+                Height = 0,
+                Tiles = Array.Empty<TilePlacement>(),
+                Instances =
+                [
+                    new InstanceMarker
+                    {
+                        Kind = InstanceMarkerKind.Item,
+                        Position = Vector3.Zero,
+                        Orientation = Vector2.UnitX
+                    }
+                ],
+                Diagnostics = new AreaSceneDiagnostics()
+            };
+            var method = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
+                .GetMethod(
+                    "BackgroundForScene",
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Static)!;
+
+            var background = method.Invoke(null, [scene])
+                .Should()
+                .BeOfType<Vector3>()
+                .Subject;
+
+            background.Should().Be(new Vector3(0.4f, 0.4f, 0.4f));
         }
 
         [Test]

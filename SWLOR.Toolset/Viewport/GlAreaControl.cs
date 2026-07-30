@@ -84,6 +84,8 @@ namespace SWLOR.Toolset.Viewport
         private const float DiffuseLightFloor = 0.20f;
         /// <summary>The empty-space colour behind the scene.</summary>
         private static readonly Vector3 ViewportBackground = new(0.12f, 0.14f, 0.18f);
+        /// <summary>Aurora's neutral grey background for isolated model and item previews.</summary>
+        private static readonly Vector3 AuroraPreviewBackground = new(0.4f, 0.4f, 0.4f);
         private static readonly Vector3 UntexturedTileColor = new(0.6f, 0.6f, 0.6f);
         private static readonly Vector3 FallbackTileColor = new(0.95f, 0.15f, 0.55f);
         // Aurora draws trigger outlines unlit at #6666CC (sampled off the reference toolset in
@@ -253,14 +255,15 @@ void main()
 
     // Two-sided lighting (abs, not max) - NWN tile/prop meshes have inconsistent winding.
     float diff = abs(dot(norm, lightDir));
-    vec3 surfaceColor = texColor.rgb;
+    vec3 result = (ambientColor + diff * lightColor) * texColor.rgb;
     if (hasTexture && hasEnvironmentMap)
     {
-        // Aurora draws the environment first, then source-alpha blends the diffuse over it.
-        // PLT alpha therefore means diffuse coverage (zero = full reflection), not transparency.
-        surfaceColor = mix(SampleEnvironmentMap(norm), texColor.rgb, texColor.a);
+        // Aurora renders this as two passes: an unlit environment map first, then the normally
+        // lit diffuse texture source-alpha blended over it. PLT alpha therefore means diffuse
+        // coverage (zero = full reflection), not transparency. Applying diffuse lighting after
+        // this mix incorrectly dims the reflective metal regions.
+        result = mix(SampleEnvironmentMap(norm), result, texColor.a);
     }
-    vec3 result = (ambientColor + diff * lightColor) * surfaceColor;
 
     if (hasTexture && hasSpecularMap)
     {
@@ -1103,7 +1106,7 @@ void main()
             // straight on and near level; the area editor's raised three-quarter view is for reading
             // a floor plan and puts a mannequin at a diagonal seen from above. The eye sits at
             // (cos, sin) from the target, so 270 degrees is directly in front of a model facing -Y.
-            var isSingleModelPreview = scene.Tiles.Count == 0 && scene.Instances.Count == 1;
+            var isSingleModelPreview = IsSingleModelPreview(scene);
             _azimuth = isSingleModelPreview ? MathF.PI * 1.5f : MathF.PI * 1.25f;
             _elevation = isSingleModelPreview
                 ? PreviewElevationRadians
@@ -2430,10 +2433,13 @@ void main()
             // that target is unavailable this is a no-op and the scene renders straight to Avalonia's
             // framebuffer, flicker and all.
             _depthPrecisionTarget.BeginFrame(_gl, pixelWidth, pixelHeight);
+            var sceneState = Volatile.Read(ref _sceneState);
+            var scene = sceneState.Scene;
+            var background = BackgroundForScene(scene);
 
             try
             {
-                _gl.ClearColor(ViewportBackground.X, ViewportBackground.Y, ViewportBackground.Z, 1f);
+                _gl.ClearColor(background.X, background.Y, background.Z, 1f);
                 _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
                 _gl.Enable(EnableCap.DepthTest);
                 _gl.DepthFunc(DepthFunction.Less);
@@ -2443,14 +2449,12 @@ void main()
                 _gl.Disable(EnableCap.CullFace);
                 _gl.Viewport(0, 0, pixelWidth, pixelHeight);
 
-                var sceneState = Volatile.Read(ref _sceneState);
-                var scene = sceneState.Scene;
                 if (scene == null)
                     return;
 
                 if (sceneState.Version != _renderedSceneVersion)
                 {
-                    var isSingleModelPreview = scene.Tiles.Count == 0 && scene.Instances.Count == 1;
+                    var isSingleModelPreview = IsSingleModelPreview(scene);
                     if (isSingleModelPreview)
                     {
                         // Preview controls reuse Array.Empty<TilePlacement>() for every model, so a
@@ -2496,9 +2500,19 @@ void main()
             {
                 // Composite onto Avalonia's framebuffer whatever happened above - including the
                 // early return for a null scene, which still owes it the cleared background.
-                _depthPrecisionTarget.EndFrame(_gl, fb, ViewportBackground);
+                _depthPrecisionTarget.EndFrame(_gl, fb, background);
             }
         }
+
+        private static bool IsSingleModelPreview(AreaScene? scene) =>
+            scene != null &&
+            scene.Tiles.Count == 0 &&
+            scene.Instances.Count == 1;
+
+        private static Vector3 BackgroundForScene(AreaScene? scene) =>
+            IsSingleModelPreview(scene)
+                ? AuroraPreviewBackground
+                : ViewportBackground;
 
         private static bool IsLikelySoftwareRenderer(string renderer) =>
             renderer.Contains("llvmpipe", StringComparison.OrdinalIgnoreCase) ||

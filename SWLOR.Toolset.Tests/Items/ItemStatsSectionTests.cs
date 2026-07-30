@@ -334,5 +334,30 @@ namespace SWLOR.Toolset.Tests.Items
             section.ReloadFromDocument();
             section.Engine!.HasEntries.Should().BeFalse();
         }
+
+        [Test]
+        public void ADropdownNeverOffersABlankRowOrARepeatedLabel()
+        {
+            var ranges = new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory));
+            var section = new ItemStatsSectionViewModel(
+                OpenStore(), (_, mutation) => { mutation(); return true; }, costTables: ranges);
+            section.Rebuild(ItemFamily.Armor, ItemRoleCatalog.CustomId);
+
+            var cells = section.Groups.SelectMany(group => group.Cells).ToList();
+            cells.Should().NotBeEmpty();
+
+            foreach (var cell in cells.Where(cell => cell.HasOptions))
+            {
+                // 2DA blanks are a run of asterisks and are not selectable CostValues.
+                cell.Options.Should().NotContain(
+                    option => option.Label.Length == 0 || option.Label.All(character => character == '*'),
+                    $"{cell.Label} offered a blank row");
+
+                // A decorated ladder ("Resistance_001") reads as a column of identical entries once
+                // truncated, so those labels are shown as the number they carry.
+                cell.Options.Select(option => option.Label).Should().OnlyHaveUniqueItems(
+                    $"{cell.Label} offered the same label twice");
+            }
+        }
     }
 }

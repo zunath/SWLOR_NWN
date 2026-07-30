@@ -76,7 +76,7 @@
          Maximum are the property's real engine cap, so garbage or out-of-range input is impossible
          rather than refused after the fact. -->
     <DataTemplate DataType="items:ItemStatCellViewModel">
-      <Grid ColumnDefinitions="*,116" ColumnSpacing="8" Margin="0,2">
+      <Grid ColumnDefinitions="*,150" ColumnSpacing="8" Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
                    Foreground="{DynamicResource InkSecondaryBrush}"
                    TextTrimming="CharacterEllipsis" />

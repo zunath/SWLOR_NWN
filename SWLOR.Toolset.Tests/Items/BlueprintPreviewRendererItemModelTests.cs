@@ -96,6 +96,25 @@ namespace SWLOR.Toolset.Tests.Items
                 .LayerColorIndices[PltLayers.Cloth1].Should().Be(11, "a dye edit reaches the model");
         }
 
+
+        [Test]
+        public void AWornPartsSkinLayerIsNotLeftOnThePalettesWhiteRow()
+        {
+            // Every palette runs light to dark, so row 0 is white - pal_skin01's is #FFFEFE. An item
+            // names no skin colour because it has no wearer, and a glove is roughly a third skin
+            // pixels by area (pfh0_handl002: Skin 34%, Tattoo1 7%), so leaving those layers at 0
+            // rendered white patches on the hands that read as a missing texture.
+            var root = CorpusItem("adren_harness");
+            var renderer = BuildRenderer();
+
+            var model = renderer.BuildModel(ResourceType.Uti, root);
+
+            model.Should().NotBeNull();
+            model!.LayerColorIndices[PltLayers.Skin].Should().NotBe(0, "row 0 is white");
+            model.LayerColorIndices[PltLayers.Tattoo1].Should().NotBe(0);
+            model.LayerColorIndices[PltLayers.Tattoo2].Should().NotBe(0);
+        }
+
         private static Domain.Gff.JsonGffStruct CorpusItem(string resRef) =>
             new ModuleWorkspace(CorpusLocator.ModuleDirectory).LoadBlueprint(ResourceType.Uti, resRef).Document.Root;
     }

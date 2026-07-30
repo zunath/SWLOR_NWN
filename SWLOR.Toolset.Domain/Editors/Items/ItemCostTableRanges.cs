@@ -80,22 +80,38 @@ namespace SWLOR.Toolset.Domain.Editors.Items
 
                 for (var value = 0; value < target.RowCount; value++)
                 {
-                    var label = target.GetString(value, LabelColumn);
-                    if (string.IsNullOrWhiteSpace(label) || label == "****")
+                    // A blank row is not a selectable CostValue. 2DA writes blanks as a run of
+                    // asterisks, and the length of that run varies between tables, so the test is
+                    // "nothing but asterisks" rather than a literal "****" - matching only the
+                    // four-star spelling put rows of "*****" into the Utility dropdowns.
+                    var label = target.GetString(value, LabelColumn)?.Trim() ?? string.Empty;
+                    if (label.Length == 0 || label.All(character => character == '*'))
                         continue;
 
-                    if (label != value.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                    // The label is shown as authored. Stripping a decorated ladder down to its number
+                    // ("Resistance_001" -> "1") looked tidier and was wrong: that table indexes a
+                    // resistance TYPE as well as an amount, so the numbers repeat and the prefix is
+                    // the part that distinguishes them.
+                    var display = label;
+
+                    if (display != value.ToString(System.Globalization.CultureInfo.InvariantCulture))
                         everyLabelIsItsOwnRow = false;
                     if (previous >= 0 && value != previous + 1)
                         contiguous = false;
 
                     previous = value;
-                    options.Add(new ItemCostTableOption(value, label));
+                    options.Add(new ItemCostTableOption(value, display));
                 }
 
                 // A dense ladder whose labels are just their row numbers IS a number - typing it is
                 // better than scrolling for it. Anything else is a set of codes and must be listed.
+                var distinct = options.Select(option => option.Label)
+                    .Distinct(StringComparer.OrdinalIgnoreCase).Count();
+
+                // Nothing selectable, a dense ladder better typed than scrolled, or labels that
+                // repeat - a list of indistinguishable entries is worse than a number box.
                 if (options.Count == 0 ||
+                    distinct != options.Count ||
                     (everyLabelIsItsOwnRow && contiguous && options.Count > MaximumListedOptions))
                 {
                     continue;

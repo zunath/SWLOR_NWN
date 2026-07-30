@@ -4,6 +4,7 @@ using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Editors.Items;
 
 namespace SWLOR.Toolset.Tests.Items
@@ -169,6 +170,71 @@ namespace SWLOR.Toolset.Tests.Items
             }
 
             [Test]
+            public void FailedMirrorEditRestoresTheToggleAndRightSideEditing()
+            {
+                var store = OpenStore("adren_harness");
+                ItemAppearanceValues.Write(store, ItemAppearanceFieldNames.Bicep.RightField, 9);
+                var armor = new ArmorPartsViewModel(
+                    store,
+                    (label, mutation) =>
+                    {
+                        if (label == "Mirror right from left")
+                            return false;
+                        mutation();
+                        return true;
+                    });
+
+                armor.MirrorRightFromLeft.Should().BeFalse();
+
+                armor.MirrorRightFromLeft = true;
+
+                armor.MirrorRightFromLeft.Should().BeFalse("the transaction was rejected");
+                armor.RightBicep.IsReadOnly.Should().BeFalse();
+                ItemAppearanceValues.Read(store.Item, ItemAppearanceFieldNames.Bicep.RightField).Should().Be(9);
+            }
+
+            [Test]
+            public void ReloadRecomputesMirrorStateAfterExternalChanges()
+            {
+                var store = OpenStore("adren_harness");
+                ItemAppearanceValues.Write(store, ItemAppearanceFieldNames.Bicep.RightField, 9);
+                var armor = new ArmorPartsViewModel(store, RunEdit);
+                armor.MirrorRightFromLeft.Should().BeFalse();
+
+                ItemAppearanceValues.Write(
+                    store,
+                    ItemAppearanceFieldNames.Bicep.RightField,
+                    ItemAppearanceValues.Read(store.Item, ItemAppearanceFieldNames.Bicep.LeftField)!.Value);
+                armor.ReloadFromDocument();
+
+                armor.MirrorRightFromLeft.Should().BeTrue();
+                armor.RightBicep.IsReadOnly.Should().BeTrue();
+            }
+
+            [Test]
+            public void FractionalArmorPartIsRefusedRatherThanTruncated()
+            {
+                var stored = 7;
+                var writes = new List<int>();
+                var cell = new ItemFieldCellViewModel(
+                    "Left Bicep",
+                    () => stored,
+                    value =>
+                    {
+                        writes.Add(value);
+                        stored = value;
+                        return true;
+                    },
+                    0,
+                    ushort.MaxValue);
+
+                cell.Number = 12.9m;
+
+                writes.Should().BeEmpty();
+                cell.Number.Should().Be(7);
+            }
+
+            [Test]
             public void DyeCellWriteRoundTrips()
             {
                 var store = OpenStore("adren_harness");
@@ -224,6 +290,22 @@ namespace SWLOR.Toolset.Tests.Items
 
                 written.Should().BeEmpty("a dye index is a whole number - 12.9 is not silently stored as 12");
                 cell.Number.Should().Be(7, "the box goes back to what the document holds");
+            }
+
+            [Test]
+            public void ExtremelyLargeDyeInputClampsWithoutOverflowing()
+            {
+                var stored = 7;
+                var cell = new ItemDyeCellViewModel(
+                    "Cloth 1",
+                    () => stored,
+                    value => { stored = value; return true; },
+                    Array.Empty<(byte, byte, byte)>());
+
+                cell.Number = decimal.MaxValue;
+
+                stored.Should().Be(cell.Maximum);
+                cell.Number.Should().Be(cell.Maximum);
             }
 
             [Test]
@@ -315,6 +397,25 @@ namespace SWLOR.Toolset.Tests.Items
                 Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ModelPart3"), Is.EqualTo(21));
                 Assert.That(section.Top.Selected!.Value, Is.EqualTo(21));
             }
+
+            [Test]
+            public void CompositeGalleryIncludesPartZeroAndStoresExtendedPartNumbersSafely()
+            {
+                var store = OpenStore("bobsaber");
+                var textures = ExistingLightsaberTextures();
+                textures.Add("iWSwGlsbr_t_000");
+                textures.Add("iWSwGlsbr_t_259");
+                var section = Open(store, LightsaberRow, textures);
+
+                section.Top!.Options.Should().Contain(option => option.Value == 0);
+                var extended = section.Top.Options.Single(option => option.Value == 259);
+
+                section.Top.Selected = extended;
+
+                store.GetInteger(BehaviorFieldStorage.Field, "ModelPart3").Should().Be(byte.MaxValue);
+                store.GetInteger(BehaviorFieldStorage.Field, "xModelPart3").Should().Be(259);
+                ItemAppearanceValues.Read(store.Item, "ModelPart3").Should().Be(259);
+            }
         }
 
         [TestFixture]
@@ -360,6 +461,38 @@ namespace SWLOR.Toolset.Tests.Items
 
                 Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ModelPart1"), Is.EqualTo(1));
                 Assert.That(section.Gallery.Selected!.Value, Is.EqualTo(1));
+            }
+
+            [Test]
+            public void ExtendedModelWithoutAUniqueIconIsStillSelectableAndPreviewable()
+            {
+                var scratch = Path.Combine(
+                    Path.GetTempPath(),
+                    "swlor-item-parts-" + Guid.NewGuid().ToString("N"));
+                Directory.CreateDirectory(scratch);
+                try
+                {
+                    File.WriteAllBytes(Path.Combine(scratch, "helm_309.mdl"), Array.Empty<byte>());
+                    var resources = new ResourceIndex(
+                        baseLayer: null,
+                        hakLayersInOrder: new[] { new ResourceIndex.HakLayer("fixture", scratch) });
+                    var catalog = new ArmorPartCatalog(resources);
+                    var row = new BaseItemIconRow(17, 1, "helm", "ihelm");
+                    var section = new ItemAppearanceSectionViewModel(
+                        OpenStore("abdamaryllia"),
+                        RunEdit,
+                        _ => row,
+                        _ => false,
+                        armorPartModels: catalog);
+
+                    var part = section.Gallery!.Options.Single(option => option.Value == 309);
+                    part.Choice.ModelResRef.Should().Be("helm_309",
+                        "a model thumbnail can represent a part whose inventory icon falls back");
+                }
+                finally
+                {
+                    Directory.Delete(scratch, recursive: true);
+                }
             }
         }
 
@@ -495,6 +628,35 @@ namespace SWLOR.Toolset.Tests.Items
                 Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ModelPart1"), Is.EqualTo(1));
                 Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ModelPart2"), Is.EqualTo(1));
                 Assert.That(store.GetInteger(BehaviorFieldStorage.Field, "ModelPart3"), Is.EqualTo(1));
+            }
+
+            [Test]
+            public void CompositeDefaultsAreCommittedAsOneEditAndOnePreviewRefresh()
+            {
+                var store = OpenStore("bobsaber");
+                var row = new BaseItemIconRow(0, 2, "WSwVibro", "iwswvibro");
+                var textures = new HashSet<string>
+                {
+                    "iWSwVibro_b_001", "iWSwVibro_m_001", "iWSwVibro_t_001"
+                };
+                var edits = 0;
+                var previews = 0;
+                var section = new ItemAppearanceSectionViewModel(
+                    store,
+                    (_, mutation) =>
+                    {
+                        edits++;
+                        mutation();
+                        return true;
+                    },
+                    _ => row,
+                    textures.Contains,
+                    appearanceChanged: () => previews++);
+
+                section.EnsureSelection();
+
+                edits.Should().Be(1);
+                previews.Should().Be(1);
             }
         }
 

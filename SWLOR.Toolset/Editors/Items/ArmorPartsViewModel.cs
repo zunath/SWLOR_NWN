@@ -12,8 +12,8 @@ namespace SWLOR.Toolset.Editors.Items
     /// <remarks>
     /// A pair defaults to mirrored when the document already carries matching left/right values -
     /// which is every shipped armor blueprint, since nothing before this editor could set them apart.
-    /// While mirrored, editing the left cell writes both sides (and each side's "x" twin, when the
-    /// document carries one); the right cell stays visible but read-only, always showing the left
+    /// While mirrored, editing the left cell writes both sides and keeps each side's extended
+    /// companion synchronized; the right cell stays visible but read-only, always showing the left
     /// side's current value. Turning mirroring off makes the right cells editable again so they can
     /// diverge; turning it back on immediately writes the right side from the left (the mockup's "the
     /// mirror check writes the right side from the left"), as one undoable edit.
@@ -26,8 +26,9 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly ArmorDyeSwatchService? _dyes;
         private readonly ArmorPartCatalog? _partModels;
         private readonly List<ItemFieldCellViewModel> _allCells = new();
-        private readonly List<ItemFieldCellViewModel> _rightCells = new();
         private readonly List<ItemDyeCellViewModel> _dyeCells = new();
+        private readonly List<PairBinding> _pairBindings = new();
+        private bool _loadingMirror;
 
         public ItemFieldCellViewModel Neck { get; }
         public ItemFieldCellViewModel Torso { get; }
@@ -79,19 +80,19 @@ namespace SWLOR.Toolset.Editors.Items
 
             _mirrorRightFromLeft = DetectMirror();
 
-            Neck = CreateSingle("Neck", ItemAppearanceFieldNames.Neck, ItemAppearanceFieldNames.NeckTwin, "neck");
-            Torso = CreateSingle("Torso", ItemAppearanceFieldNames.Torso, ItemAppearanceFieldNames.TorsoTwin, "chest");
-            Belt = CreateSingle("Belt", ItemAppearanceFieldNames.Belt, ItemAppearanceFieldNames.BeltTwin, "belt");
-            Pelvis = CreateSingle("Pelvis", ItemAppearanceFieldNames.Pelvis, ItemAppearanceFieldNames.PelvisTwin, "pelvis");
-            Robe = CreateSingle("Robe", ItemAppearanceFieldNames.Robe, ItemAppearanceFieldNames.RobeTwin, "robe");
+            Neck = CreateSingle("Neck", ItemAppearanceFieldNames.Neck, "neck");
+            Torso = CreateSingle("Torso", ItemAppearanceFieldNames.Torso, "chest");
+            Belt = CreateSingle("Belt", ItemAppearanceFieldNames.Belt, "belt");
+            Pelvis = CreateSingle("Pelvis", ItemAppearanceFieldNames.Pelvis, "pelvis");
+            Robe = CreateSingle("Robe", ItemAppearanceFieldNames.Robe, "robe");
 
-            (LeftShoulder, RightShoulder) = CreatePair(ItemAppearanceFieldNames.Shoulder, "shol");
-            (LeftBicep, RightBicep) = CreatePair(ItemAppearanceFieldNames.Bicep, "bicepl");
-            (LeftForearm, RightForearm) = CreatePair(ItemAppearanceFieldNames.Forearm, "forel");
-            (LeftHand, RightHand) = CreatePair(ItemAppearanceFieldNames.Hand, "handl");
-            (LeftThigh, RightThigh) = CreatePair(ItemAppearanceFieldNames.Thigh, "legl");
-            (LeftShin, RightShin) = CreatePair(ItemAppearanceFieldNames.Shin, "shinl");
-            (LeftFoot, RightFoot) = CreatePair(ItemAppearanceFieldNames.Foot, "footl");
+            (LeftShoulder, RightShoulder) = CreatePair(ItemAppearanceFieldNames.Shoulder, "shol", "shor");
+            (LeftBicep, RightBicep) = CreatePair(ItemAppearanceFieldNames.Bicep, "bicepl", "bicepr");
+            (LeftForearm, RightForearm) = CreatePair(ItemAppearanceFieldNames.Forearm, "forel", "forer");
+            (LeftHand, RightHand) = CreatePair(ItemAppearanceFieldNames.Hand, "handl", "handr");
+            (LeftThigh, RightThigh) = CreatePair(ItemAppearanceFieldNames.Thigh, "legl", "legr");
+            (LeftShin, RightShin) = CreatePair(ItemAppearanceFieldNames.Shin, "shinl", "shinr");
+            (LeftFoot, RightFoot) = CreatePair(ItemAppearanceFieldNames.Foot, "footl", "footr");
 
             Cloth1 = CreateDye("Cloth 1", ItemAppearanceFieldNames.Cloth1Color, ArmorDyeSwatchService.DyeMaterial.Cloth);
             Cloth2 = CreateDye("Cloth 2", ItemAppearanceFieldNames.Cloth2Color, ArmorDyeSwatchService.DyeMaterial.Cloth);
@@ -112,6 +113,19 @@ namespace SWLOR.Toolset.Editors.Items
         /// <summary>Re-reads every cell after an undo, redo, or external reload.</summary>
         public void ReloadFromDocument()
         {
+            var mirrored = DetectMirror();
+            _loadingMirror = true;
+            try
+            {
+                MirrorRightFromLeft = mirrored;
+            }
+            finally
+            {
+                _loadingMirror = false;
+            }
+
+            ApplyPairState(mirrored);
+
             foreach (var cell in _allCells)
                 cell.Reload();
             foreach (var dye in _dyeCells)
@@ -126,27 +140,27 @@ namespace SWLOR.Toolset.Editors.Items
         /// </summary>
         public void EnsureDefaults()
         {
-            var missing = new List<(string Field, string? Twin, int Value, bool IsDye)>();
+            var missing = new List<(string Field, int Value, bool IsDye)>();
 
-            void Single(string field, string? twin, int value)
+            void Single(string field, int value)
             {
-                if (_store.GetInteger(BehaviorFieldStorage.Field, field) is null)
-                    missing.Add((field, twin, value, false));
+                if (ItemAppearanceValues.Read(_store.Item, field) is null)
+                    missing.Add((field, value, false));
             }
 
-            Single(ItemAppearanceFieldNames.Neck, ItemAppearanceFieldNames.NeckTwin, 1);
-            Single(ItemAppearanceFieldNames.Torso, ItemAppearanceFieldNames.TorsoTwin, 1);
-            Single(ItemAppearanceFieldNames.Belt, ItemAppearanceFieldNames.BeltTwin, 0);
-            Single(ItemAppearanceFieldNames.Pelvis, ItemAppearanceFieldNames.PelvisTwin, 1);
-            Single(ItemAppearanceFieldNames.Robe, ItemAppearanceFieldNames.RobeTwin, 0);
+            Single(ItemAppearanceFieldNames.Neck, 1);
+            Single(ItemAppearanceFieldNames.Torso, 1);
+            Single(ItemAppearanceFieldNames.Belt, 0);
+            Single(ItemAppearanceFieldNames.Pelvis, 1);
+            Single(ItemAppearanceFieldNames.Robe, 0);
 
             foreach (var pair in ItemAppearanceFieldNames.Pairs)
             {
                 // Shoulders default to "none" like belts and robes; every other limb piece has a
                 // plain part 1 model to stand in.
                 var value = pair.Label == "Shoulder" ? 0 : 1;
-                Single(pair.LeftField, pair.LeftTwinField, value);
-                Single(pair.RightField, pair.RightTwinField, value);
+                Single(pair.LeftField, value);
+                Single(pair.RightField, value);
             }
 
             foreach (var dye in new[]
@@ -157,7 +171,7 @@ namespace SWLOR.Toolset.Editors.Items
                      })
             {
                 if (_store.GetInteger(BehaviorFieldStorage.Field, dye) is null)
-                    missing.Add((dye, null, 0, true));
+                    missing.Add((dye, 0, true));
             }
 
             if (missing.Count == 0)
@@ -165,12 +179,12 @@ namespace SWLOR.Toolset.Editors.Items
 
             var applied = _runEdit("Set armor defaults", () =>
             {
-                foreach (var (field, twin, value, isDye) in missing)
+                foreach (var (field, value, isDye) in missing)
                 {
                     if (isDye)
                         _store.SetInteger(BehaviorFieldStorage.Field, field, GffFieldType.Byte, value);
                     else
-                        WriteArmorField(field, twin, value);
+                        WriteArmorField(field, value);
                 }
             });
 
@@ -190,9 +204,10 @@ namespace SWLOR.Toolset.Editors.Items
         /// </summary>
         partial void OnMirrorRightFromLeftChanged(bool value)
         {
-            foreach (var right in _rightCells)
-                right.IsReadOnly = value;
+            if (_loadingMirror)
+                return;
 
+            ApplyPairState(value);
             if (!value)
                 return;
 
@@ -200,16 +215,30 @@ namespace SWLOR.Toolset.Editors.Items
             {
                 foreach (var pair in ItemAppearanceFieldNames.Pairs)
                 {
-                    var leftValue = (int)(_store.GetInteger(BehaviorFieldStorage.Field, pair.LeftField) ?? 0);
-                    WriteArmorField(pair.RightField, pair.RightTwinField, leftValue);
+                    var leftValue = ItemAppearanceValues.Read(_store.Item, pair.LeftField) ?? 0;
+                    WriteArmorField(pair.RightField, leftValue);
                 }
             });
 
-            if (applied)
-                _appearanceChanged?.Invoke();
+            if (!applied)
+            {
+                _loadingMirror = true;
+                try
+                {
+                    MirrorRightFromLeft = false;
+                }
+                finally
+                {
+                    _loadingMirror = false;
+                }
 
-            foreach (var right in _rightCells)
-                right.Reload();
+                ApplyPairState(false);
+                ReloadCells();
+                return;
+            }
+
+            _appearanceChanged?.Invoke();
+            ReloadCells();
         }
 
         /// <summary>True only when every pair's left and right value already match.</summary>
@@ -217,8 +246,8 @@ namespace SWLOR.Toolset.Editors.Items
         {
             foreach (var pair in ItemAppearanceFieldNames.Pairs)
             {
-                var left = _store.GetInteger(BehaviorFieldStorage.Field, pair.LeftField) ?? 0;
-                var right = _store.GetInteger(BehaviorFieldStorage.Field, pair.RightField) ?? 0;
+                var left = ItemAppearanceValues.Read(_store.Item, pair.LeftField) ?? 0;
+                var right = ItemAppearanceValues.Read(_store.Item, pair.RightField) ?? 0;
                 if (left != right)
                     return false;
             }
@@ -227,12 +256,12 @@ namespace SWLOR.Toolset.Editors.Items
         }
 
         private ItemFieldCellViewModel CreateSingle(
-            string label, string field, string? twinField, string partType) =>
+            string label, string field, string partType) =>
             new(
                 label,
-                () => (int?)_store.GetInteger(BehaviorFieldStorage.Field, field),
-                value => Apply(label, () => WriteArmorField(field, twinField, value)),
-                0, 255,
+                () => ItemAppearanceValues.Read(_store.Item, field),
+                value => Apply(label, () => WriteArmorField(field, value)),
+                0, ushort.MaxValue,
                 options: PartNumbers(partType));
 
         /// <summary>The variants that exist for a part, plus 0 - "this armor covers nothing here".</summary>
@@ -259,20 +288,25 @@ namespace SWLOR.Toolset.Editors.Items
         /// changes what the very next left-side edit does without rebuilding either cell.
         /// </summary>
         private (ItemFieldCellViewModel Left, ItemFieldCellViewModel Right) CreatePair(
-            ItemArmorPartFieldPair pair, string partType)
+            ItemArmorPartFieldPair pair, string leftPartType, string rightPartType)
         {
             ItemFieldCellViewModel? right = null;
+            var leftOptions = PartNumbers(leftPartType);
+            var rightOptions = PartNumbers(rightPartType);
+            IReadOnlyList<int> mirroredOptions = leftOptions.Count == 0 || rightOptions.Count == 0
+                ? Array.Empty<int>()
+                : leftOptions.Intersect(rightOptions).OrderBy(number => number).ToList();
 
             var left = new ItemFieldCellViewModel(
                 $"Left {pair.Label}",
-                () => (int?)_store.GetInteger(BehaviorFieldStorage.Field, pair.LeftField),
+                () => ItemAppearanceValues.Read(_store.Item, pair.LeftField),
                 value =>
                 {
                     var applied = Apply($"Left {pair.Label}", () =>
                     {
-                        WriteArmorField(pair.LeftField, pair.LeftTwinField, value);
+                        WriteArmorField(pair.LeftField, value);
                         if (MirrorRightFromLeft)
-                            WriteArmorField(pair.RightField, pair.RightTwinField, value);
+                            WriteArmorField(pair.RightField, value);
                     });
 
                     // The right cell's own OnValueChanged never fired for this edit, so its display
@@ -282,33 +316,46 @@ namespace SWLOR.Toolset.Editors.Items
 
                     return applied;
                 },
-                0, 255,
-                options: PartNumbers(partType));
+                0, ushort.MaxValue,
+                options: MirrorRightFromLeft ? mirroredOptions : leftOptions);
 
             right = new ItemFieldCellViewModel(
                 $"Right {pair.Label}",
-                () => (int?)_store.GetInteger(BehaviorFieldStorage.Field, pair.RightField),
+                () => ItemAppearanceValues.Read(_store.Item, pair.RightField),
                 value => Apply(
-                    $"Right {pair.Label}", () => WriteArmorField(pair.RightField, pair.RightTwinField, value)),
-                0, 255,
-                options: PartNumbers(partType))
+                    $"Right {pair.Label}", () => WriteArmorField(pair.RightField, value)),
+                0, ushort.MaxValue,
+                options: MirrorRightFromLeft ? mirroredOptions : rightOptions)
             {
                 IsReadOnly = MirrorRightFromLeft
             };
-            _rightCells.Add(right);
+            _pairBindings.Add(new PairBinding(left, right, leftOptions, rightOptions, mirroredOptions));
 
             return (left, right);
         }
 
         /// <summary>
-        /// Writes a byte-typed ArmorPart_* field, and its word-typed "x" twin too when the document
-        /// already carries one - never adding a twin that was not already there.
+        /// Writes the legacy byte field and keeps its word-sized NWN:EE companion synchronized.
         /// </summary>
-        private void WriteArmorField(string field, string? twinField, int value)
+        private void WriteArmorField(string field, int value)
         {
-            _store.SetInteger(BehaviorFieldStorage.Field, field, GffFieldType.Byte, value);
-            if (twinField != null && _store.Item.Contains(twinField))
-                _store.SetInteger(BehaviorFieldStorage.Field, twinField, GffFieldType.Word, value);
+            ItemAppearanceValues.Write(_store, field, value);
+        }
+
+        private void ApplyPairState(bool mirrored)
+        {
+            foreach (var binding in _pairBindings)
+            {
+                binding.Left.SetOptions(mirrored ? binding.MirroredOptions : binding.LeftOptions);
+                binding.Right.SetOptions(mirrored ? binding.MirroredOptions : binding.RightOptions);
+                binding.Right.IsReadOnly = mirrored;
+            }
+        }
+
+        private void ReloadCells()
+        {
+            foreach (var cell in _allCells)
+                cell.Reload();
         }
 
         private bool Apply(string label, Action mutation)
@@ -318,5 +365,12 @@ namespace SWLOR.Toolset.Editors.Items
                 _appearanceChanged?.Invoke();
             return applied;
         }
+
+        private sealed record PairBinding(
+            ItemFieldCellViewModel Left,
+            ItemFieldCellViewModel Right,
+            IReadOnlyList<int> LeftOptions,
+            IReadOnlyList<int> RightOptions,
+            IReadOnlyList<int> MirroredOptions);
     }
 }

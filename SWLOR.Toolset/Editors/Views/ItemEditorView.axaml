@@ -86,7 +86,7 @@
                    TextTrimming="CharacterEllipsis" />
         <!-- A cost table of coded choices (Delay) lists its real rows; a plain numeric ladder
              (DMG) keeps the number box, capped at what the table actually reaches. -->
-        <ComboBox Grid.Column="1" ItemsSource="{Binding Options}"
+        <ComboBox Grid.Column="1" ItemsSource="{Binding SelectableOptions}"
                   SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
                   HorizontalAlignment="Stretch" IsVisible="{Binding HasOptions}" />
         <NumericUpDown Grid.Column="1" Value="{Binding Number, Mode=TwoWay}"
@@ -455,6 +455,16 @@
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3"
                   IsVisible="{Binding HasModelPreview}">
             <ContentControl Content="{Binding PreviewView}" />
+          </Border>
+
+          <Border Grid.Row="1" MinHeight="260" Margin="0,8,0,0"
+                  Background="{DynamicResource PanelRaisedBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3"
+                  IsVisible="{Binding IsModelPreviewLoading}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+              <ProgressBar IsIndeterminate="True" Width="96" />
+              <TextBlock Text="Loading model..." Classes="dim" />
+            </StackPanel>
           </Border>
 
           <!-- Armor is previewed worn; the mannequin's body is the one thing to choose. Two halves

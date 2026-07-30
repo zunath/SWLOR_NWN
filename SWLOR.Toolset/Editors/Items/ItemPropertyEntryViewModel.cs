@@ -28,7 +28,7 @@ namespace SWLOR.Toolset.Editors.Items
 
         public int Minimum => 0;
 
-        /// <summary>The property's real engine cap, resolved from its CostTableId; 255 when unresolved.</summary>
+        /// <summary>The property's real engine cap, resolved from its CostTableId.</summary>
         public int Maximum { get; }
 
         [ObservableProperty]
@@ -56,7 +56,9 @@ namespace SWLOR.Toolset.Editors.Items
 
             SubtypeId = subtypeId;
             SubtypeDisplay = subtypeDisplay ?? throw new ArgumentNullException(nameof(subtypeDisplay));
-            Maximum = costTables?.MaxFor(costTableId) ?? ItemCostTableRanges.DefaultMax;
+            Maximum = Math.Min(
+                costTables?.MaxFor(costTableId) ?? ItemCostTableRanges.DefaultMax,
+                ushort.MaxValue);
 
             RemoveCommand = new RelayCommand(Remove);
 
@@ -67,6 +69,15 @@ namespace SWLOR.Toolset.Editors.Items
         {
             if (_loading)
                 return;
+
+            if (value.HasValue &&
+                (decimal.Truncate(value.Value) != value.Value ||
+                 value.Value < Minimum ||
+                 value.Value > Maximum))
+            {
+                RestoreValue();
+                return;
+            }
 
             Write(value.HasValue ? (int)value.Value : null);
         }

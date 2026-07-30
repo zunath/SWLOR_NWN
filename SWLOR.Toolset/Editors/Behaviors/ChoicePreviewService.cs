@@ -41,6 +41,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         private readonly ResourceIndex? _resources;
         private readonly ThumbnailService? _models;
+        private readonly SemaphoreSlim _decodeSlots = new(4);
         private readonly object _syncRoot = new();
         private readonly Dictionary<string, Bitmap?> _cache = new(StringComparer.OrdinalIgnoreCase);
 
@@ -116,9 +117,22 @@ namespace SWLOR.Toolset.Editors.Behaviors
                     return cached;
             }
 
-            // Decode and scale on a worker; only the bitmap handoff needs the UI thread.
-            var scaled = await Task.Run(
-                () => Decode(resRef, maxWidth, cropTransparentCanvas)).ConfigureAwait(true);
+            // Hundreds of item-part tiles can be published at once. Queue only a small number of
+            // decodes concurrently so the editor remains responsive instead of flooding the thread
+            // pool and memory bus with every texture in the gallery.
+            await _decodeSlots.WaitAsync().ConfigureAwait(false);
+            ScaledImage? scaled;
+            try
+            {
+                // Decode and scale on a worker; only the bitmap handoff needs the UI thread.
+                scaled = await Task.Run(
+                    () => Decode(resRef, maxWidth, cropTransparentCanvas)).ConfigureAwait(false);
+            }
+            finally
+            {
+                _decodeSlots.Release();
+            }
+
             var bitmap = scaled == null ? null : await ToBitmapAsync(scaled).ConfigureAwait(true);
 
             lock (_syncRoot)

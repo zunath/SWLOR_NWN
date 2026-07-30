@@ -98,6 +98,73 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public void FractionalAndOutOfRangeStatValuesAreRefused()
+        {
+            var store = OpenStore();
+            var section = OpenArmorSection(store);
+            var physicalDefense = section.Groups
+                .Single(group => group.Group == ItemStatGroup.Defense)
+                .Cells.Single(cell => cell.Label == "Physical Defense");
+
+            physicalDefense.Number = 26.5m;
+            physicalDefense.Number.Should().Be(26);
+            store.GetPropertyValue(94, 1).Should().Be(26);
+
+            physicalDefense.Number = physicalDefense.Maximum + 1m;
+            physicalDefense.Number.Should().Be(26);
+            store.GetPropertyValue(94, 1).Should().Be(26);
+        }
+
+        [Test]
+        public void OrdinaryNumericEditDoesNotRepackTheStatColumns()
+        {
+            var section = OpenArmorSection(OpenStore());
+            var collectionChanges = 0;
+            section.LeftColumn.CollectionChanged += (_, _) => collectionChanges++;
+            section.RightColumn.CollectionChanged += (_, _) => collectionChanges++;
+            var physicalDefense = section.Groups
+                .Single(group => group.Group == ItemStatGroup.Defense)
+                .Cells.Single(cell => cell.Label == "Physical Defense");
+
+            physicalDefense.Number = 27;
+
+            collectionChanges.Should().Be(0, "a value edit does not change card height or membership");
+        }
+
+        [Test]
+        public void ClearingTheLastStoredValueRemovesAStoredOnlyGroupImmediately()
+        {
+            var store = OpenStore();
+            var section = new ItemStatsSectionViewModel(
+                store, (_, mutation) => { mutation(); return true; });
+            section.Rebuild(ItemFamily.Miscellaneous, ItemRoleCatalog.CustomId);
+
+            var defense = section.Groups.Single(group => group.Group == ItemStatGroup.Defense);
+            defense.Cells.Single(cell => cell.Label == "Physical Defense").Number = null;
+            defense.Cells.Single(cell => cell.Label == "Force Defense").Number = null;
+
+            section.Groups.Should().NotContain(group => group.Group == ItemStatGroup.Defense);
+            section.LeftColumn.Concat(section.RightColumn)
+                .OfType<ItemStatGroupViewModel>()
+                .Should().NotContain(group => group.Group == ItemStatGroup.Defense);
+        }
+
+        [Test]
+        public void ExternalReloadRecomputesStoredOnlyGroups()
+        {
+            var store = OpenStore();
+            var section = new ItemStatsSectionViewModel(
+                store, (_, mutation) => { mutation(); return true; });
+            section.Rebuild(ItemFamily.Miscellaneous, ItemRoleCatalog.CustomId);
+            section.Groups.Should().Contain(group => group.Group == ItemStatGroup.Defense);
+
+            store.ClearProperty(94);
+            section.ReloadFromDocument();
+
+            section.Groups.Should().NotContain(group => group.Group == ItemStatGroup.Defense);
+        }
+
+        [Test]
         public void ArmorShowsNeitherEnhancementLevelNorWeaponDamageType()
         {
             // Corpus-verified: of EnhancementLevel's 812 entries and WeaponDamageType's 311, not
@@ -296,6 +363,27 @@ namespace SWLOR.Toolset.Tests.Items
 
             // DMG's table is a dense 1..N ladder labelled with its own row numbers - a number.
             combat.Cells.Single(cell => cell.Label == "DMG").HasOptions.Should().BeFalse();
+        }
+
+        [Test]
+        public void CodedStatCanBeClearedFromItsDropdown()
+        {
+            var store = OpenStore();
+            var ranges = new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory));
+            var section = new ItemStatsSectionViewModel(
+                store, (_, mutation) => { mutation(); return true; }, costTables: ranges);
+            section.Rebuild(ItemFamily.MeleeWeapon, ItemRoleCatalog.CustomId);
+            var delay = section.Groups.Single(group => group.Group == ItemStatGroup.Combat)
+                .Cells.Single(cell => cell.Label == "Delay");
+
+            delay.SelectedOption = delay.Options.First();
+            store.HasProperty(98).Should().BeTrue();
+
+            delay.SelectedOption = delay.SelectableOptions[0];
+
+            delay.Number.Should().BeNull();
+            store.HasProperty(98).Should().BeFalse();
+            delay.SelectableOptions[0].Label.Should().Contain("none");
         }
 
         [Test]

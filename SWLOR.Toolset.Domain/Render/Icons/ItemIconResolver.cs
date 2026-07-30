@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
 
@@ -50,10 +51,10 @@ namespace SWLOR.Toolset.Domain.Render.Icons
 
             if (!string.IsNullOrWhiteSpace(itemClass))
             {
-                var part1 = root.GetIntOrNull("ModelPart1") ?? 0;
-                var part2 = root.GetIntOrNull("ModelPart2") ?? 0;
-                var part3 = root.GetIntOrNull("ModelPart3") ?? 0;
-                var torso = root.GetIntOrNull("ArmorPart_Torso") ?? 0;
+                var part1 = ItemAppearanceValues.Read(root, "ModelPart1") ?? 0;
+                var part2 = ItemAppearanceValues.Read(root, "ModelPart2") ?? 0;
+                var part3 = ItemAppearanceValues.Read(root, "ModelPart3") ?? 0;
+                var torso = ItemAppearanceValues.Read(root, "ArmorPart_Torso") ?? 0;
 
                 switch (row.ModelType)
                 {

@@ -52,6 +52,29 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public void CompositeBaseItemUsesExtendedPartFields()
+        {
+            var row = new BaseItemIconRow(512, 2, "WSwGlsbr", "iwswglsbr");
+            var root = JsonGffDocument.Parse(Encoding.UTF8.GetBytes(
+                """
+                {
+                  "__data_type": "UTI ",
+                  "BaseItem": { "type": "int", "value": 512 },
+                  "ModelPart1": { "type": "byte", "value": 255 },
+                  "ModelPart2": { "type": "byte", "value": 1 },
+                  "ModelPart3": { "type": "byte", "value": 1 },
+                  "xModelPart1": { "type": "word", "value": 259 }
+                }
+                """)).Root;
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Uti, root, null, null, null, baseItems: _ => row);
+
+            result.Parts.Single(part => part.PartType == "bottom").ModelResRef
+                .Should().Be("WSwGlsbr_b_259");
+        }
+
+        [Test]
         public void SimpleBaseItem_ModelType0_ResolvesToGroundModelWhenItExists()
         {
             // it_torch_006.mdl exists in sw_item.
@@ -167,6 +190,27 @@ namespace SWLOR.Toolset.Tests.Items
 
             result.Kind.Should().Be(BlueprintModelKind.Segmented);
             result.SkeletonResRef.Should().Be("pfh0");
+        }
+
+        [Test]
+        public void ArmorMannequinUsesExtendedBodyPartFields()
+        {
+            var row = new BaseItemIconRow(16, 3, "AArCl", "gifp");
+            var root = JsonGffDocument.Parse(Encoding.UTF8.GetBytes(
+                """
+                {
+                  "__data_type": "UTI ",
+                  "BaseItem": { "type": "int", "value": 16 },
+                  "ArmorPart_LBicep": { "type": "byte", "value": 255 },
+                  "xArmorPart_LBice": { "type": "word", "value": 270 }
+                }
+                """)).Root;
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Uti, root, null, null, null, baseItems: _ => row);
+
+            result.Parts.Single(part => part.PartType == "bicepl").ModelResRef
+                .Should().Be("pmh0_bicepl270");
         }
 
         [Test]

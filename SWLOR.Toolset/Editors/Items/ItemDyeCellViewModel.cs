@@ -112,7 +112,9 @@ namespace SWLOR.Toolset.Editors.Items
                 return;
             }
 
-            var index = value.HasValue ? Math.Clamp((int)value.Value, Minimum, Maximum) : Minimum;
+            var index = value.HasValue
+                ? (int)Math.Clamp(value.Value, Minimum, Maximum)
+                : Minimum;
             _write(index);
             Reload();
         }

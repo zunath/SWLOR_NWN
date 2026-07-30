@@ -24,6 +24,8 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly ItemCostTableRanges? _costTables;
 
         private ItemFamily _family;
+        private string _roleId = string.Empty;
+        private string _layoutSignature = string.Empty;
 
         /// <summary>
         /// The properties the open blueprint carries, snapshotted at the start of each
@@ -67,37 +69,15 @@ namespace SWLOR.Toolset.Editors.Items
         public void Rebuild(ItemFamily family, string roleId)
         {
             _family = family;
-            _storedProperties = _store.Properties.Select(property => property.PropertyId).ToHashSet();
-
-            var primaryIds = ItemStatVisibility.PrimaryGroups(family)
-                .Concat(ItemRoleCatalog.GroupsUnlockedBy(roleId))
-                .Distinct()
-                .ToList();
-
-            // The *Enhancement multi-entry properties (ItemStatGroup.Enhancements) mark an Essence AS
-            // an enhancement module - relevant to every Essence regardless of which role it takes -
-            // so Essence always sees the group as primary. ItemStatVisibility.PrimaryGroups itself
-            // stays untouched; this is purely local to how the Stats tab decides what to show.
-            if (family == ItemFamily.Essence && !primaryIds.Contains(ItemStatGroup.Enhancements))
-                primaryIds.Add(ItemStatGroup.Enhancements);
-
-            // The family decides what a blueprint of this kind USUALLY has; what this blueprint
-            // actually carries decides the rest. A cook's armor holds Crafting stats, an armor-based
-            // enhancement module holds Enhancements, an essence holds weapon DMG - none of which the
-            // family alone would show, leaving real stored values invisible and uneditable. Only
-            // groups with a value on THIS item are added, so nothing empty appears: this is not the
-            // "stats your base type doesn't use" list, it is "the stats this item has".
-            foreach (var group in StoredGroups())
-            {
-                if (!primaryIds.Contains(group))
-                    primaryIds.Add(group);
-            }
+            _roleId = roleId ?? string.Empty;
+            RefreshStoredProperties();
 
             Groups.Clear();
-            foreach (var groupId in primaryIds)
+            foreach (var groupId in DesiredGroupIds())
                 Groups.Add(BuildGroup(groupId));
 
-            Engine = new ItemEngineLegacySectionViewModel(_store, _runEdit, _resolveChoices, _costTables);
+            Engine = new ItemEngineLegacySectionViewModel(
+                _store, _runEdit, _resolveChoices, _costTables, OnContentChanged);
 
             LayOutColumns();
         }
@@ -111,6 +91,7 @@ namespace SWLOR.Toolset.Editors.Items
         {
             LeftColumn.Clear();
             RightColumn.Clear();
+            _layoutSignature = LayoutSignature();
 
             var cards = Cards().ToList();
             if (cards.Count == 0)
@@ -211,8 +192,7 @@ namespace SWLOR.Toolset.Editors.Items
         private IEnumerable<(object Card, int Rows)> Cards()
         {
             var cards = Groups
-                .Select(group => ((object)group,
-                    group.Cells.Count + group.EntryLists.Count + group.ExclusiveChoices.Count))
+                .Select(group => ((object)group, RowsFor(group)))
                 .ToList();
 
             // The engine sweep is a card like any other. It used to sit below the whole grid, so
@@ -224,28 +204,85 @@ namespace SWLOR.Toolset.Editors.Items
             return cards.OrderBy(card => DisplayRank(card.Item1));
         }
 
+        private static int RowsFor(ItemStatGroupViewModel group) =>
+            group.Cells.Count +
+            group.ExclusiveChoices.Count +
+            group.EntryLists.Sum(list => 2 + Math.Max(1, list.Entries.Count));
+
+        private string LayoutSignature()
+        {
+            var signature = new System.Text.StringBuilder();
+            foreach (var group in Groups)
+            {
+                signature.Append((int)group.Group)
+                    .Append(':').Append(group.Cells.Count)
+                    .Append(':').Append(group.ExclusiveChoices.Count);
+                foreach (var list in group.EntryLists)
+                    signature.Append(':').Append(list.Entries.Count);
+                signature.Append('|');
+            }
+
+            signature.Append("engine:").Append(Engine?.Entries.Count ?? 0);
+            return signature.ToString();
+        }
+
         private static bool IsDefense((object Card, int Rows) card) =>
             card.Card is ItemStatGroupViewModel { Group: ItemStatGroup.Defense };
 
-        /// <summary>Re-reads every built cell/entry list/exclusive choice, and the engine rows.</summary>
+        /// <summary>
+        /// Rebuilds from the current document after undo/redo or an external reload. A lightweight
+        /// cell-only reload is insufficient because the set of stored properties controls which
+        /// cards exist and how both columns are packed.
+        /// </summary>
         public void ReloadFromDocument()
         {
-            foreach (var group in Groups)
-                ReloadGroup(group);
-
-            Engine?.Rebuild();
+            Rebuild(_family, _roleId);
         }
 
-        private static void ReloadGroup(ItemStatGroupViewModel group)
+        private void RefreshStoredProperties()
         {
-            foreach (var cell in group.Cells)
-                cell.Reload();
+            _storedProperties = _store.Properties.Select(property => property.PropertyId).ToHashSet();
+        }
 
-            foreach (var entryList in group.EntryLists)
-                entryList.Reload();
+        private IReadOnlyList<ItemStatGroup> DesiredGroupIds()
+        {
+            var groupIds = ItemStatVisibility.PrimaryGroups(_family)
+                .Concat(ItemRoleCatalog.GroupsUnlockedBy(_roleId))
+                .Distinct()
+                .ToList();
 
-            foreach (var exclusiveChoice in group.ExclusiveChoices)
-                exclusiveChoice.Reload();
+            // The *Enhancement multi-entry properties mark an Essence AS an enhancement module,
+            // regardless of which role it takes.
+            if (_family == ItemFamily.Essence && !groupIds.Contains(ItemStatGroup.Enhancements))
+                groupIds.Add(ItemStatGroup.Enhancements);
+
+            // Family describes the usual cards; the document supplies any additional cards whose
+            // properties are actually stored on this blueprint.
+            foreach (var group in StoredGroups())
+            {
+                if (!groupIds.Contains(group))
+                    groupIds.Add(group);
+            }
+
+            return groupIds;
+        }
+
+        /// <summary>
+        /// Keeps structural edits honest without rebuilding focused controls for ordinary value
+        /// changes. Adding/removing a row can change both card membership and column height.
+        /// </summary>
+        private void OnContentChanged()
+        {
+            RefreshStoredProperties();
+            var desired = DesiredGroupIds();
+            var current = Groups.Select(group => group.Group).ToList();
+
+            if (!current.SequenceEqual(desired))
+                Rebuild(_family, _roleId);
+            else if (!string.Equals(_layoutSignature, LayoutSignature(), StringComparison.Ordinal))
+                LayOutColumns();
+
+            _valueChanged?.Invoke();
         }
 
         /// <summary>Every stat group this item already stores at least one property in.</summary>
@@ -294,15 +331,15 @@ namespace SWLOR.Toolset.Editors.Items
                 .ToList();
 
             return new ItemStatGroupViewModel(
-                group, definitions, _store, _runEdit, _valueChanged, entryLists, exclusiveChoices, _costTables);
+                group, definitions, _store, _runEdit, OnContentChanged, entryLists, exclusiveChoices, _costTables);
         }
 
         private ItemPropertyEntryListViewModel BuildEntryList(ItemMultiEntryDefinition definition) =>
-            new(definition, _store, _runEdit, ResolveSubtypeChoices(definition.SubtypeTableResRef), _valueChanged,
+            new(definition, _store, _runEdit, ResolveSubtypeChoices(definition.SubtypeTableResRef), OnContentChanged,
                 _costTables);
 
         private ItemExclusiveChoiceViewModel BuildExclusiveChoice(ItemMultiEntryDefinition definition) =>
-            new(definition, _store, _runEdit, ResolveSubtypeChoices(definition.SubtypeTableResRef), _valueChanged);
+            new(definition, _store, _runEdit, ResolveSubtypeChoices(definition.SubtypeTableResRef), OnContentChanged);
 
         private IReadOnlyList<BehaviorChoice> ResolveSubtypeChoices(string tableResRef) =>
             _resolveChoices?.Invoke($"{SubtypeKeyPrefix}{tableResRef}") ?? Array.Empty<BehaviorChoice>();

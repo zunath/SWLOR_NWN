@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
@@ -173,9 +174,9 @@ namespace SWLOR.Toolset.Domain.Render
         /// leading "i" (verified against the corpus: <c>wswls_b_015.mdl</c> sits beside
         /// <c>iwswls_b_015.tga</c> in sw_weapon). A ModelType 0/1 item resolves to a single ground
         /// model <c>{ItemClass}_{ModelPart1:D3}</c> when <paramref name="partModelExists"/> confirms it
-        /// (also corpus-verified: <c>it_torch_015.mdl</c>, <c>helm_001.mdl</c>). ModelType 3 (armor) has
-        /// no world model of its own - previewing it means posing a mannequin, which is future work -
-        /// and an unrecognised ModelType degrades the same way.
+        /// (also corpus-verified: <c>it_torch_015.mdl</c>, <c>helm_001.mdl</c>). ModelType 3 (armor)
+        /// is assembled on a male or female mannequin from its body-part fields. An unrecognised
+        /// ModelType degrades to the standard loot-bag model.
         /// </summary>
         private static BlueprintModelReference ResolveItem(
             JsonGffStruct root,
@@ -199,9 +200,9 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 case 2:
                 {
-                    var part1 = root.GetIntOrNull("ModelPart1") ?? 0;
-                    var part2 = root.GetIntOrNull("ModelPart2") ?? 0;
-                    var part3 = root.GetIntOrNull("ModelPart3") ?? 0;
+                    var part1 = ItemAppearanceValues.Read(root, "ModelPart1") ?? 0;
+                    var part2 = ItemAppearanceValues.Read(root, "ModelPart2") ?? 0;
+                    var part3 = ItemAppearanceValues.Read(root, "ModelPart3") ?? 0;
                     var parts = new[]
                     {
                         new BlueprintModelPart("bottom", $"{itemClass}_b_{part1:D3}"),
@@ -223,7 +224,7 @@ namespace SWLOR.Toolset.Domain.Render
                 case 0:
                 case 1:
                 {
-                    var part1 = root.GetIntOrNull("ModelPart1") ?? 0;
+                    var part1 = ItemAppearanceValues.Read(root, "ModelPart1") ?? 0;
 
                     // A cloak's own model is a skinmesh weighted to the skeleton's cloak chain - drawn
                     // by itself it is a flat sheet in mid-air. Worn on the mannequin it hangs where it
@@ -290,7 +291,7 @@ namespace SWLOR.Toolset.Domain.Render
             var prefix = female ? "pfh0" : "pmh0";
             var parts = new List<BlueprintModelPart>();
 
-            var robeNumber = root.GetIntOrNull("ArmorPart_Robe") ?? 0;
+            var robeNumber = ItemAppearanceValues.Read(root, "ArmorPart_Robe") ?? 0;
             if (robeNumber > 0)
             {
                 var robeResRef = BuildPartName(prefix, "robe", robeNumber);
@@ -302,7 +303,7 @@ namespace SWLOR.Toolset.Domain.Render
 
             foreach (var (_, armorKey, partType) in BodyPartFields)
             {
-                var armorValue = root.GetIntOrNull("ArmorPart_" + armorKey) ?? 0;
+                var armorValue = ItemAppearanceValues.Read(root, "ArmorPart_" + armorKey) ?? 0;
 
                 // Unlike a dressed creature (where a creature part of 0 means "this body has no
                 // such part"), the mannequin exists to SHOW the armor: an armor part always wins,
@@ -420,7 +421,9 @@ namespace SWLOR.Toolset.Domain.Render
             // ALL body parts are still emitted alongside it — whether the robe replaces the parts
             // it covers depends on its geometry (RobeCoverage.IsFullBodyRobe), which the renderer
             // decides after loading the model; partial robes (loincloths, tabards) cover nothing.
-            var robeNumber = armor?.GetIntOrNull("ArmorPart_Robe") ?? 0;
+            var robeNumber = armor == null
+                ? 0
+                : ItemAppearanceValues.Read(armor, "ArmorPart_Robe") ?? 0;
             if (robeNumber > 0)
             {
                 var robeResRef = BuildPartName(prefix, "robe", robeNumber);
@@ -436,7 +439,9 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 var number = ResolvePartNumber(
                     root.GetIntOrNull(creatureField) ?? 0,
-                    armor?.GetIntOrNull("ArmorPart_" + armorKey) ?? 0);
+                    armor == null
+                        ? 0
+                        : ItemAppearanceValues.Read(armor, "ArmorPart_" + armorKey) ?? 0);
                 if (number > 0)
                     parts.Add(new BlueprintModelPart(partType, BuildPartName(prefix, partType, number)));
             }

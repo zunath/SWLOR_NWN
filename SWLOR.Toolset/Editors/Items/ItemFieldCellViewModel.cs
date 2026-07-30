@@ -58,7 +58,13 @@ namespace SWLOR.Toolset.Editors.Items
         /// behind them - and a part with no model just vanishes off the body, which reads as the
         /// armor not covering it rather than as a bad value.
         /// </remarks>
-        public IReadOnlyList<int> Options { get; }
+        private IReadOnlyList<int> _options = Array.Empty<int>();
+
+        public IReadOnlyList<int> Options
+        {
+            get => _options;
+            private set => SetProperty(ref _options, value);
+        }
 
         /// <summary>Whether to render this cell as a list of real values rather than a number box.</summary>
         public bool HasOptions => Options.Count > 0;
@@ -119,6 +125,17 @@ namespace SWLOR.Toolset.Editors.Items
             }
         }
 
+        /// <summary>
+        /// Replaces the real model choices when a paired armor field changes between independent
+        /// left/right editing and mirrored editing.
+        /// </summary>
+        public void SetOptions(IReadOnlyList<int>? options)
+        {
+            Options = options ?? Array.Empty<int>();
+            OnPropertyChanged(nameof(HasOptions));
+            OnPropertyChanged(nameof(SelectedOption));
+        }
+
         partial void OnNumberChanged(decimal? value)
         {
             OnPropertyChanged(nameof(SelectedOption));
@@ -129,7 +146,11 @@ namespace SWLOR.Toolset.Editors.Items
             // A part number or dye channel is always present on a real blueprint, so an empty box
             // is refused; anything the control let through outside Minimum/Maximum is refused too.
             // Both restore what is actually stored.
-            if (!value.HasValue || value.Value < Minimum || value.Value > Maximum)
+            if (!value.HasValue ||
+                decimal.Truncate(value.Value) != value.Value ||
+                value.Value < Minimum ||
+                value.Value > Maximum ||
+                (HasOptions && !Options.Contains((int)value.Value)))
             {
                 Reload();
                 return;

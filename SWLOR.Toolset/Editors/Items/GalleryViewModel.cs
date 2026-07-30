@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
-using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
 
 namespace SWLOR.Toolset.Editors.Items
@@ -44,7 +43,7 @@ namespace SWLOR.Toolset.Editors.Items
             _loading = true;
             try
             {
-                var stored = _store.GetInteger(BehaviorFieldStorage.Field, ItemAppearanceFieldNames.SimplePart) ?? 0;
+                var stored = ItemAppearanceValues.Read(_store.Item, ItemAppearanceFieldNames.SimplePart) ?? 0;
                 Selected = Options.FirstOrDefault(option => option.Value == stored);
                 MarkSelected();
             }
@@ -59,8 +58,8 @@ namespace SWLOR.Toolset.Editors.Items
             if (_loading || value == null)
                 return;
 
-            if (!_runEdit($"Change model to {value.Display}", () => _store.SetInteger(
-                    BehaviorFieldStorage.Field, ItemAppearanceFieldNames.SimplePart, GffFieldType.Byte, value.Value)))
+            if (!_runEdit($"Change model to {value.Display}", () =>
+                    ItemAppearanceValues.Write(_store, ItemAppearanceFieldNames.SimplePart, checked((int)value.Value))))
             {
                 Reload();
                 return;

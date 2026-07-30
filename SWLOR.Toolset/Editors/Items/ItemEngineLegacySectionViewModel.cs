@@ -20,6 +20,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveSubtypeChoices;
         private readonly ItemCostTableRanges? _costTables;
+        private readonly Action? _valueChanged;
 
         private IReadOnlyList<ItemPropertyEntryViewModel> _entries = Array.Empty<ItemPropertyEntryViewModel>();
 
@@ -35,12 +36,14 @@ namespace SWLOR.Toolset.Editors.Items
             ItemValueStore store,
             Func<string, Action, bool> runEdit,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveSubtypeChoices = null,
-            ItemCostTableRanges? costTables = null)
+            ItemCostTableRanges? costTables = null,
+            Action? valueChanged = null)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _resolveSubtypeChoices = resolveSubtypeChoices;
             _costTables = costTables;
+            _valueChanged = valueChanged;
 
             Rebuild();
         }
@@ -67,7 +70,13 @@ namespace SWLOR.Toolset.Editors.Items
         private ItemPropertyEntryViewModel BuildRow(
             int propertyId, int subtypeId, ItemEngineLegacyDefinition definition) =>
             new(propertyId, subtypeId, DisplayFor(definition, subtypeId), definition.CostTableId,
-                _store, _runEdit, valueChanged: null, removed: Rebuild, costTables: _costTables);
+                _store, _runEdit, valueChanged: _valueChanged, removed: OnEntryRemoved, costTables: _costTables);
+
+        private void OnEntryRemoved()
+        {
+            Rebuild();
+            _valueChanged?.Invoke();
+        }
 
         /// <summary>
         /// "Label" alone when the property has no subtype table; "Label (resolved subtype)" when it

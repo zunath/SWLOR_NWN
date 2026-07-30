@@ -74,12 +74,34 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ExtendedModelPartOverridesTheLegacyByteForCompositeIcons()
+        {
+            var root = Item(7, part1: 28, part2: 28, part3: 255);
+            SetInt(root, "xModelPart3", 259);
+
+            var stacks = ItemIconResolver.Resolve(root, Table(2, "WSwGs"));
+
+            stacks[0].Layers.Should().Equal("iWSwGs_b_028", "iWSwGs_m_028", "iWSwGs_t_259");
+        }
+
+        [Test]
         public void Armor_Uses_The_Body_Part_Icons_Keyed_On_Torso_Not_Its_Own_ItemClass()
         {
             // iAArCl_### exists nowhere in the base game or any hak; armor icons are ip{m,f}_chest###.
             var stacks = ItemIconResolver.Resolve(Item(7, torso: 156), Table(3, "AArCl"));
 
             FirstLayers(stacks).Should().ContainInOrder("ipm_chest156", "ipf_chest156");
+        }
+
+        [Test]
+        public void ExtendedTorsoPartControlsTheArmorIcon()
+        {
+            var root = Item(7, torso: 255);
+            SetInt(root, "xArmorPart_Torso", 270);
+
+            var stacks = ItemIconResolver.Resolve(root, Table(3, "AArCl"));
+
+            FirstLayers(stacks).Should().ContainInOrder("ipm_chest270", "ipf_chest270");
         }
 
         [Test]

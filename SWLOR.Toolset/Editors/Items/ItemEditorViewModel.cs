@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Numerics;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
@@ -23,6 +24,8 @@ namespace SWLOR.Toolset.Editors.Items
     public sealed partial class ItemEditorViewModel : ObservableObject, IModelPreviewSource, IDisposable
     {
         private readonly ItemValueStore _store;
+        private bool _previewUpdateQueued;
+        private bool _previewSceneUpdateQueued;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
@@ -32,6 +35,9 @@ namespace SWLOR.Toolset.Editors.Items
         private ModelPreviewControl? _previewView;
         private RenderModel? _cachedModel;
         private string? _cachedModelSignature;
+        private string? _pendingModelSignature;
+        private int _previewModelGeneration;
+        private readonly SemaphoreSlim _previewModelGate = new(1);
         private bool _disposed;
 
         public ObservableCollection<BehaviorRowViewModel> BasicRows { get; } = new();
@@ -65,6 +71,9 @@ namespace SWLOR.Toolset.Editors.Items
 
         [ObservableProperty]
         private Avalonia.Media.Imaging.Bitmap? _previewImage;
+
+        [ObservableProperty]
+        private bool _isModelPreviewLoading;
 
         /// <summary>Null unless a resolver was supplied and the item's base type has a world model to preview.</summary>
         public AreaScene? PreviewScene { get; private set; }
@@ -100,7 +109,8 @@ namespace SWLOR.Toolset.Editors.Items
         partial void OnPreviewFemaleChanged(bool value)
         {
             OnPropertyChanged(nameof(PreviewMale));
-            UpdatePreview();
+            // The inventory icon is gender-independent; only the mannequin geometry changes.
+            QueuePreviewSceneUpdate();
         }
 
         public ResourceIndex? ResourceIndex { get; }
@@ -213,7 +223,12 @@ namespace SWLOR.Toolset.Editors.Items
             ReclassifyFamily();
             Role = ItemRoleCatalog.Classify(_store, Family);
             BuildBasicRows();
-            Stats = new ItemStatsSectionViewModel(_store, RunEdit, null, resolveChoices, costTables);
+            Stats = new ItemStatsSectionViewModel(
+                _store,
+                RunEdit,
+                () => OnPropertyChanged(nameof(ShowsStatsTab)),
+                resolveChoices,
+                costTables);
             Stats.Rebuild(Family, Role.Id);
             Requirements = new ItemRequirementsSectionViewModel(_store, RunEdit, null, resolveChoices, costTables);
             Roles = new ItemRoleSectionViewModel(_store, RunEdit, resolveChoices, prompts, OnRoleChosen);
@@ -221,7 +236,7 @@ namespace SWLOR.Toolset.Editors.Items
             if (baseItemIcons != null && textureExists != null)
             {
                 Appearance = new ItemAppearanceSectionViewModel(
-                    _store, RunEdit, baseItemIcons, textureExists, choicePreviews, UpdatePreview,
+                    _store, RunEdit, baseItemIcons, textureExists, choicePreviews, QueuePreviewUpdate,
                     armorDyeSwatches, armorPartModels);
             }
             Source = new ItemSourceSectionViewModel(headerOwner, sourceLookup, itemSourcesReady);
@@ -490,22 +505,137 @@ namespace SWLOR.Toolset.Editors.Items
                 return;
 
             var icon = _renderIcon?.Invoke(_store.Item);
-            PreviewImage = icon == null ? null : Workspace.ThumbnailService.ToBitmap(icon);
+            ReplacePreviewImage(icon == null ? null : Workspace.ThumbnailService.ToBitmap(icon));
             UpdatePreviewScene();
         }
 
+        private void ReplacePreviewImage(Avalonia.Media.Imaging.Bitmap? image)
+        {
+            var previous = PreviewImage;
+            PreviewImage = image;
+            if (!ReferenceEquals(previous, image))
+                previous?.Dispose();
+        }
+
         /// <summary>
-        /// Rebuilds the orbitable 3D scene alongside the 2D icon, so both refresh together on every
-        /// appearance/base-type edit. Null when no resolver was supplied (construction-only callers,
-        /// which must never resolve or render anything) or the base type has no world model worth
-        /// showing (<see cref="Domain.Render.BlueprintModelResolver"/> decides that).
+        /// Lets an appearance control paint its new selection before decoding the icon and composing
+        /// the 3D model. Multiple field changes in one UI turn collapse into one preview rebuild.
+        /// </summary>
+        private void QueuePreviewUpdate()
+        {
+            if (_disposed || _previewUpdateQueued)
+                return;
+
+            _previewUpdateQueued = true;
+            Dispatcher.UIThread.Post(() =>
+            {
+                _previewUpdateQueued = false;
+                UpdatePreview();
+            }, DispatcherPriority.Background);
+        }
+
+        private void QueuePreviewSceneUpdate()
+        {
+            if (_disposed || _previewSceneUpdateQueued)
+                return;
+
+            _previewSceneUpdateQueued = true;
+            Dispatcher.UIThread.Post(() =>
+            {
+                _previewSceneUpdateQueued = false;
+                UpdatePreviewScene();
+            }, DispatcherPriority.Background);
+        }
+
+        /// <summary>
+        /// Starts rebuilding the orbitable 3D scene alongside the 2D icon. Model parsing and
+        /// composition run on a worker so opening the editor and changing a part never block the UI.
         /// </summary>
         private void UpdatePreviewScene()
         {
             if (_disposed)
                 return;
 
-            var model = ResolveCachedModel();
+            if (_resolveModel == null)
+            {
+                _previewModelGeneration++;
+                _pendingModelSignature = null;
+                IsModelPreviewLoading = false;
+                ApplyPreviewScene(null);
+                return;
+            }
+
+            var signature = GeometrySignature();
+            if (_cachedModelSignature == signature)
+            {
+                _previewModelGeneration++;
+                _pendingModelSignature = null;
+                IsModelPreviewLoading = false;
+                ApplyPreviewScene(_cachedModel);
+                return;
+            }
+
+            if (_pendingModelSignature == signature)
+                return;
+
+            var generation = ++_previewModelGeneration;
+            _pendingModelSignature = signature;
+            IsModelPreviewLoading = true;
+            ApplyPreviewScene(null);
+
+            // Snapshot on the UI thread. The background resolver never observes a field halfway
+            // through another edit, and an older completion is discarded by its generation.
+            var snapshot = new JsonGffDocument("UTI ", _store.Item).ToBytes();
+            var female = PreviewFemale;
+            _ = ResolvePreviewModelAsync(snapshot, female, signature, generation);
+        }
+
+        private async Task ResolvePreviewModelAsync(
+            byte[] snapshot,
+            bool female,
+            string signature,
+            int generation)
+        {
+            RenderModel? model;
+            await _previewModelGate.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                // An older request waiting behind an expensive composition is discarded before it
+                // starts. Rapid part clicks therefore cost at most the active render plus the
+                // newest one, rather than rendering every intermediate selection.
+                if (generation != Volatile.Read(ref _previewModelGeneration))
+                    return;
+
+                model = await Task.Run(() =>
+                {
+                    var item = JsonGffDocument.Parse(snapshot).Root;
+                    return _resolveModel!(item, female);
+                }).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                model = null;
+            }
+            finally
+            {
+                _previewModelGate.Release();
+            }
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (_disposed || generation != _previewModelGeneration)
+                    return;
+
+                _pendingModelSignature = null;
+                _cachedModel = model;
+                _cachedModelSignature = signature;
+                IsModelPreviewLoading = false;
+                ApplyPreviewScene(model);
+            });
+        }
+
+        private void ApplyPreviewScene(RenderModel? model)
+        {
             PreviewScene = model == null
                 ? null
                 : new AreaScene
@@ -540,28 +670,6 @@ namespace SWLOR.Toolset.Editors.Items
             OnPropertyChanged(nameof(HasModelPreview));
         }
 
-        /// <summary>
-        /// The composed preview model, reused while nothing about the item's GEOMETRY has changed.
-        /// </summary>
-        /// <remarks>
-        /// Resolving it means reading every body-part model, composing them onto a skeleton and
-        /// rebuilding the viewport's vertex buffers. Dye edits do none of that - they only recolour
-        /// textures - so doing the whole job on each swatch click is what made picking a colour lag.
-        /// </remarks>
-        private RenderModel? ResolveCachedModel()
-        {
-            if (_resolveModel == null)
-                return null;
-
-            var signature = GeometrySignature();
-            if (_cachedModelSignature == signature)
-                return _cachedModel;
-
-            _cachedModel = _resolveModel(_store.Item, PreviewFemale);
-            _cachedModelSignature = signature;
-            return _cachedModel;
-        }
-
         /// <summary>Everything that changes the shape of the preview, and nothing that only recolours it.</summary>
         private string GeometrySignature()
         {
@@ -570,7 +678,7 @@ namespace SWLOR.Toolset.Editors.Items
             parts.Append(':').Append(CurrentBaseItem());
 
             foreach (var field in GeometryFields)
-                parts.Append(':').Append(_store.GetInteger(BehaviorFieldStorage.Field, field) ?? -1);
+                parts.Append(':').Append(ItemAppearanceValues.Read(_store.Item, field) ?? -1);
 
             return parts.ToString();
         }
@@ -621,9 +729,12 @@ namespace SWLOR.Toolset.Editors.Items
                 return;
 
             _disposed = true;
+            _previewModelGeneration++;
+            _pendingModelSignature = null;
+            IsModelPreviewLoading = false;
             foreach (var row in AllBasicRows())
                 row.Dispose();
-            PreviewImage = null;
+            ReplacePreviewImage(null);
             _previewView?.Dispose();
             _previewView = null;
             PreviewScene = null;

@@ -61,9 +61,33 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void DefaultMaxIsTwoHundredFiftyFive()
+        public void DefaultMaxMatchesTheWordSizedCostValueField()
         {
-            ItemCostTableRanges.DefaultMax.Should().Be(255);
+            ItemCostTableRanges.DefaultMax.Should().Be(ushort.MaxValue);
+        }
+
+        [Test]
+        public void TrailingBlankRowsDoNotIncreaseTheReportedMaximum()
+        {
+            var scratch = Path.Combine(Path.GetTempPath(), "swlor-cost-table-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "iprp_costtable.2da"),
+                    "2DA V2.0\r\n\r\nName\r\n0 FIXTURE_TABLE\r\n");
+                File.WriteAllText(
+                    Path.Combine(scratch, "fixture_table.2da"),
+                    "2DA V2.0\r\n\r\nName\r\n0 a\r\n1 b\r\n2 c\r\n3 ****\r\n4 ****\r\n");
+
+                var ranges = new ItemCostTableRanges(new TwoDaService(scratch));
+
+                ranges.MaxFor(0).Should().Be(2, "empty padding rows are not selectable CostValues");
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
         }
     }
 }

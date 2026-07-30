@@ -27,7 +27,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
         private const string NameColumn = "Name";
 
         /// <summary>Fallback cap when a cell's CostTableId is absent or cannot be resolved.</summary>
-        public const int DefaultMax = 255;
+        public const int DefaultMax = ushort.MaxValue;
 
         private const string LabelColumn = "Label";
 
@@ -80,6 +80,9 @@ namespace SWLOR.Toolset.Domain.Editors.Items
 
                 for (var value = 0; value < target.RowCount; value++)
                 {
+                    if (value > ushort.MaxValue)
+                        break;
+
                     // A blank row is not a selectable CostValue. 2DA writes blanks as a run of
                     // asterisks, and the length of that run varies between tables, so the test is
                     // "nothing but asterisks" rather than a literal "****" - matching only the
@@ -142,7 +145,15 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                 if (!twoDa.TryGetTable(name, out var target) || target == null || target.RowCount == 0)
                     continue;
 
-                result[row] = target.RowCount - 1;
+                var highestPopulated = -1;
+                for (var targetRow = 0; targetRow < target.RowCount; targetRow++)
+                {
+                    if (target.ColumnNames.Any(column => target.GetString(targetRow, column) != null))
+                        highestPopulated = targetRow;
+                }
+
+                if (highestPopulated >= 0)
+                    result[row] = Math.Min(highestPopulated, ushort.MaxValue);
             }
 
             return result;

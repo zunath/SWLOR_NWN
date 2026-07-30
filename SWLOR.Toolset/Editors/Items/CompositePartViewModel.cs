@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
-using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
 
 namespace SWLOR.Toolset.Editors.Items
@@ -24,7 +23,7 @@ namespace SWLOR.Toolset.Editors.Items
         /// <summary>"Bottom", "Middle", or "Top" - which layer this picker writes.</summary>
         public string Label { get; }
 
-        /// <summary>Every part number 1-259 whose layer texture actually resolved, ascending.</summary>
+        /// <summary>Every part number 0-259 whose layer texture actually resolved, ascending.</summary>
         public IReadOnlyList<BehaviorChoiceViewModel> Options { get; }
 
         [ObservableProperty]
@@ -54,7 +53,7 @@ namespace SWLOR.Toolset.Editors.Items
             _loading = true;
             try
             {
-                var stored = _store.GetInteger(BehaviorFieldStorage.Field, _fieldName) ?? 0;
+                var stored = ItemAppearanceValues.Read(_store.Item, _fieldName) ?? 0;
                 Selected = Options.FirstOrDefault(option => option.Value == stored);
                 MarkSelected();
             }
@@ -69,8 +68,8 @@ namespace SWLOR.Toolset.Editors.Items
             if (_loading || value == null)
                 return;
 
-            if (!_runEdit($"Change {Label} model", () => _store.SetInteger(
-                    BehaviorFieldStorage.Field, _fieldName, GffFieldType.Byte, value.Value)))
+            if (!_runEdit($"Change {Label} model", () =>
+                    ItemAppearanceValues.Write(_store, _fieldName, checked((int)value.Value))))
             {
                 Reload();
                 return;

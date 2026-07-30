@@ -366,8 +366,11 @@ namespace SWLOR.Toolset.Tests.Items
             {
                 try
                 {
-                    var original = File.ReadAllBytes(path);
                     var document = UtiDocument.Load(path);
+                    // Compare the same document serializer before and after construction. Comparing
+                    // to the source file conflates editor mutation with harmless canonicalization
+                    // of older JSON formatting/order during a normal load/save round trip.
+                    var beforeConstruction = document.ToBytes();
 
                     using (var editor = new ItemEditorViewModel(
                                document.Fields, "test", runEdit, baseItemRows: baseItemRows.GetOrNull))
@@ -376,7 +379,7 @@ namespace SWLOR.Toolset.Tests.Items
                     }
 
                     var written = document.ToBytes();
-                    if (!written.AsSpan().SequenceEqual(original))
+                    if (!written.AsSpan().SequenceEqual(beforeConstruction))
                         failures.Add($"{path}: constructing the editor changed the document's bytes");
                 }
                 catch (Exception ex)

@@ -17,15 +17,19 @@ namespace SWLOR.Toolset.Editors.Items
     {
         /// <summary>ModelType 0's and 1's one part field.</summary>
         public const string SimplePart = "ModelPart1";
+        public const string SimplePartTwin = "xModelPart1";
 
         /// <summary>ModelType 2's bottom layer - the hilt/grip end of a composite weapon.</summary>
         public const string Bottom = "ModelPart1";
+        public const string BottomTwin = "xModelPart1";
 
         /// <summary>ModelType 2's middle layer.</summary>
         public const string Middle = "ModelPart2";
+        public const string MiddleTwin = "xModelPart2";
 
         /// <summary>ModelType 2's top layer - the blade/head end.</summary>
         public const string Top = "ModelPart3";
+        public const string TopTwin = "xModelPart3";
 
         public const string Neck = "ArmorPart_Neck";
         public const string NeckTwin = "xArmorPart_Neck";

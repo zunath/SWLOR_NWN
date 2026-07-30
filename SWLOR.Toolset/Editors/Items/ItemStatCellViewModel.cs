@@ -11,6 +11,8 @@ namespace SWLOR.Toolset.Editors.Items
     /// </summary>
     public sealed partial class ItemStatCellViewModel : ObservableObject
     {
+        private static readonly ItemCostTableOption NoneOption = new(-1, "— none");
+
         private readonly ItemStatDefinition _definition;
         private readonly ItemValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
@@ -21,7 +23,7 @@ namespace SWLOR.Toolset.Editors.Items
 
         public int Minimum => 0;
 
-        /// <summary>The stat's real engine cap, resolved from its CostTableId; 255 when unresolved.</summary>
+        /// <summary>The stat's real engine cap, resolved from its CostTableId.</summary>
         public int Maximum { get; }
 
         [ObservableProperty]
@@ -40,13 +42,16 @@ namespace SWLOR.Toolset.Editors.Items
 
         public bool HasOptions => Options.Count > 0;
 
-        /// <summary>The stored CostValue as a row of <see cref="Options"/>; null when it matches none.</summary>
+        /// <summary>The clear choice followed by every real row in the cost table.</summary>
+        public IReadOnlyList<ItemCostTableOption> SelectableOptions { get; }
+
+        /// <summary>The stored CostValue as a selectable row, or the clear choice when absent.</summary>
         public ItemCostTableOption? SelectedOption
         {
             get
             {
                 if (Number is not { } number)
-                    return null;
+                    return NoneOption;
                 var value = (int)number;
                 foreach (var option in Options)
                 {
@@ -59,7 +64,7 @@ namespace SWLOR.Toolset.Editors.Items
             set
             {
                 if (value is { } chosen)
-                    Number = chosen.Value;
+                    Number = chosen.Value < 0 ? null : chosen.Value;
             }
         }
 
@@ -74,8 +79,11 @@ namespace SWLOR.Toolset.Editors.Items
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _valueChanged = valueChanged;
-            Maximum = costTables?.MaxFor(definition.CostTableId) ?? ItemCostTableRanges.DefaultMax;
+            Maximum = Math.Min(
+                costTables?.MaxFor(definition.CostTableId) ?? ItemCostTableRanges.DefaultMax,
+                ushort.MaxValue);
             Options = costTables?.OptionsFor(definition.CostTableId) ?? Array.Empty<ItemCostTableOption>();
+            SelectableOptions = new[] { NoneOption }.Concat(Options).ToList();
             Reload();
         }
 
@@ -99,6 +107,16 @@ namespace SWLOR.Toolset.Editors.Items
 
             if (_loading)
                 return;
+
+            if (value.HasValue &&
+                (decimal.Truncate(value.Value) != value.Value ||
+                 value.Value < Minimum ||
+                 value.Value > Maximum ||
+                 (HasOptions && !Options.Any(option => option.Value == (int)value.Value))))
+            {
+                Reload();
+                return;
+            }
 
             Write(value.HasValue ? (int)value.Value : null);
         }

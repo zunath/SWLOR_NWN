@@ -15,10 +15,12 @@ namespace SWLOR.Toolset.Editors.Items
     /// </summary>
     public sealed partial class ItemAppearanceSectionViewModel : ObservableObject
     {
-        /// <summary>Highest ModelPart1 value probed for a Gallery item - baseitems.2da parts are a byte.</summary>
+        private const int ItemThumbnailWidth = 72;
+
+        /// <summary>Legacy range checked for icon-only gallery parts.</summary>
         private const int MaxSimplePart = 255;
 
-        /// <summary>Highest model-color part number probed for a composite item's three layers.</summary>
+        /// <summary>Standard model/color range checked for icon-only composite parts.</summary>
         private const int MaxCompositePart = 259;
 
         private readonly ItemValueStore _store;
@@ -134,9 +136,7 @@ namespace SWLOR.Toolset.Editors.Items
                     break;
 
                 case ItemAppearanceKind.Composite:
-                    EnsureFirstSelected(Top);
-                    EnsureFirstSelected(Middle);
-                    EnsureFirstSelected(Bottom);
+                    EnsureCompositeSelection();
                     break;
 
                 case ItemAppearanceKind.ArmorParts:
@@ -151,10 +151,34 @@ namespace SWLOR.Toolset.Editors.Items
                 gallery.Selected = gallery.Options[0];
         }
 
-        private static void EnsureFirstSelected(CompositePartViewModel? part)
+        private void EnsureCompositeSelection()
         {
-            if (part != null && part.Selected == null && part.Options.Count > 0)
-                part.Selected = part.Options[0];
+            var missing = new[]
+                {
+                    (Part: Bottom, Field: ItemAppearanceFieldNames.Bottom),
+                    (Part: Middle, Field: ItemAppearanceFieldNames.Middle),
+                    (Part: Top, Field: ItemAppearanceFieldNames.Top),
+                }
+                .Where(entry => entry.Part is { Selected: null, Options.Count: > 0 })
+                .Select(entry => (entry.Part!, entry.Field))
+                .ToList();
+
+            if (missing.Count == 0)
+                return;
+
+            var applied = _runEdit("Set composite appearance", () =>
+            {
+                foreach (var (part, field) in missing)
+                    ItemAppearanceValues.Write(_store, field, checked((int)part.Options[0].Value));
+            });
+
+            if (!applied)
+                return;
+
+            foreach (var (part, _) in missing)
+                part.Reload();
+
+            _appearanceChanged?.Invoke();
         }
 
         /// <summary>Re-reads whatever is currently built, without re-probing for artwork.</summary>
@@ -185,18 +209,30 @@ namespace SWLOR.Toolset.Editors.Items
         {
             var itemClass = row.ItemClass ?? string.Empty;
             var options = new List<BehaviorChoiceViewModel>();
+            var modelPrefix = itemClass + "_";
+            var modelParts = _armorPartModels?.NumbersForModelPrefix(modelPrefix) ?? Array.Empty<int>();
+            var modelPartSet = modelParts.ToHashSet();
+            var candidateParts = Enumerable.Range(0, MaxSimplePart + 1)
+                .Concat(modelParts)
+                .Distinct()
+                .OrderBy(part => part);
 
-            for (var part = 0; part <= MaxSimplePart; part++)
+            foreach (var part in candidateParts)
             {
                 var resolved = row.ModelType == 1
                     ? Probe($"i{itemClass}_{part:D3}") ?? Probe($"i{itemClass}_m_{part:D3}")
                     : Probe($"i{itemClass}_{part:D3}") ?? Probe($"i{itemClass}{part:D3}");
+                var model = modelPartSet.Contains(part) ? modelPrefix + part.ToString("D3") : null;
 
-                if (resolved == null)
+                if (resolved == null && model == null)
                     continue;
 
                 options.Add(new BehaviorChoiceViewModel(
-                    new BehaviorChoice(part, part.ToString("D3", CultureInfo.InvariantCulture), resolved)));
+                    new BehaviorChoice(
+                        part,
+                        part.ToString("D3", CultureInfo.InvariantCulture),
+                        imageResRef: resolved,
+                        modelResRef: resolved == null ? model : null)));
             }
 
             RequestThumbnails(options);
@@ -208,11 +244,20 @@ namespace SWLOR.Toolset.Editors.Items
         {
             var itemClass = row.ItemClass ?? string.Empty;
             var options = new List<BehaviorChoiceViewModel>();
+            var modelPrefix = $"{itemClass}_{layerInfix}_";
+            var modelParts = _armorPartModels?.NumbersForModelPrefix(modelPrefix) ?? Array.Empty<int>();
+            var modelPartSet = modelParts.ToHashSet();
+            var candidateParts = Enumerable.Range(0, MaxCompositePart + 1)
+                .Concat(modelParts)
+                .Distinct()
+                .OrderBy(part => part);
 
-            for (var part = 1; part <= MaxCompositePart; part++)
+            foreach (var part in candidateParts)
             {
                 var resRef = $"i{itemClass}_{layerInfix}_{part:D3}";
-                if (!_textureExists(resRef))
+                var image = _textureExists(resRef) ? resRef : null;
+                var model = modelPartSet.Contains(part) ? modelPrefix + part.ToString("D3") : null;
+                if (image == null && model == null)
                     continue;
 
                 // A part below 10 has no color digit to split off; everything else is read as
@@ -221,7 +266,12 @@ namespace SWLOR.Toolset.Editors.Items
                     ? $"{part / 10}-{part % 10}"
                     : part.ToString(CultureInfo.InvariantCulture);
 
-                options.Add(new BehaviorChoiceViewModel(new BehaviorChoice(part, caption, resRef)));
+                options.Add(new BehaviorChoiceViewModel(
+                    new BehaviorChoice(
+                        part,
+                        caption,
+                        imageResRef: image,
+                        modelResRef: image == null ? model : null)));
             }
 
             RequestThumbnails(options, cropTransparentCanvas: true);
@@ -244,7 +294,7 @@ namespace SWLOR.Toolset.Editors.Items
 
                 if (_previews.Cached(
                         option.Choice,
-                        ChoicePreviewService.ThumbnailWidth,
+                        ItemThumbnailWidth,
                         cropTransparentCanvas) is { } cached)
                 {
                     option.Thumbnail = cached;
@@ -253,7 +303,7 @@ namespace SWLOR.Toolset.Editors.Items
 
                 _ = _previews.RequestAsync(
                     option.Choice,
-                    ChoicePreviewService.ThumbnailWidth,
+                    ItemThumbnailWidth,
                     bitmap => option.Thumbnail = bitmap,
                     cropTransparentCanvas);
             }

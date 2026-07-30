@@ -68,5 +68,20 @@ namespace SWLOR.Toolset.Tests.Items
             section.Entries.Should().NotContain(entry => entry.SubtypeDisplay == "AttackBonus");
             section.HasEntries.Should().BeTrue("Damage and the OnHit rows are still present");
         }
+
+        [Test]
+        public void FractionalEntryValueIsRefusedRatherThanTruncated()
+        {
+            var store = OpenStore(ZombBitePath);
+            var section = new ItemEngineLegacySectionViewModel(
+                store, (_, mutation) => { mutation(); return true; });
+            var attackBonus = section.Entries.Single(entry => entry.SubtypeDisplay == "AttackBonus");
+            var original = attackBonus.Number;
+
+            attackBonus.Number = original + 0.5m;
+
+            attackBonus.Number.Should().Be(original);
+            store.GetPropertyValue(56, 0).Should().Be((int?)original);
+        }
     }
 }

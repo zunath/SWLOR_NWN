@@ -18,9 +18,10 @@ DEPLOYMENT_ROOT="$VOLUME_ROOT/deployment/$DEPLOYMENT_NAME"
 STATE_ROOT="$DEPLOYMENT_ROOT/state"
 CACHE_ROOT="$VOLUME_ROOT/deployment/cache"
 
-# NWSync HAK/TLK/module directories are a temporary build workspace. The
-# server directories are the permanent live set. All seven artifact
-# directories and CACHE_ROOT must be ordinary directories on one filesystem.
+# NWSync HAK/TLK/module directories are the persistent raw inputs used to
+# generate and serve manifests. The server directories are a separate live
+# set. All seven artifact directories and CACHE_ROOT must be ordinary
+# directories on one filesystem.
 NWSYNC_BUILD_SCRIPT="$NWSYNC_ROOT/build.sh"
 NWSYNC_HAK_ROOT="$NWSYNC_ROOT/hak"
 NWSYNC_TLK_ROOT="$NWSYNC_ROOT/tlk"
@@ -41,18 +42,20 @@ SERVER_IMAGE=zunath/nwn-dotnet:8193.37.15-2
 # established Compose project name.
 COMPOSE_PROJECT_NAME=nwnserver
 
-# HAK, TLK, and module paths must be separate ordinary directories. NWSync is
-# the temporary build workspace; the completed directories are moved into the
-# server tree only after Compose is down.
+# HAK, TLK, and module paths must be separate ordinary directories. The
+# deployer never moves or empties the NWSync directories. It pre-stages an
+# independent server copy before Compose is stopped.
 
 STOP_TIMEOUT_SECONDS=120
 HEALTH_TIMEOUT_SECONDS=300
-HEALTH_STABLE_SECONDS=30
+HEALTH_STABLE_SECONDS=120
 HEALTH_LOG_MARKER="Server: Module loaded"
+HEALTH_FATAL_LOG_PATTERN="buffer overflow|Fatal error|has crashed|Segmentation fault"
+HEALTH_LOG_TAIL_LINES=2000
 
-# Both guards check NWSYNC_ROOT's filesystem. The first must allow a temporary
-# HAK/TLK/module set beside the permanent server set. The second runs after the
-# full build and NWSync generation, before the server is stopped.
+# Both guards check NWSYNC_ROOT's filesystem. The first protects the build.
+# Before pre-staging, the deployer additionally requires enough room for a
+# complete independent HAK/TLK/module copy plus the second configured reserve.
 MIN_FREE_GIB_BEFORE_BUILD=20
 MIN_FREE_GIB_BEFORE_CUTOVER=8
 

@@ -57,6 +57,8 @@ SERVER_MODULE_ROOT="${SERVER_MODULE_ROOT:-$SERVER_ROOT/modules}"
 SERVER_DOTNET_ROOT="${SERVER_DOTNET_ROOT:-$SERVER_ROOT/dotnet}"
 SERVER_ENV_FILE="${SERVER_ENV_FILE:-$SERVER_ROOT/swlor.env}"
 NWSYNC_HASH_VARIABLE="${NWSYNC_HASH_VARIABLE:-NWN_NWSYNCHASH}"
+HEALTH_FATAL_LOG_PATTERN="${HEALTH_FATAL_LOG_PATTERN:-buffer overflow|Fatal error|has crashed|Segmentation fault}"
+HEALTH_LOG_TAIL_LINES="${HEALTH_LOG_TAIL_LINES:-2000}"
 
 # A host config can set these directly. Environment overrides win when supplied
 # for an individual invocation.
@@ -139,8 +141,8 @@ require_command()
 }
 
 for required_command in \
-    awk basename chown chmod cp curl date df docker dotnet find findmnt flock \
-    git grep install jq ln mktemp mv realpath rm rsync sed sha256sum sleep \
+    awk basename chown chmod cmp cp curl date df docker dotnet find findmnt flock \
+    du git grep install jq ln mktemp mv realpath rm rsync sed sha256sum sleep \
     sort stat tail tee tr unzip wc
 do
     require_command "$required_command"
@@ -148,11 +150,24 @@ done
 
 for numeric_setting in \
     STOP_TIMEOUT_SECONDS HEALTH_TIMEOUT_SECONDS HEALTH_STABLE_SECONDS \
-    MIN_FREE_GIB_BEFORE_BUILD MIN_FREE_GIB_BEFORE_CUTOVER
+    HEALTH_LOG_TAIL_LINES MIN_FREE_GIB_BEFORE_BUILD \
+    MIN_FREE_GIB_BEFORE_CUTOVER
 do
     [[ "${!numeric_setting}" =~ ^[0-9]+$ ]] ||
         die "$numeric_setting must be a non-negative integer."
 done
+(( HEALTH_TIMEOUT_SECONDS > 0 )) ||
+    die "HEALTH_TIMEOUT_SECONDS must be greater than zero."
+(( HEALTH_LOG_TAIL_LINES > 0 )) ||
+    die "HEALTH_LOG_TAIL_LINES must be greater than zero."
+[[ -n "$HEALTH_FATAL_LOG_PATTERN" ]] ||
+    die "HEALTH_FATAL_LOG_PATTERN must not be empty."
+health_pattern_status=0
+printf '' |
+    grep -E "$HEALTH_FATAL_LOG_PATTERN" >/dev/null 2>&1 ||
+    health_pattern_status=$?
+(( health_pattern_status <= 1 )) ||
+    die "HEALTH_FATAL_LOG_PATTERN is not a valid extended regular expression."
 
 for absolute_path in \
     "$SOURCE_ROOT" "$NWSYNC_ROOT" "$SERVER_ROOT" "$COMPOSE_FILE" \
@@ -287,20 +302,40 @@ wait_for_server_health()
     local started_at="$1"
     local deadline=$(( $(date +%s) + HEALTH_TIMEOUT_SECONDS ))
     local container_id
+    local current_id
+    local recent_logs=
     local restart_count
     local state
-    local current_id
 
     container_id="$(compose ps -q "$SERVER_SERVICE")"
     [[ -n "$container_id" ]] || return 1
     restart_count="$(docker inspect --format '{{.RestartCount}}' "$container_id")"
+    [[ "$restart_count" == 0 ]] || {
+        log "Health check rejected a server container that already restarted $restart_count time(s)."
+        return 1
+    }
 
     log "Waiting up to ${HEALTH_TIMEOUT_SECONDS}s for '$HEALTH_LOG_MARKER'."
     while (( $(date +%s) < deadline )); do
         state="$(docker inspect --format '{{.State.Status}}' "$container_id" 2>/dev/null || true)"
         [[ "$state" == running ]] || return 1
+        [[ "$(docker inspect --format '{{.RestartCount}}' "$container_id")" == 0 ]] ||
+            return 1
 
-        if compose logs --no-color --since "$started_at" "$SERVER_SERVICE" 2>&1 |
+        recent_logs="$(
+            compose logs \
+                --no-color \
+                --since "$started_at" \
+                --tail "$HEALTH_LOG_TAIL_LINES" \
+                "$SERVER_SERVICE" 2>&1 || true
+        )"
+        if printf '%s\n' "$recent_logs" |
+            grep -E "$HEALTH_FATAL_LOG_PATTERN" >/dev/null
+        then
+            log "A fatal server marker appeared during startup."
+            return 1
+        fi
+        if printf '%s\n' "$recent_logs" |
             grep -F "$HEALTH_LOG_MARKER" >/dev/null
         then
             break
@@ -308,7 +343,7 @@ wait_for_server_health()
         sleep 5
     done
 
-    if ! compose logs --no-color --since "$started_at" "$SERVER_SERVICE" 2>&1 |
+    if ! printf '%s\n' "$recent_logs" |
         grep -F "$HEALTH_LOG_MARKER" >/dev/null
     then
         return 1
@@ -321,10 +356,43 @@ wait_for_server_health()
         [[ "$current_id" == "$container_id" ]] || return 1
         [[ "$(docker inspect --format '{{.State.Status}}' "$container_id")" == running ]] ||
             return 1
-        [[ "$(docker inspect --format '{{.RestartCount}}' "$container_id")" == "$restart_count" ]] ||
+        [[ "$(docker inspect --format '{{.RestartCount}}' "$container_id")" == 0 ]] ||
             return 1
+        recent_logs="$(
+            compose logs \
+                --no-color \
+                --since "$started_at" \
+                --tail "$HEALTH_LOG_TAIL_LINES" \
+                "$SERVER_SERVICE" 2>&1 || true
+        )"
+        if printf '%s\n' "$recent_logs" |
+            grep -E "$HEALTH_FATAL_LOG_PATTERN" >/dev/null
+        then
+            log "A fatal server marker appeared during the stability window."
+            return 1
+        fi
         sleep 5
     done
+
+    current_id="$(compose ps -q "$SERVER_SERVICE")"
+    [[ "$current_id" == "$container_id" ]] || return 1
+    [[ "$(docker inspect --format '{{.State.Status}}' "$container_id")" == running ]] ||
+        return 1
+    [[ "$(docker inspect --format '{{.RestartCount}}' "$container_id")" == 0 ]] ||
+        return 1
+    recent_logs="$(
+        compose logs \
+            --no-color \
+            --since "$started_at" \
+            --tail "$HEALTH_LOG_TAIL_LINES" \
+            "$SERVER_SERVICE" 2>&1 || true
+    )"
+    if printf '%s\n' "$recent_logs" |
+        grep -E "$HEALTH_FATAL_LOG_PATTERN" >/dev/null
+    then
+        log "A fatal server marker appeared at the end of the stability window."
+        return 1
+    fi
 
     return 0
 }
@@ -358,18 +426,41 @@ restore_directory()
 {
     local rollback_path="$1"
     local server_path="$2"
-    local nwsync_path="$3"
-    local nwsync_parent="$4"
+    local failed_path="$3"
+    local failed_parent="$4"
 
     [[ -d "$rollback_path" ]] || return 0
 
     if [[ -d "$server_path" ]]; then
-        if [[ -e "$nwsync_path" ]]; then
-            safe_remove_under "$nwsync_parent" "$nwsync_path"
+        if [[ -e "$failed_path" ]]; then
+            safe_remove_under "$failed_parent" "$failed_path"
         fi
-        mv "$server_path" "$nwsync_path"
+        mv "$server_path" "$failed_path"
     fi
     mv "$rollback_path" "$server_path"
+}
+
+verify_directory_payloads()
+{
+    local source_path="$1"
+    local destination_path="$2"
+    local differences
+
+    differences="$(
+        rsync \
+            --recursive \
+            --links \
+            --checksum \
+            --delete \
+            --dry-run \
+            --itemize-changes \
+            "$source_path/" \
+            "$destination_path/"
+    )"
+    if [[ -n "$differences" ]]; then
+        printf '%s\n' "$differences"
+        return 1
+    fi
 }
 
 show_status()
@@ -559,9 +650,56 @@ remote_haks_commit="$(
     die "$HAKS_SUBMODULE_PATH is not pinned to the tip of $BRANCH (parent=$pinned_haks_commit checkout=$checked_out_haks_commit remote=$remote_haks_commit)."
 log "Verified $HAKS_SUBMODULE_PATH $BRANCH at $checked_out_haks_commit."
 
+haks_root="$SOURCE_ROOT/$HAKS_SUBMODULE_PATH"
+tracked_set_count="$(
+    git -C "$haks_root" ls-files '*.set' |
+        wc -l |
+        tr -d '[:space:]'
+)"
+(( tracked_set_count > 0 )) ||
+    die "$HAKS_SUBMODULE_PATH does not contain any tracked .set files."
+
+log "Materializing $tracked_set_count tracked .set resources with repository-defined line endings."
+git -C "$haks_root" ls-files -z '*.set' |
+    git -C "$haks_root" checkout-index --force --stdin -z
+
+validated_set_count=0
+while IFS= read -r -d '' set_relative_path; do
+    if ! awk \
+        'BEGIN { lines = 0 }
+         {
+             lines++
+             if (substr($0, length($0), 1) != "\r") {
+                 exit 1
+             }
+         }
+         END {
+             if (lines == 0) {
+                 exit 1
+             }
+         }' \
+        "$haks_root/$set_relative_path"
+    then
+        die "$HAKS_SUBMODULE_PATH/$set_relative_path is not fully CRLF encoded."
+    fi
+    (( validated_set_count += 1 ))
+done < <(git -C "$haks_root" ls-files -z '*.set')
+(( validated_set_count == tracked_set_count )) ||
+    die "Validated $validated_set_count of $tracked_set_count tracked .set files."
+log "Verified CRLF encoding for all $validated_set_count tracked .set resources."
+
+if [[ -n "$(git -C "$SOURCE_ROOT" status --porcelain --untracked-files=all)" ]]; then
+    die "Deployment source became dirty while materializing .set resources."
+fi
+
 work_directory="$(mktemp -d "$CACHE_ROOT/work.XXXXXXXX")"
-staged_dotnet="$work_directory/dotnet"
+staged_server_directory="$work_directory/staged"
+staged_hak="$staged_server_directory/hak"
+staged_tlk="$staged_server_directory/tlk"
+staged_modules="$staged_server_directory/modules"
+staged_dotnet="$staged_server_directory/dotnet"
 rollback_directory="$work_directory/rollback"
+failed_directory="$work_directory/failed"
 module_temporary=
 server_env_temporary=
 server_env_restore_temporary=
@@ -578,26 +716,26 @@ rollback_cutover()
     restore_directory \
         "$rollback_directory/hak" \
         "$SERVER_HAK_ROOT" \
-        "$NWSYNC_HAK_ROOT" \
-        "$NWSYNC_ROOT" ||
+        "$failed_directory/hak" \
+        "$failed_directory" ||
         return 1
     restore_directory \
         "$rollback_directory/tlk" \
         "$SERVER_TLK_ROOT" \
-        "$NWSYNC_TLK_ROOT" \
-        "$NWSYNC_ROOT" ||
+        "$failed_directory/tlk" \
+        "$failed_directory" ||
         return 1
     restore_directory \
         "$rollback_directory/modules" \
         "$SERVER_MODULE_ROOT" \
-        "$NWSYNC_MODULE_ROOT" \
-        "$NWSYNC_ROOT" ||
+        "$failed_directory/modules" \
+        "$failed_directory" ||
         return 1
     restore_directory \
         "$rollback_directory/dotnet" \
         "$SERVER_DOTNET_ROOT" \
-        "$staged_dotnet" \
-        "$work_directory" ||
+        "$failed_directory/dotnet" \
+        "$failed_directory" ||
         return 1
 
     if [[ -f "$rollback_directory/swlor.env" ]]; then
@@ -665,14 +803,15 @@ trap 'exit 143' TERM
 
 install -d -o root -g root -m 0750 \
     "$CACHE_ROOT/nuget" "$CACHE_ROOT/dotnet-home" "$CACHE_ROOT/tmp" \
-    "$staged_dotnet" "$rollback_directory"
+    "$staged_hak" "$staged_tlk" "$staged_modules" "$staged_dotnet" \
+    "$rollback_directory" "$failed_directory"
 export NUGET_PACKAGES="$CACHE_ROOT/nuget"
 export DOTNET_CLI_HOME="$CACHE_ROOT/dotnet-home"
 export TMPDIR="$CACHE_ROOT/tmp"
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export DOTNET_NOLOGO=1
 
-log "Refreshing the temporary NWSync artifact workspace from the running server."
+log "Refreshing the persistent NWSync artifact inputs from the running server."
 rsync --archive --delete "$SERVER_HAK_ROOT/" "$NWSYNC_HAK_ROOT/"
 rsync --archive --delete "$SERVER_TLK_ROOT/" "$NWSYNC_TLK_ROOT/"
 rsync --archive --delete "$SERVER_MODULE_ROOT/" "$NWSYNC_MODULE_ROOT/"
@@ -735,11 +874,70 @@ jq \
     "$SOURCE_ROOT/Build/hakbuilder.json" \
     > "$work_directory/hakbuilder.json"
 
+expected_haks_file="$work_directory/expected-haks.txt"
+jq -r \
+    '.HakList[] | select(. != null and (.Name // "") != "") | .Name' \
+    "$SOURCE_ROOT/Build/hakbuilder.json" |
+    sort -u > "$expected_haks_file"
+configured_hak_count="$(
+    jq '[.HakList[] | select(. != null and (.Name // "") != "")] | length' \
+        "$SOURCE_ROOT/Build/hakbuilder.json"
+)"
+expected_hak_count="$(
+    wc -l < "$expected_haks_file" |
+        tr -d '[:space:]'
+)"
+(( expected_hak_count == configured_hak_count )) ||
+    die "Build/hakbuilder.json contains duplicate HAK names."
+
 log "Building changed HAKs and the TLK directly in $NWSYNC_ROOT."
 (
     cd "$work_directory"
     dotnet "$cli_directory/SWLOR.CLI.dll" --hak
 )
+
+while IFS= read -r -d '' hak_path; do
+    hak_file_name="$(basename "$hak_path")"
+    hak_name="${hak_file_name%.hak}"
+    if ! grep -Fqx -- "$hak_name" "$expected_haks_file"; then
+        log "Removing obsolete NWSync HAK $hak_file_name."
+        safe_remove_under "$NWSYNC_HAK_ROOT" "$hak_path"
+        if [[ -e "$NWSYNC_HAK_ROOT/$hak_name.md5" ]]; then
+            safe_remove_under \
+                "$NWSYNC_HAK_ROOT" \
+                "$NWSYNC_HAK_ROOT/$hak_name.md5"
+        fi
+    fi
+done < <(find "$NWSYNC_HAK_ROOT" -maxdepth 1 -type f -name '*.hak' -print0)
+
+set_validation_root="$work_directory/set-validation"
+install -d -o root -g root -m 0750 "$set_validation_root"
+packaged_set_count=0
+log "Extracting and byte-validating every packaged .set resource."
+while IFS= read -r -d '' set_relative_path; do
+    hak_name="${set_relative_path%%/*}"
+    set_file_name="$(basename "$set_relative_path")"
+    extracted_set_root="$set_validation_root/$hak_name"
+    install -d -o root -g root -m 0750 "$extracted_set_root"
+
+    (
+        cd "$extracted_set_root"
+        "$tools_directory/nwn_erf" \
+            --quiet \
+            -f "$NWSYNC_HAK_ROOT/$hak_name.hak" \
+            -x "$set_file_name"
+    )
+    [[ -s "$extracted_set_root/$set_file_name" ]] ||
+        die "$hak_name.hak does not contain $set_file_name."
+    cmp --silent \
+        "$haks_root/$set_relative_path" \
+        "$extracted_set_root/$set_file_name" ||
+        die "$hak_name.hak contains an altered $set_file_name resource."
+    (( packaged_set_count += 1 ))
+done < <(git -C "$haks_root" ls-files -z '*.set')
+(( packaged_set_count == tracked_set_count )) ||
+    die "Validated $packaged_set_count of $tracked_set_count packaged .set files."
+log "Verified all $packaged_set_count packaged .set resources byte-for-byte."
 
 if [[ -d "$SOURCE_ROOT/Module/packing" ]]; then
     safe_remove_under "$SOURCE_ROOT/Module" "$SOURCE_ROOT/Module/packing"
@@ -772,25 +970,17 @@ log "Running the existing NWSync build script from $NWSYNC_ROOT."
 [[ -s "$NWSYNC_TLK_ROOT/sw_tlk.tlk" ]] ||
     die "NWSync tlk directory does not contain sw_tlk.tlk."
 
-expected_hak_count="$(
-    jq '[.HakList[] | select(. != null and (.Name // "") != "")] | length' \
-        "$SOURCE_ROOT/Build/hakbuilder.json"
-)"
 while IFS= read -r hak_name; do
     [[ -s "$NWSYNC_HAK_ROOT/$hak_name.hak" ]] ||
         die "NWSync is missing expected HAK: $hak_name.hak"
-done < <(
-    jq -r \
-        '.HakList[] | select(. != null and (.Name // "") != "") | .Name' \
-        "$SOURCE_ROOT/Build/hakbuilder.json"
-)
+done < "$expected_haks_file"
 actual_hak_count="$(
     find "$NWSYNC_HAK_ROOT" -maxdepth 1 -type f -name '*.hak' |
         wc -l |
         tr -d '[:space:]'
 )"
-(( actual_hak_count >= expected_hak_count )) ||
-    die "Expected at least $expected_hak_count HAK files but found $actual_hak_count."
+(( actual_hak_count == expected_hak_count )) ||
+    die "Expected exactly $expected_hak_count HAK files but found $actual_hak_count."
 
 [[ -s "$NWSYNC_ROOT/latest" ]] ||
     die "NWSync build did not create the latest manifest pointer."
@@ -806,7 +996,6 @@ log "Validated $expected_hak_count required HAKs ($actual_hak_count total) and m
 if [[ -n "$(git -C "$SOURCE_ROOT" status --porcelain --untracked-files=all)" ]]; then
     die "Deployment source has unexpected changes after building."
 fi
-check_free_space "$MIN_FREE_GIB_BEFORE_CUTOVER" "Pre-restart"
 
 if ! docker image inspect "$SERVER_IMAGE" >/dev/null 2>&1; then
     log "Building the missing server container image before downtime."
@@ -820,6 +1009,37 @@ while IFS= read -r compose_image; do
     fi
 done < <(compose config --images | sort -u)
 
+stage_bytes="$(
+    du --summarize --block-size=1 \
+        "$NWSYNC_HAK_ROOT" \
+        "$NWSYNC_TLK_ROOT" \
+        "$NWSYNC_MODULE_ROOT" |
+        awk '{ total += $1 } END { print total + 0 }'
+)"
+stage_reserve_bytes=$(( MIN_FREE_GIB_BEFORE_CUTOVER * 1024 * 1024 * 1024 ))
+free_bytes="$(available_bytes)"
+if (( free_bytes < stage_bytes + stage_reserve_bytes )); then
+    die "Pre-staging requires $(( stage_bytes / 1024 / 1024 / 1024 + MIN_FREE_GIB_BEFORE_CUTOVER )) GiB free, including the configured reserve; only $(( free_bytes / 1024 / 1024 / 1024 )) GiB is available."
+fi
+
+log "Pre-staging an independent server artifact set while the live server remains online."
+rsync --archive --delete "$NWSYNC_HAK_ROOT/" "$staged_hak/"
+rsync --archive --delete "$NWSYNC_TLK_ROOT/" "$staged_tlk/"
+rsync --archive --delete "$NWSYNC_MODULE_ROOT/" "$staged_modules/"
+
+log "Verifying every pre-staged artifact by checksum. This can remain silent for several minutes."
+verify_directory_payloads "$NWSYNC_HAK_ROOT" "$staged_hak" ||
+    die "Pre-staged HAK verification failed."
+verify_directory_payloads "$NWSYNC_TLK_ROOT" "$staged_tlk" ||
+    die "Pre-staged TLK verification failed."
+verify_directory_payloads "$NWSYNC_MODULE_ROOT" "$staged_modules" ||
+    die "Pre-staged module verification failed."
+verify_directory_payloads \
+    "$SOURCE_ROOT/SWLOR.Game.Server/bin/Release/net10.0" \
+    "$staged_dotnet" ||
+    die "Pre-staged .NET verification failed."
+check_free_space "$MIN_FREE_GIB_BEFORE_CUTOVER" "Pre-restart"
+
 cp -a "$SERVER_ENV_FILE" "$rollback_directory/swlor.env"
 cutover_started=1
 log "Stopping and removing the Compose stack with a ${STOP_TIMEOUT_SECONDS}s timeout."
@@ -828,18 +1048,15 @@ compose down --timeout "$STOP_TIMEOUT_SECONDS"
 log "Setting $NWSYNC_HASH_VARIABLE to $manifest_id."
 write_manifest_hash "$manifest_id"
 
-log "Moving the completed HAK, TLK, module, and .NET artifacts into the server."
+log "Switching the server to the independently staged artifact set."
 mv "$SERVER_HAK_ROOT" "$rollback_directory/hak"
-mv "$NWSYNC_HAK_ROOT" "$SERVER_HAK_ROOT"
-install -d -o root -g root -m 0755 "$NWSYNC_HAK_ROOT"
+mv "$staged_hak" "$SERVER_HAK_ROOT"
 
 mv "$SERVER_TLK_ROOT" "$rollback_directory/tlk"
-mv "$NWSYNC_TLK_ROOT" "$SERVER_TLK_ROOT"
-install -d -o root -g root -m 0755 "$NWSYNC_TLK_ROOT"
+mv "$staged_tlk" "$SERVER_TLK_ROOT"
 
 mv "$SERVER_MODULE_ROOT" "$rollback_directory/modules"
-mv "$NWSYNC_MODULE_ROOT" "$SERVER_MODULE_ROOT"
-install -d -o root -g root -m 0755 "$NWSYNC_MODULE_ROOT"
+mv "$staged_modules" "$SERVER_MODULE_ROOT"
 
 mv "$SERVER_DOTNET_ROOT" "$rollback_directory/dotnet"
 mv "$staged_dotnet" "$SERVER_DOTNET_ROOT"

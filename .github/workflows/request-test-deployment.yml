@@ -1,6 +1,6 @@
-name: Request test-server deployment
+name: Update Test Server
 
-run-name: Request test-server deployment by ${{ github.actor }}
+run-name: Update Test Server requested by ${{ github.actor }}
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   authorize:
-    name: Authorize deployment request
+    name: Update Test Server
     runs-on: ubuntu-latest
     steps:
       - name: Permit only the repository owner

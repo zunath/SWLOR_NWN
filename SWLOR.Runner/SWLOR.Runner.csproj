@@ -9,15 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ductus.FluentDocker" Version="2.85.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="10.0.10" />
-    <PackageReference Include="Microsoft.VisualStudio.Interop" Version="17.14.40260" />
-    <PackageReference Include="Microsoft.VisualStudio.Shared.VSCodeDebugProtocol" Version="18.0.10427.1" />
-    <PackageReference Include="SharpCompress" Version="0.50.0" />
+    <PackageReference Include="Ductus.FluentDocker" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" />
+    <PackageReference Include="Microsoft.VisualStudio.Interop" />
+    <PackageReference Include="Microsoft.VisualStudio.Shared.VSCodeDebugProtocol" />
+    <PackageReference Include="SharpCompress" />
   </ItemGroup>
 
   <ItemGroup>

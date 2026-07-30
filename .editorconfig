@@ -1,0 +1,21 @@
+# Top-most EditorConfig file for the SWLOR repository.
+# Deliberately modest: whitespace/encoding conventions only, no style rules that
+# would fight the existing codebase. Tighten incrementally.
+root = true
+
+[*]
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.cs]
+indent_size = 4
+
+[*.{csproj,props,targets,json,yml,yaml}]
+indent_size = 2
+
+[*.{cmd,bat}]
+end_of_line = crlf
+
+[*.sh]
+end_of_line = lf

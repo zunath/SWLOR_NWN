@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.CommandLine" Version="2.0.10" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="NRediSearch" Version="2.2.79" />
-    <PackageReference Include="NReJSON" Version="4.0.0" />
-    <PackageReference Include="StackExchange.Redis" Version="3.0.17" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.10" />
+    <PackageReference Include="System.CommandLine" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="NRediSearch" />
+    <PackageReference Include="NReJSON" />
+    <PackageReference Include="StackExchange.Redis" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" />
   </ItemGroup>
 
   <ItemGroup>

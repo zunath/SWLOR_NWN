@@ -1,0 +1,30 @@
+name: Build & Unit Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - feature/combat-upgrade
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout (with SWLOR_Haks submodule - the unit suite scans hak sources)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build solution
+        run: dotnet build SWLOR.Game.Server.sln --configuration Release -p:RunPostBuildEvent=Never
+
+      - name: Run unit tests
+        run: dotnet test SWLOR.Game.Server.Tests/SWLOR.Game.Server.Tests.csproj --no-build --configuration Release --logger "console;verbosity=minimal"

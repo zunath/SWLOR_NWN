@@ -1,0 +1,10 @@
+<Project>
+
+  <!-- Shared build settings for every project in the repository.
+       Per-project csproj files should only declare what genuinely differs
+       (OutputType, Nullable opt-in status, unsafe blocks, etc.). -->
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+</Project>

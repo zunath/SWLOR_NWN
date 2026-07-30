@@ -428,10 +428,11 @@ namespace SWLOR.Toolset.Workspace
             if (parts.Count == 0)
                 return null;
 
-            // Aurora keeps weighted garments as separate visuals. A robe such as pmh0_robe010
-            // inherits a_ba_coat and must play that complete hierarchy -- including its own
-            // torso/arm tracks as well as coat-only bones. Attaching the skin under the segmented
-            // mannequin makes duplicate bone names compete and mixes two incompatible hierarchies.
+            // Aurora keeps weighted garments as separate visuals, but poses them from the wearer.
+            // A robe such as pmh0_robe010 also inherits a_ba_coat; applying that hierarchy's
+            // coat-only helper tracks bends its diagonal sash around the waist. Those helpers are
+            // attachment bones, so leave them at their authored bind transforms while the shared
+            // torso and arm bones follow the mannequin's idle.
             var skinParts = new List<MdlModel>();
             var rigidParts = new List<(string PartType, string ModelResRef)>();
             foreach (var part in parts)
@@ -444,6 +445,8 @@ namespace SWLOR.Toolset.Workspace
             }
 
             var renderModels = new List<RenderModel>();
+            var skeleton = LoadMdl(reference.SkeletonResRef, withSupermodelAnims: false);
+            var wearerFrames = skeleton == null ? null : IdleFrames(skeleton);
             if (rigidParts.Count > 0)
             {
                 MdlModel? composed;
@@ -462,7 +465,7 @@ namespace SWLOR.Toolset.Workspace
             }
 
             renderModels.AddRange(skinParts.Select(model =>
-                MdlMeshBuilder.Build(model, IdleFrames(model))));
+                MdlMeshBuilder.Build(model, wearerFrames ?? IdleFrames(model))));
 
             return CombineRenderModels(reference.SkeletonResRef, renderModels);
         }

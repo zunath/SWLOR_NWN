@@ -124,7 +124,7 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void ChimedClothesRobeAnimatesOnItsAuthoredCoatSkeleton()
+        public void ChimedClothesRobeUsesWearerIdleWithoutCoatHelperDeformation()
         {
             var renderer = BuildRenderer(out var index);
 
@@ -159,20 +159,33 @@ namespace SWLOR.Toolset.Tests.Items
                 return new MdlReader().Parse(handle.GetBytes());
             }
 
-            var standaloneFrames = MdlAnimationPose.SampleIdleFrames(source, LoadModel)
+            var coatFrames = MdlAnimationPose.SampleIdleFrames(source, LoadModel)
                 .Select(frame => frame.Pose)
                 .ToList();
-            var standaloneRobe = MdlMeshBuilder.Build(source, standaloneFrames).Meshes
+            var coatPoseRobe = MdlMeshBuilder.Build(source, coatFrames).Meshes
                 .Single(mesh =>
                     mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&
                     mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase));
-            renderedRobe.PosePositions.Should().HaveCount(standaloneRobe.PosePositions.Count);
-            for (var frame = 0; frame < standaloneRobe.PosePositions.Count; frame++)
+            var body = LoadModel("pmh0")!;
+            var bodyFrames = MdlAnimationPose.SampleIdleFrames(body, LoadModel)
+                .Select(frame => frame.Pose)
+                .ToList();
+            var wearerPoseRobe = MdlMeshBuilder.Build(source, bodyFrames).Meshes
+                .Single(mesh =>
+                    mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&
+                    mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase));
+
+            renderedRobe.PosePositions.Should().HaveCount(wearerPoseRobe.PosePositions.Count);
+            for (var frame = 0; frame < wearerPoseRobe.PosePositions.Count; frame++)
             {
                 renderedRobe.PosePositions[frame].Should().Equal(
-                    standaloneRobe.PosePositions[frame],
-                    "the equipped robe must retain the exact deformation produced by its own a_ba_coat hierarchy");
+                    wearerPoseRobe.PosePositions[frame],
+                    "the equipped robe follows the wearer's idle while coat-only helpers remain at bind");
             }
+
+            renderedRobe.PosePositions[0].Should().NotEqual(
+                coatPoseRobe.PosePositions[0],
+                "the a_ba_coat helper pose is the deformation that curls the sash into the waist");
 
             var firstFrame = renderedRobe.PosePositions[0];
             var maximumAnimatedDisplacement = renderedRobe.PosePositions

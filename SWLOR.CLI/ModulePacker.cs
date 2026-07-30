@@ -19,6 +19,7 @@ namespace SWLOR.CLI
         private const int ResourceConversionRetryCount = 3;
         private const int ResourceConversionRetryDelayMilliseconds = 250;
         private const string PackingDirectory = "./packing";
+        private const string PaletteRefreshDirectory = "./palette-refresh";
         private const string WorkerCountEnvironmentVariable = "SWLOR_RESOURCE_CONVERSION_WORKERS";
         // Mirrors NewAreaWriter.PendingMarkerPrefix in SWLOR.Toolset.Domain - this project cannot
         // reference that one (see RequireNoInterruptedAreaCreation), so the literal is duplicated.
@@ -43,7 +44,23 @@ namespace SWLOR.CLI
                 RequireNoInterruptedErfImport();
                 RequireNoInterruptedItemRename();
                 RecreateDirectory(PackingDirectory);
+                RecreateDirectory(PaletteRefreshDirectory);
                 DeleteFileWithRetry(temporaryModuleFileName);
+
+                // Aurora refreshes each custom blueprint palette from the module resources before it
+                // saves/builds. Do the same on temporary JSON copies so newly added, renamed, moved, or
+                // deleted blueprints are represented in the packed ITPs without dirtying Module/itp.
+                Console.WriteLine("Refreshing custom blueprint palettes...");
+                var paletteRefresh = ModulePaletteRefresher.Refresh(
+                    Environment.CurrentDirectory,
+                    PaletteRefreshDirectory);
+                foreach (var result in paletteRefresh.Results)
+                {
+                    Console.WriteLine(
+                        $"Refreshed {result.PaletteName}: {result.Included:N0} blueprints " +
+                        $"({result.Added:N0} added, {result.Removed:N0} removed, " +
+                        $"{result.Updated:N0} updated, {result.MissingCategory:N0} category not found).");
+                }
 
                 // Get all JSON files, run them through nwn_gff to convert them to files NWN can read.
                 // Put the output files in the ./packing folder.
@@ -58,12 +75,18 @@ namespace SWLOR.CLI
                     {
                         var fileNameNoJson = Path.GetFileNameWithoutExtension(file);
                         var outputFile = Path.Combine(PackingDirectory, fileNameNoJson);
+                        var fullSourcePath = Path.GetFullPath(file);
+                        var conversionInput = paletteRefresh.Replacements.TryGetValue(
+                            fullSourcePath,
+                            out var refreshedPalette)
+                            ? refreshedPalette
+                            : file;
 
                         RunResourceConversion(
                             file,
                             outputFile,
                             "-l", "json",
-                            "-i", file,
+                            "-i", conversionInput,
                             "-o", outputFile,
                             "-k", "gff");
 
@@ -118,6 +141,7 @@ namespace SWLOR.CLI
                 try
                 {
                     DeleteDirectoryWithRetry(PackingDirectory);
+                    DeleteDirectoryWithRetry(PaletteRefreshDirectory);
                     DeleteFileWithRetry(temporaryModuleFileName);
                 }
                 catch (Exception ex)
@@ -614,6 +638,9 @@ namespace SWLOR.CLI
             var results = new List<string>();
             foreach (var folder in GetModuleFolders())
             {
+                if (!Directory.Exists(folder))
+                    continue;
+
                 // Only the real resources. Atomic-save temporaries and rollback backups can remain
                 // beside their target after an interrupted/locked write. GetFileNameWithoutExtension
                 // strips their final suffix, so accepting either would convert and pack transaction
@@ -640,6 +667,7 @@ namespace SWLOR.CLI
                 "./jrl",
                 "./utc",
                 "./utd",
+                "./ute",
                 "./uti",
                 "./utm",
                 "./utp",

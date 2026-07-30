@@ -24,11 +24,14 @@ cd Module
 ## Functionality
 
 ### Pack Module Process
-1. **Temporary Directory Creation**: Creates `./packing/` directory for temporary files
-2. **JSON to GFF Conversion**: Converts all JSON files in module folders to GFF format using `nwn_gff`
-3. **Script File Copying**: Copies both `.nss` (source) and `.ncs` (compiled) script files
-4. **Module Assembly**: Uses `nwn_erf` to create the final `.mod` file
-5. **Cleanup**: Removes temporary files and directories
+1. **Temporary Directory Creation**: Creates isolated packing and palette-refresh directories
+2. **Palette Refresh**: Rebuilds temporary custom blueprint palette entries from the module's
+   creature, door, encounter, item, placeable, sound, store, trigger, and waypoint blueprints,
+   matching Aurora Toolset refresh behavior without modifying the source JSON
+3. **JSON to GFF Conversion**: Converts all JSON files in module folders to GFF format using `nwn_gff`
+4. **Script File Copying**: Copies both `.nss` (source) and `.ncs` (compiled) script files
+5. **Module Assembly**: Uses `nwn_erf` to create the final `.mod` file
+6. **Cleanup**: Removes temporary files and directories
 
 ### Unpack Module Process
 1. **Directory Preparation**: Creates and cleans module folders
@@ -49,6 +52,7 @@ The tool processes the following module folder types:
 - `./jrl` - Journal entries
 - `./utc` - Creature templates
 - `./utd` - Door templates
+- `./ute` - Encounter templates
 - `./uti` - Item templates
 - `./utm` - Merchant templates
 - `./utp` - Placeable templates

@@ -194,6 +194,84 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PltRenderHintsUseAurorasStandaloneEnvironmentMap()
+        {
+            var image = new TextureImage
+            {
+                Width = 1,
+                Height = 1,
+                Pixels = new byte[] { 10, 20, 30, 0 },
+                SourceFormat = TextureSourceFormat.Plt
+            };
+
+            var hints = TextureRenderPolicy.Resolve(Index(), "armor_part", image);
+
+            hints.EnvironmentMapTexture.Should().Be(TextureRenderPolicy.StandaloneEnvironmentMap);
+            hints.AlphaCutoff.Should().Be(0f,
+                "PLT alpha blends the diffuse over chrome1 rather than punching a hole");
+        }
+
+        [Test]
+        public void ExplicitTxiEnvironmentMapOverridesTheStandaloneDefault()
+        {
+            File.WriteAllText(
+                Path.Combine(_resourceDirectory, "reflective.txi"),
+                "envmaptexture TTR01__ref01");
+            var image = new TextureImage
+            {
+                Width = 1,
+                Height = 1,
+                Pixels = new byte[] { 10, 20, 30, 0 },
+                SourceFormat = TextureSourceFormat.Plt
+            };
+
+            var hints = TextureRenderPolicy.Resolve(Index(), "reflective", image);
+
+            hints.EnvironmentMapTexture.Should().Be("TTR01__ref01");
+            hints.AlphaCutoff.Should().Be(0f);
+        }
+
+        [Test]
+        public void OrdinaryAlphaTextureRemainsPunchThroughRatherThanReflective()
+        {
+            var pixels = Enumerable.Range(0, 100)
+                .SelectMany(_ => new byte[] { 10, 20, 30, 0 })
+                .ToArray();
+            var image = new TextureImage
+            {
+                Width = 10,
+                Height = 10,
+                Pixels = pixels,
+                SourceFormat = TextureSourceFormat.Tga
+            };
+
+            var hints = TextureRenderPolicy.Resolve(Index(), "grate", image);
+
+            hints.EnvironmentMapTexture.Should().BeNull();
+            hints.AlphaCutoff.Should().Be(TextureAlphaPolicy.PunchThroughCutoff);
+        }
+
+        [Test]
+        public void LitShaderSourceAlphaBlendsTheDiffuseOverTheSphereMap()
+        {
+            var shader = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
+                .GetField(
+                    "FragmentShaderBody",
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Static)!
+                .GetRawConstantValue()
+                .Should()
+                .BeOfType<string>()
+                .Subject;
+
+            shader.Should().Contain("uniform sampler2D environmentTexture");
+            shader.Should().Contain("SampleEnvironmentMap");
+            shader.Should().Contain(
+                "surfaceColor = mix(SampleEnvironmentMap(norm), texColor.rgb, texColor.a);",
+                "Aurora draws the environment first and source-alpha blends the diffuse on top");
+        }
+
+        [Test]
         public void TgaLoaderRetainsTheReadersTopFirstRgbaConvention()
         {
             var bytes = new byte[24];

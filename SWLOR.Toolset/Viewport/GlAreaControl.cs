@@ -158,10 +158,12 @@ uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D specularTexture;
 uniform sampler2D roughnessTexture;
+uniform sampler2D environmentTexture;
 uniform bool hasTexture;
 uniform bool hasNormalMap;
 uniform bool hasSpecularMap;
 uniform bool hasRoughnessMap;
+uniform bool hasEnvironmentMap;
 uniform vec3 flatColor;
 uniform bool unlit;
 uniform float alphaCutoff;
@@ -173,6 +175,7 @@ uniform vec3 ambientColor;
 uniform vec3 fogColor;
 uniform float fogDensity;
 uniform vec3 cameraPos;
+uniform mat4 view;
 
 // Blinn-Phong exponent for a specular-mapped highlight when the material carries no
 // roughness map. One shared value rather than a material parameter: MTR files carry no
@@ -210,6 +213,22 @@ vec3 PerturbNormal(vec3 geomNormal, vec2 uv)
     return normalize(tbn * mapNormal);
 }
 
+// Aurora's legacy environment maps are mirrored-sphere images rather than cubemaps. Reproduce
+// fixed-function GL_SPHERE_MAP coordinates in eye space so chrome1 moves across the surface as
+// either the camera or the model turns.
+vec3 SampleEnvironmentMap(vec3 worldNormal)
+{
+    vec3 incident = normalize(WorldPos - cameraPos);
+    vec3 reflected = normalize(mat3(view) * reflect(incident, worldNormal));
+    float denominator = 2.0 * sqrt(max(
+        reflected.x * reflected.x +
+        reflected.y * reflected.y +
+        (reflected.z + 1.0) * (reflected.z + 1.0),
+        0.000001));
+    vec2 sphereUv = reflected.xy / denominator + vec2(0.5);
+    return texture(environmentTexture, sphereUv).rgb;
+}
+
 void main()
 {
     vec4 texColor = hasTexture ? texture(diffuseTexture, TexCoord) : vec4(flatColor, 1.0);
@@ -234,7 +253,14 @@ void main()
 
     // Two-sided lighting (abs, not max) - NWN tile/prop meshes have inconsistent winding.
     float diff = abs(dot(norm, lightDir));
-    vec3 result = (ambientColor + diff * lightColor) * texColor.rgb;
+    vec3 surfaceColor = texColor.rgb;
+    if (hasTexture && hasEnvironmentMap)
+    {
+        // Aurora draws the environment first, then source-alpha blends the diffuse over it.
+        // PLT alpha therefore means diffuse coverage (zero = full reflection), not transparency.
+        surfaceColor = mix(SampleEnvironmentMap(norm), texColor.rgb, texColor.a);
+    }
+    vec3 result = (ambientColor + diff * lightColor) * surfaceColor;
 
     if (hasTexture && hasSpecularMap)
     {
@@ -326,16 +352,27 @@ void main()
 
         /// <summary>
         /// The GL-side textures one mesh material binds: the diffuse (with its alpha cutoff) plus
-        /// optional normal, specular and roughness maps, each 0 when absent or unloadable.
+        /// optional normal, specular, roughness and environment maps, each 0 when absent or
+        /// unloadable.
         /// </summary>
         private readonly record struct MeshMaterial(
-            uint TexId, float AlphaCutoff, uint NormalTexId, uint SpecularTexId, uint RoughnessTexId);
+            uint TexId,
+            float AlphaCutoff,
+            uint NormalTexId,
+            uint SpecularTexId,
+            uint RoughnessTexId,
+            uint EnvironmentTexId);
+
+        private readonly record struct UploadedDiffuse(
+            uint TexId,
+            float AlphaCutoff,
+            string? EnvironmentMapTexture);
 
         private GL? _gl;
         private uint _shaderProgram;
 
         private readonly Dictionary<RenderModel, ModelBuffer> _modelBuffers = new();
-        private readonly Dictionary<string, (uint TexId, float AlphaCutoff)> _textureCache =
+        private readonly Dictionary<string, UploadedDiffuse> _textureCache =
             new(StringComparer.OrdinalIgnoreCase);
 
         // The dye indices of the model currently being drawn, and a stable string form of them for
@@ -2299,9 +2336,9 @@ void main()
             {
                 if (_gl != null)
                 {
-                    foreach (var (texId, _) in _textureCache.Values)
-                        if (texId != 0)
-                            _gl.DeleteTexture(texId);
+                    foreach (var diffuse in _textureCache.Values)
+                        if (diffuse.TexId != 0)
+                            _gl.DeleteTexture(diffuse.TexId);
                     _textureCache.Clear();
                     foreach (var texId in _mapTextureCache.Values)
                         if (texId != 0)
@@ -2677,9 +2714,11 @@ void main()
             SetUniformInt("normalTexture", 1);
             SetUniformInt("specularTexture", 2);
             SetUniformInt("roughnessTexture", 3);
+            SetUniformInt("environmentTexture", 4);
             SetUniformBool("hasNormalMap", false);
             SetUniformBool("hasSpecularMap", false);
             SetUniformBool("hasRoughnessMap", false);
+            SetUniformBool("hasEnvironmentMap", false);
             SetUniformVec2("uvScale", Vector2.One);
             SetUniformVec2("uvOffset", Vector2.Zero);
             SetUniformBool("useTextureAlpha", false);
@@ -4384,12 +4423,15 @@ void main()
                 SetUniformBool("hasNormalMap", useMaps && material.NormalTexId != 0);
                 SetUniformBool("hasSpecularMap", useMaps && material.SpecularTexId != 0);
                 SetUniformBool("hasRoughnessMap", useMaps && material.RoughnessTexId != 0);
+                SetUniformBool("hasEnvironmentMap", material.EnvironmentTexId != 0);
                 _gl!.ActiveTexture(TextureUnit.Texture1);
                 _gl.BindTexture(TextureTarget.Texture2D, material.NormalTexId);
                 _gl.ActiveTexture(TextureUnit.Texture2);
                 _gl.BindTexture(TextureTarget.Texture2D, material.SpecularTexId);
                 _gl.ActiveTexture(TextureUnit.Texture3);
                 _gl.BindTexture(TextureTarget.Texture2D, material.RoughnessTexId);
+                _gl.ActiveTexture(TextureUnit.Texture4);
+                _gl.BindTexture(TextureTarget.Texture2D, material.EnvironmentTexId);
 
                 // Unit 0 last, so every other draw path (particles, markers) that assumes the
                 // active unit is Texture0 keeps working untouched.
@@ -4402,6 +4444,7 @@ void main()
                 SetUniformBool("hasNormalMap", false);
                 SetUniformBool("hasSpecularMap", false);
                 SetUniformBool("hasRoughnessMap", false);
+                SetUniformBool("hasEnvironmentMap", false);
                 SetUniformFloat("alphaCutoff", 0f);
                 SetUniformVec3("flatColor", UntexturedTileColor);
             }
@@ -4437,13 +4480,14 @@ void main()
             // A mesh whose diffuse failed to resolve draws flat-colored; loading its maps
             // anyway would waste GPU memory on textures the shader never samples.
             var material = cached.TexId == 0
-                ? new MeshMaterial(0, 0f, 0, 0, 0)
+                ? new MeshMaterial(0, 0f, 0, 0, 0, 0)
                 : new MeshMaterial(
                     cached.TexId,
                     cached.AlphaCutoff,
                     ResolveMapTexture(maps.Normal),
                     ResolveMapTexture(maps.Specular),
-                    ResolveMapTexture(maps.Roughness));
+                    ResolveMapTexture(maps.Roughness),
+                    ResolveMapTexture(cached.EnvironmentMapTexture));
 
             _rawTextureCache[rawTextureName + _layerColorKey] = material;
             return material;
@@ -4475,72 +4519,25 @@ void main()
             }
         }
 
-        private (uint TexId, float AlphaCutoff) LoadAndUploadTexture(string resolvedName)
+        private UploadedDiffuse LoadAndUploadTexture(string resolvedName)
         {
             try
             {
                 var image = TextureLoader.Load(ResourceIndex!, resolvedName, _layerColors);
                 if (image == null)
-                    return (0, 0f);
+                    return default;
 
                 var texId = UploadTexture(image.Width, image.Height, image.Pixels);
-                return (texId, ResolveAlphaCutoff(resolvedName, image));
+                var hints = TextureRenderPolicy.Resolve(ResourceIndex!, resolvedName, image);
+                return new UploadedDiffuse(
+                    texId,
+                    hints.AlphaCutoff,
+                    hints.EnvironmentMapTexture);
             }
             catch (Exception)
             {
-                return (0, 0f);
+                return default;
             }
-        }
-
-        /// <summary>
-        /// The alpha cutoff a texture should be drawn with: a TXI punch-through hint when there is
-        /// one, otherwise whatever the texture's own alpha channel says. Zero means draw opaque.
-        /// Full alpha sorting/blending remains out of scope; this is a hard cutoff.
-        /// </summary>
-        /// <remarks>
-        /// Reading the alpha channel matters because most textures that need it carry no TXI at all.
-        /// A tileset's floor gratings are the case that exposed it: cz220shipbreakin lays 62 tiles of
-        /// zsf01_d05_01, whose floor is a see-through grating (zsf01_bridge - 32% of its texels fully
-        /// transparent) suspended 1.5m above a solid floor. Drawn opaque, the transparent texels come
-        /// out the colour the DXT block happens to hold there, which is black - so every one of those
-        /// tiles rendered as a solid black square instead of a grating you can see the floor through.
-        /// </remarks>
-        private float ResolveAlphaCutoff(string resolvedTextureName, TextureImage? image)
-        {
-            if (ResourceIndex == null)
-                return 0f;
-
-            try
-            {
-                var identity = new ResourceIdentity(resolvedTextureName, ResourceIdentity.TypeFromExtension("txi"));
-                if (ResourceIndex.TryLookup(identity, out var handle))
-                {
-                    var bytes = handle.GetBytes();
-                    if (bytes.Length > 0)
-                    {
-                        var txi = TxiInfo.Parse(System.Text.Encoding.ASCII.GetString(bytes));
-                        if (txi.Blending == TxiBlendMode.PunchThrough)
-                            return TextureAlphaPolicy.PunchThroughCutoff;
-
-                        // An envmaptexture declaration repurposes the alpha channel as a
-                        // reflectivity mask - alpha 0 means "fully mirrored", not "fully
-                        // transparent". w_metal_tex (every base-game metal weapon) carries 11% of
-                        // its texels under the punch-through cutoff this way; discarding them
-                        // punched striped holes across blades, guards and grips. Opaque is the
-                        // correct read until environment mapping is actually implemented.
-                        if (txi.EnvMapTexture != null)
-                            return 0f;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // An unreadable TXI is not a reason to ignore the alpha channel below.
-            }
-
-            return TextureAlphaPolicy.RequiresCutoff(image)
-                ? TextureAlphaPolicy.PunchThroughCutoff
-                : 0f;
         }
 
         /// <summary>

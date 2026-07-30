@@ -37298,17 +37298,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Concede Game"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "concedegame"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Deactivated Spawn"
                     },
                     "RESREF": {
@@ -37325,17 +37314,6 @@
                     "STRREF": {
                       "type": "dword",
                       "value": 16812398
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sacrifice / Game Information"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gamepedestal"
                     }
                   },
                   {

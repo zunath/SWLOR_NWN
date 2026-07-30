@@ -3,19 +3,21 @@ namespace SWLOR.Toolset.Domain.Workspace
     /// <summary>
     /// Finds every file that still names an item resref, so a rename-on-save can refuse to
     /// delete a blueprint other content points at (a loot table's .AddItem literal, the item
-    /// palette, a store page, a placed instance) - deleting it would silently break each of them.
+    /// store page, a placed instance) - deleting it would silently break each of them.
     /// </summary>
     /// <remarks>
     /// A raw quoted-literal sweep rather than a semantic index: resrefs only ever appear inside
     /// string quotes in both the module's JSON and the game's C#, and a rename is a rare, explicit
     /// action where a few seconds of IO is a fair price for not missing a reference shape no index
     /// anticipated. Module folders that cannot carry item resrefs (area terrain, comments) are
-    /// skipped; everything else - instances (git), inventories (utc/utp), stores (utm), palettes
-    /// (itp), dialogs (dlg), scripts (nss) - is swept.
+    /// skipped; everything else - instances (git), inventories (utc/utp), stores (utm), dialogs
+    /// (dlg), scripts (nss) - is swept. Generated palettes (itp) are deliberately excluded because
+    /// packing rebuilds them from the blueprint folders and their stale descriptor must not block
+    /// the rename that causes that rebuild.
     /// </remarks>
     public static class ItemReferenceScanner
     {
-        private static readonly string[] ModuleFolders = { "git", "utc", "utp", "utm", "itp", "dlg", "nss" };
+        private static readonly string[] ModuleFolders = { "git", "utc", "utp", "utm", "dlg", "nss" };
 
         /// <summary>
         /// Relative display paths of every file referencing <paramref name="resRef"/> as a quoted

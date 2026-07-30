@@ -16886,7 +16886,6 @@
               "name": "Other Signs*",
               "members": [
                 "spawn_ban_a",
-                "concedegame",
                 "spawn_ban_d",
                 "zep_os_sna_001",
                 "zep_os_sna_002",
@@ -16952,7 +16951,6 @@
                 "zep_os_sn9_001",
                 "zep_noticebrd001",
                 "zep_pumpkinsign",
-                "gamepedestal",
                 "zep_savgesign001",
                 "zep_os_sar_001",
                 "zep_os_scm_001",

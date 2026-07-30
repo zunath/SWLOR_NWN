@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.LogService;
 using Faction = SWLOR.Game.Server.Service.Faction;
-using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
+using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;

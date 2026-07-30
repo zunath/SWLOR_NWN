@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;

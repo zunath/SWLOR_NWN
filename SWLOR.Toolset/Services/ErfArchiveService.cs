@@ -504,6 +504,7 @@ namespace SWLOR.Toolset.Services
                     or ErfConflictAction.Rename)
                 .ToList();
             var renameMap = ValidateImportPlan(active, workspace.ModuleRoot);
+            ValidateEntryPointScriptCompanions(active);
             ValidateCompiledScriptGenerations(active, renameMap);
             var transactionRoot = CreateModuleTransactionDirectory(workspace.ModuleRoot);
             var stagedRoot = Path.Combine(transactionRoot, "staged");
@@ -1298,6 +1299,38 @@ namespace SWLOR.Toolset.Services
             }
 
             return normalized;
+        }
+
+        /// <summary>
+        /// Refuses executable script source without the bytecode NWN will actually run. Importing
+        /// source alone would leave Add/Rename without an executable and Replace paired with stale
+        /// destination bytecode. Include-only sources intentionally remain valid without NCS files.
+        /// </summary>
+        private static void ValidateEntryPointScriptCompanions(
+            IReadOnlyCollection<ErfImportChoice> choices)
+        {
+            var compiledResRefs = choices
+                .Where(choice => choice.Prepared.Asset.Extension.Equals(
+                    "ncs",
+                    StringComparison.OrdinalIgnoreCase))
+                .Select(choice => choice.Prepared.Asset.ResRef)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var choice in choices.Where(choice =>
+                         choice.Prepared.Asset.Extension.Equals(
+                             "nss",
+                             StringComparison.OrdinalIgnoreCase) &&
+                         !compiledResRefs.Contains(choice.Prepared.Asset.ResRef)))
+            {
+                var script = ScriptTextDocument.Load(choice.Prepared.ContentPath);
+                if (!ScriptStalenessScanner.IsEntryPoint(script.Text))
+                    continue;
+
+                throw new InvalidOperationException(
+                    $"Cannot import entry-point script '{choice.Prepared.Asset.FileName}' without " +
+                    $"its compiled companion '{choice.Prepared.Asset.ResRef}.ncs'. Include the " +
+                    "matching NCS from the same build, or import this source after compiling it.");
+            }
         }
 
         /// <summary>

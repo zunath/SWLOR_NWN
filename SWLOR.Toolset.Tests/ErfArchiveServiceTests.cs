@@ -70,6 +70,10 @@ namespace SWLOR.Toolset.Tests
             File.WriteAllText(
                 Path.Combine(sourceDirectory, "shared_inc.nss"),
                 "int SharedValue() { return 7; }\n");
+            var compiledGeneration = new byte[] { 0x4e, 0x43, 0x53, 0x20 };
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "ncs", "entry.ncs"),
+                compiledGeneration);
 
             var entryAsset = _service.EnumerateModuleAssets()
                 .Single(asset => asset.FileName == "entry.nss");
@@ -77,14 +81,14 @@ namespace SWLOR.Toolset.Tests
 
             var archivePath = Path.Combine(_root, "scripts.erf");
             var exported = await _service.ExportAsync(
-                new[] { "entry.nss", "shared_inc.nss" },
+                new[] { "entry.nss", "entry.ncs", "shared_inc.nss" },
                 archivePath);
-            exported.Exported.Should().Be(2);
+            exported.Exported.Should().Be(3);
             File.Exists(archivePath).Should().BeTrue();
 
             using var archive = await _service.OpenArchiveAsync(archivePath);
             archive.Assets.Select(asset => asset.FileName)
-                .Should().BeEquivalentTo("entry.nss", "shared_inc.nss");
+                .Should().BeEquivalentTo("entry.nss", "entry.ncs", "shared_inc.nss");
 
             _workspace.Open(_secondModule);
             var prepared = await _service.PrepareImportAsync(
@@ -96,11 +100,13 @@ namespace SWLOR.Toolset.Tests
                 prepared.Select(item =>
                     new ErfImportChoice(item, item.DefaultAction, RenameResRef: null)).ToList());
 
-            imported.Imported.Should().Be(2);
+            imported.Imported.Should().Be(3);
             File.ReadAllText(Path.Combine(_secondModule, "nss", "entry.nss"))
                 .Should().Contain("#include \"shared_inc\"");
             File.ReadAllText(Path.Combine(_secondModule, "nss", "shared_inc.nss"))
                 .Should().Contain("return 7");
+            File.ReadAllBytes(Path.Combine(_secondModule, "ncs", "entry.ncs"))
+                .Should().Equal(compiledGeneration);
         }
 
         [Test]
@@ -933,6 +939,67 @@ namespace SWLOR.Toolset.Tests
                 .Should().BeFalse();
         }
 
+        [TestCase(ErfConflictAction.Add)]
+        [TestCase(ErfConflictAction.Replace)]
+        [TestCase(ErfConflictAction.Rename)]
+        public async Task ImportRefusesEntryPointScriptWithoutCompiledCompanion(
+            ErfConflictAction action)
+        {
+            _workspace.Open(_secondModule);
+            const string resRef = "source_only";
+            const string renamedResRef = "renamed_source";
+            var source = Path.Combine(_root, $"{resRef}.nss");
+            var destinationNss = Path.Combine(_secondModule, "nss", $"{resRef}.nss");
+            var destinationNcs = Path.Combine(_secondModule, "ncs", $"{resRef}.ncs");
+            File.WriteAllText(source, "void main() { int imported = 1; }\n");
+
+            var conflict = action == ErfConflictAction.Add
+                ? ErfConflictKind.New
+                : ErfConflictKind.Different;
+            if (conflict == ErfConflictKind.Different)
+                File.WriteAllText(destinationNss, "void main() { int existing = 1; }\n");
+            if (action == ErfConflictAction.Replace)
+                File.WriteAllBytes(destinationNcs, new byte[] { 0x4e, 0x43, 0x53, 0x20, 0x01 });
+
+            var asset = new ErfArchiveAsset(
+                $"{resRef}.nss",
+                resRef,
+                "nss",
+                new FileInfo(source).Length,
+                IsSupported: true,
+                TypeName: "Script source",
+                UnsupportedReason: null);
+            var prepared = new ErfPreparedImport(
+                asset,
+                source,
+                destinationNss,
+                conflict,
+                conflict == ErfConflictKind.New
+                    ? ErfConflictAction.Add
+                    : ErfConflictAction.KeepExisting);
+
+            Func<Task> import = async () => await _service.ImportAsync(new[]
+            {
+                new ErfImportChoice(
+                    prepared,
+                    action,
+                    action == ErfConflictAction.Rename ? renamedResRef : null)
+            });
+
+            await import.Should().ThrowAsync<InvalidOperationException>()
+                .WithMessage("*entry-point script*without its compiled companion*source_only.ncs*");
+
+            if (action == ErfConflictAction.Add)
+                File.Exists(destinationNss).Should().BeFalse();
+            else
+                File.ReadAllText(destinationNss).Should().Contain("existing");
+            if (action == ErfConflictAction.Replace)
+                File.ReadAllBytes(destinationNcs).Should().Equal(
+                    new byte[] { 0x4e, 0x43, 0x53, 0x20, 0x01 });
+            File.Exists(Path.Combine(_secondModule, "nss", $"{renamedResRef}.nss"))
+                .Should().BeFalse();
+        }
+
         [Test]
         public async Task RenameWritesANewResourceAndRewritesImportedResRefs()
         {
@@ -1047,7 +1114,7 @@ namespace SWLOR.Toolset.Tests
                 new JsonGffDocument("DLG ", new JsonGffStruct()).ToBytes());
             File.WriteAllText(
                 scriptSource,
-                "void main() {\n" +
+                "void RewriteReferences() {\n" +
                 "    CreateItemOnObject(\"shared\", OBJECT_SELF);\n" +
                 "    CreateObject(OBJECT_TYPE_CREATURE, \"shared\", GetLocation(OBJECT_SELF));\n" +
                 "}\n");
@@ -1122,7 +1189,9 @@ namespace SWLOR.Toolset.Tests
             _workspace.Open(_secondModule);
             var entrySource = Path.Combine(_root, "entry.nss");
             var includeSource = Path.Combine(_root, "old_inc.nss");
-            File.WriteAllText(entrySource, "#include \"old_inc\"\nvoid main() {}\n");
+            File.WriteAllText(
+                entrySource,
+                "#include \"old_inc\"\nint EntryValue() { return SharedValue(); }\n");
             File.WriteAllText(includeSource, "int SharedValue() { return 1; }\n");
 
             ErfImportChoice Choice(
@@ -1167,8 +1236,8 @@ namespace SWLOR.Toolset.Tests
             _workspace.Open(_secondModule);
             var source = Path.Combine(_root, "replacement.nss");
             var destination = Path.Combine(_secondModule, "nss", "replacement.nss");
-            File.WriteAllText(source, "void main() { int imported = 1; }\n");
-            var original = System.Text.Encoding.UTF8.GetBytes("void main() { int original = 1; }\n");
+            File.WriteAllText(source, "int ImportedValue() { return 1; }\n");
+            var original = System.Text.Encoding.UTF8.GetBytes("int OriginalValue() { return 1; }\n");
             File.WriteAllBytes(destination, original);
 
             var asset = new ErfArchiveAsset(
@@ -1189,7 +1258,7 @@ namespace SWLOR.Toolset.Tests
                     original.LongLength,
                     Convert.ToHexString(SHA256.HashData(original))));
 
-            File.WriteAllText(destination, "void main() { int newer = 1; }\n");
+            File.WriteAllText(destination, "int NewerValue() { return 1; }\n");
 
             var action = () => _service.ImportAsync(new[]
             {
@@ -1198,7 +1267,7 @@ namespace SWLOR.Toolset.Tests
 
             await action.Should().ThrowAsync<IOException>()
                 .WithMessage("*changed after the ERF import was prepared*");
-            File.ReadAllText(destination).Should().Contain("newer");
+            File.ReadAllText(destination).Should().Contain("NewerValue");
         }
 
         [Test]

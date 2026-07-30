@@ -73,13 +73,12 @@ namespace SWLOR.Toolset.Domain.Render
             if (string.IsNullOrWhiteSpace(resRef))
                 return null;
 
-            if (layerColorIndices is { Count: > 0 })
-            {
-                return LoadPlt(resourceIndex, resRef, layerColorIndices) ??
-                       LoadTga(resourceIndex, resRef) ??
-                       LoadDds(resourceIndex, resRef);
-            }
-
+            // An authored TGA always wins, dyes or not. A PLT is only a picture once its layers are
+            // coloured, so it looks like the obvious source for a dyeable part - but where a part
+            // ships both, the TGA is the appearance the artist baked and the PLT alongside it is a
+            // base-game leftover under the same name. Preferring the PLT repainted SWLOR's custom
+            // parts in unrelated palette colours. Genuinely dyeable parts carry a PLT and no TGA,
+            // which is how Aurora decides the same question.
             return LoadTga(resourceIndex, resRef) ??
                    LoadDds(resourceIndex, resRef) ??
                    LoadPlt(resourceIndex, resRef, layerColorIndices);

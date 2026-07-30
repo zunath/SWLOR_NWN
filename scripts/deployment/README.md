@@ -20,35 +20,41 @@ The deployment:
 
 1. Takes an exclusive `flock`, refuses dirty/diverged source, and performs only
    a fast-forward from the configured GitHub branch.
-2. Builds the .NET 10 server and updates changed HAKs, the TLK, packed module,
-   and .NET output directly under the existing `NWSYNC_ROOT`.
+2. Copies the permanent server HAK/TLK/module set into temporary NWSync
+   workspace, builds the .NET 10 server in the deployment cache, and updates
+   changed HAKs, the TLK, and packed module under `NWSYNC_ROOT`.
 3. Runs `NWSYNC_ROOT/build.sh` from `NWSYNC_ROOT`. This is the operation that
    generates and activates the new NWSync manifest; a build failure never stops
    the game server.
 4. Verifies every expected HAK, the TLK, module, .NET output, manifest, and free
    space before server downtime.
-5. Ensures supporting Compose services and the server image exist before
-   downtime.
-6. Gives `swlor-server` 120 seconds to stop, copies the completed .NET output
-   to the server tree, and starts only that service. HAK/TLK/module files are
-   already visible through the configured bind mounts.
+5. Ensures every required Compose image exists before downtime.
+6. Runs `docker compose down`, updates `NWN_NWSYNCHASH` in `swlor.env`, and
+   atomically moves the completed HAK/TLK/module directories and staged .NET
+   output into the server tree.
 7. Requires `Server: Module loaded` within five minutes and then 30 seconds
-   without a restart.
-8. Removes temporary build work and prunes only dangling Docker images after a
-   successful deployment.
+   without a restart after bringing the complete Compose project back up.
+8. Retains the previous live artifacts and `swlor.env` in the deployment cache
+   until that health check passes. A failed cutover automatically restores
+   them and starts the prior stack. A successful cutover removes that rollback
+   set and prunes only dangling Docker images.
 
-HakBuilder uses the `.md5` files beside the existing HAKs, so unchanged HAKs
-are not rebuilt or duplicated. The NWSync `data` store is append-only in this
-workflow. It is not automatically pruned because doing so safely depends on
-the installed `nwsync_prune` version and the manifests that must remain
-available to players. Review its help and disk usage separately before
-enabling pruning.
+The NWSync and server HAK/TLK/module paths must be separate ordinary
+directories, not symlinks or bind mounts. The deployer refuses to proceed
+while a server artifact path is still mounted or resolves to the same object
+as its NWSync counterpart.
 
-This low-space design does not retain a second 13 GB HAK tree for local
-artifact rollback. The prior NWSync manifest remains active until `build.sh`
-succeeds, and the game server remains running if any build step fails. After
-manifest activation, recovery is a rebuild from the desired Git commit or a
-restore from the host backup.
+HakBuilder uses the `.md5` files copied from the permanent set, so unchanged
+HAKs do not need to be rebuilt. During a deployment there is one temporary raw
+HAK/TLK/module set in NWSync and one permanent live set in `nwn-server`. After
+a successful cutover the NWSync raw directories are recreated empty; only the
+new permanent live set remains. NWSync `data`, `manifests`, and `latest` stay
+in place to serve players.
+
+The NWSync `data` store is append-only in this workflow. It is not
+automatically pruned because doing so safely depends on the installed
+`nwsync_prune` version and the manifests that must remain available to
+players. Review its help and disk usage separately before enabling pruning.
 
 ## Initial source checkout
 
@@ -104,9 +110,15 @@ STATE_ROOT="$DEPLOYMENT_ROOT/state"
 CACHE_ROOT="$VOLUME_ROOT/deployment/cache"
 
 NWSYNC_BUILD_SCRIPT="$NWSYNC_ROOT/build.sh"
-NWSYNC_DOTNET_ROOT="$NWSYNC_ROOT/dotnet"
+NWSYNC_HAK_ROOT="$NWSYNC_ROOT/hak"
+NWSYNC_TLK_ROOT="$NWSYNC_ROOT/tlk"
+NWSYNC_MODULE_ROOT="$NWSYNC_ROOT/modules"
+SERVER_HAK_ROOT="$SERVER_ROOT/hak"
+SERVER_TLK_ROOT="$SERVER_ROOT/tlk"
+SERVER_MODULE_ROOT="$SERVER_ROOT/modules"
 SERVER_DOTNET_ROOT="$SERVER_ROOT/dotnet"
-SERVER_CONTENT_MODE=bind
+SERVER_ENV_FILE="$SERVER_ROOT/swlor.env"
+NWSYNC_HASH_VARIABLE=NWN_NWSYNCHASH
 ```
 
 For production, make another copy of the example and change
@@ -115,10 +127,105 @@ For production, make another copy of the example and change
 names, disk thresholds, and health settings as needed. No changes to
 `swlor-deploy.sh` or `install.sh` are required.
 
-Set `SERVER_CONTENT_MODE=bind` when `SERVER_ROOT/{hak,modules,tlk}` are bind
-mounts backed by `NWSYNC_ROOT`. Set it to `copy` on a host with separate server
-content directories; that mode copies the completed content only after the
-server has stopped.
+`CACHE_ROOT`, all three NWSync artifact directories, all four server artifact
+directories, and their parent paths must be on the same filesystem. This makes
+the cutover and rollback directory moves atomic and avoids a second copy
+during downtime.
+
+## One-time unlink migration
+
+The old host layout bind-mounted `hak`, `tlk`, and `modules` from NWSync into
+the server. Perform this migration once before installing this version of the
+deployer. Run it in `screen`, and do not use a forced or lazy unmount.
+
+First verify the exact paths and take the full game Compose project down:
+
+```bash
+VOLUME_ROOT=/mnt/swlor-web-vol
+NWSYNC_ROOT="$VOLUME_ROOT/nwsync"
+SERVER_ROOT="$VOLUME_ROOT/nwn-server"
+COMPOSE_FILE="$SERVER_ROOT/docker-compose.yml"
+
+for artifact_name in hak tlk modules; do
+  server_path="$SERVER_ROOT/$artifact_name"
+  printf '%s -> target=%s source=%s\n' \
+    "$server_path" \
+    "$(findmnt -T "$server_path" -n -o TARGET)" \
+    "$(findmnt -T "$server_path" -n -o SOURCE)"
+done
+
+docker compose \
+  --project-directory "$SERVER_ROOT" \
+  --file "$COMPOSE_FILE" \
+  down --timeout 120
+```
+
+Each reported target must exactly match its server path before the following
+unmount. Stop and investigate instead of using `umount -f` or `umount -l` if
+any unmount reports that the target is busy.
+
+```bash
+MIGRATION_BACKUP="$VOLUME_ROOT/upgrade-backups/swlor-content-unlink-$(date -u +%Y%m%dT%H%M%SZ)"
+install -d -o root -g root -m 0700 "$MIGRATION_BACKUP"
+install -o root -g root -m 0600 /etc/fstab "$MIGRATION_BACKUP/fstab"
+
+for artifact_name in hak tlk modules; do
+  server_path="$SERVER_ROOT/$artifact_name"
+  test "$(findmnt -T "$server_path" -n -o TARGET)" = "$server_path"
+  umount -- "$server_path"
+done
+
+FSTAB_TEMP=/etc/fstab.swlor-unlink
+awk \
+  -v nwsync="$NWSYNC_ROOT" \
+  -v server="$SERVER_ROOT" \
+  '
+    !($1 == nwsync "/hak"     && $2 == server "/hak") &&
+    !($1 == nwsync "/tlk"     && $2 == server "/tlk") &&
+    !($1 == nwsync "/modules" && $2 == server "/modules")
+  ' \
+  /etc/fstab > "$FSTAB_TEMP"
+chown --reference=/etc/fstab "$FSTAB_TEMP"
+chmod --reference=/etc/fstab "$FSTAB_TEMP"
+mv -f "$FSTAB_TEMP" /etc/fstab
+systemctl daemon-reload
+```
+
+The unmount reveals the old underlying server directories. Replace their
+contents with the current known-good NWSync set, verify an exact match, and
+bring the unchanged server back up:
+
+```bash
+for artifact_name in hak tlk modules; do
+  install -d -o root -g root -m 0755 "$SERVER_ROOT/$artifact_name"
+  rsync --archive --delete \
+    "$NWSYNC_ROOT/$artifact_name/" \
+    "$SERVER_ROOT/$artifact_name/"
+  test -z "$(
+    rsync --archive --delete --dry-run --itemize-changes \
+      "$NWSYNC_ROOT/$artifact_name/" \
+      "$SERVER_ROOT/$artifact_name/"
+  )"
+done
+
+for artifact_name in hak tlk modules; do
+  nwsync_path="$NWSYNC_ROOT/$artifact_name"
+  server_path="$SERVER_ROOT/$artifact_name"
+  test "$(stat -Lc '%d:%i' "$nwsync_path")" != \
+       "$(stat -Lc '%d:%i' "$server_path")"
+  test "$(findmnt -T "$server_path" -n -o TARGET)" != "$server_path"
+done
+
+docker compose \
+  --project-directory "$SERVER_ROOT" \
+  --file "$COMPOSE_FILE" \
+  up -d
+```
+
+At this point both raw artifact sets intentionally exist. The first successful
+deployment uses the NWSync set as its temporary workspace, moves it into the
+server tree during cutover, and removes the superseded permanent set after the
+health check.
 
 ## Install
 
@@ -166,7 +273,8 @@ the polling timer.
 # Intentionally rebuild the currently active commit:
 /usr/local/sbin/swlor-deploy --force
 
-# Display recorded commits, active manifest, containers, and free space:
+# Display recorded commits, NWSync/server manifest hashes, path separation,
+# containers, and free space:
 /usr/local/sbin/swlor-deploy --status
 
 # Follow the durable deployment log:
@@ -221,12 +329,18 @@ source /etc/swlor-deploy.conf
 cat "$STATE_ROOT/active-commit"
 cat "$STATE_ROOT/previous-commit"
 cat "$NWSYNC_ROOT/latest"
+grep "^${NWSYNC_HASH_VARIABLE}=" "$SERVER_ENV_FILE"
 docker compose \
   --project-directory "$SERVER_ROOT" \
   --file "$COMPOSE_FILE" \
   logs --tail 200 swlor-server
 ```
 
-To recover from a bad application change, revert it on the configured branch
-and deploy the resulting commit so all artifacts and the manifest are rebuilt.
-For disaster recovery, restore the host backup.
+Cutover failures are rolled back automatically. If rollback itself fails, the
+deployer preserves its exact recovery directory under `CACHE_ROOT` and logs
+that path instead of deleting the old artifact set. Do not manually delete
+that directory.
+
+To recover from a bad change that passed startup health, revert it on the
+configured branch and deploy the resulting commit so all artifacts and the
+manifest are rebuilt. For disaster recovery, restore the host backup.

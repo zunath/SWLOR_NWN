@@ -99,7 +99,7 @@ file-writing path could be covered.
 1. **Module root** — from `%LOCALAPPDATA%\SWLOR.Toolset\settings.json`, or auto-detected from the
    repo layout. A valid root contains `are/` and `utc/` subfolders. If neither works the status bar
    says so; set `moduleRoot` in that settings file and restart.
-2. **Haks** — `SWLOR_Haks/`, layered per `Build/hakbuilder.json` (later layers win).
+2. **Haks** — `SWLOR_Haks/`, layered per `Build/hakbuilder.json` (the first matching layer wins).
 3. **Base game** — an NWN:EE install, auto-located or overridden in settings. Missing is fine; a
    broken install degrades to hak-only rather than failing startup.
 

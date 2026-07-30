@@ -77,6 +77,44 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ExternalOverwriteAdoptsTheAcceptedGenerationBeforeTheFinalRecheck()
+        {
+            var log = new OutputLogService();
+            var context = new WorkspaceContext(_ => throw new NotSupportedException(), log);
+            var schema = new EditorSchema
+            {
+                ResourceType = ResourceType.Utc,
+                Groups = Array.Empty<FieldGroup>(),
+                HasVarTable = true
+            };
+            var editor = new BlueprintEditorViewModel(
+                _path,
+                "reload_var",
+                ResourceType.Utc,
+                schema,
+                new LookupOptionProvider(context),
+                gameCodeIndex: null,
+                log,
+                new OverwritePrompts());
+            editor.VarTableSection!.NewName = "LOCAL_TEST";
+            editor.VarTableSection.NewType = "int";
+            editor.VarTableSection.NewValue = "1";
+            editor.VarTableSection.SetVariableCommand.Execute(null);
+
+            File.WriteAllBytes(
+                _path,
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utc,
+                    "reload_var",
+                    "External"));
+
+            (await editor.TrySaveAsync()).Should().BeTrue(
+                "the accepted disk generation becomes the baseline for the final race check");
+            editor.IsDirty.Should().BeFalse();
+            editor.OnClose().Should().BeTrue();
+        }
+
+        [Test]
         public void CreatureAppearanceGalleryFollowsUndoAndRedo()
         {
             var log = new OutputLogService();
@@ -132,6 +170,23 @@ namespace SWLOR.Toolset.Tests
         {
             public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) =>
                 Task.FromResult(ExternalChangeChoice.Reload);
+
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) =>
+                Task.FromResult(UnsavedChangesChoice.Cancel);
+
+            public Task<bool> ConfirmDestructiveAsync(
+                string headline, string message, string confirmLabel) =>
+                Task.FromResult(false);
+
+            public Task<string?> PromptForTextAsync(
+                string headline, string message, string initialValue, string confirmLabel) =>
+                Task.FromResult<string?>(null);
+        }
+
+        private sealed class OverwritePrompts : IEditorPromptService
+        {
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) =>
+                Task.FromResult(ExternalChangeChoice.Overwrite);
 
             public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) =>
                 Task.FromResult(UnsavedChangesChoice.Cancel);

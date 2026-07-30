@@ -22,6 +22,9 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         /// <summary>Journal text by 1-based state number, where the definition sets one.</summary>
         public required IReadOnlyDictionary<int, string> JournalTextByState { get; init; }
 
+        /// <summary>States whose builder chain declares at least one item-collection objective.</summary>
+        public required IReadOnlyList<int> CollectItemObjectiveStates { get; init; }
+
         public required bool IsRepeatable { get; init; }
 
         /// <summary>
@@ -208,8 +211,11 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             // Journal text belongs to whichever AddState() precedes it, so both are walked in
             // document order rather than counted separately.
             var journalByState = new Dictionary<int, string>();
+            var collectItemStates = new HashSet<int>();
             var stateCount = 0;
-            foreach (Match match in Regex.Matches(chain, @"\.AddState\(\s*\)|\.SetStateJournalText\(\s*""(?<text>(?:[^""\\]|\\.)*)"""))
+            foreach (Match match in Regex.Matches(
+                         chain,
+                         @"\.AddState\(\s*\)|\.SetStateJournalText\(\s*""(?<text>(?:[^""\\]|\\.)*)""|\.AddCollectItemObjective\("))
             {
                 if (match.Value.StartsWith(".AddState", StringComparison.Ordinal))
                 {
@@ -217,8 +223,15 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
                     continue;
                 }
 
-                if (stateCount > 0)
+                if (match.Value.StartsWith(".AddCollectItemObjective", StringComparison.Ordinal))
+                {
+                    if (stateCount > 0)
+                        collectItemStates.Add(stateCount);
+                }
+                else if (stateCount > 0)
+                {
                     journalByState[stateCount] = Unescape(match.Groups["text"].Value);
+                }
             }
 
             // Prerequisites are resolved through the file's constants as well as from literals. The
@@ -248,6 +261,7 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
                 Name = name,
                 StateCount = stateCount,
                 JournalTextByState = journalByState,
+                CollectItemObjectiveStates = collectItemStates.Order().ToList(),
                 IsRepeatable = RepeatableRegex.IsMatch(chain),
                 HasRewardSelection = RewardSelectionRegex.IsMatch(chain),
                 PrerequisiteQuestIds = prerequisiteQuests,

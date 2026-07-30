@@ -57,21 +57,33 @@ namespace SWLOR.Toolset.Domain.Conversations
 
             var beats = new List<ScaffoldBeat>();
 
-            beats.Add(new ScaffoldBeat(
-                $"Finished {quest.Name}",
-                quest.IsRepeatable
-                    ? "Every time they talk afterwards. Repeatable, so it should not read as a full stop."
-                    : "Every time they talk afterwards. Not repeatable, so this is permanent."));
-
-            beats.Add(new ScaffoldBeat(
-                $"Ready to hand in {quest.Name}",
-                $"Step {quest.StateCount} — she takes what they brought and pays out."));
-
-            for (var state = quest.StateCount - 1; state >= 1; state--)
+            if (!quest.IsRepeatable)
             {
                 beats.Add(new ScaffoldBeat(
-                    $"On step {state} of {quest.Name}",
-                    Journal(quest, state) ?? $"Step {state} — remind them what is still outstanding."));
+                    $"Finished {quest.Name}",
+                    "Every time they talk afterwards. Not repeatable, so this is permanent."));
+            }
+
+            for (var state = quest.StateCount; state >= 1; state--)
+            {
+                if (quest.CollectItemObjectiveStates.Contains(state))
+                {
+                    beats.Add(new ScaffoldBeat(
+                        $"Ready to hand in {quest.Name} (step {state})",
+                        $"Step {state} — opens the item collector, then ends while it processes the hand-in."));
+                }
+                else if (state == quest.StateCount)
+                {
+                    beats.Add(new ScaffoldBeat(
+                        $"Ready to complete {quest.Name}",
+                        $"Step {state} — pays out after the final non-item objectives are complete."));
+                }
+                else
+                {
+                    beats.Add(new ScaffoldBeat(
+                        $"On step {state} of {quest.Name}",
+                        Journal(quest, state) ?? $"Step {state} — remind them what is still outstanding."));
+                }
             }
 
             beats.Add(new ScaffoldBeat(
@@ -142,25 +154,34 @@ namespace SWLOR.Toolset.Domain.Conversations
                     opening.AddCondition("condition-completed-quest", questId)));
             }
 
-            // Ready to hand in - the turn-in, and the only place the quest advances.
-            var turnIn = Opening(document, Placeholder, opening =>
-                opening.AddCondition("condition-on-quest-state", $"{questId} {quest.StateCount}"));
-            var handOver = document.AddReply(Placeholder);
-            handOver.AddAction("action-request-quest-items", questId);
-            document.AddLink(turnIn.Target, handOver);
-
-            var reward = document.AddEntry(Placeholder);
-            reward.AddAction("action-advance-quest", questId);
-            document.AddLink(handOver, reward);
-            created.Add(turnIn);
-
-            // In progress, latest step first so the reminders read in the same order as the rail.
-            for (var state = quest.StateCount - 1; state >= 1; state--)
+            // Quest states, latest first. Collection states open the collector and deliberately end:
+            // it advances the quest after the last item and starts a fresh conversation with the NPC.
+            for (var state = quest.StateCount; state >= 1; state--)
             {
-                var inProgress = Opening(document, Placeholder, opening =>
+                var onState = Opening(document, Placeholder, opening =>
                     opening.AddCondition("condition-on-quest-state", $"{questId} {state}"));
-                document.AddLink(inProgress.Target, document.AddReply("[Come back later.]"));
-                created.Add(inProgress);
+
+                if (quest.CollectItemObjectiveStates.Contains(state))
+                {
+                    var handOver = document.AddReply(Placeholder);
+                    handOver.AddAction("action-request-quest-items", questId);
+                    document.AddLink(onState.Target, handOver);
+                }
+                else if (state == quest.StateCount)
+                {
+                    var complete = document.AddReply(Placeholder);
+                    document.AddLink(onState.Target, complete);
+
+                    var reward = document.AddEntry(Placeholder);
+                    reward.AddAction("action-advance-quest", questId);
+                    document.AddLink(complete, reward);
+                }
+                else
+                {
+                    document.AddLink(onState.Target, document.AddReply("[Come back later.]"));
+                }
+
+                created.Add(onState);
             }
 
             // The offer.

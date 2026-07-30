@@ -85,6 +85,7 @@ namespace SWLOR.Toolset.Tests
             quest.Should().NotBeNull();
             quest!.Name.Should().Be("Field Tinctures");
             quest.StateCount.Should().Be(2);
+            quest.CollectItemObjectiveStates.Should().Equal(1);
             quest.IsRepeatable.Should().BeFalse();
             quest.PrerequisiteQuestIds.Should().Equal("harvest_herbs");
             quest.SourceFile.Should().Be("DantooineQuestDefinition.cs");
@@ -99,7 +100,17 @@ namespace SWLOR.Toolset.Tests
             quest!.Name.Should().Be("Harvesting Herbs");
             quest.IsRepeatable.Should().BeTrue();
             quest.StateCount.Should().Be(2);
+            quest.CollectItemObjectiveStates.Should().Equal(1);
             quest.PrerequisiteQuestIds.Should().BeEmpty();
+        }
+
+        [Test]
+        public void NonCollectionObjectivesAreNotReportedAsItemHandIns()
+        {
+            var quest = Index.FindQuest("voritor_lizard_threat");
+
+            quest.Should().NotBeNull();
+            quest!.CollectItemObjectiveStates.Should().BeEmpty();
         }
 
         [Test]

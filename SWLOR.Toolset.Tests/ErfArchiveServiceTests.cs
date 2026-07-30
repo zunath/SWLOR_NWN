@@ -763,6 +763,46 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ScriptSourceRequiresBlueprintsReferencedByRuntimeLiterals()
+        {
+            File.WriteAllText(
+                Path.Combine(_firstModule, "nss", "literal_refs.nss"),
+                "void main() {\n" +
+                "    CreateItemOnObject(\"shared_asset\", OBJECT_SELF);\n" +
+                "    CreateObject(OBJECT_TYPE_CREATURE, \"shared_asset\", GetLocation(OBJECT_SELF));\n" +
+                "}\n");
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "uti", "shared_asset.uti.json"),
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Uti,
+                    "shared_asset",
+                    "Shared Item"));
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "utc", "shared_asset.utc.json"),
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utc,
+                    "shared_asset",
+                    "Shared Creature"));
+            var archivePath = Path.Combine(_root, "literal-dependencies.erf");
+            await _service.ExportAsync(
+                new[]
+                {
+                    "literal_refs.nss",
+                    "shared_asset.uti",
+                    "shared_asset.utc"
+                },
+                archivePath);
+            using var archive = await _service.OpenArchiveAsync(archivePath);
+
+            var dependencies = await _service.FindImportDependenciesAsync(
+                archive,
+                new[] { "literal_refs.nss" });
+
+            dependencies.Select(dependency => dependency.FileName).Should()
+                .BeEquivalentTo("shared_asset.uti", "shared_asset.utc");
+        }
+
+        [Test]
         public async Task ImportingScriptSourceReplacesAStaleCompiledCompanion()
         {
             _workspace.Open(_secondModule);
@@ -815,6 +855,79 @@ namespace SWLOR.Toolset.Tests
             File.ReadAllBytes(destinationNcs).Should().Equal(
                 compiledGeneration,
                 "the runtime must execute the generation that belongs to the imported source");
+        }
+
+        [Test]
+        public async Task ImportRefusesCompiledBytecodeWhenRenamesRewriteItsSource()
+        {
+            _workspace.Open(_secondModule);
+            var itemSource = Path.Combine(_root, "old_item.uti.json");
+            var scriptSource = Path.Combine(_root, "runtime_ref.nss");
+            var compiledSource = Path.Combine(_root, "runtime_ref.ncs");
+            File.WriteAllBytes(
+                itemSource,
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Uti,
+                    "old_item",
+                    "Imported Item"));
+            File.WriteAllText(
+                scriptSource,
+                "void main() { CreateItemOnObject(\"old_item\", OBJECT_SELF); }\n");
+            File.WriteAllBytes(
+                compiledSource,
+                new byte[] { 0x4e, 0x43, 0x53, 0x20, 0x01 });
+
+            ErfPreparedImport Prepared(
+                string source,
+                string resRef,
+                string extension,
+                ErfConflictKind conflict)
+            {
+                var asset = new ErfArchiveAsset(
+                    $"{resRef}.{extension}",
+                    resRef,
+                    extension,
+                    new FileInfo(source).Length,
+                    IsSupported: true,
+                    TypeName: extension,
+                    UnsupportedReason: null);
+                var fileName = extension is "nss" or "ncs"
+                    ? $"{resRef}.{extension}"
+                    : $"{resRef}.{extension}.json";
+                return new ErfPreparedImport(
+                    asset,
+                    source,
+                    Path.Combine(_secondModule, extension, fileName),
+                    conflict,
+                    conflict == ErfConflictKind.New
+                        ? ErfConflictAction.Add
+                        : ErfConflictAction.KeepExisting);
+            }
+
+            Func<Task> import = async () => await _service.ImportAsync(new[]
+            {
+                new ErfImportChoice(
+                    Prepared(itemSource, "old_item", "uti", ErfConflictKind.Different),
+                    ErfConflictAction.Rename,
+                    "renamed_item"),
+                new ErfImportChoice(
+                    Prepared(scriptSource, "runtime_ref", "nss", ErfConflictKind.New),
+                    ErfConflictAction.Add,
+                    RenameResRef: null),
+                new ErfImportChoice(
+                    Prepared(compiledSource, "runtime_ref", "ncs", ErfConflictKind.New),
+                    ErfConflictAction.KeepExisting,
+                    RenameResRef: null)
+            });
+
+            await import.Should().ThrowAsync<InvalidOperationException>()
+                .WithMessage("*source but not its NCS bytecode*");
+            File.Exists(Path.Combine(_secondModule, "uti", "renamed_item.uti.json"))
+                .Should().BeFalse("the unsafe plan must fail before any module mutation");
+            File.Exists(Path.Combine(_secondModule, "nss", "runtime_ref.nss"))
+                .Should().BeFalse();
+            File.Exists(Path.Combine(_secondModule, "ncs", "runtime_ref.ncs"))
+                .Should().BeFalse();
         }
 
         [Test]

@@ -331,8 +331,8 @@ namespace SWLOR.Toolset.Tests
 
             beats.Select(beat => beat.Title).Should().Equal(
                 "Finished Field Tinctures",
-                "Ready to hand in Field Tinctures",
-                "On step 1 of Field Tinctures",
+                "Ready to complete Field Tinctures",
+                "Ready to hand in Field Tinctures (step 1)",
                 "Offering Field Tinctures",
                 "First meeting");
         }
@@ -350,11 +350,14 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void ARepeatableQuestIsExplainedDifferently()
+        public void ARepeatableQuestPreviewOmitsTheFinishedSituation()
         {
             var beats = new QuestConversationScaffold(GameCode).Preview("harvest_herbs");
 
-            beats[0].Explanation.Should().Contain("Repeatable");
+            beats.Select(beat => beat.Title).Should().NotContain(
+                title => title.StartsWith("Finished", StringComparison.Ordinal));
+            beats.Select(beat => beat.Title).Should().Contain(
+                "Ready to hand in Harvesting Herbs (step 1)");
             beats[^1].Explanation.Should().NotContain("has not finished");
         }
 
@@ -455,6 +458,37 @@ namespace SWLOR.Toolset.Tests
                 "action-accept-quest field_tinctures",
                 "action-request-quest-items field_tinctures",
                 "action-advance-quest field_tinctures");
+        }
+
+        [Test]
+        public void ItemCollectionEndsBeforeTheCollectorAdvancesTheQuest()
+        {
+            var document = NewConversation();
+            new QuestConversationScaffold(GameCode).Apply(document, "field_tinctures");
+
+            var handOver = document.Replies.Single(reply =>
+                reply.Actions.Any(action =>
+                    action.SnippetKey == "action-request-quest-items" &&
+                    action.Value == "field_tinctures"));
+
+            handOver.Links.Should().BeEmpty(
+                "the collector advances the quest and restarts the NPC conversation after the last item");
+        }
+
+        [Test]
+        public void AQuestWithoutCollectionObjectivesGetsNoItemHandIn()
+        {
+            var document = NewConversation();
+            new QuestConversationScaffold(GameCode).Apply(document, "voritor_lizard_threat");
+
+            document.Entries.Concat(document.Replies)
+                .SelectMany(node => node.Actions)
+                .Should().NotContain(action => action.SnippetKey == "action-request-quest-items");
+            document.Entries.Concat(document.Replies)
+                .SelectMany(node => node.Actions)
+                .Should().ContainSingle(action =>
+                    action.SnippetKey == "action-advance-quest" &&
+                    action.Value == "voritor_lizard_threat");
         }
 
         [Test]

@@ -397,9 +397,7 @@ namespace SWLOR.Toolset.Services
 
                     if (asset.Extension.Equals("nss", StringComparison.OrdinalIgnoreCase))
                     {
-                        return FindScriptIncludes(session.ExtractedPath(asset))
-                            .Select(resRef => new ErfResourceReference("nss", resRef))
-                            .ToList();
+                        return FindScriptResourceReferences(session.ExtractedPath(asset));
                     }
 
                     return Array.Empty<ErfResourceReference>();
@@ -504,6 +502,7 @@ namespace SWLOR.Toolset.Services
                     or ErfConflictAction.Rename)
                 .ToList();
             var renameMap = ValidateImportPlan(active, workspace.ModuleRoot);
+            ValidateCompiledScriptGenerations(active, renameMap);
             var transactionRoot = CreateModuleTransactionDirectory(workspace.ModuleRoot);
             var stagedRoot = Path.Combine(transactionRoot, "staged");
             var rollbackRoot = Path.Combine(transactionRoot, "rollback");
@@ -1029,13 +1028,32 @@ namespace SWLOR.Toolset.Services
             }
         }
 
-        private static IReadOnlyList<string> FindScriptIncludes(string path)
+        private static IReadOnlyList<ErfResourceReference> FindScriptResourceReferences(string path)
         {
             var text = File.ReadAllText(path);
-            return IncludePattern.Matches(text)
-                .Select(match => match.Groups["resref"].Value)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            var result = new Dictionary<string, ErfResourceReference>(
+                StringComparer.OrdinalIgnoreCase);
+
+            void Add(string extension, string resRef)
+            {
+                result[ArchiveKey(extension, resRef)] =
+                    new ErfResourceReference(extension, resRef);
+            }
+
+            foreach (Match match in IncludePattern.Matches(text))
+                Add("nss", match.Groups["resref"].Value);
+
+            foreach (Match match in CreateItemPattern.Matches(text))
+                Add("uti", match.Groups["resref"].Value);
+
+            foreach (Match match in CreateObjectPattern.Matches(text))
+            {
+                var extension = ScriptObjectExtension(match.Groups["type"].Value);
+                if (extension != null)
+                    Add(extension, match.Groups["resref"].Value);
+            }
+
+            return result.Values.ToList();
         }
 
         private IEnumerable<ModuleArchiveAsset> EnumerateModuleAssetsCore(
@@ -1279,6 +1297,41 @@ namespace SWLOR.Toolset.Services
             return normalized;
         }
 
+        /// <summary>
+        /// Refuses an import whose source rewrite would detach a selected compiled companion from
+        /// the source generation that produced it. The importer cannot patch NCS bytecode, and
+        /// installing it under either the original or renamed resref would leave NWN executing the
+        /// old literals while the editor displays the new ones.
+        /// </summary>
+        private static void ValidateCompiledScriptGenerations(
+            IReadOnlyCollection<ErfImportChoice> choices,
+            IReadOnlyDictionary<string, string> renameMap)
+        {
+            var compiledResRefs = choices
+                .Where(choice => choice.Prepared.Asset.Extension.Equals(
+                    "ncs",
+                    StringComparison.OrdinalIgnoreCase))
+                .Select(choice => choice.Prepared.Asset.ResRef)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var choice in choices.Where(choice =>
+                         choice.Prepared.Asset.Extension.Equals(
+                             "nss",
+                             StringComparison.OrdinalIgnoreCase) &&
+                         compiledResRefs.Contains(choice.Prepared.Asset.ResRef)))
+            {
+                var script = ScriptTextDocument.Load(choice.Prepared.ContentPath);
+                var rewritten = RewriteScriptReferences(script.Text, renameMap);
+                if (string.Equals(script.Text, rewritten, StringComparison.Ordinal))
+                    continue;
+
+                throw new InvalidOperationException(
+                    $"Cannot import '{choice.Prepared.Asset.FileName}' with its compiled companion " +
+                    "because renamed resource references change the script source but not its NCS " +
+                    "bytecode. Import without those renames, or recompile the rewritten script before importing.");
+            }
+        }
+
         private static void RewriteOwnResRef(
             JsonGffStruct root,
             string extension,
@@ -1443,21 +1496,24 @@ namespace SWLOR.Toolset.Services
             source = ReplaceScriptResRef(source, CreateItemPattern, "uti", renameMap);
             return CreateObjectPattern.Replace(source, match =>
             {
-                var extension = match.Groups["type"].Value switch
-                {
-                    "CREATURE" => "utc",
-                    "ITEM" => "uti",
-                    "PLACEABLE" => "utp",
-                    "STORE" => "utm",
-                    "WAYPOINT" => "utw",
-                    "DOOR" => "utd",
-                    "TRIGGER" => "utt",
-                    "SOUND" => "uts",
-                    _ => string.Empty
-                };
+                var extension = ScriptObjectExtension(match.Groups["type"].Value) ?? string.Empty;
                 return ReplaceScriptResRefMatch(match, extension, renameMap);
             });
         }
+
+        private static string? ScriptObjectExtension(string objectType) =>
+            objectType switch
+            {
+                "CREATURE" => "utc",
+                "ITEM" => "uti",
+                "PLACEABLE" => "utp",
+                "STORE" => "utm",
+                "WAYPOINT" => "utw",
+                "DOOR" => "utd",
+                "TRIGGER" => "utt",
+                "SOUND" => "uts",
+                _ => null
+            };
 
         private static string ReplaceScriptResRef(
             string source,

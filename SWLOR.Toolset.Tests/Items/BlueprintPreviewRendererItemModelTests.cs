@@ -166,6 +166,11 @@ namespace SWLOR.Toolset.Tests.Items
                     mesh.NodeName.Contains("hand", StringComparison.OrdinalIgnoreCase),
                 "row 10 keeps the hands visible below the sleeves");
             model.Meshes.Should().Contain(mesh =>
+                    mesh.TextureName.Equals("pmh0_handl001", StringComparison.OrdinalIgnoreCase));
+            model.Meshes.Should().Contain(mesh =>
+                    mesh.TextureName.Equals("pmh0_handr001", StringComparison.OrdinalIgnoreCase),
+                "NULL in the standard hand MDLs means to keep their stamped body-part PLTs");
+            model.Meshes.Should().Contain(mesh =>
                     mesh.TextureName.Equals("pmh0_chest186", StringComparison.OrdinalIgnoreCase),
                 "row 10 keeps the selected armor chest instead of treating the coat as a full-body robe");
         }

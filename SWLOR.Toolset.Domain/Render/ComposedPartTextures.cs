@@ -41,8 +41,16 @@ namespace SWLOR.Toolset.Domain.Render
 
             foreach (var mesh in partModel.GetMeshNodes())
             {
-                if (!string.IsNullOrWhiteSpace(mesh.Bitmap))
+                // NULL is Aurora's sentinel for "no authored bitmap", not a texture override.
+                // Standard hand models use it intentionally so the body-part resref stamped by
+                // MdlPartComposer resolves their PLT. Recording the sentinel can otherwise restore
+                // it over that resref when a literal null texture exists in the resource index,
+                // leaving hands flat gray instead of skin-coloured.
+                if (!string.IsNullOrWhiteSpace(mesh.Bitmap) &&
+                    !mesh.Bitmap.Equals("NULL", StringComparison.OrdinalIgnoreCase))
+                {
                     _authored[(partResRef, mesh.Name)] = mesh.Bitmap;
+                }
             }
         }
 

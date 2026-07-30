@@ -36,8 +36,10 @@ HAKS_SUBMODULE_PATH=SWLOR_Haks
 
 SERVER_SERVICE=swlor-server
 SERVER_IMAGE=zunath/nwn-dotnet:8193.37.15-2
-# Leave blank to let Compose derive the project name from SERVER_ROOT.
-COMPOSE_PROJECT_NAME=""
+# Keep this stable so Compose reuses the host's existing named volumes.
+# Change it in the production host configuration if production uses another
+# established Compose project name.
+COMPOSE_PROJECT_NAME=nwnserver
 
 # HAK, TLK, and module paths must be separate ordinary directories. NWSync is
 # the temporary build workspace; the completed directories are moved into the

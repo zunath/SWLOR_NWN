@@ -119,6 +119,7 @@ SERVER_MODULE_ROOT="$SERVER_ROOT/modules"
 SERVER_DOTNET_ROOT="$SERVER_ROOT/dotnet"
 SERVER_ENV_FILE="$SERVER_ROOT/swlor.env"
 NWSYNC_HASH_VARIABLE=NWN_NWSYNCHASH
+COMPOSE_PROJECT_NAME=nwnserver
 ```
 
 For production, make another copy of the example and change
@@ -131,6 +132,10 @@ names, disk thresholds, and health settings as needed. No changes to
 directories, and their parent paths must be on the same filesystem. This makes
 the cutover and rollback directory moves atomic and avoids a second copy
 during downtime.
+
+Keep `COMPOSE_PROJECT_NAME` equal to the host's established Compose project
+name. Changing it selects different project-scoped containers, networks, and
+named volumes. The test host uses `nwnserver`.
 
 ## One-time unlink migration
 

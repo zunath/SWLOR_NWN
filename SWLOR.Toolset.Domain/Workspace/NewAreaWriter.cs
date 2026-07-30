@@ -177,6 +177,8 @@ namespace SWLOR.Toolset.Domain.Workspace
             try
             {
                 var are = AreDocument.Load(templateAre);
+                var templateGitBytes = File.ReadAllBytes(templateGit);
+                var templateGicBytes = File.ReadAllBytes(templateGic);
                 // These are standalone documents loaded specifically for this write, but another
                 // editor's DocumentSession may still have the ambient mutation guard enabled on
                 // the UI context. Give each document its own short-lived session/transaction so
@@ -204,17 +206,13 @@ namespace SWLOR.Toolset.Domain.Workspace
                 // break module load.
                 WriteAtomic(arePath, are.ToBytes(), overwrite: false);
                 createdPaths.Add(arePath);
-                // Destinations are recorded BEFORE each copy: File.Copy can create the file and
-                // then fail partway (full disk, I/O error), and an untracked partial GIT/GIC would
-                // survive cleanup, permanently blocking the resref as "already exists". A
-                // destination that already exists is NOT recorded - the copy will refuse it, and
-                // cleanup must never delete a file this writer did not create.
-                if (!File.Exists(gitPath))
-                    createdPaths.Add(gitPath);
-                File.Copy(templateGit, gitPath, overwrite: false);
-                if (!File.Exists(gicPath))
-                    createdPaths.Add(gicPath);
-                File.Copy(templateGic, gicPath, overwrite: false);
+                // Stage each companion beside its destination, then install it atomically without
+                // overwrite. Ownership begins only after the move succeeds: if another editor wins
+                // the destination race, rollback must not delete that editor's file.
+                WriteAtomic(gitPath, templateGitBytes, overwrite: false);
+                createdPaths.Add(gitPath);
+                WriteAtomic(gicPath, templateGicBytes, overwrite: false);
+                createdPaths.Add(gicPath);
 
                 var currentIfo = File.ReadAllBytes(ifoPath);
                 if (!currentIfo.AsSpan().SequenceEqual(ifoBaseline))

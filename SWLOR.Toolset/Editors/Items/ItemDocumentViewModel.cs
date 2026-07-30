@@ -200,9 +200,11 @@ namespace SWLOR.Toolset.Editors.Items
 
                 // Everything above - the reference sweep and the category preflight - reads the disk
                 // and can take seconds. Another tool may have written the original in that window,
-                // and a rename is about to DELETE it, so the external-change question is asked again
-                // here against the file as it stands rather than trusted from before the scans.
-                if (renaming && _session.HasExternalChange())
+                // and a rename is about to DELETE it, so its fingerprint is checked and captured
+                // here rather than trusting the check from before the scans.
+                byte[]? originalContentHash = null;
+                if (renaming &&
+                    !_session.TryCaptureUnchangedFileContentHash(out originalContentHash))
                 {
                     _log.AppendLine(
                         $"Cannot rename {_resRef}: the file changed on disk while the rename was being " +
@@ -221,7 +223,12 @@ namespace SWLOR.Toolset.Editors.Items
                     : null;
                 var saveBytes = _session.ToBytes();
                 using var renameRecovery = moving
-                    ? ItemRenameRecovery.Begin(moduleRoot!, oldPath, newPath, saveBytes)
+                    ? ItemRenameRecovery.Begin(
+                        moduleRoot!,
+                        oldPath,
+                        newPath,
+                        saveBytes,
+                        originalContentHash!)
                     : null;
 
                 // A rename installs its destination with no-overwrite semantics: the existence
@@ -241,7 +248,7 @@ namespace SWLOR.Toolset.Editors.Items
                     if (moving && !RefileCategories(oldResRef, targetResRef, newPath))
                         return false;
 
-                    if (moving && !TryDeleteRenamedOriginal(oldPath, newPath))
+                    if (moving && !TryDeleteRenamedOriginal(oldPath, newPath, renameRecovery!))
                     {
                         // The delete failed after the sidecar already moved: put the sidecar back so
                         // it keeps naming the blueprint that actually exists.
@@ -313,10 +320,22 @@ namespace SWLOR.Toolset.Editors.Items
         /// Without the rollback the failed save would leave BOTH blueprints on disk, and every
         /// retry would then be refused because the target path already exists.
         /// </summary>
-        private bool TryDeleteRenamedOriginal(string oldPath, string newPath)
+        private bool TryDeleteRenamedOriginal(
+            string oldPath,
+            string newPath,
+            ItemRenameRecovery.Transaction renameRecovery)
         {
             try
             {
+                if (!renameRecovery.OriginalStillMatches())
+                {
+                    File.Delete(newPath);
+                    _log.AppendLine(
+                        $"Cannot rename {_resRef}: {oldPath} changed before it could be deleted. " +
+                        "The save was rolled back; reload the external change before retrying.");
+                    return false;
+                }
+
                 File.Delete(oldPath);
                 return true;
             }

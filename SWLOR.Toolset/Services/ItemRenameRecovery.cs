@@ -18,9 +18,17 @@ namespace SWLOR.Toolset.Services
             string moduleRoot,
             string oldPath,
             string newPath,
-            byte[] newContent)
+            byte[] newContent,
+            byte[] expectedOriginalContentHash)
         {
             ArgumentNullException.ThrowIfNull(newContent);
+            ArgumentNullException.ThrowIfNull(expectedOriginalContentHash);
+            if (expectedOriginalContentHash.Length != SHA256.HashSizeInBytes)
+            {
+                throw new ArgumentException(
+                    "The original item fingerprint must be SHA-256.",
+                    nameof(expectedOriginalContentHash));
+            }
             moduleRoot = Path.GetFullPath(moduleRoot);
             oldPath = Path.GetFullPath(oldPath);
             newPath = Path.GetFullPath(newPath);
@@ -38,6 +46,13 @@ namespace SWLOR.Toolset.Services
             try
             {
                 File.Copy(oldPath, itemBackupPath);
+                var backedUpOriginalHash = SHA256.HashData(File.ReadAllBytes(itemBackupPath));
+                if (!backedUpOriginalHash.AsSpan().SequenceEqual(expectedOriginalContentHash))
+                {
+                    throw new IOException(
+                        $"The original item '{oldPath}' changed while the rename transaction was starting.");
+                }
+
                 var categoryExisted = File.Exists(categoryPath);
                 if (categoryExisted)
                     File.Copy(categoryPath, categoryBackupPath);
@@ -51,6 +66,7 @@ namespace SWLOR.Toolset.Services
                     CategoryPath = categoryPath,
                     CategoryBackupPath = categoryBackupPath,
                     CategoryExisted = categoryExisted,
+                    OriginalContentSha256 = Convert.ToHexString(expectedOriginalContentHash),
                     NewContentSha256 = Convert.ToHexString(SHA256.HashData(newContent))
                 };
                 WriteMarker(markerPath, manifest);
@@ -150,6 +166,16 @@ namespace SWLOR.Toolset.Services
                 throw new InvalidDataException(
                     $"Item rename recovery marker '{markerPath}' has an invalid destination fingerprint.");
             }
+
+            // Markers written before the original fingerprint was introduced remain recoverable.
+            if (manifest.OriginalContentSha256.Length != 0 &&
+                (manifest.OriginalContentSha256.Length != 64 ||
+                 manifest.OriginalContentSha256.Any(character =>
+                     character is not (>= '0' and <= '9' or >= 'A' and <= 'F'))))
+            {
+                throw new InvalidDataException(
+                    $"Item rename recovery marker '{markerPath}' has an invalid original fingerprint.");
+            }
         }
 
         private static void RequirePathUnder(string root, string path, string description)
@@ -176,7 +202,15 @@ namespace SWLOR.Toolset.Services
                         manifest.ItemBackupPath);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(manifest.OldPath)!);
-                File.Copy(manifest.ItemBackupPath, manifest.OldPath, overwrite: true);
+                var preserveExternallyChangedOriginal =
+                    manifest.OriginalContentSha256.Length != 0 &&
+                    File.Exists(manifest.OldPath) &&
+                    !string.Equals(
+                        Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(manifest.OldPath))),
+                        manifest.OriginalContentSha256,
+                        StringComparison.Ordinal);
+                if (!preserveExternallyChangedOriginal)
+                    File.Copy(manifest.ItemBackupPath, manifest.OldPath, overwrite: true);
                 if (!string.Equals(
                         manifest.OldPath,
                         manifest.NewPath,
@@ -205,7 +239,8 @@ namespace SWLOR.Toolset.Services
                 }
                 else
                 {
-                    File.Delete(manifest.CategoryPath);
+                    if (File.Exists(manifest.CategoryPath))
+                        File.Delete(manifest.CategoryPath);
                 }
 
                 File.Delete(markerPath);
@@ -215,7 +250,7 @@ namespace SWLOR.Toolset.Services
             {
                 throw new ItemRenameRecoveryException(
                     $"Could not recover interrupted item rename '{manifest.OldPath}'. " +
-                    $"Recovery evidence remains at '{markerPath}'.",
+                    $"Recovery evidence remains at '{markerPath}': {exception.Message}",
                     exception);
             }
         }
@@ -259,6 +294,20 @@ namespace SWLOR.Toolset.Services
                 DeleteDirectoryBestEffort(_manifest.TransactionRoot);
             }
 
+            public bool OriginalStillMatches()
+            {
+                if (_manifest.OriginalContentSha256.Length == 0 ||
+                    !File.Exists(_manifest.OldPath))
+                {
+                    return false;
+                }
+
+                return string.Equals(
+                    Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(_manifest.OldPath))),
+                    _manifest.OriginalContentSha256,
+                    StringComparison.Ordinal);
+            }
+
             public void Dispose()
             {
                 if (!_completed && File.Exists(_markerPath))
@@ -275,6 +324,7 @@ namespace SWLOR.Toolset.Services
             public string CategoryPath { get; set; } = string.Empty;
             public string CategoryBackupPath { get; set; } = string.Empty;
             public bool CategoryExisted { get; set; }
+            public string OriginalContentSha256 { get; set; } = string.Empty;
             public string NewContentSha256 { get; set; } = string.Empty;
         }
     }

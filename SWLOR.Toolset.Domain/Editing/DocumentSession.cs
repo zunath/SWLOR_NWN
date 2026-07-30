@@ -124,6 +124,35 @@ namespace SWLOR.Toolset.Domain.Editing
         }
 
         /// <summary>
+        /// Captures the content fingerprint established when this session loaded or last saved,
+        /// but only while the file still matches it. Multi-step destructive operations carry this
+        /// immutable baseline through their final commit check instead of trusting an earlier
+        /// external-change check.
+        /// </summary>
+        public bool TryCaptureUnchangedFileContentHash(out byte[] contentHash)
+        {
+            lock (_syncRoot)
+            {
+                contentHash = Array.Empty<byte>();
+                if (_loadedMTimeUtc == null ||
+                    _loadedContentHash == null ||
+                    !File.Exists(FilePath) ||
+                    File.GetLastWriteTimeUtc(FilePath) != _loadedMTimeUtc)
+                {
+                    return false;
+                }
+
+                var currentHash = System.Security.Cryptography.SHA256
+                    .HashData(File.ReadAllBytes(FilePath));
+                if (!currentHash.AsSpan().SequenceEqual(_loadedContentHash))
+                    return false;
+
+                contentHash = _loadedContentHash.ToArray();
+                return true;
+            }
+        }
+
+        /// <summary>
         /// Reloads the file into the existing document object, clears undo/redo history, and
         /// records the reloaded file state as the new external-change baseline.
         /// </summary>

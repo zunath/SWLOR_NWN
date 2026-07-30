@@ -372,6 +372,40 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public async Task AnOriginalChangedDuringRenameIsPreserved()
+        {
+            const string externalGeneration = "someone else's newer original";
+            var document = new ItemDocumentViewModel(
+                Scratch("adren_harness"),
+                "adren_harness",
+                null,
+                new OutputLogService(),
+                new StubPrompts(),
+                refileCategories: (_, _) =>
+                {
+                    // Category refiling occurs after the renamed destination is installed and
+                    // immediately before the original delete. It deterministically exercises the
+                    // race where an external editor saves during that window.
+                    File.WriteAllText(Scratch("adren_harness"), externalGeneration);
+                    return true;
+                });
+            SetResRef(document, "adren_mk9");
+
+            Assert.That(await document.TrySaveAsync(), Is.False);
+            Assert.That(File.ReadAllText(Scratch("adren_harness")), Is.EqualTo(externalGeneration),
+                "rollback must not overwrite or delete the external generation");
+            Assert.That(File.Exists(Scratch("adren_mk9")), Is.False,
+                "the uncommitted renamed destination is rolled back");
+            Assert.That(document.ResRef, Is.EqualTo("adren_harness"));
+            Assert.That(
+                Directory.EnumerateFiles(
+                    _root,
+                    ".swlor-toolset-item-rename-*.pending.json",
+                    SearchOption.TopDirectoryOnly),
+                Is.Empty);
+        }
+
+        [Test]
         public async Task SaveRefusesARenameWhileOtherFilesStillReferenceTheOldResRef()
         {
             var document = new ItemDocumentViewModel(

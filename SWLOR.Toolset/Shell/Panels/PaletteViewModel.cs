@@ -758,27 +758,6 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            var palettePath = CustomPalettePath(workspace.ModuleRoot, SelectedType);
-            if (palettePath != null && File.Exists(palettePath))
-            {
-                try
-                {
-                    if (ItpDocument.Load(palettePath).ContainsResRef(tile.ResRef))
-                    {
-                        StatusMessage =
-                            $"'{tile.Name}' is still referenced by {Path.GetFileName(palettePath)}. " +
-                            "Remove that palette entry before deleting the blueprint.";
-                        return;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    StatusMessage =
-                        $"Could not verify {Path.GetFileName(palettePath)} before deletion: {ex.Message}";
-                    return;
-                }
-            }
-
             // Asked before the delete, not after: removing the file is irreversible from here, and a
             // sidecar that cannot be written would leave the category pointing at a resource that no
             // longer exists with nothing the builder can do about it.
@@ -911,24 +890,6 @@ namespace SWLOR.Toolset.Shell.Panels
                 StatusMessage = $"Deleted {tile.Name}.";
                 _log.AppendLine($"Deleted blueprint '{tile.ResRef}' ({path}).");
             }
-        }
-
-        private static string? CustomPalettePath(string moduleRoot, ResourceType type)
-        {
-            var stem = type switch
-            {
-                ResourceType.Utc => "creaturepalcus",
-                ResourceType.Utd => "doorpalcus",
-                ResourceType.Uti => "itempalcus",
-                ResourceType.Utp => "placeablepalcus",
-                ResourceType.Uts => "soundpalcus",
-                ResourceType.Utm => "storepalcus",
-                ResourceType.Utt => "triggerpalcus",
-                ResourceType.Utw => "waypointpalcus",
-                _ => null
-            };
-
-            return stem == null ? null : Path.Combine(moduleRoot, "itp", stem + ".itp.json");
         }
 
         /// <summary>The label for the type-specific create action, e.g. "New Placeable...".</summary>

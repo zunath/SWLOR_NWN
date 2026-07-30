@@ -4,9 +4,9 @@ namespace SWLOR.Toolset.Workspace
 {
     /// <summary>
     /// Watches a module root and its resource directories for external changes and logs them to
-    /// the Output panel. The packer's transient "packing" directory and the NWN toolset's temp#
-    /// workspaces are excluded from recursive monitoring; packed .mod artifacts and this app's
-    /// atomic-save .tmp files are filtered before reporting.
+    /// the Output panel. The packer's transient "packing" and "palette-refresh" directories and
+    /// the NWN toolset's temp# workspaces are excluded from recursive monitoring; packed .mod
+    /// artifacts and this app's atomic-save .tmp files are filtered before reporting.
     /// </summary>
     public sealed class ModuleFileWatcher : IDisposable
     {
@@ -272,11 +272,7 @@ namespace SWLOR.Toolset.Workspace
                 watcher.Deleted += (_, e) =>
                 {
                     if (!includeSubdirectories)
-                    {
-                        RemoveWatcher(e.FullPath);
-                        // A bare directory event cannot name every resource that vanished with it.
-                        ScheduleRescan();
-                    }
+                        HandleTopLevelDirectoryRemoved(e.FullPath);
 
                     Report($"External file deleted: {e.FullPath}", deleted: true, e.FullPath);
                 };
@@ -284,8 +280,7 @@ namespace SWLOR.Toolset.Workspace
                 {
                     if (!includeSubdirectories)
                     {
-                        RemoveWatcher(e.OldFullPath);
-                        ScheduleRescan();
+                        HandleTopLevelDirectoryRemoved(e.OldFullPath);
                         if (Directory.Exists(e.FullPath))
                             TryAddTopLevelDirectoryWatcher(e.FullPath);
                     }
@@ -304,6 +299,17 @@ namespace SWLOR.Toolset.Workspace
                 _watchers.Add(fullPath, watcher);
                 watcher.EnableRaisingEvents = true;
             }
+        }
+
+        private void HandleTopLevelDirectoryRemoved(string directory)
+        {
+            RemoveWatcher(directory);
+
+            // A bare directory event cannot name every resource that vanished with it. Transient
+            // pack/toolset directories never contained catalog resources, though, and scheduling a
+            // recovery for their routine cleanup would reopen the workspace after every pack.
+            if (!IsIgnoredTopLevelDirectory(directory))
+                ScheduleRescan();
         }
 
         private void TryAddTopLevelDirectoryWatcher(string directory)
@@ -352,6 +358,7 @@ namespace SWLOR.Toolset.Workspace
             var directoryName = Path.GetFileName(
                 directory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
             return string.Equals(directoryName, "packing", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(directoryName, "palette-refresh", StringComparison.OrdinalIgnoreCase) ||
                    IsNwnToolsetTemporaryDirectoryName(directoryName);
         }
 
@@ -381,9 +388,9 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>True for paths the NWN toolset, pack pipeline, or this app churn as part of
-        /// normal work: numbered toolset workspaces, anything under the packer's "packing"
-        /// directory (including the directory itself), packed .mod artifacts, and atomic-save
-        /// temporary/rollback files.</summary>
+        /// normal work: numbered toolset workspaces, anything under the packer's transient
+        /// directories (including the directories themselves), packed .mod artifacts, and
+        /// atomic-save temporary/rollback files.</summary>
         private bool IsBuildNoise(string path)
         {
             if (_moduleRoot != null)
@@ -394,7 +401,7 @@ namespace SWLOR.Toolset.Workspace
                 var topLevelName = firstSeparator < 0
                     ? relativePath
                     : relativePath[..firstSeparator];
-                if (IsNwnToolsetTemporaryDirectoryName(topLevelName))
+                if (IsIgnoredTopLevelDirectory(topLevelName))
                     return true;
             }
 

@@ -207,5 +207,47 @@ namespace SWLOR.Toolset.Tests
                     Directory.Delete(root, recursive: true);
             }
         }
+
+        [AvaloniaTest]
+        [NonParallelizable]
+        public void RemovingTransientPackDirectoriesDoesNotArmARescan()
+        {
+            var root = Path.Combine(Path.GetTempPath(), $"swlor_watch_{Guid.NewGuid():N}");
+            Directory.CreateDirectory(root);
+            var log = new OutputLogService();
+            using var watcher = new ModuleFileWatcher(log);
+
+            try
+            {
+                watcher.Watch(root);
+
+                var method = typeof(ModuleFileWatcher).GetMethod(
+                    "HandleTopLevelDirectoryRemoved",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                method.Should().NotBeNull("the root Deleted/Renamed handlers use this path");
+
+                foreach (var directoryName in new[] { "packing", "palette-refresh", "temp0" })
+                {
+                    method!.Invoke(
+                        watcher,
+                        new object[] { Path.Combine(root, directoryName) });
+                }
+
+                Dispatcher.UIThread.RunJobs();
+
+                var timerField = typeof(ModuleFileWatcher).GetField(
+                    "_rescanDebounceTimer",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                timerField.Should().NotBeNull();
+                timerField!.GetValue(watcher).Should().BeNull(
+                    "routine pack/toolset cleanup must not masquerade as a watcher overflow");
+            }
+            finally
+            {
+                watcher.Stop();
+                if (Directory.Exists(root))
+                    Directory.Delete(root, recursive: true);
+            }
+        }
     }
 }

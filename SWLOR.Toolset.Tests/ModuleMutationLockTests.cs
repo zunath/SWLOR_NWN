@@ -320,16 +320,23 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        /// <summary>Baseline for the test above: with no module-wide operation in the way, deletion still works.</summary>
+        /// <summary>
+        /// Baseline for the tests above: with no module-wide operation in the way, deletion still
+        /// works even though the generated custom palette still describes the established blueprint.
+        /// Packing rebuilds that palette from the surviving blueprint files.
+        /// </summary>
         [Test]
-        public async Task DeletingABlueprintStillWorksWhenTheModuleIsNotLocked()
+        public async Task DeletingABlueprintStillWorksWhenTheGeneratedPaletteContainsItsDescriptor()
         {
             var moduleRoot = Path.Combine(Path.GetTempPath(), $"swlor_palette_delete_{Guid.NewGuid():N}");
-            foreach (var folder in new[] { "are", "utc", "utp" })
+            foreach (var folder in new[] { "are", "utc", "utp", "itp" })
                 Directory.CreateDirectory(Path.Combine(moduleRoot, folder));
 
             var blueprintPath = Path.Combine(moduleRoot, "utp", "testplc.utp.json");
             File.WriteAllText(blueprintPath, "{}");
+            File.WriteAllBytes(
+                Path.Combine(moduleRoot, "itp", "placeablepalcus.itp.json"),
+                SyntheticPalette.Flat(("Test Placeable", "testplc")).ToBytes());
 
             try
             {
@@ -365,7 +372,8 @@ namespace SWLOR.Toolset.Tests
                     ModuleMutationLock.ModuleWrites = previousAmbient;
                 }
 
-                File.Exists(blueprintPath).Should().BeFalse("nothing locked the module, so the delete must go through");
+                File.Exists(blueprintPath).Should().BeFalse(
+                    "the generated palette is refreshed during packing and must not block deletion");
                 palette.StatusMessage.Should().Contain("Deleted");
             }
             finally

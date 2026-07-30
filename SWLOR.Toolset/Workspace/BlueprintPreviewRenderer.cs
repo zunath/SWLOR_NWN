@@ -538,7 +538,8 @@ namespace SWLOR.Toolset.Workspace
         /// attaches their geometry assuming it sits at the part origin, which several SWLOR hak parts
         /// violate with in-file node offsets. The skeleton must never be flattened - its node transforms
         /// *are* the bone positions - which is exactly what the composer's withSupermodelAnims flag
-        /// distinguishes.
+        /// distinguishes. A skinned robe or cloak is the other exception: its bone transforms are the
+        /// inverse-bind data needed to deform the garment into the mannequin's idle pose.
         /// </summary>
         /// <remarks>
         /// Each part's authored texture names are recorded on the way in so
@@ -552,7 +553,8 @@ namespace SWLOR.Toolset.Workspace
             var model = LoadMdl(resRef, withSupermodelAnims);
             if (model != null && !withSupermodelAnims)
             {
-                MdlGeometryFlattener.FlattenNodeTransforms(model);
+                if (!MdlMeshBuilder.ContainsNamedSkinWeights(model))
+                    MdlGeometryFlattener.FlattenNodeTransforms(model);
                 _partTextures.Record(resRef, model);
             }
 

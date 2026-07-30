@@ -1,5 +1,7 @@
+using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.Formats.Mdl;
 using SWLOR.NWN.Formats.Plt;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
@@ -7,6 +9,7 @@ using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
+using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 
@@ -113,6 +116,55 @@ namespace SWLOR.Toolset.Tests.Items
             model!.LayerColorIndices[PltLayers.Skin].Should().Be(0);
             model.LayerColorIndices[PltLayers.Hair].Should().Be(0);
             model.LayerColorIndices[PltLayers.Tattoo1].Should().Be(0);
+        }
+
+        [Test]
+        public void ChimedClothesRobeIsSkinnedIntoTheMannequinsIdlePose()
+        {
+            var renderer = BuildRenderer();
+
+            var model = renderer.BuildModel(ResourceType.Uti, CorpusItem("chimedclothes"));
+
+            model.Should().NotBeNull();
+            var renderedRobe = model!.Meshes
+                .Should().ContainSingle(mesh =>
+                    mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&
+                    mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase))
+                .Subject;
+            renderedRobe.Transform.Should().Be(Matrix4x4.Identity,
+                "a skinned mesh is baked into composed-model space rather than moved as one rigid panel");
+            renderedRobe.PoseFrames.Should().NotBeEmpty("the mannequin has a standing idle");
+            renderedRobe.PoseFrames.Should().OnlyContain(transform => transform == Matrix4x4.Identity);
+            model.Meshes.Where(mesh => mesh.PoseFrames.Count > 0)
+                .Should().OnlyContain(mesh => mesh.PoseFrames.Count == 1,
+                    "rigid body parts and weighted clothing must be held in the same final pose");
+
+            var source = new MdlReader().Parse(File.ReadAllBytes(
+                Path.Combine(RepoRoot, "SWLOR_Haks", "sw_pt_robe", "pmh0_robe010.mdl")));
+            var sourceRobe = source.GetMeshNodes()
+                .OfType<MdlSkinmeshNode>()
+                .Single(mesh => mesh.Name.Equals("Box01", StringComparison.OrdinalIgnoreCase));
+            sourceRobe.Vertices.Should().HaveCount(renderedRobe.VertexCount);
+
+            var bindTransform = MdlMeshBuilder.ComposeNodeTransform(sourceRobe);
+            var maximumDeformation = sourceRobe.Vertices
+                .Select((vertex, index) =>
+                {
+                    var bindPosition = Vector3.Transform(vertex, bindTransform);
+                    var posedPosition = new Vector3(
+                        renderedRobe.Positions[index * 3],
+                        renderedRobe.Positions[index * 3 + 1],
+                        renderedRobe.Positions[index * 3 + 2]);
+                    return Vector3.Distance(bindPosition, posedPosition);
+                })
+                .Max();
+
+            maximumDeformation.Should().BeGreaterThan(0.1f,
+                "the weighted sleeves and coat panels must follow the lowered arm bones instead of " +
+                "remaining detached in their arms-out bind pose");
+            maximumDeformation.Should().BeLessThan(2f, "an idle pose cannot move clothing metres away");
+            renderedRobe.Positions.Should().OnlyContain(value =>
+                float.IsFinite(value) && MathF.Abs(value) < 3f);
         }
 
         private static Domain.Gff.JsonGffStruct CorpusItem(string resRef) =>

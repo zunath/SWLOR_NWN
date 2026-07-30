@@ -202,6 +202,23 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         /// <summary>
+        /// Whether a model contains an ASCII skinmesh with one influence row per vertex.
+        /// </summary>
+        /// <remarks>
+        /// Such a model must retain its authored bone transforms through composition because they
+        /// are the bind pose used by <see cref="Build(MdlModel, IReadOnlyList{IReadOnlyDictionary{string, PosedNode}}?)"/>.
+        /// </remarks>
+        public static bool ContainsNamedSkinWeights(MdlModel model)
+        {
+            ArgumentNullException.ThrowIfNull(model);
+            return EnumerateNodes(model.GeometryRoot)
+                .OfType<MdlSkinmeshNode>()
+                .Any(skin =>
+                    skin.VertexInfluences.Length == skin.Vertices.Length &&
+                    skin.VertexInfluences.Length > 0);
+        }
+
+        /// <summary>
         /// Composes one node's local transform through its parent chain. A supplied pose replaces
         /// the corresponding node's authored local transform by name.
         /// </summary>
@@ -248,6 +265,15 @@ namespace SWLOR.Toolset.Domain.Render
             var emitterNodes = includePlaceableMetadata
                 ? EnumerateNodes(model.GeometryRoot).OfType<MdlEmitterNode>().Where(IsPersistentEmitter).ToList()
                 : new List<MdlEmitterNode>();
+            var renderedPoseFrames = poseFrames;
+            if (poseFrames is { Count: > 0 } && ContainsNamedSkinWeights(model))
+            {
+                // RenderMesh stores one transform per frame, which is enough for rigid segmented
+                // bodies but cannot carry a different vertex buffer for every skin pose. Skin the
+                // garment at the final idle and hold the entire mannequin there so the two never
+                // pass through different poses during the intro.
+                renderedPoseFrames = new[] { poseFrames[^1] };
+            }
 
             var renderMeshes = new List<RenderMesh>();
             foreach (var mesh in EnumerateNodes(model.GeometryRoot).OfType<MdlTrimeshNode>())
@@ -260,7 +286,7 @@ namespace SWLOR.Toolset.Domain.Render
                 if (mesh.IsWalkmesh || !mesh.Render || PlaceholderNames.Contains(mesh.Name))
                     continue;
 
-                var built = BuildMesh(mesh, poseFrames, animationSamples);
+                var built = BuildMesh(mesh, renderedPoseFrames, animationSamples);
                 if (built != null)
                     renderMeshes.Add(built);
             }
@@ -310,18 +336,18 @@ namespace SWLOR.Toolset.Domain.Render
             if (vertexCount == 0 || mesh.Faces.Length == 0)
                 return null;
 
-            var positions = new float[checked(vertexCount * 3)];
-            for (var index = 0; index < vertexCount; index++)
-            {
-                var vertex = FiniteOrZero(mesh.Vertices[index]);
-                positions[index * 3] = vertex.X;
-                positions[index * 3 + 1] = vertex.Y;
-                positions[index * 3 + 2] = vertex.Z;
-            }
-
-            var normals = mesh.Normals.Length == vertexCount
-                ? Flatten(mesh.Normals.Select(FiniteOrZero))
-                : Array.Empty<float>();
+            var skinnedPositions = Array.Empty<Vector3>();
+            var skinnedNormals = Array.Empty<Vector3>();
+            var skinned = mesh is MdlSkinmeshNode skin &&
+                          TrySkinAtRest(skin, poseFrames, out skinnedPositions, out skinnedNormals);
+            var positions = skinned
+                ? Flatten(skinnedPositions)
+                : Flatten(mesh.Vertices.Select(FiniteOrZero));
+            var normals = skinned
+                ? Flatten(skinnedNormals)
+                : mesh.Normals.Length == vertexCount
+                    ? Flatten(mesh.Normals.Select(FiniteOrZero))
+                    : Array.Empty<float>();
             var texCoords = mesh.TextureCoordinates.Length == vertexCount
                 ? Flatten(mesh.TextureCoordinates.Select(FiniteOrZero))
                 : Array.Empty<float>();
@@ -344,14 +370,23 @@ namespace SWLOR.Toolset.Domain.Render
             if (indices.Count == 0)
                 return null;
 
-            var staticTransform = ComposeNodeTransform(mesh);
+            // Skin vertices have already been transformed into composed-model space at the idle's
+            // resting frame. A single matrix cannot express their per-bone deformation, so their
+            // transform stays identity.
+            var staticTransform = skinned ? Matrix4x4.Identity : ComposeNodeTransform(mesh);
             var renderedPoseFrames = poseFrames == null
                 ? Array.Empty<Matrix4x4>()
-                : poseFrames.Select(pose => ComposeNodeTransform(mesh, pose)).ToArray();
+                : skinned
+                    ? Enumerable.Repeat(Matrix4x4.Identity, poseFrames.Count).ToArray()
+                    : poseFrames.Select(pose => ComposeNodeTransform(mesh, pose)).ToArray();
             var animationFrames = new Dictionary<string, IReadOnlyList<Matrix4x4>>(
                 StringComparer.OrdinalIgnoreCase);
             foreach (var (name, samples) in animationSamples)
-                animationFrames[name] = samples.Select(pose => ComposeNodeTransform(mesh, pose)).ToArray();
+            {
+                animationFrames[name] = skinned
+                    ? Enumerable.Repeat(Matrix4x4.Identity, samples.Count).ToArray()
+                    : samples.Select(pose => ComposeNodeTransform(mesh, pose)).ToArray();
+            }
 
             return new RenderMesh
             {
@@ -368,6 +403,153 @@ namespace SWLOR.Toolset.Domain.Render
                 TileFade = mesh.TileFade
             };
         }
+
+        /// <summary>
+        /// Deforms an ASCII skinmesh into the final requested pose.
+        /// </summary>
+        /// <remarks>
+        /// Aurora stores a skin vertex in the skin node's bind space and names the bones that
+        /// influence it. Rendering it as an ordinary trimesh leaves sleeves and coat panels in the
+        /// arms-out bind pose while the segmented mannequin moves into its idle. The usual
+        /// inverse-bind × posed-bone blend places each vertex in the same composed-model space as
+        /// the rigid body parts.
+        /// <para>
+        /// Binary skinmeshes expose index/mapping arrays instead of bone names. Those continue
+        /// through the rigid fallback until their index ordering can be resolved without guessing.
+        /// SWLOR's robe and cloak parts are ASCII and carry the named influence rows used here.
+        /// </para>
+        /// </remarks>
+        private static bool TrySkinAtRest(
+            MdlSkinmeshNode skin,
+            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
+            out Vector3[] positions,
+            out Vector3[] normals)
+        {
+            positions = Array.Empty<Vector3>();
+            normals = Array.Empty<Vector3>();
+
+            if (skin.VertexInfluences.Length != skin.Vertices.Length ||
+                skin.VertexInfluences.Length == 0)
+            {
+                return false;
+            }
+
+            var bones = FindSkinBones(skin);
+            if (bones.Count == 0)
+                return false;
+
+            var pose = poseFrames is { Count: > 0 } ? poseFrames[^1] : null;
+            var meshBind = ComposeNodeTransform(skin);
+            var transforms = new Dictionary<string, Matrix4x4>(StringComparer.OrdinalIgnoreCase);
+            foreach (var (name, bone) in bones)
+            {
+                var bind = ComposeNodeTransform(bone);
+                if (!Matrix4x4.Invert(bind, out var inverseBind))
+                    continue;
+
+                var posed = pose == null ? bind : ComposeNodeTransform(bone, pose);
+                transforms[name] = inverseBind * posed;
+            }
+
+            if (transforms.Count == 0)
+                return false;
+
+            positions = new Vector3[skin.Vertices.Length];
+            var hasNormals = skin.Normals.Length == skin.Vertices.Length;
+            normals = hasNormals ? new Vector3[skin.Normals.Length] : Array.Empty<Vector3>();
+
+            for (var index = 0; index < skin.Vertices.Length; index++)
+            {
+                var bindPosition = Vector3.Transform(FiniteOrZero(skin.Vertices[index]), meshBind);
+                var bindNormal = hasNormals
+                    ? TransformDirection(FiniteOrZero(skin.Normals[index]), meshBind)
+                    : Vector3.Zero;
+                var position = Vector3.Zero;
+                var normal = Vector3.Zero;
+                var totalWeight = 0f;
+
+                foreach (var influence in skin.VertexInfluences[index])
+                {
+                    if (!float.IsFinite(influence.Weight) ||
+                        influence.Weight <= 0f ||
+                        string.IsNullOrWhiteSpace(influence.BoneName) ||
+                        !transforms.TryGetValue(influence.BoneName, out var boneTransform))
+                    {
+                        continue;
+                    }
+
+                    position += Vector3.Transform(bindPosition, boneTransform) * influence.Weight;
+                    if (hasNormals)
+                        normal += TransformDirection(bindNormal, boneTransform) * influence.Weight;
+                    totalWeight += influence.Weight;
+                }
+
+                if (totalWeight > 0f)
+                {
+                    position /= totalWeight;
+                    if (hasNormals)
+                        normal /= totalWeight;
+                }
+                else
+                {
+                    position = bindPosition;
+                    normal = bindNormal;
+                }
+
+                positions[index] = FiniteOrZero(position);
+                if (hasNormals)
+                    normals[index] = NormalizeOrZero(normal);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Finds the nearest ancestor subtree containing every named influence. In a composed body
+        /// this selects the robe's own bind skeleton instead of an identically named bone on the
+        /// mannequin beside it.
+        /// </summary>
+        private static IReadOnlyDictionary<string, MdlNode> FindSkinBones(MdlSkinmeshNode skin)
+        {
+            var required = skin.VertexInfluences
+                .SelectMany(row => row)
+                .Where(influence =>
+                    influence.Weight > 0f &&
+                    !string.IsNullOrWhiteSpace(influence.BoneName))
+                .Select(influence => influence.BoneName)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            if (required.Count == 0)
+                return new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase);
+
+            for (var scope = skin.Parent; scope != null; scope = scope.Parent)
+            {
+                var indexed = IndexNodes(scope);
+                if (required.All(indexed.ContainsKey))
+                    return indexed;
+            }
+
+            return new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static IReadOnlyDictionary<string, MdlNode> IndexNodes(MdlNode root)
+        {
+            var result = new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase);
+            foreach (var node in EnumerateNodes(root))
+            {
+                if (!string.IsNullOrWhiteSpace(node.Name))
+                    result.TryAdd(node.Name, node);
+            }
+
+            return result;
+        }
+
+        private static Vector3 TransformDirection(Vector3 value, Matrix4x4 transform) =>
+            FiniteOrZero(Vector3.TransformNormal(value, transform));
+
+        private static Vector3 NormalizeOrZero(Vector3 value) =>
+            IsFinite(value) && value.LengthSquared() > 0f
+                ? Vector3.Normalize(value)
+                : Vector3.Zero;
 
         /// <summary>
         /// The node's diffuse colour, preserved verbatim - including explicit black.

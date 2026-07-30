@@ -98,8 +98,8 @@ namespace SWLOR.Toolset.Editors.Items
             Cloth2 = CreateDye("Cloth 2", ItemAppearanceFieldNames.Cloth2Color, ArmorDyeSwatchService.DyeMaterial.Cloth);
             Leather1 = CreateDye("Leather 1", ItemAppearanceFieldNames.Leather1Color, ArmorDyeSwatchService.DyeMaterial.Leather);
             Leather2 = CreateDye("Leather 2", ItemAppearanceFieldNames.Leather2Color, ArmorDyeSwatchService.DyeMaterial.Leather);
-            Metal1 = CreateDye("Metal 1", ItemAppearanceFieldNames.Metal1Color, ArmorDyeSwatchService.DyeMaterial.Metal);
-            Metal2 = CreateDye("Metal 2", ItemAppearanceFieldNames.Metal2Color, ArmorDyeSwatchService.DyeMaterial.Metal);
+            Metal1 = CreateDye("Metal 1", ItemAppearanceFieldNames.Metal1Color, ArmorDyeSwatchService.DyeMaterial.Metal1);
+            Metal2 = CreateDye("Metal 2", ItemAppearanceFieldNames.Metal2Color, ArmorDyeSwatchService.DyeMaterial.Metal2);
 
             _allCells.AddRange(new[]
             {

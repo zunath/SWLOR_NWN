@@ -51,7 +51,7 @@ namespace SWLOR.Toolset.Domain.Render
             "pal_skin01",
             "pal_hair01",
             "pal_armor01",
-            "pal_armor01",
+            "pal_armor02",
             "pal_cloth01",
             "pal_cloth01",
             "pal_leath01",

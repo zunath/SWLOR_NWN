@@ -173,12 +173,13 @@ namespace SWLOR.Toolset.Tests
         [TestCase(PltLayers.Cloth2, "pal_cloth01")]
         [TestCase(PltLayers.Leather1, "pal_leath01")]
         [TestCase(PltLayers.Leather2, "pal_leath01")]
-        public void PltClothAndLeatherLayersUseTheirOwnPalettesNotArmor(int layer, string expectedPalette)
+        [TestCase(PltLayers.Metal1, "pal_armor01")]
+        [TestCase(PltLayers.Metal2, "pal_armor02")]
+        public void EveryPltMaterialLayerUsesItsAuroraPalette(int layer, string expectedPalette)
         {
-            // pal_armor01 must only back Metal1/Metal2. Placing a palette resource only under the
-            // expected cloth/leather name (never pal_armor01) proves the layer-to-palette mapping:
-            // an old mapping that pointed Cloth/Leather at pal_armor01 would miss this fixture file
-            // and fall back to grayscale instead of resolving the authored swatch color.
+            // Only the expected palette is present. A wrong layer-to-palette mapping therefore
+            // falls back to grayscale instead of resolving this authored swatch color. In
+            // particular, Aurora gives Metal2 its own pal_armor02 rather than pal_armor01.
             File.WriteAllBytes(
                 Path.Combine(_resourceDirectory, expectedPalette + ".tga"),
                 SolidColorTga(10, 20, 30));

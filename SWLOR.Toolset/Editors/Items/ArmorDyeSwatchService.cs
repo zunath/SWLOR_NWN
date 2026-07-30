@@ -4,15 +4,14 @@ using SWLOR.Toolset.Domain.Render;
 namespace SWLOR.Toolset.Editors.Items
 {
     /// <summary>
-    /// Decodes NWN's three dye-palette textures and samples the color a given dye index (0-175)
+    /// Decodes NWN's dye-palette textures and samples the color a given dye index (0-175)
     /// renders as, for the Appearance tab's armor Colors panel swatches.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Per the Aurora item format, each material shares ONE palette texture between its two dye
-    /// slots: Metal1/Metal2 both read <c>pal_armor01</c>, Cloth1/Cloth2 read <c>pal_cloth01</c>,
-    /// Leather1/Leather2 read <c>pal_leath01</c> (the "1"/"2" split is which PLT layer uses the
-    /// looked-up index, not a separate file).
+    /// Per the Aurora PLT layer mapping, Cloth1/Cloth2 share <c>pal_cloth01</c> and
+    /// Leather1/Leather2 share <c>pal_leath01</c>. The metal channels are the exception:
+    /// Metal1 reads <c>pal_armor01</c> while Metal2 reads <c>pal_armor02</c>.
     /// </para>
     /// <para>
     /// Sampling mirrors <see cref="TextureLoader.LoadPlt"/>'s own palette math exactly - row is the
@@ -29,12 +28,13 @@ namespace SWLOR.Toolset.Editors.Items
     /// </remarks>
     public sealed class ArmorDyeSwatchService
     {
-        /// <summary>Which of the three shared palette textures a dye channel reads.</summary>
+        /// <summary>Which palette texture a dye channel reads.</summary>
         public enum DyeMaterial
         {
             Cloth,
             Leather,
-            Metal
+            Metal1,
+            Metal2
         }
 
         /// <summary>Grayscale intensity sampled to stand in for a palette row's hue (mid-tone).</summary>
@@ -106,7 +106,8 @@ namespace SWLOR.Toolset.Editors.Items
         {
             DyeMaterial.Cloth => "pal_cloth01",
             DyeMaterial.Leather => "pal_leath01",
-            DyeMaterial.Metal => "pal_armor01",
+            DyeMaterial.Metal1 => "pal_armor01",
+            DyeMaterial.Metal2 => "pal_armor02",
             _ => throw new ArgumentOutOfRangeException(nameof(material))
         };
 

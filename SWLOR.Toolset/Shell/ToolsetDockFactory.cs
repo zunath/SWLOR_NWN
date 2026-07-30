@@ -240,7 +240,7 @@ namespace SWLOR.Toolset.Shell
             SetFocusedDockable(_documentDock, document);
         }
 
-        /// <summary>Brings a tool panel to the front - what the View and Tools menus act on.</summary>
+        /// <summary>Brings a tool panel to the front.</summary>
         public void Focus(IDockable dockable)
         {
             SetActiveDockable(dockable);

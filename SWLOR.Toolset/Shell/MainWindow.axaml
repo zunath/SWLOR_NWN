@@ -27,19 +27,12 @@
         <MenuItem Header="_Undo" Command="{Binding UndoCommand}" InputGesture="Ctrl+Z" />
         <MenuItem Header="_Redo" Command="{Binding RedoCommand}" InputGesture="Ctrl+Y" />
       </MenuItem>
-      <MenuItem Header="_View">
-        <MenuItem Header="Module Contents" Command="{Binding FocusExplorerCommand}" />
-        <MenuItem Header="Area Contents" Command="{Binding FocusAreaContentsCommand}" />
-        <MenuItem Header="Palette" Command="{Binding FocusPaletteCommand}" />
-        <MenuItem Header="Output" Command="{Binding FocusOutputCommand}" />
-      </MenuItem>
       <MenuItem Header="_Build">
         <!-- Compiling ONE script is not here: it is an act on the document in front of you, so it
              lives on the script editor itself (a Compile button plus Ctrl+B). What remains is genuinely
              module-wide, which is what this menu is for. -->
         <MenuItem Header="Build _All Scripts" Command="{Binding BuildAllScriptsCommand}"
                   InputGesture="Ctrl+Shift+B" />
-        <MenuItem Header="Check Script _Staleness" Command="{Binding CheckScriptStalenessCommand}" />
         <Separator />
         <MenuItem Header="_Pack Module" Command="{Binding PackModuleCommand}" />
       </MenuItem>
@@ -49,10 +42,6 @@
         <MenuItem Header="Run Validation" Command="{Binding FocusValidationCommand}" />
         <Separator />
         <MenuItem Header="Build _Preview Cache" Command="{Binding BuildPreviewCacheCommand}" />
-        <MenuItem Header="Rebuild Preview Cache from Scratch" Command="{Binding RebuildPreviewCacheCommand}" />
-      </MenuItem>
-      <MenuItem Header="_Help">
-        <MenuItem Header="About SWLOR Toolset" Command="{Binding AboutCommand}" />
       </MenuItem>
     </Menu>
     <!-- Quick-access bar: the handful of actions a builder reaches for constantly, so they are one

@@ -319,22 +319,6 @@ namespace SWLOR.Toolset.Shell
         private string _windowTitle = "SWLOR Toolset";
 
         [RelayCommand]
-        private void FocusExplorer() => _factory.Focus(_explorer);
-
-        [RelayCommand]
-        private void FocusAreaContents()
-        {
-            if (_areaContents != null)
-                _factory.Focus(_areaContents);
-        }
-
-        [RelayCommand]
-        private void FocusPalette() => _factory.Focus(_palette);
-
-        [RelayCommand]
-        private void FocusOutput() => _factory.Focus(_output);
-
-        [RelayCommand]
         private void FocusValidation() => _factory.Focus(_validation);
 
         /// <summary>
@@ -445,37 +429,6 @@ namespace SWLOR.Toolset.Shell
         }
 
         /// <summary>
-        /// Reports compiled scripts that would ship stale. Deliberately a Validation result rather
-        /// than a Problem: the code is fine, the build artifact is not.
-        /// </summary>
-        [RelayCommand]
-        private void CheckScriptStaleness()
-        {
-            if (_compileService == null)
-                return;
-
-            var stale = _compileService.ScanStale();
-            _factory.Focus(_validation);
-
-            if (stale.Count == 0)
-            {
-                _log.AppendLine("All compiled scripts are up to date.");
-                StatusText = "All compiled scripts are up to date.";
-                return;
-            }
-
-            foreach (var entry in stale)
-                _log.AppendLine($"  {entry.Describe()}");
-
-            _log.AppendLine($"{stale.Count} script(s) would ship stale. Build ▸ Build All Scripts fixes this.");
-            StatusText = $"{stale.Count} script(s) need recompiling.";
-        }
-
-        [RelayCommand]
-        private void About() =>
-            StatusText = "SWLOR Toolset - an Aurora replacement for area, instance and blueprint editing.";
-
-        /// <summary>
         /// True while previews are being rendered. Deliberately not part of
         /// <see cref="IsModuleMutationLocked"/>: the build only reads blueprints, so the builder keeps
         /// working through it - it just must not be started twice at once.
@@ -484,24 +437,20 @@ namespace SWLOR.Toolset.Shell
         private bool _isBuildingPreviewCache;
 
         [RelayCommand(CanExecute = nameof(CanBuildPreviewCache))]
-        private Task BuildPreviewCacheAsync() => RunPreviewCacheBuildAsync(fromScratch: false);
-
-        [RelayCommand(CanExecute = nameof(CanBuildPreviewCache))]
-        private Task RebuildPreviewCacheAsync() => RunPreviewCacheBuildAsync(fromScratch: true);
+        private Task BuildPreviewCacheAsync() => RunPreviewCacheBuildAsync();
 
         private bool CanBuildPreviewCache() => !IsBuildingPreviewCache && _thumbnails.IsAvailable;
 
         partial void OnIsBuildingPreviewCacheChanged(bool value)
         {
             BuildPreviewCacheCommand.NotifyCanExecuteChanged();
-            RebuildPreviewCacheCommand.NotifyCanExecuteChanged();
         }
 
         /// <summary>
         /// Renders every missing palette preview and stores it on disk. Runs in the background with
         /// progress in the Output pane, the same way the catalog build reports itself.
         /// </summary>
-        private async Task RunPreviewCacheBuildAsync(bool fromScratch)
+        private async Task RunPreviewCacheBuildAsync()
         {
             if (IsBuildingPreviewCache)
                 return;
@@ -515,12 +464,6 @@ namespace SWLOR.Toolset.Shell
             IsBuildingPreviewCache = true;
             try
             {
-                if (fromScratch)
-                {
-                    var removed = await Task.Run(_thumbnails.ClearCache).ConfigureAwait(true);
-                    _log.AppendLine($"Preview cache: cleared {removed} cached file(s).");
-                }
-
                 var pruned = await Task.Run(_thumbnails.PruneSupersededCaches).ConfigureAwait(true);
                 if (pruned > 0)
                     _log.AppendLine($"Preview cache: removed {pruned} folder(s) from an older render version.");
@@ -816,7 +759,7 @@ namespace SWLOR.Toolset.Shell
 
                     // Previews last: it is the longest job and the only one the builder can work
                     // through, so it starts once everything they might click is already usable.
-                    _ = RunPreviewCacheBuildAsync(fromScratch: false);
+                    _ = RunPreviewCacheBuildAsync();
                 });
             });
         }

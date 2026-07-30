@@ -73,8 +73,16 @@ namespace SWLOR.Game.Server.Service
         /// <param name="printToConsole">If true, the details will be printed to the console.</param>
         public static void Write(LogGroup group, string details, bool printToConsole = false)
         {
+            // Non-bootstrapped contexts (unit tests, tools) exercise service code
+            // without Log.Register() ever running. Fall back to the console so the
+            // message is never lost and the caller never throws.
+            if (!_logGroups.TryGetValue(group, out var logDetail))
+            {
+                Console.WriteLine(details);
+                return;
+            }
+
             var settings = ApplicationSettings.Get();
-            var logDetail = _logGroups[group];
 
             // If the log group isn't configured for this environment, skip it.
             if (logDetail.Environment != ServerEnvironmentType.All &&
@@ -95,8 +103,13 @@ namespace SWLOR.Game.Server.Service
 
         public static void WriteStructured(LogGroup group, string messageTemplate, params object[] propertyValues)
         {
+            if (!_logGroups.TryGetValue(group, out var logDetail))
+            {
+                Console.WriteLine(messageTemplate);
+                return;
+            }
+
             var settings = ApplicationSettings.Get();
-            var logDetail = _logGroups[group];
 
             if (logDetail.Environment != ServerEnvironmentType.All &&
                 !logDetail.Environment.HasFlag(settings.ServerEnvironment))

@@ -382,7 +382,7 @@ public class AIModelTests
         adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnSpawnIn, \"x2_def_spawn\")");
         adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnSpellCastAt, \"x2_def_spellcast\")");
         adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnUserDefined, \"x2_def_userdef\")");
-        adjustBody.Should().Contain("ExecuteScript(\"x2_def_spawn\", spawn)");
+        adjustBody.Should().Contain("ExecuteScript(ScriptName.DefaultCreatureSpawn, spawn)");
         spawnSource.Should().Contain("Stat.LoadNPCStats(deserialized);");
         spawnSource.Should().Contain("if (spawnObject.Type == ObjectType.Creature)\n                {\n                    Stat.LoadNPCStats(spawn);\n                }");
         attackedScript.Should().Contain("ExecuteScript(\"crea_attack_bef\", OBJECT_SELF)");

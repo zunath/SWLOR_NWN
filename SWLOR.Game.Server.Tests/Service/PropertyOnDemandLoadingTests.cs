@@ -554,7 +554,8 @@ public class PropertyOnDemandLoadingTests
 
         registerBody.Should().Contain("RemoveLandingPointByPropertyId(propertyId);");
         registerBody.Should().Contain("if (_dockPoints[planet].ContainsKey(dockPointId))");
-        registerBody.Should().Contain("DeleteLocalString(waypoint, \"STARSHIP_DOCKPOINT_ID\");");
+        registerBody.Should().Contain("DeleteLocalString(waypoint, StarshipDockPointIdVariable);");
+        spaceSource.Should().Contain("StarshipDockPointIdVariable = \"STARSHIP_DOCKPOINT_ID\"");
         removeBody.Should().Contain("x.Value.PropertyId == propertyId");
         retrieveBody.Should().Contain("if (dbInterior == null)");
         retrieveBody.Should().Contain("Space.RemoveLandingPointByPropertyId(interiorId);");

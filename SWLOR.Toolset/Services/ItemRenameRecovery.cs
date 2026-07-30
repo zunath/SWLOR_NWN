@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Security.Cryptography;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Categories;
 
 namespace SWLOR.Toolset.Services
@@ -34,6 +35,7 @@ namespace SWLOR.Toolset.Services
             newPath = Path.GetFullPath(newPath);
             RequirePathUnder(moduleRoot, oldPath, "original item");
             RequirePathUnder(moduleRoot, newPath, "renamed item");
+            var moduleWriteLock = ModuleWriteLock.Acquire(moduleRoot);
 
             var transactionName = TransactionPrefix + Guid.NewGuid().ToString("N");
             var transactionRoot = Path.Combine(moduleRoot, transactionName);
@@ -74,11 +76,12 @@ namespace SWLOR.Toolset.Services
                     NewContentSha256 = Convert.ToHexString(SHA256.HashData(newContent))
                 };
                 WriteMarker(markerPath, manifest);
-                return new Transaction(moduleRoot, markerPath, manifest);
+                return new Transaction(moduleRoot, markerPath, manifest, moduleWriteLock);
             }
             catch
             {
                 DeleteDirectoryBestEffort(transactionRoot);
+                moduleWriteLock.Dispose();
                 throw;
             }
         }
@@ -89,6 +92,7 @@ namespace SWLOR.Toolset.Services
             if (!Directory.Exists(moduleRoot))
                 return Array.Empty<string>();
 
+            using var moduleWriteLock = ModuleWriteLock.Acquire(moduleRoot);
             var recovered = new List<string>();
             foreach (var markerPath in Directory.EnumerateFiles(
                          moduleRoot,
@@ -350,13 +354,19 @@ namespace SWLOR.Toolset.Services
             private readonly string _moduleRoot;
             private readonly string _markerPath;
             private readonly Manifest _manifest;
+            private readonly ModuleWriteLock _moduleWriteLock;
             private bool _completed;
 
-            internal Transaction(string moduleRoot, string markerPath, Manifest manifest)
+            internal Transaction(
+                string moduleRoot,
+                string markerPath,
+                Manifest manifest,
+                ModuleWriteLock moduleWriteLock)
             {
                 _moduleRoot = moduleRoot;
                 _markerPath = markerPath;
                 _manifest = manifest;
+                _moduleWriteLock = moduleWriteLock;
             }
 
             public void Complete()
@@ -433,8 +443,15 @@ namespace SWLOR.Toolset.Services
 
             public void Dispose()
             {
-                if (!_completed && File.Exists(_markerPath))
-                    RollBack(_markerPath, _manifest);
+                try
+                {
+                    if (!_completed && File.Exists(_markerPath))
+                        RollBack(_markerPath, _manifest);
+                }
+                finally
+                {
+                    _moduleWriteLock.Dispose();
+                }
             }
         }
 

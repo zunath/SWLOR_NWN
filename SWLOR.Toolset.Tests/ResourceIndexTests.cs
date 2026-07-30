@@ -81,6 +81,36 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BaseGameExistenceCheckDoesNotTreatHakOnlyScriptsAsCompilerInputs()
+        {
+            var tempRoot = Path.Combine(
+                Path.GetTempPath(),
+                "SWLOR.Toolset.Tests",
+                Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempRoot);
+
+            try
+            {
+                File.WriteAllText(Path.Combine(tempRoot, "hak_header.nss"), "int Helper();");
+                var index = new ResourceIndex(
+                    baseLayer: null,
+                    hakLayersInOrder: new[]
+                    {
+                        new ResourceIndex.HakLayer("fixture", tempRoot)
+                    });
+                var identity = ResourceIdentity.FromFileName("hak_header.nss");
+
+                index.TryLookup(identity, out _).Should().BeTrue();
+                index.ContainsBaseGameResource(identity).Should().BeFalse(
+                    "the compiler receives the NWN KEY/BIF root, not the module's HAK directories");
+            }
+            finally
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
         public void TryLookup_WhenResourceOnlyExistsInEarlierLayer_StillResolves()
         {
             var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));

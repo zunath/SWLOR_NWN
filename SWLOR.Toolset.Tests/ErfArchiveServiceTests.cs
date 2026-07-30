@@ -698,8 +698,11 @@ namespace SWLOR.Toolset.Tests
 
             var creatureInstance = SyntheticGit.Instance(
                 ("TemplateResRef", GffFieldType.ResRef, sharedResRef));
+            var itemInstance = SyntheticGit.Instance(
+                ("TemplateResRef", GffFieldType.ResRef, sharedResRef));
             var git = new JsonGffDocument("GIT ", new JsonGffStruct());
             git.Root.Add("Creature List", SyntheticGit.ListOf(creatureInstance));
+            git.Root.Add("List", SyntheticGit.ListOf(itemInstance));
             File.WriteAllBytes(
                 Path.Combine(_firstModule, "git", areaResRef + ".git.json"),
                 git.ToBytes());
@@ -735,7 +738,7 @@ namespace SWLOR.Toolset.Tests
 
             dependencies.Select(dependency => dependency.FileName)
                 .Should().Contain($"{sharedResRef}.utc")
-                .And.NotContain($"{sharedResRef}.uti");
+                .And.Contain($"{sharedResRef}.uti");
         }
 
         [Test]
@@ -1053,8 +1056,11 @@ namespace SWLOR.Toolset.Tests
                 ("TemplateResRef", GffFieldType.ResRef, "shared"),
                 ("Conversation", GffFieldType.ResRef, "shared"),
                 ("ScriptSpawn", GffFieldType.ResRef, "shared"));
+            var placedItem = SyntheticGit.Instance(
+                ("TemplateResRef", GffFieldType.ResRef, "shared"));
             var git = new JsonGffDocument("GIT ", new JsonGffStruct());
             git.Root.Add("Creature List", SyntheticGit.ListOf(creature));
+            git.Root.Add("List", SyntheticGit.ListOf(placedItem));
             File.WriteAllBytes(gitSource, git.ToBytes());
 
             ErfImportChoice Choice(
@@ -1101,6 +1107,8 @@ namespace SWLOR.Toolset.Tests
             importedCreature.Get("Conversation").GetString().Should().Be("renamed_dialog");
             importedCreature.Get("ScriptSpawn").GetString().Should().Be("renamed_script");
             importedCreature.Get("TemplateResRef").GetString().Should().NotBe("renamed_item");
+            importedGit.Items.Should().ContainSingle()
+                .Which.Get("TemplateResRef").GetString().Should().Be("renamed_item");
             var importedScript = File.ReadAllText(
                 Path.Combine(_secondModule, "nss", "renamed_script.nss"));
             importedScript.Should().Contain("CreateItemOnObject(\"renamed_item\"");

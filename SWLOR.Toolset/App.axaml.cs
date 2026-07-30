@@ -188,10 +188,10 @@ namespace SWLOR.Toolset
         /// <summary>
         /// Registers every service, lookup, and view model the shell needs. Game-data services
         /// (2DA/TLK/resource index/lookups/game-code index) are all rooted at the repository
-        /// found by walking up from the executable's directory; if that repository layout can't be
-        /// found (e.g. the exe was copied out on its own), those registrations are simply skipped -
-        /// consumers declare them as optional constructor parameters and get null instead of a
-        /// missing-service exception.
+        /// containing the configured module. The executable's repository remains a fallback for a
+        /// missing or invalid module setting. If neither layout can be found, those registrations
+        /// are simply skipped - consumers declare them as optional constructor parameters and get
+        /// null instead of a missing-service exception.
         /// </summary>
         private static void ConfigureServices(IServiceCollection services, ToolsetSettings settings)
         {
@@ -208,7 +208,7 @@ namespace SWLOR.Toolset
             services.AddSingleton<ModuleFileWatcher>();
             services.AddSingleton<Workspace.PlaceableIndexService>();
 
-            var repoRoot = AutoDetectRepoRoot();
+            var repoRoot = ResolveRepoRoot(settings);
             RegisterGameDataServices(services, repoRoot, settings);
 
             services.AddSingleton(sp => new Editors.LookupOptionProvider(
@@ -520,10 +520,14 @@ namespace SWLOR.Toolset
         }
 
         /// <summary>
-        /// Walks up from the executable's directory looking for the repo root (matching the
-        /// pattern used by ResourceIndexTests/LookupServiceTests): both "Build/hakbuilder.json" and
-        /// "SWLOR_Haks" must be present. Returns null (never throws) if not found.
+        /// Resolves game data beside the configured module first. This matters when a published
+        /// toolset executable opens a module in another checkout: its 2DA, TLK, haks, and game-code
+        /// index must all come from the module's repository rather than the executable's checkout.
+        /// The executable directory remains the compatibility fallback.
         /// </summary>
+        private static string? ResolveRepoRoot(ToolsetSettings settings) =>
+            FindRepoRoot(settings.ModuleRoot) ?? FindRepoRoot(AppContext.BaseDirectory);
+
         /// <summary>
         /// Queues a log line naming the NWN:EE install that was found, or listing where it looked when
         /// there was none. Deferred onto the log service rather than written here, because logging is a
@@ -541,11 +545,18 @@ namespace SWLOR.Toolset
             services.AddSingleton(new StartupNotice(message));
         }
 
-        private static string? AutoDetectRepoRoot()
+        private static string? FindRepoRoot(string? startPath)
         {
+            if (string.IsNullOrWhiteSpace(startPath))
+                return null;
+
             try
             {
-                var current = new DirectoryInfo(AppContext.BaseDirectory);
+                var fullStartPath = Path.GetFullPath(startPath);
+                var current = new DirectoryInfo(
+                    File.Exists(fullStartPath)
+                        ? Path.GetDirectoryName(fullStartPath)!
+                        : fullStartPath);
                 while (current != null)
                 {
                     var hakBuilderConfig = Path.Combine(current.FullName, "Build", "hakbuilder.json");

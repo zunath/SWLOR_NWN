@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SWLOR.NWN.Formats.Common;
 
 namespace SWLOR.CLI
 {
@@ -28,6 +29,7 @@ namespace SWLOR.CLI
 
         public void PackModule(string filePath, bool noPrompt = false)
         {
+            using var moduleWriteLock = ModuleWriteLock.Acquire(Environment.CurrentDirectory);
             var sw = new Stopwatch();
             Exception packException = null;
             sw.Start();
@@ -139,6 +141,7 @@ namespace SWLOR.CLI
 
         public void UnpackModule(string filePath, bool noPrompt = false)
         {
+            using var moduleWriteLock = ModuleWriteLock.Acquire(Environment.CurrentDirectory);
             var sw = new Stopwatch();
             sw.Start();
             var moduleFileName = Path.GetFileName(filePath);

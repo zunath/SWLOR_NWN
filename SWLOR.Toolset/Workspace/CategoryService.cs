@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -296,6 +297,9 @@ namespace SWLOR.Toolset.Workspace
 
             try
             {
+                using var moduleWriteLock = _workspaceContext.Workspace is { } workspace
+                    ? ModuleWriteLock.Acquire(workspace.ModuleRoot)
+                    : ModuleWriteLock.AcquireForResourcePath(catalog.FilePath!);
                 catalog.MarkDirty();
                 catalog.Save();
                 _sidecarStateKnown = true;

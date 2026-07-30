@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Domain.Script.Symbols;
 using SWLOR.Toolset.Domain.Script.Syntax;
@@ -189,6 +190,8 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            using var moduleWriteLock =
+                ModuleWriteLock.AcquireForResourcePath(_session.FilePath);
             // Compiling reads the file from disk, so unsaved work would silently not be built.
             if (!await TrySaveAsync(compileOnSave: false).ConfigureAwait(true))
             {
@@ -680,6 +683,8 @@ namespace SWLOR.Toolset.Editors
                     }
                 }
 
+                using var moduleWriteLock =
+                    ModuleWriteLock.AcquireForResourcePath(_session.FilePath);
                 SaveService.WriteAtomic(_session.FilePath, _session.ToBytes(_text));
                 _session.MarkSaved(_text);
                 AfterHistoryChange();

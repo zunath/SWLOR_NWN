@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
@@ -494,6 +495,7 @@ namespace SWLOR.Toolset.Services
             CancellationToken cancellationToken)
         {
             var workspace = RequireWorkspace();
+            using var moduleWriteLock = ModuleWriteLock.Acquire(workspace.ModuleRoot);
 
             var normalizedChoices = NormalizeImportChoices(choices);
             var active = normalizedChoices
@@ -755,6 +757,7 @@ namespace SWLOR.Toolset.Services
             if (!Directory.Exists(moduleRoot))
                 return Array.Empty<string>();
 
+            using var moduleWriteLock = ModuleWriteLock.Acquire(moduleRoot);
             var recovered = new List<string>();
             foreach (var manifestPath in Directory.EnumerateFiles(
                          moduleRoot,
@@ -1417,6 +1420,7 @@ namespace SWLOR.Toolset.Services
                     "creature list" => "utc",
                     "door list" => "utd",
                     "encounter list" => "ute",
+                    "list" => "uti",
                     "placeable list" => "utp",
                     "soundlist" => "uts",
                     "triggerlist" => "utt",

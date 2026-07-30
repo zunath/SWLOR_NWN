@@ -506,6 +506,32 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void IncludesResolvedByTheCompilerGameLayersDoNotBlockPacking()
+        {
+            var old = DateTime.UtcNow.AddHours(-2);
+            Source(
+                "entry",
+                "#include \"local_inc\"\nvoid main() { BaseHelper(); }",
+                old);
+            Source(
+                "local_inc",
+                "#include \"nw_i0_generic\"\nint BaseHelper() { return 1; }",
+                old);
+            Compiled("entry", DateTime.UtcNow);
+
+            var stale = new ScriptStalenessScanner(
+                _nss,
+                _ncs,
+                include => include.Equals(
+                    "nw_i0_generic",
+                    StringComparison.OrdinalIgnoreCase)).Scan();
+
+            stale.Should().BeEmpty(
+                "the compiler resolves engine headers through its staged and KEY/BIF resource layers");
+            ScriptPackReadiness.Evaluate(stale).Should().BeNull();
+        }
+
+        [Test]
         public void StartingConditional_CountsAsAnEntryPoint()
         {
             Source("cond", "int StartingConditional() { return TRUE; }");

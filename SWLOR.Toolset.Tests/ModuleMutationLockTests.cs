@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
@@ -517,6 +518,52 @@ namespace SWLOR.Toolset.Tests
             {
                 ModuleMutationLock.ModuleWrites = previous;
                 Directory.Delete(directory, recursive: true);
+            }
+        }
+
+        [Test]
+        public async Task AnIndependentWriterWaitsForTheCrossProcessLease()
+        {
+            var moduleRoot = Path.Combine(
+                Path.GetTempPath(),
+                $"swlor_cross_process_lock_{Guid.NewGuid():N}");
+            var resourceDirectory = Path.Combine(moduleRoot, "utc");
+            Directory.CreateDirectory(resourceDirectory);
+            var path = Path.Combine(resourceDirectory, "guard.utc.json");
+            File.WriteAllText(path, "{\"original\":true}");
+
+            try
+            {
+                var heldLock = ModuleWriteLock.Acquire(moduleRoot);
+                try
+                {
+                    Task attemptedWrite;
+                    using (ExecutionContext.SuppressFlow())
+                    {
+                        attemptedWrite = Task.Run(() => SaveService.WriteAtomic(
+                            path,
+                            System.Text.Encoding.UTF8.GetBytes("{\"raced\":true}")));
+                    }
+
+                    await Task.Delay(100);
+                    attemptedWrite.IsCompleted.Should().BeFalse(
+                        "the independent writer must wait until the module-wide operation finishes");
+                    File.ReadAllText(path).Should().Be("{\"original\":true}");
+
+                    heldLock.Dispose();
+                    await attemptedWrite;
+                }
+                finally
+                {
+                    heldLock.Dispose();
+                }
+
+                File.ReadAllText(path).Should().Be("{\"raced\":true}");
+            }
+            finally
+            {
+                if (Directory.Exists(moduleRoot))
+                    Directory.Delete(moduleRoot, recursive: true);
             }
         }
 

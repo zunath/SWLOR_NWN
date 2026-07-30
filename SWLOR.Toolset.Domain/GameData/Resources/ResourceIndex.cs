@@ -215,6 +215,17 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         }
 
         /// <summary>
+        /// True when the NWN installation's KEY/BIF layer contains the resource, irrespective of
+        /// any HAK override. Used by consumers such as the script compiler that receive the game
+        /// root but do not mount the module's HAK list.
+        /// </summary>
+        public bool ContainsBaseGameResource(ResourceIdentity identity)
+        {
+            EnsureInitialized();
+            return _baseLayer?.Contains(identity) == true;
+        }
+
+        /// <summary>
         /// Enumerates every visible resource identity of one type across the base game and all hak
         /// layers, deduplicated by resref/type. This exposes names without extracting resource
         /// bytes and retains <see cref="TryLookup"/> as the authority for precedence and loading.

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Workspace;
 
@@ -70,6 +71,7 @@ namespace SWLOR.Toolset.Services
             try
             {
                 ModuleMutationLock.ThrowIfModuleLocked();
+                using var moduleWriteLock = ModuleWriteLock.AcquireForResourcePath(path);
                 File.Move(staged.TemporaryPath, staged.TargetPath, overwrite: false);
             }
             catch
@@ -102,6 +104,7 @@ namespace SWLOR.Toolset.Services
             if (string.IsNullOrWhiteSpace(moduleRoot) || !Directory.Exists(moduleRoot))
                 return Array.Empty<string>();
 
+            using var moduleWriteLock = ModuleWriteLock.Acquire(moduleRoot);
             var restored = new List<string>();
             var protectedBackups = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var protectedTransactionIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -282,6 +285,7 @@ namespace SWLOR.Toolset.Services
         public static void WriteNewAtomic(string path, byte[] bytes)
         {
             ModuleMutationLock.ThrowIfModuleLocked();
+            using var moduleWriteLock = ModuleWriteLock.AcquireForResourcePath(path);
 
             var temporaryPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
             try
@@ -316,6 +320,7 @@ namespace SWLOR.Toolset.Services
             // the packer is copying, and a stray .tmp arriving mid-pass is the thing the packer's
             // own filter exists to survive rather than something to hand it.
             ModuleMutationLock.ThrowIfModuleLocked();
+            using var moduleWriteLock = ModuleWriteLock.AcquireForResourcePath(path);
 
             var temporaryPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
             File.WriteAllBytes(temporaryPath, bytes);
@@ -326,6 +331,8 @@ namespace SWLOR.Toolset.Services
         public static void Commit(StagedWrite staged)
         {
             ModuleMutationLock.ThrowIfModuleLocked();
+            using var moduleWriteLock =
+                ModuleWriteLock.AcquireForResourcePath(staged.TargetPath);
             File.Move(staged.TemporaryPath, staged.TargetPath, overwrite: true);
         }
 
@@ -348,6 +355,8 @@ namespace SWLOR.Toolset.Services
             // The whole group is refused up front. Half a triplet installed and then rolled back is
             // a worse outcome than not starting, and the pack is not going to finish mid-loop.
             ModuleMutationLock.ThrowIfModuleLocked();
+            using var moduleWriteLock =
+                ModuleWriteLock.AcquireForResourcePath(stagedWrites[0].TargetPath);
 
             var transactionId = Guid.NewGuid().ToString("N");
             var states = stagedWrites

@@ -1,3 +1,5 @@
+using SWLOR.NWN.Formats.Common;
+
 namespace SWLOR.Toolset.Domain.Script
 {
     /// <summary>Why a compiled script is out of date.</summary>
@@ -82,11 +84,16 @@ namespace SWLOR.Toolset.Domain.Script
     {
         private readonly string _nssDirectory;
         private readonly string _ncsDirectory;
+        private readonly Func<string, bool>? _externalIncludeExists;
 
-        public ScriptStalenessScanner(string nssDirectory, string ncsDirectory)
+        public ScriptStalenessScanner(
+            string nssDirectory,
+            string ncsDirectory,
+            Func<string, bool>? externalIncludeExists = null)
         {
             _nssDirectory = nssDirectory;
             _ncsDirectory = ncsDirectory;
+            _externalIncludeExists = externalIncludeExists;
         }
 
         /// <summary>True when the source declares an entry point and so should produce a .ncs.</summary>
@@ -105,6 +112,7 @@ namespace SWLOR.Toolset.Domain.Script
             if (!Directory.Exists(_nssDirectory))
                 return Array.Empty<StaleScript>();
 
+            using var moduleWriteLock = ModuleWriteLock.Acquire(ModuleRoot());
             var graph = ScriptIncludeGraph.Build(_nssDirectory);
             var sourceTimes = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
             var entryPoints = new List<string>();
@@ -145,7 +153,7 @@ namespace SWLOR.Toolset.Domain.Script
             foreach (var resRef in entryPoints)
             {
                 var missingInclude = graph.TransitiveIncludes(resRef).FirstOrDefault(include =>
-                    !File.Exists(Path.Combine(_nssDirectory, include + ".nss")));
+                    !IncludeExists(include));
                 if (missingInclude != null)
                 {
                     stale.Add(new StaleScript(resRef, StaleReason.MissingInclude, missingInclude));
@@ -242,6 +250,7 @@ namespace SWLOR.Toolset.Domain.Script
             if (!Directory.Exists(_ncsDirectory))
                 return purged;
 
+            using var moduleWriteLock = ModuleWriteLock.Acquire(ModuleRoot());
             var fingerprints = ScriptFingerprintStore.Load(_ncsDirectory);
             foreach (var resRef in fingerprints.TrackedResRefs.ToList())
             {
@@ -279,7 +288,8 @@ namespace SWLOR.Toolset.Domain.Script
                 foreach (var include in graph.TransitiveIncludes(resRef)
                              .OrderBy(name => name, StringComparer.OrdinalIgnoreCase))
                 {
-                    AppendFile(hash, include);
+                    if (File.Exists(Path.Combine(_nssDirectory, include + ".nss")))
+                        AppendFile(hash, include);
                 }
 
                 return Convert.ToHexString(hash.GetHashAndReset());
@@ -295,5 +305,25 @@ namespace SWLOR.Toolset.Domain.Script
             hash.AppendData(System.Text.Encoding.UTF8.GetBytes(resRef + "\n"));
             hash.AppendData(File.ReadAllBytes(Path.Combine(_nssDirectory, resRef + ".nss")));
         }
+
+        private bool IncludeExists(string resRef)
+        {
+            if (File.Exists(Path.Combine(_nssDirectory, resRef + ".nss")))
+                return true;
+
+            try
+            {
+                return _externalIncludeExists?.Invoke(resRef) == true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private string ModuleRoot() =>
+            Directory.GetParent(Path.GetFullPath(_nssDirectory))?.FullName
+            ?? throw new InvalidOperationException(
+                $"Could not determine the module root containing '{_nssDirectory}'.");
     }
 }

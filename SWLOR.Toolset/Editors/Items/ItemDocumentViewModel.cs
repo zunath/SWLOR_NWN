@@ -2,6 +2,7 @@ using SWLOR.Toolset.Domain.Editors.Items;
 using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.GameCode;
@@ -191,6 +192,8 @@ namespace SWLOR.Toolset.Editors.Items
                 if (Editor.TemplateResRef != targetResRef && !Editor.NormalizeResRef(targetResRef))
                     return false;
 
+                using var moduleWriteLock =
+                    ModuleWriteLock.AcquireForResourcePath(_session.FilePath);
                 var renaming = !string.Equals(targetResRef, _resRef, StringComparison.OrdinalIgnoreCase);
                 var newPath = _session.FilePath;
                 if (renaming && !TryResolveRenameTarget(targetResRef, out newPath))

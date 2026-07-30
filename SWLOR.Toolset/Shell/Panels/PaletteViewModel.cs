@@ -4,6 +4,7 @@ using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
@@ -841,12 +842,25 @@ namespace SWLOR.Toolset.Shell.Panels
                 }
             }
 
+            ModuleWriteLock moduleWriteLock;
             try
             {
                 // The same guard SaveService's write paths check before touching disk, so the delete
                 // itself is refused the instant a module-wide operation starts - not just at the
                 // recheck above, which still leaves a race between it and the file operation.
                 Services.ModuleMutationLock.ThrowIfModuleLocked();
+                moduleWriteLock = ModuleWriteLock.AcquireForResourcePath(path);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"'{tile.Name}' was not deleted: {ex.Message}";
+                _log.AppendLine($"Deleting blueprint '{tile.ResRef}' failed: {ex.Message}");
+                return;
+            }
+
+            using var heldModuleWriteLock = moduleWriteLock;
+            try
+            {
 
                 if (!File.Exists(path) ||
                     !SHA256.HashData(File.ReadAllBytes(path))

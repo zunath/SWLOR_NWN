@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Domain.Script.Compile;
 using SWLOR.Toolset.Domain.Script.Syntax;
@@ -134,6 +135,7 @@ namespace SWLOR.Toolset.Services
                 return CompileOutcome.Failed(resRef);
             }
 
+            using var moduleWriteLock = ModuleWriteLock.Acquire(workspace.ModuleRoot);
             var source = workspace.GetResourcePath(ResourceType.Nss, resRef);
             if (!File.Exists(source))
             {
@@ -446,6 +448,7 @@ namespace SWLOR.Toolset.Services
                 return new BuildAllOutcome(Ran: false, 0, 0);
             }
 
+            using var moduleWriteLock = ModuleWriteLock.Acquire(workspace.ModuleRoot);
             var compiled = 0;
             var failed = 0;
             var purged = 0;
@@ -517,6 +520,9 @@ namespace SWLOR.Toolset.Services
             IEnumerable<string> resRefs,
             CancellationToken cancellationToken = default)
         {
+            using var moduleWriteLock = _workspaceContext.Workspace is { } workspace
+                ? ModuleWriteLock.Acquire(workspace.ModuleRoot)
+                : null;
             var compiled = 0;
             var failed = 0;
 
@@ -543,7 +549,8 @@ namespace SWLOR.Toolset.Services
 
             return new ScriptStalenessScanner(
                 Path.Combine(workspace.ModuleRoot, "nss"),
-                Path.Combine(workspace.ModuleRoot, "ncs")).Scan();
+                Path.Combine(workspace.ModuleRoot, "ncs"),
+                CanResolveExternalInclude).Scan();
         }
 
         private ScriptIncludeGraph? IncludeGraph()
@@ -613,6 +620,21 @@ namespace SWLOR.Toolset.Services
             }
 
             return new ScriptCompiler(compilerPath, directories, root);
+        }
+
+        private bool CanResolveExternalInclude(string resRef)
+        {
+            var staged = StageEngineHeader();
+            if (staged != null &&
+                File.Exists(Path.Combine(staged, resRef + ".nss")))
+            {
+                return true;
+            }
+
+            var resources = _workspaceContext.Workspace?.ResourceIndex;
+            return resources != null &&
+                   resources.ContainsBaseGameResource(
+                       ResourceIdentity.FromFileName(resRef + ".nss"));
         }
 
         /// <summary>Copies the version-stamped header to a temp dir under the name the compiler expects.</summary>

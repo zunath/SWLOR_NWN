@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Text.Json;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
@@ -67,6 +68,18 @@ namespace SWLOR.Toolset.Domain.Workspace
                 error = $"Width and height must each be between 1 and {MaxDimension}.";
                 return false;
             }
+
+            ModuleWriteLock moduleWriteLock;
+            try
+            {
+                moduleWriteLock = ModuleWriteLock.Acquire(workspace.ModuleRoot);
+            }
+            catch (Exception ex)
+            {
+                error = $"Could not reserve the module while creating '{resRef}': {ex.Message}";
+                return false;
+            }
+            using var heldModuleWriteLock = moduleWriteLock;
 
             var arePath = workspace.GetResourcePath(ResourceType.Area, resRef);
             var gitPath = GitPath(workspace, resRef);

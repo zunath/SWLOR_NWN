@@ -11,9 +11,9 @@
         public WebSettings(IConfiguration configuration)
         {
             var section = configuration.GetSection(Section);
-            RedisIP = section["RedisIP"];
-            LogDirectory = section["LogDirectory"];
-            Port = section["RedisPort"];
+            RedisIP = section["RedisIP"] ?? string.Empty;
+            LogDirectory = section["LogDirectory"] ?? string.Empty;
+            Port = section["RedisPort"] ?? string.Empty;
         }
 
         public void Load()

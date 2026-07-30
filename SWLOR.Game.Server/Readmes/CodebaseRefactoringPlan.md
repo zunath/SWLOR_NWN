@@ -118,8 +118,11 @@ only the logic-free folders.
 ### The model
 
 - **`Data/<Type>/` files declare everything:** identity, stats, costs, components, targeting
-  metadata, effect lists. Format: JSON (the module pipeline already speaks JSON) or TSV where purely
-  tabular.
+  metadata, effect lists. Format: **JSON** (owner decision, 2026-07 — consistent across the board;
+  the module pipeline already speaks JSON), organized one folder per definition type
+  (`Data/Beasts/`, `Data/Recipes/`, `Data/LootTables/`, …).
+- **Status: Phases 3–4 are NOT started** — owner will green-light them explicitly. Phases 0–2
+  shipped in PR #2144.
 - **Behavior comes in two tiers:**
   1. *Parameterized standard routines* — shared runtime code driven by data fields:
      "deal damage of type X scaled by stat Y", "apply status Z for N seconds", "pull aggro in
@@ -280,8 +283,9 @@ Cheap, high-value for onboarding and for agents. Effort: small.
   `AGENTS.md` declares mandatory (`EngineTesting.md`, `DesignBibleWorkbookRules.md`).
 - **Split `Readmes/` by genre:** reference docs vs one-off project plans vs generated CSV artifacts
   currently share one flat folder. Move plans to `Readmes/plans/`, generated artifacts to
-  `Readmes/generated/` (updating the generating tools' paths), and resolve the `AGENTS.md` naming
-  rule conflict on the eight `CombatUpgrade*` filenames when moving them.
+  `Readmes/generated/` (updating the generating tools' paths). The `CombatUpgrade*` doc/CSV
+  filenames keep their names — the AGENTS.md naming rule targets production code identifiers, not
+  documentation about the combat-upgrade project (owner-confirmed).
 
 ---
 

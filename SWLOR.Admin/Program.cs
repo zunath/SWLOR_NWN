@@ -85,7 +85,7 @@ namespace SWLOR.Admin
                             var hasPermission = await discordAuthService.ValidateUserPermissions(tempUser);
                             
                             // Store permission result in claims for future use
-                            context.Identity.AddClaim(new Claim("discord_admin_permission", hasPermission.ToString()));
+                            context.Identity?.AddClaim(new Claim("discord_admin_permission", hasPermission.ToString()));
                             
                             // If user doesn't have permission, fail the authentication
                             if (!hasPermission)
@@ -149,7 +149,7 @@ namespace SWLOR.Admin
 
             var app = builder.Build();
 
-            app.Services.GetService<WebSettings>().Load();
+            app.Services.GetRequiredService<WebSettings>().Load();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

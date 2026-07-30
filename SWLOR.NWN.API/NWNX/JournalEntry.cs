@@ -8,17 +8,17 @@ namespace SWLOR.NWN.API.NWNX
         /// <summary>
         /// Gets or sets the name of the journal entry.
         /// </summary>
-        public string Name{ get; set; }
+        public string Name{ get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the text content of the journal entry.
         /// </summary>
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the tag associated with the journal entry.
         /// </summary>
-        public string Tag { get; set; }
+        public string Tag { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the state of the journal entry.

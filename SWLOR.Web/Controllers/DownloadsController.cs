@@ -6,9 +6,9 @@ namespace SWLOR.Web.Controllers
     {
         private class Download
         {
-            public string LocalPath { get; set; }
-            public string ContentType { get; set; }
-            public string FileName { get; set; }
+            public required string LocalPath { get; init; }
+            public required string ContentType { get; init; }
+            public required string FileName { get; init; }
         }
 
         private static readonly Dictionary<int, Download> _downloads = new Dictionary<int, Download>

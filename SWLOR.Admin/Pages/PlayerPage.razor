@@ -76,8 +76,8 @@
 </div>
 
 @code {
-	private List<Player> _players;
-	protected string _searchText;
+	private List<Player> _players = new();
+	protected string _searchText = "";
     protected long _totalRecords;
 
     // Pagination state

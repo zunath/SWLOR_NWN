@@ -73,29 +73,21 @@ namespace SWLOR.Toolset.Workspace
             await _reloadGate.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                var snapshot = Discover();
-                var missing = new List<string>();
-                var layers = new List<ResourceIndex.HakLayer>(hakNames.Count);
-                foreach (var rawName in hakNames)
-                {
-                    var name = rawName.Trim();
-                    var path = snapshot.Profile.FindHakPath(name);
-                    if (path == null)
-                    {
-                        missing.Add(name);
-                        continue;
-                    }
-
-                    layers.Add(new ResourceIndex.HakLayer(name, path));
-                }
+                // Reloading a known saved list needs path resolution only. Discover() also enumerates every
+                // available HAK, TLK, and movie for the module-properties pickers, which is unrelated work
+                // on the startup path.
+                var profile = NwnIniProfile.Load(_iniPathOverride);
+                var hakResolution = profile.ResolveHakLayers(hakNames);
+                var layers = hakResolution.Layers;
+                var missing = hakResolution.MissingHakNames;
 
                 var normalizedTlk = string.IsNullOrWhiteSpace(customTlk) ? null : customTlk.Trim();
-                var tlkPath = normalizedTlk == null ? null : snapshot.Profile.FindTlkPath(normalizedTlk);
+                var tlkPath = normalizedTlk == null ? null : profile.FindTlkPath(normalizedTlk);
                 if (normalizedTlk != null && tlkPath == null)
                     throw new FileNotFoundException(
                         $"The custom TLK '{normalizedTlk}.tlk' was not found in the nwn.ini TLK directory.");
 
-                if (_resourceIndex != null && snapshot.Profile.HakDirectory != null)
+                if (_resourceIndex != null && profile.HakDirectory != null)
                     await _resourceIndex.ReloadHakLayersAsync(layers, cancellationToken).ConfigureAwait(false);
 
                 _tlkService?.ReloadCustomTlk(tlkPath);

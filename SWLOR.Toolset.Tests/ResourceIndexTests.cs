@@ -203,6 +203,74 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ReloadHakLayersAsync_WhenStackIsUnchanged_DoesNotRescanOrInvalidateConsumers()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempRoot);
+            File.WriteAllText(Path.Combine(tempRoot, "stable.uti"), "stable");
+
+            try
+            {
+                var layers = new[] { new ResourceIndex.HakLayer("fixture", tempRoot) };
+                var index = new ResourceIndex(baseLayer: null, hakLayersInOrder: layers);
+                index.EnsureInitialized();
+                var reloads = 0;
+                index.ResourcesReloaded += () => reloads++;
+
+                await index.ReloadHakLayersAsync(layers);
+
+                reloads.Should().Be(0,
+                    "confirming the module.ifo stack at startup must not invalidate every derived cache");
+                index.TryLookup(ResourceIdentity.FromFileName("stable.uti"), out _).Should().BeTrue();
+            }
+            finally
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
+        public async Task ReloadHakLayersAsync_DoesNotSynchronouslyBlockOnColdInitialization()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempRoot);
+            var configPath = Path.Combine(tempRoot, "hakbuilder.json");
+            File.WriteAllText(configPath, """{"HakList":[]}""");
+            using var factoryStarted = new ManualResetEventSlim();
+            using var releaseFactory = new ManualResetEventSlim();
+
+            try
+            {
+                var index = ResourceIndex.FromHakBuilderConfigDeferred(
+                    configPath,
+                    tempRoot,
+                    () =>
+                    {
+                        factoryStarted.Set();
+                        releaseFactory.Wait();
+                        return null;
+                    });
+                factoryStarted.Wait(TimeSpan.FromSeconds(2)).Should().BeTrue();
+
+                // StartNew deliberately does not unwrap the returned Task. Its outer task completes
+                // only when ReloadHakLayersAsync returns control to its caller at the first await.
+                var invocation = Task.Factory.StartNew(
+                    () => index.ReloadHakLayersAsync(Array.Empty<ResourceIndex.HakLayer>()));
+                var returned = await Task.WhenAny(invocation, Task.Delay(TimeSpan.FromSeconds(2)));
+
+                returned.Should().BeSameAs(invocation,
+                    "workspace startup must not synchronously wait for the cold resource scan");
+                releaseFactory.Set();
+                await await invocation;
+            }
+            finally
+            {
+                releaseFactory.Set();
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
         public void FindHakConflicts_ReportsEveryProvidingLayerInPrecedenceOrder()
         {
             var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));

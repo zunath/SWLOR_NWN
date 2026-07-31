@@ -1,5 +1,13 @@
 namespace SWLOR.Toolset.Domain.GameData.Resources
 {
+    /// <summary>
+    /// The module-assigned HAK archives found through an NWN profile, plus names whose archives
+    /// were absent. Layers preserve module.ifo order because that order defines resource precedence.
+    /// </summary>
+    public sealed record HakLayerResolution(
+        IReadOnlyList<ResourceIndex.HakLayer> Layers,
+        IReadOnlyList<string> MissingHakNames);
+
     /// <summary>The custom-content aliases declared by the user's Neverwinter Nights nwn.ini.</summary>
     public sealed record NwnIniProfile(
         string IniPath,
@@ -86,6 +94,34 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
 
         public string? FindTlkPath(string name) => FindFile(TlkDirectory, name, ".tlk");
 
+        /// <summary>
+        /// Resolves a complete module HAK list with one directory enumeration. Calling
+        /// <see cref="FindHakPath"/> once per assigned HAK repeatedly walks the same directory;
+        /// production modules carry more than one hundred layers, so startup uses this batch path.
+        /// </summary>
+        public HakLayerResolution ResolveHakLayers(IEnumerable<string> hakNames)
+        {
+            ArgumentNullException.ThrowIfNull(hakNames);
+
+            var pathsByName = IndexFilesByBaseName(HakDirectory, ".hak");
+            var layers = new List<ResourceIndex.HakLayer>();
+            var missing = new List<string>();
+
+            foreach (var rawName in hakNames)
+            {
+                var name = rawName?.Trim() ?? string.Empty;
+                if (name.Length == 0)
+                    continue;
+
+                if (pathsByName.TryGetValue(name, out var path))
+                    layers.Add(new ResourceIndex.HakLayer(name, path));
+                else
+                    missing.Add(name);
+            }
+
+            return new HakLayerResolution(layers, missing);
+        }
+
         private static string? ResolveAliasPath(string iniPath, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -146,6 +182,34 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             {
                 return null;
             }
+        }
+
+        private static IReadOnlyDictionary<string, string> IndexFilesByBaseName(
+            string? directory,
+            string extension)
+        {
+            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+                return result;
+
+            try
+            {
+                foreach (var path in Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly))
+                {
+                    if (!Path.GetExtension(path).Equals(extension, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    var name = Path.GetFileNameWithoutExtension(path);
+                    if (!string.IsNullOrWhiteSpace(name))
+                        result.TryAdd(name, path);
+                }
+            }
+            catch (Exception)
+            {
+                // Match the profile's other discovery methods: an unavailable alias is an empty set.
+            }
+
+            return result;
         }
     }
 }

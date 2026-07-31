@@ -50,6 +50,13 @@ namespace SWLOR.Toolset.Tests
                     .Equal("custom_intro", "custom_outro", "nwnintro");
                 profile.FindHakPath("SECOND").Should().Be(Path.Combine(hakDirectory, "Second.HAK"));
                 profile.FindTlkPath("SW_TLK").Should().Be(Path.Combine(tlkDirectory, "sw_tlk.TLK"));
+
+                var resolution = profile.ResolveHakLayers(new[] { "SECOND", "missing", "first" });
+                resolution.Layers.Select(layer => layer.Name).Should().Equal("SECOND", "first");
+                resolution.Layers.Select(layer => layer.DirectoryPath).Should().Equal(
+                    Path.Combine(hakDirectory, "Second.HAK"),
+                    Path.Combine(hakDirectory, "first.hak"));
+                resolution.MissingHakNames.Should().Equal("missing");
             }
             finally
             {

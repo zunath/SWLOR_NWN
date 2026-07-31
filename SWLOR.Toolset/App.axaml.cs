@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -412,15 +413,20 @@ namespace SWLOR.Toolset
 
             if (File.Exists(hakBuilderConfigPath) && Directory.Exists(swlorHaksRoot))
             {
-                // KEY parsing and the ~130-folder HAK scan both belong to ResourceIndex's background
-                // initialization task. Creating the service must stay cheap enough for first paint.
+                // KEY parsing and HAK indexing both belong to ResourceIndex's background initialization
+                // task. Prefer the module's packed, authoritative HAK stack: indexing its archive tables
+                // is dramatically cheaper than walking ~160,000 loose hakbuilder source files only to
+                // replace that fallback stack as soon as WorkspaceOpened reads the same module.ifo.
                 Func<KeyBifCatalog?>? loadBaseLayer = nwnInstallPath == null
                     ? null
                     : () => KeyBifCatalog.Load(Path.Combine(nwnInstallPath, "data"));
-                services.AddSingleton(ResourceIndex.FromHakBuilderConfigDeferred(
-                    hakBuilderConfigPath,
-                    swlorHaksRoot,
-                    loadBaseLayer));
+                var moduleHakLayers = ResolveStartupHakLayers(settings.ModuleRoot, NwnIniProfile.Load());
+                services.AddSingleton(moduleHakLayers == null
+                    ? ResourceIndex.FromHakBuilderConfigDeferred(
+                        hakBuilderConfigPath,
+                        swlorHaksRoot,
+                        loadBaseLayer)
+                    : ResourceIndex.CreateDeferred(moduleHakLayers, loadBaseLayer));
                 services.AddSingleton(sp => new TwoDaService(sp.GetRequiredService<ResourceIndex>()));
 
                 // The area 3D view needs both, and both need the ResourceIndex above -
@@ -495,6 +501,34 @@ namespace SWLOR.Toolset
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Resolves the saved module's runtime HAK order before the workspace opens. Null means the
+        /// runtime stack cannot be discovered, so startup should retain the loose source fallback;
+        /// an empty list is meaningful and means the module authoritatively assigns no available HAKs.
+        /// </summary>
+        private static IReadOnlyList<ResourceIndex.HakLayer>? ResolveStartupHakLayers(
+            string? moduleRoot,
+            NwnIniProfile profile)
+        {
+            if (string.IsNullOrWhiteSpace(moduleRoot) || profile.HakDirectory == null)
+                return null;
+
+            try
+            {
+                var ifoPath = Path.Combine(moduleRoot, "ifo", "module.ifo.json");
+                if (!File.Exists(ifoPath))
+                    return null;
+
+                var ifo = IfoDocument.Load(ifoPath);
+                return profile.ResolveHakLayers(ifo.HakNames).Layers;
+            }
+            catch (Exception)
+            {
+                // A missing/malformed module or profile falls back to the repository source layers.
+                return null;
+            }
         }
 
         /// <summary>

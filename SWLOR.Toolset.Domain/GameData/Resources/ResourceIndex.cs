@@ -45,10 +45,10 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
     ///
     /// <list type="bullet">
     /// <item>Hak layers always override the base game.</item>
-    /// <item>Among haks, earlier entries win over later ones. At startup the repository's
-    /// <c>hakbuilder.json</c> source folders provide a usable fallback. Once a module is open,
-    /// <c>module.ifo</c> <c>Mod_HakList</c> and the HAK alias from <c>nwn.ini</c> replace that fallback
-    /// through <see cref="ReloadHakLayersAsync"/>; the module list is the runtime authority.</item>
+    /// <item>Among haks, earlier entries win over later ones. At startup the saved module's
+    /// <c>Mod_HakList</c> and the HAK alias from <c>nwn.ini</c> provide the authoritative packed
+    /// archives when available; the repository's <c>hakbuilder.json</c> source folders are the
+    /// fallback. Runtime module changes replace either through <see cref="ReloadHakLayersAsync"/>.</item>
     /// </list>
     ///
     /// Index construction is two-phase: the constructor records the layer list synchronously and
@@ -157,12 +157,25 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(hakLayersInOrder);
-            EnsureInitialized();
+            var specs = hakLayersInOrder.ToArray();
+            // ReloadSavedModuleInBackground starts from WorkspaceOpened on the UI thread. Await the
+            // initial index asynchronously so confirming the saved module stack never turns its cold
+            // scan into a synchronous UI stall.
+            await InitializationTask.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            // Startup can already be using module.ifo's packed HAK stack. ModuleCustomContentService
+            // confirms that same saved list once the workspace opens; rescanning identical multi-GB
+            // archives would add work without changing a single lookup.
+            if (SameHakLayers(Volatile.Read(ref _hakLayerSpecs), specs))
+                return;
 
             await _reloadGate.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                var specs = hakLayersInOrder.ToArray();
+                // Another reload may have published this list while this caller waited for the gate.
+                if (SameHakLayers(Volatile.Read(ref _hakLayerSpecs), specs))
+                    return;
+
                 var scanned = await Task.Run(
                     () =>
                     {
@@ -188,6 +201,28 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             }
 
             ResourcesReloaded?.Invoke();
+        }
+
+        private static bool SameHakLayers(
+            IReadOnlyList<HakLayer> current,
+            IReadOnlyList<HakLayer> requested)
+        {
+            if (current.Count != requested.Count)
+                return false;
+
+            var pathComparison = OperatingSystem.IsWindows()
+                ? StringComparison.OrdinalIgnoreCase
+                : StringComparison.Ordinal;
+            for (var index = 0; index < current.Count; index++)
+            {
+                if (!current[index].Name.Equals(requested[index].Name, StringComparison.OrdinalIgnoreCase) ||
+                    !current[index].DirectoryPath.Equals(requested[index].DirectoryPath, pathComparison))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static IHakResourceCatalog? OpenCatalog(string path)
@@ -388,6 +423,16 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             var layers = ReadHakLayers(hakBuilderConfigPath, swlorHaksRoot);
             return new ResourceIndex(baseLayerFactory, layers);
         }
+
+        /// <summary>
+        /// Starts a deferred index over an already-resolved HAK stack. The application uses this for
+        /// module.ifo's authoritative packed archives, avoiding an initial scan of the much larger
+        /// loose hakbuilder source tree that would immediately be replaced after the module opens.
+        /// </summary>
+        public static ResourceIndex CreateDeferred(
+            IReadOnlyList<HakLayer> hakLayersInOrder,
+            Func<KeyBifCatalog?>? baseLayerFactory = null) =>
+            new(baseLayerFactory, hakLayersInOrder);
 
         private static IReadOnlyList<HakLayer> ReadHakLayers(
             string hakBuilderConfigPath,

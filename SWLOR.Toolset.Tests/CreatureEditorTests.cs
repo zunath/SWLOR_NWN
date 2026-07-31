@@ -778,8 +778,14 @@ namespace SWLOR.Toolset.Tests
                 Dispatcher.UIThread.RunJobs();
                 var audienceFilter = view.FindControl<ComboBox>("CreatureAbilityAudienceFilter");
                 audienceFilter.Should().NotBeNull();
-                audienceFilter!.Bounds.Width.Should().BeGreaterThanOrEqualTo(150,
+                audienceFilter!.Bounds.Width.Should().BeGreaterThanOrEqualTo(300,
                     "the longest ability audience option must remain readable in the field and its popup");
+                var skillFilter = view.FindControl<ComboBox>("CreatureAbilitySkillFilter");
+                skillFilter.Should().NotBeNull();
+                skillFilter!.Bounds.Width.Should().BeGreaterThanOrEqualTo(300,
+                    "the longest ability skill option must remain readable in the field and its popup");
+                skillFilter.Bounds.Width.Should().BeApproximately(audienceFilter.Bounds.Width, 0.1,
+                    "both ability filters should receive the full card width");
                 var abilityButton = view.GetVisualDescendants()
                     .OfType<Button>()
                     .FirstOrDefault(button => button.DataContext is CreatureAbilityInfo);

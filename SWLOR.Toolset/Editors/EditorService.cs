@@ -1154,8 +1154,15 @@ namespace SWLOR.Toolset.Editors
 
             var repoRoot = Path.GetDirectoryName(Path.GetFullPath(workspace.ModuleRoot));
             var gameSourceRoot = repoRoot == null ? null : Path.Combine(repoRoot, "SWLOR.Game.Server");
+            var generatorInputRoot = repoRoot == null
+                ? null
+                : Path.Combine(repoRoot, "SWLOR.CLI", "InputFiles");
             var references = ItemReferenceScanner.FindReferences(
-                workspace.ModuleRoot, gameSourceRoot, resRef, selfFilePath).ToList();
+                workspace.ModuleRoot,
+                gameSourceRoot,
+                resRef,
+                selfFilePath,
+                generatorInputRoot).ToList();
 
             // The scan reads disk, but an open script's unsaved buffer can already name this resref
             // - and SaveAll writes item editors before script editors, so a rename that only

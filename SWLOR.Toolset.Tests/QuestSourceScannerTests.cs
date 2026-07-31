@@ -71,6 +71,18 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void HelpersSharingAQuestIdParameterKeepTheirOwnObjectiveChains()
+        {
+            var killTask = Index.FindQuest("hun_tsk_001")!;
+            var itemTask = Index.FindQuest("hun_tsk_004")!;
+
+            killTask.StateCount.Should().Be(2);
+            killTask.CollectItemObjectiveStates.Should().BeEmpty();
+            itemTask.StateCount.Should().Be(1);
+            itemTask.CollectItemObjectiveStates.Should().Equal(1);
+        }
+
+        [Test]
         public void TheSourceScanIsAvailable()
         {
             Index.IsSourceScanAvailable.Should().BeTrue();

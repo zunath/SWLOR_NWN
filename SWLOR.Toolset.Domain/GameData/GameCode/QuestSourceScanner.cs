@@ -183,6 +183,7 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
                     {
                         ExpandHelperCalls(
                             text,
+                            create.Index,
                             create.Groups["idIdentifier"].Value,
                             chain,
                             constants,
@@ -284,26 +285,44 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         /// </remarks>
         private static void ExpandHelperCalls(
             string text,
+            int createIndex,
             string parameterName,
             string chain,
             IReadOnlyDictionary<string, string> constants,
             string sourceFile,
             Dictionary<string, QuestDefinitionInfo> quests)
         {
+            Match? enclosingDeclaration = null;
+            var parameterIndex = -1;
             foreach (Match declaration in HelperDeclarationRegex.Matches(text))
             {
+                if (declaration.Index >= createIndex)
+                    break;
+
                 var parameters = SplitArguments(declaration.Groups["params"].Value);
                 var index = parameters.FindIndex(parameter => DeclaresParameter(parameter, parameterName));
                 if (index < 0)
                     continue;
 
-                var helperName = declaration.Groups["name"].Value;
-                foreach (var id in CallSiteLiterals(text, helperName, index))
-                {
-                    // A real Create() for this id wins: it was read from the quest's own chain.
-                    if (!quests.ContainsKey(id))
-                        quests[id] = ReadChain(id, id, chain, constants, sourceFile);
-                }
+                var openBrace = declaration.Index + declaration.Length - 1;
+                var closeBrace = FindMatchingBrace(text, openBrace);
+                if (closeBrace < createIndex)
+                    continue;
+
+                // Prefer the innermost declaration if a helper is nested in another body.
+                enclosingDeclaration = declaration;
+                parameterIndex = index;
+            }
+
+            if (enclosingDeclaration == null)
+                return;
+
+            var helperName = enclosingDeclaration.Groups["name"].Value;
+            foreach (var id in CallSiteLiterals(text, helperName, parameterIndex))
+            {
+                // A real Create() for this id wins: it was read from the quest's own chain.
+                if (!quests.ContainsKey(id))
+                    quests[id] = ReadChain(id, id, chain, constants, sourceFile);
             }
         }
 
@@ -362,6 +381,89 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
                         depth++;
                         break;
                     case ')':
+                        if (--depth == 0)
+                            return i;
+                        break;
+                }
+            }
+
+            return -1;
+        }
+
+        private static int FindMatchingBrace(string text, int open)
+        {
+            var depth = 0;
+            var inString = false;
+            var inCharacter = false;
+            var inLineComment = false;
+            var inBlockComment = false;
+
+            for (var i = open; i < text.Length; i++)
+            {
+                var c = text[i];
+                var next = i + 1 < text.Length ? text[i + 1] : '\0';
+
+                if (inLineComment)
+                {
+                    if (c == '\n')
+                        inLineComment = false;
+                    continue;
+                }
+
+                if (inBlockComment)
+                {
+                    if (c == '*' && next == '/')
+                    {
+                        inBlockComment = false;
+                        i++;
+                    }
+                    continue;
+                }
+
+                if (inString)
+                {
+                    if (c == '\\')
+                        i++;
+                    else if (c == '"')
+                        inString = false;
+                    continue;
+                }
+
+                if (inCharacter)
+                {
+                    if (c == '\\')
+                        i++;
+                    else if (c == '\'')
+                        inCharacter = false;
+                    continue;
+                }
+
+                if (c == '/' && next == '/')
+                {
+                    inLineComment = true;
+                    i++;
+                    continue;
+                }
+
+                if (c == '/' && next == '*')
+                {
+                    inBlockComment = true;
+                    i++;
+                    continue;
+                }
+
+                switch (c)
+                {
+                    case '"':
+                        inString = true;
+                        break;
+                    case '\'':
+                        inCharacter = true;
+                        break;
+                    case '{':
+                        depth++;
+                        break;
+                    case '}':
                         if (--depth == 0)
                             return i;
                         break;

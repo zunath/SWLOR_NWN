@@ -173,7 +173,7 @@ namespace SWLOR.Toolset.Tests.Items
             var layeredPoseRobe = MdlMeshBuilder.Build(
                     source,
                     layeredFrames,
-                    skinSurfaceClearance: 0.004f)
+                    skinSurfaceClearance: 0.012f)
                 .Meshes
                 .Single(mesh =>
                     mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&

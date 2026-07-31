@@ -44,10 +44,10 @@ namespace SWLOR.Toolset.Workspace
 
         /// <summary>
         /// Small shell gap Aurora preserves between an equipped skinmesh and the segmented body it
-        /// overlays. Four millimetres is enough to stop blended collar/sash vertices from breaking
-        /// through without visibly resizing the garment.
+        /// overlays. Twelve millimetres clears blended shoulder, collar, sash, and belt vertices
+        /// without visibly resizing a human-scale garment.
         /// </summary>
-        private const float EquippedGarmentSurfaceClearance = 0.004f;
+        private const float EquippedGarmentSurfaceClearance = 0.012f;
 
         private readonly WorkspaceContext _workspaceContext;
         private readonly ResourceIndex? _resourceIndex;

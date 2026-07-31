@@ -328,6 +328,51 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void LootTables_ReuseTheSharedProgressivePicker()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "loot_picker", "Loot Picker"));
+            var store = new CreatureValueStore(document.Root);
+            store.Locals.SetString("LOOT_TABLE_1", "TABLE_400,75,2");
+            var tables = Enumerable.Range(0, 500)
+                .Select(index => new CreatureLootTableInfo(
+                    $"TABLE_{index:D3}",
+                    $"Table {index:D3}",
+                    false,
+                    Array.Empty<CreatureLootTableItemInfo>()))
+                .ToList();
+            using var viewModel = new CreatureLootViewModel(store, (_, mutation) =>
+            {
+                mutation();
+                return true;
+            }, tables);
+
+            var row = viewModel.Entries.Should().ContainSingle().Which;
+            var picker = row.TablePicker;
+            picker.Should().BeAssignableTo<BehaviorRowViewModel>();
+            picker.AreChoicesLoaded.Should().BeFalse();
+            picker.FilteredChoices.Should().BeEmpty();
+            picker.SelectedChoiceDisplay.Should().Be("Table 400 (TABLE_400)");
+
+            picker.OpenSearchCommand.Execute(null);
+
+            picker.AreChoicesLoaded.Should().BeTrue();
+            picker.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize + 1,
+                "the stored table remains visible above the first progressive page");
+            picker.ChoiceSearchText = "TABLE_321";
+            var match = picker.FilteredChoices.Should().ContainSingle().Which;
+
+            picker.PickChoiceCommand.Execute(match);
+
+            store.Locals.GetString("LOOT_TABLE_1").Should().Be("TABLE_321,75,2");
+            row.Table.Should().BeSameAs(tables[321]);
+            viewModel.SelectedEntry.Should().BeSameAs(row);
+            viewModel.PreviewTitle.Should().Be("Table 321");
+            picker.IsSearchExpanded.Should().BeFalse();
+            picker.FilteredChoices.Should().BeEmpty();
+        }
+
+        [Test]
         public void LootDefinitionLink_UsesTheRegisteredDefinitionType()
         {
             var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(

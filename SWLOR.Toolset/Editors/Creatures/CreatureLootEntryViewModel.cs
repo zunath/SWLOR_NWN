@@ -5,16 +5,15 @@ using SWLOR.Toolset.Domain.Editors.Creatures;
 namespace SWLOR.Toolset.Editors.Creatures
 {
     /// <summary>Editable chance and pull count for one selected registered loot table.</summary>
-    public sealed partial class CreatureLootEntryViewModel : ObservableObject
+    public sealed partial class CreatureLootEntryViewModel : ObservableObject, IDisposable
     {
         private readonly Action<CreatureLootEntryViewModel> _changed;
         private readonly Action<CreatureLootEntryViewModel> _remove;
         private bool _loading;
 
-        public IReadOnlyList<CreatureLootTableInfo> Tables { get; }
+        public CreatureLootTablePickerViewModel TablePicker { get; }
 
-        [ObservableProperty]
-        private CreatureLootTableInfo? _table;
+        public CreatureLootTableInfo? Table { get; private set; }
 
         [ObservableProperty]
         private decimal _chance;
@@ -27,10 +26,13 @@ namespace SWLOR.Toolset.Editors.Creatures
         public CreatureLootEntryViewModel(
             CreatureLootEntry entry,
             IReadOnlyList<CreatureLootTableInfo> tables,
+            CreatureValueStore store,
+            Func<string, Action, bool> runEdit,
+            Action<CreatureLootEntryViewModel, string> writeTable,
+            Action<CreatureLootEntryViewModel> tableApplied,
             Action<CreatureLootEntryViewModel> changed,
             Action<CreatureLootEntryViewModel> remove)
         {
-            Tables = tables;
             _changed = changed;
             _remove = remove;
             _loading = true;
@@ -40,17 +42,23 @@ namespace SWLOR.Toolset.Editors.Creatures
             Chance = entry.Chance;
             Pulls = entry.Pulls;
             _loading = false;
+            TablePicker = new CreatureLootTablePickerViewModel(
+                this, store, runEdit, tables, writeTable, tableApplied);
         }
 
-        public CreatureLootEntry ToEntry() => new(
-            Table?.Id ?? string.Empty,
+        public CreatureLootEntry ToEntry(string? tableId = null) => new(
+            tableId ?? Table?.Id ?? string.Empty,
             Math.Clamp((int)Chance, 1, 100),
             Math.Max(1, (int)Pulls));
 
+        internal void ApplyTable(CreatureLootTableInfo table)
+        {
+            Table = table;
+            OnPropertyChanged(nameof(Table));
+        }
+
         [RelayCommand]
         private void Remove() => _remove(this);
-
-        partial void OnTableChanged(CreatureLootTableInfo? value) => Changed();
 
         partial void OnChanceChanged(decimal value)
         {
@@ -80,5 +88,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (!_loading)
                 _changed(this);
         }
+
+        public void Dispose() => TablePicker.Dispose();
     }
 }

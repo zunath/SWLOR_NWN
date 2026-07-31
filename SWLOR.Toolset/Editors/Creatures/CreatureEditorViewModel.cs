@@ -561,6 +561,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             _disposed = true;
             foreach (var row in AllRows())
                 row.Dispose();
+            Loot.Dispose();
             AppearanceGallery?.Dispose();
             Equipment.Dispose();
             _previewView?.Dispose();

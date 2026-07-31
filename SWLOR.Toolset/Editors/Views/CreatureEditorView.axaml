@@ -100,18 +100,22 @@
 
     <DataTemplate DataType="creatures:CreatureLootEntryViewModel">
       <Border Classes="card" Margin="0,0,0,8" Padding="10">
-        <Grid ColumnDefinitions="*,92,92,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="7">
-          <ComboBox ItemsSource="{Binding Tables}" SelectedItem="{Binding Table, Mode=TwoWay}" />
-          <NumericUpDown Grid.Column="1" Value="{Binding Chance, Mode=TwoWay}"
-                         Minimum="1" Maximum="100" Increment="1" FormatString="0"
-                         Watermark="Chance %" />
-          <NumericUpDown Grid.Column="2" Value="{Binding Pulls, Mode=TwoWay}"
-                         Minimum="1" Maximum="100" Increment="1" FormatString="0"
-                         Watermark="Pulls" />
-          <Button Grid.Column="3" Content="Remove" Command="{Binding RemoveCommand}" />
-          <TextBlock Grid.Row="1" Grid.ColumnSpan="4" Text="{Binding ExpectedDrops}"
-                     Classes="dim" FontSize="11" Margin="0,4,0,0" />
-        </Grid>
+        <StackPanel Spacing="8">
+          <!-- Loot table selection is the same deferred, virtualized, paged picker used by the
+               behavior and equipment editors. Do not replace this with an eager combo box. -->
+          <behaviors:BehaviorRowView DataContext="{Binding TablePicker}" />
+          <Grid ColumnDefinitions="Auto,92,Auto,92,*,Auto" ColumnSpacing="7">
+            <TextBlock Text="Chance %" Classes="dim" VerticalAlignment="Center" />
+            <NumericUpDown Grid.Column="1" Value="{Binding Chance, Mode=TwoWay}"
+                           Minimum="1" Maximum="100" Increment="1" FormatString="0" />
+            <TextBlock Grid.Column="2" Text="Pulls" Classes="dim" VerticalAlignment="Center" />
+            <NumericUpDown Grid.Column="3" Value="{Binding Pulls, Mode=TwoWay}"
+                           Minimum="1" Maximum="100" Increment="1" FormatString="0" />
+            <TextBlock Grid.Column="4" Text="{Binding ExpectedDrops}" Classes="dim"
+                       FontSize="11" Margin="4,0" VerticalAlignment="Center" />
+            <Button Grid.Column="5" Content="Remove" Command="{Binding RemoveCommand}" />
+          </Grid>
+        </StackPanel>
       </Border>
     </DataTemplate>
 

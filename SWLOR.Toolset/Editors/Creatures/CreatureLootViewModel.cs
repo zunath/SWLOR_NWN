@@ -6,7 +6,7 @@ using SWLOR.Toolset.Domain.Editors.Creatures;
 namespace SWLOR.Toolset.Editors.Creatures
 {
     /// <summary>Contiguous LOOT_TABLE_n editor with registered-table previews.</summary>
-    public sealed partial class CreatureLootViewModel : ObservableObject
+    public sealed partial class CreatureLootViewModel : ObservableObject, IDisposable
     {
         private static readonly Lazy<IReadOnlyList<CreatureLootTableInfo>> SharedTables =
             new(CreatureLootTableCatalog.Build);
@@ -76,9 +76,20 @@ namespace SWLOR.Toolset.Editors.Creatures
             {
                 var entries = _store.ReadLoot(out var hasGap);
                 NeedsNormalization = hasGap;
+                DisposeEntries();
                 Entries.Clear();
                 foreach (var entry in entries)
-                    Entries.Add(new CreatureLootEntryViewModel(entry, Tables, Changed, Remove));
+                {
+                    Entries.Add(new CreatureLootEntryViewModel(
+                        entry,
+                        Tables,
+                        _store,
+                        _runEdit,
+                        WriteTable,
+                        TableApplied,
+                        Changed,
+                        Remove));
+                }
                 var unknownCount = entries.Count(entry => Tables.All(table => table.Id != entry.TableId));
                 var warnings = new List<string>();
                 if (hasGap)
@@ -120,6 +131,24 @@ namespace SWLOR.Toolset.Editors.Creatures
             RefreshPreview();
         }
 
+        /// <summary>Writes a picker selection inside the shared row's existing undo transaction.</summary>
+        private void WriteTable(CreatureLootEntryViewModel entry, string tableId)
+        {
+            var entries = Entries.Select(candidate => ReferenceEquals(candidate, entry)
+                    ? candidate.ToEntry(tableId)
+                    : candidate.ToEntry())
+                .ToList();
+            _store.WriteLoot(entries);
+        }
+
+        private void TableApplied(CreatureLootEntryViewModel entry)
+        {
+            SelectedEntry = entry;
+            RefreshPreview();
+            OnPropertyChanged(nameof(CanOpenDefinition));
+            OpenDefinitionCommand.NotifyCanExecuteChanged();
+        }
+
         private void Remove(CreatureLootEntryViewModel entry)
         {
             var entries = Entries.Where(candidate => !ReferenceEquals(candidate, entry))
@@ -141,6 +170,14 @@ namespace SWLOR.Toolset.Editors.Creatures
             OnPropertyChanged(nameof(PreviewItems));
             OnPropertyChanged(nameof(PreviewTitle));
             OnPropertyChanged(nameof(ExpectedDrops));
+        }
+
+        public void Dispose() => DisposeEntries();
+
+        private void DisposeEntries()
+        {
+            foreach (var entry in Entries)
+                entry.Dispose();
         }
     }
 }

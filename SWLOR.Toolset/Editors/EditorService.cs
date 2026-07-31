@@ -1992,7 +1992,7 @@ namespace SWLOR.Toolset.Editors
         }
 
         private IReadOnlyList<BehaviorChoice> LookupChoices(string key) => _lookups.GetOptions(key)
-            .Select(option => new BehaviorChoice(option.Id, $"{option.Display} ({option.Id})"))
+            .Select(option => new BehaviorChoice(option.Id, option.BehaviorDisplay))
             .ToList();
 
         private IReadOnlyList<BehaviorChoice> ResolvePortraitChoices() =>

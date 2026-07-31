@@ -382,33 +382,61 @@
         </TabItem>
 
         <TabItem Header="Abilities">
-          <Grid ColumnDefinitions="*,310" ColumnSpacing="10" Margin="14,10">
+          <Grid ColumnDefinitions="*,340" ColumnSpacing="10" Margin="14,10">
             <ScrollViewer>
               <StackPanel>
                 <TextBlock Text="Assigned Abilities" Classes="section" Margin="0,0,0,8" />
                 <ItemsControl ItemsSource="{Binding Abilities.Assigned}" />
               </StackPanel>
             </ScrollViewer>
-            <Border Grid.Column="1" Classes="card" Padding="10">
-              <Grid RowDefinitions="Auto,Auto,*">
-                <TextBox Text="{Binding Abilities.SearchText, Mode=TwoWay}"
+            <Border Grid.Column="1" Classes="card" Padding="10"
+                    DataContext="{Binding Abilities}" x:DataType="creatures:CreatureAbilitiesViewModel">
+              <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="6">
+                <TextBox Text="{Binding SearchText, Mode=TwoWay}"
                          Watermark="Search registered abilities" />
-                <TextBlock Grid.Row="1" Text="{Binding Abilities.SearchSummary}" Classes="count" Margin="0,5" />
-                <ScrollViewer Grid.Row="2">
-                  <ItemsControl ItemsSource="{Binding Abilities.Matching}">
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate DataType="cdom:CreatureAbilityInfo">
-                        <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Margin="0,2"
-                                Command="{Binding $parent[ItemsControl].((creatures:CreatureEditorViewModel)DataContext).Abilities.AddCommand}"
-                                CommandParameter="{Binding}">
-                          <StackPanel><TextBlock Text="{Binding Name}" />
-                            <TextBlock Text="{Binding Description}" Classes="dim" FontSize="10"
-                                       TextWrapping="Wrap" MaxWidth="270" /></StackPanel>
-                        </Button>
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                  </ItemsControl>
-                </ScrollViewer>
+                <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="6">
+                  <StackPanel Spacing="3">
+                    <TextBlock Text="Intended for" Classes="dim" FontSize="10" />
+                    <ComboBox ItemsSource="{Binding AudienceFilters}"
+                              SelectedItem="{Binding SelectedAudienceFilter, Mode=TwoWay}" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="1" Spacing="3">
+                    <TextBlock Text="Skill" Classes="dim" FontSize="10" />
+                    <ComboBox ItemsSource="{Binding SkillFilters}"
+                              SelectedItem="{Binding SelectedSkillFilter, Mode=TwoWay}" />
+                  </StackPanel>
+                </Grid>
+                <TextBlock Grid.Row="2" Text="{Binding SearchSummary}" Classes="count" />
+                <!-- A virtualized, progressively published list: adding or removing one ability
+                     now changes at most two realized rows instead of rebuilding 200 cards. -->
+                <ListBox Grid.Row="3" ItemsSource="{Binding Matching}"
+                         ScrollViewer.ScrollChanged="OnAbilityScrollChanged"
+                         Background="Transparent" BorderThickness="0" Padding="0">
+                  <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                  </ListBox.ItemsPanel>
+                  <ListBox.Styles>
+                    <Style Selector="ListBoxItem">
+                      <Setter Property="Padding" Value="0" />
+                    </Style>
+                  </ListBox.Styles>
+                  <ListBox.ItemTemplate>
+                    <DataTemplate DataType="cdom:CreatureAbilityInfo">
+                      <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Margin="0,2"
+                              Command="{Binding $parent[ListBox].((creatures:CreatureAbilitiesViewModel)DataContext).AddCommand}"
+                              CommandParameter="{Binding}">
+                        <StackPanel>
+                          <TextBlock Text="{Binding Name}" />
+                          <TextBlock Text="{Binding Classification}" Classes="mono" FontSize="9.5" />
+                          <TextBlock Text="{Binding Description}" Classes="dim" FontSize="10"
+                                     TextWrapping="Wrap" MaxWidth="290" />
+                        </StackPanel>
+                      </Button>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
               </Grid>
             </Border>
           </Grid>

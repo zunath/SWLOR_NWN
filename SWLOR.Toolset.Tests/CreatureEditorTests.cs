@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using System.Numerics;
 using System.Text;
 using Avalonia.Controls;
@@ -266,6 +267,103 @@ namespace SWLOR.Toolset.Tests
             assigned.RemoveCommand.Execute(null);
             store.Feats.Should().BeEmpty();
             viewModel.Assigned.Should().BeEmpty();
+        }
+
+        [Test]
+        public void AbilityFilters_UseAudienceAndSkillMetadata()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "ability_filters", "Ability Filters"));
+            var store = new CreatureValueStore(document.Root);
+            var abilities = new[]
+            {
+                new CreatureAbilityInfo(1, "NPC Device", "NPC device ability", 0, "", 33, "Devices", true),
+                new CreatureAbilityInfo(2, "Player Device", "Player device ability", 0, "", 33, "Devices"),
+                new CreatureAbilityInfo(3, "Player Rifle", "Player rifle ability", 0, "", 46, "Rifle"),
+                new CreatureAbilityInfo(4, "Unskilled", "No associated skill", 0, "")
+            };
+            var viewModel = new CreatureAbilitiesViewModel(
+                store,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                abilities,
+                new Dictionary<int, CreaturePerkInfo>());
+
+            viewModel.SelectedAudienceFilter = viewModel.AudienceFilters.Single(
+                filter => filter.Value == CreatureAbilityAudience.Npc);
+            viewModel.Matching.Should().ContainSingle(info => info.Name == "NPC Device");
+
+            viewModel.SelectedSkillFilter = viewModel.SkillFilters.Single(filter => filter.Label == "Devices");
+            viewModel.Matching.Should().ContainSingle(info => info.Name == "NPC Device");
+
+            viewModel.SelectedAudienceFilter = viewModel.AudienceFilters.Single(
+                filter => filter.Value == CreatureAbilityAudience.Player);
+            viewModel.Matching.Should().ContainSingle(info => info.Name == "Player Device");
+
+            viewModel.SelectedAudienceFilter = viewModel.AudienceFilters[0];
+            viewModel.SelectedSkillFilter = viewModel.SkillFilters.Single(filter => filter.Label == "No skill");
+            viewModel.Matching.Should().ContainSingle(info => info.Name == "Unskilled");
+        }
+
+        [Test]
+        public void AbilityAssignments_UpdatePublishedPageIncrementally()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "ability_paging", "Ability Paging"));
+            var store = new CreatureValueStore(document.Root);
+            var abilities = Enumerable.Range(1, 75)
+                .Select(id => new CreatureAbilityInfo(
+                    id, $"Ability {id:000}", "Test ability", 0, "", 33, "Devices"))
+                .ToArray();
+            var viewModel = new CreatureAbilitiesViewModel(
+                store,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                abilities,
+                new Dictionary<int, CreaturePerkInfo>());
+
+            viewModel.Matching.Should().HaveCount(40);
+            viewModel.CanLoadMore.Should().BeTrue();
+            var changes = new List<NotifyCollectionChangedAction>();
+            viewModel.Matching.CollectionChanged += (_, change) => changes.Add(change.Action);
+            var selected = viewModel.Matching[5];
+
+            viewModel.AddCommand.Execute(selected);
+
+            changes.Should().NotContain(NotifyCollectionChangedAction.Reset,
+                "assigning one ability must not reconstruct the published result page");
+            viewModel.Matching.Should().HaveCount(40);
+            viewModel.Matching.Should().NotContain(selected);
+            var assigned = viewModel.Assigned.Should().ContainSingle().Which;
+
+            changes.Clear();
+            assigned.RemoveCommand.Execute(null);
+
+            changes.Should().NotContain(NotifyCollectionChangedAction.Reset,
+                "removing one assignment must return only its sorted result row");
+            viewModel.Matching.Should().Contain(selected);
+            viewModel.LoadMoreCommand.Execute(null);
+            viewModel.Matching.Should().HaveCount(75);
+            viewModel.CanLoadMore.Should().BeFalse();
+        }
+
+        [Test]
+        public void AbilitiesTab_UsesMetadataFiltersAndVirtualizedProgressiveResults()
+        {
+            var view = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset", "Editors", "Views", "CreatureEditorView.axaml"));
+
+            view.Should().Contain("AudienceFilters");
+            view.Should().Contain("SkillFilters");
+            view.Should().Contain("VirtualizingStackPanel");
+            view.Should().Contain("OnAbilityScrollChanged");
         }
 
         [TestCase(-100, 200)]

@@ -1,6 +1,7 @@
 using System.Reflection;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Toolset.Domain.Editors.Creatures
@@ -8,6 +9,8 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
     /// <summary>Registered abilities projected without initializing the live game cache.</summary>
     public static class CreatureAbilityCatalog
     {
+        private const string NpcAbilityNamespace = "SWLOR.Game.Server.Feature.AbilityDefinition.NPC";
+
         public static IReadOnlyList<CreatureAbilityInfo> Build()
         {
             var result = new Dictionary<int, CreatureAbilityInfo>();
@@ -28,12 +31,21 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
                         var perkName = detail.EffectiveLevelPerkType == PerkType.Invalid
                             ? string.Empty
                             : Humanize(detail.EffectiveLevelPerkType.ToString());
+                        var skillId = Convert.ToInt32(detail.SkillType);
+                        var skillName = detail.SkillType == SkillType.Invalid
+                            ? string.Empty
+                            : typeof(SkillType).GetField(detail.SkillType.ToString())?
+                                .GetCustomAttribute<SkillAttribute>()?.Name ??
+                              Humanize(detail.SkillType.ToString());
                         result[featId] = new CreatureAbilityInfo(
                             featId,
                             string.IsNullOrWhiteSpace(detail.Name) ? Humanize(feat.ToString()) : detail.Name,
                             Describe(detail),
                             perkId,
-                            perkName);
+                            perkName,
+                            skillId,
+                            skillName,
+                            type.Namespace == NpcAbilityNamespace);
                     }
                 }
                 catch (Exception ex) when (ex is TargetInvocationException or InvalidOperationException or ArgumentException)

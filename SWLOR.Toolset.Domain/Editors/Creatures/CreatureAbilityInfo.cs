@@ -6,5 +6,15 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
         string Name,
         string Description,
         int EffectivePerkId,
-        string EffectivePerkName);
+        string EffectivePerkName,
+        int SkillId = 0,
+        string SkillName = "",
+        bool IsNpcIntended = false)
+    {
+        public string IntendedFor => IsNpcIntended ? "NPC-intended" : "Player-intended";
+
+        public string Classification => string.IsNullOrWhiteSpace(SkillName)
+            ? $"{IntendedFor} · No skill"
+            : $"{IntendedFor} · {SkillName}";
+    }
 }

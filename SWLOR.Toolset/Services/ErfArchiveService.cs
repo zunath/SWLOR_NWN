@@ -140,6 +140,9 @@ namespace SWLOR.Toolset.Services
         private static readonly Regex CreateObjectPattern = new(
             @"\bCreateObject\s*\(\s*OBJECT_TYPE_(?<type>CREATURE|ITEM|PLACEABLE|STORE|WAYPOINT|DOOR|TRIGGER|SOUND)\s*,\s*""(?<resref>[A-Za-z0-9_]{1,16})""",
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
+        private static readonly Regex ExecuteScriptPattern = new(
+            @"\bExecuteScript\s*\(\s*""(?<resref>[A-Za-z0-9_]{1,16})""",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         private readonly WorkspaceContext _workspaceContext;
         private readonly OutputLogService _log;
@@ -504,7 +507,7 @@ namespace SWLOR.Toolset.Services
                     or ErfConflictAction.Rename)
                 .ToList();
             var renameMap = ValidateImportPlan(active, workspace.ModuleRoot);
-            ValidateEntryPointScriptCompanions(active);
+            ValidateScriptCompanions(active, renameMap, workspace.ModuleRoot);
             ValidateCompiledScriptGenerations(active, renameMap);
             var transactionRoot = CreateModuleTransactionDirectory(workspace.ModuleRoot);
             var stagedRoot = Path.Combine(transactionRoot, "staged");
@@ -600,13 +603,24 @@ namespace SWLOR.Toolset.Services
                 {
                     ifoUpdateLock = ModuleIfoUpdateLock.Acquire(workspace.ModuleRoot);
                     var ifoPath = ModuleDestination(workspace.ModuleRoot, "ifo", "module");
-                    if (!File.Exists(ifoPath))
-                        throw new FileNotFoundException(
-                            "module.ifo.json was not found; imported areas cannot be registered.",
-                            ifoPath);
+                    var selectedIfoIndex = plan.FindIndex(entry =>
+                        entry.DestinationPath.Equals(ifoPath, StringComparison.OrdinalIgnoreCase));
+                    IfoDocument ifo;
+                    if (selectedIfoIndex >= 0)
+                    {
+                        ifo = IfoDocument.Load(plan[selectedIfoIndex].StagedPath);
+                    }
+                    else
+                    {
+                        if (!File.Exists(ifoPath))
+                            throw new FileNotFoundException(
+                                "module.ifo.json was not found; imported areas cannot be registered.",
+                                ifoPath);
 
-                    moduleIfoBaseline = File.ReadAllBytes(ifoPath);
-                    var ifo = IfoDocument.Parse(moduleIfoBaseline);
+                        moduleIfoBaseline = File.ReadAllBytes(ifoPath);
+                        ifo = IfoDocument.Parse(moduleIfoBaseline);
+                    }
+
                     var ifoChanged = false;
                     using (var ifoSession = new DocumentSession(ifoPath, ifo.Document))
                     using (var transaction = ifoSession.Begin("Register imported areas"))
@@ -618,19 +632,28 @@ namespace SWLOR.Toolset.Services
 
                     if (ifoChanged)
                     {
-                        var stagedIfo = Path.Combine(stagedRoot, "ifo", "module.ifo.json");
-                        Directory.CreateDirectory(Path.GetDirectoryName(stagedIfo)!);
-                        File.WriteAllBytes(stagedIfo, ifo.ToBytes());
-                        _ = IfoDocument.Load(stagedIfo);
-                        plan.Add(new ImportPlanEntry(
-                            stagedIfo,
-                            ifoPath,
-                            "ifo",
-                            "module",
-                            ReplacesExisting: true,
-                            IsRename: false,
-                            IsMetadata: true,
-                            ExpectedDestination: Fingerprint(moduleIfoBaseline)));
+                        if (selectedIfoIndex >= 0)
+                        {
+                            var selectedIfo = plan[selectedIfoIndex];
+                            File.WriteAllBytes(selectedIfo.StagedPath, ifo.ToBytes());
+                            _ = IfoDocument.Load(selectedIfo.StagedPath);
+                        }
+                        else
+                        {
+                            var stagedIfo = Path.Combine(stagedRoot, "ifo", "module.ifo.json");
+                            Directory.CreateDirectory(Path.GetDirectoryName(stagedIfo)!);
+                            File.WriteAllBytes(stagedIfo, ifo.ToBytes());
+                            _ = IfoDocument.Load(stagedIfo);
+                            plan.Add(new ImportPlanEntry(
+                                stagedIfo,
+                                ifoPath,
+                                "ifo",
+                                "module",
+                                ReplacesExisting: true,
+                                IsRename: false,
+                                IsMetadata: true,
+                                ExpectedDestination: Fingerprint(moduleIfoBaseline!)));
+                        }
                     }
                 }
 
@@ -990,7 +1013,18 @@ namespace SWLOR.Toolset.Services
 
                 foreach (var reference in await referencesOf(fileName).ConfigureAwait(false))
                 {
-                    foreach (var referencedFile in filesForResource(reference.Extension, reference.ResRef))
+                    var referencedFiles = filesForResource(
+                            reference.Extension,
+                            reference.ResRef)
+                        .ToList();
+                    if (referencedFiles.Count == 0 &&
+                        reference.AllowCompiledFallback &&
+                        reference.Extension.Equals("nss", StringComparison.OrdinalIgnoreCase))
+                    {
+                        referencedFiles = filesForResource("ncs", reference.ResRef).ToList();
+                    }
+
+                    foreach (var referencedFile in referencedFiles)
                         Add(referencedFile, $"Referenced by {fileName}");
                 }
             }
@@ -1023,7 +1057,12 @@ namespace SWLOR.Toolset.Services
                     if (extension != null && IsValidResRef(value))
                     {
                         result[ArchiveKey(extension, value)] =
-                            new ErfResourceReference(extension, value);
+                            new ErfResourceReference(
+                                extension,
+                                value,
+                                AllowCompiledFallback: extension.Equals(
+                                    "nss",
+                                    StringComparison.OrdinalIgnoreCase));
                     }
                 }
                 else if (field.Type == GffFieldType.Struct && field.Struct != null)
@@ -1044,10 +1083,17 @@ namespace SWLOR.Toolset.Services
             var result = new Dictionary<string, ErfResourceReference>(
                 StringComparer.OrdinalIgnoreCase);
 
-            void Add(string extension, string resRef)
+            void Add(string extension, string resRef, bool allowCompiledFallback = false)
             {
-                result[ArchiveKey(extension, resRef)] =
-                    new ErfResourceReference(extension, resRef);
+                var key = ArchiveKey(extension, resRef);
+                if (!result.TryGetValue(key, out var existing) ||
+                    allowCompiledFallback && !existing.AllowCompiledFallback)
+                {
+                    result[key] = new ErfResourceReference(
+                        extension,
+                        resRef,
+                        allowCompiledFallback);
+                }
             }
 
             foreach (Match match in IncludePattern.Matches(text))
@@ -1062,6 +1108,12 @@ namespace SWLOR.Toolset.Services
                 if (extension != null)
                     Add(extension, match.Groups["resref"].Value);
             }
+
+            foreach (Match match in ExecuteScriptPattern.Matches(text))
+                Add(
+                    "nss",
+                    match.Groups["resref"].Value,
+                    allowCompiledFallback: true);
 
             return result.Values.ToList();
         }
@@ -1145,6 +1197,12 @@ namespace SWLOR.Toolset.Services
 
                 if (choice.Action != ErfConflictAction.Rename)
                     continue;
+
+                if (!CanRenameResource(asset.Extension, asset.ResRef))
+                {
+                    throw new InvalidOperationException(
+                        $"'{asset.FileName}' is a fixed-name module resource and cannot be renamed.");
+                }
 
                 var renamed = choice.RenameResRef?.Trim() ?? string.Empty;
                 if (!IsValidResRef(renamed))
@@ -1312,8 +1370,10 @@ namespace SWLOR.Toolset.Services
         /// source alone would leave Add/Rename without an executable and Replace paired with stale
         /// destination bytecode. Include-only sources intentionally remain valid without NCS files.
         /// </summary>
-        private static void ValidateEntryPointScriptCompanions(
-            IReadOnlyCollection<ErfImportChoice> choices)
+        private static void ValidateScriptCompanions(
+            IReadOnlyCollection<ErfImportChoice> choices,
+            IReadOnlyDictionary<string, string> renameMap,
+            string moduleRoot)
         {
             var compiledResRefs = choices
                 .Where(choice => choice.Prepared.Asset.Extension.Equals(
@@ -1325,17 +1385,46 @@ namespace SWLOR.Toolset.Services
             foreach (var choice in choices.Where(choice =>
                          choice.Prepared.Asset.Extension.Equals(
                              "nss",
-                             StringComparison.OrdinalIgnoreCase) &&
-                         !compiledResRefs.Contains(choice.Prepared.Asset.ResRef)))
+                             StringComparison.OrdinalIgnoreCase)))
             {
                 var script = ScriptTextDocument.Load(choice.Prepared.ContentPath);
-                if (!ScriptStalenessScanner.IsEntryPoint(script.Text))
-                    continue;
+                var isEntryPoint = ScriptStalenessScanner.IsEntryPoint(script.Text);
+                var hasCompiledCompanion = compiledResRefs.Contains(
+                    choice.Prepared.Asset.ResRef);
+                if (isEntryPoint && !hasCompiledCompanion)
+                {
+                    throw new InvalidOperationException(
+                        $"Cannot import entry-point script '{choice.Prepared.Asset.FileName}' without " +
+                        $"its compiled companion '{choice.Prepared.Asset.ResRef}.ncs'. Include the " +
+                        "matching NCS from the same build, or import this source after compiling it.");
+                }
 
-                throw new InvalidOperationException(
-                    $"Cannot import entry-point script '{choice.Prepared.Asset.FileName}' without " +
-                    $"its compiled companion '{choice.Prepared.Asset.ResRef}.ncs'. Include the " +
-                    "matching NCS from the same build, or import this source after compiling it.");
+                if (isEntryPoint || hasCompiledCompanion)
+                {
+                    if (!isEntryPoint)
+                    {
+                        throw new InvalidOperationException(
+                            $"Cannot import include-only script '{choice.Prepared.Asset.FileName}' " +
+                            "with a compiled NCS companion. Remove the stale bytecode from the " +
+                            "archive before importing.");
+                    }
+
+                    continue;
+                }
+
+                var targetResRef = renameMap.TryGetValue(
+                    ArchiveKey("nss", choice.Prepared.Asset.ResRef),
+                    out var renamed)
+                    ? renamed
+                    : choice.Prepared.Asset.ResRef;
+                var staleCompiledPath = ModuleDestination(moduleRoot, "ncs", targetResRef);
+                if (File.Exists(staleCompiledPath))
+                {
+                    throw new InvalidOperationException(
+                        $"Cannot import include-only script '{choice.Prepared.Asset.FileName}' while " +
+                        $"the stale compiled artifact '{targetResRef}.ncs' exists. Remove the NCS or " +
+                        "import a matching source/bytecode pair.");
+                }
             }
         }
 
@@ -1415,8 +1504,10 @@ namespace SWLOR.Toolset.Services
                     var referencedExtension = ReferencedExtension(name, containingList);
                     var current = field.GetString();
                     if (referencedExtension != null &&
-                        renameMap.TryGetValue(
-                            ArchiveKey(referencedExtension, current),
+                        TryGetReferenceRename(
+                            referencedExtension,
+                            current,
+                            renameMap,
                             out var replacement))
                     {
                         field.SetString(replacement);
@@ -1449,6 +1540,9 @@ namespace SWLOR.Toolset.Services
             if (fieldName.Equals("InventoryRes", StringComparison.OrdinalIgnoreCase))
                 return "uti";
 
+            if (fieldName.Equals("EquippedRes", StringComparison.OrdinalIgnoreCase))
+                return "uti";
+
             if (fieldName.Equals("Area_Name", StringComparison.OrdinalIgnoreCase))
                 return "are";
 
@@ -1475,6 +1569,30 @@ namespace SWLOR.Toolset.Services
             }
 
             return null;
+        }
+
+        private static bool TryGetReferenceRename(
+            string extension,
+            string resRef,
+            IReadOnlyDictionary<string, string> renameMap,
+            out string replacement)
+        {
+            if (renameMap.TryGetValue(ArchiveKey(extension, resRef), out replacement!))
+                return true;
+
+            return extension.Equals("nss", StringComparison.OrdinalIgnoreCase) &&
+                   renameMap.TryGetValue(ArchiveKey("ncs", resRef), out replacement!);
+        }
+
+        internal static bool CanRenameResource(string extension, string resRef)
+        {
+            return !(
+                (extension.Equals("ifo", StringComparison.OrdinalIgnoreCase) &&
+                 resRef.Equals("module", StringComparison.OrdinalIgnoreCase)) ||
+                (extension.Equals("fac", StringComparison.OrdinalIgnoreCase) &&
+                 resRef.Equals("repute", StringComparison.OrdinalIgnoreCase)) ||
+                (extension.Equals("jrl", StringComparison.OrdinalIgnoreCase) &&
+                 resRef.Equals("module", StringComparison.OrdinalIgnoreCase)));
         }
 
         private static string? GameSourceRoot(string moduleRoot)
@@ -1512,7 +1630,11 @@ namespace SWLOR.Toolset.Services
             var itemSources = ItemObtainabilityIndex.Build(
                 workspace,
                 GameSourceRoot(workspace.ModuleRoot),
-                sourceOverrides);
+                sourceOverrides,
+                plan.Where(entry => entry.Extension.Equals(
+                        "nss",
+                        StringComparison.OrdinalIgnoreCase))
+                    .Select(entry => entry.StagedPath));
             foreach (var item in importedItems)
             {
                 using (EditScope.EnterConstruction())
@@ -1537,6 +1659,12 @@ namespace SWLOR.Toolset.Services
         {
             source = ReplaceScriptResRef(source, IncludePattern, "nss", renameMap);
             source = ReplaceScriptResRef(source, CreateItemPattern, "uti", renameMap);
+            source = ReplaceScriptResRef(
+                source,
+                ExecuteScriptPattern,
+                "nss",
+                renameMap,
+                allowCompiledFallback: true);
             return CreateObjectPattern.Replace(source, match =>
             {
                 var extension = ScriptObjectExtension(match.Groups["type"].Value) ?? string.Empty;
@@ -1562,22 +1690,31 @@ namespace SWLOR.Toolset.Services
             string source,
             Regex pattern,
             string extension,
-            IReadOnlyDictionary<string, string> renameMap)
+            IReadOnlyDictionary<string, string> renameMap,
+            bool allowCompiledFallback = false)
         {
             return pattern.Replace(
                 source,
-                match => ReplaceScriptResRefMatch(match, extension, renameMap));
+                match => ReplaceScriptResRefMatch(
+                    match,
+                    extension,
+                    renameMap,
+                    allowCompiledFallback));
         }
 
         private static string ReplaceScriptResRefMatch(
             Match match,
             string extension,
-            IReadOnlyDictionary<string, string> renameMap)
+            IReadOnlyDictionary<string, string> renameMap,
+            bool allowCompiledFallback = false)
         {
             var group = match.Groups["resref"];
-            if (!renameMap.TryGetValue(
+            var hasReplacement = allowCompiledFallback
+                ? TryGetReferenceRename(extension, group.Value, renameMap, out var replacement)
+                : renameMap.TryGetValue(
                     ArchiveKey(extension, group.Value),
-                    out var replacement))
+                    out replacement!);
+            if (!hasReplacement)
             {
                 return match.Value;
             }
@@ -2086,7 +2223,10 @@ namespace SWLOR.Toolset.Services
             bool IsMetadata,
             ErfDestinationFingerprint? ExpectedDestination);
 
-        private sealed record ErfResourceReference(string Extension, string ResRef);
+        private sealed record ErfResourceReference(
+            string Extension,
+            string ResRef,
+            bool AllowCompiledFallback = false);
     }
 
     public sealed class ErfImportRecoveryException(string message, Exception innerException)

@@ -165,10 +165,14 @@ namespace SWLOR.Toolset.Archives
                 if (!IsPrepared)
                     return Array.Empty<string>();
                 if (_preparedImports.All(item => item.Conflict == ErfConflictKind.New))
-                    return new[] { "Add", "Rename imported", "Skip" };
+                    return SupportsRename
+                        ? new[] { "Add", "Rename imported", "Skip" }
+                        : new[] { "Add", "Skip" };
                 if (_preparedImports.All(item => item.Conflict == ErfConflictKind.Identical))
                     return new[] { "Skip", "Replace" };
-                return new[] { "Keep existing", "Replace", "Rename imported" };
+                return SupportsRename
+                    ? new[] { "Keep existing", "Replace", "Rename imported" }
+                    : new[] { "Keep existing", "Replace" };
             }
         }
 
@@ -186,7 +190,12 @@ namespace SWLOR.Toolset.Archives
         }
 
         public bool CanRename =>
+            SupportsRename &&
             string.Equals(ConflictActionLabel, "Rename imported", StringComparison.Ordinal);
+
+        private bool SupportsRename =>
+            _archiveAssets.All(asset =>
+                ErfArchiveService.CanRenameResource(asset.Extension, asset.ResRef));
 
         public string RenameResRef
         {

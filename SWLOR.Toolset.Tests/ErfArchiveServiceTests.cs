@@ -840,6 +840,165 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task CompiledOnlyEventScriptsAreDiscoveredAndRewritten()
+        {
+            const string creatureResRef = "compiled_ref";
+            const string scriptResRef = "compiled_only";
+            const string renamedScriptResRef = "compiled_exec";
+            var creature = JsonGffDocument.Parse(
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utc,
+                    creatureResRef,
+                    "Compiled Script User"));
+            using (EditScope.EnterConstruction())
+            {
+                new UtcDocument(creature).ScriptSpawn = scriptResRef;
+            }
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "utc", $"{creatureResRef}.utc.json"),
+                creature.ToBytes());
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "ncs", $"{scriptResRef}.ncs"),
+                new byte[] { 0x4e, 0x43, 0x53, 0x20, 0x01 });
+
+            var archivePath = Path.Combine(_root, "compiled-event-script.erf");
+            await _service.ExportAsync(
+                new[] { $"{creatureResRef}.utc", $"{scriptResRef}.ncs" },
+                archivePath);
+            using var archive = await _service.OpenArchiveAsync(archivePath);
+
+            var dependencies = await _service.FindImportDependenciesAsync(
+                archive,
+                new[] { $"{creatureResRef}.utc" });
+            dependencies.Should().ContainSingle(dependency =>
+                dependency.FileName == $"{scriptResRef}.ncs");
+
+            _workspace.Open(_secondModule);
+            var prepared = await _service.PrepareImportAsync(
+                archive,
+                archive.Assets.Select(asset => asset.FileName).ToList());
+            await _service.ImportAsync(prepared.Select(item =>
+                new ErfImportChoice(
+                    item,
+                    item.Asset.Extension == "ncs"
+                        ? ErfConflictAction.Rename
+                        : ErfConflictAction.Add,
+                    item.Asset.Extension == "ncs" ? renamedScriptResRef : null)).ToList());
+
+            var importedCreature = JsonGffDocument.Load(
+                Path.Combine(_secondModule, "utc", $"{creatureResRef}.utc.json"));
+            importedCreature.Root.Get("ScriptSpawn").GetString()
+                .Should().Be(renamedScriptResRef);
+            File.Exists(Path.Combine(
+                _secondModule,
+                "ncs",
+                $"{renamedScriptResRef}.ncs")).Should().BeTrue();
+        }
+
+        [Test]
+        public async Task ExecuteScriptLiteralsDiscoverAndRewriteCompiledCallees()
+        {
+            const string callerResRef = "script_caller";
+            const string calleeResRef = "script_callee";
+            const string renamedCalleeResRef = "renamed_callee";
+            File.WriteAllText(
+                Path.Combine(_firstModule, "nss", $"{callerResRef}.nss"),
+                $"void RunCallee() {{ ExecuteScript(\"{calleeResRef}\", OBJECT_SELF); }}\n");
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "ncs", $"{calleeResRef}.ncs"),
+                new byte[] { 0x4e, 0x43, 0x53, 0x20, 0x02 });
+
+            var archivePath = Path.Combine(_root, "execute-script.erf");
+            await _service.ExportAsync(
+                new[] { $"{callerResRef}.nss", $"{calleeResRef}.ncs" },
+                archivePath);
+            using var archive = await _service.OpenArchiveAsync(archivePath);
+
+            var dependencies = await _service.FindImportDependenciesAsync(
+                archive,
+                new[] { $"{callerResRef}.nss" });
+            dependencies.Should().ContainSingle(dependency =>
+                dependency.FileName == $"{calleeResRef}.ncs");
+
+            _workspace.Open(_secondModule);
+            var prepared = await _service.PrepareImportAsync(
+                archive,
+                archive.Assets.Select(asset => asset.FileName).ToList());
+            await _service.ImportAsync(prepared.Select(item =>
+                new ErfImportChoice(
+                    item,
+                    item.Asset.Extension == "ncs"
+                        ? ErfConflictAction.Rename
+                        : ErfConflictAction.Add,
+                    item.Asset.Extension == "ncs" ? renamedCalleeResRef : null)).ToList());
+
+            File.ReadAllText(Path.Combine(
+                    _secondModule,
+                    "nss",
+                    $"{callerResRef}.nss"))
+                .Should().Contain($"ExecuteScript(\"{renamedCalleeResRef}\"");
+        }
+
+        [Test]
+        public async Task EquippedItemsAreDiscoveredAndRewritten()
+        {
+            const string creatureResRef = "equipped_user";
+            const string itemResRef = "equipped_item";
+            const string renamedItemResRef = "renamed_equip";
+            var creature = JsonGffDocument.Parse(
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utc,
+                    creatureResRef,
+                    "Equipped Item User"));
+            using (EditScope.EnterConstruction())
+            {
+                var equipment = SyntheticGit.Instance(
+                    ("EquippedRes", GffFieldType.ResRef, itemResRef));
+                var equipmentList = creature.Root.Get("Equip_ItemList");
+                equipmentList.InsertElement(equipmentList.Elements!.Count, equipment);
+            }
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "utc", $"{creatureResRef}.utc.json"),
+                creature.ToBytes());
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "uti", $"{itemResRef}.uti.json"),
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Uti,
+                    itemResRef,
+                    "Equipped Item"));
+
+            var archivePath = Path.Combine(_root, "equipped-item.erf");
+            await _service.ExportAsync(
+                new[] { $"{creatureResRef}.utc", $"{itemResRef}.uti" },
+                archivePath);
+            using var archive = await _service.OpenArchiveAsync(archivePath);
+
+            var dependencies = await _service.FindImportDependenciesAsync(
+                archive,
+                new[] { $"{creatureResRef}.utc" });
+            dependencies.Should().ContainSingle(dependency =>
+                dependency.FileName == $"{itemResRef}.uti");
+
+            _workspace.Open(_secondModule);
+            var prepared = await _service.PrepareImportAsync(
+                archive,
+                archive.Assets.Select(asset => asset.FileName).ToList());
+            await _service.ImportAsync(prepared.Select(item =>
+                new ErfImportChoice(
+                    item,
+                    item.Asset.Extension == "uti"
+                        ? ErfConflictAction.Rename
+                        : ErfConflictAction.Add,
+                    item.Asset.Extension == "uti" ? renamedItemResRef : null)).ToList());
+
+            var importedCreature = JsonGffDocument.Load(
+                Path.Combine(_secondModule, "utc", $"{creatureResRef}.utc.json"));
+            importedCreature.Root.Get("Equip_ItemList").Elements!
+                .Should().ContainSingle()
+                .Which.Get("EquippedRes").GetString().Should().Be(renamedItemResRef);
+        }
+
+        [Test]
         public async Task ImportingScriptSourceReplacesAStaleCompiledCompanion()
         {
             _workspace.Open(_secondModule);
@@ -1259,6 +1418,152 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task StagedScriptsCountAsPlayerSourcesBeforeNoEconomyIsApplied()
+        {
+            _workspace.Open(_secondModule);
+            const string itemResRef = "scripted_item";
+            var itemSource = Path.Combine(_root, $"{itemResRef}.uti.json");
+            var item = JsonGffDocument.Parse(
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Uti,
+                    itemResRef,
+                    "Scripted Item"));
+            new VarTable(item.Root).Remove(BlueprintTemplateFactory.NoEconomyVariable);
+            File.WriteAllBytes(itemSource, item.ToBytes());
+
+            var scriptSource = Path.Combine(_root, "grant_item.nss");
+            File.WriteAllText(
+                scriptSource,
+                $"void GrantItem() {{ CreateItemOnObject(\"{itemResRef}\", OBJECT_SELF); }}\n");
+
+            await _service.ImportAsync(new[]
+            {
+                CreateImportChoice(itemSource, itemResRef, "uti", ErfConflictAction.Add),
+                CreateImportChoice(scriptSource, "grant_item", "nss", ErfConflictAction.Add)
+            });
+
+            var importedItem = JsonGffDocument.Load(
+                Path.Combine(_secondModule, "uti", $"{itemResRef}.uti.json"));
+            new VarTable(importedItem.Root)
+                .GetInt(BlueprintTemplateFactory.NoEconomyVariable)
+                .Should().NotBe(
+                    1,
+                    "the staged script grants the item in the same transaction");
+        }
+
+        [Test]
+        public async Task FixedNameModuleResourcesCannotBeRenamed()
+        {
+            EnsureModuleIfo(_secondModule);
+            _workspace.Open(_secondModule);
+            var source = Path.Combine(_root, "module.ifo.json");
+            File.Copy(
+                Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"),
+                source);
+            var asset = new ErfArchiveAsset(
+                "module.ifo",
+                "module",
+                "ifo",
+                new FileInfo(source).Length,
+                IsSupported: true,
+                TypeName: "Module properties",
+                UnsupportedReason: null);
+            var prepared = new ErfPreparedImport(
+                asset,
+                source,
+                Path.Combine(_secondModule, "ifo", "module.ifo.json"),
+                ErfConflictKind.Different,
+                ErfConflictAction.KeepExisting);
+            var row = new ErfAssetRow(asset);
+            row.ApplyPrepared(new[] { prepared });
+
+            row.AvailableActions.Should().NotContain("Rename imported");
+            row.ConflictActionLabel = "Rename imported";
+            row.CanRename.Should().BeFalse();
+
+            var action = () => _service.ImportAsync(new[]
+            {
+                new ErfImportChoice(prepared, ErfConflictAction.Rename, "module_imp")
+            });
+
+            await action.Should().ThrowAsync<InvalidOperationException>()
+                .WithMessage("*fixed-name module resource*cannot be renamed*");
+            File.Exists(Path.Combine(
+                _secondModule,
+                "ifo",
+                "module_imp.ifo.json")).Should().BeFalse();
+        }
+
+        [Test]
+        public async Task AreaRegistrationMergesIntoTheSelectedModuleIfo()
+        {
+            EnsureModuleIfo(_secondModule);
+            _workspace.Open(_secondModule);
+            const string areaResRef = "merged_ifo_area";
+            var importedIfo = Path.Combine(_root, "selected_module.ifo.json");
+            File.Copy(
+                Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"),
+                importedIfo);
+            var choices = new List<ErfImportChoice>
+            {
+                CreateImportChoice(
+                    importedIfo,
+                    "module",
+                    "ifo",
+                    ErfConflictAction.Replace)
+            };
+            foreach (var extension in new[] { "are", "git", "gic" })
+            {
+                var source = Path.Combine(_root, $"{areaResRef}.{extension}.json");
+                File.WriteAllBytes(
+                    source,
+                    new JsonGffDocument(
+                        extension.ToUpperInvariant() + " ",
+                        new JsonGffStruct()).ToBytes());
+                choices.Add(CreateImportChoice(
+                    source,
+                    areaResRef,
+                    extension,
+                    ErfConflictAction.Add));
+            }
+
+            var result = await _service.ImportAsync(choices);
+
+            result.Imported.Should().Be(4);
+            result.Replaced.Should().Be(1);
+            IfoDocument.Load(Path.Combine(_secondModule, "ifo", "module.ifo.json"))
+                .AreaResRefs.Should().Contain(areaResRef);
+        }
+
+        [Test]
+        public async Task IncludeOnlyReplacementRefusesToLeaveStaleBytecode()
+        {
+            _workspace.Open(_secondModule);
+            const string resRef = "changed_include";
+            var source = Path.Combine(_root, $"{resRef}.nss");
+            var destinationSource = Path.Combine(_secondModule, "nss", $"{resRef}.nss");
+            var destinationBytecode = Path.Combine(_secondModule, "ncs", $"{resRef}.ncs");
+            File.WriteAllText(source, "int NewHelper() { return 2; }\n");
+            File.WriteAllText(destinationSource, "void main() {}\n");
+            var originalBytecode = new byte[] { 0x4e, 0x43, 0x53, 0x20, 0x03 };
+            File.WriteAllBytes(destinationBytecode, originalBytecode);
+
+            var action = () => _service.ImportAsync(new[]
+            {
+                CreateImportChoice(
+                    source,
+                    resRef,
+                    "nss",
+                    ErfConflictAction.Replace)
+            });
+
+            await action.Should().ThrowAsync<InvalidOperationException>()
+                .WithMessage("*include-only script*stale compiled artifact*");
+            File.ReadAllText(destinationSource).Should().Be("void main() {}\n");
+            File.ReadAllBytes(destinationBytecode).Should().Equal(originalBytecode);
+        }
+
+        [Test]
         public async Task ImportRefusesToReplaceAResourceChangedAfterPreparation()
         {
             _workspace.Open(_secondModule);
@@ -1451,6 +1756,42 @@ namespace SWLOR.Toolset.Tests
             }
             IfoDocument.Load(Path.Combine(_secondModule, "ifo", "module.ifo.json"))
                 .AreaResRefs.Should().Contain("new_area");
+        }
+
+        private ErfImportChoice CreateImportChoice(
+            string sourcePath,
+            string resRef,
+            string extension,
+            ErfConflictAction action,
+            string? renameResRef = null)
+        {
+            var fileName = $"{resRef}.{extension}";
+            var destinationName = extension is "nss" or "ncs"
+                ? fileName
+                : $"{fileName}.json";
+            var destination = Path.Combine(_secondModule, extension, destinationName);
+            var conflict = File.Exists(destination)
+                ? ErfConflictKind.Different
+                : ErfConflictKind.New;
+            var asset = new ErfArchiveAsset(
+                fileName,
+                resRef,
+                extension,
+                new FileInfo(sourcePath).Length,
+                IsSupported: true,
+                TypeName: extension,
+                UnsupportedReason: null);
+            return new ErfImportChoice(
+                new ErfPreparedImport(
+                    asset,
+                    sourcePath,
+                    destination,
+                    conflict,
+                    conflict == ErfConflictKind.New
+                        ? ErfConflictAction.Add
+                        : ErfConflictAction.KeepExisting),
+                action,
+                renameResRef);
         }
 
         private static void CreateModuleFolders(string moduleRoot)

@@ -63,7 +63,8 @@ namespace SWLOR.Toolset.Domain.Workspace
         public static ItemObtainabilityIndex Build(
             ModuleWorkspace workspace,
             string? gameSourceRoot,
-            IEnumerable<(ResourceType Type, string ResRef, string SourcePath)>? blueprintOverrides = null)
+            IEnumerable<(ResourceType Type, string ResRef, string SourcePath)>? blueprintOverrides = null,
+            IEnumerable<string>? additionalLiteralSourcePaths = null)
         {
             ArgumentNullException.ThrowIfNull(workspace);
 
@@ -84,6 +85,28 @@ namespace SWLOR.Toolset.Domain.Workspace
 
             if (!string.IsNullOrWhiteSpace(gameSourceRoot) && Directory.Exists(gameSourceRoot))
                 IndexGameCode(gameSourceRoot, sources);
+
+            if (additionalLiteralSourcePaths != null)
+            {
+                foreach (var sourcePath in additionalLiteralSourcePaths)
+                {
+                    if (string.IsNullOrWhiteSpace(sourcePath))
+                        continue;
+
+                    try
+                    {
+                        IndexCreateOrCopyLiterals(
+                            Path.GetFileName(sourcePath),
+                            File.ReadAllText(sourcePath),
+                            sources);
+                    }
+                    catch (Exception)
+                    {
+                        // A malformed or inaccessible staged source must not hide the other
+                        // obtainability sources. Its import validation reports the file error.
+                    }
+                }
+            }
 
             return new ItemObtainabilityIndex(sources);
         }

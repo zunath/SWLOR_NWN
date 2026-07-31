@@ -428,12 +428,10 @@ namespace SWLOR.Toolset.Workspace
             if (parts.Count == 0)
                 return null;
 
-            // Aurora keeps weighted garments as separate visuals. An equipped robe also owns the
-            // animation tree for the assembled character: pmh0_robe010 declares a_ba_coat, whose
-            // shared torso/arm tracks keep the rigid chest synchronized while its coat-only tracks
-            // place the weighted waist and tails around that chest. Driving both pieces from the
-            // plain mannequin idle leaves the sash and waist on different authored poses and makes
-            // one cut through the other.
+            // Aurora keeps weighted garments as separate visuals. A robe's a_ba_coat supermodel is
+            // an overlay: it supplies coat-helper tracks and body rotations, but deliberately omits
+            // translations shared with the wearer. Those missing channels must inherit the wearer's
+            // bind pose; taking them from the robe's zeroed skin skeleton collapses the legs upward.
             var skinParts = new List<(string PartType, MdlModel Model)>();
             var rigidParts = new List<(string PartType, string ModelResRef)>();
             foreach (var part in parts)
@@ -451,11 +449,18 @@ namespace SWLOR.Toolset.Workspace
                 .Where(part => part.PartType.Equals("robe", StringComparison.OrdinalIgnoreCase))
                 .Select(part => part.Model)
                 .FirstOrDefault();
-            var sharedFrames = weightedRobe != null
-                ? IdleFrames(weightedRobe)
-                : skeleton == null
-                    ? null
-                    : IdleFrames(skeleton);
+            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? sharedFrames = null;
+            if (weightedRobe != null)
+            {
+                sharedFrames = skeleton == null
+                    ? IdleFrames(weightedRobe)
+                    : LayeredGarmentIdleFrames(weightedRobe, skeleton);
+            }
+            else if (skeleton != null)
+            {
+                sharedFrames = IdleFrames(skeleton);
+            }
+
             if (rigidParts.Count > 0)
             {
                 MdlModel? composed;
@@ -516,6 +521,29 @@ namespace SWLOR.Toolset.Workspace
             var frames = MdlAnimationPose.SampleIdleFrames(
                 model,
                 superModel => LoadMdl(superModel, withSupermodelAnims: true));
+            return frames.Select(frame => frame.Pose).ToList();
+        }
+
+        /// <summary>
+        /// Samples a garment overlay with wearer bones providing the bind transform for every
+        /// shared name. Garment-only helpers remain sourced from the garment, so coat panels move
+        /// without replacing the mannequin's complete skeleton.
+        /// </summary>
+        private IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> LayeredGarmentIdleFrames(
+            MdlModel garment,
+            MdlModel wearer)
+        {
+            var bindPose = MdlAnimationPose.BindPose(garment).ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value,
+                StringComparer.OrdinalIgnoreCase);
+            foreach (var (name, node) in MdlAnimationPose.BindPose(wearer))
+                bindPose[name] = node;
+
+            var frames = MdlAnimationPose.SampleIdleFrames(
+                garment,
+                superModel => LoadMdl(superModel, withSupermodelAnims: true),
+                bindPose);
             return frames.Select(frame => frame.Pose).ToList();
         }
 

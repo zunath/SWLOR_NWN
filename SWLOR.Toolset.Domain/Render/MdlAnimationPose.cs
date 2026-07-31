@@ -209,7 +209,29 @@ namespace SWLOR.Toolset.Domain.Render
             int framesPerSecond = 20,
             int maxFrames = 60)
         {
+            return SampleIdleFrames(
+                model,
+                loadSuperModel,
+                BindPose(model),
+                framesPerSecond,
+                maxFrames);
+        }
+
+        /// <summary>
+        /// The idle sampled against an explicit geometry bind pose. This is used for Aurora
+        /// animation overlays such as <c>a_ba_coat</c>: their animation owns coat-helper tracks,
+        /// while untracked channels on shared body bones must retain the wearer's authored
+        /// translations rather than the garment visual's zeroed skin skeleton.
+        /// </summary>
+        public static IReadOnlyList<IdleFrame> SampleIdleFrames(
+            MdlModel? model,
+            Func<string, MdlModel?> loadSuperModel,
+            IReadOnlyDictionary<string, MdlNode> bindPose,
+            int framesPerSecond = 20,
+            int maxFrames = 60)
+        {
             ArgumentNullException.ThrowIfNull(loadSuperModel);
+            ArgumentNullException.ThrowIfNull(bindPose);
 
             var (animation, owner) = FindIdleInChain(model, loadSuperModel);
             if (animation == null || owner == null)
@@ -218,7 +240,7 @@ namespace SWLOR.Toolset.Domain.Render
             var inheritedScale = ReferenceEquals(owner, model)
                 ? 1f
                 : AnimationScale(model);
-            return SampleFrames(animation, framesPerSecond, maxFrames, BindPose(model))
+            return SampleFrames(animation, framesPerSecond, maxFrames, bindPose)
                 .Select(frame => new IdleFrame(
                     ScaleTranslations(frame.Pose, inheritedScale),
                     frame.Seconds))

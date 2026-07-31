@@ -124,7 +124,7 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void ChimedClothesRobeOwnsTheSharedCoatIdle()
+        public void ChimedClothesRobeLayersCoatIdleOverWearerBind()
         {
             var renderer = BuildRenderer(out var index);
 
@@ -159,34 +159,60 @@ namespace SWLOR.Toolset.Tests.Items
                 return new MdlReader().Parse(handle.GetBytes());
             }
 
-            var coatFrames = MdlAnimationPose.SampleIdleFrames(source, LoadModel)
+            var wearer = LoadModel("pmh0")!;
+            var layeredBind = MdlAnimationPose.BindPose(source).ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value,
+                StringComparer.OrdinalIgnoreCase);
+            foreach (var (name, node) in MdlAnimationPose.BindPose(wearer))
+                layeredBind[name] = node;
+
+            var layeredFrames = MdlAnimationPose.SampleIdleFrames(source, LoadModel, layeredBind)
                 .Select(frame => frame.Pose)
                 .ToList();
-            var coatPoseRobe = MdlMeshBuilder.Build(source, coatFrames).Meshes
-                .Single(mesh =>
-                    mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&
-                    mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase));
-            var body = LoadModel("pmh0")!;
-            var bodyFrames = MdlAnimationPose.SampleIdleFrames(body, LoadModel)
-                .Select(frame => frame.Pose)
-                .ToList();
-            var wearerPoseRobe = MdlMeshBuilder.Build(source, bodyFrames).Meshes
+            var layeredPoseRobe = MdlMeshBuilder.Build(source, layeredFrames).Meshes
                 .Single(mesh =>
                     mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&
                     mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase));
 
-            renderedRobe.PosePositions.Should().HaveCount(coatPoseRobe.PosePositions.Count);
-            for (var frame = 0; frame < coatPoseRobe.PosePositions.Count; frame++)
+            var unlayeredCoatFrames = MdlAnimationPose.SampleIdleFrames(source, LoadModel)
+                .Select(frame => frame.Pose)
+                .ToList();
+            var unlayeredCoatRobe = MdlMeshBuilder.Build(source, unlayeredCoatFrames).Meshes
+                .Single(mesh =>
+                    mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&
+                    mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase));
+
+            var wearerFrames = MdlAnimationPose.SampleIdleFrames(wearer, LoadModel)
+                .Select(frame => frame.Pose)
+                .ToList();
+            var wearerPoseRobe = MdlMeshBuilder.Build(source, wearerFrames).Meshes
+                .Single(mesh =>
+                    mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&
+                    mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase));
+
+            renderedRobe.PosePositions.Should().HaveCount(layeredPoseRobe.PosePositions.Count);
+            for (var frame = 0; frame < layeredPoseRobe.PosePositions.Count; frame++)
             {
                 renderedRobe.PosePositions[frame].Should().Equal(
-                    coatPoseRobe.PosePositions[frame],
-                    "the equipped robe declares a_ba_coat as the assembled character's animation owner");
+                    layeredPoseRobe.PosePositions[frame],
+                    "the coat overlay keeps its helper tracks while shared bones inherit the wearer bind");
             }
 
+            renderedRobe.PosePositions[0].Should().NotEqual(
+                unlayeredCoatRobe.PosePositions[0],
+                "sampling missing coat channels from the robe's zeroed bind collapses the lower body");
             renderedRobe.PosePositions[0].Should().NotEqual(
                 wearerPoseRobe.PosePositions[0],
                 "falling back to the plain wearer leaves coat-only helpers at bind and cuts the " +
                 "weighted waist through the rigid chest sash");
+
+            var bounds = model.ComputeBounds();
+            bounds.Should().NotBeNull();
+            bounds!.Value.Minimum.Z.Should().BeLessThan(0.2f,
+                "the feet remain at ground level instead of being pulled into the torso");
+            (bounds.Value.Maximum.Z - bounds.Value.Minimum.Z).Should().BeGreaterThan(1.5f,
+                "the assembled mannequin retains normal human height");
 
             var firstFrame = renderedRobe.PosePositions[0];
             var maximumAnimatedDisplacement = renderedRobe.PosePositions

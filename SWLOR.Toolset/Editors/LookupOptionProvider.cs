@@ -121,7 +121,7 @@ namespace SWLOR.Toolset.Editors
                     case LookupKeys.Races:
                         return FromTable(TwoDaLookupTables.Race);
                     case LookupKeys.CreatureMovementRates:
-                        return FromTable(TwoDaLookupTables.CreatureSpeed);
+                        return FromTable(TwoDaLookupTables.CreatureSpeed, showId: false);
                     case LookupKeys.TriggerTypes:
                         return TriggerTypeOptions;
                     case LookupKeys.WaypointAppearances when _waypointAppearances != null:

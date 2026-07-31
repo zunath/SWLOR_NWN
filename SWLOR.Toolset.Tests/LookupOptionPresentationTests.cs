@@ -91,6 +91,53 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void CreatureMovementRatesUseNamesWithoutExposingTheirEngineRowIds()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"movement-presentation-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "creaturespeed.2da"),
+                    "2DA V2.0\r\n\r\nLabel Name\r\n" +
+                    "0 PC_Movement ****\r\n" +
+                    "1 Immobile ****\r\n" +
+                    "2 Very_Slow ****\r\n" +
+                    "3 Slow ****\r\n" +
+                    "4 Normal ****\r\n" +
+                    "5 Fast ****\r\n" +
+                    "6 Very_Fast ****\r\n" +
+                    "7 Default ****\r\n" +
+                    "8 DM_Fast ****\r\n" +
+                    "9 Aircraft ****\r\n");
+                var lookup = new TwoDaLookupService(
+                    new TwoDaService(scratch),
+                    new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
+                var provider = new LookupOptionProvider(
+                    new WorkspaceContext(
+                        path => new Domain.Workspace.ModuleWorkspace(path),
+                        new OutputLogService()),
+                    twoDaLookups: lookup);
+
+                var options = provider.GetOptions(LookupKeys.CreatureMovementRates);
+
+                options.Select(option => option.Id).Should().Equal(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+                options.Select(option => option.ToString()).Should().Equal(
+                    "PC_Movement", "Immobile", "Very_Slow", "Slow", "Normal",
+                    "Fast", "Very_Fast", "Default", "DM_Fast", "Aircraft");
+                options.Select(option => option.BehaviorDisplay)
+                    .Should().Equal(options.Select(option => option.Display));
+                options.Should().OnlyContain(option => !option.ShowId);
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
         public void OtherLookupsKeepTheirIdPresentationByDefault()
         {
             var option = new LookupOption(7, "Default");

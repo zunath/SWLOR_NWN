@@ -393,8 +393,7 @@
           <ScrollViewer>
             <StackPanel Margin="14,10" Spacing="8">
               <!-- Fixed semantic rows keep the reading order stable. Independent masonry columns
-                   made Attributes appear after Resistances and allowed natural weapons to begin
-                   beside unrelated fields, so the tab looked different depending on card height. -->
+                   made related fields appear in different orders depending on card height. -->
               <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
                     ColumnSpacing="10" RowSpacing="8">
                 <Border x:Name="CreatureVitalsCard" Classes="card" Padding="12">
@@ -426,22 +425,6 @@
                 </Border>
               </Grid>
 
-              <Border x:Name="CreatureResistancesCard" Classes="card" Padding="12">
-                <StackPanel>
-                  <TextBlock Text="Resistances (−100 … 100)" Classes="section"
-                             Margin="0,0,0,6" />
-                  <ItemsControl ItemsSource="{Binding Stats.Resistances}">
-                    <ItemsControl.ItemsPanel>
-                      <ItemsPanelTemplate>
-                        <UniformGrid Columns="2" />
-                      </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                  </ItemsControl>
-                  <TextBlock Text="Negative values are vulnerabilities."
-                             Classes="dim" FontSize="11" Margin="0,4,0,0" />
-                </StackPanel>
-              </Border>
-
               <Border x:Name="CreatureSkillOverridesCard" Classes="card" Padding="12">
                 <StackPanel>
                   <TextBlock Text="Skill Overrides" Classes="section" Margin="0,0,0,3" />
@@ -460,6 +443,28 @@
                     <Button Grid.Column="1" Content="Add override"
                             Command="{Binding Stats.AddSkillOverrideCommand}" />
                   </Grid>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Resistances">
+          <ScrollViewer>
+            <StackPanel Margin="14,10" Spacing="8">
+              <Border x:Name="CreatureResistancesCard" Classes="card" Padding="12">
+                <StackPanel>
+                  <TextBlock Text="Resistances (−100 … 100)" Classes="section"
+                             Margin="0,0,0,6" />
+                  <ItemsControl ItemsSource="{Binding Stats.Resistances}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <UniformGrid Columns="2" />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                  </ItemsControl>
+                  <TextBlock Text="Negative values are vulnerabilities."
+                             Classes="dim" FontSize="11" Margin="0,4,0,0" />
                 </StackPanel>
               </Border>
             </StackPanel>

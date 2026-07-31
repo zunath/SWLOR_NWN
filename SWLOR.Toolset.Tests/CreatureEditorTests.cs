@@ -252,7 +252,6 @@ namespace SWLOR.Toolset.Tests
                 "CreatureAttributesCard",
                 "CreatureOffenseCard",
                 "CreatureDefenseCard",
-                "CreatureResistancesCard",
                 "CreatureSkillOverridesCard"
             };
 
@@ -265,9 +264,18 @@ namespace SWLOR.Toolset.Tests
             view.Should().Contain("<UniformGrid Columns=\"2\" />",
                 "the eight resistances should use the full tab width instead of one tall side column");
 
+            var statsStart = view.IndexOf("<TabItem Header=\"Stats\">", StringComparison.Ordinal);
+            var statsEnd = view.IndexOf("</TabItem>", statsStart, StringComparison.Ordinal);
+            var resistancesStart = view.IndexOf("<TabItem Header=\"Resistances\">", StringComparison.Ordinal);
+            var resistancesCard = view.IndexOf("CreatureResistancesCard", StringComparison.Ordinal);
+            var abilitiesStart = view.IndexOf("<TabItem Header=\"Abilities\">", StringComparison.Ordinal);
+            resistancesStart.Should().BeGreaterThan(statsEnd,
+                "resistances should be removed from the long Stats form");
+            resistancesCard.Should().BeGreaterThan(resistancesStart);
+            resistancesCard.Should().BeLessThan(abilitiesStart);
+
             var equipmentStart = view.IndexOf("CreatureEquipmentSections", StringComparison.Ordinal);
             var naturalWeapons = view.IndexOf("CreatureNaturalWeapons", StringComparison.Ordinal);
-            var statsStart = view.IndexOf("<TabItem Header=\"Stats\">", StringComparison.Ordinal);
             equipmentStart.Should().BeGreaterThanOrEqualTo(0);
             naturalWeapons.Should().BeGreaterThan(equipmentStart);
             naturalWeapons.Should().BeLessThan(statsStart,
@@ -871,7 +879,7 @@ namespace SWLOR.Toolset.Tests
                 tabs.Should().NotBeNull();
                 var tabItems = tabs!.Items.Cast<TabItem>().ToList();
                 tabItems.Select(tab => tab.Header?.ToString()).Should().Equal(
-                    "Basic", "Behavior", "Variables", "Appearance", "Equipment", "Stats", "Abilities", "AI", "Loot");
+                    "Basic", "Behavior", "Variables", "Appearance", "Equipment", "Stats", "Resistances", "Abilities", "AI", "Loot");
                 var flagsCard = view.FindControl<Border>("CreatureFlagsCard");
                 flagsCard.Should().NotBeNull();
                 flagsCard!.IsVisible.Should().BeTrue("Flags belong to the initially selected Basic tab");
@@ -929,7 +937,7 @@ namespace SWLOR.Toolset.Tests
                 view.FindControl<TextBlock>("CreatureEquipmentNoStats").Should().NotBeNull(
                     "an equipped item with no gameplay properties must say so explicitly");
 
-                tabs.SelectedIndex = 6;
+                tabs.SelectedItem = tabItems.Single(tab => tab.Header?.ToString() == "Abilities");
                 Dispatcher.UIThread.RunJobs();
                 var availableAbilities = view.FindControl<Border>("CreatureAvailableAbilities");
                 var assignedAbilities = view.FindControl<ScrollViewer>("CreatureAssignedAbilities");
@@ -962,7 +970,7 @@ namespace SWLOR.Toolset.Tests
                 Dispatcher.UIThread.RunJobs();
                 editor.Abilities.Assigned.Should().ContainSingle(entry => entry.FeatId == selectedAbility.FeatId);
 
-                tabs.SelectedIndex = 8;
+                tabs.SelectedItem = tabItems.Single(tab => tab.Header?.ToString() == "Loot");
                 editor.Loot.AddCommand.Execute(null);
                 Dispatcher.UIThread.RunJobs();
                 var lootEntry = editor.Loot.Entries.Should().ContainSingle().Which;

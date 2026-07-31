@@ -422,12 +422,64 @@ namespace SWLOR.Toolset.Tests
                 "probe_store",
                 resRef => resRef == "probe_item" ? item : null).Should().BeTrue();
 
+            StoreInstanceSynchronizer.Inspect(
+                    merchant,
+                    expected,
+                    "probe_store",
+                    resRef => resRef == "probe_item" ? item : null)
+                .Should().Be(new StoreInstanceSyncStatus(0, 0));
+
+            expanded.Remove("Cost").Should().BeTrue();
+            StoreInstanceSynchronizer.Inspect(
+                    merchant,
+                    expected,
+                    "probe_store",
+                    resRef => resRef == "probe_item" ? item : null)
+                .Should().Be(new StoreInstanceSyncStatus(1, 1));
+
+            expected = StoreInstanceSynchronizer.BuildExpected(
+                merchant,
+                expected,
+                "probe_store",
+                resRef => resRef == "probe_item" ? item : null);
+
             expected.SetInt("MarkUp", GffFieldType.Int, 175);
             StoreInstanceSynchronizer.IsCurrent(
                 merchant,
                 expected,
                 "probe_store",
                 resRef => resRef == "probe_item" ? item : null).Should().BeFalse();
+            StoreInstanceSynchronizer.Inspect(
+                    merchant,
+                    expected,
+                    "probe_store",
+                    resRef => resRef == "probe_item" ? item : null)
+                .Should().Be(new StoreInstanceSyncStatus(1, 0));
+        }
+
+        [Test]
+        public void InstanceSummaryReportsOutOfDateMerchantAndItemRecordCounts()
+        {
+            using var editor = new MerchantEditorViewModel(
+                NewMerchant(),
+                "probe_store",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+
+            editor.PlacedInstances.Add(new MerchantInstancePlacement(
+                "Area A", "area_a", "store_a", 0, 1, 2));
+            editor.PlacedInstances.Add(new MerchantInstancePlacement(
+                "Area B", "area_b", "store_b", 0, 1, 0));
+            editor.PlacedInstances.Add(new MerchantInstancePlacement(
+                "Area C", "area_c", "store_c", 0, 0, 0));
+
+            editor.InstanceSummary.Should().Be(
+                "2 merchant records and 2 item records out of date across 2 of 3 placed instances.");
+            editor.PlacedInstances[0].Status.Should().Be(
+                "1 merchant record, 2 item records out of date");
         }
 
         private static JsonGffStruct NewMerchant() =>

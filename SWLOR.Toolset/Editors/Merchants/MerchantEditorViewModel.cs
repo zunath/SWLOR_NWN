@@ -54,6 +54,10 @@ namespace SWLOR.Toolset.Editors.Merchants
         public bool HasItemCandidates => ItemCandidates.Count > 0;
         public bool HasPlacedInstances => PlacedInstances.Count > 0;
         public bool HasOutOfDateInstances => PlacedInstances.Any(instance => !instance.IsCurrent);
+        public int OutOfDateMerchantRecords =>
+            PlacedInstances.Sum(instance => instance.OutOfDateMerchantRecords);
+        public int OutOfDateItemRecords =>
+            PlacedInstances.Sum(instance => instance.OutOfDateItemRecords);
         public string InventorySummary =>
             $"{InventoryItems.Count} item{(InventoryItems.Count == 1 ? string.Empty : "s")} shown";
         public string CandidateSummary =>
@@ -62,12 +66,14 @@ namespace SWLOR.Toolset.Editors.Merchants
             $"{BuyingRules.Count} of {_allBuyingRules.Count} base item types";
         public string InstanceSummary =>
             PlacedInstances.Count == 0
-                ? "This merchant has no placed instances."
+                ? "0 merchant records and 0 item records out of date. This merchant has no placed instances."
                 : HasOutOfDateInstances
-                    ? $"{PlacedInstances.Count(instance => !instance.IsCurrent)} of {PlacedInstances.Count} placed " +
-                      $"instance{(PlacedInstances.Count == 1 ? string.Empty : "s")} out of date."
-                    : $"All {PlacedInstances.Count} placed instance{(PlacedInstances.Count == 1 ? string.Empty : "s")} " +
-                      "up to date.";
+                    ? $"{RecordCount(OutOfDateMerchantRecords, "merchant")} and " +
+                      $"{RecordCount(OutOfDateItemRecords, "item")} out of date across " +
+                      $"{PlacedInstances.Count(instance => !instance.IsCurrent)} of {PlacedInstances.Count} placed " +
+                      $"instance{(PlacedInstances.Count == 1 ? string.Empty : "s")}."
+                    : $"0 merchant records and 0 item records out of date. All {PlacedInstances.Count} placed " +
+                      $"instance{(PlacedInstances.Count == 1 ? string.Empty : "s")} up to date.";
         public string SelectedItemName => SelectedInventoryItem?.DisplayName ?? "No item selected";
         public string SelectedItemResRef => SelectedInventoryItem?.ResRef ?? string.Empty;
         public string SelectedItemSellPrice => SelectedInventoryItem?.SellPrice ?? "—";
@@ -574,6 +580,9 @@ namespace SWLOR.Toolset.Editors.Merchants
                 ? storePanel
                 : (int)MerchantInventoryCategory.Miscellaneous;
 
+        private static string RecordCount(int count, string kind) =>
+            $"{count} {kind} record{(count == 1 ? string.Empty : "s")}";
+
         private void BuildBuyingRules()
         {
             _allBuyingRules.Clear();
@@ -649,6 +658,8 @@ namespace SWLOR.Toolset.Editors.Merchants
         {
             OnPropertyChanged(nameof(HasPlacedInstances));
             OnPropertyChanged(nameof(HasOutOfDateInstances));
+            OnPropertyChanged(nameof(OutOfDateMerchantRecords));
+            OnPropertyChanged(nameof(OutOfDateItemRecords));
             OnPropertyChanged(nameof(InstanceSummary));
             UpdateOutOfDateInstancesCommand.NotifyCanExecuteChanged();
         }

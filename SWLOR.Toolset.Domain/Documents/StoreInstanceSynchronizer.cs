@@ -6,6 +6,14 @@ using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.Documents
 {
+    /// <summary>The source-backed records that the CLI-style store expansion would replace.</summary>
+    public sealed record StoreInstanceSyncStatus(
+        int OutOfDateMerchantRecords,
+        int OutOfDateItemRecords)
+    {
+        public bool IsCurrent => OutOfDateMerchantRecords == 0 && OutOfDateItemRecords == 0;
+    }
+
     /// <summary>
     /// Builds the canonical placed-store shape used by the CLI store synchronizer while preserving
     /// placement and per-slot metadata owned by the instance.
@@ -59,9 +67,51 @@ namespace SWLOR.Toolset.Domain.Documents
             JsonGffStruct placedStore,
             string storeResRef,
             Func<string, JsonGffDocument?> loadItemBlueprint) =>
-            Equivalent(
+            Inspect(storeBlueprint, placedStore, storeResRef, loadItemBlueprint).IsCurrent;
+
+        /// <summary>
+        /// Counts stale records with the same semantics as SWLOR.CLI's store sync report: the
+        /// placed store is one merchant record when its canonical expansion differs, and each
+        /// existing source-backed embedded item that differs from its UTI is one item record.
+        /// Missing/extra inventory membership is represented by the stale merchant record because
+        /// there is no corresponding embedded item record to compare.
+        /// </summary>
+        public static StoreInstanceSyncStatus Inspect(
+            JsonGffDocument storeBlueprint,
+            JsonGffStruct placedStore,
+            string storeResRef,
+            Func<string, JsonGffDocument?> loadItemBlueprint)
+        {
+            var expected = BuildExpected(
+                storeBlueprint,
                 placedStore,
-                BuildExpected(storeBlueprint, placedStore, storeResRef, loadItemBlueprint));
+                storeResRef,
+                loadItemBlueprint);
+            if (Equivalent(placedStore, expected))
+                return new StoreInstanceSyncStatus(0, 0);
+
+            var outOfDateItems = 0;
+            var existingItems = ExistingItemLookup(placedStore);
+            foreach (var pane in expected.GetListOrEmpty("StoreList"))
+            {
+                foreach (var expectedItem in pane.GetListOrEmpty("ItemList"))
+                {
+                    var itemResRef = ItemResRef(expectedItem);
+                    var existingItem = TakeExisting(existingItems, itemResRef);
+                    if (existingItem == null ||
+                        string.IsNullOrWhiteSpace(itemResRef) ||
+                        loadItemBlueprint(itemResRef) == null)
+                    {
+                        continue;
+                    }
+
+                    if (!Equivalent(existingItem, expectedItem))
+                        outOfDateItems++;
+                }
+            }
+
+            return new StoreInstanceSyncStatus(1, outOfDateItems);
+        }
 
         public static bool Equivalent(JsonGffStruct left, JsonGffStruct right)
         {

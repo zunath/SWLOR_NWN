@@ -14,9 +14,17 @@ namespace SWLOR.Toolset.Editors.Merchants
         string AreaResRef,
         string Tag,
         int InstanceIndex,
-        bool IsCurrent)
+        int OutOfDateMerchantRecords,
+        int OutOfDateItemRecords)
     {
-        public string Status => IsCurrent ? "Up to date" : "Out of date";
+        public bool IsCurrent => OutOfDateMerchantRecords == 0 && OutOfDateItemRecords == 0;
+        public string Status => IsCurrent
+            ? "Up to date"
+            : $"{RecordCount(OutOfDateMerchantRecords, "merchant")}, " +
+              $"{RecordCount(OutOfDateItemRecords, "item")} out of date";
+
+        private static string RecordCount(int count, string kind) =>
+            $"{count} {kind} record{(count == 1 ? string.Empty : "s")}";
     }
 
     /// <summary>
@@ -117,13 +125,18 @@ namespace SWLOR.Toolset.Editors.Merchants
                         continue;
                     }
 
+                    var status = StoreInstanceSynchronizer.Inspect(
+                        merchant,
+                        store,
+                        merchantResRef,
+                        LoadItem);
                     placements.Add(new MerchantInstancePlacement(
                         areaName,
                         areaResRef,
                         store.GetStringOrNull("Tag") ?? string.Empty,
                         index,
-                        StoreInstanceSynchronizer.IsCurrent(
-                            merchant, store, merchantResRef, LoadItem)));
+                        status.OutOfDateMerchantRecords,
+                        status.OutOfDateItemRecords));
                 }
             }
 

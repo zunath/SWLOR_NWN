@@ -100,6 +100,8 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, Doors.DoorDocumentViewModel> _openDoorEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Creatures.CreatureDocumentViewModel> _openCreatureEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<Creatures.CreatureEquipmentChoice>? _creatureEquipmentChoices;
+        private readonly Dictionary<string, Creatures.CreatureEquipmentChoice> _creatureEquipmentDetails =
+            new(StringComparer.OrdinalIgnoreCase);
         private Creatures.CreatureSoundSetPreviewResolver? _creatureSoundSetPreviews;
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice>? _doorAppearances;
         private readonly Dictionary<string, Items.ItemDocumentViewModel> _openItemEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -306,6 +308,7 @@ namespace SWLOR.Toolset.Editors
                 _merchantItemCatalog = null;
                 _merchantItemDetails.Clear();
                 _creatureEquipmentChoices = null;
+                _creatureEquipmentDetails.Clear();
                 _itemSourcesGeneration++;
                 _behaviorValues?.InvalidateModuleSources();
 
@@ -331,6 +334,7 @@ namespace SWLOR.Toolset.Editors
                     _merchantItemCatalog = null;
                     _merchantItemDetails.Remove(refreshedResRef);
                     _creatureEquipmentChoices = null;
+                    _creatureEquipmentDetails.Remove(refreshedResRef);
                     foreach (var merchant in _openMerchantEditors.Values)
                         merchant.Editor.RefreshItemCatalog();
                 }
@@ -447,6 +451,7 @@ namespace SWLOR.Toolset.Editors
             _choiceSets.Clear();
             _creatureAppearanceOptions = null;
             _creatureEquipmentChoices = null;
+            _creatureEquipmentDetails.Clear();
             _creatureSoundSetPreviews = null;
             _soundResources = null;
             _doorAppearances = null;
@@ -1242,6 +1247,7 @@ namespace SWLOR.Toolset.Editors
                 CreatureAppearance,
                 ArmorPartModels(),
                 CreatureEquipmentChoices,
+                LoadCreatureEquipmentDetails,
                 ChoicePreviews(),
                 PreviewCreatureAudio,
                 OpenLootDefinition,
@@ -2090,13 +2096,9 @@ namespace SWLOR.Toolset.Editors
                 try
                 {
                     var root = JsonGffDocument.Load(workspace.GetResourcePath(ResourceType.Uti, resRef)).Root;
-                    var baseItem = root.GetIntOrNull("BaseItem") ?? -1;
-                    var name = root.GetLocStringOrNull("LocalizedName")?.Text;
-                    result.Add(new Creatures.CreatureEquipmentChoice(
-                        resRef,
-                        string.IsNullOrWhiteSpace(name) ? resRef : $"{name} ({resRef})",
-                        baseItem,
-                        baseItemRows?.Invoke(baseItem)?.EquipableSlots ?? 0));
+                    var choice = BuildCreatureEquipmentDetails(resRef, root, baseItemRows);
+                    result.Add(choice);
+                    _creatureEquipmentDetails[resRef] = choice;
                 }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
                 {
@@ -2105,6 +2107,51 @@ namespace SWLOR.Toolset.Editors
             _creatureEquipmentChoices = result
                 .OrderBy(choice => choice.Display, StringComparer.OrdinalIgnoreCase).ToList();
             return _creatureEquipmentChoices;
+        }
+
+        /// <summary>
+        /// Loads one equipped blueprint for the details pane without forcing the progressive
+        /// chooser to scan every UTI. Once that chooser is opened, its catalog fills the same cache.
+        /// </summary>
+        private Creatures.CreatureEquipmentChoice? LoadCreatureEquipmentDetails(string resRef)
+        {
+            if (string.IsNullOrWhiteSpace(resRef))
+                return null;
+            if (_creatureEquipmentDetails.TryGetValue(resRef, out var cached))
+                return cached;
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return null;
+
+            try
+            {
+                var root = JsonGffDocument.Load(
+                    workspace.GetResourcePath(ResourceType.Uti, resRef)).Root;
+                var details = BuildCreatureEquipmentDetails(resRef, root, BaseItemRows());
+                _creatureEquipmentDetails[resRef] = details;
+                return details;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
+            {
+                return null;
+            }
+        }
+
+        private Creatures.CreatureEquipmentChoice BuildCreatureEquipmentDetails(
+            string resRef,
+            JsonGffStruct root,
+            Func<int, BaseItemRow?>? baseItemRows)
+        {
+            var baseItem = root.GetIntOrNull("BaseItem") ?? -1;
+            var name = root.GetLocStringOrNull("LocalizedName")?.Text;
+            var stats = Items.ItemStatSummary.Build(root, ItemCostTables(), ResolveItemChoices);
+            return new Creatures.CreatureEquipmentChoice(
+                resRef,
+                string.IsNullOrWhiteSpace(name) ? resRef : $"{name} ({resRef})",
+                baseItem,
+                baseItemRows?.Invoke(baseItem)?.EquipableSlots ?? 0,
+                stats);
         }
 
         /// <summary>

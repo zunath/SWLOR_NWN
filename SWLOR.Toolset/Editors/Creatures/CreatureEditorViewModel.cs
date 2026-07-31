@@ -127,6 +127,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<int, AppearanceRow?> appearance,
             ArmorPartCatalog? armorParts,
             Func<IReadOnlyList<CreatureEquipmentChoice>>? equipmentChoices = null,
+            Func<string, CreatureEquipmentChoice?>? equipmentDetails = null,
             ChoicePreviewService? choicePreviews = null,
             Func<BehaviorChoice, string?>? previewAudio = null,
             Action<string>? openLootDefinition = null,
@@ -157,6 +158,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 _store,
                 RunEdit,
                 equipmentChoices ?? (() => Array.Empty<CreatureEquipmentChoice>()),
+                equipmentDetails ?? (_ => null),
                 OnEquipmentChanged);
             Variables = new VarTableSectionViewModel(RunEdit, _store.Locals, gameCodeIndex, IsCustomVariable);
             if (appearanceOptions != null)

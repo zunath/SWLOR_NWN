@@ -21,6 +21,7 @@ using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Appearance;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Creatures;
+using SWLOR.Toolset.Editors.Items;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -775,6 +776,10 @@ namespace SWLOR.Toolset.Tests
                 equipmentSlots.Should().NotBeNull();
                 equipmentSlots!.ItemCount.Should().Be(14);
                 equipmentSlots.SelectedItem.Should().BeSameAs(editor.EquipmentSlots.SelectedSlot);
+                view.FindControl<Border>("CreatureEquipmentStats").Should().NotBeNull(
+                    "the selected item uses the reusable read-only stat summary");
+                view.FindControl<TextBlock>("CreatureEquipmentNoStats").Should().NotBeNull(
+                    "an equipped item with no gameplay properties must say so explicitly");
 
                 tabs.SelectedIndex = 6;
                 Dispatcher.UIThread.RunJobs();
@@ -1129,15 +1134,31 @@ namespace SWLOR.Toolset.Tests
         public void EquipmentSlots_UseBaseItemMasksAndLoadOneProgressivePickerAtATime()
         {
             var catalogLoads = 0;
+            var detailLoads = 0;
+            var weaponStats = new[]
+            {
+                new ItemStatSummaryGroup("Combat", new[]
+                {
+                    new ItemStatSummaryEntry("DMG", "8")
+                })
+            };
+            var equipment = Enumerable.Range(0, 500)
+                .Select(index => new CreatureEquipmentChoice(
+                    $"armor_{index:D3}", $"Armor {index:D3}", 16, 2))
+                .Append(new CreatureEquipmentChoice(
+                    "right_hand_test", "Right Hand Test", 7, 0x30, weaponStats))
+                .ToList();
+
             IReadOnlyList<CreatureEquipmentChoice> Equipment()
             {
                 catalogLoads++;
-                return Enumerable.Range(0, 500)
-                    .Select(index => new CreatureEquipmentChoice(
-                        $"armor_{index:D3}", $"Armor {index:D3}", 16, 2))
-                    .Append(new CreatureEquipmentChoice(
-                        "right_hand_test", "Right Hand Test", 7, 0x30))
-                    .ToList();
+                return equipment;
+            }
+
+            CreatureEquipmentChoice? Details(string resRef)
+            {
+                detailLoads++;
+                return equipment.FirstOrDefault(choice => choice.ResRef == resRef);
             }
 
             var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
@@ -1157,7 +1178,8 @@ namespace SWLOR.Toolset.Tests
                 null,
                 _ => null,
                 null,
-                equipmentChoices: Equipment);
+                equipmentChoices: Equipment,
+                equipmentDetails: Details);
 
             catalogLoads.Should().Be(0);
             editor.EquipmentSlots.Slots.Select(slot => slot.Label).Should().Equal(
@@ -1187,6 +1209,8 @@ namespace SWLOR.Toolset.Tests
             mainHand.FilteredChoices.Select(choice => choice.StringValue)
                 .Should().Equal(new[] { "right_hand_test" },
                     "baseitems.2da's equipment mask determines which slot offers an item");
+            mainHand.FilteredChoices.Single().Summary.Should().Contain("DMG 8",
+                "candidate stats are visible before the builder equips the item");
 
             editor.EquipmentSlots.SelectedSlot = armor;
             armor.OpenSearchCommand.Execute(null);
@@ -1198,6 +1222,15 @@ namespace SWLOR.Toolset.Tests
             armor.ClearChoiceCommand.Execute(null);
             new CreatureValueStore(document.Root).EquippedResRef(2).Should().BeNull();
             armor.CanClearChoice.Should().BeFalse();
+
+            var detailLoadsBeforeMainHand = detailLoads;
+            editor.EquipmentSlots.SelectedSlot = mainHand;
+            mainHand.OpenSearchCommand.Execute(null);
+            mainHand.PickChoiceCommand.Execute(mainHand.FilteredChoices.Single());
+            detailLoads.Should().Be(detailLoadsBeforeMainHand + 1,
+                "only the newly equipped blueprint is loaded for the details pane");
+            mainHand.SelectedStatGroups.Should().ContainSingle()
+                .Which.Entries.Should().ContainSingle(entry => entry.Label == "DMG" && entry.Value == "8");
         }
 
         [AvaloniaTest]

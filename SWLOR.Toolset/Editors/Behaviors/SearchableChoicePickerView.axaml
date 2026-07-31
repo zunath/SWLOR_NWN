@@ -49,10 +49,16 @@
             <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
               <Grid ColumnDefinitions="*,Auto">
                 <Button Classes="behavior" Classes.on="{Binding IsSelected}"
-                        Content="{Binding Display}" Margin="2" Padding="8,5"
+                        Margin="2" Padding="8,5"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                         Command="{Binding $parent[ListBox].((behaviors:BehaviorRowViewModel)DataContext).PickChoiceCommand}"
-                        CommandParameter="{Binding}" />
+                        CommandParameter="{Binding}">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{Binding Display}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Summary}" Classes="dim" FontSize="10.5"
+                               TextWrapping="Wrap" IsVisible="{Binding HasSummary}" />
+                  </StackPanel>
+                </Button>
                 <Button Grid.Column="1" Content="▶" Margin="2" Padding="8,5"
                         IsVisible="{Binding CanPreviewAudio}" ToolTip.Tip="Preview sound set"
                         Command="{Binding $parent[ListBox].((behaviors:BehaviorRowViewModel)DataContext).PreviewAudioCommand}"

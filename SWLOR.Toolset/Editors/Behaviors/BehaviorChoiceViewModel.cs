@@ -19,6 +19,10 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         public string Display => Choice.Display;
 
+        public string? Summary => Choice.Summary;
+
+        public bool HasSummary => !string.IsNullOrWhiteSpace(Summary);
+
         public bool CanPreviewAudio => Choice.CanPreviewAudio;
 
         /// <summary>Whether this choice has a picture at all — a texture or a model — drawn or not.</summary>

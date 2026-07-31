@@ -30,7 +30,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 if (_selectedSlot?.IsSearchExpanded == true)
                     _selectedSlot.CloseSearchCommand.Execute(null);
 
-                SetProperty(ref _selectedSlot, value);
+                if (SetProperty(ref _selectedSlot, value))
+                    value?.Activate();
             }
         }
 
@@ -38,23 +39,24 @@ namespace SWLOR.Toolset.Editors.Creatures
             CreatureValueStore store,
             Func<string, Action, bool> runEdit,
             Func<IReadOnlyList<CreatureEquipmentChoice>> allChoices,
+            Func<string, CreatureEquipmentChoice?> loadDetails,
             Action changed)
         {
             // Equip_ItemList struct ids are Aurora's equipment bit values, not InventorySlot ordinals.
-            Slots.Add(Picker("Armor", 2, store, runEdit, allChoices, changed));
-            Slots.Add(Picker("Helmet", 1, store, runEdit, allChoices, changed));
-            Slots.Add(Picker("Cloak", 64, store, runEdit, allChoices, changed));
-            Slots.Add(Picker("Right Hand", 16, store, runEdit, allChoices, changed));
-            Slots.Add(Picker("Left Hand", 32, store, runEdit, allChoices, changed));
-            Slots.Add(Picker("Boots", 4, store, runEdit, allChoices, changed));
-            Slots.Add(Picker("Arms", 8, store, runEdit, allChoices, changed));
-            Slots.Add(Picker("Neck", 512, store, runEdit, allChoices, changed));
-            Slots.Add(Picker("Belt", 1024, store, runEdit, allChoices, changed));
-            Slots.Add(Picker("Left Ring", 128, store, runEdit, allChoices, changed));
-            Slots.Add(Picker("Right Ring", 256, store, runEdit, allChoices, changed));
-            Slots.Add(Picker("Arrows", 2048, store, runEdit, allChoices, changed));
-            Slots.Add(Picker("Bolts", 8192, store, runEdit, allChoices, changed));
-            Slots.Add(Picker("Bullets", 4096, store, runEdit, allChoices, changed));
+            Slots.Add(Picker("Armor", 2, store, runEdit, allChoices, loadDetails, changed));
+            Slots.Add(Picker("Helmet", 1, store, runEdit, allChoices, loadDetails, changed));
+            Slots.Add(Picker("Cloak", 64, store, runEdit, allChoices, loadDetails, changed));
+            Slots.Add(Picker("Right Hand", 16, store, runEdit, allChoices, loadDetails, changed));
+            Slots.Add(Picker("Left Hand", 32, store, runEdit, allChoices, loadDetails, changed));
+            Slots.Add(Picker("Boots", 4, store, runEdit, allChoices, loadDetails, changed));
+            Slots.Add(Picker("Arms", 8, store, runEdit, allChoices, loadDetails, changed));
+            Slots.Add(Picker("Neck", 512, store, runEdit, allChoices, loadDetails, changed));
+            Slots.Add(Picker("Belt", 1024, store, runEdit, allChoices, loadDetails, changed));
+            Slots.Add(Picker("Left Ring", 128, store, runEdit, allChoices, loadDetails, changed));
+            Slots.Add(Picker("Right Ring", 256, store, runEdit, allChoices, loadDetails, changed));
+            Slots.Add(Picker("Arrows", 2048, store, runEdit, allChoices, loadDetails, changed));
+            Slots.Add(Picker("Bolts", 8192, store, runEdit, allChoices, loadDetails, changed));
+            Slots.Add(Picker("Bullets", 4096, store, runEdit, allChoices, loadDetails, changed));
             SelectedSlot = Slots[0];
         }
 
@@ -62,6 +64,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             foreach (var slot in Slots)
                 slot.Reload();
+            SelectedSlot?.Activate(force: true);
         }
 
         private static CreatureEquipmentPickerViewModel Picker(
@@ -70,6 +73,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             CreatureValueStore store,
             Func<string, Action, bool> runEdit,
             Func<IReadOnlyList<CreatureEquipmentChoice>> allChoices,
+            Func<string, CreatureEquipmentChoice?> loadDetails,
             Action changed)
         {
             IReadOnlyList<CreatureEquipmentChoice> Filtered() => allChoices()
@@ -77,7 +81,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 .ToList();
 
             return new CreatureEquipmentPickerViewModel(
-                label, slot, store, runEdit, Filtered, changed);
+                label, slot, store, runEdit, Filtered, loadDetails, changed);
         }
     }
 }

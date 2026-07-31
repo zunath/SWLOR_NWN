@@ -327,7 +327,41 @@
                   </StackPanel>
                 </Border>
                 <Border Classes="card" Padding="12">
-                  <behaviors:BehaviorRowView DataContext="{Binding EquipmentSlots.SelectedSlot}" />
+                  <StackPanel Spacing="10">
+                    <behaviors:BehaviorRowView DataContext="{Binding EquipmentSlots.SelectedSlot}" />
+                    <Border x:Name="CreatureEquipmentStats" Padding="10"
+                            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                            CornerRadius="3"
+                            IsVisible="{Binding EquipmentSlots.SelectedSlot.HasSelectedStats}">
+                      <StackPanel Spacing="8">
+                        <TextBlock Text="Item stats" Classes="section" />
+                        <ItemsControl ItemsSource="{Binding EquipmentSlots.SelectedSlot.SelectedStatGroups}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="items:ItemStatSummaryGroup">
+                              <StackPanel Spacing="4" Margin="0,0,0,6">
+                                <TextBlock Text="{Binding Title}" Classes="label" />
+                                <ItemsControl ItemsSource="{Binding Entries}">
+                                  <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="items:ItemStatSummaryEntry">
+                                      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" Margin="0,2">
+                                        <TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Value}"
+                                                   FontFamily="{DynamicResource MonoFont}" />
+                                      </Grid>
+                                    </DataTemplate>
+                                  </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                              </StackPanel>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </StackPanel>
+                    </Border>
+                    <TextBlock x:Name="CreatureEquipmentNoStats"
+                               Text="{Binding EquipmentSlots.SelectedSlot.SelectedStatsStatus}"
+                               Classes="dim" TextWrapping="Wrap"
+                               IsVisible="{Binding EquipmentSlots.SelectedSlot.ShowsSelectedStatsStatus}" />
+                  </StackPanel>
                 </Border>
               </StackPanel>
             </ScrollViewer>

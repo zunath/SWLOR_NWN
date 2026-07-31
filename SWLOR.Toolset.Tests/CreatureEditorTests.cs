@@ -776,6 +776,10 @@ namespace SWLOR.Toolset.Tests
 
                 tabs.SelectedIndex = 6;
                 Dispatcher.UIThread.RunJobs();
+                var audienceFilter = view.FindControl<ComboBox>("CreatureAbilityAudienceFilter");
+                audienceFilter.Should().NotBeNull();
+                audienceFilter!.Bounds.Width.Should().BeGreaterThanOrEqualTo(150,
+                    "the longest ability audience option must remain readable in the field and its popup");
                 var abilityButton = view.GetVisualDescendants()
                     .OfType<Button>()
                     .FirstOrDefault(button => button.DataContext is CreatureAbilityInfo);

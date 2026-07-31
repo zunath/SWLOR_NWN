@@ -432,10 +432,12 @@
               <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="6">
                 <TextBox Text="{Binding SearchText, Mode=TwoWay}"
                          Watermark="Search registered abilities" />
-                <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="6">
+                <Grid Grid.Row="1" ColumnDefinitions="150,*" ColumnSpacing="6">
                   <StackPanel Spacing="3">
                     <TextBlock Text="Intended for" Classes="dim" FontSize="10" />
-                    <ComboBox ItemsSource="{Binding AudienceFilters}"
+                    <ComboBox x:Name="CreatureAbilityAudienceFilter"
+                              MinWidth="150"
+                              ItemsSource="{Binding AudienceFilters}"
                               SelectedItem="{Binding SelectedAudienceFilter, Mode=TwoWay}" />
                   </StackPanel>
                   <StackPanel Grid.Column="1" Spacing="3">

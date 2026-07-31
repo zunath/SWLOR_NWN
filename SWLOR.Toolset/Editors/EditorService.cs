@@ -1706,17 +1706,11 @@ namespace SWLOR.Toolset.Editors
                 var rows = BaseItemRows();
                 var icons = BaseItemIcons();
 
-                // With both services, reject every structurally invalid row. A partially configured
-                // installation can still reject obvious display artifacts instead of exposing the
-                // entire raw table (including bio_reserved and "Bad Strref").
+                // The item editor's established rule needs label and ItemClass together. Do not
+                // invent a weaker display-only merchant rule when that structural metadata is
+                // unavailable; fail closed instead of exposing reserved USER/CEP/Bio rows.
                 if (rows == null || icons == null)
-                {
-                    return options
-                        .Where(option => Domain.Editors.Items.BaseItemChoicePolicy.IsDisplayOffered(
-                            option.Display))
-                        .Select(option => new BehaviorChoice(option.Id, option.Display))
-                        .ToList();
-                }
+                    return Array.Empty<BehaviorChoice>();
 
                 return options
                     .Where(option => Domain.Editors.Items.BaseItemChoicePolicy.IsOffered(

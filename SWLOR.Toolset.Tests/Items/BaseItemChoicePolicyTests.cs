@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Tests.Items
         [TestCase("PADDING", "AArCl", false)]
         [TestCase("Shortsword", null, false, TestName = "BlankItemClassIsRejected")]
         [TestCase("Shortsword", "", false)]
+        [TestCase("USER", null, false, TestName = "UserPaddingWithoutItemClassIsRejected")]
         [TestCase("Shortsword", "WSwSbre", true)]
         public void IsOffered_MatchesExpectation(string? label, string? itemClass, bool expected)
         {
@@ -45,18 +46,6 @@ namespace SWLOR.Toolset.Tests.Items
             // Label/ItemClass are otherwise perfectly valid - only the resolved display text (what
             // a broken base-game dialog.tlk strref hands back for this row's Name column) decides.
             BaseItemChoicePolicy.IsOffered("Shortsword", "WSwSbre", display).Should().Be(expected);
-        }
-
-        [TestCase("Bad Strref", false)]
-        [TestCase("bio_reserved", false)]
-        [TestCase("cep_reserved", false)]
-        [TestCase("some_reserved_slot", false)]
-        [TestCase("DELETED", false)]
-        [TestCase("Padding", false)]
-        [TestCase("Shortsword", true)]
-        public void IsDisplayOffered_ProtectsTheDegradedLookup(string display, bool expected)
-        {
-            BaseItemChoicePolicy.IsDisplayOffered(display).Should().Be(expected);
         }
 
         [Test]
@@ -85,7 +74,9 @@ namespace SWLOR.Toolset.Tests.Items
 
                 var lowered = label!.Trim().ToLowerInvariant();
                 lowered.Should().NotContain("deleted", $"row {row} should not have been offered");
+                lowered.Should().NotContain("reserved", $"row {row} should not have been offered");
                 lowered.Should().NotBe("padding", $"row {row} should not have been offered");
+                lowered.Should().NotBe("user", $"row {row} should not have been offered");
                 offered++;
             }
 

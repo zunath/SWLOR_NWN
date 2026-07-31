@@ -13,11 +13,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
         /// <summary>The literal text a broken base-game dialog.tlk strref resolves to.</summary>
         private const string BadStrrefSentinel = "Bad Strref";
 
-        /// <summary>
-        /// Whether display text alone is usable. This is the degraded-installation guard used when
-        /// the detailed baseitems/icon services are unavailable but the generic lookup still exists.
-        /// </summary>
-        public static bool IsDisplayOffered(string? display)
+        private static bool IsDisplayOffered(string? display)
         {
             if (string.IsNullOrWhiteSpace(display))
                 return false;

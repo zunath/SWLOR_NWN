@@ -16,7 +16,7 @@ namespace SWLOR.Toolset.Tests
     public class ModulePropertiesViewTests
     {
         [AvaloniaTest]
-        public void EditorUsesTheSevenAgreedTabsAndKeepsTheEntryPointReadOnly()
+        public void EditorUsesTheConsolidatedTabsAndFullWidthBasicFields()
         {
             var view = new ModulePropertiesDocumentView();
             var window = new Window { Width = 1200, Height = 800, Content = view };
@@ -26,11 +26,20 @@ namespace SWLOR.Toolset.Tests
                 .OfType<TabItem>()
                 .Select(tab => tab.Header?.ToString())
                 .Should()
-                .Equal("Basic", "Events", "Advanced", "Variables", "Description", "Custom Content", "SWLOR");
+                .Equal("Basic", "Events", "Variables", "Description", "Custom Content", "SWLOR");
+            window.UpdateLayout();
+            var moduleName = view.FindControl<TextBox>("ModuleNameField")!;
+            var moduleTag = view.FindControl<TextBox>("ModuleTagField")!;
+            moduleName.Bounds.Width.Should().BeGreaterThan(800);
+            moduleTag.Bounds.Width.Should().BeApproximately(moduleName.Bounds.Width, 0.1);
             view.FindControl<TextBox>("EntryAreaField")!.IsReadOnly.Should().BeTrue();
             view.FindControl<TextBox>("EntryXField")!.IsReadOnly.Should().BeTrue();
             view.FindControl<TextBox>("EntryYField")!.IsReadOnly.Should().BeTrue();
             view.FindControl<TextBox>("EntryZField")!.IsReadOnly.Should().BeTrue();
+            view.FindControl<TextBox>("EntryAreaField")!.Bounds.Width
+                .Should().BeApproximately(moduleName.Bounds.Width, 0.1);
+            view.FindControl<ComboBox>("StartingMoviePicker")!.HorizontalAlignment
+                .Should().Be(Avalonia.Layout.HorizontalAlignment.Stretch);
 
             window.Close();
         }
@@ -89,7 +98,7 @@ namespace SWLOR.Toolset.Tests
             var window = new Window { Width = 1200, Height = 800, Content = view };
 
             window.Show();
-            view.FindControl<TabControl>("ModulePropertyTabs")!.SelectedIndex = 2;
+            view.FindControl<TabControl>("ModulePropertyTabs")!.SelectedIndex = 0;
             Dispatcher.UIThread.RunJobs();
             window.UpdateLayout();
 
@@ -116,7 +125,7 @@ namespace SWLOR.Toolset.Tests
             var window = new Window { Width = 1200, Height = 800, Content = view };
 
             window.Show();
-            view.FindControl<TabControl>("ModulePropertyTabs")!.SelectedIndex = 2;
+            view.FindControl<TabControl>("ModulePropertyTabs")!.SelectedIndex = 0;
             Dispatcher.UIThread.RunJobs();
             window.UpdateLayout();
 
@@ -155,7 +164,7 @@ namespace SWLOR.Toolset.Tests
             var window = new Window { Width = 1200, Height = 800, Content = view };
 
             window.Show();
-            view.FindControl<TabControl>("ModulePropertyTabs")!.SelectedIndex = 5;
+            view.FindControl<TabControl>("ModulePropertyTabs")!.SelectedIndex = 4;
             Dispatcher.UIThread.RunJobs();
             window.UpdateLayout();
 
@@ -192,7 +201,7 @@ namespace SWLOR.Toolset.Tests
                 window.Show();
                 var tabs = view.FindControl<TabControl>("ModulePropertyTabs")!;
 
-                for (var index = 0; index < 7; index++)
+                for (var index = 0; index < 6; index++)
                 {
                     tabs.SelectedIndex = index;
                     Dispatcher.UIThread.RunJobs();

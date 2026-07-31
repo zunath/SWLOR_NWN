@@ -41,13 +41,16 @@
     <TabControl x:Name="ModulePropertyTabs">
       <TabItem Header="Basic">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-          <StackPanel Margin="18,16" Spacing="14" MaxWidth="760" HorizontalAlignment="Left">
+          <StackPanel x:Name="BasicFormStack" Margin="18,16" Spacing="14"
+                      HorizontalAlignment="Stretch">
             <Border Classes="card" Padding="14">
               <Grid ColumnDefinitions="150,*" RowDefinitions="Auto,Auto" RowSpacing="9" ColumnSpacing="12">
                 <TextBlock Grid.Row="0" Text="Name" VerticalAlignment="Center" />
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name, Mode=TwoWay}" />
+                <TextBox x:Name="ModuleNameField" Grid.Row="0" Grid.Column="1"
+                         Text="{Binding Name, Mode=TwoWay}" />
                 <TextBlock Grid.Row="1" Text="Tag" VerticalAlignment="Center" />
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Tag, Mode=TwoWay}" MaxLength="32" />
+                <TextBox x:Name="ModuleTagField" Grid.Row="1" Grid.Column="1"
+                         Text="{Binding Tag, Mode=TwoWay}" MaxLength="32" />
               </Grid>
             </Border>
 
@@ -67,6 +70,60 @@
                   <TextBlock Grid.Row="3" Text="Starting Z" VerticalAlignment="Center" />
                   <TextBox x:Name="EntryZField" Grid.Row="3" Grid.Column="1"
                            Text="{Binding EntryZ}" IsReadOnly="True" Classes="mono" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <Border Classes="card" Padding="14">
+              <StackPanel Spacing="10">
+                <TextBlock Text="MODULE SETTINGS" Classes="section" />
+                <Grid ColumnDefinitions="150,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                      RowSpacing="8" ColumnSpacing="12">
+                  <TextBlock Grid.Row="0" Text="Minutes per hour" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding MinutesPerHour, Mode=TwoWay}"
+                                 Width="110" HorizontalAlignment="Left"
+                                 Minimum="1" Maximum="255" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="1" Text="Dawn start hour" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding DawnHour, Mode=TwoWay}"
+                                 Width="110" HorizontalAlignment="Left"
+                                 Minimum="0" Maximum="23" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="2" Text="Dusk start hour" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding DuskHour, Mode=TwoWay}"
+                                 Width="110" HorizontalAlignment="Left"
+                                 Minimum="0" Maximum="23" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="3" Text="Starting month" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding StartingMonth, Mode=TwoWay}"
+                                 Width="110" HorizontalAlignment="Left"
+                                 Minimum="1" Maximum="12" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="4" Text="Starting day" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding StartingDay, Mode=TwoWay}"
+                                 Width="110" HorizontalAlignment="Left"
+                                 Minimum="1" Maximum="28" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="5" Text="Starting hour" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Row="5" Grid.Column="1" Value="{Binding StartingHour, Mode=TwoWay}"
+                                 Width="110" HorizontalAlignment="Left"
+                                 Minimum="0" Maximum="23" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="6" Text="Starting year" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Row="6" Grid.Column="1" Value="{Binding StartingYear, Mode=TwoWay}"
+                                 Width="110" HorizontalAlignment="Left"
+                                 Minimum="0" Maximum="2147483647" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="7" Text="XP scale" VerticalAlignment="Center" />
+                  <Grid Grid.Row="7" Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Slider x:Name="XpScaleSlider" Grid.Column="0"
+                            Minimum="0" Maximum="200" TickFrequency="1" IsSnapToTickEnabled="True"
+                            SmallChange="1" LargeChange="10" VerticalAlignment="Center"
+                            Value="{Binding XpScale, Mode=TwoWay}" />
+                    <NumericUpDown x:Name="XpScaleNumeric" Grid.Column="1"
+                                   Width="110" VerticalAlignment="Center"
+                                   Minimum="0" Maximum="200" Increment="1" FormatString="0"
+                                   Value="{Binding XpScale, Mode=TwoWay}" />
+                  </Grid>
+                  <TextBlock Grid.Row="8" Text="Starting movie" VerticalAlignment="Center" />
+                  <ComboBox x:Name="StartingMoviePicker" Grid.Row="8" Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            ItemsSource="{Binding StartingMovieChoices}"
+                            SelectedItem="{Binding StartingMovie, Mode=TwoWay}"
+                            MaxDropDownHeight="400" />
                 </Grid>
               </StackPanel>
             </Border>
@@ -100,63 +157,6 @@
             </DataGrid.Columns>
           </DataGrid>
         </Grid>
-      </TabItem>
-
-      <TabItem Header="Advanced">
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-          <StackPanel Margin="18,16" MaxWidth="650" HorizontalAlignment="Left">
-            <Border Classes="card" Padding="14">
-              <Grid ColumnDefinitions="190,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
-                    RowSpacing="8" ColumnSpacing="12">
-                <TextBlock Grid.Row="0" Text="Minutes per hour" VerticalAlignment="Center" />
-                <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding MinutesPerHour, Mode=TwoWay}"
-                               Width="110" HorizontalAlignment="Left"
-                               Minimum="1" Maximum="255" Increment="1" FormatString="0" />
-                <TextBlock Grid.Row="1" Text="Dawn start hour" VerticalAlignment="Center" />
-                <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding DawnHour, Mode=TwoWay}"
-                               Width="110" HorizontalAlignment="Left"
-                               Minimum="0" Maximum="23" Increment="1" FormatString="0" />
-                <TextBlock Grid.Row="2" Text="Dusk start hour" VerticalAlignment="Center" />
-                <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding DuskHour, Mode=TwoWay}"
-                               Width="110" HorizontalAlignment="Left"
-                               Minimum="0" Maximum="23" Increment="1" FormatString="0" />
-                <TextBlock Grid.Row="3" Text="Starting month" VerticalAlignment="Center" />
-                <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding StartingMonth, Mode=TwoWay}"
-                               Width="110" HorizontalAlignment="Left"
-                               Minimum="1" Maximum="12" Increment="1" FormatString="0" />
-                <TextBlock Grid.Row="4" Text="Starting day" VerticalAlignment="Center" />
-                <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding StartingDay, Mode=TwoWay}"
-                               Width="110" HorizontalAlignment="Left"
-                               Minimum="1" Maximum="28" Increment="1" FormatString="0" />
-                <TextBlock Grid.Row="5" Text="Starting hour" VerticalAlignment="Center" />
-                <NumericUpDown Grid.Row="5" Grid.Column="1" Value="{Binding StartingHour, Mode=TwoWay}"
-                               Width="110" HorizontalAlignment="Left"
-                               Minimum="0" Maximum="23" Increment="1" FormatString="0" />
-                <TextBlock Grid.Row="6" Text="Starting year" VerticalAlignment="Center" />
-                <NumericUpDown Grid.Row="6" Grid.Column="1" Value="{Binding StartingYear, Mode=TwoWay}"
-                               Width="110" HorizontalAlignment="Left"
-                               Minimum="0" Maximum="2147483647" Increment="1" FormatString="0" />
-                <TextBlock Grid.Row="7" Text="XP scale" VerticalAlignment="Center" />
-                <Grid Grid.Row="7" Grid.Column="1" Width="360" ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                  <Slider x:Name="XpScaleSlider" Grid.Column="0"
-                          Minimum="0" Maximum="200" TickFrequency="1" IsSnapToTickEnabled="True"
-                          SmallChange="1" LargeChange="10" VerticalAlignment="Center"
-                          Value="{Binding XpScale, Mode=TwoWay}" />
-                  <NumericUpDown x:Name="XpScaleNumeric" Grid.Column="1"
-                                 Width="110" VerticalAlignment="Center"
-                                 Minimum="0" Maximum="200" Increment="1" FormatString="0"
-                                 Value="{Binding XpScale, Mode=TwoWay}" />
-                </Grid>
-                <TextBlock Grid.Row="8" Text="Starting movie" VerticalAlignment="Center" />
-                <ComboBox x:Name="StartingMoviePicker" Grid.Row="8" Grid.Column="1"
-                          Width="220" HorizontalAlignment="Left"
-                          ItemsSource="{Binding StartingMovieChoices}"
-                          SelectedItem="{Binding StartingMovie, Mode=TwoWay}"
-                          MaxDropDownHeight="400" />
-              </Grid>
-            </Border>
-          </StackPanel>
-        </ScrollViewer>
       </TabItem>
 
       <TabItem Header="Variables">

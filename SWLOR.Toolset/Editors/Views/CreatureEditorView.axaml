@@ -269,18 +269,62 @@
               </ScrollViewer>
             </TabItem>
 
-            <TabItem Header="Equipment">
-              <ScrollViewer>
-                <Border Classes="card" Padding="12" Margin="14,10"
-                        IsVisible="{Binding BodyParts.IsDynamic}">
-                  <StackPanel>
-                    <TextBlock Text="Visible Equipment" Classes="section" Margin="0,0,0,8" />
-                    <ItemsControl ItemsSource="{Binding VisibleEquipment.Slots}" />
-                  </StackPanel>
-                </Border>
-              </ScrollViewer>
-            </TabItem>
           </TabControl>
+        </TabItem>
+
+        <!-- Equipment is a creature-level task, not a subsection of body appearance. The merchant
+             editor's category/work-pane layout is reused here: all four slots remain visible as
+             compact summaries, while only the selected slot owns a chooser and published results. -->
+        <TabItem Header="Equipment">
+          <Grid>
+            <Grid ColumnDefinitions="210,*" IsVisible="{Binding BodyParts.IsDynamic}">
+              <Border Grid.Column="0" BorderBrush="{DynamicResource RuleBrush}"
+                      BorderThickness="0,0,1,0" Padding="10">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Equipment slots" Classes="section" Margin="4,2,4,0" />
+                  <TextBlock Text="Select a slot to view or replace its item."
+                             Classes="dim" TextWrapping="Wrap" Margin="4,0,4,4" />
+                  <ListBox x:Name="CreatureEquipmentSlots"
+                           ItemsSource="{Binding VisibleEquipment.Slots}"
+                           SelectedItem="{Binding VisibleEquipment.SelectedSlot, Mode=TwoWay}">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate DataType="creatures:CreatureEquipmentPickerViewModel">
+                        <StackPanel Margin="4,5" Spacing="2">
+                          <TextBlock Text="{Binding Label}" FontWeight="SemiBold" />
+                          <TextBlock Text="{Binding SelectedChoiceDisplay}" Classes="dim"
+                                     FontSize="10.5" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+                </StackPanel>
+              </Border>
+
+              <ScrollViewer Grid.Column="1">
+                <StackPanel Margin="14,10,22,16" Spacing="10">
+                  <Border Classes="card" Padding="12">
+                    <StackPanel Spacing="4">
+                      <TextBlock Text="Visible Equipment" Classes="section" />
+                      <TextBlock Text="Armor, weapons, helmets and cloaks are linked item blueprints. Choose one slot at a time; search results load only when its chooser is opened."
+                                 Classes="dim" TextWrapping="Wrap" />
+                    </StackPanel>
+                  </Border>
+                  <Border Classes="card" Padding="12">
+                    <behaviors:BehaviorRowView DataContext="{Binding VisibleEquipment.SelectedSlot}" />
+                  </Border>
+                </StackPanel>
+              </ScrollViewer>
+            </Grid>
+
+            <Border Classes="card" Padding="14" Margin="14,10"
+                    IsVisible="{Binding BodyParts.IsFullBody}">
+              <StackPanel Spacing="5">
+                <TextBlock Text="Equipment" Classes="section" />
+                <TextBlock Text="This full-body model supplies its visible equipment as part of the model and has no segmented equipment slots."
+                           Classes="dim" TextWrapping="Wrap" />
+              </StackPanel>
+            </Border>
+          </Grid>
         </TabItem>
 
         <TabItem Header="Stats">

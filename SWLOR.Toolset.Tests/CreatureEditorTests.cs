@@ -313,7 +313,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
-        public void CreatureEditorView_RendersItsSevenTabSurface()
+        public void CreatureEditorView_RendersItsEightTabSurface()
         {
             var root = Path.Combine(Path.GetTempPath(), "swlor-creature-view-" + Guid.NewGuid().ToString("N"));
             var utcDirectory = Path.Combine(root, "utc");
@@ -351,16 +351,27 @@ namespace SWLOR.Toolset.Tests
                 view.GetVisualDescendants().Should().NotBeEmpty();
                 var tabs = view.FindControl<TabControl>("CreatureTabs");
                 tabs.Should().NotBeNull();
+                tabs!.Items.Cast<TabItem>().Select(tab => tab.Header?.ToString()).Should().Equal(
+                    "Basic", "Behavior", "Appearance", "Equipment", "Stats", "Abilities", "AI", "Loot");
                 tabs!.SelectedIndex = 2;
                 Dispatcher.UIThread.RunJobs();
 
                 var appearanceSections = view.FindControl<TabControl>("CreatureAppearanceSections");
                 appearanceSections.Should().NotBeNull();
-                for (var index = 0; index < 4; index++)
+                appearanceSections!.Items.Cast<TabItem>().Select(tab => tab.Header?.ToString()).Should().Equal(
+                    "Model", "Details", "Body");
+                for (var index = 0; index < 3; index++)
                 {
                     appearanceSections!.SelectedIndex = index;
                     Dispatcher.UIThread.RunJobs();
                 }
+
+                tabs.SelectedIndex = 3;
+                Dispatcher.UIThread.RunJobs();
+                var equipmentSlots = view.FindControl<ListBox>("CreatureEquipmentSlots");
+                equipmentSlots.Should().NotBeNull();
+                equipmentSlots!.ItemCount.Should().Be(4);
+                equipmentSlots.SelectedItem.Should().BeSameAs(editor.VisibleEquipment.SelectedSlot);
 
                 window.Close();
                 Dispatcher.UIThread.RunJobs();
@@ -613,6 +624,8 @@ namespace SWLOR.Toolset.Tests
                 equipmentChoices: Equipment);
 
             catalogLoads.Should().Be(0);
+            editor.VisibleEquipment.SelectedSlot.Should().BeSameAs(
+                editor.VisibleEquipment.Slots.Single(slot => slot.Label == "Armor"));
             editor.VisibleEquipment.Slots.Should().OnlyContain(slot => !slot.AreChoicesLoaded);
             editor.VisibleEquipment.Slots.Should().OnlyContain(slot => slot.FilteredChoices.Count == 0);
 
@@ -623,6 +636,17 @@ namespace SWLOR.Toolset.Tests
             armor.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
             editor.VisibleEquipment.Slots.Where(slot => slot.Label != "Armor")
                 .Should().OnlyContain(slot => !slot.AreChoicesLoaded);
+
+            var mainHand = editor.VisibleEquipment.Slots.Single(slot => slot.Label == "Main Hand");
+            editor.VisibleEquipment.SelectedSlot = mainHand;
+            armor.IsSearchExpanded.Should().BeFalse(
+                "moving between compact slot summaries closes and releases the old list");
+            armor.FilteredChoices.Should().BeEmpty();
+            mainHand.AreChoicesLoaded.Should().BeFalse(
+                "selecting a slot is cheap; its catalog loads only when Choose is opened");
+
+            editor.VisibleEquipment.SelectedSlot = armor;
+            armor.OpenSearchCommand.Execute(null);
 
             armor.PickChoiceCommand.Execute(armor.FilteredChoices[3]);
             new CreatureValueStore(document.Root).EquippedResRef(2).Should().Be("armor_003");

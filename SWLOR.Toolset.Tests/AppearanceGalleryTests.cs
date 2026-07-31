@@ -154,6 +154,9 @@ namespace SWLOR.Toolset.Tests
             itemView.Should().Contain("<items:PaletteColorPickerView");
             creatureView.Should().Contain("<items:PaletteColorPickerView",
                 "creature colors reuse the item editor's established palette control");
+            creatureView.Should().Contain("<TabItem Header=\"Equipment\">");
+            creatureView.Should().Contain("SelectedItem=\"{Binding VisibleEquipment.SelectedSlot, Mode=TwoWay}\"",
+                "equipment reuses the merchant editor's focused rail/work-pane interaction");
 
             Directory.Exists(Path.Combine(
                     CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Appearance"))

@@ -385,14 +385,13 @@ namespace SWLOR.Toolset.Editors
                 }
 
                 var saveBytes = _session.ToBytes();
-                if (_session.HasExternalChange())
+                if (!Services.SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
                 {
                     _log.AppendLine(
                         $"Save stopped because {_session.FilePath} changed after the overwrite decision.");
                     return false;
                 }
 
-                Services.SaveService.WriteAtomic(_session.FilePath, saveBytes);
                 _session.UndoStack.MarkSaved();
                 _session.RecordCurrentFileState(saveBytes);
                 PlaceableSections?.Behavior.MarkSavedBaseline();

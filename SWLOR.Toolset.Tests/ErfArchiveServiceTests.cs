@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Security.Cryptography;
 using System.Text.Json;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Archives;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
@@ -107,6 +108,33 @@ namespace SWLOR.Toolset.Tests
                 .Should().Contain("return 7");
             File.ReadAllBytes(Path.Combine(_secondModule, "ncs", "entry.ncs"))
                 .Should().Equal(compiledGeneration);
+        }
+
+        [Test]
+        public async Task ExportAcquiresTheModuleLeaseBeforeEnumeratingResources()
+        {
+            const string fileName = "late_source.nss";
+            var archivePath = Path.Combine(_root, "lease-protected.erf");
+            Task<ErfExportResult> export;
+            using (var heldLock = ModuleWriteLock.Acquire(_firstModule))
+            {
+                using (ExecutionContext.SuppressFlow())
+                {
+                    export = Task.Run(() =>
+                        _service.ExportAsync(new[] { fileName }, archivePath));
+                }
+
+                await Task.Delay(150);
+                export.IsCompleted.Should().BeFalse(
+                    "export must wait for the module snapshot lease before enumerating");
+                File.WriteAllText(
+                    Path.Combine(_firstModule, "nss", fileName),
+                    "int IncludedValue() { return 1; }\n");
+            }
+
+            var result = await export.WaitAsync(TimeSpan.FromSeconds(15));
+            result.Exported.Should().Be(1);
+            File.Exists(archivePath).Should().BeTrue();
         }
 
         [Test]

@@ -794,7 +794,13 @@ namespace SWLOR.Toolset.Services
             if (!string.Equals(Path.GetExtension(destinationPath), ".erf", StringComparison.OrdinalIgnoreCase))
                 destinationPath += ".erf";
 
-            var byFile = EnumerateModuleAssets()
+            // Enumeration, source copying, and archive validation are one read snapshot. The same
+            // cross-process lease used by imports prevents another toolset or CLI process from
+            // replacing one member of an area or script pair while that snapshot is being built.
+            using var moduleWriteLock = ModuleWriteLock.Acquire(workspace.ModuleRoot);
+            var byFile = EnumerateModuleAssetsCore(workspace.ModuleRoot, cancellationToken)
+                .OrderBy(asset => asset.TypeName, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(asset => asset.ResRef, StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(asset => asset.FileName, StringComparer.OrdinalIgnoreCase);
             var selected = selectedFileNames
                 .Distinct(StringComparer.OrdinalIgnoreCase)

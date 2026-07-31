@@ -127,10 +127,18 @@ namespace SWLOR.Toolset.Editors.Doors
                         _log.AppendLine($"Reloaded externally changed file {_session.FilePath}.");
                         return true;
                     }
+
+                    _session.RecordCurrentFileState();
                 }
 
                 var saveBytes = _session.ToBytes();
-                SaveService.WriteAtomic(_session.FilePath, saveBytes);
+                if (!SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
+                {
+                    _log.AppendLine(
+                        $"Save stopped because {_session.FilePath} changed while the save was being prepared.");
+                    return false;
+                }
+
                 _session.UndoStack.MarkSaved();
                 _session.RecordCurrentFileState(saveBytes);
                 AfterHistoryChange();

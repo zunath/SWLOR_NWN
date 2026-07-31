@@ -58,6 +58,26 @@ namespace SWLOR.Toolset.Services
         }
 
         /// <summary>
+        /// Replaces one session file only if it still matches the generation the editor accepted.
+        /// The final fingerprint check and atomic replacement share one module-wide lease, so a
+        /// second toolset or CLI process cannot write between them.
+        /// </summary>
+        public static bool TryWriteAtomicIfUnchanged(DocumentSession session, byte[] bytes)
+        {
+            ArgumentNullException.ThrowIfNull(session);
+            ArgumentNullException.ThrowIfNull(bytes);
+
+            ModuleMutationLock.ThrowIfModuleLocked();
+            using var moduleWriteLock =
+                ModuleWriteLock.AcquireForResourcePath(session.FilePath);
+            if (session.HasExternalChange())
+                return false;
+
+            WriteAtomic(session.FilePath, bytes);
+            return true;
+        }
+
+        /// <summary>
         /// <see cref="WriteAtomic"/> for a path that must NOT exist yet - a rename's destination.
         /// An ordinary save owns its target and may replace it, but a rename's target was only
         /// checked before a potentially long preflight (the reference scan); if another process

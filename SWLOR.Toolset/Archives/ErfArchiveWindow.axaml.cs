@@ -27,6 +27,7 @@ namespace SWLOR.Toolset.Archives
         {
             _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             DataContext = viewModel;
+            Closing += OnClosing;
             Closed += (_, _) => viewModel.Dispose();
         }
 
@@ -115,6 +116,16 @@ namespace SWLOR.Toolset.Archives
                 await _viewModel.ExportAsync(path).ConfigureAwait(true);
         }
 
-        private void OnCloseClicked(object? sender, RoutedEventArgs e) => Close();
+        private void OnClosing(object? sender, WindowClosingEventArgs e)
+        {
+            if (_viewModel?.IsBusy == true)
+                e.Cancel = true;
+        }
+
+        private void OnCloseClicked(object? sender, RoutedEventArgs e)
+        {
+            if (_viewModel?.CanClose != false)
+                Close();
+        }
     }
 }

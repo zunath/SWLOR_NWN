@@ -110,13 +110,23 @@ namespace SWLOR.Toolset.Editors.Waypoints
                         _log.AppendLine($"Reloaded externally changed file {_session.FilePath}.");
                         return true;
                     }
+
+                    // Overwrite accepts the generation currently on disk. A final locked check
+                    // below refuses any later write while save normalization is being prepared.
+                    _session.RecordCurrentFileState();
                 }
 
                 if (!Editor.PrepareForSave())
                     return false;
 
                 var saveBytes = _session.ToBytes();
-                SaveService.WriteAtomic(_session.FilePath, saveBytes);
+                if (!SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
+                {
+                    _log.AppendLine(
+                        $"Save stopped because {_session.FilePath} changed while the save was being prepared.");
+                    return false;
+                }
+
                 _session.UndoStack.MarkSaved();
                 _session.RecordCurrentFileState(saveBytes);
                 AfterHistoryChange();

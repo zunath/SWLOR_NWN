@@ -373,7 +373,8 @@
           <TextBlock Classes="dim" Text="{Binding StatusText}"
                      TextTrimming="CharacterEllipsis" />
         </StackPanel>
-        <Button Grid.Column="1" Content="Close" Click="OnCloseClicked" />
+        <Button Grid.Column="1" Content="Close" Click="OnCloseClicked"
+                IsEnabled="{Binding CanClose}" />
         <Button Grid.Column="2" Content="Back"
                 Command="{Binding BackCommand}" IsVisible="{Binding CanGoBack}" />
         <Button Grid.Column="3" Classes="primary" Content="Next"

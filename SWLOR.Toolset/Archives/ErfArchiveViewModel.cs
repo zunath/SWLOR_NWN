@@ -369,6 +369,7 @@ namespace SWLOR.Toolset.Archives
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CanGoNext))]
         [NotifyPropertyChangedFor(nameof(CanCommit))]
+        [NotifyPropertyChangedFor(nameof(CanClose))]
         private bool _isBusy;
 
         [ObservableProperty]
@@ -447,6 +448,7 @@ namespace SWLOR.Toolset.Archives
         public bool ShowExportValidation =>
             IsExport && CurrentStep == 2 && !IsValidatingSelection;
         public bool CanCommit => !IsBusy && !IsComplete;
+        public bool CanClose => !IsBusy;
         public bool CanGoNext => !IsBusy && CurrentStep < 3 && (CurrentStep != 0 || !IsImport || _session != null);
         public string ModeTitle => IsImport ? "Import ERF" : "Export ERF";
         public string StepOneLabel => IsImport ? "1  Select ERF file" : "1  Prepare export";

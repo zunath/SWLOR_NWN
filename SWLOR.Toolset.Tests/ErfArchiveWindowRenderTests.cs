@@ -88,6 +88,7 @@ namespace SWLOR.Toolset.Tests
 
                 viewModel.CurrentStep = 2;
                 viewModel.IsValidatingSelection = true;
+                viewModel.IsBusy = true;
                 Dispatcher.UIThread.RunJobs();
 
                 var validationProgress =
@@ -96,9 +97,23 @@ namespace SWLOR.Toolset.Tests
                 validationProgress!.IsVisible.Should().BeTrue();
                 viewModel.StepTitle.Should().Be("Validating selected assets");
                 viewModel.ShowExportValidation.Should().BeFalse();
+
+                var closeButton = window.GetVisualDescendants()
+                    .OfType<Button>()
+                    .Single(button => button.Content?.ToString() == "Close");
+                closeButton.IsEnabled.Should().BeFalse();
+                window.Close();
+                Dispatcher.UIThread.RunJobs();
+                window.IsVisible.Should().BeTrue(
+                    "window chrome must not dispose an archive operation that is still active");
+
+                viewModel.IsBusy = false;
+                Dispatcher.UIThread.RunJobs();
+                closeButton.IsEnabled.Should().BeTrue();
             }
             finally
             {
+                viewModel.IsBusy = false;
                 window.Close();
                 Dispatcher.UIThread.RunJobs();
             }

@@ -15,6 +15,8 @@ namespace SWLOR.Toolset.Tests.Items
         [TestCase("DELETED", "AArCl", false)]
         [TestCase("deleted", "AArCl", false)]
         [TestCase("Deleted_Shortsword", "AArCl", false, TestName = "ContainsDeletedAnywhere")]
+        [TestCase("bio_reserved", "AArCl", false)]
+        [TestCase("BIO_RESERVED", "AArCl", false)]
         [TestCase("Padding", "AArCl", false)]
         [TestCase("PADDING", "AArCl", false)]
         [TestCase("Shortsword", null, false, TestName = "BlankItemClassIsRejected")]
@@ -29,6 +31,10 @@ namespace SWLOR.Toolset.Tests.Items
         [TestCase("bad strref", false)]
         [TestCase("BAD STRREF", false)]
         [TestCase("  Bad Strref  ", false)]
+        [TestCase("bio_reserved", false)]
+        [TestCase("BIO_RESERVED", false)]
+        [TestCase("DELETED", false)]
+        [TestCase("Padding", false)]
         [TestCase("", false)]
         [TestCase("   ", false)]
         [TestCase("Shortsword", true)]
@@ -37,6 +43,17 @@ namespace SWLOR.Toolset.Tests.Items
             // Label/ItemClass are otherwise perfectly valid - only the resolved display text (what
             // a broken base-game dialog.tlk strref hands back for this row's Name column) decides.
             BaseItemChoicePolicy.IsOffered("Shortsword", "WSwSbre", display).Should().Be(expected);
+        }
+
+        [TestCase("Bad Strref", false)]
+        [TestCase("bio_reserved", false)]
+        [TestCase("some_reserved_slot", false)]
+        [TestCase("DELETED", false)]
+        [TestCase("Padding", false)]
+        [TestCase("Shortsword", true)]
+        public void IsDisplayOffered_ProtectsTheDegradedLookup(string display, bool expected)
+        {
+            BaseItemChoicePolicy.IsDisplayOffered(display).Should().Be(expected);
         }
 
         [Test]

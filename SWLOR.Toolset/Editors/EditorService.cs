@@ -1706,12 +1706,16 @@ namespace SWLOR.Toolset.Editors
                 var rows = BaseItemRows();
                 var icons = BaseItemIcons();
 
-                // Filtering needs both services' own view of the row (label from one, ItemClass
-                // from the other); either being unavailable falls back to the unfiltered list rather
-                // than guessing.
+                // With both services, reject every structurally invalid row. A partially configured
+                // installation can still reject obvious display artifacts instead of exposing the
+                // entire raw table (including bio_reserved and "Bad Strref").
                 if (rows == null || icons == null)
                 {
-                    return options.Select(option => new BehaviorChoice(option.Id, option.Display)).ToList();
+                    return options
+                        .Where(option => Domain.Editors.Items.BaseItemChoicePolicy.IsDisplayOffered(
+                            option.Display))
+                        .Select(option => new BehaviorChoice(option.Id, option.Display))
+                        .ToList();
                 }
 
                 return options

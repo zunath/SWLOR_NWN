@@ -13,6 +13,22 @@ namespace SWLOR.Toolset.Domain.Editors.Items
         /// <summary>The literal text a broken base-game dialog.tlk strref resolves to.</summary>
         private const string BadStrrefSentinel = "Bad Strref";
 
+        /// <summary>
+        /// Whether display text alone is usable. This is the degraded-installation guard used when
+        /// the detailed baseitems/icon services are unavailable but the generic lookup still exists.
+        /// </summary>
+        public static bool IsDisplayOffered(string? display)
+        {
+            if (string.IsNullOrWhiteSpace(display))
+                return false;
+
+            var trimmed = display.Trim();
+            return !trimmed.Contains("deleted", StringComparison.OrdinalIgnoreCase) &&
+                   !trimmed.Contains("reserved", StringComparison.OrdinalIgnoreCase) &&
+                   !string.Equals(trimmed, "padding", StringComparison.OrdinalIgnoreCase) &&
+                   !string.Equals(trimmed, BadStrrefSentinel, StringComparison.OrdinalIgnoreCase);
+        }
+
         /// <summary>True when this row belongs in the Base Type list.</summary>
         /// <param name="display">
         /// The row's resolved display text (label or TLK name), when the caller has one. Null skips
@@ -28,18 +44,17 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             if (trimmed.Contains("deleted", StringComparison.OrdinalIgnoreCase))
                 return false;
 
+            if (trimmed.Contains("reserved", StringComparison.OrdinalIgnoreCase))
+                return false;
+
             if (string.Equals(trimmed, "padding", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             if (string.IsNullOrWhiteSpace(itemClass))
                 return false;
 
-            if (display != null &&
-                (string.IsNullOrWhiteSpace(display) ||
-                 string.Equals(display.Trim(), BadStrrefSentinel, StringComparison.OrdinalIgnoreCase)))
-            {
+            if (display != null && !IsDisplayOffered(display))
                 return false;
-            }
 
             return true;
         }

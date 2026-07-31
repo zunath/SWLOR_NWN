@@ -42,6 +42,13 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>Square size for rasterized model previews.</summary>
         public const int ModelRenderSize = 128;
 
+        /// <summary>
+        /// Small shell gap Aurora preserves between an equipped skinmesh and the segmented body it
+        /// overlays. Four millimetres is enough to stop blended collar/sash vertices from breaking
+        /// through without visibly resizing the garment.
+        /// </summary>
+        private const float EquippedGarmentSurfaceClearance = 0.004f;
+
         private readonly WorkspaceContext _workspaceContext;
         private readonly ResourceIndex? _resourceIndex;
         private readonly AppearanceService? _appearances;
@@ -481,7 +488,10 @@ namespace SWLOR.Toolset.Workspace
             }
 
             renderModels.AddRange(skinParts.Select(part =>
-                MdlMeshBuilder.Build(part.Model, sharedFrames ?? IdleFrames(part.Model))));
+                MdlMeshBuilder.Build(
+                    part.Model,
+                    sharedFrames ?? IdleFrames(part.Model),
+                    EquippedGarmentSurfaceClearance)));
 
             return CombineRenderModels(reference.SkeletonResRef, renderModels);
         }

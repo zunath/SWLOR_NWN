@@ -170,7 +170,15 @@ namespace SWLOR.Toolset.Tests.Items
             var layeredFrames = MdlAnimationPose.SampleIdleFrames(source, LoadModel, layeredBind)
                 .Select(frame => frame.Pose)
                 .ToList();
-            var layeredPoseRobe = MdlMeshBuilder.Build(source, layeredFrames).Meshes
+            var layeredPoseRobe = MdlMeshBuilder.Build(
+                    source,
+                    layeredFrames,
+                    skinSurfaceClearance: 0.004f)
+                .Meshes
+                .Single(mesh =>
+                    mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&
+                    mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase));
+            var layeredWithoutClearance = MdlMeshBuilder.Build(source, layeredFrames).Meshes
                 .Single(mesh =>
                     mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&
                     mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase));
@@ -206,6 +214,23 @@ namespace SWLOR.Toolset.Tests.Items
                 wearerPoseRobe.PosePositions[0],
                 "falling back to the plain wearer leaves coat-only helpers at bind and cuts the " +
                 "weighted waist through the rigid chest sash");
+            renderedRobe.PoseNormals.Should().HaveCount(renderedRobe.PosePositions.Count);
+            renderedRobe.PoseNormals.Should().OnlyContain(frame =>
+                    frame.Length == renderedRobe.Positions.Length,
+                "Aurora generates normals for a robe even when its ASCII skinmesh omits them");
+            renderedRobe.PosePositions[0].Should().NotEqual(
+                layeredWithoutClearance.PosePositions[0],
+                "the generated normals must actually move the equipped shell away from the retained chest");
+            static float Span(float[] positions, int axis)
+            {
+                var values = positions.Where((_, index) => index % 3 == axis);
+                return values.Max() - values.Min();
+            }
+            Span(renderedRobe.PosePositions[0], 0).Should()
+                .BeGreaterThan(Span(layeredWithoutClearance.PosePositions[0], 0));
+            Span(renderedRobe.PosePositions[0], 1).Should()
+                .BeGreaterThan(Span(layeredWithoutClearance.PosePositions[0], 1),
+                    "the clearance must expand the robe shell instead of pulling it farther into the body");
 
             var bounds = model.ComputeBounds();
             bounds.Should().NotBeNull();

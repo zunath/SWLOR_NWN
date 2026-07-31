@@ -128,7 +128,36 @@ namespace SWLOR.Toolset.Tests
                 "bone hierarchy");
         }
 
-        private static MdlSkinmeshNode TriangleSkin(MdlNode parent) =>
+        [Test]
+        public void NormalLessGarmentGeneratesNormalsBeforeApplyingSurfaceClearance()
+        {
+            var root = new MdlNode { Name = "root" };
+            var bone = new MdlNode
+            {
+                Name = "forearm_g",
+                Parent = root,
+                Position = new Vector3(1f, 0f, 0f)
+            };
+            root.Children.Add(bone);
+            var skin = TriangleSkin(root, withNormals: false);
+            root.Children.Add(skin);
+
+            var rendered = MdlMeshBuilder.Build(
+                new MdlModel { Name = "coat", GeometryRoot = root },
+                skinSurfaceClearance: 0.004f);
+
+            var mesh = rendered.Meshes.Should().ContainSingle().Subject;
+            mesh.Normals.Should().Equal(
+                1f, 0f, 0f,
+                1f, 0f, 0f,
+                1f, 0f, 0f);
+            mesh.Positions.Should().Equal(
+                2.004f, 0f, 0f,
+                2.004f, 1f, 0f,
+                2.004f, 0f, 1f);
+        }
+
+        private static MdlSkinmeshNode TriangleSkin(MdlNode parent, bool withNormals = true) =>
             new()
             {
                 Name = "robe-skin",
@@ -141,7 +170,9 @@ namespace SWLOR.Toolset.Tests
                     new Vector3(2f, 1f, 0f),
                     new Vector3(2f, 0f, 1f)
                 ],
-                Normals = [Vector3.UnitX, Vector3.UnitX, Vector3.UnitX],
+                Normals = withNormals
+                    ? [Vector3.UnitX, Vector3.UnitX, Vector3.UnitX]
+                    : Array.Empty<Vector3>(),
                 TextureCoordinates = [Vector2.Zero, Vector2.UnitX, Vector2.UnitY],
                 VertexInfluences =
                 [

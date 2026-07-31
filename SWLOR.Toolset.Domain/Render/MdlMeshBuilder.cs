@@ -194,14 +194,24 @@ namespace SWLOR.Toolset.Domain.Render
 
         /// <summary>
         /// Builds ordinary render geometry. Optional poses become a bounded sequence of per-mesh
-        /// matrices; the final pose is the mesh's resting transform.
+        /// matrices; the final pose is the mesh's resting transform. A positive
+        /// <paramref name="skinSurfaceClearance"/> expands deformed skinmeshes along their rendered
+        /// normals, for garments authored as a shell over separately rendered body parts.
         /// </summary>
         public static RenderModel Build(
             MdlModel model,
-            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames = null)
+            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames = null,
+            float skinSurfaceClearance = 0f)
         {
             ArgumentNullException.ThrowIfNull(model);
-            return BuildInternal(model, poseFrames, includePlaceableMetadata: false);
+            if (!float.IsFinite(skinSurfaceClearance) || skinSurfaceClearance < 0f)
+                throw new ArgumentOutOfRangeException(nameof(skinSurfaceClearance));
+
+            return BuildInternal(
+                model,
+                poseFrames,
+                includePlaceableMetadata: false,
+                skinSurfaceClearance: skinSurfaceClearance);
         }
 
         /// <summary>
@@ -211,7 +221,11 @@ namespace SWLOR.Toolset.Domain.Render
         public static RenderModel BuildPlaceablePreview(MdlModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
-            return BuildInternal(model, poseFrames: null, includePlaceableMetadata: true);
+            return BuildInternal(
+                model,
+                poseFrames: null,
+                includePlaceableMetadata: true,
+                skinSurfaceClearance: 0f);
         }
 
         /// <summary>
@@ -219,7 +233,7 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         /// <remarks>
         /// Such a model must retain its authored bone transforms through composition because they
-        /// are the bind pose used by <see cref="Build(MdlModel, IReadOnlyList{IReadOnlyDictionary{string, PosedNode}}?)"/>.
+        /// are the bind pose used by <see cref="Build"/>.
         /// </remarks>
         public static bool ContainsNamedSkinWeights(MdlModel model)
         {
@@ -269,7 +283,8 @@ namespace SWLOR.Toolset.Domain.Render
         private static RenderModel BuildInternal(
             MdlModel model,
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
-            bool includePlaceableMetadata)
+            bool includePlaceableMetadata,
+            float skinSurfaceClearance)
         {
             var animations = includePlaceableMetadata
                 ? MdlAnimationPose.PlaceableAnimations(model)
@@ -289,7 +304,7 @@ namespace SWLOR.Toolset.Domain.Render
                 if (mesh.IsWalkmesh || !mesh.Render || PlaceholderNames.Contains(mesh.Name))
                     continue;
 
-                var built = BuildMesh(mesh, poseFrames, animationSamples);
+                var built = BuildMesh(mesh, poseFrames, animationSamples, skinSurfaceClearance);
                 if (built != null)
                     renderMeshes.Add(built);
             }
@@ -333,7 +348,8 @@ namespace SWLOR.Toolset.Domain.Render
         private static RenderMesh? BuildMesh(
             MdlTrimeshNode mesh,
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
-            IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationSamples)
+            IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationSamples,
+            float skinSurfaceClearance)
         {
             var vertexCount = mesh.Vertices.Length;
             if (vertexCount == 0 || mesh.Faces.Length == 0)
@@ -347,6 +363,7 @@ namespace SWLOR.Toolset.Domain.Render
                           TrySkinPoses(
                               skin,
                               poseFrames,
+                              skinSurfaceClearance,
                               out skinnedPositions,
                               out skinnedNormals,
                               out skinnedPosePositions,
@@ -435,6 +452,7 @@ namespace SWLOR.Toolset.Domain.Render
         private static bool TrySkinPoses(
             MdlSkinmeshNode skin,
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
+            float surfaceClearance,
             out Vector3[] positions,
             out Vector3[] normals,
             out IReadOnlyList<float[]> renderedPositions,
@@ -457,13 +475,29 @@ namespace SWLOR.Toolset.Domain.Render
 
             var meshBind = ComposeNodeTransform(skin);
             if (poseFrames is not { Count: > 0 })
-                return TrySkinPose(skin, bones, meshBind, pose: null, out positions, out normals);
+            {
+                return TrySkinPose(
+                    skin,
+                    bones,
+                    meshBind,
+                    pose: null,
+                    surfaceClearance,
+                    out positions,
+                    out normals);
+            }
 
             var positionFrames = new List<float[]>(poseFrames.Count);
             var normalFrames = new List<float[]>(poseFrames.Count);
             foreach (var pose in poseFrames)
             {
-                if (!TrySkinPose(skin, bones, meshBind, pose, out positions, out normals))
+                if (!TrySkinPose(
+                        skin,
+                        bones,
+                        meshBind,
+                        pose,
+                        surfaceClearance,
+                        out positions,
+                        out normals))
                     return false;
 
                 positionFrames.Add(Flatten(positions));
@@ -480,6 +514,7 @@ namespace SWLOR.Toolset.Domain.Render
             SkinBones bones,
             Matrix4x4 meshBind,
             IReadOnlyDictionary<string, PosedNode>? pose,
+            float surfaceClearance,
             out Vector3[] positions,
             out Vector3[] normals)
         {
@@ -507,13 +542,13 @@ namespace SWLOR.Toolset.Domain.Render
                 return false;
 
             positions = new Vector3[skin.Vertices.Length];
-            var hasNormals = skin.Normals.Length == skin.Vertices.Length;
-            normals = hasNormals ? new Vector3[skin.Normals.Length] : Array.Empty<Vector3>();
+            var hasAuthoredNormals = skin.Normals.Length == skin.Vertices.Length;
+            normals = hasAuthoredNormals ? new Vector3[skin.Normals.Length] : Array.Empty<Vector3>();
 
             for (var index = 0; index < skin.Vertices.Length; index++)
             {
                 var bindPosition = Vector3.Transform(FiniteOrZero(skin.Vertices[index]), meshBind);
-                var bindNormal = hasNormals
+                var bindNormal = hasAuthoredNormals
                     ? TransformDirection(FiniteOrZero(skin.Normals[index]), meshBind)
                     : Vector3.Zero;
                 var position = Vector3.Zero;
@@ -531,7 +566,7 @@ namespace SWLOR.Toolset.Domain.Render
                     }
 
                     position += Vector3.Transform(bindPosition, boneTransform) * influence.Weight;
-                    if (hasNormals)
+                    if (hasAuthoredNormals)
                         normal += TransformDirection(bindNormal, boneTransform) * influence.Weight;
                     totalWeight += influence.Weight;
                 }
@@ -539,7 +574,7 @@ namespace SWLOR.Toolset.Domain.Render
                 if (totalWeight > 0f)
                 {
                     position /= totalWeight;
-                    if (hasNormals)
+                    if (hasAuthoredNormals)
                         normal /= totalWeight;
                 }
                 else
@@ -549,11 +584,54 @@ namespace SWLOR.Toolset.Domain.Render
                 }
 
                 positions[index] = FiniteOrZero(position);
-                if (hasNormals)
+                if (hasAuthoredNormals)
                     normals[index] = NormalizeOrZero(normal);
             }
 
+            if (!hasAuthoredNormals)
+                normals = GenerateVertexNormals(skin, positions);
+
+            if (surfaceClearance > 0f && normals.Length == positions.Length)
+            {
+                for (var index = 0; index < positions.Length; index++)
+                    positions[index] = FiniteOrZero(positions[index] + normals[index] * surfaceClearance);
+            }
+
             return true;
+        }
+
+        /// <summary>
+        /// Generates smooth normals from the deformed triangles when an ASCII skinmesh omits them.
+        /// Aurora accepts those robe models and derives their normals at load; leaving the array
+        /// empty made both lighting and garment-shell clearance silently unavailable.
+        /// </summary>
+        private static Vector3[] GenerateVertexNormals(MdlTrimeshNode mesh, IReadOnlyList<Vector3> positions)
+        {
+            var normals = new Vector3[positions.Count];
+            foreach (var face in mesh.Faces)
+            {
+                if (face.VertexIndex0 >= positions.Count ||
+                    face.VertexIndex1 >= positions.Count ||
+                    face.VertexIndex2 >= positions.Count)
+                {
+                    continue;
+                }
+
+                var a = positions[face.VertexIndex0];
+                var b = positions[face.VertexIndex1];
+                var c = positions[face.VertexIndex2];
+                var faceNormal = Vector3.Cross(b - a, c - a);
+                if (!IsFinite(faceNormal) || faceNormal.LengthSquared() <= 0f)
+                    continue;
+
+                normals[face.VertexIndex0] += faceNormal;
+                normals[face.VertexIndex1] += faceNormal;
+                normals[face.VertexIndex2] += faceNormal;
+            }
+
+            for (var index = 0; index < normals.Length; index++)
+                normals[index] = NormalizeOrZero(normals[index]);
+            return normals;
         }
 
         /// <summary>

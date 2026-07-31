@@ -390,8 +390,6 @@
             <ScrollViewer>
               <StackPanel>
                 <TextBlock Text="Assigned Abilities" Classes="section" Margin="0,0,0,8" />
-                <TextBlock Text="{Binding Abilities.PreservedSummary}" Classes="dim" TextWrapping="Wrap"
-                           Margin="0,0,0,8" IsVisible="{Binding Abilities.HasPreservedFeats}" />
                 <ItemsControl ItemsSource="{Binding Abilities.Assigned}" />
               </StackPanel>
             </ScrollViewer>

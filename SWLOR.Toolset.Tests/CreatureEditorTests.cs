@@ -159,6 +159,18 @@ namespace SWLOR.Toolset.Tests
             view.Should().NotContain("IsStatSkinMissing");
         }
 
+        [Test]
+        public void AbilitiesTab_DoesNotExposePreservedEngineFeats()
+        {
+            var view = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset", "Editors", "Views", "CreatureEditorView.axaml"));
+
+            view.ToLowerInvariant().Should().NotContain("engine feat");
+            view.Should().NotContain("PreservedSummary");
+            view.Should().NotContain("HasPreservedFeats");
+        }
+
         [TestCase(-100, 200)]
         [TestCase(-10, 110)]
         [TestCase(0, 0)]

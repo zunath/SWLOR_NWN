@@ -28,9 +28,6 @@ namespace SWLOR.Toolset.Editors.Creatures
             ? "No matching registered abilities"
             : $"{Matching.Count} registered abilit{(Matching.Count == 1 ? "y" : "ies")}";
 
-        public string PreservedSummary { get; private set; } = string.Empty;
-        public bool HasPreservedFeats => PreservedSummary.Length > 0;
-
         public CreatureAbilitiesViewModel(
             CreatureValueStore store,
             Func<string, Action, bool> runEdit,
@@ -67,13 +64,6 @@ namespace SWLOR.Toolset.Editors.Creatures
                     info, maximum, _store, _runEdit, Remove));
             }
 
-            var registered = _catalog.Select(info => info.FeatId).ToHashSet();
-            var preserved = featIds.Where(id => !registered.Contains(id)).Order().ToList();
-            PreservedSummary = preserved.Count == 0
-                ? string.Empty
-                : $"{preserved.Count} engine feat{(preserved.Count == 1 ? " is" : "s are")} preserved but not editable here.";
-            OnPropertyChanged(nameof(PreservedSummary));
-            OnPropertyChanged(nameof(HasPreservedFeats));
             RebuildMatching();
         }
 

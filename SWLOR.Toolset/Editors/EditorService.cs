@@ -472,6 +472,86 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
+        /// Invalidates faction choice caches after the modal faction editor saves. Any open editor
+        /// which owns a faction picker is clean (the shell saves all documents before opening the
+        /// modal workflow), so closing it prevents a stale list or a pre-remap numeric id from being
+        /// written back over the grouped faction transaction.
+        /// </summary>
+        public void RefreshAfterFactionSave(IReadOnlyCollection<string> changedPaths)
+        {
+            if (changedPaths.Count == 0)
+                return;
+
+            _lookups.Invalidate();
+            _choiceSets.Clear();
+
+            foreach (var path in changedPaths)
+            {
+                var extension = Path.GetFileName(Path.GetDirectoryName(path));
+                if (string.IsNullOrWhiteSpace(extension) ||
+                    !ResourceTypeExtensions.TryFromExtension(extension, out var type) ||
+                    type == ResourceType.Area)
+                {
+                    continue;
+                }
+
+                var fileName = Path.GetFileNameWithoutExtension(path);
+                var resRef = Path.GetFileNameWithoutExtension(fileName);
+                if (!string.IsNullOrWhiteSpace(resRef))
+                    _workspaceContext.RefreshCatalogEntry(type, resRef);
+            }
+
+            var closed = 0;
+            foreach (var editor in _openEditors.Values
+                         .Where(editor => editor.BlueprintType is
+                             ResourceType.Utc or ResourceType.Utp or ResourceType.Utd or
+                             ResourceType.Utt)
+                         .ToList())
+            {
+                _factory.CloseDocument(editor);
+                closed++;
+            }
+
+            foreach (var editor in _openCreatureEditors.Values.ToList())
+            {
+                _factory.CloseDocument(editor);
+                closed++;
+            }
+
+            foreach (var editor in _openDoorEditors.Values.ToList())
+            {
+                _factory.CloseDocument(editor);
+                closed++;
+            }
+
+            foreach (var editor in _openTriggerEditors.Values.ToList())
+            {
+                _factory.CloseDocument(editor);
+                closed++;
+            }
+
+            if (changedPaths.Any(path =>
+                    string.Equals(
+                        Path.GetFileName(Path.GetDirectoryName(path)),
+                        "git",
+                        StringComparison.OrdinalIgnoreCase)))
+            {
+                foreach (var editor in _openAreaEditors.Values.ToList())
+                {
+                    _factory.CloseDocument(editor);
+                    closed++;
+                }
+            }
+
+            if (closed > 0)
+            {
+                _log.AppendLine(
+                    $"Closed {closed} clean faction-aware editor tab" +
+                    $"{(closed == 1 ? string.Empty : "s")} so it reopens with the saved faction table.");
+            }
+        }
+
+        /// <summary>
         /// Focuses the script named by a Problems row and puts the caret on the reported line.
         /// </summary>
         public void NavigateToScriptLine(string resRef, int line)

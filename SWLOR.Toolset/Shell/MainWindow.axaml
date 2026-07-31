@@ -21,6 +21,9 @@
         <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGesture="Ctrl+S" />
         <MenuItem Header="Save _All" Command="{Binding SaveAllCommand}" InputGesture="Ctrl+Shift+S" />
         <Separator />
+        <MenuItem x:Name="ErfManagerMenuItem" Header="ERF _Manager..."
+                  Command="{Binding ErfArchivesCommand}" />
+        <Separator />
         <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
       </MenuItem>
       <MenuItem Header="_Edit">
@@ -40,7 +43,8 @@
         <MenuItem Header="_Pack Module" Command="{Binding PackModuleCommand}" />
       </MenuItem>
       <MenuItem Header="_Tools">
-        <MenuItem Header="ERF _Manager..." Command="{Binding ErfArchivesCommand}" />
+        <MenuItem x:Name="FactionEditorMenuItem" Header="_Faction Editor..."
+                  Command="{Binding FactionEditorCommand}" />
         <Separator />
         <MenuItem Header="Run Validation" Command="{Binding FocusValidationCommand}" />
         <Separator />

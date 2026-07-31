@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Controls;
 using SWLOR.Toolset.Archives;
+using SWLOR.Toolset.Factions;
 using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
@@ -56,8 +57,12 @@ namespace SWLOR.Toolset.Shell
         [ObservableProperty]
         private bool _isManagingErfArchives;
 
+        [ObservableProperty]
+        private bool _isManagingFactions;
+
         public bool IsModuleMutationLocked =>
-            IsPacking || IsValidationRunning || IsBuildingScripts || IsManagingErfArchives;
+            IsPacking || IsValidationRunning || IsBuildingScripts ||
+            IsManagingErfArchives || IsManagingFactions;
 
         /// <summary>
         /// The shared answer to <see cref="IsModuleMutationLocked"/>, published for the panels and
@@ -425,6 +430,66 @@ namespace SWLOR.Toolset.Shell
             }
         }
 
+        /// <summary>
+        /// Opens the module-wide faction workflow after saving every open editor. The window owns a
+        /// grouped transaction which writes repute.fac and any remapped blueprint/area references
+        /// together, so no other module writer may run while it is open.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanMutateModule))]
+        private async Task FactionEditor()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+            {
+                StatusText = "Faction Editor needs an open module.";
+                return;
+            }
+
+            if (ScriptCompileService.AnyCompilationActive)
+            {
+                StatusText = "Faction Editor will be available after the active script compile finishes.";
+                return;
+            }
+
+            IsManagingFactions = true;
+            try
+            {
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
+                    {
+                        StatusText = "Faction Editor cancelled: an open editor could not be saved.";
+                        return;
+                    }
+                }
+
+                StatusText = "Opening Faction Editor...";
+                IReadOnlyCollection<string> changedPaths;
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    changedPaths = await FactionEditorWindow.ShowAsync(
+                        workspace.ModuleRoot,
+                        _log,
+                        _prompts).ConfigureAwait(true);
+                }
+
+                _editorService.Value.RefreshAfterFactionSave(changedPaths);
+                StatusText = changedPaths.Count == 0
+                    ? "Faction Editor closed."
+                    : $"Faction Editor saved {changedPaths.Count} module file" +
+                      $"{(changedPaths.Count == 1 ? string.Empty : "s")}.";
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Faction Editor failed: {ex.Message}");
+                StatusText = "Faction Editor could not be opened; see Output.";
+            }
+            finally
+            {
+                IsManagingFactions = false;
+            }
+        }
+
         // ----- scripts -----
 
         private bool CanCompileActiveScript => _activeScript?.CanCompile == true;
@@ -698,6 +763,11 @@ namespace SWLOR.Toolset.Shell
             NotifyMutationStateChanged();
         }
 
+        partial void OnIsManagingFactionsChanged(bool value)
+        {
+            NotifyMutationStateChanged();
+        }
+
         private void NotifyMutationStateChanged()
         {
             OnPropertyChanged(nameof(IsModuleMutationLocked));
@@ -707,6 +777,7 @@ namespace SWLOR.Toolset.Shell
             _mutationLock.Set(IsModuleMutationLocked);
             SaveAllCommand.NotifyCanExecuteChanged();
             ErfArchivesCommand.NotifyCanExecuteChanged();
+            FactionEditorCommand.NotifyCanExecuteChanged();
             PackModuleCommand.NotifyCanExecuteChanged();
             BuildAllScriptsCommand.NotifyCanExecuteChanged();
             ModulePropertiesCommand.NotifyCanExecuteChanged();

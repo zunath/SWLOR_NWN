@@ -7,7 +7,7 @@ using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Editors.Creatures
 {
-    /// <summary>Creature attributes plus the linked stat skin and natural weapons.</summary>
+    /// <summary>Creature attributes plus the linked stat skin.</summary>
     public sealed partial class CreatureStatsViewModel : ObservableObject
     {
         private readonly CreatureValueStore _creature;
@@ -19,7 +19,6 @@ namespace SWLOR.Toolset.Editors.Creatures
         public ObservableCollection<CreatureStatCellViewModel> Defense { get; } = new();
         public ObservableCollection<CreatureStatCellViewModel> Resistances { get; } = new();
         public ObservableCollection<CreatureStatCellViewModel> Attributes { get; } = new();
-        public ObservableCollection<CreatureWeaponViewModel> Weapons { get; } = new();
         public ObservableCollection<CreatureSkillOverrideViewModel> SkillOverrides { get; } = new();
         public IReadOnlyList<CreatureOption> AvailableSkills { get; }
 
@@ -81,12 +80,6 @@ namespace SWLOR.Toolset.Editors.Creatures
                     byte.MaxValue));
             }
 
-            Weapons.Add(new CreatureWeaponViewModel(
-                "Primary Natural Weapon", CreaturePropertyCatalog.MainWeaponSlot, equipment, runEdit));
-            Weapons.Add(new CreatureWeaponViewModel(
-                "Secondary Natural Weapon", CreaturePropertyCatalog.OffWeaponSlot, equipment, runEdit));
-            Weapons.Add(new CreatureWeaponViewModel(
-                "Additional Natural Weapon", CreaturePropertyCatalog.CreatureWeaponSlot, equipment, runEdit));
             ReloadSkillOverrides();
         }
 
@@ -108,8 +101,6 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             foreach (var cell in Vitals.Concat(Offense).Concat(Defense).Concat(Resistances).Concat(Attributes))
                 cell.Reload();
-            foreach (var weapon in Weapons)
-                weapon.Reload();
             ReloadSkillOverrides();
             OnPropertyChanged(nameof(HasStatSkin));
         }

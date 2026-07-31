@@ -161,6 +161,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 _store, RunEdit, appearance, armorParts, colorPalettes, OnBodyPartChanged);
             EquipmentSlots = new CreatureEquipmentSlotsViewModel(
                 _store,
+                Equipment,
                 RunEdit,
                 equipmentChoices ?? (() => Task.FromResult<IReadOnlyList<CreatureEquipmentChoice>>(
                     Array.Empty<CreatureEquipmentChoice>())),

@@ -6,12 +6,13 @@ using SWLOR.Toolset.Editors.Behaviors;
 namespace SWLOR.Toolset.Editors.Creatures
 {
     /// <summary>
-    /// Ordinary UTC equipment slots. These exist independently of whether the selected creature
-    /// model renders the equipped item; natural weapons and the internal stat skin remain on Stats.
+    /// Ordinary UTC equipment slots plus the creature's natural-weapon equipment. These exist
+    /// independently of whether the selected creature model renders the equipped item.
     /// </summary>
     public sealed class CreatureEquipmentSlotsViewModel : ObservableObject
     {
         public ObservableCollection<CreatureEquipmentPickerViewModel> Slots { get; } = new();
+        public ObservableCollection<CreatureWeaponViewModel> NaturalWeapons { get; } = new();
 
         private CreatureEquipmentPickerViewModel? _selectedSlot;
 
@@ -37,6 +38,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public CreatureEquipmentSlotsViewModel(
             CreatureValueStore store,
+            CreatureEquipmentSet equipment,
             Func<string, Action, bool> runEdit,
             Func<Task<IReadOnlyList<CreatureEquipmentChoice>>> allChoices,
             Func<string, CreatureEquipmentChoice?> loadDetails,
@@ -59,6 +61,12 @@ namespace SWLOR.Toolset.Editors.Creatures
             Slots.Add(Picker("Arrows", 2048, store, runEdit, allChoices, loadDetails, changed, previews, searchChoices));
             Slots.Add(Picker("Bolts", 8192, store, runEdit, allChoices, loadDetails, changed, previews, searchChoices));
             Slots.Add(Picker("Bullets", 4096, store, runEdit, allChoices, loadDetails, changed, previews, searchChoices));
+            NaturalWeapons.Add(new CreatureWeaponViewModel(
+                "Primary Natural Weapon", CreaturePropertyCatalog.MainWeaponSlot, equipment, runEdit));
+            NaturalWeapons.Add(new CreatureWeaponViewModel(
+                "Secondary Natural Weapon", CreaturePropertyCatalog.OffWeaponSlot, equipment, runEdit));
+            NaturalWeapons.Add(new CreatureWeaponViewModel(
+                "Additional Natural Weapon", CreaturePropertyCatalog.CreatureWeaponSlot, equipment, runEdit));
             SetProperty(ref _selectedSlot, Slots[0]);
         }
 
@@ -73,6 +81,8 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             foreach (var slot in Slots)
                 slot.Reload();
+            foreach (var weapon in NaturalWeapons)
+                weapon.Reload();
             if (SelectedSlot != null)
                 _ = SelectedSlot.ActivateAsync(force: true);
         }

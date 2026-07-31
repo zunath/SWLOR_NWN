@@ -189,7 +189,7 @@ namespace SWLOR.Toolset.Tests
                         return true;
                     },
                     null, null, null, null, _ => null, null);
-                var primary = editor.Stats.Weapons.Single(weapon =>
+                var primary = editor.EquipmentSlots.NaturalWeapons.Single(weapon =>
                     weapon.Label == "Primary Natural Weapon");
                 var store = new CreatureValueStore(session.Document.Root);
 
@@ -227,16 +227,18 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void StatsTab_UsesNaturalWeaponCheckboxesInsteadOfCreationButtons()
+        public void EquipmentTab_UsesNaturalWeaponCheckboxesInsteadOfCreationButtons()
         {
             var view = File.ReadAllText(Path.Combine(
                 CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", "CreatureEditorView.axaml"));
 
             view.Should().NotContain("Create weapon");
             view.Should().NotContain("EnsureExistsCommand");
+            view.Should().Contain("ItemsSource=\"{Binding EquipmentSlots.NaturalWeapons}\"");
+            view.Should().NotContain("ItemsSource=\"{Binding Stats.Weapons}\"");
             view.Should().Contain("IsChecked=\"{Binding IsEnabled, Mode=TwoWay}\"");
             view.Should().Contain("IsVisible=\"{Binding IsEnabled}\"",
-                "disabled natural weapons should not fill the tab with inactive fields");
+                "disabled natural weapons should not fill Equipment with inactive fields");
         }
 
         [Test]
@@ -251,8 +253,7 @@ namespace SWLOR.Toolset.Tests
                 "CreatureOffenseCard",
                 "CreatureDefenseCard",
                 "CreatureResistancesCard",
-                "CreatureSkillOverridesCard",
-                "CreatureNaturalWeapons"
+                "CreatureSkillOverridesCard"
             };
 
             var positions = orderedCards
@@ -260,9 +261,17 @@ namespace SWLOR.Toolset.Tests
                 .ToList();
             positions.Should().OnlyContain(index => index >= 0);
             positions.Should().BeInAscendingOrder(
-                "the Stats tab should read from core values through combat tuning and weapons");
+                "the Stats tab should read from core values through combat tuning");
             view.Should().Contain("<UniformGrid Columns=\"2\" />",
                 "the eight resistances should use the full tab width instead of one tall side column");
+
+            var equipmentStart = view.IndexOf("CreatureEquipmentSections", StringComparison.Ordinal);
+            var naturalWeapons = view.IndexOf("CreatureNaturalWeapons", StringComparison.Ordinal);
+            var statsStart = view.IndexOf("<TabItem Header=\"Stats\">", StringComparison.Ordinal);
+            equipmentStart.Should().BeGreaterThanOrEqualTo(0);
+            naturalWeapons.Should().BeGreaterThan(equipmentStart);
+            naturalWeapons.Should().BeLessThan(statsStart,
+                "natural weapons belong to Equipment rather than Stats");
         }
 
         [Test]

@@ -196,22 +196,28 @@ namespace SWLOR.Toolset.Domain.Render
         /// Builds ordinary render geometry. Optional poses become a bounded sequence of per-mesh
         /// matrices; the final pose is the mesh's resting transform. A positive
         /// <paramref name="skinSurfaceClearance"/> expands deformed skinmeshes along their rendered
-        /// normals, for garments authored as a shell over separately rendered body parts.
+        /// normals, for garments authored as a shell over separately rendered body parts. Weights
+        /// assigned to <paramref name="skinSurfaceClearanceExcludedBones"/> proportionally suppress
+        /// that expansion where the garment replaces a concealed body segment.
         /// </summary>
         public static RenderModel Build(
             MdlModel model,
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames = null,
-            float skinSurfaceClearance = 0f)
+            float skinSurfaceClearance = 0f,
+            IReadOnlySet<string>? skinSurfaceClearanceExcludedBones = null)
         {
             ArgumentNullException.ThrowIfNull(model);
             if (!float.IsFinite(skinSurfaceClearance) || skinSurfaceClearance < 0f)
                 throw new ArgumentOutOfRangeException(nameof(skinSurfaceClearance));
+            var excludedBones = skinSurfaceClearanceExcludedBones?.ToHashSet(
+                StringComparer.OrdinalIgnoreCase);
 
             return BuildInternal(
                 model,
                 poseFrames,
                 includePlaceableMetadata: false,
-                skinSurfaceClearance: skinSurfaceClearance);
+                skinSurfaceClearance: skinSurfaceClearance,
+                skinSurfaceClearanceExcludedBones: excludedBones);
         }
 
         /// <summary>
@@ -225,7 +231,8 @@ namespace SWLOR.Toolset.Domain.Render
                 model,
                 poseFrames: null,
                 includePlaceableMetadata: true,
-                skinSurfaceClearance: 0f);
+                skinSurfaceClearance: 0f,
+                skinSurfaceClearanceExcludedBones: null);
         }
 
         /// <summary>
@@ -284,7 +291,8 @@ namespace SWLOR.Toolset.Domain.Render
             MdlModel model,
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
             bool includePlaceableMetadata,
-            float skinSurfaceClearance)
+            float skinSurfaceClearance,
+            IReadOnlySet<string>? skinSurfaceClearanceExcludedBones)
         {
             var animations = includePlaceableMetadata
                 ? MdlAnimationPose.PlaceableAnimations(model)
@@ -304,7 +312,12 @@ namespace SWLOR.Toolset.Domain.Render
                 if (mesh.IsWalkmesh || !mesh.Render || PlaceholderNames.Contains(mesh.Name))
                     continue;
 
-                var built = BuildMesh(mesh, poseFrames, animationSamples, skinSurfaceClearance);
+                var built = BuildMesh(
+                    mesh,
+                    poseFrames,
+                    animationSamples,
+                    skinSurfaceClearance,
+                    skinSurfaceClearanceExcludedBones);
                 if (built != null)
                     renderMeshes.Add(built);
             }
@@ -349,7 +362,8 @@ namespace SWLOR.Toolset.Domain.Render
             MdlTrimeshNode mesh,
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
             IReadOnlyDictionary<string, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>> animationSamples,
-            float skinSurfaceClearance)
+            float skinSurfaceClearance,
+            IReadOnlySet<string>? skinSurfaceClearanceExcludedBones)
         {
             var vertexCount = mesh.Vertices.Length;
             if (vertexCount == 0 || mesh.Faces.Length == 0)
@@ -364,6 +378,7 @@ namespace SWLOR.Toolset.Domain.Render
                               skin,
                               poseFrames,
                               skinSurfaceClearance,
+                              skinSurfaceClearanceExcludedBones,
                               out skinnedPositions,
                               out skinnedNormals,
                               out skinnedPosePositions,
@@ -380,14 +395,6 @@ namespace SWLOR.Toolset.Domain.Render
                 ? Flatten(mesh.TextureCoordinates.Select(FiniteOrZero))
                 : Array.Empty<float>();
 
-            // ASCII skinmeshes that omit normals can also mix triangle winding. The generated
-            // normals below are oriented outward for lighting and shell clearance; give the GPU
-            // the matching winding as well, otherwise back-face culling removes those same robe
-            // panels and exposes the body underneath.
-            var orientGeneratedSkinFaces = skinned && mesh.Normals.Length != vertexCount;
-            var horizontalCenter = orientGeneratedSkinFaces
-                ? HorizontalBoundsCenter(skinnedPositions)
-                : Vector2.Zero;
             var indices = new List<int>(checked(mesh.Faces.Length * 3));
             foreach (var face in mesh.Faces)
             {
@@ -399,17 +406,8 @@ namespace SWLOR.Toolset.Domain.Render
                 }
 
                 indices.Add(face.VertexIndex0);
-                if (orientGeneratedSkinFaces &&
-                    HasInwardHorizontalWinding(face, skinnedPositions, horizontalCenter))
-                {
-                    indices.Add(face.VertexIndex2);
-                    indices.Add(face.VertexIndex1);
-                }
-                else
-                {
-                    indices.Add(face.VertexIndex1);
-                    indices.Add(face.VertexIndex2);
-                }
+                indices.Add(face.VertexIndex1);
+                indices.Add(face.VertexIndex2);
             }
 
             if (indices.Count == 0)
@@ -470,6 +468,7 @@ namespace SWLOR.Toolset.Domain.Render
             MdlSkinmeshNode skin,
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
             float surfaceClearance,
+            IReadOnlySet<string>? surfaceClearanceExcludedBones,
             out Vector3[] positions,
             out Vector3[] normals,
             out IReadOnlyList<float[]> renderedPositions,
@@ -499,6 +498,7 @@ namespace SWLOR.Toolset.Domain.Render
                     meshBind,
                     pose: null,
                     surfaceClearance,
+                    surfaceClearanceExcludedBones,
                     out positions,
                     out normals);
             }
@@ -513,6 +513,7 @@ namespace SWLOR.Toolset.Domain.Render
                         meshBind,
                         pose,
                         surfaceClearance,
+                        surfaceClearanceExcludedBones,
                         out positions,
                         out normals))
                     return false;
@@ -532,6 +533,7 @@ namespace SWLOR.Toolset.Domain.Render
             Matrix4x4 meshBind,
             IReadOnlyDictionary<string, PosedNode>? pose,
             float surfaceClearance,
+            IReadOnlySet<string>? surfaceClearanceExcludedBones,
             out Vector3[] positions,
             out Vector3[] normals)
         {
@@ -561,6 +563,10 @@ namespace SWLOR.Toolset.Domain.Render
             positions = new Vector3[skin.Vertices.Length];
             var hasAuthoredNormals = skin.Normals.Length == skin.Vertices.Length;
             normals = hasAuthoredNormals ? new Vector3[skin.Normals.Length] : Array.Empty<Vector3>();
+            var clearanceScales =
+                surfaceClearance > 0f && surfaceClearanceExcludedBones is { Count: > 0 }
+                    ? new float[skin.Vertices.Length]
+                    : null;
 
             for (var index = 0; index < skin.Vertices.Length; index++)
             {
@@ -571,6 +577,7 @@ namespace SWLOR.Toolset.Domain.Render
                 var position = Vector3.Zero;
                 var normal = Vector3.Zero;
                 var totalWeight = 0f;
+                var excludedWeight = 0f;
 
                 foreach (var influence in skin.VertexInfluences[index])
                 {
@@ -586,6 +593,8 @@ namespace SWLOR.Toolset.Domain.Render
                     if (hasAuthoredNormals)
                         normal += TransformDirection(bindNormal, boneTransform) * influence.Weight;
                     totalWeight += influence.Weight;
+                    if (surfaceClearanceExcludedBones?.Contains(influence.BoneName) == true)
+                        excludedWeight += influence.Weight;
                 }
 
                 if (totalWeight > 0f)
@@ -603,6 +612,12 @@ namespace SWLOR.Toolset.Domain.Render
                 positions[index] = FiniteOrZero(position);
                 if (hasAuthoredNormals)
                     normals[index] = NormalizeOrZero(normal);
+                if (clearanceScales != null)
+                {
+                    clearanceScales[index] = totalWeight > 0f
+                        ? 1f - Math.Clamp(excludedWeight / totalWeight, 0f, 1f)
+                        : 1f;
+                }
             }
 
             if (!hasAuthoredNormals)
@@ -611,7 +626,11 @@ namespace SWLOR.Toolset.Domain.Render
             if (surfaceClearance > 0f && normals.Length == positions.Length)
             {
                 for (var index = 0; index < positions.Length; index++)
-                    positions[index] = FiniteOrZero(positions[index] + normals[index] * surfaceClearance);
+                {
+                    var scale = clearanceScales?[index] ?? 1f;
+                    positions[index] = FiniteOrZero(
+                        positions[index] + normals[index] * surfaceClearance * scale);
+                }
             }
 
             return true;

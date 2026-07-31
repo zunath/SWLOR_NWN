@@ -434,6 +434,15 @@ namespace SWLOR.Toolset.Workspace
             var parts = ApplyRobeCoverage(reference.Parts);
             if (parts.Count == 0)
                 return null;
+            var visiblePartTypes = parts
+                .Select(part => part.PartType)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var concealedPartBones = reference.Parts
+                .Where(part =>
+                    !part.PartType.Equals("robe", StringComparison.OrdinalIgnoreCase) &&
+                    !visiblePartTypes.Contains(part.PartType))
+                .SelectMany(part => MdlPartBoneMap.GetBoneCandidates(part.PartType))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
             // Aurora keeps weighted garments as separate visuals. A robe's a_ba_coat supermodel is
             // an overlay: it supplies coat-helper tracks and body rotations, but deliberately omits
@@ -491,7 +500,8 @@ namespace SWLOR.Toolset.Workspace
                 MdlMeshBuilder.Build(
                     part.Model,
                     sharedFrames ?? IdleFrames(part.Model),
-                    EquippedGarmentSurfaceClearance)));
+                    EquippedGarmentSurfaceClearance,
+                    concealedPartBones)));
 
             return CombineRenderModels(reference.SkeletonResRef, renderModels);
         }

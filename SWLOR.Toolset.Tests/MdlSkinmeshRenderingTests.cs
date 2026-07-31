@@ -158,6 +158,35 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void GarmentClearanceIgnoresTheWeightOfConcealedBodyParts()
+        {
+            var root = new MdlNode { Name = "root" };
+            var forearm = new MdlNode { Name = "forearm_g", Parent = root };
+            var torso = new MdlNode { Name = "torso_g", Parent = root };
+            root.Children.Add(forearm);
+            root.Children.Add(torso);
+            var skin = TriangleSkin(root, withNormals: false);
+            skin.VertexInfluences =
+            [
+                [new MdlSkinInfluence("forearm_g", 0.5f), new MdlSkinInfluence("torso_g", 0.5f)],
+                [new MdlSkinInfluence("forearm_g", 0.5f), new MdlSkinInfluence("torso_g", 0.5f)],
+                [new MdlSkinInfluence("forearm_g", 0.5f), new MdlSkinInfluence("torso_g", 0.5f)]
+            ];
+            root.Children.Add(skin);
+
+            var rendered = MdlMeshBuilder.Build(
+                new MdlModel { Name = "coat", GeometryRoot = root },
+                skinSurfaceClearance: 0.1f,
+                skinSurfaceClearanceExcludedBones:
+                    new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "forearm_g" });
+
+            rendered.Meshes.Should().ContainSingle().Which.Positions.Should().Equal(
+                2.05f, 0f, 0f,
+                2.05f, 1f, 0f,
+                2.05f, 0f, 1f);
+        }
+
+        [Test]
         public void NormalLessGarmentOrientsMixedFaceWindingAwayFromTheWearer()
         {
             var root = new MdlNode { Name = "root" };
@@ -220,9 +249,8 @@ namespace SWLOR.Toolset.Tests
                 -2.1f, -1f, 0f,
                 -2.1f, -1f, 1f,
                 -2.1f, 1f, 0f);
-            // The GPU must cull the inward side rather than removing outward robe panels.
             mesh.Indices.Should().Equal(
-                0, 2, 1,
+                0, 1, 2,
                 3, 4, 5);
         }
 

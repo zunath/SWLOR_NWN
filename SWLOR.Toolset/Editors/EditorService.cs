@@ -2082,6 +2082,7 @@ namespace SWLOR.Toolset.Editors
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
                 return Array.Empty<Creatures.CreatureEquipmentChoice>();
+            var baseItemRows = BaseItemRows();
             var result = new List<Creatures.CreatureEquipmentChoice>();
             foreach (var resRef in workspace.EnumerateResRefs(ResourceType.Uti))
             {
@@ -2093,7 +2094,8 @@ namespace SWLOR.Toolset.Editors
                     result.Add(new Creatures.CreatureEquipmentChoice(
                         resRef,
                         string.IsNullOrWhiteSpace(name) ? resRef : $"{name} ({resRef})",
-                        baseItem));
+                        baseItem,
+                        baseItemRows?.Invoke(baseItem)?.EquipableSlots ?? 0));
                 }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
                 {

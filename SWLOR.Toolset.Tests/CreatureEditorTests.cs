@@ -497,8 +497,8 @@ namespace SWLOR.Toolset.Tests
                 Dispatcher.UIThread.RunJobs();
                 var equipmentSlots = view.FindControl<ListBox>("CreatureEquipmentSlots");
                 equipmentSlots.Should().NotBeNull();
-                equipmentSlots!.ItemCount.Should().Be(4);
-                equipmentSlots.SelectedItem.Should().BeSameAs(editor.VisibleEquipment.SelectedSlot);
+                equipmentSlots!.ItemCount.Should().Be(14);
+                equipmentSlots.SelectedItem.Should().BeSameAs(editor.EquipmentSlots.SelectedSlot);
 
                 tabs.SelectedIndex = 6;
                 Dispatcher.UIThread.RunJobs();
@@ -586,6 +586,17 @@ namespace SWLOR.Toolset.Tests
             editor.SelectedAppearanceSectionIndex.Should().Be(0,
                 "changing away from a dynamic model cannot leave a hidden section selected");
             appearanceSections.SelectedIndex.Should().Be(0);
+
+            var editorTabs = view.FindControl<TabControl>("CreatureTabs");
+            editorTabs.Should().NotBeNull();
+            editorTabs!.SelectedItem = editorTabs.Items.Cast<TabItem>()
+                .Single(tab => tab.Header?.ToString() == "Equipment");
+            Dispatcher.UIThread.RunJobs();
+            var equipmentEditor = view.FindControl<Grid>("CreatureEquipmentEditor");
+            equipmentEditor.Should().NotBeNull();
+            equipmentEditor!.IsVisible.Should().BeTrue(
+                "UTC equipment slots exist even when the full-body model does not render them");
+            view.FindControl<ListBox>("CreatureEquipmentSlots")!.ItemCount.Should().Be(14);
 
             window.Close();
             Dispatcher.UIThread.RunJobs();
@@ -790,7 +801,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void VisibleEquipment_LoadsOneSharedProgressivePickerAtATime()
+        public void EquipmentSlots_UseBaseItemMasksAndLoadOneProgressivePickerAtATime()
         {
             var catalogLoads = 0;
             IReadOnlyList<CreatureEquipmentChoice> Equipment()
@@ -798,7 +809,9 @@ namespace SWLOR.Toolset.Tests
                 catalogLoads++;
                 return Enumerable.Range(0, 500)
                     .Select(index => new CreatureEquipmentChoice(
-                        $"armor_{index:D3}", $"Armor {index:D3}", 16))
+                        $"armor_{index:D3}", $"Armor {index:D3}", 16, 2))
+                    .Append(new CreatureEquipmentChoice(
+                        "right_hand_test", "Right Hand Test", 7, 0x30))
                     .ToList();
             }
 
@@ -822,28 +835,35 @@ namespace SWLOR.Toolset.Tests
                 equipmentChoices: Equipment);
 
             catalogLoads.Should().Be(0);
-            editor.VisibleEquipment.SelectedSlot.Should().BeSameAs(
-                editor.VisibleEquipment.Slots.Single(slot => slot.Label == "Armor"));
-            editor.VisibleEquipment.Slots.Should().OnlyContain(slot => !slot.AreChoicesLoaded);
-            editor.VisibleEquipment.Slots.Should().OnlyContain(slot => slot.FilteredChoices.Count == 0);
+            editor.EquipmentSlots.Slots.Select(slot => slot.Label).Should().Equal(
+                "Armor", "Helmet", "Cloak", "Right Hand", "Left Hand", "Boots", "Arms",
+                "Neck", "Belt", "Left Ring", "Right Ring", "Arrows", "Bolts", "Bullets");
+            editor.EquipmentSlots.SelectedSlot.Should().BeSameAs(
+                editor.EquipmentSlots.Slots.Single(slot => slot.Label == "Armor"));
+            editor.EquipmentSlots.Slots.Should().OnlyContain(slot => !slot.AreChoicesLoaded);
+            editor.EquipmentSlots.Slots.Should().OnlyContain(slot => slot.FilteredChoices.Count == 0);
 
-            var armor = editor.VisibleEquipment.Slots.Single(slot => slot.Label == "Armor");
+            var armor = editor.EquipmentSlots.Slots.Single(slot => slot.Label == "Armor");
             armor.OpenSearchCommand.Execute(null);
 
             catalogLoads.Should().Be(1);
             armor.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
-            editor.VisibleEquipment.Slots.Where(slot => slot.Label != "Armor")
+            editor.EquipmentSlots.Slots.Where(slot => slot.Label != "Armor")
                 .Should().OnlyContain(slot => !slot.AreChoicesLoaded);
 
-            var mainHand = editor.VisibleEquipment.Slots.Single(slot => slot.Label == "Main Hand");
-            editor.VisibleEquipment.SelectedSlot = mainHand;
+            var mainHand = editor.EquipmentSlots.Slots.Single(slot => slot.Label == "Right Hand");
+            editor.EquipmentSlots.SelectedSlot = mainHand;
             armor.IsSearchExpanded.Should().BeFalse(
                 "moving between compact slot summaries closes and releases the old list");
             armor.FilteredChoices.Should().BeEmpty();
             mainHand.AreChoicesLoaded.Should().BeFalse(
                 "selecting a slot is cheap; its catalog loads only when Choose is opened");
+            mainHand.OpenSearchCommand.Execute(null);
+            mainHand.FilteredChoices.Select(choice => choice.StringValue)
+                .Should().Equal(new[] { "right_hand_test" },
+                    "baseitems.2da's equipment mask determines which slot offers an item");
 
-            editor.VisibleEquipment.SelectedSlot = armor;
+            editor.EquipmentSlots.SelectedSlot = armor;
             armor.OpenSearchCommand.Execute(null);
 
             armor.PickChoiceCommand.Execute(armor.FilteredChoices[3]);

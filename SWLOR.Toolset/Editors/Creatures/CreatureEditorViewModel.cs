@@ -47,7 +47,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         public CreatureAiViewModel Ai { get; }
         public CreatureLootViewModel Loot { get; }
         public CreatureBodyPartsViewModel BodyParts { get; }
-        public CreatureVisibleEquipmentViewModel VisibleEquipment { get; }
+        public CreatureEquipmentSlotsViewModel EquipmentSlots { get; }
         public VarTableSectionViewModel Variables { get; }
         public AppearanceGallerySectionViewModel? AppearanceGallery { get; }
         public bool HasAppearanceGallery => AppearanceGallery != null;
@@ -144,11 +144,11 @@ namespace SWLOR.Toolset.Editors.Creatures
             Loot = new CreatureLootViewModel(_store, RunEdit, openDefinition: openLootDefinition);
             BodyParts = new CreatureBodyPartsViewModel(
                 _store, RunEdit, appearance, armorParts, colorPalettes, OnBodyPartChanged);
-            VisibleEquipment = new CreatureVisibleEquipmentViewModel(
+            EquipmentSlots = new CreatureEquipmentSlotsViewModel(
                 _store,
                 RunEdit,
                 equipmentChoices ?? (() => Array.Empty<CreatureEquipmentChoice>()),
-                OnVisibleEquipmentChanged);
+                OnEquipmentChanged);
             Variables = new VarTableSectionViewModel(RunEdit, _store.Locals, gameCodeIndex, IsCustomVariable);
             if (appearanceOptions != null)
             {
@@ -187,7 +187,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             Loot.Reload();
             BodyParts.Reload();
             EnsureSelectedAppearanceSectionLoaded();
-            VisibleEquipment.Reload();
+            EquipmentSlots.Reload();
             AppearanceGallery?.ReloadFromDocument();
             Variables.RefreshFromDocument();
             UpdateWarnings();
@@ -293,7 +293,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             NotifySummary();
         }
 
-        private void OnVisibleEquipmentChanged()
+        private void OnEquipmentChanged()
         {
             UpdatePreviewScene();
         }

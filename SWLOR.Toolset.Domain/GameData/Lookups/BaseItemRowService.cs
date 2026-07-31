@@ -3,7 +3,7 @@ using SWLOR.Toolset.Domain.GameData.TwoDa;
 namespace SWLOR.Toolset.Domain.GameData.Lookups
 {
     /// <summary>
-    /// Reads baseitems.2da's label, ModelType, and StorePanel columns, indexed by row. Mirrors
+    /// Reads baseitems.2da's label, ModelType, StorePanel, and EquipableSlots columns, indexed by row. Mirrors
     /// <see cref="BaseItemIconService"/>'s shape but surfaces the columns item-family
     /// classification needs rather than icon naming.
     /// </summary>
@@ -63,10 +63,41 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                 if (storePanel is < 0 or > 4)
                     storePanel = 4;
 
-                rows[row] = new BaseItemRow(row, label, modelType, storePanel);
+                rows[row] = new BaseItemRow(
+                    row,
+                    label,
+                    modelType,
+                    storePanel,
+                    ParseEquipableSlots(table.GetString(row, "EquipableSlots")));
             }
 
             return rows;
+        }
+
+        private static int ParseEquipableSlots(string? raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw))
+                return 0;
+
+            var value = raw.Trim();
+            if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                return int.TryParse(
+                    value.AsSpan(2),
+                    System.Globalization.NumberStyles.HexNumber,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out var hex)
+                    ? hex
+                    : 0;
+            }
+
+            return int.TryParse(
+                value,
+                System.Globalization.NumberStyles.Integer,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out var number)
+                ? number
+                : 0;
         }
     }
 }

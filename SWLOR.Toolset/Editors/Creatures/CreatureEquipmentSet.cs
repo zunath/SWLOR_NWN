@@ -6,7 +6,7 @@ using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Editors.Creatures
 {
-    /// <summary>Loads and creates the item blueprints used by creature Stats and visible equipment.</summary>
+    /// <summary>Loads and creates the item blueprints used by creature Stats and equipment.</summary>
     public sealed class CreatureEquipmentSet : IDisposable
     {
         private readonly CreatureValueStore _creature;

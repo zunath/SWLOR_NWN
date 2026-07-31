@@ -109,7 +109,7 @@ namespace SWLOR.Toolset.Editors
                             .Select(row => new LookupOption(row.Id, row.DisplayName))
                             .ToList();
                     case LookupKeys.Gender:
-                        return FromTable(TwoDaLookupTables.Gender);
+                        return FromTable(TwoDaLookupTables.Gender, showId: false);
                     case LookupKeys.Phenotype:
                         return FromTable(TwoDaLookupTables.Phenotype, showId: false);
                     case LookupKeys.SoundSets:

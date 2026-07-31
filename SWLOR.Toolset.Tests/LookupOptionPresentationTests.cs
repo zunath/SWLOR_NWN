@@ -50,6 +50,47 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void GendersUseNamesWithoutExposingTheirEngineRowIds()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"gender-presentation-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "gender.2da"),
+                    "2DA V2.0\r\n\r\nCONSTANT NAME\r\n" +
+                    "0 Male ****\r\n" +
+                    "1 Female ****\r\n" +
+                    "2 Both ****\r\n" +
+                    "3 Other ****\r\n" +
+                    "4 None ****\r\n");
+                var lookup = new TwoDaLookupService(
+                    new TwoDaService(scratch),
+                    new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
+                var provider = new LookupOptionProvider(
+                    new WorkspaceContext(
+                        path => new Domain.Workspace.ModuleWorkspace(path),
+                        new OutputLogService()),
+                    twoDaLookups: lookup);
+
+                var options = provider.GetOptions(LookupKeys.Gender);
+
+                options.Select(option => option.Id).Should().Equal(0, 1, 2, 3, 4);
+                options.Select(option => option.ToString())
+                    .Should().Equal("Male", "Female", "Both", "Other", "None");
+                options.Select(option => option.BehaviorDisplay)
+                    .Should().Equal("Male", "Female", "Both", "Other", "None");
+                options.Should().OnlyContain(option => !option.ShowId);
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
         public void OtherLookupsKeepTheirIdPresentationByDefault()
         {
             var option = new LookupOption(7, "Default");

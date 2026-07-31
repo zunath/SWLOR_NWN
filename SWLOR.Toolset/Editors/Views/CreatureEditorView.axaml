@@ -403,7 +403,7 @@
                     <ItemsControl.ItemTemplate>
                       <DataTemplate DataType="cdom:CreatureAbilityInfo">
                         <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Margin="0,2"
-                                Command="{Binding $parent[ItemsControl].((creatures:CreatureAbilitiesViewModel)DataContext).AddCommand}"
+                                Command="{Binding $parent[ItemsControl].((creatures:CreatureEditorViewModel)DataContext).Abilities.AddCommand}"
                                 CommandParameter="{Binding}">
                           <StackPanel><TextBlock Text="{Binding Name}" />
                             <TextBlock Text="{Binding Description}" Classes="dim" FontSize="10"

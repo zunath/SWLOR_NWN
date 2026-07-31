@@ -171,6 +171,40 @@ namespace SWLOR.Toolset.Tests
             view.Should().NotContain("HasPreservedFeats");
         }
 
+        [Test]
+        public void RegisteredAbility_CanBeAddedRankedAndRemoved()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "ability_test", "Ability Test"));
+            var store = new CreatureValueStore(document.Root);
+            var ability = new CreatureAbilityInfo(42, "Test Ability", "Test description", 7, "Test Perk");
+            var viewModel = new CreatureAbilitiesViewModel(
+                store,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                [ability],
+                new Dictionary<int, CreaturePerkInfo>
+                {
+                    [7] = new CreaturePerkInfo(7, "Test Perk", 4)
+                });
+
+            viewModel.AddCommand.Execute(ability);
+
+            var assigned = viewModel.Assigned.Should().ContainSingle().Which;
+            store.Feats.Should().ContainSingle().Which.Should().Be(42);
+            assigned.EffectiveLevel.Should().Be(4);
+
+            assigned.EffectiveLevel = 2;
+            store.Locals.GetInt("PERK_LEVEL_7").Should().Be(2);
+
+            assigned.RemoveCommand.Execute(null);
+            store.Feats.Should().BeEmpty();
+            viewModel.Assigned.Should().BeEmpty();
+        }
+
         [TestCase(-100, 200)]
         [TestCase(-10, 110)]
         [TestCase(0, 0)]
@@ -358,9 +392,9 @@ namespace SWLOR.Toolset.Tests
                     session.Document.Root,
                     path,
                     "render_test",
-                    (_, mutation) =>
+                    (description, mutation) =>
                     {
-                        mutation();
+                        session.Execute(description, mutation);
                         return true;
                     },
                     null, null, null, null,
@@ -400,6 +434,21 @@ namespace SWLOR.Toolset.Tests
                 equipmentSlots.Should().NotBeNull();
                 equipmentSlots!.ItemCount.Should().Be(4);
                 equipmentSlots.SelectedItem.Should().BeSameAs(editor.VisibleEquipment.SelectedSlot);
+
+                tabs.SelectedIndex = 5;
+                Dispatcher.UIThread.RunJobs();
+                var abilityButton = view.GetVisualDescendants()
+                    .OfType<Button>()
+                    .FirstOrDefault(button => button.DataContext is CreatureAbilityInfo);
+                abilityButton.Should().NotBeNull("registered abilities must render as actionable choices");
+                abilityButton!.IsEnabled.Should().BeTrue();
+                abilityButton.Command.Should().NotBeNull();
+                abilityButton.CommandParameter.Should().BeOfType<CreatureAbilityInfo>();
+                var selectedAbility = (CreatureAbilityInfo)abilityButton.CommandParameter!;
+
+                abilityButton.Command!.Execute(abilityButton.CommandParameter);
+                Dispatcher.UIThread.RunJobs();
+                editor.Abilities.Assigned.Should().ContainSingle(entry => entry.FeatId == selectedAbility.FeatId);
 
                 window.Close();
                 Dispatcher.UIThread.RunJobs();

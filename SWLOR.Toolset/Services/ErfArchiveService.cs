@@ -150,6 +150,7 @@ namespace SWLOR.Toolset.Services
         private readonly string? _erfToolOverride;
         private readonly string? _gffToolOverride;
         private readonly Func<Action, Task> _dispatchToUiThread;
+        private readonly Func<string, CancellationToken, Task>? _reloadCustomContent;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _gffConversionLocks =
             new(StringComparer.OrdinalIgnoreCase);
 
@@ -158,13 +159,28 @@ namespace SWLOR.Toolset.Services
             OutputLogService log,
             string? erfToolOverride = null,
             string? gffToolOverride = null,
-            Func<Action, Task>? dispatchToUiThread = null)
+            Func<Action, Task>? dispatchToUiThread = null,
+            ModuleCustomContentService? moduleCustomContent = null,
+            Func<string, CancellationToken, Task>? reloadCustomContent = null)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _erfToolOverride = erfToolOverride;
             _gffToolOverride = gffToolOverride;
             _dispatchToUiThread = dispatchToUiThread ?? DispatchToUiThreadAsync;
+            _reloadCustomContent = reloadCustomContent ??
+                (moduleCustomContent == null
+                    ? null
+                    : async (moduleRoot, cancellationToken) =>
+                    {
+                        var ifo = IfoDocument.Load(
+                            Path.Combine(moduleRoot, "ifo", "module.ifo.json"));
+                        await moduleCustomContent.ReloadAsync(
+                                ifo.HakNames,
+                                ifo.CustomTlk,
+                                cancellationToken)
+                            .ConfigureAwait(false);
+                    });
         }
 
         public async Task<ErfArchiveSession> OpenArchiveAsync(
@@ -492,11 +508,34 @@ namespace SWLOR.Toolset.Services
         {
             ArgumentNullException.ThrowIfNull(choices);
             ModuleMutationLock.ThrowIfModuleLocked();
+            var moduleRoot = RequireWorkspace().ModuleRoot;
             var snapshot = choices.ToList();
             var result = await Task.Run(
                     () => Import(snapshot, cancellationToken),
                     cancellationToken)
                 .ConfigureAwait(false);
+
+            if (_reloadCustomContent != null && result.ChangedResources.Any(resource =>
+                    resource.Extension.Equals("ifo", StringComparison.OrdinalIgnoreCase) &&
+                    resource.ResRef.Equals("module", StringComparison.OrdinalIgnoreCase)))
+            {
+                try
+                {
+                    // The transaction is committed at this point. Finish synchronizing the live
+                    // HAK/TLK stack even if the caller cancels while the post-commit refresh runs;
+                    // reporting cancellation here would imply the already-installed import rolled
+                    // back when it did not.
+                    await _reloadCustomContent(moduleRoot, CancellationToken.None)
+                        .ConfigureAwait(false);
+                    _log.AppendLine("Reloaded module custom content after importing module.ifo.");
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine(
+                        "Imported module.ifo, but its custom content could not be reloaded: " +
+                        ex.GetBaseException().Message);
+                }
+            }
 
             await _dispatchToUiThread(() =>
             {

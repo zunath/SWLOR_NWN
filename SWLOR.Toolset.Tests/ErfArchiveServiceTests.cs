@@ -23,12 +23,18 @@ namespace SWLOR.Toolset.Tests
         private WorkspaceContext _workspace = null!;
         private ErfArchiveService _service = null!;
         private int _workspaceDispatches;
+        private int _customContentReloads;
+        private IReadOnlyList<string> _reloadedHakNames = Array.Empty<string>();
+        private string? _reloadedCustomTlk;
 
         [SetUp]
         public void SetUp()
         {
             ModuleMutationLock.ModuleWrites = null;
             _workspaceDispatches = 0;
+            _customContentReloads = 0;
+            _reloadedHakNames = Array.Empty<string>();
+            _reloadedCustomTlk = null;
             _root = Path.Combine(Path.GetTempPath(), $"swlor-erf-{Guid.NewGuid():N}");
             _firstModule = Path.Combine(_root, "first", "Module");
             _secondModule = Path.Combine(_root, "second", "Module");
@@ -49,6 +55,15 @@ namespace SWLOR.Toolset.Tests
                 {
                     _workspaceDispatches++;
                     action();
+                    return Task.CompletedTask;
+                },
+                reloadCustomContent: (moduleRoot, _) =>
+                {
+                    var ifo = IfoDocument.Load(
+                        Path.Combine(moduleRoot, "ifo", "module.ifo.json"));
+                    _customContentReloads++;
+                    _reloadedHakNames = ifo.HakNames;
+                    _reloadedCustomTlk = ifo.CustomTlk;
                     return Task.CompletedTask;
                 });
         }
@@ -1746,6 +1761,34 @@ namespace SWLOR.Toolset.Tests
             result.Replaced.Should().Be(1);
             IfoDocument.Load(Path.Combine(_secondModule, "ifo", "module.ifo.json"))
                 .AreaResRefs.Should().Contain(areaResRef);
+        }
+
+        [Test]
+        public async Task ReplacingModuleIfoReloadsTheInstalledCustomContentAssignments()
+        {
+            EnsureModuleIfo(_secondModule);
+            _workspace.Open(_secondModule);
+            var source = Path.Combine(_root, "replacement_module.ifo.json");
+            var importedIfo = IfoDocument.Load(
+                Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"));
+            importedIfo.SetHakNames(new[] { "imported_hak_a", "imported_hak_b" });
+            importedIfo.CustomTlk = "imported_tlk";
+            File.WriteAllBytes(source, importedIfo.ToBytes());
+            _customContentReloads = 0;
+
+            var result = await _service.ImportAsync(new[]
+            {
+                CreateImportChoice(
+                    source,
+                    "module",
+                    "ifo",
+                    ErfConflictAction.Replace)
+            });
+
+            result.Replaced.Should().Be(1);
+            _customContentReloads.Should().Be(1);
+            _reloadedHakNames.Should().Equal("imported_hak_a", "imported_hak_b");
+            _reloadedCustomTlk.Should().Be("imported_tlk");
         }
 
         [Test]

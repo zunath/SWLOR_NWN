@@ -12,6 +12,7 @@ namespace SWLOR.Toolset.Tests
         [TestCase("****")]
         [TestCase("DELETED")]
         [TestCase("USER")]
+        [TestCase("User002")]
         [TestCase("Unused")]
         [TestCase("UNUSED_42")]
         [TestCase("INVALID_RACE")]
@@ -90,6 +91,45 @@ namespace SWLOR.Toolset.Tests
                         "Name",
                         ["Constant"]))
                     .Should().BeEmpty();
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
+        public void DoorChoicesExcludeSentinelsAndStructurallyIncompleteRows()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"door-choice-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "doortypes.2da"),
+                    "2DA V2.0\r\n\r\nLabel Model TileSet TemplateResRef StringRefGame BlockSight VisibleModel SoundAppType\r\n" +
+                    "0 RealDoor real_model TST01 real_template 123 1 1 1\r\n" +
+                    "1 Reserved47 **** **** **** **** **** **** ****\r\n" +
+                    "2 User002 **** **** **** **** **** **** ****\r\n" +
+                    "3 MissingModel **** TST01 missing_model 123 1 1 1\r\n" +
+                    "4 MissingStringRef another_model TST01 missing_strref **** 1 1 1\r\n");
+                File.WriteAllText(
+                    Path.Combine(scratch, "genericdoors.2da"),
+                    "2DA V2.0\r\n\r\nLabel StrRef ModelName BlockSight VisibleModel SoundAppType Name\r\n" +
+                    "0 GenericDoor 123 generic_model 1 1 1 123\r\n" +
+                    "1 User002 **** **** **** **** **** ****\r\n" +
+                    "2 MissingModel 123 **** 1 1 1 123\r\n");
+                var service = new DoorTypeService(
+                    new TwoDaService(scratch),
+                    new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
+
+                service.GetAll().Should().ContainSingle()
+                    .Which.Should().Be(new DoorTypeRow(0, "RealDoor", "RealDoor", "real_model"));
+                service.GetGenericAll().Should().ContainSingle()
+                    .Which.Should().Match<GenericDoorRow>(row =>
+                        row.Id == 0 && row.Label == "GenericDoor" && row.Model == "generic_model");
             }
             finally
             {

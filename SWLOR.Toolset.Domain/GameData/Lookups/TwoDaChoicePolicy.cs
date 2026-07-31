@@ -23,10 +23,16 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                 normalized.Contains("deleted", StringComparison.OrdinalIgnoreCase) ||
                 normalized.Contains("invalid", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(normalized, "padding", StringComparison.OrdinalIgnoreCase) ||
-                normalized.StartsWith("unused", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(normalized, "user", StringComparison.OrdinalIgnoreCase))
+                normalized.StartsWith("unused", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
+            }
+
+            if (normalized.StartsWith("user", StringComparison.OrdinalIgnoreCase))
+            {
+                var suffix = normalized["user".Length..];
+                if (suffix.Length == 0 || suffix.All(char.IsDigit))
+                    return false;
             }
 
             if (normalized.StartsWith("null", StringComparison.OrdinalIgnoreCase))

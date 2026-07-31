@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text.Json;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editing;
@@ -223,6 +224,17 @@ namespace SWLOR.Toolset.Services
                         {
                             if (File.Exists(entry.BackupPath))
                             {
+                                if (TargetExists(entry.TargetPath) &&
+                                    !MatchesReplacement(
+                                        entry.TargetPath,
+                                        entry.ReplacementSha256))
+                                {
+                                    recovered = false;
+                                    unrecoveredTargets.Add(
+                                        $"{entry.TargetPath} (changed after the interrupted save)");
+                                    continue;
+                                }
+
                                 File.Move(entry.BackupPath, entry.TargetPath, overwrite: true);
                                 restored.Add(entry.TargetPath);
                             }
@@ -231,9 +243,30 @@ namespace SWLOR.Toolset.Services
                                 recovered = false;
                                 unrecoveredTargets.Add(entry.TargetPath);
                             }
+                            else if (MatchesReplacement(
+                                         entry.TargetPath,
+                                         entry.ReplacementSha256))
+                            {
+                                // The replacement landed, but the original backup is gone. Accepting
+                                // this member as recovered would leave the group at mixed generations.
+                                recovered = false;
+                                unrecoveredTargets.Add(
+                                    $"{entry.TargetPath} (original backup is missing)");
+                                continue;
+                            }
                         }
-                        else if (File.Exists(entry.TargetPath))
+                        else if (TargetExists(entry.TargetPath))
                         {
+                            if (!MatchesReplacement(
+                                    entry.TargetPath,
+                                    entry.ReplacementSha256))
+                            {
+                                recovered = false;
+                                unrecoveredTargets.Add(
+                                    $"{entry.TargetPath} (changed after the interrupted save)");
+                                continue;
+                            }
+
                             File.Delete(entry.TargetPath);
                         }
 
@@ -559,7 +592,8 @@ namespace SWLOR.Toolset.Services
                     TargetPath = Path.GetFullPath(state.Staged.TargetPath),
                     TemporaryPath = Path.GetFullPath(state.Staged.TemporaryPath),
                     BackupPath = Path.GetFullPath(state.BackupPath),
-                    HadOriginal = state.HadOriginal
+                    HadOriginal = state.HadOriginal,
+                    ReplacementSha256 = ComputeSha256(state.Staged.TemporaryPath)
                 }).ToList()
             };
 
@@ -600,6 +634,26 @@ namespace SWLOR.Toolset.Services
                    !relative.StartsWith(".." + Path.DirectorySeparatorChar, StringComparison.Ordinal);
         }
 
+        private static bool TargetExists(string path) =>
+            File.Exists(path) || Directory.Exists(path);
+
+        private static bool MatchesReplacement(string path, string? expectedSha256)
+        {
+            if (string.IsNullOrWhiteSpace(expectedSha256) || !File.Exists(path))
+                return false;
+
+            return string.Equals(
+                ComputeSha256(path),
+                expectedSha256,
+                StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string ComputeSha256(string path)
+        {
+            using var stream = File.OpenRead(path);
+            return Convert.ToHexString(SHA256.HashData(stream));
+        }
+
         private sealed class SaveTransactionManifest
         {
             public List<SaveTransactionEntry> Entries { get; set; } = new();
@@ -611,6 +665,7 @@ namespace SWLOR.Toolset.Services
             public string TemporaryPath { get; set; } = string.Empty;
             public string BackupPath { get; set; } = string.Empty;
             public bool HadOriginal { get; set; }
+            public string? ReplacementSha256 { get; set; }
         }
     }
 

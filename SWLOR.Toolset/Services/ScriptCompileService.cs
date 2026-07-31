@@ -30,7 +30,6 @@ namespace SWLOR.Toolset.Services
         private readonly OutputLogService _log;
         private readonly ToolsetSettings? _settings;
         private readonly string? _compilerPathOverride;
-        private string? _stagedHeaderDirectory;
 
         public ScriptCompileService(
             WorkspaceContext workspaceContext,
@@ -640,9 +639,6 @@ namespace SWLOR.Toolset.Services
         /// <summary>Copies the version-stamped header to a temp dir under the name the compiler expects.</summary>
         private string? StageEngineHeader()
         {
-            if (_stagedHeaderDirectory != null && File.Exists(Path.Combine(_stagedHeaderDirectory, "nwscript.nss")))
-                return _stagedHeaderDirectory;
-
             var root = RepositoryRoot();
             if (root == null)
                 return null;
@@ -660,13 +656,52 @@ namespace SWLOR.Toolset.Services
 
             try
             {
-                var staging = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset", "nsscomp");
+                var headerPath = Path.GetFullPath(header);
+                var headerBytes = File.ReadAllBytes(headerPath);
+                var identityBytes = System.Text.Encoding.UTF8.GetBytes(headerPath);
+                using var identityHash = System.Security.Cryptography.IncrementalHash.CreateHash(
+                    System.Security.Cryptography.HashAlgorithmName.SHA256);
+                identityHash.AppendData(identityBytes);
+                identityHash.AppendData(new byte[] { 0 });
+                identityHash.AppendData(headerBytes);
+                var stagingKey = Convert.ToHexString(identityHash.GetHashAndReset())
+                    .ToLowerInvariant();
+                var staging = Path.Combine(
+                    Path.GetTempPath(),
+                    "SWLOR.Toolset",
+                    "nsscomp",
+                    stagingKey);
                 Directory.CreateDirectory(staging);
-                File.Copy(header, Path.Combine(staging, "nwscript.nss"), overwrite: true);
-                _stagedHeaderDirectory = staging;
+                var stagedHeader = Path.Combine(staging, "nwscript.nss");
+
+                if (File.Exists(stagedHeader) &&
+                    File.ReadAllBytes(stagedHeader).AsSpan().SequenceEqual(headerBytes))
+                {
+                    return staging;
+                }
+
+                // Never write in place: another toolset process may already be compiling against
+                // this content-addressed directory. The rename publishes a complete header.
+                var temporaryHeader = stagedHeader + "." + Guid.NewGuid().ToString("N") + ".tmp";
+                try
+                {
+                    File.WriteAllBytes(temporaryHeader, headerBytes);
+                    File.Move(temporaryHeader, stagedHeader, overwrite: true);
+                }
+                finally
+                {
+                    if (File.Exists(temporaryHeader))
+                        File.Delete(temporaryHeader);
+                }
+
                 return staging;
             }
             catch (IOException ex)
+            {
+                _log.AppendLine($"Could not stage the NWScript header: {ex.Message}");
+                return null;
+            }
+            catch (UnauthorizedAccessException ex)
             {
                 _log.AppendLine($"Could not stage the NWScript header: {ex.Message}");
                 return null;

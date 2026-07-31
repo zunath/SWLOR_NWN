@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using FluentAssertions;
@@ -77,13 +78,15 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void AnInterruptedGroupedSaveRollsBackEveryMember()
         {
+            const string newAre = "{\"generation\":\"new\"}";
+            const string newGit = "{\"generation\":\"new-git\"}";
             var transactionId = Guid.NewGuid().ToString("N");
             var areTarget = Path.Combine(_root, "are", "cantina.are.json");
             var gitTarget = Path.Combine(_root, "git", "cantina.git.json");
             var areBackup = areTarget + "." + transactionId + SaveService.BackupSuffix;
             var gitBackup = gitTarget + "." + transactionId + SaveService.BackupSuffix;
 
-            File.WriteAllText(areTarget, "{\"generation\":\"new\"}");
+            File.WriteAllText(areTarget, newAre);
             File.WriteAllText(areBackup, "{\"generation\":\"old-are\"}");
             File.WriteAllText(gitBackup, "{\"generation\":\"old-git\"}");
 
@@ -100,14 +103,16 @@ namespace SWLOR.Toolset.Tests
                             TargetPath = areTarget,
                             TemporaryPath = areTarget + ".tmp",
                             BackupPath = areBackup,
-                            HadOriginal = true
+                            HadOriginal = true,
+                            ReplacementSha256 = Sha256(newAre)
                         },
                         new
                         {
                             TargetPath = gitTarget,
                             TemporaryPath = gitTarget + ".tmp",
                             BackupPath = gitBackup,
-                            HadOriginal = true
+                            HadOriginal = true,
+                            ReplacementSha256 = Sha256(newGit)
                         }
                     }
                 }));
@@ -132,13 +137,15 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void ARecoveryFailureForOneMemberThrowsInsteadOfReportingSuccess()
         {
+            const string newAre = "{\"generation\":\"new\"}";
+            const string newGit = "{\"generation\":\"new-git\"}";
             var transactionId = Guid.NewGuid().ToString("N");
             var areTarget = Path.Combine(_root, "are", "cantina.are.json");
             var gitTarget = Path.Combine(_root, "git", "cantina.git.json");
             var areBackup = areTarget + "." + transactionId + SaveService.BackupSuffix;
             var gitBackup = gitTarget + "." + transactionId + SaveService.BackupSuffix;
 
-            File.WriteAllText(areTarget, "{\"generation\":\"new\"}");
+            File.WriteAllText(areTarget, newAre);
             File.WriteAllText(areBackup, "{\"generation\":\"old-are\"}");
             File.WriteAllText(gitBackup, "{\"generation\":\"old-git\"}");
 
@@ -159,14 +166,16 @@ namespace SWLOR.Toolset.Tests
                             TargetPath = areTarget,
                             TemporaryPath = areTarget + ".tmp",
                             BackupPath = areBackup,
-                            HadOriginal = true
+                            HadOriginal = true,
+                            ReplacementSha256 = Sha256(newAre)
                         },
                         new
                         {
                             TargetPath = gitTarget,
                             TemporaryPath = gitTarget + ".tmp",
                             BackupPath = gitBackup,
-                            HadOriginal = true
+                            HadOriginal = true,
+                            ReplacementSha256 = Sha256(newGit)
                         }
                     }
                 }));
@@ -179,6 +188,50 @@ namespace SWLOR.Toolset.Tests
             File.Exists(manifestPath).Should().BeTrue(
                 "the group is still incomplete, so startup must roll it back again next time");
             File.Exists(gitBackup).Should().BeTrue("the only copy of the GIT generation must survive");
+        }
+
+        /// <summary>
+        /// Recovery owns only the replacement generation recorded in its manifest. If another editor
+        /// changes the canonical target after the crash, restoring the backup over it would silently
+        /// destroy newer work.
+        /// </summary>
+        [Test]
+        public void RecoveryRefusesToOverwriteATargetChangedAfterTheInterruptedSave()
+        {
+            const string installed = "{\"generation\":\"interrupted-save\"}";
+            const string external = "{\"generation\":\"newer-external-edit\"}";
+            var transactionId = Guid.NewGuid().ToString("N");
+            var target = Path.Combine(_root, "git", "cantina.git.json");
+            var backup = target + "." + transactionId + SaveService.BackupSuffix;
+            var manifestPath = Path.Combine(
+                _root, "." + transactionId + SaveService.TransactionSuffix);
+
+            File.WriteAllText(target, external);
+            File.WriteAllText(backup, "{\"generation\":\"original\"}");
+            File.WriteAllText(
+                manifestPath,
+                JsonSerializer.Serialize(new
+                {
+                    Entries = new[]
+                    {
+                        new
+                        {
+                            TargetPath = target,
+                            TemporaryPath = target + ".tmp",
+                            BackupPath = backup,
+                            HadOriginal = true,
+                            ReplacementSha256 = Sha256(installed)
+                        }
+                    }
+                }));
+
+            Action act = () => SaveService.RecoverInterruptedSaves(_root);
+
+            act.Should().Throw<SaveRecoveryException>()
+                .Which.Message.Should().Contain(target);
+            File.ReadAllText(target).Should().Be(external);
+            File.Exists(backup).Should().BeTrue("the original is recovery evidence");
+            File.Exists(manifestPath).Should().BeTrue("the unresolved transaction must remain visible");
         }
 
         /// <summary>
@@ -370,5 +423,8 @@ namespace SWLOR.Toolset.Tests
 
         private static string? Tag(DocumentSession session) =>
             session.Document.Root.GetOrNull("Tag")?.GetString();
+
+        private static string Sha256(string content) =>
+            Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(content)));
     }
 }

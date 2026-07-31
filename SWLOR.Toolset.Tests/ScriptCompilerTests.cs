@@ -1,3 +1,4 @@
+using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Script.Compile;
@@ -76,6 +77,61 @@ namespace SWLOR.Toolset.Tests
             result.Ran.Should().BeFalse();
             result.Compiled.Should().Be(0);
             result.Failed.Should().Be(0);
+        }
+
+        [Test]
+        public void EngineHeaderStagingRefreshesAfterTheRepositoryHeaderChanges()
+        {
+            var repository = Path.Combine(_staging, "Repository");
+            Directory.CreateDirectory(Path.Combine(repository, "tools", "SWLOR.CLI"));
+            var headerDirectory = Path.Combine(repository, "SWLOR.NWN.API", "NWN");
+            Directory.CreateDirectory(headerDirectory);
+            var module = Path.Combine(repository, "Module");
+            foreach (var folder in new[] { "are", "utc", "nss", "ncs" })
+                Directory.CreateDirectory(Path.Combine(module, folder));
+
+            var sourceHeader = Path.Combine(headerDirectory, "nwscript-test.nss");
+            const string firstHeader = "int FirstVersion();\r\n";
+            const string secondHeader = "int SecondVersion();\r\n";
+            File.WriteAllText(sourceHeader, firstHeader);
+
+            var log = new OutputLogService();
+            var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
+            context.Open(module);
+            var service = new ScriptCompileService(context, log);
+            var stageHeader = typeof(ScriptCompileService).GetMethod(
+                "StageEngineHeader",
+                BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+            string? firstDirectory = null;
+            string? secondDirectory = null;
+            try
+            {
+                firstDirectory = (string)stageHeader.Invoke(service, null)!;
+                File.ReadAllText(Path.Combine(firstDirectory, "nwscript.nss"))
+                    .Should().Be(firstHeader);
+
+                File.WriteAllText(sourceHeader, secondHeader);
+
+                secondDirectory = (string)stageHeader.Invoke(service, null)!;
+                secondDirectory.Should().NotBe(
+                    firstDirectory,
+                    "each checkout and header generation must have immutable compiler input");
+                File.ReadAllText(Path.Combine(secondDirectory, "nwscript.nss"))
+                    .Should().Be(secondHeader);
+                File.ReadAllText(Path.Combine(firstDirectory, "nwscript.nss"))
+                    .Should().Be(firstHeader, "a concurrent compiler may still be using it");
+            }
+            finally
+            {
+                foreach (var directory in new[] { firstDirectory, secondDirectory }
+                             .OfType<string>()
+                             .Distinct(StringComparer.OrdinalIgnoreCase))
+                {
+                    if (Directory.Exists(directory))
+                        Directory.Delete(directory, recursive: true);
+                }
+            }
         }
 
         [Test]

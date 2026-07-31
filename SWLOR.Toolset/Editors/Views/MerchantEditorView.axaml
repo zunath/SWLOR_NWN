@@ -52,14 +52,15 @@
                        VerticalAlignment="Center" />
           </Grid>
 
-          <Grid Grid.Row="2" ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8">
-            <Button Grid.Column="0" Content="Select all shown"
-                    Command="{Binding SelectAllShownInventoryItemsCommand}" />
-            <Button Grid.Column="1" Content="Clear"
-                    Command="{Binding ClearCheckedInventoryItemsCommand}" />
-            <TextBlock Grid.Column="2" Text="{Binding CheckedInventorySummary}" Classes="dim"
+          <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+            <CheckBox Grid.Column="0" Content="Select shown" IsThreeState="True"
+                      IsChecked="{Binding ShownInventorySelectionState, Mode=OneWay}"
+                      IsEnabled="{Binding CanToggleShownInventoryItems}"
+                      Command="{Binding ToggleShownInventorySelectionCommand}"
+                      ToolTip.Tip="Select or clear shown items" />
+            <TextBlock Grid.Column="1" Text="{Binding CheckedInventorySummary}" Classes="dim"
                        VerticalAlignment="Center" />
-            <Button Grid.Column="3" Content="{Binding RemoveCheckedInventoryLabel}"
+            <Button Grid.Column="2" Content="{Binding RemoveCheckedInventoryLabel}"
                     Command="{Binding RemoveCheckedInventoryItemsCommand}" />
           </Grid>
 

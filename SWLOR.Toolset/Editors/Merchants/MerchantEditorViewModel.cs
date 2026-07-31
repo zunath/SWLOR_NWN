@@ -28,6 +28,7 @@ namespace SWLOR.Toolset.Editors.Merchants
         private readonly HashSet<(int PaneIndex, int ItemIndex)> _checkedInventoryItems = new();
         private int _instanceRefreshGeneration;
         private int _inventoryRefreshGeneration;
+        private bool _isUpdatingInventoryChecks;
         private bool _loading;
         private bool _disposed;
 
@@ -57,6 +58,16 @@ namespace SWLOR.Toolset.Editors.Merchants
             $"{CheckedInventoryItemCount} item{(CheckedInventoryItemCount == 1 ? string.Empty : "s")} selected";
         public string RemoveCheckedInventoryLabel =>
             $"Remove selected ({CheckedInventoryItemCount})";
+        public bool? ShownInventorySelectionState
+        {
+            get
+            {
+                if (InventoryItems.Count == 0 || InventoryItems.All(item => !item.IsChecked))
+                    return false;
+                return InventoryItems.All(item => item.IsChecked) ? true : null;
+            }
+        }
+        public bool CanToggleShownInventoryItems => InventoryItems.Count > 0;
         public bool HasItemCandidates => ItemCandidates.Count > 0;
         public bool HasPlacedInstances => PlacedInstances.Count > 0;
         public bool HasOutOfDateInstances => PlacedInstances.Any(instance => !instance.IsCurrent);
@@ -294,20 +305,23 @@ namespace SWLOR.Toolset.Editors.Merchants
             }
         }
 
-        [RelayCommand(CanExecute = nameof(CanSelectAllShownInventoryItems))]
-        private void SelectAllShownInventoryItems()
+        [RelayCommand]
+        private void ToggleShownInventorySelection()
         {
-            foreach (var item in InventoryItems)
-                item.IsChecked = true;
+            var shouldSelect = InventoryItems.Any(item => !item.IsChecked);
+            _isUpdatingInventoryChecks = true;
+            try
+            {
+                foreach (var item in InventoryItems)
+                    item.IsChecked = shouldSelect;
+            }
+            finally
+            {
+                _isUpdatingInventoryChecks = false;
+            }
+
+            NotifyInventorySelectionChanged();
         }
-
-        private bool CanSelectAllShownInventoryItems() =>
-            InventoryItems.Any(item => !item.IsChecked);
-
-        [RelayCommand(CanExecute = nameof(CanClearCheckedInventoryItems))]
-        private void ClearCheckedInventoryItems() => ClearCheckedInventoryItemsCore();
-
-        private bool CanClearCheckedInventoryItems() => _checkedInventoryItems.Count > 0;
 
         [RelayCommand(CanExecute = nameof(CanRemoveCheckedInventoryItems))]
         private void RemoveCheckedInventoryItems()
@@ -546,7 +560,8 @@ namespace SWLOR.Toolset.Editors.Merchants
                             _checkedInventoryItems.Add(inventoryKey);
                         else
                             _checkedInventoryItems.Remove(inventoryKey);
-                        NotifyInventorySelectionChanged();
+                        if (!_isUpdatingInventoryChecks)
+                            NotifyInventorySelectionChanged();
                     });
                 InventoryItems.Add(inventoryItem);
                 _requestItemPreview?.Invoke(resRef, preview =>
@@ -704,7 +719,8 @@ namespace SWLOR.Toolset.Editors.Merchants
         {
             OnPropertyChanged(nameof(HasInventoryItems));
             OnPropertyChanged(nameof(InventorySummary));
-            SelectAllShownInventoryItemsCommand.NotifyCanExecuteChanged();
+            OnPropertyChanged(nameof(ShownInventorySelectionState));
+            OnPropertyChanged(nameof(CanToggleShownInventoryItems));
         }
 
         private void ClearCheckedInventoryItemsCore()
@@ -723,8 +739,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             OnPropertyChanged(nameof(CheckedInventoryItemCount));
             OnPropertyChanged(nameof(CheckedInventorySummary));
             OnPropertyChanged(nameof(RemoveCheckedInventoryLabel));
-            SelectAllShownInventoryItemsCommand.NotifyCanExecuteChanged();
-            ClearCheckedInventoryItemsCommand.NotifyCanExecuteChanged();
+            OnPropertyChanged(nameof(ShownInventorySelectionState));
             RemoveCheckedInventoryItemsCommand.NotifyCanExecuteChanged();
         }
 

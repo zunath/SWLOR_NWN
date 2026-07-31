@@ -256,14 +256,25 @@ namespace SWLOR.Toolset.Tests
                     (int)MerchantInventoryCategory.Armor));
 
             editor.InventorySearchText = "Alpha";
-            editor.SelectAllShownInventoryItemsCommand.Execute(null);
+            editor.ShownInventorySelectionState.Should().BeFalse();
+            editor.ToggleShownInventorySelectionCommand.Execute(null);
+            editor.ShownInventorySelectionState.Should().BeTrue();
             editor.InventorySearchText = "Gamma";
-            editor.SelectAllShownInventoryItemsCommand.Execute(null);
+            editor.ShownInventorySelectionState.Should().BeFalse();
+            editor.ToggleShownInventorySelectionCommand.Execute(null);
+            editor.ShownInventorySelectionState.Should().BeTrue();
+
+            editor.ToggleShownInventorySelectionCommand.Execute(null);
+            editor.ShownInventorySelectionState.Should().BeFalse();
+            editor.CheckedInventoryItemCount.Should().Be(1);
+            editor.ToggleShownInventorySelectionCommand.Execute(null);
 
             editor.CheckedInventoryItemCount.Should().Be(2);
             editor.CheckedInventorySummary.Should().Be("2 items selected");
             editor.RemoveCheckedInventoryLabel.Should().Be("Remove selected (2)");
             editor.RemoveCheckedInventoryItemsCommand.CanExecute(null).Should().BeTrue();
+            editor.InventorySearchText = string.Empty;
+            editor.ShownInventorySelectionState.Should().BeNull();
 
             editor.RemoveCheckedInventoryItemsCommand.Execute(null);
 

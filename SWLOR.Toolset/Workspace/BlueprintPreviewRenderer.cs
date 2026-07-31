@@ -42,13 +42,6 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>Square size for rasterized model previews.</summary>
         public const int ModelRenderSize = 128;
 
-        /// <summary>
-        /// Small shell gap Aurora preserves between an equipped skinmesh and the segmented body it
-        /// overlays. Twelve millimetres clears blended shoulder, collar, sash, and belt vertices
-        /// without visibly resizing a human-scale garment.
-        /// </summary>
-        private const float EquippedGarmentSurfaceClearance = 0.012f;
-
         private readonly WorkspaceContext _workspaceContext;
         private readonly ResourceIndex? _resourceIndex;
         private readonly AppearanceService? _appearances;
@@ -434,15 +427,6 @@ namespace SWLOR.Toolset.Workspace
             var parts = ApplyRobeCoverage(reference.Parts);
             if (parts.Count == 0)
                 return null;
-            var visiblePartTypes = parts
-                .Select(part => part.PartType)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-            var concealedPartBones = reference.Parts
-                .Where(part =>
-                    !part.PartType.Equals("robe", StringComparison.OrdinalIgnoreCase) &&
-                    !visiblePartTypes.Contains(part.PartType))
-                .SelectMany(part => MdlPartBoneMap.GetBoneCandidates(part.PartType))
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
             // Aurora keeps weighted garments as separate visuals. A robe's a_ba_coat supermodel is
             // an overlay: it supplies coat-helper tracks and body rotations, but deliberately omits
@@ -499,9 +483,7 @@ namespace SWLOR.Toolset.Workspace
             renderModels.AddRange(skinParts.Select(part =>
                 MdlMeshBuilder.Build(
                     part.Model,
-                    sharedFrames ?? IdleFrames(part.Model),
-                    EquippedGarmentSurfaceClearance,
-                    concealedPartBones)));
+                    sharedFrames ?? IdleFrames(part.Model))));
 
             return CombineRenderModels(reference.SkeletonResRef, renderModels);
         }

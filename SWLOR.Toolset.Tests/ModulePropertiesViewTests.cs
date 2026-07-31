@@ -149,6 +149,29 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void HakPriorityControlsUseCompactArrowIcons()
+        {
+            var view = new ModulePropertiesDocumentView();
+            var window = new Window { Width = 1200, Height = 800, Content = view };
+
+            window.Show();
+            view.FindControl<TabControl>("ModulePropertyTabs")!.SelectedIndex = 5;
+            Dispatcher.UIThread.RunJobs();
+            window.UpdateLayout();
+
+            var moveUp = view.FindControl<Button>("MoveHakUpButton")!;
+            var moveDown = view.FindControl<Button>("MoveHakDownButton")!;
+            moveUp.Content.Should().BeOfType<Avalonia.Controls.Shapes.Path>();
+            moveDown.Content.Should().BeOfType<Avalonia.Controls.Shapes.Path>();
+            ToolTip.GetTip(moveUp).Should().Be("Move selected HAK up");
+            ToolTip.GetTip(moveDown).Should().Be("Move selected HAK down");
+            moveUp.Bounds.Width.Should().BeLessThan(30);
+            moveDown.Bounds.Width.Should().BeLessThan(30);
+
+            window.Close();
+        }
+
+        [AvaloniaTest]
         public void EveryModulePropertiesTabRendersWithoutBindingErrors()
         {
             var previousSink = Logger.Sink;

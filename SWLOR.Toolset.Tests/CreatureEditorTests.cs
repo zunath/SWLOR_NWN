@@ -463,9 +463,14 @@ namespace SWLOR.Toolset.Tests
                     "Basic", "Behavior", "Variables", "Appearance", "Equipment", "Stats", "Abilities", "AI", "Loot");
                 var variablesTab = tabItems.Single(tab => tab.Header?.ToString() == "Variables");
                 variablesTab.IsVisible.Should().BeFalse();
+                editor.SelectedRole.Id.Should().Be(CreatureRoleCatalog.StandardId);
+                var standardRole = editor.RoleList.First(item => item.IsSelectable);
+                standardRole.Text.Should().Be("Standard");
+                standardRole.IsSelected.Should().BeTrue();
 
                 tabs.SelectedIndex = 1;
-                editor.ChooseRoleCommand.Execute(CreatureRoleCatalog.All.Single(role => role.Id == "custom"));
+                editor.ChooseRoleCommand.Execute(CreatureRoleCatalog.All.Single(
+                    role => role.Id == CreatureRoleCatalog.CustomId));
                 Dispatcher.UIThread.RunJobs();
                 editor.ShowsVariablesTab.Should().BeTrue();
                 variablesTab.IsVisible.Should().BeTrue();
@@ -861,10 +866,22 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void CustomVariablesRole_HasNoDecorativeTagline()
         {
-            var custom = CreatureRoleCatalog.All.Single(role => role.Id == "custom");
+            var custom = CreatureRoleCatalog.All.Single(role => role.Id == CreatureRoleCatalog.CustomId);
 
             custom.DisplayName.Should().Be("Custom Variables");
             custom.Tagline.Should().BeNull();
+        }
+
+        [Test]
+        public void CreatureRoles_DefaultToNeutralStandard()
+        {
+            var standard = CreatureRoleCatalog.Default;
+
+            standard.Id.Should().Be(CreatureRoleCatalog.StandardId);
+            standard.DisplayName.Should().Be("Standard");
+            standard.Group.Should().BeNull();
+            standard.Fields.Should().BeEmpty();
+            standard.AllowsVariables.Should().BeFalse();
         }
 
         [Test]

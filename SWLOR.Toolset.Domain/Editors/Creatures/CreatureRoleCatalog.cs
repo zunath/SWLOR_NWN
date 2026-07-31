@@ -3,8 +3,20 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
     /// <summary>Creature roles are additive panels, not mutually-exclusive presets.</summary>
     public static class CreatureRoleCatalog
     {
+        public const string StandardId = "standard";
+        public const string CustomId = "custom";
+
         public static IReadOnlyList<CreatureRole> All { get; } = new[]
         {
+            // The neutral landing panel. Selecting it never clears the additive role settings
+            // below; it gives ordinary creatures an honest default instead of highlighting a
+            // specialized role they may not use.
+            new CreatureRole
+            {
+                Id = StandardId,
+                DisplayName = "Standard",
+                Summary = "Uses ordinary creature behavior without a specialized gameplay role."
+            },
             new CreatureRole
             {
                 Id = "quest_target", DisplayName = "Quest Target", Group = "GAMEPLAY",
@@ -37,7 +49,7 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
             },
             new CreatureRole
             {
-                Id = "custom", DisplayName = "Custom Variables",
+                Id = CustomId, DisplayName = "Custom Variables",
                 Summary = "Edit unrecognized local variables without hiding them.",
                 AllowsVariables = true
             }

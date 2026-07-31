@@ -1,7 +1,11 @@
 using System.Text;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using Avalonia.Logging;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using FluentAssertions;
@@ -137,6 +141,43 @@ namespace SWLOR.Toolset.Tests
             }
 
             sink.Errors.Should().BeEmpty();
+        }
+
+        [AvaloniaTest]
+        public void LoadedPopupArtworkDoesNotDrawItsFallbackTextBehindTransparentPixels()
+        {
+            var row = PictureRow(400);
+            row.Choice = row.Choices[0];
+            using var preview = new WriteableBitmap(
+                new PixelSize(1, 1),
+                new Vector(96, 96),
+                PixelFormat.Bgra8888,
+                AlphaFormat.Unpremul);
+            row.SelectedPreview = preview;
+
+            var view = new BehaviorRowView { DataContext = row };
+            var window = new Window { Width = 900, Height = 700, Content = view };
+
+            try
+            {
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+
+                var selectedName = view.GetVisualDescendants()
+                    .OfType<TextBlock>()
+                    .Where(block => block.Text == row.SelectedChoiceDisplay)
+                    .ToList();
+
+                selectedName.Should().HaveCount(2,
+                    "the popup picker has one fallback inside the preview and one caption below it");
+                selectedName.Should().ContainSingle(block => block.IsVisible,
+                    "the fallback must disappear once artwork is loaded so transparent pixels cannot reveal text");
+            }
+            finally
+            {
+                window.Close();
+                Dispatcher.UIThread.RunJobs();
+            }
         }
 
         [AvaloniaTest]

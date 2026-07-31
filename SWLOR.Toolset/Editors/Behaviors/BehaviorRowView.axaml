@@ -135,7 +135,8 @@
                 <TextBlock Text="{Binding SelectedChoiceDisplay}" FontSize="15"
                            Foreground="{DynamicResource InkBrush}"
                            HorizontalAlignment="Center" VerticalAlignment="Center"
-                           TextWrapping="Wrap" TextAlignment="Center" Margin="10" />
+                           TextWrapping="Wrap" TextAlignment="Center" Margin="10"
+                           IsVisible="{Binding SelectedPreview, Converter={x:Static ObjectConverters.IsNull}}" />
                 <Image Source="{Binding SelectedPreview}" Stretch="Uniform" />
               </Panel>
             </Border>

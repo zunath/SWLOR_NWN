@@ -97,6 +97,12 @@ namespace SWLOR.Toolset.Domain.Conversations
 
             AddUnreachableOpenings(situations, problems);
             AddEmptySituations(situations, problems);
+            AddDanglingLinks(document, problems);
+            AddUnwrittenNodes(document, problems);
+            AddConditionalChoiceFallbacks(document, problems);
+            AddAutomaticContinuationLoops(document, problems);
+            AddDuplicateSnippetKeys(document, problems);
+            AddOncePerPlayerMarkerProblems(document, problems);
             AddDispatcherProblems(document, problems);
             AddSnippetProblems(document, problems);
             AddOrphans(document, problems);
@@ -141,11 +147,228 @@ namespace SWLOR.Toolset.Domain.Conversations
                 problems.Add(new ConversationProblem
                 {
                     RuleId = "empty-situation",
-                    Severity = ProblemSeverity.Untidy,
+                    Severity = ProblemSeverity.Broken,
                     Message = $"Nothing is written for “{situation.Title}” — a player who fits it hears silence.",
                     Anchor = ProblemAnchor.Situation,
                     Situation = situation
                 });
+            }
+        }
+
+        /// <summary>
+        /// New dialogue and quest scaffolds carry an internal marker until the writer supplies real
+        /// copy. The UI renders that marker as an empty field; saving it would ship unfinished text.
+        /// </summary>
+        private static void AddUnwrittenNodes(DlgDocument document, List<ConversationProblem> problems)
+        {
+            foreach (var node in document.Entries.Concat(document.Replies))
+            {
+                var isMarker = node.Text is QuestConversationScaffold.Placeholder
+                    or ModuleResourceTemplateFactory.PlaceholderEntryText;
+                var isSilentNpc = node.IsEntry && string.IsNullOrWhiteSpace(node.Text);
+                if (!isMarker && !isSilentNpc)
+                    continue;
+
+                problems.Add(new ConversationProblem
+                {
+                    RuleId = "required-text-missing",
+                    Severity = ProblemSeverity.Broken,
+                    Message = node.IsEntry
+                        ? "This NPC line still needs text before the dialogue can be saved."
+                        : "This player choice still needs text before the dialogue can be saved.",
+                    Anchor = node.IsEntry ? ProblemAnchor.Line : ProblemAnchor.Choice,
+                    Node = node
+                });
+            }
+        }
+
+        private static void AddDanglingLinks(DlgDocument document, List<ConversationProblem> problems)
+        {
+            foreach (var link in document.FindDanglingLinks())
+            {
+                problems.Add(new ConversationProblem
+                {
+                    RuleId = "dangling-route",
+                    Severity = ProblemSeverity.Broken,
+                    Message = "This route points to a line that no longer exists.",
+                    Anchor = link.Parent?.IsEntry == true ? ProblemAnchor.Choice : ProblemAnchor.Conversation,
+                    Link = link,
+                    Node = link.Parent
+                });
+            }
+        }
+
+        /// <summary>
+        /// NWN shows every reply whose check passes. With no unconditional fallback, a player can
+        /// reach the NPC line and be left with no response at all.
+        /// </summary>
+        private static void AddConditionalChoiceFallbacks(
+            DlgDocument document,
+            List<ConversationProblem> problems)
+        {
+            foreach (var entry in document.Entries)
+            {
+                var choices = entry.Links;
+                if (choices.Count == 0)
+                    continue;
+
+                var hasConditionalChoice = choices.Any(link =>
+                    link.Conditions.Count > 0 || !string.IsNullOrWhiteSpace(link.Active));
+                var hasFallback = choices.Any(link =>
+                    link.Conditions.Count == 0 && string.IsNullOrWhiteSpace(link.Active));
+                if (!hasConditionalChoice || hasFallback)
+                    continue;
+
+                problems.Add(new ConversationProblem
+                {
+                    RuleId = "conditional-choice-no-fallback",
+                    Severity = ProblemSeverity.Broken,
+                    Message = "Every player choice here has a check. Some players can be left with no response.",
+                    Anchor = ProblemAnchor.Line,
+                    Node = entry
+                });
+            }
+        }
+
+        /// <summary>
+        /// Empty reply nodes are how NWN represents an automatic continuation. A cycle made only
+        /// from those replies can advance forever without returning control to the player.
+        /// </summary>
+        private static void AddAutomaticContinuationLoops(
+            DlgDocument document,
+            List<ConversationProblem> problems)
+        {
+            var entriesByStruct = document.Entries.ToDictionary(entry => entry.Struct);
+            var edges = new Dictionary<DlgNode, List<DlgNode>>();
+            foreach (var entry in document.Entries)
+            {
+                var next = new List<DlgNode>();
+                foreach (var replyLink in entry.Links)
+                {
+                    if (!document.HasNode(replyLink.TargetKind, replyLink.TargetIndex))
+                        continue;
+
+                    var reply = replyLink.Target;
+                    if (!string.IsNullOrWhiteSpace(reply.Text))
+                        continue;
+
+                    foreach (var entryLink in reply.Links)
+                    {
+                        if (!document.HasNode(entryLink.TargetKind, entryLink.TargetIndex))
+                            continue;
+
+                        var target = entryLink.Target;
+                        if (entriesByStruct.TryGetValue(target.Struct, out var canonical))
+                            next.Add(canonical);
+                    }
+                }
+
+                edges[entry] = next;
+            }
+
+            var states = new Dictionary<DlgNode, int>();
+            var reported = new HashSet<DlgNode>();
+
+            void Visit(DlgNode node)
+            {
+                states[node] = 1;
+                foreach (var next in edges[node])
+                {
+                    states.TryGetValue(next, out var state);
+                    if (state == 0)
+                    {
+                        Visit(next);
+                    }
+                    else if (state == 1 && reported.Add(next))
+                    {
+                        problems.Add(new ConversationProblem
+                        {
+                            RuleId = "automatic-continuation-loop",
+                            Severity = ProblemSeverity.Broken,
+                            Message = "This path loops using only automatic continuations, so the player never regains control.",
+                            Anchor = ProblemAnchor.Line,
+                            Node = next
+                        });
+                    }
+                }
+
+                states[node] = 2;
+            }
+
+            foreach (var entry in document.Entries)
+            {
+                if (!states.ContainsKey(entry))
+                    Visit(entry);
+            }
+        }
+
+        /// <summary>
+        /// NWN script parameters are addressed by key, not list position. Repeating the same key
+        /// on one route or node does not create two independent checks/actions; one value wins.
+        /// </summary>
+        private static void AddDuplicateSnippetKeys(DlgDocument document, List<ConversationProblem> problems)
+        {
+            foreach (var link in document.AllLinks())
+            {
+                foreach (var duplicate in link.Conditions
+                             .GroupBy(param => param.SnippetKey, StringComparer.OrdinalIgnoreCase)
+                             .Where(group => group.Count() > 1))
+                {
+                    problems.Add(new ConversationProblem
+                    {
+                        RuleId = "duplicate-condition",
+                        Severity = ProblemSeverity.Broken,
+                        Message = $"This route repeats the same check ({duplicate.Key}). NWN reads one value per check name, so one of them is ignored.",
+                        Anchor = ProblemAnchor.Choice,
+                        Link = link,
+                        Node = link.Parent
+                    });
+                }
+            }
+
+            foreach (var node in document.Entries.Concat(document.Replies))
+            {
+                foreach (var duplicate in node.Actions
+                             .GroupBy(param => param.SnippetKey, StringComparer.OrdinalIgnoreCase)
+                             .Where(group => group.Count() > 1))
+                {
+                    problems.Add(new ConversationProblem
+                    {
+                        RuleId = "duplicate-action",
+                        Severity = ProblemSeverity.Broken,
+                        Message = $"This line repeats the same outcome ({duplicate.Key}). NWN reads one value per outcome name, so one of them is ignored.",
+                        Anchor = node.IsEntry ? ProblemAnchor.Line : ProblemAnchor.Choice,
+                        Node = node
+                    });
+                }
+            }
+        }
+
+        private static void AddOncePerPlayerMarkerProblems(
+            DlgDocument document,
+            List<ConversationProblem> problems)
+        {
+            foreach (var node in document.Entries.Concat(document.Replies))
+            {
+                foreach (var marker in node.Actions.Where(action => action.IsOncePerPlayerMarker))
+                {
+                    var hasAction = node.Actions.Any(action =>
+                        !action.IsOncePerPlayerMarker
+                        && action.SnippetKey.Equals(marker.MarkedActionKey, StringComparison.OrdinalIgnoreCase));
+                    if (hasAction && !string.IsNullOrWhiteSpace(marker.Value))
+                        continue;
+
+                    problems.Add(new ConversationProblem
+                    {
+                        RuleId = "invalid-once-marker",
+                        Severity = ProblemSeverity.Broken,
+                        Message = hasAction
+                            ? "A once-per-player outcome is missing its stable player marker."
+                            : "A once-per-player marker no longer has an outcome to control.",
+                        Anchor = node.IsEntry ? ProblemAnchor.Line : ProblemAnchor.Choice,
+                        Node = node
+                    });
+                }
             }
         }
 
@@ -199,7 +422,12 @@ namespace SWLOR.Toolset.Domain.Conversations
             foreach (var node in document.Entries.Concat(document.Replies))
             {
                 foreach (var action in node.Actions)
+                {
+                    if (action.IsOncePerPlayerMarker)
+                        continue;
+
                     CheckParam(action, ProblemAnchor.Line, null, node, problems);
+                }
             }
         }
 

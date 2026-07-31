@@ -154,12 +154,33 @@ namespace SWLOR.Toolset.Domain.Conversations
                     opening.AddCondition("condition-completed-quest", questId)));
             }
 
-            // Quest states, latest first. Collection states open the collector and deliberately end:
+            // Quest states, latest first. Ordinary progress steps share one reminder line by
+            // default. A writer who needs step-specific wording can split one incoming route with
+            // "Make a separate copy"; until then there is only one reminder to maintain.
+            DlgNode? sharedProgress = null;
+
+            // Collection states open the collector and deliberately end:
             // it advances the quest after the last item and starts a fresh conversation with the NPC.
             for (var state = quest.StateCount; state >= 1; state--)
             {
-                var onState = Opening(document, Placeholder, opening =>
-                    opening.AddCondition("condition-on-quest-state", $"{questId} {state}"));
+                DlgLink onState;
+                if (!quest.CollectItemObjectiveStates.Contains(state) && state != quest.StateCount)
+                {
+                    if (sharedProgress == null)
+                    {
+                        sharedProgress = document.AddEntry(Placeholder);
+                        var leave = document.AddReply("Goodbye.");
+                        document.AddLink(sharedProgress, leave);
+                    }
+
+                    onState = document.AddOpening(sharedProgress);
+                    onState.AddCondition("condition-on-quest-state", $"{questId} {state}");
+                }
+                else
+                {
+                    onState = Opening(document, Placeholder, opening =>
+                        opening.AddCondition("condition-on-quest-state", $"{questId} {state}"));
+                }
 
                 if (quest.CollectItemObjectiveStates.Contains(state))
                 {
@@ -176,11 +197,6 @@ namespace SWLOR.Toolset.Domain.Conversations
                     reward.AddAction("action-advance-quest", questId);
                     document.AddLink(complete, reward);
                 }
-                else
-                {
-                    document.AddLink(onState.Target, document.AddReply("[Come back later.]"));
-                }
-
                 created.Add(onState);
             }
 

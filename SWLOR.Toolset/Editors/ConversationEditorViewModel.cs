@@ -56,6 +56,7 @@ namespace SWLOR.Toolset.Editors
         private DlgLink? _editingLink;
         private DlgNode? _editingNode;
         private string _rulesTitle = string.Empty;
+        private bool _initializingMerchantFields;
 
         private sealed record WalkStep(DlgNode Line, PretendPlayer Player);
 
@@ -70,6 +71,45 @@ namespace SWLOR.Toolset.Editors
 
         [ObservableProperty]
         private string _walkStatus = string.Empty;
+
+        [ObservableProperty]
+        private ConversationBehaviorOption? _selectedBehavior;
+
+        [ObservableProperty]
+        private bool _showBehaviorChooser;
+
+        [ObservableProperty]
+        private string _merchantGreeting = string.Empty;
+
+        [ObservableProperty]
+        private string _merchantChoiceText = string.Empty;
+
+        [ObservableProperty]
+        private ArgumentOption? _selectedMerchantStore;
+
+        [ObservableProperty]
+        private bool _showAdvanced;
+
+        [ObservableProperty]
+        private string _advancedSpeaker = string.Empty;
+
+        [ObservableProperty]
+        private string _advancedSound = string.Empty;
+
+        [ObservableProperty]
+        private decimal _advancedAnimation;
+
+        [ObservableProperty]
+        private string _advancedComment = string.Empty;
+
+        [ObservableProperty]
+        private string _advancedScript = string.Empty;
+
+        [ObservableProperty]
+        private DynamicTextTokenOption? _selectedDynamicTextToken;
+
+        [ObservableProperty]
+        private DynamicTextTokenOption? _selectedMerchantDynamicTextToken;
 
         /// <summary>
         /// The choice whose guards and consequences are open for editing, if any. Written by hand
@@ -131,6 +171,14 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Consequences that can be added to the selected line.</summary>
         public ObservableCollection<SnippetDescriptor> AvailableConsequences { get; } = new();
 
+        public ObservableCollection<ConversationBehaviorOption> BehaviorOptions { get; } = new();
+
+        public ObservableCollection<DynamicTextTokenOption> DynamicTextTokens { get; } = new();
+
+        public ObservableCollection<ArgumentOption> MerchantStores { get; } = new();
+
+        public ObservableCollection<string> CurrentOutcomeSummaries { get; } = new();
+
         /// <summary>Quests the scaffold can lay out, for the "set up a quest" picker.</summary>
         public ObservableCollection<ArgumentOption> ScaffoldableQuests { get; } = new();
 
@@ -157,6 +205,62 @@ namespace SWLOR.Toolset.Editors
         public bool HasHiddenChoices => HiddenChoiceCount > 0;
 
         public bool HasProblems => Problems.Count > 0;
+
+        public int BlockingProblemCount => Problems.Count(problem => problem.IsBroken);
+
+        public bool HasBlockingProblems => BlockingProblemCount > 0;
+
+        public string ValidationSummary => BlockingProblemCount switch
+        {
+            0 => "Everything looks good",
+            1 => "1 error blocks saving",
+            _ => $"{BlockingProblemCount} errors block saving"
+        };
+
+        public bool IsMerchant => SelectedBehavior?.Kind == ConversationBehaviorKind.Merchant;
+
+        public bool IsQuestGiver => SelectedBehavior?.Kind == ConversationBehaviorKind.QuestGiver;
+
+        public bool IsConversation => SelectedBehavior?.Kind == ConversationBehaviorKind.Conversation;
+
+        public bool IsOutlineBehavior => IsQuestGiver || IsConversation;
+
+        public bool ShowEditor => !ShowBehaviorChooser;
+
+        public string OutlineTitle => IsQuestGiver ? "Quest moments" : "Opening lines";
+
+        public string OutlineHelp => IsQuestGiver
+            ? "Choose the quest moment you want to write."
+            : "The first NPC line whose checks pass is used.";
+
+        public bool HasCompetingSituations => Situations.Count > 1;
+
+        public string PreviewLineText => DynamicTextPreview.Resolve(LineText);
+
+        public int ReuseUseCount => _currentLine == null ? 0 : _dialog.IncomingLinks(_currentLine).Count;
+
+        public bool CanRemoveSharedLine => ReuseUseCount > 1;
+
+        public bool HasAdvancedValues => !string.IsNullOrWhiteSpace(AdvancedSpeaker)
+                                         || !string.IsNullOrWhiteSpace(AdvancedSound)
+                                         || AdvancedAnimation != 0
+                                         || !string.IsNullOrWhiteSpace(AdvancedComment)
+                                         || !string.IsNullOrWhiteSpace(AdvancedScript);
+
+        public bool CanEditCustomScript => _currentLine != null
+                                           && (_currentLine.Actions.Count == 0
+                                               || !DlgDocument.IsActionDispatcher(_currentLine.Script));
+
+        public bool HasCurrentOutcomes => CurrentOutcomeSummaries.Count > 0;
+
+        public string MerchantRequiredOutcome
+        {
+            get
+            {
+                var store = FindStoreChoice();
+                return store == null ? "Opens the selected shop" : _evaluator.DescribeAction(store.Value.Action);
+            }
+        }
 
         public bool HasCoverage => Coverage.Count > 0;
 
@@ -203,15 +307,192 @@ namespace SWLOR.Toolset.Editors
             foreach (var snippet in snippets.Actions)
                 AvailableConsequences.Add(snippet);
 
+            BehaviorOptions.Add(new ConversationBehaviorOption(
+                ConversationBehaviorKind.Merchant,
+                "Merchant",
+                "A greeting, one shop choice, and an automatic Goodbye choice."));
+            BehaviorOptions.Add(new ConversationBehaviorOption(
+                ConversationBehaviorKind.QuestGiver,
+                "Quest giver",
+                "Dialogue moments generated from a quest's real steps."));
+            BehaviorOptions.Add(new ConversationBehaviorOption(
+                ConversationBehaviorKind.Conversation,
+                "Conversation",
+                "A flexible outline of NPC lines, player choices, and follow-ups."));
+
+            DynamicTextTokens.Add(new DynamicTextTokenOption("Player first name", "<FirstName>"));
+            DynamicTextTokens.Add(new DynamicTextTokenOption("Player full name", "<FullName>"));
+            DynamicTextTokens.Add(new DynamicTextTokenOption("Player class", "<Class>"));
+            DynamicTextTokens.Add(new DynamicTextTokenOption("Day or night", "<Day/Night>"));
+            DynamicTextTokens.Add(new DynamicTextTokenOption("Boy or girl", "<Boy/Girl>"));
+
+            MerchantStores.Add(new ArgumentOption(string.Empty, "Nearest store"));
+            var storeSnippet = snippets.Find("action-open-store");
+            var storeArgument = storeSnippet?.Arguments.FirstOrDefault();
+            if (storeArgument != null)
+            {
+                foreach (var option in _argumentOptions.For(storeArgument, Array.Empty<string>()))
+                    MerchantStores.Add(option);
+            }
+
             if (gameCode != null)
             {
                 foreach (var quest in gameCode.Quests.Values.OrderBy(q => q.Name, StringComparer.OrdinalIgnoreCase))
                     ScaffoldableQuests.Add(new ArgumentOption(quest.Id, quest.Name));
             }
 
+            _selectedBehavior = BehaviorOptions.First(option => option.Kind == DetectBehavior());
+            ShowBehaviorChooser = IsNewConversationTemplate();
+
             BuildPlayerControls();
             Redraw();
+            RefreshMerchantFields();
             GoToFirstUnwritten();
+        }
+
+        private ConversationBehaviorKind DetectBehavior()
+        {
+            var conditionKeys = _dialog.AllLinks()
+                .SelectMany(link => link.Conditions)
+                .Select(condition => condition.SnippetKey);
+            var actionKeys = _dialog.Entries.Concat(_dialog.Replies)
+                .SelectMany(node => node.Actions)
+                .Select(action => action.SnippetKey);
+            var keys = conditionKeys.Concat(actionKeys).ToList();
+            var hasStore = keys.Contains("action-open-store", StringComparer.OrdinalIgnoreCase);
+            var hasQuest = keys.Any(key => key.Contains("quest", StringComparison.OrdinalIgnoreCase));
+
+            if (hasStore && !hasQuest)
+                return ConversationBehaviorKind.Merchant;
+            if (hasQuest && !hasStore)
+                return ConversationBehaviorKind.QuestGiver;
+            return ConversationBehaviorKind.Conversation;
+        }
+
+        private bool IsNewConversationTemplate() =>
+            _dialog.Entries.Count == 1
+            && _dialog.Replies.Count == 0
+            && _dialog.Openings.Count == 1
+            && _dialog.Entries[0].Text == ModuleResourceTemplateFactory.PlaceholderEntryText;
+
+        partial void OnSelectedBehaviorChanged(ConversationBehaviorOption? value)
+        {
+            OnPropertyChanged(nameof(IsMerchant));
+            OnPropertyChanged(nameof(IsQuestGiver));
+            OnPropertyChanged(nameof(IsConversation));
+            OnPropertyChanged(nameof(IsOutlineBehavior));
+            OnPropertyChanged(nameof(OutlineTitle));
+            OnPropertyChanged(nameof(OutlineHelp));
+
+            CloseRulesEditor();
+            ShowAdvanced = false;
+            // Behavior-specific fields stay alive for the editor session. In particular, do not
+            // reload the merchant form here: switching away and back must restore its draft.
+            if (value?.Kind == ConversationBehaviorKind.QuestGiver)
+                GoToFirstUnwritten();
+            else if (value?.Kind == ConversationBehaviorKind.Conversation)
+                StartOver();
+        }
+
+        partial void OnLineTextChanged(string value) => OnPropertyChanged(nameof(PreviewLineText));
+
+        [RelayCommand]
+        private void ChooseBehavior(ConversationBehaviorOption? behavior)
+        {
+            if (behavior == null)
+                return;
+
+            SelectedBehavior = behavior;
+            ShowBehaviorChooser = false;
+            OnPropertyChanged(nameof(ShowEditor));
+        }
+
+        partial void OnShowBehaviorChooserChanged(bool value) => OnPropertyChanged(nameof(ShowEditor));
+
+        [RelayCommand]
+        private void ToggleAdvanced() => ShowAdvanced = !ShowAdvanced;
+
+        [RelayCommand]
+        private void InsertDynamicText()
+        {
+            if (SelectedDynamicTextToken == null)
+                return;
+
+            LineText += SelectedDynamicTextToken.Token;
+            SelectedDynamicTextToken = null;
+        }
+
+        [RelayCommand]
+        private void InsertMerchantDynamicText()
+        {
+            if (SelectedMerchantDynamicTextToken == null)
+                return;
+
+            MerchantGreeting += SelectedMerchantDynamicTextToken.Token;
+            SelectedMerchantDynamicTextToken = null;
+        }
+
+        private static bool IsAuthoringPlaceholder(string text) =>
+            text is QuestConversationScaffold.Placeholder or ModuleResourceTemplateFactory.PlaceholderEntryText;
+
+        private static string EditableText(string text) => IsAuthoringPlaceholder(text) ? string.Empty : text;
+
+        private (DlgNode Reply, DlgParam Action)? FindStoreChoice()
+        {
+            foreach (var reply in _dialog.Replies)
+            {
+                var action = reply.Actions.FirstOrDefault(candidate =>
+                    candidate.SnippetKey.Equals("action-open-store", StringComparison.OrdinalIgnoreCase));
+                if (action != null)
+                    return (reply, action);
+            }
+
+            return null;
+        }
+
+        private void RefreshMerchantFields()
+        {
+            _initializingMerchantFields = true;
+            try
+            {
+                MerchantGreeting = EditableText(_dialog.Openings.FirstOrDefault()?.Target.Text ?? string.Empty);
+                var store = FindStoreChoice();
+                MerchantChoiceText = store == null ? string.Empty : EditableText(store.Value.Reply.Text);
+                var tag = store?.Action.Arguments.FirstOrDefault() ?? string.Empty;
+                SelectedMerchantStore = MerchantStores.FirstOrDefault(option => option.Value == tag)
+                                        ?? new ArgumentOption(tag, tag);
+            }
+            finally
+            {
+                _initializingMerchantFields = false;
+            }
+
+            OnPropertyChanged(nameof(MerchantRequiredOutcome));
+        }
+
+        private void RefreshAdvancedFields()
+        {
+            if (_currentLine == null)
+            {
+                AdvancedSpeaker = string.Empty;
+                AdvancedSound = string.Empty;
+                AdvancedAnimation = 0;
+                AdvancedComment = string.Empty;
+                AdvancedScript = string.Empty;
+            }
+            else
+            {
+                AdvancedSpeaker = _currentLine.Speaker;
+                AdvancedSound = _currentLine.Sound;
+                AdvancedAnimation = _currentLine.Animation;
+                AdvancedComment = _currentLine.Comment;
+                AdvancedScript = DlgDocument.IsActionDispatcher(_currentLine.Script)
+                    ? string.Empty
+                    : _currentLine.Script;
+            }
+
+            OnPropertyChanged(nameof(HasAdvancedValues));
+            OnPropertyChanged(nameof(CanEditCustomScript));
         }
 
         // ---------- navigation ----------
@@ -350,11 +631,209 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand]
         private void CommitLine()
         {
-            if (_currentLine == null || LineText == _currentLine.Text)
+            if (_currentLine == null)
                 return;
 
             var node = _currentLine;
-            RunEdit("Edit a line", () => node.Text = LineText);
+            var text = string.IsNullOrWhiteSpace(LineText) && IsAuthoringPlaceholder(node.Text)
+                ? node.Text
+                : LineText;
+            if (text == node.Text)
+                return;
+
+            RunEdit("Edit a line", () => node.Text = text);
+        }
+
+        /// <summary>
+        /// Writes the compact merchant form into an ordinary NWN conversation. The shop outcome is
+        /// required and read-only in the guided surface; Goodbye is supplied automatically.
+        /// </summary>
+        [RelayCommand]
+        private void CommitMerchant()
+        {
+            if (_initializingMerchantFields || !MerchantDraftDiffers())
+                return;
+
+            RunEdit("Update merchant dialogue", () => EnsureMerchantStructure());
+        }
+
+        private void EnsureMerchantStructure()
+        {
+            var opening = _dialog.Openings.FirstOrDefault();
+            DlgNode greeting;
+            if (opening == null)
+            {
+                greeting = _dialog.AddEntry(QuestConversationScaffold.Placeholder);
+                _dialog.AddOpening(greeting);
+            }
+            else
+            {
+                greeting = opening.Target;
+            }
+
+            greeting.Text = string.IsNullOrWhiteSpace(MerchantGreeting)
+                ? QuestConversationScaffold.Placeholder
+                : MerchantGreeting;
+
+            var store = FindStoreChoice();
+            DlgNode shopChoice;
+            DlgParam storeAction;
+            if (store == null)
+            {
+                shopChoice = _dialog.AddReply(QuestConversationScaffold.Placeholder);
+                storeAction = shopChoice.AddAction("action-open-store");
+            }
+            else
+            {
+                shopChoice = store.Value.Reply;
+                storeAction = store.Value.Action;
+            }
+
+            shopChoice.Text = string.IsNullOrWhiteSpace(MerchantChoiceText)
+                ? QuestConversationScaffold.Placeholder
+                : MerchantChoiceText;
+            storeAction.Value = SelectedMerchantStore?.Value ?? string.Empty;
+
+            var shopIsLinked = greeting.Links.Any(link =>
+                _dialog.HasNode(link.TargetKind, link.TargetIndex)
+                && ReferenceEquals(link.Target.Struct, shopChoice.Struct));
+            if (!shopIsLinked)
+                _dialog.AddLink(greeting, shopChoice, isChild: _dialog.IncomingLinks(shopChoice).Count > 0);
+
+            var hasGoodbye = greeting.Links.Any(link =>
+            {
+                if (!_dialog.HasNode(link.TargetKind, link.TargetIndex))
+                    return false;
+
+                var reply = link.Target;
+                return reply.Actions.Count == 0
+                       && reply.Links.Count == 0
+                       && link.Conditions.Count == 0
+                       && string.IsNullOrWhiteSpace(link.Active);
+            });
+            if (!hasGoodbye)
+            {
+                var goodbye = _dialog.AddReply("Goodbye.");
+                _dialog.AddLink(greeting, goodbye);
+            }
+        }
+
+        private bool MerchantDraftDiffers()
+        {
+            var opening = _dialog.Openings.FirstOrDefault();
+            if (opening == null)
+                return true;
+
+            var expectedGreeting = string.IsNullOrWhiteSpace(MerchantGreeting)
+                ? QuestConversationScaffold.Placeholder
+                : MerchantGreeting;
+            if (opening.Target.Text != expectedGreeting)
+                return true;
+
+            var store = FindStoreChoice();
+            if (store == null)
+                return true;
+
+            var expectedChoice = string.IsNullOrWhiteSpace(MerchantChoiceText)
+                ? QuestConversationScaffold.Placeholder
+                : MerchantChoiceText;
+            if (store.Value.Reply.Text != expectedChoice
+                || store.Value.Action.Value != (SelectedMerchantStore?.Value ?? string.Empty))
+                return true;
+
+            var greeting = opening.Target;
+            var linkedToStore = greeting.Links.Any(link =>
+                _dialog.HasNode(link.TargetKind, link.TargetIndex)
+                && ReferenceEquals(link.Target.Struct, store.Value.Reply.Struct));
+            if (!linkedToStore)
+                return true;
+
+            return !greeting.Links.Any(link =>
+            {
+                if (!_dialog.HasNode(link.TargetKind, link.TargetIndex))
+                    return false;
+
+                var reply = link.Target;
+                return reply.Actions.Count == 0
+                       && reply.Links.Count == 0
+                       && link.Conditions.Count == 0
+                       && string.IsNullOrWhiteSpace(link.Active);
+            });
+        }
+
+        [RelayCommand]
+        private void CommitAdvanced()
+        {
+            if (_currentLine == null)
+                return;
+
+            var line = _currentLine;
+            RunEdit("Update advanced dialogue settings", () =>
+            {
+                line.Speaker = AdvancedSpeaker;
+                line.Sound = AdvancedSound;
+                line.Animation = decimal.ToUInt32(Math.Max(0, AdvancedAnimation));
+                line.Comment = AdvancedComment;
+                if (line.Actions.Count == 0)
+                {
+                    line.Script = AdvancedScript;
+                }
+                else if (!DlgDocument.IsActionDispatcher(line.Script))
+                {
+                    // Imported files can contain both a custom script and snippet parameters,
+                    // which means the snippets never run. Clearing the custom field repairs that.
+                    line.Script = string.IsNullOrWhiteSpace(AdvancedScript)
+                        ? DlgDocument.ActionDispatcher
+                        : AdvancedScript;
+                }
+            });
+        }
+
+        /// <summary>Adds NWN's empty reply node without exposing it as a blank author field.</summary>
+        [RelayCommand]
+        private void ContinueAutomatically()
+        {
+            if (_currentLine == null || !_currentLine.IsEntry)
+                return;
+
+            var line = _currentLine;
+            RunEdit("Continue automatically", () =>
+            {
+                var continuation = _dialog.AddReply(string.Empty);
+                var next = _dialog.AddEntry(QuestConversationScaffold.Placeholder);
+                _dialog.AddLink(line, continuation);
+                _dialog.AddLink(continuation, next);
+            });
+
+            var automatic = line.Links.LastOrDefault()?.Target;
+            var nextLine = automatic?.Links.LastOrDefault()?.Target;
+            if (nextLine != null)
+                EnterLine(nextLine);
+        }
+
+        [RelayCommand]
+        private void EndConversation()
+        {
+            if (_currentLine == null || !_currentLine.IsEntry)
+                return;
+
+            var line = _currentLine;
+            var alreadyHasEnding = line.Links.Any(link =>
+                _dialog.HasNode(link.TargetKind, link.TargetIndex)
+                && link.Target.Links.Count == 0
+                && link.Conditions.Count == 0
+                && string.IsNullOrWhiteSpace(link.Active));
+            if (alreadyHasEnding)
+            {
+                WalkStatus = "This line already has an ending choice.";
+                return;
+            }
+
+            RunEdit("Add an ending choice", () =>
+            {
+                var goodbye = _dialog.AddReply("Goodbye.");
+                _dialog.AddLink(line, goodbye);
+            });
         }
 
         /// <summary>Adds an empty choice under the current line, ready to be typed into.</summary>
@@ -370,6 +849,36 @@ namespace SWLOR.Toolset.Editors
                 var reply = _dialog.AddReply(QuestConversationScaffold.Placeholder);
                 _dialog.AddLink(parent, reply);
             });
+        }
+
+        /// <summary>Commits one inline player-choice text box on focus loss.</summary>
+        public void CommitChoiceText(ChoiceRowViewModel? choice, string? text)
+        {
+            if (choice == null || choice.IsDangling)
+                return;
+
+            var value = string.IsNullOrWhiteSpace(text) && IsAuthoringPlaceholder(choice.Target.Text)
+                ? choice.Target.Text
+                : text ?? string.Empty;
+            if (choice.Target.Text == value)
+                return;
+
+            RunEdit("Edit a player choice", () => choice.Target.Text = value);
+        }
+
+        /// <summary>Adds another top-level NPC alternative. NWN checks these from top to bottom.</summary>
+        [RelayCommand]
+        private void AddSituation()
+        {
+            DlgNode? added = null;
+            RunEdit("Add an NPC alternative", () =>
+            {
+                added = _dialog.AddEntry(QuestConversationScaffold.Placeholder);
+                _dialog.AddOpening(added);
+            });
+
+            if (added != null)
+                ShowLine(added);
         }
 
         /// <summary>Adds the NPC line that follows a player choice which currently ends the talk.</summary>
@@ -490,6 +999,122 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
+        private DlgLink? RouteIntoCurrentLine()
+        {
+            if (_currentLine == null)
+                return null;
+
+            var nested = FindRouteInto(_currentLine);
+            if (nested != null)
+                return nested;
+
+            return Situations
+                .Where(row => row.IsSelected)
+                .Select(row => row.Situation.Opening)
+                .FirstOrDefault(opening =>
+                    _dialog.HasNode(opening.TargetKind, opening.TargetIndex)
+                    && ReferenceEquals(opening.Target.Struct, _currentLine.Struct));
+        }
+
+        /// <summary>Detaches only the current incoming route from a line used in several places.</summary>
+        [RelayCommand]
+        private void RemoveCurrentLineFromHere()
+        {
+            if (_currentLine == null || _dialog.IncomingLinks(_currentLine).Count <= 1)
+                return;
+
+            var route = RouteIntoCurrentLine();
+            if (route == null)
+                return;
+
+            RunEdit("Remove shared line from here", () => _dialog.RemoveLink(route));
+            WalkStatus = "Removed from this location. The shared line remains everywhere else it is used.";
+            StartWalk(Situations.FirstOrDefault(row => row.IsSelected)?.Title ?? "Start");
+        }
+
+        /// <summary>Deletes a shared node and all incoming routes only after an explicit warning.</summary>
+        [RelayCommand]
+        private async Task DeleteCurrentLineEverywhere()
+        {
+            if (_currentLine == null)
+                return;
+
+            var line = _currentLine;
+            var useCount = _dialog.IncomingLinks(line).Count;
+            if (useCount == 0)
+                return;
+
+            var confirmed = await _prompts.ConfirmDestructiveAsync(
+                "Delete this line everywhere?",
+                $"This line is used in {useCount} place(s). Its text, outcomes, and every route to it will be removed.",
+                "Delete everywhere").ConfigureAwait(true);
+            if (!confirmed)
+                return;
+
+            RunEdit("Delete shared line everywhere", () => _dialog.RemoveNode(line));
+            WalkStatus = "Deleted the shared line everywhere it was used.";
+            StartWalk("Start");
+        }
+
+        [RelayCommand]
+        private void GoToProblem(ProblemRowViewModel? row)
+        {
+            if (row?.Problem.Situation != null)
+            {
+                var situation = Situations.FirstOrDefault(candidate =>
+                    ReferenceEquals(candidate.Situation.Opening.Struct, row.Problem.Situation.Opening.Struct));
+                if (situation != null)
+                    SelectSituation(situation);
+                return;
+            }
+
+            if (row?.Problem.Node != null && _dialog.IndexOf(row.Problem.Node) >= 0)
+            {
+                ShowLine(row.Problem.Node);
+                return;
+            }
+
+            if (row?.Problem.Link?.Parent?.IsEntry == true)
+                ShowLine(row.Problem.Link.Parent);
+        }
+
+        /// <summary>Applies only fixes whose intended result is mechanically unambiguous.</summary>
+        [RelayCommand]
+        private void FixProblem(ProblemRowViewModel? row)
+        {
+            if (row == null)
+                return;
+
+            if (row.Problem.RuleId == "conditional-choice-no-fallback" && row.Problem.Node?.IsEntry == true)
+            {
+                var line = row.Problem.Node;
+                RunEdit("Add a fallback choice", () =>
+                {
+                    var goodbye = _dialog.AddReply("Goodbye.");
+                    _dialog.AddLink(line, goodbye);
+                });
+                WalkStatus = "Added an unconditional Goodbye choice.";
+                return;
+            }
+
+            if (row.Problem.RuleId != "unreachable-opening" || row.Problem.Situation == null)
+                return;
+
+            var openings = _dialog.Openings;
+            var targetIndex = openings.ToList().FindIndex(opening =>
+                ReferenceEquals(opening.Struct, row.Problem.Situation.Opening.Struct));
+            if (targetIndex < 0)
+                return;
+
+            var fallbackIndex = openings.Take(targetIndex).ToList().FindIndex(opening =>
+                opening.Conditions.Count == 0 && string.IsNullOrWhiteSpace(opening.Active));
+            if (fallbackIndex < 0)
+                return;
+
+            RunEdit("Move fallback last", () => _dialog.MoveOpening(fallbackIndex, openings.Count - 1));
+            WalkStatus = "Moved the unconditional fallback to the end of NWN's check order.";
+        }
+
         /// <summary>Moves a situation one place up the order, which is how a dead one is revived.</summary>
         [RelayCommand]
         private void MoveSituationUp(SituationRowViewModel? row)
@@ -564,6 +1189,27 @@ namespace SWLOR.Toolset.Editors
             RefreshSnippetEditors();
         }
 
+        /// <summary>Opens only the shop choice's optional outcomes; opening the shop stays required.</summary>
+        [RelayCommand]
+        private void EditMerchantActions()
+        {
+            if (MerchantDraftDiffers())
+                RunEdit("Finish merchant dialogue", EnsureMerchantStructure);
+
+            var store = FindStoreChoice();
+            if (store == null)
+                return;
+
+            EditingChoice = null;
+            _editingLink = _dialog.AllLinks().FirstOrDefault(link =>
+                _dialog.HasNode(link.TargetKind, link.TargetIndex)
+                && ReferenceEquals(link.Target.Struct, store.Value.Reply.Struct));
+            _editingNode = store.Value.Reply;
+            RulesTitle = "WHEN THE PLAYER CHOOSES THE SHOP";
+            RefreshSnippetEditors();
+        }
+
+        [RelayCommand]
         private void CloseRulesEditor()
         {
             EditingChoice = null;
@@ -581,6 +1227,13 @@ namespace SWLOR.Toolset.Editors
                 return;
 
             var snippet = GuardToAdd;
+            if (link.Conditions.Any(condition =>
+                    condition.SnippetKey.Equals(snippet.Key, StringComparison.OrdinalIgnoreCase)))
+            {
+                WalkStatus = "That check is already attached here. Change its existing details instead.";
+                return;
+            }
+
             RunEdit($"Add a condition", () => link.AddCondition(snippet.Key));
             GuardToAdd = null;
         }
@@ -593,8 +1246,42 @@ namespace SWLOR.Toolset.Editors
                 return;
 
             var snippet = ConsequenceToAdd;
-            if (RunEdit($"Add an effect", () => node.AddAction(snippet.Key)))
+            if (node.Actions.Any(action =>
+                    action.SnippetKey.Equals(snippet.Key, StringComparison.OrdinalIgnoreCase)))
+            {
+                WalkStatus = "That outcome is already attached here. NWN supports one value per outcome type.";
+                return;
+            }
+
+            if (RunEdit($"Add an effect", () =>
+                {
+                    var action = node.AddAction(snippet.Key);
+                    if (CanRunOncePerPlayer(snippet.Key))
+                    {
+                        node.SetActionOncePerPlayer(
+                            action,
+                            oncePerPlayer: true,
+                            $"{_resRef}:{Guid.NewGuid():N}");
+                    }
+                }))
                 ConsequenceToAdd = null;
+        }
+
+        private static bool CanRunOncePerPlayer(string actionKey) => actionKey is not
+            "action-open-store" and not
+            "action-teleport";
+
+        private void SetConsequenceOncePerPlayer(SnippetEditorViewModel editor, bool oncePerPlayer)
+        {
+            var node = _editingNode;
+            if (node == null || !CanRunOncePerPlayer(editor.Snippet.Key))
+                return;
+
+            RunEdit("Change how often an outcome runs", () =>
+                node.SetActionOncePerPlayer(
+                    editor.Param,
+                    oncePerPlayer,
+                    $"{_resRef}:{Guid.NewGuid():N}"));
         }
 
         /// <summary>
@@ -657,11 +1344,19 @@ namespace SWLOR.Toolset.Editors
 
             foreach (var action in _editingNode?.Actions ?? Array.Empty<DlgParam>())
             {
+                if (action.IsOncePerPlayerMarker)
+                    continue;
+
                 var snippet = _snippets.Find(action.Key);
                 if (snippet != null)
                 {
                     Consequences.Add(new SnippetEditorViewModel(
-                        action, snippet, _argumentOptions, canNegate: false, CommitSnippet, RemoveConsequence, _evaluator.DisplayValue));
+                        action, snippet, _argumentOptions, canNegate: false, CommitSnippet, RemoveConsequence,
+                        _evaluator.DisplayValue,
+                        canRemove: !(IsMerchant && action.SnippetKey.Equals("action-open-store", StringComparison.OrdinalIgnoreCase)),
+                        canRunOncePerPlayer: CanRunOncePerPlayer(action.SnippetKey),
+                        isOncePerPlayer: _editingNode!.IsActionOncePerPlayer(action),
+                        onOncePerPlayerChanged: SetConsequenceOncePerPlayer));
                 }
             }
 
@@ -773,9 +1468,14 @@ namespace SWLOR.Toolset.Editors
             var selectedOrder = Situations.FirstOrDefault(row => row.IsSelected)?.Order;
 
             Situations.Clear();
-            foreach (var situation in model.Situations())
+            var situations = model.Situations();
+            foreach (var situation in situations)
             {
-                var row = new SituationRowViewModel(situation) { IsSelected = situation.Order == selectedOrder };
+                var row = new SituationRowViewModel(situation)
+                {
+                    IsSelected = situation.Order == selectedOrder,
+                    HasCompetingLines = situations.Count > 1
+                };
                 Situations.Add(row);
             }
 
@@ -791,8 +1491,12 @@ namespace SWLOR.Toolset.Editors
             RefreshChoices();
             RestoreEditingChoice();
             OnPropertyChanged(nameof(HasProblems));
+            OnPropertyChanged(nameof(BlockingProblemCount));
+            OnPropertyChanged(nameof(HasBlockingProblems));
+            OnPropertyChanged(nameof(ValidationSummary));
             OnPropertyChanged(nameof(HasCoverage));
             OnPropertyChanged(nameof(HasQuestPills));
+            OnPropertyChanged(nameof(HasCompetingSituations));
         }
 
         /// <summary>
@@ -855,16 +1559,30 @@ namespace SWLOR.Toolset.Editors
         private void ShowLine(DlgNode line)
         {
             _currentLine = line;
-            LineText = line.Text;
+            LineText = EditableText(line.Text);
             WalkStatus = string.Empty;
 
             var incoming = _dialog.IncomingLinks(line).Count;
             ReuseWarning = incoming > 1
-                ? $"This line is reached from {incoming} places — editing it changes all of them."
+                ? $"Used in {incoming} places. Editing its text or outcomes changes all of them."
                 : string.Empty;
 
             RefreshChoices();
+            RefreshCurrentOutcomes();
+            RefreshAdvancedFields();
             RefreshLineState();
+        }
+
+        private void RefreshCurrentOutcomes()
+        {
+            CurrentOutcomeSummaries.Clear();
+            if (_currentLine != null)
+            {
+                foreach (var action in _currentLine.Actions.Where(action => !action.IsOncePerPlayerMarker))
+                    CurrentOutcomeSummaries.Add(_evaluator.DescribeAction(action));
+            }
+
+            OnPropertyChanged(nameof(HasCurrentOutcomes));
         }
 
         private void RefreshChoices()
@@ -926,7 +1644,10 @@ namespace SWLOR.Toolset.Editors
 
         private string DescribeConsequence(DlgNode reply)
         {
-            var effects = reply.Actions.Select(action => _evaluator.DescribeAction(action)).ToList();
+            var effects = reply.Actions
+                .Where(action => !action.IsOncePerPlayerMarker)
+                .Select(action => _evaluator.DescribeAction(action))
+                .ToList();
             if (effects.Count > 0)
                 return string.Join("; ", effects);
 
@@ -944,6 +1665,11 @@ namespace SWLOR.Toolset.Editors
             OnPropertyChanged(nameof(HasLine));
             OnPropertyChanged(nameof(HasNoLine));
             OnPropertyChanged(nameof(HasReuseWarning));
+            OnPropertyChanged(nameof(ReuseUseCount));
+            OnPropertyChanged(nameof(CanRemoveSharedLine));
+            OnPropertyChanged(nameof(PreviewLineText));
+            OnPropertyChanged(nameof(HasAdvancedValues));
+            OnPropertyChanged(nameof(CanEditCustomScript));
         }
 
         /// <summary>
@@ -1093,6 +1819,8 @@ namespace SWLOR.Toolset.Editors
             else if (_currentLine != null)
                 ShowLine(_currentLine);
 
+            RefreshMerchantFields();
+
             OnPropertyChanged(nameof(IsDirty));
             OnPropertyChanged(nameof(CanUndo));
             OnPropertyChanged(nameof(CanRedo));
@@ -1114,6 +1842,20 @@ namespace SWLOR.Toolset.Editors
 
         public async Task<bool> TrySaveAsync()
         {
+            CommitLine();
+            if (IsMerchant && MerchantDraftDiffers())
+                RunEdit("Finish merchant dialogue", EnsureMerchantStructure);
+
+            Redraw();
+            var firstBroken = Problems.FirstOrDefault(problem => problem.IsBroken);
+            if (firstBroken != null)
+            {
+                GoToProblem(firstBroken);
+                WalkStatus = $"Cannot save: {firstBroken.Message}";
+                _log.AppendLine($"Cannot save {_session.FilePath}: {BlockingProblemCount} dialogue error(s) must be fixed first.");
+                return false;
+            }
+
             if (!IsDirty)
                 return true;
 

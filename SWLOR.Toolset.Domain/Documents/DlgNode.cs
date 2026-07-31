@@ -186,6 +186,15 @@ namespace SWLOR.Toolset.Domain.Documents
         /// <summary>Removes an action, clearing the dispatcher script when the last one goes.</summary>
         public void RemoveAction(DlgParam action)
         {
+            if (!action.IsOncePerPlayerMarker)
+            {
+                var marker = Actions.FirstOrDefault(candidate =>
+                    candidate.IsOncePerPlayerMarker
+                    && candidate.MarkedActionKey.Equals(action.SnippetKey, StringComparison.OrdinalIgnoreCase));
+                if (marker != null)
+                    RemoveAction(marker);
+            }
+
             if (!Struct.TryGet(ActionParamsField, out var field) || field.Elements == null)
                 return;
 
@@ -207,6 +216,30 @@ namespace SWLOR.Toolset.Domain.Documents
 
             if (field.Elements.Count == 0 && DlgDocument.IsActionDispatcher(Script))
                 Script = string.Empty;
+        }
+
+        public bool IsActionOncePerPlayer(DlgParam action) => Actions.Any(candidate =>
+            candidate.IsOncePerPlayerMarker
+            && candidate.MarkedActionKey.Equals(action.SnippetKey, StringComparison.OrdinalIgnoreCase));
+
+        /// <summary>Adds/removes the stable marker the runtime uses to suppress repeat execution.</summary>
+        public void SetActionOncePerPlayer(DlgParam action, bool oncePerPlayer, string markerId)
+        {
+            var marker = Actions.FirstOrDefault(candidate =>
+                candidate.IsOncePerPlayerMarker
+                && candidate.MarkedActionKey.Equals(action.SnippetKey, StringComparison.OrdinalIgnoreCase));
+
+            if (oncePerPlayer)
+            {
+                if (marker == null)
+                    AddAction(DlgParam.OncePerPlayerKey(action.SnippetKey), markerId);
+                else if (!string.IsNullOrWhiteSpace(markerId))
+                    marker.Value = markerId;
+            }
+            else if (marker != null)
+            {
+                RemoveAction(marker);
+            }
         }
 
         private JsonGffField GetOrCreateActionParams()

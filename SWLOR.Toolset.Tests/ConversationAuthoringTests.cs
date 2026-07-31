@@ -295,7 +295,8 @@ namespace SWLOR.Toolset.Tests
             // hints, and that ratio is the point.
             var problems = Analyzer.Analyze(DantHerbs());
 
-            problems.Count(problem => problem.Severity == ProblemSeverity.Broken).Should().Be(4);
+            problems.Count(problem => problem.Severity == ProblemSeverity.Broken).Should().Be(5,
+                "the four unreachable openings and their duplicate NWN script-parameter key are real breaks");
             problems.Should().OnlyContain(problem =>
                 problem.Severity != ProblemSeverity.Untidy || problem.RuleId == "quest-beat-missing");
         }
@@ -318,6 +319,103 @@ namespace SWLOR.Toolset.Tests
             }
 
             failures.Should().BeEmpty();
+        }
+
+        [Test]
+        public void InternalAuthoringMarkersBlockSaving()
+        {
+            var problems = Analyzer.Analyze(NewConversation());
+
+            problems.Should().Contain(problem =>
+                problem.RuleId == "required-text-missing"
+                && problem.Severity == ProblemSeverity.Broken);
+        }
+
+        [Test]
+        public void ConditionalPlayerChoicesNeedAnUnconditionalFallback()
+        {
+            var document = NewConversation();
+            document.Openings[0].Target.Text = "Choose.";
+            var yes = document.AddReply("Yes.");
+            var yesLink = document.AddLink(document.Openings[0].Target, yes);
+            yesLink.AddCondition("condition-has-completed-tutorial");
+
+            Analyzer.Analyze(document).Should().Contain(problem =>
+                problem.RuleId == "conditional-choice-no-fallback"
+                && problem.Severity == ProblemSeverity.Broken);
+
+            var goodbye = document.AddReply("Goodbye.");
+            document.AddLink(document.Openings[0].Target, goodbye);
+            Analyzer.Analyze(document).Should().NotContain(problem =>
+                problem.RuleId == "conditional-choice-no-fallback");
+        }
+
+        [Test]
+        public void AnAutomaticContinuationOnlyLoopIsBroken()
+        {
+            var document = NewConversation();
+            var first = document.Openings[0].Target;
+            first.Text = "First.";
+            var automaticOne = document.AddReply(string.Empty);
+            var second = document.AddEntry("Second.");
+            document.AddLink(first, automaticOne);
+            document.AddLink(automaticOne, second);
+            var automaticTwo = document.AddReply(string.Empty);
+            document.AddLink(second, automaticTwo);
+            document.AddLink(automaticTwo, first, isChild: true);
+
+            Analyzer.Analyze(document).Should().Contain(problem =>
+                problem.RuleId == "automatic-continuation-loop"
+                && problem.Severity == ProblemSeverity.Broken);
+        }
+
+        [Test]
+        public void RepeatingASnippetKeyIsBrokenBecauseNwnReadsOneValuePerKey()
+        {
+            var document = NewConversation();
+            document.Openings[0].Target.Text = "Hello.";
+            document.Openings[0].AddCondition("condition-has-quest", "field_tinctures");
+            document.Openings[0].AddCondition("condition-has-quest", "harvest_herbs");
+
+            Analyzer.Analyze(document).Should().Contain(problem =>
+                problem.RuleId == "duplicate-condition"
+                && problem.Severity == ProblemSeverity.Broken);
+        }
+
+        [Test]
+        public void OncePerPlayerMetadataIsValidatedButNotTreatedAsAnUnknownSnippet()
+        {
+            var document = NewConversation();
+            var line = document.Openings[0].Target;
+            line.Text = "Hello.";
+            var action = line.AddAction("action-give-key-items", "79");
+            line.SetActionOncePerPlayer(action, oncePerPlayer: true, "test_convo:stable-marker");
+
+            var problems = Analyzer.Analyze(document);
+
+            problems.Should().NotContain(problem =>
+                problem.RuleId == "unknown-rule" || problem.RuleId == "invalid-once-marker");
+
+            line.RemoveAction(action);
+            line.Actions.Should().NotContain(candidate => candidate.IsOncePerPlayerMarker,
+                "removing the outcome also removes its execution-frequency metadata");
+        }
+
+        [Test]
+        public void PreviewDoesNotApplyAOncePerPlayerRewardTwice()
+        {
+            var document = NewConversation();
+            var line = document.Openings[0].Target;
+            line.Text = "Hello.";
+            var action = line.AddAction("action-give-faction-points", "7 5");
+            line.SetActionOncePerPlayer(action, oncePerPlayer: true, "test_convo:faction-reward");
+
+            var firstVisit = Evaluator.ApplyActions(line, new PretendPlayer());
+            var secondVisit = Evaluator.ApplyActions(line, firstVisit);
+
+            firstVisit.GetFactionPoints(7).Should().Be(5);
+            secondVisit.GetFactionPoints(7).Should().Be(5,
+                "the separate Preview tab mirrors the runtime's once-per-player guard");
         }
 
         // ---------- the scaffold ----------
@@ -503,6 +601,33 @@ namespace SWLOR.Toolset.Tests
             unwritten.Should().BeGreaterThan(8);
             document.Entries.Concat(document.Replies).Should()
                 .OnlyContain(node => !string.IsNullOrWhiteSpace(node.Text));
+        }
+
+        [Test]
+        public void OrdinaryQuestProgressStepsShareOneReminderLine()
+        {
+            var quest = GameCode.Quests.Values.First(candidate =>
+                Enumerable.Range(1, Math.Max(0, candidate.StateCount - 1))
+                    .Count(state => !candidate.CollectItemObjectiveStates.Contains(state)) >= 2);
+            var document = NewConversation();
+
+            new QuestConversationScaffold(GameCode).Apply(document, quest.Id);
+
+            var progressTargets = document.Openings
+                .Where(opening => opening.Conditions.Any(condition =>
+                    condition.SnippetKey == "condition-on-quest-state"
+                    && condition.Value.StartsWith(quest.Id + " ", StringComparison.Ordinal)))
+                .Where(opening =>
+                {
+                    var state = int.Parse(opening.Conditions[0].Arguments[1]);
+                    return state < quest.StateCount && !quest.CollectItemObjectiveStates.Contains(state);
+                })
+                .Select(opening => opening.Target.Struct)
+                .Distinct()
+                .ToList();
+
+            progressTargets.Should().ContainSingle(
+                "the writer starts with one shared progress line and can split a route only when needed");
         }
 
         [Test]

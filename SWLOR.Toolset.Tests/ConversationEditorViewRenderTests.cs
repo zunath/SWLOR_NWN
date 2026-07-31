@@ -93,9 +93,12 @@ namespace SWLOR.Toolset.Tests
                 .Select(block => block.Text ?? string.Empty)
                 .ToList();
 
-            // The rail's furniture, and the caption carrying the one rule a writer has to know.
-            texts.Should().Contain("SITUATIONS");
-            texts.Should().Contain(text => text.Contains("first that fits"));
+            // The behavior-tailored outline, and the one NWN ordering rule a writer has to know.
+            texts.Should().Contain("Quest moments");
+            texts.Should().Contain(text => text.Contains("first match wins"));
+
+            texts.Should().Contain("Write");
+            texts.Should().Contain("Preview", "preview is a separate tab rather than a side panel");
 
             // A real situation, titled from what the player is doing rather than from a condition key.
             texts.Should().Contain(text => text.Contains("Field Tinctures"));

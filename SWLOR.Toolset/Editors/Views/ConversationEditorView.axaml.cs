@@ -24,5 +24,26 @@ namespace SWLOR.Toolset.Editors
             if (DataContext is ConversationEditorViewModel viewModel)
                 viewModel.CommitLineCommand.Execute(null);
         }
+
+        private void OnChoiceLostFocus(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is ConversationEditorViewModel viewModel
+                && sender is TextBox { Tag: ChoiceRowViewModel choice } textBox)
+            {
+                viewModel.CommitChoiceText(choice, textBox.Text);
+            }
+        }
+
+        private void OnMerchantLostFocus(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is ConversationEditorViewModel viewModel)
+                viewModel.CommitMerchantCommand.Execute(null);
+        }
+
+        private void OnAdvancedLostFocus(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is ConversationEditorViewModel viewModel)
+                viewModel.CommitAdvancedCommand.Execute(null);
+        }
     }
 }

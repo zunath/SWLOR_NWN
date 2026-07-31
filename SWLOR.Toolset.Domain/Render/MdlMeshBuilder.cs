@@ -380,6 +380,14 @@ namespace SWLOR.Toolset.Domain.Render
                 ? Flatten(mesh.TextureCoordinates.Select(FiniteOrZero))
                 : Array.Empty<float>();
 
+            // ASCII skinmeshes that omit normals can also mix triangle winding. The generated
+            // normals below are oriented outward for lighting and shell clearance; give the GPU
+            // the matching winding as well, otherwise back-face culling removes those same robe
+            // panels and exposes the body underneath.
+            var orientGeneratedSkinFaces = skinned && mesh.Normals.Length != vertexCount;
+            var horizontalCenter = orientGeneratedSkinFaces
+                ? HorizontalBoundsCenter(skinnedPositions)
+                : Vector2.Zero;
             var indices = new List<int>(checked(mesh.Faces.Length * 3));
             foreach (var face in mesh.Faces)
             {
@@ -391,8 +399,17 @@ namespace SWLOR.Toolset.Domain.Render
                 }
 
                 indices.Add(face.VertexIndex0);
-                indices.Add(face.VertexIndex1);
-                indices.Add(face.VertexIndex2);
+                if (orientGeneratedSkinFaces &&
+                    HasInwardHorizontalWinding(face, skinnedPositions, horizontalCenter))
+                {
+                    indices.Add(face.VertexIndex2);
+                    indices.Add(face.VertexIndex1);
+                }
+                else
+                {
+                    indices.Add(face.VertexIndex1);
+                    indices.Add(face.VertexIndex2);
+                }
             }
 
             if (indices.Count == 0)
@@ -615,21 +632,7 @@ namespace SWLOR.Toolset.Domain.Render
             if (positions.Count == 0)
                 return normals;
 
-            var minimumX = positions[0].X;
-            var maximumX = positions[0].X;
-            var minimumY = positions[0].Y;
-            var maximumY = positions[0].Y;
-            for (var index = 1; index < positions.Count; index++)
-            {
-                minimumX = MathF.Min(minimumX, positions[index].X);
-                maximumX = MathF.Max(maximumX, positions[index].X);
-                minimumY = MathF.Min(minimumY, positions[index].Y);
-                maximumY = MathF.Max(maximumY, positions[index].Y);
-            }
-
-            var horizontalCenter = new Vector2(
-                (minimumX + maximumX) * 0.5f,
-                (minimumY + maximumY) * 0.5f);
+            var horizontalCenter = HorizontalBoundsCenter(positions);
             foreach (var face in mesh.Faces)
             {
                 if (face.VertexIndex0 >= positions.Count ||
@@ -646,16 +649,8 @@ namespace SWLOR.Toolset.Domain.Render
                 if (!IsFinite(faceNormal) || faceNormal.LengthSquared() <= 0f)
                     continue;
 
-                var faceCenter = (a + b + c) / 3f;
-                var radialDirection = new Vector3(
-                    faceCenter.X - horizontalCenter.X,
-                    faceCenter.Y - horizontalCenter.Y,
-                    0f);
-                if (radialDirection.LengthSquared() > 0f &&
-                    Vector3.Dot(faceNormal, radialDirection) < 0f)
-                {
+                if (HasInwardHorizontalWinding(face, positions, horizontalCenter))
                     faceNormal = -faceNormal;
-                }
 
                 normals[face.VertexIndex0] += faceNormal;
                 normals[face.VertexIndex1] += faceNormal;
@@ -665,6 +660,49 @@ namespace SWLOR.Toolset.Domain.Render
             for (var index = 0; index < normals.Length; index++)
                 normals[index] = NormalizeOrZero(normals[index]);
             return normals;
+        }
+
+        private static Vector2 HorizontalBoundsCenter(IReadOnlyList<Vector3> positions)
+        {
+            if (positions.Count == 0)
+                return Vector2.Zero;
+
+            var minimumX = positions[0].X;
+            var maximumX = positions[0].X;
+            var minimumY = positions[0].Y;
+            var maximumY = positions[0].Y;
+            for (var index = 1; index < positions.Count; index++)
+            {
+                minimumX = MathF.Min(minimumX, positions[index].X);
+                maximumX = MathF.Max(maximumX, positions[index].X);
+                minimumY = MathF.Min(minimumY, positions[index].Y);
+                maximumY = MathF.Max(maximumY, positions[index].Y);
+            }
+
+            return new Vector2(
+                (minimumX + maximumX) * 0.5f,
+                (minimumY + maximumY) * 0.5f);
+        }
+
+        private static bool HasInwardHorizontalWinding(
+            MdlFace face,
+            IReadOnlyList<Vector3> positions,
+            Vector2 horizontalCenter)
+        {
+            var a = positions[face.VertexIndex0];
+            var b = positions[face.VertexIndex1];
+            var c = positions[face.VertexIndex2];
+            var faceNormal = Vector3.Cross(b - a, c - a);
+            if (!IsFinite(faceNormal) || faceNormal.LengthSquared() <= 0f)
+                return false;
+
+            var faceCenter = (a + b + c) / 3f;
+            var radialDirection = new Vector3(
+                faceCenter.X - horizontalCenter.X,
+                faceCenter.Y - horizontalCenter.Y,
+                0f);
+            return radialDirection.LengthSquared() > 0f &&
+                   Vector3.Dot(faceNormal, radialDirection) < 0f;
         }
 
         /// <summary>

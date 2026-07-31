@@ -232,6 +232,39 @@ namespace SWLOR.Toolset.Tests.Items
             radialDots.Should().OnlyContain(dot => dot >= -0.0001f,
                 "generated normals must move the robe away from the wearer even when its source " +
                 "triangles use mixed winding");
+            var windingPositions = renderedRobe.Positions;
+            var windingX = windingPositions.Where((_, coordinate) => coordinate % 3 == 0);
+            var windingY = windingPositions.Where((_, coordinate) => coordinate % 3 == 1);
+            var windingCenterX = (windingX.Min() + windingX.Max()) * 0.5f;
+            var windingCenterY = (windingY.Min() + windingY.Max()) * 0.5f;
+            for (var triangleOffset = 0;
+                 triangleOffset < renderedRobe.Indices.Length;
+                 triangleOffset += 3)
+            {
+                var vertex0 = renderedRobe.Indices[triangleOffset];
+                var vertex1 = renderedRobe.Indices[triangleOffset + 1];
+                var vertex2 = renderedRobe.Indices[triangleOffset + 2];
+                var a = new Vector3(
+                    windingPositions[vertex0 * 3],
+                    windingPositions[vertex0 * 3 + 1],
+                    windingPositions[vertex0 * 3 + 2]);
+                var b = new Vector3(
+                    windingPositions[vertex1 * 3],
+                    windingPositions[vertex1 * 3 + 1],
+                    windingPositions[vertex1 * 3 + 2]);
+                var c = new Vector3(
+                    windingPositions[vertex2 * 3],
+                    windingPositions[vertex2 * 3 + 1],
+                    windingPositions[vertex2 * 3 + 2]);
+                var faceNormal = Vector3.Cross(b - a, c - a);
+                var faceCenter = (a + b + c) / 3f;
+                var radialDirection = new Vector3(
+                    faceCenter.X - windingCenterX,
+                    faceCenter.Y - windingCenterY,
+                    0f);
+                Vector3.Dot(faceNormal, radialDirection).Should().BeGreaterThanOrEqualTo(-0.0001f,
+                    "mixed source winding must not let back-face culling punch holes in the robe");
+            }
             renderedRobe.PosePositions[0].Should().NotEqual(
                 layeredWithoutClearance.PosePositions[0],
                 "the generated normals must actually move the equipped shell away from the retained chest");

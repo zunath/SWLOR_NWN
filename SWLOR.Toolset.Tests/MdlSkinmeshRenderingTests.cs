@@ -220,6 +220,10 @@ namespace SWLOR.Toolset.Tests
                 -2.1f, -1f, 0f,
                 -2.1f, -1f, 1f,
                 -2.1f, 1f, 0f);
+            // The GPU must cull the inward side rather than removing outward robe panels.
+            mesh.Indices.Should().Equal(
+                0, 2, 1,
+                3, 4, 5);
         }
 
         private static MdlSkinmeshNode TriangleSkin(MdlNode parent, bool withNormals = true) =>

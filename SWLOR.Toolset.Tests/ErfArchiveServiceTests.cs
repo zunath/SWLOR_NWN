@@ -22,11 +22,13 @@ namespace SWLOR.Toolset.Tests
         private string _secondModule = string.Empty;
         private WorkspaceContext _workspace = null!;
         private ErfArchiveService _service = null!;
+        private int _workspaceDispatches;
 
         [SetUp]
         public void SetUp()
         {
             ModuleMutationLock.ModuleWrites = null;
+            _workspaceDispatches = 0;
             _root = Path.Combine(Path.GetTempPath(), $"swlor-erf-{Guid.NewGuid():N}");
             _firstModule = Path.Combine(_root, "first", "Module");
             _secondModule = Path.Combine(_root, "second", "Module");
@@ -42,7 +44,13 @@ namespace SWLOR.Toolset.Tests
                 _workspace,
                 log,
                 Path.Combine(tools, "nwn_erf.exe"),
-                Path.Combine(tools, "nwn_gff.exe"));
+                Path.Combine(tools, "nwn_gff.exe"),
+                dispatchToUiThread: action =>
+                {
+                    _workspaceDispatches++;
+                    action();
+                    return Task.CompletedTask;
+                });
         }
 
         [TearDown]
@@ -598,6 +606,8 @@ namespace SWLOR.Toolset.Tests
             new VarTable(imported.Root)
                 .GetInt(BlueprintTemplateFactory.NoEconomyVariable)
                 .Should().Be(1, "a newly imported item with no player source must stay out of economy searches");
+            _workspaceDispatches.Should().Be(1,
+                "post-import catalog notifications must pass through the UI dispatcher as one batch");
         }
 
         [Test]

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -414,6 +415,70 @@ namespace SWLOR.Toolset.Tests
             diagnostics[0].Message.Should().Contain("UNDEFINED IDENTIFIER");
             diagnostics[1].IsError.Should().BeFalse();
             diagnostics[1].Line.Should().Be(41);
+        }
+
+        [Test]
+        public void ParsesDiagnosticPathsContainingSpaces()
+        {
+            const string output =
+                @"C:\Users\First Last\SWLOR Workspace\Module\nss\bad.nss(23): ERROR: UNDEFINED IDENTIFIER";
+
+            var diagnostic = ScriptCompiler.ParseDiagnostics(output).Should().ContainSingle().Subject;
+
+            diagnostic.File.Should().Be(
+                @"C:\Users\First Last\SWLOR Workspace\Module\nss\bad.nss");
+            diagnostic.Line.Should().Be(23);
+            diagnostic.IsError.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task CancellingACompilerWaitTerminatesTheChildProcess()
+        {
+            if (!OperatingSystem.IsWindows())
+                Assert.Ignore("the Toolset compiler process is Windows-only");
+
+            var powershell = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.System),
+                "WindowsPowerShell",
+                "v1.0",
+                "powershell.exe");
+            using var process = new Process
+            {
+                StartInfo = new ProcessStartInfo(powershell)
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            process.StartInfo.ArgumentList.Add("-NoProfile");
+            process.StartInfo.ArgumentList.Add("-Command");
+            process.StartInfo.ArgumentList.Add("Start-Sleep -Seconds 30");
+            process.Start().Should().BeTrue();
+
+            try
+            {
+                var waitMethod = typeof(ScriptCompiler).GetMethod(
+                    "WaitForExitOrKillAsync",
+                    BindingFlags.Static | BindingFlags.NonPublic)!;
+                using var cancellation = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
+                var wait = (Task)waitMethod.Invoke(
+                    null,
+                    new object[] { process, cancellation.Token })!;
+
+                Func<Task> act = () => wait;
+                await act.Should().ThrowAsync<OperationCanceledException>();
+
+                process.HasExited.Should().BeTrue(
+                    "cancellation must not release the compiler gate while its child is still running");
+            }
+            finally
+            {
+                if (!process.HasExited)
+                {
+                    process.Kill(entireProcessTree: true);
+                    await process.WaitForExitAsync();
+                }
+            }
         }
 
         [Test]

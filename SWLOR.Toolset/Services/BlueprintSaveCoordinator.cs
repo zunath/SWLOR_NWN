@@ -369,7 +369,8 @@ namespace SWLOR.Toolset.Services
 
                     try
                     {
-                        if (File.ReadAllText(file).Contains(quoted, StringComparison.OrdinalIgnoreCase))
+                        var text = File.ReadAllText(file);
+                        if (ContainsBlockingReference(file, text, quoted, type, resRef))
                         {
                             hits.Add(
                                 "Module/" +
@@ -399,6 +400,47 @@ namespace SWLOR.Toolset.Services
             }
 
             return hits;
+        }
+
+        private static bool ContainsBlockingReference(
+            string file,
+            string text,
+            string quotedResRef,
+            ResourceType targetType,
+            string resRef)
+        {
+            var firstOccurrence = text.IndexOf(
+                quotedResRef,
+                StringComparison.OrdinalIgnoreCase);
+            if (firstOccurrence < 0)
+                return false;
+
+            var resourceFileName = Path.GetFileNameWithoutExtension(file);
+            var resourceExtension = Path.GetExtension(resourceFileName).TrimStart('.');
+            if (!ResourceTypeExtensions.TryFromExtension(resourceExtension, out var fileType) ||
+                !ModuleWorkspace.BlueprintTypes.Contains(fileType) ||
+                fileType == targetType)
+            {
+                return true;
+            }
+
+            var document = JsonGffDocument.Load(file);
+            var identityField = InstanceFieldMap.GetInstanceTemplateField(fileType);
+            if (!string.Equals(
+                    document.Root.GetStringOrNull(identityField),
+                    resRef,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            // Another blueprint type may legitimately own the same ResRef. Ignore that one root
+            // identity occurrence, but remain conservative if the value appears anywhere else in
+            // the document because that second occurrence can still be a real reference.
+            return text.IndexOf(
+                quotedResRef,
+                firstOccurrence + quotedResRef.Length,
+                StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         private static void ScanTokenTree(

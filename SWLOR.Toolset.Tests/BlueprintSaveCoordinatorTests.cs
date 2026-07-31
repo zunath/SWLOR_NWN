@@ -166,6 +166,52 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void RenameIgnoresAnotherBlueprintTypesMatchingIdentity()
+        {
+            const ResourceType type = ResourceType.Utc;
+            const string oldResRef = "shared_identity";
+            const string newResRef = "renamed_creature";
+            var creatureFolder = Path.Combine(_moduleRoot, type.Extension());
+            var itemFolder = Path.Combine(_moduleRoot, ResourceType.Uti.Extension());
+            Directory.CreateDirectory(itemFolder);
+            var oldPath = Path.Combine(creatureFolder, $"{oldResRef}.utc.json");
+            var newPath = Path.Combine(creatureFolder, $"{newResRef}.utc.json");
+            File.WriteAllBytes(
+                oldPath,
+                BlueprintTemplateFactory.CreateFileContent(type, oldResRef, "Shared Creature"));
+            var sameNamedItem = JsonGffDocument.Parse(
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Uti,
+                    oldResRef,
+                    "Same-Named Item"));
+            using (EditScope.EnterConstruction())
+            {
+                sameNamedItem.Root.SetString(
+                    "Tag", GffFieldType.CExoString, "same_named_item");
+            }
+            File.WriteAllBytes(
+                Path.Combine(itemFolder, $"{oldResRef}.uti.json"),
+                sameNamedItem.ToBytes());
+
+            using var session = DocumentSession.Open(oldPath);
+            session.Execute(
+                "Rename creature",
+                () => session.Document.Root.SetString(
+                    "TemplateResRef", GffFieldType.ResRef, newResRef));
+
+            var outcome = new BlueprintSaveCoordinator(new OutputLogService())
+                .Save(session, type, oldResRef, newResRef);
+
+            outcome.Saved.Should().BeTrue();
+            outcome.Renamed.Should().BeTrue();
+            File.Exists(newPath).Should().BeTrue();
+            JsonGffDocument.Load(
+                    Path.Combine(itemFolder, $"{oldResRef}.uti.json"))
+                .Root.GetStringOrNull("TemplateResRef")
+                .Should().Be(oldResRef, "the unrelated item keeps its own typed identity");
+        }
+
+        [Test]
         public void RenameRefusesToOverwriteUnsavedOpenAreaInstances()
         {
             const ResourceType type = ResourceType.Utp;

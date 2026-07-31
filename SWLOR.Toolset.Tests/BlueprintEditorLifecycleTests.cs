@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors;
+using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Editors.Appearance;
@@ -33,6 +34,51 @@ namespace SWLOR.Toolset.Tests
         {
             if (Directory.Exists(_directory))
                 Directory.Delete(_directory, recursive: true);
+        }
+
+        [Test]
+        public async Task GenericCreatureEditorPersistsBuilderEnteredValues()
+        {
+            var log = new OutputLogService();
+            var context = new WorkspaceContext(_ => throw new NotSupportedException(), log);
+            var schema = new EditorSchema
+            {
+                ResourceType = ResourceType.Utc,
+                Groups = new[]
+                {
+                    new FieldGroup
+                    {
+                        Title = "Identity",
+                        Fields = new[]
+                        {
+                            new FieldDescriptor
+                            {
+                                Label = "Tag",
+                                FieldName = "Tag",
+                                Kind = EditorKind.Text,
+                                FieldType = GffFieldType.CExoString
+                            }
+                        }
+                    }
+                }
+            };
+            var editor = new BlueprintEditorViewModel(
+                _path,
+                "reload_var",
+                ResourceType.Utc,
+                schema,
+                new LookupOptionProvider(context),
+                gameCodeIndex: null,
+                log,
+                new ReloadPrompts());
+
+            ((TextFieldViewModel)editor.Groups.Single().Fields.Single()).Text =
+                "builder_entered_creature";
+
+            (await editor.TrySaveAsync()).Should().BeTrue();
+            JsonGffDocument.Load(_path).Root.GetStringOrNull("Tag")
+                .Should().Be("builder_entered_creature");
+            editor.OnClose().Should().BeTrue();
         }
 
         [Test]

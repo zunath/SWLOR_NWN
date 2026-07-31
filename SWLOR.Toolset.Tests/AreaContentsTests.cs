@@ -347,6 +347,10 @@ namespace SWLOR.Toolset.Tests
             (await editor.TrySaveAsync()).Should().BeTrue();
             notifications.Should().Be(1,
                 "placed-instance tags and script slots are indexed from GIT, not ARE");
+            new GitDocument(JsonGffDocument.Load(
+                    Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json")))
+                .Placeables[0].GetStringOrNull("Tag")
+                .Should().Be("git_only_catalog_refresh");
         }
 
         [Test]

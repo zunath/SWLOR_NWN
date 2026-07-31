@@ -315,6 +315,9 @@ namespace SWLOR.Toolset.Tests
             editor.Value.LineText = "A deliberately different line.";
             editor.Value.CommitLineCommand.Execute(null);
             await editor.Value.TrySaveAsync();
+            DlgDocument.Load(_workingCopy).Openings
+                .Select(link => link.Target.Text)
+                .Should().Contain("A deliberately different line.");
             editor.Value.UndoCommand.Execute(null);
 
             editor.Value.LineText.Should().Be(original);

@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
+using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Editors.Doors;
@@ -34,6 +35,44 @@ namespace SWLOR.Toolset.Tests
         {
             if (Directory.Exists(Directory.GetParent(_moduleRoot)!.FullName))
                 Directory.Delete(Directory.GetParent(_moduleRoot)!.FullName, recursive: true);
+        }
+
+        [TestCase(ResourceType.Utw)]
+        [TestCase(ResourceType.Utd)]
+        [TestCase(ResourceType.Uts)]
+        [TestCase(ResourceType.Utt)]
+        public async Task SavePersistsBuilderEnteredValues(ResourceType resourceType)
+        {
+            const string resRef = "save_contract";
+            var extension = resourceType.Extension();
+            var directory = Path.Combine(_moduleRoot, extension);
+            Directory.CreateDirectory(directory);
+            var path = Path.Combine(directory, $"{resRef}.{extension}.json");
+            File.WriteAllBytes(
+                path,
+                BlueprintTemplateFactory.CreateFileContent(
+                    resourceType,
+                    resRef,
+                    "Save Contract"));
+            var opened = OpenDocument(
+                resourceType,
+                path,
+                resRef,
+                new QuietPrompts());
+
+            try
+            {
+                opened.EditTag("builder_entered_tag");
+
+                (await opened.Document.TrySaveAsync()).Should().BeTrue();
+
+                JsonGffDocument.Load(path).Root.GetStringOrNull("Tag")
+                    .Should().Be("builder_entered_tag");
+            }
+            finally
+            {
+                opened.Cleanup();
+            }
         }
 
         [TestCase(ResourceType.Utw)]
@@ -175,6 +214,28 @@ namespace SWLOR.Toolset.Tests
             IEditorDocument Document,
             Action<string> EditTag,
             Action Cleanup);
+
+        private sealed class QuietPrompts : IEditorPromptService
+        {
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) =>
+                Task.FromResult(ExternalChangeChoice.Cancel);
+
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) =>
+                Task.FromResult(UnsavedChangesChoice.Cancel);
+
+            public Task<bool> ConfirmDestructiveAsync(
+                string headline,
+                string message,
+                string confirmLabel) =>
+                Task.FromResult(false);
+
+            public Task<string?> PromptForTextAsync(
+                string headline,
+                string message,
+                string initialValue,
+                string confirmLabel) =>
+                Task.FromResult<string?>(null);
+        }
 
         private sealed class RacingOverwritePrompts(
             string moduleRoot,

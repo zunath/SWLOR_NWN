@@ -153,6 +153,14 @@ namespace SWLOR.Toolset.Editors.Items
 
         public string TemplateResRef => _store.GetString(BehaviorFieldStorage.Field, "TemplateResRef");
 
+        /// <summary>
+        /// SWLOR exposes one item description. Aurora stores two, so a save must copy the visible
+        /// identified description into its engine companion even when an older blueprint has
+        /// divergent text and the builder made no other edit.
+        /// </summary>
+        public bool NeedsSaveNormalization =>
+            !_store.LocalizedValuesMatch("Description", "DescIdentified");
+
         /// <summary>What the preview caption calls the item: its family, in words.</summary>
         public string FamilyDisplay => Family switch
         {
@@ -302,6 +310,14 @@ namespace SWLOR.Toolset.Editors.Items
         /// </summary>
         public string? EnforceSaveInvariants()
         {
+            if (NeedsSaveNormalization &&
+                !RunEdit(
+                    "Synchronize item descriptions",
+                    () => _store.CopyLocalizedValue("DescIdentified", "Description")))
+            {
+                return "Could not synchronize the item's required engine description fields.";
+            }
+
             if (!Source.IsLoaded)
                 return null;
             if (!Source.IsReady)
@@ -384,7 +400,6 @@ namespace SWLOR.Toolset.Editors.Items
         private bool RunEdit(string description, Action mutation)
         {
             var identifiedBefore = _store.GetLocalizedText("DescIdentified");
-            var descriptionBefore = _store.GetLocalizedText("Description");
             var noEconomyBefore = _store.GetInteger(
                 BehaviorFieldStorage.Local,
                 ItemEditorLayout.NoEconomyLocal);
@@ -393,15 +408,12 @@ namespace SWLOR.Toolset.Editors.Items
             {
                 mutation();
 
-                // SWLOR does not use item identification, but template/corpus validation still
-                // expects both engine description slots to agree. Preserve deliberately divergent
-                // legacy text; mirror only an empty or previously synchronized companion.
+                // SWLOR exposes one description even though Aurora stores identified and
+                // unidentified slots. The visible DescIdentified field is authoritative.
                 var identifiedAfter = _store.GetLocalizedText("DescIdentified");
-                if (!string.Equals(identifiedAfter, identifiedBefore, StringComparison.Ordinal) &&
-                    (string.IsNullOrWhiteSpace(descriptionBefore) ||
-                     string.Equals(descriptionBefore, identifiedBefore, StringComparison.Ordinal)))
+                if (!string.Equals(identifiedAfter, identifiedBefore, StringComparison.Ordinal))
                 {
-                    _store.SetLocalizedText("Description", identifiedAfter);
+                    _store.CopyLocalizedValue("DescIdentified", "Description");
                 }
 
                 // A source-less item must remain excluded from player-facing economy searches.

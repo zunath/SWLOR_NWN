@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Domain.Editors.Behaviors
@@ -40,11 +41,69 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         public void SetLocalizedText(string name, string value) =>
             _valueStruct.GetOrAddLocString(name).Text = value;
 
+        /// <summary>Whether two complete localized-string fields carry the same TLK reference
+        /// and the same ordered language/gender entries, not merely the same English text.</summary>
+        public bool LocalizedValuesMatch(string leftName, string rightName)
+        {
+            var left = _valueStruct.GetOrNull(leftName);
+            var right = _valueStruct.GetOrNull(rightName);
+            if (left == null || right == null)
+                return left == right;
+            if (left.Type != GffFieldType.CExoLocString || right.Type != GffFieldType.CExoLocString)
+                return false;
+            if (!BytesEqual(left.RawLocStringId, right.RawLocStringId))
+                return false;
+
+            var leftEntries = left.LocStringEntries ?? new List<LocStringEntry>();
+            var rightEntries = right.LocStringEntries ?? new List<LocStringEntry>();
+            if (leftEntries.Count != rightEntries.Count)
+                return false;
+
+            for (var index = 0; index < leftEntries.Count; index++)
+            {
+                if (!string.Equals(
+                        leftEntries[index].LanguageKey,
+                        rightEntries[index].LanguageKey,
+                        StringComparison.Ordinal) ||
+                    !BytesEqual(leftEntries[index].RawText, rightEntries[index].RawText))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>Replaces one localized-string field with an independent complete copy of
+        /// another, preserving its TLK reference and every language/gender entry.</summary>
+        public void CopyLocalizedValue(string sourceName, string targetName)
+        {
+            if (_valueStruct.GetOrNull(sourceName) is not { } source)
+                throw new KeyNotFoundException($"Localized-string field '{sourceName}' was not found.");
+            if (source.Type != GffFieldType.CExoLocString)
+                throw new InvalidOperationException($"Field '{sourceName}' is not a localized string.");
+
+            JsonGffField clone;
+            using (EditScope.EnterConstruction())
+                clone = InstanceFieldMap.CloneField(source);
+
+            _valueStruct.Remove(targetName);
+            _valueStruct.Add(targetName, clone);
+        }
+
         public string GetString(BehaviorFieldStorage storage, string name)
         {
             return storage == BehaviorFieldStorage.Local
                 ? _locals.GetString(name) ?? string.Empty
                 : _valueStruct.GetStringOrNull(name) ?? string.Empty;
+        }
+
+        private static bool BytesEqual(byte[]? left, byte[]? right)
+        {
+            if (left == null || right == null)
+                return left == right;
+
+            return left.AsSpan().SequenceEqual(right);
         }
 
         public void SetString(BehaviorFieldStorage storage, string name, GffFieldType type, string value)

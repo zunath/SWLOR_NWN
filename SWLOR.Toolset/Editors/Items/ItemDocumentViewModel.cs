@@ -160,7 +160,7 @@ namespace SWLOR.Toolset.Editors.Items
 
         public async Task<bool> TrySaveAsync()
         {
-            if (!IsDirty)
+            if (!IsDirty && !Editor.NeedsSaveNormalization)
                 return true;
 
             try

@@ -139,7 +139,7 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void EditingDescriptionPreservesDivergentHistoricalCompanionText()
+        public void EditingDescriptionReplacesDivergentHistoricalCompanionText()
         {
             var path = Path.Combine(
                 CorpusLocator.ModuleDirectory,
@@ -158,7 +158,7 @@ namespace SWLOR.Toolset.Tests.Items
                 "New player-facing text";
 
             store.GetLocalizedText("DescIdentified").Should().Be("New player-facing text");
-            store.GetLocalizedText("Description").Should().Be("Historical unidentified text");
+            store.GetLocalizedText("Description").Should().Be("New player-facing text");
         }
 
         [Test]
@@ -271,6 +271,43 @@ namespace SWLOR.Toolset.Tests.Items
             var row = document.Editor.BasicRows.Single(candidate =>
                 candidate.Definition.Name == "TemplateResRef");
             row.Text = value;
+        }
+
+        [Test]
+        public async Task SaveSynchronizesBothEngineDescriptionsWithoutAnotherUserEdit()
+        {
+            var source = UtiDocument.Load(Scratch("adren_harness"));
+            var store = new ItemValueStore(source.Fields);
+            store.SetLocalizedText("Description", "Stale unidentified text");
+            store.SetLocalizedText("DescIdentified", "The builder-facing description");
+            source.Fields.GetLocStringOrNull("DescIdentified")!
+                .SetText("2", "The localized builder-facing description");
+            File.WriteAllBytes(Scratch("adren_harness"), source.ToBytes());
+
+            var document = OpenScratch("adren_harness");
+            try
+            {
+                document.IsDirty.Should().BeFalse();
+                document.Editor.NeedsSaveNormalization.Should().BeTrue();
+
+                Assert.That(await document.TrySaveAsync(), Is.True);
+
+                var savedDocument = UtiDocument.Load(Scratch("adren_harness"));
+                var saved = new ItemValueStore(savedDocument.Fields);
+                saved.GetLocalizedText("Description")
+                    .Should().Be("The builder-facing description");
+                saved.GetLocalizedText("DescIdentified")
+                    .Should().Be("The builder-facing description");
+                savedDocument.Fields.GetLocStringOrNull("Description")!
+                    .GetText("2").Should().Be("The localized builder-facing description");
+                saved.LocalizedValuesMatch("Description", "DescIdentified").Should().BeTrue();
+                document.Editor.NeedsSaveNormalization.Should().BeFalse();
+                document.IsDirty.Should().BeFalse();
+            }
+            finally
+            {
+                document.OnClose();
+            }
         }
 
         [Test]

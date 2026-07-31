@@ -130,6 +130,21 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void CreateFileContent_Item_StartsWithSynchronizedEngineDescriptions()
+        {
+            var root = Parse(
+                ResourceType.Uti,
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Uti,
+                    "probe_item",
+                    "Probe Item")).Fields;
+
+            root.GetIntOrNull("Identified").Should().Be(1);
+            root.Get("Description").LocStringEntries.Should().BeEmpty();
+            root.Get("DescIdentified").LocStringEntries.Should().BeEmpty();
+        }
+
+        [Test]
         public void CreateFileContent_Merchant_UsesSwlorDefaultsAndFiveInventoryPanes()
         {
             var root = Parse(

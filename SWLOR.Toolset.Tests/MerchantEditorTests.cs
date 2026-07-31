@@ -6,6 +6,8 @@ using SWLOR.Toolset.Domain.Editors.Merchants;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Merchants;
+using SWLOR.Toolset.Services;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -78,6 +80,66 @@ namespace SWLOR.Toolset.Tests
             root.GetStringOrNull("OnOpenStore").Should().Be(MerchantEditorViewModel.OnOpenStoreScript);
             root.GetStringOrNull("OnStoreClosed").Should().Be(MerchantEditorViewModel.OnStoreClosedScript);
             editor.NeedsSaveNormalization.Should().BeFalse();
+        }
+
+        [Test]
+        public async Task DocumentSavePersistsBuilderValuesAndHiddenSwlorDefaultsTogether()
+        {
+            var moduleRoot = Path.Combine(
+                Path.GetTempPath(),
+                "swlor-merchant-save-contract-" + Guid.NewGuid().ToString("N"),
+                "Module");
+            var directory = Path.Combine(moduleRoot, "utm");
+            Directory.CreateDirectory(directory);
+            var path = Path.Combine(directory, "probe_store.utm.json");
+            var source = JsonGffDocument.Parse(
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utm, "probe_store", "Probe Store"));
+            source.Root.SetString("Comment", GffFieldType.CExoString, "legacy note");
+            source.Root.SetInt("IdentifyPrice", GffFieldType.Int, 25);
+            source.Root.SetInt("BlackMarket", GffFieldType.Byte, 0);
+            source.Root.SetInt("MaxBuyPrice", GffFieldType.Int, 500);
+            source.Root.SetInt("StoreGold", GffFieldType.Int, 1000);
+            source.Root.SetString("OnOpenStore", GffFieldType.ResRef, "legacy_open");
+            source.Root.SetString("OnStoreClosed", GffFieldType.ResRef, "legacy_close");
+            File.WriteAllBytes(path, source.ToBytes());
+
+            var document = new MerchantDocumentViewModel(
+                path,
+                "probe_store",
+                new OutputLogService(),
+                new MerchantSavePrompts());
+            try
+            {
+                document.Editor.DetailRows.Single(row => row.Definition.Name == "LocName").Text =
+                    "Builder Merchant";
+                document.Editor.DetailRows.Single(row => row.Definition.Name == "Tag").Text =
+                    "BUILDER_MERCHANT";
+                document.Editor.PricingRows.Single(row => row.Definition.Name == "MarkUp").Number =
+                    135;
+
+                (await document.TrySaveAsync()).Should().BeTrue();
+
+                var saved = JsonGffDocument.Load(path).Root;
+                new MerchantValueStore(saved).GetLocalizedText("LocName")
+                    .Should().Be("Builder Merchant");
+                saved.GetStringOrNull("Tag").Should().Be("BUILDER_MERCHANT");
+                saved.GetIntOrNull("MarkUp").Should().Be(135);
+                saved.GetStringOrNull("Comment").Should().BeEmpty();
+                saved.GetIntOrNull("IdentifyPrice").Should().Be(0);
+                saved.GetIntOrNull("BlackMarket").Should().Be(1);
+                saved.GetIntOrNull("MaxBuyPrice").Should().Be(-1);
+                saved.GetIntOrNull("StoreGold").Should().Be(-1);
+                saved.GetStringOrNull("OnOpenStore")
+                    .Should().Be(MerchantEditorViewModel.OnOpenStoreScript);
+                saved.GetStringOrNull("OnStoreClosed")
+                    .Should().Be(MerchantEditorViewModel.OnStoreClosedScript);
+            }
+            finally
+            {
+                document.OnClose();
+                Directory.Delete(Directory.GetParent(moduleRoot)!.FullName, recursive: true);
+            }
         }
 
         [Test]
@@ -224,5 +286,27 @@ namespace SWLOR.Toolset.Tests
             JsonGffDocument.Parse(
                 BlueprintTemplateFactory.CreateFileContent(
                     ResourceType.Utm, "probe_store", "Probe Store")).Root;
+
+        private sealed class MerchantSavePrompts : IEditorPromptService
+        {
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) =>
+                Task.FromResult(ExternalChangeChoice.Cancel);
+
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) =>
+                Task.FromResult(UnsavedChangesChoice.Cancel);
+
+            public Task<bool> ConfirmDestructiveAsync(
+                string headline,
+                string message,
+                string confirmLabel) =>
+                Task.FromResult(false);
+
+            public Task<string?> PromptForTextAsync(
+                string headline,
+                string message,
+                string initialValue,
+                string confirmLabel) =>
+                Task.FromResult<string?>(null);
+        }
     }
 }

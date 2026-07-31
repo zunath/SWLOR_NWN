@@ -164,6 +164,27 @@ namespace SWLOR.Toolset.Tests
                 "2DA labels are identifiers; the picker shows names");
         }
 
+        [Test]
+        public void LoadScreensRejectSentinelAndScriptedRows()
+        {
+            File.WriteAllText(
+                Path.Combine(_tempDirectory, "loadscreens.2da"),
+                "2DA V2.0\r\n\r\n" +
+                "Label BMPResRef\r\n" +
+                "0 Random ****\r\n" +
+                "1 SWLOR_17_Tatooine load_tat\r\n" +
+                "2 DELETED load_deleted\r\n" +
+                "3 UNUSED_3 load_unused\r\n" +
+                "4 Padding load_padding\r\n" +
+                "5 UserDefined ****\r\n");
+
+            var screens = LoadScreenCatalog.Read(new Domain.GameData.TwoDa.TwoDaService(_tempDirectory));
+
+            screens.Select(screen => screen.Value).Should().Equal(0, 1);
+            screens[0].IsAny.Should().BeTrue();
+            screens[1].Display.Should().Be("17 Tatooine");
+        }
+
         private string _tempDirectory = string.Empty;
 
         [SetUp]

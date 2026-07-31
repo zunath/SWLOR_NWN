@@ -49,8 +49,8 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private void Invalidate()
         {
-            _byId.Reset();
             _rows.Reset();
+            _byId.Reset();
         }
 
         /// <summary>All non-reserved portraits.2da rows, in row order.</summary>

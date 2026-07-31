@@ -47,10 +47,10 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private void Invalidate()
         {
-            _genericById.Reset();
             _genericRows.Reset();
-            _byId.Reset();
+            _genericById.Reset();
             _rows.Reset();
+            _byId.Reset();
         }
 
         /// <summary>All non-reserved doortypes.2da rows, in row order.</summary>

@@ -1,3 +1,4 @@
+using System.Globalization;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
@@ -38,28 +39,30 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                     continue;
                 }
 
+                var rawStrRef = table.GetString(row, definition.StrRefColumn!);
+                if (!int.TryParse(
+                        rawStrRef,
+                        NumberStyles.Integer,
+                        CultureInfo.InvariantCulture,
+                        out var strRef))
+                {
+                    continue;
+                }
+
                 spells.Add(new BehaviorChoice(
                     row,
-                    ResolveDisplay(table, row, definition.StrRefColumn!, tlk) ?? label!));
+                    ResolveDisplay(strRef, tlk) ?? label!));
             }
 
             return spells;
         }
 
-        private static string? ResolveDisplay(
-            TwoDaTable table,
-            int row,
-            string nameColumn,
-            Func<int, string?>? tlk)
+        private static string? ResolveDisplay(int strRef, Func<int, string?>? tlk)
         {
             if (tlk == null)
                 return null;
 
-            var strRef = table.GetInt(row, nameColumn);
-            if (strRef is null)
-                return null;
-
-            var text = tlk(strRef.Value);
+            var text = tlk(strRef);
             return string.IsNullOrWhiteSpace(text) ? null : text;
         }
     }

@@ -180,7 +180,7 @@ namespace SWLOR.Toolset.Domain.Workspace
                     return;
 
                 var entry = BuildEntry(item.Type, item.ResRef);
-                if (!_removed.ContainsKey(key))
+                if (entry != null && !_removed.ContainsKey(key))
                     _indexedEntries.TryAdd(key, entry);
                 var processed = Interlocked.Increment(ref _processedCount);
                 if (processed % publishInterval == 0)
@@ -196,7 +196,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// current catalog snapshot immediately. A concurrent initial build also merges the
         /// refreshed entry before publishing its final snapshot, so the update cannot be lost.
         /// </summary>
-        public CatalogEntry RefreshEntry(ResourceType type, string resRef)
+        public CatalogEntry? RefreshEntry(ResourceType type, string resRef)
         {
             var key = IdentityKey(type, resRef);
 
@@ -205,6 +205,12 @@ namespace SWLOR.Toolset.Domain.Workspace
             _removed.TryRemove(key, out _);
 
             var entry = BuildEntry(type, resRef);
+            if (entry == null)
+            {
+                RemoveEntry(type, resRef);
+                return null;
+            }
+
             _indexedEntries[key] = entry;
             PublishSnapshot();
 
@@ -241,7 +247,7 @@ namespace SWLOR.Toolset.Domain.Workspace
 
         private static string IdentityKey(ResourceType type, string resRef) => $"{(int)type}:{resRef}";
 
-        private CatalogEntry BuildEntry(ResourceType type, string resRef)
+        private CatalogEntry? BuildEntry(ResourceType type, string resRef)
         {
             var path = _workspace.GetResourcePath(type, resRef);
 
@@ -250,6 +256,14 @@ namespace SWLOR.Toolset.Domain.Workspace
                 var bytes = File.ReadAllBytes(path);
                 var (name, tag) = ExtractNameAndTag(type, bytes);
                 return new CatalogEntry(type, resRef, name, tag, path);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                return null;
             }
             catch (Exception)
             {

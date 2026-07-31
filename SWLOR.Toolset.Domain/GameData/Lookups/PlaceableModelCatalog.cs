@@ -38,8 +38,8 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         private void Invalidate()
         {
             BuildFailure = null;
-            _byId.Reset();
             _rows.Reset();
+            _byId.Reset();
         }
 
         /// <summary>Why the table did not load, or null. The grid degrades either way.</summary>

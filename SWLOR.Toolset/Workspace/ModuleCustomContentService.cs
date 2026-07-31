@@ -31,6 +31,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly TlkService? _tlkService;
         private readonly string? _iniPathOverride;
         private readonly string? _nwnInstallPath;
+        private readonly SemaphoreSlim _reloadGate = new(1, 1);
 
         public event Action<ModuleCustomContentReloadResult>? Reloaded;
 
@@ -69,41 +70,49 @@ namespace SWLOR.Toolset.Workspace
             CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(hakNames);
-            var snapshot = Discover();
-            var missing = new List<string>();
-            var layers = new List<ResourceIndex.HakLayer>(hakNames.Count);
-            foreach (var rawName in hakNames)
+            await _reloadGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+            try
             {
-                var name = rawName.Trim();
-                var path = snapshot.Profile.FindHakPath(name);
-                if (path == null)
+                var snapshot = Discover();
+                var missing = new List<string>();
+                var layers = new List<ResourceIndex.HakLayer>(hakNames.Count);
+                foreach (var rawName in hakNames)
                 {
-                    missing.Add(name);
-                    continue;
+                    var name = rawName.Trim();
+                    var path = snapshot.Profile.FindHakPath(name);
+                    if (path == null)
+                    {
+                        missing.Add(name);
+                        continue;
+                    }
+
+                    layers.Add(new ResourceIndex.HakLayer(name, path));
                 }
 
-                layers.Add(new ResourceIndex.HakLayer(name, path));
+                var normalizedTlk = string.IsNullOrWhiteSpace(customTlk) ? null : customTlk.Trim();
+                var tlkPath = normalizedTlk == null ? null : snapshot.Profile.FindTlkPath(normalizedTlk);
+                if (normalizedTlk != null && tlkPath == null)
+                    throw new FileNotFoundException(
+                        $"The custom TLK '{normalizedTlk}.tlk' was not found in the nwn.ini TLK directory.");
+
+                if (_resourceIndex != null && snapshot.Profile.HakDirectory != null)
+                    await _resourceIndex.ReloadHakLayersAsync(layers, cancellationToken).ConfigureAwait(false);
+
+                _tlkService?.ReloadCustomTlk(tlkPath);
+
+                var result = new ModuleCustomContentReloadResult(
+                    hakNames.Count,
+                    layers.Count,
+                    missing,
+                    normalizedTlk,
+                    _resourceIndex != null);
+                Reloaded?.Invoke(result);
+                return result;
             }
-
-            var normalizedTlk = string.IsNullOrWhiteSpace(customTlk) ? null : customTlk.Trim();
-            var tlkPath = normalizedTlk == null ? null : snapshot.Profile.FindTlkPath(normalizedTlk);
-            if (normalizedTlk != null && tlkPath == null)
-                throw new FileNotFoundException(
-                    $"The custom TLK '{normalizedTlk}.tlk' was not found in the nwn.ini TLK directory.");
-
-            if (_resourceIndex != null && snapshot.Profile.HakDirectory != null)
-                await _resourceIndex.ReloadHakLayersAsync(layers, cancellationToken).ConfigureAwait(false);
-
-            _tlkService?.ReloadCustomTlk(tlkPath);
-
-            var result = new ModuleCustomContentReloadResult(
-                hakNames.Count,
-                layers.Count,
-                missing,
-                normalizedTlk,
-                _resourceIndex != null);
-            Reloaded?.Invoke(result);
-            return result;
+            finally
+            {
+                _reloadGate.Release();
+            }
         }
 
         private void ReloadSavedModuleInBackground()

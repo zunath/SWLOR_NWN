@@ -306,7 +306,8 @@ namespace SWLOR.Toolset.Tests.Items
                     "0 Valid_Spell 100 5 3 42 0 0 1 iss_valid\r\n" +
                     "1 Calm_Emotions **** **** **** **** **** **** **** ****\r\n" +
                     "2 Bio_reserved 101 5 3 43 0 0 1 iss_reserved\r\n" +
-                    "3 Missing_Spell_Index 102 5 3 **** 0 0 1 iss_missing\r\n");
+                    "3 Missing_Spell_Index 102 5 3 **** 0 0 1 iss_missing\r\n" +
+                    "4 Malformed_StrRef not-a-number 5 3 44 0 0 1 iss_malformed\r\n");
 
                 var choice = ItemSpellChoiceCatalog.Read(new TwoDaService(scratch), _ => null)
                     .Should().ContainSingle().Which;

@@ -42,8 +42,8 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private void Invalidate()
         {
-            _byId.Reset();
             _rows.Reset();
+            _byId.Reset();
         }
 
         /// <summary>All non-reserved placeables.2da rows, in row (Appearance_Type) order.</summary>

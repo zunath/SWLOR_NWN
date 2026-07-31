@@ -160,6 +160,69 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void NaturalWeaponCheckbox_CreatesAndUnlinksTheHiddenBackingItem()
+        {
+            var root = Path.Combine(Path.GetTempPath(), "swlor-creature-weapon-" + Guid.NewGuid().ToString("N"));
+            var utcDirectory = Path.Combine(root, "utc");
+            Directory.CreateDirectory(utcDirectory);
+            Directory.CreateDirectory(Path.Combine(root, "uti"));
+            var path = Path.Combine(utcDirectory, "weapon_toggle.utc.json");
+            File.WriteAllBytes(path, BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "weapon_toggle", "Weapon Toggle"));
+
+            try
+            {
+                using var session = DocumentSession.Open(path);
+                using var editor = new CreatureEditorViewModel(
+                    session.Document.Root,
+                    path,
+                    "weapon_toggle",
+                    (description, mutation) =>
+                    {
+                        session.Execute(description, mutation);
+                        return true;
+                    },
+                    null, null, null, null, _ => null, null);
+                var primary = editor.Stats.Weapons.Single(weapon =>
+                    weapon.Label == "Primary Natural Weapon");
+                var store = new CreatureValueStore(session.Document.Root);
+
+                primary.IsEnabled.Should().BeFalse();
+                primary.IsEnabled = true;
+
+                var createdResRef = store.EquippedResRef(CreaturePropertyCatalog.MainWeaponSlot);
+                createdResRef.Should().NotBeNullOrWhiteSpace();
+                editor.Equipment.ForSlot(CreaturePropertyCatalog.MainWeaponSlot)!.Session.Document.Root
+                    .GetIntOrNull("BaseItem").Should().Be(69);
+
+                primary.Damage.Number = 12;
+                primary.IsEnabled = false;
+                store.EquippedResRef(CreaturePropertyCatalog.MainWeaponSlot).Should().BeNull();
+                primary.IsEnabled.Should().BeFalse();
+
+                primary.IsEnabled = true;
+                store.EquippedResRef(CreaturePropertyCatalog.MainWeaponSlot).Should().Be(createdResRef,
+                    "re-enabling relinks the same hidden item instead of creating duplicates");
+                primary.Damage.Number.Should().Be(12);
+            }
+            finally
+            {
+                Directory.Delete(root, true);
+            }
+        }
+
+        [Test]
+        public void StatsTab_UsesNaturalWeaponCheckboxesInsteadOfCreationButtons()
+        {
+            var view = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", "CreatureEditorView.axaml"));
+
+            view.Should().NotContain("Create weapon");
+            view.Should().NotContain("EnsureExistsCommand");
+            view.Should().Contain("IsChecked=\"{Binding IsEnabled, Mode=TwoWay}\"");
+        }
+
+        [Test]
         public void AbilitiesTab_DoesNotExposePreservedEngineFeats()
         {
             var view = File.ReadAllText(Path.Combine(

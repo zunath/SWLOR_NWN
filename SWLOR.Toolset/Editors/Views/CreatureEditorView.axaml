@@ -67,13 +67,15 @@
         <StackPanel Spacing="5">
           <Grid ColumnDefinitions="*,Auto">
             <TextBlock Text="{Binding Label}" Classes="section" />
-            <Button Grid.Column="1" Content="Create weapon" Command="{Binding EnsureExistsCommand}"
-                    IsVisible="{Binding !Exists}" />
+            <CheckBox Grid.Column="1" Content="Enabled"
+                      IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
           </Grid>
-          <ContentControl Content="{Binding Damage}" />
-          <ContentControl Content="{Binding Delay}" />
-          <ContentControl Content="{Binding DamageType}" />
-          <ContentControl Content="{Binding DamageStat}" />
+          <StackPanel Spacing="5" IsEnabled="{Binding IsEnabled}">
+            <ContentControl Content="{Binding Damage}" />
+            <ContentControl Content="{Binding Delay}" />
+            <ContentControl Content="{Binding DamageType}" />
+            <ContentControl Content="{Binding DamageStat}" />
+          </StackPanel>
         </StackPanel>
       </Border>
     </DataTemplate>

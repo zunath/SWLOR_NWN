@@ -24,6 +24,11 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public IReadOnlyCollection<CreatureEquipmentDocument> Documents => _documents.Values;
 
+        public string? EquippedResRef(int slotId) => _creature.EquippedResRef(slotId);
+
+        public void SetEquippedResRef(int slotId, string? resRef) =>
+            _creature.SetEquippedResRef(slotId, resRef);
+
         public CreatureEquipmentDocument? ForSlot(int slotId)
         {
             var resRef = _creature.EquippedResRef(slotId);

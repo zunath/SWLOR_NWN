@@ -1189,9 +1189,10 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Merchant blueprints open in the dedicated inventory and buying-rules editor.</summary>
         private void OpenMerchantEditor(string filePath, string resRef)
         {
-            var baseItems = _lookups.GetOptions(LookupKeys.BaseItems)
-                .Select(option => new BehaviorChoice(option.Id, option.Display))
-                .ToList();
+            // Share the item editor's filtered base-type catalog. The raw lookup includes deleted,
+            // reserved, iconless, and broken-TLK rows (displayed as "Bad Strref"), none of which is
+            // a meaningful merchant buying rule.
+            var baseItems = ResolveItemChoices(Domain.Editors.Items.ItemChoiceKeys.BaseItems);
             var editor = new Merchants.MerchantDocumentViewModel(
                 filePath,
                 resRef,

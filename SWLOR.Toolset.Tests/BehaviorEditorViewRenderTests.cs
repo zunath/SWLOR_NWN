@@ -193,7 +193,15 @@ namespace SWLOR.Toolset.Tests
                 Accept,
                 Enumerable.Range(1, count)
                     .Select(id => new BehaviorChoice(
-                        id, $"marker {id}", modelResRef: $"gi_waypoint{id:00}"))
+                        id, $"marker {id}", modelResRef: $"gi_waypoint{id:00}")
+                    {
+                        GalleryFacets =
+                        [
+                            new BehaviorChoiceFacet(
+                                "group", "Group", id % 2 == 0 ? "even" : "odd",
+                                id % 2 == 0 ? "Even" : "Odd")
+                        ]
+                    })
                     .ToList());
 
         private static IEnumerable<Control> BuildViews()

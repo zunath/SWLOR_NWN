@@ -191,12 +191,35 @@
                  IsLightDismissEnabled="True">
             <Border Background="{DynamicResource PanelBrush}" CornerRadius="4" Padding="8"
                     BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
-              <Grid RowDefinitions="Auto,Auto,*" Width="680">
+              <Grid RowDefinitions="Auto,Auto,Auto,*" Width="680">
                 <TextBox Grid.Row="0" Text="{Binding GalleryQuery, Mode=TwoWay}"
                          Watermark="Search by name or resource" />
-                <TextBlock Grid.Row="1" Text="{Binding GallerySummary}" Classes="count"
+                <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="12" Margin="0,8,0,0">
+                  <ItemsControl Grid.Column="0" ItemsSource="{Binding GalleryFilters}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <WrapPanel />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="behaviors:GalleryFilterViewModel">
+                        <StackPanel Width="142" Spacing="3" Margin="0,0,8,0">
+                          <TextBlock Text="{Binding Label}" Classes="label" />
+                          <ComboBox ItemsSource="{Binding Options}"
+                                    SelectedItem="{Binding SelectedOption, Mode=TwoWay}" />
+                        </StackPanel>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <StackPanel Grid.Column="1" Width="142" Spacing="3">
+                    <TextBlock Text="Sort" Classes="label" />
+                    <ComboBox ItemsSource="{Binding GallerySortOptions}"
+                              SelectedItem="{Binding SelectedGallerySort, Mode=TwoWay}" />
+                  </StackPanel>
+                </Grid>
+                <TextBlock Grid.Row="2" Text="{Binding GallerySummary}" Classes="count"
                            Margin="2,6" />
-                <ScrollViewer Grid.Row="2" MaxHeight="520"
+                <ScrollViewer Grid.Row="3" MaxHeight="470"
                               ScrollChanged="OnChoiceGalleryScrollChanged">
                   <ItemsControl ItemsSource="{Binding GalleryChoices}" Margin="1">
                     <ItemsControl.ItemsPanel>

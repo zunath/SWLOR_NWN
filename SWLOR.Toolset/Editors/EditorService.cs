@@ -1924,14 +1924,7 @@ namespace SWLOR.Toolset.Editors
             }
 
             if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Portraits && _portraits != null)
-            {
-                return _portraits.GetAll()
-                    .Select(row => new BehaviorChoice(
-                        row.Id,
-                        $"{row.BaseResRef} ({row.Id})",
-                        PortraitService.GetTgaVariants(row.BaseResRef).Medium))
-                    .ToList();
-            }
+                return ResolvePortraitChoices();
 
             if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Races)
                 return LookupChoices(LookupKeys.Races);
@@ -2001,6 +1994,21 @@ namespace SWLOR.Toolset.Editors
         private IReadOnlyList<BehaviorChoice> LookupChoices(string key) => _lookups.GetOptions(key)
             .Select(option => new BehaviorChoice(option.Id, $"{option.Display} ({option.Id})"))
             .ToList();
+
+        private IReadOnlyList<BehaviorChoice> ResolvePortraitChoices() =>
+            Cached("shared", LookupKeys.Portraits, _ =>
+            {
+                if (_portraits == null)
+                    return Array.Empty<BehaviorChoice>();
+
+                var genders = _lookups.GetOptions(LookupKeys.Gender)
+                    .GroupBy(option => (int)option.Id)
+                    .ToDictionary(group => group.Key, group => group.First().Display);
+                var races = _lookups.GetOptions(LookupKeys.Races)
+                    .GroupBy(option => (int)option.Id)
+                    .ToDictionary(group => group.Key, group => group.First().Display);
+                return PortraitBehaviorChoiceCatalog.Build(_portraits.GetAll(), genders, races);
+            });
 
         private IReadOnlyList<BehaviorChoice> ResolveCreatureCategories()
         {
@@ -2268,14 +2276,7 @@ namespace SWLOR.Toolset.Editors
                 return Domain.Editors.Triggers.TrapTypeCatalog.Read(_twoDaService);
 
             if (key == Domain.Editors.Doors.DoorChoiceKeys.Portraits && _portraits != null)
-            {
-                return _portraits.GetAll()
-                    .Select(row => new Domain.Editors.Behaviors.BehaviorChoice(
-                        row.Id,
-                        row.BaseResRef,
-                        PortraitService.GetTgaVariants(row.BaseResRef).Medium))
-                    .ToList();
-            }
+                return ResolvePortraitChoices();
 
             return _lookups.GetOptions(key)
                 .Select(option => new Domain.Editors.Behaviors.BehaviorChoice(option.Id, option.Display))

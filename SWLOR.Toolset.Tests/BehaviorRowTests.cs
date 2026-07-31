@@ -161,6 +161,47 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AVisualCatalogGetsSharedFacetFiltersAndSortsWithoutEditorSpecificCode()
+        {
+            var choices = Enumerable.Range(0, 140)
+                .Select(index => new BehaviorChoice(
+                    index,
+                    index % 2 == 0 ? $"Zulu {index:D3}" : $"Alpha {index:D3}",
+                    $"portrait_{index}")
+                {
+                    GalleryFacets =
+                    [
+                        new BehaviorChoiceFacet(
+                            "gender",
+                            "Gender",
+                            index % 2 == 0 ? "female" : "male",
+                            index % 2 == 0 ? "Female" : "Male")
+                    ]
+                })
+                .ToList();
+            using var row = Row(
+                new BehaviorFieldDefinition
+                {
+                    Label = "Portrait", Name = "PortraitId", Kind = BehaviorFieldKind.Choice,
+                    FieldType = GffFieldType.Word, Choices = choices
+                },
+                Store("""{ "__data_type": "UTC " }"""),
+                new List<string>());
+
+            row.OpenGalleryCommand.Execute(null);
+
+            var gender = row.GalleryFilters.Should().ContainSingle().Subject;
+            gender.Label.Should().Be("Gender");
+            gender.SelectedOption = gender.Options.Single(option => option.Display == "Female");
+            row.GalleryChoices.Should().OnlyContain(choice => choice.Value % 2 == 0);
+            row.GallerySummary.Should().Be("48 of 70 choices");
+
+            row.SelectedGallerySort = row.GallerySortOptions.Single(option =>
+                option.Mode == GallerySortMode.NameAscending);
+            row.GalleryChoices.Select(choice => choice.Display).Should().BeInAscendingOrder();
+        }
+
+        [Test]
         public void ASearchableRowNeverPublishesMoreRowsThanItsCap()
         {
             var choices = Enumerable.Range(0, 5000)

@@ -1,5 +1,16 @@
 namespace SWLOR.Toolset.Domain.Editors.Behaviors
 {
+    /// <summary>
+    /// One reusable filter value carried by a visual choice. The shared gallery discovers these
+    /// facets rather than knowing which editor or resource type supplied them.
+    /// </summary>
+    public sealed record BehaviorChoiceFacet(
+        string GroupKey,
+        string GroupLabel,
+        string ValueKey,
+        string Display,
+        int Order = 0);
+
     /// <summary>One named value of a Choice row.</summary>
     /// <remarks>
     /// ToString is the display name and nothing else. A combo box falls back to ToString when it has
@@ -38,6 +49,14 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         /// and a picker that draws pictures has to say which of the two it is showing.
         /// </summary>
         public bool IsAny { get; init; }
+
+        /// <summary>
+        /// Optional metadata the shared gallery turns into filter controls. Portraits currently
+        /// provide gender, race, and subject facets; another visual picker can add its own groups
+        /// without adding editor-specific branches to the gallery.
+        /// </summary>
+        public IReadOnlyList<BehaviorChoiceFacet> GalleryFacets { get; init; } =
+            Array.Empty<BehaviorChoiceFacet>();
 
         public bool IsStringValue => StringValue != null;
 

@@ -62,6 +62,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         private int _searchPublished;
         private int _galleryPublished;
         private bool _galleryBuilt;
+        private bool _galleryControlsBuilt;
         private bool _disposed;
         private bool _loading;
         private BehaviorChoiceViewModel? _markedChoice;
@@ -108,6 +109,10 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 if (!SetProperty(ref _choices, value))
                     return;
 
+                _galleryControlsBuilt = false;
+                GalleryFilters.Clear();
+                GallerySortOptions.Clear();
+                _selectedGallerySort = null;
                 NotifyChoicePresentationChanged();
             }
         }
@@ -120,6 +125,16 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         /// <summary>The published page of gallery tiles, for a choice row whose options have artwork.</summary>
         public ObservableCollection<BehaviorChoiceViewModel> GalleryChoices { get; } = new();
+
+        /// <summary>
+        /// Facet controls discovered from the current visual choices. The gallery owns this once;
+        /// individual editors only describe their choices.
+        /// </summary>
+        public ObservableCollection<GalleryFilterViewModel> GalleryFilters { get; } = new();
+
+        public ObservableCollection<GallerySortOption> GallerySortOptions { get; } = new();
+
+        public bool HasGalleryFilters => GalleryFilters.Count > 0;
 
         public bool IsText => Definition.Kind is BehaviorFieldKind.Text or BehaviorFieldKind.Script;
         public bool IsLocalizedText => Definition.Kind == BehaviorFieldKind.LocalizedText;
@@ -340,6 +355,20 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         [ObservableProperty]
         private string _galleryQuery = string.Empty;
+
+        private GallerySortOption? _selectedGallerySort;
+
+        public GallerySortOption? SelectedGallerySort
+        {
+            get => _selectedGallerySort;
+            set
+            {
+                if (!SetProperty(ref _selectedGallerySort, value) || !_galleryBuilt)
+                    return;
+
+                RebuildGallery();
+            }
+        }
 
         /// <summary>The chosen option's picture, shown large enough to actually judge.</summary>
         [ObservableProperty]
@@ -629,16 +658,92 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 return;
 
             _galleryBuilt = true;
+            EnsureGalleryControls();
             var words = (GalleryQuery ?? string.Empty)
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            _galleryMatches = Choices
+            IEnumerable<BehaviorChoiceViewModel> matches = Choices
                 .Where(candidate => words.All(word =>
                     candidate.Display.Contains(word, StringComparison.OrdinalIgnoreCase) ||
-                    (candidate.Detail?.Contains(word, StringComparison.OrdinalIgnoreCase) ?? false)))
-                .ToList();
+                    (candidate.Detail?.Contains(word, StringComparison.OrdinalIgnoreCase) ?? false)));
+
+            foreach (var filter in GalleryFilters)
+            {
+                var selected = filter.SelectedOption.ValueKey;
+                if (selected == null)
+                    continue;
+
+                matches = matches.Where(candidate => candidate.Choice.GalleryFacets.Any(facet =>
+                    string.Equals(facet.GroupKey, filter.GroupKey, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(facet.ValueKey, selected, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            matches = SelectedGallerySort?.Mode switch
+            {
+                GallerySortMode.NameAscending => matches
+                    .OrderBy(candidate => candidate.Display, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(candidate => candidate.Value),
+                GallerySortMode.NameDescending => matches
+                    .OrderByDescending(candidate => candidate.Display, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(candidate => candidate.Value),
+                GallerySortMode.IdAscending => matches.OrderBy(candidate => candidate.Value),
+                GallerySortMode.IdDescending => matches.OrderByDescending(candidate => candidate.Value),
+                _ => matches
+            };
+
+            _galleryMatches = matches.ToList();
             _galleryPublished = 0;
             GalleryChoices.Clear();
             PublishGalleryPage();
+        }
+
+        private void EnsureGalleryControls()
+        {
+            if (_galleryControlsBuilt)
+                return;
+
+            _galleryControlsBuilt = true;
+            GalleryFilters.Clear();
+            GallerySortOptions.Clear();
+
+            var facets = Choices.SelectMany(choice => choice.Choice.GalleryFacets).ToList();
+            foreach (var group in facets.GroupBy(
+                         facet => facet.GroupKey,
+                         StringComparer.OrdinalIgnoreCase))
+            {
+                var values = group
+                    .GroupBy(facet => facet.ValueKey, StringComparer.OrdinalIgnoreCase)
+                    .Select(valueGroup => valueGroup
+                        .OrderBy(facet => facet.Order)
+                        .ThenBy(facet => facet.Display, StringComparer.OrdinalIgnoreCase)
+                        .First())
+                    .OrderBy(facet => facet.Order)
+                    .ThenBy(facet => facet.Display, StringComparer.OrdinalIgnoreCase)
+                    .Select(facet => new GalleryFilterOption(facet.ValueKey, facet.Display))
+                    .ToList();
+
+                if (values.Count <= 1)
+                    continue;
+
+                values.Insert(0, new GalleryFilterOption(null, "All"));
+                GalleryFilters.Add(new GalleryFilterViewModel(
+                    group.Key,
+                    group.First().GroupLabel,
+                    values,
+                    RebuildGallery));
+            }
+
+            GallerySortOptions.Add(new GallerySortOption(GallerySortMode.Default, "Default order"));
+            GallerySortOptions.Add(new GallerySortOption(GallerySortMode.NameAscending, "Name A-Z"));
+            GallerySortOptions.Add(new GallerySortOption(GallerySortMode.NameDescending, "Name Z-A"));
+            if (Choices.All(choice => !choice.Choice.IsStringValue))
+            {
+                GallerySortOptions.Add(new GallerySortOption(GallerySortMode.IdAscending, "ID low-high"));
+                GallerySortOptions.Add(new GallerySortOption(GallerySortMode.IdDescending, "ID high-low"));
+            }
+
+            _selectedGallerySort = GallerySortOptions[0];
+            OnPropertyChanged(nameof(SelectedGallerySort));
+            OnPropertyChanged(nameof(HasGalleryFilters));
         }
 
         private void PublishGalleryPage()

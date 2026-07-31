@@ -437,6 +437,32 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public async Task SaveNormalizesAnExistingCaseOnlyFilename()
+        {
+            var lowerPath = Scratch("adren_harness");
+            var upperPath = Scratch("ADREN_HARNESS");
+            var intermediatePath = Scratch("case_rename_temp");
+            File.Move(lowerPath, intermediatePath);
+            File.Move(intermediatePath, upperPath);
+
+            var document = OpenScratch("ADREN_HARNESS");
+            var renames = new List<(string OldResRef, string OldPath)>();
+            document.Renamed += (_, oldResRef, oldPath) => renames.Add((oldResRef, oldPath));
+            SetResRef(document, "ADREN_HARNESS");
+
+            Assert.That(await document.TrySaveAsync(), Is.True);
+            var fileNames = Directory.EnumerateFiles(Path.Combine(_root, "uti"))
+                .Select(Path.GetFileName)
+                .ToList();
+            fileNames.Should().Contain("adren_harness.uti.json");
+            fileNames.Should().NotContain("ADREN_HARNESS.uti.json");
+            document.ResRef.Should().Be("adren_harness");
+            document.FilePath.Should().Be(lowerPath);
+            UtiDocument.Load(lowerPath).TemplateResRef.Should().Be("adren_harness");
+            renames.Should().Equal(new[] { ("ADREN_HARNESS", upperPath) });
+        }
+
+        [Test]
         public async Task IllegalResRefIsRefusedAtTheEditAndEmptyAtTheSave()
         {
             var document = OpenScratch("adren_harness");

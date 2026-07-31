@@ -13,7 +13,7 @@ namespace SWLOR.Toolset.Services
     internal static class ItemRenameRecovery
     {
         private const string MarkerPattern = ".swlor-toolset-item-rename-*.pending.json";
-        private const string TransactionPrefix = ".swlor-toolset-item-rename-";
+        internal const string TransactionPrefix = ".swlor-toolset-item-rename-";
 
         public static Transaction Begin(
             string moduleRoot,
@@ -71,6 +71,9 @@ namespace SWLOR.Toolset.Services
                     CategoryPath = categoryPath,
                     CategoryBackupPath = categoryBackupPath,
                     CategoryExisted = categoryExisted,
+                    CaseOnlyRename =
+                        !string.Equals(oldPath, newPath, StringComparison.Ordinal) &&
+                        string.Equals(oldPath, newPath, StringComparison.OrdinalIgnoreCase),
                     CategoryOriginalContentSha256 = categoryOriginalHash,
                     OriginalContentSha256 = Convert.ToHexString(expectedOriginalContentHash),
                     NewContentSha256 = Convert.ToHexString(SHA256.HashData(newContent))
@@ -156,6 +159,16 @@ namespace SWLOR.Toolset.Services
 
             RequirePathUnder(moduleRoot, manifest.OldPath, "original item");
             RequirePathUnder(moduleRoot, manifest.NewPath, "renamed item");
+            if (manifest.CaseOnlyRename &&
+                (string.Equals(manifest.OldPath, manifest.NewPath, StringComparison.Ordinal) ||
+                 !string.Equals(
+                     manifest.OldPath,
+                     manifest.NewPath,
+                     StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new InvalidDataException(
+                    $"Item rename recovery marker '{markerPath}' has invalid case-only paths.");
+            }
             RequirePathUnder(transactionRoot, manifest.ItemBackupPath, "item backup");
             RequirePathUnder(transactionRoot, manifest.CategoryBackupPath, "category backup");
             if (!string.Equals(
@@ -227,29 +240,7 @@ namespace SWLOR.Toolset.Services
 
                 ValidateCategoryGeneration(manifest);
 
-                Directory.CreateDirectory(Path.GetDirectoryName(manifest.OldPath)!);
-                var preserveExternallyChangedOriginal =
-                    manifest.OriginalContentSha256.Length != 0 &&
-                    File.Exists(manifest.OldPath) &&
-                    !string.Equals(
-                        Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(manifest.OldPath))),
-                        manifest.OriginalContentSha256,
-                        StringComparison.Ordinal);
-                if (!preserveExternallyChangedOriginal)
-                    File.Copy(manifest.ItemBackupPath, manifest.OldPath, overwrite: true);
-                if (!string.Equals(
-                        manifest.OldPath,
-                        manifest.NewPath,
-                        StringComparison.OrdinalIgnoreCase) &&
-                    File.Exists(manifest.NewPath) &&
-                    string.Equals(
-                        Convert.ToHexString(
-                            SHA256.HashData(File.ReadAllBytes(manifest.NewPath))),
-                        manifest.NewContentSha256,
-                        StringComparison.Ordinal))
-                {
-                    File.Delete(manifest.NewPath);
-                }
+                RollBackItem(manifest);
 
                 if (manifest.CategoryExisted)
                 {
@@ -279,6 +270,65 @@ namespace SWLOR.Toolset.Services
                     $"Could not recover interrupted item rename '{manifest.OldPath}'. " +
                     $"Recovery evidence remains at '{markerPath}': {exception.Message}",
                     exception);
+            }
+        }
+
+        private static void RollBackItem(Manifest manifest)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(manifest.OldPath)!);
+            if (manifest.CaseOnlyRename)
+            {
+                var currentPath = File.Exists(manifest.NewPath)
+                    ? manifest.NewPath
+                    : File.Exists(manifest.OldPath)
+                        ? manifest.OldPath
+                        : null;
+                if (currentPath != null)
+                {
+                    var currentHash = ContentHash(currentPath);
+                    if (string.Equals(
+                            currentHash,
+                            manifest.NewContentSha256,
+                            StringComparison.Ordinal))
+                    {
+                        File.Delete(currentPath);
+                    }
+                    else if (manifest.OriginalContentSha256.Length != 0 &&
+                             !string.Equals(
+                                 currentHash,
+                                 manifest.OriginalContentSha256,
+                                 StringComparison.Ordinal))
+                    {
+                        // A newer external generation owns the case-insensitive path. Preserve it
+                        // just as the ordinary rename recovery path preserves a changed original.
+                        return;
+                    }
+                }
+
+                File.Copy(manifest.ItemBackupPath, manifest.OldPath, overwrite: true);
+                return;
+            }
+
+            var preserveExternallyChangedOriginal =
+                manifest.OriginalContentSha256.Length != 0 &&
+                File.Exists(manifest.OldPath) &&
+                !string.Equals(
+                    ContentHash(manifest.OldPath),
+                    manifest.OriginalContentSha256,
+                    StringComparison.Ordinal);
+            if (!preserveExternallyChangedOriginal)
+                File.Copy(manifest.ItemBackupPath, manifest.OldPath, overwrite: true);
+            if (!string.Equals(
+                    manifest.OldPath,
+                    manifest.NewPath,
+                    StringComparison.OrdinalIgnoreCase) &&
+                File.Exists(manifest.NewPath) &&
+                string.Equals(
+                    ContentHash(manifest.NewPath),
+                    manifest.NewContentSha256,
+                    StringComparison.Ordinal))
+            {
+                File.Delete(manifest.NewPath);
             }
         }
 
@@ -464,6 +514,7 @@ namespace SWLOR.Toolset.Services
             public string CategoryPath { get; set; } = string.Empty;
             public string CategoryBackupPath { get; set; } = string.Empty;
             public bool CategoryExisted { get; set; }
+            public bool CaseOnlyRename { get; set; }
             public string CategoryOriginalContentSha256 { get; set; } = string.Empty;
             public string CategoryInstalledContentSha256 { get; set; } = string.Empty;
             public string OriginalContentSha256 { get; set; } = string.Empty;

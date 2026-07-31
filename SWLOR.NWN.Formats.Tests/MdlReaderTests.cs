@@ -410,19 +410,41 @@ public sealed class MdlReaderTests
             .GetMeshNodes()
             .Should().ContainSingle().Subject;
 
-        mesh.Vertices.Should().HaveCount(6,
+        mesh.Vertices.Should().HaveCount(5,
             "Aurora splits vertices at hard smoothing-group boundaries");
         mesh.Normals.Should().HaveCount(mesh.Vertices.Length);
         mesh.Faces[0].VertexIndex0.Should().Be(mesh.Faces[1].VertexIndex0,
             "faces with overlapping smoothing-group masks share the generated corner normal");
-        mesh.Faces[2].VertexIndex0.Should().NotBe(mesh.Faces[0].VertexIndex0,
-            "disjoint smoothing groups retain separate normals at the same source vertex");
+        mesh.Faces[2].VertexIndex0.Should().Be(mesh.Faces[0].VertexIndex0,
+            "overlap through mask 3 connects masks 1 and 2 into one smoothing component");
 
         var smoothed = mesh.Normals[mesh.Faces[0].VertexIndex0];
-        smoothed.X.Should().BeApproximately(0f, 0.0001f);
-        smoothed.Y.Should().BeApproximately(-MathF.Sqrt(0.5f), 0.0001f);
-        smoothed.Z.Should().BeApproximately(MathF.Sqrt(0.5f), 0.0001f);
-        mesh.Normals[mesh.Faces[2].VertexIndex0].Should().Be(Vector3.UnitX);
+        var componentValue = 1f / MathF.Sqrt(3f);
+        smoothed.X.Should().BeApproximately(componentValue, 0.0001f);
+        smoothed.Y.Should().BeApproximately(-componentValue, 0.0001f);
+        smoothed.Z.Should().BeApproximately(componentValue, 0.0001f);
+
+        mesh.Faces[0].VertexIndex2.Should().NotBe(mesh.Faces[2].VertexIndex1,
+            "masks 1 and 2 remain a hard boundary where no bridging face shares that vertex");
+        mesh.Normals[mesh.Faces[0].VertexIndex2].Should().Be(Vector3.UnitZ);
+        mesh.Normals[mesh.Faces[2].VertexIndex1].Should().Be(Vector3.UnitX);
+
+        var normalizedText = text.ReplaceLineEndings("\n");
+        var reorderedText = normalizedText.Replace(
+                "0 1 2 1 0 1 2 0\n      0 1 3 3 0 1 3 0\n      0 2 3 2 0 2 3 0",
+                "0 2 3 2 0 2 3 0\n      0 1 3 3 0 1 3 0\n      0 1 2 1 0 1 2 0",
+                StringComparison.Ordinal);
+        reorderedText.Should().NotBe(normalizedText, "the fixture must actually reorder the face rows");
+        var reordered = new MdlReader()
+            .Parse(Encoding.ASCII.GetBytes(reorderedText))
+            .GetMeshNodes()
+            .Should().ContainSingle().Subject;
+        reordered.Vertices.Should().HaveCount(mesh.Vertices.Length);
+        var reorderedShared = reordered.Normals[reordered.Faces[0].VertexIndex0];
+        reordered.Faces.Should().OnlyContain(face =>
+            reordered.Normals[face.VertexIndex0] == reorderedShared);
+        reorderedShared.Should().Be(smoothed,
+            "reordering masks 1, 3, 2 must not change their shared normal");
     }
 
     [Test]

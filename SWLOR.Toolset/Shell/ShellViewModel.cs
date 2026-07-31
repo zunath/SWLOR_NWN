@@ -502,9 +502,12 @@ namespace SWLOR.Toolset.Shell
         /// <summary>Returns true when the main window may close after handling unsaved editors.</summary>
         public Task<bool> TryCloseAsync()
         {
-            if (IsModuleMutationLocked)
+            var compilationActive = ScriptCompileService.AnyCompilationActive;
+            if (IsModuleMutationLocked || compilationActive)
             {
-                StatusText = "Wait for the active module operation to finish before closing.";
+                StatusText = compilationActive
+                    ? "Wait for the active script compile to finish before closing."
+                    : "Wait for the active module operation to finish before closing.";
                 return Task.FromResult(false);
             }
 

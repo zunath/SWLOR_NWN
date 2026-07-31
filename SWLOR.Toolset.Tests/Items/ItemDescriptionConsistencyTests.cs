@@ -9,14 +9,17 @@ namespace SWLOR.Toolset.Tests.Items
     /// Item description cleanup must only make changes when the intended value is unambiguous.
     /// </summary>
     /// <remarks>
-    /// A uti carries Description (unidentified) and DescIdentified, but only the second is live:
-    /// NWScript's GetDescription defaults to the identified string and every examine surface on the
-    /// server takes that default. Historical blueprints can still have two different authored
-    /// values, though, and a bulk cleanup cannot safely decide which one belongs to the item.
+    /// A uti carries Description (unidentified) and DescIdentified. Most server surfaces request
+    /// the identified string, but Description remains meaningful for an item whose Identified flag
+    /// is zero: authors can deliberately withhold details until identification. Historical
+    /// blueprints can also have two different authored values, and a bulk cleanup cannot safely
+    /// decide which one belongs to the item.
     /// <para>
     /// Run <c>python tools/NormalizeItemDescriptions.py</c> to fix a failure here. It blanks a name
     /// only when both fields contain nothing else, and copies prose only when the other field is
-    /// empty. Conflicting non-empty values are deliberately preserved for human review.
+    /// empty. An unidentified blueprint may intentionally keep Description blank until the item
+    /// is identified; those withheld descriptions and conflicting non-empty values are deliberately
+    /// preserved for human review.
     /// </para>
     /// </remarks>
     [TestFixture]
@@ -48,7 +51,10 @@ namespace SWLOR.Toolset.Tests.Items
 
                 if (name.Length > 0 && name == unidentified && name == identified)
                     nameAsDescription.Add(Path.GetFileName(path));
-                else if (unidentified.Length == 0 ^ identified.Length == 0)
+                else if ((unidentified.Length == 0 ^ identified.Length == 0) &&
+                         !(document.Fields.GetIntOrNull("Identified") == 0 &&
+                           unidentified.Length == 0 &&
+                           identified.Length > 0))
                     oneSided.Add(Path.GetFileName(path));
             }
 
@@ -57,6 +63,23 @@ namespace SWLOR.Toolset.Tests.Items
                 "an item's description must not just repeat its name - {0}", because);
             oneSided.Should().BeEmpty(
                 "a single unambiguous description should be copied to its empty companion - {0}", because);
+        }
+
+        [TestCase("TaserPistol")]
+        [TestCase("drakebruiser_wp")]
+        [TestCase("key_smuggler01")]
+        [TestCase("novauniform")]
+        [TestCase("novauniformsup")]
+        [TestCase("tuskenmelee_wp")]
+        public void UnidentifiedBlueprintsKeepTheirAuthoredDescriptionWithheld(string resRef)
+        {
+            var document = UtiDocument.Load(Path.Combine(
+                CorpusLocator.ModuleDirectory, "uti", resRef + ".uti.json"));
+            var store = new ItemValueStore(document.Fields);
+
+            document.Fields.GetIntOrNull("Identified").Should().Be(0);
+            store.GetLocalizedText("Description").Should().BeEmpty();
+            store.GetLocalizedText("DescIdentified").Should().NotBeNullOrWhiteSpace();
         }
 
         [Test]

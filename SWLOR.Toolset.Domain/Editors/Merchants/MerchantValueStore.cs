@@ -86,6 +86,12 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
                 .Select(value => value!.Value)
                 .ToList();
 
+            if (buyOnlySelected && selected.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "Select at least one base item type before choosing 'buy only'.");
+            }
+
             ReplaceBuyingRules(newField, selected);
             ReplaceBuyingRules(oldField, Array.Empty<int>());
         }
@@ -94,13 +100,19 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
         {
             var fieldName = buyOnlySelected ? WillOnlyBuyField : WillNotBuyField;
             var otherField = buyOnlySelected ? WillNotBuyField : WillOnlyBuyField;
-            ReplaceBuyingRules(otherField, Array.Empty<int>());
-
             var ids = BuyingRuleIds(buyOnlySelected).ToHashSet();
             if (selected)
                 ids.Add(baseItem);
             else
                 ids.Remove(baseItem);
+
+            if (buyOnlySelected && ids.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "A 'buy only' merchant must keep at least one base item type selected.");
+            }
+
+            ReplaceBuyingRules(otherField, Array.Empty<int>());
             ReplaceBuyingRules(fieldName, ids.OrderBy(id => id));
         }
 

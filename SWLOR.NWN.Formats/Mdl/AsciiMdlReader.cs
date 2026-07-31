@@ -572,8 +572,9 @@ internal sealed class AsciiMdlReader
     /// <summary>
     /// Reproduces Aurora's ASCII model compiler smoothing pass. A smoothing-group value is a bit
     /// mask: faces share a vertex normal when their masks overlap; group zero remains flat. The
-    /// compiler assigns each matching group of face corners one normal before it expands vertices
-    /// at UV and hard-normal seams.
+    /// compiler assigns each connected group of face corners one normal before it expands vertices
+    /// at UV and hard-normal seams. Connectivity matters for masks such as 1, 3, 2: the middle face
+    /// overlaps both neighbors, so all three belong to one group regardless of face order.
     /// </summary>
     private static GeneratedVertexNormals GenerateVertexNormals(
         IReadOnlyList<Vector3> vertices,
@@ -608,41 +609,64 @@ internal sealed class AsciiMdlReader
         }
 
         var normals = new List<Vector3>();
-        for (var faceIndex = 0; faceIndex < faces.Count; faceIndex++)
+        foreach (var corners in cornersByVertex.Values)
         {
-            var face = faces[faceIndex];
-            for (var cornerIndex = 0; cornerIndex < 3; cornerIndex++)
+            var assigned = new HashSet<int>();
+            foreach (var seed in corners)
             {
-                if (faceNormalIndices[faceIndex, cornerIndex] != -1)
+                if (!assigned.Add(seed))
                     continue;
 
-                var normalIndex = normals.Count;
-                var vertexIndex = VertexIndex(face, cornerIndex);
-                var sum = Vector3.Zero;
-                foreach (var candidateId in cornersByVertex[vertexIndex])
+                var component = new List<int>();
+                var pending = new Queue<int>();
+                pending.Enqueue(seed);
+                while (pending.Count > 0)
                 {
-                    var candidateFaceIndex = candidateId / 3;
-                    var candidateCorner = candidateId % 3;
-                    if (candidateFaceIndex < faceIndex ||
-                        faceNormalIndices[candidateFaceIndex, candidateCorner] != -1)
+                    var current = pending.Dequeue();
+                    component.Add(current);
+                    var currentFaceIndex = current / 3;
+                    foreach (var candidate in corners)
                     {
-                        continue;
-                    }
+                        if (assigned.Contains(candidate))
+                            continue;
 
-                    var candidate = faces[candidateFaceIndex];
-                    if (candidateFaceIndex != faceIndex &&
-                        (face.SmoothingGroup & candidate.SmoothingGroup) == 0)
-                    {
-                        continue;
-                    }
+                        var candidateFaceIndex = candidate / 3;
+                        if (currentFaceIndex != candidateFaceIndex &&
+                            (faces[currentFaceIndex].SmoothingGroup &
+                             faces[candidateFaceIndex].SmoothingGroup) == 0)
+                        {
+                            continue;
+                        }
 
-                    sum += faceNormals[candidateFaceIndex];
-                    faceNormalIndices[candidateFaceIndex, candidateCorner] = normalIndex;
+                        assigned.Add(candidate);
+                        pending.Enqueue(candidate);
+                    }
                 }
 
+                // A stable face ordering also makes the floating-point sum independent of the
+                // source's face row order, rather than merely giving it the same membership.
+                var componentFaces = component
+                    .Select(corner => corner / 3)
+                    .Distinct()
+                    .OrderBy(index => faces[index].SmoothingGroup)
+                    .ThenBy(index => faces[index].Vertex0)
+                    .ThenBy(index => faces[index].Vertex1)
+                    .ThenBy(index => faces[index].Vertex2)
+                    .ThenBy(index => faceNormals[index].X)
+                    .ThenBy(index => faceNormals[index].Y)
+                    .ThenBy(index => faceNormals[index].Z)
+                    .ToList();
+                var sum = componentFaces.Aggregate(
+                    Vector3.Zero,
+                    (current, faceIndex) => current + faceNormals[faceIndex]);
+                var normalIndex = normals.Count;
                 normals.Add(sum.LengthSquared() <= float.Epsilon
                     ? Vector3.Zero
                     : Vector3.Normalize(sum));
+                foreach (var corner in component)
+                {
+                    faceNormalIndices[corner / 3, corner % 3] = normalIndex;
+                }
             }
         }
 

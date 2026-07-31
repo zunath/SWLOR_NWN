@@ -1,12 +1,14 @@
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Services;
 
 namespace SWLOR.Toolset.Workspace
 {
     /// <summary>
     /// Watches a module root and its resource directories for external changes and logs them to
     /// the Output panel. The packer's transient "packing" and "palette-refresh" directories and
-    /// the NWN toolset's temp# workspaces are excluded from recursive monitoring; packed .mod
-    /// artifacts and this app's atomic-save .tmp files are filtered before reporting.
+    /// item-rename transaction directories, and the NWN toolset's temp# workspaces are excluded
+    /// from recursive monitoring; packed .mod artifacts and this app's atomic-save .tmp files are
+    /// filtered before reporting.
     /// </summary>
     public sealed class ModuleFileWatcher : IDisposable
     {
@@ -359,6 +361,9 @@ namespace SWLOR.Toolset.Workspace
                 directory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
             return string.Equals(directoryName, "packing", StringComparison.OrdinalIgnoreCase) ||
                    string.Equals(directoryName, "palette-refresh", StringComparison.OrdinalIgnoreCase) ||
+                   directoryName.StartsWith(
+                       ItemRenameRecovery.TransactionPrefix,
+                       StringComparison.OrdinalIgnoreCase) ||
                    IsNwnToolsetTemporaryDirectoryName(directoryName);
         }
 

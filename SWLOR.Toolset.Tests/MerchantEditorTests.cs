@@ -103,6 +103,66 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BuyOnlyRulesCannotCollapseToTheNativeBothEmptyDefault()
+        {
+            var root = NewMerchant();
+            var store = new MerchantValueStore(root);
+
+            var switchEmpty = () => store.SwitchBuyingRuleMode(buyOnlySelected: true);
+            switchEmpty.Should().Throw<InvalidOperationException>()
+                .WithMessage("*at least one base item type*");
+            root.GetListOrEmpty(MerchantValueStore.WillNotBuyField).Should().BeEmpty();
+            root.GetListOrEmpty(MerchantValueStore.WillOnlyBuyField).Should().BeEmpty();
+
+            store.SetBuyingRule(buyOnlySelected: false, baseItem: 42, selected: true);
+            store.SwitchBuyingRuleMode(buyOnlySelected: true);
+            var removeLast = () => store.SetBuyingRule(
+                buyOnlySelected: true,
+                baseItem: 42,
+                selected: false);
+            removeLast.Should().Throw<InvalidOperationException>()
+                .WithMessage("*at least one base item type selected*");
+            root.GetListOrEmpty(MerchantValueStore.WillOnlyBuyField)
+                .Single().GetIntOrNull("BaseItem").Should().Be(42);
+        }
+
+        [Test]
+        public void EditorRequiresASelectionBeforeAndDuringBuyOnlyMode()
+        {
+            var root = NewMerchant();
+            var editCount = 0;
+            using var editor = new MerchantEditorViewModel(
+                root,
+                "probe_store",
+                (_, mutation) =>
+                {
+                    mutation();
+                    editCount++;
+                    return true;
+                },
+                baseItems: new[] { new BehaviorChoice(42, "Probe Type") });
+
+            editor.BuyOnlySelected = true;
+            editor.BuyOnlySelected.Should().BeFalse();
+            editor.BuyingRuleError.Should().Contain("at least one");
+            editCount.Should().Be(0);
+
+            var rule = editor.BuyingRules.Should().ContainSingle().Subject;
+            rule.IsSelected = true;
+            editor.BuyOnlySelected = true;
+            editor.BuyOnlySelected.Should().BeTrue();
+            editor.BuyingRuleError.Should().BeNull();
+            root.GetListOrEmpty(MerchantValueStore.WillOnlyBuyField)
+                .Single().GetIntOrNull("BaseItem").Should().Be(42);
+
+            rule.IsSelected = false;
+            rule.IsSelected.Should().BeTrue();
+            editor.BuyingRuleError.Should().Contain("at least one");
+            root.GetListOrEmpty(MerchantValueStore.WillOnlyBuyField)
+                .Single().GetIntOrNull("BaseItem").Should().Be(42);
+        }
+
+        [Test]
         public void StoreSynchronizer_PreservesPlacementAndExpandsInventoryInCliOrder()
         {
             var merchant = JsonGffDocument.Parse(

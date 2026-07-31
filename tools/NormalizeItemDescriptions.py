@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """Repair unambiguous description drift on item blueprints.
 
-A uti carries both Description (unidentified) and DescIdentified. Only the second
-is live: NWScript's GetDescription defaults to the identified string and every
-examine surface on the server takes that default. The corpus had drifted anyway,
-so the rules below repair only cases where the intended result is certain:
+A uti carries both Description (unidentified) and DescIdentified. Most server
+surfaces request the identified string, but Description remains meaningful when
+Identified is 0 because it can intentionally withhold details until identification.
+The corpus had drifted anyway, so the rules below repair only cases where the
+intended result is certain:
 
   1. Ignore a field that holds nothing but the item's own name. An item described
      as itself has no description there, and echoing the name under the name is
      not worth keeping.
-  2. A single real description with an empty companion is copied to the empty field.
+  2. A single real description with an empty companion is copied to the empty field, except
+     when an unidentified blueprint deliberately withholds Description until identification.
   3. Two different non-empty values are left untouched. In particular, a name echo
      beside different prose is ambiguous: the prose may belong to another item, so
      this script must not promote it into the identified description.
@@ -130,6 +132,16 @@ def plan(path):
         if not echoes_name:
             return None
         return "name-only", {field: "" for field in FIELDS if values[field]}
+
+    # Identified=0 makes the two fields semantically different: a blank Description can be an
+    # intentional withheld-description state, with DescIdentified revealed only after the item
+    # is identified. Filling that blank would expose information the author chose to hide.
+    identified_field = document.get("Identified")
+    is_unidentified = (
+        isinstance(identified_field, dict) and identified_field.get("value") == 0
+    )
+    if is_unidentified and not values["Description"] and values["DescIdentified"]:
+        return None
 
     # Rule 2: the surviving description goes in both fields.
     source = real[0]

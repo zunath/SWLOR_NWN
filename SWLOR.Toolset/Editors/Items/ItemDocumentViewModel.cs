@@ -205,13 +205,18 @@ namespace SWLOR.Toolset.Editors.Items
 
                 using var moduleWriteLock =
                     ModuleWriteLock.AcquireForResourcePath(_session.FilePath);
-                var renaming = !string.Equals(targetResRef, _resRef, StringComparison.OrdinalIgnoreCase);
+                var renaming = !string.Equals(targetResRef, _resRef, StringComparison.Ordinal);
+                var caseOnlyRename = renaming &&
+                                     string.Equals(
+                                         targetResRef,
+                                         _resRef,
+                                         StringComparison.OrdinalIgnoreCase);
                 var newPath = _session.FilePath;
                 if (renaming && !TryResolveRenameTarget(targetResRef, out newPath))
                     return false;
-                if (renaming && IsStillReferenced(targetResRef))
+                if (renaming && !caseOnlyRename && IsStillReferenced(targetResRef))
                     return false;
-                if (renaming && !CanRefileCategories(targetResRef))
+                if (renaming && !caseOnlyRename && !CanRefileCategories(targetResRef))
                     return false;
 
                 // Everything above - the reference sweep and the category preflight - reads the disk
@@ -232,13 +237,15 @@ namespace SWLOR.Toolset.Editors.Items
                 var oldResRef = _resRef;
                 var moving = renaming &&
                              !string.Equals(oldPath, newPath, StringComparison.OrdinalIgnoreCase);
-                var moduleRoot = moving
+                var changingPathSpelling = renaming &&
+                                           !string.Equals(oldPath, newPath, StringComparison.Ordinal);
+                var moduleRoot = changingPathSpelling
                     ? Directory.GetParent(Path.GetDirectoryName(oldPath)!)?.FullName
                       ?? throw new InvalidOperationException(
                           $"Could not determine the module root for '{oldPath}'.")
                     : null;
                 var saveBytes = _session.ToBytes();
-                using var renameRecovery = moving
+                using var renameRecovery = changingPathSpelling
                     ? ItemRenameRecovery.Begin(
                         moduleRoot!,
                         oldPath,
@@ -251,7 +258,24 @@ namespace SWLOR.Toolset.Editors.Items
                 // check above ran before the (potentially long) reference scan, and a blueprint
                 // another process created in that window must fail this save rather than be
                 // silently replaced and then orphaned by the delete below.
-                if (renaming && !string.Equals(_session.FilePath, newPath, StringComparison.OrdinalIgnoreCase))
+                if (caseOnlyRename && changingPathSpelling)
+                {
+                    if (!renameRecovery!.OriginalStillMatches())
+                    {
+                        _log.AppendLine(
+                            $"Cannot normalize the filename for {_resRef}: {oldPath} changed while " +
+                            "the save was being prepared. Nothing was written - reload and try again.");
+                        return false;
+                    }
+
+                    // Windows keeps the existing directory-entry casing when a file is overwritten.
+                    // Remove the old spelling first, under the recovery transaction's module lock,
+                    // then create the canonical lowercase path as a new directory entry.
+                    File.Delete(oldPath);
+                    SaveService.WriteAtomicNew(newPath, saveBytes);
+                }
+                else if (renaming &&
+                         !string.Equals(_session.FilePath, newPath, StringComparison.OrdinalIgnoreCase))
                     SaveService.WriteAtomicNew(newPath, saveBytes);
                 else if (!SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
                 {

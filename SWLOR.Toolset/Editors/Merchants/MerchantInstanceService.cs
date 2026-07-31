@@ -2,6 +2,7 @@ using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
@@ -133,6 +134,10 @@ namespace SWLOR.Toolset.Editors.Merchants
             string merchantResRef,
             IReadOnlySet<string> openAreas)
         {
+            // Synchronization is one read/modify/write operation across the merchant, every GIT,
+            // and the referenced inventory blueprints. Keep pack/unpack and other writers out for
+            // the entire snapshot instead of acquiring only around each staged file operation.
+            using var moduleWriteLock = ModuleWriteLock.Acquire(workspace.ModuleRoot);
             var merchant = JsonGffDocument.Load(
                 workspace.GetResourcePath(ResourceType.Utm, merchantResRef));
             var itemCache = new Dictionary<string, JsonGffDocument?>(StringComparer.OrdinalIgnoreCase);

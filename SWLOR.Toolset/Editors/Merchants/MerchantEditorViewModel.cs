@@ -124,6 +124,9 @@ namespace SWLOR.Toolset.Editors.Merchants
         private string _buyingRuleSearchText = string.Empty;
 
         [ObservableProperty]
+        private string? _buyingRuleError;
+
+        [ObservableProperty]
         private bool _isLoadingInstances;
 
         [ObservableProperty]
@@ -169,6 +172,7 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         public void ReloadFromDocument()
         {
+            BuyingRuleError = null;
             foreach (var row in DetailRows.Concat(PricingRows))
                 row.Reload();
 
@@ -287,6 +291,17 @@ namespace SWLOR.Toolset.Editors.Merchants
             OnPropertyChanged(nameof(BuyAllExceptSelected));
             if (_loading)
                 return;
+
+            BuyingRuleError = null;
+            if (value && _store.BuyingRuleIds(buyOnlySelected: false).Count == 0)
+            {
+                BuyingRuleError = "Select at least one base item type before choosing 'buy only'.";
+                _loading = true;
+                BuyOnlySelected = false;
+                _loading = false;
+                OnPropertyChanged(nameof(BuyAllExceptSelected));
+                return;
+            }
 
             if (_runEdit(
                     value
@@ -498,6 +513,18 @@ namespace SWLOR.Toolset.Editors.Merchants
                     false,
                     selected =>
                     {
+                        BuyingRuleError = null;
+                        if (BuyOnlySelected &&
+                            !selected &&
+                            _store.BuyingRuleIds(buyOnlySelected: true).Count == 1 &&
+                            _store.BuyingRuleIds(buyOnlySelected: true).Contains(baseItem))
+                        {
+                            BuyingRuleError =
+                                "A 'buy only' merchant must keep at least one base item type selected.";
+                            RefreshBuyingRuleSelections();
+                            return;
+                        }
+
                         if (!_runEdit(
                                 $"Change buying rule for {choice.Display}",
                                 () => _store.SetBuyingRule(BuyOnlySelected, baseItem, selected)))

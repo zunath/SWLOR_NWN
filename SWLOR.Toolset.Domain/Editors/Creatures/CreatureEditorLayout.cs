@@ -23,7 +23,7 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
             Field("Description", "Description", BehaviorFieldKind.Paragraph, GffFieldType.CExoLocString)
         };
 
-        public static IReadOnlyList<BehaviorFieldDefinition> CombatRules { get; } = new[]
+        public static IReadOnlyList<BehaviorFieldDefinition> Flags { get; } = new[]
         {
             Field("Plot", "Plot", BehaviorFieldKind.Check, GffFieldType.Byte),
             Field("Immortal", "IsImmortal", BehaviorFieldKind.Check, GffFieldType.Byte),

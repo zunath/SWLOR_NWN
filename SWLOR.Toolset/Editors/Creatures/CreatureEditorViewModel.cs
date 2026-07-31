@@ -34,7 +34,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public ObservableCollection<BehaviorRowViewModel> BasicRows { get; } = new();
         public ObservableCollection<BehaviorRowViewModel> AppearanceRows { get; } = new();
-        public ObservableCollection<BehaviorRowViewModel> CombatRuleRows { get; } = new();
+        public ObservableCollection<BehaviorRowViewModel> FlagRows { get; } = new();
         public ObservableCollection<BehaviorRowViewModel> AiRows { get; } = new();
         public ObservableCollection<BehaviorRowViewModel> RoleRows { get; } = new();
         public ObservableCollection<BehaviorListItemViewModel> RoleList { get; } = new();
@@ -162,7 +162,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
             BuildRows(CreatureEditorLayout.Basic, BasicRows);
             BuildRows(CreatureEditorLayout.Appearance, AppearanceRows);
-            BuildRows(CreatureEditorLayout.CombatRules, CombatRuleRows);
+            BuildRows(CreatureEditorLayout.Flags, FlagRows);
             BuildRows(CreatureEditorLayout.Ai, AiRows);
             BehaviorListItemViewModel.Build(RoleList, CreatureRoleCatalog.All);
             SelectRole(CreatureRoleCatalog.Default);
@@ -234,7 +234,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         }
 
         private IEnumerable<BehaviorRowViewModel> DirectRows() =>
-            BasicRows.Concat(AppearanceRows).Concat(CombatRuleRows).Concat(AiRows);
+            BasicRows.Concat(AppearanceRows).Concat(FlagRows).Concat(AiRows);
 
         private IEnumerable<BehaviorRowViewModel> AllRows() =>
             DirectRows().Concat(_roleRowCache.Values.SelectMany(rows => rows));

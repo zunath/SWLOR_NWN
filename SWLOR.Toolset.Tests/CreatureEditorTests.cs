@@ -461,6 +461,13 @@ namespace SWLOR.Toolset.Tests
                 var tabItems = tabs!.Items.Cast<TabItem>().ToList();
                 tabItems.Select(tab => tab.Header?.ToString()).Should().Equal(
                     "Basic", "Behavior", "Variables", "Appearance", "Equipment", "Stats", "Abilities", "AI", "Loot");
+                var flagsCard = view.FindControl<Border>("CreatureFlagsCard");
+                flagsCard.Should().NotBeNull();
+                flagsCard!.IsVisible.Should().BeTrue("Flags belong to the initially selected Basic tab");
+                var basicTab = tabItems.Single(tab => tab.Header?.ToString() == "Basic");
+                basicTab.Content.Should().BeAssignableTo<Control>().Which
+                    .GetVisualDescendants().Should().Contain(flagsCard,
+                        "the Flags card is content owned by Basic rather than Stats");
                 var variablesTab = tabItems.Single(tab => tab.Header?.ToString() == "Variables");
                 variablesTab.IsVisible.Should().BeFalse();
                 editor.SelectedRole.Id.Should().Be(CreatureRoleCatalog.StandardId);
@@ -666,19 +673,18 @@ namespace SWLOR.Toolset.Tests
             CreatureEditorLayout.Basic.Single(field => field.Name == "TemplateResRef")
                 .IsReadOnly.Should().BeTrue();
             CreatureEditorLayout.Basic.Should().Contain(field => field.Name == "PaletteID");
-            var movedFields = new[]
-            {
-                "Race", "FactionID", "Conversation", "Plot",
-                "IsImmortal", "NoPermDeath", "Disarmable"
-            };
+            var movedFields = new[] { "Race", "FactionID", "Conversation" };
             CreatureEditorLayout.Basic.Should().NotContain(field => movedFields.Contains(field.Name));
             CreatureEditorLayout.Appearance.Should().Contain(field => field.Name == "Race");
             CreatureEditorLayout.Appearance.Should().NotContain(field => field.Name == "Appearance_Type",
                 "the model uses the shared paged appearance gallery instead of a generic choice row");
             CreatureEditorLayout.Ai.Should().ContainSingle(field => field.Name == "FactionID");
             CreatureEditorLayout.DialogRole.Should().Contain(field => field.Name == "Conversation");
-            CreatureEditorLayout.CombatRules.Select(field => field.Name).Should().Equal(
+            CreatureEditorLayout.Flags.Select(field => field.Name).Should().Equal(
                 "Plot", "IsImmortal", "NoPermDeath", "Disarmable");
+            CreatureEditorLayout.Basic.Concat(CreatureEditorLayout.Flags)
+                .Should().Contain(field => field.Name == "Plot",
+                    "the separate Flags card is part of the Basic tab");
             CreatureEditorLayout.Basic.Should().NotContain(field => field.Name.Contains("Script"));
             CreatureEditorLayout.GuildMaster.Single(field => field.Name == "GUILD_ID")
                 .ChoicesKey.Should().Be(CreatureChoiceKeys.Guilds);

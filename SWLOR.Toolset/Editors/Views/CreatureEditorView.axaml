@@ -165,8 +165,16 @@
       <TabControl x:Name="CreatureTabs" Grid.Column="1">
         <TabItem Header="Basic">
           <ScrollViewer>
-            <StackPanel Margin="14,10">
+            <StackPanel Margin="14,10" Spacing="8">
               <ItemsControl ItemsSource="{Binding BasicRows}" />
+              <Border x:Name="CreatureFlagsCard" Classes="card" Padding="12">
+                <StackPanel Spacing="5">
+                  <TextBlock Text="Flags" Classes="section" />
+                  <ItemsControl ItemsSource="{Binding FlagRows}" />
+                  <TextBlock Text="{Binding StatWarning}" Foreground="{DynamicResource AmberBrush}"
+                             TextWrapping="Wrap" IsVisible="{Binding HasStatWarning}" />
+                </StackPanel>
+              </Border>
             </StackPanel>
           </ScrollViewer>
         </TabItem>
@@ -324,14 +332,6 @@
         <TabItem Header="Stats">
           <ScrollViewer>
             <StackPanel Margin="14,10" Spacing="8">
-              <Border Classes="card" Padding="12">
-                <StackPanel Spacing="5">
-                  <TextBlock Text="Combat Rules" Classes="section" />
-                  <ItemsControl ItemsSource="{Binding CombatRuleRows}" />
-                  <TextBlock Text="{Binding StatWarning}" Foreground="{DynamicResource AmberBrush}"
-                             TextWrapping="Wrap" IsVisible="{Binding HasStatWarning}" />
-                </StackPanel>
-              </Border>
               <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                 <StackPanel>
                   <Border Classes="card" Padding="12" Margin="0,0,0,8">

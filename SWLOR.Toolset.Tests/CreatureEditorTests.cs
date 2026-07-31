@@ -221,6 +221,34 @@ namespace SWLOR.Toolset.Tests
             view.Should().NotContain("Create weapon");
             view.Should().NotContain("EnsureExistsCommand");
             view.Should().Contain("IsChecked=\"{Binding IsEnabled, Mode=TwoWay}\"");
+            view.Should().Contain("IsVisible=\"{Binding IsEnabled}\"",
+                "disabled natural weapons should not fill the tab with inactive fields");
+        }
+
+        [Test]
+        public void StatsTab_UsesAStableEditingOrderInsteadOfIndependentColumns()
+        {
+            var view = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", "CreatureEditorView.axaml"));
+            var orderedCards = new[]
+            {
+                "CreatureVitalsCard",
+                "CreatureAttributesCard",
+                "CreatureOffenseCard",
+                "CreatureDefenseCard",
+                "CreatureResistancesCard",
+                "CreatureSkillOverridesCard",
+                "CreatureNaturalWeapons"
+            };
+
+            var positions = orderedCards
+                .Select(name => view.IndexOf(name, StringComparison.Ordinal))
+                .ToList();
+            positions.Should().OnlyContain(index => index >= 0);
+            positions.Should().BeInAscendingOrder(
+                "the Stats tab should read from core values through combat tuning and weapons");
+            view.Should().Contain("<UniformGrid Columns=\"2\" />",
+                "the eight resistances should use the full tab width instead of one tall side column");
         }
 
         [Test]

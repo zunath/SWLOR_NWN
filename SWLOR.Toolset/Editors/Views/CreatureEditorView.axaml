@@ -70,7 +70,8 @@
             <CheckBox Grid.Column="1" Content="Enabled"
                       IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
           </Grid>
-          <StackPanel Spacing="5" IsEnabled="{Binding IsEnabled}">
+          <StackPanel Spacing="5" IsEnabled="{Binding IsEnabled}"
+                      IsVisible="{Binding IsEnabled}">
             <ContentControl Content="{Binding Damage}" />
             <ContentControl Content="{Binding Delay}" />
             <ContentControl Content="{Binding DamageType}" />
@@ -342,49 +343,78 @@
         <TabItem Header="Stats">
           <ScrollViewer>
             <StackPanel Margin="14,10" Spacing="8">
-              <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                <StackPanel>
-                  <Border Classes="card" Padding="12" Margin="0,0,0,8">
-                    <StackPanel><TextBlock Text="Level &amp; Vitals" Classes="section" Margin="0,0,0,6" />
-                      <ItemsControl ItemsSource="{Binding Stats.Vitals}" /></StackPanel>
-                  </Border>
-                  <Border Classes="card" Padding="12" Margin="0,0,0,8">
-                    <StackPanel><TextBlock Text="Offense" Classes="section" Margin="0,0,0,6" />
-                      <ItemsControl ItemsSource="{Binding Stats.Offense}" />
-                      <ItemsControl ItemsSource="{Binding Stats.SkillOverrides}" Margin="0,6,0,0">
-                        <ItemsControl.ItemTemplate>
-                          <DataTemplate DataType="creatures:CreatureSkillOverrideViewModel">
-                            <ContentControl Content="{Binding Level}" />
-                          </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                      </ItemsControl>
-                      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,7,0,0">
-                        <ComboBox ItemsSource="{Binding Stats.AvailableSkills}"
-                                  SelectedItem="{Binding Stats.SelectedSkillToAdd, Mode=TwoWay}" />
-                        <Button Grid.Column="1" Content="Add override"
-                                Command="{Binding Stats.AddSkillOverrideCommand}" />
-                      </Grid>
-                      <TextBlock Text="A skill override replaces NPC Level for that skill only."
-                                 Classes="dim" FontSize="11" Margin="0,6,0,0" /></StackPanel>
-                  </Border>
-                  <Border Classes="card" Padding="12" Margin="0,0,0,8">
-                    <StackPanel><TextBlock Text="Defense" Classes="section" Margin="0,0,0,6" />
-                      <ItemsControl ItemsSource="{Binding Stats.Defense}" /></StackPanel>
-                  </Border>
-                  <ItemsControl ItemsSource="{Binding Stats.Weapons}" />
-                </StackPanel>
-                <StackPanel Grid.Column="1">
-                  <Border Classes="card" Padding="12" Margin="0,0,0,8">
-                    <StackPanel><TextBlock Text="Resistances (−100 … 100)" Classes="section" Margin="0,0,0,6" />
-                      <ItemsControl ItemsSource="{Binding Stats.Resistances}" />
-                      <TextBlock Text="Negative values are vulnerabilities." Classes="dim" FontSize="11" /></StackPanel>
-                  </Border>
-                  <Border Classes="card" Padding="12">
-                    <StackPanel><TextBlock Text="Attributes" Classes="section" Margin="0,0,0,6" />
-                      <ItemsControl ItemsSource="{Binding Stats.Attributes}" /></StackPanel>
-                  </Border>
-                </StackPanel>
+              <!-- Fixed semantic rows keep the reading order stable. Independent masonry columns
+                   made Attributes appear after Resistances and allowed natural weapons to begin
+                   beside unrelated fields, so the tab looked different depending on card height. -->
+              <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
+                    ColumnSpacing="10" RowSpacing="8">
+                <Border x:Name="CreatureVitalsCard" Classes="card" Padding="12">
+                  <StackPanel>
+                    <TextBlock Text="Level &amp; Vitals" Classes="section" Margin="0,0,0,6" />
+                    <ItemsControl ItemsSource="{Binding Stats.Vitals}" />
+                  </StackPanel>
+                </Border>
+                <Border x:Name="CreatureAttributesCard" Grid.Column="1"
+                        Classes="card" Padding="12">
+                  <StackPanel>
+                    <TextBlock Text="Attributes" Classes="section" Margin="0,0,0,6" />
+                    <ItemsControl ItemsSource="{Binding Stats.Attributes}" />
+                  </StackPanel>
+                </Border>
+                <Border x:Name="CreatureOffenseCard" Grid.Row="1"
+                        Classes="card" Padding="12">
+                  <StackPanel>
+                    <TextBlock Text="Offense" Classes="section" Margin="0,0,0,6" />
+                    <ItemsControl ItemsSource="{Binding Stats.Offense}" />
+                  </StackPanel>
+                </Border>
+                <Border x:Name="CreatureDefenseCard" Grid.Row="1" Grid.Column="1"
+                        Classes="card" Padding="12">
+                  <StackPanel>
+                    <TextBlock Text="Defense" Classes="section" Margin="0,0,0,6" />
+                    <ItemsControl ItemsSource="{Binding Stats.Defense}" />
+                  </StackPanel>
+                </Border>
               </Grid>
+
+              <Border x:Name="CreatureResistancesCard" Classes="card" Padding="12">
+                <StackPanel>
+                  <TextBlock Text="Resistances (−100 … 100)" Classes="section"
+                             Margin="0,0,0,6" />
+                  <ItemsControl ItemsSource="{Binding Stats.Resistances}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <UniformGrid Columns="2" />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                  </ItemsControl>
+                  <TextBlock Text="Negative values are vulnerabilities."
+                             Classes="dim" FontSize="11" Margin="0,4,0,0" />
+                </StackPanel>
+              </Border>
+
+              <Border x:Name="CreatureSkillOverridesCard" Classes="card" Padding="12">
+                <StackPanel>
+                  <TextBlock Text="Skill Overrides" Classes="section" Margin="0,0,0,3" />
+                  <TextBlock Text="A skill override replaces NPC Level for that skill only."
+                             Classes="dim" FontSize="11" Margin="0,0,0,6" />
+                  <ItemsControl ItemsSource="{Binding Stats.SkillOverrides}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="creatures:CreatureSkillOverrideViewModel">
+                        <ContentControl Content="{Binding Level}" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,7,0,0">
+                    <ComboBox ItemsSource="{Binding Stats.AvailableSkills}"
+                              SelectedItem="{Binding Stats.SelectedSkillToAdd, Mode=TwoWay}" />
+                    <Button Grid.Column="1" Content="Add override"
+                            Command="{Binding Stats.AddSkillOverrideCommand}" />
+                  </Grid>
+                </StackPanel>
+              </Border>
+
+              <ItemsControl x:Name="CreatureNaturalWeapons" ItemsSource="{Binding Stats.Weapons}" />
             </StackPanel>
           </ScrollViewer>
         </TabItem>

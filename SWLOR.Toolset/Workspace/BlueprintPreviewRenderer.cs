@@ -428,25 +428,34 @@ namespace SWLOR.Toolset.Workspace
             if (parts.Count == 0)
                 return null;
 
-            // Aurora keeps weighted garments as separate visuals, but poses them from the wearer.
-            // A robe such as pmh0_robe010 also inherits a_ba_coat; applying that hierarchy's
-            // coat-only helper tracks bends its diagonal sash around the waist. Those helpers are
-            // attachment bones, so leave them at their authored bind transforms while the shared
-            // torso and arm bones follow the mannequin's idle.
-            var skinParts = new List<MdlModel>();
+            // Aurora keeps weighted garments as separate visuals. An equipped robe also owns the
+            // animation tree for the assembled character: pmh0_robe010 declares a_ba_coat, whose
+            // shared torso/arm tracks keep the rigid chest synchronized while its coat-only tracks
+            // place the weighted waist and tails around that chest. Driving both pieces from the
+            // plain mannequin idle leaves the sash and waist on different authored poses and makes
+            // one cut through the other.
+            var skinParts = new List<(string PartType, MdlModel Model)>();
             var rigidParts = new List<(string PartType, string ModelResRef)>();
             foreach (var part in parts)
             {
                 var model = LoadMdl(part.ModelResRef, withSupermodelAnims: false);
                 if (model != null && MdlMeshBuilder.ContainsNamedSkinWeights(model))
-                    skinParts.Add(model);
+                    skinParts.Add((part.PartType, model));
                 else
                     rigidParts.Add((part.PartType, part.ModelResRef));
             }
 
             var renderModels = new List<RenderModel>();
             var skeleton = LoadMdl(reference.SkeletonResRef, withSupermodelAnims: false);
-            var wearerFrames = skeleton == null ? null : IdleFrames(skeleton);
+            var weightedRobe = skinParts
+                .Where(part => part.PartType.Equals("robe", StringComparison.OrdinalIgnoreCase))
+                .Select(part => part.Model)
+                .FirstOrDefault();
+            var sharedFrames = weightedRobe != null
+                ? IdleFrames(weightedRobe)
+                : skeleton == null
+                    ? null
+                    : IdleFrames(skeleton);
             if (rigidParts.Count > 0)
             {
                 MdlModel? composed;
@@ -461,11 +470,13 @@ namespace SWLOR.Toolset.Workspace
                 }
 
                 if (composed != null)
-                    renderModels.Add(MdlMeshBuilder.Build(composed, IdleFrames(composed)));
+                    renderModels.Add(MdlMeshBuilder.Build(
+                        composed,
+                        sharedFrames ?? IdleFrames(composed)));
             }
 
-            renderModels.AddRange(skinParts.Select(model =>
-                MdlMeshBuilder.Build(model, wearerFrames ?? IdleFrames(model))));
+            renderModels.AddRange(skinParts.Select(part =>
+                MdlMeshBuilder.Build(part.Model, sharedFrames ?? IdleFrames(part.Model))));
 
             return CombineRenderModels(reference.SkeletonResRef, renderModels);
         }

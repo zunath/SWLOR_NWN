@@ -124,7 +124,7 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void ChimedClothesRobeUsesWearerIdleWithoutCoatHelperDeformation()
+        public void ChimedClothesRobeOwnsTheSharedCoatIdle()
         {
             var renderer = BuildRenderer(out var index);
 
@@ -139,7 +139,7 @@ namespace SWLOR.Toolset.Tests.Items
             renderedRobe.Transform.Should().Be(Matrix4x4.Identity,
                 "a skinmesh is baked into model space rather than moved as one rigid panel");
             model.Meshes.Should().OnlyContain(mesh => mesh.PoseFrames.Count > 1,
-                "Aurora's armor item window plays the mannequin and independent coat idles together");
+                "Aurora's armor item window plays one shared coat idle across the assembled character");
             renderedRobe.PosePositions.Should().HaveCount(renderedRobe.PoseFrames.Count);
             renderedRobe.Positions.Should().Equal(renderedRobe.PosePositions[^1],
                 "the still thumbnail and bounds use the final animated pose");
@@ -175,17 +175,18 @@ namespace SWLOR.Toolset.Tests.Items
                     mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&
                     mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase));
 
-            renderedRobe.PosePositions.Should().HaveCount(wearerPoseRobe.PosePositions.Count);
-            for (var frame = 0; frame < wearerPoseRobe.PosePositions.Count; frame++)
+            renderedRobe.PosePositions.Should().HaveCount(coatPoseRobe.PosePositions.Count);
+            for (var frame = 0; frame < coatPoseRobe.PosePositions.Count; frame++)
             {
                 renderedRobe.PosePositions[frame].Should().Equal(
-                    wearerPoseRobe.PosePositions[frame],
-                    "the equipped robe follows the wearer's idle while coat-only helpers remain at bind");
+                    coatPoseRobe.PosePositions[frame],
+                    "the equipped robe declares a_ba_coat as the assembled character's animation owner");
             }
 
             renderedRobe.PosePositions[0].Should().NotEqual(
-                coatPoseRobe.PosePositions[0],
-                "the a_ba_coat helper pose is the deformation that curls the sash into the waist");
+                wearerPoseRobe.PosePositions[0],
+                "falling back to the plain wearer leaves coat-only helpers at bind and cuts the " +
+                "weighted waist through the rigid chest sash");
 
             var firstFrame = renderedRobe.PosePositions[0];
             var maximumAnimatedDisplacement = renderedRobe.PosePositions

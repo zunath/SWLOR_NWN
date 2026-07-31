@@ -39,6 +39,7 @@
       <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
               ClipToBounds="True">
         <ListBox ItemsSource="{Binding FilteredChoices}" MaxHeight="220"
+                 ScrollViewer.ScrollChanged="OnSearchResultsScrollChanged"
                  ScrollViewer.VerticalScrollBarVisibility="Auto">
           <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
@@ -68,9 +69,6 @@
           </ListBox.ItemTemplate>
         </ListBox>
       </Border>
-      <Button Content="Load more" HorizontalAlignment="Left"
-              Command="{Binding LoadMoreSearchResultsCommand}"
-              IsVisible="{Binding CanLoadMoreSearchResults}" />
     </StackPanel>
   </StackPanel>
 </UserControl>

@@ -4,6 +4,14 @@
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
              x:Class="SWLOR.Toolset.Editors.Module.ModulePropertiesDocumentView"
              x:DataType="module:ModulePropertiesDocumentViewModel">
+  <UserControl.Resources>
+    <ControlTheme x:Key="StretchDataGridCellTheme"
+                  TargetType="DataGridCell"
+                  BasedOn="{StaticResource {x:Type DataGridCell}}">
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </ControlTheme>
+  </UserControl.Resources>
+
   <DockPanel>
     <Border DockPanel.Dock="Top" Padding="18,13"
             Background="{DynamicResource PanelHeaderBrush}"
@@ -72,10 +80,12 @@
                     CanUserResizeColumns="True" GridLinesVisibility="Horizontal">
             <DataGrid.Columns>
               <DataGridTextColumn Header="Event" Binding="{Binding Label}" Width="210" IsReadOnly="True" />
-              <DataGridTemplateColumn Header="Script" Width="*">
+              <DataGridTemplateColumn Header="Script" Width="*"
+                                      CellTheme="{StaticResource StretchDataGridCellTheme}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate x:DataType="module:ModuleEventRowViewModel">
-                    <ComboBox Margin="4,2" ItemsSource="{Binding ScriptChoices}"
+                    <ComboBox Margin="4,2" HorizontalAlignment="Stretch"
+                              ItemsSource="{Binding ScriptChoices}"
                               SelectedItem="{Binding Script, Mode=TwoWay}" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>

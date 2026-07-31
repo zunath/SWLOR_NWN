@@ -303,6 +303,39 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void EveryTintMaterialRequestsTangentData()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var materialDirectory = Path.Combine(repositoryRoot.FullName, "SWLOR_Haks", "sw_tint_mtr");
+        var materialPaths = Directory
+            .EnumerateFiles(materialDirectory, "*.mtr", SearchOption.TopDirectoryOnly)
+            .ToArray();
+        materialPaths.Should().NotBeEmpty();
+
+        var missingOrInvalid = materialPaths
+            .Where(path =>
+            {
+                var renderHints = File.ReadLines(path)
+                    .Select(line => line.Trim())
+                    .Where(line => line.StartsWith("renderhint ", StringComparison.OrdinalIgnoreCase))
+                    .ToArray();
+                return renderHints.Length != 1 ||
+                       !renderHints[0].Equals(
+                           "renderhint NormalAndSpecMapped",
+                           StringComparison.OrdinalIgnoreCase) &&
+                       !renderHints[0].Equals(
+                           "renderhint NormalTangents",
+                           StringComparison.OrdinalIgnoreCase);
+            })
+            .Select(Path.GetFileName)
+            .ToArray();
+
+        missingOrInvalid.Should().BeEmpty(
+            "the tint shader consumes a tangent basis and the stock Toolset must receive a " +
+            "tangent-generating render hint for every converted material");
+    }
+
+    [Test]
     public void TintMapRegistryUsesStructuredServerLogging()
     {
         var source = ReadSource(

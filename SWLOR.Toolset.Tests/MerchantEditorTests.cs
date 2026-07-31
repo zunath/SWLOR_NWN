@@ -588,6 +588,8 @@ namespace SWLOR.Toolset.Tests
                 "2 merchant records and 2 item records out of date across 2 of 3 placed instances.");
             editor.PlacedInstances[0].Status.Should().Be(
                 "1 merchant record, 2 item records out of date");
+            editor.PlacedInstances[0].SyncState.Should().Be("Out of date");
+            editor.PlacedInstances[2].SyncState.Should().Be("Up to date");
         }
 
         private static JsonGffStruct NewMerchant() =>

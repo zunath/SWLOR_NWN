@@ -197,7 +197,8 @@
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
           <StackPanel Grid.Column="0">
             <TextBlock Text="Placed instances" Classes="section" />
-            <TextBlock Text="{Binding InstanceSummary}" Classes="dim" Margin="0,3,0,0" />
+            <TextBlock Text="{Binding InstanceSummary}" Margin="0,3,0,0"
+                       FontWeight="SemiBold" TextWrapping="Wrap" />
           </StackPanel>
           <Button Grid.Column="1" Content="Refresh" Command="{Binding RefreshPlacedInstancesCommand}" />
           <Button Grid.Column="2" Content="Update out-of-date" Classes="primary"
@@ -214,9 +215,13 @@
                   AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="Horizontal">
           <DataGrid.Columns>
             <DataGridTextColumn Header="Area" Binding="{Binding AreaName}" Width="2*" />
-            <DataGridTextColumn Header="Area ResRef" Binding="{Binding AreaResRef}" Width="*" />
-            <DataGridTextColumn Header="Tag" Binding="{Binding Tag}" Width="*" />
-            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" />
+            <DataGridTextColumn Header="Area ResRef" Binding="{Binding AreaResRef}" Width="1.1*" />
+            <DataGridTextColumn Header="Tag" Binding="{Binding Tag}" Width="1.1*" />
+            <DataGridTextColumn Header="Merchant records"
+                                Binding="{Binding OutOfDateMerchantRecords}" Width="125" />
+            <DataGridTextColumn Header="Item records"
+                                Binding="{Binding OutOfDateItemRecords}" Width="105" />
+            <DataGridTextColumn Header="Status" Binding="{Binding SyncState}" Width="110" />
           </DataGrid.Columns>
         </DataGrid>
       </Grid>

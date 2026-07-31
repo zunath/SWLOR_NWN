@@ -18,6 +18,7 @@ namespace SWLOR.Toolset.Editors.Merchants
         int OutOfDateItemRecords)
     {
         public bool IsCurrent => OutOfDateMerchantRecords == 0 && OutOfDateItemRecords == 0;
+        public string SyncState => IsCurrent ? "Up to date" : "Out of date";
         public string Status => IsCurrent
             ? "Up to date"
             : $"{RecordCount(OutOfDateMerchantRecords, "merchant")}, " +

@@ -16,6 +16,12 @@ namespace SWLOR.Toolset.Editors.Creatures
         public CreatureLootTableInfo? Table { get; private set; }
 
         [ObservableProperty]
+        private int _position;
+
+        public bool HasTable => Table != null;
+        public bool IsPending => Table == null;
+
+        [ObservableProperty]
         private decimal _chance;
 
         [ObservableProperty]
@@ -31,14 +37,18 @@ namespace SWLOR.Toolset.Editors.Creatures
             Action<CreatureLootEntryViewModel, string> writeTable,
             Action<CreatureLootEntryViewModel> tableApplied,
             Action<CreatureLootEntryViewModel> changed,
-            Action<CreatureLootEntryViewModel> remove)
+            Action<CreatureLootEntryViewModel> remove,
+            int position = 0)
         {
             _changed = changed;
             _remove = remove;
             _loading = true;
-            Table = tables.FirstOrDefault(table => table.Id == entry.TableId)
-                    ?? new CreatureLootTableInfo(entry.TableId, $"Unknown table ({entry.TableId})", false,
-                        Array.Empty<CreatureLootTableItemInfo>());
+            Position = position;
+            Table = string.IsNullOrWhiteSpace(entry.TableId)
+                ? null
+                : tables.FirstOrDefault(table => table.Id == entry.TableId)
+                  ?? new CreatureLootTableInfo(entry.TableId, $"Unknown table ({entry.TableId})", false,
+                      Array.Empty<CreatureLootTableItemInfo>());
             Chance = entry.Chance;
             Pulls = entry.Pulls;
             _loading = false;
@@ -55,6 +65,8 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             Table = table;
             OnPropertyChanged(nameof(Table));
+            OnPropertyChanged(nameof(HasTable));
+            OnPropertyChanged(nameof(IsPending));
         }
 
         [RelayCommand]

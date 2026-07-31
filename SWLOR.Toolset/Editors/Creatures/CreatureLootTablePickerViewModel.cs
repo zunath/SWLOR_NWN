@@ -90,7 +90,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private static string Display(CreatureLootTableInfo? table)
         {
             if (table == null)
-                return "Nothing chosen";
+                return "Choose a loot table...";
 
             var idSuffix = $"({table.Id})";
             return table.DisplayName.EndsWith(idSuffix, StringComparison.OrdinalIgnoreCase)

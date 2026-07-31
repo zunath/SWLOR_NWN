@@ -101,23 +101,22 @@
     </DataTemplate>
 
     <DataTemplate DataType="creatures:CreatureLootEntryViewModel">
-      <Border Classes="card" Margin="0,0,0,8" Padding="10">
-        <StackPanel Spacing="8">
-          <!-- Loot table selection is the same deferred, virtualized, paged picker used by the
-               behavior and equipment editors. Do not replace this with an eager combo box. -->
-          <behaviors:BehaviorRowView DataContext="{Binding TablePicker}" />
-          <Grid ColumnDefinitions="Auto,92,Auto,92,*,Auto" ColumnSpacing="7">
-            <TextBlock Text="Chance %" Classes="dim" VerticalAlignment="Center" />
-            <NumericUpDown Grid.Column="1" Value="{Binding Chance, Mode=TwoWay}"
-                           Minimum="1" Maximum="100" Increment="1" FormatString="0" />
-            <TextBlock Grid.Column="2" Text="Pulls" Classes="dim" VerticalAlignment="Center" />
-            <NumericUpDown Grid.Column="3" Value="{Binding Pulls, Mode=TwoWay}"
-                           Minimum="1" Maximum="100" Increment="1" FormatString="0" />
-            <TextBlock Grid.Column="4" Text="{Binding ExpectedDrops}" Classes="dim"
-                       FontSize="11" Margin="4,0" VerticalAlignment="Center" />
-            <Button Grid.Column="5" Content="Remove" Command="{Binding RemoveCommand}" />
-          </Grid>
-        </StackPanel>
+      <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="5,7">
+        <Grid ColumnDefinitions="34,*,116,116,Auto" ColumnSpacing="8">
+          <TextBlock Text="{Binding Position}" Classes="dim" VerticalAlignment="Center"
+                     HorizontalAlignment="Center" />
+          <!-- The compact shell still uses the shared deferred, virtualized, paged catalog. -->
+          <behaviors:SearchableChoicePickerView Grid.Column="1" DataContext="{Binding TablePicker}"
+                                                Compact="True" />
+          <NumericUpDown Grid.Column="2" Value="{Binding Chance, Mode=TwoWay}"
+                         Minimum="1" Maximum="100" Increment="1" FormatString="0"
+                         MinWidth="110" VerticalAlignment="Top" />
+          <NumericUpDown Grid.Column="3" Value="{Binding Pulls, Mode=TwoWay}"
+                         Minimum="1" Maximum="100" Increment="1" FormatString="0"
+                         MinWidth="110" VerticalAlignment="Top" />
+          <Button Grid.Column="4" Content="Remove" Command="{Binding RemoveCommand}"
+                  VerticalAlignment="Top" />
+        </Grid>
       </Border>
     </DataTemplate>
 
@@ -477,33 +476,122 @@
         </TabItem>
 
         <TabItem Header="Loot">
-          <Grid ColumnDefinitions="*,320" ColumnSpacing="10" Margin="14,10">
-            <StackPanel>
-              <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
-                <TextBlock Text="Per-Kill Loot" Classes="section" VerticalAlignment="Center" />
-                <Button Grid.Column="1" Content="Add table" Command="{Binding Loot.AddCommand}" />
-              </Grid>
-              <TextBlock Text="{Binding Loot.Warning}" Foreground="{DynamicResource AmberBrush}"
-                         TextWrapping="Wrap" Margin="0,0,0,8" IsVisible="{Binding Loot.HasWarning}" />
-              <ScrollViewer><ItemsControl ItemsSource="{Binding Loot.Entries}" /></ScrollViewer>
-            </StackPanel>
-            <Border Grid.Column="1" Classes="card" Padding="12">
-              <StackPanel>
-                <TextBlock Text="{Binding Loot.PreviewTitle}" Classes="section" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding Loot.ExpectedDrops}" Classes="dim" Margin="0,4,0,8" />
-                <Button Content="Open table definition" Command="{Binding Loot.OpenDefinitionCommand}"
-                        IsVisible="{Binding Loot.CanOpenDefinition}" HorizontalAlignment="Left"
-                        Margin="0,0,0,8" />
-                <DataGrid ItemsSource="{Binding Loot.PreviewItems}" AutoGenerateColumns="False"
-                          IsReadOnly="True" GridLinesVisibility="Horizontal">
-                  <DataGrid.Columns>
-                    <DataGridTextColumn Header="Item" Binding="{Binding ResRef}" Width="2*" />
-                    <DataGridTextColumn Header="Weight" Binding="{Binding Weight}" Width="*" />
-                    <DataGridTextColumn Header="Max" Binding="{Binding MaximumQuantity}" Width="*" />
-                  </DataGrid.Columns>
-                </DataGrid>
+          <Grid ColumnDefinitions="*,300" ColumnSpacing="12" Margin="14,10">
+            <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+              <TextBlock Text="Configured Drops" Classes="section" Margin="0,0,0,8" />
+              <TextBlock Grid.Row="1" Text="{Binding Loot.Warning}"
+                         Foreground="{DynamicResource AmberBrush}" TextWrapping="Wrap"
+                         Margin="0,0,0,8" IsVisible="{Binding Loot.HasWarning}" />
+
+              <!-- Column labels live once at the list level, matching the item and merchant
+                   editors instead of repeating a labeled form in every row. -->
+              <Border Grid.Row="2" Background="{DynamicResource PanelRaisedBrush}" Padding="5,7">
+                <Grid ColumnDefinitions="34,*,116,116,Auto" ColumnSpacing="8">
+                  <TextBlock Text="#" Classes="dim" HorizontalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="Loot table" Classes="dim" />
+                  <TextBlock Grid.Column="2" Text="Chance %" Classes="dim" />
+                  <TextBlock Grid.Column="3" Text="Pulls" Classes="dim" />
+                </Grid>
+              </Border>
+
+              <ListBox Grid.Row="3" ItemsSource="{Binding Loot.Entries}"
+                       SelectedItem="{Binding Loot.SelectedEntry, Mode=TwoWay}"
+                       Background="Transparent" BorderThickness="0"
+                       ScrollViewer.VerticalScrollBarVisibility="Auto" />
+              <Border Grid.Row="3" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                      CornerRadius="3" Padding="18" IsVisible="{Binding !Loot.HasEntries}">
+                <TextBlock Text="No loot drops are configured." Classes="dim"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+
+              <Button Grid.Row="4" Content="Add drop" Command="{Binding Loot.AddCommand}"
+                      HorizontalAlignment="Left" Margin="0,10,0,0" />
+            </Grid>
+
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+              <StackPanel Spacing="10">
+                <Border Classes="card" Padding="12" IsVisible="{Binding Loot.HasSelectedTable}">
+                  <StackPanel Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                      <StackPanel>
+                        <TextBlock Text="{Binding Loot.PreviewTitle}" Classes="section"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding Loot.PreviewTableId}" Classes="resref"
+                                   TextTrimming="CharacterEllipsis" />
+                      </StackPanel>
+                      <Button Grid.Column="1" Content="Open definition"
+                              Command="{Binding Loot.OpenDefinitionCommand}"
+                              IsVisible="{Binding Loot.CanOpenDefinition}" VerticalAlignment="Top" />
+                    </Grid>
+
+                    <TextBlock Text="Contents" Classes="dim" />
+                    <ItemsControl ItemsSource="{Binding Loot.PreviewItems}"
+                                  IsVisible="{Binding Loot.HasPreviewItems}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="creatures:CreatureLootPreviewItemViewModel">
+                          <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0"
+                                  Padding="0,7">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                              <StackPanel>
+                                <TextBlock Text="{Binding DisplayName}" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding ResRef}" Classes="resref"
+                                           IsVisible="{Binding ShowsResRef}" />
+                              </StackPanel>
+                              <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                <TextBlock Text="{Binding WeightDisplay}" Classes="dim"
+                                           HorizontalAlignment="Right" />
+                                <TextBlock Text="{Binding QuantityDisplay}" Classes="dim"
+                                           HorizontalAlignment="Right" />
+                                <TextBlock Text="{Binding RareDisplay}"
+                                           Foreground="{DynamicResource AmberBrush}"
+                                           HorizontalAlignment="Right" />
+                              </StackPanel>
+                            </Grid>
+                          </Border>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Border BorderBrush="{DynamicResource AmberBrush}" BorderThickness="1"
+                            CornerRadius="3" Padding="10" IsVisible="{Binding !Loot.HasPreviewItems}">
+                      <TextBlock Text="{Binding Loot.PreviewEmptyMessage}"
+                                 TextWrapping="Wrap" Foreground="{DynamicResource AmberBrush}" />
+                    </Border>
+                  </StackPanel>
+                </Border>
+
+                <Border Classes="card" Padding="12" IsVisible="{Binding Loot.HasConfiguredEntries}">
+                  <StackPanel Spacing="7">
+                    <TextBlock Text="Per-kill estimate" Classes="section" />
+                    <TextBlock Text="{Binding Loot.ExpectedSummary}" Classes="dim"
+                               TextWrapping="Wrap" />
+                    <ItemsControl ItemsSource="{Binding Loot.ExpectedItems}"
+                                  IsVisible="{Binding Loot.HasExpectedItems}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="creatures:CreatureExpectedLootItemViewModel">
+                          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,3">
+                            <StackPanel>
+                              <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+                              <TextBlock Text="{Binding ResRef}" Classes="resref"
+                                         IsVisible="{Binding ShowsResRef}" />
+                            </StackPanel>
+                            <TextBlock Grid.Column="1" Text="{Binding ExpectedDisplay}" Classes="dim"
+                                       VerticalAlignment="Center" />
+                          </Grid>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="Rare-table bonuses and runtime modifiers can change actual results."
+                               Classes="dim" FontSize="10" TextWrapping="Wrap"
+                               IsVisible="{Binding Loot.HasExpectedItems}" />
+                  </StackPanel>
+                </Border>
+
+                <Border Classes="card" Padding="18" IsVisible="{Binding !Loot.HasSelectedTable}">
+                  <TextBlock Text="Select a configured drop to inspect its contents."
+                             Classes="dim" TextWrapping="Wrap" HorizontalAlignment="Center" />
+                </Border>
               </StackPanel>
-            </Border>
+            </ScrollViewer>
           </Grid>
         </TabItem>
       </TabControl>

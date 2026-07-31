@@ -1247,7 +1247,8 @@ namespace SWLOR.Toolset.Editors
                 OpenLootDefinition,
                 _appearances == null ? null : CreatureAppearanceOptions(),
                 _thumbnails,
-                ArmorDyeSwatches());
+                ArmorDyeSwatches(),
+                itemResRef => LoadMerchantItem(itemResRef)?.Name ?? itemResRef);
             editor.Closed += closed => _openCreatureEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>

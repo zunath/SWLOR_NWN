@@ -60,55 +60,9 @@
         </ComboBox.ItemTemplate>
       </ComboBox>
 
-      <!-- A long set stays as one lightweight summary until this particular picker is opened.
-           Results are then virtualized and paged, so changing a behavior never realizes every
-           option list in the new form. Only picking a listed option writes a value. -->
-      <StackPanel IsVisible="{Binding IsSearchableChoice}" Spacing="6">
-        <TextBlock Text="{Binding SelectedChoiceDisplay}" TextTrimming="CharacterEllipsis"
-                   VerticalAlignment="Center" />
-        <TextBlock Text="{Binding SearchSummary}" Classes="count" />
-        <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding !IsSearchExpanded}">
-          <Button Content="Choose..." Command="{Binding OpenSearchCommand}" />
-          <Button Content="Clear" Command="{Binding ClearChoiceCommand}"
-                  IsVisible="{Binding CanClearChoice}" />
-        </StackPanel>
-        <StackPanel IsVisible="{Binding IsSearchExpanded}" Spacing="6">
-          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-            <TextBox Text="{Binding ChoiceSearchText, Mode=TwoWay}"
-                     Watermark="{Binding SearchWatermark}" />
-            <Button Grid.Column="1" Content="Close" Command="{Binding CloseSearchCommand}" />
-          </Grid>
-        <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
-                ClipToBounds="True">
-          <ListBox ItemsSource="{Binding FilteredChoices}" MaxHeight="220"
-                   ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <ListBox.ItemsPanel>
-              <ItemsPanelTemplate>
-                <VirtualizingStackPanel />
-              </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-              <ListBox.ItemTemplate>
-                <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
-                  <Grid ColumnDefinitions="*,Auto">
-                    <Button Classes="behavior" Classes.on="{Binding IsSelected}"
-                            Content="{Binding Display}" Margin="2" Padding="8,5"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                            Command="{Binding $parent[ListBox].((behaviors:BehaviorRowViewModel)DataContext).PickChoiceCommand}"
-                            CommandParameter="{Binding}" />
-                    <Button Grid.Column="1" Content="▶" Margin="2" Padding="8,5"
-                            IsVisible="{Binding CanPreviewAudio}" ToolTip.Tip="Preview sound set"
-                            Command="{Binding $parent[ListBox].((behaviors:BehaviorRowViewModel)DataContext).PreviewAudioCommand}"
-                            CommandParameter="{Binding}" />
-                  </Grid>
-                </DataTemplate>
-              </ListBox.ItemTemplate>
-          </ListBox>
-        </Border>
-          <Button Content="Load more" HorizontalAlignment="Left"
-                  Command="{Binding LoadMoreSearchResultsCommand}"
-                  IsVisible="{Binding CanLoadMoreSearchResults}" />
-        </StackPanel>
-      </StackPanel>
+      <!-- A long set stays lightweight until this particular picker is opened. The shared control
+           also gives dense editors the same deferred, virtualized catalog in compact mode. -->
+      <behaviors:SearchableChoicePickerView IsVisible="{Binding IsSearchableChoice}" />
 
       <!-- A set of pictures that fits the page is shown on it. The difference between a blue marker
            and a treasure marker, or between two load screens, is visible and not sayable, so a list

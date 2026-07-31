@@ -51,7 +51,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             Action<string>? openLootDefinition,
             IReadOnlyList<AppearanceOption>? appearanceOptions,
             ThumbnailService? appearanceThumbnails,
-            Editors.Items.ArmorDyeSwatchService? colorPalettes = null)
+            Editors.Items.ArmorDyeSwatchService? colorPalettes = null,
+            Func<string, string>? resolveItemName = null)
         {
             _log = log;
             _prompts = prompts;
@@ -75,7 +76,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 openLootDefinition,
                 appearanceOptions,
                 appearanceThumbnails,
-                colorPalettes);
+                colorPalettes,
+                resolveItemName);
             UpdateTitle();
         }
 

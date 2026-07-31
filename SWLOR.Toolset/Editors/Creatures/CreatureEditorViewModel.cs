@@ -125,7 +125,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             Action<string>? openLootDefinition = null,
             IReadOnlyList<AppearanceOption>? appearanceOptions = null,
             ThumbnailService? appearanceThumbnails = null,
-            ArmorDyeSwatchService? colorPalettes = null)
+            ArmorDyeSwatchService? colorPalettes = null,
+            Func<string, string>? resolveItemName = null)
         {
             _store = new CreatureValueStore(creature);
             _runEdit = runEdit;
@@ -141,7 +142,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             Stats = new CreatureStatsViewModel(_store, Equipment, RunEdit, gameCodeIndex?.Skills);
             Abilities = new CreatureAbilitiesViewModel(_store, RunEdit);
             Ai = new CreatureAiViewModel(_store, RunEdit);
-            Loot = new CreatureLootViewModel(_store, RunEdit, openDefinition: openLootDefinition);
+            Loot = new CreatureLootViewModel(
+                _store, RunEdit, openDefinition: openLootDefinition, resolveItemName: resolveItemName);
             BodyParts = new CreatureBodyPartsViewModel(
                 _store, RunEdit, appearance, armorParts, colorPalettes, OnBodyPartChanged);
             EquipmentSlots = new CreatureEquipmentSlotsViewModel(

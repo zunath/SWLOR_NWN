@@ -534,6 +534,84 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AddingALootDrop_WaitsForARealTableSelectionBeforeWriting()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "loot_add", "Loot Add"));
+            var store = new CreatureValueStore(document.Root);
+            var table = new CreatureLootTableInfo(
+                "TEST_TABLE", "Test Table", false, Array.Empty<CreatureLootTableItemInfo>());
+            using var viewModel = new CreatureLootViewModel(store, (_, mutation) =>
+            {
+                mutation();
+                return true;
+            }, new[] { table });
+
+            viewModel.AddCommand.Execute(null);
+
+            var row = viewModel.Entries.Should().ContainSingle().Which;
+            row.IsPending.Should().BeTrue();
+            row.TablePicker.IsSearchExpanded.Should().BeTrue();
+            store.Locals.GetString("LOOT_TABLE_1").Should().BeNullOrEmpty();
+
+            var selection = row.TablePicker.FilteredChoices.Should().ContainSingle().Which;
+            row.TablePicker.PickChoiceCommand.Execute(selection);
+
+            row.IsPending.Should().BeFalse();
+            store.Locals.GetString("LOOT_TABLE_1").Should().Be("TEST_TABLE,100,1");
+        }
+
+        [Test]
+        public void EmptyRegisteredLootTables_AreSurfacedAsInvalidConfiguration()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "loot_empty", "Loot Empty"));
+            var store = new CreatureValueStore(document.Root);
+            store.Locals.SetString("LOOT_TABLE_1", "EMPTY_TABLE,100,1");
+            var table = new CreatureLootTableInfo(
+                "EMPTY_TABLE", "Empty Table", false, Array.Empty<CreatureLootTableItemInfo>());
+            using var viewModel = new CreatureLootViewModel(store, (_, mutation) =>
+            {
+                mutation();
+                return true;
+            }, new[] { table });
+
+            viewModel.HasWarning.Should().BeTrue();
+            viewModel.Warning.Should().Contain("has no items");
+            viewModel.HasPreviewItems.Should().BeFalse();
+        }
+
+        [Test]
+        public void PerKillLootEstimate_UsesWeightsQuantitiesAndResolvedItemNames()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "loot_estimate", "Loot Estimate"));
+            var store = new CreatureValueStore(document.Root);
+            store.Locals.SetString("LOOT_TABLE_1", "TEST_TABLE,50,2");
+            var table = new CreatureLootTableInfo(
+                "TEST_TABLE",
+                "Test Table",
+                false,
+                new[]
+                {
+                    new CreatureLootTableItemInfo("item_a", 1, 1, false),
+                    new CreatureLootTableItemInfo("item_b", 1, 3, false)
+                });
+            using var viewModel = new CreatureLootViewModel(store, (_, mutation) =>
+            {
+                mutation();
+                return true;
+            }, new[] { table }, resolveItemName: resRef => resRef == "item_a" ? "Item A" : "Item B");
+
+            viewModel.PreviewItems.Select(item => item.DisplayName)
+                .Should().Equal("Item A", "Item B");
+            viewModel.ExpectedItems.Should().ContainEquivalentOf(
+                new CreatureExpectedLootItemViewModel("Item A", "item_a", 0.5));
+            viewModel.ExpectedItems.Should().ContainEquivalentOf(
+                new CreatureExpectedLootItemViewModel("Item B", "item_b", 1.0));
+        }
+
+        [Test]
         public void LootDefinitionLink_UsesTheRegisteredDefinitionType()
         {
             var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(

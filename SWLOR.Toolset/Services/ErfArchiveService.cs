@@ -1617,6 +1617,8 @@ namespace SWLOR.Toolset.Services
                     "creature list" => "utc",
                     "door list" => "utd",
                     "encounter list" => "ute",
+                    "equip_itemlist" => "uti",
+                    "itemlist" => "uti",
                     "list" => "uti",
                     "placeable list" => "utp",
                     "soundlist" => "uts",

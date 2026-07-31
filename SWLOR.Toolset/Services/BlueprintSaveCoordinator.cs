@@ -24,8 +24,9 @@ namespace SWLOR.Toolset.Services
 
     /// <summary>
     /// One rename-on-save transaction for every placeable blueprint type. It renames the file,
-    /// carries custom-category membership, rebuilds every placed instance with the new ResRef, and
-    /// rolls the entire set back together if any member cannot be written.
+    /// carries custom-category membership, updates placed-instance references without rebuilding
+    /// their builder-authored overrides, and rolls the entire set back together if any member
+    /// cannot be written.
     /// </summary>
     public sealed class BlueprintSaveCoordinator
     {
@@ -66,7 +67,7 @@ namespace SWLOR.Toolset.Services
             var renaming = !string.Equals(
                 currentResRef,
                 targetResRef,
-                StringComparison.OrdinalIgnoreCase);
+                StringComparison.Ordinal);
 
             if (!renaming)
             {
@@ -94,22 +95,28 @@ namespace SWLOR.Toolset.Services
             var moduleRoot = ModuleRootFor(oldPath);
             var workspace = new ModuleWorkspace(moduleRoot);
             var newPath = workspace.GetResourcePath(type, targetResRef);
+            var caseOnlyRename = string.Equals(
+                currentResRef,
+                targetResRef,
+                StringComparison.OrdinalIgnoreCase);
             if (File.Exists(newPath) &&
-                !string.Equals(oldPath, newPath, StringComparison.OrdinalIgnoreCase))
+                (!caseOnlyRename || HasMultipleCaseVariants(newPath)))
             {
                 _log.AppendLine(
                     $"Cannot rename {currentResRef} to {targetResRef}: another blueprint already uses that ResRef.");
                 return failed;
             }
 
-            var references = FindBlockingReferences(
-                    moduleRoot,
-                    type,
-                    currentResRef,
-                    oldPath)
-                .Concat(_findUnsavedReferences?.Invoke(currentResRef) ?? Array.Empty<string>())
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            var references = caseOnlyRename
+                ? new List<string>()
+                : FindBlockingReferences(
+                        moduleRoot,
+                        type,
+                        currentResRef,
+                        oldPath)
+                    .Concat(_findUnsavedReferences?.Invoke(currentResRef) ?? Array.Empty<string>())
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
             if (references.Count > 0)
             {
                 var shown = string.Join(", ", references.Take(5));
@@ -120,7 +127,8 @@ namespace SWLOR.Toolset.Services
                 return failed;
             }
 
-            if (_categories != null && !_categories.CanRefileMember(type, currentResRef))
+            if (_categories != null &&
+                !_categories.CanRefileMember(type, currentResRef))
             {
                 _log.AppendLine(
                     $"Cannot rename {currentResRef} to {targetResRef}: its category could not be updated.");
@@ -136,7 +144,6 @@ namespace SWLOR.Toolset.Services
             }
 
             var blueprintBytes = session.ToBytes();
-            var blueprint = session.Document;
             List<CompanionWrite> companionWrites;
             int updatedInstances;
             IReadOnlyList<string> updatedAreas;
@@ -146,7 +153,6 @@ namespace SWLOR.Toolset.Services
                 companionWrites = PrepareInstanceWrites(
                     workspace,
                     type,
-                    blueprint,
                     currentResRef,
                     targetResRef,
                     out updatedInstances,
@@ -192,6 +198,21 @@ namespace SWLOR.Toolset.Services
                     staged.Add(SaveService.StageNew(newPath, blueprintBytes));
                     staged.AddRange(companionWrites.Select(write =>
                         SaveService.Stage(write.Path, write.Content)));
+
+                    // A case-insensitive filesystem exposes the old and new spellings as the same
+                    // path, so the destination cannot become "new" until the old directory entry is
+                    // removed. The recovery marker and every staged replacement already exist here.
+                    if (caseOnlyRename)
+                    {
+                        if (!recovery.OriginalStillMatches())
+                        {
+                            throw new IOException(
+                                $"The original blueprint '{oldPath}' changed before it could be renamed.");
+                        }
+
+                        File.Delete(oldPath);
+                    }
+
                     SaveService.CommitAll(staged);
                 }
                 catch
@@ -211,13 +232,14 @@ namespace SWLOR.Toolset.Services
 
                 categoryMoved = _categories != null;
                 recovery.RecordCategoryGeneration(categoryResult.ContentSha256);
-                if (!recovery.OriginalStillMatches())
+                if (!caseOnlyRename && !recovery.OriginalStillMatches())
                 {
                     throw new IOException(
                         $"The original blueprint '{oldPath}' changed before it could be removed.");
                 }
 
-                File.Delete(oldPath);
+                if (!caseOnlyRename)
+                    File.Delete(oldPath);
                 recovery.Complete();
                 session.MoveTo(newPath);
 
@@ -263,7 +285,6 @@ namespace SWLOR.Toolset.Services
         private List<CompanionWrite> PrepareInstanceWrites(
             ModuleWorkspace workspace,
             ResourceType type,
-            JsonGffDocument blueprint,
             string currentResRef,
             string targetResRef,
             out int updatedInstances,
@@ -274,24 +295,6 @@ namespace SWLOR.Toolset.Services
             var areas = new List<string>();
             updatedInstances = 0;
             openDirtyArea = null;
-            var itemCache = new Dictionary<string, JsonGffDocument?>(StringComparer.OrdinalIgnoreCase);
-            JsonGffDocument? LoadItem(string resRef)
-            {
-                if (itemCache.TryGetValue(resRef, out var cached))
-                    return cached;
-                try
-                {
-                    cached = workspace.LoadBlueprint(ResourceType.Uti, resRef).Document;
-                }
-                catch
-                {
-                    cached = null;
-                }
-
-                itemCache[resRef] = cached;
-                return cached;
-            }
-
             foreach (var areaResRef in workspace.EnumerateAreaResRefs())
             {
                 var path = Path.Combine(workspace.ModuleRoot, "git", areaResRef + ".git.json");
@@ -303,13 +306,11 @@ namespace SWLOR.Toolset.Services
                 int count;
                 using (EditScope.EnterConstruction())
                 {
-                    count = BlueprintInstanceSynchronizer.Synchronize(
+                    count = BlueprintInstanceSynchronizer.RenameReferences(
                         type,
-                        blueprint,
                         git,
                         currentResRef,
-                        targetResRef,
-                        LoadItem);
+                        targetResRef);
                 }
 
                 if (count == 0)
@@ -514,6 +515,20 @@ namespace SWLOR.Toolset.Services
             value.Length is >= 1 and <= 16 &&
             value.All(character =>
                 character is >= 'a' and <= 'z' or >= '0' and <= '9' or '_');
+
+        private static bool HasMultipleCaseVariants(string path)
+        {
+            var directory = Path.GetDirectoryName(path);
+            if (directory == null || !Directory.Exists(directory))
+                return false;
+
+            var fileName = Path.GetFileName(path);
+            return Directory.EnumerateFiles(directory)
+                .Count(candidate => string.Equals(
+                    Path.GetFileName(candidate),
+                    fileName,
+                    StringComparison.OrdinalIgnoreCase)) > 1;
+        }
 
         private sealed record CompanionWrite(
             string Path,

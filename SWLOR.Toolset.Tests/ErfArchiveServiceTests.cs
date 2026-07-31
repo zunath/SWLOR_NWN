@@ -776,6 +776,63 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task EmbeddedItemTemplateResRefsAreDiscoveredAsDependencies()
+        {
+            const string creatureResRef = "embedded_owner";
+            const string inventoryResRef = "embedded_inv";
+            const string equippedResRef = "embedded_equip";
+            var creature = JsonGffDocument.Parse(
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utc,
+                    creatureResRef,
+                    "Embedded Item Owner"));
+            using (EditScope.EnterConstruction())
+            {
+                creature.Root.Add(
+                    "ItemList",
+                    SyntheticGit.ListOf(SyntheticGit.Instance(
+                        ("TemplateResRef", GffFieldType.ResRef, inventoryResRef))));
+                creature.Root.Get("Equip_ItemList").InsertElement(
+                    0,
+                    SyntheticGit.Instance(
+                        ("TemplateResRef", GffFieldType.ResRef, equippedResRef)));
+            }
+
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "utc", $"{creatureResRef}.utc.json"),
+                creature.ToBytes());
+            foreach (var itemResRef in new[] { inventoryResRef, equippedResRef })
+            {
+                File.WriteAllBytes(
+                    Path.Combine(_firstModule, "uti", $"{itemResRef}.uti.json"),
+                    BlueprintTemplateFactory.CreateFileContent(
+                        ResourceType.Uti,
+                        itemResRef,
+                        itemResRef));
+            }
+
+            var archivePath = Path.Combine(_root, "embedded-item-dependencies.erf");
+            await _service.ExportAsync(
+                new[]
+                {
+                    $"{creatureResRef}.utc",
+                    $"{inventoryResRef}.uti",
+                    $"{equippedResRef}.uti"
+                },
+                archivePath);
+            using var archive = await _service.OpenArchiveAsync(archivePath);
+
+            var dependencies = await _service.FindImportDependenciesAsync(
+                archive,
+                new[] { $"{creatureResRef}.utc" });
+
+            dependencies.Select(dependency => dependency.FileName)
+                .Should().BeEquivalentTo(
+                    $"{inventoryResRef}.uti",
+                    $"{equippedResRef}.uti");
+        }
+
+        [Test]
         public async Task ScriptSourceRequiresItsCompiledCompanion()
         {
             File.WriteAllText(
@@ -1446,6 +1503,12 @@ namespace SWLOR.Toolset.Tests
                 ("ScriptSpawn", GffFieldType.ResRef, "shared"));
             var placedItem = SyntheticGit.Instance(
                 ("TemplateResRef", GffFieldType.ResRef, "shared"));
+            var inventoryItem = SyntheticGit.Instance(
+                ("TemplateResRef", GffFieldType.ResRef, "shared"));
+            var equippedItem = SyntheticGit.Instance(
+                ("TemplateResRef", GffFieldType.ResRef, "shared"));
+            creature.Add("ItemList", SyntheticGit.ListOf(inventoryItem));
+            creature.Add("Equip_ItemList", SyntheticGit.ListOf(equippedItem));
             var git = new JsonGffDocument("GIT ", new JsonGffStruct());
             git.Root.Add("Creature List", SyntheticGit.ListOf(creature));
             git.Root.Add("List", SyntheticGit.ListOf(placedItem));
@@ -1497,6 +1560,10 @@ namespace SWLOR.Toolset.Tests
             importedCreature.Get("Conversation").GetString().Should().Be("renamed_dialog");
             importedCreature.Get("ScriptSpawn").GetString().Should().Be("renamed_script");
             importedCreature.Get("TemplateResRef").GetString().Should().NotBe("renamed_item");
+            importedCreature.Get("ItemList").Elements!.Single()
+                .Get("TemplateResRef").GetString().Should().Be("renamed_item");
+            importedCreature.Get("Equip_ItemList").Elements!.Single()
+                .Get("TemplateResRef").GetString().Should().Be("renamed_item");
             importedGit.Items.Should().ContainSingle()
                 .Which.Get("TemplateResRef").GetString().Should().Be("renamed_item");
             var importedScript = File.ReadAllText(

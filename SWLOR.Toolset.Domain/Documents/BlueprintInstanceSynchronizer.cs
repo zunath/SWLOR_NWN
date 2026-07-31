@@ -6,8 +6,8 @@ namespace SWLOR.Toolset.Domain.Documents
 {
     /// <summary>
     /// Compares and rebuilds placed instances from a blueprint while retaining the fields that
-    /// belong to the placement itself. This is the shared implementation behind rename-on-save
-    /// and the editor's explicit "Update instances" actions.
+    /// belong to the placement itself. Explicit "Update instances" actions use the rebuild path;
+    /// blueprint renames use the reference-only path so placement overrides remain untouched.
     /// </summary>
     public static class BlueprintInstanceSynchronizer
     {
@@ -125,6 +125,46 @@ namespace SWLOR.Toolset.Domain.Documents
             }
 
             return replacements.Count + (type == ResourceType.Uti
+                ? SynchronizeEmbeddedItemReferences(git.Root, sourceResRef, targetResRef)
+                : 0);
+        }
+
+        /// <summary>
+        /// Changes only blueprint identity references for a rename and returns the number changed.
+        /// All other instance-authored fields remain exactly as the builder saved them. The caller
+        /// owns the surrounding edit/construction scope.
+        /// </summary>
+        public static int RenameReferences(
+            ResourceType type,
+            JsonGffDocument git,
+            string sourceResRef,
+            string targetResRef)
+        {
+            ArgumentNullException.ThrowIfNull(git);
+            ArgumentException.ThrowIfNullOrWhiteSpace(sourceResRef);
+            ArgumentException.ThrowIfNullOrWhiteSpace(targetResRef);
+
+            var updated = 0;
+            var list = git.Root.GetOrNull(ListFieldName(type));
+            if (list?.Elements != null)
+            {
+                var identityField = InstanceFieldMap.GetInstanceTemplateField(type);
+                foreach (var instance in list.Elements)
+                {
+                    if (!string.Equals(
+                            InstanceFieldMap.GetTemplateResRef(type, instance),
+                            sourceResRef,
+                            StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    instance.SetString(identityField, GffFieldType.ResRef, targetResRef);
+                    updated++;
+                }
+            }
+
+            return updated + (type == ResourceType.Uti
                 ? SynchronizeEmbeddedItemReferences(git.Root, sourceResRef, targetResRef)
                 : 0);
         }

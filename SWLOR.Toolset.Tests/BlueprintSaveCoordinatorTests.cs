@@ -40,7 +40,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [TestCaseSource(nameof(BlueprintTypes))]
-        public void RenameMovesTheBlueprintAndSynchronizesEveryPlacedType(ResourceType type)
+        public void RenameMovesTheBlueprintAndPreservesEveryPlacedType(ResourceType type)
         {
             const string oldResRef = "probe_old";
             const string newResRef = "probe_new";
@@ -59,18 +59,30 @@ namespace SWLOR.Toolset.Tests
             var blueprint = JsonGffDocument.Parse(blueprintBytes);
             var gitRoot = new JsonGffStruct();
             var list = JsonGffField.CreateList();
+            JsonGffStruct placedInstance;
             using (EditScope.EnterConstruction())
             {
-                list.InsertElement(
-                    0,
-                    InstanceFieldMap.CreateInstance(
-                        type, blueprint, oldResRef, 12.5, 24.25, 1.5, 0, 1));
+                placedInstance = InstanceFieldMap.CreateInstance(
+                    type, blueprint, oldResRef, 12.5, 24.25, 1.5, 0, 1);
+                placedInstance.SetString(
+                    "Tag", GffFieldType.CExoString, "instance_override");
+                list.InsertElement(0, placedInstance);
                 gitRoot.Add(BlueprintInstanceSynchronizer.ListFieldName(type), list);
             }
 
             var git = new JsonGffDocument("GIT ", gitRoot);
             var gitPath = Path.Combine(_moduleRoot, "git", $"{areaResRef}.git.json");
             File.WriteAllBytes(gitPath, git.ToBytes());
+            var expectedPlaced = JsonGffDocument.Parse(git.ToBytes()).Root
+                .Get(BlueprintInstanceSynchronizer.ListFieldName(type))
+                .Elements!.Single();
+            using (EditScope.EnterConstruction())
+            {
+                expectedPlaced.SetString(
+                    InstanceFieldMap.GetInstanceTemplateField(type),
+                    GffFieldType.ResRef,
+                    newResRef);
+            }
 
             using var session = DocumentSession.Open(oldPath);
             var identityField = type == ResourceType.Utm ? "ResRef" : "TemplateResRef";
@@ -102,9 +114,55 @@ namespace SWLOR.Toolset.Tests
                 .Get(BlueprintInstanceSynchronizer.ListFieldName(type))
                 .Elements!.Single();
             InstanceFieldMap.GetTemplateResRef(type, placed).Should().Be(newResRef);
-            InstanceFieldMap.GetTag(placed).Should().Be("updated_tag");
-            InstanceFieldMap.GetPosition(type, placed)
-                .Should().Be((12.5f, 24.25f, 1.5f));
+            StoreInstanceSynchronizer.Equivalent(placed, expectedPlaced).Should().BeTrue(
+                "a rename must change only the placement's blueprint identity field");
+            InstanceFieldMap.GetTag(placed).Should().Be("instance_override");
+        }
+
+        [Test]
+        public void SaveTreatsCaseOnlyResRefNormalizationAsARename()
+        {
+            const ResourceType type = ResourceType.Uti;
+            const string currentResRef = "CzerkaSoda";
+            const string targetResRef = "czerkasoda";
+            var folder = Path.Combine(_moduleRoot, type.Extension());
+            Directory.CreateDirectory(folder);
+            var oldPath = Path.Combine(folder, $"{currentResRef}.uti.json");
+            var newPath = Path.Combine(folder, $"{targetResRef}.uti.json");
+            File.WriteAllBytes(
+                oldPath,
+                BlueprintTemplateFactory.CreateFileContent(
+                    type, currentResRef, "Czerka Soda"));
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(path => new ModuleWorkspace(path), log);
+            workspace.Open(_moduleRoot);
+            var categories = new CategoryService(workspace, log);
+            var category = categories.Section(type)!.AddFolder("Consumables");
+            category.AddMember(currentResRef);
+            categories.SaveChanges().Saved.Should().BeTrue();
+
+            using var session = DocumentSession.Open(oldPath);
+            session.Execute(
+                "Normalize ResRef",
+                () => session.Document.Root.SetString(
+                    "TemplateResRef", GffFieldType.ResRef, targetResRef));
+
+            var outcome = new BlueprintSaveCoordinator(log, categories)
+                .Save(session, type, currentResRef, targetResRef);
+
+            outcome.Saved.Should().BeTrue();
+            outcome.Renamed.Should().BeTrue();
+            outcome.OldPath.Should().Be(oldPath);
+            outcome.NewPath.Should().Be(newPath);
+            session.FilePath.Should().Be(newPath);
+            Directory.EnumerateFiles(folder)
+                .Select(Path.GetFileName)
+                .Should().ContainSingle()
+                .Which.Should().Be($"{targetResRef}.uti.json");
+            JsonGffDocument.Load(newPath).Root.GetStringOrNull("TemplateResRef")
+                .Should().Be(targetResRef);
+            categories.Section(type)!.Find("Consumables")!.Members
+                .Should().Equal(targetResRef);
         }
 
         [Test]
@@ -193,16 +251,12 @@ namespace SWLOR.Toolset.Tests
                 root.Add("StoreList", stores);
             }
 
-            var itemBlueprint = JsonGffDocument.Parse(
-                BlueprintTemplateFactory.CreateFileContent(
-                    ResourceType.Uti, newResRef, "Renamed Item"));
             var git = new JsonGffDocument("GIT ", root);
             int updated;
             using (EditScope.EnterConstruction())
             {
-                updated = BlueprintInstanceSynchronizer.Synchronize(
+                updated = BlueprintInstanceSynchronizer.RenameReferences(
                     ResourceType.Uti,
-                    itemBlueprint,
                     git,
                     oldResRef,
                     newResRef);

@@ -645,6 +645,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 return;
 
             _previewModelGeneration++;
+            AppearanceGallery?.ReloadPreviews();
             UpdatePreviewScene();
         }
 

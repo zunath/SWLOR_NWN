@@ -197,9 +197,12 @@ namespace SWLOR.Toolset.Shell
             {
                 _moduleCustomContent.Reloaded += result => Dispatcher.UIThread.Post(() =>
                 {
+                    // Clear first: open galleries re-request their visible page during the editor
+                    // reload below. Clearing afterward discarded those fresh results and left the
+                    // tiles on their letter placeholders until the editor was reopened.
+                    _thumbnails.ClearCache();
                     if (_editorService.IsValueCreated)
                         _editorService.Value.ReloadOpenGameResources();
-                    _thumbnails.ClearCache();
                     _palette.Refresh();
                     StatusText = result.MissingHaks.Count == 0
                         ? $"Custom content reloaded: {result.LoadedHakCount} HAK layer(s)."

@@ -152,6 +152,23 @@ namespace SWLOR.Toolset.Editors.Appearance
             NotifyCurrentChanged();
         }
 
+        /// <summary>
+        /// Re-requests pictures for the published page after game resources become available or
+        /// the HAK stack changes. A gallery can be constructed while resources are still loading;
+        /// those initial requests are deliberately no-ops and therefore need this retry.
+        /// </summary>
+        public void ReloadPreviews()
+        {
+            if (_disposed)
+                return;
+
+            foreach (var tile in Tiles)
+            {
+                tile.Preview = null;
+                RequestPreview(tile);
+            }
+        }
+
         partial void OnQueryChanged(string value)
         {
             _searchDebounce?.Cancel();

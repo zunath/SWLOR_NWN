@@ -1,6 +1,11 @@
+using Avalonia.Headless.NUnit;
+using Avalonia.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.Render.Icons;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Appearance;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -115,6 +120,29 @@ namespace SWLOR.Toolset.Tests
             section.Tiles[0].HasDetail.Should().BeTrue();
         }
 
+        [AvaloniaTest]
+        public void VisiblePreviewsRetryAfterGameResourcesBecomeAvailable()
+        {
+            var source = new AppearancePreviewSource { IsAvailable = false };
+            var thumbnails = new ThumbnailService(
+                new WorkspaceContext(_ => throw new NotSupportedException(), new OutputLogService()),
+                source);
+            using var section = new AppearanceGallerySectionViewModel(
+                Options(3), thumbnails, () => "0", _ => true, noun: "appearance");
+
+            source.AppearanceCalls.Should().Be(0,
+                "opening during game-data loading cannot render yet");
+            section.Tiles.Should().OnlyContain(tile => tile.Preview == null);
+
+            source.IsAvailable = true;
+            section.ReloadPreviews();
+            DrainDispatcher();
+
+            source.AppearanceCalls.Should().Be(3,
+                "only the currently published page is retried");
+            section.Tiles.Should().OnlyContain(tile => tile.Preview != null);
+        }
+
         [Test]
         public void DisposingCancelsAPendingSearchRatherThanLettingItFire()
         {
@@ -197,5 +225,38 @@ namespace SWLOR.Toolset.Tests
                     $"row {index} · label_{index}",
                     CreatureAppearanceId: index))
                 .ToList();
+
+        private static void DrainDispatcher()
+        {
+            for (var attempt = 0; attempt < 100; attempt++)
+            {
+                Dispatcher.UIThread.RunJobs();
+                Thread.Sleep(5);
+                Dispatcher.UIThread.RunJobs();
+            }
+        }
+
+        private sealed class AppearancePreviewSource : IPreviewImageSource
+        {
+            public bool IsAvailable { get; set; }
+            public DateTime ContentVersionUtc => new(2026, 1, 1);
+            public int AppearanceCalls;
+
+            public IconImage? Render(ResourceType type, string resRef, bool useIndexedBlueprint = false) =>
+                Image();
+
+            public IconImage? RenderModel(string modelResRef) => Image();
+
+            public IconImage? RenderTileGroup(
+                IReadOnlyList<string> slotModelResRefs, int columns, int rows) => Image();
+
+            public IconImage? RenderCreatureAppearance(int appearanceId)
+            {
+                Interlocked.Increment(ref AppearanceCalls);
+                return Image();
+            }
+
+            private static IconImage Image() => new(2, 2, new byte[2 * 2 * 4]);
+        }
     }
 }

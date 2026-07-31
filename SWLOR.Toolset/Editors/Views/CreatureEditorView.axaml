@@ -138,7 +138,16 @@
         <Grid RowDefinitions="*,Auto">
           <Border Grid.Row="0" MinHeight="280" Background="{DynamicResource PanelRaisedBrush}"
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
-            <ContentControl Content="{Binding PreviewView}" />
+            <Grid>
+              <ContentControl Content="{Binding PreviewView}" />
+              <Border Background="{DynamicResource PanelRaisedBrush}"
+                      IsVisible="{Binding IsModelPreviewLoading}">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+                  <ProgressBar IsIndeterminate="True" Width="96" />
+                  <TextBlock Text="Loading model..." Classes="dim" />
+                </StackPanel>
+              </Border>
+            </Grid>
           </Border>
           <StackPanel Grid.Row="1" Margin="0,9,0,0" Spacing="5">
             <ListBox Classes="segmented"

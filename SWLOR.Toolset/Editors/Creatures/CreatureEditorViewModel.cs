@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Numerics;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
@@ -29,6 +30,9 @@ namespace SWLOR.Toolset.Editors.Creatures
         private readonly Func<BehaviorChoice, string?>? _previewAudio;
         private readonly Dictionary<string, IReadOnlyList<BehaviorRowViewModel>> _roleRowCache =
             new(StringComparer.Ordinal);
+        private bool _previewSceneUpdateQueued;
+        private int _previewModelGeneration;
+        private readonly SemaphoreSlim _previewModelGate = new(1);
         private ModelPreviewControl? _previewView;
         private bool _disposed;
 
@@ -64,6 +68,9 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         [ObservableProperty]
         private bool _isDirty;
+
+        [ObservableProperty]
+        private bool _isModelPreviewLoading;
 
         public string HeaderName => "Creature";
         public string HeaderKind => "blueprint";
@@ -291,18 +298,18 @@ namespace SWLOR.Toolset.Editors.Creatures
             EnsureSelectedAppearanceSectionLoaded();
             UpdateWarnings();
             UpdateQuestUsage();
-            UpdatePreviewScene();
+            QueuePreviewSceneUpdate();
             NotifySummary();
         }
 
         private void OnEquipmentChanged()
         {
-            UpdatePreviewScene();
+            QueuePreviewSceneUpdate();
         }
 
         private void OnBodyPartChanged()
         {
-            UpdatePreviewScene();
+            QueuePreviewSceneUpdate();
         }
 
         private string CurrentAppearanceKey() =>
@@ -469,11 +476,88 @@ namespace SWLOR.Toolset.Editors.Creatures
                 "PERMANENT_VFX_ID" or "PARALYZE" or "DAZE" or "AI_PROFILE" or "AI_FLAGS");
         }
 
+        /// <summary>
+        /// Lets the picker close and publish its selected item before any preview work starts.
+        /// Multiple equipment or appearance changes in one UI turn collapse into one model rebuild.
+        /// </summary>
+        private void QueuePreviewSceneUpdate()
+        {
+            if (_disposed || _previewSceneUpdateQueued)
+                return;
+
+            _previewSceneUpdateQueued = true;
+            Dispatcher.UIThread.Post(() =>
+            {
+                _previewSceneUpdateQueued = false;
+                UpdatePreviewScene();
+            }, DispatcherPriority.Background);
+        }
+
+        /// <summary>
+        /// Snapshots the UTC on the UI thread, then parses and composes its model on a worker.
+        /// A serialized gate discards superseded queued requests before they start, matching the
+        /// progressive preview strategy used by the item editor.
+        /// </summary>
         private void UpdatePreviewScene()
         {
             if (_disposed)
                 return;
-            var model = _resolveModel?.Invoke(_store.Creature);
+
+            if (_resolveModel == null)
+            {
+                _previewModelGeneration++;
+                IsModelPreviewLoading = false;
+                ApplyPreviewScene(null);
+                return;
+            }
+
+            var generation = ++_previewModelGeneration;
+            IsModelPreviewLoading = true;
+            ApplyPreviewScene(null);
+
+            // The resolver never observes a partially applied edit, and no worker touches the
+            // live document while undo/redo or another field mutation is in progress.
+            var snapshot = new JsonGffDocument("UTC ", _store.Creature).ToBytes();
+            _ = ResolvePreviewModelAsync(snapshot, generation);
+        }
+
+        private async Task ResolvePreviewModelAsync(byte[] snapshot, int generation)
+        {
+            RenderModel? model;
+            await _previewModelGate.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                // Rapid item picks cost at most the active composition plus the newest state.
+                if (generation != Volatile.Read(ref _previewModelGeneration))
+                    return;
+
+                model = await Task.Run(() =>
+                {
+                    var creature = JsonGffDocument.Parse(snapshot).Root;
+                    return _resolveModel!(creature);
+                }).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                model = null;
+            }
+            finally
+            {
+                _previewModelGate.Release();
+            }
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (_disposed || generation != _previewModelGeneration)
+                    return;
+
+                IsModelPreviewLoading = false;
+                ApplyPreviewScene(model);
+            });
+        }
+
+        private void ApplyPreviewScene(RenderModel? model)
+        {
             PublishAnimations(model);
             PreviewScene = model == null
                 ? null
@@ -557,6 +641,8 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             if (_disposed)
                 return;
+
+            _previewModelGeneration++;
             UpdatePreviewScene();
         }
 
@@ -571,6 +657,9 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (_disposed)
                 return;
             _disposed = true;
+            _previewModelGeneration++;
+            _previewSceneUpdateQueued = false;
+            IsModelPreviewLoading = false;
             foreach (var row in AllRows())
                 row.Dispose();
             Loot.Dispose();

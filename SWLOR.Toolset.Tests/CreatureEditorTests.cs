@@ -770,7 +770,7 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        [Test]
+        [AvaloniaTest]
         public void CreaturePreview_FacesTheDefaultCameraAndAlwaysPublishesAnimationSegments()
         {
             using var editor = OpenPreviewEditor(new RenderModel { Name = "facing_test" });
@@ -848,7 +848,7 @@ namespace SWLOR.Toolset.Tests
             Dispatcher.UIThread.RunJobs();
         }
 
-        [Test]
+        [AvaloniaTest]
         public void CreaturePreview_MapsNamedAnimationsToSegments()
         {
             using var editor = OpenPreviewEditor(new RenderModel
@@ -871,7 +871,7 @@ namespace SWLOR.Toolset.Tests
         {
             var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
                 ResourceType.Utc, "facing_test", "Facing Test"));
-            return new CreatureEditorViewModel(
+            var editor = new CreatureEditorViewModel(
                 document.Root,
                 Path.Combine(CorpusLocator.ModuleDirectory, "utc", "facing_test.utc.json"),
                 "facing_test",
@@ -886,6 +886,20 @@ namespace SWLOR.Toolset.Tests
                 _ => model,
                 _ => null,
                 null);
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+            return editor;
+        }
+
+        private static void DrainUntil(Func<bool> condition)
+        {
+            for (var attempt = 0; attempt < 200 && !condition(); attempt++)
+            {
+                Dispatcher.UIThread.RunJobs();
+                Thread.Sleep(5);
+            }
+
+            Dispatcher.UIThread.RunJobs();
+            condition().Should().BeTrue("the background creature preview should publish promptly");
         }
 
         private static byte[] SoundSetBytes(string resRef)
@@ -1118,6 +1132,100 @@ namespace SWLOR.Toolset.Tests
             armor.ClearChoiceCommand.Execute(null);
             new CreatureValueStore(document.Root).EquippedResRef(2).Should().BeNull();
             armor.CanClearChoice.Should().BeFalse();
+        }
+
+        [AvaloniaTest]
+        public void EquipmentSelection_ComposesOnlyTheNewestCreaturePreviewOffTheUiThread()
+        {
+            using var firstSelectionStarted = new ManualResetEventSlim();
+            using var releaseFirstSelection = new ManualResetEventSlim();
+            using var autoReleaseCancellation = new CancellationTokenSource();
+            Task? autoRelease = null;
+            var resolverCalls = 0;
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "equipmentprev", "Equipment Preview"));
+            var choices = new[]
+            {
+                new CreatureEquipmentChoice("armor_a", "Armor A", 16, 2),
+                new CreatureEquipmentChoice("armor_b", "Armor B", 16, 2)
+            };
+            using var editor = new CreatureEditorViewModel(
+                document.Root,
+                Path.Combine(CorpusLocator.ModuleDirectory, "utc", "equipmentprev.utc.json"),
+                "equipmentprev",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                null,
+                null,
+                creature =>
+                {
+                    Interlocked.Increment(ref resolverCalls);
+                    var equipped = new CreatureValueStore(creature).EquippedResRef(2) ?? "none";
+                    if (equipped == "armor_a")
+                    {
+                        firstSelectionStarted.Set();
+                        releaseFirstSelection.Wait();
+                    }
+
+                    return new RenderModel { Name = equipped };
+                },
+                _ => null,
+                null,
+                equipmentChoices: () => choices);
+
+            try
+            {
+                DrainUntil(() => !editor.IsModelPreviewLoading);
+                editor.PreviewScene!.Instances.Single().Model!.Name.Should().Be("none");
+
+                var armor = editor.EquipmentSlots.Slots.Single(slot => slot.Label == "Armor");
+                armor.OpenSearchCommand.Execute(null);
+                var armorA = armor.FilteredChoices.Single(choice => choice.StringValue == "armor_a");
+
+                // A regressed synchronous selection releases itself after two seconds so the test
+                // fails with a useful timing assertion instead of hanging the runner forever.
+                autoRelease = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(2), autoReleaseCancellation.Token);
+                        releaseFirstSelection.Set();
+                    }
+                    catch (OperationCanceledException)
+                    {
+                    }
+                });
+                var elapsed = System.Diagnostics.Stopwatch.StartNew();
+                armor.PickChoiceCommand.Execute(armorA);
+                elapsed.Stop();
+                elapsed.Elapsed.Should().BeLessThan(TimeSpan.FromMilliseconds(250),
+                    "choosing equipment must not parse and compose the creature model on the UI thread");
+
+                Dispatcher.UIThread.RunJobs();
+                firstSelectionStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+
+                armor.OpenSearchCommand.Execute(null);
+                var armorB = armor.FilteredChoices.Single(choice => choice.StringValue == "armor_b");
+                armor.PickChoiceCommand.Execute(armorB);
+                Dispatcher.UIThread.RunJobs();
+                releaseFirstSelection.Set();
+                DrainUntil(() => !editor.IsModelPreviewLoading);
+
+                resolverCalls.Should().Be(3,
+                    "only the initial model, active selection, and newest queued selection should compose");
+                editor.PreviewScene!.Instances.Single().Model!.Name.Should().Be("armor_b",
+                    "a slower previous equipment preview must not replace the latest selection");
+            }
+            finally
+            {
+                autoReleaseCancellation.Cancel();
+                releaseFirstSelection.Set();
+                autoRelease?.GetAwaiter().GetResult();
+            }
         }
 
         [Test]

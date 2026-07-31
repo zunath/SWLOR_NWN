@@ -123,7 +123,8 @@ namespace SWLOR.Toolset.Domain.Script
                 var path = prefix.Length == 0 ? entry.Key : prefix + "." + entry.Key;
                 if (entry.Value.Type == GffFieldType.ResRef &&
                     (IsScriptSlotField(entry.Key) ||
-                     type == ResourceType.Dlg && entry.Key is "Active" or "Script"))
+                     type == ResourceType.Dlg &&
+                     entry.Key is "Active" or "Script" or "EndConversation" or "EndConverAbort"))
                 {
                     string value;
                     try

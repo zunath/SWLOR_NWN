@@ -161,6 +161,13 @@ namespace SWLOR.Toolset.Editors.Items
 
             try
             {
+                var invariantProblem = Editor.EnforceSaveInvariants();
+                if (invariantProblem != null)
+                {
+                    _log.AppendLine(invariantProblem);
+                    return false;
+                }
+
                 var targetResRef = Editor.TemplateResRef.Trim().ToLowerInvariant();
                 if (!ResRefShape.IsMatch(targetResRef))
                 {
@@ -246,8 +253,13 @@ namespace SWLOR.Toolset.Editors.Items
                 // silently replaced and then orphaned by the delete below.
                 if (renaming && !string.Equals(_session.FilePath, newPath, StringComparison.OrdinalIgnoreCase))
                     SaveService.WriteAtomicNew(newPath, saveBytes);
-                else
-                    SaveService.WriteAtomic(newPath, saveBytes);
+                else if (!SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
+                {
+                    _log.AppendLine(
+                        $"Cannot save {_session.FilePath}: the file changed on disk while the save " +
+                        "was being prepared. Nothing was written - reload or save again.");
+                    return false;
+                }
 
                 if (renaming)
                 {

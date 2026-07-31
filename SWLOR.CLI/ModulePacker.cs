@@ -548,22 +548,23 @@ namespace SWLOR.CLI
         }
 
         /// <summary>
-        /// Refuses to pack while an interrupted toolset save is pending. A kill during a grouped
-        /// save can leave a canonical ARE/GIT/GIC only at its ".save-backup" path with a
-        /// ".save-transaction.json" manifest beside it; GetFileList deliberately filters backups,
-        /// so packing in that state would silently ship an incomplete area triplet. The toolset's
-        /// SaveService.RecoverInterruptedSaves performs the recovery when the module is opened -
-        /// this CLI does not duplicate that logic, it fails loudly instead.
+        /// Refuses to pack while an interrupted toolset save is pending. Every transaction manifest
+        /// is pending, as is a backup whose canonical target is missing. A backup beside an existing
+        /// canonical file is only stale cleanup debris from a save that already committed and is safe
+        /// to ignore. The toolset's SaveService.RecoverInterruptedSaves performs the recovery when
+        /// the module is opened; this CLI does not duplicate that logic, it fails loudly instead.
         /// </summary>
         private static void RequireNoInterruptedSaves()
         {
             var pending = GetModuleFolders()
+                .Concat(new[] { "./nss", "./ncs" })
                 .Where(Directory.Exists)
                 .Append(".")
                 .SelectMany(folder => Directory.GetFiles(folder)
                     .Where(file =>
                         file.EndsWith(".save-transaction.json", StringComparison.OrdinalIgnoreCase) ||
-                        file.EndsWith(".save-backup", StringComparison.OrdinalIgnoreCase)))
+                        file.EndsWith(".save-backup", StringComparison.OrdinalIgnoreCase) &&
+                        !File.Exists(InterruptedSaveTarget(file))))
                 .ToList();
 
             if (pending.Count == 0)
@@ -574,6 +575,13 @@ namespace SWLOR.CLI
                 "Open the module in the SWLOR Toolset to recover it, then pack again. Pending files:" +
                 Environment.NewLine +
                 string.Join(Environment.NewLine, pending));
+        }
+
+        private static string InterruptedSaveTarget(string backupPath)
+        {
+            // "area.git.json.<transaction-id>.save-backup" -> "area.git.json"
+            var withoutSuffix = backupPath[..^".save-backup".Length];
+            return Path.ChangeExtension(withoutSuffix, null);
         }
 
         /// <summary>

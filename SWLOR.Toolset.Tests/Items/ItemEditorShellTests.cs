@@ -7,6 +7,7 @@ using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Items;
 using SWLOR.Toolset.Services;
@@ -112,6 +113,77 @@ namespace SWLOR.Toolset.Tests.Items
             // the toolset to edit its locals - the new-item template's NO_ECONOMY opt-out included.
             Assert.That(editor.ShowsVariablesTab, Is.True);
             Assert.That(editor.Variables, Is.Not.Null);
+        }
+
+        [Test]
+        public void EditingDescriptionMirrorsAnEmptyEngineCompanion()
+        {
+            var path = Path.Combine(
+                CorpusLocator.ModuleDirectory,
+                "uti",
+                "adren_harness.uti.json");
+            var document = UtiDocument.Load(path);
+            var store = new ItemValueStore(document.Fields);
+            store.SetLocalizedText("Description", string.Empty);
+            store.SetLocalizedText("DescIdentified", string.Empty);
+            using var editor = new ItemEditorViewModel(
+                document.Fields,
+                "adren_harness",
+                (_, mutation) => { mutation(); return true; });
+
+            editor.BasicRows.Single(row => row.Definition.Name == "DescIdentified").Text =
+                "A mirrored description.";
+
+            store.GetLocalizedText("DescIdentified").Should().Be("A mirrored description.");
+            store.GetLocalizedText("Description").Should().Be("A mirrored description.");
+        }
+
+        [Test]
+        public void EditingDescriptionPreservesDivergentHistoricalCompanionText()
+        {
+            var path = Path.Combine(
+                CorpusLocator.ModuleDirectory,
+                "uti",
+                "adren_harness.uti.json");
+            var document = UtiDocument.Load(path);
+            var store = new ItemValueStore(document.Fields);
+            store.SetLocalizedText("Description", "Historical unidentified text");
+            store.SetLocalizedText("DescIdentified", "Old player-facing text");
+            using var editor = new ItemEditorViewModel(
+                document.Fields,
+                "adren_harness",
+                (_, mutation) => { mutation(); return true; });
+
+            editor.BasicRows.Single(row => row.Definition.Name == "DescIdentified").Text =
+                "New player-facing text";
+
+            store.GetLocalizedText("DescIdentified").Should().Be("New player-facing text");
+            store.GetLocalizedText("Description").Should().Be("Historical unidentified text");
+        }
+
+        [Test]
+        public void SourceLessItemCannotClearNoEconomy()
+        {
+            var path = Path.Combine(
+                CorpusLocator.ModuleDirectory,
+                "uti",
+                "adren_harness.uti.json");
+            var document = UtiDocument.Load(path);
+            var locals = new VarTable(document.Fields);
+            locals.SetInt(ItemEditorLayout.NoEconomyLocal, 1);
+            using var editor = new ItemEditorViewModel(
+                document.Fields,
+                "adren_harness",
+                (_, mutation) => { mutation(); return true; },
+                sourceLookup: _ => Array.Empty<ItemSourceEntry>(),
+                itemSourcesReady: () => true);
+            var noEconomy = editor.FlagRows.Single(row =>
+                row.Definition.Name == ItemEditorLayout.NoEconomyLocal);
+
+            noEconomy.IsChecked = false;
+
+            noEconomy.IsChecked.Should().BeTrue();
+            locals.GetInt(ItemEditorLayout.NoEconomyLocal).Should().Be(1);
         }
 
         [Test]
@@ -551,6 +623,29 @@ namespace SWLOR.Toolset.Tests.Items
             Assert.That(await document.TrySaveAsync(), Is.True);
             Assert.That(document.FilePath, Is.EqualTo(Scratch("adren_harness")));
             Assert.That(UtiDocument.Load(Scratch("adren_harness")).Tag, Is.EqualTo("adren_harness_b"));
+        }
+
+        [Test]
+        public async Task SaveFlagsAnUnobtainableItemThatWasPreviouslyUnrestricted()
+        {
+            var source = UtiDocument.Load(Scratch("adren_harness"));
+            new VarTable(source.Fields).Remove(ItemEditorLayout.NoEconomyLocal);
+            File.WriteAllBytes(Scratch("adren_harness"), source.ToBytes());
+            var document = new ItemDocumentViewModel(
+                Scratch("adren_harness"),
+                "adren_harness",
+                null,
+                new OutputLogService(),
+                new StubPrompts(),
+                sourceLookup: _ => Array.Empty<ItemSourceEntry>(),
+                itemSourcesReady: () => true);
+            document.Editor.BasicRows.Single(row => row.Definition.Name == "Tag").Text =
+                "adren_harness_restricted";
+
+            Assert.That(await document.TrySaveAsync(), Is.True);
+
+            var saved = UtiDocument.Load(Scratch("adren_harness"));
+            new VarTable(saved.Fields).GetInt(ItemEditorLayout.NoEconomyLocal).Should().Be(1);
         }
 
         private static string Hash(string content) =>

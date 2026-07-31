@@ -800,6 +800,103 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task CompiledScriptRequiresItsSourceWhenTheArchiveContainsOne()
+        {
+            File.WriteAllText(
+                Path.Combine(_firstModule, "nss", "compiled_pair.nss"),
+                "void main() {}\n");
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "ncs", "compiled_pair.ncs"),
+                new byte[] { 0x4e, 0x43, 0x53, 0x20 });
+            var archivePath = Path.Combine(_root, "compiled-pair-reverse.erf");
+            await _service.ExportAsync(
+                new[] { "compiled_pair.nss", "compiled_pair.ncs" },
+                archivePath);
+            using var archive = await _service.OpenArchiveAsync(archivePath);
+
+            var dependencies = await _service.FindImportDependenciesAsync(
+                archive,
+                new[] { "compiled_pair.ncs" });
+
+            dependencies.Should().ContainSingle(dependency =>
+                dependency.FileName == "compiled_pair.nss" &&
+                dependency.Reason.Contains("script source companion"));
+        }
+
+        [Test]
+        public async Task DialogRootScriptsAreDiscoveredAndRewritten()
+        {
+            const string dialogResRef = "scripted_dialog";
+            var scripts = new Dictionary<string, string>
+            {
+                ["dlg_active"] = "active_new",
+                ["dlg_end"] = "end_new",
+                ["dlg_abort"] = "abort_new"
+            };
+            var dialog = JsonGffDocument.Parse(
+                ModuleResourceTemplateFactory.CreateFileContent(
+                    ResourceType.Dlg,
+                    dialogResRef,
+                    "Scripted Dialog"));
+            using (EditScope.EnterConstruction())
+            {
+                dialog.Root.Add(
+                    "Active",
+                    JsonGffField.CreateScalar(
+                        GffFieldType.ResRef,
+                        System.Text.Encoding.UTF8.GetBytes("\"dlg_active\"")));
+                dialog.Root.Get("EndConversation").SetString("dlg_end");
+                dialog.Root.Get("EndConverAbort").SetString("dlg_abort");
+            }
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "dlg", $"{dialogResRef}.dlg.json"),
+                dialog.ToBytes());
+            foreach (var script in scripts.Keys)
+            {
+                File.WriteAllText(
+                    Path.Combine(_firstModule, "nss", $"{script}.nss"),
+                    "void main() {}\n");
+                File.WriteAllBytes(
+                    Path.Combine(_firstModule, "ncs", $"{script}.ncs"),
+                    new byte[] { 0x4e, 0x43, 0x53, 0x20 });
+            }
+
+            var archivePath = Path.Combine(_root, "dialog-scripts.erf");
+            var exportedFiles = new[] { $"{dialogResRef}.dlg" }
+                .Concat(scripts.Keys.SelectMany(script =>
+                    new[] { $"{script}.nss", $"{script}.ncs" }))
+                .ToList();
+            await _service.ExportAsync(exportedFiles, archivePath);
+            using var archive = await _service.OpenArchiveAsync(archivePath);
+
+            var dependencies = await _service.FindImportDependenciesAsync(
+                archive,
+                new[] { $"{dialogResRef}.dlg" });
+            dependencies.Select(dependency => dependency.FileName).Should().BeEquivalentTo(
+                scripts.Keys.SelectMany(script =>
+                    new[] { $"{script}.nss", $"{script}.ncs" }));
+
+            _workspace.Open(_secondModule);
+            var prepared = await _service.PrepareImportAsync(
+                archive,
+                archive.Assets.Select(asset => asset.FileName).ToList());
+            await _service.ImportAsync(prepared.Select(item =>
+            {
+                var isScript = item.Asset.Extension is "nss" or "ncs";
+                return new ErfImportChoice(
+                    item,
+                    isScript ? ErfConflictAction.Rename : ErfConflictAction.Add,
+                    isScript ? scripts[item.Asset.ResRef] : null);
+            }).ToList());
+
+            var imported = JsonGffDocument.Load(
+                Path.Combine(_secondModule, "dlg", $"{dialogResRef}.dlg.json"));
+            imported.Root.Get("Active").GetString().Should().Be("active_new");
+            imported.Root.Get("EndConversation").GetString().Should().Be("end_new");
+            imported.Root.Get("EndConverAbort").GetString().Should().Be("abort_new");
+        }
+
+        [Test]
         public async Task ScriptSourceRequiresBlueprintsReferencedByRuntimeLiterals()
         {
             File.WriteAllText(
@@ -1188,6 +1285,34 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ImportRefusesCompiledOnlyReplacementBesideExistingSource()
+        {
+            _workspace.Open(_secondModule);
+            const string resRef = "compiled_only";
+            File.WriteAllText(
+                Path.Combine(_secondModule, "nss", $"{resRef}.nss"),
+                "void main() { int existing = 1; }\n");
+            var compiledSource = Path.Combine(_root, $"{resRef}.ncs");
+            File.WriteAllBytes(
+                compiledSource,
+                new byte[] { 0x4e, 0x43, 0x53, 0x20, 0x02 });
+
+            Func<Task> import = async () => await _service.ImportAsync(new[]
+            {
+                CreateImportChoice(
+                    compiledSource,
+                    resRef,
+                    "ncs",
+                    ErfConflictAction.Add)
+            });
+
+            await import.Should().ThrowAsync<InvalidOperationException>()
+                .WithMessage("*without its matching source*already exists*");
+            File.Exists(Path.Combine(_secondModule, "ncs", $"{resRef}.ncs"))
+                .Should().BeFalse();
+        }
+
+        [Test]
         public async Task RenameWritesANewResourceAndRewritesImportedResRefs()
         {
             _workspace.Open(_secondModule);
@@ -1281,13 +1406,16 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task RenamingResourcesRewritesOnlyMatchingTypedReferences()
         {
+            EnsureModuleIfo(_secondModule);
             _workspace.Open(_secondModule);
 
             var creatureSource = Path.Combine(_root, "shared.utc.json");
             var itemSource = Path.Combine(_root, "shared.uti.json");
             var dialogSource = Path.Combine(_root, "shared.dlg.json");
             var scriptSource = Path.Combine(_root, "shared.nss");
+            var areSource = Path.Combine(_root, "typed_refs.are.json");
             var gitSource = Path.Combine(_root, "typed_refs.git.json");
+            var gicSource = Path.Combine(_root, "typed_refs.gic.json");
             File.WriteAllBytes(
                 creatureSource,
                 BlueprintTemplateFactory.CreateFileContent(
@@ -1305,6 +1433,12 @@ namespace SWLOR.Toolset.Tests
                 "    CreateItemOnObject(\"shared\", OBJECT_SELF);\n" +
                 "    CreateObject(OBJECT_TYPE_CREATURE, \"shared\", GetLocation(OBJECT_SELF));\n" +
                 "}\n");
+            File.WriteAllBytes(
+                areSource,
+                new JsonGffDocument("ARE ", new JsonGffStruct()).ToBytes());
+            File.WriteAllBytes(
+                gicSource,
+                new JsonGffDocument("GIC ", new JsonGffStruct()).ToBytes());
 
             var creature = SyntheticGit.Instance(
                 ("TemplateResRef", GffFieldType.ResRef, "shared"),
@@ -1351,7 +1485,9 @@ namespace SWLOR.Toolset.Tests
                 Choice(itemSource, "shared", "uti", ErfConflictAction.Rename, "renamed_item"),
                 Choice(dialogSource, "shared", "dlg", ErfConflictAction.Rename, "renamed_dialog"),
                 Choice(scriptSource, "shared", "nss", ErfConflictAction.Rename, "renamed_script"),
-                Choice(gitSource, "typed_refs", "git", ErfConflictAction.Add, null)
+                Choice(areSource, "typed_refs", "are", ErfConflictAction.Add, null),
+                Choice(gitSource, "typed_refs", "git", ErfConflictAction.Add, null),
+                Choice(gicSource, "typed_refs", "gic", ErfConflictAction.Add, null)
             });
 
             var importedGit = GitDocument.Load(
@@ -1617,6 +1753,32 @@ namespace SWLOR.Toolset.Tests
             {
                 using var archive = await _service.OpenArchiveAsync(archivePath);
             };
+
+            await action.Should().ThrowAsync<InvalidDataException>()
+                .WithMessage("*incomplete*missing*.git*.gic*");
+        }
+
+        [Test]
+        public async Task PreparingASelectionRejectsAPartialAreaTriplet()
+        {
+            const string resRef = "selected_area";
+            foreach (var extension in new[] { "are", "git", "gic" })
+            {
+                File.WriteAllBytes(
+                    Path.Combine(_firstModule, extension, $"{resRef}.{extension}.json"),
+                    new JsonGffDocument(
+                        extension.ToUpperInvariant() + " ",
+                        new JsonGffStruct()).ToBytes());
+            }
+            var archivePath = Path.Combine(_root, "complete-area.erf");
+            await _service.ExportAsync(
+                new[] { $"{resRef}.are", $"{resRef}.git", $"{resRef}.gic" },
+                archivePath);
+            using var archive = await _service.OpenArchiveAsync(archivePath);
+
+            Func<Task> action = async () => await _service.PrepareImportAsync(
+                archive,
+                new[] { $"{resRef}.are" });
 
             await action.Should().ThrowAsync<InvalidDataException>()
                 .WithMessage("*incomplete*missing*.git*.gic*");

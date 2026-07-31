@@ -1,6 +1,7 @@
 using System.Text.Json;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editing;
+using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Services
@@ -27,8 +28,15 @@ namespace SWLOR.Toolset.Services
 
             try
             {
-                WriteAtomic(session.FilePath, session.ToBytes());
+                var saveBytes = session.ToBytes();
+                if (!TryWriteAtomicIfUnchanged(session, saveBytes))
+                {
+                    _log.AppendLine(
+                        $"Save refused for {session.FilePath}: the file changed outside the editor.");
+                    return false;
+                }
                 session.UndoStack.MarkSaved();
+                session.RecordCurrentFileState(saveBytes);
                 _log.AppendLine($"Saved {session.FilePath}.");
                 return true;
             }
@@ -63,6 +71,25 @@ namespace SWLOR.Toolset.Services
         /// second toolset or CLI process cannot write between them.
         /// </summary>
         public static bool TryWriteAtomicIfUnchanged(DocumentSession session, byte[] bytes)
+        {
+            ArgumentNullException.ThrowIfNull(session);
+            ArgumentNullException.ThrowIfNull(bytes);
+
+            ModuleMutationLock.ThrowIfModuleLocked();
+            using var moduleWriteLock =
+                ModuleWriteLock.AcquireForResourcePath(session.FilePath);
+            if (session.HasExternalChange())
+                return false;
+
+            WriteAtomic(session.FilePath, bytes);
+            return true;
+        }
+
+        /// <summary>
+        /// Replaces a script source only if it still matches the generation the editor accepted.
+        /// The final fingerprint check and atomic replacement share one module-wide lease.
+        /// </summary>
+        public static bool TryWriteAtomicIfUnchanged(ScriptSession session, byte[] bytes)
         {
             ArgumentNullException.ThrowIfNull(session);
             ArgumentNullException.ThrowIfNull(bytes);

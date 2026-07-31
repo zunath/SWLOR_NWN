@@ -259,6 +259,11 @@ public sealed class ModulePaletteRefresherTests
         WriteBlueprint("uti", "probe", "PaletteID", 1, "LocalizedName", LocString("Packed probe"));
         Directory.CreateDirectory(Path.Combine(_moduleRoot, "ncs"));
         Directory.CreateDirectory(Path.Combine(_moduleRoot, "nss"));
+        var canonicalScript = Path.Combine(_moduleRoot, "nss", "probe.nss");
+        File.WriteAllText(canonicalScript, "void main() {}\n");
+        File.WriteAllText(
+            canonicalScript + "." + Guid.NewGuid().ToString("N") + ".save-backup",
+            "stale backup");
 
         var previousDirectory = Environment.CurrentDirectory;
         try
@@ -298,6 +303,32 @@ public sealed class ModulePaletteRefresherTests
             JObject.Parse(File.ReadAllText(unpackedJson)))[1]);
         descriptors.Select(ResRef).Should().Equal("probe");
         descriptors[0]["NAME"]!["value"]!.Value<string>().Should().Be("Packed probe");
+    }
+
+    [Test]
+    [NonParallelizable]
+    public void PackModule_RejectsABackupWhoseCanonicalTargetIsMissing()
+    {
+        var scriptDirectory = Path.Combine(_moduleRoot, "nss");
+        Directory.CreateDirectory(scriptDirectory);
+        var backup = Path.Combine(
+            scriptDirectory,
+            "missing.nss." + Guid.NewGuid().ToString("N") + ".save-backup");
+        File.WriteAllText(backup, "only surviving generation");
+
+        var previousDirectory = Environment.CurrentDirectory;
+        try
+        {
+            Environment.CurrentDirectory = _moduleRoot;
+            var action = () => new ModulePacker().PackModule("blocked.mod", noPrompt: true);
+
+            action.Should().Throw<InvalidOperationException>()
+                .WithMessage("*Interrupted toolset save*");
+        }
+        finally
+        {
+            Environment.CurrentDirectory = previousDirectory;
+        }
     }
 
     private string WritePalette(string paletteName, params JObject[] categories)

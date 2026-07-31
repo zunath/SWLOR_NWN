@@ -396,7 +396,7 @@ namespace SWLOR.Toolset.Services
                     {
                         var jsonPath = await ConvertImportedGffAsync(session, asset, tools, cancellationToken)
                             .ConfigureAwait(false);
-                        return FindJsonResourceReferences(jsonPath);
+                        return FindJsonResourceReferences(jsonPath, asset.Extension);
                     }
 
                     if (asset.Extension.Equals("nss", StringComparison.OrdinalIgnoreCase))
@@ -442,6 +442,7 @@ namespace SWLOR.Toolset.Services
             var tools = ResolveTools();
             var selected = new HashSet<string>(selectedFileNames, StringComparer.OrdinalIgnoreCase);
             var prepared = new List<ErfPreparedImport>();
+            ValidateAreaTriplets(selected);
 
             foreach (var asset in session.Assets.Where(asset => selected.Contains(asset.FileName)))
             {
@@ -507,6 +508,9 @@ namespace SWLOR.Toolset.Services
                     or ErfConflictAction.Rename)
                 .ToList();
             var renameMap = ValidateImportPlan(active, workspace.ModuleRoot);
+            ValidateAreaTriplets(active
+                .Select(choice => choice.Prepared.Asset.FileName)
+                .ToList());
             ValidateScriptCompanions(active, renameMap, workspace.ModuleRoot);
             ValidateCompiledScriptGenerations(active, renameMap);
             var transactionRoot = CreateModuleTransactionDirectory(workspace.ModuleRoot);
@@ -546,7 +550,10 @@ namespace SWLOR.Toolset.Services
                                 asset.Extension,
                                 asset.ResRef,
                                 targetResRef);
-                            RewriteTypedReferences(document.Root, renameMap);
+                            RewriteTypedReferences(
+                                document.Root,
+                                renameMap,
+                                asset.Extension);
 
                             File.WriteAllBytes(stagedPath, document.ToBytes());
                         }
@@ -1000,8 +1007,14 @@ namespace SWLOR.Toolset.Services
                     foreach (var companionExtension in new[] { "git", "gic" })
                     {
                         var companion = filesForResource(companionExtension, resRef).FirstOrDefault();
-                        if (companion != null)
-                            Add(companion, $"{fileName} area companion");
+                        if (companion == null)
+                        {
+                            throw new InvalidDataException(
+                                $"Area '{resRef}' is incomplete; the ERF is missing " +
+                                $".{companionExtension}.");
+                        }
+
+                        Add(companion, $"{fileName} area companion");
                     }
                 }
                 else if (extension.Equals("nss", StringComparison.OrdinalIgnoreCase))
@@ -1009,6 +1022,12 @@ namespace SWLOR.Toolset.Services
                     var compiledCompanion = filesForResource("ncs", resRef).FirstOrDefault();
                     if (compiledCompanion != null)
                         Add(compiledCompanion, $"{fileName} compiled script companion");
+                }
+                else if (extension.Equals("ncs", StringComparison.OrdinalIgnoreCase))
+                {
+                    var sourceCompanion = filesForResource("nss", resRef).FirstOrDefault();
+                    if (sourceCompanion != null)
+                        Add(sourceCompanion, $"{fileName} script source companion");
                 }
 
                 foreach (var reference in await referencesOf(fileName).ConfigureAwait(false))
@@ -1035,17 +1054,20 @@ namespace SWLOR.Toolset.Services
                 .ToList();
         }
 
-        private static IReadOnlyList<ErfResourceReference> FindJsonResourceReferences(string path)
+        private static IReadOnlyList<ErfResourceReference> FindJsonResourceReferences(
+            string path,
+            string resourceExtension)
         {
             var document = JsonGffDocument.Load(path);
             var result = new Dictionary<string, ErfResourceReference>(StringComparer.OrdinalIgnoreCase);
-            CollectResourceReferences(document.Root, result);
+            CollectResourceReferences(document.Root, result, resourceExtension);
             return result.Values.ToList();
         }
 
         private static void CollectResourceReferences(
             JsonGffStruct current,
             IDictionary<string, ErfResourceReference> result,
+            string resourceExtension,
             string? containingList = null)
         {
             foreach (var (name, field) in current.Entries)
@@ -1053,7 +1075,7 @@ namespace SWLOR.Toolset.Services
                 if (field.Type == GffFieldType.ResRef)
                 {
                     var value = field.GetString();
-                    var extension = ReferencedExtension(name, containingList);
+                    var extension = ReferencedExtension(name, containingList, resourceExtension);
                     if (extension != null && IsValidResRef(value))
                     {
                         result[ArchiveKey(extension, value)] =
@@ -1067,12 +1089,12 @@ namespace SWLOR.Toolset.Services
                 }
                 else if (field.Type == GffFieldType.Struct && field.Struct != null)
                 {
-                    CollectResourceReferences(field.Struct, result, containingList);
+                    CollectResourceReferences(field.Struct, result, resourceExtension, containingList);
                 }
                 else if (field.Type == GffFieldType.List && field.Elements != null)
                 {
                     foreach (var element in field.Elements)
-                        CollectResourceReferences(element, result, name);
+                        CollectResourceReferences(element, result, resourceExtension, name);
                 }
             }
         }
@@ -1375,12 +1397,39 @@ namespace SWLOR.Toolset.Services
             IReadOnlyDictionary<string, string> renameMap,
             string moduleRoot)
         {
+            var sourceResRefs = choices
+                .Where(choice => choice.Prepared.Asset.Extension.Equals(
+                    "nss",
+                    StringComparison.OrdinalIgnoreCase))
+                .Select(choice => choice.Prepared.Asset.ResRef)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
             var compiledResRefs = choices
                 .Where(choice => choice.Prepared.Asset.Extension.Equals(
                     "ncs",
                     StringComparison.OrdinalIgnoreCase))
                 .Select(choice => choice.Prepared.Asset.ResRef)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var choice in choices.Where(choice =>
+                         choice.Prepared.Asset.Extension.Equals(
+                             "ncs",
+                             StringComparison.OrdinalIgnoreCase) &&
+                         !sourceResRefs.Contains(choice.Prepared.Asset.ResRef)))
+            {
+                var targetResRef = renameMap.TryGetValue(
+                    ArchiveKey("ncs", choice.Prepared.Asset.ResRef),
+                    out var renamed)
+                    ? renamed
+                    : choice.Prepared.Asset.ResRef;
+                var existingSourcePath = ModuleDestination(moduleRoot, "nss", targetResRef);
+                if (File.Exists(existingSourcePath))
+                {
+                    throw new InvalidOperationException(
+                        $"Cannot import compiled script '{choice.Prepared.Asset.FileName}' without " +
+                        $"its matching source while '{targetResRef}.nss' already exists in the module. " +
+                        "Include the NSS from the same build or remove the stale module source.");
+                }
+            }
 
             foreach (var choice in choices.Where(choice =>
                          choice.Prepared.Asset.Extension.Equals(
@@ -1495,13 +1544,15 @@ namespace SWLOR.Toolset.Services
         private static void RewriteTypedReferences(
             JsonGffStruct root,
             IReadOnlyDictionary<string, string> renameMap,
+            string resourceExtension,
             string? containingList = null)
         {
             foreach (var (name, field) in root.Entries)
             {
                 if (field.Type == GffFieldType.ResRef)
                 {
-                    var referencedExtension = ReferencedExtension(name, containingList);
+                    var referencedExtension =
+                        ReferencedExtension(name, containingList, resourceExtension);
                     var current = field.GetString();
                     if (referencedExtension != null &&
                         TryGetReferenceRename(
@@ -1516,20 +1567,33 @@ namespace SWLOR.Toolset.Services
 
                 if (field.Type == GffFieldType.Struct && field.Struct != null)
                 {
-                    RewriteTypedReferences(field.Struct, renameMap, containingList);
+                    RewriteTypedReferences(
+                        field.Struct,
+                        renameMap,
+                        resourceExtension,
+                        containingList);
                 }
                 else if (field.Type == GffFieldType.List && field.Elements != null)
                 {
                     foreach (var element in field.Elements)
-                        RewriteTypedReferences(element, renameMap, name);
+                        RewriteTypedReferences(element, renameMap, resourceExtension, name);
                 }
             }
         }
 
-        private static string? ReferencedExtension(string fieldName, string? containingList)
+        private static string? ReferencedExtension(
+            string fieldName,
+            string? containingList,
+            string resourceExtension)
         {
             if (fieldName.StartsWith("Script", StringComparison.OrdinalIgnoreCase) ||
                 fieldName.StartsWith("On", StringComparison.OrdinalIgnoreCase))
+            {
+                return "nss";
+            }
+
+            if (resourceExtension.Equals("dlg", StringComparison.OrdinalIgnoreCase) &&
+                fieldName is "Active" or "EndConversation" or "EndConverAbort")
             {
                 return "nss";
             }
@@ -2144,15 +2208,26 @@ namespace SWLOR.Toolset.Services
 
             foreach (var group in groups)
             {
-                var present = group
-                    .Select(item => item.Extension)
-                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                var extensions = group.Select(item => item.Extension).ToList();
+                var present = extensions.ToHashSet(StringComparer.OrdinalIgnoreCase);
                 var missing = areaExtensions.Where(extension => !present.Contains(extension)).ToList();
                 if (missing.Count > 0)
                 {
                     throw new InvalidDataException(
                         $"Area '{group.Key}' is incomplete; the ERF is missing " +
                         string.Join(", ", missing.Select(extension => "." + extension)) + ".");
+                }
+
+                var duplicates = extensions
+                    .GroupBy(extension => extension, StringComparer.OrdinalIgnoreCase)
+                    .Where(extension => extension.Count() > 1)
+                    .Select(extension => "." + extension.Key)
+                    .ToList();
+                if (duplicates.Count > 0)
+                {
+                    throw new InvalidDataException(
+                        $"Area '{group.Key}' contains duplicate " +
+                        string.Join(", ", duplicates) + " resources.");
                 }
             }
         }

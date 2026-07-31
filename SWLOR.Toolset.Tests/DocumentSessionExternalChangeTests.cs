@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Services;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -171,6 +172,21 @@ namespace SWLOR.Toolset.Tests
             var snapshot = capture.GetAwaiter().GetResult().Single();
 
             JsonGffDocument.Parse(snapshot).Should().NotBeNull();
+        }
+
+        [Test]
+        public void AtomicSaveRefusesAFileChangedAfterSerialization()
+        {
+            using var session = DocumentSession.Open(_path);
+            var field = CorpusFiles.FindFirstMutableInteger(session.Document.Root)!;
+            using (session.Begin("edit"))
+                field.SetInteger(field.GetInteger() + 1);
+            var preparedBytes = session.ToBytes();
+
+            File.WriteAllText(_path, "newer external generation");
+
+            SaveService.TryWriteAtomicIfUnchanged(session, preparedBytes).Should().BeFalse();
+            File.ReadAllText(_path).Should().Be("newer external generation");
         }
     }
 }

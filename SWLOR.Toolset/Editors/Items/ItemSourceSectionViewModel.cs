@@ -62,6 +62,15 @@ namespace SWLOR.Toolset.Editors.Items
         /// <summary>False while the index is still building - the tab shows progress, not a verdict.</summary>
         public bool IsReady => _isReady?.Invoke() ?? true;
 
+        /// <summary>
+        /// Answers obtainability for a prospective resref without changing the Source tab. Save uses
+        /// this when the editable TemplateResRef may already differ from the file/header resref.
+        /// </summary>
+        public bool HasPlayerSource(string resRef) =>
+            IsLoaded &&
+            IsReady &&
+            (_lookup!(resRef) ?? Array.Empty<ItemSourceEntry>()).Count > 0;
+
         /// <summary>Re-runs the lookup for (possibly) a new resref and rebuilds every derived property.</summary>
         public void Refresh(string resRef)
         {

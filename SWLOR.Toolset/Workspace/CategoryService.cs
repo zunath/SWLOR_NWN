@@ -287,19 +287,23 @@ namespace SWLOR.Toolset.Workspace
             if (catalog == null)
                 return CategorySaveResult.Ok();
 
-            var preflight = CanSaveChanges();
-            if (!preflight.Saved)
-            {
-                _log.AppendLine(preflight.Problem!);
-                RestorePersistedCatalog();
-                return preflight;
-            }
-
             try
             {
                 using var moduleWriteLock = _workspaceContext.Workspace is { } workspace
                     ? ModuleWriteLock.Acquire(workspace.ModuleRoot)
                     : ModuleWriteLock.AcquireForResourcePath(catalog.FilePath!);
+
+                // CanSaveChanges fingerprints the sidecar. Repeating it after acquiring the same
+                // module lease as Save closes the gap where another process could replace the
+                // category file between the optimistic preflight and our write.
+                var preflight = CanSaveChanges();
+                if (!preflight.Saved)
+                {
+                    _log.AppendLine(preflight.Problem!);
+                    RestorePersistedCatalog();
+                    return preflight;
+                }
+
                 catalog.MarkDirty();
                 catalog.Save();
                 _sidecarStateKnown = true;

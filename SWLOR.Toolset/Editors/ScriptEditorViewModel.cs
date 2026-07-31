@@ -681,11 +681,20 @@ namespace SWLOR.Toolset.Editors
                         _log.AppendLine($"Reloaded externally changed file {_session.FilePath}.");
                         return true;
                     }
+
+                    // Overwrite accepts the generation currently on disk. The locked check below
+                    // still catches a second writer arriving while the source bytes are prepared.
+                    _session.RecordCurrentFileState();
                 }
 
-                using var moduleWriteLock =
-                    ModuleWriteLock.AcquireForResourcePath(_session.FilePath);
-                SaveService.WriteAtomic(_session.FilePath, _session.ToBytes(_text));
+                var saveBytes = _session.ToBytes(_text);
+                if (!SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
+                {
+                    _log.AppendLine(
+                        $"Cannot save {_session.FilePath}: the file changed on disk while the save " +
+                        "was being prepared. Nothing was written - reload or save again.");
+                    return false;
+                }
                 _session.MarkSaved(_text);
                 AfterHistoryChange();
                 _log.AppendLine($"Saved {_session.FilePath}.");

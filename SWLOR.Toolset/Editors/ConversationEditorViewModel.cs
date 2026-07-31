@@ -1134,6 +1134,10 @@ namespace SWLOR.Toolset.Editors
                         _log.AppendLine($"Reloaded externally changed file {_session.FilePath}.");
                         return true;
                     }
+
+                    // Overwrite accepts the generation currently on disk. A final compare-and-swap
+                    // below still refuses a second external write that lands while we prepare bytes.
+                    _session.RecordCurrentFileState();
                 }
 
                 // NumWords is saved metadata derived entirely from the authored lines. Updating it
@@ -1141,7 +1145,13 @@ namespace SWLOR.Toolset.Editors
                 _session.ExecuteDerived(() => _dialog.RecomputeWordCount());
 
                 var saveBytes = _session.ToBytes();
-                SaveService.WriteAtomic(_session.FilePath, saveBytes);
+                if (!SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
+                {
+                    _log.AppendLine(
+                        $"Cannot save {_session.FilePath}: the file changed on disk while the save " +
+                        "was being prepared. Nothing was written - reload or save again.");
+                    return false;
+                }
                 _session.UndoStack.MarkSaved();
                 _session.RecordCurrentFileState(saveBytes);
                 AfterHistoryChange();

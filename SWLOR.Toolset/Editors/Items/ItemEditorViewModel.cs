@@ -296,6 +296,40 @@ namespace SWLOR.Toolset.Editors.Items
             OnPropertyChanged(nameof(ShowsSourceTab));
         }
 
+        /// <summary>
+        /// Enforces item invariants that depend on workspace-wide source data immediately before
+        /// serialization. Returns a user-facing problem when the source index cannot answer yet.
+        /// </summary>
+        public string? EnforceSaveInvariants()
+        {
+            if (!Source.IsLoaded)
+                return null;
+            if (!Source.IsReady)
+                return "Cannot save while the item obtainability index is still being built.";
+            var targetResRef = TemplateResRef.Trim().ToLowerInvariant();
+            if (Source.HasPlayerSource(targetResRef) ||
+                _store.GetInteger(
+                    BehaviorFieldStorage.Local,
+                    ItemEditorLayout.NoEconomyLocal) == 1)
+            {
+                return null;
+            }
+
+            if (!RunEdit(
+                    "Keep unobtainable item out of the economy",
+                    () => _store.SetInteger(
+                        BehaviorFieldStorage.Local,
+                        ItemEditorLayout.NoEconomyLocal,
+                        GffFieldType.Int,
+                        1)))
+            {
+                return "Could not restore NO_ECONOMY for an item with no player source.";
+            }
+
+            ReloadNoEconomyRow();
+            return null;
+        }
+
         public void ReloadFromDocument()
         {
             var previousFamily = Family;
@@ -349,10 +383,57 @@ namespace SWLOR.Toolset.Editors.Items
 
         private bool RunEdit(string description, Action mutation)
         {
-            var applied = _runEdit(description, mutation);
+            var identifiedBefore = _store.GetLocalizedText("DescIdentified");
+            var descriptionBefore = _store.GetLocalizedText("Description");
+            var noEconomyBefore = _store.GetInteger(
+                BehaviorFieldStorage.Local,
+                ItemEditorLayout.NoEconomyLocal);
+
+            var applied = _runEdit(description, () =>
+            {
+                mutation();
+
+                // SWLOR does not use item identification, but template/corpus validation still
+                // expects both engine description slots to agree. Preserve deliberately divergent
+                // legacy text; mirror only an empty or previously synchronized companion.
+                var identifiedAfter = _store.GetLocalizedText("DescIdentified");
+                if (!string.Equals(identifiedAfter, identifiedBefore, StringComparison.Ordinal) &&
+                    (string.IsNullOrWhiteSpace(descriptionBefore) ||
+                     string.Equals(descriptionBefore, identifiedBefore, StringComparison.Ordinal)))
+                {
+                    _store.SetLocalizedText("Description", identifiedAfter);
+                }
+
+                // A source-less item must remain excluded from player-facing economy searches.
+                // Restore an attempted clear inside the same undo transaction as the checkbox edit.
+                var noEconomyAfter = _store.GetInteger(
+                    BehaviorFieldStorage.Local,
+                    ItemEditorLayout.NoEconomyLocal);
+                if (noEconomyBefore == 1 &&
+                    noEconomyAfter != 1 &&
+                    Source.IsLoaded &&
+                    Source.IsReady &&
+                    !Source.HasPlayerSource(TemplateResRef.Trim().ToLowerInvariant()))
+                {
+                    _store.SetInteger(
+                        BehaviorFieldStorage.Local,
+                        ItemEditorLayout.NoEconomyLocal,
+                        GffFieldType.Int,
+                        1);
+                }
+            });
             if (applied)
                 IsDirty = true;
             return applied;
+        }
+
+        private void ReloadNoEconomyRow()
+        {
+            foreach (var row in FlagRows.Where(row =>
+                         row.Definition.Name == ItemEditorLayout.NoEconomyLocal))
+            {
+                row.Reload();
+            }
         }
 
         private void BuildBasicRows()
@@ -396,6 +477,9 @@ namespace SWLOR.Toolset.Editors.Items
 
         private void OnRowChanged(BehaviorFieldDefinition definition)
         {
+            if (definition.Name == ItemEditorLayout.NoEconomyLocal)
+                ReloadNoEconomyRow();
+
             if (definition.Name == "BaseItem")
             {
                 // Only a real user-driven base-type change should pick a default appearance for

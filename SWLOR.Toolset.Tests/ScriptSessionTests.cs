@@ -2,6 +2,7 @@ using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Script;
+using SWLOR.Toolset.Services;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -128,6 +129,19 @@ namespace SWLOR.Toolset.Tests
 
             // A caller handing back CRLF text must not read as permanently dirty.
             session.IsDirty("void main()\r\n{\r\n}").Should().BeFalse();
+        }
+
+        [Test]
+        public void AtomicSaveRefusesAScriptChangedAfterSerialization()
+        {
+            var path = WriteScript("a.nss", "void main() {}\n");
+            var session = ScriptSession.Open(path);
+            var preparedBytes = session.ToBytes("void main() { int mine = 1; }\n");
+
+            File.WriteAllText(path, "void main() { int external = 1; }\n");
+
+            SaveService.TryWriteAtomicIfUnchanged(session, preparedBytes).Should().BeFalse();
+            File.ReadAllText(path).Should().Contain("external");
         }
     }
 }

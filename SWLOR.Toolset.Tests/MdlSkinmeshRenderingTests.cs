@@ -187,7 +187,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void NormalLessGarmentOrientsMixedFaceWindingAwayFromTheWearer()
+        public void NormalLessProgrammaticGarmentPreservesAuthoredFaceWinding()
         {
             var root = new MdlNode { Name = "root" };
             var bone = new MdlNode { Name = "torso_g", Parent = root };
@@ -236,16 +236,16 @@ namespace SWLOR.Toolset.Tests
 
             var mesh = rendered.Meshes.Should().ContainSingle().Subject;
             mesh.Normals.Should().Equal(
-                1f, 0f, 0f,
-                1f, 0f, 0f,
-                1f, 0f, 0f,
+                -1f, 0f, 0f,
+                -1f, 0f, 0f,
+                -1f, 0f, 0f,
                 -1f, 0f, 0f,
                 -1f, 0f, 0f,
                 -1f, 0f, 0f);
             mesh.Positions.Should().Equal(
-                2.1f, -1f, 0f,
-                2.1f, -1f, 1f,
-                2.1f, 1f, 0f,
+                1.9f, -1f, 0f,
+                1.9f, -1f, 1f,
+                1.9f, 1f, 0f,
                 -2.1f, -1f, 0f,
                 -2.1f, -1f, 1f,
                 -2.1f, 1f, 0f);

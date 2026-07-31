@@ -637,21 +637,13 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         /// <summary>
-        /// Generates smooth normals from the deformed triangles when an ASCII skinmesh omits them.
-        /// Aurora accepts those robe models and derives their normals at load; leaving the array
-        /// empty made both lighting and garment-shell clearance silently unavailable. Some Aurora
-        /// garments mix triangle winding, so orient each vertical-shell face away from the model's
-        /// horizontal center before smoothing. Faces whose normals are perpendicular to that radial
-        /// direction retain their authored winding so collars, hems, and other horizontal surfaces
-        /// are not forced upward or downward.
+        /// Generates a safe fallback normal array for programmatically constructed skinmeshes.
+        /// Parsed ASCII models already receive Aurora-compatible smoothing-group normals before
+        /// their vertices are expanded, so production garments follow the authored face winding.
         /// </summary>
         private static Vector3[] GenerateVertexNormals(MdlTrimeshNode mesh, IReadOnlyList<Vector3> positions)
         {
             var normals = new Vector3[positions.Count];
-            if (positions.Count == 0)
-                return normals;
-
-            var horizontalCenter = HorizontalBoundsCenter(positions);
             foreach (var face in mesh.Faces)
             {
                 if (face.VertexIndex0 >= positions.Count ||
@@ -668,9 +660,6 @@ namespace SWLOR.Toolset.Domain.Render
                 if (!IsFinite(faceNormal) || faceNormal.LengthSquared() <= 0f)
                     continue;
 
-                if (HasInwardHorizontalWinding(face, positions, horizontalCenter))
-                    faceNormal = -faceNormal;
-
                 normals[face.VertexIndex0] += faceNormal;
                 normals[face.VertexIndex1] += faceNormal;
                 normals[face.VertexIndex2] += faceNormal;
@@ -679,49 +668,6 @@ namespace SWLOR.Toolset.Domain.Render
             for (var index = 0; index < normals.Length; index++)
                 normals[index] = NormalizeOrZero(normals[index]);
             return normals;
-        }
-
-        private static Vector2 HorizontalBoundsCenter(IReadOnlyList<Vector3> positions)
-        {
-            if (positions.Count == 0)
-                return Vector2.Zero;
-
-            var minimumX = positions[0].X;
-            var maximumX = positions[0].X;
-            var minimumY = positions[0].Y;
-            var maximumY = positions[0].Y;
-            for (var index = 1; index < positions.Count; index++)
-            {
-                minimumX = MathF.Min(minimumX, positions[index].X);
-                maximumX = MathF.Max(maximumX, positions[index].X);
-                minimumY = MathF.Min(minimumY, positions[index].Y);
-                maximumY = MathF.Max(maximumY, positions[index].Y);
-            }
-
-            return new Vector2(
-                (minimumX + maximumX) * 0.5f,
-                (minimumY + maximumY) * 0.5f);
-        }
-
-        private static bool HasInwardHorizontalWinding(
-            MdlFace face,
-            IReadOnlyList<Vector3> positions,
-            Vector2 horizontalCenter)
-        {
-            var a = positions[face.VertexIndex0];
-            var b = positions[face.VertexIndex1];
-            var c = positions[face.VertexIndex2];
-            var faceNormal = Vector3.Cross(b - a, c - a);
-            if (!IsFinite(faceNormal) || faceNormal.LengthSquared() <= 0f)
-                return false;
-
-            var faceCenter = (a + b + c) / 3f;
-            var radialDirection = new Vector3(
-                faceCenter.X - horizontalCenter.X,
-                faceCenter.Y - horizontalCenter.Y,
-                0f);
-            return radialDirection.LengthSquared() > 0f &&
-                   Vector3.Dot(faceNormal, radialDirection) < 0f;
         }
 
         /// <summary>

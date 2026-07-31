@@ -375,6 +375,57 @@ public sealed class MdlReaderTests
     }
 
     [Test]
+    public void AsciiMeshGeneratesNormalsAcrossOverlappingSmoothingGroups()
+    {
+        var text = """
+                   newmodel sample
+                   beginmodelgeom sample
+                     node dummy sample
+                       parent NULL
+                     endnode
+                     node trimesh panel
+                       parent sample
+                       render 1
+                       verts 4
+                         0 0 0
+                         1 0 0
+                         0 1 0
+                         0 0 1
+                       tverts 4
+                         0 0 0
+                         1 0 0
+                         0 1 0
+                         1 1 0
+                       faces 3
+                         0 1 2 1 0 1 2 0
+                         0 1 3 3 0 1 3 0
+                         0 2 3 2 0 2 3 0
+                     endnode
+                   endmodelgeom sample
+                   donemodel sample
+                   """;
+
+        var mesh = new MdlReader()
+            .Parse(Encoding.ASCII.GetBytes(text))
+            .GetMeshNodes()
+            .Should().ContainSingle().Subject;
+
+        mesh.Vertices.Should().HaveCount(6,
+            "Aurora splits vertices at hard smoothing-group boundaries");
+        mesh.Normals.Should().HaveCount(mesh.Vertices.Length);
+        mesh.Faces[0].VertexIndex0.Should().Be(mesh.Faces[1].VertexIndex0,
+            "faces with overlapping smoothing-group masks share the generated corner normal");
+        mesh.Faces[2].VertexIndex0.Should().NotBe(mesh.Faces[0].VertexIndex0,
+            "disjoint smoothing groups retain separate normals at the same source vertex");
+
+        var smoothed = mesh.Normals[mesh.Faces[0].VertexIndex0];
+        smoothed.X.Should().BeApproximately(0f, 0.0001f);
+        smoothed.Y.Should().BeApproximately(-MathF.Sqrt(0.5f), 0.0001f);
+        smoothed.Z.Should().BeApproximately(MathF.Sqrt(0.5f), 0.0001f);
+        mesh.Normals[mesh.Faces[2].VertexIndex0].Should().Be(Vector3.UnitX);
+    }
+
+    [Test]
     public void AsciiMeshFallsBackToTexture0WhenBitmapIsAbsent()
     {
         var text = """

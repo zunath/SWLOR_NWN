@@ -81,6 +81,9 @@ namespace SWLOR.Toolset.Editors.Waypoints
             }
         }
 
+        /// <summary>Refreshes module-derived waypoint behavior classification in the open tab.</summary>
+        public void RefreshCatalog(WaypointBehaviorCatalog catalog) => Editor.RefreshCatalog(catalog);
+
         [RelayCommand]
         private async Task Save() => await TrySaveAsync().ConfigureAwait(true);
 

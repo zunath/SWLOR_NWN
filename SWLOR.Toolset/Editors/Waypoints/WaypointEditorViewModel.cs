@@ -12,7 +12,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
     public sealed partial class WaypointEditorViewModel : ObservableObject
     {
         private readonly BehaviorValueStore _store;
-        private readonly WaypointBehaviorCatalog _catalog;
+        private WaypointBehaviorCatalog _catalog;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly IGameCodeIndex? _gameCodeIndex;
@@ -163,6 +163,22 @@ namespace SWLOR.Toolset.Editors.Waypoints
                 RebuildBehaviorSection();
             }
 
+            ReloadRowsFromDocument();
+        }
+
+        /// <summary>
+        /// Replaces the module-derived transition classifier and immediately reclassifies the live
+        /// waypoint without editing it. The transition index changes when a door or trigger link is
+        /// saved externally or from another open tab, so retaining the catalog captured at open time
+        /// can leave an inbound-only destination displayed as Transition Destination after its last
+        /// link has been removed.
+        /// </summary>
+        public void RefreshCatalog(WaypointBehaviorCatalog catalog)
+        {
+            _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
+            BehaviorListItemViewModel.Build(BehaviorList, _catalog.All);
+            Behavior = _catalog.Classify(_store.ValueStruct);
+            RebuildBehaviorSection();
             ReloadRowsFromDocument();
         }
 

@@ -95,6 +95,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, Triggers.TriggerDocumentViewModel> _openTriggerEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Waypoints.WaypointDocumentViewModel> _openWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _openingWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
+        private int _waypointCatalogGeneration;
         private readonly Dictionary<string, Doors.DoorDocumentViewModel> _openDoorEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice>? _doorAppearances;
         private readonly Dictionary<string, Items.ItemDocumentViewModel> _openItemEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -283,6 +284,7 @@ namespace SWLOR.Toolset.Editors
                 }
             });
             _workspaceContext.ScriptUsagesInvalidated += _scriptUsageIndex.Invalidate;
+            _workspaceContext.TagIndexInvalidated += OnTagIndexInvalidated;
 
             // Opening another module invalidates every module-derived picker; saving a blueprint
             // invalidates only the ones built out of the module's own content.
@@ -322,6 +324,62 @@ namespace SWLOR.Toolset.Editors
                 }
             };
             _workspaceContext.PaletteChoicesInvalidated += InvalidatePaletteChoices;
+        }
+
+        private void OnTagIndexInvalidated()
+        {
+            var generation = ++_waypointCatalogGeneration;
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null ||
+                (_openWaypointEditors.Count == 0 && _openAreaEditors.Count == 0))
+            {
+                return;
+            }
+
+            _ = RefreshWaypointCatalogsAsync(workspace, generation);
+        }
+
+        private async Task RefreshWaypointCatalogsAsync(
+            ModuleWorkspace workspace,
+            int generation)
+        {
+            try
+            {
+                var transitionDestinationTags =
+                    await workspace.TagIndex.GetTransitionDestinationTagsAsync().ConfigureAwait(true);
+                if (generation != _waypointCatalogGeneration ||
+                    !ReferenceEquals(workspace, _workspaceContext.Workspace))
+                {
+                    return;
+                }
+
+                var catalog = new Domain.Editors.Waypoints.WaypointBehaviorCatalog(
+                    _gameCodeIndex,
+                    transitionDestinationTags);
+                foreach (var editor in _openWaypointEditors.Values)
+                    editor.RefreshCatalog(catalog);
+                foreach (var editor in _openAreaEditors.Values)
+                    editor.RefreshWaypointCatalog(catalog);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not refresh open waypoint behavior catalogs: {ex.Message}");
+            }
+        }
+
+        private async Task<IReadOnlyCollection<string>?> GetCurrentTransitionDestinationTagsAsync(
+            ModuleWorkspace workspace)
+        {
+            while (ReferenceEquals(workspace, _workspaceContext.Workspace))
+            {
+                var generation = _waypointCatalogGeneration;
+                var tags =
+                    await workspace.TagIndex.GetTransitionDestinationTagsAsync().ConfigureAwait(true);
+                if (generation == _waypointCatalogGeneration)
+                    return tags;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -1015,8 +1073,8 @@ namespace SWLOR.Toolset.Editors
                 // The transition classifier needs a module-wide GIT scan. Await its background
                 // warm-up instead of parsing hundreds of area files on Avalonia's UI thread.
                 var transitionDestinationTags =
-                    await workspace.TagIndex.GetTransitionDestinationTagsAsync().ConfigureAwait(true);
-                if (!ReferenceEquals(workspace, _workspaceContext.Workspace))
+                    await GetCurrentTransitionDestinationTagsAsync(workspace).ConfigureAwait(true);
+                if (transitionDestinationTags == null)
                     return;
 
                 if (_openWaypointEditors.TryGetValue(filePath, out var existing))
@@ -2141,8 +2199,8 @@ namespace SWLOR.Toolset.Editors
                 // module-wide GIT scan is warmed in the background so opening a large area does not
                 // freeze Avalonia's UI thread.
                 var transitionDestinationTags =
-                    await workspace.TagIndex.GetTransitionDestinationTagsAsync().ConfigureAwait(true);
-                if (!ReferenceEquals(workspace, _workspaceContext.Workspace))
+                    await GetCurrentTransitionDestinationTagsAsync(workspace).ConfigureAwait(true);
+                if (transitionDestinationTags == null)
                     return;
 
                 if (_openAreaEditors.TryGetValue(resRef, out existing))

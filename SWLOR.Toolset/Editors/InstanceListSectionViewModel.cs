@@ -108,7 +108,7 @@ namespace SWLOR.Toolset.Editors
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
         private readonly Doors.DoorEditorServices? _doorEditorServices;
-        private readonly WaypointEditorServices? _waypointEditorServices;
+        private WaypointEditorServices? _waypointEditorServices;
         private readonly string _soundHeaderOwner;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveSoundChoices;
         private readonly IReadOnlyList<string> _audioResources;
@@ -242,6 +242,19 @@ namespace SWLOR.Toolset.Editors
             DoorEditor?.RefreshPaletteChoices();
             WaypointEditor?.RefreshPaletteChoices();
             SoundEditor?.RefreshPaletteChoices();
+        }
+
+        /// <summary>
+        /// Rebinds both the currently selected waypoint and future selections to the latest
+        /// module transition-destination catalog.
+        /// </summary>
+        public void RefreshWaypointCatalog(WaypointBehaviorCatalog catalog)
+        {
+            if (_waypointEditorServices == null)
+                return;
+
+            _waypointEditorServices = _waypointEditorServices with { Catalog = catalog };
+            WaypointEditor?.RefreshCatalog(catalog);
         }
 
         /// <summary>Applies save-time normalization required by the selected specialized editor.</summary>

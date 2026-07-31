@@ -1542,6 +1542,17 @@ namespace SWLOR.Toolset.Editors
         public event Action? ContentsChanged;
 
         /// <summary>
+        /// Reclassifies the selected placed waypoint, and supplies the same fresh catalog to any
+        /// waypoint selected later in this open area.
+        /// </summary>
+        public void RefreshWaypointCatalog(
+            Domain.Editors.Waypoints.WaypointBehaviorCatalog catalog)
+        {
+            Sections.FirstOrDefault(section => section.BlueprintType == ResourceType.Utw)
+                ?.RefreshWaypointCatalog(catalog);
+        }
+
+        /// <summary>
         /// Asks the view to put the camera on a world position and show the map if it is not in
         /// front. Raised rather than acted on here because the camera belongs to the GL control,
         /// which this view model deliberately does not own.

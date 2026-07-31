@@ -357,6 +357,37 @@ namespace SWLOR.Toolset.Tests
                 },
                 catalog);
             reopened.Behavior.Id.Should().Be(WaypointBehaviorCatalog.TransitionDestinationId);
+            reopened.RefreshCatalog(new WaypointBehaviorCatalog(null, Array.Empty<string>()));
+            reopened.Behavior.Id.Should().Be(
+                WaypointBehaviorCatalog.TransitionDestinationId,
+                "an explicitly authored destination remains valid while it waits for an inbound link");
+        }
+
+        [Test]
+        public void RefreshingCatalogReclassifiesAnInboundOnlyTransitionWithoutPersistingIt()
+        {
+            const string tag = "destination_with_removed_link";
+            var waypoint = Waypoint(tag);
+            var originalCatalog = new WaypointBehaviorCatalog(null, new[] { tag });
+            var editor = new WaypointEditorViewModel(
+                waypoint,
+                tag,
+                isInstance: false,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                },
+                originalCatalog);
+            editor.Behavior.Id.Should().Be(WaypointBehaviorCatalog.TransitionDestinationId);
+
+            editor.RefreshCatalog(new WaypointBehaviorCatalog(null, Array.Empty<string>()));
+
+            editor.Behavior.Id.Should().Be(WaypointBehaviorCatalog.CustomId);
+            editor.NeedsSaveNormalization.Should().BeFalse(
+                "catalog refresh is classification, not a user-authored behavior change");
+            new VarTable(waypoint).GetString(WaypointBehaviorCatalog.PersistedBehaviorLocal)
+                .Should().BeNull("an obsolete inbound-only classification must not become durable metadata");
         }
 
         [Test]

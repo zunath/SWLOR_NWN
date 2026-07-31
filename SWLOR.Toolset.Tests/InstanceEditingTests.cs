@@ -229,6 +229,51 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void RefreshingAnAreaWaypointCatalogReclassifiesTheSelectionAndFutureSelections()
+        {
+            const string area = "anchor_entreenor";
+            var gitPath = Path.Combine(CorpusLocator.ModuleDirectory, "git", area + ".git.json");
+            var gicPath = Path.Combine(CorpusLocator.ModuleDirectory, "gic", area + ".gic.json");
+            using var gitSession = DocumentSession.Open(gitPath);
+            using var gicSession = DocumentSession.Open(gicPath);
+            using var section = new InstanceListSectionViewModel(
+                "Waypoints",
+                "WaypointList",
+                ResourceType.Utw,
+                gitSession,
+                gicSession,
+                new ModuleWorkspace(CorpusLocator.ModuleDirectory),
+                (description, edit) =>
+                {
+                    using (gitSession.Begin(description))
+                        edit();
+                    return true;
+                },
+                null,
+                new OutputLogService(),
+                new StubPrompts(),
+                waypointEditorServices: new WaypointEditorServices(
+                    area,
+                    new WaypointBehaviorCatalog(null, Array.Empty<string>())));
+            var selected = section.Rows.First(row => !string.IsNullOrWhiteSpace(row.Tag));
+            section.SelectedRow = selected;
+            section.WaypointEditor!.Behavior.Id.Should().Be(WaypointBehaviorCatalog.CustomId);
+
+            section.RefreshWaypointCatalog(
+                new WaypointBehaviorCatalog(null, new[] { selected.Tag }));
+            section.WaypointEditor.Behavior.Id
+                .Should().Be(WaypointBehaviorCatalog.TransitionDestinationId);
+
+            section.SelectedRow = null;
+            section.SelectedRow = selected;
+            section.WaypointEditor!.Behavior.Id.Should().Be(
+                WaypointBehaviorCatalog.TransitionDestinationId,
+                "future selections must use the refreshed catalog too");
+            gitSession.UndoStack.IsDirty.Should().BeFalse(
+                "refreshing derived classification must not edit the area");
+        }
+
+        [Test]
         public void GetVisualTransform_ReadsScaleDegreeRotationAndTranslation()
         {
             var instance = new JsonGffStruct();

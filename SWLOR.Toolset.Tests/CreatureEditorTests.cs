@@ -778,6 +778,14 @@ namespace SWLOR.Toolset.Tests
 
                 tabs.SelectedIndex = 6;
                 Dispatcher.UIThread.RunJobs();
+                var availableAbilities = view.FindControl<Border>("CreatureAvailableAbilities");
+                var assignedAbilities = view.FindControl<ScrollViewer>("CreatureAssignedAbilities");
+                availableAbilities.Should().NotBeNull();
+                assignedAbilities.Should().NotBeNull();
+                Grid.GetColumn(availableAbilities!).Should().Be(0,
+                    "available abilities belong in the left work pane");
+                Grid.GetColumn(assignedAbilities!).Should().Be(1,
+                    "assigned abilities belong in the right summary pane");
                 var audienceFilter = view.FindControl<ComboBox>("CreatureAbilityAudienceFilter");
                 audienceFilter.Should().NotBeNull();
                 audienceFilter!.Bounds.Width.Should().BeGreaterThanOrEqualTo(300,

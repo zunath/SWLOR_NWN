@@ -415,13 +415,7 @@
 
         <TabItem Header="Abilities">
           <Grid ColumnDefinitions="*,340" ColumnSpacing="10" Margin="14,10">
-            <ScrollViewer>
-              <StackPanel>
-                <TextBlock Text="Assigned Abilities" Classes="section" Margin="0,0,0,8" />
-                <ItemsControl ItemsSource="{Binding Abilities.Assigned}" />
-              </StackPanel>
-            </ScrollViewer>
-            <Border Grid.Column="1" Classes="card" Padding="10"
+            <Border x:Name="CreatureAvailableAbilities" Classes="card" Padding="10"
                     DataContext="{Binding Abilities}" x:DataType="creatures:CreatureAbilitiesViewModel">
               <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="6">
                 <TextBox Text="{Binding SearchText, Mode=TwoWay}"
@@ -475,6 +469,12 @@
                 </ListBox>
               </Grid>
             </Border>
+            <ScrollViewer x:Name="CreatureAssignedAbilities" Grid.Column="1">
+              <StackPanel>
+                <TextBlock Text="Assigned Abilities" Classes="section" Margin="0,0,0,8" />
+                <ItemsControl ItemsSource="{Binding Abilities.Assigned}" />
+              </StackPanel>
+            </ScrollViewer>
           </Grid>
         </TabItem>
 

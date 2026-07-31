@@ -537,6 +537,8 @@ namespace SWLOR.Toolset.Tests
             }, tables);
 
             var row = viewModel.Entries.Should().ContainSingle().Which;
+            row.EditorTitle.Should().Be("Drop 1");
+            row.ConfigurationSummary.Should().Be("75% chance \u00B7 2 pulls");
             var picker = row.TablePicker;
             picker.Should().BeAssignableTo<BehaviorRowViewModel>();
             picker.AreChoicesLoaded.Should().BeFalse();
@@ -798,6 +800,24 @@ namespace SWLOR.Toolset.Tests
                 abilityButton.Command!.Execute(abilityButton.CommandParameter);
                 Dispatcher.UIThread.RunJobs();
                 editor.Abilities.Assigned.Should().ContainSingle(entry => entry.FeatId == selectedAbility.FeatId);
+
+                tabs.SelectedIndex = 8;
+                editor.Loot.AddCommand.Execute(null);
+                Dispatcher.UIThread.RunJobs();
+                var lootEntry = editor.Loot.Entries.Should().ContainSingle().Which;
+                var lootList = view.FindControl<ListBox>("CreatureLootEntries");
+                lootList.Should().NotBeNull();
+                lootList!.SelectedItem.Should().BeSameAs(lootEntry);
+                var lootListItem = view.GetVisualDescendants().OfType<ListBoxItem>()
+                    .SingleOrDefault(item => ReferenceEquals(item.DataContext, lootEntry));
+                lootListItem.Should().NotBeNull();
+                lootListItem!.Bounds.Height.Should().BeLessThan(80,
+                    "opening the loot-table picker must not stretch its summary row");
+                var lootPicker = view.GetVisualDescendants().OfType<SearchableChoicePickerView>()
+                    .SingleOrDefault(picker => ReferenceEquals(picker.DataContext, lootEntry.TablePicker));
+                lootPicker.Should().NotBeNull();
+                lootPicker!.Bounds.Width.Should().BeGreaterThanOrEqualTo(300,
+                    "the shared loot-table picker belongs in the full-width detail pane");
 
                 window.Close();
                 Dispatcher.UIThread.RunJobs();

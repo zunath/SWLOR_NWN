@@ -20,6 +20,9 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public bool HasTable => Table != null;
         public bool IsPending => Table == null;
+        public string EditorTitle => $"Drop {Position}";
+        public string ConfigurationSummary =>
+            $"{Chance:0}% chance \u00B7 {Pulls:0} {(Pulls == 1 ? "pull" : "pulls")}";
 
         [ObservableProperty]
         private decimal _chance;
@@ -69,6 +72,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             OnPropertyChanged(nameof(IsPending));
         }
 
+        partial void OnPositionChanged(int value) => OnPropertyChanged(nameof(EditorTitle));
+
         [RelayCommand]
         private void Remove() => _remove(this);
 
@@ -97,6 +102,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private void Changed()
         {
             OnPropertyChanged(nameof(ExpectedDrops));
+            OnPropertyChanged(nameof(ConfigurationSummary));
             if (!_loading)
                 _changed(this);
         }

@@ -1,4 +1,5 @@
 using SWLOR.NWN.Formats.Mdl;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
@@ -388,8 +389,8 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
-        /// Renders one <c>appearance.2da</c> row on its own, with no creature involved — what the
-        /// creature editor's appearance grid shows.
+        /// Renders one <c>appearance.2da</c> row on a neutral generic creature — what the creature
+        /// editor's appearance grid shows.
         /// </summary>
         /// <remarks>
         /// Goes through a synthetic creature struct rather than reading the row's model column
@@ -404,14 +405,9 @@ namespace SWLOR.Toolset.Workspace
             if (!IsAvailable || appearanceId < 0)
                 return null;
 
-            var root = Domain.Gff.JsonGffDocument.Parse(
-                System.Text.Encoding.UTF8.GetBytes(
-                    $$"""
-                    {
-                      "__data_type": "UTC ",
-                      "Appearance_Type": { "type": "word", "value": {{appearanceId}} }
-                    }
-                    """)).Root;
+            var root = new Domain.Gff.JsonGffStruct();
+            root.SetInt("Appearance_Type", Domain.Gff.GffFieldType.Word, appearanceId);
+            CreatureAppearanceDefaults.ApplyGenericSegmentedBody(root);
 
             return RenderModel(ResourceType.Utc, root, useIndexedBlueprint: false);
         }

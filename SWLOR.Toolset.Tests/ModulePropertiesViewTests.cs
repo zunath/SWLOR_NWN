@@ -67,6 +67,9 @@ namespace SWLOR.Toolset.Tests
             var cell = picker.GetVisualAncestors().OfType<DataGridCell>().Single();
             cell.HorizontalContentAlignment.Should().Be(Avalonia.Layout.HorizontalAlignment.Stretch);
             picker.Bounds.Width.Should().BeGreaterThan(cell.Bounds.Width - 12);
+            picker.ItemsSource!.Cast<string>().Should().Contain("colors_inc");
+            picker.ItemsSource!.Cast<string>().Should().Contain("nw_c2_default1");
+            picker.SelectedItem.Should().Be(editor.Events[0].Script);
 
             window.Close();
             editor.OnClose().Should().BeTrue();

@@ -295,10 +295,7 @@ namespace SWLOR.Toolset.Editors.Module
             _session = DocumentSession.Open(filePath);
             Document = new IfoDocument(_session.Document);
             Variables = new VarTableSectionViewModel(RunEdit, Document.VarTable, gameCodeIndex);
-            ScriptChoices = new[] { string.Empty }
-                .Concat(workspace.EnumerateResRefs(ResourceType.Nss)
-                    .OrderBy(value => value, StringComparer.OrdinalIgnoreCase))
-                .ToArray();
+            ScriptChoices = BuildScriptChoices(workspace, Document);
             foreach (var (label, field) in EventDefinitions)
                 Events.Add(new ModuleEventRowViewModel(this, label, field));
 
@@ -315,6 +312,49 @@ namespace SWLOR.Toolset.Editors.Module
                 OpenBuildConfiguration,
                 () => File.Exists(HakConfigurationPath));
             UpdateTitle();
+        }
+
+        private static IReadOnlyList<string> BuildScriptChoices(
+            Domain.Workspace.ModuleWorkspace workspace,
+            IfoDocument document)
+        {
+            var scripts = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var script in workspace.EnumerateResRefs(ResourceType.Nss))
+                scripts.Add(script);
+
+            var compiledDirectory = Path.Combine(workspace.ModuleRoot, "ncs");
+            if (Directory.Exists(compiledDirectory))
+            {
+                try
+                {
+                    foreach (var path in Directory.EnumerateFiles(
+                                 compiledDirectory,
+                                 "*.ncs",
+                                 SearchOption.TopDirectoryOnly))
+                    {
+                        var script = Path.GetFileNameWithoutExtension(path);
+                        if (!string.IsNullOrWhiteSpace(script))
+                            scripts.Add(script);
+                    }
+                }
+                catch (Exception exception) when (
+                    exception is IOException or UnauthorizedAccessException)
+                {
+                    // Source scripts and current assignments remain available when compiled output
+                    // is temporarily locked by a build or inaccessible on disk.
+                }
+            }
+
+            foreach (var (_, field) in EventDefinitions)
+            {
+                var assigned = document.GetScript(field).Trim();
+                if (assigned.Length > 0)
+                    scripts.Add(assigned);
+            }
+
+            return new[] { string.Empty }
+                .Concat(scripts.OrderBy(value => value, StringComparer.OrdinalIgnoreCase))
+                .ToArray();
         }
 
         internal bool SetEventScript(ModuleEventRowViewModel row, string value) =>

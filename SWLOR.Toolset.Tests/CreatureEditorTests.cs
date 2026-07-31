@@ -844,6 +844,15 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void CustomVariablesRole_HasNoDecorativeTagline()
+        {
+            var custom = CreatureRoleCatalog.All.Single(role => role.Id == "custom");
+
+            custom.DisplayName.Should().Be("Custom Variables");
+            custom.Tagline.Should().BeNull();
+        }
+
+        [Test]
         public void PerkCatalog_BuildsWithoutAHeadlessNwnRuntime()
         {
             var catalog = CreaturePerkCatalog.Build();

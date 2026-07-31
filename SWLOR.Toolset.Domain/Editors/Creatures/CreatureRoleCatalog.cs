@@ -38,7 +38,7 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
             new CreatureRole
             {
                 Id = "custom", DisplayName = "Custom Variables",
-                Tagline = "advanced", Summary = "Edit unrecognized local variables without hiding them.",
+                Summary = "Edit unrecognized local variables without hiding them.",
                 AllowsVariables = true
             }
         };

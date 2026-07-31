@@ -11,6 +11,8 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
         public const string WillNotBuyField = "WillNotBuy";
         public const string WillOnlyBuyField = "WillOnlyBuy";
         private const uint BuyingRuleStructId = 97869;
+        private const int InventoryColumns = 5;
+        private const int InventoryCellSpacing = 2;
 
         public MerchantValueStore(JsonGffStruct merchant) : base(merchant)
         {
@@ -42,8 +44,7 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
             var item = JsonGffField.CreateStruct((uint)index).Struct!;
             item.SetInt("Infinite", GffFieldType.Byte, 1);
             item.SetString("InventoryRes", GffFieldType.ResRef, resRef);
-            item.SetInt("Repos_PosX", GffFieldType.Word, index % 10);
-            item.SetInt("Repos_Posy", GffFieldType.Word, index / 10);
+            SetInventoryPosition(item, index);
             items.InsertElement(index, item);
         }
 
@@ -132,6 +133,88 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
             }
         }
 
+        /// <summary>Whether all inventory entries are in the pane selected by their BaseItem row.
+        /// A null resolver result preserves an unresolvable legacy entry in its current valid pane.</summary>
+        public bool InventoryMatchesCategories(Func<string, int?> resolveStorePanel)
+        {
+            ArgumentNullException.ThrowIfNull(resolveStorePanel);
+
+            var panes = Owner.GetListOrEmpty("StoreList");
+            if (panes.Count != InventoryPaneCount)
+                return false;
+
+            for (var paneIndex = 0; paneIndex < panes.Count; paneIndex++)
+            {
+                foreach (var item in panes[paneIndex].GetListOrEmpty("ItemList"))
+                {
+                    var resRef = item.GetStringOrNull("InventoryRes") ?? string.Empty;
+                    var expected = resolveStorePanel(resRef);
+                    if (expected.HasValue && NormalizePane(expected.Value) != paneIndex)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>Moves every resolvable inventory entry into its baseitems.2da StorePanel,
+        /// preserves the relative file order within each destination, and leaves exactly five
+        /// engine panes with valid item indices and non-overlapping repository positions.</summary>
+        public void NormalizeInventoryPanes(Func<string, int?> resolveStorePanel)
+        {
+            ArgumentNullException.ThrowIfNull(resolveStorePanel);
+            if (InventoryMatchesCategories(resolveStorePanel))
+                return;
+
+            EnsureInventoryPanes();
+            var storeList = Owner.Get("StoreList");
+            var entries = new List<(JsonGffStruct Item, int Destination)>();
+            for (var paneIndex = 0; paneIndex < storeList.Elements!.Count; paneIndex++)
+            {
+                var pane = storeList.Elements[paneIndex];
+                var items = pane.GetOrNull("ItemList");
+                if (items?.Elements == null)
+                    continue;
+
+                foreach (var item in items.Elements)
+                {
+                    var resRef = item.GetStringOrNull("InventoryRes") ?? string.Empty;
+                    var resolved = resolveStorePanel(resRef);
+                    var destination = resolved.HasValue
+                        ? NormalizePane(resolved.Value)
+                        : NormalizePane(paneIndex);
+                    entries.Add((item, destination));
+                }
+
+                while (items.Elements.Count > 0)
+                    items.RemoveElementAt(items.Elements.Count - 1);
+            }
+
+            while (storeList.Elements.Count > InventoryPaneCount)
+                storeList.RemoveElementAt(storeList.Elements.Count - 1);
+
+            foreach (var (item, destination) in entries)
+            {
+                var pane = storeList.Elements[destination];
+                var items = pane.GetOrNull("ItemList");
+                if (items == null)
+                {
+                    items = JsonGffField.CreateList();
+                    pane.Add("ItemList", items);
+                }
+
+                items.InsertElement(items.Elements!.Count, item);
+            }
+
+            foreach (var pane in storeList.Elements)
+            {
+                var items = pane.GetListOrEmpty("ItemList");
+                Renumber(items);
+                for (var index = 0; index < items.Count; index++)
+                    SetInventoryPosition(items[index], index);
+            }
+        }
+
         public void EnsureBuyingRuleLists()
         {
             EnsureList(WillNotBuyField);
@@ -179,6 +262,23 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
             for (var index = 0; index < items.Count; index++)
                 items[index].SetStructId((uint)index);
         }
+
+        private static void SetInventoryPosition(JsonGffStruct item, int index)
+        {
+            item.SetInt(
+                "Repos_PosX",
+                GffFieldType.Word,
+                index % InventoryColumns * InventoryCellSpacing);
+            item.SetInt(
+                "Repos_Posy",
+                GffFieldType.Word,
+                index / InventoryColumns * InventoryCellSpacing);
+        }
+
+        private static int NormalizePane(int paneIndex) =>
+            paneIndex is >= 0 and < InventoryPaneCount
+                ? paneIndex
+                : (int)MerchantInventoryCategory.Miscellaneous;
 
         private static void ValidatePane(int paneIndex)
         {

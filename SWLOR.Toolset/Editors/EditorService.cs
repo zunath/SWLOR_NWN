@@ -102,6 +102,8 @@ namespace SWLOR.Toolset.Editors
             new(StringComparer.OrdinalIgnoreCase);
         private Merchants.MerchantInstanceService? _merchantInstances;
         private IReadOnlyList<Merchants.MerchantItemDefinition>? _merchantItemCatalog;
+        private readonly Dictionary<string, Merchants.MerchantItemDefinition> _merchantItemDetails =
+            new(StringComparer.OrdinalIgnoreCase);
         private BaseItemRowService? _baseItemRowService;
         private BaseItemIconService? _baseItemIconService;
         private Domain.Editors.Items.ItemCostTableRanges? _itemCostTableRanges;
@@ -290,6 +292,7 @@ namespace SWLOR.Toolset.Editors
                 _doorAppearances = null;
                 _itemSources = null;
                 _merchantItemCatalog = null;
+                _merchantItemDetails.Clear();
                 _itemSourcesGeneration++;
                 _behaviorValues?.InvalidateModuleSources();
 
@@ -313,6 +316,7 @@ namespace SWLOR.Toolset.Editors
                 if (type == ResourceType.Uti)
                 {
                     _merchantItemCatalog = null;
+                    _merchantItemDetails.Remove(refreshedResRef);
                     foreach (var merchant in _openMerchantEditors.Values)
                         merchant.Editor.RefreshItemCatalog();
                 }
@@ -1469,6 +1473,8 @@ namespace SWLOR.Toolset.Editors
             var workspace = _workspaceContext.Workspace;
             if (workspace == null || string.IsNullOrWhiteSpace(resRef))
                 return null;
+            if (_merchantItemDetails.TryGetValue(resRef, out var cached))
+                return cached;
 
             try
             {
@@ -1482,30 +1488,53 @@ namespace SWLOR.Toolset.Editors
 
                 var cost = (long)(item.GetUIntOrNull("Cost") ?? 0) +
                            (item.GetUIntOrNull("AddCost") ?? 0);
-                return new Merchants.MerchantItemDefinition(
+                var baseItem = item.GetIntOrNull("BaseItem") ?? -1;
+                var storePanel = BaseItemRows()?.Invoke(baseItem)?.StorePanel
+                                 ?? (int)Domain.Editors.Merchants.MerchantInventoryCategory.Miscellaneous;
+                var definition = new Merchants.MerchantItemDefinition(
                     resRef,
                     string.IsNullOrWhiteSpace(name) ? resRef : name,
-                    cost);
+                    cost,
+                    storePanel);
+                _merchantItemDetails[resRef] = definition;
+                return definition;
             }
             catch
             {
-                return new Merchants.MerchantItemDefinition(resRef, resRef, 0);
+                var definition = new Merchants.MerchantItemDefinition(resRef, resRef, 0);
+                _merchantItemDetails[resRef] = definition;
+                return definition;
             }
         }
 
-        private IReadOnlyList<Merchants.MerchantItemDefinition> SearchMerchantItems(string query)
+        private IReadOnlyList<Merchants.MerchantItemDefinition> SearchMerchantItems(
+            string query,
+            int storePanel)
         {
             if (_workspaceContext.Workspace == null)
                 return Array.Empty<Merchants.MerchantItemDefinition>();
 
             var trimmed = query.Trim();
-            return MerchantItemCatalog()
-                .Where(item =>
-                    trimmed.Length == 0 ||
-                    item.ResRef.Contains(trimmed, StringComparison.OrdinalIgnoreCase) ||
-                    item.Name.Contains(trimmed, StringComparison.OrdinalIgnoreCase))
-                .Take(Behaviors.BehaviorRowViewModel.MaxSearchResults)
-                .ToList();
+            var matches = new List<Merchants.MerchantItemDefinition>();
+            foreach (var item in MerchantItemCatalog())
+            {
+                if (trimmed.Length > 0 &&
+                    !item.ResRef.Contains(trimmed, StringComparison.OrdinalIgnoreCase) &&
+                    !item.Name.Contains(trimmed, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                var detailed = LoadMerchantItem(item.ResRef);
+                if (detailed == null || detailed.StorePanel != storePanel)
+                    continue;
+
+                matches.Add(detailed);
+                if (matches.Count == Behaviors.BehaviorRowViewModel.MaxSearchResults)
+                    break;
+            }
+
+            return matches;
         }
 
         private IReadOnlyList<string> FindUnsavedBlueprintReferences(string resRef)

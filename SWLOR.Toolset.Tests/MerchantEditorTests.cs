@@ -102,13 +102,21 @@ namespace SWLOR.Toolset.Tests
             source.Root.SetInt("StoreGold", GffFieldType.Int, 1000);
             source.Root.SetString("OnOpenStore", GffFieldType.ResRef, "legacy_open");
             source.Root.SetString("OnStoreClosed", GffFieldType.ResRef, "legacy_close");
+            new MerchantValueStore(source.Root).AddInventoryItem(
+                (int)MerchantInventoryCategory.PotionsScrolls,
+                "probe_ring");
             File.WriteAllBytes(path, source.ToBytes());
 
             var document = new MerchantDocumentViewModel(
                 path,
                 "probe_store",
                 new OutputLogService(),
-                new MerchantSavePrompts());
+                new MerchantSavePrompts(),
+                loadItem: resRef => new MerchantItemDefinition(
+                    resRef,
+                    "Probe Ring",
+                    100,
+                    (int)MerchantInventoryCategory.RingsAmulets));
             try
             {
                 document.Editor.DetailRows.Single(row => row.Definition.Name == "LocName").Text =
@@ -134,6 +142,12 @@ namespace SWLOR.Toolset.Tests
                     .Should().Be(MerchantEditorViewModel.OnOpenStoreScript);
                 saved.GetStringOrNull("OnStoreClosed")
                     .Should().Be(MerchantEditorViewModel.OnStoreClosedScript);
+                var savedStore = new MerchantValueStore(saved);
+                savedStore.Inventory((int)MerchantInventoryCategory.PotionsScrolls)
+                    .Should().BeEmpty();
+                savedStore.Inventory((int)MerchantInventoryCategory.RingsAmulets)
+                    .Should().ContainSingle()
+                    .Which.GetStringOrNull("InventoryRes").Should().Be("probe_ring");
             }
             finally
             {
@@ -182,7 +196,11 @@ namespace SWLOR.Toolset.Tests
                     mutation();
                     return true;
                 },
-                loadItem: resRef => new MerchantItemDefinition(resRef, "Probe Armor", 100),
+                loadItem: resRef => new MerchantItemDefinition(
+                    resRef,
+                    "Probe Armor",
+                    100,
+                    (int)MerchantInventoryCategory.Armor),
                 requestItemPreview: (resRef, onReady) =>
                 {
                     requested.Add(resRef);
@@ -193,6 +211,105 @@ namespace SWLOR.Toolset.Tests
             deliverPreview.Should().NotBeNull();
             editor.InventoryItems.Should().ContainSingle();
             editor.SelectedInventoryItem.Should().BeSameAs(editor.InventoryItems[0]);
+        }
+
+        [Test]
+        public void InventoryCategoriesAndSaveFollowBaseItemsStorePanel()
+        {
+            var root = NewMerchant();
+            var store = new MerchantValueStore(root);
+            store.AddInventoryItem(
+                (int)MerchantInventoryCategory.PotionsScrolls,
+                "probe_ring");
+            var misplaced = store.Inventory(
+                (int)MerchantInventoryCategory.PotionsScrolls).Single();
+            misplaced.SetInt("Infinite", GffFieldType.Byte, 0);
+
+            using var editor = new MerchantEditorViewModel(
+                root,
+                "probe_store",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                loadItem: resRef => new MerchantItemDefinition(
+                    resRef,
+                    "Probe Ring",
+                    100,
+                    (int)MerchantInventoryCategory.RingsAmulets),
+                searchItems: (_, _) => new[]
+                {
+                    new MerchantItemDefinition(
+                        "probe_ring",
+                        "Probe Ring",
+                        100,
+                        (int)MerchantInventoryCategory.RingsAmulets),
+                    new MerchantItemDefinition(
+                        "probe_sword",
+                        "Probe Sword",
+                        100,
+                        (int)MerchantInventoryCategory.Weapons)
+                });
+
+            editor.InventoryCategories.Single(category =>
+                    category.Index == (int)MerchantInventoryCategory.PotionsScrolls)
+                .Count.Should().Be(0);
+            var rings = editor.InventoryCategories.Single(category =>
+                category.Index == (int)MerchantInventoryCategory.RingsAmulets);
+            rings.Count.Should().Be(1);
+
+            editor.SelectedInventoryCategory = rings;
+            editor.InventoryItems.Should().ContainSingle()
+                .Which.ResRef.Should().Be("probe_ring");
+            editor.ItemCandidates.Should().ContainSingle()
+                .Which.ResRef.Should().Be("probe_ring");
+            editor.NeedsSaveNormalization.Should().BeTrue();
+
+            editor.PrepareForSave().Should().BeTrue();
+
+            store.Inventory((int)MerchantInventoryCategory.PotionsScrolls).Should().BeEmpty();
+            var normalized = store.Inventory(
+                (int)MerchantInventoryCategory.RingsAmulets).Should().ContainSingle().Subject;
+            normalized.GetStringOrNull("InventoryRes").Should().Be("probe_ring");
+            normalized.GetIntOrNull("Infinite").Should().Be(0);
+            normalized.GetIntOrNull("Repos_PosX").Should().Be(0);
+            normalized.GetIntOrNull("Repos_Posy").Should().Be(0);
+            editor.NeedsSaveNormalization.Should().BeFalse();
+        }
+
+        [Test]
+        public void AddingAnItemUsesItsBaseItemsStorePanelInsteadOfTheSelectedPane()
+        {
+            var root = NewMerchant();
+            var store = new MerchantValueStore(root);
+            var ring = new MerchantItemDefinition(
+                "probe_ring",
+                "Probe Ring",
+                100,
+                (int)MerchantInventoryCategory.RingsAmulets);
+
+            using var editor = new MerchantEditorViewModel(
+                root,
+                "probe_store",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                loadItem: _ => ring);
+
+            editor.SelectedInventoryCategory = editor.InventoryCategories.Single(category =>
+                category.Index == (int)MerchantInventoryCategory.PotionsScrolls);
+            editor.SelectedItemCandidate = ring;
+
+            editor.AddInventoryItemCommand.Execute(null);
+
+            store.Inventory((int)MerchantInventoryCategory.PotionsScrolls).Should().BeEmpty();
+            store.Inventory((int)MerchantInventoryCategory.RingsAmulets).Should().ContainSingle()
+                .Which.GetStringOrNull("InventoryRes").Should().Be("probe_ring");
+            editor.SelectedInventoryCategory!.Index.Should().Be(
+                (int)MerchantInventoryCategory.RingsAmulets);
         }
 
         [Test]

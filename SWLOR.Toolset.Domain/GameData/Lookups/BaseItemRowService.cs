@@ -3,7 +3,7 @@ using SWLOR.Toolset.Domain.GameData.TwoDa;
 namespace SWLOR.Toolset.Domain.GameData.Lookups
 {
     /// <summary>
-    /// Reads baseitems.2da's label and ModelType columns, indexed by row. Mirrors
+    /// Reads baseitems.2da's label, ModelType, and StorePanel columns, indexed by row. Mirrors
     /// <see cref="BaseItemIconService"/>'s shape but surfaces the columns item-family
     /// classification needs rather than icon naming.
     /// </summary>
@@ -47,7 +47,22 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     modelType = -1; // A malformed ModelType just means the classifier falls back to the label.
                 }
 
-                rows[row] = new BaseItemRow(row, label, modelType);
+                int storePanel;
+                try
+                {
+                    storePanel = table.GetInt(row, "StorePanel") ?? 4;
+                }
+                catch (FormatException)
+                {
+                    storePanel = 4;
+                }
+
+                // Aurora has exactly five panes. Unknown/custom values belong in Miscellaneous,
+                // which is also what baseitems.2da uses for uncategorized item types.
+                if (storePanel is < 0 or > 4)
+                    storePanel = 4;
+
+                rows[row] = new BaseItemRow(row, label, modelType, storePanel);
             }
 
             return rows;

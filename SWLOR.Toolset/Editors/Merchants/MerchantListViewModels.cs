@@ -7,7 +7,8 @@ namespace SWLOR.Toolset.Editors.Merchants
     public sealed record MerchantItemDefinition(
         string ResRef,
         string Name,
-        long BaseCost)
+        long BaseCost,
+        int StorePanel = (int)global::SWLOR.Toolset.Domain.Editors.Merchants.MerchantInventoryCategory.Miscellaneous)
     {
         public string Display => string.IsNullOrWhiteSpace(Name) ||
                                  string.Equals(Name, ResRef, StringComparison.OrdinalIgnoreCase)

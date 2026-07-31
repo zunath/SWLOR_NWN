@@ -1,8 +1,8 @@
 namespace SWLOR.Toolset.Domain.Editors.Merchants
 {
     /// <summary>
-    /// The five store panes in the exact positional order the engine and Aurora toolset use.
-    /// The pane struct IDs vary in legacy files, so position rather than struct ID is authoritative.
+    /// The five values baseitems.2da's StorePanel column uses. An item's BaseItem row is the
+    /// authority for which pane it belongs in; legacy UTM files are not assumed to be correct.
     /// </summary>
     public enum MerchantInventoryCategory
     {

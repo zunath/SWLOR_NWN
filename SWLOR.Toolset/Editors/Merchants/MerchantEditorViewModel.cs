@@ -20,7 +20,7 @@ namespace SWLOR.Toolset.Editors.Merchants
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly Func<string, MerchantItemDefinition?>? _loadItem;
-        private readonly Func<string, IReadOnlyList<MerchantItemDefinition>>? _searchItems;
+        private readonly Func<string, int, IReadOnlyList<MerchantItemDefinition>>? _searchItems;
         private readonly Action<string, Action<Bitmap>>? _requestItemPreview;
         private readonly IReadOnlyList<BehaviorChoice> _baseItems;
         private readonly MerchantInstanceService? _instances;
@@ -96,9 +96,10 @@ namespace SWLOR.Toolset.Editors.Merchants
                 _store.Owner.GetStringOrNull("OnStoreClosed"),
                 OnStoreClosedScript,
                 StringComparison.Ordinal) ||
-            _store.Owner.GetListOrEmpty("StoreList").Count < MerchantValueStore.InventoryPaneCount ||
+            _store.Owner.GetListOrEmpty("StoreList").Count != MerchantValueStore.InventoryPaneCount ||
             _store.Owner.GetOrNull(MerchantValueStore.WillNotBuyField)?.Type != GffFieldType.List ||
-            _store.Owner.GetOrNull(MerchantValueStore.WillOnlyBuyField)?.Type != GffFieldType.List;
+            _store.Owner.GetOrNull(MerchantValueStore.WillOnlyBuyField)?.Type != GffFieldType.List ||
+            (_loadItem != null && !_store.InventoryMatchesCategories(ResolveStorePanel));
 
         [ObservableProperty]
         private MerchantInventoryCategoryViewModel? _selectedInventoryCategory;
@@ -151,7 +152,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             IReadOnlyList<BehaviorChoice>? baseItems = null,
             Func<string, MerchantItemDefinition?>? loadItem = null,
-            Func<string, IReadOnlyList<MerchantItemDefinition>>? searchItems = null,
+            Func<string, int, IReadOnlyList<MerchantItemDefinition>>? searchItems = null,
             MerchantInstanceService? instances = null,
             Action<string, Action<Bitmap>>? requestItemPreview = null)
         {
@@ -177,7 +178,6 @@ namespace SWLOR.Toolset.Editors.Merchants
             RefreshBuyingRuleSelections();
 
             SelectedInventoryCategory = InventoryCategories[0];
-            RefreshItemCandidates();
             _ = RefreshPlacedInstancesAsync();
         }
 
@@ -236,6 +236,7 @@ namespace SWLOR.Toolset.Editors.Merchants
                 _store.Owner.SetString("OnOpenStore", GffFieldType.ResRef, OnOpenStoreScript);
                 _store.Owner.SetString("OnStoreClosed", GffFieldType.ResRef, OnStoreClosedScript);
                 _store.EnsureInventoryPanes();
+                _store.NormalizeInventoryPanes(ResolveStorePanel);
                 _store.EnsureBuyingRuleLists();
             });
 
@@ -250,12 +251,14 @@ namespace SWLOR.Toolset.Editors.Merchants
             if (SelectedInventoryCategory == null || SelectedItemCandidate == null)
                 return;
 
-            var category = SelectedInventoryCategory;
-            var candidate = SelectedItemCandidate;
+            var candidate = _loadItem?.Invoke(SelectedItemCandidate.ResRef) ?? SelectedItemCandidate;
+            var storePanel = NormalizeStorePanel(candidate.StorePanel);
+            var category = InventoryCategories.Single(entry => entry.Index == storePanel);
             if (_runEdit(
                     $"Add {candidate.Name} to {category.Name}",
-                    () => _store.AddInventoryItem(category.Index, candidate.ResRef)))
+                    () => _store.AddInventoryItem(storePanel, candidate.ResRef)))
             {
+                SelectedInventoryCategory = category;
                 RefreshInventory();
             }
         }
@@ -281,6 +284,7 @@ namespace SWLOR.Toolset.Editors.Merchants
         {
             AddInventoryItemCommand.NotifyCanExecuteChanged();
             RefreshInventory();
+            RefreshItemCandidates();
         }
 
         partial void OnSelectedInventoryItemChanged(MerchantInventoryItemViewModel? value)
@@ -442,7 +446,8 @@ namespace SWLOR.Toolset.Editors.Merchants
             var refreshGeneration = ++_inventoryRefreshGeneration;
             InventoryItems.Clear();
             SelectedInventoryItem = null;
-            RefreshCategoryCounts();
+            var inventory = InventorySnapshot();
+            RefreshCategoryCounts(inventory);
 
             var category = SelectedInventoryCategory;
             if (category == null)
@@ -454,13 +459,11 @@ namespace SWLOR.Toolset.Editors.Merchants
             var query = InventorySearchText.Trim();
             var markUp = _store.Owner.GetIntOrNull("MarkUp") ?? 100;
             var markDown = _store.Owner.GetIntOrNull("MarkDown") ?? 0;
-            var slots = _store.Inventory(category.Index);
-            for (var itemIndex = 0; itemIndex < slots.Count; itemIndex++)
+            foreach (var entry in inventory.Where(entry =>
+                         NormalizeStorePanel(entry.Definition.StorePanel) == category.Index))
             {
-                var slot = slots[itemIndex];
-                var resRef = slot.GetStringOrNull("InventoryRes") ?? string.Empty;
-                var definition = _loadItem?.Invoke(resRef)
-                                 ?? new MerchantItemDefinition(resRef, resRef, 0);
+                var resRef = entry.Definition.ResRef;
+                var definition = entry.Definition;
                 if (query.Length > 0 &&
                     !definition.Name.Contains(query, StringComparison.OrdinalIgnoreCase) &&
                     !definition.ResRef.Contains(query, StringComparison.OrdinalIgnoreCase))
@@ -468,12 +471,13 @@ namespace SWLOR.Toolset.Editors.Merchants
                     continue;
                 }
 
-                var capturedIndex = itemIndex;
+                var capturedPane = entry.PaneIndex;
+                var capturedIndex = entry.ItemIndex;
                 var inventoryItem = new MerchantInventoryItemViewModel(
-                    category.Index,
-                    itemIndex,
+                    capturedPane,
+                    capturedIndex,
                     definition,
-                    slot.GetIntOrNull("Infinite") != 0,
+                    entry.Slot.GetIntOrNull("Infinite") != 0,
                     markUp,
                     markDown,
                     infinite =>
@@ -481,7 +485,7 @@ namespace SWLOR.Toolset.Editors.Merchants
                         if (!_runEdit(
                                 $"Set {definition.Name} inventory quantity",
                                 () => _store.SetInventoryInfinite(
-                                    category.Index, capturedIndex, infinite)))
+                                    capturedPane, capturedIndex, infinite)))
                         {
                             RefreshInventory();
                         }
@@ -498,26 +502,77 @@ namespace SWLOR.Toolset.Editors.Merchants
             NotifyInventoryShapeChanged();
         }
 
-        private void RefreshCategoryCounts()
+        private void RefreshCategoryCounts() => RefreshCategoryCounts(InventorySnapshot());
+
+        private void RefreshCategoryCounts(
+            IReadOnlyList<(int PaneIndex, int ItemIndex, JsonGffStruct Slot,
+                MerchantItemDefinition Definition)> inventory)
         {
             foreach (var category in InventoryCategories)
-                category.Count = _store.Inventory(category.Index).Count;
+            {
+                category.Count = inventory.Count(entry =>
+                    NormalizeStorePanel(entry.Definition.StorePanel) == category.Index);
+            }
         }
 
         private void RefreshItemCandidates()
         {
             ItemCandidates.Clear();
             SelectedItemCandidate = null;
-            foreach (var candidate in _searchItems?.Invoke(ItemSearchText.Trim())
+            var category = SelectedInventoryCategory;
+            if (category == null)
+            {
+                OnPropertyChanged(nameof(HasItemCandidates));
+                OnPropertyChanged(nameof(CandidateSummary));
+                return;
+            }
+
+            foreach (var candidate in _searchItems?.Invoke(ItemSearchText.Trim(), category.Index)
                          ?? Array.Empty<MerchantItemDefinition>())
             {
-                ItemCandidates.Add(candidate);
+                if (NormalizeStorePanel(candidate.StorePanel) == category.Index)
+                    ItemCandidates.Add(candidate);
             }
 
             SelectedItemCandidate = ItemCandidates.FirstOrDefault();
             OnPropertyChanged(nameof(HasItemCandidates));
             OnPropertyChanged(nameof(CandidateSummary));
         }
+
+        private IReadOnlyList<(int PaneIndex, int ItemIndex, JsonGffStruct Slot,
+            MerchantItemDefinition Definition)> InventorySnapshot()
+        {
+            var inventory = new List<(int, int, JsonGffStruct, MerchantItemDefinition)>();
+            var panes = _store.Owner.GetListOrEmpty("StoreList");
+            for (var paneIndex = 0; paneIndex < panes.Count; paneIndex++)
+            {
+                var slots = panes[paneIndex].GetListOrEmpty("ItemList");
+                for (var itemIndex = 0; itemIndex < slots.Count; itemIndex++)
+                {
+                    var slot = slots[itemIndex];
+                    var resRef = slot.GetStringOrNull("InventoryRes") ?? string.Empty;
+                    var definition = _loadItem?.Invoke(resRef)
+                                     ?? new MerchantItemDefinition(
+                                         resRef,
+                                         resRef,
+                                         0,
+                                         NormalizeStorePanel(paneIndex));
+                    inventory.Add((paneIndex, itemIndex, slot, definition));
+                }
+            }
+
+            return inventory;
+        }
+
+        private int? ResolveStorePanel(string resRef) =>
+            _loadItem?.Invoke(resRef) is { } item
+                ? NormalizeStorePanel(item.StorePanel)
+                : null;
+
+        private static int NormalizeStorePanel(int storePanel) =>
+            storePanel is >= 0 and < MerchantValueStore.InventoryPaneCount
+                ? storePanel
+                : (int)MerchantInventoryCategory.Miscellaneous;
 
         private void BuildBuyingRules()
         {

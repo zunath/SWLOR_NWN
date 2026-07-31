@@ -63,7 +63,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             int slot,
             CreatureValueStore store,
             Func<string, Action, bool> runEdit,
-            Func<IReadOnlyList<CreatureEquipmentChoice>> choices,
+            Func<Task<IReadOnlyList<CreatureEquipmentChoice>>> choices,
             Func<string, CreatureEquipmentChoice?> loadDetails,
             Action changed)
             : base(
@@ -78,7 +78,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 store,
                 runEdit,
                 valueChanged: changed,
-                choiceLoader: () => choices()
+                asyncChoiceLoader: async () => (await choices().ConfigureAwait(true))
                     .Select(choice => new BehaviorChoice(choice.ResRef, choice.Display)
                     {
                         Summary = choice.StatSummary

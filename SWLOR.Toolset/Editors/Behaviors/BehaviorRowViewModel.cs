@@ -56,6 +56,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         private readonly ChoicePreviewService? _previews;
         private readonly Func<BehaviorChoice, string?>? _previewAudio;
         private Func<IReadOnlyList<BehaviorChoice>>? _choiceLoader;
+        private Func<Task<IReadOnlyList<BehaviorChoice>>>? _asyncChoiceLoader;
         private List<BehaviorChoiceViewModel> _searchMatches = new();
         private List<BehaviorChoiceViewModel> _galleryMatches = new();
         private CancellationTokenSource? _searchDebounce;
@@ -118,7 +119,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         }
 
         /// <summary>Whether this row has paid the cost of resolving and wrapping its option set.</summary>
-        public bool AreChoicesLoaded => _choiceLoader == null;
+        public bool AreChoicesLoaded => _choiceLoader == null && _asyncChoiceLoader == null;
 
         /// <summary>The filtered slice of <see cref="Choices"/> a searchable row shows.</summary>
         public ObservableCollection<BehaviorChoiceViewModel> FilteredChoices { get; } = new();
@@ -397,7 +398,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
             Action? valueChanged = null,
             ChoicePreviewService? previews = null,
             Func<BehaviorChoice, string?>? previewAudio = null,
-            Func<IReadOnlyList<BehaviorChoice>>? choiceLoader = null)
+            Func<IReadOnlyList<BehaviorChoice>>? choiceLoader = null,
+            Func<Task<IReadOnlyList<BehaviorChoice>>>? asyncChoiceLoader = null)
         {
             Definition = definition ?? throw new ArgumentNullException(nameof(definition));
             Store = store ?? throw new ArgumentNullException(nameof(store));
@@ -405,15 +407,19 @@ namespace SWLOR.Toolset.Editors.Behaviors
             _valueChanged = valueChanged;
             _previews = previews;
             _previewAudio = previewAudio;
-            if (choices != null && choiceLoader != null)
-                throw new ArgumentException("Provide eager choices or a deferred choice loader, not both.");
+            var choiceSourceCount = (choices != null ? 1 : 0) +
+                                    (choiceLoader != null ? 1 : 0) +
+                                    (asyncChoiceLoader != null ? 1 : 0);
+            if (choiceSourceCount > 1)
+                throw new ArgumentException("Provide eager choices or one deferred choice loader, not both.");
 
             _choiceLoader = choiceLoader;
+            _asyncChoiceLoader = asyncChoiceLoader;
             // Wrapping the choices costs nothing: no picture is decoded or rendered until a tile
             // that shows one exists, and then only for the page that has been published. Building
             // the rows used to decode every load screen - around thirty megabytes of DDS - before
             // the tab could draw, which is what made switching to Area Transition stall.
-            if (choiceLoader == null)
+            if (choiceLoader == null && asyncChoiceLoader == null)
                 Choices = BehaviorChoiceViewModel.From(choices ?? definition.Choices);
         }
 
@@ -425,7 +431,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         {
             if (Definition.IsInlineSearch)
             {
-                LoadDeferredChoices();
+                LoadSynchronousDeferredChoices();
                 IsSearchExpanded = true;
             }
 
@@ -574,15 +580,15 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// or changing behaviors never calls a deferred loader.
         /// </summary>
         [RelayCommand]
-        private void OpenSearch()
+        private async Task OpenSearch()
         {
-            EnsureChoicesLoaded();
+            await EnsureChoicesLoadedAsync().ConfigureAwait(true);
 
             // Loading can reveal that this is an artwork picker. Open that reusable surface rather
             // than also constructing a text-result list for the same choices.
             if (IsPopupGallery)
             {
-                OpenGallery();
+                await OpenGallery().ConfigureAwait(true);
                 return;
             }
 
@@ -621,9 +627,9 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// exactly one picture — the one it is showing.
         /// </summary>
         [RelayCommand]
-        private void OpenGallery()
+        private async Task OpenGallery()
         {
-            EnsureChoicesLoaded();
+            await EnsureChoicesLoadedAsync().ConfigureAwait(true);
             if (!IsPopupGallery)
                 return;
 
@@ -996,24 +1002,42 @@ namespace SWLOR.Toolset.Editors.Behaviors
             OnPropertyChanged(nameof(CanLoadMoreSearchResults));
         }
 
-        private void EnsureChoicesLoaded()
+        private async Task EnsureChoicesLoadedAsync()
         {
-            if (!LoadDeferredChoices())
+            if (!await LoadDeferredChoicesAsync().ConfigureAwait(true))
                 return;
 
             Reload();
         }
 
-        private bool LoadDeferredChoices()
+        private async Task<bool> LoadDeferredChoicesAsync()
         {
             var loader = _choiceLoader;
-            if (loader == null)
+            var asyncLoader = _asyncChoiceLoader;
+            if (loader == null && asyncLoader == null)
                 return false;
+
+            if (loader != null)
+                return LoadSynchronousDeferredChoices();
 
             // Resolve before clearing the loader so a malformed source can be retried instead of
             // leaving the row claiming that an empty set loaded successfully. The resolver itself
             // is cached by the editor service; this row pays only for its wrappers and only after
             // explicit interaction.
+            var choices = await asyncLoader!().ConfigureAwait(true);
+            var loaded = BehaviorChoiceViewModel.From(choices);
+            _asyncChoiceLoader = null;
+            Choices = loaded;
+            OnPropertyChanged(nameof(AreChoicesLoaded));
+            return true;
+        }
+
+        private bool LoadSynchronousDeferredChoices()
+        {
+            var loader = _choiceLoader;
+            if (loader == null)
+                return false;
+
             var loaded = BehaviorChoiceViewModel.From(loader());
             _choiceLoader = null;
             Choices = loaded;

@@ -1269,7 +1269,8 @@ namespace SWLOR.Toolset.Editors
 
         private static bool CanRunOncePerPlayer(string actionKey) => actionKey is not
             "action-open-store" and not
-            "action-teleport";
+            "action-teleport" and not
+            "action-request-quest-items";
 
         private void SetConsequenceOncePerPlayer(SnippetEditorViewModel editor, bool oncePerPlayer)
         {

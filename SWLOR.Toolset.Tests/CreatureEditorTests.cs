@@ -1274,10 +1274,10 @@ namespace SWLOR.Toolset.Tests
                     "right_hand_test", "Right Hand Test", 7, 0x30, weaponStats))
                 .ToList();
 
-            IReadOnlyList<CreatureEquipmentChoice> Equipment()
+            Task<IReadOnlyList<CreatureEquipmentChoice>> Equipment()
             {
                 catalogLoads++;
-                return equipment;
+                return Task.FromResult<IReadOnlyList<CreatureEquipmentChoice>>(equipment);
             }
 
             CreatureEquipmentChoice? Details(string resRef)
@@ -1358,6 +1358,46 @@ namespace SWLOR.Toolset.Tests
                 .Which.Entries.Should().ContainSingle(entry => entry.Label == "DMG" && entry.Value == "8");
         }
 
+        [Test]
+        public async Task EquipmentPicker_AwaitsTheCatalogWithoutBlockingItsOpenCommand()
+        {
+            var started = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var release = new TaskCompletionSource<IReadOnlyList<CreatureEquipmentChoice>>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "equipment_async", "Async Equipment"));
+            var picker = new CreatureEquipmentPickerViewModel(
+                "Armor",
+                2,
+                new CreatureValueStore(document.Root),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                async () =>
+                {
+                    started.TrySetResult(true);
+                    return await release.Task.ConfigureAwait(false);
+                },
+                _ => null,
+                () => { });
+
+            var opening = picker.OpenSearchCommand.ExecuteAsync(null);
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
+            opening.IsCompleted.Should().BeFalse();
+            picker.AreChoicesLoaded.Should().BeFalse();
+            release.SetResult([
+                new CreatureEquipmentChoice("armor_async", "Async Armor", 16, 2)
+            ]);
+            await opening.WaitAsync(TimeSpan.FromSeconds(2));
+
+            picker.AreChoicesLoaded.Should().BeTrue();
+            picker.FilteredChoices.Should().ContainSingle()
+                .Which.StringValue.Should().Be("armor_async");
+        }
+
         [AvaloniaTest]
         public void EquipmentSelection_ComposesOnlyTheNewestCreaturePreviewOffTheUiThread()
         {
@@ -1399,7 +1439,7 @@ namespace SWLOR.Toolset.Tests
                 },
                 _ => null,
                 null,
-                equipmentChoices: () => choices);
+                equipmentChoices: () => Task.FromResult<IReadOnlyList<CreatureEquipmentChoice>>(choices));
 
             try
             {

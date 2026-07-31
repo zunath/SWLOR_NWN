@@ -544,6 +544,26 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void QuestItemHandInRemainsRepeatableUntilTheQuestActuallyCollectsTheItems()
+        {
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            editor.Value.AddChoiceCommand.Execute(null);
+            var choice = editor.Value.Choices.Last();
+            editor.Value.EditChoiceCommand.Execute(choice);
+
+            editor.Value.ConsequenceToAdd = Snippets.Find("action-request-quest-items");
+            editor.Value.AddConsequenceCommand.Execute(null);
+
+            var handIn = editor.Value.Consequences.Should().ContainSingle().Which;
+            handIn.CanRunOncePerPlayer.Should().BeFalse();
+            handIn.IsOncePerPlayer.Should().BeFalse();
+            choice.Target.Actions.Should().NotContain(action => action.IsOncePerPlayerMarker,
+                "closing or failing the collection flow must not suppress every later hand-in attempt");
+        }
+
+        [Test]
         public void UnmatchedDropdownValuesSurviveUnrelatedSnippetEdits()
         {
             var document = DlgDocument.Load(_workingCopy);

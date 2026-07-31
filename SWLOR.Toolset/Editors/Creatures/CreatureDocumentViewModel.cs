@@ -46,7 +46,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<JsonGffStruct, RenderModel?>? resolveModel,
             Func<int, AppearanceRow?> appearance,
             Editors.Items.ArmorPartCatalog? armorParts,
-            Func<IReadOnlyList<CreatureEquipmentChoice>>? equipmentChoices,
+            Func<Task<IReadOnlyList<CreatureEquipmentChoice>>>? equipmentChoices,
             Func<string, CreatureEquipmentChoice?>? equipmentDetails,
             Editors.Behaviors.ChoicePreviewService? choicePreviews,
             Func<BehaviorChoice, string?>? previewAudio,

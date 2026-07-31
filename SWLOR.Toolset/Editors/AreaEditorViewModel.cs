@@ -2193,15 +2193,19 @@ namespace SWLOR.Toolset.Editors
                 using var moduleWriteLock = staged.Count == 0
                     ? null
                     : ModuleWriteLock.AcquireForResourcePath(staged[0].TargetPath);
+                var instancePairBeingWritten =
+                    gitPlan == SavePlan.Write || gicPlan == SavePlan.Write;
 
-                foreach (var (session, plan) in new[]
+                foreach (var (session, plan, isInstancePairMember) in new[]
                          {
-                             (_areSession, arePlan),
-                             (_gitSession, gitPlan),
-                             (_gicSession, gicPlan)
+                             (_areSession, arePlan, false),
+                             (_gitSession, gitPlan, true),
+                             (_gicSession, gicPlan, true)
                          })
                 {
-                    if (plan == SavePlan.Write && session.HasExternalChange())
+                    var mustRecheck = plan == SavePlan.Write ||
+                                      isInstancePairMember && instancePairBeingWritten;
+                    if (mustRecheck && session.HasExternalChange())
                     {
                         foreach (var write in staged)
                             Services.SaveService.Discard(write);

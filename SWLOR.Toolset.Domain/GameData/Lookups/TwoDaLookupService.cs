@@ -138,6 +138,16 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             new("placeables", "Label", "StrRef", ["ModelName"]);
 
         /// <summary>
+        /// iprp_spells.2da - a Cast Spell subtype must identify a real spell, its levels, supported
+        /// item usages, and an icon. Labeled disabled rows leave these cells blank.
+        /// </summary>
+        public static readonly TwoDaLookupTable ItemSpell = new(
+            "iprp_spells",
+            "Label",
+            "Name",
+            ["Name", "CasterLvl", "InnateLvl", "SpellIndex", "PotionUse", "WandUse", "GeneralUse", "Icon"]);
+
+        /// <summary>
         /// Load screens. Read by label rather than by StrRef: every SWLOR row points at the same
         /// generic strref, so the label is the only thing that tells one screen from another.
         /// </summary>

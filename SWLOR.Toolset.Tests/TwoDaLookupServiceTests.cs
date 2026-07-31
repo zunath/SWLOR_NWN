@@ -46,7 +46,8 @@ namespace SWLOR.Toolset.Tests
                      {
                          TwoDaLookupTables.Gender, TwoDaLookupTables.Phenotype,
                          TwoDaLookupTables.SoundSet, TwoDaLookupTables.BaseItem,
-                         TwoDaLookupTables.PlaceableModel, TwoDaLookupTables.Race,
+                         TwoDaLookupTables.PlaceableModel, TwoDaLookupTables.ItemSpell,
+                         TwoDaLookupTables.Race,
                          TwoDaLookupTables.CreatureSpeed
                      })
             {

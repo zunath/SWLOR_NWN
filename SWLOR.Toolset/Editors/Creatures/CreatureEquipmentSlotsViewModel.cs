@@ -38,7 +38,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         public CreatureEquipmentSlotsViewModel(
             CreatureValueStore store,
             Func<string, Action, bool> runEdit,
-            Func<IReadOnlyList<CreatureEquipmentChoice>> allChoices,
+            Func<Task<IReadOnlyList<CreatureEquipmentChoice>>> allChoices,
             Func<string, CreatureEquipmentChoice?> loadDetails,
             Action changed)
         {
@@ -72,11 +72,12 @@ namespace SWLOR.Toolset.Editors.Creatures
             int slot,
             CreatureValueStore store,
             Func<string, Action, bool> runEdit,
-            Func<IReadOnlyList<CreatureEquipmentChoice>> allChoices,
+            Func<Task<IReadOnlyList<CreatureEquipmentChoice>>> allChoices,
             Func<string, CreatureEquipmentChoice?> loadDetails,
             Action changed)
         {
-            IReadOnlyList<CreatureEquipmentChoice> Filtered() => allChoices()
+            async Task<IReadOnlyList<CreatureEquipmentChoice>> Filtered() =>
+                (await allChoices().ConfigureAwait(true))
                 .Where(choice => (choice.EquipableSlots & slot) != 0)
                 .ToList();
 

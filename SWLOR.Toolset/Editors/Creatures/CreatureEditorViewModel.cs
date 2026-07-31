@@ -126,7 +126,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<JsonGffStruct, RenderModel?>? resolveModel,
             Func<int, AppearanceRow?> appearance,
             ArmorPartCatalog? armorParts,
-            Func<IReadOnlyList<CreatureEquipmentChoice>>? equipmentChoices = null,
+            Func<Task<IReadOnlyList<CreatureEquipmentChoice>>>? equipmentChoices = null,
             Func<string, CreatureEquipmentChoice?>? equipmentDetails = null,
             ChoicePreviewService? choicePreviews = null,
             Func<BehaviorChoice, string?>? previewAudio = null,
@@ -157,7 +157,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             EquipmentSlots = new CreatureEquipmentSlotsViewModel(
                 _store,
                 RunEdit,
-                equipmentChoices ?? (() => Array.Empty<CreatureEquipmentChoice>()),
+                equipmentChoices ?? (() => Task.FromResult<IReadOnlyList<CreatureEquipmentChoice>>(
+                    Array.Empty<CreatureEquipmentChoice>())),
                 equipmentDetails ?? (_ => null),
                 OnEquipmentChanged);
             Variables = new VarTableSectionViewModel(RunEdit, _store.Locals, gameCodeIndex, IsCustomVariable);

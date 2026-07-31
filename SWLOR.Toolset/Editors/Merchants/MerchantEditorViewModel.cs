@@ -25,6 +25,7 @@ namespace SWLOR.Toolset.Editors.Merchants
         private readonly IReadOnlyList<BehaviorChoice> _baseItems;
         private readonly MerchantInstanceService? _instances;
         private readonly List<MerchantBuyingRuleViewModel> _allBuyingRules = new();
+        private readonly HashSet<(int PaneIndex, int ItemIndex)> _checkedInventoryItems = new();
         private int _instanceRefreshGeneration;
         private int _inventoryRefreshGeneration;
         private bool _loading;
@@ -51,6 +52,11 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         public bool HasInventoryItems => InventoryItems.Count > 0;
         public bool HasSelectedInventoryItem => SelectedInventoryItem != null;
+        public int CheckedInventoryItemCount => _checkedInventoryItems.Count;
+        public string CheckedInventorySummary =>
+            $"{CheckedInventoryItemCount} item{(CheckedInventoryItemCount == 1 ? string.Empty : "s")} selected";
+        public string RemoveCheckedInventoryLabel =>
+            $"Remove selected ({CheckedInventoryItemCount})";
         public bool HasItemCandidates => ItemCandidates.Count > 0;
         public bool HasPlacedInstances => PlacedInstances.Count > 0;
         public bool HasOutOfDateInstances => PlacedInstances.Any(instance => !instance.IsCurrent);
@@ -189,6 +195,7 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         public void ReloadFromDocument()
         {
+            ClearCheckedInventoryItemsCore();
             BuyingRuleError = null;
             foreach (var row in DetailRows.Concat(PricingRows))
                 row.Reload();
@@ -282,9 +289,44 @@ namespace SWLOR.Toolset.Editors.Merchants
                     $"Remove {item.DisplayName} from merchant inventory",
                     () => _store.RemoveInventoryItem(item.PaneIndex, item.ItemIndex)))
             {
+                ClearCheckedInventoryItemsCore();
                 RefreshInventory();
             }
         }
+
+        [RelayCommand(CanExecute = nameof(CanSelectAllShownInventoryItems))]
+        private void SelectAllShownInventoryItems()
+        {
+            foreach (var item in InventoryItems)
+                item.IsChecked = true;
+        }
+
+        private bool CanSelectAllShownInventoryItems() =>
+            InventoryItems.Any(item => !item.IsChecked);
+
+        [RelayCommand(CanExecute = nameof(CanClearCheckedInventoryItems))]
+        private void ClearCheckedInventoryItems() => ClearCheckedInventoryItemsCore();
+
+        private bool CanClearCheckedInventoryItems() => _checkedInventoryItems.Count > 0;
+
+        [RelayCommand(CanExecute = nameof(CanRemoveCheckedInventoryItems))]
+        private void RemoveCheckedInventoryItems()
+        {
+            var removals = _checkedInventoryItems.ToList();
+            if (removals.Count == 0)
+                return;
+
+            var itemLabel = removals.Count == 1 ? "item" : "items";
+            if (_runEdit(
+                    $"Remove {removals.Count} {itemLabel} from merchant inventory",
+                    () => _store.RemoveInventoryItems(removals)))
+            {
+                ClearCheckedInventoryItemsCore();
+                RefreshInventory();
+            }
+        }
+
+        private bool CanRemoveCheckedInventoryItems() => _checkedInventoryItems.Count > 0;
 
         partial void OnSelectedInventoryCategoryChanged(MerchantInventoryCategoryViewModel? value)
         {
@@ -479,11 +521,13 @@ namespace SWLOR.Toolset.Editors.Merchants
 
                 var capturedPane = entry.PaneIndex;
                 var capturedIndex = entry.ItemIndex;
+                var inventoryKey = (capturedPane, capturedIndex);
                 var inventoryItem = new MerchantInventoryItemViewModel(
                     capturedPane,
                     capturedIndex,
                     definition,
                     entry.Slot.GetIntOrNull("Infinite") != 0,
+                    _checkedInventoryItems.Contains(inventoryKey),
                     markUp,
                     markDown,
                     infinite =>
@@ -495,6 +539,14 @@ namespace SWLOR.Toolset.Editors.Merchants
                         {
                             RefreshInventory();
                         }
+                    },
+                    isChecked =>
+                    {
+                        if (isChecked)
+                            _checkedInventoryItems.Add(inventoryKey);
+                        else
+                            _checkedInventoryItems.Remove(inventoryKey);
+                        NotifyInventorySelectionChanged();
                     });
                 InventoryItems.Add(inventoryItem);
                 _requestItemPreview?.Invoke(resRef, preview =>
@@ -652,6 +704,28 @@ namespace SWLOR.Toolset.Editors.Merchants
         {
             OnPropertyChanged(nameof(HasInventoryItems));
             OnPropertyChanged(nameof(InventorySummary));
+            SelectAllShownInventoryItemsCommand.NotifyCanExecuteChanged();
+        }
+
+        private void ClearCheckedInventoryItemsCore()
+        {
+            if (_checkedInventoryItems.Count == 0 && InventoryItems.All(item => !item.IsChecked))
+                return;
+
+            _checkedInventoryItems.Clear();
+            foreach (var item in InventoryItems)
+                item.SetCheckedWithoutWriting(false);
+            NotifyInventorySelectionChanged();
+        }
+
+        private void NotifyInventorySelectionChanged()
+        {
+            OnPropertyChanged(nameof(CheckedInventoryItemCount));
+            OnPropertyChanged(nameof(CheckedInventorySummary));
+            OnPropertyChanged(nameof(RemoveCheckedInventoryLabel));
+            SelectAllShownInventoryItemsCommand.NotifyCanExecuteChanged();
+            ClearCheckedInventoryItemsCommand.NotifyCanExecuteChanged();
+            RemoveCheckedInventoryItemsCommand.NotifyCanExecuteChanged();
         }
 
         private void NotifyInstanceShapeChanged()

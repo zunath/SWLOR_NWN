@@ -179,6 +179,103 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BulkInventoryRemovalPreservesOrderAndRenumbersEveryAffectedPane()
+        {
+            var store = new MerchantValueStore(NewMerchant());
+            store.AddInventoryItem((int)MerchantInventoryCategory.Armor, "armor_a");
+            store.AddInventoryItem((int)MerchantInventoryCategory.Armor, "armor_b");
+            store.AddInventoryItem((int)MerchantInventoryCategory.Armor, "armor_c");
+            store.AddInventoryItem((int)MerchantInventoryCategory.Weapons, "weapon_a");
+            store.AddInventoryItem((int)MerchantInventoryCategory.Weapons, "weapon_b");
+
+            store.RemoveInventoryItems(new[]
+            {
+                ((int)MerchantInventoryCategory.Armor, 0),
+                ((int)MerchantInventoryCategory.Armor, 2),
+                ((int)MerchantInventoryCategory.Weapons, 1)
+            });
+
+            store.Inventory((int)MerchantInventoryCategory.Armor)
+                .Select(item => item.GetStringOrNull("InventoryRes"))
+                .Should().Equal("armor_b");
+            store.Inventory((int)MerchantInventoryCategory.Weapons)
+                .Select(item => item.GetStringOrNull("InventoryRes"))
+                .Should().Equal("weapon_a");
+            store.Inventory((int)MerchantInventoryCategory.Armor).Single().StructId.Should().Be(0);
+            store.Inventory((int)MerchantInventoryCategory.Weapons).Single().StructId.Should().Be(0);
+        }
+
+        [Test]
+        public void BulkInventoryRemovalValidatesEverySlotBeforeMutating()
+        {
+            var store = new MerchantValueStore(NewMerchant());
+            store.AddInventoryItem((int)MerchantInventoryCategory.Armor, "armor_a");
+            store.AddInventoryItem((int)MerchantInventoryCategory.Armor, "armor_b");
+
+            var remove = () => store.RemoveInventoryItems(new[]
+            {
+                ((int)MerchantInventoryCategory.Armor, 0),
+                ((int)MerchantInventoryCategory.Armor, 20)
+            });
+
+            remove.Should().Throw<ArgumentOutOfRangeException>();
+            store.Inventory((int)MerchantInventoryCategory.Armor)
+                .Select(item => item.GetStringOrNull("InventoryRes"))
+                .Should().Equal("armor_a", "armor_b");
+        }
+
+        [Test]
+        public void InventoryChecksPersistAcrossFiltersAndRemoveInOneEdit()
+        {
+            var root = NewMerchant();
+            var store = new MerchantValueStore(root);
+            store.AddInventoryItem((int)MerchantInventoryCategory.Armor, "armor_alpha");
+            store.AddInventoryItem((int)MerchantInventoryCategory.Armor, "armor_beta");
+            store.AddInventoryItem((int)MerchantInventoryCategory.Armor, "armor_gamma");
+            var editDescriptions = new List<string>();
+            var names = new Dictionary<string, string>
+            {
+                ["armor_alpha"] = "Alpha Armor",
+                ["armor_beta"] = "Beta Armor",
+                ["armor_gamma"] = "Gamma Armor"
+            };
+
+            using var editor = new MerchantEditorViewModel(
+                root,
+                "probe_store",
+                (description, mutation) =>
+                {
+                    mutation();
+                    editDescriptions.Add(description);
+                    return true;
+                },
+                loadItem: resRef => new MerchantItemDefinition(
+                    resRef,
+                    names[resRef],
+                    100,
+                    (int)MerchantInventoryCategory.Armor));
+
+            editor.InventorySearchText = "Alpha";
+            editor.SelectAllShownInventoryItemsCommand.Execute(null);
+            editor.InventorySearchText = "Gamma";
+            editor.SelectAllShownInventoryItemsCommand.Execute(null);
+
+            editor.CheckedInventoryItemCount.Should().Be(2);
+            editor.CheckedInventorySummary.Should().Be("2 items selected");
+            editor.RemoveCheckedInventoryLabel.Should().Be("Remove selected (2)");
+            editor.RemoveCheckedInventoryItemsCommand.CanExecute(null).Should().BeTrue();
+
+            editor.RemoveCheckedInventoryItemsCommand.Execute(null);
+
+            editDescriptions.Should().Equal("Remove 2 items from merchant inventory");
+            store.Inventory((int)MerchantInventoryCategory.Armor)
+                .Select(item => item.GetStringOrNull("InventoryRes"))
+                .Should().Equal("armor_beta");
+            editor.CheckedInventoryItemCount.Should().Be(0);
+            editor.RemoveCheckedInventoryItemsCommand.CanExecute(null).Should().BeFalse();
+        }
+
+        [Test]
         public void InventoryRowsRequestTheSharedItemPreview()
         {
             var root = NewMerchant();

@@ -59,6 +59,40 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
             Renumber(items.Elements);
         }
 
+        /// <summary>Removes multiple inventory slots while preserving the native order of every
+        /// pane. All slots are validated before the first mutation so the operation is atomic.</summary>
+        public void RemoveInventoryItems(
+            IEnumerable<(int PaneIndex, int ItemIndex)> inventoryItems)
+        {
+            ArgumentNullException.ThrowIfNull(inventoryItems);
+            var removals = inventoryItems.Distinct().ToList();
+            if (removals.Count == 0)
+                return;
+
+            var panes = Owner.GetListOrEmpty("StoreList");
+            foreach (var (paneIndex, itemIndex) in removals)
+            {
+                if (paneIndex < 0 || paneIndex >= panes.Count)
+                    throw new ArgumentOutOfRangeException(nameof(inventoryItems));
+
+                var items = panes[paneIndex].GetListOrEmpty("ItemList");
+                if (itemIndex < 0 || itemIndex >= items.Count)
+                    throw new ArgumentOutOfRangeException(nameof(inventoryItems));
+            }
+
+            foreach (var group in removals.GroupBy(removal => removal.PaneIndex))
+            {
+                var items = panes[group.Key].Get("ItemList");
+                foreach (var itemIndex in group.Select(removal => removal.ItemIndex)
+                             .OrderByDescending(index => index))
+                {
+                    items.RemoveElementAt(itemIndex);
+                }
+
+                Renumber(items.Elements!);
+            }
+        }
+
         public void SetInventoryInfinite(int paneIndex, int itemIndex, bool infinite)
         {
             var item = Inventory(paneIndex).ElementAtOrDefault(itemIndex);

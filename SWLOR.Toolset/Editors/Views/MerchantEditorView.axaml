@@ -42,7 +42,7 @@
           </StackPanel>
         </Border>
 
-        <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*,Auto" Margin="12" RowSpacing="8">
+        <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="12" RowSpacing="8">
           <TextBlock Grid.Row="0" Text="{Binding SelectedInventoryCategory.Name}"
                      Classes="section" FontSize="15" />
           <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
@@ -52,23 +52,36 @@
                        VerticalAlignment="Center" />
           </Grid>
 
-          <ListBox Grid.Row="2" ItemsSource="{Binding InventoryItems}"
+          <Grid Grid.Row="2" ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8">
+            <Button Grid.Column="0" Content="Select all shown"
+                    Command="{Binding SelectAllShownInventoryItemsCommand}" />
+            <Button Grid.Column="1" Content="Clear"
+                    Command="{Binding ClearCheckedInventoryItemsCommand}" />
+            <TextBlock Grid.Column="2" Text="{Binding CheckedInventorySummary}" Classes="dim"
+                       VerticalAlignment="Center" />
+            <Button Grid.Column="3" Content="{Binding RemoveCheckedInventoryLabel}"
+                    Command="{Binding RemoveCheckedInventoryItemsCommand}" />
+          </Grid>
+
+          <ListBox Grid.Row="3" ItemsSource="{Binding InventoryItems}"
                    SelectedItem="{Binding SelectedInventoryItem, Mode=TwoWay}">
             <ListBox.ItemTemplate>
               <DataTemplate DataType="merchants:MerchantInventoryItemViewModel">
-                <Grid ColumnDefinitions="46,*,Auto" Margin="6,6" ColumnSpacing="10">
-                  <Border Grid.Column="0" Width="42" Height="42"
+                <Grid ColumnDefinitions="Auto,46,*,Auto" Margin="6,6" ColumnSpacing="10">
+                  <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                            VerticalAlignment="Center" />
+                  <Border Grid.Column="1" Width="42" Height="42"
                           Background="{DynamicResource PanelRaisedBrush}"
                           BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
                           CornerRadius="3">
                     <Image Source="{Binding Preview}" Stretch="Uniform" Margin="3" />
                   </Border>
-                  <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                  <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
                     <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"
                                TextTrimming="CharacterEllipsis" />
                     <TextBlock Text="{Binding ResRef}" Classes="resref" FontSize="10.5" />
                   </StackPanel>
-                  <StackPanel Grid.Column="2" HorizontalAlignment="Right"
+                  <StackPanel Grid.Column="3" HorizontalAlignment="Right"
                               VerticalAlignment="Center">
                     <TextBlock Text="{Binding SellPrice}" HorizontalAlignment="Right" />
                     <TextBlock Text="{Binding BuyPrice}" Classes="dim" FontSize="10.5"
@@ -79,7 +92,7 @@
             </ListBox.ItemTemplate>
           </ListBox>
 
-          <Border Grid.Row="3" Classes="card" Padding="10">
+          <Border Grid.Row="4" Classes="card" Padding="10">
             <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10">
               <TextBox Grid.Column="0" Grid.Row="0" Text="{Binding ItemSearchText, Mode=TwoWay}"
                        Watermark="Find an item blueprint to add" />

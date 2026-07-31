@@ -38,6 +38,7 @@ namespace SWLOR.Toolset.Editors.Merchants
     public sealed partial class MerchantInventoryItemViewModel : ObservableObject
     {
         private readonly Action<bool> _setInfinite;
+        private readonly Action<bool> _setChecked;
 
         public int PaneIndex { get; }
         public int ItemIndex { get; }
@@ -57,6 +58,9 @@ namespace SWLOR.Toolset.Editors.Merchants
         [ObservableProperty]
         private bool _isInfinite;
 
+        [ObservableProperty]
+        private bool _isChecked;
+
         private bool _loading;
 
         public MerchantInventoryItemViewModel(
@@ -64,9 +68,11 @@ namespace SWLOR.Toolset.Editors.Merchants
             int itemIndex,
             MerchantItemDefinition item,
             bool isInfinite,
+            bool isChecked,
             int markUp,
             int markDown,
-            Action<bool> setInfinite)
+            Action<bool> setInfinite,
+            Action<bool> setChecked)
         {
             PaneIndex = paneIndex;
             ItemIndex = itemIndex;
@@ -76,9 +82,18 @@ namespace SWLOR.Toolset.Editors.Merchants
             StoreSellsFor = Math.Max(0, item.BaseCost * markUp / 100);
             StoreBuysFor = Math.Max(0, item.BaseCost * markDown / 100);
             _setInfinite = setInfinite ?? throw new ArgumentNullException(nameof(setInfinite));
+            _setChecked = setChecked ?? throw new ArgumentNullException(nameof(setChecked));
 
             _loading = true;
             IsInfinite = isInfinite;
+            IsChecked = isChecked;
+            _loading = false;
+        }
+
+        public void SetCheckedWithoutWriting(bool isChecked)
+        {
+            _loading = true;
+            IsChecked = isChecked;
             _loading = false;
         }
 
@@ -86,6 +101,12 @@ namespace SWLOR.Toolset.Editors.Merchants
         {
             if (!_loading)
                 _setInfinite(value);
+        }
+
+        partial void OnIsCheckedChanged(bool value)
+        {
+            if (!_loading)
+                _setChecked(value);
         }
     }
 

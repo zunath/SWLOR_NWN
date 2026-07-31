@@ -2,10 +2,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:creatures="using:SWLOR.Toolset.Editors.Creatures"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
              xmlns:items="using:SWLOR.Toolset.Editors.Items"
              xmlns:cdom="using:SWLOR.Toolset.Domain.Editors.Creatures"
              x:Class="SWLOR.Toolset.Editors.Creatures.CreatureEditorView"
              x:DataType="creatures:CreatureEditorViewModel">
+
+  <UserControl.Resources>
+    <!-- The same compact left/right value cell used by the item armor part grid. The row owns the
+         label; each side only needs its independent value editor. -->
+    <DataTemplate x:Key="CreaturePartValueTemplate" DataType="items:ItemFieldCellViewModel">
+      <Grid>
+        <ComboBox ItemsSource="{Binding Options}"
+                  SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                  IsEnabled="{Binding IsEnabled}" IsVisible="{Binding HasOptions}" />
+        <NumericUpDown Value="{Binding Number, Mode=TwoWay}"
+                       Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                       IsEnabled="{Binding IsEnabled}" IsVisible="{Binding !HasOptions}"
+                       Increment="1" FormatString="0" />
+      </Grid>
+    </DataTemplate>
+  </UserControl.Resources>
 
   <UserControl.DataTemplates>
     <DataTemplate DataType="behaviors:BehaviorRowViewModel">
@@ -99,30 +116,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="creatures:CreatureEquipmentPickerViewModel">
-      <Border Classes="card" Margin="0,0,0,8" Padding="10">
-        <StackPanel Spacing="6">
-          <Grid ColumnDefinitions="*,Auto">
-            <StackPanel>
-              <TextBlock Text="{Binding Label}" Classes="section" />
-              <TextBlock Text="{Binding CurrentDisplay}" Classes="dim" />
-            </StackPanel>
-            <Button Grid.Column="1" Content="Clear" Command="{Binding ClearCommand}" />
-          </Grid>
-          <TextBox Text="{Binding SearchText, Mode=TwoWay}" Watermark="Search item blueprints" />
-          <ScrollViewer MaxHeight="130">
-            <ItemsControl ItemsSource="{Binding Matching}">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="creatures:CreatureEquipmentChoice">
-                  <Button Content="{Binding Display}" HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Left" Margin="0,1"
-                          Command="{Binding $parent[ItemsControl].((creatures:CreatureEquipmentPickerViewModel)DataContext).ChooseCommand}"
-                          CommandParameter="{Binding}" />
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </ScrollViewer>
-        </StackPanel>
-      </Border>
+      <behaviors:BehaviorRowView />
     </DataTemplate>
   </UserControl.DataTemplates>
 
@@ -142,8 +136,20 @@
             <ContentControl Content="{Binding PreviewView}" />
           </Border>
           <StackPanel Grid.Row="1" Margin="0,9,0,0" Spacing="5">
-            <ComboBox ItemsSource="{Binding PreviewAnimations}"
-                      SelectedItem="{Binding SelectedPreviewAnimation, Mode=TwoWay}" />
+            <ListBox Classes="segmented"
+                     ItemsSource="{Binding PreviewAnimations}"
+                     SelectedItem="{Binding SelectedPreviewAnimation, Mode=TwoWay}">
+              <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <UniformGrid Columns="3" />
+                </ItemsPanelTemplate>
+              </ListBox.ItemsPanel>
+              <ListBox.ItemTemplate>
+                <DataTemplate DataType="creatures:CreatureAnimationOption">
+                  <TextBlock Text="{Binding Display}" HorizontalAlignment="Center" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
             <TextBlock Text="{Binding CreatureName}" FontWeight="SemiBold" TextWrapping="Wrap" />
             <TextBlock Text="{Binding TemplateResRef}" Classes="resref" />
             <TextBlock Text="Left-drag to move · right-drag to turn · wheel to zoom"
@@ -185,51 +191,119 @@
         </TabItem>
 
         <TabItem Header="Appearance">
-          <ScrollViewer>
-            <StackPanel Margin="14,10" Spacing="8">
-              <Border Classes="card" Padding="8">
-                <ItemsControl ItemsSource="{Binding AppearanceRows}" />
-              </Border>
-              <Border Classes="card" Padding="12">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="Body" Classes="section" />
-                  <TextBlock Text="{Binding BodyParts.ModelSummary}" Classes="dim" TextWrapping="Wrap" />
-                  <TextBlock Text="{Binding BodyParts.FullBodyDetails}" Classes="mono"
-                             IsVisible="{Binding BodyParts.IsFullBody}" />
-                  <Grid ColumnDefinitions="*,*" ColumnSpacing="16" IsVisible="{Binding BodyParts.IsDynamic}">
-                    <StackPanel>
-                      <TextBlock Text="Structure" Classes="section" Margin="0,6" />
-                      <ItemsControl ItemsSource="{Binding BodyParts.Structure}" />
-                      <TextBlock Text="Colors" Classes="section" Margin="0,10,0,6" />
-                      <ItemsControl ItemsSource="{Binding BodyParts.Colors}" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="1">
-                      <TextBlock Text="Mirrored Limbs" Classes="section" Margin="0,6" />
-                      <ItemsControl ItemsSource="{Binding BodyParts.Limbs}" />
-                    </StackPanel>
-                  </Grid>
-                </StackPanel>
-              </Border>
-              <Border Classes="card" Padding="12" IsVisible="{Binding BodyParts.IsDynamic}">
-                <StackPanel>
-                  <TextBlock Text="Visible Equipment" Classes="section" Margin="0,0,0,8" />
-                  <ItemsControl ItemsSource="{Binding VisibleEquipment.Slots}" />
-                </StackPanel>
-              </Border>
-            </StackPanel>
-          </ScrollViewer>
+          <!-- The old page realized the model gallery, portrait gallery, body controls and four
+               100-row item lists as one scroll surface. These sections now use the same focused,
+               progressive surfaces as the door/placeable and behavior editors. -->
+          <TabControl x:Name="CreatureAppearanceSections"
+                      SelectedIndex="{Binding SelectedAppearanceSectionIndex, Mode=TwoWay}">
+            <TabItem Header="Model">
+              <Grid>
+                <Panel IsVisible="{Binding HasAppearanceGallery}">
+                  <appearance:AppearanceGalleryView DataContext="{Binding AppearanceGallery}" />
+                </Panel>
+                <TextBlock Text="Creature appearance data is not available."
+                           Classes="dim" Margin="14,10"
+                           IsVisible="{Binding !HasAppearanceGallery}" />
+              </Grid>
+            </TabItem>
+
+            <TabItem Header="Details">
+              <ScrollViewer>
+                <Border Classes="card" Padding="8" Margin="14,10">
+                  <ItemsControl ItemsSource="{Binding AppearanceRows}" />
+                </Border>
+              </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Body">
+              <ScrollViewer>
+                <Border Classes="card" Padding="12" Margin="14,10">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="Body" Classes="section" />
+                    <ProgressBar IsIndeterminate="True" Height="3"
+                                 IsVisible="{Binding BodyParts.IsLoading}" />
+                    <TextBlock Text="{Binding BodyParts.ModelSummary}" Classes="dim" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding BodyParts.FullBodyDetails}" Classes="mono"
+                               IsVisible="{Binding BodyParts.IsFullBody}" />
+                    <Grid ColumnDefinitions="*,230" ColumnSpacing="18"
+                          IsVisible="{Binding BodyParts.IsDynamic}">
+                      <StackPanel Grid.Column="0">
+                        <TextBlock Text="Structure" Classes="section" Margin="0,6" />
+                        <ItemsControl ItemsSource="{Binding BodyParts.Structure}" />
+
+                        <Grid ColumnDefinitions="120,*,*" ColumnSpacing="10" Margin="0,12,0,2">
+                          <TextBlock Grid.Column="1" Text="Left" Classes="section" />
+                          <TextBlock Grid.Column="2" Text="Right" Classes="section" />
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding BodyParts.Limbs}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="items:BodyPartPairViewModel">
+                              <Grid ColumnDefinitions="120,*,*" ColumnSpacing="10" Margin="0,2">
+                                <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                                           Foreground="{DynamicResource InkSecondaryBrush}" />
+                                <ContentControl Grid.Column="1" Content="{Binding Left}"
+                                                ContentTemplate="{StaticResource CreaturePartValueTemplate}" />
+                                <ContentControl Grid.Column="2" Content="{Binding Right}"
+                                                ContentTemplate="{StaticResource CreaturePartValueTemplate}" />
+                              </Grid>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <CheckBox IsChecked="{Binding BodyParts.MirrorRightFromLeft, Mode=TwoWay}"
+                                  Content="Mirror right from left" Margin="0,8,0,4" />
+                      </StackPanel>
+
+                      <StackPanel Grid.Column="1">
+                        <TextBlock Text="Colors" Classes="section" Margin="0,6" />
+                        <ItemsControl ItemsSource="{Binding BodyParts.Colors}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="items:ItemDyeCellViewModel">
+                              <items:PaletteColorPickerView />
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </StackPanel>
+                    </Grid>
+                  </StackPanel>
+                </Border>
+              </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Equipment">
+              <ScrollViewer>
+                <Border Classes="card" Padding="12" Margin="14,10"
+                        IsVisible="{Binding BodyParts.IsDynamic}">
+                  <StackPanel>
+                    <TextBlock Text="Visible Equipment" Classes="section" Margin="0,0,0,8" />
+                    <ItemsControl ItemsSource="{Binding VisibleEquipment.Slots}" />
+                  </StackPanel>
+                </Border>
+              </ScrollViewer>
+            </TabItem>
+          </TabControl>
         </TabItem>
 
         <TabItem Header="Stats">
           <ScrollViewer>
             <StackPanel Margin="14,10" Spacing="8">
-              <Border Classes="card" Padding="12">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                  <TextBlock Text="{Binding Stats.SkinStatus}" Classes="dim" TextWrapping="Wrap" />
-                  <Button Grid.Column="1" Content="Create stat skin" Command="{Binding Stats.CreateStatSkinCommand}"
-                          IsVisible="{Binding Stats.IsStatSkinMissing}" />
-                </Grid>
-              </Border>
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Border Classes="card" Padding="12">
+                  <StackPanel Spacing="7">
+                    <TextBlock Text="Stat Sheet" Classes="section" />
+                    <TextBlock Text="{Binding Stats.SkinStatus}" Classes="dim" TextWrapping="Wrap" />
+                    <Button Content="Create stat skin" Command="{Binding Stats.CreateStatSkinCommand}"
+                            IsVisible="{Binding Stats.IsStatSkinMissing}" HorizontalAlignment="Left" />
+                  </StackPanel>
+                </Border>
+                <Border Grid.Column="1" Classes="card" Padding="12">
+                  <StackPanel Spacing="5">
+                    <TextBlock Text="Combat Rules" Classes="section" />
+                    <ItemsControl ItemsSource="{Binding CombatRuleRows}" />
+                    <TextBlock Text="{Binding StatWarning}" Foreground="{DynamicResource AmberBrush}"
+                               TextWrapping="Wrap" IsVisible="{Binding HasStatWarning}" />
+                  </StackPanel>
+                </Border>
+              </Grid>
               <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                 <StackPanel>
                   <Border Classes="card" Padding="12" Margin="0,0,0,8">
@@ -315,16 +389,24 @@
         <TabItem Header="AI">
           <ScrollViewer>
             <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="14,10">
-              <Border Classes="card" Padding="12">
-                <StackPanel Spacing="7">
-                  <TextBlock Text="Decision Profile" Classes="section" />
-                  <ComboBox ItemsSource="{Binding Ai.Profiles}" SelectedItem="{Binding Ai.Profile, Mode=TwoWay}" />
-                  <CheckBox Content="Random Walk" IsChecked="{Binding Ai.RandomWalk, Mode=TwoWay}" />
-                  <CheckBox Content="Return Home" IsChecked="{Binding Ai.ReturnHome, Mode=TwoWay}" />
-                  <TextBlock Text="Hand-placed creatures always return home. Spawned creatures use these flags."
-                             Classes="dim" TextWrapping="Wrap" />
-                </StackPanel>
-              </Border>
+              <StackPanel Spacing="8">
+                <Border Classes="card" Padding="12">
+                  <StackPanel Spacing="5">
+                    <TextBlock Text="Disposition" Classes="section" />
+                    <ItemsControl ItemsSource="{Binding AiRows}" />
+                  </StackPanel>
+                </Border>
+                <Border Classes="card" Padding="12">
+                  <StackPanel Spacing="7">
+                    <TextBlock Text="Decision Profile" Classes="section" />
+                    <ComboBox ItemsSource="{Binding Ai.Profiles}" SelectedItem="{Binding Ai.Profile, Mode=TwoWay}" />
+                    <CheckBox Content="Random Walk" IsChecked="{Binding Ai.RandomWalk, Mode=TwoWay}" />
+                    <CheckBox Content="Return Home" IsChecked="{Binding Ai.ReturnHome, Mode=TwoWay}" />
+                    <TextBlock Text="Hand-placed creatures always return home. Spawned creatures use these flags."
+                               Classes="dim" TextWrapping="Wrap" />
+                  </StackPanel>
+                </Border>
+              </StackPanel>
               <Border Grid.Column="1" Classes="card" Padding="12">
                 <StackPanel Spacing="8">
                   <TextBlock Text="Runtime Behavior" Classes="section" />

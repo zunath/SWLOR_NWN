@@ -146,7 +146,13 @@ namespace SWLOR.Toolset.Tests
 
             row.IsSearchableChoice.Should().BeTrue();
             row.IsPlainChoice.Should().BeFalse();
-            row.FilteredChoices.Should().HaveCount(120);
+            row.IsSearchExpanded.Should().BeFalse();
+            row.FilteredChoices.Should().BeEmpty(
+                "a closed picker must not publish controls while its editor is being laid out");
+
+            row.OpenSearchCommand.Execute(null);
+            row.IsSearchExpanded.Should().BeTrue();
+            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
 
             row.ChoiceSearchText = "011";
             row.FilteredChoices.Should().ContainSingle()
@@ -169,6 +175,10 @@ namespace SWLOR.Toolset.Tests
                 Store("""{ "__data_type": "UTD " }"""),
                 new List<string>());
 
+            row.OpenSearchCommand.Execute(null);
+            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
+            while (row.CanLoadMoreSearchResults)
+                row.LoadMoreSearchResultsCommand.Execute(null);
             row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.MaxSearchResults);
         }
 
@@ -192,13 +202,53 @@ namespace SWLOR.Toolset.Tests
                 new List<string>());
 
             row.Choice!.Value.Should().Be(900);
-            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.MaxSearchResults + 1);
+            row.OpenSearchCommand.Execute(null);
+            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize + 1);
             row.FilteredChoices[0].Should().BeSameAs(row.Choice, "the stored value goes back on top");
 
             // A filter is deliberate: it may exclude the selection without putting it back.
             row.ChoiceSearchText = "Table 0001";
             row.FilteredChoices.Should().ContainSingle()
                 .Which.Display.Should().Be("Table 0001");
+        }
+
+        [Test]
+        public void ADeferredChoiceSetLoadsOnlyWhenItsPickerIsOpened()
+        {
+            var calls = 0;
+            var definition = new BehaviorFieldDefinition
+            {
+                Label = "Dialog", Name = "Conversation", Kind = BehaviorFieldKind.Choice,
+                FieldType = GffFieldType.ResRef, IsSearchable = true
+            };
+            var row = new BehaviorRowViewModel(
+                definition,
+                Store("""{ "__data_type": "UTC ", "Conversation": { "type": "resref", "value": "dlg_42" } }"""),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                choiceLoader: () =>
+                {
+                    calls++;
+                    return Enumerable.Range(0, 120)
+                        .Select(index => new BehaviorChoice($"dlg_{index}", $"Dialog {index}"))
+                        .ToList();
+                });
+            row.Reload();
+
+            calls.Should().Be(0);
+            row.AreChoicesLoaded.Should().BeFalse();
+            row.SelectedChoiceDisplay.Should().Be("dlg_42");
+            row.FilteredChoices.Should().BeEmpty();
+
+            row.OpenSearchCommand.Execute(null);
+
+            calls.Should().Be(1);
+            row.AreChoicesLoaded.Should().BeTrue();
+            row.SelectedChoiceDisplay.Should().Be("Dialog 42");
+            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
         }
 
         [Test]

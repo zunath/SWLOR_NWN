@@ -11,7 +11,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         public CreatureVisibleEquipmentViewModel(
             CreatureValueStore store,
             Func<string, Action, bool> runEdit,
-            IReadOnlyList<CreatureEquipmentChoice> allChoices,
+            Func<IReadOnlyList<CreatureEquipmentChoice>> allChoices,
             Action changed)
         {
             Slots.Add(Picker("Armor", 2, new[] { 16 }, store, runEdit, allChoices, changed));
@@ -32,15 +32,20 @@ namespace SWLOR.Toolset.Editors.Creatures
             IReadOnlyCollection<int>? baseItems,
             CreatureValueStore store,
             Func<string, Action, bool> runEdit,
-            IReadOnlyList<CreatureEquipmentChoice> allChoices,
+            Func<IReadOnlyList<CreatureEquipmentChoice>> allChoices,
             Action changed)
         {
-            var filtered = baseItems == null
-                ? allChoices.Where(choice => choice.BaseItem is not (16 or 17 or 73 or 80) &&
-                                             choice.BaseItem is < 69 or > 72).ToList()
-                : allChoices.Where(choice => baseItems.Contains(choice.BaseItem)).ToList();
+            IReadOnlyList<CreatureEquipmentChoice> Filtered()
+            {
+                var choices = allChoices();
+                return baseItems == null
+                    ? choices.Where(choice => choice.BaseItem is not (16 or 17 or 73 or 80) &&
+                                              choice.BaseItem is < 69 or > 72).ToList()
+                    : choices.Where(choice => baseItems.Contains(choice.BaseItem)).ToList();
+            }
+
             return new CreatureEquipmentPickerViewModel(
-                label, slot, store, runEdit, filtered, changed);
+                label, slot, store, runEdit, Filtered, changed);
         }
     }
 }

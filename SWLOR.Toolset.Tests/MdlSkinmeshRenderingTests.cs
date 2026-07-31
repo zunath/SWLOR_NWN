@@ -82,6 +82,48 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void NamedCreatureAnimationsRetainSkinnedVertexFrames()
+        {
+            var root = new MdlNode { Name = "root" };
+            var bone = new MdlNode
+            {
+                Name = "forearm_g",
+                Parent = root,
+                Position = new Vector3(1f, 0f, 0f)
+            };
+            root.Children.Add(bone);
+            root.Children.Add(TriangleSkin(root));
+
+            var firstPose = new Dictionary<string, PosedNode>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["forearm_g"] = new(new Vector3(1f, 1f, 0f), Quaternion.Identity, 1f)
+            };
+            var finalPose = new Dictionary<string, PosedNode>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["forearm_g"] = new(new Vector3(1f, 3f, 0f), Quaternion.Identity, 1f)
+            };
+            var animation = new MdlAnimationPose.SampledAnimation(
+                "walk",
+                1f,
+                [firstPose, finalPose]);
+
+            var rendered = MdlMeshBuilder.BuildAnimatedPreview(
+                new MdlModel { Name = "coat", GeometryRoot = root },
+                [firstPose, finalPose],
+                [animation]);
+
+            rendered.DefaultAnimationName.Should().Be("walk");
+            rendered.Animations.Should().ContainSingle(item => item.Name == "walk" && item.IsPlayable);
+            var mesh = rendered.Meshes.Should().ContainSingle().Which;
+            mesh.PosePositions.Should().ContainSingle()
+                .Which.Take(3).Should().Equal(2f, 3f, 0f);
+            var positions = mesh.AnimationPositions["walk"];
+            positions.Should().HaveCount(2);
+            positions[0].Take(3).Should().Equal(2f, 1f, 0f);
+            positions[1].Take(3).Should().Equal(2f, 3f, 0f);
+        }
+
+        [Test]
         public void RobeSkinKeepsItsAuthoredAnimationHierarchy()
         {
             var composite = new MdlNode { Name = "composite" };

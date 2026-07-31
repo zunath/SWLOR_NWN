@@ -210,8 +210,11 @@ namespace SWLOR.Toolset.Workspace
 
             var model = reference.Kind switch
             {
-                BlueprintModelKind.Simple when reference.ModelResRef != null => BuildRenderModel(reference.ModelResRef),
-                BlueprintModelKind.Segmented => ComposeSegmented(reference),
+                BlueprintModelKind.Simple when reference.ModelResRef != null =>
+                    type == ResourceType.Utc
+                        ? BuildCreatureRenderModel(reference.ModelResRef)
+                        : BuildRenderModel(reference.ModelResRef),
+                BlueprintModelKind.Segmented => ComposeSegmented(reference, type == ResourceType.Utc),
                 BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
                 _ => null
             };
@@ -328,7 +331,7 @@ namespace SWLOR.Toolset.Workspace
             var model = reference.Kind switch
             {
                 BlueprintModelKind.Simple when reference.ModelResRef != null => BuildRenderModel(reference.ModelResRef),
-                BlueprintModelKind.Segmented => ComposeSegmented(reference),
+                BlueprintModelKind.Segmented => ComposeSegmented(reference, includeCreatureAnimations: false),
                 BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
                 _ => null
             };
@@ -430,7 +433,29 @@ namespace SWLOR.Toolset.Workspace
             }
         }
 
-        private RenderModel? ComposeSegmented(BlueprintModelReference reference)
+        private RenderModel? BuildCreatureRenderModel(string modelResRef)
+        {
+            var model = LoadMdl(modelResRef, withSupermodelAnims: false);
+            if (model == null)
+                return null;
+
+            try
+            {
+                var idle = IdleFrames(model);
+                var animations = MdlAnimationPose.SampleCreaturePreviewAnimations(
+                    model,
+                    superModel => LoadMdl(superModel, withSupermodelAnims: true));
+                return MdlMeshBuilder.BuildAnimatedPreview(model, idle, animations);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private RenderModel? ComposeSegmented(
+            BlueprintModelReference reference,
+            bool includeCreatureAnimations)
         {
             if (_partComposer == null || reference.SkeletonResRef == null)
                 return null;
@@ -461,15 +486,31 @@ namespace SWLOR.Toolset.Workspace
                 .Select(part => part.Model)
                 .FirstOrDefault();
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? sharedFrames = null;
+            IReadOnlyList<MdlAnimationPose.SampledAnimation> sharedAnimations =
+                Array.Empty<MdlAnimationPose.SampledAnimation>();
             if (weightedRobe != null)
             {
+                var bindPose = LayeredGarmentBindPose(weightedRobe, skeleton);
                 sharedFrames = skeleton == null
                     ? IdleFrames(weightedRobe)
-                    : LayeredGarmentIdleFrames(weightedRobe, skeleton);
+                    : LayeredGarmentIdleFrames(weightedRobe, bindPose);
+                if (includeCreatureAnimations)
+                {
+                    sharedAnimations = MdlAnimationPose.SampleCreaturePreviewAnimations(
+                        weightedRobe,
+                        superModel => LoadMdl(superModel, withSupermodelAnims: true),
+                        bindPose);
+                }
             }
             else if (skeleton != null)
             {
                 sharedFrames = IdleFrames(skeleton);
+                if (includeCreatureAnimations)
+                {
+                    sharedAnimations = MdlAnimationPose.SampleCreaturePreviewAnimations(
+                        skeleton,
+                        superModel => LoadMdl(superModel, withSupermodelAnims: true));
+                }
             }
 
             if (rigidParts.Count > 0)
@@ -486,15 +527,21 @@ namespace SWLOR.Toolset.Workspace
                 }
 
                 if (composed != null)
-                    renderModels.Add(MdlMeshBuilder.Build(
-                        composed,
-                        sharedFrames ?? IdleFrames(composed)));
+                {
+                    var frames = sharedFrames ?? IdleFrames(composed);
+                    renderModels.Add(includeCreatureAnimations
+                        ? MdlMeshBuilder.BuildAnimatedPreview(composed, frames, sharedAnimations)
+                        : MdlMeshBuilder.Build(composed, frames));
+                }
             }
 
             renderModels.AddRange(skinParts.Select(part =>
-                MdlMeshBuilder.Build(
-                    part.Model,
-                    sharedFrames ?? IdleFrames(part.Model))));
+            {
+                var frames = sharedFrames ?? IdleFrames(part.Model);
+                return includeCreatureAnimations
+                    ? MdlMeshBuilder.BuildAnimatedPreview(part.Model, frames, sharedAnimations)
+                    : MdlMeshBuilder.Build(part.Model, frames);
+            }));
 
             return CombineRenderModels(reference.SkeletonResRef, renderModels);
         }
@@ -542,17 +589,27 @@ namespace SWLOR.Toolset.Workspace
         /// shared name. Garment-only helpers remain sourced from the garment, so coat panels move
         /// without replacing the mannequin's complete skeleton.
         /// </summary>
-        private IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> LayeredGarmentIdleFrames(
+        private IReadOnlyDictionary<string, MdlNode> LayeredGarmentBindPose(
             MdlModel garment,
-            MdlModel wearer)
+            MdlModel? wearer)
         {
             var bindPose = MdlAnimationPose.BindPose(garment).ToDictionary(
                 pair => pair.Key,
                 pair => pair.Value,
                 StringComparer.OrdinalIgnoreCase);
-            foreach (var (name, node) in MdlAnimationPose.BindPose(wearer))
-                bindPose[name] = node;
+            if (wearer != null)
+            {
+                foreach (var (name, node) in MdlAnimationPose.BindPose(wearer))
+                    bindPose[name] = node;
+            }
 
+            return bindPose;
+        }
+
+        private IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> LayeredGarmentIdleFrames(
+            MdlModel garment,
+            IReadOnlyDictionary<string, MdlNode> bindPose)
+        {
             var frames = MdlAnimationPose.SampleIdleFrames(
                 garment,
                 superModel => LoadMdl(superModel, withSupermodelAnims: true),
@@ -569,7 +626,11 @@ namespace SWLOR.Toolset.Workspace
             {
                 Name = name,
                 Meshes = models.SelectMany(model => model.Meshes).ToList(),
-                Animations = models.SelectMany(model => model.Animations).ToList(),
+                Animations = models
+                    .SelectMany(model => model.Animations)
+                    .GroupBy(animation => animation.Name, StringComparer.OrdinalIgnoreCase)
+                    .Select(group => group.First())
+                    .ToList(),
                 Emitters = models.SelectMany(model => model.Emitters).ToList(),
                 DefaultAnimationName = models
                     .Select(model => model.DefaultAnimationName)

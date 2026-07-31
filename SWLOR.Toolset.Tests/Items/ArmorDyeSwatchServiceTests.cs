@@ -6,9 +6,9 @@ using SWLOR.Toolset.Editors.Items;
 namespace SWLOR.Toolset.Tests.Items
 {
     /// <summary>
-    /// Coverage for <see cref="ArmorDyeSwatchService"/>'s graceful-degrade contract: no resource
-    /// layer, or a resource layer that cannot resolve the <c>pal_cloth01</c>/<c>pal_leath01</c>/
-    /// <c>pal_armor01</c>/<c>pal_armor02</c> palette textures, both yield null (the caller renders a neutral chip)
+    /// Coverage for <see cref="ArmorDyeSwatchService"/>'s shared appearance-palette contract: no
+    /// resource layer, or one that cannot resolve Aurora's armor/skin/hair/tattoo palette textures,
+    /// yields null (the caller renders an unavailable state rather than inventing a color)
     /// rather than throwing. Color-accurate sampling against the real palette artwork is not
     /// verifiable from this repo: those TGAs ship only in the base-game BIF, never in SWLOR_Haks -
     /// see <c>RenderPipelineTests.TextureLoader_LoadPlt_ForKnownCorpusTexture_DecodesToReportedDimensions</c>
@@ -35,6 +35,9 @@ namespace SWLOR.Toolset.Tests.Items
             service.GetColor(ArmorDyeSwatchService.DyeMaterial.Leather, 23).Should().BeNull();
             service.GetColor(ArmorDyeSwatchService.DyeMaterial.Metal1, 23).Should().BeNull();
             service.GetColor(ArmorDyeSwatchService.DyeMaterial.Metal2, 23).Should().BeNull();
+            service.GetColor(ArmorDyeSwatchService.DyeMaterial.Skin, 23).Should().BeNull();
+            service.GetColor(ArmorDyeSwatchService.DyeMaterial.Hair, 23).Should().BeNull();
+            service.GetColor(ArmorDyeSwatchService.DyeMaterial.Tattoo, 23).Should().BeNull();
         }
 
         [Test]
@@ -81,6 +84,36 @@ namespace SWLOR.Toolset.Tests.Items
                     .Should().Be(((byte)10, (byte)20, (byte)30));
                 service.GetColor(ArmorDyeSwatchService.DyeMaterial.Metal2, 0)
                     .Should().Be(((byte)40, (byte)50, (byte)60));
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+
+        [Test]
+        public void CreatureChannelsUseTheRenderersAuroraPalettes()
+        {
+            var directory = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                "creature-color-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                File.WriteAllBytes(Path.Combine(directory, "pal_skin01.tga"), SolidColorTga(10, 20, 30));
+                File.WriteAllBytes(Path.Combine(directory, "pal_hair01.tga"), SolidColorTga(40, 50, 60));
+                File.WriteAllBytes(Path.Combine(directory, "pal_tattoo01.tga"), SolidColorTga(70, 80, 90));
+                var index = new ResourceIndex(
+                    null,
+                    new[] { new ResourceIndex.HakLayer("fixture", directory) });
+                var service = new ArmorDyeSwatchService(index);
+
+                service.GetColor(ArmorDyeSwatchService.DyeMaterial.Skin, 0)
+                    .Should().Be(((byte)10, (byte)20, (byte)30));
+                service.GetColor(ArmorDyeSwatchService.DyeMaterial.Hair, 0)
+                    .Should().Be(((byte)40, (byte)50, (byte)60));
+                service.GetColor(ArmorDyeSwatchService.DyeMaterial.Tattoo, 0)
+                    .Should().Be(((byte)70, (byte)80, (byte)90));
             }
             finally
             {

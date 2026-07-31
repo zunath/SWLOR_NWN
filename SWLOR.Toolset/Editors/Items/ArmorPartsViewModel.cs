@@ -27,7 +27,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly ArmorPartCatalog? _partModels;
         private readonly List<ItemFieldCellViewModel> _allCells = new();
         private readonly List<ItemDyeCellViewModel> _dyeCells = new();
-        private readonly List<PairBinding> _pairBindings = new();
+        private readonly List<BodyPartPairViewModel> _pairBindings = new();
         private bool _loadingMirror;
 
         public ItemFieldCellViewModel Neck { get; }
@@ -86,13 +86,13 @@ namespace SWLOR.Toolset.Editors.Items
             Pelvis = CreateSingle("Pelvis", ItemAppearanceFieldNames.Pelvis, "pelvis");
             Robe = CreateSingle("Robe", ItemAppearanceFieldNames.Robe, "robe");
 
-            (LeftShoulder, RightShoulder) = CreatePair(ItemAppearanceFieldNames.Shoulder, "shol", "shor");
-            (LeftBicep, RightBicep) = CreatePair(ItemAppearanceFieldNames.Bicep, "bicepl", "bicepr");
-            (LeftForearm, RightForearm) = CreatePair(ItemAppearanceFieldNames.Forearm, "forel", "forer");
-            (LeftHand, RightHand) = CreatePair(ItemAppearanceFieldNames.Hand, "handl", "handr");
-            (LeftThigh, RightThigh) = CreatePair(ItemAppearanceFieldNames.Thigh, "legl", "legr");
-            (LeftShin, RightShin) = CreatePair(ItemAppearanceFieldNames.Shin, "shinl", "shinr");
-            (LeftFoot, RightFoot) = CreatePair(ItemAppearanceFieldNames.Foot, "footl", "footr");
+            (LeftShoulder, RightShoulder) = Cells(CreatePair(ItemAppearanceFieldNames.Shoulder, "shol", "shor"));
+            (LeftBicep, RightBicep) = Cells(CreatePair(ItemAppearanceFieldNames.Bicep, "bicepl", "bicepr"));
+            (LeftForearm, RightForearm) = Cells(CreatePair(ItemAppearanceFieldNames.Forearm, "forel", "forer"));
+            (LeftHand, RightHand) = Cells(CreatePair(ItemAppearanceFieldNames.Hand, "handl", "handr"));
+            (LeftThigh, RightThigh) = Cells(CreatePair(ItemAppearanceFieldNames.Thigh, "legl", "legr"));
+            (LeftShin, RightShin) = Cells(CreatePair(ItemAppearanceFieldNames.Shin, "shinl", "shinr"));
+            (LeftFoot, RightFoot) = Cells(CreatePair(ItemAppearanceFieldNames.Foot, "footl", "footr"));
 
             Cloth1 = CreateDye("Cloth 1", ItemAppearanceFieldNames.Cloth1Color, ArmorDyeSwatchService.DyeMaterial.Cloth);
             Cloth2 = CreateDye("Cloth 2", ItemAppearanceFieldNames.Cloth2Color, ArmorDyeSwatchService.DyeMaterial.Cloth);
@@ -287,52 +287,33 @@ namespace SWLOR.Toolset.Editors.Items
         /// construction - whether mirroring is on, so toggling <see cref="MirrorRightFromLeft"/>
         /// changes what the very next left-side edit does without rebuilding either cell.
         /// </summary>
-        private (ItemFieldCellViewModel Left, ItemFieldCellViewModel Right) CreatePair(
+        private BodyPartPairViewModel CreatePair(
             ItemArmorPartFieldPair pair, string leftPartType, string rightPartType)
         {
-            ItemFieldCellViewModel? right = null;
             var leftOptions = PartNumbers(leftPartType);
             var rightOptions = PartNumbers(rightPartType);
-            IReadOnlyList<int> mirroredOptions = leftOptions.Count == 0 || rightOptions.Count == 0
-                ? Array.Empty<int>()
-                : leftOptions.Intersect(rightOptions).OrderBy(number => number).ToList();
-
-            var left = new ItemFieldCellViewModel(
-                $"Left {pair.Label}",
+            var binding = new BodyPartPairViewModel(
+                pair.Label,
                 () => ItemAppearanceValues.Read(_store.Item, pair.LeftField),
-                value =>
-                {
-                    var applied = Apply($"Left {pair.Label}", () =>
-                    {
-                        WriteArmorField(pair.LeftField, value);
-                        if (MirrorRightFromLeft)
-                            WriteArmorField(pair.RightField, value);
-                    });
-
-                    // The right cell's own OnValueChanged never fired for this edit, so its display
-                    // has to be told directly that mirroring just changed what it shows.
-                    if (applied && MirrorRightFromLeft)
-                        right?.Reload();
-
-                    return applied;
-                },
-                0, ushort.MaxValue,
-                options: MirrorRightFromLeft ? mirroredOptions : leftOptions);
-
-            right = new ItemFieldCellViewModel(
-                $"Right {pair.Label}",
                 () => ItemAppearanceValues.Read(_store.Item, pair.RightField),
-                value => Apply(
-                    $"Right {pair.Label}", () => WriteArmorField(pair.RightField, value)),
-                0, ushort.MaxValue,
-                options: MirrorRightFromLeft ? mirroredOptions : rightOptions)
-            {
-                IsReadOnly = MirrorRightFromLeft
-            };
-            _pairBindings.Add(new PairBinding(left, right, leftOptions, rightOptions, mirroredOptions));
-
-            return (left, right);
+                value => Apply($"Left {pair.Label}", () => WriteArmorField(pair.LeftField, value)),
+                value => Apply($"Right {pair.Label}", () => WriteArmorField(pair.RightField, value)),
+                value => Apply($"Left {pair.Label}", () =>
+                {
+                    WriteArmorField(pair.LeftField, value);
+                    WriteArmorField(pair.RightField, value);
+                }),
+                () => MirrorRightFromLeft,
+                0,
+                ushort.MaxValue,
+                leftOptions,
+                rightOptions);
+            _pairBindings.Add(binding);
+            return binding;
         }
+
+        private static (ItemFieldCellViewModel Left, ItemFieldCellViewModel Right) Cells(
+            BodyPartPairViewModel pair) => (pair.Left, pair.Right);
 
         /// <summary>
         /// Writes the legacy byte field and keeps its word-sized NWN:EE companion synchronized.
@@ -345,11 +326,7 @@ namespace SWLOR.Toolset.Editors.Items
         private void ApplyPairState(bool mirrored)
         {
             foreach (var binding in _pairBindings)
-            {
-                binding.Left.SetOptions(mirrored ? binding.MirroredOptions : binding.LeftOptions);
-                binding.Right.SetOptions(mirrored ? binding.MirroredOptions : binding.RightOptions);
-                binding.Right.IsReadOnly = mirrored;
-            }
+                binding.SetMirrored(mirrored);
         }
 
         private void ReloadCells()
@@ -366,11 +343,5 @@ namespace SWLOR.Toolset.Editors.Items
             return applied;
         }
 
-        private sealed record PairBinding(
-            ItemFieldCellViewModel Left,
-            ItemFieldCellViewModel Right,
-            IReadOnlyList<int> LeftOptions,
-            IReadOnlyList<int> RightOptions,
-            IReadOnlyList<int> MirroredOptions);
     }
 }

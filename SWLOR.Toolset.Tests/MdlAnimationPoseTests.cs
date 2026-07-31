@@ -150,5 +150,33 @@ namespace SWLOR.Toolset.Tests
 
             posed["hand"].Position.Should().Be(new Vector3(6f, 0f, 0f));
         }
+
+        [Test]
+        public void CreaturePreviewClipsResolveIdleWalkAndAttackFromTheSupermodelChain()
+        {
+            static MdlNode AnimatedRoot(float endX)
+            {
+                var root = new MdlNode { Name = "root" };
+                root.Children.Add(Bone(
+                    "hand",
+                    (0f, Vector3.Zero),
+                    (1f, new Vector3(endX, 0f, 0f))));
+                return root;
+            }
+
+            var superModel = ModelWith(
+                Animation("pause1", AnimatedRoot(1f)),
+                Animation("walk", AnimatedRoot(2f)),
+                Animation("1hslashl", AnimatedRoot(3f)));
+            var model = new MdlModel { SuperModel = "a_ba" };
+
+            var clips = MdlAnimationPose.SampleCreaturePreviewAnimations(
+                model,
+                name => name == "a_ba" ? superModel : null,
+                framesPerSecond: 2);
+
+            clips.Select(clip => clip.Name).Should().Equal("pause1", "walk", "1hslashl");
+            clips.Should().OnlyContain(clip => clip.Frames.Count > 1);
+        }
     }
 }

@@ -139,9 +139,21 @@ namespace SWLOR.Toolset.Tests
             var blueprintView = File.ReadAllText(Path.Combine(
                 CorpusLocator.RepositoryRoot,
                 "SWLOR.Toolset", "Editors", "Views", "BlueprintEditorView.axaml"));
+            var creatureView = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset", "Editors", "Views", "CreatureEditorView.axaml"));
 
             doorView.Should().Contain("<appearance:AppearanceGalleryView");
             blueprintView.Should().Contain("appearance:AppearanceGallerySectionViewModel");
+            creatureView.Should().Contain("<appearance:AppearanceGalleryView");
+            creatureView.Should().Contain("<behaviors:BehaviorRowView />",
+                "creature equipment reuses the shared progressive choice control");
+            var itemView = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset", "Editors", "Views", "ItemEditorView.axaml"));
+            itemView.Should().Contain("<items:PaletteColorPickerView");
+            creatureView.Should().Contain("<items:PaletteColorPickerView",
+                "creature colors reuse the item editor's established palette control");
 
             Directory.Exists(Path.Combine(
                     CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Appearance"))

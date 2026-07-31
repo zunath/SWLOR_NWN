@@ -22,7 +22,10 @@ namespace SWLOR.Toolset.Tests.Items
         [TestCase("PADDING", "AArCl", false)]
         [TestCase("Shortsword", null, false, TestName = "BlankItemClassIsRejected")]
         [TestCase("Shortsword", "", false)]
-        [TestCase("USER", null, false, TestName = "UserPaddingWithoutItemClassIsRejected")]
+        [TestCase("USER", "AArCl", false)]
+        [TestCase("Unused", "AArCl", false)]
+        [TestCase("INVALID_ITEM", "AArCl", false)]
+        [TestCase("NULL6", "AArCl", false)]
         [TestCase("Shortsword", "WSwSbre", true)]
         public void IsOffered_MatchesExpectation(string? label, string? itemClass, bool expected)
         {
@@ -38,6 +41,10 @@ namespace SWLOR.Toolset.Tests.Items
         [TestCase("cep_reserved", false)]
         [TestCase("DELETED", false)]
         [TestCase("Padding", false)]
+        [TestCase("USER", false)]
+        [TestCase("Unused", false)]
+        [TestCase("INVALID_ITEM", false)]
+        [TestCase("NULL6", false)]
         [TestCase("", false)]
         [TestCase("   ", false)]
         [TestCase("Shortsword", true)]

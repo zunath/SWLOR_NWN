@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Text;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
@@ -10,10 +11,13 @@ using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Editors.Items;
+using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Editors.Appearance;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Creatures;
 
@@ -331,14 +335,32 @@ namespace SWLOR.Toolset.Tests
                         mutation();
                         return true;
                     },
-                    null, null, null, null, _ => null, null);
+                    null, null, null, null,
+                    _ => new AppearanceRow(0, "DYNAMIC_TEST", "Dynamic Test", "P", "H", null),
+                    null,
+                    appearanceOptions: Enumerable.Range(0, 50)
+                        .Select(index => new AppearanceOption(
+                            index.ToString(), $"Appearance {index}", $"row {index}",
+                            CreatureAppearanceId: index))
+                        .ToList());
                 var view = new CreatureEditorView { DataContext = editor };
                 var window = new Window { Width = 1280, Height = 800, Content = view };
 
                 window.Show();
                 Dispatcher.UIThread.RunJobs();
                 view.GetVisualDescendants().Should().NotBeEmpty();
-                view.FindControl<TabControl>("CreatureTabs").Should().NotBeNull();
+                var tabs = view.FindControl<TabControl>("CreatureTabs");
+                tabs.Should().NotBeNull();
+                tabs!.SelectedIndex = 2;
+                Dispatcher.UIThread.RunJobs();
+
+                var appearanceSections = view.FindControl<TabControl>("CreatureAppearanceSections");
+                appearanceSections.Should().NotBeNull();
+                for (var index = 0; index < 4; index++)
+                {
+                    appearanceSections!.SelectedIndex = index;
+                    Dispatcher.UIThread.RunJobs();
+                }
 
                 window.Close();
                 Dispatcher.UIThread.RunJobs();
@@ -347,6 +369,57 @@ namespace SWLOR.Toolset.Tests
             {
                 Directory.Delete(root, true);
             }
+        }
+
+        [Test]
+        public void CreaturePreview_FacesTheDefaultCameraAndAlwaysPublishesAnimationSegments()
+        {
+            using var editor = OpenPreviewEditor(new RenderModel { Name = "facing_test" });
+
+            editor.PreviewScene.Should().NotBeNull();
+            editor.PreviewScene!.Instances.Single().Orientation.Should().Be(new Vector2(-1f, 0f));
+            editor.PreviewAnimations.Select(option => option.Display)
+                .Should().Equal("Idle", "Walk", "Attack");
+        }
+
+        [Test]
+        public void CreaturePreview_MapsNamedAnimationsToSegments()
+        {
+            using var editor = OpenPreviewEditor(new RenderModel
+            {
+                Name = "facing_test",
+                DefaultAnimationName = "pause1",
+                Animations =
+                [
+                    new RenderAnimation { Name = "pause1", Length = 1f, IsPlayable = true },
+                    new RenderAnimation { Name = "walk", Length = 1f, IsPlayable = true },
+                    new RenderAnimation { Name = "1hslashl", Length = 1f, IsPlayable = true }
+                ]
+            });
+
+            editor.PreviewAnimations.Select(option => option.AnimationName)
+                .Should().Equal("pause1", "walk", "1hslashl");
+        }
+
+        private static CreatureEditorViewModel OpenPreviewEditor(RenderModel model)
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "facing_test", "Facing Test"));
+            return new CreatureEditorViewModel(
+                document.Root,
+                Path.Combine(CorpusLocator.ModuleDirectory, "utc", "facing_test.utc.json"),
+                "facing_test",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                null,
+                null,
+                _ => model,
+                _ => null,
+                null);
         }
 
         private static byte[] SoundSetBytes(string resRef)
@@ -368,16 +441,260 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void BasicLayout_UsesReadOnlyResRefAndRequiredBuilderFields()
+        public void DirectFields_AreGroupedByTheTabsThatOwnThem()
         {
             CreatureEditorLayout.Basic.Single(field => field.Name == "TemplateResRef")
                 .IsReadOnly.Should().BeTrue();
             CreatureEditorLayout.Basic.Should().Contain(field => field.Name == "PaletteID");
-            CreatureEditorLayout.Basic.Should().Contain(field => field.Name == "Race");
-            CreatureEditorLayout.Basic.Should().Contain(field => field.Name == "FactionID");
+            var movedFields = new[]
+            {
+                "Race", "FactionID", "Conversation", "Plot",
+                "IsImmortal", "NoPermDeath", "Disarmable"
+            };
+            CreatureEditorLayout.Basic.Should().NotContain(field => movedFields.Contains(field.Name));
+            CreatureEditorLayout.Appearance.Should().Contain(field => field.Name == "Race");
+            CreatureEditorLayout.Appearance.Should().NotContain(field => field.Name == "Appearance_Type",
+                "the model uses the shared paged appearance gallery instead of a generic choice row");
+            CreatureEditorLayout.Ai.Should().ContainSingle(field => field.Name == "FactionID");
+            CreatureEditorLayout.DialogRole.Should().Contain(field => field.Name == "Conversation");
+            CreatureEditorLayout.CombatRules.Select(field => field.Name).Should().Equal(
+                "Plot", "IsImmortal", "NoPermDeath", "Disarmable");
             CreatureEditorLayout.Basic.Should().NotContain(field => field.Name.Contains("Script"));
             CreatureEditorLayout.GuildMaster.Single(field => field.Name == "GUILD_ID")
                 .ChoicesKey.Should().Be(CreatureChoiceKeys.Guilds);
+        }
+
+        [Test]
+        public async Task CreatureAppearance_UsesTheSharedPagedGalleryAndDefersBodyPartRows()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "appearance_test", "Appearance Test"));
+            var options = Enumerable.Range(0, 500)
+                .Select(index => new AppearanceOption(
+                    index.ToString(),
+                    $"Appearance {index}",
+                    $"row {index}",
+                    CreatureAppearanceId: index))
+                .ToList();
+            using var editor = new CreatureEditorViewModel(
+                document.Root,
+                Path.Combine(CorpusLocator.ModuleDirectory, "utc", "appearance_test.utc.json"),
+                "appearance_test",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                null,
+                null,
+                null,
+                _ => null,
+                null,
+                appearanceOptions: options);
+
+            editor.AppearanceGallery.Should().NotBeNull();
+            editor.AppearanceGallery!.Tiles.Should().HaveCount(48,
+                "the shared gallery only publishes one visual page at a time");
+            editor.BodyParts.IsLoaded.Should().BeFalse(
+                "opening an editor must not scan the model catalog for a hidden body section");
+
+            var target = editor.AppearanceGallery.Tiles[7];
+            editor.AppearanceGallery.Highlighted = target;
+
+            new CreatureValueStore(document.Root)
+                .GetInteger(BehaviorFieldStorage.Field, "Appearance_Type").Should().Be(7);
+
+            editor.SelectedAppearanceSectionIndex = 2;
+            await editor.BodyParts.EnsureLoadedAsync();
+            editor.BodyParts.IsLoaded.Should().BeTrue(
+                "the body rows are published when their section is actually opened");
+        }
+
+        [Test]
+        public async Task CreatureBodyParts_AreIndependentUntilTheBuilderEnablesMirroring()
+        {
+            var path = Path.Combine(CorpusLocator.ModuleDirectory, "utc", "nw_blozeatiato.utc.json");
+            var document = JsonGffDocument.Load(path);
+            var store = new CreatureValueStore(document.Root);
+            using var editor = new CreatureEditorViewModel(
+                document.Root,
+                path,
+                "nw_blozeatiato",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                null,
+                null,
+                null,
+                id => id == 10001
+                    ? new AppearanceRow(id, "DYNAMIC_CHISS", "Dynamic Chiss", "P", "H", null)
+                    : null,
+                null);
+
+            await editor.BodyParts.EnsureLoadedAsync();
+
+            editor.BodyParts.MirrorRightFromLeft.Should().BeFalse(
+                "matching stored values do not imply that the builder opted into mirroring");
+            editor.BodyParts.Limbs.Select(pair => pair.Label).Should().Equal(
+                "Shoulder", "Bicep", "Forearm", "Hand", "Thigh", "Shin", "Foot");
+            editor.BodyParts.Limbs.Should().OnlyContain(pair => pair.Right.IsEnabled);
+            editor.BodyParts.Structure.Should().Contain(cell => cell.Label == "Belt");
+            editor.BodyParts.Colors.Select(color => color.Label).Should().Equal(
+                "Skin", "Hair", "Body Color 1", "Body Color 2");
+            editor.BodyParts.Colors.Should().OnlyContain(color =>
+                !color.AllowsNumericFallback && !color.HasNumericFallback,
+                "creature colors always use the shared palette picker, never a number control");
+
+            var bicep = editor.BodyParts.Limbs.Single(pair => pair.Label == "Bicep");
+            bicep.Left.Number = 2;
+            store.GetInteger(BehaviorFieldStorage.Field, "BodyPart_LBicep").Should().Be(2);
+            store.GetInteger(BehaviorFieldStorage.Field, "BodyPart_RBicep").Should().Be(1);
+            store.GetInteger(BehaviorFieldStorage.Field, "xBodyPart_LBicep").Should().Be(2);
+
+            bicep.Right.Number = 3;
+            store.GetInteger(BehaviorFieldStorage.Field, "BodyPart_LBicep").Should().Be(2);
+            store.GetInteger(BehaviorFieldStorage.Field, "BodyPart_RBicep").Should().Be(3);
+
+            editor.BodyParts.MirrorRightFromLeft = true;
+            bicep.Right.IsReadOnly.Should().BeTrue();
+            bicep.Right.Number.Should().Be(2,
+                "enabling mirroring immediately copies the left side to the right");
+
+            bicep.Left.Number = 4;
+            store.GetInteger(BehaviorFieldStorage.Field, "BodyPart_LBicep").Should().Be(4);
+            store.GetInteger(BehaviorFieldStorage.Field, "BodyPart_RBicep").Should().Be(4);
+
+            editor.BodyParts.MirrorRightFromLeft = false;
+            bicep.Right.IsEnabled.Should().BeTrue();
+            bicep.Left.Number = 5;
+            store.GetInteger(BehaviorFieldStorage.Field, "BodyPart_LBicep").Should().Be(5);
+            store.GetInteger(BehaviorFieldStorage.Field, "BodyPart_RBicep").Should().Be(4);
+
+            var foot = editor.BodyParts.Limbs.Single(pair => pair.Label == "Foot");
+            foot.Right.Number = 2;
+            store.GetInteger(BehaviorFieldStorage.Field, "ArmorPart_RFoot").Should().Be(2,
+                "the creature format's unusual right-foot field must remain wired correctly");
+        }
+
+        [Test]
+        public void VisibleEquipment_LoadsOneSharedProgressivePickerAtATime()
+        {
+            var catalogLoads = 0;
+            IReadOnlyList<CreatureEquipmentChoice> Equipment()
+            {
+                catalogLoads++;
+                return Enumerable.Range(0, 500)
+                    .Select(index => new CreatureEquipmentChoice(
+                        $"armor_{index:D3}", $"Armor {index:D3}", 16))
+                    .ToList();
+            }
+
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "equipment_test", "Equipment Test"));
+            using var editor = new CreatureEditorViewModel(
+                document.Root,
+                Path.Combine(CorpusLocator.ModuleDirectory, "utc", "equipment_test.utc.json"),
+                "equipment_test",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                null,
+                null,
+                null,
+                _ => null,
+                null,
+                equipmentChoices: Equipment);
+
+            catalogLoads.Should().Be(0);
+            editor.VisibleEquipment.Slots.Should().OnlyContain(slot => !slot.AreChoicesLoaded);
+            editor.VisibleEquipment.Slots.Should().OnlyContain(slot => slot.FilteredChoices.Count == 0);
+
+            var armor = editor.VisibleEquipment.Slots.Single(slot => slot.Label == "Armor");
+            armor.OpenSearchCommand.Execute(null);
+
+            catalogLoads.Should().Be(1);
+            armor.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
+            editor.VisibleEquipment.Slots.Where(slot => slot.Label != "Armor")
+                .Should().OnlyContain(slot => !slot.AreChoicesLoaded);
+
+            armor.PickChoiceCommand.Execute(armor.FilteredChoices[3]);
+            new CreatureValueStore(document.Root).EquippedResRef(2).Should().Be("armor_003");
+            armor.CanClearChoice.Should().BeTrue();
+
+            armor.ClearChoiceCommand.Execute(null);
+            new CreatureValueStore(document.Root).EquippedResRef(2).Should().BeNull();
+            armor.CanClearChoice.Should().BeFalse();
+        }
+
+        [Test]
+        public void BehaviorChoices_LoadOnePickerAtATimeAndRoleRowsAreReused()
+        {
+            var guildStoreLoads = 0;
+            IReadOnlyList<BehaviorChoice> Resolve(string key)
+            {
+                if (key == CreatureChoiceKeys.GuildStores)
+                {
+                    guildStoreLoads++;
+                    return Enumerable.Range(0, 120)
+                        .Select(index => new BehaviorChoice($"store_{index}", $"Store {index}"))
+                        .ToList();
+                }
+
+                if (key == CreatureChoiceKeys.Guilds)
+                    return new[] { new BehaviorChoice(1, "Hunters Guild") };
+                return Array.Empty<BehaviorChoice>();
+            }
+
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "lazy_roles", "Lazy Roles"));
+            using var editor = new CreatureEditorViewModel(
+                document.Root,
+                Path.Combine(CorpusLocator.ModuleDirectory, "utc", "lazy_roles.utc.json"),
+                "lazy_roles",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                Resolve,
+                null,
+                null,
+                _ => null,
+                null);
+
+            var guildMaster = CreatureRoleCatalog.All.Single(role => role.Id == "guild_master");
+            editor.ChooseRoleCommand.Execute(guildMaster);
+            guildStoreLoads.Should().Be(0,
+                "switching behaviors must create field shells without resolving their catalogs");
+
+            var firstStore = editor.RoleRows.Single(row => row.Definition.Name == "STORE_TAG_RANK_1");
+            editor.RoleRows.Where(row => row.Definition.Name.StartsWith("STORE_TAG_RANK_"))
+                .Should().OnlyContain(row => !row.AreChoicesLoaded);
+
+            firstStore.OpenSearchCommand.Execute(null);
+
+            guildStoreLoads.Should().Be(1);
+            firstStore.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
+            editor.RoleRows.Where(row => row.Definition.Name.StartsWith("STORE_TAG_RANK_") &&
+                                         row.Definition.Name != "STORE_TAG_RANK_1")
+                .Should().OnlyContain(row => !row.AreChoicesLoaded,
+                    "opening one rank must not initialize the other four pickers");
+
+            var presentation = CreatureRoleCatalog.All.Single(role => role.Id == "presentation");
+            editor.ChooseRoleCommand.Execute(presentation);
+            editor.ChooseRoleCommand.Execute(guildMaster);
+
+            editor.RoleRows.Single(row => row.Definition.Name == "STORE_TAG_RANK_1")
+                .Should().BeSameAs(firstStore, "revisiting a behavior reuses its already loaded rows");
+            guildStoreLoads.Should().Be(1);
         }
 
         [Test]

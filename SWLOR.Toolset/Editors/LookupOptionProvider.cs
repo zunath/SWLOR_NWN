@@ -140,7 +140,7 @@ namespace SWLOR.Toolset.Editors
             if (_twoDaLookups == null)
                 return Array.Empty<LookupOption>();
 
-            return _twoDaLookups.GetRows(table.TableName, table.LabelColumn, table.StrRefColumn)
+            return _twoDaLookups.GetRows(table)
                 .Select(row => new LookupOption(row.Id, row.DisplayName))
                 .ToList();
         }

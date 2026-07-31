@@ -9,6 +9,7 @@ using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Toolset.Editors.Appearance;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Items;
 using SWLOR.Toolset.Viewport;
@@ -26,11 +27,15 @@ namespace SWLOR.Toolset.Editors.Creatures
         private readonly Func<JsonGffStruct, RenderModel?>? _resolveModel;
         private readonly ChoicePreviewService? _choicePreviews;
         private readonly Func<BehaviorChoice, string?>? _previewAudio;
+        private readonly Dictionary<string, IReadOnlyList<BehaviorRowViewModel>> _roleRowCache =
+            new(StringComparer.Ordinal);
         private ModelPreviewControl? _previewView;
         private bool _disposed;
 
         public ObservableCollection<BehaviorRowViewModel> BasicRows { get; } = new();
         public ObservableCollection<BehaviorRowViewModel> AppearanceRows { get; } = new();
+        public ObservableCollection<BehaviorRowViewModel> CombatRuleRows { get; } = new();
+        public ObservableCollection<BehaviorRowViewModel> AiRows { get; } = new();
         public ObservableCollection<BehaviorRowViewModel> RoleRows { get; } = new();
         public ObservableCollection<BehaviorListItemViewModel> RoleList { get; } = new();
         public ObservableCollection<CreatureAnimationOption> PreviewAnimations { get; } = new();
@@ -44,12 +49,17 @@ namespace SWLOR.Toolset.Editors.Creatures
         public CreatureBodyPartsViewModel BodyParts { get; }
         public CreatureVisibleEquipmentViewModel VisibleEquipment { get; }
         public VarTableSectionViewModel Variables { get; }
+        public AppearanceGallerySectionViewModel? AppearanceGallery { get; }
+        public bool HasAppearanceGallery => AppearanceGallery != null;
 
         [ObservableProperty]
         private CreatureRole _selectedRole = CreatureRoleCatalog.Default;
 
         [ObservableProperty]
         private CreatureAnimationOption? _selectedPreviewAnimation;
+
+        [ObservableProperty]
+        private int _selectedAppearanceSectionIndex;
 
         [ObservableProperty]
         private bool _isDirty;
@@ -108,10 +118,13 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<JsonGffStruct, RenderModel?>? resolveModel,
             Func<int, AppearanceRow?> appearance,
             ArmorPartCatalog? armorParts,
-            IReadOnlyList<CreatureEquipmentChoice>? equipmentChoices = null,
+            Func<IReadOnlyList<CreatureEquipmentChoice>>? equipmentChoices = null,
             ChoicePreviewService? choicePreviews = null,
             Func<BehaviorChoice, string?>? previewAudio = null,
-            Action<string>? openLootDefinition = null)
+            Action<string>? openLootDefinition = null,
+            IReadOnlyList<AppearanceOption>? appearanceOptions = null,
+            ThumbnailService? appearanceThumbnails = null,
+            ArmorDyeSwatchService? colorPalettes = null)
         {
             _store = new CreatureValueStore(creature);
             _runEdit = runEdit;
@@ -128,13 +141,28 @@ namespace SWLOR.Toolset.Editors.Creatures
             Abilities = new CreatureAbilitiesViewModel(_store, RunEdit);
             Ai = new CreatureAiViewModel(_store, RunEdit);
             Loot = new CreatureLootViewModel(_store, RunEdit, openDefinition: openLootDefinition);
-            BodyParts = new CreatureBodyPartsViewModel(_store, RunEdit, appearance, armorParts);
+            BodyParts = new CreatureBodyPartsViewModel(
+                _store, RunEdit, appearance, armorParts, colorPalettes, OnBodyPartChanged);
             VisibleEquipment = new CreatureVisibleEquipmentViewModel(
-                _store, RunEdit, equipmentChoices ?? Array.Empty<CreatureEquipmentChoice>(), OnVisibleEquipmentChanged);
+                _store,
+                RunEdit,
+                equipmentChoices ?? (() => Array.Empty<CreatureEquipmentChoice>()),
+                OnVisibleEquipmentChanged);
             Variables = new VarTableSectionViewModel(RunEdit, _store.Locals, gameCodeIndex, IsCustomVariable);
+            if (appearanceOptions != null)
+            {
+                AppearanceGallery = new AppearanceGallerySectionViewModel(
+                    appearanceOptions,
+                    appearanceThumbnails,
+                    CurrentAppearanceKey,
+                    ApplyAppearance,
+                    noun: "appearance");
+            }
 
             BuildRows(CreatureEditorLayout.Basic, BasicRows);
             BuildRows(CreatureEditorLayout.Appearance, AppearanceRows);
+            BuildRows(CreatureEditorLayout.CombatRules, CombatRuleRows);
+            BuildRows(CreatureEditorLayout.Ai, AiRows);
             BehaviorListItemViewModel.Build(RoleList, CreatureRoleCatalog.All);
             SelectRole(CreatureRoleCatalog.Default);
             UpdateWarnings();
@@ -150,14 +178,16 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public void ReloadFromDocument()
         {
-            foreach (var row in BasicRows.Concat(AppearanceRows).Concat(RoleRows))
+            foreach (var row in AllRows())
                 row.Reload();
             Stats.Reload();
             Abilities.Reload();
             Ai.Reload();
             Loot.Reload();
             BodyParts.Reload();
+            EnsureSelectedAppearanceSectionLoaded();
             VisibleEquipment.Reload();
+            AppearanceGallery?.ReloadFromDocument();
             Variables.RefreshFromDocument();
             UpdateWarnings();
             UpdateQuestUsage();
@@ -202,11 +232,27 @@ namespace SWLOR.Toolset.Editors.Creatures
                 target.Add(CreateRow(definition));
         }
 
-        private BehaviorRowViewModel CreateRow(BehaviorFieldDefinition definition)
+        private IEnumerable<BehaviorRowViewModel> DirectRows() =>
+            BasicRows.Concat(AppearanceRows).Concat(CombatRuleRows).Concat(AiRows);
+
+        private IEnumerable<BehaviorRowViewModel> AllRows() =>
+            DirectRows().Concat(_roleRowCache.Values.SelectMany(rows => rows));
+
+        private BehaviorRowViewModel CreateRow(
+            BehaviorFieldDefinition definition,
+            bool deferSearchableChoices = false)
         {
-            var choices = definition.ChoicesKey == null
-                ? definition.Choices
-                : _resolveChoices?.Invoke(definition.ChoicesKey) ?? Array.Empty<BehaviorChoice>();
+            var defersChoices = deferSearchableChoices &&
+                                definition.IsSearchable &&
+                                definition.ChoicesKey != null;
+            var choices = defersChoices
+                ? null
+                : definition.ChoicesKey == null
+                    ? definition.Choices
+                    : _resolveChoices?.Invoke(definition.ChoicesKey) ?? Array.Empty<BehaviorChoice>();
+            Func<IReadOnlyList<BehaviorChoice>>? choiceLoader = defersChoices
+                ? () => _resolveChoices?.Invoke(definition.ChoicesKey!) ?? Array.Empty<BehaviorChoice>()
+                : null;
             var row = new BehaviorRowViewModel(
                 definition,
                 _store,
@@ -214,18 +260,23 @@ namespace SWLOR.Toolset.Editors.Creatures
                 choices,
                 OnDirectValueChanged,
                 _choicePreviews,
-                _previewAudio);
+                _previewAudio,
+                choiceLoader);
             row.Reload();
             return row;
         }
 
         private void SelectRole(CreatureRole role)
         {
-            foreach (var row in RoleRows)
-                row.Dispose();
             RoleRows.Clear();
             SelectedRole = role;
-            BuildRows(role.Fields, RoleRows);
+            if (!_roleRowCache.TryGetValue(role.Id, out var rows))
+            {
+                rows = role.Fields.Select(definition => CreateRow(definition, true)).ToList();
+                _roleRowCache[role.Id] = rows;
+            }
+            foreach (var row in rows)
+                RoleRows.Add(row);
             BehaviorListItemViewModel.Select(RoleList, role.Id);
             UpdateQuestUsage();
         }
@@ -233,6 +284,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private void OnDirectValueChanged()
         {
             BodyParts.Reload();
+            EnsureSelectedAppearanceSectionLoaded();
             UpdateWarnings();
             UpdateQuestUsage();
             UpdatePreviewScene();
@@ -242,6 +294,35 @@ namespace SWLOR.Toolset.Editors.Creatures
         private void OnVisibleEquipmentChanged()
         {
             UpdatePreviewScene();
+        }
+
+        private void OnBodyPartChanged()
+        {
+            UpdatePreviewScene();
+        }
+
+        private string CurrentAppearanceKey() =>
+            (_store.GetInteger(BehaviorFieldStorage.Field, "Appearance_Type") ?? 0)
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        private bool ApplyAppearance(AppearanceOption option)
+        {
+            if (option.CreatureAppearanceId is not { } id)
+                return false;
+
+            if (!RunEdit(
+                    $"Change appearance to {option.Caption}",
+                    () => _store.SetInteger(
+                        BehaviorFieldStorage.Field,
+                        "Appearance_Type",
+                        GffFieldType.Word,
+                        id)))
+            {
+                return false;
+            }
+
+            OnDirectValueChanged();
+            return true;
         }
 
         private void UpdateQuestUsage()
@@ -406,7 +487,9 @@ namespace SWLOR.Toolset.Editors.Creatures
                             TemplateResRef = TemplateResRef,
                             Tag = _store.GetString(BehaviorFieldStorage.Field, "Tag"),
                             Position = new Vector3(AreaSceneBuilder.TileSize / 2f, AreaSceneBuilder.TileSize / 2f, 0f),
-                            Orientation = new Vector2(1f, 0f),
+                            // The default model-preview camera sits on the -Y side while creature
+                            // fronts are authored toward +Y, so turn the model around to greet the user.
+                            Orientation = new Vector2(-1f, 0f),
                             Model = model
                         }
                     },
@@ -421,32 +504,42 @@ namespace SWLOR.Toolset.Editors.Creatures
             PreviewAnimations.Clear();
             if (model != null)
             {
-                AddAnimation("Idle", model.DefaultAnimationName,
-                    model.Animations.Select(animation => animation.Name).FirstOrDefault(name =>
+                var names = model.Animations.Select(animation => animation.Name).ToList();
+                var idle = !string.IsNullOrWhiteSpace(model.DefaultAnimationName)
+                    ? model.DefaultAnimationName
+                    : names.FirstOrDefault(name =>
                         name.Contains("pause", StringComparison.OrdinalIgnoreCase) ||
-                        name.Contains("idle", StringComparison.OrdinalIgnoreCase)));
-                AddAnimation("Walk", null,
-                    model.Animations.Select(animation => animation.Name).FirstOrDefault(name =>
-                        name.Contains("walk", StringComparison.OrdinalIgnoreCase)));
-                AddAnimation("Attack", null,
-                    model.Animations.Select(animation => animation.Name).FirstOrDefault(name =>
-                        name.Contains("attack", StringComparison.OrdinalIgnoreCase) ||
-                        name.StartsWith("ca", StringComparison.OrdinalIgnoreCase)));
+                        name.Contains("idle", StringComparison.OrdinalIgnoreCase));
+                var walk = names.FirstOrDefault(name =>
+                    name.Contains("walk", StringComparison.OrdinalIgnoreCase));
+                var attack = names.FirstOrDefault(name =>
+                    name.Contains("attack", StringComparison.OrdinalIgnoreCase) ||
+                    name.Contains("slash", StringComparison.OrdinalIgnoreCase) ||
+                    name.Contains("stab", StringComparison.OrdinalIgnoreCase) ||
+                    name.Contains("kick", StringComparison.OrdinalIgnoreCase) ||
+                    name.EndsWith("shot", StringComparison.OrdinalIgnoreCase));
+
+                // The three fixed segments are part of the editor contract. A model without one of
+                // the optional clips keeps that segment visible and simply falls back to its rest pose.
+                PreviewAnimations.Add(new CreatureAnimationOption("Idle", idle));
+                PreviewAnimations.Add(new CreatureAnimationOption("Walk", walk));
+                PreviewAnimations.Add(new CreatureAnimationOption("Attack", attack));
             }
             SelectedPreviewAnimation = PreviewAnimations.FirstOrDefault(option => option.Display == previous)
                                        ?? PreviewAnimations.FirstOrDefault();
         }
 
-        private void AddAnimation(string display, string? preferred, string? fallback)
-        {
-            var name = !string.IsNullOrWhiteSpace(preferred) ? preferred : fallback;
-            if (!string.IsNullOrWhiteSpace(name) &&
-                PreviewAnimations.All(option => option.AnimationName != name))
-                PreviewAnimations.Add(new CreatureAnimationOption(display, name));
-        }
-
         partial void OnSelectedPreviewAnimationChanged(CreatureAnimationOption? value) =>
             OnPropertyChanged(nameof(PreviewAnimationName));
+
+        partial void OnSelectedAppearanceSectionIndexChanged(int value) =>
+            EnsureSelectedAppearanceSectionLoaded();
+
+        private void EnsureSelectedAppearanceSectionLoaded()
+        {
+            if (SelectedAppearanceSectionIndex == 2)
+                _ = BodyParts.EnsureLoadedAsync();
+        }
 
         public void ReloadGameResources()
         {
@@ -466,8 +559,9 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (_disposed)
                 return;
             _disposed = true;
-            foreach (var row in BasicRows.Concat(AppearanceRows).Concat(RoleRows))
+            foreach (var row in AllRows())
                 row.Dispose();
+            AppearanceGallery?.Dispose();
             Equipment.Dispose();
             _previewView?.Dispose();
             _previewView = null;

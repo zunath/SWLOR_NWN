@@ -27,6 +27,9 @@ namespace SWLOR.Toolset.Editors.Items
 
         private readonly ResourceIndex? _resources;
         private readonly Lazy<IReadOnlyDictionary<string, IReadOnlyList<int>>>? _numbersByModelPrefix;
+        private readonly Lazy<Task>? _buildTask;
+
+        public bool IsBuilt => _numbersByModelPrefix?.IsValueCreated != false;
 
         public ArmorPartCatalog(ResourceIndex? resources)
         {
@@ -36,8 +39,18 @@ namespace SWLOR.Toolset.Editors.Items
                 _numbersByModelPrefix = new Lazy<IReadOnlyDictionary<string, IReadOnlyList<int>>>(
                     BuildIndex,
                     LazyThreadSafetyMode.ExecutionAndPublication);
+                _buildTask = new Lazy<Task>(
+                    () => Task.Run(() => _ = _numbersByModelPrefix.Value),
+                    LazyThreadSafetyMode.ExecutionAndPublication);
             }
         }
+
+        /// <summary>
+        /// Builds the shared model-prefix index away from the UI thread. The index remains the same
+        /// lazy singleton used by item editors; this merely gives expensive first-use callers a way
+        /// to warm it without blocking tab navigation.
+        /// </summary>
+        public Task EnsureBuiltAsync() => _buildTask?.Value ?? Task.CompletedTask;
 
         /// <summary>
         /// The numbers that resolve to a real model for a part category ("chest", "shol", ...),

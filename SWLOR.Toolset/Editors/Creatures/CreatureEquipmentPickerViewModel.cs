@@ -1,105 +1,80 @@
-using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
+using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Editors.Behaviors;
 
 namespace SWLOR.Toolset.Editors.Creatures
 {
-    /// <summary>Searchable visible-equipment blueprint picker.</summary>
-    public sealed partial class CreatureEquipmentPickerViewModel : ObservableObject
+    /// <summary>
+    /// A creature equipment slot using the shared deferred, paged behavior picker.
+    /// </summary>
+    /// <remarks>
+    /// This used to maintain a second search implementation which eagerly realized 100 buttons for
+    /// every slot when the Appearance tab opened. Keeping the slot-specific GFF write hooks here and
+    /// reusing <see cref="BehaviorRowViewModel"/> means the item catalog is resolved only when this
+    /// picker is opened, then published in the same 50-row virtualized pages as every other editor.
+    /// </remarks>
+    public sealed partial class CreatureEquipmentPickerViewModel : BehaviorRowViewModel
     {
-        private const int SearchLimit = 100;
         private readonly int _slot;
-        private readonly CreatureValueStore _store;
-        private readonly Func<string, Action, bool> _runEdit;
-        private readonly Action _changed;
-        private bool _loading;
+        private readonly CreatureValueStore _creatureStore;
 
-        public string Label { get; }
-        public IReadOnlyList<CreatureEquipmentChoice> Choices { get; }
-        public ObservableCollection<CreatureEquipmentChoice> Matching { get; } = new();
+        public override string SelectedChoiceDisplay =>
+            Choice?.Display ?? _creatureStore.EquippedResRef(_slot) ?? "None";
 
-        [ObservableProperty]
-        private string _searchText = string.Empty;
+        public override bool CanClearChoice =>
+            !string.IsNullOrWhiteSpace(_creatureStore.EquippedResRef(_slot));
 
-        [ObservableProperty]
-        private CreatureEquipmentChoice? _selected;
-
-        public string CurrentDisplay => Selected?.Display ?? "None";
+        protected override bool SelectsFirstChoiceWhenUnset => false;
 
         public CreatureEquipmentPickerViewModel(
             string label,
             int slot,
             CreatureValueStore store,
             Func<string, Action, bool> runEdit,
-            IReadOnlyList<CreatureEquipmentChoice> choices,
+            Func<IReadOnlyList<CreatureEquipmentChoice>> choices,
             Action changed)
+            : base(
+                new BehaviorFieldDefinition
+                {
+                    Label = label,
+                    Name = $"equipment_{slot}",
+                    Kind = BehaviorFieldKind.Choice,
+                    FieldType = GffFieldType.ResRef,
+                    IsSearchable = true
+                },
+                store,
+                runEdit,
+                valueChanged: changed,
+                choiceLoader: () => choices()
+                    .Select(choice => new BehaviorChoice(choice.ResRef, choice.Display))
+                    .ToList())
         {
-            Label = label;
             _slot = slot;
-            _store = store;
-            _runEdit = runEdit;
-            Choices = choices;
-            _changed = changed;
+            _creatureStore = store;
             Reload();
         }
 
-        public void Reload()
+        protected override void ReadValue()
         {
-            _loading = true;
-            try
-            {
-                var resRef = _store.EquippedResRef(_slot);
-                Selected = Choices.FirstOrDefault(choice =>
-                    string.Equals(choice.ResRef, resRef, StringComparison.OrdinalIgnoreCase));
-            }
-            finally
-            {
-                _loading = false;
-            }
-            Rebuild();
-            OnPropertyChanged(nameof(CurrentDisplay));
+            var resRef = _creatureStore.EquippedResRef(_slot);
+            Choice = Choices.FirstOrDefault(choice =>
+                string.Equals(choice.StringValue, resRef, StringComparison.OrdinalIgnoreCase));
         }
 
-        [RelayCommand]
-        private void Choose(CreatureEquipmentChoice? choice)
-        {
-            if (choice != null)
-                Selected = choice;
-        }
+        protected override void WriteChoice(BehaviorChoiceViewModel value) =>
+            _creatureStore.SetEquippedResRef(_slot, value.StringValue);
 
-        [RelayCommand]
-        private void Clear()
+        protected override void ClearChoice()
         {
-            if (!_runEdit($"Clear {Label}", () => _store.SetEquippedResRef(_slot, null)))
-                return;
-            Reload();
-            _changed();
-        }
-
-        partial void OnSearchTextChanged(string value) => Rebuild();
-
-        partial void OnSelectedChanged(CreatureEquipmentChoice? value)
-        {
-            OnPropertyChanged(nameof(CurrentDisplay));
-            if (_loading || value == null)
-                return;
-            if (!_runEdit($"Change {Label}", () => _store.SetEquippedResRef(_slot, value.ResRef)))
+            if (!RunEditFunc($"Clear {Label}", () => _creatureStore.SetEquippedResRef(_slot, null)))
             {
                 Reload();
                 return;
             }
-            _changed();
-        }
 
-        private void Rebuild()
-        {
-            var query = SearchText.Trim();
-            Matching.Clear();
-            foreach (var choice in Choices.Where(choice => query.Length == 0 ||
-                         choice.Display.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-                         choice.ResRef.Contains(query, StringComparison.OrdinalIgnoreCase)).Take(SearchLimit))
-                Matching.Add(choice);
+            Reload();
+            OnApplied();
         }
     }
 }

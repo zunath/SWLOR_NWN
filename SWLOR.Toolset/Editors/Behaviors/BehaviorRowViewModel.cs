@@ -43,15 +43,28 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// </remarks>
         public const int MaxSearchResults = 200;
 
+        /// <summary>How many search matches are published on first open and per explicit load.</summary>
+        /// <remarks>
+        /// Search rows live inside larger editor forms. Publishing even the full capped set for
+        /// every field at once still realizes hundreds of buttons while changing behaviors. A
+        /// page keeps the initial interaction bounded; the virtualized list and search box handle
+        /// browsing, and builders can request another page when they actually need it.
+        /// </remarks>
+        public const int SearchPageSize = 50;
+
         private readonly Action? _valueChanged;
         private readonly ChoicePreviewService? _previews;
         private readonly Func<BehaviorChoice, string?>? _previewAudio;
+        private Func<IReadOnlyList<BehaviorChoice>>? _choiceLoader;
+        private List<BehaviorChoiceViewModel> _searchMatches = new();
         private List<BehaviorChoiceViewModel> _galleryMatches = new();
         private CancellationTokenSource? _searchDebounce;
+        private int _searchPublished;
         private int _galleryPublished;
         private bool _galleryBuilt;
         private bool _disposed;
         private bool _loading;
+        private BehaviorChoiceViewModel? _markedChoice;
 
         public BehaviorFieldDefinition Definition { get; }
 
@@ -83,8 +96,24 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         public bool HasCounter => MaxLength > 0;
 
-        /// <summary>Resolved at construction, so a game-data choice set and a fixed one read alike.</summary>
-        public IReadOnlyList<BehaviorChoiceViewModel> Choices { get; }
+        private IReadOnlyList<BehaviorChoiceViewModel> _choices =
+            Array.Empty<BehaviorChoiceViewModel>();
+
+        /// <summary>The choice models, resolved only when a deferred picker is opened.</summary>
+        public IReadOnlyList<BehaviorChoiceViewModel> Choices
+        {
+            get => _choices;
+            private set
+            {
+                if (!SetProperty(ref _choices, value))
+                    return;
+
+                NotifyChoicePresentationChanged();
+            }
+        }
+
+        /// <summary>Whether this row has paid the cost of resolving and wrapping its option set.</summary>
+        public bool AreChoicesLoaded => _choiceLoader == null;
 
         /// <summary>The filtered slice of <see cref="Choices"/> a searchable row shows.</summary>
         public ObservableCollection<BehaviorChoiceViewModel> FilteredChoices { get; } = new();
@@ -141,7 +170,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// the page rather than as a list of names. The load screens, the door appearances, the
         /// portraits, and the waypoint markers all arrive this way.
         /// </summary>
-        public bool IsGallery => IsChoice && Choices.Any(choice => choice.HasArtwork);
+        public bool IsGallery => IsChoice && AreChoicesLoaded && Choices.Any(choice => choice.HasArtwork);
 
         /// <summary>
         /// A gallery whose whole set fits on the page, shown there rather than behind a button. A
@@ -170,7 +199,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// </summary>
         public virtual bool IsSearchableChoice =>
             IsChoice && !IsGallery &&
-            (Definition.IsSearchable || Choices.Count > SearchableChoiceThreshold);
+            (Definition.IsSearchable || AreChoicesLoaded && Choices.Count > SearchableChoiceThreshold);
 
         /// <summary>A plain drop-down: every choice row that is neither searchable nor a gallery.</summary>
         public virtual bool IsPlainChoice => IsChoice && !IsGallery && !IsSearchableChoice;
@@ -192,7 +221,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// Whether this row carries a value at all — what the footer's "still needs" list reads.
         /// </summary>
         public virtual bool HasValue =>
-            IsChoice ? Choice != null :
+            IsChoice ? Choice != null || !AreChoicesLoaded && HasStoredChoiceValue() :
             IsTextEntry || IsParagraph ? !string.IsNullOrWhiteSpace(Text) :
             true;
 
@@ -200,12 +229,32 @@ namespace SWLOR.Toolset.Editors.Behaviors
         public bool IsEmpty => !HasValue;
 
         /// <summary>Number of options matched by the current search, for the row's count line.</summary>
-        public string SearchSummary =>
-            FilteredChoices.Count == Choices.Count
-                ? $"{Choices.Count} option{(Choices.Count == 1 ? string.Empty : "s")}"
-                : FilteredChoices.Count == 0
-                    ? "No matching options"
-                    : $"{FilteredChoices.Count} of {Choices.Count} options";
+        public string SearchSummary
+        {
+            get
+            {
+                if (!AreChoicesLoaded)
+                    return "Options load when opened";
+                if (!IsSearchExpanded)
+                    return $"{Choices.Count} option{(Choices.Count == 1 ? string.Empty : "s")}";
+                if (_searchMatches.Count == 0)
+                    return "No matching options";
+                if (ChoiceSearchText.Trim().Length > 0 && FilteredChoices.Count >= _searchMatches.Count)
+                    return $"{_searchMatches.Count} of {Choices.Count} options";
+
+                if (FilteredChoices.Count >= _searchMatches.Count)
+                {
+                    var suffix = _searchMatches.Count == 1 ? string.Empty : "s";
+                    return $"{_searchMatches.Count} option{suffix}";
+                }
+
+                return $"{FilteredChoices.Count} shown of {_searchMatches.Count} options";
+            }
+        }
+
+        public bool CanLoadMoreSearchResults =>
+            IsSearchExpanded &&
+            _searchPublished < Math.Min(_searchMatches.Count, MaxSearchResults);
 
         /// <summary>Watermark for a searchable row's filter box, named after what it searches.</summary>
         public string SearchWatermark => $"Search {Label.ToLowerInvariant()}";
@@ -215,7 +264,14 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// because a row whose stored value matches nothing has no Choice at all, and binding
         /// through the null logs an error on every render.
         /// </summary>
-        public string SelectedChoiceDisplay => Choice?.Display ?? "Nothing chosen";
+        public virtual string SelectedChoiceDisplay => Choice?.Display ?? StoredChoiceDisplay();
+
+        /// <summary>
+        /// Whether this choice row can remove its stored value. Most engine fields always carry a
+        /// value; linked-resource pickers such as creature equipment opt in and reuse the same
+        /// progressive chooser rather than building a second search-list control.
+        /// </summary>
+        public virtual bool CanClearChoice => false;
 
         /// <summary>How much of the gallery is on screen, for its count line.</summary>
         public string GallerySummary
@@ -261,6 +317,10 @@ namespace SWLOR.Toolset.Editors.Behaviors
         [ObservableProperty]
         private string _choiceSearchText = string.Empty;
 
+        /// <summary>Search results stay collapsed until the builder opens this particular field.</summary>
+        [ObservableProperty]
+        private bool _isSearchExpanded;
+
         /// <summary>
         /// What a read-only Statement row prints: the stored value, so a builder can see what the
         /// behavior wrote without being offered a box that would fight it.
@@ -300,7 +360,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
             IReadOnlyList<BehaviorChoice>? choices = null,
             Action? valueChanged = null,
             ChoicePreviewService? previews = null,
-            Func<BehaviorChoice, string?>? previewAudio = null)
+            Func<BehaviorChoice, string?>? previewAudio = null,
+            Func<IReadOnlyList<BehaviorChoice>>? choiceLoader = null)
         {
             Definition = definition ?? throw new ArgumentNullException(nameof(definition));
             Store = store ?? throw new ArgumentNullException(nameof(store));
@@ -308,11 +369,16 @@ namespace SWLOR.Toolset.Editors.Behaviors
             _valueChanged = valueChanged;
             _previews = previews;
             _previewAudio = previewAudio;
+            if (choices != null && choiceLoader != null)
+                throw new ArgumentException("Provide eager choices or a deferred choice loader, not both.");
+
+            _choiceLoader = choiceLoader;
             // Wrapping the choices costs nothing: no picture is decoded or rendered until a tile
             // that shows one exists, and then only for the page that has been published. Building
             // the rows used to decode every load screen - around thirty megabytes of DDS - before
             // the tab could draw, which is what made switching to Area Transition stall.
-            Choices = BehaviorChoiceViewModel.From(choices ?? definition.Choices);
+            if (choiceLoader == null)
+                Choices = BehaviorChoiceViewModel.From(choices ?? definition.Choices);
         }
 
         /// <summary>
@@ -331,10 +397,17 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 _loading = false;
             }
 
-            if (IsSearchableChoice)
+            if (IsSearchableChoice && IsSearchExpanded)
+            {
                 ChoiceSearchText = string.Empty;
-
-            RebuildFilteredChoices();
+                RebuildFilteredChoices();
+            }
+            else
+            {
+                FilteredChoices.Clear();
+                _searchMatches.Clear();
+                _searchPublished = 0;
+            }
 
             // An inline grid is part of the row rather than something opened, so it is built with the
             // row. Only the published page costs anything: the tiles beyond it are not realized and
@@ -441,10 +514,55 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 Choice = option;
 
             IsGalleryOpen = false;
+            IsSearchExpanded = false;
         }
 
         [RelayCommand]
-        private void ClearSearch() => ChoiceSearchText = string.Empty;
+        private void ClearSearch()
+        {
+            if (ChoiceSearchText.Length == 0)
+                RebuildFilteredChoices();
+            else
+                ChoiceSearchText = string.Empty;
+        }
+
+        /// <summary>
+        /// Resolves this one option set and publishes its first page. Merely displaying the editor
+        /// or changing behaviors never calls a deferred loader.
+        /// </summary>
+        [RelayCommand]
+        private void OpenSearch()
+        {
+            EnsureChoicesLoaded();
+
+            // Loading can reveal that this is an artwork picker. Open that reusable surface rather
+            // than also constructing a text-result list for the same choices.
+            if (IsPopupGallery)
+            {
+                OpenGallery();
+                return;
+            }
+
+            if (IsInlineGallery || !IsSearchableChoice)
+                return;
+
+            IsSearchExpanded = true;
+            if (ChoiceSearchText.Length == 0)
+                RebuildFilteredChoices();
+            else
+                ChoiceSearchText = string.Empty;
+        }
+
+        [RelayCommand]
+        private void CloseSearch() => IsSearchExpanded = false;
+
+        [RelayCommand]
+        private void LoadMoreSearchResults() => PublishSearchPage();
+
+        [RelayCommand]
+        protected virtual void ClearChoice()
+        {
+        }
 
         [RelayCommand]
         private void PreviewAudio(BehaviorChoiceViewModel? option)
@@ -462,6 +580,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         [RelayCommand]
         private void OpenGallery()
         {
+            EnsureChoicesLoaded();
             if (!IsPopupGallery)
                 return;
 
@@ -626,6 +745,18 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         partial void OnChoiceSearchTextChanged(string value) => RebuildFilteredChoices();
 
+        partial void OnIsSearchExpandedChanged(bool value)
+        {
+            OnPropertyChanged(nameof(SearchSummary));
+            OnPropertyChanged(nameof(CanLoadMoreSearchResults));
+            if (value)
+                return;
+
+            FilteredChoices.Clear();
+            _searchMatches.Clear();
+            _searchPublished = 0;
+        }
+
         /// <summary>Called whenever the selected choice changes, including during a reload.</summary>
         /// <remarks>
         /// A popup gallery resolves one picture, not the whole set: the chosen option is the only
@@ -634,12 +765,16 @@ namespace SWLOR.Toolset.Editors.Behaviors
         protected virtual void OnChoiceSelected(BehaviorChoiceViewModel? value)
         {
             OnPropertyChanged(nameof(SelectedChoiceDisplay));
+            OnPropertyChanged(nameof(CanClearChoice));
 
-            // Every choice presentation marks what is stored rather than restating it underneath -
-            // a gallery tile, and equally a searchable list's row - so the option a builder is
-            // looking at is the answer to "which one is this", on load and after every pick.
-            foreach (var choice in Choices)
-                choice.IsSelected = ReferenceEquals(choice, value);
+            // Mark only the two entries whose state changed. Walking thousands of choices on every
+            // reload or pick made the row cost proportional to its entire catalog even though only
+            // a virtualized page can be visible.
+            if (_markedChoice != null && !ReferenceEquals(_markedChoice, value))
+                _markedChoice.IsSelected = false;
+            if (value != null)
+                value.IsSelected = true;
+            _markedChoice = value;
 
             if (IsPopupGallery)
                 _ = LoadSelectedPreviewAsync(value);
@@ -703,34 +838,95 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         private void RebuildFilteredChoices()
         {
-            if (!IsSearchableChoice)
+            if (!IsSearchableChoice || !IsSearchExpanded || !AreChoicesLoaded)
                 return;
 
             var query = ChoiceSearchText.Trim();
+            _searchMatches = Choices.Where(option =>
+                    query.Length == 0 ||
+                    option.Display.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                    (option.StringValue?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false))
+                .ToList();
+            _searchPublished = 0;
             FilteredChoices.Clear();
+            PublishSearchPage();
+        }
 
-            var published = 0;
-            foreach (var option in Choices)
+        private void PublishSearchPage()
+        {
+            if (!IsSearchableChoice || !IsSearchExpanded || !AreChoicesLoaded)
+                return;
+
+            var end = Math.Min(
+                _searchPublished + SearchPageSize,
+                Math.Min(_searchMatches.Count, MaxSearchResults));
+            for (var index = _searchPublished; index < end; index++)
             {
-                if (query.Length > 0 &&
-                    !option.Display.Contains(query, StringComparison.OrdinalIgnoreCase) &&
-                    !(option.StringValue?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false))
-                {
-                    continue;
-                }
-
-                FilteredChoices.Add(option);
-                if (++published >= MaxSearchResults)
-                    break;
+                var option = _searchMatches[index];
+                if (!FilteredChoices.Contains(option))
+                    FilteredChoices.Add(option);
             }
+            _searchPublished = end;
 
-            // A filter excludes a non-match on purpose; the cap excludes one by accident. When the
-            // list was truncated, put what is stored back at the top - a value the editor will not
-            // show is one a builder cannot see they have.
-            if (published >= MaxSearchResults && Choice != null && !FilteredChoices.Contains(Choice))
+            // Paging excludes a non-match by accident where a filter excludes it on purpose. Keep
+            // the stored value visible while browsing the unfiltered catalog.
+            if (ChoiceSearchText.Length == 0 && Choice != null && !FilteredChoices.Contains(Choice))
                 FilteredChoices.Insert(0, Choice);
 
             OnPropertyChanged(nameof(SearchSummary));
+            OnPropertyChanged(nameof(CanLoadMoreSearchResults));
+        }
+
+        private void EnsureChoicesLoaded()
+        {
+            var loader = _choiceLoader;
+            if (loader == null)
+                return;
+
+            // Resolve before clearing the loader so a malformed source can be retried instead of
+            // leaving the row claiming that an empty set loaded successfully. The resolver itself
+            // is cached by the editor service; this row pays only for its wrappers and only after
+            // explicit interaction.
+            var loaded = BehaviorChoiceViewModel.From(loader());
+            _choiceLoader = null;
+            Choices = loaded;
+            OnPropertyChanged(nameof(AreChoicesLoaded));
+            Reload();
+        }
+
+        private string StoredChoiceDisplay()
+        {
+            if (!IsChoice)
+                return "Nothing chosen";
+
+            if (Definition.FieldType is GffFieldType.CExoString or GffFieldType.ResRef)
+            {
+                var text = Store.GetString(Definition.Storage, Definition.Name);
+                return string.IsNullOrWhiteSpace(text) ? "Nothing chosen" : text;
+            }
+
+            var value = Store.GetInteger(Definition.Storage, Definition.Name);
+            return value?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "Nothing chosen";
+        }
+
+        private bool HasStoredChoiceValue()
+        {
+            if (Definition.FieldType is GffFieldType.CExoString or GffFieldType.ResRef)
+                return !string.IsNullOrWhiteSpace(Store.GetString(Definition.Storage, Definition.Name));
+
+            return Store.GetInteger(Definition.Storage, Definition.Name).HasValue;
+        }
+
+        private void NotifyChoicePresentationChanged()
+        {
+            OnPropertyChanged(nameof(AreChoicesLoaded));
+            OnPropertyChanged(nameof(IsGallery));
+            OnPropertyChanged(nameof(IsInlineGallery));
+            OnPropertyChanged(nameof(IsPopupGallery));
+            OnPropertyChanged(nameof(IsSearchableChoice));
+            OnPropertyChanged(nameof(IsPlainChoice));
+            OnPropertyChanged(nameof(SearchSummary));
+            OnPropertyChanged(nameof(CanLoadMoreSearchResults));
         }
 
         /// <summary>Republishes the properties that depend on the stored value rather than on it alone.</summary>

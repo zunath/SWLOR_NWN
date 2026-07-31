@@ -922,18 +922,8 @@ namespace SWLOR.Toolset.Editors
             if (_appearances == null)
                 return null;
 
-            var options = _creatureAppearanceOptions ??= _appearances.GetAll()
-                .Select(row => new Appearance.AppearanceOption(
-                    row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                    row.DisplayName,
-                    // The label rather than the model column: half of appearance.2da names a
-                    // phenotype there, and "H" tells a builder nothing about what they picked.
-                    $"row {row.Id} \u00b7 {row.Label}",
-                    CreatureAppearanceId: row.Id))
-                .ToList();
-
             return new Appearance.AppearanceGallerySectionViewModel(
-                options,
+                CreatureAppearanceOptions(),
                 _thumbnails,
                 () => (context.Document.Root.GetOrNull("Appearance_Type")?.GetInteger() ?? 0)
                     .ToString(System.Globalization.CultureInfo.InvariantCulture),
@@ -1249,17 +1239,15 @@ namespace SWLOR.Toolset.Editors
                 _previewRenderer != null
                     ? creature => _previewRenderer.BuildModel(ResourceType.Utc, creature)
                     : null,
-                id =>
-                {
-                    if (_appearances == null)
-                        return null;
-                    return _appearances.GetAll().FirstOrDefault(row => row.Id == id);
-                },
+                CreatureAppearance,
                 ArmorPartModels(),
-                CreatureEquipmentChoices(),
+                CreatureEquipmentChoices,
                 ChoicePreviews(),
                 PreviewCreatureAudio,
-                OpenLootDefinition);
+                OpenLootDefinition,
+                _appearances == null ? null : CreatureAppearanceOptions(),
+                _thumbnails,
+                ArmorDyeSwatches());
             editor.Closed += closed => _openCreatureEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -1983,7 +1971,7 @@ namespace SWLOR.Toolset.Editors
                     .Where(value => value != SWLOR.Game.Server.Enumeration.GuildType.Invalid)
                     .Select(value => new BehaviorChoice(
                         (int)value,
-                        $"{Humanize(value.ToString())} ({(int)value})"))
+                        Humanize(value.ToString())))
                     .ToList();
             }
             if (key == Domain.Editors.Creatures.CreatureChoiceKeys.GuildStores)
@@ -2106,6 +2094,49 @@ namespace SWLOR.Toolset.Editors
             _creatureEquipmentChoices = result
                 .OrderBy(choice => choice.Display, StringComparer.OrdinalIgnoreCase).ToList();
             return _creatureEquipmentChoices;
+        }
+
+        /// <summary>
+        /// The shared creature appearance option set used by both generic UTC fields and the
+        /// specialized creature editor. The projection is cached once per game-data generation.
+        /// </summary>
+        private IReadOnlyList<Appearance.AppearanceOption> CreatureAppearanceOptions()
+        {
+            if (_creatureAppearanceOptions != null)
+                return _creatureAppearanceOptions;
+            if (_appearances == null)
+                return Array.Empty<Appearance.AppearanceOption>();
+
+            _creatureAppearanceOptions = _appearances.GetAll()
+                .Select(row => new Appearance.AppearanceOption(
+                    row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    row.DisplayName,
+                    // The label rather than the model column: half of appearance.2da names a
+                    // phenotype there, and "H" tells a builder nothing about what they picked.
+                    $"row {row.Id} \u00b7 {row.Label}",
+                    CreatureAppearanceId: row.Id))
+                .ToList();
+            return _creatureAppearanceOptions;
+        }
+
+        /// <summary>
+        /// Looks up a selected appearance through AppearanceService's cached ID index. Body-part
+        /// bindings ask for this repeatedly, so scanning the entire 2DA on every property read made
+        /// the Appearance tab cost proportional to the table size.
+        /// </summary>
+        private AppearanceRow? CreatureAppearance(int id)
+        {
+            if (_appearances == null)
+                return null;
+
+            try
+            {
+                return _appearances.Get(id);
+            }
+            catch (KeyNotFoundException)
+            {
+                return null;
+            }
         }
 
         private static string Humanize(string value) =>

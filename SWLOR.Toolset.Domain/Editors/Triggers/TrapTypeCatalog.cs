@@ -1,5 +1,6 @@
 using System.Text;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
+using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 
 namespace SWLOR.Toolset.Domain.Editors.Triggers
@@ -22,23 +23,14 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             for (var row = 0; row < table.RowCount; row++)
             {
                 var label = table.GetString(row, LabelColumn);
-                if (string.IsNullOrWhiteSpace(label) || IsPlaceholder(label))
+                if (!TwoDaChoicePolicy.IsSelectableLabel(label))
                     continue;
 
-                traps.Add(new BehaviorChoice(row, Humanise(label)));
+                traps.Add(new BehaviorChoice(row, Humanise(label!)));
             }
 
             return traps;
         }
-
-        /// <summary>
-        /// Whether a row is padding rather than a trap. More than half of traps.2da is: 52 rows
-        /// labelled <c>Bio_reserved</c> and 20 labelled <c>USER</c>, all of them holding a row index
-        /// open and none of them a kind a trigger can be. Offering them buries the 57 real traps.
-        /// </summary>
-        private static bool IsPlaceholder(string label) =>
-            label.StartsWith("Bio_reserved", StringComparison.OrdinalIgnoreCase) ||
-            label.Equals("USER", StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Splits the 2DA's run-together labels: "MinorSpike" reads as "Minor Spike". They are

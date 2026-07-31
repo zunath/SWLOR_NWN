@@ -139,6 +139,47 @@ namespace SWLOR.Toolset.Tests
             sink.Errors.Should().BeEmpty();
         }
 
+        [AvaloniaTest]
+        public void SearchableRowsRealizeOnlyTheVisiblePartOfTheirFirstPage()
+        {
+            var previous = Logger.Sink;
+            var sink = new CountingSink();
+            Logger.Sink = sink;
+            var row = new WaypointRowViewModel(
+                new BehaviorFieldDefinition
+                {
+                    Label = "Dialog", Name = "Conversation", Kind = BehaviorFieldKind.Choice,
+                    FieldType = Domain.Gff.GffFieldType.ResRef, IsSearchable = true
+                },
+                new BehaviorValueStore(Struct("UTW ")),
+                Accept,
+                Enumerable.Range(0, 500)
+                    .Select(index => new BehaviorChoice($"dlg_{index}", $"Dialog {index}"))
+                    .ToList());
+            row.OpenSearchCommand.Execute(null);
+            var view = new BehaviorRowView { DataContext = row };
+            var window = new Window { Width = 800, Height = 400, Content = view };
+
+            try
+            {
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+
+                row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
+                view.GetVisualDescendants().OfType<ListBoxItem>().Should().HaveCountLessThan(
+                    row.FilteredChoices.Count,
+                    "the list must virtualize its page instead of constructing every result control");
+            }
+            finally
+            {
+                window.Close();
+                Dispatcher.UIThread.RunJobs();
+                Logger.Sink = previous;
+            }
+
+            sink.Errors.Should().BeEmpty();
+        }
+
         private static WaypointRowViewModel PictureRow(int count) =>
             new(
                 new BehaviorFieldDefinition

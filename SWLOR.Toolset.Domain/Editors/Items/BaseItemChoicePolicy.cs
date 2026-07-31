@@ -1,3 +1,5 @@
+using SWLOR.Toolset.Domain.GameData.Lookups;
+
 namespace SWLOR.Toolset.Domain.Editors.Items
 {
     /// <summary>
@@ -15,14 +17,8 @@ namespace SWLOR.Toolset.Domain.Editors.Items
 
         private static bool IsDisplayOffered(string? display)
         {
-            if (string.IsNullOrWhiteSpace(display))
-                return false;
-
-            var trimmed = display.Trim();
-            return !trimmed.Contains("deleted", StringComparison.OrdinalIgnoreCase) &&
-                   !trimmed.Contains("reserved", StringComparison.OrdinalIgnoreCase) &&
-                   !string.Equals(trimmed, "padding", StringComparison.OrdinalIgnoreCase) &&
-                   !string.Equals(trimmed, BadStrrefSentinel, StringComparison.OrdinalIgnoreCase);
+            return TwoDaChoicePolicy.IsSelectableLabel(display) &&
+                   !string.Equals(display!.Trim(), BadStrrefSentinel, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>True when this row belongs in the Base Type list.</summary>
@@ -33,17 +29,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
         /// </param>
         public static bool IsOffered(string? label, string? itemClass, string? display = null)
         {
-            if (string.IsNullOrWhiteSpace(label))
-                return false;
-
-            var trimmed = label.Trim();
-            if (trimmed.Contains("deleted", StringComparison.OrdinalIgnoreCase))
-                return false;
-
-            if (trimmed.Contains("reserved", StringComparison.OrdinalIgnoreCase))
-                return false;
-
-            if (string.Equals(trimmed, "padding", StringComparison.OrdinalIgnoreCase))
+            if (!TwoDaChoicePolicy.IsSelectableLabel(label))
                 return false;
 
             if (string.IsNullOrWhiteSpace(itemClass))

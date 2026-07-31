@@ -20,19 +20,25 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
             Field("ResRef", "TemplateResRef", BehaviorFieldKind.Text, GffFieldType.ResRef,
                 maxLength: MaxResRefLength, readOnly: true),
             Choice("Category", "PaletteID", GffFieldType.Byte, CreatureChoiceKeys.PaletteCategories, true),
-            Field("Description", "Description", BehaviorFieldKind.Paragraph, GffFieldType.CExoLocString),
-            Choice("Race", "Race", GffFieldType.Byte, CreatureChoiceKeys.Races, true),
-            Choice("Faction", "FactionID", GffFieldType.Word, CreatureChoiceKeys.Factions, true),
-            Choice("Dialog", "Conversation", GffFieldType.ResRef, CreatureChoiceKeys.Dialogs, true),
+            Field("Description", "Description", BehaviorFieldKind.Paragraph, GffFieldType.CExoLocString)
+        };
+
+        public static IReadOnlyList<BehaviorFieldDefinition> CombatRules { get; } = new[]
+        {
             Field("Plot", "Plot", BehaviorFieldKind.Check, GffFieldType.Byte),
             Field("Immortal", "IsImmortal", BehaviorFieldKind.Check, GffFieldType.Byte),
             Field("No Permanent Death", "NoPermDeath", BehaviorFieldKind.Check, GffFieldType.Byte),
             Field("Disarmable", "Disarmable", BehaviorFieldKind.Check, GffFieldType.Byte)
         };
 
+        public static IReadOnlyList<BehaviorFieldDefinition> Ai { get; } = new[]
+        {
+            Choice("Faction", "FactionID", GffFieldType.Word, CreatureChoiceKeys.Factions)
+        };
+
         public static IReadOnlyList<BehaviorFieldDefinition> Appearance { get; } = new[]
         {
-            Choice("Model", "Appearance_Type", GffFieldType.Word, CreatureChoiceKeys.Appearances, true),
+            Choice("Race", "Race", GffFieldType.Byte, CreatureChoiceKeys.Races, true),
             Choice("Portrait", "PortraitId", GffFieldType.Word, CreatureChoiceKeys.Portraits),
             Choice("Gender", "Gender", GffFieldType.Byte, CreatureChoiceKeys.Genders),
             Choice("Phenotype", "Phenotype", GffFieldType.Int, CreatureChoiceKeys.Phenotypes),
@@ -48,6 +54,8 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
 
         public static IReadOnlyList<BehaviorFieldDefinition> DialogRole { get; } = new[]
         {
+            Choice("Conversation Blueprint", "Conversation", GffFieldType.ResRef,
+                CreatureChoiceKeys.Dialogs, true),
             Choice("Scripted Dialog", "CONVERSATION", GffFieldType.CExoString,
                 CreatureChoiceKeys.DialogDefinitions, true, local: true)
         };
@@ -80,14 +88,6 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
                 CreatureChoiceKeys.VisualEffects, true, local: true),
             Field("Statue", "PARALYZE", BehaviorFieldKind.Check, GffFieldType.Int, local: true),
             Field("Never Attacks", "DAZE", BehaviorFieldKind.Check, GffFieldType.Int, local: true)
-        };
-
-        public static IReadOnlyList<BehaviorFieldDefinition> Ai { get; } = new[]
-        {
-            Choice("AI Profile", "AI_PROFILE", GffFieldType.CExoString,
-                CreatureChoiceKeys.AiProfiles, local: true),
-            Field("Random Walk", "AI_FLAGS", BehaviorFieldKind.Check, GffFieldType.Int, local: true,
-                note: "Allows roaming between decisions."),
         };
 
         private static BehaviorFieldDefinition Field(

@@ -7,6 +7,7 @@ using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Toolset.Editors.Appearance;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
@@ -44,10 +45,13 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<JsonGffStruct, RenderModel?>? resolveModel,
             Func<int, AppearanceRow?> appearance,
             Editors.Items.ArmorPartCatalog? armorParts,
-            IReadOnlyList<CreatureEquipmentChoice>? equipmentChoices,
+            Func<IReadOnlyList<CreatureEquipmentChoice>>? equipmentChoices,
             Editors.Behaviors.ChoicePreviewService? choicePreviews,
             Func<BehaviorChoice, string?>? previewAudio,
-            Action<string>? openLootDefinition)
+            Action<string>? openLootDefinition,
+            IReadOnlyList<AppearanceOption>? appearanceOptions,
+            ThumbnailService? appearanceThumbnails,
+            Editors.Items.ArmorDyeSwatchService? colorPalettes = null)
         {
             _log = log;
             _prompts = prompts;
@@ -68,7 +72,10 @@ namespace SWLOR.Toolset.Editors.Creatures
                 equipmentChoices,
                 choicePreviews,
                 previewAudio,
-                openLootDefinition);
+                openLootDefinition,
+                appearanceOptions,
+                appearanceThumbnails,
+                colorPalettes);
             UpdateTitle();
         }
 

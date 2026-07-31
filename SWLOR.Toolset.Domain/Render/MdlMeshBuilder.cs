@@ -90,11 +90,19 @@ namespace SWLOR.Toolset.Domain.Render
         public IReadOnlyDictionary<string, IReadOnlyList<Matrix4x4>> AnimationFrames { get; init; } =
             new Dictionary<string, IReadOnlyList<Matrix4x4>>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>Model-space skinned positions for each frame of a named preview animation.</summary>
+        public IReadOnlyDictionary<string, IReadOnlyList<float[]>> AnimationPositions { get; init; } =
+            new Dictionary<string, IReadOnlyList<float[]>>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>Model-space skinned normals parallel to <see cref="AnimationPositions"/>.</summary>
+        public IReadOnlyDictionary<string, IReadOnlyList<float[]>> AnimationNormals { get; init; } =
+            new Dictionary<string, IReadOnlyList<float[]>>(StringComparer.OrdinalIgnoreCase);
+
         public int VertexCount => Positions.Length / 3;
         public int TriangleCount => Indices.Length / 3;
     }
 
-    /// <summary>A placeable preview animation exposed to the state picker and viewport.</summary>
+    /// <summary>A named preview animation exposed to an editor picker and the viewport.</summary>
     public sealed class RenderAnimation
     {
         public string Name { get; init; } = string.Empty;
@@ -217,7 +225,36 @@ namespace SWLOR.Toolset.Domain.Render
                 poseFrames,
                 includePlaceableMetadata: false,
                 skinSurfaceClearance: skinSurfaceClearance,
-                skinSurfaceClearanceExcludedBones: excludedBones);
+                skinSurfaceClearanceExcludedBones: excludedBones,
+                sampledAnimations: null);
+        }
+
+        /// <summary>Builds creature geometry with a bounded set of sampled supermodel animations.</summary>
+        public static RenderModel BuildAnimatedPreview(
+            MdlModel model,
+            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
+            IReadOnlyList<MdlAnimationPose.SampledAnimation> animations,
+            float skinSurfaceClearance = 0f,
+            IReadOnlySet<string>? skinSurfaceClearanceExcludedBones = null)
+        {
+            ArgumentNullException.ThrowIfNull(model);
+            ArgumentNullException.ThrowIfNull(animations);
+            if (!float.IsFinite(skinSurfaceClearance) || skinSurfaceClearance < 0f)
+                throw new ArgumentOutOfRangeException(nameof(skinSurfaceClearance));
+
+            // Named clips own playback. Retain only the settled idle pose for static rendering and
+            // bounds instead of uploading the same skinned idle frames a second time.
+            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? restingPoseFrames = poseFrames;
+            if (poseFrames is { Count: > 1 })
+                restingPoseFrames = [poseFrames[^1]];
+
+            return BuildInternal(
+                model,
+                restingPoseFrames,
+                includePlaceableMetadata: false,
+                skinSurfaceClearance,
+                skinSurfaceClearanceExcludedBones?.ToHashSet(StringComparer.OrdinalIgnoreCase),
+                animations);
         }
 
         /// <summary>
@@ -232,7 +269,8 @@ namespace SWLOR.Toolset.Domain.Render
                 poseFrames: null,
                 includePlaceableMetadata: true,
                 skinSurfaceClearance: 0f,
-                skinSurfaceClearanceExcludedBones: null);
+                skinSurfaceClearanceExcludedBones: null,
+                sampledAnimations: null);
         }
 
         /// <summary>
@@ -292,12 +330,18 @@ namespace SWLOR.Toolset.Domain.Render
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
             bool includePlaceableMetadata,
             float skinSurfaceClearance,
-            IReadOnlySet<string>? skinSurfaceClearanceExcludedBones)
+            IReadOnlySet<string>? skinSurfaceClearanceExcludedBones,
+            IReadOnlyList<MdlAnimationPose.SampledAnimation>? sampledAnimations)
         {
-            var animations = includePlaceableMetadata
+            var sourceAnimations = includePlaceableMetadata
                 ? MdlAnimationPose.PlaceableAnimations(model)
                 : Array.Empty<MdlAnimation>();
-            var animationSamples = SampleAnimations(animations);
+            var animationSamples = sampledAnimations == null
+                ? SampleAnimations(sourceAnimations)
+                : sampledAnimations.ToDictionary(
+                    animation => animation.Name,
+                    animation => animation.Frames,
+                    StringComparer.OrdinalIgnoreCase);
             var emitterNodes = includePlaceableMetadata
                 ? EnumerateNodes(model.GeometryRoot).OfType<MdlEmitterNode>().Where(IsPersistentEmitter).ToList()
                 : new List<MdlEmitterNode>();
@@ -325,16 +369,19 @@ namespace SWLOR.Toolset.Domain.Render
             var renderEmitters = includePlaceableMetadata
                 ? emitterNodes.Select(node => BuildEmitter(node, animationSamples)).ToList()
                 : new List<RenderEmitter>();
-            var renderAnimations = includePlaceableMetadata
-                ? BuildAnimations(animations, renderMeshes, renderEmitters)
-                : new List<RenderAnimation>();
+            var descriptors = sampledAnimations != null
+                ? sampledAnimations.Select(animation =>
+                    new AnimationDescriptor(animation.Name, animation.Length, false)).ToList()
+                : sourceAnimations.Select(animation =>
+                    new AnimationDescriptor(animation.Name, animation.Length, StateShowsEmitters(animation.Name))).ToList();
+            var renderAnimations = BuildAnimations(descriptors, renderMeshes, renderEmitters);
 
             string? defaultAnimationName = null;
             if (includePlaceableMetadata)
             {
                 defaultAnimationName = MdlAnimationPose.FindPlaceableDefault(model)?.Name;
 
-                if (animations.Count == 0 && renderEmitters.Count > 0)
+                if (sourceAnimations.Count == 0 && renderEmitters.Count > 0)
                 {
                     const string syntheticDefault = "default";
                     renderAnimations.Add(new RenderAnimation
@@ -346,6 +393,10 @@ namespace SWLOR.Toolset.Domain.Render
                     });
                     defaultAnimationName = syntheticDefault;
                 }
+            }
+            else if (sampledAnimations is { Count: > 0 })
+            {
+                defaultAnimationName = sampledAnimations[0].Name;
             }
 
             return new RenderModel
@@ -373,7 +424,8 @@ namespace SWLOR.Toolset.Domain.Render
             var skinnedNormals = Array.Empty<Vector3>();
             IReadOnlyList<float[]> skinnedPosePositions = Array.Empty<float[]>();
             IReadOnlyList<float[]> skinnedPoseNormals = Array.Empty<float[]>();
-            var skinned = mesh is MdlSkinmeshNode skin &&
+            var skin = mesh as MdlSkinmeshNode;
+            var skinned = skin != null &&
                           TrySkinPoses(
                               skin,
                               poseFrames,
@@ -424,11 +476,28 @@ namespace SWLOR.Toolset.Domain.Render
                     : poseFrames.Select(pose => ComposeNodeTransform(mesh, pose)).ToArray();
             var animationFrames = new Dictionary<string, IReadOnlyList<Matrix4x4>>(
                 StringComparer.OrdinalIgnoreCase);
+            var animationPositions = new Dictionary<string, IReadOnlyList<float[]>>(
+                StringComparer.OrdinalIgnoreCase);
+            var animationNormals = new Dictionary<string, IReadOnlyList<float[]>>(
+                StringComparer.OrdinalIgnoreCase);
             foreach (var (name, samples) in animationSamples)
             {
                 animationFrames[name] = skinned
                     ? Enumerable.Repeat(Matrix4x4.Identity, samples.Count).ToArray()
                     : samples.Select(pose => ComposeNodeTransform(mesh, pose)).ToArray();
+                if (skinned && TrySkinPoses(
+                        skin!,
+                        samples,
+                        skinSurfaceClearance,
+                        skinSurfaceClearanceExcludedBones,
+                        out _,
+                        out _,
+                        out var positionFrames,
+                        out var normalFrames))
+                {
+                    animationPositions[name] = positionFrames;
+                    animationNormals[name] = normalFrames;
+                }
             }
 
             return new RenderMesh
@@ -445,6 +514,8 @@ namespace SWLOR.Toolset.Domain.Render
                 PosePositions = skinnedPosePositions,
                 PoseNormals = skinnedPoseNormals,
                 AnimationFrames = animationFrames,
+                AnimationPositions = animationPositions,
+                AnimationNormals = animationNormals,
                 TileFade = mesh.TileFade
             };
         }
@@ -798,18 +869,22 @@ namespace SWLOR.Toolset.Domain.Render
             return result;
         }
 
+        private readonly record struct AnimationDescriptor(string Name, float Length, bool ShowsEmitters);
+
         private static List<RenderAnimation> BuildAnimations(
-            IReadOnlyList<MdlAnimation> source,
+            IReadOnlyList<AnimationDescriptor> source,
             IReadOnlyList<RenderMesh> meshes,
             IReadOnlyList<RenderEmitter> emitters)
         {
             var result = new List<RenderAnimation>(source.Count);
             foreach (var animation in source)
             {
-                var showsEmitters = emitters.Count > 0 && StateShowsEmitters(animation.Name);
+                var showsEmitters = emitters.Count > 0 && animation.ShowsEmitters;
                 var movesGeometry = meshes.Any(mesh =>
                     mesh.AnimationFrames.TryGetValue(animation.Name, out var frames) &&
-                    MatricesDiffer(frames));
+                    MatricesDiffer(frames) ||
+                    mesh.AnimationPositions.TryGetValue(animation.Name, out var positions) &&
+                    ArraysDiffer(positions));
                 var movesEmitters = emitters.Any(emitter =>
                     emitter.AnimationFrames.TryGetValue(animation.Name, out var frames) &&
                     MatricesDiffer(frames));
@@ -825,6 +900,14 @@ namespace SWLOR.Toolset.Domain.Render
             }
 
             return result;
+        }
+
+        private static bool ArraysDiffer(IReadOnlyList<float[]> frames)
+        {
+            if (frames.Count < 2)
+                return false;
+            var first = frames[0];
+            return frames.Skip(1).Any(frame => !frame.AsSpan().SequenceEqual(first));
         }
 
         private static bool MatricesDiffer(IReadOnlyList<Matrix4x4> frames)

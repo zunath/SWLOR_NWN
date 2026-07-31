@@ -38,6 +38,11 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         private static readonly string[] PlaceableDefaultNames = { "default", "on" };
 
+        private static readonly string[] AttackNames =
+        {
+            "1hslashl", "nwslashl", "2hslashl", "plslashl", "2wslashl", "bowshot", "xbowshot"
+        };
+
         /// <summary>
         /// The animation to stand a model in, or null when it carries none. Prefers a plain idle by
         /// name, then anything whose name begins "pause", then gives up rather than guessing - an
@@ -155,6 +160,12 @@ namespace SWLOR.Toolset.Domain.Render
         /// <summary>One sampled frame of any named animation.</summary>
         public readonly record struct AnimationFrame(IReadOnlyDictionary<string, PosedNode> Pose, float Seconds);
 
+        /// <summary>A named creature animation sampled into the bounded pose frames the renderer consumes.</summary>
+        public readonly record struct SampledAnimation(
+            string Name,
+            float Length,
+            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>> Frames);
+
         /// <summary>
         /// Samples an animation from beginning to end. The frame count is bounded because placeable
         /// models are retained by the shared render cache, while the matrices are interpolated
@@ -186,6 +197,45 @@ namespace SWLOR.Toolset.Domain.Render
             }
 
             return frames;
+        }
+
+        /// <summary>
+        /// Resolves the builder's Idle, Walk, and Attack preview clips through a creature's
+        /// supermodel chain, in that order, and samples only those three clips.
+        /// </summary>
+        public static IReadOnlyList<SampledAnimation> SampleCreaturePreviewAnimations(
+            MdlModel? model,
+            Func<string, MdlModel?> loadSuperModel,
+            IReadOnlyDictionary<string, MdlNode>? bindPose = null,
+            int framesPerSecond = 20,
+            int maxFrames = 60)
+        {
+            ArgumentNullException.ThrowIfNull(loadSuperModel);
+            if (model == null)
+                return Array.Empty<SampledAnimation>();
+
+            bindPose ??= BindPose(model);
+            var clips = new List<SampledAnimation>(3);
+            foreach (var selector in new Func<MdlModel?, MdlAnimation?>[] { FindIdle, FindWalk, FindAttack })
+            {
+                var (animation, owner) = FindAnimationInChain(model, loadSuperModel, selector);
+                if (animation == null || owner == null ||
+                    clips.Any(clip => string.Equals(clip.Name, animation.Name, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
+                var inheritedScale = ReferenceEquals(owner, model) ? 1f : AnimationScale(model);
+                var frames = SampleFrames(animation, framesPerSecond, maxFrames, bindPose)
+                    .Select(frame => (IReadOnlyDictionary<string, PosedNode>)ScaleTranslations(
+                        frame.Pose,
+                        inheritedScale))
+                    .ToList();
+                if (frames.Count > 0)
+                    clips.Add(new SampledAnimation(animation.Name, animation.Length, frames));
+            }
+
+            return clips;
         }
 
         /// <summary>
@@ -250,15 +300,22 @@ namespace SWLOR.Toolset.Domain.Render
         /// <summary>The first idle in the supermodel chain that actually poses something, with the model it came from.</summary>
         private static (MdlAnimation? Animation, MdlModel? Owner) FindIdleInChain(
             MdlModel? model, Func<string, MdlModel?> loadSuperModel, int maxDepth = 8)
+            => FindAnimationInChain(model, loadSuperModel, FindIdle, maxDepth);
+
+        private static (MdlAnimation? Animation, MdlModel? Owner) FindAnimationInChain(
+            MdlModel? model,
+            Func<string, MdlModel?> loadSuperModel,
+            Func<MdlModel?, MdlAnimation?> select,
+            int maxDepth = 8)
         {
             var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var current = model;
 
             for (var depth = 0; current != null && depth < maxDepth; depth++)
             {
-                var idle = FindIdle(current);
-                if (idle != null && Sample(idle, 0f).Count > 0)
-                    return (idle, current);
+                var animation = select(current);
+                if (animation != null && Sample(animation, 0f).Count > 0)
+                    return (animation, current);
 
                 var superModel = current.SuperModel;
                 if (string.IsNullOrWhiteSpace(superModel) ||
@@ -272,6 +329,38 @@ namespace SWLOR.Toolset.Domain.Render
             }
 
             return (null, null);
+        }
+
+        private static MdlAnimation? FindWalk(MdlModel? model)
+        {
+            if (model == null)
+                return null;
+            return model.Animations.FirstOrDefault(animation =>
+                       string.Equals(animation.Name, "walk", StringComparison.OrdinalIgnoreCase)) ??
+                   model.Animations.FirstOrDefault(animation =>
+                       animation.Name.StartsWith("walk", StringComparison.OrdinalIgnoreCase) &&
+                       !animation.Name.Contains("dead", StringComparison.OrdinalIgnoreCase) &&
+                       !animation.Name.Contains("inj", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static MdlAnimation? FindAttack(MdlModel? model)
+        {
+            if (model == null)
+                return null;
+            foreach (var name in AttackNames)
+            {
+                var exact = model.Animations.FirstOrDefault(animation =>
+                    string.Equals(animation.Name, name, StringComparison.OrdinalIgnoreCase));
+                if (exact != null)
+                    return exact;
+            }
+
+            return model.Animations.FirstOrDefault(animation =>
+                animation.Name.Contains("attack", StringComparison.OrdinalIgnoreCase) ||
+                animation.Name.Contains("slash", StringComparison.OrdinalIgnoreCase) ||
+                animation.Name.Contains("stab", StringComparison.OrdinalIgnoreCase) ||
+                animation.Name.Contains("kick", StringComparison.OrdinalIgnoreCase) ||
+                animation.Name.EndsWith("shot", StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>

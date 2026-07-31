@@ -157,6 +157,71 @@ namespace SWLOR.Toolset.Tests
                 2.004f, 0f, 1f);
         }
 
+        [Test]
+        public void NormalLessGarmentOrientsMixedFaceWindingAwayFromTheWearer()
+        {
+            var root = new MdlNode { Name = "root" };
+            var bone = new MdlNode { Name = "torso_g", Parent = root };
+            root.Children.Add(bone);
+            var skin = new MdlSkinmeshNode
+            {
+                Name = "mixed-winding-robe",
+                Parent = root,
+                Render = true,
+                Bitmap = "robe",
+                Vertices =
+                [
+                    new Vector3(2f, -1f, 0f),
+                    new Vector3(2f, -1f, 1f),
+                    new Vector3(2f, 1f, 0f),
+                    new Vector3(-2f, -1f, 0f),
+                    new Vector3(-2f, -1f, 1f),
+                    new Vector3(-2f, 1f, 0f)
+                ],
+                Normals = Array.Empty<Vector3>(),
+                TextureCoordinates =
+                [
+                    Vector2.Zero, Vector2.UnitX, Vector2.UnitY,
+                    Vector2.Zero, Vector2.UnitX, Vector2.UnitY
+                ],
+                VertexInfluences =
+                [
+                    [new MdlSkinInfluence("torso_g", 1f)],
+                    [new MdlSkinInfluence("torso_g", 1f)],
+                    [new MdlSkinInfluence("torso_g", 1f)],
+                    [new MdlSkinInfluence("torso_g", 1f)],
+                    [new MdlSkinInfluence("torso_g", 1f)],
+                    [new MdlSkinInfluence("torso_g", 1f)]
+                ],
+                Faces =
+                [
+                    new MdlFace { VertexIndex0 = 0, VertexIndex1 = 1, VertexIndex2 = 2 },
+                    new MdlFace { VertexIndex0 = 3, VertexIndex1 = 4, VertexIndex2 = 5 }
+                ]
+            };
+            root.Children.Add(skin);
+
+            var rendered = MdlMeshBuilder.Build(
+                new MdlModel { Name = "coat", GeometryRoot = root },
+                skinSurfaceClearance: 0.1f);
+
+            var mesh = rendered.Meshes.Should().ContainSingle().Subject;
+            mesh.Normals.Should().Equal(
+                1f, 0f, 0f,
+                1f, 0f, 0f,
+                1f, 0f, 0f,
+                -1f, 0f, 0f,
+                -1f, 0f, 0f,
+                -1f, 0f, 0f);
+            mesh.Positions.Should().Equal(
+                2.1f, -1f, 0f,
+                2.1f, -1f, 1f,
+                2.1f, 1f, 0f,
+                -2.1f, -1f, 0f,
+                -2.1f, -1f, 1f,
+                -2.1f, 1f, 0f);
+        }
+
         private static MdlSkinmeshNode TriangleSkin(MdlNode parent, bool withNormals = true) =>
             new()
             {

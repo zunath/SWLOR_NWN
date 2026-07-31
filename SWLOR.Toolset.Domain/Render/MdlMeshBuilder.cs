@@ -603,11 +603,33 @@ namespace SWLOR.Toolset.Domain.Render
         /// <summary>
         /// Generates smooth normals from the deformed triangles when an ASCII skinmesh omits them.
         /// Aurora accepts those robe models and derives their normals at load; leaving the array
-        /// empty made both lighting and garment-shell clearance silently unavailable.
+        /// empty made both lighting and garment-shell clearance silently unavailable. Some Aurora
+        /// garments mix triangle winding, so orient each vertical-shell face away from the model's
+        /// horizontal center before smoothing. Faces whose normals are perpendicular to that radial
+        /// direction retain their authored winding so collars, hems, and other horizontal surfaces
+        /// are not forced upward or downward.
         /// </summary>
         private static Vector3[] GenerateVertexNormals(MdlTrimeshNode mesh, IReadOnlyList<Vector3> positions)
         {
             var normals = new Vector3[positions.Count];
+            if (positions.Count == 0)
+                return normals;
+
+            var minimumX = positions[0].X;
+            var maximumX = positions[0].X;
+            var minimumY = positions[0].Y;
+            var maximumY = positions[0].Y;
+            for (var index = 1; index < positions.Count; index++)
+            {
+                minimumX = MathF.Min(minimumX, positions[index].X);
+                maximumX = MathF.Max(maximumX, positions[index].X);
+                minimumY = MathF.Min(minimumY, positions[index].Y);
+                maximumY = MathF.Max(maximumY, positions[index].Y);
+            }
+
+            var horizontalCenter = new Vector2(
+                (minimumX + maximumX) * 0.5f,
+                (minimumY + maximumY) * 0.5f);
             foreach (var face in mesh.Faces)
             {
                 if (face.VertexIndex0 >= positions.Count ||
@@ -623,6 +645,17 @@ namespace SWLOR.Toolset.Domain.Render
                 var faceNormal = Vector3.Cross(b - a, c - a);
                 if (!IsFinite(faceNormal) || faceNormal.LengthSquared() <= 0f)
                     continue;
+
+                var faceCenter = (a + b + c) / 3f;
+                var radialDirection = new Vector3(
+                    faceCenter.X - horizontalCenter.X,
+                    faceCenter.Y - horizontalCenter.Y,
+                    0f);
+                if (radialDirection.LengthSquared() > 0f &&
+                    Vector3.Dot(faceNormal, radialDirection) < 0f)
+                {
+                    faceNormal = -faceNormal;
+                }
 
                 normals[face.VertexIndex0] += faceNormal;
                 normals[face.VertexIndex1] += faceNormal;

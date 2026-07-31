@@ -218,6 +218,20 @@ namespace SWLOR.Toolset.Tests.Items
             renderedRobe.PoseNormals.Should().OnlyContain(frame =>
                     frame.Length == renderedRobe.Positions.Length,
                 "Aurora generates normals for a robe even when its ASCII skinmesh omits them");
+            var diagnosticPositions = layeredWithoutClearance.PosePositions[0];
+            var diagnosticNormals = renderedRobe.PoseNormals[0];
+            var xCoordinates = diagnosticPositions.Where((_, index) => index % 3 == 0);
+            var yCoordinates = diagnosticPositions.Where((_, index) => index % 3 == 1);
+            var centerX = (xCoordinates.Min() + xCoordinates.Max()) * 0.5f;
+            var centerY = (yCoordinates.Min() + yCoordinates.Max()) * 0.5f;
+            var radialDots = Enumerable.Range(0, diagnosticPositions.Length / 3)
+                .Select(index =>
+                    diagnosticNormals[index * 3] * (diagnosticPositions[index * 3] - centerX) +
+                    diagnosticNormals[index * 3 + 1] * (diagnosticPositions[index * 3 + 1] - centerY))
+                .ToArray();
+            radialDots.Should().OnlyContain(dot => dot >= -0.0001f,
+                "generated normals must move the robe away from the wearer even when its source " +
+                "triangles use mixed winding");
             renderedRobe.PosePositions[0].Should().NotEqual(
                 layeredWithoutClearance.PosePositions[0],
                 "the generated normals must actually move the equipped shell away from the retained chest");

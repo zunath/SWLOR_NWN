@@ -131,9 +131,13 @@ namespace SWLOR.Toolset.Tests
 
             var slider = view.FindControl<Slider>("XpScaleSlider")!;
             var numeric = view.FindControl<NumericUpDown>("XpScaleNumeric")!;
+            var startingYear = view.FindControl<NumericUpDown>("StartingYearNumeric")!;
             var numericInputs = view.GetVisualDescendants().OfType<NumericUpDown>().ToArray();
             numericInputs.Should().HaveCount(8);
-            numericInputs.Should().OnlyContain(input => input.Bounds.Width <= 110);
+            numericInputs.Should().OnlyContain(input => input.Bounds.Width <= 130);
+            startingYear.Bounds.Width.Should().BeApproximately(130, 0.1);
+            startingYear.GetVisualDescendants().OfType<TextBox>().Single().Bounds.Width
+                .Should().BeGreaterThan(50);
             numeric.Bounds.Height.Should().BeApproximately(numericInputs[0].Bounds.Height, 0.1);
             slider.Minimum.Should().Be(0);
             slider.Maximum.Should().Be(200);

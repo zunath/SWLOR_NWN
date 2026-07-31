@@ -81,31 +81,32 @@
                       RowSpacing="8" ColumnSpacing="12">
                   <TextBlock Grid.Row="0" Text="Minutes per hour" VerticalAlignment="Center" />
                   <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding MinutesPerHour, Mode=TwoWay}"
-                                 Width="110" HorizontalAlignment="Left"
+                                 Width="130" HorizontalAlignment="Left"
                                  Minimum="1" Maximum="255" Increment="1" FormatString="0" />
                   <TextBlock Grid.Row="1" Text="Dawn start hour" VerticalAlignment="Center" />
                   <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding DawnHour, Mode=TwoWay}"
-                                 Width="110" HorizontalAlignment="Left"
+                                 Width="130" HorizontalAlignment="Left"
                                  Minimum="0" Maximum="23" Increment="1" FormatString="0" />
                   <TextBlock Grid.Row="2" Text="Dusk start hour" VerticalAlignment="Center" />
                   <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding DuskHour, Mode=TwoWay}"
-                                 Width="110" HorizontalAlignment="Left"
+                                 Width="130" HorizontalAlignment="Left"
                                  Minimum="0" Maximum="23" Increment="1" FormatString="0" />
                   <TextBlock Grid.Row="3" Text="Starting month" VerticalAlignment="Center" />
                   <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding StartingMonth, Mode=TwoWay}"
-                                 Width="110" HorizontalAlignment="Left"
+                                 Width="130" HorizontalAlignment="Left"
                                  Minimum="1" Maximum="12" Increment="1" FormatString="0" />
                   <TextBlock Grid.Row="4" Text="Starting day" VerticalAlignment="Center" />
                   <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding StartingDay, Mode=TwoWay}"
-                                 Width="110" HorizontalAlignment="Left"
+                                 Width="130" HorizontalAlignment="Left"
                                  Minimum="1" Maximum="28" Increment="1" FormatString="0" />
                   <TextBlock Grid.Row="5" Text="Starting hour" VerticalAlignment="Center" />
                   <NumericUpDown Grid.Row="5" Grid.Column="1" Value="{Binding StartingHour, Mode=TwoWay}"
-                                 Width="110" HorizontalAlignment="Left"
+                                 Width="130" HorizontalAlignment="Left"
                                  Minimum="0" Maximum="23" Increment="1" FormatString="0" />
                   <TextBlock Grid.Row="6" Text="Starting year" VerticalAlignment="Center" />
-                  <NumericUpDown Grid.Row="6" Grid.Column="1" Value="{Binding StartingYear, Mode=TwoWay}"
-                                 Width="110" HorizontalAlignment="Left"
+                  <NumericUpDown x:Name="StartingYearNumeric" Grid.Row="6" Grid.Column="1"
+                                 Value="{Binding StartingYear, Mode=TwoWay}"
+                                 Width="130" HorizontalAlignment="Left"
                                  Minimum="0" Maximum="2147483647" Increment="1" FormatString="0" />
                   <TextBlock Grid.Row="7" Text="XP scale" VerticalAlignment="Center" />
                   <Grid Grid.Row="7" Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
@@ -114,7 +115,7 @@
                             SmallChange="1" LargeChange="10" VerticalAlignment="Center"
                             Value="{Binding XpScale, Mode=TwoWay}" />
                     <NumericUpDown x:Name="XpScaleNumeric" Grid.Column="1"
-                                   Width="110" VerticalAlignment="Center"
+                                   Width="130" VerticalAlignment="Center"
                                    Minimum="0" Maximum="200" Increment="1" FormatString="0"
                                    Value="{Binding XpScale, Mode=TwoWay}" />
                   </Grid>

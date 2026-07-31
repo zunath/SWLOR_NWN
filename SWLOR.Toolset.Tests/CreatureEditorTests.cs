@@ -12,6 +12,7 @@ using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Editors.Items;
+using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
@@ -22,6 +23,8 @@ using SWLOR.Toolset.Editors.Appearance;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Creatures;
 using SWLOR.Toolset.Editors.Items;
+using SWLOR.Game.Server.Service.AIService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -91,7 +94,8 @@ namespace SWLOR.Toolset.Tests
                 "QUEST_NPC_GROUP_ID" or "CONVERSATION" or "GUILD_ID" or
                 "STORE_TAG_RANK_1" or "STORE_TAG_RANK_2" or "STORE_TAG_RANK_3" or
                 "STORE_TAG_RANK_4" or "STORE_TAG_RANK_5" or "BEAST_TYPE" or
-                "PERMANENT_VFX_ID" or "PARALYZE" or "DAZE" or "AI_PROFILE" or "AI_FLAGS";
+                "PERMANENT_VFX_ID" or "PARALYZE" or "DAZE" or "AI_PROFILE" or
+                "AI_PROFILE_ID" or "AI_FLAGS";
         }
 
         [Test]
@@ -206,6 +210,15 @@ namespace SWLOR.Toolset.Tests
                 store.EquippedResRef(CreaturePropertyCatalog.MainWeaponSlot).Should().Be(createdResRef,
                     "re-enabling relinks the same hidden item instead of creating duplicates");
                 primary.Damage.Number.Should().Be(12);
+                primary.DamageStat.Options.Select(option => option.Value).Should().Equal(
+                    Enum.GetValues<AbilityType>()
+                        .Where(value => value != AbilityType.Invalid)
+                        .Select(value => (int)value));
+                primary.DamageStat.Selected = primary.DamageStat.Options.Single(option =>
+                    option.Value == (int)AbilityType.Might);
+                editor.Equipment.ForSlot(CreaturePropertyCatalog.MainWeaponSlot)!.Store.Properties
+                    .Single(property => property.PropertyId == CreaturePropertyCatalog.DamageStat)
+                    .SubtypeId.Should().Be((int)AbilityType.Might);
             }
             finally
             {
@@ -295,7 +308,39 @@ namespace SWLOR.Toolset.Tests
 
             assigned.RemoveCommand.Execute(null);
             store.Feats.Should().BeEmpty();
+            store.Locals.GetInt("PERK_LEVEL_7").Should().BeNull(
+                "removing the last dependent ability must not leave a hidden perk override");
             viewModel.Assigned.Should().BeEmpty();
+        }
+
+        [Test]
+        public void RemovingAbility_PreservesPerkOverrideWhileAnotherGrantedFeatDependsOnIt()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "ability_shared", "Shared Perk"));
+            var store = new CreatureValueStore(document.Root);
+            store.AddFeat(99);
+            var ability = new CreatureAbilityInfo(42, "Test Ability", "Test description", 7, "Test Perk");
+            var viewModel = new CreatureAbilitiesViewModel(
+                store,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                [ability],
+                new Dictionary<int, CreaturePerkInfo>
+                {
+                    [7] = new CreaturePerkInfo(7, "Test Perk", 4, new HashSet<int> { 42, 99 })
+                });
+
+            viewModel.AddCommand.Execute(ability);
+            viewModel.Assigned.Single().EffectiveLevel = 2;
+            viewModel.Assigned.Single().RemoveCommand.Execute(null);
+
+            store.Feats.Should().Equal(99);
+            store.Locals.GetInt("PERK_LEVEL_7").Should().Be(2,
+                "the remaining perk-granted feat still makes the explicit perk level intentional");
         }
 
         [Test]
@@ -421,6 +466,86 @@ namespace SWLOR.Toolset.Tests
             store.Locals.GetString("LOOT_TABLE_1").Should().Be("FIRST,50,2");
             store.Locals.GetString("LOOT_TABLE_2").Should().Be("THIRD,100,1");
             store.Locals.GetString("LOOT_TABLE_3").Should().BeNull();
+        }
+
+        [Test]
+        public void LootRead_PreservesContiguousRowsBeyondNinetyNine()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "loot_many", "Many Loot Rows"));
+            var store = new CreatureValueStore(document.Root);
+            for (var index = 1; index <= 100; index++)
+                store.Locals.SetString($"LOOT_TABLE_{index}", $"TABLE_{index},100,1");
+
+            var read = store.ReadLoot(out var hasGap);
+
+            hasGap.Should().BeFalse();
+            read.Should().HaveCount(100);
+            read[^1].TableId.Should().Be("TABLE_100");
+            store.WriteLoot(read);
+            store.Locals.GetString("LOOT_TABLE_100").Should().Be("TABLE_100,100,1");
+        }
+
+        [Test]
+        public void AiProfile_UsesNumericFallbackAndSynchronizesBothLocals()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "ai_profile", "AI Profile"));
+            var store = new CreatureValueStore(document.Root);
+            store.Locals.SetString(NPCAI.ProfileLocalVariable, "not-a-profile");
+            store.Locals.SetInt(NPCAI.ProfileIdLocalVariable, (int)AIProfileType.BeastCompanion);
+            var viewModel = new CreatureAiViewModel(store, (_, mutation) =>
+            {
+                mutation();
+                return true;
+            });
+
+            viewModel.Profile.Should().Be(AIProfileType.BeastCompanion.ToString());
+            viewModel.Profile = AIProfileType.Generic.ToString();
+            store.Locals.GetString(NPCAI.ProfileLocalVariable).Should().BeNull();
+            store.Locals.GetInt(NPCAI.ProfileIdLocalVariable).Should().BeNull();
+
+            viewModel.Profile = AIProfileType.DroidCompanion.ToString();
+            store.Locals.GetString(NPCAI.ProfileLocalVariable)
+                .Should().Be(AIProfileType.DroidCompanion.ToString());
+            store.Locals.GetInt(NPCAI.ProfileIdLocalVariable)
+                .Should().Be((int)AIProfileType.DroidCompanion);
+        }
+
+        [Test]
+        public void PermanentCreatureVisuals_IncludeOnlyReferencedDurationEffects()
+        {
+            var visualEffects = new Dictionary<int, string>
+            {
+                [1] = "Vfx_Fnf_Burst",
+                [2] = "Vfx_Dur_Aura",
+                [3] = "Vfx_Dur_Missing_Metadata"
+            };
+            var references = new Dictionary<int, VisualEffectReferenceInfo>
+            {
+                [1] = Reference(1, "FNF"),
+                [2] = Reference(2, "DUR")
+            };
+
+            var choices = CreatureVisualEffectCatalog.Build(visualEffects, references);
+
+            choices.Should().ContainSingle().Which.Value.Should().Be(2);
+            choices[0].ImageUrl.Should().Be("https://example.test/2.jpg");
+            CreatureVisualEffectCatalog.Build(
+                    visualEffects,
+                    new Dictionary<int, VisualEffectReferenceInfo>())
+                .Should().BeEmpty("missing group metadata must fail closed");
+
+            static VisualEffectReferenceInfo Reference(int id, string group) => new(
+                id,
+                group,
+                $"Vfx_{group}_{id}",
+                "test",
+                "body",
+                "blue",
+                "test",
+                "https://example.test/source",
+                $"https://example.test/{id}.jpg");
         }
 
         [Test]

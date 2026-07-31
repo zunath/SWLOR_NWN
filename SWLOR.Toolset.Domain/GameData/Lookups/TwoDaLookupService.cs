@@ -131,6 +131,13 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         public static readonly TwoDaLookupTable BaseItem = new("baseitems", "label", "Name", ["ItemClass"]);
 
         /// <summary>
+        /// placeables.2da model gallery - blank labels are valid when ModelName names a real model,
+        /// but ModelName is required and both fields are screened for reserved sentinels.
+        /// </summary>
+        public static readonly TwoDaLookupTable PlaceableModel =
+            new("placeables", "Label", "StrRef", ["ModelName"]);
+
+        /// <summary>
         /// Load screens. Read by label rather than by StrRef: every SWLOR row points at the same
         /// generic strref, so the label is the only thing that tells one screen from another.
         /// </summary>

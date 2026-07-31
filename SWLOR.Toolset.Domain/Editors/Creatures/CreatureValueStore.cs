@@ -85,18 +85,26 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
         {
             var result = new List<CreatureLootEntry>();
             hasGap = false;
-            var stopped = false;
-            for (var index = 1; index <= 99; index++)
+            var expectedIndex = 1;
+            var rows = Locals
+                .Select(entry => entry.Name)
+                .Select(name => (Name: name, Index: LootIndex(name)))
+                .Where(row => row.Index > 0)
+                .OrderBy(row => row.Index)
+                .ToList();
+
+            foreach (var row in rows)
             {
-                var raw = Locals.GetString($"LOOT_TABLE_{index}");
+                if (row.Index != expectedIndex)
+                    hasGap = true;
+                expectedIndex = row.Index + 1;
+
+                var raw = Locals.GetString(row.Name);
                 if (string.IsNullOrWhiteSpace(raw))
                 {
-                    stopped = true;
+                    hasGap = true;
                     continue;
                 }
-
-                if (stopped)
-                    hasGap = true;
 
                 var parts = raw.Split(',', StringSplitOptions.TrimEntries);
                 if (parts.Length == 0 || string.IsNullOrWhiteSpace(parts[0]))
@@ -112,6 +120,15 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
             }
 
             return result;
+        }
+
+        private static int LootIndex(string name)
+        {
+            const string prefix = "LOOT_TABLE_";
+            return name.StartsWith(prefix, StringComparison.Ordinal) &&
+                   int.TryParse(name.AsSpan(prefix.Length), out var index)
+                ? index
+                : -1;
         }
 
         public void WriteLoot(IEnumerable<CreatureLootEntry> entries)

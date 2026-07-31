@@ -43,7 +43,11 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
                         result[id] = new CreaturePerkInfo(
                             id,
                             string.IsNullOrWhiteSpace(detail.Name) ? Humanize(perk.ToString()) : detail.Name,
-                            detail.PerkLevels.Count == 0 ? 1 : detail.PerkLevels.Keys.Max());
+                            detail.PerkLevels.Count == 0 ? 1 : detail.PerkLevels.Keys.Max(),
+                            detail.PerkLevels.Values
+                                .SelectMany(level => level.GrantedFeats)
+                                .Select(feat => (int)feat)
+                                .ToHashSet());
                     }
                 }
                 catch (Exception ex) when (ex is TargetInvocationException or InvalidOperationException or ArgumentException)

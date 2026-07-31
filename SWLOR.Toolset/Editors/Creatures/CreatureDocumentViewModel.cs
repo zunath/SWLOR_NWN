@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.GameCode;
@@ -131,28 +132,37 @@ namespace SWLOR.Toolset.Editors.Creatures
 
                 var staged = new List<SaveService.StagedWrite>();
                 var saved = new List<(DocumentSession Session, byte[] Bytes)>();
-                try
+                using (ModuleWriteLock.AcquireForResourcePath(_session.FilePath))
                 {
-                    var creatureBytes = _session.ToBytes();
-                    staged.Add(SaveService.Stage(_session.FilePath, creatureBytes));
-                    saved.Add((_session, creatureBytes));
-
-                    foreach (var item in equipment)
+                    if (ChangedWhilePreparingGroupedSave(_session, isNew: false) ||
+                        equipment.Any(item => ChangedWhilePreparingGroupedSave(item.Session, item.IsNew)))
                     {
-                        var bytes = item.Session.ToBytes();
-                        staged.Add(item.IsNew
-                            ? SaveService.StageNew(item.Session.FilePath, bytes)
-                            : SaveService.Stage(item.Session.FilePath, bytes));
-                        saved.Add((item.Session, bytes));
+                        return false;
                     }
 
-                    SaveService.CommitAll(staged);
-                }
-                catch
-                {
-                    foreach (var write in staged)
-                        SaveService.Discard(write);
-                    throw;
+                    try
+                    {
+                        var creatureBytes = _session.ToBytes();
+                        staged.Add(SaveService.Stage(_session.FilePath, creatureBytes));
+                        saved.Add((_session, creatureBytes));
+
+                        foreach (var item in equipment)
+                        {
+                            var bytes = item.Session.ToBytes();
+                            staged.Add(item.IsNew
+                                ? SaveService.StageNew(item.Session.FilePath, bytes)
+                                : SaveService.Stage(item.Session.FilePath, bytes));
+                            saved.Add((item.Session, bytes));
+                        }
+
+                        SaveService.CommitAll(staged);
+                    }
+                    catch
+                    {
+                        foreach (var write in staged)
+                            SaveService.Discard(write);
+                        throw;
+                    }
                 }
 
                 _session.UndoStack.MarkSaved();
@@ -174,6 +184,17 @@ namespace SWLOR.Toolset.Editors.Creatures
                 _log.AppendLine($"Save failed for {_session.FilePath}: {ex.Message}");
                 return false;
             }
+        }
+
+        private bool ChangedWhilePreparingGroupedSave(DocumentSession session, bool isNew)
+        {
+            if (!session.HasExternalChange())
+                return false;
+
+            _log.AppendLine(isNew
+                ? $"Cannot create {session.FilePath}: another file claimed that name while the grouped save was being prepared. Nothing was written."
+                : $"Save stopped because {session.FilePath} changed while the grouped save was being prepared. Nothing was written.");
+            return true;
         }
 
         private async Task<bool> AcceptExternalChangeAsync(

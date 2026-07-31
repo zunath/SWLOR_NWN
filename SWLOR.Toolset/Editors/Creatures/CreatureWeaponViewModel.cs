@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -78,8 +78,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 CreaturePropertyCatalog.WeaponDamageType);
             DamageStat = Exclusive(
                 "Damage Stat",
-                Enum.GetValues<StatType>()
-                    .Where(value => value != StatType.Invalid)
+                Enum.GetValues<AbilityType>()
+                    .Where(value => value != AbilityType.Invalid)
                     .Select(value => new CreatureOption((int)value, Humanize(value.ToString())))
                     .ToList(),
                 CreaturePropertyCatalog.DamageStat);
@@ -121,7 +121,9 @@ namespace SWLOR.Toolset.Editors.Creatures
                 label,
                 options,
                 () => _equipment.ForSlot(_slot)?.Store.Properties
-                    .FirstOrDefault(property => property.PropertyId == propertyId).SubtypeId,
+                    .Where(property => property.PropertyId == propertyId)
+                    .Select(property => (int?)property.SubtypeId)
+                    .FirstOrDefault(),
                 value => _runEdit($"Change {Label} {label}", () =>
                 {
                     var weapon = EnsureWeapon();

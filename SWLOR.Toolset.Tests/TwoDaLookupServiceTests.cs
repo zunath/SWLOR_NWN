@@ -46,7 +46,8 @@ namespace SWLOR.Toolset.Tests
                      {
                          TwoDaLookupTables.Gender, TwoDaLookupTables.Phenotype,
                          TwoDaLookupTables.SoundSet, TwoDaLookupTables.BaseItem,
-                         TwoDaLookupTables.Race, TwoDaLookupTables.CreatureSpeed
+                         TwoDaLookupTables.PlaceableModel, TwoDaLookupTables.Race,
+                         TwoDaLookupTables.CreatureSpeed
                      })
             {
                 var rows = service.GetRows(table);

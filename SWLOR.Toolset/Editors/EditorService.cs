@@ -1985,14 +1985,9 @@ namespace SWLOR.Toolset.Editors
             }
             if (key == Domain.Editors.Creatures.CreatureChoiceKeys.VisualEffects && _gameCodeIndex != null)
             {
-                return _gameCodeIndex.VisualEffects.OrderBy(entry => entry.Value)
-                    .Select(entry => new BehaviorChoice(
-                        entry.Key,
-                        $"{Humanize(entry.Value)} ({entry.Key})",
-                        imageUrl: _gameCodeIndex.VisualEffectReferences.TryGetValue(entry.Key, out var reference)
-                            ? reference.ImageUrl
-                            : null))
-                    .ToList();
+                return Domain.Editors.Creatures.CreatureVisualEffectCatalog.Build(
+                    _gameCodeIndex.VisualEffects,
+                    _gameCodeIndex.VisualEffectReferences);
             }
 
             return Array.Empty<BehaviorChoice>();

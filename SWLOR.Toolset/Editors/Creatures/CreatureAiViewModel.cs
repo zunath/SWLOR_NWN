@@ -39,8 +39,15 @@ namespace SWLOR.Toolset.Editors.Creatures
             _loading = true;
             try
             {
-                var stored = _store.Locals.GetString("AI_PROFILE");
-                Profile = Profiles.FirstOrDefault(candidate => candidate == stored) ?? AIProfileType.Generic.ToString();
+                var stored = _store.Locals.GetString(NPCAI.ProfileLocalVariable);
+                var profile = Enum.TryParse(stored, true, out AIProfileType namedProfile) &&
+                              namedProfile != AIProfileType.Invalid
+                    ? namedProfile
+                    : _store.Locals.GetInt(NPCAI.ProfileIdLocalVariable) is { } profileId &&
+                      profileId > 0 && Enum.IsDefined(typeof(AIProfileType), profileId)
+                        ? (AIProfileType)profileId
+                        : AIProfileType.Generic;
+                Profile = profile.ToString();
                 var flags = _store.Locals.GetInt("AI_FLAGS") ?? 0;
                 RandomWalk = (flags & (int)AIFlag.RandomWalk) != 0;
                 ReturnHome = (flags & (int)AIFlag.ReturnHome) != 0;
@@ -58,9 +65,16 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (!_runEdit("Change AI profile", () =>
                 {
                     if (value == AIProfileType.Generic.ToString())
-                        _store.Locals.Remove("AI_PROFILE");
+                    {
+                        _store.Locals.Remove(NPCAI.ProfileLocalVariable);
+                        _store.Locals.Remove(NPCAI.ProfileIdLocalVariable);
+                    }
                     else
-                        _store.Locals.SetString("AI_PROFILE", value);
+                    {
+                        var profile = Enum.Parse<AIProfileType>(value);
+                        _store.Locals.SetString(NPCAI.ProfileLocalVariable, profile.ToString());
+                        _store.Locals.SetInt(NPCAI.ProfileIdLocalVariable, (int)profile);
+                    }
                 }))
             {
                 Reload();

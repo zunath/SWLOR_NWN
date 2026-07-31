@@ -148,11 +148,32 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         private void Remove(CreatureAbilityEntryViewModel entry)
         {
-            if (!_runEdit($"Remove {entry.Name}", () => _store.RemoveFeat(entry.FeatId)))
+            if (!_runEdit($"Remove {entry.Name}", () =>
+                {
+                    _store.RemoveFeat(entry.FeatId);
+                    if (entry.Info.EffectivePerkId > 0 &&
+                        !HasRemainingPerkDependency(entry.Info.EffectivePerkId))
+                    {
+                        _store.Locals.Remove($"PERK_LEVEL_{entry.Info.EffectivePerkId}");
+                    }
+                }))
                 return;
 
             Assigned.Remove(entry);
             InsertAvailable(entry.Info);
+        }
+
+        private bool HasRemainingPerkDependency(int perkId)
+        {
+            var remainingFeats = _store.Feats.ToHashSet();
+            if (_catalog.Any(info =>
+                    info.EffectivePerkId == perkId && remainingFeats.Contains(info.FeatId)))
+            {
+                return true;
+            }
+
+            return _perks.TryGetValue(perkId, out var perk) &&
+                   perk.GrantedFeatIds?.Any(remainingFeats.Contains) == true;
         }
 
         [RelayCommand]

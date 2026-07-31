@@ -9,20 +9,17 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     /// <remarks>
     /// <para>
     /// Deliberately not <see cref="PlaceableAppearanceService"/>, which skips rows with an empty
-    /// label because a dropdown cannot show a nameless option. That skip removes 15,761 perfectly
-    /// good models from a picker whose entries are pictures - so this catalog keeps every row that
-    /// resolves to a model and lets the tile do the naming.
+    /// label because a dropdown cannot show a nameless option. This picture-backed catalog keeps a
+    /// blank-labelled row when its model resref proves it is drawable, while screening both fields
+    /// through <see cref="TwoDaChoicePolicy"/> so reserved model slots never become choices.
     /// </para>
     /// <para>
-    /// Rows with neither a label nor a model are dropped: there is nothing to draw and nothing to
-    /// call it. A blueprint already pointing at one keeps its stored value; the editor marks it
-    /// rather than blocking, which is what the 2,982 placeables on blank rows need.
+    /// Rows without the required model metadata are dropped. A blueprint already pointing at one
+    /// keeps its stored value; the editor marks it rather than blocking.
     /// </para>
     /// </remarks>
     public sealed class PlaceableModelCatalog
     {
-        private const string TableName = "placeables";
-
         private readonly ReloadableLazy<IReadOnlyList<PlaceableModelRow>> _rows;
         private readonly ReloadableLazy<IReadOnlyDictionary<int, PlaceableModelRow>> _byId;
 
@@ -101,19 +98,24 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private static IReadOnlyList<PlaceableModelRow> Build(TwoDaService twoDa, TlkService tlk)
         {
-            var table = twoDa.GetTable(TableName);
+            var definition = TwoDaLookupTables.PlaceableModel;
+            var modelColumn = definition.RequiredColumns!.Single();
+            var table = twoDa.GetTable(definition.TableName);
             var rows = new List<PlaceableModelRow>();
 
             for (var row = 0; row < table.RowCount; row++)
             {
-                var model = table.GetString(row, "ModelName");
-                if (string.IsNullOrEmpty(model))
+                var model = table.GetString(row, modelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(model))
                     continue;
 
-                var label = table.GetString(row, "Label");
-                var hasLabel = !string.IsNullOrEmpty(label);
+                var label = table.GetString(row, definition.LabelColumn);
+                var hasLabel = !string.IsNullOrWhiteSpace(label);
+                if (hasLabel && !TwoDaChoicePolicy.IsSelectableLabel(label))
+                    continue;
+
                 var displayName = hasLabel
-                    ? DisplayNameResolver.Resolve(tlk, table.GetInt(row, "StrRef"), label!)
+                    ? DisplayNameResolver.Resolve(tlk, table.GetInt(row, definition.StrRefColumn!), label!)
                     : model!;
 
                 rows.Add(new PlaceableModelRow(row, model!, displayName, hasLabel));

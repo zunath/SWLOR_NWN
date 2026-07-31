@@ -425,26 +425,6 @@
                 </Border>
               </Grid>
 
-              <Border x:Name="CreatureSkillOverridesCard" Classes="card" Padding="12">
-                <StackPanel>
-                  <TextBlock Text="Skill Overrides" Classes="section" Margin="0,0,0,3" />
-                  <TextBlock Text="A skill override replaces NPC Level for that skill only."
-                             Classes="dim" FontSize="11" Margin="0,0,0,6" />
-                  <ItemsControl ItemsSource="{Binding Stats.SkillOverrides}">
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate DataType="creatures:CreatureSkillOverrideViewModel">
-                        <ContentControl Content="{Binding Level}" />
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                  </ItemsControl>
-                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,7,0,0">
-                    <ComboBox ItemsSource="{Binding Stats.AvailableSkills}"
-                              SelectedItem="{Binding Stats.SelectedSkillToAdd, Mode=TwoWay}" />
-                    <Button Grid.Column="1" Content="Add override"
-                            Command="{Binding Stats.AddSkillOverrideCommand}" />
-                  </Grid>
-                </StackPanel>
-              </Border>
             </StackPanel>
           </ScrollViewer>
         </TabItem>

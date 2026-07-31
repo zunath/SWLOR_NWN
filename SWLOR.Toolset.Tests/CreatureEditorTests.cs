@@ -251,8 +251,7 @@ namespace SWLOR.Toolset.Tests
                 "CreatureVitalsCard",
                 "CreatureAttributesCard",
                 "CreatureOffenseCard",
-                "CreatureDefenseCard",
-                "CreatureSkillOverridesCard"
+                "CreatureDefenseCard"
             };
 
             var positions = orderedCards
@@ -263,6 +262,8 @@ namespace SWLOR.Toolset.Tests
                 "the Stats tab should read from core values through combat tuning");
             view.Should().Contain("<UniformGrid Columns=\"2\" />",
                 "the eight resistances should use the full tab width instead of one tall side column");
+            view.Should().NotContain("Skill Overrides");
+            view.Should().NotContain("Stats.AddSkillOverrideCommand");
 
             var statsStart = view.IndexOf("<TabItem Header=\"Stats\">", StringComparison.Ordinal);
             var statsEnd = view.IndexOf("</TabItem>", statsStart, StringComparison.Ordinal);

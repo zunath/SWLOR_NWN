@@ -152,7 +152,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             ResourceIndex = resourceIndex;
 
             Equipment = new CreatureEquipmentSet(_store, filePath);
-            Stats = new CreatureStatsViewModel(_store, Equipment, RunEdit, gameCodeIndex?.Skills);
+            Stats = new CreatureStatsViewModel(_store, Equipment, RunEdit);
             Abilities = new CreatureAbilitiesViewModel(_store, RunEdit);
             Ai = new CreatureAiViewModel(_store, RunEdit);
             Loot = new CreatureLootViewModel(

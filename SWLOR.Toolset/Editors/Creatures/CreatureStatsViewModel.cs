@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Gff;
@@ -19,28 +18,17 @@ namespace SWLOR.Toolset.Editors.Creatures
         public ObservableCollection<CreatureStatCellViewModel> Defense { get; } = new();
         public ObservableCollection<CreatureStatCellViewModel> Resistances { get; } = new();
         public ObservableCollection<CreatureStatCellViewModel> Attributes { get; } = new();
-        public ObservableCollection<CreatureSkillOverrideViewModel> SkillOverrides { get; } = new();
-        public IReadOnlyList<CreatureOption> AvailableSkills { get; }
-
-        [ObservableProperty]
-        private CreatureOption? _selectedSkillToAdd;
 
         public bool HasStatSkin => _equipment.ForSlot(CreaturePropertyCatalog.StatSkinSlot) != null;
 
         public CreatureStatsViewModel(
             CreatureValueStore creature,
             CreatureEquipmentSet equipment,
-            Func<string, Action, bool> runEdit,
-            IReadOnlyDictionary<int, string>? skills = null)
+            Func<string, Action, bool> runEdit)
         {
             _creature = creature;
             _equipment = equipment;
             _runEdit = runEdit;
-            AvailableSkills = (skills ?? new Dictionary<int, string>())
-                .Where(entry => entry.Key > 0)
-                .OrderBy(entry => entry.Value, StringComparer.OrdinalIgnoreCase)
-                .Select(entry => new CreatureOption(entry.Key, $"{entry.Value} ({entry.Key})"))
-                .ToList();
 
             Vitals.Add(Skin("NPC Level", CreaturePropertyCatalog.Level, -1, 43, 0, 100));
             Vitals.Add(Skin("HP", CreaturePropertyCatalog.HitPoints, -1, 39, 0, 30000, combined: true));
@@ -79,29 +67,12 @@ namespace SWLOR.Toolset.Editors.Creatures
                     0,
                     byte.MaxValue));
             }
-
-            ReloadSkillOverrides();
-        }
-
-        [RelayCommand]
-        private void AddSkillOverride()
-        {
-            if (SelectedSkillToAdd == null ||
-                SkillOverrides.Any(entry => entry.SkillId == SelectedSkillToAdd.Value))
-                return;
-            var selected = SelectedSkillToAdd;
-            if (!_runEdit($"Add {selected.Display} skill override", () =>
-                EnsureSkin().Store.SetPropertyValue(
-                    CreaturePropertyCatalog.NpcSkill, selected.Value, 48, 1)))
-                return;
-            ReloadSkillOverrides();
         }
 
         public void Reload()
         {
             foreach (var cell in Vitals.Concat(Offense).Concat(Defense).Concat(Resistances).Concat(Attributes))
                 cell.Reload();
-            ReloadSkillOverrides();
             OnPropertyChanged(nameof(HasStatSkin));
         }
 
@@ -144,22 +115,5 @@ namespace SWLOR.Toolset.Editors.Creatures
             CreaturePropertyCatalog.StatSkinBaseItem,
             "_sk",
             "Creature Stat Skin");
-
-        private void ReloadSkillOverrides()
-        {
-            SkillOverrides.Clear();
-            var skin = _equipment.ForSlot(CreaturePropertyCatalog.StatSkinSlot);
-            if (skin == null)
-                return;
-            foreach (var property in skin.Store.Properties
-                         .Where(property => property.PropertyId == CreaturePropertyCatalog.NpcSkill)
-                         .OrderBy(property => property.SubtypeId))
-            {
-                var name = AvailableSkills.FirstOrDefault(skill => skill.Value == property.SubtypeId)?.Display
-                           ?? $"Skill {property.SubtypeId}";
-                SkillOverrides.Add(new CreatureSkillOverrideViewModel(
-                    property.SubtypeId, name, _equipment, EnsureSkin, _runEdit));
-            }
-        }
     }
 }

@@ -42,7 +42,8 @@ namespace SWLOR.Toolset.Editors.Merchants
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             IReadOnlyList<BehaviorChoice>? baseItems = null,
             Func<string, MerchantItemDefinition?>? loadItem = null,
-            Func<string, int, IReadOnlyList<MerchantItemDefinition>>? searchItems = null,
+            Func<string, int, int, int,
+                IReadOnlyList<MerchantItemDefinition>>? searchItems = null,
             MerchantInstanceService? instances = null,
             BlueprintSaveCoordinator? saveCoordinator = null,
             Action<string, Action<Bitmap>>? requestItemPreview = null)

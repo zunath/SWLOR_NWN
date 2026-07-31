@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Documents;
@@ -15,12 +16,15 @@ namespace SWLOR.Toolset.Editors.Merchants
     {
         public const string OnOpenStoreScript = "on_open_store";
         public const string OnStoreClosedScript = "on_close_store";
+        private const int ItemCandidatePageSize = 48;
+        private static readonly TimeSpan ItemSearchDebounce = TimeSpan.FromMilliseconds(250);
 
         private readonly MerchantValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly Func<string, MerchantItemDefinition?>? _loadItem;
-        private readonly Func<string, int, IReadOnlyList<MerchantItemDefinition>>? _searchItems;
+        private readonly Func<string, int, int, int,
+            IReadOnlyList<MerchantItemDefinition>>? _searchItems;
         private readonly Action<string, Action<Bitmap>>? _requestItemPreview;
         private readonly IReadOnlyList<BehaviorChoice> _baseItems;
         private readonly MerchantInstanceService? _instances;
@@ -28,6 +32,11 @@ namespace SWLOR.Toolset.Editors.Merchants
         private readonly HashSet<(int PaneIndex, int ItemIndex)> _checkedInventoryItems = new();
         private int _instanceRefreshGeneration;
         private int _inventoryRefreshGeneration;
+        private int _itemCandidateRefreshGeneration;
+        private int _itemCandidateOffset;
+        private bool _itemCandidatesExhausted;
+        private bool _isLoadingItemCandidates;
+        private CancellationTokenSource? _itemSearchDebounce;
         private bool _isUpdatingInventoryChecks;
         private bool _loading;
         private bool _disposed;
@@ -36,7 +45,7 @@ namespace SWLOR.Toolset.Editors.Merchants
         public ObservableCollection<BehaviorRowViewModel> PricingRows { get; } = new();
         public ObservableCollection<MerchantInventoryCategoryViewModel> InventoryCategories { get; } = new();
         public ObservableCollection<MerchantInventoryItemViewModel> InventoryItems { get; } = new();
-        public ObservableCollection<MerchantItemDefinition> ItemCandidates { get; } = new();
+        public ObservableCollection<MerchantItemCandidateViewModel> ItemCandidates { get; } = new();
         public ObservableCollection<MerchantBuyingRuleViewModel> BuyingRules { get; } = new();
         public ObservableCollection<MerchantInstancePlacement> PlacedInstances { get; } = new();
 
@@ -69,6 +78,8 @@ namespace SWLOR.Toolset.Editors.Merchants
         }
         public bool CanToggleShownInventoryItems => InventoryItems.Count > 0;
         public bool HasItemCandidates => ItemCandidates.Count > 0;
+        public bool CanLoadMoreItemCandidates =>
+            !_isLoadingItemCandidates && !_itemCandidatesExhausted && SelectedInventoryCategory != null;
         public bool HasPlacedInstances => PlacedInstances.Count > 0;
         public bool HasOutOfDateInstances => PlacedInstances.Any(instance => !instance.IsCurrent);
         public int OutOfDateMerchantRecords =>
@@ -77,8 +88,11 @@ namespace SWLOR.Toolset.Editors.Merchants
             PlacedInstances.Sum(instance => instance.OutOfDateItemRecords);
         public string InventorySummary =>
             $"{InventoryItems.Count} item{(InventoryItems.Count == 1 ? string.Empty : "s")} shown";
-        public string CandidateSummary =>
-            $"{ItemCandidates.Count} item{(ItemCandidates.Count == 1 ? string.Empty : "s")} found";
+        public string CandidateSummary => ItemCandidates.Count == 0
+            ? "No matching items"
+            : CanLoadMoreItemCandidates
+                ? $"{ItemCandidates.Count} items loaded · scroll for more"
+                : $"{ItemCandidates.Count} item{(ItemCandidates.Count == 1 ? string.Empty : "s")}";
         public string BuyingRuleSummary =>
             $"{BuyingRules.Count} of {_allBuyingRules.Count} base item types";
         public string InstanceSummary =>
@@ -93,6 +107,7 @@ namespace SWLOR.Toolset.Editors.Merchants
                       $"instance{(PlacedInstances.Count == 1 ? string.Empty : "s")} up to date.";
         public string SelectedItemName => SelectedInventoryItem?.DisplayName ?? "No item selected";
         public string SelectedItemResRef => SelectedInventoryItem?.ResRef ?? string.Empty;
+        public Bitmap? SelectedItemPreview => SelectedInventoryItem?.Preview;
         public string SelectedItemSellPrice => SelectedInventoryItem?.SellPrice ?? "—";
         public string SelectedItemBuyPrice => SelectedInventoryItem?.BuyPrice ?? "—";
         public bool SelectedItemInfinite
@@ -138,7 +153,7 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(AddInventoryItemCommand))]
-        private MerchantItemDefinition? _selectedItemCandidate;
+        private MerchantItemCandidateViewModel? _selectedItemCandidate;
 
         [ObservableProperty]
         private bool _buyOnlySelected;
@@ -175,7 +190,8 @@ namespace SWLOR.Toolset.Editors.Merchants
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             IReadOnlyList<BehaviorChoice>? baseItems = null,
             Func<string, MerchantItemDefinition?>? loadItem = null,
-            Func<string, int, IReadOnlyList<MerchantItemDefinition>>? searchItems = null,
+            Func<string, int, int, int,
+                IReadOnlyList<MerchantItemDefinition>>? searchItems = null,
             MerchantInstanceService? instances = null,
             Action<string, Action<Bitmap>>? requestItemPreview = null)
         {
@@ -275,7 +291,8 @@ namespace SWLOR.Toolset.Editors.Merchants
             if (SelectedInventoryCategory == null || SelectedItemCandidate == null)
                 return;
 
-            var candidate = _loadItem?.Invoke(SelectedItemCandidate.ResRef) ?? SelectedItemCandidate;
+            var candidate = _loadItem?.Invoke(SelectedItemCandidate.ResRef) ??
+                            SelectedItemCandidate.Definition;
             var storePanel = NormalizeStorePanel(candidate.StorePanel);
             var category = InventoryCategories.Single(entry => entry.Index == storePanel);
             if (_runEdit(
@@ -354,6 +371,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             OnPropertyChanged(nameof(HasSelectedInventoryItem));
             OnPropertyChanged(nameof(SelectedItemName));
             OnPropertyChanged(nameof(SelectedItemResRef));
+            OnPropertyChanged(nameof(SelectedItemPreview));
             OnPropertyChanged(nameof(SelectedItemSellPrice));
             OnPropertyChanged(nameof(SelectedItemBuyPrice));
             OnPropertyChanged(nameof(SelectedItemInfinite));
@@ -361,7 +379,28 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         partial void OnInventorySearchTextChanged(string value) => RefreshInventory();
 
-        partial void OnItemSearchTextChanged(string value) => RefreshItemCandidates();
+        partial void OnItemSearchTextChanged(string value)
+        {
+            _itemSearchDebounce?.Cancel();
+            _itemSearchDebounce?.Dispose();
+            _itemSearchDebounce = null;
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                RefreshItemCandidates();
+                return;
+            }
+
+            var pending = new CancellationTokenSource();
+            _itemSearchDebounce = pending;
+            Task.Delay(ItemSearchDebounce, pending.Token).ContinueWith(
+                task =>
+                {
+                    if (!task.IsCanceled)
+                        Dispatcher.UIThread.Post(RefreshItemCandidates);
+                },
+                TaskScheduler.Default);
+        }
 
         partial void OnBuyOnlySelectedChanged(bool value)
         {
@@ -567,7 +606,11 @@ namespace SWLOR.Toolset.Editors.Merchants
                 _requestItemPreview?.Invoke(resRef, preview =>
                 {
                     if (!_disposed && refreshGeneration == _inventoryRefreshGeneration)
+                    {
                         inventoryItem.Preview = preview;
+                        if (ReferenceEquals(SelectedInventoryItem, inventoryItem))
+                            OnPropertyChanged(nameof(SelectedItemPreview));
+                    }
                 });
             }
 
@@ -590,26 +633,76 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         private void RefreshItemCandidates()
         {
+            _itemCandidateRefreshGeneration++;
             ItemCandidates.Clear();
             SelectedItemCandidate = null;
+            _itemCandidateOffset = 0;
+            _itemCandidatesExhausted = SelectedInventoryCategory == null || _searchItems == null;
+            LoadMoreItemCandidates();
+            NotifyItemCandidateShapeChanged();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanLoadMoreItemCandidates))]
+        private void LoadMoreItemCandidates()
+        {
             var category = SelectedInventoryCategory;
-            if (category == null)
-            {
-                OnPropertyChanged(nameof(HasItemCandidates));
-                OnPropertyChanged(nameof(CandidateSummary));
+            if (category == null || _searchItems == null || !CanLoadMoreItemCandidates)
                 return;
-            }
 
-            foreach (var candidate in _searchItems?.Invoke(ItemSearchText.Trim(), category.Index)
-                         ?? Array.Empty<MerchantItemDefinition>())
+            _isLoadingItemCandidates = true;
+            try
             {
-                if (NormalizeStorePanel(candidate.StorePanel) == category.Index)
-                    ItemCandidates.Add(candidate);
+                var page = _searchItems(
+                    ItemSearchText.Trim(),
+                    category.Index,
+                    _itemCandidateOffset,
+                    ItemCandidatePageSize + 1);
+                var published = 0;
+                foreach (var candidate in page.Take(ItemCandidatePageSize))
+                {
+                    if (NormalizeStorePanel(candidate.StorePanel) != category.Index)
+                        continue;
+
+                    ItemCandidates.Add(new MerchantItemCandidateViewModel(candidate));
+                    published++;
+                }
+
+                _itemCandidateOffset += published;
+                _itemCandidatesExhausted = page.Count <= ItemCandidatePageSize || published == 0;
+            }
+            finally
+            {
+                _isLoadingItemCandidates = false;
             }
 
-            SelectedItemCandidate = ItemCandidates.FirstOrDefault();
+            NotifyItemCandidateShapeChanged();
+        }
+
+        /// <summary>Requests a candidate picture only after the virtualized list realizes its row.</summary>
+        public void EnsureItemCandidatePreview(MerchantItemCandidateViewModel? candidate)
+        {
+            if (candidate == null || candidate.PreviewRequested || _requestItemPreview == null)
+                return;
+
+            candidate.PreviewRequested = true;
+            var refreshGeneration = _itemCandidateRefreshGeneration;
+            _requestItemPreview(candidate.ResRef, preview =>
+            {
+                if (!_disposed &&
+                    refreshGeneration == _itemCandidateRefreshGeneration &&
+                    ItemCandidates.Contains(candidate))
+                {
+                    candidate.Preview = preview;
+                }
+            });
+        }
+
+        private void NotifyItemCandidateShapeChanged()
+        {
             OnPropertyChanged(nameof(HasItemCandidates));
             OnPropertyChanged(nameof(CandidateSummary));
+            OnPropertyChanged(nameof(CanLoadMoreItemCandidates));
+            LoadMoreItemCandidatesCommand.NotifyCanExecuteChanged();
         }
 
         private IReadOnlyList<(int PaneIndex, int ItemIndex, JsonGffStruct Slot,
@@ -760,6 +853,10 @@ namespace SWLOR.Toolset.Editors.Merchants
 
             _disposed = true;
             _instanceRefreshGeneration++;
+            _itemCandidateRefreshGeneration++;
+            _itemSearchDebounce?.Cancel();
+            _itemSearchDebounce?.Dispose();
+            _itemSearchDebounce = null;
             foreach (var row in DetailRows.Concat(PricingRows))
                 row.Dispose();
         }

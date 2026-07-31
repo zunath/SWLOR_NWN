@@ -16,6 +16,33 @@ namespace SWLOR.Toolset.Editors.Merchants
             : $"{Name}  ·  {ResRef}";
     }
 
+    /// <summary>One progressively published item in the merchant's searchable add-item list.</summary>
+    public sealed partial class MerchantItemCandidateViewModel : ObservableObject
+    {
+        public MerchantItemDefinition Definition { get; }
+        public string ResRef => Definition.ResRef;
+        public string DisplayName => string.IsNullOrWhiteSpace(Definition.Name)
+            ? Definition.ResRef
+            : Definition.Name;
+        public string Glyph => string.IsNullOrWhiteSpace(DisplayName)
+            ? "?"
+            : DisplayName.Trim()[..1].ToUpperInvariant();
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasPreview))]
+        private Bitmap? _preview;
+
+        public bool HasPreview => Preview != null;
+        public bool PreviewRequested { get; set; }
+
+        public MerchantItemCandidateViewModel(MerchantItemDefinition definition)
+        {
+            Definition = definition ?? throw new ArgumentNullException(nameof(definition));
+        }
+
+        public override string ToString() => Definition.Display;
+    }
+
     public sealed partial class MerchantInventoryCategoryViewModel : ObservableObject
     {
         public int Index { get; }

@@ -346,7 +346,7 @@ namespace SWLOR.Toolset.Tests
                     "Probe Ring",
                     100,
                     (int)MerchantInventoryCategory.RingsAmulets),
-                searchItems: (_, _) => new[]
+                searchItems: (_, _, skip, take) => new[]
                 {
                     new MerchantItemDefinition(
                         "probe_ring",
@@ -358,7 +358,7 @@ namespace SWLOR.Toolset.Tests
                         "Probe Sword",
                         100,
                         (int)MerchantInventoryCategory.Weapons)
-                });
+                }.Skip(skip).Take(take).ToList());
 
             editor.InventoryCategories.Single(category =>
                     category.Index == (int)MerchantInventoryCategory.PotionsScrolls)
@@ -409,7 +409,7 @@ namespace SWLOR.Toolset.Tests
 
             editor.SelectedInventoryCategory = editor.InventoryCategories.Single(category =>
                 category.Index == (int)MerchantInventoryCategory.PotionsScrolls);
-            editor.SelectedItemCandidate = ring;
+            editor.SelectedItemCandidate = new MerchantItemCandidateViewModel(ring);
 
             editor.AddInventoryItemCommand.Execute(null);
 
@@ -418,6 +418,51 @@ namespace SWLOR.Toolset.Tests
                 .Which.GetStringOrNull("InventoryRes").Should().Be("probe_ring");
             editor.SelectedInventoryCategory!.Index.Should().Be(
                 (int)MerchantInventoryCategory.RingsAmulets);
+        }
+
+        [Test]
+        public void ItemCandidatePickerPublishesPagesAndRequestsPreviewsOnlyWhenRowsAreRealized()
+        {
+            var candidates = Enumerable.Range(0, 60)
+                .Select(index => new MerchantItemDefinition(
+                    $"item_{index:000}",
+                    $"Item {index:000}",
+                    100,
+                    (int)MerchantInventoryCategory.Armor))
+                .ToList();
+            var searches = new List<(int Skip, int Take)>();
+            var previewRequests = new List<string>();
+
+            using var editor = new MerchantEditorViewModel(
+                NewMerchant(),
+                "probe_store",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                searchItems: (_, _, skip, take) =>
+                {
+                    searches.Add((skip, take));
+                    return candidates.Skip(skip).Take(take).ToList();
+                },
+                requestItemPreview: (resRef, _) => previewRequests.Add(resRef));
+
+            editor.ItemCandidates.Should().HaveCount(48);
+            editor.CanLoadMoreItemCandidates.Should().BeTrue();
+            searches.Should().Equal((0, 49));
+            previewRequests.Should().BeEmpty();
+
+            var first = editor.ItemCandidates[0];
+            editor.EnsureItemCandidatePreview(first);
+            editor.EnsureItemCandidatePreview(first);
+            previewRequests.Should().Equal("item_000");
+
+            editor.LoadMoreItemCandidatesCommand.Execute(null);
+
+            editor.ItemCandidates.Should().HaveCount(60);
+            editor.CanLoadMoreItemCandidates.Should().BeFalse();
+            searches.Should().Equal((0, 49), (48, 49));
         }
 
         [Test]

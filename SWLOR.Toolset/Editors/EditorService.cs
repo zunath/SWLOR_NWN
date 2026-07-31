@@ -1652,13 +1652,16 @@ namespace SWLOR.Toolset.Editors
 
         private IReadOnlyList<Merchants.MerchantItemDefinition> SearchMerchantItems(
             string query,
-            int storePanel)
+            int storePanel,
+            int skip,
+            int take)
         {
-            if (_workspaceContext.Workspace == null)
+            if (_workspaceContext.Workspace == null || take <= 0)
                 return Array.Empty<Merchants.MerchantItemDefinition>();
 
             var trimmed = query.Trim();
             var matches = new List<Merchants.MerchantItemDefinition>();
+            var matched = 0;
             foreach (var item in MerchantItemCatalog())
             {
                 if (trimmed.Length > 0 &&
@@ -1672,8 +1675,11 @@ namespace SWLOR.Toolset.Editors
                 if (detailed == null || detailed.StorePanel != storePanel)
                     continue;
 
+                if (matched++ < Math.Max(0, skip))
+                    continue;
+
                 matches.Add(detailed);
-                if (matches.Count == Behaviors.BehaviorRowViewModel.MaxSearchResults)
+                if (matches.Count == take)
                     break;
             }
 

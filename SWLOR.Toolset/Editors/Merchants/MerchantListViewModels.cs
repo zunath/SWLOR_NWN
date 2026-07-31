@@ -1,3 +1,4 @@
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace SWLOR.Toolset.Editors.Merchants
@@ -47,6 +48,10 @@ namespace SWLOR.Toolset.Editors.Merchants
         public string DisplayName => string.IsNullOrWhiteSpace(Name) ? ResRef : Name;
         public string SellPrice => $"{StoreSellsFor:N0} cr";
         public string BuyPrice => $"{StoreBuysFor:N0} cr";
+
+        /// <summary>The same rendered UTI inventory artwork used by the item editor and palette.</summary>
+        [ObservableProperty]
+        private Bitmap? _preview;
 
         [ObservableProperty]
         private bool _isInfinite;

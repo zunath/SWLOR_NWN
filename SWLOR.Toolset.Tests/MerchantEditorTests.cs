@@ -165,6 +165,37 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void InventoryRowsRequestTheSharedItemPreview()
+        {
+            var root = NewMerchant();
+            new MerchantValueStore(root).AddInventoryItem(
+                (int)MerchantInventoryCategory.Armor,
+                "probe_armor");
+            var requested = new List<string>();
+            Action<Avalonia.Media.Imaging.Bitmap>? deliverPreview = null;
+
+            using var editor = new MerchantEditorViewModel(
+                root,
+                "probe_store",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                loadItem: resRef => new MerchantItemDefinition(resRef, "Probe Armor", 100),
+                requestItemPreview: (resRef, onReady) =>
+                {
+                    requested.Add(resRef);
+                    deliverPreview = onReady;
+                });
+
+            requested.Should().Equal("probe_armor");
+            deliverPreview.Should().NotBeNull();
+            editor.InventoryItems.Should().ContainSingle();
+            editor.SelectedInventoryItem.Should().BeSameAs(editor.InventoryItems[0]);
+        }
+
+        [Test]
         public void BuyOnlyRulesCannotCollapseToTheNativeBothEmptyDefault()
         {
             var root = NewMerchant();

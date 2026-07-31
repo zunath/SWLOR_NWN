@@ -56,13 +56,20 @@
                    SelectedItem="{Binding SelectedInventoryItem, Mode=TwoWay}">
             <ListBox.ItemTemplate>
               <DataTemplate DataType="merchants:MerchantInventoryItemViewModel">
-                <Grid ColumnDefinitions="*,Auto" Margin="6,7" ColumnSpacing="12">
-                  <StackPanel Grid.Column="0" Spacing="2">
+                <Grid ColumnDefinitions="46,*,Auto" Margin="6,6" ColumnSpacing="10">
+                  <Border Grid.Column="0" Width="42" Height="42"
+                          Background="{DynamicResource PanelRaisedBrush}"
+                          BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                          CornerRadius="3">
+                    <Image Source="{Binding Preview}" Stretch="Uniform" Margin="3" />
+                  </Border>
+                  <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
                     <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"
                                TextTrimming="CharacterEllipsis" />
                     <TextBlock Text="{Binding ResRef}" Classes="resref" FontSize="10.5" />
                   </StackPanel>
-                  <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                  <StackPanel Grid.Column="2" HorizontalAlignment="Right"
+                              VerticalAlignment="Center">
                     <TextBlock Text="{Binding SellPrice}" HorizontalAlignment="Right" />
                     <TextBlock Text="{Binding BuyPrice}" Classes="dim" FontSize="10.5"
                                HorizontalAlignment="Right" />
@@ -95,6 +102,12 @@
                 Padding="14">
           <StackPanel Spacing="9">
             <TextBlock Text="Selected item" Classes="section" />
+            <Border Height="112" Background="{DynamicResource PanelRaisedBrush}"
+                    BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                    CornerRadius="3">
+              <Image Source="{Binding SelectedInventoryItem.Preview}"
+                     Stretch="Uniform" Margin="8" />
+            </Border>
             <TextBlock Text="{Binding SelectedItemName}" FontSize="16"
                        FontWeight="SemiBold" TextWrapping="Wrap" />
             <TextBlock Text="{Binding SelectedItemResRef}" Classes="resref" />

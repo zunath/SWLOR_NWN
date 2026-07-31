@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
+using Avalonia.Media.Imaging;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Workspace;
@@ -43,7 +44,8 @@ namespace SWLOR.Toolset.Editors.Merchants
             Func<string, MerchantItemDefinition?>? loadItem = null,
             Func<string, IReadOnlyList<MerchantItemDefinition>>? searchItems = null,
             MerchantInstanceService? instances = null,
-            BlueprintSaveCoordinator? saveCoordinator = null)
+            BlueprintSaveCoordinator? saveCoordinator = null,
+            Action<string, Action<Bitmap>>? requestItemPreview = null)
         {
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _prompts = prompts ?? throw new ArgumentNullException(nameof(prompts));
@@ -59,7 +61,8 @@ namespace SWLOR.Toolset.Editors.Merchants
                 baseItems,
                 loadItem,
                 searchItems,
-                instances);
+                instances,
+                requestItemPreview);
             UpdateTitle();
         }
 

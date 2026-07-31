@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Documents;
@@ -20,10 +21,12 @@ namespace SWLOR.Toolset.Editors.Merchants
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly Func<string, MerchantItemDefinition?>? _loadItem;
         private readonly Func<string, IReadOnlyList<MerchantItemDefinition>>? _searchItems;
+        private readonly Action<string, Action<Bitmap>>? _requestItemPreview;
         private readonly IReadOnlyList<BehaviorChoice> _baseItems;
         private readonly MerchantInstanceService? _instances;
         private readonly List<MerchantBuyingRuleViewModel> _allBuyingRules = new();
         private int _instanceRefreshGeneration;
+        private int _inventoryRefreshGeneration;
         private bool _loading;
         private bool _disposed;
 
@@ -149,7 +152,8 @@ namespace SWLOR.Toolset.Editors.Merchants
             IReadOnlyList<BehaviorChoice>? baseItems = null,
             Func<string, MerchantItemDefinition?>? loadItem = null,
             Func<string, IReadOnlyList<MerchantItemDefinition>>? searchItems = null,
-            MerchantInstanceService? instances = null)
+            MerchantInstanceService? instances = null,
+            Action<string, Action<Bitmap>>? requestItemPreview = null)
         {
             ArgumentNullException.ThrowIfNull(merchant);
             _store = new MerchantValueStore(merchant);
@@ -159,6 +163,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             _loadItem = loadItem;
             _searchItems = searchItems;
             _instances = instances;
+            _requestItemPreview = requestItemPreview;
             HeaderOwner = headerOwner;
 
             BuildRows();
@@ -434,6 +439,7 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         private void RefreshInventory()
         {
+            var refreshGeneration = ++_inventoryRefreshGeneration;
             InventoryItems.Clear();
             SelectedInventoryItem = null;
             RefreshCategoryCounts();
@@ -463,7 +469,7 @@ namespace SWLOR.Toolset.Editors.Merchants
                 }
 
                 var capturedIndex = itemIndex;
-                InventoryItems.Add(new MerchantInventoryItemViewModel(
+                var inventoryItem = new MerchantInventoryItemViewModel(
                     category.Index,
                     itemIndex,
                     definition,
@@ -479,7 +485,13 @@ namespace SWLOR.Toolset.Editors.Merchants
                         {
                             RefreshInventory();
                         }
-                    }));
+                    });
+                InventoryItems.Add(inventoryItem);
+                _requestItemPreview?.Invoke(resRef, preview =>
+                {
+                    if (!_disposed && refreshGeneration == _inventoryRefreshGeneration)
+                        inventoryItem.Preview = preview;
+                });
             }
 
             SelectedInventoryItem = InventoryItems.FirstOrDefault();

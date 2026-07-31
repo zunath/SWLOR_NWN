@@ -1150,7 +1150,11 @@ namespace SWLOR.Toolset.Editors
                         if (_openAreaEditors.TryGetValue(areaResRef, out var area))
                             area.ReloadInstancesAfterBlueprintSave();
                     }),
-                _blueprintSaves);
+                _blueprintSaves,
+                _thumbnails == null
+                    ? null
+                    : (itemResRef, onReady) =>
+                        _thumbnails.RequestAsync(ResourceType.Uti, itemResRef, onReady));
             editor.Closed += closed => _openMerchantEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>

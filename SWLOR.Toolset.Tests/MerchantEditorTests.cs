@@ -373,6 +373,31 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BuyingRulesDefensivelyExcludeReservedAndBrokenDisplayChoices()
+        {
+            using var editor = new MerchantEditorViewModel(
+                NewMerchant(),
+                "probe_store",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                baseItems: new[]
+                {
+                    new BehaviorChoice(42, "Probe Type"),
+                    new BehaviorChoice(150, "bio_reserved"),
+                    new BehaviorChoice(465, "cep_reserved"),
+                    new BehaviorChoice(23, "Bad Strref"),
+                    new BehaviorChoice(30, "DELETED")
+                });
+
+            editor.BuyingRules.Should().ContainSingle()
+                .Which.Name.Should().Be("Probe Type");
+            editor.BuyingRuleSummary.Should().Be("1 of 1 base item types");
+        }
+
+        [Test]
         public void StoreSynchronizer_PreservesPlacementAndExpandsInventoryInCliOrder()
         {
             var merchant = JsonGffDocument.Parse(

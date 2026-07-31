@@ -17,6 +17,7 @@ namespace SWLOR.Toolset.Tests.Items
         [TestCase("Deleted_Shortsword", "AArCl", false, TestName = "ContainsDeletedAnywhere")]
         [TestCase("bio_reserved", "AArCl", false)]
         [TestCase("BIO_RESERVED", "AArCl", false)]
+        [TestCase("cep_reserved", "AArCl", false)]
         [TestCase("Padding", "AArCl", false)]
         [TestCase("PADDING", "AArCl", false)]
         [TestCase("Shortsword", null, false, TestName = "BlankItemClassIsRejected")]
@@ -33,6 +34,7 @@ namespace SWLOR.Toolset.Tests.Items
         [TestCase("  Bad Strref  ", false)]
         [TestCase("bio_reserved", false)]
         [TestCase("BIO_RESERVED", false)]
+        [TestCase("cep_reserved", false)]
         [TestCase("DELETED", false)]
         [TestCase("Padding", false)]
         [TestCase("", false)]
@@ -47,6 +49,7 @@ namespace SWLOR.Toolset.Tests.Items
 
         [TestCase("Bad Strref", false)]
         [TestCase("bio_reserved", false)]
+        [TestCase("cep_reserved", false)]
         [TestCase("some_reserved_slot", false)]
         [TestCase("DELETED", false)]
         [TestCase("Padding", false)]

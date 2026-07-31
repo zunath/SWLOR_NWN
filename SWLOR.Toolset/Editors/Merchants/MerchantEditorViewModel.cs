@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
+using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.Editors.Merchants;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
@@ -577,7 +578,9 @@ namespace SWLOR.Toolset.Editors.Merchants
         private void BuildBuyingRules()
         {
             _allBuyingRules.Clear();
-            foreach (var choice in _baseItems.OrderBy(choice => choice.Display, StringComparer.OrdinalIgnoreCase))
+            foreach (var choice in _baseItems
+                         .Where(choice => BaseItemChoicePolicy.IsDisplayOffered(choice.Display))
+                         .OrderBy(choice => choice.Display, StringComparer.OrdinalIgnoreCase))
             {
                 var baseItem = checked((int)choice.Value);
                 _allBuyingRules.Add(new MerchantBuyingRuleViewModel(

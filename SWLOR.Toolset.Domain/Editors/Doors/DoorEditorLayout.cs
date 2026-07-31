@@ -33,7 +33,7 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
             {
                 Label = "Category", Name = "PaletteID", Kind = BehaviorFieldKind.Choice,
                 FieldType = GffFieldType.Byte, ChoicesKey = DoorChoiceKeys.DoorPaletteCategories,
-                IsSearchable = true
+                IsSearchable = true, IsInlineSearch = true
             },
             new DoorFieldDefinition
             {

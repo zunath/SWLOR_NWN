@@ -22,7 +22,8 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
             new BehaviorFieldDefinition
             {
                 Label = "Category", Name = "PaletteID", Kind = BehaviorFieldKind.Choice,
-                FieldType = GffFieldType.Byte, ChoicesKey = WaypointChoiceKeys.PaletteCategories
+                FieldType = GffFieldType.Byte, ChoicesKey = WaypointChoiceKeys.PaletteCategories,
+                IsSearchable = true, IsInlineSearch = true
             }
         };
 

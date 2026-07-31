@@ -19,7 +19,8 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
             Field("Tag", "Tag", BehaviorFieldKind.Text, GffFieldType.CExoString, maxLength: MaxTagLength),
             Field("ResRef", "TemplateResRef", BehaviorFieldKind.Text, GffFieldType.ResRef,
                 maxLength: MaxResRefLength, readOnly: true),
-            Choice("Category", "PaletteID", GffFieldType.Byte, CreatureChoiceKeys.PaletteCategories, true),
+            Choice("Category", "PaletteID", GffFieldType.Byte, CreatureChoiceKeys.PaletteCategories,
+                searchable: true, inlineSearch: true),
             Field("Description", "Description", BehaviorFieldKind.Paragraph, GffFieldType.CExoLocString)
         };
 
@@ -120,7 +121,8 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
             GffFieldType type,
             string choicesKey,
             bool searchable = false,
-            bool local = false) => new()
+            bool local = false,
+            bool inlineSearch = false) => new()
         {
             Label = label,
             Name = name,
@@ -128,7 +130,8 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
             FieldType = type,
             Storage = local ? BehaviorFieldStorage.Local : BehaviorFieldStorage.Field,
             ChoicesKey = choicesKey,
-            IsSearchable = searchable
+            IsSearchable = searchable,
+            IsInlineSearch = inlineSearch
         };
     }
 }

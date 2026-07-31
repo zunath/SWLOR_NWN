@@ -82,7 +82,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             {
                 Label = "Category", Name = "PaletteID", Kind = BehaviorFieldKind.Choice,
                 FieldType = GffFieldType.Byte, ChoicesKey = TriggerChoiceKeys.PaletteCategories,
-                IsSearchable = true
+                IsSearchable = true, IsInlineSearch = true
             },
             new BehaviorFieldDefinition
             {

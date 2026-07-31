@@ -37,7 +37,7 @@ namespace SWLOR.Toolset.Domain.Editors.Sounds
             {
                 Label = "Category", Name = "PaletteID", Kind = BehaviorFieldKind.Choice,
                 FieldType = GffFieldType.Byte, ChoicesKey = SoundChoiceKeys.PaletteCategories,
-                IsSearchable = true
+                IsSearchable = true, IsInlineSearch = true
             },
             new BehaviorFieldDefinition
             {

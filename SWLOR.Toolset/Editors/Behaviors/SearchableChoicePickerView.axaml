@@ -11,10 +11,12 @@
       <TextBlock Text="{Binding SelectedChoiceDisplay}" TextTrimming="CharacterEllipsis"
                  VerticalAlignment="Center" />
       <TextBlock Text="{Binding SearchSummary}" Classes="count" />
-      <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding !IsSearchExpanded}">
-        <Button Content="Choose..." Command="{Binding OpenSearchCommand}" />
-        <Button Content="Clear" Command="{Binding ClearChoiceCommand}"
-                IsVisible="{Binding CanClearChoice}" />
+      <StackPanel IsVisible="{Binding !IsInlineSearchChoice}">
+        <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding !IsSearchExpanded}">
+          <Button Content="Choose..." Command="{Binding OpenSearchCommand}" />
+          <Button Content="Clear" Command="{Binding ClearChoiceCommand}"
+                  IsVisible="{Binding CanClearChoice}" />
+        </StackPanel>
       </StackPanel>
     </StackPanel>
 
@@ -29,7 +31,8 @@
       <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
         <TextBox Text="{Binding ChoiceSearchText, Mode=TwoWay}"
                  Watermark="{Binding SearchWatermark}" />
-        <Button Grid.Column="1" Content="Close" Command="{Binding CloseSearchCommand}" />
+        <Button Grid.Column="1" Content="Close" Command="{Binding CloseSearchCommand}"
+                IsVisible="{Binding !IsInlineSearchChoice}" />
       </Grid>
       <TextBlock Text="{Binding SearchSummary}" Classes="count"
                  IsVisible="{Binding Compact, ElementName=Root}" />

@@ -214,7 +214,14 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// </summary>
         public virtual bool IsSearchableChoice =>
             IsChoice && !IsGallery &&
-            (Definition.IsSearchable || AreChoicesLoaded && Choices.Count > SearchableChoiceThreshold);
+            (Definition.IsSearchable || Definition.IsInlineSearch ||
+             AreChoicesLoaded && Choices.Count > SearchableChoiceThreshold);
+
+        /// <summary>
+        /// A searchable list that remains visible in the form. Palette category fields use this
+        /// shared presentation in every blueprint editor; heavyweight catalogs stay collapsed.
+        /// </summary>
+        public bool IsInlineSearchChoice => IsSearchableChoice && Definition.IsInlineSearch;
 
         /// <summary>A plain drop-down: every choice row that is neither searchable nor a gallery.</summary>
         public virtual bool IsPlainChoice => IsChoice && !IsGallery && !IsSearchableChoice;
@@ -416,6 +423,12 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// </summary>
         public void Reload()
         {
+            if (Definition.IsInlineSearch)
+            {
+                LoadDeferredChoices();
+                IsSearchExpanded = true;
+            }
+
             _loading = true;
             try
             {
@@ -543,7 +556,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 Choice = option;
 
             IsGalleryOpen = false;
-            IsSearchExpanded = false;
+            if (!IsInlineSearchChoice)
+                IsSearchExpanded = false;
         }
 
         [RelayCommand]
@@ -984,9 +998,17 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         private void EnsureChoicesLoaded()
         {
+            if (!LoadDeferredChoices())
+                return;
+
+            Reload();
+        }
+
+        private bool LoadDeferredChoices()
+        {
             var loader = _choiceLoader;
             if (loader == null)
-                return;
+                return false;
 
             // Resolve before clearing the loader so a malformed source can be retried instead of
             // leaving the row claiming that an empty set loaded successfully. The resolver itself
@@ -996,7 +1018,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
             _choiceLoader = null;
             Choices = loaded;
             OnPropertyChanged(nameof(AreChoicesLoaded));
-            Reload();
+            return true;
         }
 
         private string StoredChoiceDisplay()
@@ -1029,6 +1051,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
             OnPropertyChanged(nameof(IsInlineGallery));
             OnPropertyChanged(nameof(IsPopupGallery));
             OnPropertyChanged(nameof(IsSearchableChoice));
+            OnPropertyChanged(nameof(IsInlineSearchChoice));
             OnPropertyChanged(nameof(IsPlainChoice));
             OnPropertyChanged(nameof(SearchSummary));
             OnPropertyChanged(nameof(CanLoadMoreSearchResults));

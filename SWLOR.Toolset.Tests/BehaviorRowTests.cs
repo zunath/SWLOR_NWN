@@ -3,7 +3,10 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
+using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Editors.Doors;
+using SWLOR.Toolset.Domain.Editors.Items;
+using SWLOR.Toolset.Domain.Editors.Merchants;
 using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
@@ -158,6 +161,59 @@ namespace SWLOR.Toolset.Tests
             row.FilteredChoices.Should().ContainSingle()
                 .Which.Display.Should().Be("Option 011");
             row.SearchSummary.Should().Be("1 of 120 options");
+        }
+
+        [Test]
+        public void PaletteCategoriesUseTheSameVisibleFilteredSelectorAcrossBlueprintEditors()
+        {
+            var definitions = new BehaviorFieldDefinition[]
+            {
+                CreatureEditorLayout.Basic.Single(field => field.Label == "Category"),
+                ItemEditorLayout.Basic.Single(field => field.Label == "Category"),
+                DoorEditorLayout.Basic.Single(field => field.Label == "Category"),
+                MerchantEditorLayout.Details.Single(field => field.Label == "Category"),
+                TriggerEditorLayout.Basic.Single(field => field.Label == "Category"),
+                SoundEditorLayout.Basic.Single(field => field.Label == "Category"),
+                WaypointEditorLayout.Basic.Single(field => field.Label == "Category")
+            };
+
+            definitions.Should().OnlyContain(field => field.IsSearchable && field.IsInlineSearch);
+        }
+
+        [Test]
+        public void AnInlineSearchPublishesItsVirtualizedFirstPageWithoutAChooseAction()
+        {
+            var calls = 0;
+            var row = new BehaviorRowViewModel(
+                new BehaviorFieldDefinition
+                {
+                    Label = "Category", Name = "PaletteID", Kind = BehaviorFieldKind.Choice,
+                    FieldType = GffFieldType.Byte, IsSearchable = true, IsInlineSearch = true
+                },
+                Store("""{ "__data_type": "UTC " }"""),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                choiceLoader: () =>
+                {
+                    calls++;
+                    return Enumerable.Range(0, 90)
+                        .Select(index => new BehaviorChoice(index, $"Category {index}"))
+                        .ToList();
+                });
+
+            row.Reload();
+
+            calls.Should().Be(1);
+            row.IsInlineSearchChoice.Should().BeTrue();
+            row.IsSearchExpanded.Should().BeTrue();
+            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
+
+            row.PickChoiceCommand.Execute(row.FilteredChoices[3]);
+
+            row.IsSearchExpanded.Should().BeTrue("inline category selection remains visible after a choice");
         }
 
         [Test]

@@ -32,7 +32,7 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
             {
                 Label = "Category", Name = "ID", Kind = BehaviorFieldKind.Choice,
                 FieldType = GffFieldType.Byte, ChoicesKey = MerchantChoiceKeys.PaletteCategories,
-                IsSearchable = true
+                IsSearchable = true, IsInlineSearch = true
             }
         };
 

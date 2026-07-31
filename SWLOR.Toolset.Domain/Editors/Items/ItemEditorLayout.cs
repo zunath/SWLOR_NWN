@@ -42,7 +42,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             {
                 Label = "Category", Name = "PaletteID", Kind = BehaviorFieldKind.Choice,
                 FieldType = GffFieldType.Byte, ChoicesKey = ItemChoiceKeys.PaletteCategories,
-                IsSearchable = true
+                IsSearchable = true, IsInlineSearch = true
             },
             new BehaviorFieldDefinition
             {

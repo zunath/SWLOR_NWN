@@ -103,6 +103,48 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void XpScaleSliderAndNumericInputStaySynchronized()
+        {
+            var ifoPath = Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json");
+            var editor = new ModulePropertiesDocumentViewModel(
+                ifoPath,
+                CorpusLocator.ModuleDirectory,
+                new ModuleWorkspace(CorpusLocator.ModuleDirectory),
+                new OutputLogService(),
+                new StubPrompts());
+            var view = new ModulePropertiesDocumentView { DataContext = editor };
+            var window = new Window { Width = 1200, Height = 800, Content = view };
+
+            window.Show();
+            view.FindControl<TabControl>("ModulePropertyTabs")!.SelectedIndex = 2;
+            Dispatcher.UIThread.RunJobs();
+            window.UpdateLayout();
+
+            var slider = view.FindControl<Slider>("XpScaleSlider")!;
+            var numeric = view.FindControl<NumericUpDown>("XpScaleNumeric")!;
+            slider.Minimum.Should().Be(0);
+            slider.Maximum.Should().Be(200);
+            slider.Value.Should().Be((double)editor.XpScale);
+            numeric.Value.Should().Be(editor.XpScale);
+
+            slider.Value = 37;
+            Dispatcher.UIThread.RunJobs();
+            editor.XpScale.Should().Be(37);
+            numeric.Value.Should().Be(37);
+
+            editor.Undo();
+            numeric.Value = 81;
+            Dispatcher.UIThread.RunJobs();
+            editor.XpScale.Should().Be(81);
+            slider.Value.Should().Be(81);
+
+            editor.Undo();
+            editor.IsDirty.Should().BeFalse();
+            window.Close();
+            editor.OnClose().Should().BeTrue();
+        }
+
+        [AvaloniaTest]
         public void EveryModulePropertiesTabRendersWithoutBindingErrors()
         {
             var previousSink = Logger.Sink;

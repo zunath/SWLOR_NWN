@@ -17,7 +17,7 @@ using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors.Creatures
 {
-    /// <summary>The seven-tab creature editor shared by all creature blueprints.</summary>
+    /// <summary>The creature editor shared by all creature blueprints.</summary>
     public sealed partial class CreatureEditorViewModel : ObservableObject, IModelPreviewSource, IDisposable
     {
         private readonly CreatureValueStore _store;
@@ -51,6 +51,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         public VarTableSectionViewModel Variables { get; }
         public AppearanceGallerySectionViewModel? AppearanceGallery { get; }
         public bool HasAppearanceGallery => AppearanceGallery != null;
+        public bool ShowsVariablesTab => SelectedRole.AllowsVariables;
 
         [ObservableProperty]
         private CreatureRole _selectedRole = CreatureRoleCatalog.Default;
@@ -278,6 +279,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             foreach (var row in rows)
                 RoleRows.Add(row);
             BehaviorListItemViewModel.Select(RoleList, role.Id);
+            OnPropertyChanged(nameof(ShowsVariablesTab));
             UpdateQuestUsage();
         }
 

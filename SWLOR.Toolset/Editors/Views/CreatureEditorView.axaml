@@ -176,7 +176,7 @@
             <behaviors:BehaviorRailView Items="{Binding RoleList}" ChooseCommand="{Binding ChooseRoleCommand}" />
             <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1,0,0,0">
               <StackPanel Margin="12" Spacing="8">
-                <Border Classes="card" Padding="12" IsVisible="{Binding !SelectedRole.AllowsVariables}">
+                <Border Classes="card" Padding="12">
                   <StackPanel>
                     <TextBlock Text="{Binding SelectedRole.DisplayName}" Classes="section" />
                     <TextBlock Text="{Binding SelectedRole.Summary}" Classes="dim" TextWrapping="Wrap"
@@ -186,12 +186,13 @@
                                Margin="8,4" IsVisible="{Binding HasQuestUsage}" />
                   </StackPanel>
                 </Border>
-                <Panel IsVisible="{Binding SelectedRole.AllowsVariables}">
-                  <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
-                </Panel>
               </StackPanel>
             </ScrollViewer>
           </Grid>
+        </TabItem>
+
+        <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
+          <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
         </TabItem>
 
         <TabItem Header="Appearance">

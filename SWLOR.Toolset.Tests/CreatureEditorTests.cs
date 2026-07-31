@@ -420,7 +420,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
-        public void CreatureEditorView_RendersItsEightTabSurface()
+        public void CreatureEditorView_RendersItsConditionalVariablesTab()
         {
             var root = Path.Combine(Path.GetTempPath(), "swlor-creature-view-" + Guid.NewGuid().ToString("N"));
             var utcDirectory = Path.Combine(root, "utc");
@@ -458,9 +458,24 @@ namespace SWLOR.Toolset.Tests
                 view.GetVisualDescendants().Should().NotBeEmpty();
                 var tabs = view.FindControl<TabControl>("CreatureTabs");
                 tabs.Should().NotBeNull();
-                tabs!.Items.Cast<TabItem>().Select(tab => tab.Header?.ToString()).Should().Equal(
-                    "Basic", "Behavior", "Appearance", "Equipment", "Stats", "Abilities", "AI", "Loot");
-                tabs!.SelectedIndex = 2;
+                var tabItems = tabs!.Items.Cast<TabItem>().ToList();
+                tabItems.Select(tab => tab.Header?.ToString()).Should().Equal(
+                    "Basic", "Behavior", "Variables", "Appearance", "Equipment", "Stats", "Abilities", "AI", "Loot");
+                var variablesTab = tabItems.Single(tab => tab.Header?.ToString() == "Variables");
+                variablesTab.IsVisible.Should().BeFalse();
+
+                tabs.SelectedIndex = 1;
+                editor.ChooseRoleCommand.Execute(CreatureRoleCatalog.All.Single(role => role.Id == "custom"));
+                Dispatcher.UIThread.RunJobs();
+                editor.ShowsVariablesTab.Should().BeTrue();
+                variablesTab.IsVisible.Should().BeTrue();
+
+                tabs.SelectedItem = variablesTab;
+                Dispatcher.UIThread.RunJobs();
+                variablesTab.Content.Should().BeOfType<VariablesSectionView>(
+                    "Custom variables use the shared editor on their own tab");
+
+                tabs.SelectedIndex = 3;
                 Dispatcher.UIThread.RunJobs();
 
                 var appearanceSections = view.FindControl<TabControl>("CreatureAppearanceSections");
@@ -473,14 +488,14 @@ namespace SWLOR.Toolset.Tests
                     Dispatcher.UIThread.RunJobs();
                 }
 
-                tabs.SelectedIndex = 3;
+                tabs.SelectedIndex = 4;
                 Dispatcher.UIThread.RunJobs();
                 var equipmentSlots = view.FindControl<ListBox>("CreatureEquipmentSlots");
                 equipmentSlots.Should().NotBeNull();
                 equipmentSlots!.ItemCount.Should().Be(4);
                 equipmentSlots.SelectedItem.Should().BeSameAs(editor.VisibleEquipment.SelectedSlot);
 
-                tabs.SelectedIndex = 5;
+                tabs.SelectedIndex = 6;
                 Dispatcher.UIThread.RunJobs();
                 var abilityButton = view.GetVisualDescendants()
                     .OfType<Button>()

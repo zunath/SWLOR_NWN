@@ -539,8 +539,16 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         private void EnsureSelectedAppearanceSectionLoaded()
         {
-            if (SelectedAppearanceSectionIndex == 2)
-                _ = BodyParts.EnsureLoadedAsync();
+            if (SelectedAppearanceSectionIndex != 2)
+                return;
+
+            if (!BodyParts.IsDynamic)
+            {
+                SelectedAppearanceSectionIndex = 0;
+                return;
+            }
+
+            _ = BodyParts.EnsureLoadedAsync();
         }
 
         public void ReloadGameResources()

@@ -220,7 +220,7 @@
               </ScrollViewer>
             </TabItem>
 
-            <TabItem Header="Body">
+            <TabItem Header="Body" IsVisible="{Binding BodyParts.IsDynamic}">
               <ScrollViewer>
                 <Border Classes="card" Padding="12" Margin="14,10">
                   <StackPanel Spacing="6">

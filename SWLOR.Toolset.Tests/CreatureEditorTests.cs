@@ -535,6 +535,62 @@ namespace SWLOR.Toolset.Tests
                 .Should().Equal("Idle", "Walk", "Attack");
         }
 
+        [AvaloniaTest]
+        public void CreatureAppearance_HidesBodyTabForNonDynamicModelsAndRepairsSelection()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "body_visibility", "Body Visibility"));
+            var options = new[]
+            {
+                new AppearanceOption("6", "Dynamic Human", "row 6", CreatureAppearanceId: 6),
+                new AppearanceOption("7", "Full Body Droid", "row 7", CreatureAppearanceId: 7)
+            };
+            using var editor = new CreatureEditorViewModel(
+                document.Root,
+                Path.Combine(CorpusLocator.ModuleDirectory, "utc", "body_visibility.utc.json"),
+                "body_visibility",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                null,
+                null,
+                null,
+                id => id == 6
+                    ? new AppearanceRow(6, "DYNAMIC_HUMAN", "Dynamic Human", "P", "H", null)
+                    : new AppearanceRow(7, "FULL_BODY_DROID", "Full Body Droid", "S", "c_droid", null),
+                null,
+                appearanceOptions: options);
+            var view = new CreatureEditorView { DataContext = editor };
+            var window = new Window { Width = 1280, Height = 800, Content = view };
+
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+            var appearanceSections = view.FindControl<TabControl>("CreatureAppearanceSections");
+            appearanceSections.Should().NotBeNull();
+            var bodyTab = appearanceSections!.Items.Cast<TabItem>()
+                .Single(tab => tab.Header?.ToString() == "Body");
+            bodyTab.IsVisible.Should().BeTrue("the starting appearance is dynamic");
+
+            appearanceSections.SelectedIndex = 2;
+            Dispatcher.UIThread.RunJobs();
+            editor.SelectedAppearanceSectionIndex.Should().Be(2);
+
+            editor.AppearanceGallery!.Highlighted = editor.AppearanceGallery.Tiles.Single(tile =>
+                tile.Option.CreatureAppearanceId == 7);
+            Dispatcher.UIThread.RunJobs();
+
+            bodyTab.IsVisible.Should().BeFalse("fixed models have no editable segmented body parts");
+            editor.SelectedAppearanceSectionIndex.Should().Be(0,
+                "changing away from a dynamic model cannot leave a hidden section selected");
+            appearanceSections.SelectedIndex.Should().Be(0);
+
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+
         [Test]
         public void CreaturePreview_MapsNamedAnimationsToSegments()
         {

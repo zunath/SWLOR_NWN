@@ -103,7 +103,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                     .OrderBy(filter => filter.SkillId == 0 ? 1 : 0)
                     .ThenBy(filter => filter.Label, StringComparer.OrdinalIgnoreCase)
             ];
-            _selectedAudienceFilter = AudienceFilters[0];
+            _selectedAudienceFilter = AudienceFilters.Single(
+                filter => filter.Value == CreatureAbilityAudience.Npc);
             _selectedSkillFilter = SkillFilters[0];
             Reload();
         }

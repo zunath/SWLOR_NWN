@@ -384,8 +384,8 @@ namespace SWLOR.Toolset.Tests
                 abilities,
                 new Dictionary<int, CreaturePerkInfo>());
 
-            viewModel.SelectedAudienceFilter = viewModel.AudienceFilters.Single(
-                filter => filter.Value == CreatureAbilityAudience.Npc);
+            viewModel.SelectedAudienceFilter.Value.Should().Be(CreatureAbilityAudience.Npc,
+                "creature builders should start with NPC-intended abilities");
             viewModel.Matching.Should().ContainSingle(info => info.Name == "NPC Device");
 
             viewModel.SelectedSkillFilter = viewModel.SkillFilters.Single(filter => filter.Label == "Devices");
@@ -408,7 +408,7 @@ namespace SWLOR.Toolset.Tests
             var store = new CreatureValueStore(document.Root);
             var abilities = Enumerable.Range(1, 75)
                 .Select(id => new CreatureAbilityInfo(
-                    id, $"Ability {id:000}", "Test ability", 0, "", 33, "Devices"))
+                    id, $"Ability {id:000}", "Test ability", 0, "", 33, "Devices", true))
                 .ToArray();
             var viewModel = new CreatureAbilitiesViewModel(
                 store,

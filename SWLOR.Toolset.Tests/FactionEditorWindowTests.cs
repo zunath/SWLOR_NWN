@@ -27,7 +27,7 @@ namespace SWLOR.Toolset.Tests
             var factionCount = FacDocument.Load(facPath).FactionList.Count;
             var usage = Enumerable.Range(0, factionCount).ToDictionary(
                 id => id,
-                _ => new FactionReferenceUsage(0, 0));
+                _ => FactionReferenceUsage.Unknown);
             var viewModel = new FactionEditorViewModel(
                 root,
                 usage,
@@ -45,6 +45,14 @@ namespace SWLOR.Toolset.Tests
                     .Should().Contain(new[] { "Simple editor", "Advanced" });
                 window.GetVisualDescendants().OfType<ListBox>()
                     .Should().Contain(list => list.ItemCount == factionCount);
+                viewModel.Factions.Should().OnlyContain(faction =>
+                    faction.UsageSummary == "References updated automatically");
+
+                viewModel.SelectedFaction = viewModel.Factions[5];
+                viewModel.RequestRemoveFactionCommand.Execute(null);
+                viewModel.RemoveSummary.Should().Contain(
+                    "Every blueprint and placed object using this faction will move to Merchant");
+                viewModel.CancelRemoveFactionCommand.Execute(null);
 
                 viewModel.EditorPage = 1;
                 Dispatcher.UIThread.RunJobs();
@@ -58,6 +66,21 @@ namespace SWLOR.Toolset.Tests
                 if (Directory.Exists(root))
                     Directory.Delete(root, recursive: true);
             }
+        }
+
+        [Test]
+        public void OpeningPathDoesNotPerformTheModuleWideUsageScan()
+        {
+            var path = Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset",
+                "Factions",
+                "FactionEditorWindow.axaml.cs");
+            var source = File.ReadAllText(path);
+
+            source.Should().NotContain("ScanUsage(",
+                "opening must not parse the module's hundreds of megabytes of GIT resources");
+            source.Should().Contain("FactionReferenceUsage.Unknown");
         }
 
         [Test]

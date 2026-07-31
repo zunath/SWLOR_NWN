@@ -3,9 +3,14 @@ using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Factions
 {
-    public sealed record FactionReferenceUsage(int BlueprintCount, int PlacedObjectCount)
+    public sealed record FactionReferenceUsage(
+        int BlueprintCount,
+        int PlacedObjectCount,
+        bool IsKnown = true)
     {
         public int Total => BlueprintCount + PlacedObjectCount;
+
+        public static FactionReferenceUsage Unknown { get; } = new(0, 0, IsKnown: false);
     }
 
     public sealed record FactionReferenceRewrite(

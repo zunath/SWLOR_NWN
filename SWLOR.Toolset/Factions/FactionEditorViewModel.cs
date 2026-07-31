@@ -22,9 +22,11 @@ namespace SWLOR.Toolset.Factions
         [ObservableProperty]
         private FactionReferenceUsage _usage;
 
-        public string UsageSummary => Usage.Total == 0
-            ? "Not used by module objects"
-            : $"{Usage.Total} module reference{(Usage.Total == 1 ? string.Empty : "s")}";
+        public string UsageSummary => !Usage.IsKnown
+            ? "References updated automatically"
+            : Usage.Total == 0
+                ? "Not used by module objects"
+                : $"{Usage.Total} module reference{(Usage.Total == 1 ? string.Empty : "s")}";
 
         public FactionListItemViewModel(
             JsonGffStruct entry,
@@ -349,11 +351,14 @@ namespace SWLOR.Toolset.Factions
             var usage = SelectedFaction.Usage;
             RemoveHeadline = $"Remove {SelectedFaction.Name}?";
             RemoveDestination = parent.Name;
-            RemoveSummary = usage.Total == 0
-                ? $"Nothing currently uses this faction. Its relationships will be removed."
-                : $"{usage.BlueprintCount} blueprint{(usage.BlueprintCount == 1 ? string.Empty : "s")} and " +
-                  $"{usage.PlacedObjectCount} placed object{(usage.PlacedObjectCount == 1 ? string.Empty : "s")} " +
-                  $"will move to {parent.Name}. Larger faction IDs will be compacted safely.";
+            RemoveSummary = !usage.IsKnown
+                ? $"Every blueprint and placed object using this faction will move to {parent.Name}. " +
+                  "Larger faction IDs will be compacted safely."
+                : usage.Total == 0
+                    ? "Nothing currently uses this faction. Its relationships will be removed."
+                    : $"{usage.BlueprintCount} blueprint{(usage.BlueprintCount == 1 ? string.Empty : "s")} and " +
+                      $"{usage.PlacedObjectCount} placed object{(usage.PlacedObjectCount == 1 ? string.Empty : "s")} " +
+                      $"will move to {parent.Name}. Larger faction IDs will be compacted safely.";
         }
 
         [RelayCommand]
@@ -454,8 +459,7 @@ namespace SWLOR.Toolset.Factions
                     {
                         _session.ReloadFromDisk();
                         _removedParentByOriginalId.Clear();
-                        _usageByOriginalId = await Task.Run(
-                            () => FactionReferenceRewriter.ScanUsage(_moduleRoot, _table.Count));
+                        _usageByOriginalId = UnknownUsage(_table.Count);
                         CaptureBaseline();
                         Rebuild(_fac.FactionList.FirstOrDefault());
                         AfterHistoryChange();
@@ -478,8 +482,7 @@ namespace SWLOR.Toolset.Factions
                 foreach (var path in changed)
                     _changedPaths.Add(path);
 
-                _usageByOriginalId = await Task.Run(
-                    () => FactionReferenceRewriter.ScanUsage(_moduleRoot, _table.Count));
+                _usageByOriginalId = UnknownUsage(_table.Count);
                 _removedParentByOriginalId.Clear();
                 CaptureBaseline();
                 Rebuild(ResolveSelection(SelectedFaction?.Entry));
@@ -607,8 +610,10 @@ namespace SWLOR.Toolset.Factions
                 ParentName = definition.ParentId.HasValue
                     ? _table.Factions[definition.ParentId.Value].Name
                     : "None (standard faction)";
-                UsedBy = $"{SelectedFaction.Usage.BlueprintCount} blueprints · " +
-                         $"{SelectedFaction.Usage.PlacedObjectCount} placed objects";
+                UsedBy = SelectedFaction.Usage.IsKnown
+                    ? $"{SelectedFaction.Usage.BlueprintCount} blueprints · " +
+                      $"{SelectedFaction.Usage.PlacedObjectCount} placed objects"
+                    : "References are discovered and updated automatically when faction IDs change.";
                 GlobalEffect = definition.GlobalEffect;
 
                 Relationships.Clear();
@@ -643,8 +648,13 @@ namespace SWLOR.Toolset.Factions
                 return usage;
             }
 
-            return new FactionReferenceUsage(0, 0);
+            return FactionReferenceUsage.Unknown;
         }
+
+        private static IReadOnlyDictionary<int, FactionReferenceUsage> UnknownUsage(int factionCount) =>
+            Enumerable.Range(0, factionCount).ToDictionary(
+                id => id,
+                _ => FactionReferenceUsage.Unknown);
 
         private Dictionary<int, int> BuildOriginalIdMap()
         {

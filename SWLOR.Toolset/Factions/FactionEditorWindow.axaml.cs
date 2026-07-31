@@ -44,8 +44,12 @@ namespace SWLOR.Toolset.Factions
                 using var session = Domain.Editing.DocumentSession.Open(factionPath);
                 return new Domain.Documents.FacDocument(session.Document).FactionList.Count;
             }).ConfigureAwait(true);
-            var usage = await Task.Run(
-                () => FactionReferenceRewriter.ScanUsage(moduleRoot, factionCount)).ConfigureAwait(true);
+            // Opening the editor must not parse every blueprint and area-instance file merely to
+            // decorate the faction list with usage counts. SWLOR's GIT corpus alone is hundreds of
+            // megabytes. The destructive save still discovers and remaps every real reference.
+            var usage = Enumerable.Range(0, factionCount).ToDictionary(
+                id => id,
+                _ => FactionReferenceUsage.Unknown);
 
             var viewModel = new FactionEditorViewModel(moduleRoot, usage, log, prompts);
             var window = new FactionEditorWindow(viewModel);

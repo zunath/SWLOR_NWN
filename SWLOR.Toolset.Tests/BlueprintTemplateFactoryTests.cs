@@ -21,12 +21,12 @@ namespace SWLOR.Toolset.Tests
         private static readonly ResourceType[] SupportedTypes =
         {
             ResourceType.Utc, ResourceType.Uti, ResourceType.Utp, ResourceType.Utd,
-            ResourceType.Utt, ResourceType.Uts, ResourceType.Utw
+            ResourceType.Utm, ResourceType.Utt, ResourceType.Uts, ResourceType.Utw
         };
 
         private static readonly ResourceType[] UnsupportedTypes =
         {
-            ResourceType.Area, ResourceType.Dlg, ResourceType.Nss, ResourceType.Utm
+            ResourceType.Area, ResourceType.Dlg, ResourceType.Nss
         };
 
         /// <summary>Per type: the resref field, then the localized-name field the display name lands in.</summary>
@@ -130,10 +130,21 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void Supports_DoesNotOfferMerchantsUntilTheirInventoryCanBeEdited()
+        public void CreateFileContent_Merchant_UsesSwlorDefaultsAndFiveInventoryPanes()
         {
-            BlueprintTemplateFactory.Supports(ResourceType.Utm).Should().BeFalse(
-                "an empty merchant cannot be made usable while StoreList has no editor");
+            var root = Parse(
+                ResourceType.Utm,
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utm, "probe_resref", "Probe Merchant")).Fields;
+
+            root.GetListOrEmpty("StoreList").Should().HaveCount(5);
+            root.GetIntOrNull("IdentifyPrice").Should().Be(0);
+            root.GetIntOrNull("BlackMarket").Should().Be(1);
+            root.GetIntOrNull("MaxBuyPrice").Should().Be(-1);
+            root.GetIntOrNull("StoreGold").Should().Be(-1);
+            root.GetStringOrNull("OnOpenStore").Should().Be("on_open_store");
+            root.GetStringOrNull("OnStoreClosed").Should().Be("on_close_store");
+            root.GetIntOrNull("ID").Should().Be(5);
         }
 
         /// <summary>

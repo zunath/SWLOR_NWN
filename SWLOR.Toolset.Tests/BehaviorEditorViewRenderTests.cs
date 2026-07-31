@@ -9,12 +9,14 @@ using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Doors;
+using SWLOR.Toolset.Domain.Editors.Merchants;
 using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Doors;
+using SWLOR.Toolset.Editors.Merchants;
 using SWLOR.Toolset.Editors.Sounds;
 using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Editors.Waypoints;
@@ -183,6 +185,15 @@ namespace SWLOR.Toolset.Tests
             var sound = new SoundEditorViewModel(
                 Struct("UTS "), "snd_test", isInstance: false, Accept);
             yield return new SoundEditorView { DataContext = sound };
+
+            var merchant = new MerchantEditorViewModel(
+                Struct("UTM "),
+                "store_test",
+                Accept,
+                key => key == MerchantChoiceKeys.PaletteCategories
+                    ? new[] { new BehaviorChoice(5, "Merchants") }
+                    : Array.Empty<BehaviorChoice>());
+            yield return new MerchantEditorView { DataContext = merchant };
 
             yield return new BehaviorEditorHeader
             {

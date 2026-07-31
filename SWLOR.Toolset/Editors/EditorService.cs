@@ -98,6 +98,10 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, Doors.DoorDocumentViewModel> _openDoorEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice>? _doorAppearances;
         private readonly Dictionary<string, Items.ItemDocumentViewModel> _openItemEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Merchants.MerchantDocumentViewModel> _openMerchantEditors =
+            new(StringComparer.OrdinalIgnoreCase);
+        private Merchants.MerchantInstanceService? _merchantInstances;
+        private IReadOnlyList<Merchants.MerchantItemDefinition>? _merchantItemCatalog;
         private BaseItemRowService? _baseItemRowService;
         private BaseItemIconService? _baseItemIconService;
         private Domain.Editors.Items.ItemCostTableRanges? _itemCostTableRanges;
@@ -273,6 +277,7 @@ namespace SWLOR.Toolset.Editors
                 _choiceSets.Clear();
                 _doorAppearances = null;
                 _itemSources = null;
+                _merchantItemCatalog = null;
                 _itemSourcesGeneration++;
                 _behaviorValues?.InvalidateModuleSources();
 
@@ -291,6 +296,13 @@ namespace SWLOR.Toolset.Editors
                     _itemSources = null;
                     _itemSourcesGeneration++;
                     _ = WarmItemSourcesAsync();
+                }
+
+                if (type == ResourceType.Uti)
+                {
+                    _merchantItemCatalog = null;
+                    foreach (var merchant in _openMerchantEditors.Values)
+                        merchant.Editor.RefreshItemCatalog();
                 }
             };
             _workspaceContext.PaletteChoicesInvalidated += InvalidatePaletteChoices;
@@ -555,6 +567,12 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            if (_openMerchantEditors.TryGetValue(filePath, out var existingMerchant))
+            {
+                _factory.ActivateDocument(existingMerchant);
+                return;
+            }
+
             try
             {
                 if (!CanRepresentEveryValue(filePath, resRef, schema))
@@ -593,6 +611,12 @@ namespace SWLOR.Toolset.Editors
                 if (type == ResourceType.Uti)
                 {
                     OpenItemEditor(filePath, resRef);
+                    return;
+                }
+
+                if (type == ResourceType.Utm)
+                {
+                    OpenMerchantEditor(filePath, resRef);
                     return;
                 }
 
@@ -801,6 +825,7 @@ namespace SWLOR.Toolset.Editors
                    || _openDoorEditors.ContainsKey(path)
                    || _openSoundEditors.ContainsKey(path)
                    || _openItemEditors.ContainsKey(path)
+                   || _openMerchantEditors.ContainsKey(path)
                    || _openConversations.ContainsKey(path);
         }
 
@@ -841,6 +866,12 @@ namespace SWLOR.Toolset.Editors
             }
 
             foreach (var editor in _openItemEditors.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
+            foreach (var editor in _openMerchantEditors.Values.ToList())
             {
                 if (!await editor.TrySaveAsync().ConfigureAwait(true))
                     return false;
@@ -889,6 +920,7 @@ namespace SWLOR.Toolset.Editors
                 !_openDoorEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openSoundEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openItemEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openMerchantEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openAreaEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openScriptEditors.Values.Any(editor => editor.IsDirty || editor.HasPendingCompileFailure) &&
                 !_openConversations.Values.Any(editor => editor.IsDirty))
@@ -912,6 +944,8 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openSoundEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openItemEditors.Values)
+                editor.ApproveApplicationClose();
+            foreach (var editor in _openMerchantEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openAreaEditors.Values)
                 editor.ApproveApplicationClose();
@@ -1049,6 +1083,33 @@ namespace SWLOR.Toolset.Editors
                 _workspaceContext.RefreshCatalogEntry(ResourceType.Uti, editor.ResRef);
             editor.Renamed += OnItemRenamed;
             _openItemEditors[filePath] = editor;
+            _factory.OpenDocument(editor);
+        }
+
+        /// <summary>Merchant blueprints open in the dedicated inventory and buying-rules editor.</summary>
+        private void OpenMerchantEditor(string filePath, string resRef)
+        {
+            var baseItems = _lookups.GetOptions(LookupKeys.BaseItems)
+                .Select(option => new BehaviorChoice(option.Id, option.Display))
+                .ToList();
+            var editor = new Merchants.MerchantDocumentViewModel(
+                filePath,
+                resRef,
+                _log,
+                _prompts,
+                ResolveMerchantChoices,
+                baseItems,
+                LoadMerchantItem,
+                SearchMerchantItems,
+                _merchantInstances ??= new Merchants.MerchantInstanceService(
+                    _workspaceContext,
+                    _log,
+                    areaResRef => _openAreaEditors.ContainsKey(areaResRef)));
+            editor.Closed += _ => _openMerchantEditors.Remove(filePath);
+            editor.CloseRequested += _ => _factory.CloseDocument(editor);
+            editor.CatalogEntryChanged += () =>
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Utm, resRef);
+            _openMerchantEditors[filePath] = editor;
             _factory.OpenDocument(editor);
         }
 
@@ -1305,6 +1366,123 @@ namespace SWLOR.Toolset.Editors
         private IReadOnlyList<BehaviorChoice> ResolveItemChoices(string key) =>
             Cached("item", key, BuildItemChoices);
 
+        private IReadOnlyList<BehaviorChoice> ResolveMerchantChoices(string key) =>
+            Cached("merchant", key, BuildMerchantChoices);
+
+        private IReadOnlyList<BehaviorChoice> BuildMerchantChoices(string key)
+        {
+            if (key != Domain.Editors.Merchants.MerchantChoiceKeys.PaletteCategories)
+                return Array.Empty<BehaviorChoice>();
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<BehaviorChoice>();
+
+            try
+            {
+                var path = Path.Combine(workspace.ModuleRoot, "itp", "storepalcus.itp.json");
+                if (!File.Exists(path))
+                    return Array.Empty<BehaviorChoice>();
+
+                return SortByDisplay(PaletteCategoryReader.Read(
+                    Domain.Documents.ItpDocument.Load(path),
+                    _tlkService != null ? _tlkService.GetString : null));
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not read the merchant palette categories: {ex.Message}");
+                return Array.Empty<BehaviorChoice>();
+            }
+        }
+
+        private Merchants.MerchantItemDefinition? LoadMerchantItem(string resRef)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null || string.IsNullOrWhiteSpace(resRef))
+                return null;
+
+            try
+            {
+                var item = workspace.LoadBlueprint(ResourceType.Uti, resRef).Fields;
+                var name = _workspaceContext.Catalog?.TryGetEntry(
+                               ResourceType.Uti, resRef, out var entry) == true
+                    ? entry.Name
+                    : null;
+                if (string.IsNullOrWhiteSpace(name))
+                    name = item.GetLocStringOrNull("LocalizedName")?.Text;
+
+                var cost = (long)(item.GetUIntOrNull("Cost") ?? 0) +
+                           (item.GetUIntOrNull("AddCost") ?? 0);
+                return new Merchants.MerchantItemDefinition(
+                    resRef,
+                    string.IsNullOrWhiteSpace(name) ? resRef : name,
+                    cost);
+            }
+            catch
+            {
+                return new Merchants.MerchantItemDefinition(resRef, resRef, 0);
+            }
+        }
+
+        private IReadOnlyList<Merchants.MerchantItemDefinition> SearchMerchantItems(string query)
+        {
+            if (_workspaceContext.Workspace == null)
+                return Array.Empty<Merchants.MerchantItemDefinition>();
+
+            var trimmed = query.Trim();
+            return MerchantItemCatalog()
+                .Where(item =>
+                    trimmed.Length == 0 ||
+                    item.ResRef.Contains(trimmed, StringComparison.OrdinalIgnoreCase) ||
+                    item.Name.Contains(trimmed, StringComparison.OrdinalIgnoreCase))
+                .Take(Behaviors.BehaviorRowViewModel.MaxSearchResults)
+                .ToList();
+        }
+
+        private IReadOnlyList<Merchants.MerchantItemDefinition> MerchantItemCatalog()
+        {
+            if (_merchantItemCatalog != null)
+                return _merchantItemCatalog;
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<Merchants.MerchantItemDefinition>();
+
+            var items = new Dictionary<string, Merchants.MerchantItemDefinition>(
+                StringComparer.OrdinalIgnoreCase);
+            foreach (var resRef in workspace.EnumerateResRefs(ResourceType.Uti))
+                items[resRef] = new Merchants.MerchantItemDefinition(resRef, resRef, 0);
+
+            if (_workspaceContext.Catalog is { } catalog)
+            {
+                foreach (var entry in catalog.EntriesOfType(ResourceType.Uti))
+                {
+                    items[entry.ResRef] = new Merchants.MerchantItemDefinition(
+                        entry.ResRef,
+                        string.IsNullOrWhiteSpace(entry.Name) ? entry.ResRef : entry.Name!,
+                        0);
+                }
+            }
+
+            if (_resourceIndex != null)
+            {
+                var utiType = ResourceIdentity.TypeFromExtension("uti");
+                foreach (var identity in _resourceIndex.EnumerateResources(utiType))
+                {
+                    items.TryAdd(
+                        identity.ResRef,
+                        new Merchants.MerchantItemDefinition(
+                            identity.ResRef, identity.ResRef, 0));
+                }
+            }
+
+            _merchantItemCatalog = items.Values
+                .OrderBy(item => item.Name, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(item => item.ResRef, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            return _merchantItemCatalog;
+        }
+
         private IReadOnlyList<BehaviorChoice> BuildItemChoices(string key) =>
             SortByDisplay(BuildItemChoicesUnsorted(key));
 
@@ -1457,6 +1635,12 @@ namespace SWLOR.Toolset.Editors
                     _choiceSets.Remove(
                         "item:" + Domain.Editors.Items.ItemChoiceKeys.PaletteCategories);
                     foreach (var editor in _openItemEditors.Values)
+                        editor.Editor.RefreshPaletteChoices();
+                    break;
+                case "storepalcus":
+                    _choiceSets.Remove(
+                        "merchant:" + Domain.Editors.Merchants.MerchantChoiceKeys.PaletteCategories);
+                    foreach (var editor in _openMerchantEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     break;
             }

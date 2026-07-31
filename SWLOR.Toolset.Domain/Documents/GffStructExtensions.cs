@@ -10,7 +10,7 @@ namespace SWLOR.Toolset.Domain.Documents
     /// already exists, or create it (with the caller-supplied <see cref="GffFieldType"/>) at
     /// nwn_gff's sorted insertion position when it does not.
     /// </summary>
-    internal static class GffStructExtensions
+    public static class GffStructExtensions
     {
         public static string? GetStringOrNull(this JsonGffStruct target, string name)
         {

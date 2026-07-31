@@ -30,15 +30,10 @@ namespace SWLOR.Toolset.Domain.Documents
         /// <summary>How many panels a store's StoreList always has; the panel is its __struct_id.</summary>
         private const int StorePanelCount = 5;
 
-        /// <remarks>
-        /// Merchants are intentionally excluded even though their scalar fields can be templated:
-        /// the editor does not yet expose StoreList inventory, so creating an empty merchant would
-        /// strand the builder with a store that cannot be stocked.
-        /// </remarks>
         public static bool Supports(ResourceType type)
         {
             return type is ResourceType.Utc or ResourceType.Uti or ResourceType.Utp or ResourceType.Utd
-                or ResourceType.Utt or ResourceType.Uts or ResourceType.Utw;
+                or ResourceType.Utm or ResourceType.Utt or ResourceType.Uts or ResourceType.Utw;
         }
 
         public static byte[] CreateFileContent(ResourceType type, string resRef, string displayName)
@@ -338,13 +333,17 @@ namespace SWLOR.Toolset.Domain.Documents
             root.SetInt("MarkUp", GffFieldType.Int, 100);
             root.SetInt("MarkDown", GffFieldType.Int, 40);
             root.SetInt("BM_MarkDown", GffFieldType.Int, 25);
-            root.SetInt("IdentifyPrice", GffFieldType.Int, 100);
+            // SWLOR always identifies merchandise for free, accepts the engine's stolen flag, and
+            // has no per-store spending limit. The dedicated editor keeps these policy fields out
+            // of the form and reasserts them on every save.
+            root.SetInt("IdentifyPrice", GffFieldType.Int, 0);
             root.SetInt("MaxBuyPrice", GffFieldType.Int, -1); // -1 = no cap
             root.SetInt("StoreGold", GffFieldType.Int, -1); // -1 = unlimited gold
-            root.SetInt("BlackMarket", GffFieldType.Byte, 0);
-            root.SetInt("ID", GffFieldType.Byte, 0);
+            root.SetInt("BlackMarket", GffFieldType.Byte, 1);
+            root.SetInt("ID", GffFieldType.Byte, 5); // Merchants in storepalcus.itp
 
-            SetEmptyResRefs(root, "OnOpenStore", "OnStoreClosed");
+            root.SetString("OnOpenStore", GffFieldType.ResRef, "on_open_store");
+            root.SetString("OnStoreClosed", GffFieldType.ResRef, "on_close_store");
         }
 
         private static void PopulateTrigger(JsonGffStruct root, string resRef, string name)

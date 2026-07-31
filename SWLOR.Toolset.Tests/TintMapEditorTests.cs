@@ -2,6 +2,7 @@ using System.Text;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
@@ -120,6 +121,40 @@ namespace SWLOR.Toolset.Tests
             try
             {
                 view.GetVisualDescendants().OfType<ColorPicker>().Should().NotBeEmpty();
+            }
+            finally
+            {
+                window.Close();
+            }
+        }
+
+        [AvaloniaTest]
+        public void ApplicationTemplateRendersTintEditorInsideAContentControl()
+        {
+            var editor = new TintMapEditorViewModel(
+                new VarTable(new JsonGffStruct()),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                TintMapCatalog.Load(Resources())!);
+            editor.Reload(ModelWith("pmh0_robe010"));
+            var host = new ContentControl { Content = editor };
+            var window = new Window { Content = host };
+
+            window.Show();
+            try
+            {
+                Dispatcher.UIThread.RunJobs();
+                host.GetVisualDescendants().OfType<TintMapEditorView>().Should().ContainSingle(
+                    "the shared application template must replace the view model object with its view");
+                host.GetVisualDescendants().OfType<ColorPicker>().Should().NotBeEmpty(
+                    "item editors must expose unrestricted custom RGB controls");
+                host.GetVisualDescendants().OfType<TextBlock>()
+                    .Select(text => text.Text)
+                    .Should()
+                    .NotContain(typeof(TintMapEditorViewModel).FullName);
             }
             finally
             {

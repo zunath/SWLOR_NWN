@@ -6,6 +6,7 @@
              xmlns:waypoints="using:SWLOR.Toolset.Editors.Waypoints"
              xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:tints="using:SWLOR.Toolset.Editors.TintMaps"
              x:Class="SWLOR.Toolset.App"
              RequestedThemeVariant="Dark">
 
@@ -277,6 +278,13 @@
                    IsVisible="{Binding HasDescription}" />
         </StackPanel>
       </behaviors:LabeledFieldPanel>
+    </DataTemplate>
+
+    <!-- Shared by the item and creature blueprint editors. Without an application-level mapping,
+         an item ContentControl falls back to the view model's type name because the creature
+         editor's local template is outside the item editor's resource scope. -->
+    <DataTemplate DataType="tints:TintMapEditorViewModel">
+      <tints:TintMapEditorView />
     </DataTemplate>
 
     <local:ViewLocator />

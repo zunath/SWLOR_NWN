@@ -4682,7 +4682,9 @@ void main()
             try
             {
                 var image = TextureLoader.Load(ResourceIndex!, mapName);
-                return image == null ? 0u : UploadTexture(image.Width, image.Height, image.Pixels);
+                return image == null
+                    ? 0u
+                    : UploadTexture(image.Width, image.Height, image.Pixels, mapName);
             }
             catch (Exception)
             {
@@ -4698,7 +4700,7 @@ void main()
                 if (image == null)
                     return default;
 
-                var texId = UploadTexture(image.Width, image.Height, image.Pixels);
+                var texId = UploadTexture(image.Width, image.Height, image.Pixels, resolvedName);
                 var hints = TextureRenderPolicy.Resolve(ResourceIndex!, resolvedName, image);
                 return new UploadedDiffuse(
                     texId,
@@ -4712,16 +4714,18 @@ void main()
         }
 
         /// <summary>
-        /// Uploads decoded RGBA pixels as a 2D texture, flipping the rows on the way in so that
-        /// v = 0 lands on the last decoded row - see <see cref="TextureOrientation"/>.
+        /// Uploads decoded RGBA pixels as a 2D texture. Model artwork is flipped so v = 0 lands on
+        /// the last decoded row; the tint palette is a row-addressed data atlas, so its decoded row
+        /// numbers must remain its GPU row numbers.
         /// </summary>
-        private uint UploadTexture(int width, int height, byte[] rgba)
+        private uint UploadTexture(int width, int height, byte[] rgba, string resourceName)
         {
             var texId = _gl!.GenTexture();
             _gl.BindTexture(TextureTarget.Texture2D, texId);
 
             _gl.TexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba8, (uint)width, (uint)height, 0,
-                PixelFormat.Rgba, PixelType.UnsignedByte, new ReadOnlySpan<byte>(TextureOrientation.FlipRows(width, height, rgba)));
+                PixelFormat.Rgba, PixelType.UnsignedByte,
+                new ReadOnlySpan<byte>(PrepareTextureUploadPixels(resourceName, width, height, rgba)));
 
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
@@ -4731,6 +4735,19 @@ void main()
 
             _gl.BindTexture(TextureTarget.Texture2D, 0);
             return texId;
+        }
+
+        private static byte[] PrepareTextureUploadPixels(
+            string resourceName,
+            int width,
+            int height,
+            byte[] rgba)
+        {
+            // tintPaletteRow0..9 are calculated from decoded atlas rows (row 0 => v = 0).
+            // Flipping this data texture changes every requested dye into a different palette.
+            return resourceName.Equals("plt_palette", StringComparison.OrdinalIgnoreCase)
+                ? rgba
+                : TextureOrientation.FlipRows(width, height, rgba);
         }
 
         // ----- Static placeholder/marker geometry (scene-independent; built once at GL init) -----

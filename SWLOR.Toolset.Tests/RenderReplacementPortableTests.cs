@@ -295,6 +295,37 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TintPaletteKeepsDecodedRowsInShaderCoordinateOrder()
+        {
+            byte[] rows =
+            [
+                255, 0, 0, 255,
+                0, 255, 0, 255,
+                0, 0, 255, 255,
+                255, 255, 255, 255
+            ];
+            var prepare = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
+                .GetMethod(
+                    "PrepareTextureUploadPixels",
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Static)!;
+
+            var palette = (byte[])prepare.Invoke(null, ["plt_palette", 1, 4, rows])!;
+            var modelTexture = (byte[])prepare.Invoke(null, ["pmh0_robe010", 1, 4, rows])!;
+
+            palette.Should().BeSameAs(rows,
+                "tintPaletteRow values address the decoded atlas from row zero");
+            modelTexture.Should().Equal(
+                [
+                    255, 255, 255, 255,
+                    0, 0, 255, 255,
+                    0, 255, 0, 255,
+                    255, 0, 0, 255
+                ],
+                "ordinary model UVs still require the top-down decoded image to be flipped");
+        }
+
+        [Test]
         public void SingleModelPreviewUsesAurorasNeutralGreyBackground()
         {
             var scene = new AreaScene

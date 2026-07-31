@@ -124,23 +124,39 @@ namespace SWLOR.Toolset.Tests
                     _ => null,
                     null);
 
+                editor.Stats.HasStatSkin.Should().BeFalse();
                 editor.Stats.Vitals.Single(cell => cell.Label == "NPC Level").Number = 7;
 
                 var store = new CreatureValueStore(session.Document.Root);
                 var skinResRef = store.EquippedResRef(CreaturePropertyCatalog.StatSkinSlot);
                 skinResRef.Should().NotBeNullOrWhiteSpace();
+                editor.Stats.HasStatSkin.Should().BeTrue();
                 editor.Equipment.ForSlot(CreaturePropertyCatalog.StatSkinSlot)!.Store
                     .GetPropertyValue(CreaturePropertyCatalog.Level, -1).Should().Be(7);
 
                 session.Undo();
                 editor.ReloadFromDocument();
                 store.EquippedResRef(CreaturePropertyCatalog.StatSkinSlot).Should().BeNull();
+                editor.Stats.HasStatSkin.Should().BeFalse();
                 session.ToBytes().Should().Equal(original);
             }
             finally
             {
                 Directory.Delete(root, true);
             }
+        }
+
+        [Test]
+        public void StatsTab_DoesNotExposeStatSkinImplementation()
+        {
+            var view = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset", "Editors", "Views", "CreatureEditorView.axaml"));
+
+            view.ToLowerInvariant().Should().NotContain("stat skin");
+            view.Should().NotContain("CreateStatSkinCommand");
+            view.Should().NotContain("SkinStatus");
+            view.Should().NotContain("IsStatSkinMissing");
         }
 
         [TestCase(-100, 200)]

@@ -27,10 +27,6 @@ namespace SWLOR.Toolset.Editors.Creatures
         private CreatureOption? _selectedSkillToAdd;
 
         public bool HasStatSkin => _equipment.ForSlot(CreaturePropertyCatalog.StatSkinSlot) != null;
-        public bool IsStatSkinMissing => !HasStatSkin;
-        public string SkinStatus => HasStatSkin
-            ? "Combat values are stored on the equipped stat skin."
-            : "No stat skin is equipped. Editing a combat value will create one.";
 
         public CreatureStatsViewModel(
             CreatureValueStore creature,
@@ -95,13 +91,6 @@ namespace SWLOR.Toolset.Editors.Creatures
         }
 
         [RelayCommand]
-        private void CreateStatSkin()
-        {
-            _runEdit("Create stat skin", () => EnsureSkin());
-            Reload();
-        }
-
-        [RelayCommand]
         private void AddSkillOverride()
         {
             if (SelectedSkillToAdd == null ||
@@ -123,8 +112,6 @@ namespace SWLOR.Toolset.Editors.Creatures
                 weapon.Reload();
             ReloadSkillOverrides();
             OnPropertyChanged(nameof(HasStatSkin));
-            OnPropertyChanged(nameof(IsStatSkinMissing));
-            OnPropertyChanged(nameof(SkinStatus));
         }
 
         private CreatureStatCellViewModel Skin(

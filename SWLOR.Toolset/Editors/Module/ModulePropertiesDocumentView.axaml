@@ -133,7 +133,10 @@
                 <NumericUpDown Grid.Row="7" Grid.Column="1" Value="{Binding XpScale, Mode=TwoWay}"
                                Minimum="0" Maximum="200" Increment="1" FormatString="0" />
                 <TextBlock Grid.Row="8" Text="Starting movie" VerticalAlignment="Center" />
-                <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding StartingMovie, Mode=TwoWay}" MaxLength="16" />
+                <ComboBox x:Name="StartingMoviePicker" Grid.Row="8" Grid.Column="1"
+                          ItemsSource="{Binding StartingMovieChoices}"
+                          SelectedItem="{Binding StartingMovie, Mode=TwoWay}"
+                          MaxDropDownHeight="400" />
               </Grid>
             </Border>
           </StackPanel>

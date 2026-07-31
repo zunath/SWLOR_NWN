@@ -1,13 +1,15 @@
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
+using SWLOR.Toolset.Settings;
 
 namespace SWLOR.Toolset.Workspace
 {
     public sealed record ModuleCustomContentSnapshot(
         NwnIniProfile Profile,
         IReadOnlyList<string> AvailableHaks,
-        IReadOnlyList<string> AvailableTlks);
+        IReadOnlyList<string> AvailableTlks,
+        IReadOnlyList<string> AvailableMovies);
 
     public sealed record ModuleCustomContentReloadResult(
         int AssignedHakCount,
@@ -28,6 +30,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly ResourceIndex? _resourceIndex;
         private readonly TlkService? _tlkService;
         private readonly string? _iniPathOverride;
+        private readonly string? _nwnInstallPath;
 
         public event Action<ModuleCustomContentReloadResult>? Reloaded;
 
@@ -38,13 +41,15 @@ namespace SWLOR.Toolset.Workspace
             OutputLogService log,
             ResourceIndex? resourceIndex = null,
             TlkService? tlkService = null,
-            string? iniPathOverride = null)
+            string? iniPathOverride = null,
+            ToolsetSettings? settings = null)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _resourceIndex = resourceIndex;
             _tlkService = tlkService;
             _iniPathOverride = iniPathOverride;
+            _nwnInstallPath = NwnInstallLocator.Locate(settings?.NwnInstallOverride);
             _workspaceContext.WorkspaceOpened += ReloadSavedModuleInBackground;
         }
 
@@ -54,7 +59,8 @@ namespace SWLOR.Toolset.Workspace
             return new ModuleCustomContentSnapshot(
                 profile,
                 profile.EnumerateHakNames(),
-                profile.EnumerateTlkNames());
+                profile.EnumerateTlkNames(),
+                profile.EnumerateMovieNames(_nwnInstallPath));
         }
 
         public async Task<ModuleCustomContentReloadResult> ReloadAsync(

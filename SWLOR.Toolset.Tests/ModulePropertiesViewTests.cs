@@ -73,6 +73,33 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void StartingMovieUsesTheDiscoveredMovieDropdown()
+        {
+            var ifoPath = Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json");
+            var editor = new ModulePropertiesDocumentViewModel(
+                ifoPath,
+                CorpusLocator.ModuleDirectory,
+                new ModuleWorkspace(CorpusLocator.ModuleDirectory),
+                new OutputLogService(),
+                new StubPrompts());
+            var view = new ModulePropertiesDocumentView { DataContext = editor };
+            var window = new Window { Width = 1200, Height = 800, Content = view };
+
+            window.Show();
+            view.FindControl<TabControl>("ModulePropertyTabs")!.SelectedIndex = 2;
+            Dispatcher.UIThread.RunJobs();
+            window.UpdateLayout();
+
+            var picker = view.FindControl<ComboBox>("StartingMoviePicker");
+            picker.Should().NotBeNull();
+            picker!.ItemsSource.Should().BeSameAs(editor.StartingMovieChoices);
+            editor.StartingMovieChoices.Should().Contain(editor.StartingMovie);
+
+            window.Close();
+            editor.OnClose().Should().BeTrue();
+        }
+
+        [AvaloniaTest]
         public void EveryModulePropertiesTabRendersWithoutBindingErrors()
         {
             var previousSink = Logger.Sink;

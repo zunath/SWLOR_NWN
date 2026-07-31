@@ -123,6 +123,7 @@ namespace SWLOR.Toolset.Editors.Module
         public ObservableCollection<ModuleHakRow> Haks { get; } = new();
         public ObservableCollection<string> AvailableHaks { get; } = new();
         public ObservableCollection<string> CustomTlkChoices { get; } = new();
+        public ObservableCollection<string> StartingMovieChoices { get; } = new();
         public VarTableSectionViewModel Variables { get; private set; }
         public IReadOnlyList<string> ScriptChoices { get; }
 
@@ -463,7 +464,18 @@ namespace SWLOR.Toolset.Editors.Module
                 CustomTlkChoices.Add(Document.CustomTlk!);
             }
 
+            StartingMovieChoices.Clear();
+            StartingMovieChoices.Add(string.Empty);
+            foreach (var name in snapshot?.AvailableMovies ?? profile.EnumerateMovieNames())
+                StartingMovieChoices.Add(name);
+            if (!string.IsNullOrWhiteSpace(Document.StartingMovie) &&
+                !StartingMovieChoices.Contains(Document.StartingMovie, StringComparer.OrdinalIgnoreCase))
+            {
+                StartingMovieChoices.Add(Document.StartingMovie!);
+            }
+
             RefreshHakRows();
+            OnPropertyChanged(nameof(StartingMovie));
             OnPropertyChanged(nameof(SelectedCustomTlk));
             OnPropertyChanged(nameof(NwnIniPath));
             OnPropertyChanged(nameof(HakDirectory));

@@ -1,7 +1,11 @@
 namespace SWLOR.Toolset.Domain.GameData.Resources
 {
     /// <summary>The custom-content aliases declared by the user's Neverwinter Nights nwn.ini.</summary>
-    public sealed record NwnIniProfile(string IniPath, string? HakDirectory, string? TlkDirectory)
+    public sealed record NwnIniProfile(
+        string IniPath,
+        string? HakDirectory,
+        string? TlkDirectory,
+        string? MovieDirectory)
     {
         public static string DefaultIniPath => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
@@ -12,10 +16,11 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         {
             iniPath = Path.GetFullPath(iniPath ?? DefaultIniPath);
             if (!File.Exists(iniPath))
-                return new NwnIniProfile(iniPath, null, null);
+                return new NwnIniProfile(iniPath, null, null, null);
 
             string? hak = null;
             string? tlk = null;
+            string? movies = null;
             var inAliasSection = false;
             foreach (var rawLine in File.ReadLines(iniPath))
             {
@@ -43,9 +48,11 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
                     hak = ResolveAliasPath(iniPath, value);
                 else if (key.Equals("TLK", StringComparison.OrdinalIgnoreCase))
                     tlk = ResolveAliasPath(iniPath, value);
+                else if (key.Equals("MOVIES", StringComparison.OrdinalIgnoreCase))
+                    movies = ResolveAliasPath(iniPath, value);
             }
 
-            return new NwnIniProfile(iniPath, hak, tlk);
+            return new NwnIniProfile(iniPath, hak, tlk, movies);
         }
 
         public IReadOnlyList<string> EnumerateHakNames() =>
@@ -53,6 +60,27 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
 
         public IReadOnlyList<string> EnumerateTlkNames() =>
             EnumerateBaseNames(TlkDirectory, ".tlk");
+
+        /// <summary>
+        /// Movie resrefs available to a module: custom movies from nwn.ini plus the movies bundled
+        /// with the detected NWN:EE installation. Both legacy BIK and Enhanced Edition WBM files
+        /// are valid starting-movie sources.
+        /// </summary>
+        public IReadOnlyList<string> EnumerateMovieNames(string? installDirectory = null)
+        {
+            var directories = new[]
+            {
+                MovieDirectory,
+                installDirectory == null ? null : Path.Combine(installDirectory, "data", "mov"),
+                installDirectory == null ? null : Path.Combine(installDirectory, "movies")
+            };
+
+            return directories
+                .SelectMany(directory => EnumerateBaseNames(directory, ".bik", ".wbm"))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+        }
 
         public string? FindHakPath(string name) => FindFile(HakDirectory, name, ".hak");
 
@@ -75,7 +103,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             }
         }
 
-        private static IReadOnlyList<string> EnumerateBaseNames(string? directory, string extension)
+        private static IReadOnlyList<string> EnumerateBaseNames(string? directory, params string[] extensions)
         {
             if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
                 return Array.Empty<string>();
@@ -83,7 +111,9 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             try
             {
                 return Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly)
-                    .Where(path => Path.GetExtension(path).Equals(extension, StringComparison.OrdinalIgnoreCase))
+                    .Where(path => extensions.Contains(
+                        Path.GetExtension(path),
+                        StringComparer.OrdinalIgnoreCase))
                     .Select(Path.GetFileNameWithoutExtension)
                     .Where(name => !string.IsNullOrWhiteSpace(name))
                     .Select(name => name!)

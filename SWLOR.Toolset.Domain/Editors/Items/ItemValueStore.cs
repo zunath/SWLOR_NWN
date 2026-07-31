@@ -44,6 +44,33 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             return entry == null ? null : (int)entry.Get("CostValue").GetInteger();
         }
 
+        /// <summary>Sums duplicate matching entries, as the creature stat runtime does for NPC HP.</summary>
+        public int GetCombinedPropertyValue(int propertyId, int subtypeId)
+        {
+            return Properties
+                .Where(property => property.PropertyId == propertyId &&
+                                   (subtypeId < 0 || property.SubtypeId == subtypeId))
+                .Sum(property => property.CostValue);
+        }
+
+        /// <summary>Normalizes all matching entries to one value while preserving unrelated properties.</summary>
+        public void SetCombinedPropertyValue(
+            int propertyId,
+            int subtypeId,
+            int costTableId,
+            int? value)
+        {
+            foreach (var entry in Owner.GetListOrEmpty(PropertiesListName)
+                         .Where(entry => Matches(entry, propertyId, subtypeId))
+                         .ToList())
+            {
+                RemoveEntry(entry);
+            }
+
+            if (value.HasValue)
+                AddEntry(propertyId, subtypeId, costTableId, value.Value);
+        }
+
         /// <summary>
         /// Adds, updates, or removes the PropertiesList entry for <paramref name="propertyId"/> /
         /// <paramref name="subtypeId"/>. Only a null <paramref name="value"/> removes the entry -
@@ -122,6 +149,21 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             }
 
             return null;
+        }
+
+        private static bool Matches(JsonGffStruct entry, int propertyId, int subtypeId)
+        {
+            if (!entry.TryGet("PropertyName", out var nameField) ||
+                (int)nameField.GetInteger() != propertyId)
+                return false;
+
+            if (subtypeId < 0)
+                return true;
+
+            var stored = entry.TryGet("Subtype", out var subtypeField)
+                ? (int)subtypeField.GetInteger()
+                : 0;
+            return stored == subtypeId;
         }
 
         private void AddEntry(int propertyId, int subtypeId, int costTableId, int value)

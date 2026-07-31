@@ -19,10 +19,13 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         public string Display => Choice.Display;
 
+        public bool CanPreviewAudio => Choice.CanPreviewAudio;
+
         /// <summary>Whether this choice has a picture at all — a texture or a model — drawn or not.</summary>
         public bool HasArtwork =>
             !string.IsNullOrWhiteSpace(Choice.ImageResRef) ||
-            !string.IsNullOrWhiteSpace(Choice.ModelResRef);
+            !string.IsNullOrWhiteSpace(Choice.ModelResRef) ||
+            !string.IsNullOrWhiteSpace(Choice.ImageUrl);
 
         /// <summary>The resource a tile is drawn from, shown under the name so it stays identifiable.</summary>
         public string? Detail => Choice.ModelResRef ?? Choice.ImageResRef;

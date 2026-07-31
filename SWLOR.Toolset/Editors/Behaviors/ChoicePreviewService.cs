@@ -41,14 +41,19 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         private readonly ResourceIndex? _resources;
         private readonly ThumbnailService? _models;
+        private readonly Placeables.VfxPreviewService? _remoteImages;
         private readonly SemaphoreSlim _decodeSlots = new(4);
         private readonly object _syncRoot = new();
         private readonly Dictionary<string, Bitmap?> _cache = new(StringComparer.OrdinalIgnoreCase);
 
-        public ChoicePreviewService(ResourceIndex? resources, ThumbnailService? models = null)
+        public ChoicePreviewService(
+            ResourceIndex? resources,
+            ThumbnailService? models = null,
+            Placeables.VfxPreviewService? remoteImages = null)
         {
             _resources = resources;
             _models = models;
+            _remoteImages = remoteImages;
         }
 
         /// <summary>The already-resolved picture for a choice, or null. Never starts work.</summary>
@@ -59,9 +64,11 @@ namespace SWLOR.Toolset.Editors.Behaviors
         {
             ArgumentNullException.ThrowIfNull(choice);
 
-            return choice.ModelResRef is { Length: > 0 } model
-                ? _models?.CachedTile(model)
-                : Cached(choice.ImageResRef, maxWidth, cropTransparentCanvas);
+            if (choice.ModelResRef is { Length: > 0 } model)
+                return _models?.CachedTile(model);
+            if (choice.ImageUrl is { Length: > 0 } imageUrl)
+                return _remoteImages?.Cached(imageUrl);
+            return Cached(choice.ImageResRef, maxWidth, cropTransparentCanvas);
         }
 
         /// <summary>
@@ -88,6 +95,15 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 else
                     _models?.RequestTileAsync(model, onReady);
 
+                return;
+            }
+
+            if (choice.ImageUrl is { Length: > 0 } imageUrl)
+            {
+                if (_remoteImages?.Cached(imageUrl) is { } cached)
+                    onReady(cached);
+                else
+                    _remoteImages?.RequestAsync(imageUrl, onReady);
                 return;
             }
 

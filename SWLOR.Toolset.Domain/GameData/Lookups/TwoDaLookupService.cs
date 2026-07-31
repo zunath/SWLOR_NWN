@@ -104,6 +104,12 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         /// generic strref, so the label is the only thing that tells one screen from another.
         /// </summary>
         public static readonly TwoDaLookupTable LoadScreen = new("loadscreens", "Label", null);
+
+        /// <summary>racialtypes.2da - Label is readable and Name is the localized race name.</summary>
+        public static readonly TwoDaLookupTable Race = new("racialtypes", "Label", "Name");
+
+        /// <summary>creaturespeed.2da - Label names each stored WalkRate row.</summary>
+        public static readonly TwoDaLookupTable CreatureSpeed = new("creaturespeed", "Label", "Name");
     }
 
     /// <summary>A 2DA table plus the columns <see cref="TwoDaLookupService"/> should read from it.</summary>

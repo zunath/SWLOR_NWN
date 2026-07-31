@@ -254,7 +254,8 @@ namespace SWLOR.Toolset
                 sp.GetService<AppearanceService>(),
                 sp.GetRequiredService<Services.ModuleMutationLock>(),
                 sp.GetService<CategoryService>(),
-                moduleCustomContent: sp.GetRequiredService<Workspace.ModuleCustomContentService>()));
+                moduleCustomContent: sp.GetRequiredService<Workspace.ModuleCustomContentService>(),
+                externalLinks: sp.GetRequiredService<Services.IExternalLinkService>()));
 
             // One parsed engine header shared by every script tab, built lazily on first use: the
             // header is 13,870 lines, so parsing it per tab would be wasteful and parsing it at

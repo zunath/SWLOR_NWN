@@ -27,6 +27,7 @@ namespace SWLOR.Toolset.Editors
 
         private readonly Func<string, Action, bool> _runEdit;
         private readonly VarTable _varTable;
+        private readonly Func<string, bool> _include;
 
         public ObservableCollection<VarTableRow> Rows { get; } = new();
 
@@ -56,10 +57,14 @@ namespace SWLOR.Toolset.Editors
         /// editor, whose locals may live on an area's instance struct rather than a document root.
         /// </summary>
         public VarTableSectionViewModel(
-            Func<string, Action, bool> runEdit, VarTable varTable, IGameCodeIndex? gameCodeIndex)
+            Func<string, Action, bool> runEdit,
+            VarTable varTable,
+            IGameCodeIndex? gameCodeIndex,
+            Func<string, bool>? include = null)
         {
             _runEdit = runEdit;
             _varTable = varTable;
+            _include = include ?? (_ => true);
             KnownKeys = WellKnownKeys;
             GameCodeIndex = gameCodeIndex;
             RefreshFromDocument();
@@ -72,6 +77,9 @@ namespace SWLOR.Toolset.Editors
             Rows.Clear();
             foreach (var entry in _varTable)
             {
+                if (!_include(entry.Name))
+                    continue;
+
                 var (typeLabel, value) = entry.Type switch
                 {
                     VarTable.TypeInt => ("int", entry.IntValue?.ToString() ?? ""),
@@ -91,6 +99,12 @@ namespace SWLOR.Toolset.Editors
             if (name.Length == 0)
             {
                 ValidationHint = "Variable name is required.";
+                return;
+            }
+
+            if (!_include(name))
+            {
+                ValidationHint = "This variable has a dedicated editor on another tab.";
                 return;
             }
 

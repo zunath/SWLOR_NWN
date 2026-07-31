@@ -1,0 +1,374 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:creatures="using:SWLOR.Toolset.Editors.Creatures"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:items="using:SWLOR.Toolset.Editors.Items"
+             xmlns:cdom="using:SWLOR.Toolset.Domain.Editors.Creatures"
+             x:Class="SWLOR.Toolset.Editors.Creatures.CreatureEditorView"
+             x:DataType="creatures:CreatureEditorViewModel">
+
+  <UserControl.DataTemplates>
+    <DataTemplate DataType="behaviors:BehaviorRowViewModel">
+      <behaviors:BehaviorRowView />
+    </DataTemplate>
+
+    <DataTemplate DataType="creatures:CreatureStatCellViewModel">
+      <Grid ColumnDefinitions="*,116" ColumnSpacing="8" Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                   Foreground="{DynamicResource InkSecondaryBrush}" />
+        <NumericUpDown Grid.Column="1" Value="{Binding Number, Mode=TwoWay}"
+                       Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                       MinWidth="110" Increment="1" FormatString="0" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="items:ItemFieldCellViewModel">
+      <Grid ColumnDefinitions="*,116" ColumnSpacing="8" Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                   Foreground="{DynamicResource InkSecondaryBrush}" />
+        <ComboBox Grid.Column="1" ItemsSource="{Binding Options}"
+                  SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                  IsEnabled="{Binding IsEnabled}" IsVisible="{Binding HasOptions}" />
+        <NumericUpDown Grid.Column="1" Value="{Binding Number, Mode=TwoWay}"
+                       Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                       IsEnabled="{Binding IsEnabled}" IsVisible="{Binding !HasOptions}"
+                       Increment="1" FormatString="0" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="creatures:CreatureOptionCellViewModel">
+      <Grid ColumnDefinitions="*,160" ColumnSpacing="8" Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                   Foreground="{DynamicResource InkSecondaryBrush}" />
+        <ComboBox Grid.Column="1" ItemsSource="{Binding Options}"
+                  SelectedItem="{Binding Selected, Mode=TwoWay}" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="creatures:CreatureWeaponViewModel">
+      <Border Classes="card" Margin="0,0,0,8" Padding="12">
+        <StackPanel Spacing="5">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="{Binding Label}" Classes="section" />
+            <Button Grid.Column="1" Content="Create weapon" Command="{Binding EnsureExistsCommand}"
+                    IsVisible="{Binding !Exists}" />
+          </Grid>
+          <ContentControl Content="{Binding Damage}" />
+          <ContentControl Content="{Binding Delay}" />
+          <ContentControl Content="{Binding DamageType}" />
+          <ContentControl Content="{Binding DamageStat}" />
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+
+    <DataTemplate DataType="creatures:CreatureAbilityEntryViewModel">
+      <Border Classes="card" Margin="0,0,0,8" Padding="12">
+        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+          <TextBlock Text="{Binding Name}" Classes="section" />
+          <Button Grid.Column="1" Content="Remove" Command="{Binding RemoveCommand}" />
+          <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Description}"
+                     Classes="dim" TextWrapping="Wrap" Margin="0,4,0,4" />
+          <Grid Grid.Row="2" Grid.ColumnSpan="2" ColumnDefinitions="*,116" ColumnSpacing="8"
+                IsVisible="{Binding HasEffectiveLevel}">
+            <StackPanel>
+              <TextBlock Text="{Binding EffectiveLevelLabel}" />
+              <TextBlock Text="{Binding EffectiveLevelHelp}" Classes="dim" FontSize="11" />
+            </StackPanel>
+            <NumericUpDown Grid.Column="1" Value="{Binding EffectiveLevel, Mode=TwoWay}"
+                           Minimum="1" Maximum="{Binding MaximumLevel}" Increment="1" FormatString="0" />
+          </Grid>
+        </Grid>
+      </Border>
+    </DataTemplate>
+
+    <DataTemplate DataType="creatures:CreatureLootEntryViewModel">
+      <Border Classes="card" Margin="0,0,0,8" Padding="10">
+        <Grid ColumnDefinitions="*,92,92,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="7">
+          <ComboBox ItemsSource="{Binding Tables}" SelectedItem="{Binding Table, Mode=TwoWay}" />
+          <NumericUpDown Grid.Column="1" Value="{Binding Chance, Mode=TwoWay}"
+                         Minimum="1" Maximum="100" Increment="1" FormatString="0"
+                         Watermark="Chance %" />
+          <NumericUpDown Grid.Column="2" Value="{Binding Pulls, Mode=TwoWay}"
+                         Minimum="1" Maximum="100" Increment="1" FormatString="0"
+                         Watermark="Pulls" />
+          <Button Grid.Column="3" Content="Remove" Command="{Binding RemoveCommand}" />
+          <TextBlock Grid.Row="1" Grid.ColumnSpan="4" Text="{Binding ExpectedDrops}"
+                     Classes="dim" FontSize="11" Margin="0,4,0,0" />
+        </Grid>
+      </Border>
+    </DataTemplate>
+
+    <DataTemplate DataType="creatures:CreatureEquipmentPickerViewModel">
+      <Border Classes="card" Margin="0,0,0,8" Padding="10">
+        <StackPanel Spacing="6">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel>
+              <TextBlock Text="{Binding Label}" Classes="section" />
+              <TextBlock Text="{Binding CurrentDisplay}" Classes="dim" />
+            </StackPanel>
+            <Button Grid.Column="1" Content="Clear" Command="{Binding ClearCommand}" />
+          </Grid>
+          <TextBox Text="{Binding SearchText, Mode=TwoWay}" Watermark="Search item blueprints" />
+          <ScrollViewer MaxHeight="130">
+            <ItemsControl ItemsSource="{Binding Matching}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="creatures:CreatureEquipmentChoice">
+                  <Button Content="{Binding Display}" HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Left" Margin="0,1"
+                          Command="{Binding $parent[ItemsControl].((creatures:CreatureEquipmentPickerViewModel)DataContext).ChooseCommand}"
+                          CommandParameter="{Binding}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+  </UserControl.DataTemplates>
+
+  <DockPanel>
+    <behaviors:BehaviorEditorHeader DockPanel.Dock="Top"
+                                    BehaviorName="{Binding HeaderName}"
+                                    Kind="{Binding HeaderKind}"
+                                    Owner="{Binding HeaderOwner}"
+                                    IsDirty="{Binding IsDirty}" />
+
+    <Grid ColumnDefinitions="230,*">
+      <Border Grid.Column="0" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0"
+              Padding="10">
+        <Grid RowDefinitions="*,Auto">
+          <Border Grid.Row="0" MinHeight="280" Background="{DynamicResource PanelRaisedBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
+            <ContentControl Content="{Binding PreviewView}" />
+          </Border>
+          <StackPanel Grid.Row="1" Margin="0,9,0,0" Spacing="5">
+            <ComboBox ItemsSource="{Binding PreviewAnimations}"
+                      SelectedItem="{Binding SelectedPreviewAnimation, Mode=TwoWay}" />
+            <TextBlock Text="{Binding CreatureName}" FontWeight="SemiBold" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding TemplateResRef}" Classes="resref" />
+            <TextBlock Text="Left-drag to move · right-drag to turn · wheel to zoom"
+                       Classes="dim" FontSize="10" TextWrapping="Wrap" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <TabControl x:Name="CreatureTabs" Grid.Column="1">
+        <TabItem Header="Basic">
+          <ScrollViewer>
+            <StackPanel Margin="14,10">
+              <ItemsControl ItemsSource="{Binding BasicRows}" />
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Behavior">
+          <Grid ColumnDefinitions="210,*">
+            <behaviors:BehaviorRailView Items="{Binding RoleList}" ChooseCommand="{Binding ChooseRoleCommand}" />
+            <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1,0,0,0">
+              <StackPanel Margin="12" Spacing="8">
+                <Border Classes="card" Padding="12" IsVisible="{Binding !SelectedRole.AllowsVariables}">
+                  <StackPanel>
+                    <TextBlock Text="{Binding SelectedRole.DisplayName}" Classes="section" />
+                    <TextBlock Text="{Binding SelectedRole.Summary}" Classes="dim" TextWrapping="Wrap"
+                               Margin="0,3,0,8" />
+                    <ItemsControl ItemsSource="{Binding RoleRows}" />
+                    <TextBlock Text="{Binding QuestUsage}" Classes="dim" TextWrapping="Wrap"
+                               Margin="8,4" IsVisible="{Binding HasQuestUsage}" />
+                  </StackPanel>
+                </Border>
+                <Panel IsVisible="{Binding SelectedRole.AllowsVariables}">
+                  <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
+                </Panel>
+              </StackPanel>
+            </ScrollViewer>
+          </Grid>
+        </TabItem>
+
+        <TabItem Header="Appearance">
+          <ScrollViewer>
+            <StackPanel Margin="14,10" Spacing="8">
+              <Border Classes="card" Padding="8">
+                <ItemsControl ItemsSource="{Binding AppearanceRows}" />
+              </Border>
+              <Border Classes="card" Padding="12">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="Body" Classes="section" />
+                  <TextBlock Text="{Binding BodyParts.ModelSummary}" Classes="dim" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding BodyParts.FullBodyDetails}" Classes="mono"
+                             IsVisible="{Binding BodyParts.IsFullBody}" />
+                  <Grid ColumnDefinitions="*,*" ColumnSpacing="16" IsVisible="{Binding BodyParts.IsDynamic}">
+                    <StackPanel>
+                      <TextBlock Text="Structure" Classes="section" Margin="0,6" />
+                      <ItemsControl ItemsSource="{Binding BodyParts.Structure}" />
+                      <TextBlock Text="Colors" Classes="section" Margin="0,10,0,6" />
+                      <ItemsControl ItemsSource="{Binding BodyParts.Colors}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                      <TextBlock Text="Mirrored Limbs" Classes="section" Margin="0,6" />
+                      <ItemsControl ItemsSource="{Binding BodyParts.Limbs}" />
+                    </StackPanel>
+                  </Grid>
+                </StackPanel>
+              </Border>
+              <Border Classes="card" Padding="12" IsVisible="{Binding BodyParts.IsDynamic}">
+                <StackPanel>
+                  <TextBlock Text="Visible Equipment" Classes="section" Margin="0,0,0,8" />
+                  <ItemsControl ItemsSource="{Binding VisibleEquipment.Slots}" />
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Stats">
+          <ScrollViewer>
+            <StackPanel Margin="14,10" Spacing="8">
+              <Border Classes="card" Padding="12">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                  <TextBlock Text="{Binding Stats.SkinStatus}" Classes="dim" TextWrapping="Wrap" />
+                  <Button Grid.Column="1" Content="Create stat skin" Command="{Binding Stats.CreateStatSkinCommand}"
+                          IsVisible="{Binding Stats.IsStatSkinMissing}" />
+                </Grid>
+              </Border>
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <StackPanel>
+                  <Border Classes="card" Padding="12" Margin="0,0,0,8">
+                    <StackPanel><TextBlock Text="Level &amp; Vitals" Classes="section" Margin="0,0,0,6" />
+                      <ItemsControl ItemsSource="{Binding Stats.Vitals}" /></StackPanel>
+                  </Border>
+                  <Border Classes="card" Padding="12" Margin="0,0,0,8">
+                    <StackPanel><TextBlock Text="Offense" Classes="section" Margin="0,0,0,6" />
+                      <ItemsControl ItemsSource="{Binding Stats.Offense}" />
+                      <ItemsControl ItemsSource="{Binding Stats.SkillOverrides}" Margin="0,6,0,0">
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate DataType="creatures:CreatureSkillOverrideViewModel">
+                            <ContentControl Content="{Binding Level}" />
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,7,0,0">
+                        <ComboBox ItemsSource="{Binding Stats.AvailableSkills}"
+                                  SelectedItem="{Binding Stats.SelectedSkillToAdd, Mode=TwoWay}" />
+                        <Button Grid.Column="1" Content="Add override"
+                                Command="{Binding Stats.AddSkillOverrideCommand}" />
+                      </Grid>
+                      <TextBlock Text="A skill override replaces NPC Level for that skill only."
+                                 Classes="dim" FontSize="11" Margin="0,6,0,0" /></StackPanel>
+                  </Border>
+                  <Border Classes="card" Padding="12" Margin="0,0,0,8">
+                    <StackPanel><TextBlock Text="Defense" Classes="section" Margin="0,0,0,6" />
+                      <ItemsControl ItemsSource="{Binding Stats.Defense}" /></StackPanel>
+                  </Border>
+                  <ItemsControl ItemsSource="{Binding Stats.Weapons}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                  <Border Classes="card" Padding="12" Margin="0,0,0,8">
+                    <StackPanel><TextBlock Text="Resistances (−100 … 100)" Classes="section" Margin="0,0,0,6" />
+                      <ItemsControl ItemsSource="{Binding Stats.Resistances}" />
+                      <TextBlock Text="Negative values are vulnerabilities." Classes="dim" FontSize="11" /></StackPanel>
+                  </Border>
+                  <Border Classes="card" Padding="12">
+                    <StackPanel><TextBlock Text="Attributes" Classes="section" Margin="0,0,0,6" />
+                      <ItemsControl ItemsSource="{Binding Stats.Attributes}" /></StackPanel>
+                  </Border>
+                </StackPanel>
+              </Grid>
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Abilities">
+          <Grid ColumnDefinitions="*,310" ColumnSpacing="10" Margin="14,10">
+            <ScrollViewer>
+              <StackPanel>
+                <TextBlock Text="Assigned Abilities" Classes="section" Margin="0,0,0,8" />
+                <TextBlock Text="{Binding Abilities.PreservedSummary}" Classes="dim" TextWrapping="Wrap"
+                           Margin="0,0,0,8" IsVisible="{Binding Abilities.HasPreservedFeats}" />
+                <ItemsControl ItemsSource="{Binding Abilities.Assigned}" />
+              </StackPanel>
+            </ScrollViewer>
+            <Border Grid.Column="1" Classes="card" Padding="10">
+              <Grid RowDefinitions="Auto,Auto,*">
+                <TextBox Text="{Binding Abilities.SearchText, Mode=TwoWay}"
+                         Watermark="Search registered abilities" />
+                <TextBlock Grid.Row="1" Text="{Binding Abilities.SearchSummary}" Classes="count" Margin="0,5" />
+                <ScrollViewer Grid.Row="2">
+                  <ItemsControl ItemsSource="{Binding Abilities.Matching}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="cdom:CreatureAbilityInfo">
+                        <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Margin="0,2"
+                                Command="{Binding $parent[ItemsControl].((creatures:CreatureAbilitiesViewModel)DataContext).AddCommand}"
+                                CommandParameter="{Binding}">
+                          <StackPanel><TextBlock Text="{Binding Name}" />
+                            <TextBlock Text="{Binding Description}" Classes="dim" FontSize="10"
+                                       TextWrapping="Wrap" MaxWidth="270" /></StackPanel>
+                        </Button>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </ScrollViewer>
+              </Grid>
+            </Border>
+          </Grid>
+        </TabItem>
+
+        <TabItem Header="AI">
+          <ScrollViewer>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="14,10">
+              <Border Classes="card" Padding="12">
+                <StackPanel Spacing="7">
+                  <TextBlock Text="Decision Profile" Classes="section" />
+                  <ComboBox ItemsSource="{Binding Ai.Profiles}" SelectedItem="{Binding Ai.Profile, Mode=TwoWay}" />
+                  <CheckBox Content="Random Walk" IsChecked="{Binding Ai.RandomWalk, Mode=TwoWay}" />
+                  <CheckBox Content="Return Home" IsChecked="{Binding Ai.ReturnHome, Mode=TwoWay}" />
+                  <TextBlock Text="Hand-placed creatures always return home. Spawned creatures use these flags."
+                             Classes="dim" TextWrapping="Wrap" />
+                </StackPanel>
+              </Border>
+              <Border Grid.Column="1" Classes="card" Padding="12">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Runtime Behavior" Classes="section" />
+                  <TextBlock Text="Aggro range" Classes="dim" /><TextBlock Text="8.5m" Classes="mono" />
+                  <TextBlock Text="Return range" Classes="dim" /><TextBlock Text="15m" Classes="mono" />
+                  <TextBlock Text="Leash range" Classes="dim" /><TextBlock Text="45m" Classes="mono" />
+                  <TextBlock Text="Decision cadence" Classes="dim" /><TextBlock Text="0.25s" Classes="mono" />
+                </StackPanel>
+              </Border>
+            </Grid>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Loot">
+          <Grid ColumnDefinitions="*,320" ColumnSpacing="10" Margin="14,10">
+            <StackPanel>
+              <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                <TextBlock Text="Per-Kill Loot" Classes="section" VerticalAlignment="Center" />
+                <Button Grid.Column="1" Content="Add table" Command="{Binding Loot.AddCommand}" />
+              </Grid>
+              <TextBlock Text="{Binding Loot.Warning}" Foreground="{DynamicResource AmberBrush}"
+                         TextWrapping="Wrap" Margin="0,0,0,8" IsVisible="{Binding Loot.HasWarning}" />
+              <ScrollViewer><ItemsControl ItemsSource="{Binding Loot.Entries}" /></ScrollViewer>
+            </StackPanel>
+            <Border Grid.Column="1" Classes="card" Padding="12">
+              <StackPanel>
+                <TextBlock Text="{Binding Loot.PreviewTitle}" Classes="section" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding Loot.ExpectedDrops}" Classes="dim" Margin="0,4,0,8" />
+                <Button Content="Open table definition" Command="{Binding Loot.OpenDefinitionCommand}"
+                        IsVisible="{Binding Loot.CanOpenDefinition}" HorizontalAlignment="Left"
+                        Margin="0,0,0,8" />
+                <DataGrid ItemsSource="{Binding Loot.PreviewItems}" AutoGenerateColumns="False"
+                          IsReadOnly="True" GridLinesVisibility="Horizontal">
+                  <DataGrid.Columns>
+                    <DataGridTextColumn Header="Item" Binding="{Binding ResRef}" Width="2*" />
+                    <DataGridTextColumn Header="Weight" Binding="{Binding Weight}" Width="*" />
+                    <DataGridTextColumn Header="Max" Binding="{Binding MaximumQuantity}" Width="*" />
+                  </DataGrid.Columns>
+                </DataGrid>
+              </StackPanel>
+            </Border>
+          </Grid>
+        </TabItem>
+      </TabControl>
+    </Grid>
+  </DockPanel>
+</UserControl>

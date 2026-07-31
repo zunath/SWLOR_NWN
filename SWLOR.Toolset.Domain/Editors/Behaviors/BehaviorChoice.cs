@@ -25,6 +25,12 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         /// </summary>
         public string? ModelResRef { get; }
 
+        /// <summary>Remote reference artwork loaded by the shared preview pipeline.</summary>
+        public string? ImageUrl { get; }
+
+        /// <summary>Whether this choice can ask its editor to play a representative audio cue.</summary>
+        public bool CanPreviewAudio { get; }
+
         /// <summary>
         /// Whether this option stands for "any of them" rather than for one of them — the load
         /// screen row that leaves the choice to the destination area. It has no picture because
@@ -39,24 +45,32 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
             long value,
             string display,
             string? imageResRef = null,
-            string? modelResRef = null)
+            string? modelResRef = null,
+            string? imageUrl = null,
+            bool canPreviewAudio = false)
         {
             Value = value;
             Display = display;
             ImageResRef = imageResRef;
             ModelResRef = modelResRef;
+            ImageUrl = imageUrl;
+            CanPreviewAudio = canPreviewAudio;
         }
 
         public BehaviorChoice(
             string value,
             string display,
             string? imageResRef = null,
-            string? modelResRef = null)
+            string? modelResRef = null,
+            string? imageUrl = null,
+            bool canPreviewAudio = false)
         {
             StringValue = value ?? throw new ArgumentNullException(nameof(value));
             Display = display;
             ImageResRef = imageResRef;
             ModelResRef = modelResRef;
+            ImageUrl = imageUrl;
+            CanPreviewAudio = canPreviewAudio;
         }
 
         public override string ToString() => Display;

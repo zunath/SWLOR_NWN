@@ -45,6 +45,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         private readonly Action? _valueChanged;
         private readonly ChoicePreviewService? _previews;
+        private readonly Func<BehaviorChoice, string?>? _previewAudio;
         private List<BehaviorChoiceViewModel> _galleryMatches = new();
         private CancellationTokenSource? _searchDebounce;
         private int _galleryPublished;
@@ -298,13 +299,15 @@ namespace SWLOR.Toolset.Editors.Behaviors
             Func<string, Action, bool> runEdit,
             IReadOnlyList<BehaviorChoice>? choices = null,
             Action? valueChanged = null,
-            ChoicePreviewService? previews = null)
+            ChoicePreviewService? previews = null,
+            Func<BehaviorChoice, string?>? previewAudio = null)
         {
             Definition = definition ?? throw new ArgumentNullException(nameof(definition));
             Store = store ?? throw new ArgumentNullException(nameof(store));
             RunEditFunc = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _valueChanged = valueChanged;
             _previews = previews;
+            _previewAudio = previewAudio;
             // Wrapping the choices costs nothing: no picture is decoded or rendered until a tile
             // that shows one exists, and then only for the page that has been published. Building
             // the rows used to decode every load screen - around thirty megabytes of DDS - before
@@ -442,6 +445,15 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         [RelayCommand]
         private void ClearSearch() => ChoiceSearchText = string.Empty;
+
+        [RelayCommand]
+        private void PreviewAudio(BehaviorChoiceViewModel? option)
+        {
+            if (option?.CanPreviewAudio != true || _previewAudio == null)
+                return;
+            Status = _previewAudio(option.Choice);
+            IsStatusGood = string.IsNullOrWhiteSpace(Status);
+        }
 
         /// <summary>
         /// Opens a popup gallery, building it on the first open. Until then the row has paid for

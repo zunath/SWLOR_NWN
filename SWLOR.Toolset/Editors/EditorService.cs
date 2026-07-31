@@ -28,6 +28,7 @@ namespace SWLOR.Toolset.Editors
         private readonly OutputLogService _log;
         private readonly ToolsetDockFactory _factory;
         private readonly IEditorPromptService _prompts;
+        private readonly IExternalLinkService? _externalLinks;
         private readonly TilesetCatalog? _tilesetCatalog;
         private readonly TileModelCache? _tileModelCache;
         private readonly ResourceIndex? _resourceIndex;
@@ -97,6 +98,9 @@ namespace SWLOR.Toolset.Editors
         private readonly HashSet<string> _openingWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
         private int _waypointCatalogGeneration;
         private readonly Dictionary<string, Doors.DoorDocumentViewModel> _openDoorEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Creatures.CreatureDocumentViewModel> _openCreatureEditors = new(StringComparer.OrdinalIgnoreCase);
+        private IReadOnlyList<Creatures.CreatureEquipmentChoice>? _creatureEquipmentChoices;
+        private Creatures.CreatureSoundSetPreviewResolver? _creatureSoundSetPreviews;
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice>? _doorAppearances;
         private readonly Dictionary<string, Items.ItemDocumentViewModel> _openItemEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Merchants.MerchantDocumentViewModel> _openMerchantEditors =
@@ -226,9 +230,11 @@ namespace SWLOR.Toolset.Editors
             CategoryService? categories = null,
             Func<Domain.Workspace.ModuleWorkspace, string?, ItemObtainabilityIndex>?
                 itemSourcesBuilder = null,
-            Workspace.ModuleCustomContentService? moduleCustomContent = null)
+            Workspace.ModuleCustomContentService? moduleCustomContent = null,
+            IExternalLinkService? externalLinks = null)
         {
             _moduleCustomContent = moduleCustomContent;
+            _externalLinks = externalLinks;
             _categories = categories;
             _blueprintSaves = new BlueprintSaveCoordinator(
                 log,
@@ -299,6 +305,7 @@ namespace SWLOR.Toolset.Editors
                 _itemSources = null;
                 _merchantItemCatalog = null;
                 _merchantItemDetails.Clear();
+                _creatureEquipmentChoices = null;
                 _itemSourcesGeneration++;
                 _behaviorValues?.InvalidateModuleSources();
 
@@ -323,6 +330,7 @@ namespace SWLOR.Toolset.Editors
                 {
                     _merchantItemCatalog = null;
                     _merchantItemDetails.Remove(refreshedResRef);
+                    _creatureEquipmentChoices = null;
                     foreach (var merchant in _openMerchantEditors.Values)
                         merchant.Editor.RefreshItemCatalog();
                 }
@@ -438,6 +446,8 @@ namespace SWLOR.Toolset.Editors
             _lookups.Invalidate();
             _choiceSets.Clear();
             _creatureAppearanceOptions = null;
+            _creatureEquipmentChoices = null;
+            _creatureSoundSetPreviews = null;
             _soundResources = null;
             _doorAppearances = null;
             _merchantItemCatalog = null;
@@ -452,6 +462,8 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openEditors.Values)
                 editor.PlaceableSections?.Appearance.ReloadGameResources();
             foreach (var editor in _openDoorEditors.Values)
+                editor.Editor.ReloadGameResources();
+            foreach (var editor in _openCreatureEditors.Values)
                 editor.Editor.ReloadGameResources();
             foreach (var editor in _openItemEditors.Values)
                 editor.Editor.ReloadGameResources();
@@ -704,6 +716,12 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            if (_openCreatureEditors.TryGetValue(filePath, out var existingCreature))
+            {
+                _factory.ActivateDocument(existingCreature);
+                return;
+            }
+
             if (_openSoundEditors.TryGetValue(filePath, out var existingSound))
             {
                 _factory.ActivateDocument(existingSound);
@@ -731,6 +749,12 @@ namespace SWLOR.Toolset.Editors
                 if (type == ResourceType.Utd)
                 {
                     OpenDoorEditor(filePath, resRef);
+                    return;
+                }
+
+                if (type == ResourceType.Utc)
+                {
+                    OpenCreatureEditor(filePath, resRef);
                     return;
                 }
 
@@ -982,6 +1006,7 @@ namespace SWLOR.Toolset.Editors
                    || _openTriggerEditors.ContainsKey(path)
                    || _openWaypointEditors.ContainsKey(path)
                    || _openDoorEditors.ContainsKey(path)
+                   || _openCreatureEditors.ContainsKey(path)
                    || _openSoundEditors.ContainsKey(path)
                    || _openItemEditors.ContainsKey(path)
                    || _openMerchantEditors.ContainsKey(path)
@@ -1019,6 +1044,12 @@ namespace SWLOR.Toolset.Editors
             }
 
             foreach (var editor in _openDoorEditors.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
+            foreach (var editor in _openCreatureEditors.Values.ToList())
             {
                 if (!await editor.TrySaveAsync().ConfigureAwait(true))
                     return false;
@@ -1084,6 +1115,7 @@ namespace SWLOR.Toolset.Editors
                 !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openWaypointEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openDoorEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openCreatureEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openSoundEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openItemEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openMerchantEditors.Values.Any(editor => editor.IsDirty) &&
@@ -1108,6 +1140,8 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openWaypointEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openDoorEditors.Values)
+                editor.ApproveApplicationClose();
+            foreach (var editor in _openCreatureEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openSoundEditors.Values)
                 editor.ApproveApplicationClose();
@@ -1199,6 +1233,39 @@ namespace SWLOR.Toolset.Editors
             {
                 _openingWaypointEditors.Remove(filePath);
             }
+        }
+
+        /// <summary>Creature blueprints open with their linked stat/equipment resources.</summary>
+        private void OpenCreatureEditor(string filePath, string resRef)
+        {
+            var editor = new Creatures.CreatureDocumentViewModel(
+                filePath,
+                resRef,
+                _gameCodeIndex,
+                _log,
+                _prompts,
+                ResolveCreatureChoices,
+                _resourceIndex,
+                _previewRenderer != null
+                    ? creature => _previewRenderer.BuildModel(ResourceType.Utc, creature)
+                    : null,
+                id =>
+                {
+                    if (_appearances == null)
+                        return null;
+                    return _appearances.GetAll().FirstOrDefault(row => row.Id == id);
+                },
+                ArmorPartModels(),
+                CreatureEquipmentChoices(),
+                ChoicePreviews(),
+                PreviewCreatureAudio,
+                OpenLootDefinition);
+            editor.Closed += closed => _openCreatureEditors.Remove(closed.FilePath);
+            editor.CloseRequested += _ => _factory.CloseDocument(editor);
+            editor.CatalogEntryChanged += () =>
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Utc, editor.ResRef);
+            _openCreatureEditors[filePath] = editor;
+            _factory.OpenDocument(editor);
         }
 
         /// <summary>Door blueprints open in the same behavior editor used by door placements.</summary>
@@ -1848,8 +1915,234 @@ namespace SWLOR.Toolset.Editors
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice> DoorAppearances() =>
             _doorAppearances ??= Domain.Editors.Doors.DoorAppearanceCatalog.Read(_doorTypes);
 
+        private IReadOnlyList<BehaviorChoice> ResolveCreatureChoices(string key) =>
+            Cached("creature", key, BuildCreatureChoices);
+
+        private IReadOnlyList<BehaviorChoice> BuildCreatureChoices(string key)
+        {
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.PaletteCategories)
+                return ResolveCreatureCategories();
+
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Appearances && _appearances != null)
+            {
+                return _appearances.GetAll()
+                    .Select(row => new BehaviorChoice(
+                        row.Id,
+                        $"{row.DisplayName} ({row.Id})",
+                        modelResRef: string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase)
+                            ? null
+                            : row.Race))
+                    .ToList();
+            }
+
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Portraits && _portraits != null)
+            {
+                return _portraits.GetAll()
+                    .Select(row => new BehaviorChoice(
+                        row.Id,
+                        $"{row.BaseResRef} ({row.Id})",
+                        PortraitService.GetTgaVariants(row.BaseResRef).Medium))
+                    .ToList();
+            }
+
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Races)
+                return LookupChoices(LookupKeys.Races);
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Factions)
+                return LookupChoices(LookupKeys.Factions);
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Genders)
+                return LookupChoices(LookupKeys.Gender);
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Phenotypes)
+                return LookupChoices(LookupKeys.Phenotype);
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.SoundSets)
+            {
+                var table = _twoDaService?.TryGetTable("soundset", out var soundSets) == true
+                    ? soundSets
+                    : null;
+                return _lookups.GetOptions(LookupKeys.SoundSets)
+                    .Select(option => new BehaviorChoice(
+                        option.Id,
+                        $"{option.Display} ({option.Id})",
+                        canPreviewAudio: !string.IsNullOrWhiteSpace(
+                            table?.GetString((int)option.Id, "RESREF"))))
+                    .ToList();
+            }
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.MovementRates)
+                return LookupChoices(LookupKeys.CreatureMovementRates);
+
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Dialogs)
+                return CreatureBlueprintChoices(ResourceType.Dlg);
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.NpcGroups && _gameCodeIndex != null)
+                return _gameCodeIndex.NpcGroups.OrderBy(entry => entry.Value)
+                    .Select(entry => new BehaviorChoice(entry.Key, $"{entry.Value} ({entry.Key})")).ToList();
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.DialogDefinitions && _gameCodeIndex != null)
+                return _gameCodeIndex.DialogNames.Order(StringComparer.OrdinalIgnoreCase)
+                    .Select(name => new BehaviorChoice(name, name)).ToList();
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Guilds)
+            {
+                return Enum.GetValues<SWLOR.Game.Server.Enumeration.GuildType>()
+                    .Where(value => value != SWLOR.Game.Server.Enumeration.GuildType.Invalid)
+                    .Select(value => new BehaviorChoice(
+                        (int)value,
+                        $"{Humanize(value.ToString())} ({(int)value})"))
+                    .ToList();
+            }
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.GuildStores)
+                return GuildStoreChoices();
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.BeastTypes)
+            {
+                return Enum.GetValues<SWLOR.Game.Server.Service.BeastMasteryService.BeastType>()
+                    .Where(value => value != SWLOR.Game.Server.Service.BeastMasteryService.BeastType.Invalid)
+                    .Select(value => new BehaviorChoice((int)value, $"{Humanize(value.ToString())} ({(int)value})"))
+                    .ToList();
+            }
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.VisualEffects && _gameCodeIndex != null)
+            {
+                return _gameCodeIndex.VisualEffects.OrderBy(entry => entry.Value)
+                    .Select(entry => new BehaviorChoice(
+                        entry.Key,
+                        $"{Humanize(entry.Value)} ({entry.Key})",
+                        imageUrl: _gameCodeIndex.VisualEffectReferences.TryGetValue(entry.Key, out var reference)
+                            ? reference.ImageUrl
+                            : null))
+                    .ToList();
+            }
+
+            return Array.Empty<BehaviorChoice>();
+        }
+
+        private IReadOnlyList<BehaviorChoice> LookupChoices(string key) => _lookups.GetOptions(key)
+            .Select(option => new BehaviorChoice(option.Id, $"{option.Display} ({option.Id})"))
+            .ToList();
+
+        private IReadOnlyList<BehaviorChoice> ResolveCreatureCategories()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<BehaviorChoice>();
+            try
+            {
+                var path = Path.Combine(workspace.ModuleRoot, "itp", "creaturepalcus.itp.json");
+                return File.Exists(path)
+                    ? PaletteCategoryReader.Read(
+                        Domain.Documents.ItpDocument.Load(path),
+                        _tlkService != null ? _tlkService.GetString : null)
+                    : Array.Empty<BehaviorChoice>();
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not read the creature palette categories: {ex.Message}");
+                return Array.Empty<BehaviorChoice>();
+            }
+        }
+
+        private IReadOnlyList<BehaviorChoice> CreatureBlueprintChoices(ResourceType type)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<BehaviorChoice>();
+            var names = _workspaceContext.Catalog?.EntriesOfType(type)
+                .ToDictionary(entry => entry.ResRef, entry => entry.Name, StringComparer.OrdinalIgnoreCase)
+                ?? new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+            return workspace.EnumerateResRefs(type)
+                .Order(StringComparer.OrdinalIgnoreCase)
+                .Select(resRef => new BehaviorChoice(
+                    resRef,
+                    names.TryGetValue(resRef, out var name) && !string.IsNullOrWhiteSpace(name)
+                        ? $"{name} ({resRef})"
+                        : resRef))
+                .ToList();
+        }
+
+        private IReadOnlyList<BehaviorChoice> GuildStoreChoices()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<BehaviorChoice>();
+            var choices = new Dictionary<string, BehaviorChoice>(StringComparer.OrdinalIgnoreCase);
+            foreach (var resRef in workspace.EnumerateResRefs(ResourceType.Utm))
+            {
+                try
+                {
+                    var root = JsonGffDocument.Load(workspace.GetResourcePath(ResourceType.Utm, resRef)).Root;
+                    var tag = root.GetStringOrNull("Tag");
+                    if (string.IsNullOrWhiteSpace(tag))
+                        continue;
+                    var name = root.GetLocStringOrNull("LocName")?.Text;
+                    choices[tag] = new BehaviorChoice(
+                        tag,
+                        string.IsNullOrWhiteSpace(name) ? tag : $"{name} ({tag})");
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
+                {
+                }
+            }
+            return choices.Values.OrderBy(choice => choice.Display, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        private IReadOnlyList<Creatures.CreatureEquipmentChoice> CreatureEquipmentChoices()
+        {
+            if (_creatureEquipmentChoices != null)
+                return _creatureEquipmentChoices;
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<Creatures.CreatureEquipmentChoice>();
+            var result = new List<Creatures.CreatureEquipmentChoice>();
+            foreach (var resRef in workspace.EnumerateResRefs(ResourceType.Uti))
+            {
+                try
+                {
+                    var root = JsonGffDocument.Load(workspace.GetResourcePath(ResourceType.Uti, resRef)).Root;
+                    var baseItem = root.GetIntOrNull("BaseItem") ?? -1;
+                    var name = root.GetLocStringOrNull("LocalizedName")?.Text;
+                    result.Add(new Creatures.CreatureEquipmentChoice(
+                        resRef,
+                        string.IsNullOrWhiteSpace(name) ? resRef : $"{name} ({resRef})",
+                        baseItem));
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
+                {
+                }
+            }
+            _creatureEquipmentChoices = result
+                .OrderBy(choice => choice.Display, StringComparer.OrdinalIgnoreCase).ToList();
+            return _creatureEquipmentChoices;
+        }
+
+        private static string Humanize(string value) =>
+            System.Text.RegularExpressions.Regex.Replace(value, "([a-z0-9])([A-Z])", "$1 $2")
+                .Replace('_', ' ');
+
         private Behaviors.ChoicePreviewService ChoicePreviews() =>
-            _choicePreviews ??= new Behaviors.ChoicePreviewService(_resourceIndex, _thumbnails);
+            _choicePreviews ??= new Behaviors.ChoicePreviewService(_resourceIndex, _thumbnails, _vfxPreviews);
+
+        private string? PreviewCreatureAudio(BehaviorChoice choice)
+        {
+            var resolver = _creatureSoundSetPreviews ??=
+                new Creatures.CreatureSoundSetPreviewResolver(_twoDaService, _resourceIndex);
+            var sample = resolver.Resolve((int)choice.Value);
+            return sample == null
+                ? "This sound set has no preview sample."
+                : SoundPreviews().Play(sample);
+        }
+
+        private void OpenLootDefinition(string typeName)
+        {
+            var moduleRoot = _workspaceContext.Workspace?.ModuleRoot;
+            var repositoryRoot = moduleRoot == null ? null : Directory.GetParent(moduleRoot)?.FullName;
+            var definitionsRoot = repositoryRoot == null
+                ? null
+                : Path.Combine(repositoryRoot, "SWLOR.Game.Server", "Feature", "LootTableDefinition");
+            var path = definitionsRoot != null && Directory.Exists(definitionsRoot)
+                ? Directory.EnumerateFiles(definitionsRoot, typeName + ".cs", SearchOption.AllDirectories)
+                    .FirstOrDefault()
+                : null;
+            if (path == null || _externalLinks == null)
+            {
+                _log.AppendLine("The loot table source definition is not available in this workspace.");
+                return;
+            }
+            _externalLinks.OpenFile(path);
+        }
 
         /// <summary>
         /// One option set, built on first use and kept. Every one of these is a 2DA read, a palette
@@ -1874,6 +2167,12 @@ namespace SWLOR.Toolset.Editors
         {
             switch (paletteResRef.ToLowerInvariant())
             {
+                case "creaturepalcus":
+                    _choiceSets.Remove(
+                        "creature:" + Domain.Editors.Creatures.CreatureChoiceKeys.PaletteCategories);
+                    foreach (var editor in _openCreatureEditors.Values)
+                        editor.Editor.RefreshPaletteChoices();
+                    break;
                 case "doorpalcus":
                     _choiceSets.Remove(
                         "door:" + Domain.Editors.Doors.DoorChoiceKeys.DoorPaletteCategories);

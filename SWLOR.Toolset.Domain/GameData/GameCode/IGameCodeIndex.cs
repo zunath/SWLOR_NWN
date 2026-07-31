@@ -19,6 +19,10 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         /// <summary>NPC group enum value to display name, read from <c>NPCGroupType</c>.</summary>
         IReadOnlyDictionary<int, string> NpcGroups { get; }
 
+        /// <summary>Quest ids whose kill objectives reference each NPC group.</summary>
+        IReadOnlyDictionary<int, IReadOnlyList<string>> NpcGroupQuestIds =>
+            new Dictionary<int, IReadOnlyList<string>>();
+
         /// <summary>Key item enum value to display name, read from <c>KeyItemType</c>.</summary>
         IReadOnlyDictionary<int, string> KeyItems { get; }
 

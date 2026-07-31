@@ -112,6 +112,10 @@ namespace SWLOR.Toolset.Editors
                         return FromTable(TwoDaLookupTables.BaseItem);
                     case LookupKeys.LoadScreens:
                         return FromTable(TwoDaLookupTables.LoadScreen);
+                    case LookupKeys.Races:
+                        return FromTable(TwoDaLookupTables.Race);
+                    case LookupKeys.CreatureMovementRates:
+                        return FromTable(TwoDaLookupTables.CreatureSpeed);
                     case LookupKeys.TriggerTypes:
                         return TriggerTypeOptions;
                     case LookupKeys.WaypointAppearances when _waypointAppearances != null:

@@ -75,11 +75,17 @@
             <ItemsControl ItemsSource="{Binding FilteredChoices}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
-                  <Button Classes="behavior" Classes.on="{Binding IsSelected}"
-                          Content="{Binding Display}" Margin="2" Padding="8,5"
-                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                          Command="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).PickChoiceCommand}"
-                          CommandParameter="{Binding}" />
+                  <Grid ColumnDefinitions="*,Auto">
+                    <Button Classes="behavior" Classes.on="{Binding IsSelected}"
+                            Content="{Binding Display}" Margin="2" Padding="8,5"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Command="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).PickChoiceCommand}"
+                            CommandParameter="{Binding}" />
+                    <Button Grid.Column="1" Content="▶" Margin="2" Padding="8,5"
+                            IsVisible="{Binding CanPreviewAudio}" ToolTip.Tip="Preview sound set"
+                            Command="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).PreviewAudioCommand}"
+                            CommandParameter="{Binding}" />
+                  </Grid>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>

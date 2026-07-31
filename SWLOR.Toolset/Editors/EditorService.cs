@@ -126,11 +126,11 @@ namespace SWLOR.Toolset.Editors
         private int _itemSourcesGeneration;
 
         /// <summary>
-        /// Optional: without it, item renames skip the category-membership preflight and swap, so a
-        /// module using no custom item categories never notices, and one that does has to refile the
-        /// renamed item by hand.
+        /// Optional category sidecar used by the shared blueprint rename transaction. Without it,
+        /// file and instance updates still work, but custom palette membership cannot be carried.
         /// </summary>
         private readonly CategoryService? _categories;
+        private readonly BlueprintSaveCoordinator _blueprintSaves;
         private Items.ArmorDyeSwatchService? _armorDyeSwatches;
         private Items.ArmorPartCatalog? _armorPartModels;
         private readonly Dictionary<string, Sounds.SoundDocumentViewModel> _openSoundEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -223,6 +223,18 @@ namespace SWLOR.Toolset.Editors
                 itemSourcesBuilder = null)
         {
             _categories = categories;
+            _blueprintSaves = new BlueprintSaveCoordinator(
+                log,
+                categories,
+                areaResRef =>
+                    _openAreaEditors.TryGetValue(areaResRef, out var area) &&
+                    area.HasUnsavedInstanceChanges,
+                areaResRef =>
+                {
+                    if (_openAreaEditors.TryGetValue(areaResRef, out var area))
+                        area.ReloadInstancesAfterBlueprintSave();
+                },
+                FindUnsavedBlueprintReferences);
             _itemSourcesBuilder = itemSourcesBuilder ??
                                   ((workspace, gameSourceRoot) =>
                                       ItemObtainabilityIndex.Build(workspace, gameSourceRoot));
@@ -628,11 +640,21 @@ namespace SWLOR.Toolset.Editors
                     CreateScriptSlotHost($"{type.SingularDisplayName()} '{resRef}'"),
                     type == ResourceType.Utp ? CreatePlaceableSections : null,
                     () => _workspaceContext.Workspace,
-                    type == ResourceType.Utc ? CreateCreatureAppearanceGallery : null);
-                editor.Closed += _ => _openEditors.Remove(filePath);
+                    type == ResourceType.Utc ? CreateCreatureAppearanceGallery : null,
+                    _blueprintSaves);
+                editor.Closed += closed => _openEditors.Remove(closed.FilePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
-                    _workspaceContext.RefreshCatalogEntry(editor.BlueprintType, resRef);
+                    _workspaceContext.RefreshCatalogEntry(editor.BlueprintType, editor.ResRef);
+                editor.Renamed += (renamed, oldResRef, oldPath) =>
+                    OnBlueprintRenamed(
+                        _openEditors,
+                        renamed,
+                        renamed.BlueprintType,
+                        oldResRef,
+                        oldPath,
+                        renamed.FilePath,
+                        renamed.ResRef);
                 _openEditors[filePath] = editor;
                 _factory.OpenDocument(editor);
             }
@@ -963,11 +985,16 @@ namespace SWLOR.Toolset.Editors
             var editor = new Triggers.TriggerDocumentViewModel(
                 filePath, resRef, _gameCodeIndex, _log, _prompts, ResolveTriggerTagArea,
                 ResolveTriggerChoices,
-                ChoicePreviews());
-            editor.Closed += _ => _openTriggerEditors.Remove(filePath);
+                ChoicePreviews(),
+                _blueprintSaves);
+            editor.Closed += closed => _openTriggerEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
-                _workspaceContext.RefreshCatalogEntry(ResourceType.Utt, resRef);
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Utt, editor.ResRef);
+            editor.Renamed += (renamed, oldResRef, oldPath) =>
+                OnBlueprintRenamed(
+                    _openTriggerEditors, renamed, ResourceType.Utt,
+                    oldResRef, oldPath, renamed.FilePath, renamed.ResRef);
             _openTriggerEditors[filePath] = editor;
             _factory.OpenDocument(editor);
         }
@@ -1005,11 +1032,16 @@ namespace SWLOR.Toolset.Editors
                     _prompts,
                     catalog,
                     ResolveWaypointChoices,
-                    ChoicePreviews());
-                editor.Closed += _ => _openWaypointEditors.Remove(filePath);
+                    ChoicePreviews(),
+                    _blueprintSaves);
+                editor.Closed += closed => _openWaypointEditors.Remove(closed.FilePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
-                    _workspaceContext.RefreshCatalogEntry(ResourceType.Utw, resRef);
+                    _workspaceContext.RefreshCatalogEntry(ResourceType.Utw, editor.ResRef);
+                editor.Renamed += (renamed, oldResRef, oldPath) =>
+                    OnBlueprintRenamed(
+                        _openWaypointEditors, renamed, ResourceType.Utw,
+                        oldResRef, oldPath, renamed.FilePath, renamed.ResRef);
                 _openWaypointEditors[filePath] = editor;
                 _factory.OpenDocument(editor);
             }
@@ -1040,11 +1072,16 @@ namespace SWLOR.Toolset.Editors
                     ? door => _previewRenderer.BuildModel(ResourceType.Utd, door)
                     : null,
                 _thumbnails,
-                ChoicePreviews());
-            editor.Closed += _ => _openDoorEditors.Remove(filePath);
+                ChoicePreviews(),
+                _blueprintSaves);
+            editor.Closed += closed => _openDoorEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
-                _workspaceContext.RefreshCatalogEntry(ResourceType.Utd, resRef);
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Utd, editor.ResRef);
+            editor.Renamed += (renamed, oldResRef, oldPath) =>
+                OnBlueprintRenamed(
+                    _openDoorEditors, renamed, ResourceType.Utd,
+                    oldResRef, oldPath, renamed.FilePath, renamed.ResRef);
             _openDoorEditors[filePath] = editor;
             _factory.OpenDocument(editor);
         }
@@ -1076,7 +1113,8 @@ namespace SWLOR.Toolset.Editors
                 armorPartModels: ArmorPartModels(),
                 findReferences: FindItemReferences,
                 canRefileCategories: CanRefileItemCategories,
-                refileCategories: RefileItemCategories);
+                refileCategories: RefileItemCategories,
+                saveCoordinator: _blueprintSaves);
             editor.Closed += closed => _openItemEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -1104,11 +1142,23 @@ namespace SWLOR.Toolset.Editors
                 _merchantInstances ??= new Merchants.MerchantInstanceService(
                     _workspaceContext,
                     _log,
-                    areaResRef => _openAreaEditors.ContainsKey(areaResRef)));
-            editor.Closed += _ => _openMerchantEditors.Remove(filePath);
+                    areaResRef =>
+                        _openAreaEditors.TryGetValue(areaResRef, out var area) &&
+                        area.HasUnsavedInstanceChanges,
+                    areaResRef =>
+                    {
+                        if (_openAreaEditors.TryGetValue(areaResRef, out var area))
+                            area.ReloadInstancesAfterBlueprintSave();
+                    }),
+                _blueprintSaves);
+            editor.Closed += closed => _openMerchantEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
-                _workspaceContext.RefreshCatalogEntry(ResourceType.Utm, resRef);
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Utm, editor.ResRef);
+            editor.Renamed += (renamed, oldResRef, oldPath) =>
+                OnBlueprintRenamed(
+                    _openMerchantEditors, renamed, ResourceType.Utm,
+                    oldResRef, oldPath, renamed.FilePath, renamed.ResRef);
             _openMerchantEditors[filePath] = editor;
             _factory.OpenDocument(editor);
         }
@@ -1395,6 +1445,21 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
+        private void OnBlueprintRenamed<TEditor>(
+            IDictionary<string, TEditor> openEditors,
+            TEditor editor,
+            ResourceType type,
+            string oldResRef,
+            string oldPath,
+            string newPath,
+            string newResRef)
+        {
+            openEditors.Remove(oldPath);
+            openEditors[newPath] = editor;
+            _workspaceContext.RemoveCatalogEntry(type, oldResRef);
+            _workspaceContext.RefreshCatalogEntry(type, newResRef);
+        }
+
         private Merchants.MerchantItemDefinition? LoadMerchantItem(string resRef)
         {
             var workspace = _workspaceContext.Workspace;
@@ -1437,6 +1502,38 @@ namespace SWLOR.Toolset.Editors
                     item.Name.Contains(trimmed, StringComparison.OrdinalIgnoreCase))
                 .Take(Behaviors.BehaviorRowViewModel.MaxSearchResults)
                 .ToList();
+        }
+
+        private IReadOnlyList<string> FindUnsavedBlueprintReferences(string resRef)
+        {
+            var references = new List<string>();
+            var quoted = $"\"{resRef}\"";
+            foreach (var (scriptResRef, text) in SnapshotOpenScriptSources())
+            {
+                if (text.Contains(quoted, StringComparison.OrdinalIgnoreCase))
+                {
+                    references.Add(
+                        $"Module/nss/{scriptResRef}.nss (unsaved editor buffer)");
+                }
+            }
+
+            foreach (var area in _openAreaEditors.Values)
+            {
+                if (!area.HasUnsavedInstanceChanges)
+                    continue;
+
+                if (area.Sections.Any(section => section.Rows.Any(row =>
+                        string.Equals(
+                            row.TemplateResRef,
+                            resRef,
+                            StringComparison.OrdinalIgnoreCase))))
+                {
+                    references.Add(
+                        $"Module/git/{area.AreaResRef}.git.json (unsaved area editor)");
+                }
+            }
+
+            return references;
         }
 
         private IReadOnlyList<Merchants.MerchantItemDefinition> MerchantItemCatalog()
@@ -1744,11 +1841,16 @@ namespace SWLOR.Toolset.Editors
                 _prompts,
                 ResolveSoundChoices,
                 SoundResources(),
-                SoundPreviews());
-            editor.Closed += _ => _openSoundEditors.Remove(filePath);
+                SoundPreviews(),
+                _blueprintSaves);
+            editor.Closed += closed => _openSoundEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
-                _workspaceContext.RefreshCatalogEntry(ResourceType.Uts, resRef);
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Uts, editor.ResRef);
+            editor.Renamed += (renamed, oldResRef, oldPath) =>
+                OnBlueprintRenamed(
+                    _openSoundEditors, renamed, ResourceType.Uts,
+                    oldResRef, oldPath, renamed.FilePath, renamed.ResRef);
             _openSoundEditors[filePath] = editor;
             _factory.OpenDocument(editor);
         }

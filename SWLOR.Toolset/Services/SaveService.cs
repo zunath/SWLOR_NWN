@@ -381,7 +381,10 @@ namespace SWLOR.Toolset.Services
         }
 
         /// <summary>A serialized document written to its temporary file, waiting to replace the real one.</summary>
-        public readonly record struct StagedWrite(string TargetPath, string TemporaryPath);
+        public readonly record struct StagedWrite(
+            string TargetPath,
+            string TemporaryPath,
+            bool MustNotExist = false);
 
         /// <summary>
         /// Writes <paramref name="bytes"/> to the temporary file beside <paramref name="path"/> without
@@ -405,6 +408,16 @@ namespace SWLOR.Toolset.Services
             var temporaryPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
             File.WriteAllBytes(temporaryPath, bytes);
             return new StagedWrite(path, temporaryPath);
+        }
+
+        /// <summary>
+        /// Stages a file that is the destination of a rename. Group commit will refuse rather than
+        /// overwrite if another resource appears at the path after rename preflight.
+        /// </summary>
+        public static StagedWrite StageNew(string path, byte[] bytes)
+        {
+            var staged = Stage(path, bytes);
+            return staged with { MustNotExist = true };
         }
 
         /// <summary>Replaces the real file with its staged content.</summary>
@@ -443,7 +456,16 @@ namespace SWLOR.Toolset.Services
                 .Select(staged => new CommitState(staged, transactionId))
                 .ToList();
             foreach (var state in states)
+            {
                 state.HadOriginal = File.Exists(state.Staged.TargetPath);
+                if (state.HadOriginal && state.Staged.MustNotExist)
+                {
+                    foreach (var staged in stagedWrites)
+                        Discard(staged);
+                    throw new IOException(
+                        $"A file already exists at rename destination '{state.Staged.TargetPath}'.");
+                }
+            }
 
             var manifestPath = TransactionManifestPath(states, transactionId);
             try
@@ -458,7 +480,10 @@ namespace SWLOR.Toolset.Services
                         state.OriginalMoved = true;
                     }
 
-                    File.Move(state.Staged.TemporaryPath, state.Staged.TargetPath, overwrite: true);
+                    File.Move(
+                        state.Staged.TemporaryPath,
+                        state.Staged.TargetPath,
+                        overwrite: !state.Staged.MustNotExist);
                     state.ReplacementMoved = true;
                 }
 

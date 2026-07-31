@@ -43,12 +43,6 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public void Open(string moduleRoot)
         {
-            foreach (var recovered in Services.ItemRenameRecovery.RecoverInterruptedRenames(moduleRoot))
-                _log.AppendLine($"Recovered '{recovered}' from an interrupted item rename.");
-
-            foreach (var recovered in Services.ErfArchiveService.RecoverInterruptedImports(moduleRoot))
-                _log.AppendLine($"Recovered '{recovered}' from an interrupted ERF import.");
-
             // Before anything reads the folder. A grouped save that was interrupted between moving
             // an original aside and installing its replacement leaves the canonical ARE, GIT, or
             // GIC missing and its only copy sitting beside it under a .save-backup name; opening
@@ -61,6 +55,15 @@ namespace SWLOR.Toolset.Workspace
             // area at mixed ARE/GIT/GIC generations.
             foreach (var recovered in Services.SaveService.RecoverInterruptedSaves(moduleRoot))
                 _log.AppendLine($"Recovered '{recovered}' from an interrupted save.");
+
+            // A ResRef rename may contain one of the grouped GIT saves recovered above. Restore that
+            // inner transaction first, then the outer rename transaction can reliably see either
+            // every original companion or every installed companion instead of a half-moved set.
+            foreach (var recovered in Services.ItemRenameRecovery.RecoverInterruptedRenames(moduleRoot))
+                _log.AppendLine($"Recovered '{recovered}' from an interrupted blueprint rename.");
+
+            foreach (var recovered in Services.ErfArchiveService.RecoverInterruptedImports(moduleRoot))
+                _log.AppendLine($"Recovered '{recovered}' from an interrupted ERF import.");
 
             var openStopwatch = Stopwatch.StartNew();
             Workspace = _workspaceFactory(moduleRoot);

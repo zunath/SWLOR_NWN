@@ -47,12 +47,8 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
             },
             new DoorFieldDefinition
             {
-                // Read-only: the door document's save path always writes back to its original file and
-                // never renames it, so an edited ResRef here would leave the file's internal identity
-                // disagreeing with its filename. The generic door schema (UtdSchema) keeps this field
-                // read-only for the same reason.
                 Label = "ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
-                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsReadOnly = true
+                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsRequired = true
             },
             new DoorFieldDefinition
             {

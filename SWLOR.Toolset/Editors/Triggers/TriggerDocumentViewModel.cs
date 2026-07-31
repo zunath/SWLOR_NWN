@@ -3,6 +3,7 @@ using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 using SWLOR.Toolset.Editors.Behaviors;
@@ -19,7 +20,8 @@ namespace SWLOR.Toolset.Editors.Triggers
         private readonly DocumentSession _session;
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
-        private readonly string _resRef;
+        private readonly BlueprintSaveCoordinator? _saveCoordinator;
+        private string _resRef;
         private bool _closeApproved;
         private bool _closePromptOpen;
         private bool _disposed;
@@ -31,6 +33,8 @@ namespace SWLOR.Toolset.Editors.Triggers
         public bool CanUndo => _session.UndoStack.CanUndo;
 
         public bool CanRedo => _session.UndoStack.CanRedo;
+        public string FilePath => _session.FilePath;
+        public string ResRef => _resRef;
 
         /// <summary>Raised when the tab closes so the editor registry can forget this instance.</summary>
         public event Action<TriggerDocumentViewModel>? Closed;
@@ -40,6 +44,7 @@ namespace SWLOR.Toolset.Editors.Triggers
 
         /// <summary>Raised after this resource is saved or reloaded so catalog views can re-index it.</summary>
         public event Action? CatalogEntryChanged;
+        public event Action<TriggerDocumentViewModel, string, string>? Renamed;
 
         public TriggerDocumentViewModel(
             string filePath,
@@ -49,11 +54,13 @@ namespace SWLOR.Toolset.Editors.Triggers
             IEditorPromptService prompts,
             Func<BehaviorTagScope, string, string?>? resolveTag = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
-            ChoicePreviewService? previews = null)
+            ChoicePreviewService? previews = null,
+            BlueprintSaveCoordinator? saveCoordinator = null)
         {
             _log = log;
             _prompts = prompts;
             _resRef = resRef;
+            _saveCoordinator = saveCoordinator;
             Id = $"trigger:{filePath}";
             _session = DocumentSession.Open(filePath);
 
@@ -120,19 +127,59 @@ namespace SWLOR.Toolset.Editors.Triggers
                     _session.RecordCurrentFileState();
                 }
 
+                if (!BlueprintResRef.TryNormalize(
+                        _session, "TemplateResRef", out var targetResRef, out var problem))
+                {
+                    _log.AppendLine($"Cannot save {_resRef}: {problem}");
+                    return false;
+                }
+
+                Editor.ReloadFromDocument();
+                var renaming = !string.Equals(
+                    targetResRef, _resRef, StringComparison.OrdinalIgnoreCase);
+                if (renaming && _saveCoordinator == null)
+                {
+                    _log.AppendLine($"Cannot rename {_resRef}: no blueprint save coordinator is available.");
+                    return false;
+                }
+
+                var oldResRef = _resRef;
+                var oldPath = _session.FilePath;
                 var saveBytes = _session.ToBytes();
-                if (!SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
+                var outcome = _saveCoordinator?.Save(
+                    _session, ResourceType.Utt, oldResRef, targetResRef);
+                if (outcome != null && !outcome.Saved)
+                    return false;
+                if (outcome == null && !SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
                 {
                     _log.AppendLine(
                         $"Save stopped because {_session.FilePath} changed while the save was being prepared.");
                     return false;
                 }
 
+                if (outcome?.Renamed == true)
+                {
+                    _resRef = targetResRef;
+                    Id = $"trigger:{_session.FilePath}";
+                    Editor.SetHeaderOwner(targetResRef);
+                }
+
                 _session.UndoStack.MarkSaved();
-                _session.RecordCurrentFileState(saveBytes);
+                _session.RecordCurrentFileState(_session.ToBytes());
                 AfterHistoryChange();
                 CatalogEntryChanged?.Invoke();
-                _log.AppendLine($"Saved {_session.FilePath}.");
+                if (outcome?.Renamed == true)
+                {
+                    Renamed?.Invoke(this, oldResRef, oldPath);
+                    _log.AppendLine(
+                        $"Saved {oldPath} as {_session.FilePath} and updated " +
+                        $"{outcome.UpdatedInstances} placed instance" +
+                        $"{(outcome.UpdatedInstances == 1 ? string.Empty : "s")}.");
+                }
+                else
+                {
+                    _log.AppendLine($"Saved {_session.FilePath}.");
+                }
                 return true;
             }
             catch (Exception ex)

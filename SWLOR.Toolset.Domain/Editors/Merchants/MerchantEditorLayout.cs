@@ -26,7 +26,7 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
             {
                 Label = "ResRef", Name = "ResRef", Kind = BehaviorFieldKind.Text,
                 FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength,
-                IsReadOnly = true, IsRequired = true
+                IsRequired = true
             },
             new BehaviorFieldDefinition
             {

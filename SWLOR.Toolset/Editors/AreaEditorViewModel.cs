@@ -2457,6 +2457,25 @@ namespace SWLOR.Toolset.Editors
                 section.RefreshFromDocument();
         }
 
+        /// <summary>
+        /// True when an external blueprint refactor must not replace this area's GIT/GIC pair.
+        /// ARE-only edits are deliberately excluded: reloading clean instance files does not touch
+        /// unsaved terrain or area-property work.
+        /// </summary>
+        public bool HasUnsavedInstanceChanges =>
+            _gitSession.UndoStack.IsDirty || _gicDirty;
+
+        /// <summary>
+        /// Picks up instance files written by a blueprint rename without closing a clean open area.
+        /// </summary>
+        public bool ReloadInstancesAfterBlueprintSave()
+        {
+            if (HasUnsavedInstanceChanges)
+                return false;
+
+            return ReloadInstancePair();
+        }
+
         private void RefreshGicDirty()
         {
             _gicDirty = !_savedGicBytes.AsSpan().SequenceEqual(_gicSession.ToBytes());

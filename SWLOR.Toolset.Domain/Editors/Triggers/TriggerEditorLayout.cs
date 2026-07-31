@@ -75,12 +75,8 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             },
             new BehaviorFieldDefinition
             {
-                // Read-only: the trigger document's save path always writes back to its original file
-                // and never renames it, so an edited ResRef here would leave the file's internal
-                // identity disagreeing with its filename. The generic trigger schema (UttSchema) keeps
-                // this field read-only for the same reason.
                 Label = "ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
-                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsReadOnly = true
+                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsRequired = true
             },
             new BehaviorFieldDefinition
             {

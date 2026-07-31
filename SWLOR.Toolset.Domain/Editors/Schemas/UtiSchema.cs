@@ -25,7 +25,7 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                         {
                             new FieldDescriptor { Label = "Localized Name", FieldName = "LocalizedName", Kind = EditorKind.LocString, FieldType = GffFieldType.CExoLocString },
                             new FieldDescriptor { Label = "Tag", FieldName = "Tag", Kind = EditorKind.Text, FieldType = GffFieldType.CExoString },
-                            new FieldDescriptor { Label = "ResRef", FieldName = "TemplateResRef", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, IsReadOnly = true, Description = "The ResRef. Matches the file name." },
+                            new FieldDescriptor { Label = "ResRef", FieldName = "TemplateResRef", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, IsRequired = true, Description = "Renaming this ResRef renames the blueprint and updates every placed instance." },
                             new FieldDescriptor { Label = "Description", FieldName = "DescIdentified", Kind = EditorKind.LocString, FieldType = GffFieldType.CExoLocString, Description = "The text players read. GetDescription returns the identified description by default." },
                             new FieldDescriptor { Label = "Comment", FieldName = "Comment", Kind = EditorKind.Text, FieldType = GffFieldType.CExoString }
                         }

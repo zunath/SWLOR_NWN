@@ -37,7 +37,13 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         public string HeaderName => _store.GetLocalizedText("LocName");
         public string HeaderKind => "merchant";
-        public string HeaderOwner { get; }
+        public string HeaderOwner { get; private set; }
+
+        public void SetHeaderOwner(string value)
+        {
+            HeaderOwner = value;
+            OnPropertyChanged(nameof(HeaderOwner));
+        }
         public string ResRef => _store.GetString(BehaviorFieldStorage.Field, "ResRef");
 
         public bool HasInventoryItems => InventoryItems.Count > 0;

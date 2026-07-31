@@ -32,7 +32,13 @@ namespace SWLOR.Toolset.Editors.Waypoints
 
         public string HeaderName => Behavior.DisplayName;
         public string HeaderKind => _isInstance ? "instance" : "blueprint";
-        public string HeaderOwner { get; }
+        public string HeaderOwner { get; private set; }
+
+        public void SetHeaderOwner(string value)
+        {
+            HeaderOwner = value;
+            OnPropertyChanged(nameof(HeaderOwner));
+        }
         public bool ShowsVariablesTab => Behavior.AllowsVariables;
         public bool NeedsSaveNormalization =>
             Behavior.Manages.Any(value => !_store.Matches(value, _isInstance)) ||

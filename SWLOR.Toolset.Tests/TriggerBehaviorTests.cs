@@ -356,9 +356,9 @@ namespace SWLOR.Toolset.Tests
             resRef.MaxLength.Should().Be(16);
             resRef.MaxLength.Should().Be(TriggerEditorLayout.MaxResRefLength);
             resRef.Label.Should().Be("ResRef");
-            resRef.IsReadOnly.Should().BeTrue(
-                "the trigger document save path never renames the file, so an edited ResRef here would " +
-                "leave the blueprint's identity disagreeing with its filename");
+            resRef.IsReadOnly.Should().BeFalse(
+                "rename-on-save keeps the internal identity, file name, and placements together");
+            resRef.IsRequired.Should().BeTrue();
             TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.NoSpawnZoneId).Manages
                 .Single(value => value.Name == "TemplateResRef").Label.Should().Be("ResRef");
 

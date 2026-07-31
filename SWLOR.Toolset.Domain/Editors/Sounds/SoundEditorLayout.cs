@@ -31,7 +31,7 @@ namespace SWLOR.Toolset.Domain.Editors.Sounds
             new BehaviorFieldDefinition
             {
                 Label = "ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
-                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsReadOnly = true
+                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsRequired = true
             },
             new BehaviorFieldDefinition
             {

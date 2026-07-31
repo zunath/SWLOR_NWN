@@ -20,7 +20,8 @@ namespace SWLOR.Toolset.Services
             string oldPath,
             string newPath,
             byte[] newContent,
-            byte[] expectedOriginalContentHash)
+            byte[] expectedOriginalContentHash,
+            IReadOnlyList<RenameCompanion>? companions = null)
         {
             ArgumentNullException.ThrowIfNull(newContent);
             ArgumentNullException.ThrowIfNull(expectedOriginalContentHash);
@@ -62,6 +63,49 @@ namespace SWLOR.Toolset.Services
                     ? Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(categoryBackupPath)))
                     : string.Empty;
 
+                var companionManifests = new List<CompanionManifest>();
+                foreach (var (companion, index) in
+                         (companions ?? Array.Empty<RenameCompanion>()).Select((value, index) => (value, index)))
+                {
+                    if (companion.ExpectedOriginalContentHash.Length != SHA256.HashSizeInBytes)
+                    {
+                        throw new ArgumentException(
+                            "A blueprint rename companion fingerprint must be SHA-256.",
+                            nameof(companions));
+                    }
+
+                    var companionPath = Path.GetFullPath(companion.Path);
+                    RequirePathUnder(moduleRoot, companionPath, "companion file");
+                    if (!File.Exists(companionPath))
+                    {
+                        throw new FileNotFoundException(
+                            "A file being updated with the blueprint rename is missing.",
+                            companionPath);
+                    }
+
+                    var backupPath = Path.Combine(transactionRoot, $"companion-{index}.original");
+                    File.Copy(companionPath, backupPath);
+                    var originalContentSha256 = ContentHash(backupPath);
+                    if (!string.Equals(
+                            originalContentSha256,
+                            Convert.ToHexString(companion.ExpectedOriginalContentHash),
+                            StringComparison.Ordinal))
+                    {
+                        throw new IOException(
+                            $"The blueprint rename companion '{companionPath}' changed while the " +
+                            "rename transaction was starting.");
+                    }
+
+                    companionManifests.Add(new CompanionManifest
+                    {
+                        Path = companionPath,
+                        BackupPath = backupPath,
+                        OriginalContentSha256 = originalContentSha256,
+                        InstalledContentSha256 =
+                            Convert.ToHexString(SHA256.HashData(companion.ReplacementContent))
+                    });
+                }
+
                 var manifest = new Manifest
                 {
                     TransactionRoot = transactionRoot,
@@ -76,7 +120,8 @@ namespace SWLOR.Toolset.Services
                         string.Equals(oldPath, newPath, StringComparison.OrdinalIgnoreCase),
                     CategoryOriginalContentSha256 = categoryOriginalHash,
                     OriginalContentSha256 = Convert.ToHexString(expectedOriginalContentHash),
-                    NewContentSha256 = Convert.ToHexString(SHA256.HashData(newContent))
+                    NewContentSha256 = Convert.ToHexString(SHA256.HashData(newContent)),
+                    Companions = companionManifests
                 };
                 WriteMarker(markerPath, manifest);
                 return new Transaction(moduleRoot, markerPath, manifest, moduleWriteLock);
@@ -213,6 +258,26 @@ namespace SWLOR.Toolset.Services
                         $"Item rename recovery marker '{markerPath}' has an invalid {description} fingerprint.");
                 }
             }
+
+            foreach (var companion in manifest.Companions)
+            {
+                RequirePathUnder(moduleRoot, companion.Path, "companion file");
+                RequirePathUnder(transactionRoot, companion.BackupPath, "companion backup");
+                ValidateSha256(companion.OriginalContentSha256, "companion original", markerPath);
+                ValidateSha256(companion.InstalledContentSha256, "companion replacement", markerPath);
+            }
+        }
+
+        private static void ValidateSha256(string value, string description, string markerPath)
+        {
+            if (value.Length == 64 && value.All(character =>
+                    character is >= '0' and <= '9' or >= 'A' and <= 'F'))
+            {
+                return;
+            }
+
+            throw new InvalidDataException(
+                $"Item rename recovery marker '{markerPath}' has an invalid {description} fingerprint.");
         }
 
         private static void RequirePathUnder(string root, string path, string description)
@@ -239,6 +304,7 @@ namespace SWLOR.Toolset.Services
                         manifest.ItemBackupPath);
 
                 ValidateCategoryGeneration(manifest);
+                ValidateAndRestoreCompanions(manifest);
 
                 RollBackItem(manifest);
 
@@ -375,6 +441,53 @@ namespace SWLOR.Toolset.Services
             throw new IOException(
                 $"The category sidecar '{manifest.CategoryPath}' changed after the interrupted " +
                 "item rename. Recovery was refused so the newer file is preserved.");
+        }
+
+        private static void ValidateAndRestoreCompanions(Manifest manifest)
+        {
+            var installed = new List<CompanionManifest>();
+            foreach (var companion in manifest.Companions)
+            {
+                if (!File.Exists(companion.BackupPath))
+                {
+                    throw new FileNotFoundException(
+                        "A blueprint rename companion backup is missing.",
+                        companion.BackupPath);
+                }
+
+                if (!File.Exists(companion.Path))
+                {
+                    throw new IOException(
+                        $"The blueprint rename companion '{companion.Path}' disappeared. Recovery was refused.");
+                }
+
+                var currentHash = ContentHash(companion.Path);
+                if (string.Equals(
+                        currentHash,
+                        companion.OriginalContentSha256,
+                        StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (!string.Equals(
+                        currentHash,
+                        companion.InstalledContentSha256,
+                        StringComparison.Ordinal))
+                {
+                    throw new IOException(
+                        $"The blueprint rename companion '{companion.Path}' changed after the interrupted " +
+                        "rename. Recovery was refused so the newer file is preserved.");
+                }
+
+                installed.Add(companion);
+            }
+
+            // Validate the whole set before restoring the first member. A newer external write to
+            // one GIT must leave every companion untouched, not roll earlier areas back and then
+            // discover the conflict halfway through the set.
+            foreach (var companion in installed)
+                File.Copy(companion.BackupPath, companion.Path, overwrite: true);
         }
 
         private static string CategoryOriginalHash(Manifest manifest) =>
@@ -519,7 +632,21 @@ namespace SWLOR.Toolset.Services
             public string CategoryInstalledContentSha256 { get; set; } = string.Empty;
             public string OriginalContentSha256 { get; set; } = string.Empty;
             public string NewContentSha256 { get; set; } = string.Empty;
+            public List<CompanionManifest> Companions { get; set; } = new();
         }
+
+        internal sealed class CompanionManifest
+        {
+            public string Path { get; set; } = string.Empty;
+            public string BackupPath { get; set; } = string.Empty;
+            public string OriginalContentSha256 { get; set; } = string.Empty;
+            public string InstalledContentSha256 { get; set; } = string.Empty;
+        }
+
+        internal sealed record RenameCompanion(
+            string Path,
+            byte[] ReplacementContent,
+            byte[] ExpectedOriginalContentHash);
     }
 
     internal sealed class ItemRenameRecoveryException(string message, Exception innerException)

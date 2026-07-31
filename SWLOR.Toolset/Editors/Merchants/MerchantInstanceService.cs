@@ -26,16 +26,19 @@ namespace SWLOR.Toolset.Editors.Merchants
     {
         private readonly WorkspaceContext _workspaceContext;
         private readonly OutputLogService _log;
-        private readonly Func<string, bool>? _isAreaOpen;
+        private readonly Func<string, bool>? _hasUnsavedAreaInstances;
+        private readonly Action<string>? _reloadOpenAreaInstances;
 
         public MerchantInstanceService(
             WorkspaceContext workspaceContext,
             OutputLogService log,
-            Func<string, bool>? isAreaOpen = null)
+            Func<string, bool>? hasUnsavedAreaInstances = null,
+            Action<string>? reloadOpenAreaInstances = null)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _log = log ?? throw new ArgumentNullException(nameof(log));
-            _isAreaOpen = isAreaOpen;
+            _hasUnsavedAreaInstances = hasUnsavedAreaInstances;
+            _reloadOpenAreaInstances = reloadOpenAreaInstances;
         }
 
         public Task<IReadOnlyList<MerchantInstancePlacement>> FindAsync(string merchantResRef)
@@ -55,23 +58,25 @@ namespace SWLOR.Toolset.Editors.Merchants
             if (workspace == null)
                 return 0;
 
-            var openAreas = _isAreaOpen == null
+            var protectedAreas = _hasUnsavedAreaInstances == null
                 ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                 : workspace.EnumerateAreaResRefs()
-                    .Where(_isAreaOpen)
+                    .Where(_hasUnsavedAreaInstances)
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
-            var updated = await Task.Run(
-                () => Update(workspace, merchantResRef, openAreas)).ConfigureAwait(true);
-            if (updated > 0)
+            var result = await Task.Run(
+                () => Update(workspace, merchantResRef, protectedAreas)).ConfigureAwait(true);
+            foreach (var areaResRef in result.Areas)
+                _reloadOpenAreaInstances?.Invoke(areaResRef);
+            if (result.Count > 0)
             {
                 _workspaceContext.InvalidateTagIndex();
                 _workspaceContext.InvalidateScriptUsages();
                 _log.AppendLine(
-                    $"Updated {updated} placed instance{(updated == 1 ? string.Empty : "s")} of merchant " +
+                    $"Updated {result.Count} placed instance{(result.Count == 1 ? string.Empty : "s")} of merchant " +
                     $"'{merchantResRef}'.");
             }
 
-            return updated;
+            return result.Count;
         }
 
         private static IReadOnlyList<MerchantInstancePlacement> Find(
@@ -129,10 +134,10 @@ namespace SWLOR.Toolset.Editors.Merchants
                 .ToList();
         }
 
-        private static int Update(
+        private static (int Count, IReadOnlyList<string> Areas) Update(
             ModuleWorkspace workspace,
             string merchantResRef,
-            IReadOnlySet<string> openAreas)
+            IReadOnlySet<string> protectedAreas)
         {
             // Synchronization is one read/modify/write operation across the merchant, every GIT,
             // and the referenced inventory blueprints. Keep pack/unpack and other writers out for
@@ -147,6 +152,7 @@ namespace SWLOR.Toolset.Editors.Merchants
                     : itemCache[resRef] = TryLoadItem(workspace, resRef);
 
             var staged = new List<SaveService.StagedWrite>();
+            var areas = new List<string>();
             var updated = 0;
             try
             {
@@ -184,10 +190,11 @@ namespace SWLOR.Toolset.Editors.Merchants
                     if (replacements.Count == 0)
                         continue;
 
-                    if (openAreas.Contains(areaResRef))
+                    if (protectedAreas.Contains(areaResRef))
                     {
                         throw new InvalidOperationException(
-                            $"Close the open area '{areaResRef}' before updating its placed merchant instance.");
+                            $"Save or revert the unsaved instance edits in area '{areaResRef}' before " +
+                            "updating its placed merchant instance.");
                     }
 
                     using (EditScope.EnterConstruction())
@@ -203,11 +210,12 @@ namespace SWLOR.Toolset.Editors.Merchants
                     }
 
                     staged.Add(SaveService.Stage(path, git.ToBytes()));
+                    areas.Add(areaResRef);
                     updated += replacements.Count;
                 }
 
                 SaveService.CommitAll(staged);
-                return updated;
+                return (updated, areas);
             }
             catch
             {

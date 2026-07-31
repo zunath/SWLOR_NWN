@@ -902,11 +902,12 @@ namespace SWLOR.Game.Server.Service
             var logicalDurationSeconds = durationTicks * Math.Max(1f, statusEffect.Frequency);
 
             // NWN may remove an effect before delivering an interval callback scheduled for the
-            // exact same timestamp. Ticking effects therefore need one scheduler interval of
-            // native lifetime grace so their final logical tick can run and remove the effect.
+            // exact same timestamp. Ticking effects therefore keep one logical tick of native
+            // lifetime grace so a late callback can catch up and the final logical tick can remove
+            // the effect.
             // Passive effects have no interval callback and retain their exact duration.
             return statusEffect.ActivationType == StatusEffectActivationType.Tick
-                ? logicalDurationSeconds + Interval
+                ? logicalDurationSeconds + Math.Max(Interval, statusEffect.Frequency)
                 : logicalDurationSeconds;
         }
 

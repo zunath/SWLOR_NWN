@@ -3,6 +3,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -22,10 +24,29 @@ public class DamageOverTimeStatusEffectTests
             null,
             new object[] { new KoltoMistHealingStatusEffect(), 2 })!;
 
-        burnDuration.Should().Be(13f,
-            "two 6-second ticks need the 1-second NWN scheduler grace at the 12-second boundary");
+        burnDuration.Should().Be(18f,
+            "two 6-second ticks need one logical tick of NWN scheduler grace at the 12-second boundary");
         passiveDuration.Should().Be(2f,
             "passive effects have no interval callback and must retain their exact duration");
+    }
+
+    [Test]
+    public void TickingStatusEffects_PreserveCadenceWhenAnEngineCallbackArrivesLate()
+    {
+        var statusEffect = new CountingStatusEffect();
+        statusEffect.ApplyEffect(1, 1, 3);
+
+        var lastRunField = typeof(StatusEffectBase).GetField(
+            "_lastRun",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        lastRunField.SetValue(statusEffect, DateTime.UtcNow.AddSeconds(-6.1));
+
+        statusEffect.TickEffect(1);
+        statusEffect.TickEffect(1);
+
+        statusEffect.TickCount.Should().Be(2,
+            "a late callback must advance one logical period, not reset the cadence and discard a HoT tick");
+        statusEffect.DurationTicks.Should().Be(1);
     }
 
     [Test]
@@ -94,6 +115,19 @@ public class DamageOverTimeStatusEffectTests
             "Feature",
             "StatusEffectDefinition",
             fileName));
+    }
+
+    private sealed class CountingStatusEffect : StatusEffectBase
+    {
+        public override string Name => "Counting";
+        public override EffectIconType Icon => EffectIconType.Invalid;
+        public override float Frequency => 3f;
+        public int TickCount { get; private set; }
+
+        protected override void Tick(uint creature)
+        {
+            TickCount++;
+        }
     }
 
     private static DirectoryInfo FindRepositoryRoot()

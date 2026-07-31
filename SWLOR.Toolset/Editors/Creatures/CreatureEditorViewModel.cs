@@ -64,6 +64,9 @@ namespace SWLOR.Toolset.Editors.Creatures
         private CreatureAnimationOption? _selectedPreviewAnimation;
 
         [ObservableProperty]
+        private bool _isEquipmentTabSelected;
+
+        [ObservableProperty]
         private int _selectedAppearanceSectionIndex;
 
         [ObservableProperty]
@@ -134,7 +137,9 @@ namespace SWLOR.Toolset.Editors.Creatures
             IReadOnlyList<AppearanceOption>? appearanceOptions = null,
             ThumbnailService? appearanceThumbnails = null,
             ArmorDyeSwatchService? colorPalettes = null,
-            Func<string, string>? resolveItemName = null)
+            Func<string, string>? resolveItemName = null,
+            Func<string, int, int, int,
+                Task<IReadOnlyList<CreatureEquipmentChoice>>>? equipmentSearch = null)
         {
             _store = new CreatureValueStore(creature);
             _runEdit = runEdit;
@@ -160,7 +165,9 @@ namespace SWLOR.Toolset.Editors.Creatures
                 equipmentChoices ?? (() => Task.FromResult<IReadOnlyList<CreatureEquipmentChoice>>(
                     Array.Empty<CreatureEquipmentChoice>())),
                 equipmentDetails ?? (_ => null),
-                OnEquipmentChanged);
+                OnEquipmentChanged,
+                _choicePreviews,
+                equipmentSearch);
             Variables = new VarTableSectionViewModel(RunEdit, _store.Locals, gameCodeIndex, IsCustomVariable);
             if (appearanceOptions != null)
             {
@@ -625,6 +632,12 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         partial void OnSelectedAppearanceSectionIndexChanged(int value) =>
             EnsureSelectedAppearanceSectionLoaded();
+
+        partial void OnIsEquipmentTabSelectedChanged(bool value)
+        {
+            if (value)
+                EquipmentSlots.ActivateSelected();
+        }
 
         private void EnsureSelectedAppearanceSectionLoaded()
         {

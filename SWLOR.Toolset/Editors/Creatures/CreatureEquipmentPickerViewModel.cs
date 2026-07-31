@@ -1,6 +1,7 @@
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Items;
 
@@ -56,16 +57,27 @@ namespace SWLOR.Toolset.Editors.Creatures
         public override bool CanClearChoice =>
             !string.IsNullOrWhiteSpace(_creatureStore.EquippedResRef(_slot));
 
+        public override string ClearChoiceLabel => "Unequip";
+
         protected override bool SelectsFirstChoiceWhenUnset => false;
+
+        // Equipment owns the whole work pane. The shared gallery still publishes only 48 tiles at
+        // a time, so a large item catalog remains bounded without hiding it behind another action.
+        protected override int InlineGalleryLimit => int.MaxValue;
+        public override double GalleryTileWidth => 168;
+        public override double GalleryThumbnailHeight => 92;
+        public override double GalleryViewportHeight => 430;
 
         public CreatureEquipmentPickerViewModel(
             string label,
             int slot,
             CreatureValueStore store,
             Func<string, Action, bool> runEdit,
-            Func<Task<IReadOnlyList<CreatureEquipmentChoice>>> choices,
+            Func<Task<IReadOnlyList<CreatureEquipmentChoice>>>? choices,
             Func<string, CreatureEquipmentChoice?> loadDetails,
-            Action changed)
+            Action changed,
+            ChoicePreviewService? previews = null,
+            Func<string, int, int, Task<IReadOnlyList<CreatureEquipmentChoice>>>? searchChoices = null)
             : base(
                 new BehaviorFieldDefinition
                 {
@@ -78,12 +90,20 @@ namespace SWLOR.Toolset.Editors.Creatures
                 store,
                 runEdit,
                 valueChanged: changed,
-                asyncChoiceLoader: async () => (await choices().ConfigureAwait(true))
-                    .Select(choice => new BehaviorChoice(choice.ResRef, choice.Display)
-                    {
-                        Summary = choice.StatSummary
-                    })
-                    .ToList())
+                previews: previews,
+                asyncChoiceLoader: searchChoices == null
+                    ? async () => (await (choices?.Invoke() ??
+                                         Task.FromResult<IReadOnlyList<CreatureEquipmentChoice>>(
+                                             Array.Empty<CreatureEquipmentChoice>())).ConfigureAwait(true))
+                        .Select(ToBehaviorChoice)
+                        .ToList()
+                    : null,
+                choicePageLoader: searchChoices == null
+                    ? null
+                    : async (query, skip, take) =>
+                        (await searchChoices(query, skip, take).ConfigureAwait(true))
+                        .Select(ToBehaviorChoice)
+                        .ToList())
         {
             _slot = slot;
             _creatureStore = store;
@@ -98,9 +118,15 @@ namespace SWLOR.Toolset.Editors.Creatures
                 string.Equals(choice.StringValue, resRef, StringComparison.OrdinalIgnoreCase));
         }
 
-        /// <summary>Loads details only for the slot currently visible in the equipment pane.</summary>
-        public void Activate(bool force = false) =>
+        /// <summary>
+        /// Loads the selected slot's first item page immediately. Other slots remain deferred, and
+        /// the shared gallery requests previews only for the page it has actually published.
+        /// </summary>
+        public async Task ActivateAsync(bool force = false)
+        {
+            await EnsureChoicesLoadedAsync().ConfigureAwait(true);
             RefreshSelectedStats(_creatureStore.EquippedResRef(_slot), force);
+        }
 
         protected override void WriteChoice(BehaviorChoiceViewModel value) =>
             _creatureStore.SetEquippedResRef(_slot, value.StringValue);
@@ -137,5 +163,13 @@ namespace SWLOR.Toolset.Editors.Creatures
             OnPropertyChanged(nameof(HasSelectedItem));
             OnPropertyChanged(nameof(ShowsSelectedStatsStatus));
         }
+
+        private static BehaviorChoice ToBehaviorChoice(CreatureEquipmentChoice choice) =>
+            new(choice.ResRef, choice.Display)
+            {
+                Summary = choice.StatSummary,
+                BlueprintPreviewType = ResourceType.Uti,
+                BlueprintPreviewResRef = choice.ResRef
+            };
     }
 }

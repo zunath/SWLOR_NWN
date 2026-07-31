@@ -1,3 +1,5 @@
+using SWLOR.Toolset.Domain.Workspace;
+
 namespace SWLOR.Toolset.Domain.Editors.Behaviors
 {
     /// <summary>
@@ -45,6 +47,16 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
 
         /// <summary>Remote reference artwork loaded by the shared preview pipeline.</summary>
         public string? ImageUrl { get; }
+
+        /// <summary>
+        /// Optional blueprint type whose ordinary Toolset thumbnail pictures this choice. Item and
+        /// creature pickers use the same render queue and cache as the palette instead of inventing
+        /// a second preview pipeline.
+        /// </summary>
+        public ResourceType? BlueprintPreviewType { get; init; }
+
+        /// <summary>The resref sent to <see cref="BlueprintPreviewType"/>'s thumbnail service.</summary>
+        public string? BlueprintPreviewResRef { get; init; }
 
         /// <summary>Whether this choice can ask its editor to play a representative audio cue.</summary>
         public bool CanPreviewAudio { get; }

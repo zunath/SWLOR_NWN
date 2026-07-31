@@ -30,7 +30,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
     public partial class BehaviorRowViewModel : ObservableObject, IDisposable
     {
         /// <summary>Gallery tiles published per page, and per scroll once the builder reaches the end.</summary>
-        private const int GalleryPageSize = 48;
+        public const int GalleryPageSize = 48;
 
         /// <summary>How long typing pauses before the gallery re-filters.</summary>
         private static readonly TimeSpan SearchDebounce = TimeSpan.FromMilliseconds(250);
@@ -55,6 +55,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         private readonly Action? _valueChanged;
         private readonly ChoicePreviewService? _previews;
         private readonly Func<BehaviorChoice, string?>? _previewAudio;
+        private readonly Func<string, int, int, Task<IReadOnlyList<BehaviorChoice>>>? _choicePageLoader;
         private Func<IReadOnlyList<BehaviorChoice>>? _choiceLoader;
         private Func<Task<IReadOnlyList<BehaviorChoice>>>? _asyncChoiceLoader;
         private List<BehaviorChoiceViewModel> _searchMatches = new();
@@ -62,6 +63,12 @@ namespace SWLOR.Toolset.Editors.Behaviors
         private CancellationTokenSource? _searchDebounce;
         private int _searchPublished;
         private int _galleryPublished;
+        private int _choicePageOffset;
+        private int _choicePageRequestGeneration;
+        private bool _choicePagesActivated;
+        private bool _choicePagesExhausted;
+        private bool _choicePageLoading;
+        private bool _reusePagedChoicesOnNextRebuild;
         private bool _galleryBuilt;
         private bool _galleryControlsBuilt;
         private bool _disposed;
@@ -119,7 +126,13 @@ namespace SWLOR.Toolset.Editors.Behaviors
         }
 
         /// <summary>Whether this row has paid the cost of resolving and wrapping its option set.</summary>
-        public bool AreChoicesLoaded => _choiceLoader == null && _asyncChoiceLoader == null;
+        public bool AreChoicesLoaded =>
+            _choiceLoader == null &&
+            _asyncChoiceLoader == null &&
+            (_choicePageLoader == null || _choicePagesActivated && !_choicePageLoading);
+
+        /// <summary>True while a repository-backed gallery is resolving its next bounded page.</summary>
+        public bool IsGalleryLoading => _choicePageLoading;
 
         /// <summary>The filtered slice of <see cref="Choices"/> a searchable row shows.</summary>
         public ObservableCollection<BehaviorChoiceViewModel> FilteredChoices { get; } = new();
@@ -186,7 +199,9 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// the page rather than as a list of names. The load screens, the door appearances, the
         /// portraits, and the waypoint markers all arrive this way.
         /// </summary>
-        public bool IsGallery => IsChoice && AreChoicesLoaded && Choices.Any(choice => choice.HasArtwork);
+        public bool IsGallery => IsChoice &&
+                                 (_choicePageLoader != null ||
+                                  AreChoicesLoaded && Choices.Any(choice => choice.HasArtwork));
 
         /// <summary>
         /// A gallery whose whole set fits on the page, shown there rather than behind a button. A
@@ -207,6 +222,11 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// against a set they can only search.
         /// </summary>
         protected virtual int InlineGalleryLimit => 120;
+
+        /// <summary>Tile sizing hooks for editors that give the shared gallery a full work pane.</summary>
+        public virtual double GalleryTileWidth => 104;
+        public virtual double GalleryThumbnailHeight => 78;
+        public virtual double GalleryViewportHeight => 330;
 
         /// <summary>
         /// A choice row the builder searches rather than scrolls. Declared per field, and forced on
@@ -296,11 +316,27 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// </summary>
         public virtual bool CanClearChoice => false;
 
+        /// <summary>The clear action's builder-facing label when a linked choice can be absent.</summary>
+        public virtual string ClearChoiceLabel => "Clear";
+
         /// <summary>How much of the gallery is on screen, for its count line.</summary>
         public string GallerySummary
         {
             get
             {
+                if (_choicePageLoader != null)
+                {
+                    if (_choicePageLoading && GalleryChoices.Count == 0)
+                        return "Loading choices...";
+                    if (GalleryChoices.Count == 0)
+                        return "No choices match";
+
+                    var suffix = GalleryChoices.Count == 1 ? string.Empty : "s";
+                    return _choicePagesExhausted
+                        ? $"{GalleryChoices.Count} choice{suffix}"
+                        : $"{GalleryChoices.Count} choice{suffix} loaded · scroll for more";
+                }
+
                 if (_galleryMatches.Count == 0)
                     return "No choices match";
 
@@ -310,7 +346,9 @@ namespace SWLOR.Toolset.Editors.Behaviors
             }
         }
 
-        public bool CanLoadMoreGallery => _galleryPublished < _galleryMatches.Count;
+        public bool CanLoadMoreGallery => _choicePageLoader != null
+            ? _choicePagesActivated && !_choicePageLoading && !_choicePagesExhausted
+            : _galleryPublished < _galleryMatches.Count;
 
         [ObservableProperty]
         private string _text = string.Empty;
@@ -399,7 +437,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
             ChoicePreviewService? previews = null,
             Func<BehaviorChoice, string?>? previewAudio = null,
             Func<IReadOnlyList<BehaviorChoice>>? choiceLoader = null,
-            Func<Task<IReadOnlyList<BehaviorChoice>>>? asyncChoiceLoader = null)
+            Func<Task<IReadOnlyList<BehaviorChoice>>>? asyncChoiceLoader = null,
+            Func<string, int, int, Task<IReadOnlyList<BehaviorChoice>>>? choicePageLoader = null)
         {
             Definition = definition ?? throw new ArgumentNullException(nameof(definition));
             Store = store ?? throw new ArgumentNullException(nameof(store));
@@ -409,17 +448,20 @@ namespace SWLOR.Toolset.Editors.Behaviors
             _previewAudio = previewAudio;
             var choiceSourceCount = (choices != null ? 1 : 0) +
                                     (choiceLoader != null ? 1 : 0) +
-                                    (asyncChoiceLoader != null ? 1 : 0);
+                                    (asyncChoiceLoader != null ? 1 : 0) +
+                                    (choicePageLoader != null ? 1 : 0);
             if (choiceSourceCount > 1)
-                throw new ArgumentException("Provide eager choices or one deferred choice loader, not both.");
+                throw new ArgumentException(
+                    "Provide eager choices, one deferred choice loader, or a paged choice loader, not more than one.");
 
             _choiceLoader = choiceLoader;
             _asyncChoiceLoader = asyncChoiceLoader;
+            _choicePageLoader = choicePageLoader;
             // Wrapping the choices costs nothing: no picture is decoded or rendered until a tile
             // that shows one exists, and then only for the page that has been published. Building
             // the rows used to decode every load screen - around thirty megabytes of DDS - before
             // the tab could draw, which is what made switching to Area Transition stall.
-            if (choiceLoader == null && asyncChoiceLoader == null)
+            if (choiceLoader == null && asyncChoiceLoader == null && choicePageLoader == null)
                 Choices = BehaviorChoiceViewModel.From(choices ?? definition.Choices);
         }
 
@@ -642,7 +684,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
         }
 
         [RelayCommand]
-        private void LoadMoreGallery() => PublishGalleryPage();
+        private async Task LoadMoreGallery() =>
+            await PublishGalleryPageAsync().ConfigureAwait(true);
 
         partial void OnGalleryQueryChanged(string value)
         {
@@ -672,12 +715,38 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 TaskScheduler.Default);
         }
 
-        private void RebuildGallery()
+        private void RebuildGallery() => _ = RebuildGalleryAsync();
+
+        private async Task RebuildGalleryAsync()
         {
             if (_disposed)
                 return;
 
             _galleryBuilt = true;
+
+            // A repository-backed gallery owns only the pages it has published. Search starts a
+            // fresh page at the source; scrolling asks for the next page. This is the same bounded
+            // item flow used by the merchant editor, generalized here so other blueprint pickers
+            // do not need to duplicate it.
+            if (_choicePageLoader != null)
+            {
+                if (!_reusePagedChoicesOnNextRebuild &&
+                    !await LoadChoicePageAsync(reset: true).ConfigureAwait(true))
+                {
+                    return;
+                }
+                _reusePagedChoicesOnNextRebuild = false;
+
+                if (_disposed)
+                    return;
+
+                EnsureGalleryControls();
+                _galleryPublished = 0;
+                GalleryChoices.Clear();
+                PublishLoadedGalleryChoices();
+                return;
+            }
+
             EnsureGalleryControls();
             var words = (GalleryQuery ?? string.Empty)
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -713,7 +782,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
             _galleryMatches = matches.ToList();
             _galleryPublished = 0;
             GalleryChoices.Clear();
-            PublishGalleryPage();
+            PublishLoadedGalleryChoices();
         }
 
         private void EnsureGalleryControls()
@@ -766,7 +835,23 @@ namespace SWLOR.Toolset.Editors.Behaviors
             OnPropertyChanged(nameof(HasGalleryFilters));
         }
 
-        private void PublishGalleryPage()
+        private async Task PublishGalleryPageAsync()
+        {
+            if (_disposed || !_galleryBuilt)
+                return;
+
+            if (_choicePageLoader != null)
+            {
+                if (!await LoadChoicePageAsync(reset: false).ConfigureAwait(true))
+                    return;
+                PublishLoadedGalleryChoices();
+                return;
+            }
+
+            PublishLoadedGalleryChoices();
+        }
+
+        private void PublishLoadedGalleryChoices()
         {
             if (_disposed || !_galleryBuilt)
                 return;
@@ -781,6 +866,77 @@ namespace SWLOR.Toolset.Editors.Behaviors
             }
 
             _galleryPublished = end;
+            OnPropertyChanged(nameof(GallerySummary));
+            OnPropertyChanged(nameof(CanLoadMoreGallery));
+        }
+
+        private async Task<bool> LoadChoicePageAsync(bool reset)
+        {
+            if (_choicePageLoader == null || !_choicePagesActivated)
+                return false;
+
+            var offset = reset ? 0 : _choicePageOffset;
+            if (!reset && (_choicePagesExhausted || _choicePageLoading))
+                return false;
+
+            var query = (GalleryQuery ?? string.Empty).Trim();
+            var requestGeneration = reset
+                ? ++_choicePageRequestGeneration
+                : _choicePageRequestGeneration;
+            _choicePageLoading = true;
+            NotifyChoicePageStateChanged();
+            try
+            {
+                var sourcePage = await _choicePageLoader(
+                    query,
+                    offset,
+                    GalleryPageSize + 1).ConfigureAwait(true);
+                if (_disposed || requestGeneration != _choicePageRequestGeneration ||
+                    !string.Equals(query, (GalleryQuery ?? string.Empty).Trim(), StringComparison.Ordinal))
+                {
+                    return false;
+                }
+
+                var visiblePage = sourcePage.Take(GalleryPageSize).ToList();
+                var wrapped = BehaviorChoiceViewModel.From(visiblePage);
+
+                if (reset)
+                {
+                    Choices = wrapped;
+                    _galleryMatches = wrapped.ToList();
+                    _galleryPublished = 0;
+                    _choicePageOffset = wrapped.Count;
+                }
+                else if (wrapped.Count > 0)
+                {
+                    _choices = Choices.Concat(wrapped).ToList();
+                    _galleryMatches.AddRange(wrapped);
+                    _choicePageOffset += wrapped.Count;
+                }
+
+                _choicePagesExhausted = sourcePage.Count <= GalleryPageSize || wrapped.Count == 0;
+                return true;
+            }
+            finally
+            {
+                if (requestGeneration == _choicePageRequestGeneration)
+                {
+                    _choicePageLoading = false;
+                    NotifyChoicePageStateChanged();
+                }
+            }
+        }
+
+        private void NotifyChoicePageStateChanged()
+        {
+            OnPropertyChanged(nameof(IsGalleryLoading));
+            OnPropertyChanged(nameof(AreChoicesLoaded));
+            OnPropertyChanged(nameof(IsGallery));
+            OnPropertyChanged(nameof(IsInlineGallery));
+            OnPropertyChanged(nameof(IsPopupGallery));
+            OnPropertyChanged(nameof(IsSearchableChoice));
+            OnPropertyChanged(nameof(IsInlineSearchChoice));
+            OnPropertyChanged(nameof(IsPlainChoice));
             OnPropertyChanged(nameof(GallerySummary));
             OnPropertyChanged(nameof(CanLoadMoreGallery));
         }
@@ -1002,8 +1158,26 @@ namespace SWLOR.Toolset.Editors.Behaviors
             OnPropertyChanged(nameof(CanLoadMoreSearchResults));
         }
 
-        private async Task EnsureChoicesLoadedAsync()
+        /// <summary>
+        /// Resolves a deferred choice source and builds its initial presentation. Specialized
+        /// editors use this when their selected work pane is itself the picker, so the user never
+        /// has to press an extra button merely to reveal the options.
+        /// </summary>
+        protected async Task EnsureChoicesLoadedAsync()
         {
+            if (_choicePageLoader != null)
+            {
+                if (_choicePagesActivated)
+                    return;
+
+                _choicePagesActivated = true;
+                if (!await LoadChoicePageAsync(reset: true).ConfigureAwait(true))
+                    return;
+                _reusePagedChoicesOnNextRebuild = true;
+                Reload();
+                return;
+            }
+
             if (!await LoadDeferredChoicesAsync().ConfigureAwait(true))
                 return;
 
@@ -1079,6 +1253,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
             OnPropertyChanged(nameof(IsPlainChoice));
             OnPropertyChanged(nameof(SearchSummary));
             OnPropertyChanged(nameof(CanLoadMoreSearchResults));
+            OnPropertyChanged(nameof(GallerySummary));
+            OnPropertyChanged(nameof(CanLoadMoreGallery));
         }
 
         /// <summary>Republishes the properties that depend on the stored value rather than on it alone.</summary>

@@ -99,8 +99,6 @@ namespace SWLOR.Toolset.Editors
         private int _waypointCatalogGeneration;
         private readonly Dictionary<string, Doors.DoorDocumentViewModel> _openDoorEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Creatures.CreatureDocumentViewModel> _openCreatureEditors = new(StringComparer.OrdinalIgnoreCase);
-        private IReadOnlyList<Creatures.CreatureEquipmentChoice>? _creatureEquipmentChoices;
-        private Task<IReadOnlyList<Creatures.CreatureEquipmentChoice>>? _creatureEquipmentChoicesBuild;
         private int _creatureEquipmentChoicesGeneration;
         private readonly Dictionary<string, Creatures.CreatureEquipmentChoice> _creatureEquipmentDetails =
             new(StringComparer.OrdinalIgnoreCase);
@@ -1245,7 +1243,7 @@ namespace SWLOR.Toolset.Editors
                     : null,
                 CreatureAppearance,
                 ArmorPartModels(),
-                CreatureEquipmentChoices,
+                null,
                 LoadCreatureEquipmentDetails,
                 ChoicePreviews(),
                 PreviewCreatureAudio,
@@ -1253,7 +1251,8 @@ namespace SWLOR.Toolset.Editors
                 _appearances == null ? null : CreatureAppearanceOptions(),
                 _thumbnails,
                 ArmorDyeSwatches(),
-                itemResRef => LoadMerchantItem(itemResRef)?.Name ?? itemResRef);
+                itemResRef => LoadMerchantItem(itemResRef)?.Name ?? itemResRef,
+                SearchCreatureEquipmentItems);
             editor.Closed += closed => _openCreatureEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -2076,22 +2075,29 @@ namespace SWLOR.Toolset.Editors
             return choices.Values.OrderBy(choice => choice.Display, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
-        private Task<IReadOnlyList<Creatures.CreatureEquipmentChoice>> CreatureEquipmentChoices()
+        /// <summary>
+         /// Supplies one visible equipment page. It follows the merchant editor's established
+         /// repository-backed picker: use the lightweight catalog to narrow names first, then parse
+         /// only enough matching blueprints to fill this slot's requested page. Stats and preview
+         /// renders therefore advance with the builder's search and scroll instead of blocking the
+         /// tab on every UTI in the module.
+         /// </summary>
+        private async Task<IReadOnlyList<Creatures.CreatureEquipmentChoice>> SearchCreatureEquipmentItems(
+            string query,
+            int slot,
+            int skip,
+            int take)
         {
-            if (_creatureEquipmentChoices != null)
-            {
-                return Task.FromResult(_creatureEquipmentChoices);
-            }
-            if (_creatureEquipmentChoicesBuild != null)
-                return _creatureEquipmentChoicesBuild;
-
             var workspace = _workspaceContext.Workspace;
-            if (workspace == null)
-            {
-                return Task.FromResult<IReadOnlyList<Creatures.CreatureEquipmentChoice>>(
-                    Array.Empty<Creatures.CreatureEquipmentChoice>());
-            }
+            if (workspace == null || take <= 0)
+                return Array.Empty<Creatures.CreatureEquipmentChoice>();
 
+            var trimmed = query.Trim();
+            var candidates = MerchantItemCatalog()
+                .Where(item => trimmed.Length == 0 ||
+                               item.ResRef.Contains(trimmed, StringComparison.OrdinalIgnoreCase) ||
+                               item.Name.Contains(trimmed, StringComparison.OrdinalIgnoreCase))
+                .ToList();
             var baseItemRows = BaseItemRows();
             var costTables = ItemCostTables();
             const string subtypePrefix = "item.subtypes:";
@@ -2105,83 +2111,79 @@ namespace SWLOR.Toolset.Editors
                     table => subtypePrefix + table,
                     table => ResolveItemChoices(subtypePrefix + table),
                     StringComparer.OrdinalIgnoreCase);
-            var generation = _creatureEquipmentChoicesGeneration;
-            _creatureEquipmentChoicesBuild = BuildCreatureEquipmentChoicesAsync(
-                workspace,
-                generation,
-                baseItemRows,
-                costTables,
-                key => subtypeChoiceSets.TryGetValue(key, out var choices)
+            IReadOnlyList<BehaviorChoice> ResolveCachedItemChoices(string key) =>
+                subtypeChoiceSets.TryGetValue(key, out var choices)
                     ? choices
-                    : Array.Empty<BehaviorChoice>());
-            return _creatureEquipmentChoicesBuild;
-        }
+                    : Array.Empty<BehaviorChoice>();
+            var knownDetails = new Dictionary<string, Creatures.CreatureEquipmentChoice>(
+                _creatureEquipmentDetails,
+                StringComparer.OrdinalIgnoreCase);
+            var generation = _creatureEquipmentChoicesGeneration;
 
-        private async Task<IReadOnlyList<Creatures.CreatureEquipmentChoice>> BuildCreatureEquipmentChoicesAsync(
-            ModuleWorkspace workspace,
-            int generation,
-            Func<int, BaseItemRow?>? baseItemRows,
-            Domain.Editors.Items.ItemCostTableRanges? costTables,
-            Func<string, IReadOnlyList<BehaviorChoice>> resolveItemChoices)
-        {
-            var built = await Task.Run(() =>
+            var page = await Task.Run(() =>
             {
-                var result = new List<Creatures.CreatureEquipmentChoice>();
-                foreach (var resRef in workspace.EnumerateResRefs(ResourceType.Uti))
+                var matches = new List<Creatures.CreatureEquipmentChoice>();
+                var parsed = new List<Creatures.CreatureEquipmentChoice>();
+                var matched = 0;
+                foreach (var item in candidates)
                 {
-                    try
+                    Creatures.CreatureEquipmentChoice? detailed;
+                    if (!knownDetails.TryGetValue(item.ResRef, out detailed))
                     {
-                        var root = JsonGffDocument.Load(
-                            workspace.GetResourcePath(ResourceType.Uti, resRef)).Root;
-                        result.Add(BuildCreatureEquipmentDetails(
-                            resRef,
-                            root,
-                            baseItemRows,
-                            costTables,
-                            resolveItemChoices));
+                        try
+                        {
+                            detailed = BuildCreatureEquipmentDetails(
+                                item.ResRef,
+                                workspace.LoadBlueprint(ResourceType.Uti, item.ResRef).Fields,
+                                baseItemRows,
+                                costTables,
+                                ResolveCachedItemChoices);
+                            parsed.Add(detailed);
+                        }
+                        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
+                        {
+                            continue;
+                        }
                     }
-                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
-                    {
-                    }
+
+                    if ((detailed.EquipableSlots & slot) == 0)
+                        continue;
+
+                    if (matched++ < Math.Max(0, skip))
+                        continue;
+
+                    matches.Add(detailed);
+                    if (matches.Count == take)
+                        break;
                 }
 
-                return (IReadOnlyList<Creatures.CreatureEquipmentChoice>)result
-                    .OrderBy(choice => choice.Display, StringComparer.OrdinalIgnoreCase)
-                    .ToList();
+                return (Matches: (IReadOnlyList<Creatures.CreatureEquipmentChoice>)matches,
+                    Parsed: (IReadOnlyList<Creatures.CreatureEquipmentChoice>)parsed);
             }).ConfigureAwait(true);
 
             if (generation != _creatureEquipmentChoicesGeneration ||
                 !ReferenceEquals(workspace, _workspaceContext.Workspace))
             {
-                _creatureEquipmentChoicesBuild = null;
-                return await CreatureEquipmentChoices().ConfigureAwait(true);
+                return await SearchCreatureEquipmentItems(query, slot, skip, take).ConfigureAwait(true);
             }
 
-            _creatureEquipmentDetails.Clear();
-            foreach (var choice in built)
-                _creatureEquipmentDetails[choice.ResRef] = choice;
-            _creatureEquipmentChoices = built;
-            _creatureEquipmentChoicesBuild = null;
-            return built;
+            foreach (var detailed in page.Parsed)
+                _creatureEquipmentDetails[detailed.ResRef] = detailed;
+            return page.Matches;
         }
 
         private void InvalidateCreatureEquipmentChoices(string? resRef = null)
         {
-            _creatureEquipmentChoices = null;
             _creatureEquipmentChoicesGeneration++;
             if (string.IsNullOrWhiteSpace(resRef))
-            {
                 _creatureEquipmentDetails.Clear();
-            }
             else
-            {
                 _creatureEquipmentDetails.Remove(resRef);
-            }
         }
 
         /// <summary>
-        /// Loads one equipped blueprint for the details pane without forcing the progressive
-        /// chooser to scan every UTI. Once that chooser is opened, its catalog fills the same cache.
+        /// Loads one equipped blueprint for the details pane without scanning every UTI. The
+        /// progressive equipment gallery fills this same cache as each requested page is published.
         /// </summary>
         private Creatures.CreatureEquipmentChoice? LoadCreatureEquipmentDetails(string resRef)
         {
@@ -2196,8 +2198,7 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                var root = JsonGffDocument.Load(
-                    workspace.GetResourcePath(ResourceType.Uti, resRef)).Root;
+                var root = workspace.LoadBlueprint(ResourceType.Uti, resRef).Fields;
                 var details = BuildCreatureEquipmentDetails(resRef, root, BaseItemRows());
                 _creatureEquipmentDetails[resRef] = details;
                 return details;

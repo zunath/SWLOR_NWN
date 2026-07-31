@@ -54,7 +54,9 @@ namespace SWLOR.Toolset.Editors.Creatures
             IReadOnlyList<AppearanceOption>? appearanceOptions,
             ThumbnailService? appearanceThumbnails,
             Editors.Items.ArmorDyeSwatchService? colorPalettes = null,
-            Func<string, string>? resolveItemName = null)
+            Func<string, string>? resolveItemName = null,
+            Func<string, int, int, int,
+                Task<IReadOnlyList<CreatureEquipmentChoice>>>? equipmentSearch = null)
         {
             _log = log;
             _prompts = prompts;
@@ -80,7 +82,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 appearanceOptions,
                 appearanceThumbnails,
                 colorPalettes,
-                resolveItemName);
+                resolveItemName,
+                equipmentSearch);
             UpdateTitle();
         }
 

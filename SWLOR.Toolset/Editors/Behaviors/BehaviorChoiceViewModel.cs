@@ -29,10 +29,13 @@ namespace SWLOR.Toolset.Editors.Behaviors
         public bool HasArtwork =>
             !string.IsNullOrWhiteSpace(Choice.ImageResRef) ||
             !string.IsNullOrWhiteSpace(Choice.ModelResRef) ||
-            !string.IsNullOrWhiteSpace(Choice.ImageUrl);
+            !string.IsNullOrWhiteSpace(Choice.ImageUrl) ||
+            Choice.BlueprintPreviewType.HasValue &&
+            !string.IsNullOrWhiteSpace(Choice.BlueprintPreviewResRef);
 
         /// <summary>The resource a tile is drawn from, shown under the name so it stays identifiable.</summary>
-        public string? Detail => Choice.ModelResRef ?? Choice.ImageResRef;
+        public string? Detail =>
+            Choice.BlueprintPreviewResRef ?? Choice.ModelResRef ?? Choice.ImageResRef;
 
         public bool HasDetail => !string.IsNullOrWhiteSpace(Detail);
 

@@ -844,7 +844,14 @@ namespace SWLOR.Toolset.Tests
                         .Select(index => new AppearanceOption(
                             index.ToString(), $"Appearance {index}", $"row {index}",
                             CreatureAppearanceId: index))
-                        .ToList());
+                        .ToList(),
+                    equipmentSearch: (query, slot, skip, take) =>
+                        Task.FromResult<IReadOnlyList<CreatureEquipmentChoice>>(slot == 2
+                            ? Enumerable.Range(skip, Math.Max(0, Math.Min(take, 60 - skip)))
+                                .Select(index => new CreatureEquipmentChoice(
+                                    $"armor_{index:D3}", $"Armor {index:D3}", 16, 2))
+                                .ToList()
+                            : Array.Empty<CreatureEquipmentChoice>()));
                 var view = new CreatureEditorView { DataContext = editor };
                 var window = new Window { Width = 1280, Height = 800, Content = view };
 
@@ -901,6 +908,13 @@ namespace SWLOR.Toolset.Tests
                 equipmentSlots.Should().NotBeNull();
                 equipmentSlots!.ItemCount.Should().Be(14);
                 equipmentSlots.SelectedItem.Should().BeSameAs(editor.EquipmentSlots.SelectedSlot);
+                editor.EquipmentSlots.SelectedSlot!.GalleryChoices.Should()
+                    .HaveCount(BehaviorRowViewModel.GalleryPageSize,
+                        "the first equipment page is already present when the slot is shown");
+                view.GetVisualDescendants().OfType<Button>()
+                    .Where(button => button.IsVisible &&
+                                     button.Content?.ToString()?.StartsWith("Choose", StringComparison.Ordinal) == true)
+                    .Should().BeEmpty("equipment options are the work pane, not a second button behind it");
                 view.FindControl<Border>("CreatureEquipmentStats").Should().NotBeNull(
                     "the selected item uses the reusable read-only stat summary");
                 view.FindControl<TextBlock>("CreatureEquipmentNoStats").Should().NotBeNull(
@@ -1260,6 +1274,7 @@ namespace SWLOR.Toolset.Tests
         {
             var catalogLoads = 0;
             var detailLoads = 0;
+            var pageRequests = new List<(string Query, int Slot, int Skip, int Take)>();
             var weaponStats = new[]
             {
                 new ItemStatSummaryGroup("Combat", new[]
@@ -1286,6 +1301,23 @@ namespace SWLOR.Toolset.Tests
                 return equipment.FirstOrDefault(choice => choice.ResRef == resRef);
             }
 
+            Task<IReadOnlyList<CreatureEquipmentChoice>> Search(
+                string query,
+                int slot,
+                int skip,
+                int take)
+            {
+                pageRequests.Add((query, slot, skip, take));
+                return Task.FromResult<IReadOnlyList<CreatureEquipmentChoice>>(equipment
+                    .Where(choice => (choice.EquipableSlots & slot) != 0)
+                    .Where(choice => string.IsNullOrWhiteSpace(query) ||
+                                     choice.Display.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                                     choice.ResRef.Contains(query, StringComparison.OrdinalIgnoreCase))
+                    .Skip(skip)
+                    .Take(take)
+                    .ToList());
+            }
+
             var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
                 ResourceType.Utc, "equipment_test", "Equipment Test"));
             using var editor = new CreatureEditorViewModel(
@@ -1304,43 +1336,56 @@ namespace SWLOR.Toolset.Tests
                 _ => null,
                 null,
                 equipmentChoices: Equipment,
-                equipmentDetails: Details);
+                equipmentDetails: Details,
+                equipmentSearch: Search);
 
-            catalogLoads.Should().Be(0);
+            catalogLoads.Should().Be(0,
+                "the page source must not materialize the old all-items catalog");
+            pageRequests.Should().BeEmpty(
+                "opening a creature must not load equipment before its tab is visited");
+            editor.IsEquipmentTabSelected = true;
+            pageRequests.Should().ContainSingle().Which.Should().Be(
+                (string.Empty, 2, 0, BehaviorRowViewModel.GalleryPageSize + 1));
             editor.EquipmentSlots.Slots.Select(slot => slot.Label).Should().Equal(
                 "Armor", "Helmet", "Cloak", "Right Hand", "Left Hand", "Boots", "Arms",
                 "Neck", "Belt", "Left Ring", "Right Ring", "Arrows", "Bolts", "Bullets");
             editor.EquipmentSlots.SelectedSlot.Should().BeSameAs(
                 editor.EquipmentSlots.Slots.Single(slot => slot.Label == "Armor"));
-            editor.EquipmentSlots.Slots.Should().OnlyContain(slot => !slot.AreChoicesLoaded);
-            editor.EquipmentSlots.Slots.Should().OnlyContain(slot => slot.FilteredChoices.Count == 0);
+            editor.EquipmentSlots.SelectedSlot!.AreChoicesLoaded.Should().BeTrue();
+            editor.EquipmentSlots.SelectedSlot.IsInlineGallery.Should().BeTrue();
+            editor.EquipmentSlots.SelectedSlot.GalleryChoices.Should()
+                .HaveCount(BehaviorRowViewModel.GalleryPageSize);
+            editor.EquipmentSlots.Slots.Where(slot => slot.Label != "Armor")
+                .Should().OnlyContain(slot => !slot.AreChoicesLoaded);
 
             var armor = editor.EquipmentSlots.Slots.Single(slot => slot.Label == "Armor");
-            armor.OpenSearchCommand.Execute(null);
-
-            catalogLoads.Should().Be(1);
-            armor.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
+            catalogLoads.Should().Be(0);
+            armor.GalleryChoices.Should().HaveCount(BehaviorRowViewModel.GalleryPageSize);
+            armor.GalleryChoices.Should().OnlyContain(choice => choice.HasArtwork);
+            armor.CanLoadMoreGallery.Should().BeTrue();
+            armor.LoadMoreGalleryCommand.Execute(null);
+            armor.GalleryChoices.Should().HaveCount(BehaviorRowViewModel.GalleryPageSize * 2);
+            pageRequests.Last().Should().Be(
+                (string.Empty, 2, BehaviorRowViewModel.GalleryPageSize,
+                    BehaviorRowViewModel.GalleryPageSize + 1));
             editor.EquipmentSlots.Slots.Where(slot => slot.Label != "Armor")
                 .Should().OnlyContain(slot => !slot.AreChoicesLoaded);
 
             var mainHand = editor.EquipmentSlots.Slots.Single(slot => slot.Label == "Right Hand");
             editor.EquipmentSlots.SelectedSlot = mainHand;
-            armor.IsSearchExpanded.Should().BeFalse(
-                "moving between compact slot summaries closes and releases the old list");
-            armor.FilteredChoices.Should().BeEmpty();
-            mainHand.AreChoicesLoaded.Should().BeFalse(
-                "selecting a slot is cheap; its catalog loads only when Choose is opened");
-            mainHand.OpenSearchCommand.Execute(null);
-            mainHand.FilteredChoices.Select(choice => choice.StringValue)
+            catalogLoads.Should().Be(0);
+            pageRequests.Last().Should().Be(
+                (string.Empty, 16, 0, BehaviorRowViewModel.GalleryPageSize + 1),
+                "selecting a new slot requests only that slot's first page");
+            mainHand.AreChoicesLoaded.Should().BeTrue();
+            mainHand.GalleryChoices.Select(choice => choice.StringValue)
                 .Should().Equal(new[] { "right_hand_test" },
                     "baseitems.2da's equipment mask determines which slot offers an item");
-            mainHand.FilteredChoices.Single().Summary.Should().Contain("DMG 8",
+            mainHand.GalleryChoices.Single().Summary.Should().Contain("DMG 8",
                 "candidate stats are visible before the builder equips the item");
 
             editor.EquipmentSlots.SelectedSlot = armor;
-            armor.OpenSearchCommand.Execute(null);
-
-            armor.PickChoiceCommand.Execute(armor.FilteredChoices[3]);
+            armor.PickChoiceCommand.Execute(armor.GalleryChoices[3]);
             new CreatureValueStore(document.Root).EquippedResRef(2).Should().Be("armor_003");
             armor.CanClearChoice.Should().BeTrue();
 
@@ -1350,8 +1395,7 @@ namespace SWLOR.Toolset.Tests
 
             var detailLoadsBeforeMainHand = detailLoads;
             editor.EquipmentSlots.SelectedSlot = mainHand;
-            mainHand.OpenSearchCommand.Execute(null);
-            mainHand.PickChoiceCommand.Execute(mainHand.FilteredChoices.Single());
+            mainHand.PickChoiceCommand.Execute(mainHand.GalleryChoices.Single());
             detailLoads.Should().Be(detailLoadsBeforeMainHand + 1,
                 "only the newly equipped blueprint is loaded for the details pane");
             mainHand.SelectedStatGroups.Should().ContainSingle()
@@ -1394,8 +1438,53 @@ namespace SWLOR.Toolset.Tests
             await opening.WaitAsync(TimeSpan.FromSeconds(2));
 
             picker.AreChoicesLoaded.Should().BeTrue();
-            picker.FilteredChoices.Should().ContainSingle()
+            picker.GalleryChoices.Should().ContainSingle()
                 .Which.StringValue.Should().Be("armor_async");
+        }
+
+        [Test]
+        public async Task EquipmentPicker_AwaitsOnePagedSearchWithoutShowingAChooseControl()
+        {
+            var started = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var release = new TaskCompletionSource<IReadOnlyList<CreatureEquipmentChoice>>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "equip_page_async", "Paged Equipment"));
+            using var picker = new CreatureEquipmentPickerViewModel(
+                "Armor",
+                2,
+                new CreatureValueStore(document.Root),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                _ => null,
+                () => { },
+                searchChoices: async (query, skip, take) =>
+                {
+                    started.TrySetResult(true);
+                    return await release.Task.ConfigureAwait(false);
+                });
+
+            var activation = picker.ActivateAsync();
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
+            activation.IsCompleted.Should().BeFalse();
+            picker.IsGalleryLoading.Should().BeTrue();
+            picker.IsInlineGallery.Should().BeTrue();
+            picker.IsSearchableChoice.Should().BeFalse(
+                "a paged equipment gallery must never fall back to a Choose button while loading");
+
+            release.SetResult([
+                new CreatureEquipmentChoice("armor_page_async", "Paged Armor", 16, 2)
+            ]);
+            await activation.WaitAsync(TimeSpan.FromSeconds(2));
+
+            picker.IsGalleryLoading.Should().BeFalse();
+            picker.GalleryChoices.Should().ContainSingle()
+                .Which.StringValue.Should().Be("armor_page_async");
         }
 
         [AvaloniaTest]
@@ -1446,9 +1535,9 @@ namespace SWLOR.Toolset.Tests
                 DrainUntil(() => !editor.IsModelPreviewLoading);
                 editor.PreviewScene!.Instances.Single().Model!.Name.Should().Be("none");
 
+                editor.IsEquipmentTabSelected = true;
                 var armor = editor.EquipmentSlots.Slots.Single(slot => slot.Label == "Armor");
-                armor.OpenSearchCommand.Execute(null);
-                var armorA = armor.FilteredChoices.Single(choice => choice.StringValue == "armor_a");
+                var armorA = armor.GalleryChoices.Single(choice => choice.StringValue == "armor_a");
 
                 // A regressed synchronous selection releases itself after two seconds so the test
                 // fails with a useful timing assertion instead of hanging the runner forever.
@@ -1472,8 +1561,7 @@ namespace SWLOR.Toolset.Tests
                 Dispatcher.UIThread.RunJobs();
                 firstSelectionStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
 
-                armor.OpenSearchCommand.Execute(null);
-                var armorB = armor.FilteredChoices.Single(choice => choice.StringValue == "armor_b");
+                var armorB = armor.GalleryChoices.Single(choice => choice.StringValue == "armor_b");
                 armor.PickChoiceCommand.Execute(armorB);
                 Dispatcher.UIThread.RunJobs();
                 releaseFirstSelection.Set();

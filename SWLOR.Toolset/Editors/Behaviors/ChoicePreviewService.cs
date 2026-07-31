@@ -9,8 +9,8 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Editors.Behaviors
 {
     /// <summary>
-    /// Resolves the picture a choice is picked by: the load screens, the door appearances, the
-    /// portraits, and the waypoint markers.
+    /// Resolves the picture a choice is picked by: load screens, blueprint thumbnails, door
+    /// appearances, portraits, and waypoint markers.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -26,9 +26,9 @@ namespace SWLOR.Toolset.Editors.Behaviors
     /// scroll either.
     /// </para>
     /// <para>
-    /// A choice can name a model instead of a texture, which has to be rendered rather than decoded.
-    /// That work belongs to <see cref="ThumbnailService"/>, which already owns the render queue and
-    /// its caches, so this forwards to it rather than growing a second one.
+    /// A choice can name a model or a blueprint instead of a texture, which has to be rendered rather
+    /// than decoded. That work belongs to <see cref="ThumbnailService"/>, which already owns the
+    /// render queue and its caches, so this forwards to it rather than growing a second one.
     /// </para>
     /// </remarks>
     public sealed class ChoicePreviewService
@@ -64,6 +64,11 @@ namespace SWLOR.Toolset.Editors.Behaviors
         {
             ArgumentNullException.ThrowIfNull(choice);
 
+            if (choice.BlueprintPreviewType is { } blueprintType &&
+                choice.BlueprintPreviewResRef is { Length: > 0 } blueprintResRef)
+            {
+                return _models?.Cached(blueprintType, blueprintResRef);
+            }
             if (choice.ModelResRef is { Length: > 0 } model)
                 return _models?.CachedTile(model);
             if (choice.ImageUrl is { Length: > 0 } imageUrl)
@@ -87,6 +92,17 @@ namespace SWLOR.Toolset.Editors.Behaviors
         {
             ArgumentNullException.ThrowIfNull(choice);
             ArgumentNullException.ThrowIfNull(onReady);
+
+            if (choice.BlueprintPreviewType is { } blueprintType &&
+                choice.BlueprintPreviewResRef is { Length: > 0 } blueprintResRef)
+            {
+                if (_models?.Cached(blueprintType, blueprintResRef) is { } cached)
+                    onReady(cached);
+                else
+                    _models?.RequestAsync(blueprintType, blueprintResRef, onReady);
+
+                return;
+            }
 
             if (choice.ModelResRef is { Length: > 0 } model)
             {

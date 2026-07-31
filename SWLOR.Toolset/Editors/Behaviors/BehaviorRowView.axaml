@@ -69,11 +69,15 @@
            of their names is not a picker for them. Tiles are still published a page at a time and
            each one's picture is requested only once its tile exists. -->
       <StackPanel IsVisible="{Binding IsInlineGallery}" Spacing="6" HorizontalAlignment="Stretch">
-        <TextBox Text="{Binding GalleryQuery, Mode=TwoWay}" Watermark="{Binding SearchWatermark}" />
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+          <TextBox Text="{Binding GalleryQuery, Mode=TwoWay}" Watermark="{Binding SearchWatermark}" />
+          <Button Grid.Column="1" Content="{Binding ClearChoiceLabel}" Command="{Binding ClearChoiceCommand}"
+                  IsVisible="{Binding CanClearChoice}" />
+        </Grid>
         <TextBlock Text="{Binding GallerySummary}" Classes="count" />
         <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
                 ClipToBounds="True">
-          <ScrollViewer MaxHeight="330" VerticalScrollBarVisibility="Auto"
+          <ScrollViewer MaxHeight="{Binding GalleryViewportHeight}" VerticalScrollBarVisibility="Auto"
                         ScrollChanged="OnChoiceGalleryScrollChanged">
             <ItemsControl ItemsSource="{Binding GalleryChoices}" Margin="2">
               <ItemsControl.ItemsPanel>
@@ -87,8 +91,9 @@
                           Margin="3" Padding="4"
                           Command="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).PickChoiceCommand}"
                           CommandParameter="{Binding}">
-                    <StackPanel Width="104" Spacing="3">
-                      <Panel Height="78">
+                    <StackPanel Width="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).GalleryTileWidth}"
+                                Spacing="3">
+                      <Panel Height="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).GalleryThumbnailHeight}">
                         <!-- The letter stands in until the picture lands, so the grid is never a
                              field of empty boxes while it fills. The option that means "any of
                              them" draws a mark instead: it has no picture because there is no one
@@ -108,6 +113,9 @@
                       <TextBlock Text="{Binding Detail}" Classes="mono" FontSize="9.5"
                                  TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"
                                  IsVisible="{Binding HasDetail}" />
+                      <TextBlock Text="{Binding Summary}" Classes="dim" FontSize="9.5"
+                                 TextWrapping="Wrap" MaxHeight="30"
+                                 IsVisible="{Binding HasSummary}" />
                     </StackPanel>
                   </Button>
                 </DataTemplate>

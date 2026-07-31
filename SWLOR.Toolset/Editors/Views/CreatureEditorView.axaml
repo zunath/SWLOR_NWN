@@ -293,7 +293,8 @@
         <!-- Equipment is a creature-level task, independent of whether the current model renders
              an item. The merchant editor's focused category/work-pane interaction is reused here:
              only the selected slot owns a chooser and published results. -->
-        <TabItem Header="Equipment">
+        <TabItem Header="Equipment"
+                 IsSelected="{Binding IsEquipmentTabSelected, Mode=TwoWay}">
           <Grid x:Name="CreatureEquipmentEditor" ColumnDefinitions="210,*">
             <Border Grid.Column="0" BorderBrush="{DynamicResource RuleBrush}"
                     BorderThickness="0,0,1,0" Padding="10">
@@ -322,7 +323,7 @@
                 <Border Classes="card" Padding="12">
                   <StackPanel Spacing="4">
                     <TextBlock Text="Equipment" Classes="section" />
-                    <TextBlock Text="Equipped items affect the creature whether or not its current model displays them. Choices load only when this slot's picker is opened."
+                    <TextBlock Text="Equipped items affect the creature whether or not its current model displays them. Items load in pages for the selected slot; previews follow only the visible page."
                                Classes="dim" TextWrapping="Wrap" />
                   </StackPanel>
                 </Border>

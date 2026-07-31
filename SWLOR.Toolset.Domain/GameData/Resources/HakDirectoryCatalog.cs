@@ -7,11 +7,13 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
     /// directory listing. <see cref="Scan"/> only touches file names/extensions - no file content
     /// is read until <see cref="TryGetBytes"/> is called for a specific resource.
     /// </summary>
-    public sealed class HakDirectoryCatalog
+    public sealed class HakDirectoryCatalog : IHakResourceCatalog
     {
         private readonly Dictionary<ResourceIdentity, string> _index;
 
         public string DirectoryPath { get; }
+
+        public string SourcePath => DirectoryPath;
 
         private HakDirectoryCatalog(
             string directoryPath,
@@ -77,6 +79,9 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             path = string.Empty;
             return false;
         }
+
+        public string Describe(ResourceIdentity identity) =>
+            TryGetPath(identity, out var path) ? path : DirectoryPath;
 
         public bool TryGetBytes(ResourceIdentity identity, out byte[] bytes)
         {

@@ -26,6 +26,9 @@
       <MenuItem Header="_Edit">
         <MenuItem Header="_Undo" Command="{Binding UndoCommand}" InputGesture="Ctrl+Z" />
         <MenuItem Header="_Redo" Command="{Binding RedoCommand}" InputGesture="Ctrl+Y" />
+        <Separator />
+        <MenuItem x:Name="ModulePropertiesMenuItem" Header="Module _Properties..."
+                  Command="{Binding ModulePropertiesCommand}" />
       </MenuItem>
       <MenuItem Header="_Build">
         <!-- Compiling ONE script is not here: it is an act on the document in front of you, so it

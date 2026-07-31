@@ -25,6 +25,13 @@ namespace SWLOR.Toolset.Domain.Render
         public TileModelCache(ResourceIndex resourceIndex)
         {
             _resourceIndex = resourceIndex ?? throw new ArgumentNullException(nameof(resourceIndex));
+            _resourceIndex.ResourcesReloaded += Clear;
+        }
+
+        public void Clear()
+        {
+            _cache.Clear();
+            _placeablePreviewCache.Clear();
         }
 
         /// <summary>

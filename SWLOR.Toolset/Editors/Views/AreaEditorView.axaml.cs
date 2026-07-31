@@ -92,6 +92,7 @@ namespace SWLOR.Toolset.Editors
                 return;
 
             AreaView.ResourceIndex = _viewModel.ResourceIndex;
+            AreaView.InvalidateGameResources();
             AreaView.Scene = _viewModel.AreaScene;
             AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
             AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
@@ -121,6 +122,8 @@ namespace SWLOR.Toolset.Editors
 
             if (e.PropertyName == nameof(AreaEditorViewModel.AreaScene))
                 AreaView.Scene = _viewModel.AreaScene;
+            else if (e.PropertyName == nameof(AreaEditorViewModel.GameResourceRevision))
+                AreaView.InvalidateGameResources();
             else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedSceneInstance))
                 AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
             else if (e.PropertyName == nameof(AreaEditorViewModel.IsPlacementPending))

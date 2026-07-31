@@ -29,6 +29,8 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         {
             _twoDa = twoDa ?? throw new ArgumentNullException(nameof(twoDa));
             _tlk = tlk ?? throw new ArgumentNullException(nameof(tlk));
+            _twoDa.TablesReloaded += _cache.Clear;
+            _tlk.CustomTlkReloaded += _cache.Clear;
         }
 
         /// <summary>

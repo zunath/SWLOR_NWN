@@ -25,17 +25,25 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     {
         private const string TableName = "placeables";
 
-        private readonly Lazy<IReadOnlyList<PlaceableAppearanceRow>> _rows;
-        private readonly Lazy<IReadOnlyDictionary<int, PlaceableAppearanceRow>> _byId;
+        private readonly ReloadableLazy<IReadOnlyList<PlaceableAppearanceRow>> _rows;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, PlaceableAppearanceRow>> _byId;
 
         public PlaceableAppearanceService(TwoDaService twoDa, TlkService tlk)
         {
             if (twoDa is null) throw new ArgumentNullException(nameof(twoDa));
             if (tlk is null) throw new ArgumentNullException(nameof(tlk));
 
-            _rows = new Lazy<IReadOnlyList<PlaceableAppearanceRow>>(() => Build(twoDa, tlk));
-            _byId = new Lazy<IReadOnlyDictionary<int, PlaceableAppearanceRow>>(
+            _rows = new ReloadableLazy<IReadOnlyList<PlaceableAppearanceRow>>(() => Build(twoDa, tlk));
+            _byId = new ReloadableLazy<IReadOnlyDictionary<int, PlaceableAppearanceRow>>(
                 () => _rows.Value.ToDictionary(row => row.Id));
+            twoDa.TablesReloaded += Invalidate;
+            tlk.CustomTlkReloaded += Invalidate;
+        }
+
+        private void Invalidate()
+        {
+            _byId.Reset();
+            _rows.Reset();
         }
 
         /// <summary>All non-reserved placeables.2da rows, in row (Appearance_Type) order.</summary>

@@ -14,5 +14,8 @@ namespace SWLOR.Toolset.Viewport
         string? PreviewAnimationName { get; }
 
         bool IsAnimationPlaying { get; }
+
+        /// <summary>Rebuilds the preview from the newly active module HAK stack.</summary>
+        void ReloadGameResources();
     }
 }

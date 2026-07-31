@@ -1644,6 +1644,34 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
+        /// Re-resolves every tileset, model, walkmesh, and texture after the module HAK stack is
+        /// replaced. The authored ARE/GIT data is untouched; only its resource-backed scene is rebuilt.
+        /// </summary>
+        public void ReloadGameResources()
+        {
+            if (_disposed)
+                return;
+
+            Interlocked.Increment(ref _sceneInputRevision);
+            _sceneBuildRequested = true;
+            AreaScene = null;
+            GameResourceRevision++;
+            _ = BuildSceneAsync(CaptureReselectKey());
+        }
+
+        /// <summary>
+        /// Changes only when Module Properties replaces the active HAK stack. The view uses this
+        /// signal to release GL-side models and textures before the rebuilt scene is displayed.
+        /// </summary>
+        public int GameResourceRevision
+        {
+            get => _gameResourceRevision;
+            private set => SetProperty(ref _gameResourceRevision, value);
+        }
+
+        private int _gameResourceRevision;
+
+        /// <summary>
         /// True when the scene already reflects the current documents, or a build for them is in
         /// flight - the guard that keeps repeated refresh requests from queueing duplicate builds.
         /// </summary>

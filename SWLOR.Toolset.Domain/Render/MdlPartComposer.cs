@@ -39,6 +39,12 @@ namespace SWLOR.Toolset.Domain.Render
             _loadModel = loadModel ?? throw new ArgumentNullException(nameof(loadModel));
         }
 
+        /// <summary>Forgets source models after the mounted resource stack changes.</summary>
+        public void Clear()
+        {
+            _cache.Clear();
+        }
+
         /// <summary>
         /// Loads and clones <paramref name="skeletonResRef"/>, then attaches every resolvable,
         /// supported part. Missing skeletons return null; missing, unknown, and malformed individual

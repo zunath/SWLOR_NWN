@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -89,6 +90,7 @@ namespace SWLOR.Toolset.Shell
         private readonly ProblemsViewModel? _problems;
         private readonly AreaContentsViewModel? _areaContents;
         private readonly ErfArchiveService? _erfArchiveService;
+        private readonly ModuleCustomContentService? _moduleCustomContent;
 
         /// <summary>Guards against a second rescan starting while one is already reopening the catalog.</summary>
         private bool _isRescanningAfterWatcherOverflow;
@@ -116,8 +118,10 @@ namespace SWLOR.Toolset.Shell
             AreaContentsViewModel? areaContents = null,
             StartupNotice? startupNotice = null,
             ModuleMutationLock? mutationLock = null,
-            ErfArchiveService? erfArchiveService = null)
+            ErfArchiveService? erfArchiveService = null,
+            ModuleCustomContentService? moduleCustomContent = null)
         {
+            _moduleCustomContent = moduleCustomContent;
             _areaContents = areaContents;
             _erfArchiveService = erfArchiveService;
             _mutationLock = mutationLock ?? new ModuleMutationLock();
@@ -188,6 +192,20 @@ namespace SWLOR.Toolset.Shell
             Layout = factory.CreateLayout();
             if (Layout != null)
                 factory.InitLayout(Layout);
+
+            if (_moduleCustomContent != null)
+            {
+                _moduleCustomContent.Reloaded += result => Dispatcher.UIThread.Post(() =>
+                {
+                    if (_editorService.IsValueCreated)
+                        _editorService.Value.ReloadOpenGameResources();
+                    _thumbnails.ClearCache();
+                    _palette.Refresh();
+                    StatusText = result.MissingHaks.Count == 0
+                        ? $"Custom content reloaded: {result.LoadedHakCount} HAK layer(s)."
+                        : $"Custom content reloaded with {result.MissingHaks.Count} missing HAK(s).";
+                });
+            }
         }
 
         /// <summary>
@@ -320,6 +338,47 @@ namespace SWLOR.Toolset.Shell
 
         [RelayCommand]
         private void FocusValidation() => _factory.Focus(_validation);
+
+        [RelayCommand(CanExecute = nameof(CanMutateModule))]
+        private void ModuleProperties()
+        {
+            _editorService.Value.OpenModuleProperties(new Editors.Module.ModulePropertiesActions(
+                RunValidationFromModulePropertiesAsync,
+                RunBuildAllFromModulePropertiesAsync,
+                RunPackFromModulePropertiesAsync,
+                OpenBuildConfiguration));
+        }
+
+        private async Task RunValidationFromModulePropertiesAsync()
+        {
+            _factory.Focus(_validation);
+            if (_validation.RunCommand.CanExecute(null))
+                await _validation.RunCommand.ExecuteAsync(null).ConfigureAwait(true);
+        }
+
+        private async Task RunBuildAllFromModulePropertiesAsync()
+        {
+            if (BuildAllScriptsCommand.CanExecute(null))
+                await BuildAllScriptsCommand.ExecuteAsync(null).ConfigureAwait(true);
+        }
+
+        private async Task RunPackFromModulePropertiesAsync()
+        {
+            if (PackModuleCommand.CanExecute(null))
+                await PackModuleCommand.ExecuteAsync(null).ConfigureAwait(true);
+        }
+
+        private void OpenBuildConfiguration(string path)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not open build configuration '{path}': {ex.Message}");
+            }
+        }
 
         /// <summary>
         /// Saves every open document before entering the modal archive workflow. That makes export's
@@ -647,6 +706,7 @@ namespace SWLOR.Toolset.Shell
             ErfArchivesCommand.NotifyCanExecuteChanged();
             PackModuleCommand.NotifyCanExecuteChanged();
             BuildAllScriptsCommand.NotifyCanExecuteChanged();
+            ModulePropertiesCommand.NotifyCanExecuteChanged();
             NotifyActiveEditorCommandsChanged();
         }
 

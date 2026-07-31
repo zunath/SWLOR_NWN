@@ -686,6 +686,18 @@ namespace SWLOR.Toolset.Editors.Items
             _ = ResolvePreviewModelAsync(snapshot, female, signature, generation);
         }
 
+        public void ReloadGameResources()
+        {
+            if (_disposed)
+                return;
+
+            _previewModelGeneration++;
+            _pendingModelSignature = null;
+            _cachedModel = null;
+            _cachedModelSignature = null;
+            UpdatePreview();
+        }
+
         private async Task ResolvePreviewModelAsync(
             byte[] snapshot,
             bool female,

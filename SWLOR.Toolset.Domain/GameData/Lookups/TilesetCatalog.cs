@@ -20,7 +20,7 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         private static readonly ushort SetResourceType = ResourceIdentity.TypeFromExtension("set");
 
         private readonly ResourceIndex _resourceIndex;
-        private readonly Lazy<IReadOnlyList<string>> _names;
+        private Lazy<IReadOnlyList<string>> _names;
         private readonly ConcurrentDictionary<string, Lazy<TilesetDefinition?>> _cache =
             new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentDictionary<string, string> _displayNames =
@@ -30,6 +30,7 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         {
             _resourceIndex = resourceIndex ?? throw new ArgumentNullException(nameof(resourceIndex));
             _names = new Lazy<IReadOnlyList<string>>(DiscoverNames);
+            _resourceIndex.ResourcesReloaded += Invalidate;
         }
 
         /// <summary>
@@ -121,6 +122,13 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             return _resourceIndex.EnumerateResources(SetResourceType)
                 .Select(identity => identity.ResRef)
                 .ToArray();
+        }
+
+        private void Invalidate()
+        {
+            _names = new Lazy<IReadOnlyList<string>>(DiscoverNames);
+            _cache.Clear();
+            _displayNames.Clear();
         }
     }
 }

@@ -25,6 +25,7 @@ namespace SWLOR.Toolset.Domain.Render
         {
             _resourceIndex = resourceIndex ?? throw new ArgumentNullException(nameof(resourceIndex));
             _isWalkable = isWalkable ?? throw new ArgumentNullException(nameof(isWalkable));
+            _resourceIndex.ResourcesReloaded += _cache.Clear;
         }
 
         /// <summary>

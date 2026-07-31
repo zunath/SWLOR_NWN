@@ -34,16 +34,23 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     {
         private const string TableName = "portraits";
 
-        private readonly Lazy<IReadOnlyList<PortraitRow>> _rows;
-        private readonly Lazy<IReadOnlyDictionary<int, PortraitRow>> _byId;
+        private readonly ReloadableLazy<IReadOnlyList<PortraitRow>> _rows;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, PortraitRow>> _byId;
 
         public PortraitService(TwoDaService twoDa)
         {
             if (twoDa is null) throw new ArgumentNullException(nameof(twoDa));
 
-            _rows = new Lazy<IReadOnlyList<PortraitRow>>(() => Build(twoDa));
-            _byId = new Lazy<IReadOnlyDictionary<int, PortraitRow>>(
+            _rows = new ReloadableLazy<IReadOnlyList<PortraitRow>>(() => Build(twoDa));
+            _byId = new ReloadableLazy<IReadOnlyDictionary<int, PortraitRow>>(
                 () => _rows.Value.ToDictionary(row => row.Id));
+            twoDa.TablesReloaded += Invalidate;
+        }
+
+        private void Invalidate()
+        {
+            _byId.Reset();
+            _rows.Reset();
         }
 
         /// <summary>All non-reserved portraits.2da rows, in row order.</summary>

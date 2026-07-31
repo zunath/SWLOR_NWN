@@ -69,6 +69,9 @@ namespace SWLOR.Toolset.Editors
             return options;
         }
 
+        /// <summary>Discards lists derived from the active HAK/2DA/TLK stack.</summary>
+        public void Invalidate() => _cache.Clear();
+
         private IReadOnlyList<LookupOption> Build(string lookupKey)
         {
             try

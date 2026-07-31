@@ -93,7 +93,18 @@ namespace SWLOR.Toolset.Workspace
             {
                 _partComposer = new MdlPartComposer(LoadComposerModel);
                 _textures = new PreviewTextureCache(resourceIndex);
+                resourceIndex.ResourcesReloaded += OnResourcesReloaded;
             }
+        }
+
+        private void OnResourcesReloaded()
+        {
+            lock (_composerGate)
+            {
+                _partComposer?.Clear();
+                _partTextures.Clear();
+            }
+            _textures?.Clear();
         }
 
         /// <summary>True when the game data needed to resolve any artwork at all is present.</summary>

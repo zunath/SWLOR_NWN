@@ -210,6 +210,7 @@ namespace SWLOR.Toolset
 
             var repoRoot = ResolveRepoRoot(settings);
             RegisterGameDataServices(services, repoRoot, settings);
+            services.AddSingleton<Workspace.ModuleCustomContentService>();
 
             services.AddSingleton(sp => new Editors.LookupOptionProvider(
                 sp.GetRequiredService<WorkspaceContext>(),
@@ -252,7 +253,8 @@ namespace SWLOR.Toolset
                 sp.GetService<PortraitService>(),
                 sp.GetService<AppearanceService>(),
                 sp.GetRequiredService<Services.ModuleMutationLock>(),
-                sp.GetService<CategoryService>()));
+                sp.GetService<CategoryService>(),
+                moduleCustomContent: sp.GetRequiredService<Workspace.ModuleCustomContentService>()));
 
             // One parsed engine header shared by every script tab, built lazily on first use: the
             // header is 13,870 lines, so parsing it per tab would be wasteful and parsing it at
@@ -379,9 +381,6 @@ namespace SWLOR.Toolset
             var hasTwoDa = Directory.Exists(sw2DaDirectory);
             var hasTlk = File.Exists(swTlkJsonPath);
 
-            if (hasTwoDa)
-                services.AddSingleton(new TwoDaService(sw2DaDirectory));
-
             // Located once and reused: both the resource index and the base TLK below need it.
             string? nwnInstallPath = null;
             try
@@ -421,6 +420,7 @@ namespace SWLOR.Toolset
                     hakBuilderConfigPath,
                     swlorHaksRoot,
                     loadBaseLayer));
+                services.AddSingleton(sp => new TwoDaService(sp.GetRequiredService<ResourceIndex>()));
 
                 // The area 3D view needs both, and both need the ResourceIndex above -
                 // registered inside this same guard so resolving either never hits a missing
@@ -433,6 +433,10 @@ namespace SWLOR.Toolset
                 services.AddSingleton(sp => new Domain.Render.TileWalkmeshCache(
                     sp.GetRequiredService<ResourceIndex>(),
                     BuildSurfaceWalkability(sp.GetService<TwoDaService>())));
+            }
+            else if (hasTwoDa)
+            {
+                services.AddSingleton(new TwoDaService(sw2DaDirectory));
             }
 
             // AppearanceService/PortraitService are only registered when their 2DA/TLK

@@ -24,22 +24,32 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         private const string TableName = "doortypes";
         private const string GenericTableName = "genericdoors";
 
-        private readonly Lazy<IReadOnlyList<DoorTypeRow>> _rows;
-        private readonly Lazy<IReadOnlyDictionary<int, DoorTypeRow>> _byId;
-        private readonly Lazy<IReadOnlyList<GenericDoorRow>> _genericRows;
-        private readonly Lazy<IReadOnlyDictionary<int, GenericDoorRow>> _genericById;
+        private readonly ReloadableLazy<IReadOnlyList<DoorTypeRow>> _rows;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, DoorTypeRow>> _byId;
+        private readonly ReloadableLazy<IReadOnlyList<GenericDoorRow>> _genericRows;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, GenericDoorRow>> _genericById;
 
         public DoorTypeService(TwoDaService twoDa, TlkService tlk)
         {
             if (twoDa is null) throw new ArgumentNullException(nameof(twoDa));
             if (tlk is null) throw new ArgumentNullException(nameof(tlk));
 
-            _rows = new Lazy<IReadOnlyList<DoorTypeRow>>(() => Build(twoDa, tlk));
-            _byId = new Lazy<IReadOnlyDictionary<int, DoorTypeRow>>(
+            _rows = new ReloadableLazy<IReadOnlyList<DoorTypeRow>>(() => Build(twoDa, tlk));
+            _byId = new ReloadableLazy<IReadOnlyDictionary<int, DoorTypeRow>>(
                 () => _rows.Value.ToDictionary(row => row.Id));
-            _genericRows = new Lazy<IReadOnlyList<GenericDoorRow>>(() => BuildGeneric(twoDa, tlk));
-            _genericById = new Lazy<IReadOnlyDictionary<int, GenericDoorRow>>(
+            _genericRows = new ReloadableLazy<IReadOnlyList<GenericDoorRow>>(() => BuildGeneric(twoDa, tlk));
+            _genericById = new ReloadableLazy<IReadOnlyDictionary<int, GenericDoorRow>>(
                 () => _genericRows.Value.ToDictionary(row => row.Id));
+            twoDa.TablesReloaded += Invalidate;
+            tlk.CustomTlkReloaded += Invalidate;
+        }
+
+        private void Invalidate()
+        {
+            _genericById.Reset();
+            _genericRows.Reset();
+            _byId.Reset();
+            _rows.Reset();
         }
 
         /// <summary>All non-reserved doortypes.2da rows, in row order.</summary>

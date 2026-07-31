@@ -41,16 +41,14 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
 
     /// <summary>
     /// Layered resource resolver spanning the base game (KEY/BIF) and an ordered stack of loose
-    /// hak-source directories, mirroring NWN's own resolution precedence:
+    /// HAK-source directories or packed HAK archives, mirroring NWN's own resolution precedence:
     ///
     /// <list type="bullet">
     /// <item>Hak layers always override the base game.</item>
-    /// <item>Among haks, earlier entries win over later ones. This mirrors <c>hakbuilder.json</c>'s
-    /// own <c>HakList</c> order, which in turn was authored to match a module's
-    /// <c>module.ifo</c> <c>Mod_HakList</c> precedence (the actual, authoritative source of
-    /// per-module hak precedence at runtime - the first matching entry in <c>Mod_HakList</c> wins). This
-    /// index does not parse <c>module.ifo</c> itself; replaying <c>hakbuilder.json</c>'s order as
-    /// "first wins" is a close approximation that holds for the SWLOR module as currently built.</item>
+    /// <item>Among haks, earlier entries win over later ones. At startup the repository's
+    /// <c>hakbuilder.json</c> source folders provide a usable fallback. Once a module is open,
+    /// <c>module.ifo</c> <c>Mod_HakList</c> and the HAK alias from <c>nwn.ini</c> replace that fallback
+    /// through <see cref="ReloadHakLayersAsync"/>; the module list is the runtime authority.</item>
     /// </list>
     ///
     /// Index construction is two-phase: the constructor records the layer list synchronously and
@@ -61,6 +59,8 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
     /// </summary>
     public sealed class ResourceIndex
     {
+        public sealed record HakConflict(ResourceIdentity Resource, IReadOnlyList<string> Layers);
+
         /// <summary>
         /// One hak layer to scan: a display name (matches hakbuilder.json's "Name") and the
         /// loose-file directory to enumerate.
@@ -69,8 +69,14 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
 
         private KeyBifCatalog? _baseLayer;
         private readonly Func<KeyBifCatalog?>? _baseLayerFactory;
-        private readonly IReadOnlyList<HakLayer> _hakLayerSpecs;
-        private List<(string Name, HakDirectoryCatalog Catalog)> _hakLayers = new();
+        private IReadOnlyList<HakLayer> _hakLayerSpecs;
+        private IReadOnlyList<(string Name, IHakResourceCatalog Catalog)> _hakLayers =
+            Array.Empty<(string, IHakResourceCatalog)>();
+
+        private readonly SemaphoreSlim _reloadGate = new(1, 1);
+
+        /// <summary>Raised after a complete replacement index has been built and atomically published.</summary>
+        public event Action? ResourcesReloaded;
 
         public Task InitializationTask { get; }
 
@@ -78,7 +84,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         /// The hak layers this index was configured with, in hakbuilder.json order
         /// (index 0 = highest precedence among haks).
         /// </summary>
-        public IReadOnlyList<HakLayer> HakLayers => _hakLayerSpecs;
+        public IReadOnlyList<HakLayer> HakLayers => Volatile.Read(ref _hakLayerSpecs);
 
         /// <summary>
         /// Conservative version for all indexed game data. It is the newest write time among the base
@@ -90,7 +96,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             {
                 EnsureInitialized();
                 var latest = _baseLayer?.ContentVersionUtc ?? DateTime.MinValue;
-                foreach (var (_, catalog) in _hakLayers)
+                foreach (var (_, catalog) in Volatile.Read(ref _hakLayers))
                     latest = latest >= catalog.ContentVersionUtc ? latest : catalog.ContentVersionUtc;
                 return latest;
             }
@@ -128,17 +134,73 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
                 }
             }
 
-            var scanned = new List<(string Name, HakDirectoryCatalog Catalog)>(_hakLayerSpecs.Count);
+            var specs = Volatile.Read(ref _hakLayerSpecs);
+            var scanned = new List<(string Name, IHakResourceCatalog Catalog)>(specs.Count);
 
-            foreach (var layer in _hakLayerSpecs)
+            foreach (var layer in specs)
             {
-                if (!Directory.Exists(layer.DirectoryPath))
-                    continue; // A referenced hak source folder that's missing is skipped, not fatal.
-
-                scanned.Add((layer.Name, HakDirectoryCatalog.Scan(layer.DirectoryPath)));
+                var catalog = OpenCatalog(layer.DirectoryPath);
+                if (catalog != null)
+                    scanned.Add((layer.Name, catalog));
             }
 
-            _hakLayers = scanned;
+            Volatile.Write(ref _hakLayers, scanned);
+        }
+
+        /// <summary>
+        /// Builds a complete replacement HAK index away from readers, then publishes it in one
+        /// pointer swap. Lookups in flight finish against the old immutable catalogs; subsequent
+        /// lookups see the new module-defined precedence without a partially scanned interval.
+        /// </summary>
+        public async Task ReloadHakLayersAsync(
+            IReadOnlyList<HakLayer> hakLayersInOrder,
+            CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(hakLayersInOrder);
+            EnsureInitialized();
+
+            await _reloadGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                var specs = hakLayersInOrder.ToArray();
+                var scanned = await Task.Run(
+                    () =>
+                    {
+                        var result = new List<(string Name, IHakResourceCatalog Catalog)>(specs.Length);
+                        foreach (var layer in specs)
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+                            var catalog = OpenCatalog(layer.DirectoryPath);
+                            if (catalog != null)
+                                result.Add((layer.Name, catalog));
+                        }
+
+                        return (IReadOnlyList<(string Name, IHakResourceCatalog Catalog)>)result;
+                    },
+                    cancellationToken).ConfigureAwait(false);
+
+                Volatile.Write(ref _hakLayerSpecs, specs);
+                Volatile.Write(ref _hakLayers, scanned);
+            }
+            finally
+            {
+                _reloadGate.Release();
+            }
+
+            ResourcesReloaded?.Invoke();
+        }
+
+        private static IHakResourceCatalog? OpenCatalog(string path)
+        {
+            if (Directory.Exists(path))
+                return HakDirectoryCatalog.Scan(path);
+            if (File.Exists(path) &&
+                string.Equals(Path.GetExtension(path), ".hak", StringComparison.OrdinalIgnoreCase))
+            {
+                return HakArchiveCatalog.Open(path);
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -156,19 +218,21 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         {
             EnsureInitialized();
 
-            for (var i = 0; i < _hakLayers.Count; i++)
+            var layers = Volatile.Read(ref _hakLayers);
+            for (var i = 0; i < layers.Count; i++)
             {
-                var (name, catalog) = _hakLayers[i];
-                if (!catalog.TryGetPath(identity, out var path))
+                var (name, catalog) = layers[i];
+                if (!catalog.Resources.Contains(identity))
                     continue;
 
+                var source = catalog.Describe(identity);
                 handle = new ResourceHandle(
                     identity,
-                    new ResourceProvenance(ResourceLayerKind.Hak, name, path),
+                    new ResourceProvenance(ResourceLayerKind.Hak, name, source),
                     () =>
                     {
                         var message =
-                            $"The indexed resource '{identity.ResRef}' could not be read from '{path}'.";
+                            $"The indexed resource '{identity.ResRef}' could not be read from '{source}'.";
                         try
                         {
                             if (catalog.TryGetBytes(identity, out var bytes))
@@ -244,7 +308,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
                 }
             }
 
-            foreach (var (_, catalog) in _hakLayers)
+            foreach (var (_, catalog) in Volatile.Read(ref _hakLayers))
             {
                 foreach (var identity in catalog.Resources)
                 {
@@ -255,6 +319,36 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
 
             return resources
                 .OrderBy(identity => identity.ResRef, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+        }
+
+        /// <summary>
+        /// Finds resources supplied by more than one active HAK. Layer order is retained so the
+        /// first name in each result is the archive whose resource currently wins.
+        /// </summary>
+        public IReadOnlyList<HakConflict> FindHakConflicts()
+        {
+            EnsureInitialized();
+            var providers = new Dictionary<ResourceIdentity, List<string>>();
+            foreach (var (name, catalog) in Volatile.Read(ref _hakLayers))
+            {
+                foreach (var resource in catalog.Resources)
+                {
+                    if (!providers.TryGetValue(resource, out var layers))
+                    {
+                        layers = new List<string>();
+                        providers[resource] = layers;
+                    }
+
+                    layers.Add(name);
+                }
+            }
+
+            return providers
+                .Where(pair => pair.Value.Count > 1)
+                .OrderBy(pair => pair.Key.ResRef, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(pair => pair.Key.ResourceType)
+                .Select(pair => new HakConflict(pair.Key, pair.Value.ToArray()))
                 .ToArray();
         }
 

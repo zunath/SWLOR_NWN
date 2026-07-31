@@ -139,6 +139,8 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, Sounds.SoundDocumentViewModel> _openSoundEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<string>? _soundResources;
         private Services.SoundPreviewService? _soundPreviews;
+        private readonly Workspace.ModuleCustomContentService? _moduleCustomContent;
+        private Module.ModulePropertiesDocumentViewModel? _moduleProperties;
 
         // Keyed by path like the blueprint map rather than by resref like the area map: a script is
         // one file, so the path is its identity and there is no are/git/gic triplet to name.
@@ -223,8 +225,10 @@ namespace SWLOR.Toolset.Editors
             Services.ModuleMutationLock? mutationLock = null,
             CategoryService? categories = null,
             Func<Domain.Workspace.ModuleWorkspace, string?, ItemObtainabilityIndex>?
-                itemSourcesBuilder = null)
+                itemSourcesBuilder = null,
+            Workspace.ModuleCustomContentService? moduleCustomContent = null)
         {
+            _moduleCustomContent = moduleCustomContent;
             _categories = categories;
             _blueprintSaves = new BlueprintSaveCoordinator(
                 log,
@@ -380,6 +384,77 @@ namespace SWLOR.Toolset.Editors
             }
 
             return null;
+        }
+
+        /// <summary>Opens Module Properties as the single document tab for module.ifo.</summary>
+        public void OpenModuleProperties(Module.ModulePropertiesActions? actions = null)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+            {
+                _log.AppendLine("Open a module before using Module Properties.");
+                return;
+            }
+
+            if (_moduleProperties != null)
+            {
+                _factory.ActivateDocument(_moduleProperties);
+                return;
+            }
+
+            var path = Path.Combine(workspace.ModuleRoot, "ifo", "module.ifo.json");
+            if (!File.Exists(path))
+            {
+                _log.AppendLine($"Module properties file not found: {path}");
+                return;
+            }
+
+            try
+            {
+                var document = new Module.ModulePropertiesDocumentViewModel(
+                    path,
+                    workspace.ModuleRoot,
+                    workspace,
+                    _log,
+                    _prompts,
+                    _gameCodeIndex,
+                    _moduleCustomContent,
+                    script => TryOpenEditor(ResourceType.Nss, script),
+                    actions);
+                document.Closed += _ => _moduleProperties = null;
+                document.CloseRequested += _ => _factory.CloseDocument(document);
+                _moduleProperties = document;
+                _factory.OpenDocument(document);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Failed to open Module Properties: {ex.Message}");
+            }
+        }
+
+        /// <summary>Refreshes open resource-backed content after the module HAK stack changes.</summary>
+        public void ReloadOpenGameResources()
+        {
+            _lookups.Invalidate();
+            _choiceSets.Clear();
+            _creatureAppearanceOptions = null;
+            _soundResources = null;
+            _doorAppearances = null;
+            _merchantItemCatalog = null;
+            _baseItemRowService = null;
+            _baseItemIconService = null;
+            _itemCostTableRanges = null;
+            _armorDyeSwatches = null;
+            _armorPartModels = null;
+
+            foreach (var editor in _openAreaEditors.Values)
+                editor.ReloadGameResources();
+            foreach (var editor in _openEditors.Values)
+                editor.PlaceableSections?.Appearance.ReloadGameResources();
+            foreach (var editor in _openDoorEditors.Values)
+                editor.Editor.ReloadGameResources();
+            foreach (var editor in _openItemEditors.Values)
+                editor.Editor.ReloadGameResources();
         }
 
         /// <summary>
@@ -919,6 +994,12 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public async Task<bool> SaveAllAsync()
         {
+            if (_moduleProperties != null &&
+                !await _moduleProperties.TrySaveAsync().ConfigureAwait(true))
+            {
+                return false;
+            }
+
             foreach (var editor in _openEditors.Values.ToList())
             {
                 if (!await editor.TrySaveAsync().ConfigureAwait(true))
@@ -998,7 +1079,8 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public async Task<bool> TryPrepareApplicationCloseAsync()
         {
-            if (!_openEditors.Values.Any(editor => editor.IsDirty) &&
+            if (_moduleProperties?.IsDirty != true &&
+                !_openEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openWaypointEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openDoorEditors.Values.Any(editor => editor.IsDirty) &&
@@ -1016,6 +1098,8 @@ namespace SWLOR.Toolset.Editors
 
             if (choice != UnsavedChangesChoice.Discard)
                 return false;
+
+            _moduleProperties?.ApproveApplicationClose();
 
             foreach (var editor in _openEditors.Values)
                 editor.ApproveApplicationClose();

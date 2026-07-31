@@ -14,6 +14,10 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         public const uint CustomTlkBase = 16777216;
 
         private readonly Lazy<(TlkJsonFile Custom, TlkFile? Base)> _data;
+        private TlkFile? _customBinaryOverride;
+
+        /// <summary>Raised after the module's selected custom TLK has been atomically replaced.</summary>
+        public event Action? CustomTlkReloaded;
 
         public TlkService(TlkJsonFile customTlk, TlkFile? baseTlk = null)
         {
@@ -115,6 +119,25 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         /// <summary>
         /// Convenience accessor for a custom TLK entry by its raw (non-offset) id.
         /// </summary>
-        public string? GetCustomText(int id) => _data.Value.Custom.GetText(id);
+        public string? GetCustomText(int id)
+        {
+            var binary = Volatile.Read(ref _customBinaryOverride);
+            return binary != null
+                ? binary.GetString((uint)id)
+                : _data.Value.Custom.GetText(id);
+        }
+
+        /// <summary>
+        /// Parses a packed custom TLK away from readers, then publishes it in one pointer swap.
+        /// Passing null restores the repository JSON custom table used at startup.
+        /// </summary>
+        public void ReloadCustomTlk(string? binaryTlkPath)
+        {
+            var replacement = string.IsNullOrWhiteSpace(binaryTlkPath)
+                ? null
+                : TlkReader.Read(binaryTlkPath);
+            Volatile.Write(ref _customBinaryOverride, replacement);
+            CustomTlkReloaded?.Invoke();
+        }
     }
 }

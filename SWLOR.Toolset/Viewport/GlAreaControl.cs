@@ -397,6 +397,8 @@ void main()
         private readonly Dictionary<string, MeshMaterial> _rawTextureCache =
             new(StringComparer.OrdinalIgnoreCase);
 
+        private int _gameResourceInvalidationRequested;
+
         private StaticMeshBuffer? _fallbackCubeBuffer;
         private StaticMeshBuffer? _markerMeshBuffer;
         private StaticMeshBuffer? _particleQuadBuffer;
@@ -2439,6 +2441,9 @@ void main()
 
             try
             {
+                if (Interlocked.Exchange(ref _gameResourceInvalidationRequested, 0) != 0)
+                    ClearGameResourceGpuCaches();
+
                 _gl.ClearColor(background.X, background.Y, background.Z, 1f);
                 _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
                 _gl.Enable(EnableCap.DepthTest);
@@ -2502,6 +2507,45 @@ void main()
                 // early return for a null scene, which still owes it the cleared background.
                 _depthPrecisionTarget.EndFrame(_gl, fb, background);
             }
+        }
+
+        /// <summary>
+        /// Schedules GL-owned model and texture caches for disposal on the render thread. This is
+        /// called when Module Properties changes the HAK list; clearing only the CPU resource index
+        /// would otherwise leave an open area drawing the old GPU uploads under the same resrefs.
+        /// </summary>
+        public void InvalidateGameResources()
+        {
+            Interlocked.Exchange(ref _gameResourceInvalidationRequested, 1);
+            RequestNextFrameRendering();
+        }
+
+        private void ClearGameResourceGpuCaches()
+        {
+            if (_gl == null)
+                return;
+
+            foreach (var diffuse in _textureCache.Values)
+            {
+                if (diffuse.TexId != 0)
+                    _gl.DeleteTexture(diffuse.TexId);
+            }
+            _textureCache.Clear();
+
+            foreach (var texId in _mapTextureCache.Values)
+            {
+                if (texId != 0)
+                    _gl.DeleteTexture(texId);
+            }
+            _mapTextureCache.Clear();
+            _rawTextureCache.Clear();
+
+            foreach (var buffer in _modelBuffers.Values)
+                DeleteBuffer(buffer.Vao, buffer.Vbo, buffer.Ebo);
+            _modelBuffers.Clear();
+            _tileBatches = null;
+            _batchedTiles = null;
+            _renderedSceneVersion = -1;
         }
 
         private static bool IsSingleModelPreview(AreaScene? scene) =>

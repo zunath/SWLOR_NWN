@@ -460,6 +460,8 @@ namespace SWLOR.Toolset.Editors.Doors
             OnPropertyChanged(nameof(PreviewScene));
         }
 
+        public void ReloadGameResources() => UpdatePreviewScene();
+
         public void Dispose()
         {
             if (_disposed)

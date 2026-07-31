@@ -25,17 +25,25 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     {
         private const string TableName = "ambientsound";
 
-        private readonly Lazy<IReadOnlyList<SoundRow>> _rows;
-        private readonly Lazy<IReadOnlyDictionary<int, SoundRow>> _byId;
+        private readonly ReloadableLazy<IReadOnlyList<SoundRow>> _rows;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, SoundRow>> _byId;
 
         public SoundService(TwoDaService twoDa, TlkService tlk)
         {
             if (twoDa is null) throw new ArgumentNullException(nameof(twoDa));
             if (tlk is null) throw new ArgumentNullException(nameof(tlk));
 
-            _rows = new Lazy<IReadOnlyList<SoundRow>>(() => Build(twoDa, tlk));
-            _byId = new Lazy<IReadOnlyDictionary<int, SoundRow>>(
+            _rows = new ReloadableLazy<IReadOnlyList<SoundRow>>(() => Build(twoDa, tlk));
+            _byId = new ReloadableLazy<IReadOnlyDictionary<int, SoundRow>>(
                 () => _rows.Value.ToDictionary(row => row.Id));
+            twoDa.TablesReloaded += Invalidate;
+            tlk.CustomTlkReloaded += Invalidate;
+        }
+
+        private void Invalidate()
+        {
+            _byId.Reset();
+            _rows.Reset();
         }
 
         /// <summary>All non-reserved ambientsound.2da rows, in row order.</summary>

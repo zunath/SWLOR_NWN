@@ -34,17 +34,25 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     {
         private const string TableName = "appearance";
 
-        private readonly Lazy<IReadOnlyList<AppearanceRow>> _rows;
-        private readonly Lazy<IReadOnlyDictionary<int, AppearanceRow>> _byId;
+        private readonly ReloadableLazy<IReadOnlyList<AppearanceRow>> _rows;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, AppearanceRow>> _byId;
 
         public AppearanceService(TwoDaService twoDa, TlkService tlk)
         {
             if (twoDa is null) throw new ArgumentNullException(nameof(twoDa));
             if (tlk is null) throw new ArgumentNullException(nameof(tlk));
 
-            _rows = new Lazy<IReadOnlyList<AppearanceRow>>(() => Build(twoDa, tlk));
-            _byId = new Lazy<IReadOnlyDictionary<int, AppearanceRow>>(
+            _rows = new ReloadableLazy<IReadOnlyList<AppearanceRow>>(() => Build(twoDa, tlk));
+            _byId = new ReloadableLazy<IReadOnlyDictionary<int, AppearanceRow>>(
                 () => _rows.Value.ToDictionary(row => row.Id));
+            twoDa.TablesReloaded += Invalidate;
+            tlk.CustomTlkReloaded += Invalidate;
+        }
+
+        private void Invalidate()
+        {
+            _byId.Reset();
+            _rows.Reset();
         }
 
         /// <summary>All non-reserved appearance.2da rows, in row (Appearance_Type) order.</summary>

@@ -23,17 +23,26 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     {
         private const string TableName = "placeables";
 
-        private readonly Lazy<IReadOnlyList<PlaceableModelRow>> _rows;
-        private readonly Lazy<IReadOnlyDictionary<int, PlaceableModelRow>> _byId;
+        private readonly ReloadableLazy<IReadOnlyList<PlaceableModelRow>> _rows;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, PlaceableModelRow>> _byId;
 
         public PlaceableModelCatalog(TwoDaService twoDa, TlkService tlk)
         {
             ArgumentNullException.ThrowIfNull(twoDa);
             ArgumentNullException.ThrowIfNull(tlk);
 
-            _rows = new Lazy<IReadOnlyList<PlaceableModelRow>>(() => BuildOrEmpty(twoDa, tlk));
-            _byId = new Lazy<IReadOnlyDictionary<int, PlaceableModelRow>>(
+            _rows = new ReloadableLazy<IReadOnlyList<PlaceableModelRow>>(() => BuildOrEmpty(twoDa, tlk));
+            _byId = new ReloadableLazy<IReadOnlyDictionary<int, PlaceableModelRow>>(
                 () => _rows.Value.ToDictionary(row => row.Id));
+            twoDa.TablesReloaded += Invalidate;
+            tlk.CustomTlkReloaded += Invalidate;
+        }
+
+        private void Invalidate()
+        {
+            BuildFailure = null;
+            _byId.Reset();
+            _rows.Reset();
         }
 
         /// <summary>Why the table did not load, or null. The grid degrades either way.</summary>

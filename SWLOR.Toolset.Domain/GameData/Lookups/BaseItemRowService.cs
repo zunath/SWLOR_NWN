@@ -11,12 +11,13 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     {
         private const string TableName = "baseitems";
 
-        private readonly Lazy<IReadOnlyDictionary<int, BaseItemRow>> _byId;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, BaseItemRow>> _byId;
 
         public BaseItemRowService(TwoDaService twoDa)
         {
             ArgumentNullException.ThrowIfNull(twoDa);
-            _byId = new Lazy<IReadOnlyDictionary<int, BaseItemRow>>(() => Build(twoDa));
+            _byId = new ReloadableLazy<IReadOnlyDictionary<int, BaseItemRow>>(() => Build(twoDa));
+            twoDa.TablesReloaded += _byId.Reset;
         }
 
         /// <summary>The row for a uti's BaseItem value, or null when the row is absent or reserved.</summary>

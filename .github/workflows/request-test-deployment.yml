@@ -1,0 +1,36 @@
+name: Update Test Server
+
+run-name: Update Test Server requested by ${{ github.actor }}
+
+on:
+  workflow_dispatch:
+
+# This workflow is only an authenticated deployment signal. The server polls
+# the public workflow-runs API and performs the deployment itself.
+permissions: {}
+
+concurrency:
+  group: request-test-server-deployment
+  cancel-in-progress: false
+
+jobs:
+  authorize:
+    name: Update Test Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Permit only the repository owner
+        shell: bash
+        env:
+          REQUEST_ACTOR: ${{ github.actor }}
+          REQUEST_REPOSITORY: ${{ github.repository }}
+          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+        run: |
+          if [[ "$REQUEST_REPOSITORY" != "zunath/SWLOR_NWN" ||
+                "$REQUEST_ACTOR" != "zunath" ||
+                "$TRIGGERING_ACTOR" != "zunath" ]]
+          then
+            echo "Only zunath may request a deployment." >&2
+            exit 1
+          fi
+
+          echo "Deployment request authorized for zunath."

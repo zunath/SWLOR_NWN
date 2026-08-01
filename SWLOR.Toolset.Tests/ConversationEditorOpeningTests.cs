@@ -283,6 +283,42 @@ public sealed class ConversationEditorOpeningTests
         model.HasDetails.Should().BeFalse();
     }
 
+    [Test]
+    public async Task NuiConversationSaveTreatsExternalDeletionAsAConflict()
+    {
+        var scratch = Path.Combine(
+            TestContext.CurrentContext.WorkDirectory,
+            $"nui-conversation-save-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(scratch);
+        var path = Path.Combine(scratch, "test.conversation.json");
+        File.Copy(
+            Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Game.Server",
+                "ConversationData",
+                "cz_receptionist.conversation.json"),
+            path);
+        var prompts = new TrackingPrompts();
+        var model = new NuiConversationEditorViewModel(
+            path, "test", SnippetCatalog.Build(), null, new OutputLogService(), prompts);
+
+        try
+        {
+            model.SpeakerName = "Unsaved speaker";
+            File.Delete(path);
+
+            (await model.TrySaveAsync()).Should().BeFalse();
+            prompts.ExternalChangePrompts.Should().Be(1);
+            File.Exists(path).Should().BeFalse("cancel must preserve the external deletion");
+            Directory.EnumerateFiles(scratch, "*.tmp").Should().BeEmpty();
+        }
+        finally
+        {
+            model.OnClose();
+            Directory.Delete(scratch, recursive: true);
+        }
+    }
+
     [AvaloniaTest]
     public void ErrorDialogAcceptsNoDetailList()
     {
@@ -312,5 +348,28 @@ public sealed class ConversationEditorOpeningTests
 
         public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) =>
             Task.FromResult(false);
+    }
+
+    private sealed class TrackingPrompts : IEditorPromptService
+    {
+        public int ExternalChangePrompts { get; private set; }
+
+        public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath)
+        {
+            ExternalChangePrompts++;
+            return Task.FromResult(ExternalChangeChoice.Cancel);
+        }
+
+        public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) =>
+            Task.FromResult(UnsavedChangesChoice.Discard);
+
+        public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) =>
+            Task.FromResult(false);
+
+        public Task<string?> PromptForTextAsync(
+            string headline,
+            string message,
+            string initialValue,
+            string confirmLabel) => Task.FromResult<string?>(null);
     }
 }

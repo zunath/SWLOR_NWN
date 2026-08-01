@@ -86,7 +86,8 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             {
                 var label = table.GetString(row, labelColumn);
                 if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
-                    requiredColumns.Any(column => string.IsNullOrWhiteSpace(table.GetString(row, column))))
+                    requiredColumns.Any(column =>
+                        !TwoDaChoicePolicy.IsSelectableLabel(table.GetString(row, column))))
                 {
                     continue;
                 }
@@ -136,6 +137,14 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         /// </summary>
         public static readonly TwoDaLookupTable PlaceableModel =
             new("placeables", "Label", "StrRef", ["ModelName"]);
+
+        /// <summary>doortypes.2da - specific door appearances need a model and display strref.</summary>
+        public static readonly TwoDaLookupTable DoorType =
+            new("doortypes", "Label", "StringRefGame", ["Model", "StringRefGame"]);
+
+        /// <summary>genericdoors.2da - generic door appearances need a model.</summary>
+        public static readonly TwoDaLookupTable GenericDoor =
+            new("genericdoors", "Label", "Name", ["ModelName"]);
 
         /// <summary>
         /// iprp_spells.2da - a Cast Spell subtype must identify a real spell, its levels, supported

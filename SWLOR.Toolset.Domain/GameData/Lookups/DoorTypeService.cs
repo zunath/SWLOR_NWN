@@ -22,9 +22,6 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     /// </summary>
     public sealed class DoorTypeService
     {
-        private const string TableName = "doortypes";
-        private const string GenericTableName = "genericdoors";
-
         private readonly ReloadableLazy<IReadOnlyList<DoorTypeRow>> _rows;
         private readonly ReloadableLazy<IReadOnlyDictionary<int, DoorTypeRow>> _byId;
         private readonly ReloadableLazy<IReadOnlyList<GenericDoorRow>> _genericRows;
@@ -78,17 +75,26 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private static IReadOnlyList<DoorTypeRow> Build(TwoDaService twoDa, TlkService tlk)
         {
-            var table = twoDa.GetTable(TableName);
+            var definition = TwoDaLookupTables.DoorType;
+            if (!twoDa.TryGetTable(definition.TableName, out var table) ||
+                table == null ||
+                !table.HasColumn(definition.LabelColumn) ||
+                !table.HasColumn(definition.StrRefColumn!) ||
+                definition.RequiredColumns!.Any(column => !table.HasColumn(column)))
+            {
+                return Array.Empty<DoorTypeRow>();
+            }
+
             var results = new List<DoorTypeRow>();
 
             for (var row = 0; row < table.RowCount; row++)
             {
-                var label = table.GetString(row, "Label");
+                var label = table.GetString(row, definition.LabelColumn);
                 var model = table.GetString(row, "Model");
-                var stringRefGame = table.GetString(row, "StringRefGame");
+                var stringRefGame = table.GetString(row, definition.StrRefColumn!);
                 if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
-                    string.IsNullOrWhiteSpace(model) ||
-                    string.IsNullOrWhiteSpace(stringRefGame))
+                    !TwoDaChoicePolicy.IsSelectableLabel(model) ||
+                    !TwoDaChoicePolicy.IsSelectableLabel(stringRefGame))
                 {
                     continue;
                 }
@@ -108,15 +114,23 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private static IReadOnlyList<GenericDoorRow> BuildGeneric(TwoDaService twoDa, TlkService tlk)
         {
-            var table = twoDa.GetTable(GenericTableName);
+            var definition = TwoDaLookupTables.GenericDoor;
+            if (!twoDa.TryGetTable(definition.TableName, out var table) ||
+                table == null ||
+                !table.HasColumn(definition.LabelColumn) ||
+                definition.RequiredColumns!.Any(column => !table.HasColumn(column)))
+            {
+                return Array.Empty<GenericDoorRow>();
+            }
+
             var results = new List<GenericDoorRow>();
 
             for (var row = 0; row < table.RowCount; row++)
             {
-                var label = table.GetString(row, "Label");
+                var label = table.GetString(row, definition.LabelColumn);
                 var model = table.GetString(row, "ModelName");
                 if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
-                    string.IsNullOrWhiteSpace(model))
+                    !TwoDaChoicePolicy.IsSelectableLabel(model))
                 {
                     continue;
                 }

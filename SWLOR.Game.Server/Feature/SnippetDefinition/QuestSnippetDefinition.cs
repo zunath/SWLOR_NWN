@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     }
 
                     var questId = args[0];
-                    return Quest.AcceptQuest(player, questId);
+                    return Quest.AcceptQuest(player, Snippet.GetExecutionOwner(), questId);
                 });
         }
 
@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     }
 
                     var questId = args[0];
-                    return Quest.RequestItemsFromPlayer(player, questId);
+                    return Quest.RequestItemsFromPlayer(player, Snippet.GetExecutionOwner(), questId);
                 });
         }
 

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
@@ -27,12 +28,12 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     private readonly SnippetArgumentOptions _argumentOptions;
     private readonly OutputLogService _log;
     private readonly IEditorPromptService _prompts;
+    private readonly ScriptSession _session;
     private readonly Behaviors.ChoicePreviewService? _choicePreviews;
     private readonly Stack<string> _undo = new();
     private readonly Stack<string> _redo = new();
     private ConversationGraph _graph;
     private string _savedJson;
-    private DateTime _diskWriteTimeUtc;
     private string? _selectedNodeId;
     private ConversationLink? _selectedOpeningLink;
     private ConversationChoiceLink? _selectedChoiceLink;
@@ -133,9 +134,9 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         _log = log;
         _prompts = prompts;
         _choicePreviews = choicePreviews;
-        _graph = LoadGraph(filePath);
+        _session = ScriptSession.Open(filePath);
+        _graph = LoadGraph(_session.Document.Text, filePath);
         _savedJson = Serialize(_graph);
-        _diskWriteTimeUtc = File.GetLastWriteTimeUtc(filePath);
         Id = $"nui-conversation:{filePath}";
 
         BehaviorOptions.Add(new ConversationBehaviorOption(
@@ -426,28 +427,39 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
 
         try
         {
-            if (File.Exists(_filePath) && File.GetLastWriteTimeUtc(_filePath) != _diskWriteTimeUtc)
+            if (_session.HasExternalChange())
             {
                 var choice = await _prompts.ConfirmExternalChangeAsync(_filePath).ConfigureAwait(true);
                 if (choice == ExternalChangeChoice.Cancel)
                     return false;
                 if (choice == ExternalChangeChoice.Reload)
                 {
-                    _graph = LoadGraph(_filePath);
+                    var reloaded = _session.ReloadFromDisk();
+                    _graph = LoadGraph(reloaded.Text, _filePath);
                     _savedJson = Serialize(_graph);
                     _undo.Clear();
                     _redo.Clear();
                     RefreshAll(selectFirst: true);
                     return true;
                 }
+
+                // Overwrite accepts the current generation. The compare-and-swap save below still
+                // refuses if another writer changes or deletes it after this point.
+                _session.RecordCurrentFileState();
             }
 
             var json = Serialize(_graph);
-            var temporaryPath = _filePath + ".tmp";
-            File.WriteAllText(temporaryPath, json);
-            File.Move(temporaryPath, _filePath, true);
+            var saveBytes = _session.ToBytes(json);
+            if (!SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
+            {
+                _log.AppendLine(
+                    $"Cannot save {_filePath}: the file changed on disk while the save was being prepared. " +
+                    "Nothing was written - reload or save again.");
+                return false;
+            }
+
+            _session.MarkSaved(json, saveBytes);
             _savedJson = json;
-            _diskWriteTimeUtc = File.GetLastWriteTimeUtc(_filePath);
             NotifyHistoryChanged();
             _log.AppendLine($"Saved NUI conversation {_filePath}.");
             return true;
@@ -1071,9 +1083,9 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         }
     }
 
-    private static ConversationGraph LoadGraph(string path)
+    private static ConversationGraph LoadGraph(string json, string path)
     {
-        return JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(path))
+        return JsonConvert.DeserializeObject<ConversationGraph>(json)
                ?? throw new InvalidOperationException($"Conversation graph '{path}' is empty.");
     }
 

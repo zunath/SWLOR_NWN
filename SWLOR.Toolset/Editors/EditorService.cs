@@ -12,6 +12,8 @@ using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Shell;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
+using GameItem = SWLOR.Game.Server.Service.Item;
+using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 
 namespace SWLOR.Toolset.Editors
 {
@@ -115,6 +117,8 @@ namespace SWLOR.Toolset.Editors
         private readonly ConcurrentDictionary<string, Merchants.MerchantItemDefinition>
             _merchantItemSummaries = new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentDictionary<string, Merchants.MerchantItemDefinition> _merchantItemDetails =
+            new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, bool> _merchantItemSearchEligibility =
             new(StringComparer.OrdinalIgnoreCase);
         private BaseItemRowService? _baseItemRowService;
         private BaseItemIconService? _baseItemIconService;
@@ -330,6 +334,7 @@ namespace SWLOR.Toolset.Editors
                 _merchantItemSearchIndex = null;
                 _merchantItemSummaries.Clear();
                 _merchantItemDetails.Clear();
+                _merchantItemSearchEligibility.Clear();
                 InvalidateCreatureEquipmentChoices();
                 _itemSourcesGeneration++;
                 _behaviorValues?.InvalidateModuleSources();
@@ -358,6 +363,7 @@ namespace SWLOR.Toolset.Editors
                     _merchantItemSearchIndex = null;
                     _merchantItemSummaries.TryRemove(refreshedResRef, out _);
                     _merchantItemDetails.TryRemove(refreshedResRef, out _);
+                    _merchantItemSearchEligibility.TryRemove(refreshedResRef, out _);
                     InvalidateCreatureEquipmentChoices(refreshedResRef);
                     foreach (var merchant in _openMerchantEditors.Values)
                         merchant.Editor.RefreshItemCatalog();
@@ -483,6 +489,7 @@ namespace SWLOR.Toolset.Editors
             _merchantItemSearchIndex = null;
             _merchantItemSummaries.Clear();
             _merchantItemDetails.Clear();
+            _merchantItemSearchEligibility.Clear();
             _baseItemRowService = null;
             _baseItemIconService = null;
             _itemCostTableRanges = null;
@@ -1814,22 +1821,40 @@ namespace SWLOR.Toolset.Editors
             var workspace = _workspaceContext.Workspace;
             if (workspace == null || string.IsNullOrWhiteSpace(resRef))
                 return null;
-            if (_merchantItemDetails.TryGetValue(resRef, out var detailed))
-                return detailed;
-            if (_merchantItemSummaries.TryGetValue(resRef, out var cached))
-                return cached;
+            if (_merchantItemSearchEligibility.TryGetValue(resRef, out var eligible))
+            {
+                if (!eligible)
+                    return null;
+                if (_merchantItemDetails.TryGetValue(resRef, out var detailed))
+                    return detailed;
+                if (_merchantItemSummaries.TryGetValue(resRef, out var cached))
+                    return cached;
+            }
 
             Merchants.MerchantItemDefinition definition;
             try
             {
-                definition = BuildMerchantItemDefinition(
-                    resRef,
-                    workspace.LoadBlueprint(ResourceType.Uti, resRef).Fields,
-                    baseItemRows);
+                var item = workspace.LoadBlueprint(ResourceType.Uti, resRef).Fields;
+                var name = ResolveMerchantItemName(resRef, item);
+                var baseItem = item.GetIntOrNull("BaseItem") ?? -1;
+                var noEconomy = new VarTable(item).GetInt(GameItem.NoEconomyVariable) == 1;
+                var hasInventoryIcon = _previewRenderer?.RenderItemIcon(item) != null;
+                if (GameItem.IsEconomyRestricted(
+                        (BaseItem)baseItem,
+                        name ?? string.Empty,
+                        noEconomy,
+                        hasInventoryIcon))
+                {
+                    _merchantItemSearchEligibility[resRef] = false;
+                    return null;
+                }
+
+                _merchantItemSearchEligibility[resRef] = true;
+                definition = BuildMerchantItemDefinition(resRef, item, baseItemRows);
             }
             catch
             {
-                definition = new Merchants.MerchantItemDefinition(resRef, resRef, 0);
+                return null;
             }
 
             return _merchantItemSummaries.GetOrAdd(resRef, definition);
@@ -1873,12 +1898,7 @@ namespace SWLOR.Toolset.Editors
             Func<int, BaseItemRow?>? baseItemRows,
             IReadOnlyList<Items.ItemStatSummaryGroup>? statGroups = null)
         {
-            var name = _workspaceContext.Catalog?.TryGetEntry(
-                           ResourceType.Uti, resRef, out var entry) == true
-                ? entry.Name
-                : null;
-            if (string.IsNullOrWhiteSpace(name))
-                name = item.GetLocStringOrNull("LocalizedName")?.Text;
+            var name = ResolveMerchantItemName(resRef, item);
 
             var cost = (long)(item.GetUIntOrNull("Cost") ?? 0) +
                        (item.GetUIntOrNull("AddCost") ?? 0);
@@ -1892,6 +1912,17 @@ namespace SWLOR.Toolset.Editors
                 storePanel,
                 statGroups,
                 HasKnownStorePanel: true);
+        }
+
+        private string? ResolveMerchantItemName(string resRef, JsonGffStruct item)
+        {
+            var name = _workspaceContext.Catalog?.TryGetEntry(
+                           ResourceType.Uti, resRef, out var entry) == true
+                ? entry.Name
+                : null;
+            if (string.IsNullOrWhiteSpace(name))
+                name = item.GetLocStringOrNull("LocalizedName")?.Text;
+            return name;
         }
 
         private async Task<IReadOnlyList<Merchants.MerchantItemDefinition>> SearchMerchantItems(

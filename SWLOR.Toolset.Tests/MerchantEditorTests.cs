@@ -746,7 +746,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public async Task EmptyCategoryUsesCatalogMetadataWithoutReparsingItems()
+        public async Task EmptyCategoryStillClassifiesCandidatesForEconomyEligibility()
         {
             var catalog = Enumerable.Range(0, 200)
                 .Select(index => new MerchantItemDefinition(
@@ -779,8 +779,8 @@ namespace SWLOR.Toolset.Tests
                 CancellationToken.None);
 
             results.Should().BeEmpty();
-            summaryLoads.Should().Be(0,
-                "the catalog already retained each item's BaseItem-derived category");
+            summaryLoads.Should().Be(200,
+                "catalog category metadata cannot bypass the UTI economy-restriction classifier");
             detailLoads.Should().Be(0,
                 "an empty category has no visible rows that need complete stat details");
         }

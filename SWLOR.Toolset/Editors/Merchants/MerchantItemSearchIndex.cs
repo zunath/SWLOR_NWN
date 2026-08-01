@@ -85,9 +85,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var candidate = _catalog[_scanOffset];
-                var summary = candidate.HasKnownStorePanel
-                    ? candidate
-                    : _loadSummary(candidate.ResRef);
+                var summary = _loadSummary(candidate.ResRef);
                 if (summary != null)
                     StorePanelBucket(summary.StorePanel).Add(summary);
                 _scanOffset++;
@@ -114,9 +112,7 @@ namespace SWLOR.Toolset.Editors.Merchants
                     continue;
                 }
 
-                var summary = candidate.HasKnownStorePanel
-                    ? candidate
-                    : _loadSummary(candidate.ResRef);
+                var summary = _loadSummary(candidate.ResRef);
                 if (summary == null || summary.StorePanel != storePanel)
                     continue;
                 if (matched++ < skip)

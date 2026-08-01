@@ -228,7 +228,16 @@ namespace SWLOR.Game.Server.Service
         /// <param name="questId">The Id of the quest to accept.</param>
         public static bool AcceptQuest(uint player, string questId)
         {
-            return _quests[questId].Accept(player, OBJECT_SELF);
+            return AcceptQuest(player, OBJECT_SELF, questId);
+        }
+
+        /// <summary>
+        /// Makes a player accept a quest while preserving the creature or placeable that offered it.
+        /// Conversation callbacks attached to the quest run against this source.
+        /// </summary>
+        public static bool AcceptQuest(uint player, uint questSource, string questId)
+        {
+            return _quests[questId].Accept(player, questSource);
         }
 
         public static bool CanAcceptQuest(uint player, string questId)
@@ -255,6 +264,14 @@ namespace SWLOR.Game.Server.Service
         /// <param name="questId">The quest to collect items for.</param>
         public static bool RequestItemsFromPlayer(uint player, string questId)
         {
+            return RequestItemsFromPlayer(player, OBJECT_SELF, questId);
+        }
+
+        /// <summary>
+        /// Opens the quest item collector and records the conversation object that owns the hand-in.
+        /// </summary>
+        public static bool RequestItemsFromPlayer(uint player, uint questSource, string questId)
+        {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
@@ -279,7 +296,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var collector = CreateObject(ObjectType.Placeable, "qst_item_collect", GetLocation(player));
-            SetLocalObject(collector, "QUEST_OWNER", OBJECT_SELF);
+            SetLocalObject(collector, "QUEST_OWNER", questSource);
             SetLocalString(collector, "QUEST_ID", questId);
 
             AssignCommand(collector, () => SetFacingPoint(GetPosition(player)));

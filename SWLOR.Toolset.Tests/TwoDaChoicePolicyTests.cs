@@ -139,6 +139,33 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void RequiredValidityColumnsRejectSentinelValues()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"two-da-required-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "soundset.2da"),
+                    "2DA V2.0\r\n\r\nLABEL STRREF RESREF\r\n" +
+                    "0 Working 123 real_soundset\r\n" +
+                    "1 LooksReal 124 ****\r\n");
+                var service = new TwoDaLookupService(
+                    new TwoDaService(scratch),
+                    new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
+
+                service.GetRows(TwoDaLookupTables.SoundSet).Should().ContainSingle()
+                    .Which.Id.Should().Be(0);
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
         public void SpecializedLookupsApplyTheSharedPolicyAndRequiredMetadata()
         {
             var scratch = Path.Combine(
@@ -197,6 +224,58 @@ namespace SWLOR.Toolset.Tests
                     .Should().Equal("sound_real");
                 new BaseItemRowService(twoDa).All.Select(row => row.Label)
                     .Should().Equal("RealItem");
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
+        public void PlaceableRenderLookupRetainsModelBearingRowsWithBlankLabels()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"placeable-render-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "placeables.2da"),
+                    "2DA V2.0\r\n\r\nLabel StrRef ModelName\r\n" +
+                    "0 Named **** plc_named\r\n" +
+                    "1 **** **** plc_unlabeled\r\n");
+                var service = new PlaceableAppearanceService(
+                    new TwoDaService(scratch),
+                    new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
+
+                service.GetAll().Select(row => row.Id).Should().Equal(0);
+                service.TryGet(1, out var renderRow).Should().BeTrue();
+                renderRow.ModelName.Should().Be("plc_unlabeled");
+                renderRow.DisplayName.Should().Be("plc_unlabeled");
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
+        public void MissingOrMalformedDoorTablesFailClosed()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"door-missing-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(Path.Combine(scratch, "doortypes.2da"), "not a 2da");
+                var service = new DoorTypeService(
+                    new TwoDaService(scratch),
+                    new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
+
+                service.GetAll().Should().BeEmpty();
+                service.GetGenericAll().Should().BeEmpty();
             }
             finally
             {

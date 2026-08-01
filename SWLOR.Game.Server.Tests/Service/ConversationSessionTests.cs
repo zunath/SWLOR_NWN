@@ -72,6 +72,83 @@ public class ConversationSessionTests
     }
 
     [Test]
+    public void Start_FollowsTheSolePassingAutomaticChoiceWithoutDisplayingIt()
+    {
+        var executed = new List<string>();
+        var runtime = CreateRuntime(executed);
+        var graph = CreateGraph();
+        graph.EntryPoints.Add(Link("start"));
+        var start = Node("start", "Starting.");
+        var hiddenAutomatic = Choice("hidden", string.Empty);
+        hiddenAutomatic.IsAutomatic = true;
+        AddChoice(graph, start, hiddenAutomatic, false);
+        var automatic = Choice("automatic", string.Empty);
+        automatic.IsAutomatic = true;
+        automatic.Actions.Add(Action("automatic"));
+        automatic.Next.Clear();
+        automatic.Next.Add(Link("continued"));
+        AddChoice(graph, start, automatic, true);
+        graph.Nodes.Add(start.Id, start);
+        graph.Nodes.Add("continued", Node("continued", "Continued."));
+        graph.Nodes.Add("end", Node("end", "Done."));
+
+        var session = new ConversationSession(graph, new ConversationContext(1, 2), runtime);
+
+        session.Start().Should().BeTrue();
+        session.CurrentNode.Id.Should().Be("continued");
+        session.VisibleChoices.Should().BeEmpty();
+        executed.Should().Equal("automatic");
+    }
+
+    [Test]
+    public void AutomaticChoiceCycle_EndsWithRuntimeError()
+    {
+        var runtime = CreateRuntime();
+        var graph = CreateGraph();
+        graph.EntryPoints.Add(Link("start"));
+        var start = Node("start", "Starting.");
+        var automatic = Choice("automatic", string.Empty);
+        automatic.IsAutomatic = true;
+        automatic.Next.Clear();
+        automatic.Next.Add(Link("start"));
+        AddChoice(graph, start, automatic, true);
+        graph.Nodes.Add(start.Id, start);
+        graph.Nodes.Add("end", Node("end", "Done."));
+
+        var session = new ConversationSession(graph, new ConversationContext(1, 2), runtime);
+
+        session.Start().Should().BeTrue();
+        session.HasEnded.Should().BeTrue();
+        session.EndReason.Should().Be(ConversationEndReason.RuntimeError);
+    }
+
+    [Test]
+    public void FailedChoiceAction_StopsTheRemainingActionsAndTransition()
+    {
+        var executed = new List<string>();
+        var runtime = CreateRuntime(executed);
+        runtime.RegisterAction("fail", (_, _, _) => false);
+        var graph = CreateGraph();
+        graph.EntryPoints.Add(Link("start"));
+        var start = Node("start", "Choose.");
+        var choice = Choice("continue", "Continue");
+        choice.Actions.Add(Action("before"));
+        choice.Actions.Add(new ConversationAction { Key = "fail" });
+        choice.Actions.Add(Action("after"));
+        AddChoice(graph, start, choice, true);
+        graph.Nodes.Add(start.Id, start);
+        graph.Nodes.Add("end", Node("end", "Done."));
+
+        var session = new ConversationSession(graph, new ConversationContext(1, 2), runtime);
+        session.Start();
+
+        session.SelectChoice(0).Should().Be(ConversationSelectionResult.ConversationEnded);
+        session.EndReason.Should().Be(ConversationEndReason.RuntimeError);
+        session.CurrentNode.Id.Should().Be("start");
+        executed.Should().Equal("before");
+    }
+
+    [Test]
     public void End_IsIdempotentAndUsesAbortActionsOnlyForAbortedSessions()
     {
         var executed = new List<string>();
@@ -150,7 +227,11 @@ public class ConversationSessionTests
     {
         var runtime = new ConversationRuntime();
         runtime.RegisterCondition("test", (_, args) => bool.Parse(args[0]));
-        runtime.RegisterAction("record", (_, args, _) => executed?.Add(args[0]));
+        runtime.RegisterAction("record", (_, args, _) =>
+        {
+            executed?.Add(args[0]);
+            return true;
+        });
         return runtime;
     }
 

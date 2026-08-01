@@ -40,9 +40,10 @@ namespace SWLOR.Game.Server.Service
                 if (arguments.Count == 0 || string.IsNullOrWhiteSpace(arguments[0]))
                     throw new InvalidOperationException("The owner-script action requires a script resref.");
                 if (!GetIsObjectValid(context.Owner))
-                    return;
+                    return false;
 
                 ExecuteScript(arguments[0], context.Owner);
+                return true;
             });
         }
 

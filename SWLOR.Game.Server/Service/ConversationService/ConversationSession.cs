@@ -40,7 +40,11 @@ namespace SWLOR.Game.Server.Service.ConversationService
                 throw new InvalidOperationException("The conversation session has already been started.");
 
             _hasStarted = true;
-            ExecuteActions(_graph.OnStartActions);
+            if (!ExecuteActions(_graph.OnStartActions))
+            {
+                End(ConversationEndReason.RuntimeError);
+                return false;
+            }
 
             var entry = SelectFirstPassingLink(_graph.EntryPoints);
             if (entry == null)
@@ -61,7 +65,11 @@ namespace SWLOR.Game.Server.Service.ConversationService
                 return ConversationSelectionResult.InvalidChoice;
 
             var choice = _visibleChoices[visibleChoiceIndex];
-            ExecuteActions(choice.Actions);
+            if (!ExecuteActions(choice.Actions))
+            {
+                End(ConversationEndReason.RuntimeError);
+                return ConversationSelectionResult.ConversationEnded;
+            }
 
             if (choice.EndsConversation)
             {
@@ -77,7 +85,9 @@ namespace SWLOR.Game.Server.Service.ConversationService
             }
 
             EnterNode(next.TargetNodeId);
-            return ConversationSelectionResult.MovedToNextNode;
+            return HasEnded
+                ? ConversationSelectionResult.ConversationEnded
+                : ConversationSelectionResult.MovedToNextNode;
         }
 
         public string ResolveText(string text)
@@ -101,12 +111,62 @@ namespace SWLOR.Game.Server.Service.ConversationService
 
         private void EnterNode(string nodeId)
         {
-            CurrentNode = _graph.Nodes[nodeId];
-            ExecuteActions(CurrentNode.OnEnterActions);
-            _visibleChoices = (CurrentNode.Choices ?? new List<ConversationChoiceLink>())
-                .Where(link => ConditionsPass(link.Conditions))
-                .Select(link => _graph.Choices[link.ChoiceId])
-                .ToList();
+            var automaticPath = new HashSet<string>(StringComparer.Ordinal);
+            while (!HasEnded)
+            {
+                if (!automaticPath.Add(nodeId))
+                {
+                    End(ConversationEndReason.RuntimeError);
+                    return;
+                }
+
+                CurrentNode = _graph.Nodes[nodeId];
+                if (!ExecuteActions(CurrentNode.OnEnterActions))
+                {
+                    End(ConversationEndReason.RuntimeError);
+                    return;
+                }
+
+                var passingChoices = (CurrentNode.Choices ?? new List<ConversationChoiceLink>())
+                    .Where(link => ConditionsPass(link.Conditions))
+                    .Select(link => _graph.Choices[link.ChoiceId])
+                    .ToList();
+                var automaticChoices = passingChoices.Where(choice => choice.IsAutomatic).ToList();
+                if (automaticChoices.Count == 0)
+                {
+                    _visibleChoices = passingChoices;
+                    return;
+                }
+
+                _visibleChoices = new List<ConversationChoice>();
+                if (automaticChoices.Count != 1)
+                {
+                    End(ConversationEndReason.RuntimeError);
+                    return;
+                }
+
+                var automaticChoice = automaticChoices[0];
+                if (!ExecuteActions(automaticChoice.Actions))
+                {
+                    End(ConversationEndReason.RuntimeError);
+                    return;
+                }
+
+                if (automaticChoice.EndsConversation)
+                {
+                    End(ConversationEndReason.Completed);
+                    return;
+                }
+
+                var next = SelectFirstPassingLink(automaticChoice.Next);
+                if (next == null)
+                {
+                    End(ConversationEndReason.NoValidTransition);
+                    return;
+                }
+
+                nodeId = next.TargetNodeId;
+            }
         }
 
         private ConversationLink SelectFirstPassingLink(IEnumerable<ConversationLink> links)
@@ -119,13 +179,18 @@ namespace SWLOR.Game.Server.Service.ConversationService
             return conditions == null || conditions.All(condition => _runtime.EvaluateCondition(Context, condition));
         }
 
-        private void ExecuteActions(IEnumerable<ConversationAction> actions)
+        private bool ExecuteActions(IEnumerable<ConversationAction> actions)
         {
             if (actions == null)
-                return;
+                return true;
 
             foreach (var action in actions)
-                _runtime.ExecuteAction(Context, action);
+            {
+                if (!_runtime.ExecuteAction(Context, action))
+                    return false;
+            }
+
+            return true;
         }
     }
 

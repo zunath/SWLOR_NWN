@@ -25,34 +25,30 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     {
         private const string TableName = "placeables";
 
-        private readonly ReloadableLazy<IReadOnlyList<PlaceableAppearanceRow>> _rows;
-        private readonly ReloadableLazy<IReadOnlyDictionary<int, PlaceableAppearanceRow>> _byId;
+        private readonly ReloadableLazy<LookupData> _data;
 
         public PlaceableAppearanceService(TwoDaService twoDa, TlkService tlk)
         {
             if (twoDa is null) throw new ArgumentNullException(nameof(twoDa));
             if (tlk is null) throw new ArgumentNullException(nameof(tlk));
 
-            _rows = new ReloadableLazy<IReadOnlyList<PlaceableAppearanceRow>>(() => Build(twoDa, tlk));
-            _byId = new ReloadableLazy<IReadOnlyDictionary<int, PlaceableAppearanceRow>>(
-                () => _rows.Value.ToDictionary(row => row.Id));
+            _data = new ReloadableLazy<LookupData>(() => Build(twoDa, tlk));
             twoDa.TablesReloaded += Invalidate;
             tlk.CustomTlkReloaded += Invalidate;
         }
 
         private void Invalidate()
         {
-            _rows.Reset();
-            _byId.Reset();
+            _data.Reset();
         }
 
         /// <summary>All non-reserved placeables.2da rows, in row (Appearance_Type) order.</summary>
-        public IReadOnlyList<PlaceableAppearanceRow> GetAll() => _rows.Value;
+        public IReadOnlyList<PlaceableAppearanceRow> GetAll() => _data.Value.SelectableRows;
 
         /// <summary>Looks up a single row by its placeable Appearance_Type id.</summary>
         public PlaceableAppearanceRow Get(int id)
         {
-            if (!_byId.Value.TryGetValue(id, out var row))
+            if (!_data.Value.RenderRowsById.TryGetValue(id, out var row))
                 throw new KeyNotFoundException($"Placeable appearance row {id} was not found in placeables.2da.");
 
             return row;
@@ -61,40 +57,58 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         /// <summary>Tries to look up one row by its placeable Appearance_Type id.</summary>
         public bool TryGet(int id, out PlaceableAppearanceRow row)
         {
-            return _byId.Value.TryGetValue(id, out row!);
+            return _data.Value.RenderRowsById.TryGetValue(id, out row!);
         }
 
-        private static IReadOnlyList<PlaceableAppearanceRow> Build(TwoDaService twoDa, TlkService tlk)
+        private static LookupData Build(TwoDaService twoDa, TlkService tlk)
         {
             var definition = TwoDaLookupTables.PlaceableModel;
             var modelColumn = definition.RequiredColumns!.Single();
-            var table = twoDa.GetTable(definition.TableName);
-            if (!table.HasColumn(definition.LabelColumn) || !table.HasColumn(modelColumn))
-                return Array.Empty<PlaceableAppearanceRow>();
+            if (!twoDa.TryGetTable(definition.TableName, out var table) ||
+                table == null ||
+                !table.HasColumn(definition.LabelColumn) ||
+                !table.HasColumn(modelColumn))
+            {
+                return LookupData.Empty;
+            }
 
-            var results = new List<PlaceableAppearanceRow>();
+            var selectableRows = new List<PlaceableAppearanceRow>();
+            var renderRowsById = new Dictionary<int, PlaceableAppearanceRow>();
 
             for (var row = 0; row < table.RowCount; row++)
             {
                 var label = table.GetString(row, definition.LabelColumn);
                 var model = table.GetString(row, modelColumn);
-                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
-                    !TwoDaChoicePolicy.IsSelectableLabel(model))
-                {
+                if (!TwoDaChoicePolicy.IsSelectableLabel(model))
                     continue;
-                }
 
-                var strref = table.GetInt(row, definition.StrRefColumn!);
-                var displayName = DisplayNameResolver.Resolve(tlk, strref, label!);
+                var selectableLabel = TwoDaChoicePolicy.IsSelectableLabel(label);
+                var fallback = selectableLabel ? label! : model!;
+                var strref = definition.StrRefColumn != null && table.HasColumn(definition.StrRefColumn)
+                    ? table.GetInt(row, definition.StrRefColumn)
+                    : null;
+                var displayName = DisplayNameResolver.Resolve(tlk, strref, fallback);
 
-                results.Add(new PlaceableAppearanceRow(
+                var result = new PlaceableAppearanceRow(
                     row,
-                    label!,
+                    fallback,
                     displayName,
-                    model));
+                    model);
+                renderRowsById.Add(row, result);
+                if (selectableLabel)
+                    selectableRows.Add(result);
             }
 
-            return results;
+            return new LookupData(selectableRows, renderRowsById);
+        }
+
+        private sealed record LookupData(
+            IReadOnlyList<PlaceableAppearanceRow> SelectableRows,
+            IReadOnlyDictionary<int, PlaceableAppearanceRow> RenderRowsById)
+        {
+            public static LookupData Empty { get; } = new(
+                Array.Empty<PlaceableAppearanceRow>(),
+                new Dictionary<int, PlaceableAppearanceRow>());
         }
     }
 }

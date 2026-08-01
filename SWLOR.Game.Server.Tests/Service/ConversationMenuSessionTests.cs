@@ -100,7 +100,7 @@ public class ConversationMenuSessionTests
     private sealed class FakeRuntime : IConversationRuntime
     {
         public bool EvaluateCondition(ConversationContext context, ConversationCondition condition) => true;
-        public void ExecuteAction(ConversationContext context, ConversationAction action) { }
+        public bool ExecuteAction(ConversationContext context, ConversationAction action) => true;
         public string ResolveText(ConversationContext context, string text) => text;
     }
 }

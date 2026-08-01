@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer != null)
                     dbPlayer.CompletedDialogueActions ??= new HashSet<string>();
                 if (dbPlayer?.CompletedDialogueActions.Contains(oncePerPlayerId) == true)
-                    return false;
+                    return true;
             }
 
             arguments ??= Array.Empty<string>();

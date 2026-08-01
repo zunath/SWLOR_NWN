@@ -48,6 +48,14 @@ namespace SWLOR.Toolset.Services
                     return -1;
                 }
 
+                var serverBuildExitCode = await BuildServerAsync(repoRoot).ConfigureAwait(false);
+                if (serverBuildExitCode != 0)
+                {
+                    _log.AppendLine(
+                        $"Pack stopped because the server build failed with exit code {serverBuildExitCode}.");
+                    return serverBuildExitCode;
+                }
+
                 var moduleFileName = ReadModuleFileName(moduleRoot);
                 var arguments = $"-p \"./{moduleFileName}\" --no-prompt";
 
@@ -101,12 +109,54 @@ namespace SWLOR.Toolset.Services
         }
 
         /// <summary>
-        /// Copies the freshly packed .mod into debugserver\modules so an in-app pack is playable
-        /// without a separate deploy step. The CLI's pack (-p) deliberately does NOT do this —
-        /// only its full deploy (-o, DeployBuild) copies the module, along with binaries and haks
-        /// the toolset has no business rebuilding. Skipped quietly (with a hint) when the
-        /// debugserver directory doesn't exist.
+        /// Rebuilds the server before packing. Conversation graphs are embedded resources, so a
+        /// module-only pack would otherwise leave graph edits out of the playable assembly. The
+        /// post-build event is disabled explicitly to avoid recursively invoking the CLI deploy.
         /// </summary>
+        private async Task<int> BuildServerAsync(string repoRoot)
+        {
+            var projectPath = Path.Combine(repoRoot, "SWLOR.Game.Server", "SWLOR.Game.Server.csproj");
+            if (!File.Exists(projectPath))
+            {
+                _log.AppendLine($"Cannot build conversation data: server project not found at {projectPath}.");
+                return -1;
+            }
+
+            _log.AppendLine("Building SWLOR.Game.Server so conversation graph edits are embedded...");
+            var startInfo = new ProcessStartInfo("dotnet")
+            {
+                WorkingDirectory = repoRoot,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true
+            };
+            startInfo.ArgumentList.Add("build");
+            startInfo.ArgumentList.Add(projectPath);
+            startInfo.ArgumentList.Add("-c");
+            startInfo.ArgumentList.Add("Debug");
+            startInfo.ArgumentList.Add("-p:RunPostBuildEvent=Never");
+
+            using var process = new Process { StartInfo = startInfo };
+            process.OutputDataReceived += (_, e) =>
+            {
+                if (!string.IsNullOrWhiteSpace(e.Data))
+                    _log.AppendLine($"[server-build] {e.Data}");
+            };
+            process.ErrorDataReceived += (_, e) =>
+            {
+                if (!string.IsNullOrWhiteSpace(e.Data))
+                    _log.AppendLine($"[server-build:err] {e.Data}");
+            };
+
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            await process.WaitForExitAsync().ConfigureAwait(false);
+            return process.ExitCode;
+        }
+
+        /// <summary>Copies the packed module and rebuilt server output into debugserver.</summary>
         private bool DeployToDebugServer(string repoRoot, string moduleRoot, string moduleFileName)
         {
             try
@@ -123,12 +173,35 @@ namespace SWLOR.Toolset.Services
                 var destination = Path.Combine(modulesDirectory, moduleFileName);
                 File.Copy(source, destination, overwrite: true);
                 _log.AppendLine($"Deployed '{moduleFileName}' to debugserver\\modules.");
+
+                var serverOutput = Path.Combine(
+                    repoRoot, "SWLOR.Game.Server", "bin", "Debug", "net10.0");
+                var dotnetDirectory = Path.Combine(repoRoot, "debugserver", "dotnet");
+                if (!Directory.Exists(serverOutput))
+                    throw new DirectoryNotFoundException(
+                        $"The server build output was not found at {serverOutput}.");
+                Directory.CreateDirectory(dotnetDirectory);
+                CopyDirectory(serverOutput, dotnetDirectory);
+                _log.AppendLine("Deployed the rebuilt server assembly to debugserver\\dotnet.");
                 return true;
             }
             catch (Exception ex)
             {
                 _log.AppendLine($"Pack succeeded but the debugserver copy failed: {ex.Message}");
                 return false;
+            }
+        }
+
+        private static void CopyDirectory(string source, string destination)
+        {
+            foreach (var file in Directory.EnumerateFiles(source))
+                File.Copy(file, Path.Combine(destination, Path.GetFileName(file)), overwrite: true);
+
+            foreach (var directory in Directory.EnumerateDirectories(source))
+            {
+                var childDestination = Path.Combine(destination, Path.GetFileName(directory));
+                Directory.CreateDirectory(childDestination);
+                CopyDirectory(directory, childDestination);
             }
         }
 

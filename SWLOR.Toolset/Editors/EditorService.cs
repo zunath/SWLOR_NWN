@@ -2893,7 +2893,8 @@ namespace SWLOR.Toolset.Editors
                         _gameCodeIndex,
                         _log,
                         _prompts,
-                        extension => TagsFor(extension));
+                        extension => TagsFor(extension),
+                        ChoicePreviews());
                     graphEditor.Closed += _ => _openNuiConversations.Remove(graphPath);
                     graphEditor.CloseRequested += _ => _factory.CloseDocument(graphEditor);
                     _openNuiConversations[graphPath] = graphEditor;

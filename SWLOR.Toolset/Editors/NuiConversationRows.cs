@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Game.Server.Service.ConversationService;
@@ -70,23 +71,65 @@ public sealed partial class NuiConversationTextBlockRow : ObservableObject
     }
 }
 
+/// <summary>
+/// Read-only projection of a dialogue text block for the editor's in-game preview. Keeping this
+/// separate from the editable row lets the preview substitute representative dynamic-token values
+/// and use the exact semantic colors the runtime NUI window applies.
+/// </summary>
+public sealed class NuiConversationPreviewTextRow
+{
+    public NuiConversationPreviewTextRow(ConversationTextBlock block, string text)
+    {
+        Text = text;
+        Foreground = new SolidColorBrush(PreviewColor(block));
+    }
+
+    public string Text { get; }
+    public IBrush Foreground { get; }
+
+    private static Color PreviewColor(ConversationTextBlock block)
+    {
+        if (block.Style == ConversationTextStyle.Custom && block.Color != null)
+        {
+            return Color.FromArgb(
+                block.Color.Alpha,
+                block.Color.Red,
+                block.Color.Green,
+                block.Color.Blue);
+        }
+
+        return block.Style switch
+        {
+            ConversationTextStyle.Action => Color.FromRgb(1, 254, 1),
+            ConversationTextStyle.Highlight => Color.FromRgb(80, 140, 255),
+            ConversationTextStyle.Check => Color.FromRgb(254, 80, 80),
+            ConversationTextStyle.PlayerReply => Color.FromRgb(102, 178, 255),
+            ConversationTextStyle.Muted => Colors.Gray,
+            _ => Colors.White
+        };
+    }
+}
+
 public sealed partial class NuiConversationChoiceRow : ObservableObject
 {
     private readonly ConversationChoice _choice;
     private readonly Action<Action> _edit;
+    private readonly Func<string, string>? _displayText;
 
     public NuiConversationChoiceRow(
         ConversationChoiceLink link,
         ConversationChoice choice,
         int index,
         int count,
-        Action<Action> edit)
+        Action<Action> edit,
+        Func<string, string>? displayText = null)
     {
         Link = link;
         _choice = choice;
         Index = index;
         Count = count;
         _edit = edit;
+        _displayText = displayText;
     }
 
     public ConversationChoiceLink Link { get; }
@@ -98,6 +141,7 @@ public sealed partial class NuiConversationChoiceRow : ObservableObject
     public bool CanMoveDown => Index + 1 < Count;
     public bool HasNextLine => !_choice.EndsConversation && _choice.Next.Count > 0;
     public bool IsConditional => Link.Conditions.Count > 0;
+    public string DisplayText => _displayText?.Invoke(_choice.Text.Text) ?? _choice.Text.Text;
 
     public string Text
     {
@@ -108,6 +152,7 @@ public sealed partial class NuiConversationChoiceRow : ObservableObject
                 return;
             _edit(() => _choice.Text.Text = value ?? string.Empty);
             OnPropertyChanged();
+            OnPropertyChanged(nameof(DisplayText));
         }
     }
 

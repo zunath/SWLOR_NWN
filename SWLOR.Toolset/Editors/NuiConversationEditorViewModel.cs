@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
@@ -24,6 +25,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     private readonly SnippetArgumentOptions _argumentOptions;
     private readonly OutputLogService _log;
     private readonly IEditorPromptService _prompts;
+    private readonly Behaviors.ChoicePreviewService? _choicePreviews;
     private readonly Stack<string> _undo = new();
     private readonly Stack<string> _redo = new();
     private ConversationGraph _graph;
@@ -36,6 +38,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     private bool _closeApproved;
     private bool _closePromptOpen;
     private bool _disposed;
+    private int _portraitRequestVersion;
 
     public event Action<NuiConversationEditorViewModel>? Closed;
     public event Action<NuiConversationEditorViewModel>? CloseRequested;
@@ -51,7 +54,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     public ObservableCollection<SnippetDescriptor> AvailableActions { get; } = new();
     public ObservableCollection<NuiConversationProblem> Problems { get; } = new();
     public ObservableCollection<NuiConversationChoiceRow> PreviewChoices { get; } = new();
-    public ObservableCollection<NuiConversationTextBlockRow> PreviewTextBlocks { get; } = new();
+    public ObservableCollection<NuiConversationPreviewTextRow> PreviewTextBlocks { get; } = new();
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsMerchant))]
@@ -105,6 +108,14 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     [ObservableProperty]
     private string _previewStatus = string.Empty;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasPreviewPortrait))]
+    [NotifyPropertyChangedFor(nameof(ShowsPreviewPortraitPlaceholder))]
+    private Bitmap? _previewPortrait;
+
+    [ObservableProperty]
+    private string _previewPortraitHint = string.Empty;
+
     public NuiConversationEditorViewModel(
         string filePath,
         string resRef,
@@ -112,7 +123,8 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         IGameCodeIndex? gameCode,
         OutputLogService log,
         IEditorPromptService prompts,
-        Func<string, IReadOnlyList<string>>? tagsFor = null)
+        Func<string, IReadOnlyList<string>>? tagsFor = null,
+        Behaviors.ChoicePreviewService? choicePreviews = null)
     {
         _filePath = filePath;
         _resRef = resRef;
@@ -120,6 +132,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         _argumentOptions = new SnippetArgumentOptions(gameCode, tagsFor);
         _log = log;
         _prompts = prompts;
+        _choicePreviews = choicePreviews;
         _graph = LoadGraph(filePath);
         _savedJson = Serialize(_graph);
         _diskWriteTimeUtc = File.GetLastWriteTimeUtc(filePath);
@@ -173,6 +186,8 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     public bool IsDirty => Serialize(_graph) != _savedJson;
     public bool CanUndo => _undo.Count > 0;
     public bool CanRedo => _redo.Count > 0;
+    public bool HasPreviewPortrait => PreviewPortrait != null;
+    public bool ShowsPreviewPortraitPlaceholder => PreviewPortrait == null;
 
     /// <summary>
     /// Returns a deep copy suitable for background readers such as conversation search. The live
@@ -549,7 +564,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         _undo.Push(before);
         _redo.Clear();
         Validate();
-        StartPreview();
+        ShowSelectedNodeInPreview();
         NotifyHistoryChanged();
     }
 
@@ -588,7 +603,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
             RebuildSelectedLine();
             RefreshMerchantFields();
             Validate();
-            StartPreview();
+            ShowSelectedNodeInPreview();
         }
         finally
         {
@@ -694,6 +709,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         _loading = true;
         RebuildSelectedLine();
         _loading = false;
+        ShowSelectedNodeInPreview();
     }
 
     private void MoveOpening(NuiConversationOpeningRow? opening, int direction)
@@ -897,18 +913,114 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
             PreviewStatus = "The next line is missing.";
             return;
         }
-        PreviewSpeaker = string.IsNullOrWhiteSpace(node.SpeakerName) ? "NPC" : node.SpeakerName;
+        string ResolveNodeText(string text) => ResolvePreviewText(text, node);
+
+        PreviewSpeaker = string.IsNullOrWhiteSpace(node.SpeakerName) ? "NPC name" : ResolveNodeText(node.SpeakerName);
+        RequestPreviewPortrait(ResolveNodeText(node.PortraitResref));
         foreach (var block in node.Text)
-            PreviewTextBlocks.Add(new NuiConversationTextBlockRow(block, _ => { }));
+        {
+            if (!string.IsNullOrWhiteSpace(block.Text))
+                PreviewTextBlocks.Add(new NuiConversationPreviewTextRow(block, ResolveNodeText(block.Text)));
+        }
+
+        var visibleChoices = new List<(ConversationChoiceLink Link, ConversationChoice Choice)>();
         for (var index = 0; index < node.Choices.Count; index++)
         {
             var link = node.Choices[index];
-            if (_graph.Choices.TryGetValue(link.ChoiceId, out var choice))
-                PreviewChoices.Add(new NuiConversationChoiceRow(link, choice, index, node.Choices.Count, _ => { }));
+            if (_graph.Choices.TryGetValue(link.ChoiceId, out var choice) && !choice.IsAutomatic)
+                visibleChoices.Add((link, choice));
+        }
+
+        for (var index = 0; index < visibleChoices.Count; index++)
+        {
+            var (link, choice) = visibleChoices[index];
+            PreviewChoices.Add(new NuiConversationChoiceRow(
+                link,
+                choice,
+                index,
+                visibleChoices.Count,
+                _ => { },
+                ResolveNodeText));
+        }
+
+        if (PreviewChoices.Count == 0)
+        {
+            var goodbye = new ConversationChoice
+            {
+                Id = "preview-goodbye",
+                EndsConversation = true,
+                Text = new ConversationTextBlock
+                {
+                    Text = "Goodbye.",
+                    Style = ConversationTextStyle.PlayerReply
+                }
+            };
+            PreviewChoices.Add(new NuiConversationChoiceRow(
+                new ConversationChoiceLink { ChoiceId = goodbye.Id },
+                goodbye,
+                0,
+                1,
+                _ => { },
+                ResolveNodeText));
         }
         PreviewStatus = node.Choices.Any(link => link.Conditions.Count > 0)
-            ? "Preview shows conditional choices; use Preview State later to hide them."
+            ? "Conditional responses are shown because no sample player state is selected."
             : string.Empty;
+    }
+
+    private void ShowSelectedNodeInPreview()
+    {
+        if (CurrentNode != null)
+        {
+            ShowPreviewNode(CurrentNode.Id);
+            return;
+        }
+
+        StartPreview();
+    }
+
+    private static string ResolvePreviewText(string text, ConversationNode node)
+    {
+        var ownerName = string.IsNullOrWhiteSpace(node.SpeakerName) ||
+                        node.SpeakerName.Contains("{{owner.name}}", StringComparison.OrdinalIgnoreCase)
+            ? "NPC name"
+            : node.SpeakerName;
+
+        return (text ?? string.Empty)
+            .Replace("{{player.name}}", "Player", StringComparison.OrdinalIgnoreCase)
+            .Replace("{{owner.name}}", ownerName, StringComparison.OrdinalIgnoreCase)
+            .Replace("{{player.race}}", "Human", StringComparison.OrdinalIgnoreCase)
+            .Replace("{{player.gender.boy-girl}}", "boy", StringComparison.OrdinalIgnoreCase)
+            .Replace("{{player.gender.sir-madam}}", "sir", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void RequestPreviewPortrait(string portraitResref)
+    {
+        var requestVersion = ++_portraitRequestVersion;
+        PreviewPortrait = null;
+        PreviewPortraitHint = string.IsNullOrWhiteSpace(portraitResref)
+            ? "NPC portrait supplied in game"
+            : portraitResref;
+
+        if (_choicePreviews == null || string.IsNullOrWhiteSpace(portraitResref))
+            return;
+
+        if (_choicePreviews.Cached(portraitResref, 128) is { } cached)
+        {
+            PreviewPortrait = cached;
+            return;
+        }
+
+        _ = LoadPreviewPortraitAsync(portraitResref, requestVersion);
+    }
+
+    private async Task LoadPreviewPortraitAsync(string portraitResref, int requestVersion)
+    {
+        var bitmap = await _choicePreviews!.ResolveAsync(portraitResref, 128).ConfigureAwait(true);
+        if (_disposed || requestVersion != _portraitRequestVersion)
+            return;
+
+        PreviewPortrait = bitmap;
     }
 
     private ConversationBehaviorKind DetectBehavior()

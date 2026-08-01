@@ -15,9 +15,8 @@
       </Grid>
     </Border>
 
-    <TabControl Grid.Row="1" Margin="12">
-      <TabItem Header="Write">
-        <Grid>
+    <Grid Grid.Row="1" Margin="12" ColumnDefinitions="*,6,470">
+      <Grid Grid.Column="0">
           <ScrollViewer IsVisible="{Binding IsMerchant}" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="26" Spacing="16" MaxWidth="840" HorizontalAlignment="Center">
               <StackPanel Spacing="4">
@@ -59,7 +58,7 @@
             </StackPanel>
           </ScrollViewer>
 
-          <Grid IsVisible="{Binding IsGeneral}" ColumnDefinitions="285,*" ColumnSpacing="12">
+          <Grid IsVisible="{Binding IsGeneral}" ColumnDefinitions="235,*" ColumnSpacing="12">
             <Border Grid.Column="0" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="5" Padding="10" Background="#101720">
               <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="8">
                 <TextBlock Grid.Row="0" Text="{Binding OutlineTitle}" FontWeight="SemiBold" FontSize="16" />
@@ -259,39 +258,105 @@
               </StackPanel>
             </ScrollViewer>
           </Grid>
-        </Grid>
-      </TabItem>
+      </Grid>
 
-      <TabItem Header="Preview">
-        <Grid Margin="28" RowDefinitions="Auto,*,Auto" MaxWidth="760" HorizontalAlignment="Center">
-          <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,12">
-            <TextBlock Text="NUI player preview" FontSize="22" FontWeight="SemiBold" />
-            <TextBlock Text="{Binding PreviewStatus}" Classes="dim" TextWrapping="Wrap" />
+      <GridSplitter Grid.Column="1" Background="#253344" ResizeDirection="Columns" />
+
+      <Grid Grid.Column="2" Margin="14,0,0,0" RowDefinitions="Auto,Auto,*">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,6">
+          <StackPanel Grid.Column="0" Spacing="2">
+            <TextBlock Text="IN-GAME PREVIEW" Classes="dim" FontWeight="SemiBold" />
+            <TextBlock Text="Updates with the line you are editing. Buttons walk the conversation."
+                       Classes="dim" TextWrapping="Wrap" />
           </StackPanel>
-          <Border Grid.Row="1" Padding="20" BorderBrush="#40556D" BorderThickness="1" CornerRadius="7" Background="#111923">
-            <Grid RowDefinitions="Auto,Auto,*,Auto">
-              <TextBlock Grid.Row="0" Text="{Binding PreviewSpeaker}" FontSize="18" FontWeight="SemiBold" />
-              <ItemsControl Grid.Row="1" ItemsSource="{Binding PreviewTextBlocks}" Margin="0,12">
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate x:DataType="editors:NuiConversationTextBlockRow">
-                    <TextBlock Text="{Binding Text}" TextWrapping="Wrap" Margin="0,3" />
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-              <ListBox Grid.Row="2" ItemsSource="{Binding PreviewChoices}">
-                <ListBox.ItemTemplate>
-                  <DataTemplate x:DataType="editors:NuiConversationChoiceRow">
-                    <Button Content="{Binding Text}" HorizontalContentAlignment="Left" Margin="0,3"
-                            Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).PickPreviewChoiceCommand}"
-                            CommandParameter="{Binding}" />
-                  </DataTemplate>
-                </ListBox.ItemTemplate>
-              </ListBox>
-              <Button Grid.Row="3" Content="Restart preview" Command="{Binding StartPreviewCommand}" HorizontalAlignment="Left" Margin="0,12,0,0" />
+          <Button Grid.Column="1" Content="Start from opening" Command="{Binding StartPreviewCommand}"
+                  VerticalAlignment="Top" />
+        </Grid>
+
+        <TextBlock Grid.Row="1" Text="{Binding PreviewStatus}" Classes="dim" TextWrapping="Wrap"
+                   MinHeight="22" Margin="0,0,0,6" />
+
+        <!-- Fixed native dimensions, scaled as a unit, make this match the 650x520 NUI window
+             without forcing the editor's right-hand pane to consume 650 desktop pixels. -->
+        <Viewbox Grid.Row="2" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+          <Border Width="650" Height="520" Background="#030303" BorderBrush="#8A5427"
+                  BorderThickness="2" CornerRadius="2">
+            <Grid RowDefinitions="32,*">
+              <Border Grid.Row="0" Background="#050505" BorderBrush="#8A5427" BorderThickness="0,0,0,2">
+                <Grid ColumnDefinitions="*,30" Margin="6,0,4,0">
+                  <TextBlock Grid.Column="0" Text="Conversation" Foreground="#F3F3F3"
+                             FontSize="16" VerticalAlignment="Center" />
+                  <Border Grid.Column="1" Width="22" Height="22" BorderBrush="#8A5427" BorderThickness="2"
+                          HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="×" Foreground="#D8C29C" FontSize="18"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Border>
+                </Grid>
+              </Border>
+
+              <Grid Grid.Row="1" RowDefinitions="228,28,*" Margin="14,10,14,12">
+                <Grid Grid.Row="0" ColumnDefinitions="140,*" ColumnSpacing="8">
+                  <Grid Grid.Column="0" RowDefinitions="28,200">
+                    <TextBlock Grid.Row="0" Text="{Binding PreviewSpeaker}" Foreground="#F3F3F3"
+                               FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" />
+                    <Border Grid.Row="1" Width="128" Height="200" Background="#101010"
+                            BorderBrush="#3B3128" BorderThickness="1" HorizontalAlignment="Center">
+                      <Grid>
+                        <Image Source="{Binding PreviewPortrait}" Stretch="Fill"
+                               IsVisible="{Binding HasPreviewPortrait}" />
+                        <StackPanel IsVisible="{Binding ShowsPreviewPortraitPlaceholder}"
+                                    VerticalAlignment="Center" Margin="8" Spacing="8">
+                          <TextBlock Text="PORTRAIT" Foreground="#766B61" FontSize="14"
+                                     FontWeight="SemiBold" HorizontalAlignment="Center" />
+                          <TextBlock Text="{Binding PreviewPortraitHint}" Foreground="#766B61"
+                                     TextAlignment="Center" TextWrapping="Wrap" FontSize="11" />
+                        </StackPanel>
+                      </Grid>
+                    </Border>
+                  </Grid>
+
+                  <ScrollViewer x:Name="PreviewDialogueScroll" Grid.Column="1"
+                                VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                                Background="#030303">
+                    <ItemsControl ItemsSource="{Binding PreviewTextBlocks}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="editors:NuiConversationPreviewTextRow">
+                          <TextBlock Text="{Binding Text}" Foreground="{Binding Foreground}"
+                                     TextWrapping="Wrap" FontSize="16" LineHeight="23"
+                                     Margin="8,6,10,6" />
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </ScrollViewer>
+                </Grid>
+
+                <TextBlock Grid.Row="1" Text="Your response" Foreground="#A9A9A9"
+                           FontSize="15" VerticalAlignment="Center" />
+
+                <ScrollViewer x:Name="PreviewResponsesScroll" Grid.Row="2"
+                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                              Background="#030303">
+                  <ItemsControl ItemsSource="{Binding PreviewChoices}" Margin="0,4,0,0">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="editors:NuiConversationChoiceRow">
+                        <Button Margin="0,3" MinHeight="38" Padding="12,6"
+                                Background="#030303" BorderBrush="#8A5427" BorderThickness="2"
+                                HorizontalContentAlignment="Center"
+                                Command="{Binding $parent[ItemsControl].((editors:NuiConversationEditorViewModel)DataContext).PickPreviewChoiceCommand}"
+                                CommandParameter="{Binding}">
+                          <TextBlock Text="{Binding DisplayText}" Foreground="#66B2FF"
+                                     TextWrapping="Wrap" TextAlignment="Center" FontSize="15" />
+                        </Button>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </ScrollViewer>
+              </Grid>
             </Grid>
           </Border>
-        </Grid>
-      </TabItem>
-    </TabControl>
+        </Viewbox>
+      </Grid>
+    </Grid>
   </Grid>
 </UserControl>

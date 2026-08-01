@@ -1,5 +1,19 @@
 # Dialog Editor — Design
 
+> **Current NUI direction (2026-08-01):** the graph-native editor is an authoring surface with a
+> persistent, side-by-side simulation of the shipped 650×520 NUI conversation window. The preview
+> is no longer a separate tab. It follows the NPC line being edited, updates as the writer types,
+> and remains interactive so response buttons can walk the graph. Its title is always
+> **Conversation**; the speaker name sits above the portrait; NPC text uses its one runtime scroll
+> region; responses use the runtime blue button treatment and response-list scroll region; and an
+> empty response set previews the runtime-supplied **Goodbye.** choice. Semantic text colors and
+> representative dynamic-token values are rendered in place. Explicit portrait resrefs are loaded
+> when available; an honest placeholder explains when the live NPC supplies its name or portrait.
+>
+> The older DLG corpus analysis and Play-it exploration below are retained as historical rationale.
+> They do not override the current graph-native NUI editor or reintroduce the base-game Dialog
+> service, generated DLG shells, or NWN's conversation-window constraints.
+>
 > Approved direction: **Play it** — the conversation is edited in the form the player sees it.
 > **Built:** D1–D9 are complete; see §12 for what changed on contact with the real module. Read
 > `PLAN.md` for the toolset's ground rules and `README.md` for the invariants any new editor

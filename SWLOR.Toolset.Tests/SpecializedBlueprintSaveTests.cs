@@ -2,10 +2,13 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editors.Creatures;
+using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
+using SWLOR.Toolset.Editors.Creatures;
 using SWLOR.Toolset.Editors.Doors;
 using SWLOR.Toolset.Editors.Sounds;
 using SWLOR.Toolset.Editors.Triggers;
@@ -126,6 +129,190 @@ namespace SWLOR.Toolset.Tests
             {
                 opened.Cleanup();
             }
+        }
+
+        [Test]
+        public async Task CreatureSaveRefusesAWriteThatLandsAfterOverwriteWasAccepted()
+        {
+            const string resRef = "creature_race";
+            var directory = Path.Combine(_moduleRoot, "utc");
+            Directory.CreateDirectory(directory);
+            Directory.CreateDirectory(Path.Combine(_moduleRoot, "uti"));
+            var path = Path.Combine(directory, $"{resRef}.utc.json");
+            File.WriteAllBytes(
+                path,
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utc,
+                    resRef,
+                    "Initial generation"));
+
+            var acceptedGeneration = BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc,
+                resRef,
+                "Accepted external generation");
+            var racingGeneration = BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc,
+                resRef,
+                "Later external generation");
+            var prompts = new RacingOverwritePrompts(
+                _moduleRoot,
+                path,
+                racingGeneration);
+            var document = OpenCreature(path, resRef, prompts);
+
+            try
+            {
+                document.Editor.BasicRows.Single(row => row.Definition.Name == "Tag").Text =
+                    "builder_edit";
+                File.WriteAllBytes(path, acceptedGeneration);
+
+                (await document.TrySaveAsync()).Should().BeFalse(
+                    "the final grouped-save fingerprint check must preserve the later generation");
+                await prompts.WriterFinished.WaitAsync(TimeSpan.FromSeconds(5));
+
+                File.ReadAllBytes(path).Should().Equal(racingGeneration);
+                document.IsDirty.Should().BeTrue();
+                Directory.EnumerateFiles(_moduleRoot, "*.tmp", SearchOption.AllDirectories)
+                    .Should().BeEmpty();
+            }
+            finally
+            {
+                if (document.IsDirty)
+                    document.RevertCommand.Execute(null);
+                document.OnClose();
+            }
+        }
+
+        [Test]
+        public async Task CreatureSaveRefusesALateWriteToALinkedItem()
+        {
+            const string creatureResRef = "linked_race";
+            const string weaponResRef = "linked_race_w1";
+            var utcDirectory = Path.Combine(_moduleRoot, "utc");
+            var utiDirectory = Path.Combine(_moduleRoot, "uti");
+            Directory.CreateDirectory(utcDirectory);
+            Directory.CreateDirectory(utiDirectory);
+            var creaturePath = Path.Combine(utcDirectory, $"{creatureResRef}.utc.json");
+            var weaponPath = Path.Combine(utiDirectory, $"{weaponResRef}.uti.json");
+
+            var creature = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc,
+                creatureResRef,
+                "Linked race creature"));
+            new CreatureValueStore(creature.Root).SetEquippedResRef(
+                CreaturePropertyCatalog.MainWeaponSlot,
+                weaponResRef);
+            File.WriteAllBytes(creaturePath, creature.ToBytes());
+
+            var initialWeapon = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Uti,
+                weaponResRef,
+                "Initial linked weapon"));
+            initialWeapon.Root.SetInt("BaseItem", GffFieldType.Int, 69);
+            File.WriteAllBytes(weaponPath, initialWeapon.ToBytes());
+
+            var acceptedGeneration = BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Uti,
+                weaponResRef,
+                "Accepted linked generation");
+            var racingGeneration = BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Uti,
+                weaponResRef,
+                "Later linked generation");
+            var prompts = new RacingOverwritePrompts(
+                _moduleRoot,
+                weaponPath,
+                racingGeneration);
+            var document = OpenCreature(creaturePath, creatureResRef, prompts);
+
+            try
+            {
+                var primary = document.Editor.EquipmentSlots.NaturalWeapons.Single(weapon =>
+                    weapon.Label == "Primary Natural Weapon");
+                primary.Damage.Number = 12;
+                File.WriteAllBytes(weaponPath, acceptedGeneration);
+
+                (await document.TrySaveAsync()).Should().BeFalse(
+                    "the final grouped-save check must cover linked UTIs as well as the UTC");
+                await prompts.WriterFinished.WaitAsync(TimeSpan.FromSeconds(5));
+
+                File.ReadAllBytes(weaponPath).Should().Equal(racingGeneration);
+                document.IsDirty.Should().BeTrue();
+            }
+            finally
+            {
+                if (document.IsDirty)
+                    document.RevertCommand.Execute(null);
+                document.OnClose();
+            }
+        }
+
+        [Test]
+        public async Task CreatureSavePersistsAnEditedNaturalWeaponAfterItIsDisabled()
+        {
+            const string resRef = "creature_link";
+            var directory = Path.Combine(_moduleRoot, "utc");
+            Directory.CreateDirectory(directory);
+            Directory.CreateDirectory(Path.Combine(_moduleRoot, "uti"));
+            var path = Path.Combine(directory, $"{resRef}.utc.json");
+            File.WriteAllBytes(
+                path,
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utc,
+                    resRef,
+                    "Linked item save"));
+            var document = OpenCreature(path, resRef, new QuietPrompts());
+
+            try
+            {
+                var primary = document.Editor.EquipmentSlots.NaturalWeapons.Single(weapon =>
+                    weapon.Label == "Primary Natural Weapon");
+                primary.IsEnabled = true;
+                var weaponResRef = document.Editor.Equipment.EquippedResRef(
+                    CreaturePropertyCatalog.MainWeaponSlot);
+                weaponResRef.Should().NotBeNullOrWhiteSpace();
+
+                primary.Damage.Number = 12;
+                primary.IsEnabled = false;
+
+                (await document.TrySaveAsync()).Should().BeTrue();
+                document.IsDirty.Should().BeFalse();
+
+                var weaponPath = Path.Combine(_moduleRoot, "uti", $"{weaponResRef}.uti.json");
+                File.Exists(weaponPath).Should().BeTrue(
+                    "saving must not silently discard edits to an item unlinked before save");
+                var weapon = new ItemValueStore(JsonGffDocument.Load(weaponPath).Root);
+                weapon.GetPropertyValue(CreaturePropertyCatalog.Damage, -1).Should().Be(12);
+            }
+            finally
+            {
+                document.OnClose();
+            }
+        }
+
+        private static CreatureDocumentViewModel OpenCreature(
+            string path,
+            string resRef,
+            IEditorPromptService prompts)
+        {
+            return new CreatureDocumentViewModel(
+                path,
+                resRef,
+                gameCodeIndex: null,
+                log: new OutputLogService(),
+                prompts: prompts,
+                resolveChoices: null,
+                resourceIndex: null,
+                resolveModel: null,
+                appearance: _ => null,
+                armorParts: null,
+                equipmentChoices: null,
+                equipmentDetails: null,
+                choicePreviews: null,
+                previewAudio: null,
+                openLootDefinition: null,
+                appearanceOptions: null,
+                appearanceThumbnails: null);
         }
 
         private static OpenedDocument OpenDocument(

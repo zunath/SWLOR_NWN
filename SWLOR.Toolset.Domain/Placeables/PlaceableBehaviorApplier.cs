@@ -160,6 +160,63 @@ namespace SWLOR.Toolset.Domain.Placeables
         }
 
         /// <summary>
+        /// Whether <see cref="EnsureExpectedValues"/> would change the selected named behavior's
+        /// canonical scripts, required flags, or defaults. Visible authored values are intentionally
+        /// accepted exactly as <see cref="WriteDefaults"/> accepts them.
+        /// </summary>
+        public static bool NeedsExpectedValues(JsonGffStruct root, PlaceableBehavior behavior)
+        {
+            ArgumentNullException.ThrowIfNull(root);
+            ArgumentNullException.ThrowIfNull(behavior);
+
+            if (behavior.IsSentinel)
+                return false;
+
+            if (behavior.Scripts.Any(slot =>
+                    !string.Equals(
+                        root.GetStringOrNull(slot.Key),
+                        slot.Value,
+                        StringComparison.Ordinal)))
+            {
+                return true;
+            }
+
+            if (behavior.Flags.Any(flag =>
+                    root.GetIntOrNull(flag.FieldName) != (flag.Value ? 1 : 0)))
+            {
+                return true;
+            }
+
+            var table = new VarTable(root);
+            foreach (var field in behavior.Fields)
+            {
+                if (field.DefaultIntValue == null && string.IsNullOrWhiteSpace(field.DefaultStringValue))
+                    continue;
+
+                var entry = table.FirstOrDefault(candidate =>
+                    string.Equals(candidate.Name, field.VariableName, StringComparison.Ordinal));
+                if (entry != null && field.IsVisible)
+                    continue;
+
+                if (field.DefaultIntValue is { } intValue)
+                {
+                    if (entry?.Type != VarTable.TypeInt || entry.IntValue != intValue)
+                        return true;
+                }
+                else if (entry?.Type != VarTable.TypeString ||
+                         !string.Equals(
+                             entry.StringValue,
+                             field.DefaultStringValue,
+                             StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Whether a script slot is written by a named behavior rather than by hand. Custom exposes
         /// the raw slot beneath its flags; named behaviors keep their own wiring authoritative.
         /// </summary>

@@ -129,7 +129,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 if (!await AcceptExternalChangeAsync(_session, isMainDocument: true).ConfigureAwait(true))
                     return false;
 
-                var equipment = Editor.Equipment.CurrentlyReferenced();
+                var equipment = Editor.Equipment.SaveParticipants();
                 foreach (var item in equipment)
                 {
                     if (!await AcceptExternalChangeAsync(item.Session, item.IsNew).ConfigureAwait(true))
@@ -175,7 +175,10 @@ namespace SWLOR.Toolset.Editors.Creatures
                 foreach (var (session, bytes) in saved)
                     session.RecordCurrentFileState(bytes);
                 foreach (var item in equipment)
-                    item.MarkSaved();
+                {
+                    var savedBytes = saved.Single(entry => ReferenceEquals(entry.Session, item.Session)).Bytes;
+                    item.MarkSaved(savedBytes);
+                }
                 AfterHistoryChange();
                 CatalogEntryChanged?.Invoke();
                 _log.AppendLine(

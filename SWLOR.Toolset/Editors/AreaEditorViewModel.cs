@@ -2020,7 +2020,11 @@ namespace SWLOR.Toolset.Editors
             {
                 var earlyResult = ApplySavePlan(_areSession, arePlan);
                 if (!earlyResult.Success)
+                {
+                    foreach (var write in staged)
+                        Services.SaveService.Discard(write);
                     return false;
+                }
                 areReloadedEarly = true;
                 arePlan = SavePlan.Nothing;
                 RefreshAreaPropertyFields();

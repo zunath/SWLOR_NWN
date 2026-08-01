@@ -400,6 +400,31 @@ namespace SWLOR.Toolset.Tests
             editor.IsDirty.Should().BeTrue();
         }
 
+        [Test]
+        public async Task FailedEarlyAreReloadDiscardsAlreadyStagedCompanionWrites()
+        {
+            var editor = CreateEditor(new DeleteBeforeReloadPrompts());
+            var comments = editor.AreaPropertyGroups
+                .SelectMany(group => group.Fields)
+                .OfType<TextFieldViewModel>()
+                .Single(field => field.Descriptor.FieldName == "Comments");
+            comments.Text = "local ARE edit";
+
+            var section = editor.SectionFor(ResourceType.Utp)!;
+            section.SelectedRow = section.Rows[0];
+            section.DetailTag = "local GIT edit";
+
+            var arePath = Path.Combine(_moduleRoot, "are", $"{AreaResRef}.are.json");
+            File.SetLastWriteTimeUtc(
+                arePath,
+                File.GetLastWriteTimeUtc(arePath).AddSeconds(2));
+
+            (await editor.TrySaveAsync()).Should().BeFalse();
+
+            Directory.EnumerateFiles(_moduleRoot, "*.tmp", SearchOption.AllDirectories)
+                .Should().BeEmpty("a failed reload must dispose every staged companion write");
+        }
+
         private static int CountUnder(AreaContentsNodeViewModel kind) =>
             kind.Children.Sum(child => child.Kind == AreaContentsNodeKind.Group ? child.Indices.Count : 1);
 
@@ -484,6 +509,26 @@ namespace SWLOR.Toolset.Tests
 
             public Task<UnsavedChangesChoice> ConfirmCloseAsync(string name) =>
                 Task.FromResult(UnsavedChangesChoice.Cancel);
+
+            public Task<string?> PromptForTextAsync(
+                string headline, string message, string initialValue, string confirmLabel) =>
+                Task.FromResult<string?>(null);
+
+            public Task<bool> ConfirmDestructiveAsync(
+                string headline, string message, string confirmLabel) =>
+                Task.FromResult(true);
+        }
+
+        private sealed class DeleteBeforeReloadPrompts : IEditorPromptService
+        {
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string name) =>
+                Task.FromResult(UnsavedChangesChoice.Cancel);
+
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string path)
+            {
+                File.Delete(path);
+                return Task.FromResult(ExternalChangeChoice.Reload);
+            }
 
             public Task<string?> PromptForTextAsync(
                 string headline, string message, string initialValue, string confirmLabel) =>

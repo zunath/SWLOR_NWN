@@ -359,7 +359,7 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Saves this editor, returning false when the user cancels or the write fails.</summary>
         public async Task<bool> TrySaveAsync()
         {
-            if (!IsDirty)
+            if (!IsDirty && PlaceableSections?.Behavior.NeedsSaveNormalization != true)
                 return true;
 
             try

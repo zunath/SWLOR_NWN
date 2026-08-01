@@ -377,6 +377,74 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task CleanBlueprintSave_MaterializesMissingNamedBehaviorDefaults()
+        {
+            var directory = Path.Combine(
+                Path.GetTempPath(),
+                "swlor-placeable-clean-save-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            var path = Path.Combine(directory, "market_save.utp.json");
+
+            try
+            {
+                var modelCatalog = CreateFixturePlaceableModelCatalog(directory);
+                _ = modelCatalog.GetAll();
+                var initial = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utp,
+                    "market_save",
+                    "Market Save"));
+                initial.Root.GetOrNull("OnUsed")!.SetString("generic_convo");
+                File.WriteAllBytes(path, initial.ToBytes());
+
+                var log = new OutputLogService();
+                var workspace = new WorkspaceContext(_ => throw new NotSupportedException(), log);
+                var editor = new BlueprintEditorViewModel(
+                    path,
+                    "market_save",
+                    ResourceType.Utp,
+                    UtpSchema.Build(),
+                    new LookupOptionProvider(workspace),
+                    gameCodeIndex: null,
+                    log,
+                    new AcceptingPrompts(),
+                    placeableSections: (context, runEdit, scriptHost, _) =>
+                    {
+                        var appearance = new AppearanceSectionViewModel(
+                            context,
+                            modelCatalog,
+                            thumbnails: null,
+                            () => PlaceableAppearanceUsageIndex.Empty,
+                            runEdit);
+                        var behavior = new PlaceableBehaviorSectionViewModel(
+                            context,
+                            new BehaviorValueSourceProvider(gameCode: null, tags: () => null),
+                            new AcceptingPrompts(),
+                            runEdit,
+                            scriptHost);
+                        return new PlaceableEditorSections(appearance, behavior);
+                    });
+
+                editor.IsDirty.Should().BeFalse();
+                editor.PlaceableSections!.Behavior.Current.Id.Should().Be("market_terminal");
+                editor.PlaceableSections.Behavior.NeedsSaveNormalization.Should().BeTrue();
+
+                (await editor.TrySaveAsync()).Should().BeTrue();
+                editor.IsDirty.Should().BeFalse();
+
+                var savedVariables = new VarTable(JsonGffDocument.Load(path).Root);
+                savedVariables.GetString("CONVERSATION").Should().Be("MarketDialog");
+                savedVariables.GetInt("MARKET_ID").Should().Be(1);
+                editor.PlaceableSections.Behavior.NeedsSaveNormalization.Should().BeFalse();
+                editor.OnClose().Should().BeTrue();
+            }
+            finally
+            {
+                if (Directory.Exists(directory))
+                    Directory.Delete(directory, recursive: true);
+            }
+        }
+
+        [Test]
         public void GameCodePickerData_UsesOnlyCraftMenuSkillsAndDocumentsEveryVfxGroup()
         {
             var sourceRoot = FindGameServerSource();

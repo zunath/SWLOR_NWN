@@ -25,6 +25,9 @@ namespace SWLOR.Toolset.Editors.Doors
         private readonly Action<DoorRowViewModel> _changed;
         private readonly IReadOnlyDictionary<int, string> _knownKeyItems;
 
+        protected override bool SelectsFirstChoiceWhenUnset =>
+            Definition.Name != "LinkedToFlags";
+
         public new DoorFieldDefinition Definition { get; }
 
         public bool IsMultiChoice => Definition.Kind == BehaviorFieldKind.MultiChoice;

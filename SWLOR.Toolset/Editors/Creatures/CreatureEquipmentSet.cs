@@ -117,6 +117,27 @@ namespace SWLOR.Toolset.Editors.Creatures
             }
         }
 
+        /// <summary>
+        /// Linked documents that participate in the next creature save. Referenced items are always
+        /// included, and an item edited before it was unlinked remains included so saving the creature
+        /// cannot mark that entered data clean without putting it on disk.
+        /// </summary>
+        public IReadOnlyList<CreatureEquipmentDocument> SaveParticipants()
+        {
+            var participants = CurrentlyReferenced().ToList();
+            var included = participants
+                .Select(document => document.ResRef)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var document in _documents.Values)
+            {
+                if (document.HasUnsavedChanges && included.Add(document.ResRef))
+                    participants.Add(document);
+            }
+
+            return participants;
+        }
+
         private string UniqueResRef(string creatureResRef, string suffix)
         {
             var prefixLength = Math.Max(1, 16 - suffix.Length);

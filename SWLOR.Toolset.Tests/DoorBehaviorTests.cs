@@ -342,7 +342,11 @@ namespace SWLOR.Toolset.Tests
                 isInstance: true,
                 resolveTag: (_, _) => null);
             var destination = editor.BehaviorRows.Single(row => row.Definition.Name == "LinkedTo");
+            var destinationType = editor.BehaviorRows.Single(row =>
+                row.Definition.Name == "LinkedToFlags");
 
+            destinationType.Choice.Should().BeNull(
+                "an unset runtime value must not be displayed as the first real destination type");
             destination.IsStatusGood.Should().BeFalse();
             destination.Status.Should().Contain("destination type is unset");
             destination.Status.Should().Contain("will do nothing");

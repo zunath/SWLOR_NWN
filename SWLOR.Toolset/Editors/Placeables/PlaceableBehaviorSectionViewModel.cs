@@ -302,6 +302,10 @@ namespace SWLOR.Toolset.Editors.Placeables
             return applied;
         }
 
+        /// <summary>Whether a clean document still needs its selected behavior defaults materialized.</summary>
+        public bool NeedsSaveNormalization =>
+            PlaceableBehaviorApplier.NeedsExpectedValues(_context.Document.Root, Current);
+
         /// <summary>
         /// Records the successfully saved or reloaded form state. Later behavior changes warn only
         /// for edits made after this point.

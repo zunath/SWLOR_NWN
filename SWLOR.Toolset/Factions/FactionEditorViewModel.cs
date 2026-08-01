@@ -23,7 +23,7 @@ namespace SWLOR.Toolset.Factions
         private FactionReferenceUsage _usage;
 
         public string UsageSummary => !Usage.IsKnown
-            ? "References updated automatically"
+            ? string.Empty
             : Usage.Total == 0
                 ? "Not used by module objects"
                 : $"{Usage.Total} module reference{(Usage.Total == 1 ? string.Empty : "s")}";
@@ -169,6 +169,7 @@ namespace SWLOR.Toolset.Factions
         public bool IsNameReadOnly => SelectedFaction?.IsStandard != false;
         public string SelectedFactionName => SelectedFaction?.Name ?? "Faction";
         public bool HasSelectedRelationship => SelectedRelationship != null;
+        public bool HasUsageSummary => !string.IsNullOrWhiteSpace(UsedBy);
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CanRemoveFaction))]
@@ -183,7 +184,8 @@ namespace SWLOR.Toolset.Factions
         private string _parentName = "None";
 
         [ObservableProperty]
-        private string _usedBy = "0 blueprints · 0 placed objects";
+        [NotifyPropertyChangedFor(nameof(HasUsageSummary))]
+        private string _usedBy = string.Empty;
 
         [ObservableProperty]
         private bool _globalEffect;
@@ -613,7 +615,7 @@ namespace SWLOR.Toolset.Factions
                 UsedBy = SelectedFaction.Usage.IsKnown
                     ? $"{SelectedFaction.Usage.BlueprintCount} blueprints · " +
                       $"{SelectedFaction.Usage.PlacedObjectCount} placed objects"
-                    : "References are discovered and updated automatically when faction IDs change.";
+                    : string.Empty;
                 GlobalEffect = definition.GlobalEffect;
 
                 Relationships.Clear();

@@ -53,6 +53,9 @@
       <Setter Property="Background" Value="{DynamicResource DockApplicationAccentBrushLow}" />
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
+    <Style Selector="ListBox.factionList ListBoxItem">
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
   </Window.Styles>
 
   <Grid RowDefinitions="Auto,*,Auto">
@@ -75,7 +78,7 @@
       </Grid>
     </Border>
 
-    <Grid Grid.Row="1" ColumnDefinitions="260,*" IsEnabled="{Binding !IsSaving}">
+    <Grid Grid.Row="1" ColumnDefinitions="280,*" IsEnabled="{Binding !IsSaving}">
       <Border Grid.Column="0"
               Padding="12"
               Background="{DynamicResource PanelRaisedBrush}"
@@ -87,21 +90,22 @@
             <TextBlock Classes="dim" Text="Select one group to edit its reactions." />
           </StackPanel>
 
-          <ListBox Grid.Row="1"
+          <ListBox x:Name="FactionList" Grid.Row="1" Classes="factionList"
                    ItemsSource="{Binding Factions}"
                    SelectedItem="{Binding SelectedFaction, Mode=TwoWay}">
             <ListBox.ItemTemplate>
               <DataTemplate x:DataType="factions:FactionListItemViewModel">
-                <Grid ColumnDefinitions="*,Auto" Margin="1,3">
-                  <StackPanel>
-                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold"
-                               TextTrimming="CharacterEllipsis" />
-                    <TextBlock Classes="dim" FontSize="11" Text="{Binding UsageSummary}" />
-                  </StackPanel>
-                  <TextBlock Grid.Column="1" Classes="kicker" Margin="8,0,0,0"
+                <Grid ColumnDefinitions="*,Auto" Margin="1,6">
+                  <TextBlock Text="{Binding Name}" FontWeight="SemiBold"
                              VerticalAlignment="Center"
-                             IsVisible="{Binding IsStandard}"
-                             Text="STANDARD" />
+                             TextTrimming="CharacterEllipsis"
+                             ToolTip.Tip="{Binding Name}" />
+                  <Border Grid.Column="1" Margin="10,0,2,0" Padding="6,2"
+                          CornerRadius="3"
+                          Background="{DynamicResource PanelBrush}"
+                          IsVisible="{Binding IsStandard}">
+                    <TextBlock Classes="kicker" FontSize="10" Text="STANDARD" />
+                  </Border>
                 </Grid>
               </DataTemplate>
             </ListBox.ItemTemplate>
@@ -151,7 +155,8 @@
                 Margin="2,0,2,12">
             <StackPanel>
               <TextBlock Classes="pageTitle" Text="{Binding SelectedFactionName}" />
-              <TextBlock Classes="dim" Text="{Binding UsedBy}" />
+              <TextBlock Classes="dim" Text="{Binding UsedBy}"
+                         IsVisible="{Binding HasUsageSummary}" />
             </StackPanel>
             <TextBlock Grid.Column="1" Classes="kicker"
                        VerticalAlignment="Center" Text="repute.fac" />

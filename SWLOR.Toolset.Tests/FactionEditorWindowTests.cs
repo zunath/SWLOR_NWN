@@ -43,10 +43,18 @@ namespace SWLOR.Toolset.Tests
                 window.GetVisualDescendants().OfType<TabItem>()
                     .Select(item => item.Header?.ToString())
                     .Should().Contain(new[] { "Simple editor", "Advanced" });
-                window.GetVisualDescendants().OfType<ListBox>()
-                    .Should().Contain(list => list.ItemCount == factionCount);
+                var factionList = window.FindControl<ListBox>("FactionList");
+                factionList.Should().NotBeNull();
+                factionList!.ItemCount.Should().Be(factionCount);
+                factionList.GetVisualDescendants().OfType<ListBoxItem>()
+                    .Should().OnlyContain(item =>
+                        item.HorizontalContentAlignment == Avalonia.Layout.HorizontalAlignment.Stretch);
                 viewModel.Factions.Should().OnlyContain(faction =>
-                    faction.UsageSummary == "References updated automatically");
+                    faction.UsageSummary == string.Empty);
+                viewModel.HasUsageSummary.Should().BeFalse();
+                window.GetVisualDescendants().OfType<TextBlock>()
+                    .Select(text => text.Text)
+                    .Should().NotContain("References updated automatically");
 
                 viewModel.SelectedFaction = viewModel.Factions[5];
                 viewModel.RequestRemoveFactionCommand.Execute(null);

@@ -265,8 +265,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ReturningGripTrait)
                 .Description("After a thrown ability hits a bleeding target, restore 2 STM.")
-                .IncreasesStat(StatType.DamageDealtBleedingTargetStaminaRestoreChance, 100)
-                .IncreasesStat(StatType.DamageDealtBleedingTargetStaminaRestore, 2)
+                .IncreasesStat(StatType.SkillAbilityBleedingTargetStaminaRestoreSkillType, (int)SkillType.Throwing)
+                .IncreasesStat(StatType.SkillAbilityBleedingTargetStaminaRestoreChance, 100)
+                .IncreasesStat(StatType.SkillAbilityBleedingTargetStaminaRestore, 2)
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 5);
         }

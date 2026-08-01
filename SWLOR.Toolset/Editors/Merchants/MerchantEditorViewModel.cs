@@ -83,7 +83,7 @@ namespace SWLOR.Toolset.Editors.Merchants
         public bool IsInstanceOperationBusy => IsLoadingInstances || IsUpdatingInstances;
         public string InstanceOperationStatus => IsUpdatingInstances
             ? "Updating placed merchant instances..."
-            : "Refreshing placed merchant instance status...";
+            : "Scanning placed merchant instances...";
         public bool HasPlacedInstances => PlacedInstances.Count > 0;
         public bool HasOutOfDateInstances => PlacedInstances.Any(instance => !instance.IsCurrent);
         public int OutOfDateMerchantRecords =>
@@ -99,16 +99,37 @@ namespace SWLOR.Toolset.Editors.Merchants
                 : $"{ItemCandidates.Count} item{(ItemCandidates.Count == 1 ? string.Empty : "s")}";
         public string BuyingRuleSummary =>
             $"{BuyingRules.Count} of {_allBuyingRules.Count} base item types";
-        public string InstanceSummary =>
-            PlacedInstances.Count == 0
-                ? "0 merchant records and 0 item records out of date. This merchant has no placed instances."
-                : HasOutOfDateInstances
-                    ? $"{RecordCount(OutOfDateMerchantRecords, "merchant")} and " +
-                      $"{RecordCount(OutOfDateItemRecords, "item")} out of date across " +
-                      $"{PlacedInstances.Count(instance => !instance.IsCurrent)} of {PlacedInstances.Count} placed " +
-                      $"instance{(PlacedInstances.Count == 1 ? string.Empty : "s")}."
-                    : $"0 merchant records and 0 item records out of date. All {PlacedInstances.Count} placed " +
-                      $"instance{(PlacedInstances.Count == 1 ? string.Empty : "s")} up to date.";
+        public string InstanceSummary
+        {
+            get
+            {
+                if (IsLoadingInstances)
+                    return "Scanning the module for placed instances...";
+                if (!ArePlacedInstancesLoaded)
+                {
+                    return PlacedInstancesNeedRefresh
+                        ? "Merchant data changed. Refresh to rescan placed instances."
+                        : "Instance status loads only when this tab is opened.";
+                }
+                if (PlacedInstances.Count == 0)
+                {
+                    return "0 merchant records and 0 item records out of date. " +
+                           "This merchant has no placed instances.";
+                }
+                if (HasOutOfDateInstances)
+                {
+                    return $"{RecordCount(OutOfDateMerchantRecords, "merchant")} and " +
+                           $"{RecordCount(OutOfDateItemRecords, "item")} out of date across " +
+                           $"{PlacedInstances.Count(instance => !instance.IsCurrent)} of " +
+                           $"{PlacedInstances.Count} placed instance" +
+                           $"{(PlacedInstances.Count == 1 ? string.Empty : "s")}.";
+                }
+
+                return $"0 merchant records and 0 item records out of date. All " +
+                       $"{PlacedInstances.Count} placed instance" +
+                       $"{(PlacedInstances.Count == 1 ? string.Empty : "s")} up to date.";
+            }
+        }
         public string SelectedItemName => SelectedInventoryItem?.DisplayName ?? "No item selected";
         public string SelectedItemResRef => SelectedInventoryItem?.ResRef ?? string.Empty;
         public Bitmap? SelectedItemPreview => SelectedInventoryItem?.Preview;
@@ -187,6 +208,15 @@ namespace SWLOR.Toolset.Editors.Merchants
         [ObservableProperty]
         private string? _instanceError;
 
+        [ObservableProperty]
+        private bool _isPlacedInstancesTabSelected;
+
+        [ObservableProperty]
+        private bool _arePlacedInstancesLoaded;
+
+        [ObservableProperty]
+        private bool _placedInstancesNeedRefresh;
+
         public MerchantEditorViewModel(
             JsonGffStruct merchant,
             string headerOwner,
@@ -221,7 +251,6 @@ namespace SWLOR.Toolset.Editors.Merchants
             RefreshBuyingRuleSelections();
 
             SelectedInventoryCategory = InventoryCategories[0];
-            _ = RefreshPlacedInstancesAsync();
         }
 
         public void ReloadFromDocument()
@@ -442,6 +471,12 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         partial void OnBuyingRuleSearchTextChanged(string value) => FilterBuyingRules();
 
+        partial void OnIsPlacedInstancesTabSelectedChanged(bool value)
+        {
+            if (value && !ArePlacedInstancesLoaded)
+                _ = RefreshPlacedInstancesAsync();
+        }
+
         [RelayCommand(CanExecute = nameof(CanRefreshPlacedInstances))]
         public async Task RefreshPlacedInstancesAsync()
         {
@@ -460,6 +495,8 @@ namespace SWLOR.Toolset.Editors.Merchants
                 PlacedInstances.Clear();
                 foreach (var placement in found)
                     PlacedInstances.Add(placement);
+                ArePlacedInstancesLoaded = true;
+                PlacedInstancesNeedRefresh = false;
                 NotifyInstanceShapeChanged();
             }
             catch (Exception ex)
@@ -476,6 +513,21 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         private bool CanRefreshPlacedInstances() =>
             _instances != null && !IsInstanceOperationBusy;
+
+        /// <summary>
+        /// Drops status derived from the saved merchant without starting another module scan. The
+        /// next visit to Placed Instances, or an explicit Refresh, resolves it on demand.
+        /// </summary>
+        public void InvalidatePlacedInstances()
+        {
+            _instanceRefreshGeneration++;
+            IsLoadingInstances = false;
+            ArePlacedInstancesLoaded = false;
+            PlacedInstancesNeedRefresh = true;
+            InstanceError = null;
+            PlacedInstances.Clear();
+            NotifyInstanceShapeChanged();
+        }
 
         [RelayCommand(CanExecute = nameof(CanUpdateOutOfDateInstances))]
         private async Task UpdateOutOfDateInstances()
@@ -502,7 +554,8 @@ namespace SWLOR.Toolset.Editors.Merchants
         }
 
         private bool CanUpdateOutOfDateInstances() =>
-            _instances != null && HasOutOfDateInstances && !IsInstanceOperationBusy;
+            _instances != null && ArePlacedInstancesLoaded && HasOutOfDateInstances &&
+            !IsInstanceOperationBusy;
 
         partial void OnIsLoadingInstancesChanged(bool value) =>
             NotifyInstanceOperationStateChanged();
@@ -514,6 +567,7 @@ namespace SWLOR.Toolset.Editors.Merchants
         {
             OnPropertyChanged(nameof(IsInstanceOperationBusy));
             OnPropertyChanged(nameof(InstanceOperationStatus));
+            OnPropertyChanged(nameof(InstanceSummary));
             RefreshPlacedInstancesCommand.NotifyCanExecuteChanged();
             UpdateOutOfDateInstancesCommand.NotifyCanExecuteChanged();
         }

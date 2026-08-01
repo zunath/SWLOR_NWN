@@ -25,7 +25,7 @@ namespace SWLOR.Toolset.Editors.Merchants
         public MerchantEditorViewModel Editor { get; }
 
         public bool IsDirty => _session.UndoStack.IsDirty;
-        public bool IsBusy => Editor.IsInstanceOperationBusy;
+        public bool IsBusy => Editor.IsUpdatingInstances;
         public bool CanUndo => !IsBusy && _session.UndoStack.CanUndo;
         public bool CanRedo => !IsBusy && _session.UndoStack.CanRedo;
         public string FilePath => _session.FilePath;
@@ -131,7 +131,7 @@ namespace SWLOR.Toolset.Editors.Merchants
                         Editor.ReloadFromDocument();
                         AfterHistoryChange();
                         CatalogEntryChanged?.Invoke();
-                        await Editor.RefreshPlacedInstancesAsync().ConfigureAwait(true);
+                        Editor.InvalidatePlacedInstances();
                         _log.AppendLine($"Reloaded externally changed file {_session.FilePath}.");
                         return true;
                     }
@@ -183,7 +183,7 @@ namespace SWLOR.Toolset.Editors.Merchants
                 _session.RecordCurrentFileState(_session.ToBytes());
                 AfterHistoryChange();
                 CatalogEntryChanged?.Invoke();
-                await Editor.RefreshPlacedInstancesAsync().ConfigureAwait(true);
+                Editor.InvalidatePlacedInstances();
                 if (outcome?.Renamed == true)
                 {
                     Renamed?.Invoke(this, oldResRef, oldPath);
@@ -289,7 +289,7 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         private void OnEditorPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != nameof(MerchantEditorViewModel.IsInstanceOperationBusy))
+            if (e.PropertyName != nameof(MerchantEditorViewModel.IsUpdatingInstances))
                 return;
 
             OnPropertyChanged(nameof(IsBusy));

@@ -39,6 +39,11 @@ namespace SWLOR.Toolset.Tests
                 "Potions/Scrolls",
                 "Rings/Amulets",
                 "Miscellaneous");
+            editor.IsPlacedInstancesTabSelected.Should().BeFalse();
+            editor.ArePlacedInstancesLoaded.Should().BeFalse();
+            editor.IsLoadingInstances.Should().BeFalse();
+            editor.InstanceSummary.Should().Be(
+                "Instance status loads only when this tab is opened.");
 
             editor.DetailRows.Concat(editor.PricingRows)
                 .Select(row => row.Definition.Name)
@@ -119,6 +124,9 @@ namespace SWLOR.Toolset.Tests
                     (int)MerchantInventoryCategory.RingsAmulets));
             try
             {
+                document.Editor.ArePlacedInstancesLoaded = true;
+                document.Editor.PlacedInstances.Add(new MerchantInstancePlacement(
+                    "Probe Area", "probe_area", "PROBE_STORE", 0, 0, 0));
                 document.Editor.DetailRows.Single(row => row.Definition.Name == "LocName").Text =
                     "Builder Merchant";
                 document.Editor.DetailRows.Single(row => row.Definition.Name == "Tag").Text =
@@ -148,6 +156,10 @@ namespace SWLOR.Toolset.Tests
                 savedStore.Inventory((int)MerchantInventoryCategory.RingsAmulets)
                     .Should().ContainSingle()
                     .Which.GetStringOrNull("InventoryRes").Should().Be("probe_ring");
+                document.Editor.ArePlacedInstancesLoaded.Should().BeFalse();
+                document.Editor.PlacedInstancesNeedRefresh.Should().BeTrue();
+                document.Editor.PlacedInstances.Should().BeEmpty(
+                    "saving should invalidate status without starting another module scan");
             }
             finally
             {
@@ -191,6 +203,18 @@ namespace SWLOR.Toolset.Tests
                         busyNotifications++;
                 };
 
+                document.Editor.IsLoadingInstances = true;
+
+                document.Editor.IsInstanceOperationBusy.Should().BeTrue();
+                document.Editor.InstanceOperationStatus.Should().Be(
+                    "Scanning placed merchant instances...");
+                document.IsBusy.Should().BeFalse(
+                    "a read-only instance scan must not lock routine merchant editing");
+                document.SaveCommand.CanExecute(null).Should().BeTrue();
+                document.RevertCommand.CanExecute(null).Should().BeTrue();
+                document.UndoCommand.CanExecute(null).Should().BeTrue();
+
+                document.Editor.IsLoadingInstances = false;
                 document.Editor.IsUpdatingInstances = true;
 
                 document.IsBusy.Should().BeTrue();
@@ -697,6 +721,7 @@ namespace SWLOR.Toolset.Tests
                 "Area B", "area_b", "store_b", 0, 1, 0));
             editor.PlacedInstances.Add(new MerchantInstancePlacement(
                 "Area C", "area_c", "store_c", 0, 0, 0));
+            editor.ArePlacedInstancesLoaded = true;
 
             editor.InstanceSummary.Should().Be(
                 "2 merchant records and 2 item records out of date across 2 of 3 placed instances.");

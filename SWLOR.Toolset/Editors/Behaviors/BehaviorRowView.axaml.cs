@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
@@ -10,8 +11,20 @@ namespace SWLOR.Toolset.Editors.Behaviors
     /// </summary>
     public partial class BehaviorRowView : UserControl
     {
+        public static readonly StyledProperty<bool> ShowLabelProperty =
+            AvaloniaProperty.Register<BehaviorRowView, bool>(nameof(ShowLabel), true);
+
         /// <summary>How close to the end of the gallery publishes the next page.</summary>
         private const double LoadAheadPixels = 500;
+
+        /// <summary>
+        /// Whether this row displays and reserves its usual field label.
+        /// </summary>
+        public bool ShowLabel
+        {
+            get => GetValue(ShowLabelProperty);
+            set => SetValue(ShowLabelProperty, value);
+        }
 
         public BehaviorRowView()
         {

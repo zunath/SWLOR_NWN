@@ -40,6 +40,13 @@ namespace SWLOR.Toolset.Editors.Behaviors
         public static readonly StyledProperty<double> StackBelowProperty =
             AvaloniaProperty.Register<LabeledFieldPanel, double>(nameof(StackBelow), 420);
 
+        /// <summary>
+        /// Whether the field reserves space for its label. Dedicated picker workspaces can turn
+        /// this off when their surrounding card already identifies the value being edited.
+        /// </summary>
+        public static readonly StyledProperty<bool> ShowLabelProperty =
+            AvaloniaProperty.Register<LabeledFieldPanel, bool>(nameof(ShowLabel), true);
+
         private bool _stacked;
 
         public double LabelWidth
@@ -60,12 +67,22 @@ namespace SWLOR.Toolset.Editors.Behaviors
             set => SetValue(StackBelowProperty, value);
         }
 
+        public bool ShowLabel
+        {
+            get => GetValue(ShowLabelProperty);
+            set => SetValue(ShowLabelProperty, value);
+        }
+
         /// <summary>Whether this row is currently stacked, for tests and for callers that align to it.</summary>
         public bool IsStacked => _stacked;
 
         static LabeledFieldPanel()
         {
-            AffectsMeasure<LabeledFieldPanel>(LabelWidthProperty, SpacingProperty, StackBelowProperty);
+            AffectsMeasure<LabeledFieldPanel>(
+                LabelWidthProperty,
+                SpacingProperty,
+                StackBelowProperty,
+                ShowLabelProperty);
         }
 
         protected override Size MeasureOverride(Size availableSize)
@@ -75,6 +92,18 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
             var label = Children[0];
             var value = Children[1];
+
+            if (!ShowLabel)
+            {
+                _stacked = false;
+                label.Measure(new Size(0, 0));
+                value.Measure(availableSize);
+                return new Size(
+                    double.IsInfinity(availableSize.Width)
+                        ? value.DesiredSize.Width
+                        : availableSize.Width,
+                    value.DesiredSize.Height);
+            }
 
             // An unconstrained width is a measure pass inside a scroll viewer or an auto-sized
             // parent, not a narrow pane: laying out stacked there would make every row stack.
@@ -108,6 +137,13 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
             var label = Children[0];
             var value = Children[1];
+
+            if (!ShowLabel)
+            {
+                label.Arrange(new Rect(0, 0, 0, 0));
+                value.Arrange(new Rect(finalSize));
+                return finalSize;
+            }
 
             if (_stacked)
             {

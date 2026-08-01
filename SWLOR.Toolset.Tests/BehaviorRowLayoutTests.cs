@@ -69,6 +69,34 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void DedicatedPickerCanUseTheEntireRowWidth()
+        {
+            const double width = 700;
+            var row = Row("Armor", "Armor", BehaviorFieldKind.Text, GffFieldType.CExoString);
+            var view = new BehaviorRowView { DataContext = row, ShowLabel = false };
+            var window = new Window { Width = width, Height = 300, Content = view };
+
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            var panel = view.GetVisualDescendants().OfType<LabeledFieldPanel>().Single();
+            var value = panel.Children[1];
+            var valueLeft = value.TranslatePoint(new Point(0, 0), panel)!.Value.X;
+
+            TestContext.Out.WriteLine(
+                $"panel={panel.Bounds.Width:0.#} value={value.Bounds.Width:0.#} left={valueLeft:0.#}");
+
+            panel.ShowLabel.Should().BeFalse();
+            valueLeft.Should().BeApproximately(0, 1,
+                "a dedicated picker should expand into the unused label gutter");
+            value.Bounds.Width.Should().BeApproximately(panel.Bounds.Width, 1,
+                "the reclaimed gutter should be available for another gallery tile");
+
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+
+        [AvaloniaTest]
         public void SearchPickerCloseButtonStaysInsideTheValueColumn()
         {
             var row = new DoorRowViewModel(

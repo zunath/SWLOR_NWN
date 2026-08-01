@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
              x:Class="SWLOR.Toolset.Editors.Behaviors.BehaviorRowView"
+             x:Name="Root"
              x:DataType="behaviors:BehaviorRowViewModel">
 
   <!-- The one row every behavior editor draws: a label on the left and whichever control the field
@@ -12,9 +13,12 @@
        comfortable margin around it. Every pixel it takes comes out of the value, and the value is
        the part that has to hold a search list, a picture grid, or a tag - at a narrow pane width the
        generous column was leaving a text box a couple of characters wide. -->
-  <behaviors:LabeledFieldPanel IsVisible="{Binding IsVisible}" Margin="0,2" MinHeight="32">
+  <behaviors:LabeledFieldPanel IsVisible="{Binding IsVisible}"
+                               ShowLabel="{Binding ShowLabel, ElementName=Root}"
+                               Margin="0,2" MinHeight="32">
 
-    <StackPanel VerticalAlignment="Top" Margin="0,7,0,0" ClipToBounds="True">
+    <StackPanel VerticalAlignment="Top" Margin="0,7,0,0" ClipToBounds="True"
+                IsVisible="{Binding ShowLabel, ElementName=Root}">
       <TextBlock Text="{Binding Label}" Classes="dim" TextWrapping="Wrap" />
       <!-- "required" sits under the label rather than beside it: side by side it was the first
            thing squeezed out at narrow pane widths, which is exactly when it matters. -->

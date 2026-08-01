@@ -372,7 +372,9 @@
                     </Border>
                     <Border Classes="card" Padding="12">
                       <StackPanel Spacing="10">
-                        <behaviors:BehaviorRowView DataContext="{Binding EquipmentSlots.SelectedSlot}" />
+                        <behaviors:BehaviorRowView x:Name="CreatureEquipmentPicker"
+                                                   ShowLabel="False"
+                                                   DataContext="{Binding EquipmentSlots.SelectedSlot}" />
                         <Border x:Name="CreatureEquipmentStats" Padding="10"
                                 BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
                                 CornerRadius="3"

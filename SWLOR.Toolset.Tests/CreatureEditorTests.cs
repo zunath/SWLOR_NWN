@@ -1156,6 +1156,10 @@ namespace SWLOR.Toolset.Tests
                 equipmentSlots.Should().NotBeNull();
                 equipmentSlots!.ItemCount.Should().Be(14);
                 equipmentSlots.SelectedItem.Should().BeSameAs(editor.EquipmentSlots.SelectedSlot);
+                var equipmentPicker = FindVisual<BehaviorRowView>(view, "CreatureEquipmentPicker");
+                equipmentPicker.Should().NotBeNull();
+                equipmentPicker!.ShowLabel.Should().BeFalse(
+                    "the item gallery should extend left into the redundant selected-slot label gutter");
                 editor.EquipmentSlots.SelectedSlot!.GalleryChoices.Should()
                     .HaveCount(BehaviorRowViewModel.GalleryPageSize,
                         "the first equipment page is already present when the slot is shown");

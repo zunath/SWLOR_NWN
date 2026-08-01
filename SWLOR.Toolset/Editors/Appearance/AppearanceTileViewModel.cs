@@ -20,6 +20,13 @@ namespace SWLOR.Toolset.Editors.Appearance
         [ObservableProperty]
         private Bitmap? _preview;
 
+        /// <summary>
+        /// Whether this tile has asked for its preview. The view sets this indirectly through
+        /// <see cref="AppearanceGallerySectionViewModel.EnsurePreview"/> when the shared virtualizing
+        /// panel realizes the tile, matching the palette's progressive preview-loading contract.
+        /// </summary>
+        public bool PreviewRequested { get; set; }
+
         [ObservableProperty]
         private bool _isCurrent;
 

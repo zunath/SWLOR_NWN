@@ -908,9 +908,10 @@ namespace SWLOR.Toolset.Shell
                     _palette.Refresh();
                     StatusText = $"Catalog ready: {catalog.Entries.Count} entries indexed.";
 
-                    // Previews last: it is the longest job and the only one the builder can work
-                    // through, so it starts once everything they might click is already usable.
-                    _ = RunPreviewCacheBuildAsync();
+                    // Preview controls load artwork as their virtualized cells enter the viewport.
+                    // A complete cache warm-up remains available from Tools, but starting all 20,000
+                    // renders here competes with the first editor the builder opens and makes its
+                    // on-demand previews appear stalled.
                 });
             });
         }

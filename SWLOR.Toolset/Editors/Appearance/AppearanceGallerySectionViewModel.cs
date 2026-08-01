@@ -164,9 +164,36 @@ namespace SWLOR.Toolset.Editors.Appearance
 
             foreach (var tile in Tiles)
             {
+                var wasRequested = tile.PreviewRequested;
                 tile.Preview = null;
-                RequestPreview(tile);
+                tile.PreviewRequested = false;
+
+                // Retry only cells the view had already realized. Re-rendering the entire published
+                // page here would undo the same progressive-loading rule used by the palette.
+                if (wasRequested)
+                    EnsurePreview(tile);
             }
+        }
+
+        /// <summary>
+        /// Fetches a tile's preview unless it already has one or has already asked. The view calls
+        /// this when the shared virtualizing panel realizes the cell, just as the palette does.
+        /// </summary>
+        public void EnsurePreview(AppearanceTileViewModel? tile)
+        {
+            if (_disposed || tile == null || tile.PreviewRequested || _thumbnails == null)
+                return;
+
+            tile.PreviewRequested = true;
+
+            if (tile.Option.CreatureAppearanceId is { } appearanceId)
+            {
+                _thumbnails.RequestAppearanceAsync(appearanceId, bitmap => tile.Preview = bitmap);
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(tile.Option.ModelResRef))
+                _thumbnails.RequestTileAsync(tile.Option.ModelResRef, bitmap => tile.Preview = bitmap);
         }
 
         partial void OnQueryChanged(string value)
@@ -244,7 +271,7 @@ namespace SWLOR.Toolset.Editors.Appearance
                 var option = _matches[index];
                 var tile = new AppearanceTileViewModel(option, option.Key == current);
                 Tiles.Add(tile);
-                RequestPreview(tile);
+                ApplyCachedPreview(tile);
             }
 
             _published = end;
@@ -252,7 +279,11 @@ namespace SWLOR.Toolset.Editors.Appearance
             OnPropertyChanged(nameof(CanLoadMore));
         }
 
-        private void RequestPreview(AppearanceTileViewModel tile)
+        /// <summary>
+        /// Applies only previews that are already decoded in memory. Disk reads and model rendering
+        /// wait until <see cref="EnsurePreview"/> is called for a realized cell.
+        /// </summary>
+        private void ApplyCachedPreview(AppearanceTileViewModel tile)
         {
             if (_thumbnails == null)
                 return;
@@ -260,18 +291,14 @@ namespace SWLOR.Toolset.Editors.Appearance
             if (tile.Option.CreatureAppearanceId is { } appearanceId)
             {
                 tile.Preview = _thumbnails.CachedAppearance(appearanceId);
-                if (tile.Preview == null)
-                    _thumbnails.RequestAppearanceAsync(appearanceId, bitmap => tile.Preview = bitmap);
-
-                return;
+            }
+            else if (!string.IsNullOrWhiteSpace(tile.Option.ModelResRef))
+            {
+                tile.Preview = _thumbnails.CachedTile(tile.Option.ModelResRef);
             }
 
-            if (string.IsNullOrWhiteSpace(tile.Option.ModelResRef))
-                return;
-
-            tile.Preview = _thumbnails.CachedTile(tile.Option.ModelResRef);
-            if (tile.Preview == null)
-                _thumbnails.RequestTileAsync(tile.Option.ModelResRef, bitmap => tile.Preview = bitmap);
+            if (tile.Preview != null)
+                tile.PreviewRequested = true;
         }
 
         private void NotifyCurrentChanged()

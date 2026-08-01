@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
+             xmlns:controls="using:SWLOR.Toolset.Shell.Controls"
              x:Class="SWLOR.Toolset.Editors.Appearance.AppearanceGalleryView"
              x:DataType="appearance:AppearanceGallerySectionViewModel">
 
@@ -22,7 +23,9 @@
              Background="Transparent" BorderThickness="0" Padding="2">
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
-          <WrapPanel />
+          <!-- Reuse the palette's viewport virtualization so a 2,000-row appearance table creates
+               and requests previews only for the cells the builder can actually see. -->
+          <controls:VirtualizingWrapPanel />
         </ItemsPanelTemplate>
       </ListBox.ItemsPanel>
       <ListBox.Styles>
@@ -33,7 +36,8 @@
       </ListBox.Styles>
       <ListBox.ItemTemplate>
         <DataTemplate DataType="appearance:AppearanceTileViewModel">
-          <Border Width="112" Padding="4" CornerRadius="3"
+          <Border Width="{Binding $parent[ListBox].((appearance:AppearanceGallerySectionViewModel)DataContext).TileSize}"
+                  Padding="4" CornerRadius="3" Loaded="OnTileLoaded"
                   Classes.current="{Binding IsCurrent}"
                   Background="{DynamicResource PanelRaisedBrush}"
                   BorderThickness="2" BorderBrush="{DynamicResource RuleBrush}">
@@ -43,7 +47,7 @@
               </Style>
             </Border.Styles>
             <StackPanel Spacing="3">
-              <Panel Height="82">
+              <Panel Height="{Binding $parent[ListBox].((appearance:AppearanceGallerySectionViewModel)DataContext).TileImageHeight}">
                 <!-- The letter stands in until the render lands, so the grid is never a field of
                      empty boxes while it fills. -->
                 <TextBlock Text="{Binding Glyph}" FontSize="26" Classes="dim"

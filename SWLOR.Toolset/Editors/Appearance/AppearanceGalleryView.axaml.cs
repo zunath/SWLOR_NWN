@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
 
@@ -13,6 +14,22 @@ namespace SWLOR.Toolset.Editors.Appearance
         public AppearanceGalleryView()
         {
             InitializeComponent();
+        }
+
+        /// <summary>
+        /// Requests a preview when the shared virtualizing panel realizes its cell. This is the same
+        /// lifecycle used by the palette, so opening an appearance table does not queue thousands of
+        /// model renders before the builder has scrolled to them.
+        /// </summary>
+        private void OnTileLoaded(object? sender, RoutedEventArgs e)
+        {
+            if (sender is not Control { DataContext: AppearanceTileViewModel tile } ||
+                DataContext is not AppearanceGallerySectionViewModel section)
+            {
+                return;
+            }
+
+            section.EnsurePreview(tile);
         }
 
         /// <summary>

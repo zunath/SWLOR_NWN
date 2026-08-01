@@ -130,6 +130,9 @@ namespace SWLOR.Toolset.Tests
             using var section = new AppearanceGallerySectionViewModel(
                 Options(3), thumbnails, () => "0", _ => true, noun: "appearance");
 
+            foreach (var tile in section.Tiles)
+                section.EnsurePreview(tile);
+
             source.AppearanceCalls.Should().Be(0,
                 "opening during game-data loading cannot render yet");
             section.Tiles.Should().OnlyContain(tile => tile.Preview == null);
@@ -141,6 +144,30 @@ namespace SWLOR.Toolset.Tests
             source.AppearanceCalls.Should().Be(3,
                 "only the currently published page is retried");
             section.Tiles.Should().OnlyContain(tile => tile.Preview != null);
+        }
+
+        [AvaloniaTest]
+        public void PublishedTilesWaitForViewportRealizationBeforeRendering()
+        {
+            var source = new AppearancePreviewSource { IsAvailable = true };
+            var thumbnails = new ThumbnailService(
+                new WorkspaceContext(_ => throw new NotSupportedException(), new OutputLogService()),
+                source);
+            using var section = new AppearanceGallerySectionViewModel(
+                Options(100), thumbnails, () => "0", _ => true, noun: "appearance");
+
+            source.AppearanceCalls.Should().Be(0,
+                "publishing a page must not render cells outside the virtualized viewport");
+
+            section.EnsurePreview(section.Tiles[0]);
+            section.EnsurePreview(section.Tiles[1]);
+            section.EnsurePreview(section.Tiles[0]);
+            DrainDispatcher();
+
+            source.AppearanceCalls.Should().Be(2,
+                "only realized cells render and repeated realization does not duplicate work");
+            section.Tiles.Take(2).Should().OnlyContain(tile => tile.Preview != null);
+            section.Tiles.Skip(2).Should().OnlyContain(tile => tile.Preview == null);
         }
 
         [Test]
@@ -185,6 +212,12 @@ namespace SWLOR.Toolset.Tests
             creatureView.Should().Contain("<TabItem Header=\"Equipment\"");
             creatureView.Should().Contain("SelectedItem=\"{Binding EquipmentSlots.SelectedSlot, Mode=TwoWay}\"",
                 "equipment reuses the merchant editor's focused rail/work-pane interaction");
+            var appearanceView = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset", "Editors", "Appearance", "AppearanceGalleryView.axaml"));
+            appearanceView.Should().Contain("<controls:VirtualizingWrapPanel />");
+            appearanceView.Should().Contain("Loaded=\"OnTileLoaded\"",
+                "appearance previews must follow the palette's viewport-driven loading pattern");
 
             Directory.Exists(Path.Combine(
                     CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Appearance"))

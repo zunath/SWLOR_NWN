@@ -24,7 +24,8 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         private static readonly IReadOnlyList<LimbDefinition> LimbDefinitions = new[]
         {
-            new LimbDefinition("Shoulder", "BodyPart_LShoul", "BodyPart_RShoul", "shol", "shor"),
+            new LimbDefinition(
+                "Shoulder", "BodyPart_LShoul", "BodyPart_RShoul", "shol", "shor", AllowsNone: true),
             new LimbDefinition("Bicep", "BodyPart_LBicep", "BodyPart_RBicep", "bicepl", "bicepr"),
             new LimbDefinition("Forearm", "BodyPart_LFArm", "BodyPart_RFArm", "forel", "forer"),
             new LimbDefinition("Hand", "BodyPart_LHand", "BodyPart_RHand", "handl", "handr"),
@@ -177,7 +178,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             Structure.Add(Single("Head", "Appearance_Head", "head"));
             Structure.Add(Single("Neck", "BodyPart_Neck", "neck"));
             Structure.Add(Single("Torso", "BodyPart_Torso", "chest"));
-            Structure.Add(Single("Belt", "BodyPart_Belt", "belt"));
+            Structure.Add(Single("Belt", "BodyPart_Belt", "belt", allowsNone: true));
             Structure.Add(Single("Pelvis", "BodyPart_Pelvis", "pelvis"));
 
             foreach (var definition in LimbDefinitions)
@@ -200,14 +201,18 @@ namespace SWLOR.Toolset.Editors.Creatures
             }
         }
 
-        private ItemFieldCellViewModel Single(string label, string field, string part) =>
+        private ItemFieldCellViewModel Single(
+            string label,
+            string field,
+            string part,
+            bool allowsNone = false) =>
             new(
                 label,
                 () => Read(field),
                 value => Write(label, value, field),
                 0,
                 byte.MaxValue,
-                options: Options(part));
+                options: Options(part, allowsNone));
 
         private BodyPartPairViewModel Pair(LimbDefinition definition) =>
             new(
@@ -221,8 +226,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 () => MirrorRightFromLeft,
                 0,
                 byte.MaxValue,
-                Options(definition.LeftPart),
-                Options(definition.RightPart));
+                Options(definition.LeftPart, definition.AllowsNone),
+                Options(definition.RightPart, definition.AllowsNone));
 
         private int Read(string field) =>
             (int)(_store.GetInteger(BehaviorFieldStorage.Field, field) ?? 0);
@@ -297,7 +302,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private bool StoredPairsMatch() => LimbDefinitions.All(definition =>
             Read(definition.LeftField) == Read(definition.RightField));
 
-        private IReadOnlyList<int> Options(string part)
+        private IReadOnlyList<int> Options(string part, bool allowsNone = false)
         {
             var appearance = CurrentAppearance;
             if (appearance == null || string.IsNullOrWhiteSpace(appearance.Race) ||
@@ -309,7 +314,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             var gender = (_store.GetInteger(BehaviorFieldStorage.Field, "Gender") ?? 0) == 1 ? 'f' : 'm';
             var phenotype = _store.GetInteger(BehaviorFieldStorage.Field, "Phenotype") ?? 0;
             var prefix = $"p{gender}{char.ToLowerInvariant(appearance.Race[0])}{phenotype}_{part}";
-            return _parts.NumbersForModelPrefix(prefix);
+            var numbers = _parts.NumbersForModelPrefix(prefix);
+            return allowsNone ? ArmorPartCatalog.WithNone(numbers) : numbers;
         }
 
         private sealed record LimbDefinition(
@@ -317,6 +323,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             string LeftField,
             string RightField,
             string LeftPart,
-            string RightPart);
+            string RightPart,
+            bool AllowsNone = false);
     }
 }

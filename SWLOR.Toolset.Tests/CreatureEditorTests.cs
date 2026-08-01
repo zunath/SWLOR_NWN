@@ -1446,6 +1446,80 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task CreatureBodyParts_AllowOptionalBeltsAndShouldersToBeRemoved()
+        {
+            var scratch = Path.Combine(
+                Path.GetTempPath(), "swlor-creature-parts-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                foreach (var resRef in new[]
+                         {
+                             "pfh0_belt001", "pfh0_chest001", "pfh0_shol001", "pfh0_shor001",
+                             "pfh0_bicepl001", "pfh0_bicepr001"
+                         })
+                {
+                    File.WriteAllBytes(Path.Combine(scratch, resRef + ".mdl"), Array.Empty<byte>());
+                }
+
+                var resources = new ResourceIndex(
+                    baseLayer: null,
+                    hakLayersInOrder: new[] { new ResourceIndex.HakLayer("fixture", scratch) });
+                var catalog = new ArmorPartCatalog(resources);
+                var path = Path.Combine(CorpusLocator.ModuleDirectory, "utc", "nw_blozeatiato.utc.json");
+                var document = JsonGffDocument.Load(path);
+                var store = new CreatureValueStore(document.Root);
+                using var editor = new CreatureEditorViewModel(
+                    document.Root,
+                    path,
+                    "nw_blozeatiato",
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    },
+                    null,
+                    null,
+                    resources,
+                    null,
+                    id => id == 10001
+                        ? new AppearanceRow(id, "DYNAMIC_CHISS", "Dynamic Chiss", "P", "H", null)
+                        : null,
+                    catalog);
+
+                await editor.BodyParts.EnsureLoadedAsync();
+
+                var belt = editor.BodyParts.Structure.Single(cell => cell.Label == "Belt");
+                belt.Options.Should().Equal(0, 1);
+                editor.BodyParts.Structure.Single(cell => cell.Label == "Torso")
+                    .Options.Should().Equal(new[] { 1 },
+                        "required body segments must not gain a removal choice");
+
+                var shoulder = editor.BodyParts.Limbs.Single(pair => pair.Label == "Shoulder");
+                shoulder.Left.Options.Should().Equal(0, 1);
+                shoulder.Right.Options.Should().Equal(0, 1);
+                editor.BodyParts.Limbs.Single(pair => pair.Label == "Bicep")
+                    .Left.Options.Should().Equal(new[] { 1 },
+                        "only optional limbs use the engine's no-model value");
+
+                belt.SelectedOption = 0;
+                store.GetInteger(BehaviorFieldStorage.Field, "BodyPart_Belt").Should().Be(0);
+                store.GetInteger(BehaviorFieldStorage.Field, "xBodyPart_Belt").Should().Be(0);
+
+                editor.BodyParts.MirrorRightFromLeft = true;
+                shoulder.Left.SelectedOption = 0;
+                store.GetInteger(BehaviorFieldStorage.Field, "BodyPart_LShoul").Should().Be(0);
+                store.GetInteger(BehaviorFieldStorage.Field, "BodyPart_RShoul").Should().Be(0);
+                store.GetInteger(BehaviorFieldStorage.Field, "xBodyPart_LShoul").Should().Be(0);
+                store.GetInteger(BehaviorFieldStorage.Field, "xBodyPart_RShoul").Should().Be(0);
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
         public void EquipmentSlots_UseBaseItemMasksAndLoadOneProgressivePickerAtATime()
         {
             var catalogLoads = 0;

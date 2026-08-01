@@ -871,13 +871,20 @@ def is_self_only_active(description):
     )
 
 
+def is_automatic_guarded_target_active(description):
+    lowered = description.lower()
+    return (
+        "only usable on your guarded target" in lowered or
+        "automatically applies to your guarded target" in lowered or
+        "automatically targets your current guarded ally" in lowered
+    )
+
+
 def is_friendly_target_active(description):
     lowered = description.lower()
     return (
         "target party ally becomes guarded" in lowered or
-        "only usable on your guarded target" in lowered or
-        "automatically applies to your guarded target" in lowered or
-        "automatically targets your current guarded ally" in lowered or
+        is_automatic_guarded_target_active(description) or
         "target ally becomes" in lowered or
         "target ally" in lowered and ("ward" in lowered or "guarded ally" in lowered)
     )
@@ -2733,7 +2740,8 @@ def add_missing_feats(rows):
             # ("in a line" / "in a cone") do pick a target, because the player chooses the direction.
             is_queued = row.get("CastingTime", "").strip().lower() == "queued"
             is_self_origin_area = is_area(row["Description"]) and not is_aimed_area(row)
-            no_manual_target = target_self or is_queued or is_self_origin_area
+            is_automatic_guarded_target = is_automatic_guarded_target_active(row["Description"])
+            no_manual_target = target_self or is_queued or is_self_origin_area or is_automatic_guarded_target
             hostile = (
                 row["Type"] == "Combat" and
                 not is_friendly_target_active(row["Description"]) and

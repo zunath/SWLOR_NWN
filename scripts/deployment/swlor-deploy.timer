@@ -1,0 +1,12 @@
+[Unit]
+Description=Poll for an owner-authorized SWLOR deployment request
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=3min
+RandomizedDelaySec=20
+Persistent=true
+Unit=swlor-deploy.service
+
+[Install]
+WantedBy=timers.target

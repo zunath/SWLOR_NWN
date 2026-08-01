@@ -184,7 +184,9 @@ public class FirstAidCombatUpgradeTests
         koltoMist.Should().Contain("private const float Rank1HealPercentPerTick = 1f;");
         koltoMist.Should().Contain("private const float Rank2HealPercentPerTick = 2f;");
         koltoMist.Should().Contain("VisualEffect.Vfx_Fnf_Gas_Explosion_Mind");
-        koltoMist.Should().Contain("VisualEffect.Vfx_Dur_Aura_Blue_Light");
+        koltoMist.Should().Contain("EffectAreaOfEffect(AreaOfEffect.FogMind)");
+        koltoMist.Should().NotContain("VisualEffect.Vfx_Dur_Aura_Blue_Light",
+            "Kolto Mist needs the persistent blue gas cloud used by the live-server Kolto Bomb, not a body aura");
         koltoMist.Should().Contain("GetIsObjectValid(activator)");
         koltoMist.Should().Contain("GetCurrentHitPoints(activator) <= 0");
         koltoMist.Should().Contain("GetIsObjectValid(GetAreaFromLocation(location))");

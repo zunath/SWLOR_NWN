@@ -1,9 +1,11 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -18,6 +20,19 @@ public class CrossSkillPerkInteractionSafetyTests
         staff.Should().Contain("StatType.StatusAppliedNextAttackWindowSeconds");
         staff.Should().NotContain("StatType.StatusAppliedNextSkillAbilitySkillType",
             "Charged Blows says next attack, not next Staff ability");
+
+        Stat.GetStatTypeAggregation(StatType.StatusAppliedRequiredCategory)
+            .Should().Be(StatTypeAggregation.BitwiseOr);
+        Stat.AggregateStatAdjustment(
+                StatType.StatusAppliedRequiredCategory,
+                (int)StatusEffectCategory.Control,
+                (int)StatusEffectCategory.Control)
+            .Should().Be((int)StatusEffectCategory.Control,
+                "owning Charged Blows and Skull Rattle must not turn two Control selectors into Bleeding");
+
+        var perkSource = Read(root, "SWLOR.Game.Server", "Service", "Perk.cs");
+        var getStatBonus = ExtractMethod(perkSource, "public static int GetStatBonus(uint creature, StatType stat)");
+        getStatBonus.Should().Contain("Stat.AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature))");
 
         var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
         var statusApplied = ExtractMethod(combat, "private static void ApplyStatusAppliedEffects(");

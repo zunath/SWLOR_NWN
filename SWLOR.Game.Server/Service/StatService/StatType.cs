@@ -4026,7 +4026,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory flags required for status-applied stat riders.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.BitwiseOr)]
         StatusAppliedRequiredCategory = 701,
 
         /// <summary>
@@ -5692,10 +5692,20 @@ namespace SWLOR.Game.Server.Service.StatService
     public class StatTypeAttribute : Attribute
     {
         public StatTypeCategory Category { get; }
+        public StatTypeAggregation Aggregation { get; }
 
-        public StatTypeAttribute(StatTypeCategory category)
+        public StatTypeAttribute(
+            StatTypeCategory category,
+            StatTypeAggregation aggregation = StatTypeAggregation.Additive)
         {
             Category = category;
+            Aggregation = aggregation;
         }
+    }
+
+    public enum StatTypeAggregation
+    {
+        Additive = 0,
+        BitwiseOr = 1
     }
 }

@@ -147,6 +147,14 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void ForceDisruption_DisablesForceAbilityActivation()
+    {
+        var disruption = new ForceDisruptionStatusEffect();
+
+        disruption.StatGroup.Stats[StatType.ForceAbilityActivationDisabled].Should().Be(1);
+    }
+
+    [Test]
     public void NPCAbilityScaling_DoesNotFallbackToUnrelatedResistancesForUnresistedDamageTypes()
     {
         var root = FindRepositoryRoot();

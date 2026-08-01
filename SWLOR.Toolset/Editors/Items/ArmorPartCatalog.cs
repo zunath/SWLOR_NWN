@@ -82,6 +82,19 @@ namespace SWLOR.Toolset.Editors.Items
                    Array.Empty<int>();
         }
 
+        /// <summary>
+        /// Adds the engine's zero-valued "no model" choice to a real model list. Both item armor
+        /// and optional creature body pieces use this representation when a part is removed.
+        /// </summary>
+        public static IReadOnlyList<int> WithNone(IReadOnlyList<int> numbers)
+        {
+            ArgumentNullException.ThrowIfNull(numbers);
+            if (numbers.Count == 0 || numbers[0] == 0)
+                return numbers;
+
+            return new[] { 0 }.Concat(numbers).ToList();
+        }
+
         private IReadOnlyDictionary<string, IReadOnlyList<int>> BuildIndex()
         {
             var found = new Dictionary<string, SortedSet<int>>(StringComparer.OrdinalIgnoreCase);

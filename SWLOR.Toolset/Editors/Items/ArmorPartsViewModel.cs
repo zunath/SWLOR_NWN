@@ -268,10 +268,7 @@ namespace SWLOR.Toolset.Editors.Items
         private IReadOnlyList<int> PartNumbers(string partType)
         {
             var numbers = _partModels?.Numbers(partType) ?? Array.Empty<int>();
-            if (numbers.Count == 0)
-                return numbers;
-
-            return numbers[0] == 0 ? numbers : new[] { 0 }.Concat(numbers).ToList();
+            return ArmorPartCatalog.WithNone(numbers);
         }
 
         private ItemDyeCellViewModel CreateDye(string label, string field, ArmorDyeSwatchService.DyeMaterial material) =>

@@ -113,7 +113,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="creatures:CreatureLootEntryViewModel">
-      <Border Padding="8,6">
+      <Border Padding="8,6" HorizontalAlignment="Left">
         <Grid ColumnDefinitions="26,Auto" ColumnSpacing="8">
           <TextBlock Text="{Binding Position}" Classes="mono" VerticalAlignment="Top"
                      HorizontalAlignment="Center" Margin="0,1,0,0" />
@@ -638,7 +638,7 @@
                   <ListBox.Styles>
                     <Style Selector="ListBoxItem">
                       <Setter Property="Padding" Value="0" />
-                      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                      <Setter Property="HorizontalContentAlignment" Value="Left" />
                       <Setter Property="VerticalContentAlignment" Value="Center" />
                     </Style>
                   </ListBox.Styles>

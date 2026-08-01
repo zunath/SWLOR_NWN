@@ -1165,6 +1165,12 @@ namespace SWLOR.Toolset.Tests
                 editor.Loot.AddCommand.Execute(null);
                 Dispatcher.UIThread.RunJobs();
                 var lootEntry = editor.Loot.Entries.Should().ContainSingle().Which;
+                await lootEntry.TablePicker.OpenSearchCommand.ExecuteAsync(null);
+                var longestTable = lootEntry.TablePicker.Choices
+                    .OrderByDescending(choice => choice.Display.Length)
+                    .First();
+                lootEntry.TablePicker.PickChoiceCommand.Execute(longestTable);
+                Dispatcher.UIThread.RunJobs();
                 var lootList = FindVisual<ListBox>(view, "CreatureLootEntries");
                 lootList.Should().NotBeNull();
                 lootList!.SelectedItem.Should().BeSameAs(lootEntry);
@@ -1175,6 +1181,14 @@ namespace SWLOR.Toolset.Tests
                 lootListItem.Should().NotBeNull();
                 lootListItem!.Bounds.Height.Should().BeLessThan(80,
                     "opening the loot-table picker must not stretch its summary row");
+                var lootScroll = lootList.GetVisualDescendants().OfType<ScrollViewer>().Single();
+                lootScroll.Extent.Width.Should().BeGreaterThan(lootScroll.Viewport.Width,
+                    "the longest loot-table name must contribute its natural width to the scroll extent");
+                var rightmostOffset = lootScroll.Extent.Width - lootScroll.Viewport.Width;
+                lootScroll.Offset = new Avalonia.Vector(lootScroll.Extent.Width, lootScroll.Offset.Y);
+                Dispatcher.UIThread.RunJobs();
+                lootScroll.Offset.X.Should().BeApproximately(rightmostOffset, 0.5,
+                    "the horizontal scrollbar must reach the actual end of the loot-table name");
                 var lootPicker = view.GetVisualDescendants().OfType<SearchableChoicePickerView>()
                     .SingleOrDefault(picker => ReferenceEquals(picker.DataContext, lootEntry.TablePicker));
                 lootPicker.Should().NotBeNull();

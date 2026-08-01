@@ -1,4 +1,5 @@
 using System.Text;
+using System.Runtime.ExceptionServices;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.TwoDA;
@@ -25,6 +26,33 @@ public class TwoDAReaderTests
         table.GetValue(1, "LABEL").Should().BeNull();
         table.GetValue(1, "NOTE").Should().BeEmpty();
         table.GetValue(100, "NOTE").Should().Be("fallback value");
+    }
+
+    [Test, NonParallelizable]
+    public void LegacyTextDetection_DoesNotThrowAFirstChanceDecoderException()
+    {
+        var bytes = Encoding.ASCII.GetBytes("2DA V2.0\n\nVALUE\n0 caf")
+            .Concat(new byte[] { 0xE9, (byte)'\n' })
+            .ToArray();
+        var decoderExceptions = 0;
+        EventHandler<FirstChanceExceptionEventArgs> observe = (_, args) =>
+        {
+            if (args.Exception is DecoderFallbackException)
+                decoderExceptions++;
+        };
+
+        AppDomain.CurrentDomain.FirstChanceException += observe;
+        try
+        {
+            TwoDAReader.Read(bytes).GetValue(0, "VALUE").Should().Be("café");
+        }
+        finally
+        {
+            AppDomain.CurrentDomain.FirstChanceException -= observe;
+        }
+
+        decoderExceptions.Should().Be(0,
+            "legacy game data is normal input and must not fill the debugger console with caught exceptions");
     }
 
     [Test]

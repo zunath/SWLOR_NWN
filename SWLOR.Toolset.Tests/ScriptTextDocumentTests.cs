@@ -1,4 +1,5 @@
 using System.Text;
+using System.Runtime.ExceptionServices;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Script;
@@ -152,6 +153,31 @@ namespace SWLOR.Toolset.Tests
 
             doc.EncodingKind.Should().Be(ScriptEncoding.Latin1);
             doc.ToBytes().Should().Equal(bytes);
+        }
+
+        [Test, NonParallelizable]
+        public void Latin1Detection_DoesNotThrowAFirstChanceDecoderException()
+        {
+            var decoderExceptions = 0;
+            EventHandler<FirstChanceExceptionEventArgs> observe = (_, args) =>
+            {
+                if (args.Exception is DecoderFallbackException)
+                    decoderExceptions++;
+            };
+
+            AppDomain.CurrentDomain.FirstChanceException += observe;
+            try
+            {
+                ScriptTextDocument.FromBytes([(byte)'/', (byte)'/', (byte)' ', 0x92])
+                    .EncodingKind.Should().Be(ScriptEncoding.Latin1);
+            }
+            finally
+            {
+                AppDomain.CurrentDomain.FirstChanceException -= observe;
+            }
+
+            decoderExceptions.Should().Be(0,
+                "legacy scripts are normal input and must not fill the debugger console with caught exceptions");
         }
 
         [Test]

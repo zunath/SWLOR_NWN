@@ -101,12 +101,10 @@ namespace SWLOR.Toolset.Editors.Placeables
                 thumbnails,
                 () => CurrentId.ToString(System.Globalization.CultureInfo.InvariantCulture),
                 Apply,
-                noun: "model")
-            {
+                noun: "model",
                 // 24,304 rows: the grid earns its density here in a way the door and creature
                 // tables, with hundreds each, do not.
-                TileSize = 92
-            };
+                tileSize: 92);
             Gallery.PropertyChanged += OnGalleryChanged;
 
             BeginLoading();

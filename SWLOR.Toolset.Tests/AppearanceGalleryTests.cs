@@ -1,4 +1,6 @@
 using Avalonia.Headless.NUnit;
+using Avalonia.Controls;
+using Avalonia.Logging;
 using Avalonia.Threading;
 using FluentAssertions;
 using NUnit.Framework;
@@ -118,6 +120,46 @@ namespace SWLOR.Toolset.Tests
             section.Tiles[0].Preview.Should().BeNull("no thumbnail service was supplied");
             section.Tiles[0].Glyph.Should().Be("A");
             section.Tiles[0].HasDetail.Should().BeTrue();
+        }
+
+        [AvaloniaTest, NonParallelizable]
+        public void VirtualizedTilesRecycleWithoutBindingErrors()
+        {
+            var previous = Logger.Sink;
+            var sink = new BindingLogSink();
+            Logger.Sink = sink;
+            using var section = new AppearanceGallerySectionViewModel(
+                Options(100), null, () => "0", _ => true, noun: "appearance", tileSize: 92);
+            var window = new Window
+            {
+                Width = 700,
+                Height = 500,
+                Content = new AppearanceGalleryView { DataContext = section }
+            };
+
+            try
+            {
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+
+                section.Tiles[0].TileSize.Should().Be(92);
+                section.Tiles[0].TileImageHeight.Should().BeApproximately(67.16, 0.001);
+
+                // Replacing the page recycles realized cells. Their sizing values must stay on the
+                // item instead of walking through the ListBox data context while it is being cleared.
+                section.SetOptions(Options(12));
+                Dispatcher.UIThread.RunJobs();
+                section.SetOptions(Options(100));
+                Dispatcher.UIThread.RunJobs();
+            }
+            finally
+            {
+                window.Close();
+                Dispatcher.UIThread.RunJobs();
+                Logger.Sink = previous;
+            }
+
+            sink.Errors.Should().BeEmpty();
         }
 
         [AvaloniaTest]
@@ -290,6 +332,28 @@ namespace SWLOR.Toolset.Tests
             }
 
             private static IconImage Image() => new(2, 2, new byte[2 * 2 * 4]);
+        }
+
+        private sealed class BindingLogSink : ILogSink
+        {
+            public List<string> Errors { get; } = [];
+
+            public bool IsEnabled(LogEventLevel level, string area) =>
+                level >= LogEventLevel.Warning && area == LogArea.Binding;
+
+            public void Log(
+                LogEventLevel level,
+                string area,
+                object? source,
+                string messageTemplate) => Errors.Add(messageTemplate);
+
+            public void Log(
+                LogEventLevel level,
+                string area,
+                object? source,
+                string messageTemplate,
+                params object?[] propertyValues) => Errors.Add(
+                $"{messageTemplate} :: {string.Join(", ", propertyValues.Select(value => value ?? "<null>"))}");
         }
     }
 }

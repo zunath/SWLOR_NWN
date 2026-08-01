@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Unicode;
 
 namespace SWLOR.Toolset.Domain.Script
 {
@@ -40,19 +41,19 @@ namespace SWLOR.Toolset.Domain.Script
     /// </para>
     /// <para>
     /// <b>Encoding is detected, not assumed.</b> The module's colors_inc.nss is not valid UTF-8:
-    /// it embeds raw high bytes directly inside string literals as NWScript colour codes. Those bytes
-    /// are data, not text.
-    /// This is the same trap PLAN.md records for GFF <c>void</c> fields ("all handling must be
-    /// byte-level, never through .NET strings"), and a strict-UTF-8 reader throws on them.
+    /// it embeds raw high bytes directly inside string literals as NWScript colour codes. Those
+    /// bytes are data, not text. This is the same trap PLAN.md records for GFF <c>void</c> fields
+    /// ("all handling must be byte-level, never through .NET strings").
     /// </para>
     /// <para>
-    /// So: a BOM means UTF-8; otherwise strict UTF-8 is attempted and <b>Latin-1 is the fallback</b>,
-    /// because it maps bytes 0x00-0xFF onto U+0000-U+00FF bijectively and therefore cannot lose a
-    /// byte. Windows-1252 - the game's own encoding - was rejected despite displaying legacy accented
-    /// text better: it leaves five byte values undefined, so it cannot promise a round trip, and the
-    /// high bytes actually present here are colour codes rather than letters. On save the encoder
-    /// throws rather than substituting, so a character that cannot be represented fails the save
-    /// loudly instead of silently corrupting the file.
+    /// So: a BOM means UTF-8; otherwise the bytes are validated without throwing and
+    /// <b>Latin-1 is the fallback</b>, because it maps bytes 0x00-0xFF onto U+0000-U+00FF
+    /// bijectively and therefore cannot lose a byte. Windows-1252 - the game's own encoding - was
+    /// rejected despite displaying legacy accented text better: it leaves five byte values
+    /// undefined, so it cannot promise a round trip, and the high bytes actually present here are
+    /// colour codes rather than letters. On save the encoder throws rather than substituting, so a
+    /// character that cannot be represented fails the save loudly instead of silently corrupting
+    /// the file.
     /// </para>
     /// </remarks>
     public sealed class ScriptTextDocument
@@ -97,19 +98,11 @@ namespace SWLOR.Toolset.Domain.Script
             var offset = bom ? 3 : 0;
             var count = bytes.Length - offset;
 
-            string raw;
-            ScriptEncoding encoding;
-            try
-            {
-                raw = StrictNoBom.GetString(bytes, offset, count);
-                encoding = ScriptEncoding.Utf8;
-            }
-            catch (DecoderFallbackException)
-            {
-                // Not UTF-8: a legacy file carrying raw colour-code bytes. Latin-1 keeps every byte.
-                raw = StrictLatin1.GetString(bytes, offset, count);
-                encoding = ScriptEncoding.Latin1;
-            }
+            var isUtf8 = Utf8.IsValid(bytes.AsSpan(offset, count));
+            var raw = isUtf8
+                ? StrictNoBom.GetString(bytes, offset, count)
+                : StrictLatin1.GetString(bytes, offset, count);
+            var encoding = isUtf8 ? ScriptEncoding.Utf8 : ScriptEncoding.Latin1;
 
             // A file with no line ending at all is CRLF, matching the corpus and NewScript below;
             // otherwise the first ending seen wins. Mixed-ending files are normalised to that first

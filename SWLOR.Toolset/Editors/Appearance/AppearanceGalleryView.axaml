@@ -36,7 +36,7 @@
       </ListBox.Styles>
       <ListBox.ItemTemplate>
         <DataTemplate DataType="appearance:AppearanceTileViewModel">
-          <Border Width="{Binding $parent[ListBox].((appearance:AppearanceGallerySectionViewModel)DataContext).TileSize}"
+          <Border Width="{Binding TileSize}"
                   Padding="4" CornerRadius="3" Loaded="OnTileLoaded"
                   Classes.current="{Binding IsCurrent}"
                   Background="{DynamicResource PanelRaisedBrush}"
@@ -47,7 +47,7 @@
               </Style>
             </Border.Styles>
             <StackPanel Spacing="3">
-              <Panel Height="{Binding $parent[ListBox].((appearance:AppearanceGallerySectionViewModel)DataContext).TileImageHeight}">
+              <Panel Height="{Binding TileImageHeight}">
                 <!-- The letter stands in until the render lands, so the grid is never a field of
                      empty boxes while it fills. -->
                 <TextBlock Text="{Binding Glyph}" FontSize="26" Classes="dim"

@@ -14,6 +14,15 @@ namespace SWLOR.Toolset.Editors.Appearance
 
         public bool HasDetail => !string.IsNullOrEmpty(Option.Detail);
 
+        /// <summary>
+        /// Tile edge in pixels. Kept on the item itself so a virtualized cell does not have to bind
+        /// through a ListBox whose data context is temporarily null while the cell is recycled.
+        /// </summary>
+        public double TileSize { get; }
+
+        /// <summary>Picture height inside this tile.</summary>
+        public double TileImageHeight => TileSize * 0.73;
+
         /// <summary>Shown until the render lands, so a grid is never a field of empty boxes.</summary>
         public string Glyph => Caption.Length > 0 ? Caption[..1].ToUpperInvariant() : "?";
 
@@ -30,9 +39,10 @@ namespace SWLOR.Toolset.Editors.Appearance
         [ObservableProperty]
         private bool _isCurrent;
 
-        public AppearanceTileViewModel(AppearanceOption option, bool isCurrent)
+        public AppearanceTileViewModel(AppearanceOption option, bool isCurrent, double tileSize)
         {
             Option = option ?? throw new ArgumentNullException(nameof(option));
+            TileSize = tileSize;
             _isCurrent = isCurrent;
         }
     }

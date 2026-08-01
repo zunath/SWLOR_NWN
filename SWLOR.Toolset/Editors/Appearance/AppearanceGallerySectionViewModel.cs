@@ -92,7 +92,7 @@ namespace SWLOR.Toolset.Editors.Appearance
         /// Tile edge in pixels. The placeable grid packs 24,000 models and wants them small; the
         /// door and creature grids have hundreds and can afford a picture worth judging.
         /// </summary>
-        public double TileSize { get; init; } = 112;
+        public double TileSize { get; }
 
         /// <summary>Picture height inside a tile, kept proportional to <see cref="TileSize"/>.</summary>
         public double TileImageHeight => TileSize * 0.73;
@@ -102,13 +102,15 @@ namespace SWLOR.Toolset.Editors.Appearance
             ThumbnailService? thumbnails,
             Func<string> currentKey,
             Func<AppearanceOption, bool> apply,
-            string noun = "model")
+            string noun = "model",
+            double tileSize = 112)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _thumbnails = thumbnails;
             _currentKey = currentKey ?? throw new ArgumentNullException(nameof(currentKey));
             _apply = apply ?? throw new ArgumentNullException(nameof(apply));
             _noun = noun;
+            TileSize = tileSize;
 
             Rebuild();
         }
@@ -269,7 +271,7 @@ namespace SWLOR.Toolset.Editors.Appearance
             for (var index = _published; index < end; index++)
             {
                 var option = _matches[index];
-                var tile = new AppearanceTileViewModel(option, option.Key == current);
+                var tile = new AppearanceTileViewModel(option, option.Key == current, TileSize);
                 Tiles.Add(tile);
                 ApplyCachedPreview(tile);
             }

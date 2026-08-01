@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Gff;
+using System.Runtime.ExceptionServices;
 using System.Text;
 
 namespace SWLOR.Toolset.Tests
@@ -16,6 +17,31 @@ namespace SWLOR.Toolset.Tests
 
             decoded.Should().Be("It’s");
             JsonStringCodec.Encode(decoded).Should().Equal(rawToken);
+        }
+
+        [Test, NonParallelizable]
+        public void LegacyEncodingDetection_DoesNotThrowAFirstChanceDecoderException()
+        {
+            var decoderExceptions = 0;
+            EventHandler<FirstChanceExceptionEventArgs> observe = (_, args) =>
+            {
+                if (args.Exception is DecoderFallbackException)
+                    decoderExceptions++;
+            };
+
+            AppDomain.CurrentDomain.FirstChanceException += observe;
+            try
+            {
+                JsonStringCodec.Decode([(byte)'"', (byte)'I', (byte)'t', 0x92, (byte)'s', (byte)'"'])
+                    .Should().Be("It’s");
+            }
+            finally
+            {
+                AppDomain.CurrentDomain.FirstChanceException -= observe;
+            }
+
+            decoderExceptions.Should().Be(0,
+                "legacy text is normal input and must not fill the debugger console with caught exceptions");
         }
 
         [Test]

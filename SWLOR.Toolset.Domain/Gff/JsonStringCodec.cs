@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Unicode;
 
 namespace SWLOR.Toolset.Domain.Gff
 {
@@ -106,17 +107,7 @@ namespace SWLOR.Toolset.Domain.Gff
         /// never change the verdict). Windows-1252 accepts any byte, so it is the fallback.
         /// </summary>
         public static bool IsUtf8Content(ReadOnlySpan<byte> contentBytes)
-        {
-            try
-            {
-                StrictUtf8.GetCharCount(contentBytes);
-                return true;
-            }
-            catch (DecoderFallbackException)
-            {
-                return false;
-            }
-        }
+            => Utf8.IsValid(contentBytes);
 
         private static Encoding DetectContentEncoding(ReadOnlySpan<byte> contentBytes) =>
             IsUtf8Content(contentBytes) ? StrictUtf8 : NwnEncoding;

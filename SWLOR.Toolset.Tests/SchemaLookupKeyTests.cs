@@ -81,8 +81,6 @@ namespace SWLOR.Toolset.Tests
                 (nameof(UtcSchema), "Phenotype", LookupKeys.Phenotype),
                 (nameof(UtcSchema), "SoundSetFile", LookupKeys.SoundSets),
                 (nameof(UtiSchema), "BaseItem", LookupKeys.BaseItems),
-                (nameof(UtdSchema), "GenericType_New", LookupKeys.GenericDoors),
-                (nameof(UtdSchema), "Appearance", LookupKeys.DoorTypes),
                 (nameof(UttSchema), "Type", LookupKeys.TriggerTypes)
             };
 
@@ -110,6 +108,20 @@ namespace SWLOR.Toolset.Tests
             UtpSchema.Build().AllFields
                 .Should().NotContain(field => field.FieldName == "Appearance",
                     "placeable appearance is edited by the model grid on the Appearance tab");
+        }
+
+        [Test]
+        public void UtdSchema_DoesNotDeclareAppearanceFields_BecauseTheDoorEditorHasACombinedModelGrid()
+        {
+            // Appearance = 0 is a control value meaning that GenericType_New owns the model. The
+            // dedicated door gallery understands and preserves that paired representation, while
+            // two independent schema dropdowns do not. Re-declaring either field here would make
+            // the pre-open validator reject ordinary doors before the gallery can show them.
+            UtdSchema.Build().AllFields
+                .Should().NotContain(
+                    field => field.FieldName == "Appearance" ||
+                             field.FieldName == "GenericType_New",
+                    "door appearance is edited by the combined model grid");
         }
     }
 }

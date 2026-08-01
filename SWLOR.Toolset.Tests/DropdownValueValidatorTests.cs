@@ -230,15 +230,39 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void RealCorpusDoor_WithAnUnresolvableGenericAppearanceRow_IsStillBlocked()
+        public void ReportedCorpusDoor_UsesTheCombinedGallery_NotIndependentDropdownValidation()
         {
-            // The mechanism the placeable case used to cover, on a type that still has a dropdown.
+            // Appearance = 0 means "use GenericType_New", not doortypes.2da row zero. Every one of
+            // the 129 checked-in door blueprints uses this ordinary generic-door representation.
+            // The dedicated gallery understands the pair, preserves an unknown stored choice, and
+            // marks it explicitly, so the generic dropdown guard must not inspect either half.
+            var document = JsonGffDocument.Load(Path.Combine(
+                CorpusLocator.ModuleDirectory,
+                "utd",
+                "_mdrn_dt_alien1.utd.json"));
             var unresolved = DropdownValueValidator.FindUnresolved(
-                Document(("GenericType_New", 9999)),
+                document,
                 UtdSchema.Build(),
-                key => key == "genericdoors" ? new long[] { 0, 1, 2 } : Array.Empty<long>());
+                key => key == LookupKeys.DoorTypes
+                    ? new long[] { 1, 2, 3 }
+                    : key == LookupKeys.GenericDoors
+                        ? new long[] { 124 }
+                        : key == LookupKeys.Factions
+                            ? new long[] { 1 }
+                            : Array.Empty<long>());
 
-            unresolved.Should().ContainSingle().Which.Value.Should().Be(9999);
+            unresolved.Should().BeEmpty();
+        }
+
+        [Test]
+        public void DoorDropdownsOutsideTheAppearanceGallery_AreStillValidated()
+        {
+            var unresolved = DropdownValueValidator.FindUnresolved(
+                Document(("Faction", 9999)),
+                UtdSchema.Build(),
+                key => key == LookupKeys.Factions ? new long[] { 0, 1, 2 } : Array.Empty<long>());
+
+            unresolved.Should().ContainSingle().Which.FieldName.Should().Be("Faction");
         }
     }
 }

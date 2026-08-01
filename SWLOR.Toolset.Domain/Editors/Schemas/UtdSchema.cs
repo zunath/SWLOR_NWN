@@ -5,9 +5,12 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
 {
     /// <summary>
     /// Editor schema for door blueprints (.utd). Field names and GFF types verified against the
-    /// module corpus (e.g. Module\utd\_mdrn_dt_alien1.utd.json). GenericType_New indexes
-    /// genericdoors.2da; when Appearance is non-zero it selects a specific model from
-    /// doortypes.2da instead.
+    /// module corpus (e.g. Module\utd\_mdrn_dt_alien1.utd.json).
+    ///
+    /// Door appearance is deliberately absent from this generic schema. The dedicated door editor
+    /// owns Appearance and GenericType_New as one combined model gallery: Appearance = 0 disables
+    /// the doortypes lookup and selects GenericType_New instead. Declaring those paired fields as
+    /// independent dropdowns makes the generic lookup guard reject every ordinary generic door.
     /// </summary>
     public static class UtdSchema
     {
@@ -31,11 +34,9 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                     },
                     new FieldGroup
                     {
-                        Title = "Appearance & Behavior",
+                        Title = "Behavior",
                         Fields = new[]
                         {
-                            new FieldDescriptor { Label = "Generic Appearance", FieldName = "GenericType_New", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Dword, LookupKey = LookupKeys.GenericDoors, Description = "Row index into genericdoors.2da when no specific model is selected." },
-                            new FieldDescriptor { Label = "Specific Model", FieldName = "Appearance", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Dword, LookupKey = LookupKeys.DoorTypes, Description = "A non-zero row index into doortypes.2da overrides the generic appearance." },
                             new FieldDescriptor { Label = "Faction", FieldName = "Faction", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Dword, LookupKey = LookupKeys.Factions }
                         }
                     },

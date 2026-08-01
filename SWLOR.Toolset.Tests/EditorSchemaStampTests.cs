@@ -160,7 +160,7 @@ namespace SWLOR.Toolset.Tests
 
             SchemaFieldAccessor.GetText(document, byName["Tag"]).Should().Be("_mdrn_dt_alien1");
             SchemaFieldAccessor.GetText(document, byName["LocName"]).Should().Be("Alien Door 1");
-            SchemaFieldAccessor.GetInteger(document, byName["GenericType_New"]).Should().Be(124);
+            SchemaFieldAccessor.GetInteger(document, byName["Faction"]).Should().Be(1);
         }
 
         [Test]

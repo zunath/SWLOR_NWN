@@ -98,6 +98,48 @@ public class ConversationArchitectureTests
             "every authored conversation must have an explicit runtime path");
     }
 
+    [Test]
+    public void EveryModuleReferenceToAMigratedConversation_RoutesDirectlyToNui()
+    {
+        var root = FindRepositoryRoot().FullName;
+        var graphDirectory = Path.Combine(root, "SWLOR.Game.Server", "ConversationData");
+        var graphIds = Directory.EnumerateFiles(graphDirectory, "*.conversation.json")
+            .Select(path => Path.GetFileName(path)[..^".conversation.json".Length])
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var errors = new List<string>();
+
+        foreach (var directoryName in new[] { "git", "utc", "utp", "utd" })
+        {
+            var directory = Path.Combine(root, "Module", directoryName);
+            foreach (var path in Directory.EnumerateFiles(directory, "*.json", SearchOption.TopDirectoryOnly))
+            {
+                var document = JObject.Parse(File.ReadAllText(path));
+                foreach (var resource in document.DescendantsAndSelf().OfType<JObject>())
+                {
+                    var conversationId = resource["Conversation"]?["value"]?.Value<string>();
+                    if (string.IsNullOrWhiteSpace(conversationId) || !graphIds.Contains(conversationId))
+                        continue;
+
+                    var routes = new[] { "ScriptDialogue", "OnUsed", "OnFailToOpen" }
+                        .Select(field => (Field: field, Script: resource[field]?["value"]?.Value<string>()))
+                        .Where(route => route.Script != null)
+                        .ToArray();
+                    if (routes.Length != 1 ||
+                        !routes[0].Script!.Equals("dialog_start", StringComparison.OrdinalIgnoreCase))
+                    {
+                        errors.Add($"{Path.GetRelativePath(root, path)}: '{conversationId}' is routed by " +
+                                   (routes.Length == 0
+                                       ? "no supported interaction event"
+                                       : string.Join(", ", routes.Select(route => $"{route.Field}='{route.Script}'"))));
+                    }
+                }
+            }
+        }
+
+        errors.Should().BeEmpty(
+            "migrated conversations must bypass NWN's native dialogue window at the module-resource boundary");
+    }
+
     private static bool IsGeneratedShell(string fileName)
     {
         var match = Regex.Match(fileName, @"^dialog(?<number>\d+)\.dlg\.json$", RegexOptions.IgnoreCase);

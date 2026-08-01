@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static class Conversation
     {
+        private const string NuiConversationHandledLocal = "SWLOR_NUI_CONVO";
         private static readonly Dictionary<string, ConversationGraph> Graphs = new();
         public static ConversationRuntime Runtime { get; } = new();
 
@@ -175,7 +176,10 @@ namespace SWLOR.Game.Server.Service
             if (!TryStartAssigned(player, OBJECT_SELF))
                 return;
 
-            EventsPlugin.SkipEvent();
+            // This handler is invoked by nw_c2_default4 through ExecuteScript, not by a
+            // cancellable NWNX event. Signal the caller explicitly so it does not continue into
+            // BeginConversation after the NUI window has opened.
+            SetLocalInt(OBJECT_SELF, NuiConversationHandledLocal, 1);
         }
 
         private static void MakeCreatureConversationPrivate(uint creature)

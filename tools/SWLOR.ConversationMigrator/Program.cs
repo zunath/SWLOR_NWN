@@ -75,12 +75,14 @@ var legacyExceptions = report
 var exceptionPath = Path.Combine(outputDirectory, "legacy-exceptions.json");
 File.WriteAllText(exceptionPath, JsonConvert.SerializeObject(legacyExceptions, Formatting.Indented));
 
+var convertedIds = report
+    .Where(entry => entry.Status == "Converted")
+    .Select(entry => entry.ConversationId)
+    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+var routing = ModuleConversationRouter.RouteRepository(repositoryRoot, convertedIds);
+
 if (overwrite)
 {
-    var convertedIds = report
-        .Where(entry => entry.Status == "Converted")
-        .Select(entry => entry.ConversationId)
-        .ToHashSet(StringComparer.OrdinalIgnoreCase);
     foreach (var graphPath in Directory.GetFiles(outputDirectory, "*.conversation.json"))
     {
         var graphId = Path.GetFileName(graphPath)[..^".conversation.json".Length];
@@ -97,10 +99,15 @@ Console.WriteLine($"Converted: {converted}");
 Console.WriteLine($"Legacy exceptions: {exceptions}");
 Console.WriteLine($"Conversion failures: {failed}");
 Console.WriteLine($"Generated shells skipped: {shells}");
+Console.WriteLine($"Module conversation references found: {routing.ReferencesFound}");
+Console.WriteLine($"Module conversation references routed: {routing.ReferencesUpdated}");
+Console.WriteLine($"Module conversation references already routed: {routing.ReferencesAlreadyRouted}");
+foreach (var issue in routing.Issues)
+    Console.WriteLine($"Routing error: {issue.FilePath} ({issue.ConversationId}): {issue.Message}");
 Console.WriteLine($"Report: {reportPath}");
 Console.WriteLine($"Legacy exceptions: {exceptionPath}");
 
-return failed == 0 ? 0 : 1;
+return failed == 0 && routing.Issues.Count == 0 ? 0 : 1;
 
 static string FindRepositoryRoot(string startingPath)
 {

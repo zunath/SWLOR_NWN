@@ -14,7 +14,13 @@
 
 void main()
 {
+    DeleteLocalInt(OBJECT_SELF, "SWLOR_NUI_CONVO");
     ExecuteScript("crea_convo_bef", OBJECT_SELF);
+    if (GetLocalInt(OBJECT_SELF, "SWLOR_NUI_CONVO"))
+    {
+        DeleteLocalInt(OBJECT_SELF, "SWLOR_NUI_CONVO");
+        return;
+    }
 
     // * if petrified, jump out
     if (GetHasEffect(EFFECT_TYPE_PETRIFY, OBJECT_SELF) == TRUE)

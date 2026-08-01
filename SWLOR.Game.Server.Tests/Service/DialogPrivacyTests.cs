@@ -29,6 +29,8 @@ public class DialogPrivacyTests
 
         scriptNames.Should().Contain("public const string OnCreatureConversationBefore = \"crea_convo_bef\";");
         defaultConversationScript.Should().Contain("ExecuteScript(\"crea_convo_bef\", OBJECT_SELF);");
+        defaultConversationScript.Should().Contain("DeleteLocalInt(OBJECT_SELF, \"SWLOR_NUI_CONVO\");\n    ExecuteScript(\"crea_convo_bef\", OBJECT_SELF);");
+        defaultConversationScript.Should().Contain("if (GetLocalInt(OBJECT_SELF, \"SWLOR_NUI_CONVO\"))");
         defaultConversationScript.IndexOf("ExecuteScript(\"crea_convo_bef\", OBJECT_SELF);", StringComparison.Ordinal)
             .Should()
             .BeLessThan(defaultConversationScript.IndexOf("BeginConversation();", StringComparison.Ordinal));
@@ -37,6 +39,8 @@ public class DialogPrivacyTests
         startAssigned.IndexOf("MakeCreatureConversationPrivate(OBJECT_SELF);", StringComparison.Ordinal)
             .Should()
             .BeLessThan(startAssigned.IndexOf("TryStartAssigned(player, OBJECT_SELF)", StringComparison.Ordinal));
+        startAssigned.Should().Contain("SetLocalInt(OBJECT_SELF, NuiConversationHandledLocal, 1);");
+        startAssigned.Should().NotContain("EventsPlugin.SkipEvent();");
 
         makeCreatureConversationPrivate.Should().Contain("GetIsPC(creature)");
         makeCreatureConversationPrivate.Should().Contain("GetIsDM(creature)");

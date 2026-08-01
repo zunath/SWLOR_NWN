@@ -146,7 +146,7 @@ public sealed class NuiConversationEditorViewRenderTests
     }
 
     [AvaloniaTest]
-    public void TreeUsesTheFullAuthoringWidthAboveTheSelectedNodeEditor()
+    public void TreeUsesACompactFullWidthAreaAboveTheSelectedNodeEditor()
     {
         var viewModel = OpenEditor();
         var view = new NuiConversationEditorView { DataContext = viewModel };
@@ -168,6 +168,10 @@ public sealed class NuiConversationEditorViewRenderTests
                 "the tree and inspector occupy separate full-width rows instead of cramped columns");
             treePanel.Bounds.Bottom.Should().BeLessThanOrEqualTo(selectedPanel.Bounds.Top,
                 "the selected-node controls sit below the tree");
+            treePanel.Bounds.Height.Should().BeApproximately(270, 0.1,
+                "the tree should stay compact and leave most of the Edit tab for the selected node");
+            selectedPanel.Bounds.Height.Should().BeGreaterThan(treePanel.Bounds.Height,
+                "the selected-node editor is the primary authoring surface");
             ScrollViewer.GetHorizontalScrollBarVisibility(tree!).Should().Be(ScrollBarVisibility.Auto);
             ScrollViewer.GetVerticalScrollBarVisibility(tree).Should().Be(ScrollBarVisibility.Auto);
 

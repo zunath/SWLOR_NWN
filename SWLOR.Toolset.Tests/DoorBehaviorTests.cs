@@ -233,17 +233,16 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
-        /// The door document's save path always writes back to its original file and never renames
-        /// it, so an edited ResRef here would leave the blueprint's on-disk identity disagreeing with
-        /// its filename - the same reason the generic door schema (UtdSchema) keeps this field
-        /// read-only.
+        /// ResRef is editable because rename-on-save owns the blueprint file, category membership,
+        /// and every placed instance as one transaction.
         /// </summary>
         [Test]
-        public void TheResRefRowIsReadOnly()
+        public void TheResRefRowSupportsSafeRenameOnSave()
         {
             var resRef = DoorEditorLayout.Basic.Single(row => row.Name == "TemplateResRef");
             resRef.Label.Should().Be("ResRef");
-            resRef.IsReadOnly.Should().BeTrue();
+            resRef.IsReadOnly.Should().BeFalse();
+            resRef.IsRequired.Should().BeTrue();
         }
 
         [Test]

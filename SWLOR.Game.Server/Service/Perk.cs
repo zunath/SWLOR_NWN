@@ -659,7 +659,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var statBonus in statBonusGroup.PerkBonuses)
                 {
-                    bonus += statBonus.Calculate(creature);
+                    bonus = Stat.AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature));
                 }
 
                 if (!statBonusGroup.LevelBonuses.TryGetValue(level, out var levelBonuses))
@@ -667,7 +667,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var statBonus in levelBonuses)
                 {
-                    bonus += statBonus.Calculate(creature);
+                    bonus = Stat.AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature));
                 }
             }
 

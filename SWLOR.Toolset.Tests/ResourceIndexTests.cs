@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.GameData.Resources;
+using System.Text;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -134,6 +135,194 @@ namespace SWLOR.Toolset.Tests
                 var identity = new ResourceIdentity("onlyhere", ResourceIdentity.TypeFromExtension("2da"));
                 index.TryLookup(identity, out var handle).Should().BeTrue();
                 handle.Provenance.LayerName.Should().Be("layer_a");
+            }
+            finally
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
+        public void HakArchiveCatalog_ReadsAnIndexedResourceFromPackedHak()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempRoot);
+            var hakPath = Path.Combine(tempRoot, "fixture.hak");
+            var expected = Encoding.UTF8.GetBytes("packed resource");
+
+            try
+            {
+                WriteSingleResourceHak(hakPath, "packed", "uti", expected);
+
+                var catalog = HakArchiveCatalog.Open(hakPath);
+                var identity = ResourceIdentity.FromFileName("packed.uti");
+
+                catalog.ResourceCount.Should().Be(1);
+                catalog.TryGetBytes(identity, out var bytes).Should().BeTrue();
+                bytes.Should().Equal(expected);
+            }
+            finally
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
+        public async Task ReloadHakLayersAsync_AtomicallyReplacesTheActiveModuleStack()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            var firstDirectory = Path.Combine(tempRoot, "first");
+            var secondDirectory = Path.Combine(tempRoot, "second");
+            Directory.CreateDirectory(firstDirectory);
+            Directory.CreateDirectory(secondDirectory);
+            File.WriteAllText(Path.Combine(firstDirectory, "old.uti"), "old");
+            File.WriteAllText(Path.Combine(secondDirectory, "new.uti"), "new");
+
+            try
+            {
+                var index = new ResourceIndex(
+                    baseLayer: null,
+                    hakLayersInOrder: new[] { new ResourceIndex.HakLayer("first", firstDirectory) });
+                index.EnsureInitialized();
+                var reloads = 0;
+                index.ResourcesReloaded += () => reloads++;
+
+                await index.ReloadHakLayersAsync(
+                    new[] { new ResourceIndex.HakLayer("second", secondDirectory) });
+
+                index.TryLookup(ResourceIdentity.FromFileName("old.uti"), out _).Should().BeFalse();
+                index.TryLookup(ResourceIdentity.FromFileName("new.uti"), out var replacement).Should().BeTrue();
+                Encoding.UTF8.GetString(replacement.GetBytes()).Should().Be("new");
+                index.HakLayers.Select(layer => layer.Name).Should().Equal("second");
+                reloads.Should().Be(1);
+            }
+            finally
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
+        public async Task ReloadHakLayersAsync_WhenStackIsUnchanged_DoesNotRescanOrInvalidateConsumers()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempRoot);
+            File.WriteAllText(Path.Combine(tempRoot, "stable.uti"), "stable");
+
+            try
+            {
+                var layers = new[] { new ResourceIndex.HakLayer("fixture", tempRoot) };
+                var index = new ResourceIndex(baseLayer: null, hakLayersInOrder: layers);
+                index.EnsureInitialized();
+                var reloads = 0;
+                index.ResourcesReloaded += () => reloads++;
+
+                await index.ReloadHakLayersAsync(layers, rescanWhenUnchanged: false);
+
+                reloads.Should().Be(0,
+                    "confirming the module.ifo stack at startup must not invalidate every derived cache");
+                index.TryLookup(ResourceIdentity.FromFileName("stable.uti"), out _).Should().BeTrue();
+            }
+            finally
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
+        public async Task ReloadHakLayersAsync_ExplicitReloadRescansAnArchiveRebuiltAtTheSamePath()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempRoot);
+            var hakPath = Path.Combine(tempRoot, "rebuilt.hak");
+            var layers = new[] { new ResourceIndex.HakLayer("rebuilt", hakPath) };
+
+            try
+            {
+                WriteSingleResourceHak(hakPath, "before", "uti", Encoding.UTF8.GetBytes("before"));
+                var index = new ResourceIndex(baseLayer: null, hakLayersInOrder: layers);
+                index.EnsureInitialized();
+                index.TryLookup(ResourceIdentity.FromFileName("before.uti"), out _).Should().BeTrue();
+
+                WriteSingleResourceHak(hakPath, "after", "uti", Encoding.UTF8.GetBytes("after"));
+                await index.ReloadHakLayersAsync(layers);
+
+                index.TryLookup(ResourceIdentity.FromFileName("before.uti"), out _).Should().BeFalse();
+                index.TryLookup(ResourceIdentity.FromFileName("after.uti"), out var replacement).Should().BeTrue();
+                Encoding.UTF8.GetString(replacement.GetBytes()).Should().Be("after");
+            }
+            finally
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
+        public async Task ReloadHakLayersAsync_DoesNotSynchronouslyBlockOnColdInitialization()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempRoot);
+            var configPath = Path.Combine(tempRoot, "hakbuilder.json");
+            File.WriteAllText(configPath, """{"HakList":[]}""");
+            using var factoryStarted = new ManualResetEventSlim();
+            using var releaseFactory = new ManualResetEventSlim();
+
+            try
+            {
+                var index = ResourceIndex.FromHakBuilderConfigDeferred(
+                    configPath,
+                    tempRoot,
+                    () =>
+                    {
+                        factoryStarted.Set();
+                        releaseFactory.Wait();
+                        return null;
+                    });
+                factoryStarted.Wait(TimeSpan.FromSeconds(2)).Should().BeTrue();
+
+                // StartNew deliberately does not unwrap the returned Task. Its outer task completes
+                // only when ReloadHakLayersAsync returns control to its caller at the first await.
+                var invocation = Task.Factory.StartNew(
+                    () => index.ReloadHakLayersAsync(Array.Empty<ResourceIndex.HakLayer>()));
+                var returned = await Task.WhenAny(invocation, Task.Delay(TimeSpan.FromSeconds(2)));
+
+                returned.Should().BeSameAs(invocation,
+                    "workspace startup must not synchronously wait for the cold resource scan");
+                releaseFactory.Set();
+                await await invocation;
+            }
+            finally
+            {
+                releaseFactory.Set();
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
+        public void FindHakConflicts_ReportsEveryProvidingLayerInPrecedenceOrder()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            var firstDirectory = Path.Combine(tempRoot, "first");
+            var secondDirectory = Path.Combine(tempRoot, "second");
+            Directory.CreateDirectory(firstDirectory);
+            Directory.CreateDirectory(secondDirectory);
+            File.WriteAllText(Path.Combine(firstDirectory, "duplicate.2da"), "first");
+            File.WriteAllText(Path.Combine(secondDirectory, "duplicate.2da"), "second");
+            File.WriteAllText(Path.Combine(secondDirectory, "unique.2da"), "unique");
+
+            try
+            {
+                var index = new ResourceIndex(
+                    baseLayer: null,
+                    hakLayersInOrder: new[]
+                    {
+                        new ResourceIndex.HakLayer("first", firstDirectory),
+                        new ResourceIndex.HakLayer("second", secondDirectory)
+                    });
+
+                var conflict = index.FindHakConflicts().Should().ContainSingle().Subject;
+                conflict.Resource.Should().Be(ResourceIdentity.FromFileName("duplicate.2da"));
+                conflict.Layers.Should().Equal("first", "second");
             }
             finally
             {
@@ -322,6 +511,42 @@ namespace SWLOR.Toolset.Tests
             var identity = ResourceIdentity.FromFileName("c_barract.mtr");
             identity.ResRef.Should().Be("c_barract");
             identity.ResourceType.Should().Be(2072);
+        }
+
+        private static void WriteSingleResourceHak(
+            string path,
+            string resRef,
+            string extension,
+            byte[] payload)
+        {
+            const uint keyOffset = 160;
+            const uint resourceOffset = keyOffset + 24;
+            const uint payloadOffset = resourceOffset + 8;
+
+            using var stream = new MemoryStream();
+            using var writer = new BinaryWriter(stream, Encoding.ASCII, leaveOpen: true);
+            writer.Write(Encoding.ASCII.GetBytes("HAK "));
+            writer.Write(Encoding.ASCII.GetBytes("V1.0"));
+            writer.Write(0u); // localized string count
+            writer.Write(0u); // localized string byte size
+            writer.Write(1u); // entry count
+            writer.Write(0u); // localized string offset
+            writer.Write(keyOffset);
+            writer.Write(resourceOffset);
+            while (stream.Position < keyOffset)
+                writer.Write((byte)0);
+
+            var resRefBytes = new byte[16];
+            Encoding.ASCII.GetBytes(resRef, resRefBytes);
+            writer.Write(resRefBytes);
+            writer.Write(0u); // resource id
+            writer.Write(ResourceIdentity.TypeFromExtension(extension));
+            writer.Write((ushort)0);
+            writer.Write(payloadOffset);
+            writer.Write((uint)payload.Length);
+            writer.Write(payload);
+
+            File.WriteAllBytes(path, stream.ToArray());
         }
     }
 }

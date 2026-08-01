@@ -1,7 +1,11 @@
 using System.Text;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using Avalonia.Logging;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using FluentAssertions;
@@ -9,12 +13,14 @@ using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Doors;
+using SWLOR.Toolset.Domain.Editors.Merchants;
 using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Doors;
+using SWLOR.Toolset.Editors.Merchants;
 using SWLOR.Toolset.Editors.Sounds;
 using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Editors.Waypoints;
@@ -137,6 +143,84 @@ namespace SWLOR.Toolset.Tests
             sink.Errors.Should().BeEmpty();
         }
 
+        [AvaloniaTest]
+        public void LoadedPopupArtworkDoesNotDrawItsFallbackTextBehindTransparentPixels()
+        {
+            var row = PictureRow(400);
+            row.Choice = row.Choices[0];
+            using var preview = new WriteableBitmap(
+                new PixelSize(1, 1),
+                new Vector(96, 96),
+                PixelFormat.Bgra8888,
+                AlphaFormat.Unpremul);
+            row.SelectedPreview = preview;
+
+            var view = new BehaviorRowView { DataContext = row };
+            var window = new Window { Width = 900, Height = 700, Content = view };
+
+            try
+            {
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+
+                var selectedName = view.GetVisualDescendants()
+                    .OfType<TextBlock>()
+                    .Where(block => block.Text == row.SelectedChoiceDisplay)
+                    .ToList();
+
+                selectedName.Should().HaveCount(2,
+                    "the popup picker has one fallback inside the preview and one caption below it");
+                selectedName.Should().ContainSingle(block => block.IsVisible,
+                    "the fallback must disappear once artwork is loaded so transparent pixels cannot reveal text");
+            }
+            finally
+            {
+                window.Close();
+                Dispatcher.UIThread.RunJobs();
+            }
+        }
+
+        [AvaloniaTest]
+        public void SearchableRowsRealizeOnlyTheVisiblePartOfTheirFirstPage()
+        {
+            var previous = Logger.Sink;
+            var sink = new CountingSink();
+            Logger.Sink = sink;
+            var row = new WaypointRowViewModel(
+                new BehaviorFieldDefinition
+                {
+                    Label = "Dialog", Name = "Conversation", Kind = BehaviorFieldKind.Choice,
+                    FieldType = Domain.Gff.GffFieldType.ResRef, IsSearchable = true
+                },
+                new BehaviorValueStore(Struct("UTW ")),
+                Accept,
+                Enumerable.Range(0, 500)
+                    .Select(index => new BehaviorChoice($"dlg_{index}", $"Dialog {index}"))
+                    .ToList());
+            row.OpenSearchCommand.Execute(null);
+            var view = new BehaviorRowView { DataContext = row };
+            var window = new Window { Width = 800, Height = 400, Content = view };
+
+            try
+            {
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+
+                row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
+                view.GetVisualDescendants().OfType<ListBoxItem>().Should().HaveCountLessThan(
+                    row.FilteredChoices.Count,
+                    "the list must virtualize its page instead of constructing every result control");
+            }
+            finally
+            {
+                window.Close();
+                Dispatcher.UIThread.RunJobs();
+                Logger.Sink = previous;
+            }
+
+            sink.Errors.Should().BeEmpty();
+        }
+
         private static WaypointRowViewModel PictureRow(int count) =>
             new(
                 new BehaviorFieldDefinition
@@ -150,7 +234,15 @@ namespace SWLOR.Toolset.Tests
                 Accept,
                 Enumerable.Range(1, count)
                     .Select(id => new BehaviorChoice(
-                        id, $"marker {id}", modelResRef: $"gi_waypoint{id:00}"))
+                        id, $"marker {id}", modelResRef: $"gi_waypoint{id:00}")
+                    {
+                        GalleryFacets =
+                        [
+                            new BehaviorChoiceFacet(
+                                "group", "Group", id % 2 == 0 ? "even" : "odd",
+                                id % 2 == 0 ? "Even" : "Odd")
+                        ]
+                    })
                     .ToList());
 
         private static IEnumerable<Control> BuildViews()
@@ -183,6 +275,15 @@ namespace SWLOR.Toolset.Tests
             var sound = new SoundEditorViewModel(
                 Struct("UTS "), "snd_test", isInstance: false, Accept);
             yield return new SoundEditorView { DataContext = sound };
+
+            var merchant = new MerchantEditorViewModel(
+                Struct("UTM "),
+                "store_test",
+                Accept,
+                key => key == MerchantChoiceKeys.PaletteCategories
+                    ? new[] { new BehaviorChoice(5, "Merchants") }
+                    : Array.Empty<BehaviorChoice>());
+            yield return new MerchantEditorView { DataContext = merchant };
 
             yield return new BehaviorEditorHeader
             {

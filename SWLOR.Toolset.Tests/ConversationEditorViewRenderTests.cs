@@ -78,6 +78,49 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void HeavySurfacesAreDeferredUntilTheyAreUsed()
+        {
+            var viewModel = OpenEditor();
+            var view = new ConversationEditorView();
+            var window = new Window { Content = view, Width = 1200, Height = 800 };
+            window.Show();
+
+            try
+            {
+                view.GetVisualDescendants().Should().HaveCountLessThan(120,
+                    "opening the shell must not construct the inactive editor trees");
+
+                view.DataContext = viewModel;
+                window.UpdateLayout();
+
+                TextOnScreen().Should().NotContain("TEST AS",
+                    "the separate Preview surface should stay unrealized while writing");
+                TextOnScreen().Should().NotContain("Merchant dialogue",
+                    "an inactive behavior should not construct its editor");
+
+                var tabs = view.GetVisualDescendants().OfType<TabControl>().Single();
+                tabs.SelectedIndex = 1;
+                window.UpdateLayout();
+                TextOnScreen().Should().Contain("TEST AS");
+
+                tabs.SelectedIndex = 0;
+                viewModel.SelectedBehavior = viewModel.BehaviorOptions.Single(option =>
+                    option.Kind == ConversationBehaviorKind.Merchant);
+                window.UpdateLayout();
+                TextOnScreen().Should().Contain("Merchant dialogue");
+            }
+            finally
+            {
+                window.Close();
+            }
+
+            List<string> TextOnScreen() => view.GetVisualDescendants()
+                .OfType<TextBlock>()
+                .Select(block => block.Text ?? string.Empty)
+                .ToList();
+        }
+
+        [AvaloniaTest]
         public void TheConversationAndItsRailReachTheScreen()
         {
             var viewModel = OpenEditor();
@@ -93,9 +136,12 @@ namespace SWLOR.Toolset.Tests
                 .Select(block => block.Text ?? string.Empty)
                 .ToList();
 
-            // The rail's furniture, and the caption carrying the one rule a writer has to know.
-            texts.Should().Contain("SITUATIONS");
-            texts.Should().Contain(text => text.Contains("first that fits"));
+            // The behavior-tailored outline, and the one NWN ordering rule a writer has to know.
+            texts.Should().Contain("Quest moments");
+            texts.Should().Contain(text => text.Contains("first match wins"));
+
+            texts.Should().Contain("Write");
+            texts.Should().Contain("Preview", "preview is a separate tab rather than a side panel");
 
             // A real situation, titled from what the player is doing rather than from a condition key.
             texts.Should().Contain(text => text.Contains("Field Tinctures"));
@@ -117,6 +163,32 @@ namespace SWLOR.Toolset.Tests
             var boxes = view.GetVisualDescendants().OfType<TextBox>().ToList();
 
             boxes.Should().Contain(box => box.Text == viewModel.LineText);
+        }
+
+        [AvaloniaTest]
+        public void TheBehaviorPickerIsWideEnoughForEveryOption()
+        {
+            var viewModel = OpenEditor();
+            var view = new ConversationEditorView();
+            var window = new Window { Content = view, Width = 1200, Height = 800 };
+            window.Show();
+
+            try
+            {
+                view.DataContext = viewModel;
+                window.UpdateLayout();
+
+                var picker = view.FindControl<ComboBox>("BehaviorSelector");
+
+                picker.Should().NotBeNull();
+                picker!.HorizontalAlignment.Should().Be(Avalonia.Layout.HorizontalAlignment.Stretch);
+                picker.Bounds.Width.Should().BeGreaterThanOrEqualTo(220,
+                    "the popup inherits the picker width and must show 'Conversation' in full");
+            }
+            finally
+            {
+                window.Close();
+            }
         }
 
         [AvaloniaTest]

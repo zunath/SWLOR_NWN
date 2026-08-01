@@ -13,10 +13,21 @@ namespace SWLOR.Toolset.Domain.Gff
         /// <summary>The GFF "no strref" sentinel for a locstring's <c>StrRef</c>.</summary>
         private const uint NoStrRefSentinel = 0xFFFFFFFF;
 
-        /// <summary>Encodes text as a raw JSON string token via CP-1252 and the byte-level codec.</summary>
+        /// <summary>
+        /// Encodes text as a raw JSON string token. Canonical module text stays CP-1252 when
+        /// possible; text decoded from another NWN language codepage falls back to UTF-8 rather
+        /// than being rejected or replaced.
+        /// </summary>
         private static byte[] EncodeNwnString(string value)
         {
-            return JsonStringCodec.Encode(value, UseUtf8Text.Value);
+            try
+            {
+                return JsonStringCodec.Encode(value, UseUtf8Text.Value);
+            }
+            catch (EncoderFallbackException) when (!UseUtf8Text.Value)
+            {
+                return JsonStringCodec.Encode(value, useUtf8: true);
+            }
         }
 
         /// <summary>

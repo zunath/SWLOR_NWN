@@ -7,9 +7,8 @@ namespace SWLOR.Toolset.Tests.Items
 {
     /// <summary>
     /// <see cref="ItemSubtypeChoiceCatalog"/>'s reserved-row filtering: a row whose display would
-    /// fall back to a placeholder Label ("Bio_reserved", "cep_reserved", "Padding", "DELETED", or a
-    /// blank/"****" cell) is skipped, but a row with a real TLK Name always stays regardless of what
-    /// its label says.
+    /// fall back to a placeholder Label is skipped. The source Label is authoritative for whether
+    /// a row is real content, even when a reserved slot happens to carry a resolvable TLK Name.
     /// </summary>
     [TestFixture]
     public class ItemSubtypeChoiceCatalogTests
@@ -31,7 +30,11 @@ namespace SWLOR.Toolset.Tests.Items
                 "4    Padding          ****\r\n" +
                 "5    Wookiee          ****\r\n" +
                 "6    Zabrak           200\r\n" +
-                "7    Bio_reserved     300\r\n");
+                "7    Bio_reserved     300\r\n" +
+                "8    USER             ****\r\n" +
+                "9    Unused           ****\r\n" +
+                "10   INVALID_RACE     ****\r\n" +
+                "11   NULL6            ****\r\n");
         }
 
         [TearDown]
@@ -65,6 +68,10 @@ namespace SWLOR.Toolset.Tests.Items
                 display != "Real Bio-Reserved Name");
             choices.Should().NotContain(choice => choice.Display == "DELETED");
             choices.Should().NotContain(choice => choice.Display == "Padding");
+            choices.Should().NotContain(choice => choice.Display == "USER");
+            choices.Should().NotContain(choice => choice.Display == "Unused");
+            choices.Should().NotContain(choice => choice.Display == "INVALID_RACE");
+            choices.Should().NotContain(choice => choice.Display == "NULL6");
         }
 
         [Test]
@@ -78,11 +85,11 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void ARowWithARealTlkNameStaysEvenWithAReservedLookingLabel()
+        public void ARowWithARealTlkNameIsStillExcludedWhenItsSourceLabelIsReserved()
         {
             var choices = ReadFixture();
 
-            choices.Should().Contain(choice => choice.Display == "Real Bio-Reserved Name");
+            choices.Should().NotContain(choice => choice.Display == "Real Bio-Reserved Name");
         }
 
         [Test]

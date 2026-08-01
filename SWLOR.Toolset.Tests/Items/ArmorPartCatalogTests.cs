@@ -35,5 +35,13 @@ namespace SWLOR.Toolset.Tests.Items
                 Directory.Delete(scratch, recursive: true);
             }
         }
+
+        [Test]
+        public void WithNonePrependsTheEngineNoModelValueOnce()
+        {
+            ArmorPartCatalog.WithNone(new[] { 1, 3, 7 }).Should().Equal(0, 1, 3, 7);
+            ArmorPartCatalog.WithNone(new[] { 0, 1, 3 }).Should().Equal(0, 1, 3);
+            ArmorPartCatalog.WithNone(Array.Empty<int>()).Should().BeEmpty();
+        }
     }
 }

@@ -355,6 +355,7 @@ internal sealed class AsciiMdlReader
                 IntToken(tokens, 0, line, "face vertex"),
                 IntToken(tokens, 1, line, "face vertex"),
                 IntToken(tokens, 2, line, "face vertex"),
+                IntToken(tokens, 3, line, "face smoothing group"),
                 tokens.Length > 7 ? IntToken(tokens, 7, line, "face surface") : 0,
                 IntToken(tokens, 4, line, "face texture vertex"),
                 IntToken(tokens, 5, line, "face texture vertex"),
@@ -471,18 +472,23 @@ internal sealed class AsciiMdlReader
         if (mesh is MdlSkinmeshNode && influences.Length != 0 && influences.Length != vertices.Length)
             throw Error($"ASCII MDL skin '{mesh.Name}' has {influences.Length} weight rows for {vertices.Length} vertices.", source);
 
-        if (textureCoordinates.Length == 0)
+        if (sourceFaces.Length == 0)
         {
             mesh.Vertices = vertices;
             mesh.Normals = normals;
-            mesh.TextureCoordinates = Array.Empty<Vector2>();
-            mesh.Faces = BuildFaces(sourceFaces, vertices, source);
+            mesh.TextureCoordinates = textureCoordinates;
+            mesh.Faces = Array.Empty<MdlFace>();
             if (mesh is MdlSkinmeshNode skin)
                 skin.VertexInfluences = influences;
             return;
         }
 
-        var remap = new Dictionary<(int Vertex, int Texture), ushort>();
+        ValidateFaceIndices();
+        var generatedNormals = normals.Length == 0
+            ? GenerateVertexNormals(vertices, sourceFaces)
+            : null;
+        var hasTextureCoordinates = textureCoordinates.Length != 0;
+        var remap = new Dictionary<(int Vertex, int Texture, Vector3 Normal), ushort>();
         var expandedVertices = new List<Vector3>();
         var expandedNormals = new List<Vector3>();
         var expandedTextureCoordinates = new List<Vector2>();
@@ -491,9 +497,9 @@ internal sealed class AsciiMdlReader
         for (var index = 0; index < sourceFaces.Length; index++)
         {
             var face = sourceFaces[index];
-            var first = RemapVertex(face.Vertex0, face.Texture0);
-            var second = RemapVertex(face.Vertex1, face.Texture1);
-            var third = RemapVertex(face.Vertex2, face.Texture2);
+            var first = RemapVertex(face.Vertex0, face.Texture0, VertexNormal(index, 0, face.Vertex0));
+            var second = RemapVertex(face.Vertex1, face.Texture1, VertexNormal(index, 1, face.Vertex1));
+            var third = RemapVertex(face.Vertex2, face.Texture2, VertexNormal(index, 2, face.Vertex2));
             var normal = FaceNormal(expandedVertices[first], expandedVertices[second], expandedVertices[third]);
             faces[index] = new MdlFace
             {
@@ -507,8 +513,10 @@ internal sealed class AsciiMdlReader
         }
 
         mesh.Vertices = expandedVertices.ToArray();
-        mesh.Normals = normals.Length == 0 ? Array.Empty<Vector3>() : expandedNormals.ToArray();
-        mesh.TextureCoordinates = expandedTextureCoordinates.ToArray();
+        mesh.Normals = expandedNormals.ToArray();
+        mesh.TextureCoordinates = hasTextureCoordinates
+            ? expandedTextureCoordinates.ToArray()
+            : Array.Empty<Vector2>();
         mesh.Faces = faces;
         if (mesh is MdlSkinmeshNode skinmesh)
             skinmesh.VertexInfluences = influences.Length == 0
@@ -516,56 +524,160 @@ internal sealed class AsciiMdlReader
                 : expandedInfluences.ToArray();
         return;
 
-        ushort RemapVertex(int vertexIndex, int textureIndex)
+        Vector3 VertexNormal(int faceIndex, int cornerIndex, int vertexIndex) =>
+            generatedNormals == null
+                ? normals[vertexIndex]
+                : generatedNormals.Normals[generatedNormals.FaceNormalIndices[faceIndex, cornerIndex]];
+
+        ushort RemapVertex(int vertexIndex, int textureIndex, Vector3 normal)
         {
-            if ((uint)vertexIndex >= (uint)vertices.Length)
-                throw Error($"ASCII MDL mesh '{mesh.Name}' references vertex {vertexIndex} outside {vertices.Length}.", source);
-            if ((uint)textureIndex >= (uint)textureCoordinates.Length)
+            var mappedTextureIndex = hasTextureCoordinates ? textureIndex : -1;
+            if (hasTextureCoordinates && (uint)textureIndex >= (uint)textureCoordinates.Length)
                 throw Error($"ASCII MDL mesh '{mesh.Name}' references texture vertex {textureIndex} outside {textureCoordinates.Length}.", source);
-            if (remap.TryGetValue((vertexIndex, textureIndex), out var existing))
+            if (remap.TryGetValue((vertexIndex, mappedTextureIndex, normal), out var existing))
                 return existing;
             if (expandedVertices.Count > ushort.MaxValue)
                 throw Error($"ASCII MDL mesh '{mesh.Name}' expands beyond {ushort.MaxValue + 1} vertices.", source);
 
             var created = checked((ushort)expandedVertices.Count);
-            remap.Add((vertexIndex, textureIndex), created);
+            remap.Add((vertexIndex, mappedTextureIndex, normal), created);
             expandedVertices.Add(vertices[vertexIndex]);
-            if (normals.Length != 0)
-                expandedNormals.Add(normals[vertexIndex]);
-            expandedTextureCoordinates.Add(textureCoordinates[textureIndex]);
+            expandedNormals.Add(normal);
+            if (hasTextureCoordinates)
+                expandedTextureCoordinates.Add(textureCoordinates[textureIndex]);
             if (influences.Length != 0)
                 expandedInfluences.Add(influences[vertexIndex]);
             return created;
         }
+
+        void ValidateFaceIndices()
+        {
+            foreach (var face in sourceFaces)
+            {
+                ValidateVertexIndex(face.Vertex0);
+                ValidateVertexIndex(face.Vertex1);
+                ValidateVertexIndex(face.Vertex2);
+            }
+
+            return;
+
+            void ValidateVertexIndex(int index)
+            {
+                if ((uint)index >= (uint)vertices.Length)
+                    throw Error($"ASCII MDL face references vertex {index} outside {vertices.Length}.", source);
+            }
+        }
     }
 
-    private static MdlFace[] BuildFaces(AsciiFace[] sourceFaces, Vector3[] vertices, SourceLine source)
+    /// <summary>
+    /// Reproduces Aurora's ASCII model compiler smoothing pass. A smoothing-group value is a bit
+    /// mask: faces share a vertex normal when their masks overlap; group zero remains flat. The
+    /// compiler assigns each connected group of face corners one normal before it expands vertices
+    /// at UV and hard-normal seams. Connectivity matters for masks such as 1, 3, 2: the middle face
+    /// overlaps both neighbors, so all three belong to one group regardless of face order.
+    /// </summary>
+    private static GeneratedVertexNormals GenerateVertexNormals(
+        IReadOnlyList<Vector3> vertices,
+        IReadOnlyList<AsciiFace> faces)
     {
-        var result = new MdlFace[sourceFaces.Length];
-        for (var index = 0; index < sourceFaces.Length; index++)
+        var faceNormalIndices = new int[faces.Count, 3];
+        for (var faceIndex = 0; faceIndex < faces.Count; faceIndex++)
         {
-            var face = sourceFaces[index];
-            ValidateVertexIndex(face.Vertex0);
-            ValidateVertexIndex(face.Vertex1);
-            ValidateVertexIndex(face.Vertex2);
-            var normal = FaceNormal(vertices[face.Vertex0], vertices[face.Vertex1], vertices[face.Vertex2]);
-            result[index] = new MdlFace
-            {
-                VertexIndex0 = checked((ushort)face.Vertex0),
-                VertexIndex1 = checked((ushort)face.Vertex1),
-                VertexIndex2 = checked((ushort)face.Vertex2),
-                SurfaceId = face.Surface,
-                Normal = normal,
-                Distance = Vector3.Dot(normal, vertices[face.Vertex0])
-            };
+            for (var cornerIndex = 0; cornerIndex < 3; cornerIndex++)
+                faceNormalIndices[faceIndex, cornerIndex] = -1;
         }
-        return result;
 
-        void ValidateVertexIndex(int index)
+        var faceNormals = new Vector3[faces.Count];
+        var cornersByVertex = new Dictionary<int, List<int>>();
+        for (var faceIndex = 0; faceIndex < faces.Count; faceIndex++)
         {
-            if ((uint)index >= (uint)vertices.Length)
-                throw Error($"ASCII MDL face references vertex {index} outside {vertices.Length}.", source);
+            var face = faces[faceIndex];
+            faceNormals[faceIndex] = Vector3.Cross(
+                vertices[face.Vertex1] - vertices[face.Vertex0],
+                vertices[face.Vertex2] - vertices[face.Vertex1]);
+            for (var cornerIndex = 0; cornerIndex < 3; cornerIndex++)
+            {
+                var vertexIndex = VertexIndex(face, cornerIndex);
+                if (!cornersByVertex.TryGetValue(vertexIndex, out var corners))
+                {
+                    corners = new List<int>();
+                    cornersByVertex.Add(vertexIndex, corners);
+                }
+
+                corners.Add(faceIndex * 3 + cornerIndex);
+            }
         }
+
+        var normals = new List<Vector3>();
+        foreach (var corners in cornersByVertex.Values)
+        {
+            var assigned = new HashSet<int>();
+            foreach (var seed in corners)
+            {
+                if (!assigned.Add(seed))
+                    continue;
+
+                var component = new List<int>();
+                var pending = new Queue<int>();
+                pending.Enqueue(seed);
+                while (pending.Count > 0)
+                {
+                    var current = pending.Dequeue();
+                    component.Add(current);
+                    var currentFaceIndex = current / 3;
+                    foreach (var candidate in corners)
+                    {
+                        if (assigned.Contains(candidate))
+                            continue;
+
+                        var candidateFaceIndex = candidate / 3;
+                        if (currentFaceIndex != candidateFaceIndex &&
+                            (faces[currentFaceIndex].SmoothingGroup &
+                             faces[candidateFaceIndex].SmoothingGroup) == 0)
+                        {
+                            continue;
+                        }
+
+                        assigned.Add(candidate);
+                        pending.Enqueue(candidate);
+                    }
+                }
+
+                // A stable face ordering also makes the floating-point sum independent of the
+                // source's face row order, rather than merely giving it the same membership.
+                var componentFaces = component
+                    .Select(corner => corner / 3)
+                    .Distinct()
+                    .OrderBy(index => faces[index].SmoothingGroup)
+                    .ThenBy(index => faces[index].Vertex0)
+                    .ThenBy(index => faces[index].Vertex1)
+                    .ThenBy(index => faces[index].Vertex2)
+                    .ThenBy(index => faceNormals[index].X)
+                    .ThenBy(index => faceNormals[index].Y)
+                    .ThenBy(index => faceNormals[index].Z)
+                    .ToList();
+                var sum = componentFaces.Aggregate(
+                    Vector3.Zero,
+                    (current, faceIndex) => current + faceNormals[faceIndex]);
+                var normalIndex = normals.Count;
+                normals.Add(sum.LengthSquared() <= float.Epsilon
+                    ? Vector3.Zero
+                    : Vector3.Normalize(sum));
+                foreach (var corner in component)
+                {
+                    faceNormalIndices[corner / 3, corner % 3] = normalIndex;
+                }
+            }
+        }
+
+        return new GeneratedVertexNormals(normals.ToArray(), faceNormalIndices);
+
+        static int VertexIndex(AsciiFace face, int cornerIndex) => cornerIndex switch
+        {
+            0 => face.Vertex0,
+            1 => face.Vertex1,
+            _ => face.Vertex2
+        };
     }
 
     private static MdlNode? LinkNodes(IReadOnlyList<PendingNode> pending, string preferredRootName)
@@ -845,8 +957,10 @@ internal sealed class AsciiMdlReader
         int Vertex0,
         int Vertex1,
         int Vertex2,
+        int SmoothingGroup,
         int Surface,
         int Texture0,
         int Texture1,
         int Texture2);
+    private sealed record GeneratedVertexNormals(Vector3[] Normals, int[,] FaceNormalIndices);
 }

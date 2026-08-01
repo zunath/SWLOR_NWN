@@ -69,6 +69,47 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void SearchPickerCloseButtonStaysInsideTheValueColumn()
+        {
+            var row = new DoorRowViewModel(
+                new DoorFieldDefinition
+                {
+                    Label = "Sound Set",
+                    Name = "SoundSetFile",
+                    Kind = BehaviorFieldKind.Choice,
+                    FieldType = GffFieldType.Word,
+                    Choices = Enumerable.Range(0, 460)
+                        .Select(index => new BehaviorChoice(index, $"Sound set {index}"))
+                        .ToList()
+                },
+                new DoorValueStore(Door()),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                _ => { },
+                _ => { });
+            row.OpenSearchCommand.Execute(null);
+
+            var (view, window) = Host(row, 820);
+            var picker = view.GetVisualDescendants().OfType<SearchableChoicePickerView>().Single();
+            var close = picker.GetVisualDescendants().OfType<Button>()
+                .Single(button => button.Content?.ToString() == "Close");
+            var closeLeft = close.TranslatePoint(new Point(0, 0), picker)!.Value.X;
+            var closeRight = closeLeft + close.Bounds.Width;
+
+            TestContext.Out.WriteLine(
+                $"picker={picker.Bounds.Width:0.#} close={closeLeft:0.#}..{closeRight:0.#}");
+            closeRight.Should().BeLessThanOrEqualTo(picker.Bounds.Width - 24,
+                "the Close action needs a full scrollbar-width gutter so an owning scroller cannot clip it");
+
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+
+        [AvaloniaTest]
         public void ANumberStartsWhereEveryOtherControlStarts()
         {
             // Stretch plus a MaxWidth centres rather than left-aligns: the layout hands over the

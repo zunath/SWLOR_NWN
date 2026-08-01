@@ -3,7 +3,10 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
+using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Editors.Doors;
+using SWLOR.Toolset.Domain.Editors.Items;
+using SWLOR.Toolset.Domain.Editors.Merchants;
 using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
@@ -146,12 +149,112 @@ namespace SWLOR.Toolset.Tests
 
             row.IsSearchableChoice.Should().BeTrue();
             row.IsPlainChoice.Should().BeFalse();
-            row.FilteredChoices.Should().HaveCount(120);
+            row.IsSearchExpanded.Should().BeFalse();
+            row.FilteredChoices.Should().BeEmpty(
+                "a closed picker must not publish controls while its editor is being laid out");
+
+            row.OpenSearchCommand.Execute(null);
+            row.IsSearchExpanded.Should().BeTrue();
+            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
 
             row.ChoiceSearchText = "011";
             row.FilteredChoices.Should().ContainSingle()
                 .Which.Display.Should().Be("Option 011");
             row.SearchSummary.Should().Be("1 of 120 options");
+        }
+
+        [Test]
+        public void PaletteCategoriesUseTheSameVisibleFilteredSelectorAcrossBlueprintEditors()
+        {
+            var definitions = new BehaviorFieldDefinition[]
+            {
+                CreatureEditorLayout.Basic.Single(field => field.Label == "Category"),
+                ItemEditorLayout.Basic.Single(field => field.Label == "Category"),
+                DoorEditorLayout.Basic.Single(field => field.Label == "Category"),
+                MerchantEditorLayout.Details.Single(field => field.Label == "Category"),
+                TriggerEditorLayout.Basic.Single(field => field.Label == "Category"),
+                SoundEditorLayout.Basic.Single(field => field.Label == "Category"),
+                WaypointEditorLayout.Basic.Single(field => field.Label == "Category")
+            };
+
+            definitions.Should().OnlyContain(field => field.IsSearchable && field.IsInlineSearch);
+        }
+
+        [Test]
+        public void AnInlineSearchPublishesItsVirtualizedFirstPageWithoutAChooseAction()
+        {
+            var calls = 0;
+            var row = new BehaviorRowViewModel(
+                new BehaviorFieldDefinition
+                {
+                    Label = "Category", Name = "PaletteID", Kind = BehaviorFieldKind.Choice,
+                    FieldType = GffFieldType.Byte, IsSearchable = true, IsInlineSearch = true
+                },
+                Store("""{ "__data_type": "UTC " }"""),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                choiceLoader: () =>
+                {
+                    calls++;
+                    return Enumerable.Range(0, 90)
+                        .Select(index => new BehaviorChoice(index, $"Category {index}"))
+                        .ToList();
+                });
+
+            row.Reload();
+
+            calls.Should().Be(1);
+            row.IsInlineSearchChoice.Should().BeTrue();
+            row.IsSearchExpanded.Should().BeTrue();
+            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
+
+            row.PickChoiceCommand.Execute(row.FilteredChoices[3]);
+
+            row.IsSearchExpanded.Should().BeTrue("inline category selection remains visible after a choice");
+        }
+
+        [Test]
+        public void AVisualCatalogGetsSharedFacetFiltersAndSortsWithoutEditorSpecificCode()
+        {
+            var choices = Enumerable.Range(0, 140)
+                .Select(index => new BehaviorChoice(
+                    index,
+                    index % 2 == 0 ? $"Zulu {index:D3}" : $"Alpha {index:D3}",
+                    $"portrait_{index}")
+                {
+                    GalleryFacets =
+                    [
+                        new BehaviorChoiceFacet(
+                            "gender",
+                            "Gender",
+                            index % 2 == 0 ? "female" : "male",
+                            index % 2 == 0 ? "Female" : "Male")
+                    ]
+                })
+                .ToList();
+            using var row = Row(
+                new BehaviorFieldDefinition
+                {
+                    Label = "Portrait", Name = "PortraitId", Kind = BehaviorFieldKind.Choice,
+                    FieldType = GffFieldType.Word, Choices = choices
+                },
+                Store("""{ "__data_type": "UTC " }"""),
+                new List<string>());
+
+            row.OpenGalleryCommand.Execute(null);
+
+            var gender = row.GalleryFilters.Should().ContainSingle().Subject;
+            gender.Label.Should().Be("Gender");
+            gender.SelectedOption = gender.Options.Single(option => option.Display == "Female");
+            row.GalleryChoices.Should().OnlyContain(choice => choice.Value % 2 == 0);
+            row.GallerySummary.Should().Be("48 of 70 choices");
+
+            row.SelectedGallerySort = row.GallerySortOptions.Single(option =>
+                option.Mode == GallerySortMode.NameAscending);
+            row.GalleryChoices.Select(choice => choice.Display).Should().BeInAscendingOrder();
         }
 
         [Test]
@@ -169,7 +272,26 @@ namespace SWLOR.Toolset.Tests
                 Store("""{ "__data_type": "UTD " }"""),
                 new List<string>());
 
+            row.OpenSearchCommand.Execute(null);
+            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
+            while (row.CanLoadMoreSearchResults)
+                row.LoadMoreSearchResultsCommand.Execute(null);
             row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.MaxSearchResults);
+        }
+
+        [Test]
+        public void SearchableChoicePicker_LoadsMoreChoicesAsTheUserScrolls()
+        {
+            var picker = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset", "Editors", "Behaviors", "SearchableChoicePickerView.axaml"));
+            var codeBehind = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset", "Editors", "Behaviors", "SearchableChoicePickerView.axaml.cs"));
+
+            picker.Should().Contain("ScrollViewer.ScrollChanged=\"OnSearchResultsScrollChanged\"");
+            picker.Should().NotContain("Content=\"Load more\"");
+            codeBehind.Should().Contain("row.LoadMoreSearchResultsCommand.Execute(null)");
         }
 
         [Test]
@@ -192,13 +314,53 @@ namespace SWLOR.Toolset.Tests
                 new List<string>());
 
             row.Choice!.Value.Should().Be(900);
-            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.MaxSearchResults + 1);
+            row.OpenSearchCommand.Execute(null);
+            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize + 1);
             row.FilteredChoices[0].Should().BeSameAs(row.Choice, "the stored value goes back on top");
 
             // A filter is deliberate: it may exclude the selection without putting it back.
             row.ChoiceSearchText = "Table 0001";
             row.FilteredChoices.Should().ContainSingle()
                 .Which.Display.Should().Be("Table 0001");
+        }
+
+        [Test]
+        public void ADeferredChoiceSetLoadsOnlyWhenItsPickerIsOpened()
+        {
+            var calls = 0;
+            var definition = new BehaviorFieldDefinition
+            {
+                Label = "Dialog", Name = "Conversation", Kind = BehaviorFieldKind.Choice,
+                FieldType = GffFieldType.ResRef, IsSearchable = true
+            };
+            var row = new BehaviorRowViewModel(
+                definition,
+                Store("""{ "__data_type": "UTC ", "Conversation": { "type": "resref", "value": "dlg_42" } }"""),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                choiceLoader: () =>
+                {
+                    calls++;
+                    return Enumerable.Range(0, 120)
+                        .Select(index => new BehaviorChoice($"dlg_{index}", $"Dialog {index}"))
+                        .ToList();
+                });
+            row.Reload();
+
+            calls.Should().Be(0);
+            row.AreChoicesLoaded.Should().BeFalse();
+            row.SelectedChoiceDisplay.Should().Be("dlg_42");
+            row.FilteredChoices.Should().BeEmpty();
+
+            row.OpenSearchCommand.Execute(null);
+
+            calls.Should().Be(1);
+            row.AreChoicesLoaded.Should().BeTrue();
+            row.SelectedChoiceDisplay.Should().Be("Dialog 42");
+            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
         }
 
         [Test]

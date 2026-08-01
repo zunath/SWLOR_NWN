@@ -171,24 +171,7 @@ namespace SWLOR.Toolset.Tests.Items
             var layeredFrames = MdlAnimationPose.SampleIdleFrames(source, LoadModel, layeredBind)
                 .Select(frame => frame.Pose)
                 .ToList();
-            var concealedArmBones = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                "lshoul_g", "lshoulder_g", "lshoul",
-                "rshoul_g", "rshoulder_g", "rshoul",
-                "lbicep_g", "lbicep", "rbicep_g", "rbicep",
-                "lforearm_g", "lfore_g", "lforearm",
-                "rforearm_g", "rfore_g", "rforearm"
-            };
-            var layeredPoseRobe = MdlMeshBuilder.Build(
-                    source,
-                    layeredFrames,
-                    skinSurfaceClearance: 0.012f,
-                    skinSurfaceClearanceExcludedBones: concealedArmBones)
-                .Meshes
-                .Single(mesh =>
-                    mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&
-                    mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase));
-            var layeredWithoutClearance = MdlMeshBuilder.Build(source, layeredFrames).Meshes
+            var layeredPoseRobe = MdlMeshBuilder.Build(source, layeredFrames).Meshes
                 .Single(mesh =>
                     mesh.NodeName.Equals("Box01", StringComparison.OrdinalIgnoreCase) &&
                     mesh.TextureName.Equals("pmh0_robe010", StringComparison.OrdinalIgnoreCase));
@@ -228,35 +211,18 @@ namespace SWLOR.Toolset.Tests.Items
             renderedRobe.PoseNormals.Should().OnlyContain(frame =>
                     frame.Length == renderedRobe.Positions.Length,
                 "Aurora generates normals for a robe even when its ASCII skinmesh omits them");
-            var diagnosticPositions = layeredWithoutClearance.PosePositions[0];
-            var diagnosticNormals = renderedRobe.PoseNormals[0];
-            var xCoordinates = diagnosticPositions.Where((_, index) => index % 3 == 0);
-            var yCoordinates = diagnosticPositions.Where((_, index) => index % 3 == 1);
-            var centerX = (xCoordinates.Min() + xCoordinates.Max()) * 0.5f;
-            var centerY = (yCoordinates.Min() + yCoordinates.Max()) * 0.5f;
-            var radialDots = Enumerable.Range(0, diagnosticPositions.Length / 3)
-                .Select(index =>
-                    diagnosticNormals[index * 3] * (diagnosticPositions[index * 3] - centerX) +
-                    diagnosticNormals[index * 3 + 1] * (diagnosticPositions[index * 3 + 1] - centerY))
-                .ToArray();
-            radialDots.Should().OnlyContain(dot => dot >= -0.0001f,
-                "generated normals must move the robe away from the wearer even when its source " +
-                "triangles use mixed winding");
-            renderedRobe.PosePositions[0].Should().NotEqual(
-                layeredWithoutClearance.PosePositions[0],
-                "the generated normals must actually move the equipped shell away from the retained chest");
-            static float Span(float[] positions, int axis)
-            {
-                var values = positions.Where((_, index) => index % 3 == axis);
-                return values.Max() - values.Min();
-            }
-            Span(renderedRobe.PosePositions[0], 0).Should()
-                .Be(Span(layeredWithoutClearance.PosePositions[0], 0),
-                    "the robe replaces the concealed arm parts, so its sleeve silhouette must keep " +
-                    "the authored width instead of being inflated sideways");
-            Span(renderedRobe.PosePositions[0], 1).Should()
-                .BeGreaterThan(Span(layeredWithoutClearance.PosePositions[0], 1),
-                    "the retained torso still needs a front/back shell gap");
+            renderedRobe.PosePositions[0].Should().Equal(
+                layeredPoseRobe.PosePositions[0],
+                "Aurora preserves the robe's authored weighted surface; inflating it along generated " +
+                "normals creates shoulder wedges that are absent from the original item preview");
+            sourceRobe.Normals.Should().HaveCount(sourceRobe.Vertices.Length,
+                "ASCII robes receive the same smoothing-group normal pass as Aurora's compiler");
+            sourceRobe.Normals.Should().OnlyContain(normal =>
+                    float.IsFinite(normal.X) &&
+                    float.IsFinite(normal.Y) &&
+                    float.IsFinite(normal.Z) &&
+                    MathF.Abs(normal.LengthSquared() - 1f) < 0.0001f,
+                "the compiler-derived shell directions remain normalized");
 
             var bounds = model.ComputeBounds();
             bounds.Should().NotBeNull();

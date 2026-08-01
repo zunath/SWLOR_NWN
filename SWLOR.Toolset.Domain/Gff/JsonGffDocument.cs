@@ -57,7 +57,7 @@ namespace SWLOR.Toolset.Domain.Gff
         {
             ArgumentNullException.ThrowIfNull(replacement);
             DataType = replacement.DataType;
-            Root = replacement.Root;
+            Root.ReplaceParsedWith(replacement.Root);
             UsesCrLf = replacement.UsesCrLf;
             HasTrailingNewline = replacement.HasTrailingNewline;
             TrailingNewlineUsesCrLf = replacement.TrailingNewlineUsesCrLf;

@@ -40,7 +40,13 @@ namespace SWLOR.Toolset.Editors.Sounds
 
         public string HeaderKind => _isInstance ? "instance" : "blueprint";
 
-        public string HeaderOwner { get; }
+        public string HeaderOwner { get; private set; }
+
+        public void SetHeaderOwner(string value)
+        {
+            HeaderOwner = value;
+            OnPropertyChanged(nameof(HeaderOwner));
+        }
 
         public bool ShowsVariablesTab => Behavior.AllowsVariables;
 

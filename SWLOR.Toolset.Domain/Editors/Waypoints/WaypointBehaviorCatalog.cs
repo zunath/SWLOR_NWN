@@ -69,6 +69,19 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
             All.FirstOrDefault(behavior => behavior.Id == id)
             ?? throw new ArgumentOutOfRangeException(nameof(id), id, "No such waypoint behavior.");
 
+        /// <summary>
+        /// True for runtime destination tags that must identify exactly one placed waypoint across
+        /// the module. Repeatable rescue, dock, property, spawn, map-note, and generic transition
+        /// markers are deliberately excluded.
+        /// </summary>
+        public bool IsSingletonDestinationTag(string? tag) =>
+            !string.IsNullOrWhiteSpace(tag) &&
+            (_landingTags.Contains(tag) ||
+             _orbitTags.Contains(tag) ||
+             _taxiTags.Contains(tag) ||
+             _deathRespawnTags.Contains(tag) ||
+             _rebuildTags.Contains(tag));
+
         public WaypointBehavior Classify(JsonGffStruct waypoint)
         {
             ArgumentNullException.ThrowIfNull(waypoint);

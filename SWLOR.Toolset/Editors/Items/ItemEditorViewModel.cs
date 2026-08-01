@@ -397,7 +397,6 @@ namespace SWLOR.Toolset.Editors.Items
         private bool RunEdit(string description, Action mutation)
         {
             var identifiedBefore = _store.GetLocalizedText("DescIdentified");
-            var descriptionBefore = _store.GetLocalizedText("Description");
             var noEconomyBefore = _store.GetInteger(
                 BehaviorFieldStorage.Local,
                 ItemEditorLayout.NoEconomyLocal);
@@ -406,15 +405,12 @@ namespace SWLOR.Toolset.Editors.Items
             {
                 mutation();
 
-                // SWLOR does not use item identification, but template/corpus validation still
-                // expects both engine description slots to agree. Preserve deliberately divergent
-                // legacy text; mirror only an empty or previously synchronized companion.
+                // SWLOR exposes one description even though Aurora stores identified and
+                // unidentified slots. The visible DescIdentified field is authoritative.
                 var identifiedAfter = _store.GetLocalizedText("DescIdentified");
-                if (!string.Equals(identifiedAfter, identifiedBefore, StringComparison.Ordinal) &&
-                    (string.IsNullOrWhiteSpace(descriptionBefore) ||
-                     string.Equals(descriptionBefore, identifiedBefore, StringComparison.Ordinal)))
+                if (!string.Equals(identifiedAfter, identifiedBefore, StringComparison.Ordinal))
                 {
-                    _store.SetLocalizedText("Description", identifiedAfter);
+                    _store.CopyLocalizedValue("DescIdentified", "Description");
                 }
 
                 // A source-less item must remain excluded from player-facing economy searches.
@@ -685,6 +681,18 @@ namespace SWLOR.Toolset.Editors.Items
             var snapshot = new JsonGffDocument("UTI ", _store.Item).ToBytes();
             var female = PreviewFemale;
             _ = ResolvePreviewModelAsync(snapshot, female, signature, generation);
+        }
+
+        public void ReloadGameResources()
+        {
+            if (_disposed)
+                return;
+
+            _previewModelGeneration++;
+            _pendingModelSignature = null;
+            _cachedModel = null;
+            _cachedModelSignature = null;
+            UpdatePreview();
         }
 
         private async Task ResolvePreviewModelAsync(

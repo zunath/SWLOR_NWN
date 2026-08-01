@@ -76,12 +76,47 @@ namespace SWLOR.Toolset.Tests
             var path = WriteScript("a.nss", "void main()\r\n{\r\n}\r\n");
             var session = ScriptSession.Open(path);
             var edited = session.Document.Text + "\n// edit";
+            var savedBytes = session.ToBytes(edited);
 
-            File.WriteAllBytes(path, session.ToBytes(edited));
-            session.MarkSaved(edited);
+            File.WriteAllBytes(path, savedBytes);
+            session.MarkSaved(edited, savedBytes);
 
             session.IsDirty(edited).Should().BeFalse();
             session.HasExternalChange().Should().BeFalse("we made that write ourselves");
+        }
+
+        [Test]
+        public void MarkSavedRetainsTheFingerprintOfTheBytesThatWereWritten()
+        {
+            var path = WriteScript("a.nss", "void main() {}\n");
+            var session = ScriptSession.Open(path);
+            const string edited = "void main() { int mine = 1; }\n";
+            var savedBytes = session.ToBytes(edited);
+
+            File.WriteAllBytes(path, savedBytes);
+            File.WriteAllText(path, "void main() { int external = 1; }\n");
+            session.MarkSaved(edited, savedBytes);
+
+            session.IsDirty(edited).Should().BeFalse(
+                "the editor buffer is still the generation it successfully wrote");
+            session.HasExternalChange().Should().BeTrue(
+                "a replacement arriving after the atomic write must not become the saved fingerprint");
+        }
+
+        [Test]
+        public void MarkSavedDetectsADeletionAfterTheSuccessfulWrite()
+        {
+            var path = WriteScript("a.nss", "void main() {}\n");
+            var session = ScriptSession.Open(path);
+            const string edited = "void main() { int mine = 1; }\n";
+            var savedBytes = session.ToBytes(edited);
+
+            File.WriteAllBytes(path, savedBytes);
+            File.Delete(path);
+            session.MarkSaved(edited, savedBytes);
+
+            session.HasExternalChange().Should().BeTrue(
+                "a missing path cannot become the baseline of a write that succeeded");
         }
 
         [Test]

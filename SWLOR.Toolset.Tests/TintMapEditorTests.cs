@@ -8,9 +8,12 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Editors.Creatures;
 using SWLOR.Toolset.Editors.TintMaps;
 
 namespace SWLOR.Toolset.Tests
@@ -155,6 +158,51 @@ namespace SWLOR.Toolset.Tests
                     .Select(text => text.Text)
                     .Should()
                     .NotContain(typeof(TintMapEditorViewModel).FullName);
+            }
+            finally
+            {
+                window.Close();
+            }
+        }
+
+        [AvaloniaTest]
+        public void DedicatedCreatureEditorRendersTintControls()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "tint_creature", "Tint Creature"));
+            var resources = Resources();
+            var model = ModelWith("pmh0_robe010");
+            using var editor = new CreatureEditorViewModel(
+                document.Root,
+                Path.Combine(Path.GetTempPath(), "utc", "tint_creature.utc.json"),
+                "tint_creature",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                null,
+                resources,
+                _ => model,
+                _ => (AppearanceRow?)null,
+                null,
+                tintMapCatalog: TintMapCatalog.Load(resources));
+            editor.TintMapEditor.Should().NotBeNull();
+            editor.TintMapEditor!.Reload(model);
+            editor.IsAppearanceTabSelected = true;
+            editor.SelectedAppearanceSectionIndex = 3;
+
+            var view = new CreatureEditorView { DataContext = editor };
+            var window = new Window { Width = 1280, Height = 800, Content = view };
+            window.Show();
+            try
+            {
+                Dispatcher.UIThread.RunJobs();
+                view.GetVisualDescendants().OfType<TintMapEditorView>().Should().ContainSingle(
+                    "the dedicated UTC editor must retain the tint surface after its base refactor");
+                view.GetVisualDescendants().OfType<ColorPicker>().Should().NotBeEmpty(
+                    "creature materials must expose unrestricted custom RGB controls");
             }
             finally
             {

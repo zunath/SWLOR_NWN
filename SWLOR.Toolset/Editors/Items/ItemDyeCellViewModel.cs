@@ -15,8 +15,9 @@ namespace SWLOR.Toolset.Editors.Items
     /// meaningless to a builder, which is why nothing here asks them to know it (it survives only
     /// in each swatch's tooltip, so a specific dye can still be found or reported by number).
     /// When the palette artwork cannot be resolved - a session with no base-game data - there are
-    /// no colors to show, and <see cref="HasPalette"/> is the template's cue to fall back to plain
-    /// index entry instead of a grid of identical blank chips.
+    /// no colors to show, and <see cref="HasPalette"/> is the template's cue to use the caller's
+    /// chosen unavailable-palette behavior. Legacy item editing permits index entry; creature
+    /// colors deliberately do not because a raw palette number is not a meaningful color control.
     /// </remarks>
     public sealed partial class ItemDyeCellViewModel : ObservableObject
     {
@@ -29,6 +30,15 @@ namespace SWLOR.Toolset.Editors.Items
 
         /// <summary>False when the palette artwork is unavailable, leaving only index entry.</summary>
         public bool HasPalette => Swatches.Count > 0;
+
+        /// <summary>Whether a missing palette may fall back to raw index entry.</summary>
+        public bool AllowsNumericFallback { get; }
+
+        /// <summary>True only for legacy callers that explicitly allow raw index entry.</summary>
+        public bool HasNumericFallback => !HasPalette && AllowsNumericFallback;
+
+        /// <summary>True when this row must remain a color picker but its palette could not load.</summary>
+        public bool IsPaletteUnavailable => !HasPalette && !AllowsNumericFallback;
 
         public int Minimum => 0;
 
@@ -51,11 +61,13 @@ namespace SWLOR.Toolset.Editors.Items
             string label,
             Func<int?> read,
             Func<int, bool> write,
-            IReadOnlyList<(byte R, byte G, byte B)> paletteColors)
+            IReadOnlyList<(byte R, byte G, byte B)> paletteColors,
+            bool allowsNumericFallback = true)
         {
             Label = label ?? throw new ArgumentNullException(nameof(label));
             _read = read ?? throw new ArgumentNullException(nameof(read));
             _write = write ?? throw new ArgumentNullException(nameof(write));
+            AllowsNumericFallback = allowsNumericFallback;
 
             for (var index = 0; index < paletteColors.Count; index++)
                 Swatches.Add(new ItemDyeSwatchViewModel(index, paletteColors[index]));

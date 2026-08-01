@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -210,6 +211,7 @@ namespace SWLOR.Toolset
 
             var repoRoot = ResolveRepoRoot(settings);
             RegisterGameDataServices(services, repoRoot, settings);
+            services.AddSingleton<Workspace.ModuleCustomContentService>();
 
             services.AddSingleton(sp => new Editors.LookupOptionProvider(
                 sp.GetRequiredService<WorkspaceContext>(),
@@ -252,7 +254,9 @@ namespace SWLOR.Toolset
                 sp.GetService<PortraitService>(),
                 sp.GetService<AppearanceService>(),
                 sp.GetRequiredService<Services.ModuleMutationLock>(),
-                sp.GetService<CategoryService>()));
+                sp.GetService<CategoryService>(),
+                moduleCustomContent: sp.GetRequiredService<Workspace.ModuleCustomContentService>(),
+                externalLinks: sp.GetRequiredService<Services.IExternalLinkService>()));
 
             // One parsed engine header shared by every script tab, built lazily on first use: the
             // header is 13,870 lines, so parsing it per tab would be wasteful and parsing it at
@@ -379,9 +383,6 @@ namespace SWLOR.Toolset
             var hasTwoDa = Directory.Exists(sw2DaDirectory);
             var hasTlk = File.Exists(swTlkJsonPath);
 
-            if (hasTwoDa)
-                services.AddSingleton(new TwoDaService(sw2DaDirectory));
-
             // Located once and reused: both the resource index and the base TLK below need it.
             string? nwnInstallPath = null;
             try
@@ -412,15 +413,21 @@ namespace SWLOR.Toolset
 
             if (File.Exists(hakBuilderConfigPath) && Directory.Exists(swlorHaksRoot))
             {
-                // KEY parsing and the ~130-folder HAK scan both belong to ResourceIndex's background
-                // initialization task. Creating the service must stay cheap enough for first paint.
+                // KEY parsing and HAK indexing both belong to ResourceIndex's background initialization
+                // task. Prefer the module's packed, authoritative HAK stack: indexing its archive tables
+                // is dramatically cheaper than walking ~160,000 loose hakbuilder source files only to
+                // replace that fallback stack as soon as WorkspaceOpened reads the same module.ifo.
                 Func<KeyBifCatalog?>? loadBaseLayer = nwnInstallPath == null
                     ? null
                     : () => KeyBifCatalog.Load(Path.Combine(nwnInstallPath, "data"));
-                services.AddSingleton(ResourceIndex.FromHakBuilderConfigDeferred(
-                    hakBuilderConfigPath,
-                    swlorHaksRoot,
-                    loadBaseLayer));
+                var moduleHakLayers = ResolveStartupHakLayers(settings.ModuleRoot, NwnIniProfile.Load());
+                services.AddSingleton(moduleHakLayers == null
+                    ? ResourceIndex.FromHakBuilderConfigDeferred(
+                        hakBuilderConfigPath,
+                        swlorHaksRoot,
+                        loadBaseLayer)
+                    : ResourceIndex.CreateDeferred(moduleHakLayers, loadBaseLayer));
+                services.AddSingleton(sp => new TwoDaService(sp.GetRequiredService<ResourceIndex>()));
 
                 // The area 3D view needs both, and both need the ResourceIndex above -
                 // registered inside this same guard so resolving either never hits a missing
@@ -432,7 +439,11 @@ namespace SWLOR.Toolset
                 // surfacemat.2da's Walk column (for the overlay color + placement height-snap).
                 services.AddSingleton(sp => new Domain.Render.TileWalkmeshCache(
                     sp.GetRequiredService<ResourceIndex>(),
-                    BuildSurfaceWalkability(sp.GetService<TwoDaService>())));
+                    () => BuildSurfaceWalkability(sp.GetService<TwoDaService>())));
+            }
+            else if (hasTwoDa)
+            {
+                services.AddSingleton(new TwoDaService(sw2DaDirectory));
             }
 
             // AppearanceService/PortraitService are only registered when their 2DA/TLK
@@ -490,6 +501,37 @@ namespace SWLOR.Toolset
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Resolves the saved module's runtime HAK order before the workspace opens. Null means the
+        /// runtime stack cannot be discovered, so startup should retain the loose source fallback;
+        /// an empty list is meaningful and means the module authoritatively assigns no available HAKs.
+        /// </summary>
+        private static IReadOnlyList<ResourceIndex.HakLayer>? ResolveStartupHakLayers(
+            string? moduleRoot,
+            NwnIniProfile profile)
+        {
+            if (string.IsNullOrWhiteSpace(moduleRoot) || profile.HakDirectory == null)
+                return null;
+
+            try
+            {
+                var ifoPath = Path.Combine(moduleRoot, "ifo", "module.ifo.json");
+                if (!File.Exists(ifoPath))
+                    return null;
+
+                var ifo = IfoDocument.Load(ifoPath);
+                var resolution = profile.ResolveHakLayers(ifo.HakNames);
+                return resolution.MissingHakNames.Count == 0
+                    ? resolution.Layers
+                    : null;
+            }
+            catch (Exception)
+            {
+                // A missing/malformed module or profile falls back to the repository source layers.
+                return null;
+            }
         }
 
         /// <summary>

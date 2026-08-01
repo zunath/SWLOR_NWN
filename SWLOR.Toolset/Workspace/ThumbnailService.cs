@@ -44,6 +44,13 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>Upper bound on concurrent renders during a cache build, regardless of core count.</summary>
         private const int MaxBuildWorkers = 4;
 
+        /// <summary>
+        /// Appearance rows can compose an entire segmented creature. Keep their on-demand work at
+        /// the same measured concurrency as the cache builder instead of queueing a thread-pool job
+        /// for every published gallery tile at once.
+        /// </summary>
+        private readonly SemaphoreSlim _appearanceRenderGate = new(MaxBuildWorkers, MaxBuildWorkers);
+
         private readonly WorkspaceContext _workspaceContext;
         private readonly IPreviewImageSource _renderer;
 
@@ -345,10 +352,10 @@ namespace SWLOR.Toolset.Workspace
         /// <paramref name="onReady"/> on the UI thread.
         /// </summary>
         /// <remarks>
-        /// Kept beside the tile path rather than the blueprint path for the same reason that one is:
-        /// an appearance row is not a module resource, so there is no file to check a timestamp
-        /// against and nothing that belongs in the module's on-disk preview cache. Memory only, under
-        /// its own key prefix — a row id could otherwise collide with a resref.
+        /// Kept under its own memory and disk identities because an appearance row is not a module
+        /// blueprint and its numeric id could otherwise collide with a UTC resref. The disk entry is
+        /// still invalidated by the indexed-content version, so changing a HAK model or texture makes
+        /// the representative creature render again.
         /// </remarks>
         public void RequestAppearanceAsync(int appearanceId, Action<Bitmap> onReady)
         {
@@ -369,24 +376,30 @@ namespace SWLOR.Toolset.Workspace
             if (!TryStartRender(key, onReady, null, out var operation))
                 return;
 
-            Task.Run(() =>
+            _ = Task.Run(async () =>
             {
-                Bitmap? bitmap = null;
+                await _appearanceRenderGate.WaitAsync().ConfigureAwait(false);
                 try
                 {
-                    if (_renderer.RenderCreatureAppearance(appearanceId) is { } image)
-                        bitmap = ToBitmap(image);
-                }
-                catch (Exception)
-                {
-                    // One unrenderable appearance row must not stop the rest of the grid filling in.
-                }
+                    PreviewResolution? result = null;
+                    try
+                    {
+                        result = ResolveAppearance(appearanceId);
+                    }
+                    catch (Exception)
+                    {
+                        // A temporarily unavailable or malformed appearance remains retryable.
+                    }
 
-                var result = new PreviewResolution(
-                    bitmap, new ThumbnailDiskCache(null), ResourceType.Utc,
-                    appearanceId.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                    UseIndexedBlueprint: false, Persist: false);
-                CompleteRender(key, operation, result, bitmap);
+                    // A null result is deliberately not cached. Appearance requests commonly begin
+                    // while the resource index or replacement module HAK stack is still loading; a
+                    // permanent cached null left every later retry on its letter placeholder.
+                    CompleteRender(key, operation, result, result?.Bitmap);
+                }
+                finally
+                {
+                    _appearanceRenderGate.Release();
+                }
             });
         }
 
@@ -396,6 +409,31 @@ namespace SWLOR.Toolset.Workspace
 
         private static string AppearanceKey(int appearanceId) =>
             "appearance:" + appearanceId.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        private PreviewResolution? ResolveAppearance(int appearanceId)
+        {
+            var disk = Disk;
+            var diskResRef = "$appearance_" +
+                             appearanceId.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            if (disk.TryLoad(
+                    ResourceType.Utc,
+                    diskResRef,
+                    blueprintPath: null,
+                    useIndexedBlueprint: false,
+                    out var cached) == ThumbnailDiskCache.Lookup.Image)
+            {
+                return new PreviewResolution(
+                    cached, disk, ResourceType.Utc, diskResRef,
+                    UseIndexedBlueprint: false, Persist: false);
+            }
+
+            if (_renderer.RenderCreatureAppearance(appearanceId) is not { } image)
+                return null;
+
+            return new PreviewResolution(
+                ToBitmap(image), disk, ResourceType.Utc, diskResRef,
+                UseIndexedBlueprint: false, Persist: true);
+        }
 
         /// <summary>
         /// Registers <paramref name="onReady"/> as a waiter on <paramref name="key"/>, and reports whether

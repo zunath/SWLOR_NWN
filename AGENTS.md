@@ -31,6 +31,10 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 
 - Do not use internal initiative, milestone, or phase labels such as `CombatUpgrade` in production code identifiers, filenames, namespaces, classes, methods, or comments. Use domain terms that describe gameplay behavior, such as ability targeting, ability effects, Leadership, Devices, or the specific system being changed.
 
+## Toolset Option Lists
+
+- Builder-facing dropdowns, galleries, and searchable choice lists must never expose raw 2DA placeholder or sentinel rows such as `DELETED`, `USER`, `UNUSED`, `INVALID*`, `Bio_reserved`, `cep_reserved`, `Padding`, or numbered `NULL` slots. Route generic 2DA options through `TwoDaChoicePolicy`, declare table-specific required columns in `TwoDaLookupTables`, and fail closed when the metadata needed to prove a row is valid is unavailable. Add corpus or focused regression coverage whenever a new 2DA-backed option source is introduced.
+
 ## Stat-Driven Gameplay
 
 - Shared combat, ability, and status-effect infrastructure must not special-case specific perk types or perk-specific status-effect classes to unlock gameplay behavior. Model perk-driven behavior as `StatType` adjustments, then have shared systems read those stats. Direct perk checks are only appropriate for ownership, unlock, purchase, UI, or progression gates.

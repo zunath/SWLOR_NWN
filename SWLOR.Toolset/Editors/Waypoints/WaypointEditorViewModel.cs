@@ -12,12 +12,13 @@ namespace SWLOR.Toolset.Editors.Waypoints
     public sealed partial class WaypointEditorViewModel : ObservableObject
     {
         private readonly BehaviorValueStore _store;
-        private readonly WaypointBehaviorCatalog _catalog;
+        private WaypointBehaviorCatalog _catalog;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly ChoicePreviewService? _previews;
         private readonly Services.IEditorPromptService? _prompts;
+        private readonly Func<string, bool>? _singletonTagInUse;
         private readonly bool _isInstance;
 
         public ObservableCollection<BehaviorListItemViewModel> BehaviorList { get; } = new();
@@ -32,7 +33,13 @@ namespace SWLOR.Toolset.Editors.Waypoints
 
         public string HeaderName => Behavior.DisplayName;
         public string HeaderKind => _isInstance ? "instance" : "blueprint";
-        public string HeaderOwner { get; }
+        public string HeaderOwner { get; private set; }
+
+        public void SetHeaderOwner(string value)
+        {
+            HeaderOwner = value;
+            OnPropertyChanged(nameof(HeaderOwner));
+        }
         public bool ShowsVariablesTab => Behavior.AllowsVariables;
         public bool NeedsSaveNormalization =>
             Behavior.Manages.Any(value => !_store.Matches(value, _isInstance)) ||
@@ -49,7 +56,8 @@ namespace SWLOR.Toolset.Editors.Waypoints
             IGameCodeIndex? gameCodeIndex = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             ChoicePreviewService? previews = null,
-            Services.IEditorPromptService? prompts = null)
+            Services.IEditorPromptService? prompts = null,
+            Func<string, bool>? singletonTagInUse = null)
         {
             ArgumentNullException.ThrowIfNull(waypoint);
             _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
@@ -59,6 +67,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
             _resolveChoices = resolveChoices;
             _previews = previews;
             _prompts = prompts;
+            _singletonTagInUse = singletonTagInUse;
             _isInstance = isInstance;
             HeaderOwner = headerOwner;
             _behavior = _catalog.Classify(waypoint);
@@ -160,6 +169,22 @@ namespace SWLOR.Toolset.Editors.Waypoints
             ReloadRowsFromDocument();
         }
 
+        /// <summary>
+        /// Replaces the module-derived transition classifier and immediately reclassifies the live
+        /// waypoint without editing it. The transition index changes when a door or trigger link is
+        /// saved externally or from another open tab, so retaining the catalog captured at open time
+        /// can leave an inbound-only destination displayed as Transition Destination after its last
+        /// link has been removed.
+        /// </summary>
+        public void RefreshCatalog(WaypointBehaviorCatalog catalog)
+        {
+            _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
+            BehaviorListItemViewModel.Build(BehaviorList, _catalog.All);
+            Behavior = _catalog.Classify(_store.ValueStruct);
+            RebuildBehaviorSection();
+            ReloadRowsFromDocument();
+        }
+
         /// <summary>Rebuilds the category row after its module ITP changes.</summary>
         public void RefreshPaletteChoices()
         {
@@ -180,6 +205,10 @@ namespace SWLOR.Toolset.Editors.Waypoints
 
         public bool PrepareForSave()
         {
+            RefreshCompleteness();
+            if (HasSingletonTagConflict())
+                return false;
+
             if (!NeedsSaveNormalization)
                 return true;
 
@@ -277,12 +306,21 @@ namespace SWLOR.Toolset.Editors.Waypoints
                 .Select(row => row.Label)
                 .ToList();
 
-            Incomplete = missing.Count == 0
-                ? null
-                : $"{Behavior.DisplayName} still needs {string.Join(", ", missing)}.";
+            Incomplete = HasSingletonTagConflict()
+                ? "This destination tag is already used by another placed waypoint. Choose a unique destination."
+                : missing.Count == 0
+                    ? null
+                    : $"{Behavior.DisplayName} still needs {string.Join(", ", missing)}.";
 
             OnPropertyChanged(nameof(Incomplete));
             OnPropertyChanged(nameof(IsIncomplete));
+        }
+
+        private bool HasSingletonTagConflict()
+        {
+            var tag = _store.GetString(BehaviorFieldStorage.Field, "Tag");
+            return _catalog.IsSingletonDestinationTag(tag) &&
+                   _singletonTagInUse?.Invoke(tag) == true;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace SWLOR.Toolset.Tests
     /// corpus.
     /// </summary>
     /// <remarks>
-    /// "Search what people say" opens every dialog file in the module — 609 of them, about a second.
+    /// Dialogue-aware filtering opens every dialog file in the module — 609 of them, about a second.
     /// It used to do that inline from the property-changed handler, so each character typed froze the
     /// window for a full scan and all but the last one were for a prefix nobody wanted results for.
     /// What these check is that a keystroke no longer reads anything, and that a scan can be
@@ -63,8 +63,7 @@ namespace SWLOR.Toolset.Tests
                 new CategoryService(workspace, log),
                 log)
             {
-                SelectedType = ResourceType.Dlg,
-                SearchDialogueText = true
+                SelectedType = ResourceType.Dlg
             };
 
             // Held open for writing with no sharing: anything that reads it on this thread throws.
@@ -110,6 +109,57 @@ namespace SWLOR.Toolset.Tests
             hits.Select(hit => hit.ResRef).Should().ContainSingle().Which.Should().Be("mining");
         }
 
+        [AvaloniaTest]
+        public async Task DialogueFilteringCombinesResRefsWithWhatPeopleSay()
+        {
+            WriteConversation("veldite_terminal", "Nothing unusual here.");
+            WriteConversation("mining", "The Veldite seam runs deep.");
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            workspace.Open(_root);
+            var explorer = new ModuleExplorerViewModel(
+                workspace,
+                new PropertiesViewModel(workspace, log),
+                new CategoryService(workspace, log),
+                log)
+            {
+                SelectedType = ResourceType.Dlg
+            };
+            explorer.Initialize();
+
+            explorer.Filter = "veldite";
+
+            ContainsResRef(explorer.Rows, "veldite_terminal").Should().BeTrue(
+                "name and ResRef matches should appear without waiting for the dialogue scan");
+            await WaitUntilAsync(() => !explorer.IsSearchingDialogue);
+            ContainsResRef(explorer.Rows, "veldite_terminal").Should().BeTrue();
+            ContainsResRef(explorer.Rows, "mining").Should().BeTrue(
+                "spoken-text matches should join the ordinary search results");
+        }
+
+        [AvaloniaTest]
+        public void GeneratedDialogueShellsNeverAppearOrCountAsAuthoringContent()
+        {
+            WriteConversation("dialog1", "Generated runtime shell.");
+            WriteConversation("ordinary", "Hand-authored dialogue.");
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            workspace.Open(_root);
+            var explorer = new ModuleExplorerViewModel(
+                workspace,
+                new PropertiesViewModel(workspace, log),
+                new CategoryService(workspace, log),
+                log)
+            {
+                SelectedType = ResourceType.Dlg
+            };
+            explorer.Initialize();
+
+            ContainsResRef(explorer.Rows, "ordinary").Should().BeTrue();
+            ContainsResRef(explorer.Rows, "dialog1").Should().BeFalse();
+            explorer.Tabs.Single(tab => tab.Type == ResourceType.Dlg).Count.Should().Be(1);
+        }
+
         /// <summary>
         /// The declared debounce has to actually be awaited before the corpus is read, not just sit
         /// there unused while the scan starts immediately. A single small conversation scans in a few
@@ -129,8 +179,7 @@ namespace SWLOR.Toolset.Tests
                 new CategoryService(workspace, log),
                 log)
             {
-                SelectedType = ResourceType.Dlg,
-                SearchDialogueText = true
+                SelectedType = ResourceType.Dlg
             };
             explorer.Initialize();
 
@@ -157,8 +206,7 @@ namespace SWLOR.Toolset.Tests
                 new CategoryService(workspace, log),
                 log)
             {
-                SelectedType = ResourceType.Dlg,
-                SearchDialogueText = true
+                SelectedType = ResourceType.Dlg
             };
             explorer.Initialize();
             explorer.Filter = "veldite";

@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
+using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Items;
@@ -287,6 +288,58 @@ namespace SWLOR.Toolset.Tests.Items
         public void Read_WithNoTwoDaServiceReturnsEmptyWithoutThrowing()
         {
             ItemSpellChoiceCatalog.Read(null, null).Should().BeEmpty();
+        }
+
+        [Test]
+        public void Read_RejectsSentinelAndIncompleteSpellRows()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"item-spell-policy-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "iprp_spells.2da"),
+                    "2DA V2.0\r\n\r\n" +
+                    "Label Name CasterLvl InnateLvl SpellIndex PotionUse WandUse GeneralUse Icon\r\n" +
+                    "0 Valid_Spell 100 5 3 42 0 0 1 iss_valid\r\n" +
+                    "1 Calm_Emotions **** **** **** **** **** **** **** ****\r\n" +
+                    "2 Bio_reserved 101 5 3 43 0 0 1 iss_reserved\r\n" +
+                    "3 Missing_Spell_Index 102 5 3 **** 0 0 1 iss_missing\r\n" +
+                    "4 Malformed_StrRef not-a-number 5 3 44 0 0 1 iss_malformed\r\n");
+
+                var choice = ItemSpellChoiceCatalog.Read(new TwoDaService(scratch), _ => null)
+                    .Should().ContainSingle().Which;
+                choice.Value.Should().Be(0);
+                choice.Display.Should().Be("Valid_Spell");
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
+        public void Read_FailsClosedWhenRequiredSpellMetadataIsUnavailable()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"item-spell-metadata-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "iprp_spells.2da"),
+                    "2DA V2.0\r\n\r\nLabel Name SpellIndex\r\n0 Incomplete_Table 100 42\r\n");
+
+                ItemSpellChoiceCatalog.Read(new TwoDaService(scratch), _ => null)
+                    .Should().BeEmpty();
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
         }
 
         // ----- IEditorPromptService test double -----

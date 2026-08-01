@@ -19,6 +19,8 @@ namespace SWLOR.Toolset.Domain.Documents
     /// </remarks>
     public sealed class DlgParam
     {
+        public const string OncePerPlayerPrefix = "once-";
+
         internal const string KeyField = "Key";
         internal const string ValueField = "Value";
 
@@ -49,6 +51,18 @@ namespace SWLOR.Toolset.Domain.Documents
 
         /// <summary>True when this condition is negated (the key carries a leading '!').</summary>
         public bool IsNegated => Key.StartsWith('!');
+
+        /// <summary>
+        /// Metadata paired with an action of the remaining key. The runtime uses its value as the
+        /// player's stable completion marker and does not execute it as a snippet itself.
+        /// </summary>
+        public bool IsOncePerPlayerMarker => Key.StartsWith(OncePerPlayerPrefix, StringComparison.Ordinal);
+
+        public string MarkedActionKey => IsOncePerPlayerMarker
+            ? Key[OncePerPlayerPrefix.Length..]
+            : string.Empty;
+
+        public static string OncePerPlayerKey(string actionKey) => OncePerPlayerPrefix + actionKey;
 
         /// <summary>The raw argument string; arguments are separated by spaces.</summary>
         public string Value

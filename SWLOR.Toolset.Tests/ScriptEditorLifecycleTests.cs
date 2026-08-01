@@ -70,6 +70,7 @@ namespace SWLOR.Toolset.Tests
             (await editor.TrySaveAsync(compileOnSave: false)).Should().BeTrue();
 
             compileCount.Should().Be(0, "F7 performs the one explicit compile after saving");
+            File.ReadAllText(_path).Should().Contain("void main() { int value = 2; }");
         }
 
         [Test]

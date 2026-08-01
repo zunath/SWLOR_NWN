@@ -139,7 +139,7 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void EditingDescriptionPreservesDivergentHistoricalCompanionText()
+        public void EditingDescriptionReplacesDivergentHistoricalCompanionText()
         {
             var path = Path.Combine(
                 CorpusLocator.ModuleDirectory,
@@ -158,7 +158,7 @@ namespace SWLOR.Toolset.Tests.Items
                 "New player-facing text";
 
             store.GetLocalizedText("DescIdentified").Should().Be("New player-facing text");
-            store.GetLocalizedText("Description").Should().Be("Historical unidentified text");
+            store.GetLocalizedText("Description").Should().Be("New player-facing text");
         }
 
         [Test]
@@ -271,6 +271,58 @@ namespace SWLOR.Toolset.Tests.Items
             var row = document.Editor.BasicRows.Single(candidate =>
                 candidate.Definition.Name == "TemplateResRef");
             row.Text = value;
+        }
+
+        [TestCase(0, "", "The identified description")]
+        [TestCase(1, "Authored unidentified text", "Authored identified text")]
+        public async Task SaveAfterAnUnrelatedEditPreservesDistinctEngineDescriptions(
+            int identified,
+            string unidentifiedDescription,
+            string identifiedDescription)
+        {
+            var source = UtiDocument.Load(Scratch("adren_harness"));
+            var store = new ItemValueStore(source.Fields);
+            store.SetInteger(
+                BehaviorFieldStorage.Field,
+                "Identified",
+                GffFieldType.Byte,
+                identified);
+            store.SetLocalizedText("Description", unidentifiedDescription);
+            store.SetLocalizedText("DescIdentified", identifiedDescription);
+            source.Fields.GetLocStringOrNull("Description")!
+                .SetText("2", unidentifiedDescription.Length == 0 ? "" : "Localized unidentified text");
+            source.Fields.GetLocStringOrNull("DescIdentified")!
+                .SetText("2", "Localized identified text");
+            File.WriteAllBytes(Scratch("adren_harness"), source.ToBytes());
+
+            var document = OpenScratch("adren_harness");
+            try
+            {
+                document.IsDirty.Should().BeFalse();
+                document.Editor.BasicRows.Single(row => row.Definition.Name == "Tag").Text =
+                    "description_preservation";
+                document.IsDirty.Should().BeTrue();
+
+                Assert.That(await document.TrySaveAsync(), Is.True);
+
+                var savedDocument = UtiDocument.Load(Scratch("adren_harness"));
+                var saved = new ItemValueStore(savedDocument.Fields);
+                saved.GetLocalizedText("Description")
+                    .Should().Be(unidentifiedDescription);
+                saved.GetLocalizedText("DescIdentified")
+                    .Should().Be(identifiedDescription);
+                savedDocument.Fields.GetLocStringOrNull("Description")!
+                    .GetText("2").Should().Be(
+                        unidentifiedDescription.Length == 0 ? "" : "Localized unidentified text");
+                savedDocument.Fields.GetLocStringOrNull("DescIdentified")!
+                    .GetText("2").Should().Be("Localized identified text");
+                savedDocument.Fields.GetIntOrNull("Identified").Should().Be(identified);
+                document.IsDirty.Should().BeFalse();
+            }
+            finally
+            {
+                document.OnClose();
+            }
         }
 
         [Test]
@@ -434,6 +486,32 @@ namespace SWLOR.Toolset.Tests.Items
             Assert.That(
                 UtiDocument.Load(Scratch("adren_mk3")).TemplateResRef,
                 Is.EqualTo("adren_mk3"));
+        }
+
+        [Test]
+        public async Task SaveNormalizesAnExistingCaseOnlyFilename()
+        {
+            var lowerPath = Scratch("adren_harness");
+            var upperPath = Scratch("ADREN_HARNESS");
+            var intermediatePath = Scratch("case_rename_temp");
+            File.Move(lowerPath, intermediatePath);
+            File.Move(intermediatePath, upperPath);
+
+            var document = OpenScratch("ADREN_HARNESS");
+            var renames = new List<(string OldResRef, string OldPath)>();
+            document.Renamed += (_, oldResRef, oldPath) => renames.Add((oldResRef, oldPath));
+            SetResRef(document, "ADREN_HARNESS");
+
+            Assert.That(await document.TrySaveAsync(), Is.True);
+            var fileNames = Directory.EnumerateFiles(Path.Combine(_root, "uti"))
+                .Select(Path.GetFileName)
+                .ToList();
+            fileNames.Should().Contain("adren_harness.uti.json");
+            fileNames.Should().NotContain("ADREN_HARNESS.uti.json");
+            document.ResRef.Should().Be("adren_harness");
+            document.FilePath.Should().Be(lowerPath);
+            UtiDocument.Load(lowerPath).TemplateResRef.Should().Be("adren_harness");
+            renames.Should().Equal(new[] { ("ADREN_HARNESS", upperPath) });
         }
 
         [Test]

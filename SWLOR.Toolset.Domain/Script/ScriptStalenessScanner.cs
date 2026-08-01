@@ -236,6 +236,51 @@ namespace SWLOR.Toolset.Domain.Script
         }
 
         /// <summary>
+        /// Records the source/include fingerprint that produced a newly installed artifact.
+        /// Compilation can replace bytecode inside the same filesystem timestamp bucket as the
+        /// previous artifact, so waiting for a later timestamp-gated scan can leave the old source
+        /// hash in place and falsely report the successful rebuild as <see cref="StaleReason.SourceReplaced"/>.
+        /// </summary>
+        public bool RecordSuccessfulCompile(string resRef)
+        {
+            if (string.IsNullOrWhiteSpace(resRef) ||
+                !Directory.Exists(_nssDirectory) ||
+                !Directory.Exists(_ncsDirectory))
+            {
+                return false;
+            }
+
+            using var moduleWriteLock = ModuleWriteLock.Acquire(ModuleRoot());
+            var source = Path.Combine(_nssDirectory, resRef + ".nss");
+            var compiled = Path.Combine(_ncsDirectory, resRef + ".ncs");
+            if (!File.Exists(source) || !File.Exists(compiled))
+                return false;
+
+            try
+            {
+                if (!IsEntryPoint(ScriptTextDocument.Load(source).Text))
+                    return false;
+
+                var graph = ScriptIncludeGraph.Build(_nssDirectory);
+                var sourceHash = TryHashSources(resRef, graph);
+                if (sourceHash == null)
+                    return false;
+
+                var fingerprints = ScriptFingerprintStore.Load(_ncsDirectory);
+                fingerprints.Record(resRef, new ScriptFingerprint(
+                    File.GetLastWriteTimeUtc(source),
+                    sourceHash,
+                    File.GetLastWriteTimeUtc(compiled)));
+                fingerprints.SaveIfDirty();
+                return true;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Deletes every orphaned artifact the fingerprint store knows about - a .ncs whose .nss
         /// was deleted after being scanned as a sourced entry point - and forgets the entries.
         /// Build All runs this so a <see cref="StaleReason.SourceDeleted"/> finding is actually

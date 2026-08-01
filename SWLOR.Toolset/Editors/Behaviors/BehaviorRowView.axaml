@@ -60,43 +60,24 @@
         </ComboBox.ItemTemplate>
       </ComboBox>
 
-      <!-- A set too long to scroll past becomes a visible, filtered select list rather than a
-           drop-down: a builder can see every valid option without having to guess part of its name
-           first, and only picking a listed option writes a value. -->
-      <StackPanel IsVisible="{Binding IsSearchableChoice}" Spacing="6">
-        <TextBlock Text="{Binding SelectedChoiceDisplay}" TextTrimming="CharacterEllipsis"
-                   VerticalAlignment="Center" />
-        <TextBox Text="{Binding ChoiceSearchText, Mode=TwoWay}"
-                 Watermark="{Binding SearchWatermark}" />
-        <TextBlock Text="{Binding SearchSummary}" Classes="count" />
-        <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
-                ClipToBounds="True">
-          <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding FilteredChoices}">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
-                  <Button Classes="behavior" Classes.on="{Binding IsSelected}"
-                          Content="{Binding Display}" Margin="2" Padding="8,5"
-                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                          Command="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).PickChoiceCommand}"
-                          CommandParameter="{Binding}" />
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </ScrollViewer>
-        </Border>
-      </StackPanel>
+      <!-- A long set stays lightweight until this particular picker is opened. The shared control
+           also gives dense editors the same deferred, virtualized catalog in compact mode. -->
+      <behaviors:SearchableChoicePickerView IsVisible="{Binding IsSearchableChoice}" />
 
       <!-- A set of pictures that fits the page is shown on it. The difference between a blue marker
            and a treasure marker, or between two load screens, is visible and not sayable, so a list
            of their names is not a picker for them. Tiles are still published a page at a time and
            each one's picture is requested only once its tile exists. -->
       <StackPanel IsVisible="{Binding IsInlineGallery}" Spacing="6" HorizontalAlignment="Stretch">
-        <TextBox Text="{Binding GalleryQuery, Mode=TwoWay}" Watermark="{Binding SearchWatermark}" />
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+          <TextBox Text="{Binding GalleryQuery, Mode=TwoWay}" Watermark="{Binding SearchWatermark}" />
+          <Button Grid.Column="1" Content="{Binding ClearChoiceLabel}" Command="{Binding ClearChoiceCommand}"
+                  IsVisible="{Binding CanClearChoice}" />
+        </Grid>
         <TextBlock Text="{Binding GallerySummary}" Classes="count" />
         <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
                 ClipToBounds="True">
-          <ScrollViewer MaxHeight="330" VerticalScrollBarVisibility="Auto"
+          <ScrollViewer MaxHeight="{Binding GalleryViewportHeight}" VerticalScrollBarVisibility="Auto"
                         ScrollChanged="OnChoiceGalleryScrollChanged">
             <ItemsControl ItemsSource="{Binding GalleryChoices}" Margin="2">
               <ItemsControl.ItemsPanel>
@@ -110,8 +91,9 @@
                           Margin="3" Padding="4"
                           Command="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).PickChoiceCommand}"
                           CommandParameter="{Binding}">
-                    <StackPanel Width="104" Spacing="3">
-                      <Panel Height="78">
+                    <StackPanel Width="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).GalleryTileWidth}"
+                                Spacing="3">
+                      <Panel Height="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).GalleryThumbnailHeight}">
                         <!-- The letter stands in until the picture lands, so the grid is never a
                              field of empty boxes while it fills. The option that means "any of
                              them" draws a mark instead: it has no picture because there is no one
@@ -131,6 +113,9 @@
                       <TextBlock Text="{Binding Detail}" Classes="mono" FontSize="9.5"
                                  TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"
                                  IsVisible="{Binding HasDetail}" />
+                      <TextBlock Text="{Binding Summary}" Classes="dim" FontSize="9.5"
+                                 TextWrapping="Wrap" MaxHeight="30"
+                                 IsVisible="{Binding HasSummary}" />
                     </StackPanel>
                   </Button>
                 </DataTemplate>
@@ -158,7 +143,8 @@
                 <TextBlock Text="{Binding SelectedChoiceDisplay}" FontSize="15"
                            Foreground="{DynamicResource InkBrush}"
                            HorizontalAlignment="Center" VerticalAlignment="Center"
-                           TextWrapping="Wrap" TextAlignment="Center" Margin="10" />
+                           TextWrapping="Wrap" TextAlignment="Center" Margin="10"
+                           IsVisible="{Binding SelectedPreview, Converter={x:Static ObjectConverters.IsNull}}" />
                 <Image Source="{Binding SelectedPreview}" Stretch="Uniform" />
               </Panel>
             </Border>
@@ -168,12 +154,35 @@
                  IsLightDismissEnabled="True">
             <Border Background="{DynamicResource PanelBrush}" CornerRadius="4" Padding="8"
                     BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
-              <Grid RowDefinitions="Auto,Auto,*" Width="680">
+              <Grid RowDefinitions="Auto,Auto,Auto,*" Width="680">
                 <TextBox Grid.Row="0" Text="{Binding GalleryQuery, Mode=TwoWay}"
                          Watermark="Search by name or resource" />
-                <TextBlock Grid.Row="1" Text="{Binding GallerySummary}" Classes="count"
+                <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="12" Margin="0,8,0,0">
+                  <ItemsControl Grid.Column="0" ItemsSource="{Binding GalleryFilters}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <WrapPanel />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="behaviors:GalleryFilterViewModel">
+                        <StackPanel Width="142" Spacing="3" Margin="0,0,8,0">
+                          <TextBlock Text="{Binding Label}" Classes="label" />
+                          <ComboBox ItemsSource="{Binding Options}"
+                                    SelectedItem="{Binding SelectedOption, Mode=TwoWay}" />
+                        </StackPanel>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <StackPanel Grid.Column="1" Width="142" Spacing="3">
+                    <TextBlock Text="Sort" Classes="label" />
+                    <ComboBox ItemsSource="{Binding GallerySortOptions}"
+                              SelectedItem="{Binding SelectedGallerySort, Mode=TwoWay}" />
+                  </StackPanel>
+                </Grid>
+                <TextBlock Grid.Row="2" Text="{Binding GallerySummary}" Classes="count"
                            Margin="2,6" />
-                <ScrollViewer Grid.Row="2" MaxHeight="520"
+                <ScrollViewer Grid.Row="3" MaxHeight="470"
                               ScrollChanged="OnChoiceGalleryScrollChanged">
                   <ItemsControl ItemsSource="{Binding GalleryChoices}" Margin="1">
                     <ItemsControl.ItemsPanel>

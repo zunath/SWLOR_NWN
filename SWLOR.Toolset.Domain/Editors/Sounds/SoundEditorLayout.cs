@@ -31,13 +31,13 @@ namespace SWLOR.Toolset.Domain.Editors.Sounds
             new BehaviorFieldDefinition
             {
                 Label = "ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
-                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsReadOnly = true
+                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsRequired = true
             },
             new BehaviorFieldDefinition
             {
                 Label = "Category", Name = "PaletteID", Kind = BehaviorFieldKind.Choice,
                 FieldType = GffFieldType.Byte, ChoicesKey = SoundChoiceKeys.PaletteCategories,
-                IsSearchable = true
+                IsSearchable = true, IsInlineSearch = true
             },
             new BehaviorFieldDefinition
             {

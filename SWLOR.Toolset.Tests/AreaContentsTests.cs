@@ -1,6 +1,8 @@
 using System.Numerics;
+using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
@@ -347,6 +349,10 @@ namespace SWLOR.Toolset.Tests
             (await editor.TrySaveAsync()).Should().BeTrue();
             notifications.Should().Be(1,
                 "placed-instance tags and script slots are indexed from GIT, not ARE");
+            new GitDocument(JsonGffDocument.Load(
+                    Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json")))
+                .Placeables[0].GetStringOrNull("Tag")
+                .Should().Be("git_only_catalog_refresh");
         }
 
         [Test]
@@ -370,6 +376,28 @@ namespace SWLOR.Toolset.Tests
 
             notifications.Should().Be(1);
             editor.SectionFor(ResourceType.Utp)!.Rows[0].Tag.Should().Be(diskTag);
+        }
+
+        [Test]
+        public async Task SavingGitRechecksTheCleanGicPartnerUnderTheCommitLease()
+        {
+            var gicPath = Path.Combine(_moduleRoot, "gic", $"{AreaResRef}.gic.json");
+            var racingGeneration = File.ReadAllBytes(gicPath);
+            racingGeneration = racingGeneration.Concat(Encoding.UTF8.GetBytes(" ")).ToArray();
+            var prompts = new PairSaveRacePrompts(_moduleRoot, gicPath, racingGeneration);
+            var editor = CreateEditor(prompts);
+            var section = editor.SectionFor(ResourceType.Utp)!;
+            section.SelectedRow = section.Rows[0];
+            section.DetailTag = "pair_race_local_edit";
+
+            var gitPath = Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json");
+            File.SetLastWriteTimeUtc(gitPath, File.GetLastWriteTimeUtc(gitPath).AddSeconds(2));
+
+            (await editor.TrySaveAsync()).Should().BeFalse(
+                "a clean GIC changed after planning must not be paired with the stale edited GIT");
+            await prompts.WriterFinished.WaitAsync(TimeSpan.FromSeconds(5));
+            File.ReadAllBytes(gicPath).Should().Equal(racingGeneration);
+            editor.IsDirty.Should().BeTrue();
         }
 
         private static int CountUnder(AreaContentsNodeViewModel kind) =>
@@ -413,6 +441,49 @@ namespace SWLOR.Toolset.Tests
 
             public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string path) =>
                 Task.FromResult(ExternalChangeChoice.Reload);
+
+            public Task<string?> PromptForTextAsync(
+                string headline, string message, string initialValue, string confirmLabel) =>
+                Task.FromResult<string?>(null);
+
+            public Task<bool> ConfirmDestructiveAsync(
+                string headline, string message, string confirmLabel) =>
+                Task.FromResult(true);
+        }
+
+        private sealed class PairSaveRacePrompts(
+            string moduleRoot,
+            string gicPath,
+            byte[] racingGeneration) : IEditorPromptService
+        {
+            private readonly TaskCompletionSource<bool> _writerStarted =
+                new(TaskCreationOptions.RunContinuationsAsynchronously);
+            private Task? _writer;
+
+            public Task WriterFinished => _writer ?? Task.CompletedTask;
+
+            public async Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string path)
+            {
+                if (_writer == null)
+                {
+                    using (ExecutionContext.SuppressFlow())
+                    {
+                        _writer = Task.Run(async () =>
+                        {
+                            using var moduleWriteLock = ModuleWriteLock.Acquire(moduleRoot);
+                            _writerStarted.TrySetResult(true);
+                            await Task.Delay(500).ConfigureAwait(false);
+                            File.WriteAllBytes(gicPath, racingGeneration);
+                        });
+                    }
+                }
+
+                await _writerStarted.Task.ConfigureAwait(false);
+                return ExternalChangeChoice.Overwrite;
+            }
+
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string name) =>
+                Task.FromResult(UnsavedChangesChoice.Cancel);
 
             public Task<string?> PromptForTextAsync(
                 string headline, string message, string initialValue, string confirmLabel) =>

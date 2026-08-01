@@ -116,9 +116,7 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": "Nova. An initiative started to end the constant warring in the galaxy. Led by the Jedi, funded by Senators all over the galaxy, the Nova Initiative is here to save the day. At least, it means to."
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",

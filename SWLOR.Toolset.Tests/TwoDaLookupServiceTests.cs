@@ -45,16 +45,30 @@ namespace SWLOR.Toolset.Tests
             foreach (var table in new[]
                      {
                          TwoDaLookupTables.Gender, TwoDaLookupTables.Phenotype,
-                         TwoDaLookupTables.SoundSet, TwoDaLookupTables.BaseItem
+                         TwoDaLookupTables.SoundSet, TwoDaLookupTables.BaseItem,
+                         TwoDaLookupTables.PlaceableModel, TwoDaLookupTables.ItemSpell,
+                         TwoDaLookupTables.Race,
+                         TwoDaLookupTables.CreatureSpeed
                      })
             {
-                var rows = service.GetRows(table.TableName, table.LabelColumn, table.StrRefColumn);
+                var rows = service.GetRows(table);
 
                 rows.Should().NotBeEmpty($"{table.TableName}.2da must yield dropdown options");
                 rows.Should().OnlyContain(r => !string.IsNullOrWhiteSpace(r.DisplayName),
                     $"every {table.TableName} option needs display text - a blank one would render as an unusable empty row");
                 rows.Select(r => r.Id).Should().OnlyHaveUniqueItems($"{table.TableName} ids are row indices");
             }
+        }
+
+        [Test]
+        public void RaceOptionsExcludeEveryReservedAndStructurallyInvalidRow()
+        {
+            var rows = CreateService().GetRows(TwoDaLookupTables.Race);
+
+            rows.Should().Contain(row => row.Label == "Human");
+            rows.Should().Contain(row => row.Label == "Chiss");
+            rows.Should().OnlyContain(row => TwoDaChoicePolicy.IsSelectableLabel(row.Label));
+            rows.Select(row => row.Id).Should().NotContain(new[] { 21, 22, 26, 27, 28, 30, 54 });
         }
 
         [Test]

@@ -15,10 +15,17 @@ namespace SWLOR.Toolset.Tests.Items
         [TestCase("DELETED", "AArCl", false)]
         [TestCase("deleted", "AArCl", false)]
         [TestCase("Deleted_Shortsword", "AArCl", false, TestName = "ContainsDeletedAnywhere")]
+        [TestCase("bio_reserved", "AArCl", false)]
+        [TestCase("BIO_RESERVED", "AArCl", false)]
+        [TestCase("cep_reserved", "AArCl", false)]
         [TestCase("Padding", "AArCl", false)]
         [TestCase("PADDING", "AArCl", false)]
         [TestCase("Shortsword", null, false, TestName = "BlankItemClassIsRejected")]
         [TestCase("Shortsword", "", false)]
+        [TestCase("USER", "AArCl", false)]
+        [TestCase("Unused", "AArCl", false)]
+        [TestCase("INVALID_ITEM", "AArCl", false)]
+        [TestCase("NULL6", "AArCl", false)]
         [TestCase("Shortsword", "WSwSbre", true)]
         public void IsOffered_MatchesExpectation(string? label, string? itemClass, bool expected)
         {
@@ -29,6 +36,15 @@ namespace SWLOR.Toolset.Tests.Items
         [TestCase("bad strref", false)]
         [TestCase("BAD STRREF", false)]
         [TestCase("  Bad Strref  ", false)]
+        [TestCase("bio_reserved", false)]
+        [TestCase("BIO_RESERVED", false)]
+        [TestCase("cep_reserved", false)]
+        [TestCase("DELETED", false)]
+        [TestCase("Padding", false)]
+        [TestCase("USER", false)]
+        [TestCase("Unused", false)]
+        [TestCase("INVALID_ITEM", false)]
+        [TestCase("NULL6", false)]
         [TestCase("", false)]
         [TestCase("   ", false)]
         [TestCase("Shortsword", true)]
@@ -65,7 +81,9 @@ namespace SWLOR.Toolset.Tests.Items
 
                 var lowered = label!.Trim().ToLowerInvariant();
                 lowered.Should().NotContain("deleted", $"row {row} should not have been offered");
+                lowered.Should().NotContain("reserved", $"row {row} should not have been offered");
                 lowered.Should().NotBe("padding", $"row {row} should not have been offered");
+                lowered.Should().NotBe("user", $"row {row} should not have been offered");
                 offered++;
             }
 

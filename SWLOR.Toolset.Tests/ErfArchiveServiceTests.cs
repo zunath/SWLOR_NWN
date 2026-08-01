@@ -22,11 +22,19 @@ namespace SWLOR.Toolset.Tests
         private string _secondModule = string.Empty;
         private WorkspaceContext _workspace = null!;
         private ErfArchiveService _service = null!;
+        private int _workspaceDispatches;
+        private int _customContentReloads;
+        private IReadOnlyList<string> _reloadedHakNames = Array.Empty<string>();
+        private string? _reloadedCustomTlk;
 
         [SetUp]
         public void SetUp()
         {
             ModuleMutationLock.ModuleWrites = null;
+            _workspaceDispatches = 0;
+            _customContentReloads = 0;
+            _reloadedHakNames = Array.Empty<string>();
+            _reloadedCustomTlk = null;
             _root = Path.Combine(Path.GetTempPath(), $"swlor-erf-{Guid.NewGuid():N}");
             _firstModule = Path.Combine(_root, "first", "Module");
             _secondModule = Path.Combine(_root, "second", "Module");
@@ -42,7 +50,22 @@ namespace SWLOR.Toolset.Tests
                 _workspace,
                 log,
                 Path.Combine(tools, "nwn_erf.exe"),
-                Path.Combine(tools, "nwn_gff.exe"));
+                Path.Combine(tools, "nwn_gff.exe"),
+                dispatchToUiThread: action =>
+                {
+                    _workspaceDispatches++;
+                    action();
+                    return Task.CompletedTask;
+                },
+                reloadCustomContent: (moduleRoot, _) =>
+                {
+                    var ifo = IfoDocument.Load(
+                        Path.Combine(moduleRoot, "ifo", "module.ifo.json"));
+                    _customContentReloads++;
+                    _reloadedHakNames = ifo.HakNames;
+                    _reloadedCustomTlk = ifo.CustomTlk;
+                    return Task.CompletedTask;
+                });
         }
 
         [TearDown]
@@ -598,6 +621,8 @@ namespace SWLOR.Toolset.Tests
             new VarTable(imported.Root)
                 .GetInt(BlueprintTemplateFactory.NoEconomyVariable)
                 .Should().Be(1, "a newly imported item with no player source must stay out of economy searches");
+            _workspaceDispatches.Should().Be(1,
+                "post-import catalog notifications must pass through the UI dispatcher as one batch");
         }
 
         [Test]
@@ -773,6 +798,63 @@ namespace SWLOR.Toolset.Tests
             dependencies.Select(dependency => dependency.FileName)
                 .Should().Contain($"{sharedResRef}.utc")
                 .And.Contain($"{sharedResRef}.uti");
+        }
+
+        [Test]
+        public async Task EmbeddedItemTemplateResRefsAreDiscoveredAsDependencies()
+        {
+            const string creatureResRef = "embedded_owner";
+            const string inventoryResRef = "embedded_inv";
+            const string equippedResRef = "embedded_equip";
+            var creature = JsonGffDocument.Parse(
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utc,
+                    creatureResRef,
+                    "Embedded Item Owner"));
+            using (EditScope.EnterConstruction())
+            {
+                creature.Root.Add(
+                    "ItemList",
+                    SyntheticGit.ListOf(SyntheticGit.Instance(
+                        ("TemplateResRef", GffFieldType.ResRef, inventoryResRef))));
+                creature.Root.Get("Equip_ItemList").InsertElement(
+                    0,
+                    SyntheticGit.Instance(
+                        ("TemplateResRef", GffFieldType.ResRef, equippedResRef)));
+            }
+
+            File.WriteAllBytes(
+                Path.Combine(_firstModule, "utc", $"{creatureResRef}.utc.json"),
+                creature.ToBytes());
+            foreach (var itemResRef in new[] { inventoryResRef, equippedResRef })
+            {
+                File.WriteAllBytes(
+                    Path.Combine(_firstModule, "uti", $"{itemResRef}.uti.json"),
+                    BlueprintTemplateFactory.CreateFileContent(
+                        ResourceType.Uti,
+                        itemResRef,
+                        itemResRef));
+            }
+
+            var archivePath = Path.Combine(_root, "embedded-item-dependencies.erf");
+            await _service.ExportAsync(
+                new[]
+                {
+                    $"{creatureResRef}.utc",
+                    $"{inventoryResRef}.uti",
+                    $"{equippedResRef}.uti"
+                },
+                archivePath);
+            using var archive = await _service.OpenArchiveAsync(archivePath);
+
+            var dependencies = await _service.FindImportDependenciesAsync(
+                archive,
+                new[] { $"{creatureResRef}.utc" });
+
+            dependencies.Select(dependency => dependency.FileName)
+                .Should().BeEquivalentTo(
+                    $"{inventoryResRef}.uti",
+                    $"{equippedResRef}.uti");
         }
 
         [Test]
@@ -1446,6 +1528,12 @@ namespace SWLOR.Toolset.Tests
                 ("ScriptSpawn", GffFieldType.ResRef, "shared"));
             var placedItem = SyntheticGit.Instance(
                 ("TemplateResRef", GffFieldType.ResRef, "shared"));
+            var inventoryItem = SyntheticGit.Instance(
+                ("TemplateResRef", GffFieldType.ResRef, "shared"));
+            var equippedItem = SyntheticGit.Instance(
+                ("TemplateResRef", GffFieldType.ResRef, "shared"));
+            creature.Add("ItemList", SyntheticGit.ListOf(inventoryItem));
+            creature.Add("Equip_ItemList", SyntheticGit.ListOf(equippedItem));
             var git = new JsonGffDocument("GIT ", new JsonGffStruct());
             git.Root.Add("Creature List", SyntheticGit.ListOf(creature));
             git.Root.Add("List", SyntheticGit.ListOf(placedItem));
@@ -1497,6 +1585,10 @@ namespace SWLOR.Toolset.Tests
             importedCreature.Get("Conversation").GetString().Should().Be("renamed_dialog");
             importedCreature.Get("ScriptSpawn").GetString().Should().Be("renamed_script");
             importedCreature.Get("TemplateResRef").GetString().Should().NotBe("renamed_item");
+            importedCreature.Get("ItemList").Elements!.Single()
+                .Get("TemplateResRef").GetString().Should().Be("renamed_item");
+            importedCreature.Get("Equip_ItemList").Elements!.Single()
+                .Get("TemplateResRef").GetString().Should().Be("renamed_item");
             importedGit.Items.Should().ContainSingle()
                 .Which.Get("TemplateResRef").GetString().Should().Be("renamed_item");
             var importedScript = File.ReadAllText(
@@ -1669,6 +1761,34 @@ namespace SWLOR.Toolset.Tests
             result.Replaced.Should().Be(1);
             IfoDocument.Load(Path.Combine(_secondModule, "ifo", "module.ifo.json"))
                 .AreaResRefs.Should().Contain(areaResRef);
+        }
+
+        [Test]
+        public async Task ReplacingModuleIfoReloadsTheInstalledCustomContentAssignments()
+        {
+            EnsureModuleIfo(_secondModule);
+            _workspace.Open(_secondModule);
+            var source = Path.Combine(_root, "replacement_module.ifo.json");
+            var importedIfo = IfoDocument.Load(
+                Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"));
+            importedIfo.SetHakNames(new[] { "imported_hak_a", "imported_hak_b" });
+            importedIfo.CustomTlk = "imported_tlk";
+            File.WriteAllBytes(source, importedIfo.ToBytes());
+            _customContentReloads = 0;
+
+            var result = await _service.ImportAsync(new[]
+            {
+                CreateImportChoice(
+                    source,
+                    "module",
+                    "ifo",
+                    ErfConflictAction.Replace)
+            });
+
+            result.Replaced.Should().Be(1);
+            _customContentReloads.Should().Be(1);
+            _reloadedHakNames.Should().Equal("imported_hak_a", "imported_hak_b");
+            _reloadedCustomTlk.Should().Be("imported_tlk");
         }
 
         [Test]

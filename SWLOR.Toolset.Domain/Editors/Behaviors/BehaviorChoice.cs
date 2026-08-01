@@ -1,5 +1,18 @@
+using SWLOR.Toolset.Domain.Workspace;
+
 namespace SWLOR.Toolset.Domain.Editors.Behaviors
 {
+    /// <summary>
+    /// One reusable filter value carried by a visual choice. The shared gallery discovers these
+    /// facets rather than knowing which editor or resource type supplied them.
+    /// </summary>
+    public sealed record BehaviorChoiceFacet(
+        string GroupKey,
+        string GroupLabel,
+        string ValueKey,
+        string Display,
+        int Order = 0);
+
     /// <summary>One named value of a Choice row.</summary>
     /// <remarks>
     /// ToString is the display name and nothing else. A combo box falls back to ToString when it has
@@ -15,6 +28,13 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
 
         public string Display { get; }
 
+        /// <summary>
+        /// Optional secondary, builder-facing description shown by the shared searchable picker.
+        /// Item choices use it for a compact stat line; choices without one retain the existing
+        /// single-line presentation.
+        /// </summary>
+        public string? Summary { get; init; }
+
         /// <summary>A texture this choice is pictured by: a load screen, a portrait.</summary>
         public string? ImageResRef { get; }
 
@@ -25,6 +45,22 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         /// </summary>
         public string? ModelResRef { get; }
 
+        /// <summary>Remote reference artwork loaded by the shared preview pipeline.</summary>
+        public string? ImageUrl { get; }
+
+        /// <summary>
+        /// Optional blueprint type whose ordinary Toolset thumbnail pictures this choice. Item and
+        /// creature pickers use the same render queue and cache as the palette instead of inventing
+        /// a second preview pipeline.
+        /// </summary>
+        public ResourceType? BlueprintPreviewType { get; init; }
+
+        /// <summary>The resref sent to <see cref="BlueprintPreviewType"/>'s thumbnail service.</summary>
+        public string? BlueprintPreviewResRef { get; init; }
+
+        /// <summary>Whether this choice can ask its editor to play a representative audio cue.</summary>
+        public bool CanPreviewAudio { get; }
+
         /// <summary>
         /// Whether this option stands for "any of them" rather than for one of them — the load
         /// screen row that leaves the choice to the destination area. It has no picture because
@@ -33,30 +69,46 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         /// </summary>
         public bool IsAny { get; init; }
 
+        /// <summary>
+        /// Optional metadata the shared gallery turns into filter controls. Portraits currently
+        /// provide gender, race, and subject facets; another visual picker can add its own groups
+        /// without adding editor-specific branches to the gallery.
+        /// </summary>
+        public IReadOnlyList<BehaviorChoiceFacet> GalleryFacets { get; init; } =
+            Array.Empty<BehaviorChoiceFacet>();
+
         public bool IsStringValue => StringValue != null;
 
         public BehaviorChoice(
             long value,
             string display,
             string? imageResRef = null,
-            string? modelResRef = null)
+            string? modelResRef = null,
+            string? imageUrl = null,
+            bool canPreviewAudio = false)
         {
             Value = value;
             Display = display;
             ImageResRef = imageResRef;
             ModelResRef = modelResRef;
+            ImageUrl = imageUrl;
+            CanPreviewAudio = canPreviewAudio;
         }
 
         public BehaviorChoice(
             string value,
             string display,
             string? imageResRef = null,
-            string? modelResRef = null)
+            string? modelResRef = null,
+            string? imageUrl = null,
+            bool canPreviewAudio = false)
         {
             StringValue = value ?? throw new ArgumentNullException(nameof(value));
             Display = display;
             ImageResRef = imageResRef;
             ModelResRef = modelResRef;
+            ImageUrl = imageUrl;
+            CanPreviewAudio = canPreviewAudio;
         }
 
         public override string ToString() => Display;

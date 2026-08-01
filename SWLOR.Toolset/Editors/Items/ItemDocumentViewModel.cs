@@ -11,6 +11,7 @@ using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Render.Icons;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
@@ -18,11 +19,11 @@ namespace SWLOR.Toolset.Editors.Items
 {
     /// <summary>An item blueprint document hosting the behavior-shaped item editor.</summary>
     /// <remarks>
-    /// The one document whose save can rename its file: the ResRef row is editable, and a resref
-    /// IS the file name, so a save under a changed resref writes the new file, deletes the old,
-    /// and rebinds the session rather than letting the field and the file drift apart. A rename is
-    /// refused while other content (loot tables, palettes, stores, instances) still names the old
-    /// resref - deleting the file those references point at would break each of them silently.
+    /// The ResRef row is editable, and a ResRef is the file name, so a save under a changed value
+    /// writes the new file, removes the old, and rebinds the session rather than letting field and
+    /// file drift apart. The application supplies the shared blueprint coordinator, which also
+    /// rebuilds placed instances; the standalone fallback used by focused tests retains the older
+    /// fail-closed reference check.
     /// </remarks>
     public partial class ItemDocumentViewModel : Document, IEditorDocument
     {
@@ -31,6 +32,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly DocumentSession _session;
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
+        private readonly BlueprintSaveCoordinator? _saveCoordinator;
 
         /// <summary>(old resref, own file path) -> files still referencing that resref.</summary>
         private readonly Func<string, string, IReadOnlyList<string>>? _findReferences;
@@ -94,7 +96,8 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, string, IReadOnlyList<string>>? findReferences = null,
             Func<string, bool>? canRefileCategories = null,
             Func<string, string, CategorySaveResult>? refileCategories = null,
-            TintMapCatalog? tintMapCatalog = null)
+            TintMapCatalog? tintMapCatalog = null,
+            BlueprintSaveCoordinator? saveCoordinator = null)
         {
             _log = log;
             _prompts = prompts;
@@ -102,6 +105,7 @@ namespace SWLOR.Toolset.Editors.Items
             _findReferences = findReferences;
             _canRefileCategories = canRefileCategories;
             _refileCategories = refileCategories;
+            _saveCoordinator = saveCoordinator;
             Id = $"item:{filePath}";
             _session = DocumentSession.Open(filePath);
 
@@ -205,15 +209,23 @@ namespace SWLOR.Toolset.Editors.Items
                 if (Editor.TemplateResRef != targetResRef && !Editor.NormalizeResRef(targetResRef))
                     return false;
 
+                if (_saveCoordinator != null)
+                    return SaveWithCoordinator(targetResRef);
+
                 using var moduleWriteLock =
                     ModuleWriteLock.AcquireForResourcePath(_session.FilePath);
-                var renaming = !string.Equals(targetResRef, _resRef, StringComparison.OrdinalIgnoreCase);
+                var renaming = !string.Equals(targetResRef, _resRef, StringComparison.Ordinal);
+                var caseOnlyRename = renaming &&
+                                     string.Equals(
+                                         targetResRef,
+                                         _resRef,
+                                         StringComparison.OrdinalIgnoreCase);
                 var newPath = _session.FilePath;
                 if (renaming && !TryResolveRenameTarget(targetResRef, out newPath))
                     return false;
-                if (renaming && IsStillReferenced(targetResRef))
+                if (renaming && !caseOnlyRename && IsStillReferenced(targetResRef))
                     return false;
-                if (renaming && !CanRefileCategories(targetResRef))
+                if (renaming && !caseOnlyRename && !CanRefileCategories(targetResRef))
                     return false;
 
                 // Everything above - the reference sweep and the category preflight - reads the disk
@@ -234,13 +246,15 @@ namespace SWLOR.Toolset.Editors.Items
                 var oldResRef = _resRef;
                 var moving = renaming &&
                              !string.Equals(oldPath, newPath, StringComparison.OrdinalIgnoreCase);
-                var moduleRoot = moving
+                var changingPathSpelling = renaming &&
+                                           !string.Equals(oldPath, newPath, StringComparison.Ordinal);
+                var moduleRoot = changingPathSpelling
                     ? Directory.GetParent(Path.GetDirectoryName(oldPath)!)?.FullName
                       ?? throw new InvalidOperationException(
                           $"Could not determine the module root for '{oldPath}'.")
                     : null;
                 var saveBytes = _session.ToBytes();
-                using var renameRecovery = moving
+                using var renameRecovery = changingPathSpelling
                     ? ItemRenameRecovery.Begin(
                         moduleRoot!,
                         oldPath,
@@ -253,7 +267,24 @@ namespace SWLOR.Toolset.Editors.Items
                 // check above ran before the (potentially long) reference scan, and a blueprint
                 // another process created in that window must fail this save rather than be
                 // silently replaced and then orphaned by the delete below.
-                if (renaming && !string.Equals(_session.FilePath, newPath, StringComparison.OrdinalIgnoreCase))
+                if (caseOnlyRename && changingPathSpelling)
+                {
+                    if (!renameRecovery!.OriginalStillMatches())
+                    {
+                        _log.AppendLine(
+                            $"Cannot normalize the filename for {_resRef}: {oldPath} changed while " +
+                            "the save was being prepared. Nothing was written - reload and try again.");
+                        return false;
+                    }
+
+                    // Windows keeps the existing directory-entry casing when a file is overwritten.
+                    // Remove the old spelling first, under the recovery transaction's module lock,
+                    // then create the canonical lowercase path as a new directory entry.
+                    File.Delete(oldPath);
+                    SaveService.WriteAtomicNew(newPath, saveBytes);
+                }
+                else if (renaming &&
+                         !string.Equals(_session.FilePath, newPath, StringComparison.OrdinalIgnoreCase))
                     SaveService.WriteAtomicNew(newPath, saveBytes);
                 else if (!SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
                 {
@@ -316,6 +347,47 @@ namespace SWLOR.Toolset.Editors.Items
                 _log.AppendLine($"Save failed for {_session.FilePath}: {ex.Message}");
                 return false;
             }
+        }
+
+        private bool SaveWithCoordinator(string targetResRef)
+        {
+            var oldResRef = _resRef;
+            var oldPath = _session.FilePath;
+            var outcome = _saveCoordinator!.Save(
+                _session,
+                ResourceType.Uti,
+                oldResRef,
+                targetResRef);
+            if (!outcome.Saved)
+                return false;
+
+            var savedBytes = _session.ToBytes();
+            if (outcome.Renamed)
+            {
+                _resRef = targetResRef;
+                Id = $"item:{_session.FilePath}";
+                Editor.SetHeaderOwner(targetResRef);
+            }
+
+            _session.UndoStack.MarkSaved();
+            _session.RecordCurrentFileState(savedBytes);
+            AfterHistoryChange();
+            if (outcome.Renamed)
+            {
+                Renamed?.Invoke(this, oldResRef, oldPath);
+                _log.AppendLine(
+                    $"Saved {oldPath} as {_session.FilePath} and updated " +
+                    $"{outcome.UpdatedInstances} placed instance" +
+                    $"{(outcome.UpdatedInstances == 1 ? string.Empty : "s")}.");
+            }
+            else
+            {
+                _log.AppendLine($"Saved {_session.FilePath}.");
+            }
+
+            CatalogEntryChanged?.Invoke();
+            Editor.RefreshSource();
+            return true;
         }
 
         /// <summary>

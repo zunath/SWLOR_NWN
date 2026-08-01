@@ -30,15 +30,10 @@ namespace SWLOR.Toolset.Domain.Documents
         /// <summary>How many panels a store's StoreList always has; the panel is its __struct_id.</summary>
         private const int StorePanelCount = 5;
 
-        /// <remarks>
-        /// Merchants are intentionally excluded even though their scalar fields can be templated:
-        /// the editor does not yet expose StoreList inventory, so creating an empty merchant would
-        /// strand the builder with a store that cannot be stocked.
-        /// </remarks>
         public static bool Supports(ResourceType type)
         {
             return type is ResourceType.Utc or ResourceType.Uti or ResourceType.Utp or ResourceType.Utd
-                or ResourceType.Utt or ResourceType.Uts or ResourceType.Utw;
+                or ResourceType.Utm or ResourceType.Utt or ResourceType.Uts or ResourceType.Utw;
         }
 
         public static byte[] CreateFileContent(ResourceType type, string resRef, string displayName)
@@ -107,45 +102,6 @@ namespace SWLOR.Toolset.Domain.Documents
             };
         }
 
-        /// <summary>
-        /// The body parts an appearance-6 creature needs to be assembled into a visible model.
-        /// </summary>
-        /// <remarks>
-        /// Appearance 6 is a <c>MODELTYPE P</c> dynamic human: it has no model of its own, and is built
-        /// from these per-part pieces. Without them the parts list is empty, <c>BlueprintModelResolver</c>
-        /// returns no model, and the new creature is invisible - with no way to repair it, because the
-        /// editor schema exposes no part fields either.
-        /// <para>
-        /// 1 is the base variant of each structural part, matching what the module's own appearance-6
-        /// creatures carry. The three accessory slots - belt and both shoulders - take 0, which means "no
-        /// piece", again as the checked-in creatures have them. Colours take 1 rather than 0 for the same
-        /// reason a new creature gets ability 10 rather than 0: a neutral starting value the builder can
-        /// change, not an edge one.
-        /// </para>
-        /// </remarks>
-        private static void AddDynamicHumanParts(JsonGffStruct root)
-        {
-            root.SetInt("Appearance_Head", GffFieldType.Byte, 1);
-            root.SetInt("ArmorPart_RFoot", GffFieldType.Byte, 1);
-
-            foreach (var part in new[]
-                     {
-                         "BodyPart_LBicep", "BodyPart_LFArm", "BodyPart_LFoot", "BodyPart_LHand",
-                         "BodyPart_LShin", "BodyPart_LThigh", "BodyPart_Neck", "BodyPart_Pelvis",
-                         "BodyPart_RBicep", "BodyPart_RFArm", "BodyPart_RHand", "BodyPart_RShin",
-                         "BodyPart_RThigh", "BodyPart_Torso"
-                     })
-            {
-                root.SetInt(part, GffFieldType.Byte, 1);
-            }
-
-            foreach (var accessory in new[] { "BodyPart_Belt", "BodyPart_LShoul", "BodyPart_RShoul" })
-                root.SetInt(accessory, GffFieldType.Byte, 0);
-
-            foreach (var colour in new[] { "Color_Hair", "Color_Skin", "Color_Tattoo1", "Color_Tattoo2" })
-                root.SetInt(colour, GffFieldType.Byte, 1);
-        }
-
         private static void PopulateCreature(JsonGffStruct root, string resRef, string name)
         {
             SetIdentity(root, "TemplateResRef", resRef);
@@ -165,7 +121,7 @@ namespace SWLOR.Toolset.Domain.Documents
             root.SetInt("StartingPackage", GffFieldType.Byte, 4);
             root.SetInt("Race", GffFieldType.Byte, 6);
             root.SetInt("Appearance_Type", GffFieldType.Word, 6);
-            AddDynamicHumanParts(root);
+            CreatureAppearanceDefaults.ApplyGenericSegmentedBody(root);
 
             // The engine expects one rank entry per skills.2da row, always present.
             var skillList = root.GetOrAddList("SkillList");
@@ -338,13 +294,17 @@ namespace SWLOR.Toolset.Domain.Documents
             root.SetInt("MarkUp", GffFieldType.Int, 100);
             root.SetInt("MarkDown", GffFieldType.Int, 40);
             root.SetInt("BM_MarkDown", GffFieldType.Int, 25);
-            root.SetInt("IdentifyPrice", GffFieldType.Int, 100);
+            // SWLOR always identifies merchandise for free, accepts the engine's stolen flag, and
+            // has no per-store spending limit. The dedicated editor keeps these policy fields out
+            // of the form and reasserts them on every save.
+            root.SetInt("IdentifyPrice", GffFieldType.Int, 0);
             root.SetInt("MaxBuyPrice", GffFieldType.Int, -1); // -1 = no cap
             root.SetInt("StoreGold", GffFieldType.Int, -1); // -1 = unlimited gold
-            root.SetInt("BlackMarket", GffFieldType.Byte, 0);
-            root.SetInt("ID", GffFieldType.Byte, 0);
+            root.SetInt("BlackMarket", GffFieldType.Byte, 1);
+            root.SetInt("ID", GffFieldType.Byte, 5); // Merchants in storepalcus.itp
 
-            SetEmptyResRefs(root, "OnOpenStore", "OnStoreClosed");
+            root.SetString("OnOpenStore", GffFieldType.ResRef, "on_open_store");
+            root.SetString("OnStoreClosed", GffFieldType.ResRef, "on_close_store");
         }
 
         private static void PopulateTrigger(JsonGffStruct root, string resRef, string name)

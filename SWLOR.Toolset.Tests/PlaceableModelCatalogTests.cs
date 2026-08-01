@@ -26,7 +26,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void GetAll_OverTheRealTable_KeepsEveryRowThatHasAModel()
+        public void GetAll_OverTheRealTable_KeepsEverySelectableRowThatHasAModel()
         {
             var catalog = TryCreate();
             if (catalog == null)
@@ -37,10 +37,44 @@ namespace SWLOR.Toolset.Tests
             rows.Should().NotBeEmpty();
             rows.Should().OnlyContain(row => !string.IsNullOrEmpty(row.ModelName),
                 "a row with no model is not pickable and must be dropped");
+            rows.Should().OnlyContain(row => TwoDaChoicePolicy.IsSelectableLabel(row.ModelName),
+                "reserved model resrefs are engine slots rather than builder choices");
             rows.Should().OnlyContain(row => !string.IsNullOrEmpty(row.DisplayName),
                 "an unlabelled row falls back to its model resref, so a caption is always present");
             rows.Count(row => !row.HasLabel).Should().BeGreaterThan(0,
                 "most of the table has no label - that is why the grid exists");
+        }
+
+        [Test]
+        public void GetAll_FiltersSentinelsFromLabelsAndModelResRefs()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"placeable-model-policy-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "placeables.2da"),
+                    "2DA V2.0\r\n\r\nLabel StrRef ModelName\r\n" +
+                    "0 Real_Placeable **** real_model\r\n" +
+                    "1 **** **** unlabeled_model\r\n" +
+                    "2 **** **** bio_reserved\r\n" +
+                    "3 CEP_RESERVED **** reserved_model\r\n" +
+                    "4 Real_No_Model **** ****\r\n" +
+                    "5 User002 **** user_model\r\n");
+                var catalog = new PlaceableModelCatalog(
+                    new TwoDaService(scratch),
+                    new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
+
+                catalog.GetAll().Select(row => row.Id).Should().Equal(0, 1);
+                catalog.GetAll()[1].Should().Be(
+                    new PlaceableModelRow(1, "unlabeled_model", "unlabeled_model", false));
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
         }
 
         [Test]

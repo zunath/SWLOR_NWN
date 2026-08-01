@@ -284,7 +284,12 @@ namespace SWLOR.Toolset.Tests
                 foreach (var node in document.Entries.Concat(document.Replies))
                 {
                     foreach (var action in node.Actions)
+                    {
+                        if (action.IsOncePerPlayerMarker)
+                            continue;
+
                         yield return (file, action.Key, action.Arguments);
+                    }
                 }
             }
         }

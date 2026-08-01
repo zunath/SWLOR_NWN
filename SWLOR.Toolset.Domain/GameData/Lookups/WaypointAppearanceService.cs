@@ -26,17 +26,25 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     {
         private const string TableName = "waypoint";
 
-        private readonly Lazy<IReadOnlyList<WaypointAppearanceRow>> _rows;
-        private readonly Lazy<IReadOnlyDictionary<int, WaypointAppearanceRow>> _byId;
+        private readonly ReloadableLazy<IReadOnlyList<WaypointAppearanceRow>> _rows;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, WaypointAppearanceRow>> _byId;
 
         public WaypointAppearanceService(TwoDaService twoDa, TlkService tlk)
         {
             if (twoDa is null) throw new ArgumentNullException(nameof(twoDa));
             if (tlk is null) throw new ArgumentNullException(nameof(tlk));
 
-            _rows = new Lazy<IReadOnlyList<WaypointAppearanceRow>>(() => Build(twoDa, tlk));
-            _byId = new Lazy<IReadOnlyDictionary<int, WaypointAppearanceRow>>(
+            _rows = new ReloadableLazy<IReadOnlyList<WaypointAppearanceRow>>(() => Build(twoDa, tlk));
+            _byId = new ReloadableLazy<IReadOnlyDictionary<int, WaypointAppearanceRow>>(
                 () => _rows.Value.ToDictionary(row => row.Id));
+            twoDa.TablesReloaded += Invalidate;
+            tlk.CustomTlkReloaded += Invalidate;
+        }
+
+        private void Invalidate()
+        {
+            _rows.Reset();
+            _byId.Reset();
         }
 
         /// <summary>All non-reserved waypoint.2da rows, in row (Appearance) order.</summary>
@@ -47,22 +55,31 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private static IReadOnlyList<WaypointAppearanceRow> Build(TwoDaService twoDa, TlkService tlk)
         {
-            var table = twoDa.GetTable(TableName);
+            var definition = TwoDaLookupTables.WaypointAppearance;
+            var modelColumn = definition.RequiredColumns!.Single();
+            var table = twoDa.GetTable(definition.TableName);
+            if (!table.HasColumn(definition.LabelColumn) || !table.HasColumn(modelColumn))
+                return Array.Empty<WaypointAppearanceRow>();
+
             var results = new List<WaypointAppearanceRow>();
 
             for (var row = 0; row < table.RowCount; row++)
             {
-                var label = table.GetString(row, "LABEL");
-                if (string.IsNullOrEmpty(label))
+                var label = table.GetString(row, definition.LabelColumn);
+                var model = table.GetString(row, modelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
+                    !TwoDaChoicePolicy.IsSelectableLabel(model))
+                {
                     continue;
+                }
 
-                var strref = table.GetInt(row, "STRREF");
+                var strref = table.GetInt(row, definition.StrRefColumn!);
 
                 results.Add(new WaypointAppearanceRow(
                     row,
-                    label,
-                    DisplayNameResolver.Resolve(tlk, strref, label),
-                    table.GetString(row, "RESREF")));
+                    label!,
+                    DisplayNameResolver.Resolve(tlk, strref, label!),
+                    model));
             }
 
             return results;

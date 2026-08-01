@@ -32,6 +32,8 @@ namespace SWLOR.Toolset.Domain.Workspace
             }
 
             var existing = Directory.EnumerateFiles(moduleRoot, "*.mod")
+                .Where(path => !Path.GetFileName(path)
+                    .EndsWith(".packing.mod", StringComparison.OrdinalIgnoreCase))
                 .OrderByDescending(File.GetLastWriteTimeUtc)
                 .FirstOrDefault();
             return existing != null ? Path.GetFileName(existing) : DefaultFileName;

@@ -499,7 +499,7 @@ namespace SWLOR.Toolset.Domain.Documents
 
         /// <summary>Deep-clones a field (recursively for struct/list children) so the new
         /// instance shares no mutable state with the source blueprint document.</summary>
-        private static JsonGffField CloneField(JsonGffField source)
+        public static JsonGffField CloneField(JsonGffField source)
         {
             JsonGffField clone;
             switch (source.Type)

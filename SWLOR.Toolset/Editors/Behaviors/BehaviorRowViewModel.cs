@@ -30,7 +30,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
     public partial class BehaviorRowViewModel : ObservableObject, IDisposable
     {
         /// <summary>Gallery tiles published per page, and per scroll once the builder reaches the end.</summary>
-        private const int GalleryPageSize = 48;
+        public const int GalleryPageSize = 48;
 
         /// <summary>How long typing pauses before the gallery re-filters.</summary>
         private static readonly TimeSpan SearchDebounce = TimeSpan.FromMilliseconds(250);
@@ -43,14 +43,37 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// </remarks>
         public const int MaxSearchResults = 200;
 
+        /// <summary>How many search matches are published on first open and per explicit load.</summary>
+        /// <remarks>
+        /// Search rows live inside larger editor forms. Publishing even the full capped set for
+        /// every field at once still realizes hundreds of buttons while changing behaviors. A
+        /// page keeps the initial interaction bounded; the virtualized list and search box handle
+        /// browsing, and builders can request another page when they actually need it.
+        /// </remarks>
+        public const int SearchPageSize = 50;
+
         private readonly Action? _valueChanged;
         private readonly ChoicePreviewService? _previews;
+        private readonly Func<BehaviorChoice, string?>? _previewAudio;
+        private readonly Func<string, int, int, Task<IReadOnlyList<BehaviorChoice>>>? _choicePageLoader;
+        private Func<IReadOnlyList<BehaviorChoice>>? _choiceLoader;
+        private Func<Task<IReadOnlyList<BehaviorChoice>>>? _asyncChoiceLoader;
+        private List<BehaviorChoiceViewModel> _searchMatches = new();
         private List<BehaviorChoiceViewModel> _galleryMatches = new();
         private CancellationTokenSource? _searchDebounce;
+        private int _searchPublished;
         private int _galleryPublished;
+        private int _choicePageOffset;
+        private int _choicePageRequestGeneration;
+        private bool _choicePagesActivated;
+        private bool _choicePagesExhausted;
+        private bool _choicePageLoading;
+        private bool _reusePagedChoicesOnNextRebuild;
         private bool _galleryBuilt;
+        private bool _galleryControlsBuilt;
         private bool _disposed;
         private bool _loading;
+        private BehaviorChoiceViewModel? _markedChoice;
 
         public BehaviorFieldDefinition Definition { get; }
 
@@ -82,14 +105,50 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         public bool HasCounter => MaxLength > 0;
 
-        /// <summary>Resolved at construction, so a game-data choice set and a fixed one read alike.</summary>
-        public IReadOnlyList<BehaviorChoiceViewModel> Choices { get; }
+        private IReadOnlyList<BehaviorChoiceViewModel> _choices =
+            Array.Empty<BehaviorChoiceViewModel>();
+
+        /// <summary>The choice models, resolved only when a deferred picker is opened.</summary>
+        public IReadOnlyList<BehaviorChoiceViewModel> Choices
+        {
+            get => _choices;
+            private set
+            {
+                if (!SetProperty(ref _choices, value))
+                    return;
+
+                _galleryControlsBuilt = false;
+                GalleryFilters.Clear();
+                GallerySortOptions.Clear();
+                _selectedGallerySort = null;
+                NotifyChoicePresentationChanged();
+            }
+        }
+
+        /// <summary>Whether this row has paid the cost of resolving and wrapping its option set.</summary>
+        public bool AreChoicesLoaded =>
+            _choiceLoader == null &&
+            _asyncChoiceLoader == null &&
+            (_choicePageLoader == null || _choicePagesActivated && !_choicePageLoading);
+
+        /// <summary>True while a repository-backed gallery is resolving its next bounded page.</summary>
+        public bool IsGalleryLoading => _choicePageLoading;
 
         /// <summary>The filtered slice of <see cref="Choices"/> a searchable row shows.</summary>
         public ObservableCollection<BehaviorChoiceViewModel> FilteredChoices { get; } = new();
 
         /// <summary>The published page of gallery tiles, for a choice row whose options have artwork.</summary>
         public ObservableCollection<BehaviorChoiceViewModel> GalleryChoices { get; } = new();
+
+        /// <summary>
+        /// Facet controls discovered from the current visual choices. The gallery owns this once;
+        /// individual editors only describe their choices.
+        /// </summary>
+        public ObservableCollection<GalleryFilterViewModel> GalleryFilters { get; } = new();
+
+        public ObservableCollection<GallerySortOption> GallerySortOptions { get; } = new();
+
+        public bool HasGalleryFilters => GalleryFilters.Count > 0;
 
         public bool IsText => Definition.Kind is BehaviorFieldKind.Text or BehaviorFieldKind.Script;
         public bool IsLocalizedText => Definition.Kind == BehaviorFieldKind.LocalizedText;
@@ -140,7 +199,9 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// the page rather than as a list of names. The load screens, the door appearances, the
         /// portraits, and the waypoint markers all arrive this way.
         /// </summary>
-        public bool IsGallery => IsChoice && Choices.Any(choice => choice.HasArtwork);
+        public bool IsGallery => IsChoice &&
+                                 (_choicePageLoader != null ||
+                                  AreChoicesLoaded && Choices.Any(choice => choice.HasArtwork));
 
         /// <summary>
         /// A gallery whose whole set fits on the page, shown there rather than behind a button. A
@@ -162,6 +223,11 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// </summary>
         protected virtual int InlineGalleryLimit => 120;
 
+        /// <summary>Tile sizing hooks for editors that give the shared gallery a full work pane.</summary>
+        public virtual double GalleryTileWidth => 104;
+        public virtual double GalleryThumbnailHeight => 78;
+        public virtual double GalleryViewportHeight => 330;
+
         /// <summary>
         /// A choice row the builder searches rather than scrolls. Declared per field, and forced on
         /// once a set is large enough that a drop-down stops being usable. A gallery is already a
@@ -169,7 +235,14 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// </summary>
         public virtual bool IsSearchableChoice =>
             IsChoice && !IsGallery &&
-            (Definition.IsSearchable || Choices.Count > SearchableChoiceThreshold);
+            (Definition.IsSearchable || Definition.IsInlineSearch ||
+             AreChoicesLoaded && Choices.Count > SearchableChoiceThreshold);
+
+        /// <summary>
+        /// A searchable list that remains visible in the form. Palette category fields use this
+        /// shared presentation in every blueprint editor; heavyweight catalogs stay collapsed.
+        /// </summary>
+        public bool IsInlineSearchChoice => IsSearchableChoice && Definition.IsInlineSearch;
 
         /// <summary>A plain drop-down: every choice row that is neither searchable nor a gallery.</summary>
         public virtual bool IsPlainChoice => IsChoice && !IsGallery && !IsSearchableChoice;
@@ -191,7 +264,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// Whether this row carries a value at all — what the footer's "still needs" list reads.
         /// </summary>
         public virtual bool HasValue =>
-            IsChoice ? Choice != null :
+            IsChoice ? Choice != null || !AreChoicesLoaded && HasStoredChoiceValue() :
             IsTextEntry || IsParagraph ? !string.IsNullOrWhiteSpace(Text) :
             true;
 
@@ -199,12 +272,32 @@ namespace SWLOR.Toolset.Editors.Behaviors
         public bool IsEmpty => !HasValue;
 
         /// <summary>Number of options matched by the current search, for the row's count line.</summary>
-        public string SearchSummary =>
-            FilteredChoices.Count == Choices.Count
-                ? $"{Choices.Count} option{(Choices.Count == 1 ? string.Empty : "s")}"
-                : FilteredChoices.Count == 0
-                    ? "No matching options"
-                    : $"{FilteredChoices.Count} of {Choices.Count} options";
+        public string SearchSummary
+        {
+            get
+            {
+                if (!AreChoicesLoaded)
+                    return "Options load when opened";
+                if (!IsSearchExpanded)
+                    return $"{Choices.Count} option{(Choices.Count == 1 ? string.Empty : "s")}";
+                if (_searchMatches.Count == 0)
+                    return "No matching options";
+                if (ChoiceSearchText.Trim().Length > 0 && FilteredChoices.Count >= _searchMatches.Count)
+                    return $"{_searchMatches.Count} of {Choices.Count} options";
+
+                if (FilteredChoices.Count >= _searchMatches.Count)
+                {
+                    var suffix = _searchMatches.Count == 1 ? string.Empty : "s";
+                    return $"{_searchMatches.Count} option{suffix}";
+                }
+
+                return $"{FilteredChoices.Count} shown of {_searchMatches.Count} options";
+            }
+        }
+
+        public bool CanLoadMoreSearchResults =>
+            IsSearchExpanded &&
+            _searchPublished < Math.Min(_searchMatches.Count, MaxSearchResults);
 
         /// <summary>Watermark for a searchable row's filter box, named after what it searches.</summary>
         public string SearchWatermark => $"Search {Label.ToLowerInvariant()}";
@@ -214,13 +307,36 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// because a row whose stored value matches nothing has no Choice at all, and binding
         /// through the null logs an error on every render.
         /// </summary>
-        public string SelectedChoiceDisplay => Choice?.Display ?? "Nothing chosen";
+        public virtual string SelectedChoiceDisplay => Choice?.Display ?? StoredChoiceDisplay();
+
+        /// <summary>
+        /// Whether this choice row can remove its stored value. Most engine fields always carry a
+        /// value; linked-resource pickers such as creature equipment opt in and reuse the same
+        /// progressive chooser rather than building a second search-list control.
+        /// </summary>
+        public virtual bool CanClearChoice => false;
+
+        /// <summary>The clear action's builder-facing label when a linked choice can be absent.</summary>
+        public virtual string ClearChoiceLabel => "Clear";
 
         /// <summary>How much of the gallery is on screen, for its count line.</summary>
         public string GallerySummary
         {
             get
             {
+                if (_choicePageLoader != null)
+                {
+                    if (_choicePageLoading && GalleryChoices.Count == 0)
+                        return "Loading choices...";
+                    if (GalleryChoices.Count == 0)
+                        return "No choices match";
+
+                    var suffix = GalleryChoices.Count == 1 ? string.Empty : "s";
+                    return _choicePagesExhausted
+                        ? $"{GalleryChoices.Count} choice{suffix}"
+                        : $"{GalleryChoices.Count} choice{suffix} loaded · scroll for more";
+                }
+
                 if (_galleryMatches.Count == 0)
                     return "No choices match";
 
@@ -230,7 +346,9 @@ namespace SWLOR.Toolset.Editors.Behaviors
             }
         }
 
-        public bool CanLoadMoreGallery => _galleryPublished < _galleryMatches.Count;
+        public bool CanLoadMoreGallery => _choicePageLoader != null
+            ? _choicePagesActivated && !_choicePageLoading && !_choicePagesExhausted
+            : _galleryPublished < _galleryMatches.Count;
 
         [ObservableProperty]
         private string _text = string.Empty;
@@ -260,6 +378,10 @@ namespace SWLOR.Toolset.Editors.Behaviors
         [ObservableProperty]
         private string _choiceSearchText = string.Empty;
 
+        /// <summary>Search results stay collapsed until the builder opens this particular field.</summary>
+        [ObservableProperty]
+        private bool _isSearchExpanded;
+
         /// <summary>
         /// What a read-only Statement row prints: the stored value, so a builder can see what the
         /// behavior wrote without being offered a box that would fight it.
@@ -280,6 +402,20 @@ namespace SWLOR.Toolset.Editors.Behaviors
         [ObservableProperty]
         private string _galleryQuery = string.Empty;
 
+        private GallerySortOption? _selectedGallerySort;
+
+        public GallerySortOption? SelectedGallerySort
+        {
+            get => _selectedGallerySort;
+            set
+            {
+                if (!SetProperty(ref _selectedGallerySort, value) || !_galleryBuilt)
+                    return;
+
+                RebuildGallery();
+            }
+        }
+
         /// <summary>The chosen option's picture, shown large enough to actually judge.</summary>
         [ObservableProperty]
         private Bitmap? _selectedPreview;
@@ -298,18 +434,35 @@ namespace SWLOR.Toolset.Editors.Behaviors
             Func<string, Action, bool> runEdit,
             IReadOnlyList<BehaviorChoice>? choices = null,
             Action? valueChanged = null,
-            ChoicePreviewService? previews = null)
+            ChoicePreviewService? previews = null,
+            Func<BehaviorChoice, string?>? previewAudio = null,
+            Func<IReadOnlyList<BehaviorChoice>>? choiceLoader = null,
+            Func<Task<IReadOnlyList<BehaviorChoice>>>? asyncChoiceLoader = null,
+            Func<string, int, int, Task<IReadOnlyList<BehaviorChoice>>>? choicePageLoader = null)
         {
             Definition = definition ?? throw new ArgumentNullException(nameof(definition));
             Store = store ?? throw new ArgumentNullException(nameof(store));
             RunEditFunc = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _valueChanged = valueChanged;
             _previews = previews;
+            _previewAudio = previewAudio;
+            var choiceSourceCount = (choices != null ? 1 : 0) +
+                                    (choiceLoader != null ? 1 : 0) +
+                                    (asyncChoiceLoader != null ? 1 : 0) +
+                                    (choicePageLoader != null ? 1 : 0);
+            if (choiceSourceCount > 1)
+                throw new ArgumentException(
+                    "Provide eager choices, one deferred choice loader, or a paged choice loader, not more than one.");
+
+            _choiceLoader = choiceLoader;
+            _asyncChoiceLoader = asyncChoiceLoader;
+            _choicePageLoader = choicePageLoader;
             // Wrapping the choices costs nothing: no picture is decoded or rendered until a tile
             // that shows one exists, and then only for the page that has been published. Building
             // the rows used to decode every load screen - around thirty megabytes of DDS - before
             // the tab could draw, which is what made switching to Area Transition stall.
-            Choices = BehaviorChoiceViewModel.From(choices ?? definition.Choices);
+            if (choiceLoader == null && asyncChoiceLoader == null && choicePageLoader == null)
+                Choices = BehaviorChoiceViewModel.From(choices ?? definition.Choices);
         }
 
         /// <summary>
@@ -318,6 +471,12 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// </summary>
         public void Reload()
         {
+            if (Definition.IsInlineSearch)
+            {
+                LoadSynchronousDeferredChoices();
+                IsSearchExpanded = true;
+            }
+
             _loading = true;
             try
             {
@@ -328,10 +487,17 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 _loading = false;
             }
 
-            if (IsSearchableChoice)
+            if (IsSearchableChoice && IsSearchExpanded)
+            {
                 ChoiceSearchText = string.Empty;
-
-            RebuildFilteredChoices();
+                RebuildFilteredChoices();
+            }
+            else
+            {
+                FilteredChoices.Clear();
+                _searchMatches.Clear();
+                _searchPublished = 0;
+            }
 
             // An inline grid is part of the row rather than something opened, so it is built with the
             // row. Only the published page costs anything: the tiles beyond it are not realized and
@@ -438,18 +604,74 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 Choice = option;
 
             IsGalleryOpen = false;
+            if (!IsInlineSearchChoice)
+                IsSearchExpanded = false;
         }
 
         [RelayCommand]
-        private void ClearSearch() => ChoiceSearchText = string.Empty;
+        private void ClearSearch()
+        {
+            if (ChoiceSearchText.Length == 0)
+                RebuildFilteredChoices();
+            else
+                ChoiceSearchText = string.Empty;
+        }
+
+        /// <summary>
+        /// Resolves this one option set and publishes its first page. Merely displaying the editor
+        /// or changing behaviors never calls a deferred loader.
+        /// </summary>
+        [RelayCommand]
+        private async Task OpenSearch()
+        {
+            await EnsureChoicesLoadedAsync().ConfigureAwait(true);
+
+            // Loading can reveal that this is an artwork picker. Open that reusable surface rather
+            // than also constructing a text-result list for the same choices.
+            if (IsPopupGallery)
+            {
+                await OpenGallery().ConfigureAwait(true);
+                return;
+            }
+
+            if (IsInlineGallery || !IsSearchableChoice)
+                return;
+
+            IsSearchExpanded = true;
+            if (ChoiceSearchText.Length == 0)
+                RebuildFilteredChoices();
+            else
+                ChoiceSearchText = string.Empty;
+        }
+
+        [RelayCommand]
+        private void CloseSearch() => IsSearchExpanded = false;
+
+        [RelayCommand]
+        private void LoadMoreSearchResults() => PublishSearchPage();
+
+        [RelayCommand]
+        protected virtual void ClearChoice()
+        {
+        }
+
+        [RelayCommand]
+        private void PreviewAudio(BehaviorChoiceViewModel? option)
+        {
+            if (option?.CanPreviewAudio != true || _previewAudio == null)
+                return;
+            Status = _previewAudio(option.Choice);
+            IsStatusGood = string.IsNullOrWhiteSpace(Status);
+        }
 
         /// <summary>
         /// Opens a popup gallery, building it on the first open. Until then the row has paid for
         /// exactly one picture — the one it is showing.
         /// </summary>
         [RelayCommand]
-        private void OpenGallery()
+        private async Task OpenGallery()
         {
+            await EnsureChoicesLoadedAsync().ConfigureAwait(true);
             if (!IsPopupGallery)
                 return;
 
@@ -462,7 +684,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
         }
 
         [RelayCommand]
-        private void LoadMoreGallery() => PublishGalleryPage();
+        private async Task LoadMoreGallery() =>
+            await PublishGalleryPageAsync().ConfigureAwait(true);
 
         partial void OnGalleryQueryChanged(string value)
         {
@@ -492,25 +715,143 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 TaskScheduler.Default);
         }
 
-        private void RebuildGallery()
+        private void RebuildGallery() => _ = RebuildGalleryAsync();
+
+        private async Task RebuildGalleryAsync()
         {
             if (_disposed)
                 return;
 
             _galleryBuilt = true;
+
+            // A repository-backed gallery owns only the pages it has published. Search starts a
+            // fresh page at the source; scrolling asks for the next page. This is the same bounded
+            // item flow used by the merchant editor, generalized here so other blueprint pickers
+            // do not need to duplicate it.
+            if (_choicePageLoader != null)
+            {
+                if (!_reusePagedChoicesOnNextRebuild &&
+                    !await LoadChoicePageAsync(reset: true).ConfigureAwait(true))
+                {
+                    return;
+                }
+                _reusePagedChoicesOnNextRebuild = false;
+
+                if (_disposed)
+                    return;
+
+                EnsureGalleryControls();
+                _galleryPublished = 0;
+                GalleryChoices.Clear();
+                PublishLoadedGalleryChoices();
+                return;
+            }
+
+            EnsureGalleryControls();
             var words = (GalleryQuery ?? string.Empty)
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            _galleryMatches = Choices
+            IEnumerable<BehaviorChoiceViewModel> matches = Choices
                 .Where(candidate => words.All(word =>
                     candidate.Display.Contains(word, StringComparison.OrdinalIgnoreCase) ||
-                    (candidate.Detail?.Contains(word, StringComparison.OrdinalIgnoreCase) ?? false)))
-                .ToList();
+                    (candidate.Detail?.Contains(word, StringComparison.OrdinalIgnoreCase) ?? false)));
+
+            foreach (var filter in GalleryFilters)
+            {
+                var selected = filter.SelectedOption.ValueKey;
+                if (selected == null)
+                    continue;
+
+                matches = matches.Where(candidate => candidate.Choice.GalleryFacets.Any(facet =>
+                    string.Equals(facet.GroupKey, filter.GroupKey, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(facet.ValueKey, selected, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            matches = SelectedGallerySort?.Mode switch
+            {
+                GallerySortMode.NameAscending => matches
+                    .OrderBy(candidate => candidate.Display, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(candidate => candidate.Value),
+                GallerySortMode.NameDescending => matches
+                    .OrderByDescending(candidate => candidate.Display, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(candidate => candidate.Value),
+                GallerySortMode.IdAscending => matches.OrderBy(candidate => candidate.Value),
+                GallerySortMode.IdDescending => matches.OrderByDescending(candidate => candidate.Value),
+                _ => matches
+            };
+
+            _galleryMatches = matches.ToList();
             _galleryPublished = 0;
             GalleryChoices.Clear();
-            PublishGalleryPage();
+            PublishLoadedGalleryChoices();
         }
 
-        private void PublishGalleryPage()
+        private void EnsureGalleryControls()
+        {
+            if (_galleryControlsBuilt)
+                return;
+
+            _galleryControlsBuilt = true;
+            GalleryFilters.Clear();
+            GallerySortOptions.Clear();
+
+            var facets = Choices.SelectMany(choice => choice.Choice.GalleryFacets).ToList();
+            foreach (var group in facets.GroupBy(
+                         facet => facet.GroupKey,
+                         StringComparer.OrdinalIgnoreCase))
+            {
+                var values = group
+                    .GroupBy(facet => facet.ValueKey, StringComparer.OrdinalIgnoreCase)
+                    .Select(valueGroup => valueGroup
+                        .OrderBy(facet => facet.Order)
+                        .ThenBy(facet => facet.Display, StringComparer.OrdinalIgnoreCase)
+                        .First())
+                    .OrderBy(facet => facet.Order)
+                    .ThenBy(facet => facet.Display, StringComparer.OrdinalIgnoreCase)
+                    .Select(facet => new GalleryFilterOption(facet.ValueKey, facet.Display))
+                    .ToList();
+
+                if (values.Count <= 1)
+                    continue;
+
+                values.Insert(0, new GalleryFilterOption(null, "All"));
+                GalleryFilters.Add(new GalleryFilterViewModel(
+                    group.Key,
+                    group.First().GroupLabel,
+                    values,
+                    RebuildGallery));
+            }
+
+            GallerySortOptions.Add(new GallerySortOption(GallerySortMode.Default, "Default order"));
+            GallerySortOptions.Add(new GallerySortOption(GallerySortMode.NameAscending, "Name A-Z"));
+            GallerySortOptions.Add(new GallerySortOption(GallerySortMode.NameDescending, "Name Z-A"));
+            if (Choices.All(choice => !choice.Choice.IsStringValue))
+            {
+                GallerySortOptions.Add(new GallerySortOption(GallerySortMode.IdAscending, "ID low-high"));
+                GallerySortOptions.Add(new GallerySortOption(GallerySortMode.IdDescending, "ID high-low"));
+            }
+
+            _selectedGallerySort = GallerySortOptions[0];
+            OnPropertyChanged(nameof(SelectedGallerySort));
+            OnPropertyChanged(nameof(HasGalleryFilters));
+        }
+
+        private async Task PublishGalleryPageAsync()
+        {
+            if (_disposed || !_galleryBuilt)
+                return;
+
+            if (_choicePageLoader != null)
+            {
+                if (!await LoadChoicePageAsync(reset: false).ConfigureAwait(true))
+                    return;
+                PublishLoadedGalleryChoices();
+                return;
+            }
+
+            PublishLoadedGalleryChoices();
+        }
+
+        private void PublishLoadedGalleryChoices()
         {
             if (_disposed || !_galleryBuilt)
                 return;
@@ -525,6 +866,77 @@ namespace SWLOR.Toolset.Editors.Behaviors
             }
 
             _galleryPublished = end;
+            OnPropertyChanged(nameof(GallerySummary));
+            OnPropertyChanged(nameof(CanLoadMoreGallery));
+        }
+
+        private async Task<bool> LoadChoicePageAsync(bool reset)
+        {
+            if (_choicePageLoader == null || !_choicePagesActivated)
+                return false;
+
+            var offset = reset ? 0 : _choicePageOffset;
+            if (!reset && (_choicePagesExhausted || _choicePageLoading))
+                return false;
+
+            var query = (GalleryQuery ?? string.Empty).Trim();
+            var requestGeneration = reset
+                ? ++_choicePageRequestGeneration
+                : _choicePageRequestGeneration;
+            _choicePageLoading = true;
+            NotifyChoicePageStateChanged();
+            try
+            {
+                var sourcePage = await _choicePageLoader(
+                    query,
+                    offset,
+                    GalleryPageSize + 1).ConfigureAwait(true);
+                if (_disposed || requestGeneration != _choicePageRequestGeneration ||
+                    !string.Equals(query, (GalleryQuery ?? string.Empty).Trim(), StringComparison.Ordinal))
+                {
+                    return false;
+                }
+
+                var visiblePage = sourcePage.Take(GalleryPageSize).ToList();
+                var wrapped = BehaviorChoiceViewModel.From(visiblePage);
+
+                if (reset)
+                {
+                    Choices = wrapped;
+                    _galleryMatches = wrapped.ToList();
+                    _galleryPublished = 0;
+                    _choicePageOffset = wrapped.Count;
+                }
+                else if (wrapped.Count > 0)
+                {
+                    _choices = Choices.Concat(wrapped).ToList();
+                    _galleryMatches.AddRange(wrapped);
+                    _choicePageOffset += wrapped.Count;
+                }
+
+                _choicePagesExhausted = sourcePage.Count <= GalleryPageSize || wrapped.Count == 0;
+                return true;
+            }
+            finally
+            {
+                if (requestGeneration == _choicePageRequestGeneration)
+                {
+                    _choicePageLoading = false;
+                    NotifyChoicePageStateChanged();
+                }
+            }
+        }
+
+        private void NotifyChoicePageStateChanged()
+        {
+            OnPropertyChanged(nameof(IsGalleryLoading));
+            OnPropertyChanged(nameof(AreChoicesLoaded));
+            OnPropertyChanged(nameof(IsGallery));
+            OnPropertyChanged(nameof(IsInlineGallery));
+            OnPropertyChanged(nameof(IsPopupGallery));
+            OnPropertyChanged(nameof(IsSearchableChoice));
+            OnPropertyChanged(nameof(IsInlineSearchChoice));
+            OnPropertyChanged(nameof(IsPlainChoice));
             OnPropertyChanged(nameof(GallerySummary));
             OnPropertyChanged(nameof(CanLoadMoreGallery));
         }
@@ -614,6 +1026,18 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         partial void OnChoiceSearchTextChanged(string value) => RebuildFilteredChoices();
 
+        partial void OnIsSearchExpandedChanged(bool value)
+        {
+            OnPropertyChanged(nameof(SearchSummary));
+            OnPropertyChanged(nameof(CanLoadMoreSearchResults));
+            if (value)
+                return;
+
+            FilteredChoices.Clear();
+            _searchMatches.Clear();
+            _searchPublished = 0;
+        }
+
         /// <summary>Called whenever the selected choice changes, including during a reload.</summary>
         /// <remarks>
         /// A popup gallery resolves one picture, not the whole set: the chosen option is the only
@@ -622,12 +1046,16 @@ namespace SWLOR.Toolset.Editors.Behaviors
         protected virtual void OnChoiceSelected(BehaviorChoiceViewModel? value)
         {
             OnPropertyChanged(nameof(SelectedChoiceDisplay));
+            OnPropertyChanged(nameof(CanClearChoice));
 
-            // Every choice presentation marks what is stored rather than restating it underneath -
-            // a gallery tile, and equally a searchable list's row - so the option a builder is
-            // looking at is the answer to "which one is this", on load and after every pick.
-            foreach (var choice in Choices)
-                choice.IsSelected = ReferenceEquals(choice, value);
+            // Mark only the two entries whose state changed. Walking thousands of choices on every
+            // reload or pick made the row cost proportional to its entire catalog even though only
+            // a virtualized page can be visible.
+            if (_markedChoice != null && !ReferenceEquals(_markedChoice, value))
+                _markedChoice.IsSelected = false;
+            if (value != null)
+                value.IsSelected = true;
+            _markedChoice = value;
 
             if (IsPopupGallery)
                 _ = LoadSelectedPreviewAsync(value);
@@ -691,34 +1119,142 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         private void RebuildFilteredChoices()
         {
-            if (!IsSearchableChoice)
+            if (!IsSearchableChoice || !IsSearchExpanded || !AreChoicesLoaded)
                 return;
 
             var query = ChoiceSearchText.Trim();
+            _searchMatches = Choices.Where(option =>
+                    query.Length == 0 ||
+                    option.Display.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                    (option.StringValue?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false))
+                .ToList();
+            _searchPublished = 0;
             FilteredChoices.Clear();
+            PublishSearchPage();
+        }
 
-            var published = 0;
-            foreach (var option in Choices)
+        private void PublishSearchPage()
+        {
+            if (!IsSearchableChoice || !IsSearchExpanded || !AreChoicesLoaded)
+                return;
+
+            var end = Math.Min(
+                _searchPublished + SearchPageSize,
+                Math.Min(_searchMatches.Count, MaxSearchResults));
+            for (var index = _searchPublished; index < end; index++)
             {
-                if (query.Length > 0 &&
-                    !option.Display.Contains(query, StringComparison.OrdinalIgnoreCase) &&
-                    !(option.StringValue?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false))
-                {
-                    continue;
-                }
-
-                FilteredChoices.Add(option);
-                if (++published >= MaxSearchResults)
-                    break;
+                var option = _searchMatches[index];
+                if (!FilteredChoices.Contains(option))
+                    FilteredChoices.Add(option);
             }
+            _searchPublished = end;
 
-            // A filter excludes a non-match on purpose; the cap excludes one by accident. When the
-            // list was truncated, put what is stored back at the top - a value the editor will not
-            // show is one a builder cannot see they have.
-            if (published >= MaxSearchResults && Choice != null && !FilteredChoices.Contains(Choice))
+            // Paging excludes a non-match by accident where a filter excludes it on purpose. Keep
+            // the stored value visible while browsing the unfiltered catalog.
+            if (ChoiceSearchText.Length == 0 && Choice != null && !FilteredChoices.Contains(Choice))
                 FilteredChoices.Insert(0, Choice);
 
             OnPropertyChanged(nameof(SearchSummary));
+            OnPropertyChanged(nameof(CanLoadMoreSearchResults));
+        }
+
+        /// <summary>
+        /// Resolves a deferred choice source and builds its initial presentation. Specialized
+        /// editors use this when their selected work pane is itself the picker, so the user never
+        /// has to press an extra button merely to reveal the options.
+        /// </summary>
+        protected async Task EnsureChoicesLoadedAsync()
+        {
+            if (_choicePageLoader != null)
+            {
+                if (_choicePagesActivated)
+                    return;
+
+                _choicePagesActivated = true;
+                if (!await LoadChoicePageAsync(reset: true).ConfigureAwait(true))
+                    return;
+                _reusePagedChoicesOnNextRebuild = true;
+                Reload();
+                return;
+            }
+
+            if (!await LoadDeferredChoicesAsync().ConfigureAwait(true))
+                return;
+
+            Reload();
+        }
+
+        private async Task<bool> LoadDeferredChoicesAsync()
+        {
+            var loader = _choiceLoader;
+            var asyncLoader = _asyncChoiceLoader;
+            if (loader == null && asyncLoader == null)
+                return false;
+
+            if (loader != null)
+                return LoadSynchronousDeferredChoices();
+
+            // Resolve before clearing the loader so a malformed source can be retried instead of
+            // leaving the row claiming that an empty set loaded successfully. The resolver itself
+            // is cached by the editor service; this row pays only for its wrappers and only after
+            // explicit interaction.
+            var choices = await asyncLoader!().ConfigureAwait(true);
+            var loaded = BehaviorChoiceViewModel.From(choices);
+            _asyncChoiceLoader = null;
+            Choices = loaded;
+            OnPropertyChanged(nameof(AreChoicesLoaded));
+            return true;
+        }
+
+        private bool LoadSynchronousDeferredChoices()
+        {
+            var loader = _choiceLoader;
+            if (loader == null)
+                return false;
+
+            var loaded = BehaviorChoiceViewModel.From(loader());
+            _choiceLoader = null;
+            Choices = loaded;
+            OnPropertyChanged(nameof(AreChoicesLoaded));
+            return true;
+        }
+
+        private string StoredChoiceDisplay()
+        {
+            if (!IsChoice)
+                return "Nothing chosen";
+
+            if (Definition.FieldType is GffFieldType.CExoString or GffFieldType.ResRef)
+            {
+                var text = Store.GetString(Definition.Storage, Definition.Name);
+                return string.IsNullOrWhiteSpace(text) ? "Nothing chosen" : text;
+            }
+
+            var value = Store.GetInteger(Definition.Storage, Definition.Name);
+            return value?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "Nothing chosen";
+        }
+
+        private bool HasStoredChoiceValue()
+        {
+            if (Definition.FieldType is GffFieldType.CExoString or GffFieldType.ResRef)
+                return !string.IsNullOrWhiteSpace(Store.GetString(Definition.Storage, Definition.Name));
+
+            return Store.GetInteger(Definition.Storage, Definition.Name).HasValue;
+        }
+
+        private void NotifyChoicePresentationChanged()
+        {
+            OnPropertyChanged(nameof(AreChoicesLoaded));
+            OnPropertyChanged(nameof(IsGallery));
+            OnPropertyChanged(nameof(IsInlineGallery));
+            OnPropertyChanged(nameof(IsPopupGallery));
+            OnPropertyChanged(nameof(IsSearchableChoice));
+            OnPropertyChanged(nameof(IsInlineSearchChoice));
+            OnPropertyChanged(nameof(IsPlainChoice));
+            OnPropertyChanged(nameof(SearchSummary));
+            OnPropertyChanged(nameof(CanLoadMoreSearchResults));
+            OnPropertyChanged(nameof(GallerySummary));
+            OnPropertyChanged(nameof(CanLoadMoreGallery));
         }
 
         /// <summary>Republishes the properties that depend on the stored value rather than on it alone.</summary>

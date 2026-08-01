@@ -17,29 +17,40 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
     /// <summary>
     /// Editor lookup over doortypes.2da and genericdoors.2da. Results are built once on first use
-    /// and cached. Rows with an empty Label (unused/reserved slots) are skipped.
+    /// and cached. Placeholder labels and rows without the model/string metadata required by the
+    /// builder-facing choices are skipped.
     /// </summary>
     public sealed class DoorTypeService
     {
         private const string TableName = "doortypes";
         private const string GenericTableName = "genericdoors";
 
-        private readonly Lazy<IReadOnlyList<DoorTypeRow>> _rows;
-        private readonly Lazy<IReadOnlyDictionary<int, DoorTypeRow>> _byId;
-        private readonly Lazy<IReadOnlyList<GenericDoorRow>> _genericRows;
-        private readonly Lazy<IReadOnlyDictionary<int, GenericDoorRow>> _genericById;
+        private readonly ReloadableLazy<IReadOnlyList<DoorTypeRow>> _rows;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, DoorTypeRow>> _byId;
+        private readonly ReloadableLazy<IReadOnlyList<GenericDoorRow>> _genericRows;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, GenericDoorRow>> _genericById;
 
         public DoorTypeService(TwoDaService twoDa, TlkService tlk)
         {
             if (twoDa is null) throw new ArgumentNullException(nameof(twoDa));
             if (tlk is null) throw new ArgumentNullException(nameof(tlk));
 
-            _rows = new Lazy<IReadOnlyList<DoorTypeRow>>(() => Build(twoDa, tlk));
-            _byId = new Lazy<IReadOnlyDictionary<int, DoorTypeRow>>(
+            _rows = new ReloadableLazy<IReadOnlyList<DoorTypeRow>>(() => Build(twoDa, tlk));
+            _byId = new ReloadableLazy<IReadOnlyDictionary<int, DoorTypeRow>>(
                 () => _rows.Value.ToDictionary(row => row.Id));
-            _genericRows = new Lazy<IReadOnlyList<GenericDoorRow>>(() => BuildGeneric(twoDa, tlk));
-            _genericById = new Lazy<IReadOnlyDictionary<int, GenericDoorRow>>(
+            _genericRows = new ReloadableLazy<IReadOnlyList<GenericDoorRow>>(() => BuildGeneric(twoDa, tlk));
+            _genericById = new ReloadableLazy<IReadOnlyDictionary<int, GenericDoorRow>>(
                 () => _genericRows.Value.ToDictionary(row => row.Id));
+            twoDa.TablesReloaded += Invalidate;
+            tlk.CustomTlkReloaded += Invalidate;
+        }
+
+        private void Invalidate()
+        {
+            _genericRows.Reset();
+            _genericById.Reset();
+            _rows.Reset();
+            _byId.Reset();
         }
 
         /// <summary>All non-reserved doortypes.2da rows, in row order.</summary>
@@ -73,17 +84,23 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             for (var row = 0; row < table.RowCount; row++)
             {
                 var label = table.GetString(row, "Label");
-                if (string.IsNullOrEmpty(label))
+                var model = table.GetString(row, "Model");
+                var stringRefGame = table.GetString(row, "StringRefGame");
+                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
+                    string.IsNullOrWhiteSpace(model) ||
+                    string.IsNullOrWhiteSpace(stringRefGame))
+                {
                     continue;
+                }
 
                 var strref = table.GetInt(row, "StringRefGame");
-                var displayName = DisplayNameResolver.Resolve(tlk, strref, label);
+                var displayName = DisplayNameResolver.Resolve(tlk, strref, label!);
 
                 results.Add(new DoorTypeRow(
                     row,
-                    label,
+                    label!,
                     displayName,
-                    table.GetString(row, "Model")));
+                    model));
             }
 
             return results;
@@ -97,15 +114,19 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             for (var row = 0; row < table.RowCount; row++)
             {
                 var label = table.GetString(row, "Label");
-                if (string.IsNullOrWhiteSpace(label))
+                var model = table.GetString(row, "ModelName");
+                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
+                    string.IsNullOrWhiteSpace(model))
+                {
                     continue;
+                }
 
                 var nameStrRef = table.GetInt(row, "Name") ?? table.GetInt(row, "StrRef");
                 results.Add(new GenericDoorRow(
                     row,
-                    label,
-                    DisplayNameResolver.Resolve(tlk, nameStrRef, label.Replace('_', ' ')),
-                    table.GetString(row, "ModelName")));
+                    label!,
+                    DisplayNameResolver.Resolve(tlk, nameStrRef, label!.Replace('_', ' ')),
+                    model));
             }
 
             return results;

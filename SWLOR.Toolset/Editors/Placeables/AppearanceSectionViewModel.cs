@@ -375,6 +375,15 @@ namespace SWLOR.Toolset.Editors.Placeables
             OnPropertyChanged(nameof(PreviewScene));
         }
 
+        public void ReloadGameResources()
+        {
+            if (_disposed)
+                return;
+
+            _loaded = false;
+            BeginLoading();
+        }
+
         private void PublishAnimationStates(Domain.Render.RenderModel? model)
         {
             AnimationStates.Clear();

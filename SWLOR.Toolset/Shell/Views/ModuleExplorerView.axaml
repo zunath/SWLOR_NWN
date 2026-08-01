@@ -45,18 +45,10 @@
       <!-- The button names what it makes, which is why it is bound rather than labelled. -->
       <Button Grid.Row="0" Grid.Column="1" Content="{Binding NewItemLabel}"
               Command="{Binding NewItemCommand}" IsVisible="{Binding CanCreateSelectedType}" />
-      <!-- Two options that only mean anything for conversations, so they only appear there. -->
-      <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal"
-                  Spacing="12" Margin="2,6,0,0" IsVisible="{Binding HasDialogOptions}">
-        <CheckBox Content="Search what people say" IsChecked="{Binding SearchDialogueText, Mode=TwoWay}"
-                  ToolTip.Tip="Search the dialogue itself rather than ResRefs and names. Reads every conversation, so it is a little slower." />
-        <CheckBox Content="Show generated" IsChecked="{Binding ShowGeneratedDialogs, Mode=TwoWay}"
-                  ToolTip.Tip="Include the 255 numbered shells the C# Dialog service generates. They cannot be edited here." />
-        <!-- The scan runs in the background now, so an empty tree mid-search needs saying: without
-             this it reads as "no conversation says that" rather than "not finished looking". -->
-        <TextBlock Text="Searching..." VerticalAlignment="Center" Classes="dim"
-                   IsVisible="{Binding IsSearchingDialogue}" />
-      </StackPanel>
+      <!-- Dialogue text joins the ordinary name/ResRef results after a debounced background scan. -->
+      <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="Searching dialogue..."
+                 Margin="2,6,0,0" VerticalAlignment="Center" Classes="dim"
+                 IsVisible="{Binding IsSearchingDialogue}" />
     </Grid>
 
     <Grid Grid.Row="2">

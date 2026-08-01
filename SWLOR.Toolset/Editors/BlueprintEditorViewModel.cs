@@ -28,10 +28,11 @@ namespace SWLOR.Toolset.Editors
         private readonly IEditorPromptService _prompts;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly IScriptSlotHost? _scriptSlotHost;
+        private readonly BlueprintSaveCoordinator? _saveCoordinator;
 
         /// <summary>Supplies the module workspace to resource pickers; null leaves them free-text.</summary>
         private readonly Func<Domain.Workspace.ModuleWorkspace?>? _resourceLister;
-        private readonly string _resRef;
+        private string _resRef;
         private bool _closeApproved;
         private bool _closePromptOpen;
         private bool _disposed;
@@ -106,6 +107,10 @@ namespace SWLOR.Toolset.Editors
 
         public bool IsDirty => _session.UndoStack.IsDirty;
 
+        public string FilePath => _session.FilePath;
+
+        public string ResRef => _resRef;
+
         /// <summary>This blueprint's resource type — lets the model preview resolve its appearance.</summary>
         public ResourceType BlueprintType { get; }
 
@@ -113,6 +118,8 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Raised after this resource is saved or reloaded so catalog views can re-index it.</summary>
         public event Action? CatalogEntryChanged;
+
+        public event Action<BlueprintEditorViewModel, string, string>? Renamed;
 
         public BlueprintEditorViewModel(
             string filePath,
@@ -131,13 +138,15 @@ namespace SWLOR.Toolset.Editors
             Func<EditorFieldContext, Func<string, Action, bool>,
                 Appearance.AppearanceGallerySectionViewModel?>? appearanceGallery = null,
             Func<EditorFieldContext, Func<string, Action, bool>,
-                TintMaps.TintMapEditorViewModel?>? tintMapEditor = null)
+                TintMaps.TintMapEditorViewModel?>? tintMapEditor = null,
+            BlueprintSaveCoordinator? saveCoordinator = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resourceLister = resourceLister;
             _log = log;
             _prompts = prompts;
             _gameCodeIndex = gameCodeIndex;
+            _saveCoordinator = saveCoordinator;
             _resRef = resRef;
             BlueprintType = type;
             Id = $"editor:{filePath}";
@@ -401,20 +410,82 @@ namespace SWLOR.Toolset.Editors
                     return false;
                 }
 
+                var targetResRef =
+                    _session.Document.Root.GetStringOrNull("TemplateResRef")?.Trim().ToLowerInvariant()
+                    ?? string.Empty;
+                if (!IsValidResRef(targetResRef))
+                {
+                    _log.AppendLine(
+                        $"Cannot save {_resRef}: ResRef '{targetResRef}' must be 1-16 characters " +
+                        "of a-z, 0-9, or underscore.");
+                    return false;
+                }
+
+                if (!string.Equals(
+                        _session.Document.Root.GetStringOrNull("TemplateResRef"),
+                        targetResRef,
+                        StringComparison.Ordinal))
+                {
+                    _session.Execute(
+                        "Normalize ResRef",
+                        () => _session.Document.Root.SetString(
+                            "TemplateResRef",
+                            GffFieldType.ResRef,
+                            targetResRef));
+                    RefreshAllFields();
+                }
+
+                var renaming = !string.Equals(
+                    targetResRef,
+                    _resRef,
+                    StringComparison.OrdinalIgnoreCase);
+                if (renaming && _saveCoordinator == null)
+                {
+                    _log.AppendLine(
+                        $"Cannot rename {_resRef}: this editor has no blueprint save coordinator.");
+                    return false;
+                }
+
                 var saveBytes = _session.ToBytes();
-                if (!Services.SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
+                var oldResRef = _resRef;
+                var oldPath = _session.FilePath;
+                var outcome = _saveCoordinator?.Save(
+                    _session,
+                    BlueprintType,
+                    oldResRef,
+                    targetResRef);
+                if (outcome != null && !outcome.Saved)
+                    return false;
+                if (outcome == null && !Services.SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
                 {
                     _log.AppendLine(
                         $"Save stopped because {_session.FilePath} changed after the overwrite decision.");
                     return false;
                 }
 
+                if (outcome?.Renamed == true)
+                {
+                    _resRef = targetResRef;
+                    Id = $"editor:{_session.FilePath}";
+                }
+
                 _session.UndoStack.MarkSaved();
-                _session.RecordCurrentFileState(saveBytes);
+                _session.RecordCurrentFileState(_session.ToBytes());
                 PlaceableSections?.Behavior.MarkSavedBaseline();
                 AfterHistoryChange();
                 CatalogEntryChanged?.Invoke();
-                _log.AppendLine($"Saved {_session.FilePath}.");
+                if (outcome?.Renamed == true)
+                {
+                    Renamed?.Invoke(this, oldResRef, oldPath);
+                    _log.AppendLine(
+                        $"Saved {oldPath} as {_session.FilePath} and updated " +
+                        $"{outcome.UpdatedInstances} placed instance" +
+                        $"{(outcome.UpdatedInstances == 1 ? string.Empty : "s")}.");
+                }
+                else
+                {
+                    _log.AppendLine($"Saved {_session.FilePath}.");
+                }
                 return true;
             }
             catch (Exception ex)
@@ -544,5 +615,10 @@ namespace SWLOR.Toolset.Editors
         {
             Title = IsDirty ? $"{_resRef} *" : _resRef;
         }
+
+        private static bool IsValidResRef(string value) =>
+            value.Length is >= 1 and <= 16 &&
+            value.All(character =>
+                character is >= 'a' and <= 'z' or >= '0' and <= '9' or '_');
     }
 }

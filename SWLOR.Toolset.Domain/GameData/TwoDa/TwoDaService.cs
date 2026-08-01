@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using SWLOR.NWN.Formats;
 using SWLOR.NWN.Formats.TwoDA;
+using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Domain.GameData.TwoDa
 {
@@ -24,6 +25,10 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
 
         private readonly Dictionary<string, string> _pathsByName;
         private readonly ConcurrentDictionary<string, Lazy<TwoDaTable>> _cache;
+        private readonly ResourceIndex? _resourceIndex;
+        private static readonly ushort ResourceType = ResourceIdentity.TypeFromExtension("2da");
+
+        public event Action? TablesReloaded;
 
         public TwoDaService(string sw2DaDirectoryPath)
         {
@@ -44,6 +49,19 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
             }
         }
 
+        /// <summary>
+        /// Resolves tables from the live module HAK stack. This is the application path; the
+        /// directory constructor remains for source-folder tools and focused tests.
+        /// </summary>
+        public TwoDaService(ResourceIndex resourceIndex)
+        {
+            _resourceIndex = resourceIndex ?? throw new ArgumentNullException(nameof(resourceIndex));
+            DirectoryPath = string.Empty;
+            _pathsByName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            _cache = new ConcurrentDictionary<string, Lazy<TwoDaTable>>(StringComparer.OrdinalIgnoreCase);
+            _resourceIndex.ResourcesReloaded += OnResourcesReloaded;
+        }
+
         public string DirectoryPath { get; }
 
         /// <summary>
@@ -52,7 +70,11 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
         /// </summary>
         public IReadOnlyCollection<string> GetTableNames()
         {
-            return _pathsByName.Keys.ToArray();
+            return _resourceIndex == null
+                ? _pathsByName.Keys.ToArray()
+                : _resourceIndex.EnumerateResources(ResourceType)
+                    .Select(identity => identity.ResRef)
+                    .ToArray();
         }
 
         /// <summary>
@@ -75,14 +97,19 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
         /// </summary>
         public bool TryGetTable(string name, out TwoDaTable? table)
         {
-            if (!_pathsByName.TryGetValue(name, out var path))
+            string? path = null;
+            if (_resourceIndex == null && !_pathsByName.TryGetValue(name, out path))
             {
                 table = null;
                 return false;
             }
 
             var lazy = _cache.GetOrAdd(name, key => new Lazy<TwoDaTable>(
-                () => new TwoDaTable(key, TwoDAReader.Read(path)),
+                () => new TwoDaTable(
+                    key,
+                    _resourceIndex == null
+                        ? TwoDAReader.Read(path!)
+                        : ReadIndexed(key)),
                 LazyThreadSafetyMode.ExecutionAndPublication));
 
             try
@@ -96,6 +123,21 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
                 table = null;
                 return false;
             }
+        }
+
+        private TwoDAFile ReadIndexed(string name)
+        {
+            var identity = new ResourceIdentity(name, ResourceType);
+            if (_resourceIndex?.TryLookup(identity, out var handle) != true)
+                throw new NwnFormatException($"2DA table '{name}' was not found in the active resource stack.");
+
+            return TwoDAReader.Read(handle.GetBytes());
+        }
+
+        private void OnResourcesReloaded()
+        {
+            _cache.Clear();
+            TablesReloaded?.Invoke();
         }
     }
 }

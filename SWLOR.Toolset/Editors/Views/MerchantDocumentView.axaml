@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:merchants="using:SWLOR.Toolset.Editors.Merchants"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             x:Class="SWLOR.Toolset.Editors.Merchants.MerchantDocumentView"
+             x:DataType="merchants:MerchantDocumentViewModel">
+
+  <DockPanel>
+    <behaviors:BehaviorEditorHeader DockPanel.Dock="Top"
+                                    BehaviorName="{Binding Editor.HeaderName}"
+                                    Kind="{Binding Editor.HeaderKind}"
+                                    Owner="{Binding Editor.HeaderOwner}"
+                                    IsDirty="{Binding IsDirty}" />
+
+    <Border DockPanel.Dock="Bottom" Padding="16,11"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0">
+      <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="8">
+        <Button Content="Revert" MinWidth="86" Command="{Binding RevertCommand}" />
+        <Button Content="Save" MinWidth="86" Classes="primary" Command="{Binding SaveCommand}" />
+      </StackPanel>
+    </Border>
+
+    <merchants:MerchantEditorView DataContext="{Binding Editor}" />
+  </DockPanel>
+</UserControl>

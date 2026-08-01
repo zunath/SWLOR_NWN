@@ -9,8 +9,8 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Editors.Behaviors
 {
     /// <summary>
-    /// Resolves the picture a choice is picked by: the load screens, the door appearances, the
-    /// portraits, and the waypoint markers.
+    /// Resolves the picture a choice is picked by: load screens, blueprint thumbnails, door
+    /// appearances, portraits, and waypoint markers.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -26,9 +26,9 @@ namespace SWLOR.Toolset.Editors.Behaviors
     /// scroll either.
     /// </para>
     /// <para>
-    /// A choice can name a model instead of a texture, which has to be rendered rather than decoded.
-    /// That work belongs to <see cref="ThumbnailService"/>, which already owns the render queue and
-    /// its caches, so this forwards to it rather than growing a second one.
+    /// A choice can name a model or a blueprint instead of a texture, which has to be rendered rather
+    /// than decoded. That work belongs to <see cref="ThumbnailService"/>, which already owns the
+    /// render queue and its caches, so this forwards to it rather than growing a second one.
     /// </para>
     /// </remarks>
     public sealed class ChoicePreviewService
@@ -41,14 +41,19 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         private readonly ResourceIndex? _resources;
         private readonly ThumbnailService? _models;
+        private readonly Placeables.VfxPreviewService? _remoteImages;
         private readonly SemaphoreSlim _decodeSlots = new(4);
         private readonly object _syncRoot = new();
         private readonly Dictionary<string, Bitmap?> _cache = new(StringComparer.OrdinalIgnoreCase);
 
-        public ChoicePreviewService(ResourceIndex? resources, ThumbnailService? models = null)
+        public ChoicePreviewService(
+            ResourceIndex? resources,
+            ThumbnailService? models = null,
+            Placeables.VfxPreviewService? remoteImages = null)
         {
             _resources = resources;
             _models = models;
+            _remoteImages = remoteImages;
         }
 
         /// <summary>The already-resolved picture for a choice, or null. Never starts work.</summary>
@@ -59,9 +64,16 @@ namespace SWLOR.Toolset.Editors.Behaviors
         {
             ArgumentNullException.ThrowIfNull(choice);
 
-            return choice.ModelResRef is { Length: > 0 } model
-                ? _models?.CachedTile(model)
-                : Cached(choice.ImageResRef, maxWidth, cropTransparentCanvas);
+            if (choice.BlueprintPreviewType is { } blueprintType &&
+                choice.BlueprintPreviewResRef is { Length: > 0 } blueprintResRef)
+            {
+                return _models?.Cached(blueprintType, blueprintResRef);
+            }
+            if (choice.ModelResRef is { Length: > 0 } model)
+                return _models?.CachedTile(model);
+            if (choice.ImageUrl is { Length: > 0 } imageUrl)
+                return _remoteImages?.Cached(imageUrl);
+            return Cached(choice.ImageResRef, maxWidth, cropTransparentCanvas);
         }
 
         /// <summary>
@@ -81,6 +93,17 @@ namespace SWLOR.Toolset.Editors.Behaviors
             ArgumentNullException.ThrowIfNull(choice);
             ArgumentNullException.ThrowIfNull(onReady);
 
+            if (choice.BlueprintPreviewType is { } blueprintType &&
+                choice.BlueprintPreviewResRef is { Length: > 0 } blueprintResRef)
+            {
+                if (_models?.Cached(blueprintType, blueprintResRef) is { } cached)
+                    onReady(cached);
+                else
+                    _models?.RequestAsync(blueprintType, blueprintResRef, onReady);
+
+                return;
+            }
+
             if (choice.ModelResRef is { Length: > 0 } model)
             {
                 if (_models?.CachedTile(model) is { } cached)
@@ -88,6 +111,15 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 else
                     _models?.RequestTileAsync(model, onReady);
 
+                return;
+            }
+
+            if (choice.ImageUrl is { Length: > 0 } imageUrl)
+            {
+                if (_remoteImages?.Cached(imageUrl) is { } cached)
+                    onReady(cached);
+                else
+                    _remoteImages?.RequestAsync(imageUrl, onReady);
                 return;
             }
 

@@ -49,8 +49,8 @@ namespace SWLOR.Toolset.Domain.Script.Compile
     {
         // "path.nss(23): ERROR: message" and the NSS(line) form the compiler uses for includes.
         private static readonly Regex DiagnosticPattern = new(
-            @"(?<file>[^\s(]+\.nss)\((?<line>\d+)\)\s*:\s*(?<sev>ERROR|WARNING)\s*:\s*(?<msg>.*)",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            @"^\s*(?<file>.+?\.nss)\((?<line>\d+)\)\s*:\s*(?<sev>ERROR|WARNING)\s*:\s*(?<msg>.*)$",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
         private readonly string _compilerPath;
         private readonly string? _gameRoot;
@@ -180,10 +180,38 @@ namespace SWLOR.Toolset.Domain.Script.Compile
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
 
-            await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
+            await WaitForExitOrKillAsync(process, cancellationToken).ConfigureAwait(false);
 
             lock (output)
                 return (process.ExitCode, output.ToString());
+        }
+
+        private static async Task WaitForExitOrKillAsync(
+            Process process,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch
+            {
+                try
+                {
+                    if (!process.HasExited)
+                    {
+                        process.Kill(entireProcessTree: true);
+                        await process.WaitForExitAsync(CancellationToken.None).ConfigureAwait(false);
+                    }
+                }
+                catch
+                {
+                    // Preserve the cancellation or wait failure that caused cleanup. A failed kill
+                    // cannot make that original compiler outcome more useful to the caller.
+                }
+
+                throw;
+            }
         }
     }
 }

@@ -362,6 +362,26 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void SuccessfulCompileFingerprintClearsSameTimestampSourceReplacement()
+        {
+            var sourceTime = DateTime.UtcNow.AddHours(-2);
+            var compiledTime = DateTime.UtcNow.AddHours(-1);
+            Source("a", "void main() { Before(); }", sourceTime);
+            Compiled("a", compiledTime);
+            Scan().Should().BeEmpty();
+
+            Source("a", "void main() { After(); }", sourceTime);
+            Compiled("a", compiledTime);
+            Scan().Should().ContainSingle().Which.Reason.Should().Be(StaleReason.SourceReplaced);
+
+            var scanner = new ScriptStalenessScanner(_nss, _ncs);
+            scanner.RecordSuccessfulCompile("a").Should().BeTrue();
+
+            Scan().Should().BeEmpty(
+                "installing bytecode refreshes the persisted source/include hash even when mtimes are unchanged");
+        }
+
+        [Test]
         public void IncludeSwappedUnderAPreservedMTime_MarksTheDependentStale()
         {
             var sharedTime = DateTime.UtcNow.AddHours(-2);

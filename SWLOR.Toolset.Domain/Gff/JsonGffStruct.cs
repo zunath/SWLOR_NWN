@@ -79,6 +79,21 @@ namespace SWLOR.Toolset.Domain.Gff
             _entries.Add(new KeyValuePair<string, JsonGffField>(name, field));
         }
 
+        /// <summary>
+        /// Replaces parsed state while preserving this root object's identity. Editor value stores
+        /// retain the root struct rather than the containing document, so assigning a new Root on
+        /// reload left every open field bound to the abandoned generation.
+        /// </summary>
+        internal void ReplaceParsedWith(JsonGffStruct replacement)
+        {
+            ArgumentNullException.ThrowIfNull(replacement);
+            RawStructId = replacement.RawStructId?.ToArray();
+            _entries.Clear();
+            _indexByName.Clear();
+            foreach (var (name, field) in replacement._entries)
+                AppendParsed(name, field);
+        }
+
         /// <summary>Adds a new field at nwn_gff's sorted position.</summary>
         public void Add(string name, JsonGffField field)
         {

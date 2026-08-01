@@ -303,9 +303,9 @@ namespace SWLOR.Toolset.Tests
                 "LocalizedName", "TemplateResRef", "PaletteID");
             var resRef = WaypointEditorLayout.Basic.Single(field => field.Name == "TemplateResRef");
             resRef.Label.Should().Be("ResRef");
-            resRef.IsReadOnly.Should().BeTrue(
-                "the document save path never renames the file, so an edited ResRef here would " +
-                "leave the blueprint's identity disagreeing with its filename");
+            resRef.IsReadOnly.Should().BeFalse(
+                "rename-on-save keeps the internal identity, file name, and placements together");
+            resRef.IsRequired.Should().BeTrue();
         }
 
         [Test]
@@ -317,6 +317,43 @@ namespace SWLOR.Toolset.Tests
             field.Kind.Should().Be(BehaviorFieldKind.Text);
             field.IsRequired.Should().BeTrue();
             field.Choices.Should().BeEmpty();
+        }
+
+        [Test]
+        public void SingletonDestinationRejectsAnotherPlacementButExemptsTheCurrentInstance()
+        {
+            var catalog = Catalog();
+            var taxiTag = catalog.Get(WaypointBehaviorCatalog.TaxiStopId).Fields
+                .Single(field => field.Name == "Tag")
+                .Choices.First().StringValue!;
+
+            var conflicting = new WaypointEditorViewModel(
+                Waypoint(taxiTag),
+                "area",
+                isInstance: true,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                },
+                catalog,
+                singletonTagInUse: _ => true);
+            conflicting.IsIncomplete.Should().BeTrue();
+            conflicting.PrepareForSave().Should().BeFalse();
+
+            var currentInstanceOnly = new WaypointEditorViewModel(
+                Waypoint(taxiTag),
+                "area",
+                isInstance: true,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                },
+                catalog,
+                singletonTagInUse: _ => false);
+            currentInstanceOnly.IsIncomplete.Should().BeFalse();
+            currentInstanceOnly.PrepareForSave().Should().BeTrue();
         }
 
         [Test]
@@ -357,6 +394,37 @@ namespace SWLOR.Toolset.Tests
                 },
                 catalog);
             reopened.Behavior.Id.Should().Be(WaypointBehaviorCatalog.TransitionDestinationId);
+            reopened.RefreshCatalog(new WaypointBehaviorCatalog(null, Array.Empty<string>()));
+            reopened.Behavior.Id.Should().Be(
+                WaypointBehaviorCatalog.TransitionDestinationId,
+                "an explicitly authored destination remains valid while it waits for an inbound link");
+        }
+
+        [Test]
+        public void RefreshingCatalogReclassifiesAnInboundOnlyTransitionWithoutPersistingIt()
+        {
+            const string tag = "destination_with_removed_link";
+            var waypoint = Waypoint(tag);
+            var originalCatalog = new WaypointBehaviorCatalog(null, new[] { tag });
+            var editor = new WaypointEditorViewModel(
+                waypoint,
+                tag,
+                isInstance: false,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                },
+                originalCatalog);
+            editor.Behavior.Id.Should().Be(WaypointBehaviorCatalog.TransitionDestinationId);
+
+            editor.RefreshCatalog(new WaypointBehaviorCatalog(null, Array.Empty<string>()));
+
+            editor.Behavior.Id.Should().Be(WaypointBehaviorCatalog.CustomId);
+            editor.NeedsSaveNormalization.Should().BeFalse(
+                "catalog refresh is classification, not a user-authored behavior change");
+            new VarTable(waypoint).GetString(WaypointBehaviorCatalog.PersistedBehaviorLocal)
+                .Should().BeNull("an obsolete inbound-only classification must not become durable metadata");
         }
 
         [Test]

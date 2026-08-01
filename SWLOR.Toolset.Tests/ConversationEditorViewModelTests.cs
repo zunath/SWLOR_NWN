@@ -67,6 +67,14 @@ namespace SWLOR.Toolset.Tests
                 new OutputLogService(),
                 prompts ?? new StubPrompts());
 
+        private void ReplaceWithCleanConversation(string text = "Original line.")
+        {
+            var document = DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
+                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+            document.Openings[0].Target.Text = text;
+            File.WriteAllBytes(_workingCopy, document.ToBytes());
+        }
+
         // ---------- opening ----------
 
         [Test]
@@ -307,14 +315,17 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task SavingDerivedWordCountsDoesNotAddAnUndoStep()
         {
+            ReplaceWithCleanConversation();
             using var editor = new Disposable(Open());
-            editor.Value.SelectSituationCommand.Execute(
-                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            editor.Value.SelectSituationCommand.Execute(editor.Value.Situations.Single());
             var original = editor.Value.LineText;
 
             editor.Value.LineText = "A deliberately different line.";
             editor.Value.CommitLineCommand.Execute(null);
             await editor.Value.TrySaveAsync();
+            DlgDocument.Load(_workingCopy).Openings
+                .Select(link => link.Target.Text)
+                .Should().Contain("A deliberately different line.");
             editor.Value.UndoCommand.Execute(null);
 
             editor.Value.LineText.Should().Be(original);
@@ -333,7 +344,8 @@ namespace SWLOR.Toolset.Tests
             editor.Value.AddChoiceCommand.Execute(null);
 
             editor.Value.Choices.Should().HaveCount(before + 1);
-            editor.Value.Choices.Last().Text.Should().Be(QuestConversationScaffold.Placeholder);
+            editor.Value.Choices.Last().Text.Should().Be("End conversation",
+                "the NWN placeholder is never exposed as player-facing authoring text");
         }
 
         [Test]
@@ -506,6 +518,21 @@ namespace SWLOR.Toolset.Tests
             optional.RemoveArgumentsCommand.Execute(null);
             optional.Arguments.Should().BeEmpty();
 
+            editor.Value.ConsequenceToAdd = Snippets.Find("action-give-key-items");
+            editor.Value.AddConsequenceCommand.Execute(null);
+            editor.Value.Consequences.Should().HaveCount(2,
+                "a line can carry multiple distinct snippet outcomes");
+            editor.Value.Consequences.Select(consequence => consequence.Snippet.Key).Should()
+                .BeEquivalentTo("action-open-store", "action-give-key-items");
+            var onceOutcome = editor.Value.Consequences.Single(consequence =>
+                consequence.Snippet.Key == "action-give-key-items");
+            onceOutcome.IsOncePerPlayer.Should().BeTrue(
+                "reward-style optional outcomes default to safe one-time execution");
+            choice.Target.Actions.Should().Contain(action => action.IsOncePerPlayerMarker);
+
+            onceOutcome.IsOncePerPlayer = false;
+            choice.Target.Actions.Should().NotContain(action => action.IsOncePerPlayerMarker);
+
             editor.Value.GuardToAdd = Snippets.Find("condition-completed-quest");
             editor.Value.AddGuardCommand.Execute(null);
             var repeated = editor.Value.Guards.Single();
@@ -514,6 +541,83 @@ namespace SWLOR.Toolset.Tests
             repeated.Arguments.Should().HaveCount(2);
             repeated.RemoveArgumentsCommand.Execute(null);
             repeated.Arguments.Should().ContainSingle();
+        }
+
+        [Test]
+        public void CustomActionScriptDisablesOutcomesUntilCleared()
+        {
+            var document = DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
+                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+            document.Openings[0].Target.Script = "custom_action";
+            File.WriteAllBytes(_workingCopy, document.ToBytes());
+            using var editor = new Disposable(Open());
+            editor.Value.EditCurrentLineCommand.Execute(null);
+
+            editor.Value.CanAddOutcome.Should().BeFalse();
+            editor.Value.HasCustomActionScriptForOutcomes.Should().BeTrue();
+            editor.Value.ConsequenceToAdd = Snippets.Find("action-open-store");
+
+            editor.Value.AddConsequenceCommand.Execute(null);
+
+            editor.Value.LiveDialog.Openings[0].Target.Actions.Should().BeEmpty();
+            editor.Value.WalkStatus.Should().Contain("Clear the custom action script");
+            editor.Value.IsDirty.Should().BeFalse();
+
+            editor.Value.AdvancedScript = string.Empty;
+            editor.Value.CommitAdvancedCommand.Execute(null);
+
+            editor.Value.CanAddOutcome.Should().BeTrue();
+            editor.Value.HasCustomActionScriptForOutcomes.Should().BeFalse();
+            editor.Value.AddConsequenceCommand.Execute(null);
+            editor.Value.LiveDialog.Openings[0].Target.Actions.Should().ContainSingle();
+        }
+
+        [Test]
+        public void QuestItemHandInRemainsRepeatableUntilTheQuestActuallyCollectsTheItems()
+        {
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            editor.Value.AddChoiceCommand.Execute(null);
+            var choice = editor.Value.Choices.Last();
+            editor.Value.EditChoiceCommand.Execute(choice);
+
+            editor.Value.ConsequenceToAdd = Snippets.Find("action-request-quest-items");
+            editor.Value.AddConsequenceCommand.Execute(null);
+
+            var handIn = editor.Value.Consequences.Should().ContainSingle().Which;
+            handIn.CanRunOncePerPlayer.Should().BeFalse();
+            handIn.IsOncePerPlayer.Should().BeFalse();
+            choice.Target.Actions.Should().NotContain(action => action.IsOncePerPlayerMarker,
+                "closing or failing the collection flow must not suppress every later hand-in attempt");
+        }
+
+        [Test]
+        public void QuestProgressActionsDefaultToRepeatableButAllowExplicitOneTimeUse()
+        {
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            editor.Value.AddChoiceCommand.Execute(null);
+            var choice = editor.Value.Choices.Last();
+            editor.Value.EditChoiceCommand.Execute(choice);
+
+            editor.Value.ConsequenceToAdd = Snippets.Find("action-accept-quest");
+            editor.Value.AddConsequenceCommand.Execute(null);
+            editor.Value.ConsequenceToAdd = Snippets.Find("action-advance-quest");
+            editor.Value.AddConsequenceCommand.Execute(null);
+
+            var questActions = editor.Value.Consequences.Where(consequence =>
+                consequence.Snippet.Key is "action-accept-quest" or "action-advance-quest").ToList();
+            questActions.Should().HaveCount(2);
+            questActions.Should().OnlyContain(action =>
+                action.CanRunOncePerPlayer && !action.IsOncePerPlayer);
+            choice.Target.Actions.Should().NotContain(action => action.IsOncePerPlayerMarker,
+                "repeatable quests may reuse the same dialogue nodes on every cycle");
+
+            questActions[0].IsOncePerPlayer = true;
+            choice.Target.Actions.Should().Contain(action => action.IsOncePerPlayerMarker,
+                "builders can still opt a quest action into lifetime-once behavior deliberately");
         }
 
         [Test]
@@ -556,16 +660,17 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task ReloadingAnExternalChangeClosesTheRulesEditor()
         {
+            ReplaceWithCleanConversation();
             using var editor = new Disposable(Open(new StubPrompts(ExternalChangeChoice.Reload)));
-            var situation = editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures");
+            var situation = editor.Value.Situations.Single();
             editor.Value.EditSituationCommand.Execute(situation);
             editor.Value.GuardToAdd = Snippets.Find("condition-has-completed-tutorial");
             editor.Value.AddGuardCommand.Execute(null);
 
             var external = File.ReadAllText(_workingCopy)
                 .Replace(
-                    "The bottles are lined up",
-                    "The bottles were changed outside the toolset",
+                    "Original line.",
+                    "The line was changed outside the toolset.",
                     StringComparison.Ordinal);
             File.WriteAllText(_workingCopy, external);
 
@@ -630,9 +735,9 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void SavingWritesTheFileAndClearsTheDirtyFlag()
         {
+            ReplaceWithCleanConversation();
             using var editor = new Disposable(Open());
-            editor.Value.SelectSituationCommand.Execute(
-                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            editor.Value.SelectSituationCommand.Execute(editor.Value.Situations.Single());
             editor.Value.LineText = "Saved text.";
             editor.Value.CommitLineCommand.Execute(null);
 
@@ -641,6 +746,85 @@ namespace SWLOR.Toolset.Tests
             editor.Value.IsDirty.Should().BeFalse();
             DlgDocument.Parse(File.ReadAllBytes(_workingCopy)).Entries
                 .Should().Contain(entry => entry.Text == "Saved text.");
+        }
+
+        [Test]
+        public async Task BrokenDialogueIsNotSaved()
+        {
+            var document = DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
+                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+            File.WriteAllBytes(_workingCopy, document.ToBytes());
+            var before = File.ReadAllBytes(_workingCopy);
+            using var editor = new Disposable(Open());
+
+            (await editor.Value.TrySaveAsync()).Should().BeFalse();
+
+            editor.Value.HasBlockingProblems.Should().BeTrue();
+            editor.Value.WalkStatus.Should().StartWith("Cannot save:");
+            File.ReadAllBytes(_workingCopy).Should().Equal(before);
+        }
+
+        [Test]
+        public void ANewDialogueStartsWithOnlyTheBehaviorChoice()
+        {
+            var document = DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
+                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+            File.WriteAllBytes(_workingCopy, document.ToBytes());
+            using var editor = new Disposable(Open());
+
+            editor.Value.ShowBehaviorChooser.Should().BeTrue();
+            editor.Value.BehaviorOptions.Select(option => option.Name).Should()
+                .Equal("Merchant", "Quest giver", "Conversation");
+        }
+
+        [Test]
+        public void MerchantBehaviorSuppliesTheStoreOutcomeAndGoodbye()
+        {
+            var document = DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
+                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+            File.WriteAllBytes(_workingCopy, document.ToBytes());
+            using var editor = new Disposable(Open());
+            var merchant = editor.Value.BehaviorOptions.Single(option =>
+                option.Kind == ConversationBehaviorKind.Merchant);
+            editor.Value.ChooseBehaviorCommand.Execute(merchant);
+            editor.Value.MerchantGreeting = "Welcome, <FirstName>.";
+            editor.Value.MerchantChoiceText = "Show me your stock.";
+
+            editor.Value.CommitMerchantCommand.Execute(null);
+
+            var greeting = editor.Value.LiveDialog.Openings[0].Target;
+            greeting.Text.Should().Be("Welcome, <FirstName>.");
+            greeting.Links.Select(link => link.Target.Text).Should().Contain("Goodbye.");
+            greeting.Links.Select(link => link.Target).Should().Contain(reply =>
+                reply.Actions.Any(action => action.SnippetKey == "action-open-store"));
+        }
+
+        [Test]
+        public void SwitchingBehaviorsKeepsTheMerchantDraftForTheSession()
+        {
+            using var editor = new Disposable(Open());
+            var merchant = editor.Value.BehaviorOptions.Single(option =>
+                option.Kind == ConversationBehaviorKind.Merchant);
+            var conversation = editor.Value.BehaviorOptions.Single(option =>
+                option.Kind == ConversationBehaviorKind.Conversation);
+            editor.Value.SelectedBehavior = merchant;
+            editor.Value.MerchantGreeting = "Fresh stock every day.";
+
+            editor.Value.SelectedBehavior = conversation;
+            editor.Value.SelectedBehavior = merchant;
+
+            editor.Value.MerchantGreeting.Should().Be("Fresh stock every day.");
+        }
+
+        [Test]
+        public void PreviewResolvesFriendlyDynamicTextSamples()
+        {
+            ReplaceWithCleanConversation("Welcome, <FirstName>. It is <Day/Night>.");
+            using var editor = new Disposable(Open());
+
+            editor.Value.PreviewLineText.Should().Be("Welcome, Kori. It is day.");
+            editor.Value.LineText.Should().Contain("<FirstName>",
+                "the stored NWN token remains editable on the Write tab");
         }
 
         [Test]

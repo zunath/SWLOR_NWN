@@ -1,5 +1,6 @@
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
+using SWLOR.Toolset.Domain.GameData.Lookups;
 
 namespace SWLOR.Toolset.Domain.Editors.Triggers
 {
@@ -29,25 +30,37 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
 
         public static IReadOnlyList<BehaviorChoice> Read(TwoDaService? twoDa)
         {
-            if (twoDa == null || !twoDa.TryGetTable(TableName, out var table) || table == null)
+            if (twoDa == null ||
+                !twoDa.TryGetTable(TableName, out var table) ||
+                table == null ||
+                !table.HasColumn(LabelColumn) ||
+                !table.HasColumn(ImageColumn))
+            {
                 return Array.Empty<BehaviorChoice>();
+            }
 
             var screens = new List<BehaviorChoice>();
             for (var row = 0; row < table.RowCount; row++)
             {
                 var label = table.GetString(row, LabelColumn);
-                if (string.IsNullOrWhiteSpace(label) ||
-                    label.Equals(ScriptedLabel, StringComparison.OrdinalIgnoreCase))
+                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
+                    string.Equals(label, ScriptedLabel, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
 
+                var selectableLabel = label!;
+                var isAny = selectableLabel.Equals(AnyLabel, StringComparison.OrdinalIgnoreCase);
+                var imageResRef = table.GetString(row, ImageColumn);
+                if (!isAny && !TwoDaChoicePolicy.IsSelectableLabel(imageResRef))
+                    continue;
+
                 screens.Add(new BehaviorChoice(
                     row,
-                    Humanise(label),
-                    table.GetString(row, ImageColumn))
+                    Humanise(selectableLabel),
+                    imageResRef)
                 {
-                    IsAny = label.Equals(AnyLabel, StringComparison.OrdinalIgnoreCase)
+                    IsAny = isAny
                 });
             }
 

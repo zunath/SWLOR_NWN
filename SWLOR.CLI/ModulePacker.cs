@@ -157,6 +157,7 @@ namespace SWLOR.CLI
 
             sw.Stop();
             Console.WriteLine($"Packing module completed in {sw.ElapsedMilliseconds}ms");
+            moduleWriteLock.Dispose();
             if (!noPrompt)
             {
                 WaitForKeyIfInteractive();
@@ -261,6 +262,7 @@ namespace SWLOR.CLI
 
             sw.Stop();
             Console.WriteLine($"Unpacking module completed in {sw.ElapsedMilliseconds}ms");
+            moduleWriteLock.Dispose();
             if (!noPrompt)
             {
                 WaitForKeyIfInteractive();

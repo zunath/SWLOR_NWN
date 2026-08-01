@@ -25,17 +25,25 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     {
         private const string TableName = "ambientsound";
 
-        private readonly Lazy<IReadOnlyList<SoundRow>> _rows;
-        private readonly Lazy<IReadOnlyDictionary<int, SoundRow>> _byId;
+        private readonly ReloadableLazy<IReadOnlyList<SoundRow>> _rows;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, SoundRow>> _byId;
 
         public SoundService(TwoDaService twoDa, TlkService tlk)
         {
             if (twoDa is null) throw new ArgumentNullException(nameof(twoDa));
             if (tlk is null) throw new ArgumentNullException(nameof(tlk));
 
-            _rows = new Lazy<IReadOnlyList<SoundRow>>(() => Build(twoDa, tlk));
-            _byId = new Lazy<IReadOnlyDictionary<int, SoundRow>>(
+            _rows = new ReloadableLazy<IReadOnlyList<SoundRow>>(() => Build(twoDa, tlk));
+            _byId = new ReloadableLazy<IReadOnlyDictionary<int, SoundRow>>(
                 () => _rows.Value.ToDictionary(row => row.Id));
+            twoDa.TablesReloaded += Invalidate;
+            tlk.CustomTlkReloaded += Invalidate;
+        }
+
+        private void Invalidate()
+        {
+            _rows.Reset();
+            _byId.Reset();
         }
 
         /// <summary>All non-reserved ambientsound.2da rows, in row order.</summary>
@@ -52,13 +60,17 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private static IReadOnlyList<SoundRow> Build(TwoDaService twoDa, TlkService tlk)
         {
-            var table = twoDa.GetTable(TableName);
+            var definition = TwoDaLookupTables.AmbientSound;
+            var table = twoDa.GetTable(definition.TableName);
+            if (!table.HasColumn(definition.LabelColumn))
+                return Array.Empty<SoundRow>();
+
             var results = new List<SoundRow>();
 
             for (var row = 0; row < table.RowCount; row++)
             {
-                var resource = table.GetString(row, "Resource");
-                if (string.IsNullOrEmpty(resource))
+                var resource = table.GetString(row, definition.LabelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(resource))
                     continue;
 
                 // Prefer the DisplayName override strref if a corpus entry ever populates it,
@@ -68,9 +80,9 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                 var descriptionStrref = table.GetInt(row, "Description");
 
                 var displayName = DisplayNameResolver.Resolve(tlk, displayNameStrref,
-                    DisplayNameResolver.Resolve(tlk, descriptionStrref, resource));
+                    DisplayNameResolver.Resolve(tlk, descriptionStrref, resource!));
 
-                results.Add(new SoundRow(row, resource, displayName));
+                results.Add(new SoundRow(row, resource!, displayName));
             }
 
             return results;

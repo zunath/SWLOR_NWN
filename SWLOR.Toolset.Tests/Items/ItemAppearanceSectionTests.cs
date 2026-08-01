@@ -274,6 +274,22 @@ namespace SWLOR.Toolset.Tests.Items
             }
 
             [Test]
+            public void PalettePickerCanForbidNumericFallbackForCreatureColors()
+            {
+                var cell = new ItemDyeCellViewModel(
+                    "Skin",
+                    () => 7,
+                    _ => true,
+                    Array.Empty<(byte, byte, byte)>(),
+                    allowsNumericFallback: false);
+
+                cell.HasPalette.Should().BeFalse();
+                cell.HasNumericFallback.Should().BeFalse(
+                    "a creature color must never turn into a raw palette-number field");
+                cell.IsPaletteUnavailable.Should().BeTrue();
+            }
+
+            [Test]
             public void AFractionalDyeIndexIsRefusedRatherThanTruncated()
             {
                 var written = new List<int>();

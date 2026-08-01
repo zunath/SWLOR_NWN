@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
+using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Viewport
 {
@@ -30,6 +32,7 @@ namespace SWLOR.Toolset.Viewport
         private readonly Control? _emptyNotice;
 
         private IModelPreviewSource? _viewModel;
+        private ResourceIndex? _subscribedResourceIndex;
         private bool _isAttached;
         private bool _hostVisible;
         private bool _disposed;
@@ -73,14 +76,32 @@ namespace SWLOR.Toolset.Viewport
         {
             if (_viewModel != null)
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+            if (_subscribedResourceIndex != null)
+                _subscribedResourceIndex.ResourcesReloaded -= OnGameResourcesReloaded;
 
             _viewModel = DataContext as IModelPreviewSource;
+            _subscribedResourceIndex = _viewModel?.ResourceIndex;
 
             if (_viewModel != null)
                 _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+            if (_subscribedResourceIndex != null)
+                _subscribedResourceIndex.ResourcesReloaded += OnGameResourcesReloaded;
 
             ApplyScene();
             ApplyAnimation();
+        }
+
+        private void OnGameResourcesReloaded()
+        {
+            var expectedIndex = _subscribedResourceIndex;
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (_disposed || expectedIndex == null || !ReferenceEquals(expectedIndex, _subscribedResourceIndex))
+                    return;
+
+                _modelView?.InvalidateGameResources();
+                _viewModel?.ReloadGameResources();
+            });
         }
 
         private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -146,7 +167,10 @@ namespace SWLOR.Toolset.Viewport
             EndDrag();
             if (_viewModel != null)
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+            if (_subscribedResourceIndex != null)
+                _subscribedResourceIndex.ResourcesReloaded -= OnGameResourcesReloaded;
             _viewModel = null;
+            _subscribedResourceIndex = null;
             DataContext = null;
 
             if (_modelView != null)

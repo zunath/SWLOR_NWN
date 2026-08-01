@@ -1542,6 +1542,17 @@ namespace SWLOR.Toolset.Editors
         public event Action? ContentsChanged;
 
         /// <summary>
+        /// Reclassifies the selected placed waypoint, and supplies the same fresh catalog to any
+        /// waypoint selected later in this open area.
+        /// </summary>
+        public void RefreshWaypointCatalog(
+            Domain.Editors.Waypoints.WaypointBehaviorCatalog catalog)
+        {
+            Sections.FirstOrDefault(section => section.BlueprintType == ResourceType.Utw)
+                ?.RefreshWaypointCatalog(catalog);
+        }
+
+        /// <summary>
         /// Asks the view to put the camera on a world position and show the map if it is not in
         /// front. Raised rather than acted on here because the camera belongs to the GL control,
         /// which this view model deliberately does not own.
@@ -1631,6 +1642,34 @@ namespace SWLOR.Toolset.Editors
             _sceneBuildRequested = true;
             _ = BuildSceneAsync(reselect);
         }
+
+        /// <summary>
+        /// Re-resolves every tileset, model, walkmesh, and texture after the module HAK stack is
+        /// replaced. The authored ARE/GIT data is untouched; only its resource-backed scene is rebuilt.
+        /// </summary>
+        public void ReloadGameResources()
+        {
+            if (_disposed)
+                return;
+
+            Interlocked.Increment(ref _sceneInputRevision);
+            _sceneBuildRequested = true;
+            AreaScene = null;
+            GameResourceRevision++;
+            _ = BuildSceneAsync(CaptureReselectKey());
+        }
+
+        /// <summary>
+        /// Changes only when Module Properties replaces the active HAK stack. The view uses this
+        /// signal to release GL-side models and textures before the rebuilt scene is displayed.
+        /// </summary>
+        public int GameResourceRevision
+        {
+            get => _gameResourceRevision;
+            private set => SetProperty(ref _gameResourceRevision, value);
+        }
+
+        private int _gameResourceRevision;
 
         /// <summary>
         /// True when the scene already reflects the current documents, or a build for them is in
@@ -2154,15 +2193,19 @@ namespace SWLOR.Toolset.Editors
                 using var moduleWriteLock = staged.Count == 0
                     ? null
                     : ModuleWriteLock.AcquireForResourcePath(staged[0].TargetPath);
+                var instancePairBeingWritten =
+                    gitPlan == SavePlan.Write || gicPlan == SavePlan.Write;
 
-                foreach (var (session, plan) in new[]
+                foreach (var (session, plan, isInstancePairMember) in new[]
                          {
-                             (_areSession, arePlan),
-                             (_gitSession, gitPlan),
-                             (_gicSession, gicPlan)
+                             (_areSession, arePlan, false),
+                             (_gitSession, gitPlan, true),
+                             (_gicSession, gicPlan, true)
                          })
                 {
-                    if (plan == SavePlan.Write && session.HasExternalChange())
+                    var mustRecheck = plan == SavePlan.Write ||
+                                      isInstancePairMember && instancePairBeingWritten;
+                    if (mustRecheck && session.HasExternalChange())
                     {
                         foreach (var write in staged)
                             Services.SaveService.Discard(write);
@@ -2455,6 +2498,25 @@ namespace SWLOR.Toolset.Editors
         {
             foreach (var section in Sections)
                 section.RefreshFromDocument();
+        }
+
+        /// <summary>
+        /// True when an external blueprint refactor must not replace this area's GIT/GIC pair.
+        /// ARE-only edits are deliberately excluded: reloading clean instance files does not touch
+        /// unsaved terrain or area-property work.
+        /// </summary>
+        public bool HasUnsavedInstanceChanges =>
+            _gitSession.UndoStack.IsDirty || _gicDirty;
+
+        /// <summary>
+        /// Picks up instance files written by a blueprint rename without closing a clean open area.
+        /// </summary>
+        public bool ReloadInstancesAfterBlueprintSave()
+        {
+            if (HasUnsavedInstanceChanges)
+                return false;
+
+            return ReloadInstancePair();
         }
 
         private void RefreshGicDirty()

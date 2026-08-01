@@ -28,6 +28,7 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
 
         public bool IsSourceScanAvailable { get; }
         public IReadOnlyDictionary<int, string> NpcGroups { get; }
+        public IReadOnlyDictionary<int, IReadOnlyList<string>> NpcGroupQuestIds { get; }
         public IReadOnlyDictionary<int, string> KeyItems { get; }
         public IReadOnlyDictionary<int, string> Factions { get; }
         public IReadOnlyDictionary<int, string> Skills { get; }
@@ -98,6 +99,7 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             _quests = questDirectory != null
                 ? QuestSourceScanner.Scan(questDirectory, out _)
                 : new Dictionary<string, QuestDefinitionInfo>(StringComparer.Ordinal);
+            NpcGroupQuestIds = NpcGroupQuestSourceScanner.Scan(questDirectory);
 
             // The two scans reach different quests: SourceIdScanner only expands helpers whose
             // FIRST parameter is a string, while the guild helpers (Smithery, Engineering, ...)

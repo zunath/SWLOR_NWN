@@ -35,6 +35,8 @@ namespace SWLOR.Toolset.Domain.Editors
         public const string SoundSets = "soundsets";
         public const string BaseItems = "baseitems";
         public const string LoadScreens = "loadscreens";
+        public const string Races = "races";
+        public const string CreatureMovementRates = "creaturemovementrates";
 
         /// <summary>Trigger "Type" - a small fixed engine enum, not a 2DA table.</summary>
         public const string TriggerTypes = "triggertypes";

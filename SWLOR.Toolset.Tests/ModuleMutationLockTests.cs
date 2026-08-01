@@ -575,6 +575,70 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        [Test]
+        public async Task ALeaseHeldAcrossAwaitDoesNotFlowBackIntoSiblingWork()
+        {
+            var moduleRoot = Path.Combine(
+                Path.GetTempPath(),
+                $"swlor_ambient_cross_process_lock_{Guid.NewGuid():N}");
+            Directory.CreateDirectory(moduleRoot);
+
+            try
+            {
+                // Prime the caller's ambient state. The old implementation retained this empty
+                // dictionary after disposal, then a later async holder mutated the shared object.
+                using (ModuleWriteLock.Acquire(moduleRoot))
+                {
+                }
+
+                var acquired = new TaskCompletionSource(
+                    TaskCreationOptions.RunContinuationsAsynchronously);
+                var release = new TaskCompletionSource(
+                    TaskCreationOptions.RunContinuationsAsynchronously);
+                var holder = HoldLeaseAcrossAwait(moduleRoot, acquired, release.Task);
+                Task? sibling = null;
+                try
+                {
+                    await acquired.Task.WaitAsync(TimeSpan.FromSeconds(5));
+                    var siblingAttempting = new TaskCompletionSource(
+                        TaskCreationOptions.RunContinuationsAsynchronously);
+                    sibling = Task.Run(() =>
+                    {
+                        siblingAttempting.SetResult();
+                        using var lease = ModuleWriteLock.Acquire(
+                            moduleRoot,
+                            TimeSpan.FromSeconds(5));
+                    });
+
+                    await siblingAttempting.Task.WaitAsync(TimeSpan.FromSeconds(5));
+                    var completed = await Task.WhenAny(sibling, Task.Delay(100));
+                    completed.Should().NotBe(sibling,
+                        "a sibling operation must contend for the OS lease rather than inherit it as nested work");
+                }
+                finally
+                {
+                    release.TrySetResult();
+                    await holder;
+                    if (sibling != null)
+                        await sibling;
+                }
+            }
+            finally
+            {
+                Directory.Delete(moduleRoot, recursive: true);
+            }
+        }
+
+        private static async Task HoldLeaseAcrossAwait(
+            string moduleRoot,
+            TaskCompletionSource acquired,
+            Task release)
+        {
+            using var lease = ModuleWriteLock.Acquire(moduleRoot);
+            acquired.SetResult();
+            await release;
+        }
+
         private sealed class StubPrompts : IEditorPromptService
         {
             public Task<UnsavedChangesChoice> ConfirmCloseAsync(string name) =>

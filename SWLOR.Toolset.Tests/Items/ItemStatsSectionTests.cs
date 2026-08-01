@@ -22,6 +22,25 @@ namespace SWLOR.Toolset.Tests.Items
         private static ItemValueStore OpenStore() =>
             new(UtiDocument.Load(AdrenHarnessPath).Fields);
 
+        [Test]
+        public void ReadOnlySummaryUsesTheItemEditorsStatCatalog()
+        {
+            var item = UtiDocument.Load(Path.Combine(
+                CorpusLocator.ModuleDirectory, "uti", "vnpcrbot1.uti.json")).Fields;
+
+            var groups = ItemStatSummary.Build(item);
+            var combat = groups.Single(group => group.Title == "Combat");
+
+            combat.Entries.Should().Contain(entry =>
+                entry.Label == "DMG" && entry.Value == "6");
+            combat.Entries.Should().Contain(entry =>
+                entry.Label == "Delay" && entry.Value == "30");
+            groups.SelectMany(group => group.Entries).Should().NotContain(entry =>
+                entry.Label.Contains("ammo", StringComparison.OrdinalIgnoreCase),
+                "engine-only unlimited ammunition remains behind the scenes");
+            ItemStatSummary.Compact(groups).Should().Contain("DMG").And.Contain("Delay");
+        }
+
         private static ItemStatsSectionViewModel OpenArmorSection(ItemValueStore store)
         {
             var section = new ItemStatsSectionViewModel(store, (_, mutation) => { mutation(); return true; });

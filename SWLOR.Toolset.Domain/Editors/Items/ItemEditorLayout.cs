@@ -42,7 +42,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             {
                 Label = "Category", Name = "PaletteID", Kind = BehaviorFieldKind.Choice,
                 FieldType = GffFieldType.Byte, ChoicesKey = ItemChoiceKeys.PaletteCategories,
-                IsSearchable = true
+                IsSearchable = true, IsInlineSearch = true
             },
             new BehaviorFieldDefinition
             {
@@ -66,12 +66,9 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                 Label = "Total Cost", Name = "Cost", Kind = BehaviorFieldKind.Integer,
                 FieldType = GffFieldType.Dword, IsReadOnly = true
             },
-            // A uti carries two descriptions, and only the identified one is live here. GetDescription
-            // defaults to bIdentifiedDescription, and every examine surface in the server - market,
-            // property storage, the contract board - takes that default, so DescIdentified is the
-            // text players read. SWLOR does not play the identification game, and nothing on the
-            // server ever asks for the unidentified string, so it is preserved as it sits on disk
-            // rather than given a second box that would only ever be dead data.
+            // A UTI carries two descriptions, but SWLOR exposes one. DescIdentified is the value
+            // the UI edits; that edit mirrors into Description while preserving distinct legacy
+            // values when the builder changes some unrelated field.
             new BehaviorFieldDefinition
             {
                 Label = "Description", Name = "DescIdentified", Kind = BehaviorFieldKind.Paragraph,

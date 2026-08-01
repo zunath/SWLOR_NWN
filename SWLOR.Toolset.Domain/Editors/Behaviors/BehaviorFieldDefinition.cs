@@ -50,6 +50,14 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         public bool IsSearchable { get; init; }
 
         /// <summary>
+        /// Keeps a searchable selector visible as part of the form instead of placing it behind an
+        /// open button. Palette categories use this consistently across blueprint editors because
+        /// refiling an object is a primary editing action, not a heavyweight catalog workflow.
+        /// Results remain virtualized and paged.
+        /// </summary>
+        public bool IsInlineSearch { get; init; }
+
+        /// <summary>
         /// Lookup key for a Choice row whose values come from game data rather than from this file -
         /// the load screens, say. The app layer resolves it; an unresolved key leaves the row empty
         /// rather than inventing values.

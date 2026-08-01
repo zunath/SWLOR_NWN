@@ -371,6 +371,10 @@ void main()
             public IReadOnlyDictionary<string, IReadOnlyList<Matrix4x4>> AnimationFrames { get; init; } =
                 new Dictionary<string, IReadOnlyList<Matrix4x4>>(StringComparer.OrdinalIgnoreCase);
 
+            /// <summary>Byte offsets into the shared index buffer for named skinned-animation frames.</summary>
+            public IReadOnlyDictionary<string, IReadOnlyList<int>> AnimationIndexOffsets { get; init; } =
+                new Dictionary<string, IReadOnlyList<int>>(StringComparer.OrdinalIgnoreCase);
+
             public string? TextureName { get; init; }
 
             /// <summary>
@@ -452,6 +456,8 @@ void main()
         // them on GL teardown.
         private readonly Dictionary<string, MeshMaterial> _rawTextureCache =
             new(StringComparer.OrdinalIgnoreCase);
+
+        private int _gameResourceInvalidationRequested;
 
         private StaticMeshBuffer? _fallbackCubeBuffer;
         private StaticMeshBuffer? _markerMeshBuffer;
@@ -2059,12 +2065,19 @@ void main()
 
         private static int PreviewMeshIndexOffset(
             MeshRange mesh,
+            ModelBuffer model,
             PreviewAnimationSnapshot preview,
             float? idleElapsed)
         {
-            // Explicit placeable-state animations currently carry transform frames only. Their
-            // static vertex range remains correct; idle skin frames apply only when no state has
-            // taken over the mesh.
+            if (preview.Name is { } animatedName &&
+                mesh.AnimationIndexOffsets.TryGetValue(animatedName, out var offsets) &&
+                offsets.Count > 0)
+            {
+                return offsets[PreviewAnimationFrameIndex(model, animatedName, offsets.Count, preview.Seconds)];
+            }
+
+            // Rigid named animations carry transform frames only. Their static vertex range remains
+            // correct; idle skin frames apply only when no named state has taken over the mesh.
             if (preview.Name is { } name &&
                 mesh.AnimationFrames.TryGetValue(name, out var animationFrames) &&
                 animationFrames.Count > 0)
@@ -2094,9 +2107,23 @@ void main()
             if (length <= 0f || frames.Count == 1)
                 return frames[0];
 
-            var through = (preview.Seconds % length) / length;
-            var frame = Math.Clamp((int)(through * frames.Count), 0, frames.Count - 1);
-            return frames[frame];
+            return frames[PreviewAnimationFrameIndex(model, name, frames.Count, preview.Seconds)];
+        }
+
+        private static int PreviewAnimationFrameIndex(
+            ModelBuffer model,
+            string name,
+            int frameCount,
+            float seconds)
+        {
+            if (frameCount <= 1)
+                return 0;
+            var length = model.Animations.FirstOrDefault(animation =>
+                string.Equals(animation.Name, name, StringComparison.OrdinalIgnoreCase))?.Length ?? 0f;
+            if (length <= 0f)
+                return 0;
+            var through = (seconds % length) / length;
+            return Math.Clamp((int)(through * frameCount), 0, frameCount - 1);
         }
 
         private static Matrix4x4 PreviewEmitterTransform(
@@ -2495,6 +2522,9 @@ void main()
 
             try
             {
+                if (Interlocked.Exchange(ref _gameResourceInvalidationRequested, 0) != 0)
+                    ClearGameResourceGpuCaches();
+
                 _gl.ClearColor(background.X, background.Y, background.Z, 1f);
                 _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
                 _gl.Enable(EnableCap.DepthTest);
@@ -2558,6 +2588,45 @@ void main()
                 // early return for a null scene, which still owes it the cleared background.
                 _depthPrecisionTarget.EndFrame(_gl, fb, background);
             }
+        }
+
+        /// <summary>
+        /// Schedules GL-owned model and texture caches for disposal on the render thread. This is
+        /// called when Module Properties changes the HAK list; clearing only the CPU resource index
+        /// would otherwise leave an open area drawing the old GPU uploads under the same resrefs.
+        /// </summary>
+        public void InvalidateGameResources()
+        {
+            Interlocked.Exchange(ref _gameResourceInvalidationRequested, 1);
+            RequestNextFrameRendering();
+        }
+
+        private void ClearGameResourceGpuCaches()
+        {
+            if (_gl == null)
+                return;
+
+            foreach (var diffuse in _textureCache.Values)
+            {
+                if (diffuse.TexId != 0)
+                    _gl.DeleteTexture(diffuse.TexId);
+            }
+            _textureCache.Clear();
+
+            foreach (var texId in _mapTextureCache.Values)
+            {
+                if (texId != 0)
+                    _gl.DeleteTexture(texId);
+            }
+            _mapTextureCache.Clear();
+            _rawTextureCache.Clear();
+
+            foreach (var buffer in _modelBuffers.Values)
+                DeleteBuffer(buffer.Vao, buffer.Vbo, buffer.Ebo);
+            _modelBuffers.Clear();
+            _tileBatches = null;
+            _batchedTiles = null;
+            _renderedSceneVersion = -1;
         }
 
         private static bool IsSingleModelPreview(AreaScene? scene) =>
@@ -3057,7 +3126,7 @@ void main()
                     {
                         _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
                             DrawElementsType.UnsignedInt,
-                            (void*)PreviewMeshIndexOffset(meshRange, preview, idleElapsed));
+                            (void*)PreviewMeshIndexOffset(meshRange, buffer, preview, idleElapsed));
                     }
                 }
             }
@@ -4427,6 +4496,35 @@ void main()
                     }
                 }
 
+                var animationIndexOffsets =
+                    new Dictionary<string, IReadOnlyList<int>>(StringComparer.OrdinalIgnoreCase);
+                foreach (var (name, positionFrames) in mesh.AnimationPositions)
+                {
+                    if (!mesh.AnimationFrames.TryGetValue(name, out var transformFrames) ||
+                        positionFrames.Count != transformFrames.Count ||
+                        positionFrames.Any(frame => frame.Length != vertexCount * 3))
+                    {
+                        continue;
+                    }
+
+                    var offsets = new List<int>(positionFrames.Count);
+                    mesh.AnimationNormals.TryGetValue(name, out var normalFrames);
+                    for (var frame = 0; frame < positionFrames.Count; frame++)
+                    {
+                        var frameNormals = normalFrames != null && frame < normalFrames.Count
+                            ? normalFrames[frame]
+                            : Array.Empty<float>();
+                        AppendVertices(positionFrames[frame], frameNormals);
+
+                        offsets.Add(indices.Count * sizeof(uint));
+                        foreach (var index in mesh.Indices)
+                            indices.Add(baseVertex + (uint)index);
+                        baseVertex += (uint)vertexCount;
+                    }
+
+                    animationIndexOffsets[name] = offsets;
+                }
+
                 meshRanges.Add(new MeshRange
                 {
                     IndexOffset = indexOffset,
@@ -4435,6 +4533,7 @@ void main()
                     PoseFrames = mesh.PoseFrames,
                     PoseIndexOffsets = poseIndexOffsets,
                     AnimationFrames = mesh.AnimationFrames,
+                    AnimationIndexOffsets = animationIndexOffsets,
                     TextureName = string.IsNullOrEmpty(mesh.TextureName) ? null : mesh.TextureName,
                     TileFade = mesh.TileFade
                 });

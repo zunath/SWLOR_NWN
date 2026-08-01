@@ -25,17 +25,25 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     {
         private const string TableName = "placeables";
 
-        private readonly Lazy<IReadOnlyList<PlaceableAppearanceRow>> _rows;
-        private readonly Lazy<IReadOnlyDictionary<int, PlaceableAppearanceRow>> _byId;
+        private readonly ReloadableLazy<IReadOnlyList<PlaceableAppearanceRow>> _rows;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, PlaceableAppearanceRow>> _byId;
 
         public PlaceableAppearanceService(TwoDaService twoDa, TlkService tlk)
         {
             if (twoDa is null) throw new ArgumentNullException(nameof(twoDa));
             if (tlk is null) throw new ArgumentNullException(nameof(tlk));
 
-            _rows = new Lazy<IReadOnlyList<PlaceableAppearanceRow>>(() => Build(twoDa, tlk));
-            _byId = new Lazy<IReadOnlyDictionary<int, PlaceableAppearanceRow>>(
+            _rows = new ReloadableLazy<IReadOnlyList<PlaceableAppearanceRow>>(() => Build(twoDa, tlk));
+            _byId = new ReloadableLazy<IReadOnlyDictionary<int, PlaceableAppearanceRow>>(
                 () => _rows.Value.ToDictionary(row => row.Id));
+            twoDa.TablesReloaded += Invalidate;
+            tlk.CustomTlkReloaded += Invalidate;
+        }
+
+        private void Invalidate()
+        {
+            _rows.Reset();
+            _byId.Reset();
         }
 
         /// <summary>All non-reserved placeables.2da rows, in row (Appearance_Type) order.</summary>
@@ -58,23 +66,32 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private static IReadOnlyList<PlaceableAppearanceRow> Build(TwoDaService twoDa, TlkService tlk)
         {
-            var table = twoDa.GetTable(TableName);
+            var definition = TwoDaLookupTables.PlaceableModel;
+            var modelColumn = definition.RequiredColumns!.Single();
+            var table = twoDa.GetTable(definition.TableName);
+            if (!table.HasColumn(definition.LabelColumn) || !table.HasColumn(modelColumn))
+                return Array.Empty<PlaceableAppearanceRow>();
+
             var results = new List<PlaceableAppearanceRow>();
 
             for (var row = 0; row < table.RowCount; row++)
             {
-                var label = table.GetString(row, "Label");
-                if (string.IsNullOrEmpty(label))
+                var label = table.GetString(row, definition.LabelColumn);
+                var model = table.GetString(row, modelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
+                    !TwoDaChoicePolicy.IsSelectableLabel(model))
+                {
                     continue;
+                }
 
-                var strref = table.GetInt(row, "StrRef");
-                var displayName = DisplayNameResolver.Resolve(tlk, strref, label);
+                var strref = table.GetInt(row, definition.StrRefColumn!);
+                var displayName = DisplayNameResolver.Resolve(tlk, strref, label!);
 
                 results.Add(new PlaceableAppearanceRow(
                     row,
-                    label,
+                    label!,
                     displayName,
-                    table.GetString(row, "ModelName")));
+                    model));
             }
 
             return results;

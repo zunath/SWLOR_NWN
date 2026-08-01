@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Avalonia.Threading;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
@@ -148,6 +149,8 @@ namespace SWLOR.Toolset.Services
         private readonly OutputLogService _log;
         private readonly string? _erfToolOverride;
         private readonly string? _gffToolOverride;
+        private readonly Func<Action, Task> _dispatchToUiThread;
+        private readonly Func<string, CancellationToken, Task>? _reloadCustomContent;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _gffConversionLocks =
             new(StringComparer.OrdinalIgnoreCase);
 
@@ -155,12 +158,29 @@ namespace SWLOR.Toolset.Services
             WorkspaceContext workspaceContext,
             OutputLogService log,
             string? erfToolOverride = null,
-            string? gffToolOverride = null)
+            string? gffToolOverride = null,
+            Func<Action, Task>? dispatchToUiThread = null,
+            ModuleCustomContentService? moduleCustomContent = null,
+            Func<string, CancellationToken, Task>? reloadCustomContent = null)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _erfToolOverride = erfToolOverride;
             _gffToolOverride = gffToolOverride;
+            _dispatchToUiThread = dispatchToUiThread ?? DispatchToUiThreadAsync;
+            _reloadCustomContent = reloadCustomContent ??
+                (moduleCustomContent == null
+                    ? null
+                    : async (moduleRoot, cancellationToken) =>
+                    {
+                        var ifo = IfoDocument.Load(
+                            Path.Combine(moduleRoot, "ifo", "module.ifo.json"));
+                        await moduleCustomContent.ReloadAsync(
+                                ifo.HakNames,
+                                ifo.CustomTlk,
+                                cancellationToken)
+                            .ConfigureAwait(false);
+                    });
         }
 
         public async Task<ErfArchiveSession> OpenArchiveAsync(
@@ -482,16 +502,48 @@ namespace SWLOR.Toolset.Services
             return prepared;
         }
 
-        public Task<ErfImportResult> ImportAsync(
+        public async Task<ErfImportResult> ImportAsync(
             IReadOnlyCollection<ErfImportChoice> choices,
             CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(choices);
             ModuleMutationLock.ThrowIfModuleLocked();
+            var moduleRoot = RequireWorkspace().ModuleRoot;
             var snapshot = choices.ToList();
-            return Task.Run(
-                () => Import(snapshot, cancellationToken),
-                cancellationToken);
+            var result = await Task.Run(
+                    () => Import(snapshot, cancellationToken),
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            if (_reloadCustomContent != null && result.ChangedResources.Any(resource =>
+                    resource.Extension.Equals("ifo", StringComparison.OrdinalIgnoreCase) &&
+                    resource.ResRef.Equals("module", StringComparison.OrdinalIgnoreCase)))
+            {
+                try
+                {
+                    // The transaction is committed at this point. Finish synchronizing the live
+                    // HAK/TLK stack even if the caller cancels while the post-commit refresh runs;
+                    // reporting cancellation here would imply the already-installed import rolled
+                    // back when it did not.
+                    await _reloadCustomContent(moduleRoot, CancellationToken.None)
+                        .ConfigureAwait(false);
+                    _log.AppendLine("Reloaded module custom content after importing module.ifo.");
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine(
+                        "Imported module.ifo, but its custom content could not be reloaded: " +
+                        ex.GetBaseException().Message);
+                }
+            }
+
+            await _dispatchToUiThread(() =>
+            {
+                foreach (var (extension, resRef) in result.ChangedResources)
+                    RefreshWorkspace(extension, resRef);
+            }).ConfigureAwait(false);
+
+            return result;
         }
 
         private ErfImportResult Import(
@@ -746,9 +798,6 @@ namespace SWLOR.Toolset.Services
                     .Where(entry => !entry.IsMetadata)
                     .Select(entry => (entry.Extension, entry.ResRef))
                     .ToList();
-                foreach (var (extension, resRef) in changed)
-                    RefreshWorkspace(extension, resRef);
-
                 var importedPlan = plan.Where(entry => !entry.IsMetadata).ToList();
                 var skipped = normalizedChoices.Count - importedPlan.Count;
                 var result = new ErfImportResult(
@@ -1617,6 +1666,8 @@ namespace SWLOR.Toolset.Services
                     "creature list" => "utc",
                     "door list" => "utd",
                     "encounter list" => "ute",
+                    "equip_itemlist" => "uti",
+                    "itemlist" => "uti",
                     "list" => "uti",
                     "placeable list" => "utp",
                     "soundlist" => "uts",
@@ -2230,6 +2281,17 @@ namespace SWLOR.Toolset.Services
                         string.Join(", ", duplicates) + " resources.");
                 }
             }
+        }
+
+        private static async Task DispatchToUiThreadAsync(Action action)
+        {
+            if (Dispatcher.UIThread.CheckAccess())
+            {
+                action();
+                return;
+            }
+
+            await Dispatcher.UIThread.InvokeAsync(action);
         }
 
         private static bool IsSupportedExtension(string extension) =>

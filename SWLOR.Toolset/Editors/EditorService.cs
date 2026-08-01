@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
@@ -28,6 +29,7 @@ namespace SWLOR.Toolset.Editors
         private readonly OutputLogService _log;
         private readonly ToolsetDockFactory _factory;
         private readonly IEditorPromptService _prompts;
+        private readonly IExternalLinkService? _externalLinks;
         private readonly TilesetCatalog? _tilesetCatalog;
         private readonly TileModelCache? _tileModelCache;
         private readonly ResourceIndex? _resourceIndex;
@@ -45,7 +47,7 @@ namespace SWLOR.Toolset.Editors
         /// The picker option sets, shared by every editor rather than rebuilt per tab. Each one is a
         /// module scan or a 2DA read, and opening a second door used to redo all of them.
         /// </summary>
-        private readonly Dictionary<string, IReadOnlyList<BehaviorChoice>> _choiceSets =
+        private readonly ConcurrentDictionary<string, Lazy<IReadOnlyList<BehaviorChoice>>> _choiceSets =
             new(StringComparer.Ordinal);
 
         /// <summary>
@@ -59,6 +61,7 @@ namespace SWLOR.Toolset.Editors
         /// The creature appearance rows, projected once. appearance.2da is thousands of rows and
         /// every creature editor asks for the same list.
         /// </summary>
+        private readonly object _creatureAppearanceOptionsGate = new();
         private IReadOnlyList<Appearance.AppearanceOption>? _creatureAppearanceOptions;
 
         /// <summary>Backs the placeable Appearance tab's model grid; null degrades it to an empty grid.</summary>
@@ -95,9 +98,21 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, Triggers.TriggerDocumentViewModel> _openTriggerEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Waypoints.WaypointDocumentViewModel> _openWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _openingWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
+        private int _waypointCatalogGeneration;
         private readonly Dictionary<string, Doors.DoorDocumentViewModel> _openDoorEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Creatures.CreatureDocumentViewModel> _openCreatureEditors = new(StringComparer.OrdinalIgnoreCase);
+        private int _creatureEquipmentChoicesGeneration;
+        private readonly Dictionary<string, Creatures.CreatureEquipmentChoice> _creatureEquipmentDetails =
+            new(StringComparer.OrdinalIgnoreCase);
+        private Creatures.CreatureSoundSetPreviewResolver? _creatureSoundSetPreviews;
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice>? _doorAppearances;
         private readonly Dictionary<string, Items.ItemDocumentViewModel> _openItemEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Merchants.MerchantDocumentViewModel> _openMerchantEditors =
+            new(StringComparer.OrdinalIgnoreCase);
+        private Merchants.MerchantInstanceService? _merchantInstances;
+        private IReadOnlyList<Merchants.MerchantItemDefinition>? _merchantItemCatalog;
+        private readonly Dictionary<string, Merchants.MerchantItemDefinition> _merchantItemDetails =
+            new(StringComparer.OrdinalIgnoreCase);
         private BaseItemRowService? _baseItemRowService;
         private BaseItemIconService? _baseItemIconService;
         private Domain.Editors.Items.ItemCostTableRanges? _itemCostTableRanges;
@@ -122,17 +137,19 @@ namespace SWLOR.Toolset.Editors
         private int _itemSourcesGeneration;
 
         /// <summary>
-        /// Optional: without it, item renames skip the category-membership preflight and swap, so a
-        /// module using no custom item categories never notices, and one that does has to refile the
-        /// renamed item by hand.
+        /// Optional category sidecar used by the shared blueprint rename transaction. Without it,
+        /// file and instance updates still work, but custom palette membership cannot be carried.
         /// </summary>
         private readonly CategoryService? _categories;
+        private readonly BlueprintSaveCoordinator _blueprintSaves;
         private Items.ArmorDyeSwatchService? _armorDyeSwatches;
         private Items.ArmorPartCatalog? _armorPartModels;
         private TintMapCatalog? _tintMapCatalog;
         private readonly Dictionary<string, Sounds.SoundDocumentViewModel> _openSoundEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<string>? _soundResources;
         private Services.SoundPreviewService? _soundPreviews;
+        private readonly Workspace.ModuleCustomContentService? _moduleCustomContent;
+        private Module.ModulePropertiesDocumentViewModel? _moduleProperties;
 
         // Keyed by path like the blueprint map rather than by resref like the area map: a script is
         // one file, so the path is its identity and there is no are/git/gic triplet to name.
@@ -217,9 +234,25 @@ namespace SWLOR.Toolset.Editors
             Services.ModuleMutationLock? mutationLock = null,
             CategoryService? categories = null,
             Func<Domain.Workspace.ModuleWorkspace, string?, ItemObtainabilityIndex>?
-                itemSourcesBuilder = null)
+                itemSourcesBuilder = null,
+            Workspace.ModuleCustomContentService? moduleCustomContent = null,
+            IExternalLinkService? externalLinks = null)
         {
+            _moduleCustomContent = moduleCustomContent;
+            _externalLinks = externalLinks;
             _categories = categories;
+            _blueprintSaves = new BlueprintSaveCoordinator(
+                log,
+                categories,
+                areaResRef =>
+                    _openAreaEditors.TryGetValue(areaResRef, out var area) &&
+                    area.HasUnsavedInstanceChanges,
+                areaResRef =>
+                {
+                    if (_openAreaEditors.TryGetValue(areaResRef, out var area))
+                        area.ReloadInstancesAfterBlueprintSave();
+                },
+                FindUnsavedBlueprintReferences);
             _itemSourcesBuilder = itemSourcesBuilder ??
                                   ((workspace, gameSourceRoot) =>
                                       ItemObtainabilityIndex.Build(workspace, gameSourceRoot));
@@ -266,6 +299,7 @@ namespace SWLOR.Toolset.Editors
                 }
             });
             _workspaceContext.ScriptUsagesInvalidated += _scriptUsageIndex.Invalidate;
+            _workspaceContext.TagIndexInvalidated += OnTagIndexInvalidated;
 
             // Opening another module invalidates every module-derived picker; saving a blueprint
             // invalidates only the ones built out of the module's own content.
@@ -274,8 +308,12 @@ namespace SWLOR.Toolset.Editors
                 _choiceSets.Clear();
                 _doorAppearances = null;
                 _itemSources = null;
+                _merchantItemCatalog = null;
+                _merchantItemDetails.Clear();
+                InvalidateCreatureEquipmentChoices();
                 _itemSourcesGeneration++;
                 _behaviorValues?.InvalidateModuleSources();
+                OnTagIndexInvalidated();
 
                 // Pay the obtainability scan's cost here, in the background, rather than on
                 // whichever item editor happens to open first.
@@ -293,8 +331,229 @@ namespace SWLOR.Toolset.Editors
                     _itemSourcesGeneration++;
                     _ = WarmItemSourcesAsync();
                 }
+
+                if (type == ResourceType.Uti)
+                {
+                    _merchantItemCatalog = null;
+                    _merchantItemDetails.Remove(refreshedResRef);
+                    InvalidateCreatureEquipmentChoices(refreshedResRef);
+                    foreach (var merchant in _openMerchantEditors.Values)
+                        merchant.Editor.RefreshItemCatalog();
+                }
             };
             _workspaceContext.PaletteChoicesInvalidated += InvalidatePaletteChoices;
+        }
+
+        private void OnTagIndexInvalidated()
+        {
+            var generation = ++_waypointCatalogGeneration;
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null ||
+                (_openWaypointEditors.Count == 0 && _openAreaEditors.Count == 0))
+            {
+                return;
+            }
+
+            _ = RefreshWaypointCatalogsAsync(workspace, generation);
+        }
+
+        private async Task RefreshWaypointCatalogsAsync(
+            ModuleWorkspace workspace,
+            int generation)
+        {
+            try
+            {
+                var transitionDestinationTags =
+                    await workspace.TagIndex.GetTransitionDestinationTagsAsync().ConfigureAwait(true);
+                if (generation != _waypointCatalogGeneration ||
+                    !ReferenceEquals(workspace, _workspaceContext.Workspace))
+                {
+                    return;
+                }
+
+                var catalog = new Domain.Editors.Waypoints.WaypointBehaviorCatalog(
+                    _gameCodeIndex,
+                    transitionDestinationTags);
+                foreach (var editor in _openWaypointEditors.Values)
+                    editor.RefreshCatalog(catalog);
+                foreach (var editor in _openAreaEditors.Values)
+                    editor.RefreshWaypointCatalog(catalog);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not refresh open waypoint behavior catalogs: {ex.Message}");
+            }
+        }
+
+        private async Task<IReadOnlyCollection<string>?> GetCurrentTransitionDestinationTagsAsync(
+            ModuleWorkspace workspace)
+        {
+            while (ReferenceEquals(workspace, _workspaceContext.Workspace))
+            {
+                var generation = _waypointCatalogGeneration;
+                var tags =
+                    await workspace.TagIndex.GetTransitionDestinationTagsAsync().ConfigureAwait(true);
+                if (generation == _waypointCatalogGeneration)
+                    return tags;
+            }
+
+            return null;
+        }
+
+        /// <summary>Opens Module Properties as the single document tab for module.ifo.</summary>
+        public void OpenModuleProperties(Module.ModulePropertiesActions? actions = null)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+            {
+                _log.AppendLine("Open a module before using Module Properties.");
+                return;
+            }
+
+            if (_moduleProperties != null)
+            {
+                _factory.ActivateDocument(_moduleProperties);
+                return;
+            }
+
+            var path = Path.Combine(workspace.ModuleRoot, "ifo", "module.ifo.json");
+            if (!File.Exists(path))
+            {
+                _log.AppendLine($"Module properties file not found: {path}");
+                return;
+            }
+
+            try
+            {
+                var document = new Module.ModulePropertiesDocumentViewModel(
+                    path,
+                    workspace.ModuleRoot,
+                    workspace,
+                    _log,
+                    _prompts,
+                    _gameCodeIndex,
+                    _moduleCustomContent,
+                    script => TryOpenEditor(ResourceType.Nss, script),
+                    actions);
+                document.Closed += _ => _moduleProperties = null;
+                document.CloseRequested += _ => _factory.CloseDocument(document);
+                _moduleProperties = document;
+                _factory.OpenDocument(document);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Failed to open Module Properties: {ex.Message}");
+            }
+        }
+
+        /// <summary>Refreshes open resource-backed content after the module HAK stack changes.</summary>
+        public void ReloadOpenGameResources()
+        {
+            _lookups.Invalidate();
+            _choiceSets.Clear();
+            lock (_creatureAppearanceOptionsGate)
+                _creatureAppearanceOptions = null;
+            InvalidateCreatureEquipmentChoices();
+            _creatureSoundSetPreviews = null;
+            _soundResources = null;
+            _doorAppearances = null;
+            _merchantItemCatalog = null;
+            _baseItemRowService = null;
+            _baseItemIconService = null;
+            _itemCostTableRanges = null;
+            _armorDyeSwatches = null;
+            _armorPartModels = null;
+
+            foreach (var editor in _openAreaEditors.Values)
+                editor.ReloadGameResources();
+            foreach (var editor in _openEditors.Values)
+                editor.PlaceableSections?.Appearance.ReloadGameResources();
+            foreach (var editor in _openDoorEditors.Values)
+                editor.Editor.ReloadGameResources();
+            foreach (var editor in _openCreatureEditors.Values)
+                editor.Editor.ReloadGameResources();
+            foreach (var editor in _openItemEditors.Values)
+                editor.Editor.ReloadGameResources();
+        }
+
+        /// <summary>
+        /// Invalidates faction choice caches after the modal faction editor saves. Any open editor
+        /// which owns a faction picker is clean (the shell saves all documents before opening the
+        /// modal workflow), so closing it prevents a stale list or a pre-remap numeric id from being
+        /// written back over the grouped faction transaction.
+        /// </summary>
+        public void RefreshAfterFactionSave(IReadOnlyCollection<string> changedPaths)
+        {
+            if (changedPaths.Count == 0)
+                return;
+
+            _lookups.Invalidate();
+            _choiceSets.Clear();
+
+            foreach (var path in changedPaths)
+            {
+                var extension = Path.GetFileName(Path.GetDirectoryName(path));
+                if (string.IsNullOrWhiteSpace(extension) ||
+                    !ResourceTypeExtensions.TryFromExtension(extension, out var type) ||
+                    type == ResourceType.Area)
+                {
+                    continue;
+                }
+
+                var fileName = Path.GetFileNameWithoutExtension(path);
+                var resRef = Path.GetFileNameWithoutExtension(fileName);
+                if (!string.IsNullOrWhiteSpace(resRef))
+                    _workspaceContext.RefreshCatalogEntry(type, resRef);
+            }
+
+            var closed = 0;
+            foreach (var editor in _openEditors.Values
+                         .Where(editor => editor.BlueprintType is
+                             ResourceType.Utc or ResourceType.Utp or ResourceType.Utd or
+                             ResourceType.Utt)
+                         .ToList())
+            {
+                _factory.CloseDocument(editor);
+                closed++;
+            }
+
+            foreach (var editor in _openCreatureEditors.Values.ToList())
+            {
+                _factory.CloseDocument(editor);
+                closed++;
+            }
+
+            foreach (var editor in _openDoorEditors.Values.ToList())
+            {
+                _factory.CloseDocument(editor);
+                closed++;
+            }
+
+            foreach (var editor in _openTriggerEditors.Values.ToList())
+            {
+                _factory.CloseDocument(editor);
+                closed++;
+            }
+
+            if (changedPaths.Any(path =>
+                    string.Equals(
+                        Path.GetFileName(Path.GetDirectoryName(path)),
+                        "git",
+                        StringComparison.OrdinalIgnoreCase)))
+            {
+                foreach (var editor in _openAreaEditors.Values.ToList())
+                {
+                    _factory.CloseDocument(editor);
+                    closed++;
+                }
+            }
+
+            if (closed > 0)
+            {
+                _log.AppendLine(
+                    $"Closed {closed} clean faction-aware editor tab" +
+                    $"{(closed == 1 ? string.Empty : "s")} so it reopens with the saved faction table.");
+            }
         }
 
         /// <summary>
@@ -544,6 +803,12 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            if (_openCreatureEditors.TryGetValue(filePath, out var existingCreature))
+            {
+                _factory.ActivateDocument(existingCreature);
+                return;
+            }
+
             if (_openSoundEditors.TryGetValue(filePath, out var existingSound))
             {
                 _factory.ActivateDocument(existingSound);
@@ -556,6 +821,12 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            if (_openMerchantEditors.TryGetValue(filePath, out var existingMerchant))
+            {
+                _factory.ActivateDocument(existingMerchant);
+                return;
+            }
+
             try
             {
                 if (!CanRepresentEveryValue(filePath, resRef, schema))
@@ -565,6 +836,12 @@ namespace SWLOR.Toolset.Editors
                 if (type == ResourceType.Utd)
                 {
                     OpenDoorEditor(filePath, resRef);
+                    return;
+                }
+
+                if (type == ResourceType.Utc)
+                {
+                    OpenCreatureEditor(filePath, resRef);
                     return;
                 }
 
@@ -597,6 +874,12 @@ namespace SWLOR.Toolset.Editors
                     return;
                 }
 
+                if (type == ResourceType.Utm)
+                {
+                    OpenMerchantEditor(filePath, resRef);
+                    return;
+                }
+
                 var editor = new BlueprintEditorViewModel(
                     filePath, resRef, type, schema, _lookups, _gameCodeIndex, _log, _prompts,
                     // So a localized field that carries a strref but no language-0 override can show what
@@ -606,11 +889,21 @@ namespace SWLOR.Toolset.Editors
                     type == ResourceType.Utp ? CreatePlaceableSections : null,
                     () => _workspaceContext.Workspace,
                     type == ResourceType.Utc ? CreateCreatureAppearanceGallery : null,
-                    type == ResourceType.Utc ? CreateCreatureTintMapEditor : null);
-                editor.Closed += _ => _openEditors.Remove(filePath);
+                    type == ResourceType.Utc ? CreateCreatureTintMapEditor : null,
+                    _blueprintSaves);
+                editor.Closed += closed => _openEditors.Remove(closed.FilePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
-                    _workspaceContext.RefreshCatalogEntry(editor.BlueprintType, resRef);
+                    _workspaceContext.RefreshCatalogEntry(editor.BlueprintType, editor.ResRef);
+                editor.Renamed += (renamed, oldResRef, oldPath) =>
+                    OnBlueprintRenamed(
+                        _openEditors,
+                        renamed,
+                        renamed.BlueprintType,
+                        oldResRef,
+                        oldPath,
+                        renamed.FilePath,
+                        renamed.ResRef);
                 _openEditors[filePath] = editor;
                 _factory.OpenDocument(editor);
             }
@@ -717,18 +1010,8 @@ namespace SWLOR.Toolset.Editors
             if (_appearances == null)
                 return null;
 
-            var options = _creatureAppearanceOptions ??= _appearances.GetAll()
-                .Select(row => new Appearance.AppearanceOption(
-                    row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                    row.DisplayName,
-                    // The label rather than the model column: half of appearance.2da names a
-                    // phenotype there, and "H" tells a builder nothing about what they picked.
-                    $"row {row.Id} \u00b7 {row.Label}",
-                    CreatureAppearanceId: row.Id))
-                .ToList();
-
             return new Appearance.AppearanceGallerySectionViewModel(
-                options,
+                CreatureAppearanceOptions(),
                 _thumbnails,
                 () => (context.Document.Root.GetOrNull("Appearance_Type")?.GetInteger() ?? 0)
                     .ToString(System.Globalization.CultureInfo.InvariantCulture),
@@ -816,8 +1099,10 @@ namespace SWLOR.Toolset.Editors
                    || _openTriggerEditors.ContainsKey(path)
                    || _openWaypointEditors.ContainsKey(path)
                    || _openDoorEditors.ContainsKey(path)
+                   || _openCreatureEditors.ContainsKey(path)
                    || _openSoundEditors.ContainsKey(path)
                    || _openItemEditors.ContainsKey(path)
+                   || _openMerchantEditors.ContainsKey(path)
                    || _openConversations.ContainsKey(path);
         }
 
@@ -827,6 +1112,12 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public async Task<bool> SaveAllAsync()
         {
+            if (_moduleProperties != null &&
+                !await _moduleProperties.TrySaveAsync().ConfigureAwait(true))
+            {
+                return false;
+            }
+
             foreach (var editor in _openEditors.Values.ToList())
             {
                 if (!await editor.TrySaveAsync().ConfigureAwait(true))
@@ -851,6 +1142,12 @@ namespace SWLOR.Toolset.Editors
                     return false;
             }
 
+            foreach (var editor in _openCreatureEditors.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
             foreach (var editor in _openSoundEditors.Values.ToList())
             {
                 if (!await editor.TrySaveAsync().ConfigureAwait(true))
@@ -858,6 +1155,12 @@ namespace SWLOR.Toolset.Editors
             }
 
             foreach (var editor in _openItemEditors.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
+            foreach (var editor in _openMerchantEditors.Values.ToList())
             {
                 if (!await editor.TrySaveAsync().ConfigureAwait(true))
                     return false;
@@ -900,12 +1203,15 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public async Task<bool> TryPrepareApplicationCloseAsync()
         {
-            if (!_openEditors.Values.Any(editor => editor.IsDirty) &&
+            if (_moduleProperties?.IsDirty != true &&
+                !_openEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openWaypointEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openDoorEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openCreatureEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openSoundEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openItemEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openMerchantEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openAreaEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openScriptEditors.Values.Any(editor => editor.IsDirty || editor.HasPendingCompileFailure) &&
                 !_openConversations.Values.Any(editor => editor.IsDirty))
@@ -918,6 +1224,8 @@ namespace SWLOR.Toolset.Editors
             if (choice != UnsavedChangesChoice.Discard)
                 return false;
 
+            _moduleProperties?.ApproveApplicationClose();
+
             foreach (var editor in _openEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openTriggerEditors.Values)
@@ -926,9 +1234,13 @@ namespace SWLOR.Toolset.Editors
                 editor.ApproveApplicationClose();
             foreach (var editor in _openDoorEditors.Values)
                 editor.ApproveApplicationClose();
+            foreach (var editor in _openCreatureEditors.Values)
+                editor.ApproveApplicationClose();
             foreach (var editor in _openSoundEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openItemEditors.Values)
+                editor.ApproveApplicationClose();
+            foreach (var editor in _openMerchantEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openAreaEditors.Values)
                 editor.ApproveApplicationClose();
@@ -946,11 +1258,16 @@ namespace SWLOR.Toolset.Editors
             var editor = new Triggers.TriggerDocumentViewModel(
                 filePath, resRef, _gameCodeIndex, _log, _prompts, ResolveTriggerTagArea,
                 ResolveTriggerChoices,
-                ChoicePreviews());
-            editor.Closed += _ => _openTriggerEditors.Remove(filePath);
+                ChoicePreviews(),
+                _blueprintSaves);
+            editor.Closed += closed => _openTriggerEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
-                _workspaceContext.RefreshCatalogEntry(ResourceType.Utt, resRef);
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Utt, editor.ResRef);
+            editor.Renamed += (renamed, oldResRef, oldPath) =>
+                OnBlueprintRenamed(
+                    _openTriggerEditors, renamed, ResourceType.Utt,
+                    oldResRef, oldPath, renamed.FilePath, renamed.ResRef);
             _openTriggerEditors[filePath] = editor;
             _factory.OpenDocument(editor);
         }
@@ -967,8 +1284,8 @@ namespace SWLOR.Toolset.Editors
                 // The transition classifier needs a module-wide GIT scan. Await its background
                 // warm-up instead of parsing hundreds of area files on Avalonia's UI thread.
                 var transitionDestinationTags =
-                    await workspace.TagIndex.GetTransitionDestinationTagsAsync().ConfigureAwait(true);
-                if (!ReferenceEquals(workspace, _workspaceContext.Workspace))
+                    await GetCurrentTransitionDestinationTagsAsync(workspace).ConfigureAwait(true);
+                if (transitionDestinationTags == null)
                     return;
 
                 if (_openWaypointEditors.TryGetValue(filePath, out var existing))
@@ -988,11 +1305,16 @@ namespace SWLOR.Toolset.Editors
                     _prompts,
                     catalog,
                     ResolveWaypointChoices,
-                    ChoicePreviews());
-                editor.Closed += _ => _openWaypointEditors.Remove(filePath);
+                    ChoicePreviews(),
+                    _blueprintSaves);
+                editor.Closed += closed => _openWaypointEditors.Remove(closed.FilePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
-                    _workspaceContext.RefreshCatalogEntry(ResourceType.Utw, resRef);
+                    _workspaceContext.RefreshCatalogEntry(ResourceType.Utw, editor.ResRef);
+                editor.Renamed += (renamed, oldResRef, oldPath) =>
+                    OnBlueprintRenamed(
+                        _openWaypointEditors, renamed, ResourceType.Utw,
+                        oldResRef, oldPath, renamed.FilePath, renamed.ResRef);
                 _openWaypointEditors[filePath] = editor;
                 _factory.OpenDocument(editor);
             }
@@ -1004,6 +1326,42 @@ namespace SWLOR.Toolset.Editors
             {
                 _openingWaypointEditors.Remove(filePath);
             }
+        }
+
+        /// <summary>Creature blueprints open with their linked stat/equipment resources.</summary>
+        private void OpenCreatureEditor(string filePath, string resRef)
+        {
+            var editor = new Creatures.CreatureDocumentViewModel(
+                filePath,
+                resRef,
+                _gameCodeIndex,
+                _log,
+                _prompts,
+                ResolveCreatureChoices,
+                _resourceIndex,
+                _previewRenderer != null
+                    ? creature => _previewRenderer.BuildModel(ResourceType.Utc, creature)
+                    : null,
+                CreatureAppearance,
+                ArmorPartModels(),
+                null,
+                LoadCreatureEquipmentDetails,
+                ChoicePreviews(),
+                PreviewCreatureAudio,
+                OpenLootDefinition,
+                null,
+                _thumbnails,
+                ArmorDyeSwatches(),
+                itemResRef => LoadMerchantItem(itemResRef)?.Name ?? itemResRef,
+                SearchCreatureEquipmentItems,
+                _appearances == null ? null : CreatureAppearanceOptions,
+                GetTintMapCatalog());
+            editor.Closed += closed => _openCreatureEditors.Remove(closed.FilePath);
+            editor.CloseRequested += _ => _factory.CloseDocument(editor);
+            editor.CatalogEntryChanged += () =>
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Utc, editor.ResRef);
+            _openCreatureEditors[filePath] = editor;
+            _factory.OpenDocument(editor);
         }
 
         /// <summary>Door blueprints open in the same behavior editor used by door placements.</summary>
@@ -1023,11 +1381,16 @@ namespace SWLOR.Toolset.Editors
                     ? door => _previewRenderer.BuildModel(ResourceType.Utd, door)
                     : null,
                 _thumbnails,
-                ChoicePreviews());
-            editor.Closed += _ => _openDoorEditors.Remove(filePath);
+                ChoicePreviews(),
+                _blueprintSaves);
+            editor.Closed += closed => _openDoorEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
-                _workspaceContext.RefreshCatalogEntry(ResourceType.Utd, resRef);
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Utd, editor.ResRef);
+            editor.Renamed += (renamed, oldResRef, oldPath) =>
+                OnBlueprintRenamed(
+                    _openDoorEditors, renamed, ResourceType.Utd,
+                    oldResRef, oldPath, renamed.FilePath, renamed.ResRef);
             _openDoorEditors[filePath] = editor;
             _factory.OpenDocument(editor);
         }
@@ -1060,13 +1423,58 @@ namespace SWLOR.Toolset.Editors
                 findReferences: FindItemReferences,
                 canRefileCategories: CanRefileItemCategories,
                 refileCategories: RefileItemCategories,
-                tintMapCatalog: GetTintMapCatalog());
+                tintMapCatalog: GetTintMapCatalog(),
+                saveCoordinator: _blueprintSaves);
             editor.Closed += closed => _openItemEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
                 _workspaceContext.RefreshCatalogEntry(ResourceType.Uti, editor.ResRef);
             editor.Renamed += OnItemRenamed;
             _openItemEditors[filePath] = editor;
+            _factory.OpenDocument(editor);
+        }
+
+        /// <summary>Merchant blueprints open in the dedicated inventory and buying-rules editor.</summary>
+        private void OpenMerchantEditor(string filePath, string resRef)
+        {
+            // Share the item editor's filtered base-type catalog. The raw lookup includes deleted,
+            // reserved, iconless, and broken-TLK rows (displayed as "Bad Strref"), none of which is
+            // a meaningful merchant buying rule.
+            var baseItems = ResolveItemChoices(Domain.Editors.Items.ItemChoiceKeys.BaseItems);
+            var editor = new Merchants.MerchantDocumentViewModel(
+                filePath,
+                resRef,
+                _log,
+                _prompts,
+                ResolveMerchantChoices,
+                baseItems,
+                LoadMerchantItem,
+                SearchMerchantItems,
+                _merchantInstances ??= new Merchants.MerchantInstanceService(
+                    _workspaceContext,
+                    _log,
+                    areaResRef =>
+                        _openAreaEditors.TryGetValue(areaResRef, out var area) &&
+                        area.HasUnsavedInstanceChanges,
+                    areaResRef =>
+                    {
+                        if (_openAreaEditors.TryGetValue(areaResRef, out var area))
+                            area.ReloadInstancesAfterBlueprintSave();
+                    }),
+                _blueprintSaves,
+                _thumbnails == null
+                    ? null
+                    : (itemResRef, onReady) =>
+                        _thumbnails.RequestAsync(ResourceType.Uti, itemResRef, onReady));
+            editor.Closed += closed => _openMerchantEditors.Remove(closed.FilePath);
+            editor.CloseRequested += _ => _factory.CloseDocument(editor);
+            editor.CatalogEntryChanged += () =>
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Utm, editor.ResRef);
+            editor.Renamed += (renamed, oldResRef, oldPath) =>
+                OnBlueprintRenamed(
+                    _openMerchantEditors, renamed, ResourceType.Utm,
+                    oldResRef, oldPath, renamed.FilePath, renamed.ResRef);
+            _openMerchantEditors[filePath] = editor;
             _factory.OpenDocument(editor);
         }
 
@@ -1181,8 +1589,15 @@ namespace SWLOR.Toolset.Editors
 
             var repoRoot = Path.GetDirectoryName(Path.GetFullPath(workspace.ModuleRoot));
             var gameSourceRoot = repoRoot == null ? null : Path.Combine(repoRoot, "SWLOR.Game.Server");
+            var generatorInputRoot = repoRoot == null
+                ? null
+                : Path.Combine(repoRoot, "SWLOR.CLI", "InputFiles");
             var references = ItemReferenceScanner.FindReferences(
-                workspace.ModuleRoot, gameSourceRoot, resRef, selfFilePath).ToList();
+                workspace.ModuleRoot,
+                gameSourceRoot,
+                resRef,
+                selfFilePath,
+                generatorInputRoot).ToList();
 
             // The scan reads disk, but an open script's unsaved buffer can already name this resref
             // - and SaveAll writes item editors before script editors, so a rename that only
@@ -1325,6 +1740,201 @@ namespace SWLOR.Toolset.Editors
         private IReadOnlyList<BehaviorChoice> ResolveItemChoices(string key) =>
             Cached("item", key, BuildItemChoices);
 
+        private IReadOnlyList<BehaviorChoice> ResolveMerchantChoices(string key) =>
+            Cached("merchant", key, BuildMerchantChoices);
+
+        private IReadOnlyList<BehaviorChoice> BuildMerchantChoices(string key)
+        {
+            if (key != Domain.Editors.Merchants.MerchantChoiceKeys.PaletteCategories)
+                return Array.Empty<BehaviorChoice>();
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<BehaviorChoice>();
+
+            try
+            {
+                var path = Path.Combine(workspace.ModuleRoot, "itp", "storepalcus.itp.json");
+                if (!File.Exists(path))
+                    return Array.Empty<BehaviorChoice>();
+
+                return SortByDisplay(PaletteCategoryReader.Read(
+                    Domain.Documents.ItpDocument.Load(path),
+                    _tlkService != null ? _tlkService.GetString : null));
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not read the merchant palette categories: {ex.Message}");
+                return Array.Empty<BehaviorChoice>();
+            }
+        }
+
+        private void OnBlueprintRenamed<TEditor>(
+            IDictionary<string, TEditor> openEditors,
+            TEditor editor,
+            ResourceType type,
+            string oldResRef,
+            string oldPath,
+            string newPath,
+            string newResRef)
+        {
+            openEditors.Remove(oldPath);
+            openEditors[newPath] = editor;
+            _workspaceContext.RemoveCatalogEntry(type, oldResRef);
+            _workspaceContext.RefreshCatalogEntry(type, newResRef);
+        }
+
+        private Merchants.MerchantItemDefinition? LoadMerchantItem(string resRef)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null || string.IsNullOrWhiteSpace(resRef))
+                return null;
+            if (_merchantItemDetails.TryGetValue(resRef, out var cached))
+                return cached;
+
+            try
+            {
+                var item = workspace.LoadBlueprint(ResourceType.Uti, resRef).Fields;
+                var name = _workspaceContext.Catalog?.TryGetEntry(
+                               ResourceType.Uti, resRef, out var entry) == true
+                    ? entry.Name
+                    : null;
+                if (string.IsNullOrWhiteSpace(name))
+                    name = item.GetLocStringOrNull("LocalizedName")?.Text;
+
+                var cost = (long)(item.GetUIntOrNull("Cost") ?? 0) +
+                           (item.GetUIntOrNull("AddCost") ?? 0);
+                var baseItem = item.GetIntOrNull("BaseItem") ?? -1;
+                var storePanel = BaseItemRows()?.Invoke(baseItem)?.StorePanel
+                                 ?? (int)Domain.Editors.Merchants.MerchantInventoryCategory.Miscellaneous;
+                var definition = new Merchants.MerchantItemDefinition(
+                    resRef,
+                    string.IsNullOrWhiteSpace(name) ? resRef : name,
+                    cost,
+                    storePanel);
+                _merchantItemDetails[resRef] = definition;
+                return definition;
+            }
+            catch
+            {
+                var definition = new Merchants.MerchantItemDefinition(resRef, resRef, 0);
+                _merchantItemDetails[resRef] = definition;
+                return definition;
+            }
+        }
+
+        private IReadOnlyList<Merchants.MerchantItemDefinition> SearchMerchantItems(
+            string query,
+            int storePanel,
+            int skip,
+            int take)
+        {
+            if (_workspaceContext.Workspace == null || take <= 0)
+                return Array.Empty<Merchants.MerchantItemDefinition>();
+
+            var trimmed = query.Trim();
+            var matches = new List<Merchants.MerchantItemDefinition>();
+            var matched = 0;
+            foreach (var item in MerchantItemCatalog())
+            {
+                if (trimmed.Length > 0 &&
+                    !item.ResRef.Contains(trimmed, StringComparison.OrdinalIgnoreCase) &&
+                    !item.Name.Contains(trimmed, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                var detailed = LoadMerchantItem(item.ResRef);
+                if (detailed == null || detailed.StorePanel != storePanel)
+                    continue;
+
+                if (matched++ < Math.Max(0, skip))
+                    continue;
+
+                matches.Add(detailed);
+                if (matches.Count == take)
+                    break;
+            }
+
+            return matches;
+        }
+
+        private IReadOnlyList<string> FindUnsavedBlueprintReferences(string resRef)
+        {
+            var references = new List<string>();
+            var quoted = $"\"{resRef}\"";
+            foreach (var (scriptResRef, text) in SnapshotOpenScriptSources())
+            {
+                if (text.Contains(quoted, StringComparison.OrdinalIgnoreCase))
+                {
+                    references.Add(
+                        $"Module/nss/{scriptResRef}.nss (unsaved editor buffer)");
+                }
+            }
+
+            foreach (var area in _openAreaEditors.Values)
+            {
+                if (!area.HasUnsavedInstanceChanges)
+                    continue;
+
+                if (area.Sections.Any(section => section.Rows.Any(row =>
+                        string.Equals(
+                            row.TemplateResRef,
+                            resRef,
+                            StringComparison.OrdinalIgnoreCase))))
+                {
+                    references.Add(
+                        $"Module/git/{area.AreaResRef}.git.json (unsaved area editor)");
+                }
+            }
+
+            return references;
+        }
+
+        private IReadOnlyList<Merchants.MerchantItemDefinition> MerchantItemCatalog()
+        {
+            if (_merchantItemCatalog != null)
+                return _merchantItemCatalog;
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<Merchants.MerchantItemDefinition>();
+
+            var items = new Dictionary<string, Merchants.MerchantItemDefinition>(
+                StringComparer.OrdinalIgnoreCase);
+            foreach (var resRef in workspace.EnumerateResRefs(ResourceType.Uti))
+                items[resRef] = new Merchants.MerchantItemDefinition(resRef, resRef, 0);
+
+            if (_workspaceContext.Catalog is { } catalog)
+            {
+                foreach (var entry in catalog.EntriesOfType(ResourceType.Uti))
+                {
+                    items[entry.ResRef] = new Merchants.MerchantItemDefinition(
+                        entry.ResRef,
+                        string.IsNullOrWhiteSpace(entry.Name) ? entry.ResRef : entry.Name!,
+                        0);
+                }
+            }
+
+            if (_resourceIndex != null)
+            {
+                var utiType = ResourceIdentity.TypeFromExtension("uti");
+                foreach (var identity in _resourceIndex.EnumerateResources(utiType))
+                {
+                    items.TryAdd(
+                        identity.ResRef,
+                        new Merchants.MerchantItemDefinition(
+                            identity.ResRef, identity.ResRef, 0));
+                }
+            }
+
+            _merchantItemCatalog = items.Values
+                .OrderBy(item => item.Name, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(item => item.ResRef, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            return _merchantItemCatalog;
+        }
+
         private IReadOnlyList<BehaviorChoice> BuildItemChoices(string key) =>
             SortByDisplay(BuildItemChoicesUnsorted(key));
 
@@ -1359,13 +1969,11 @@ namespace SWLOR.Toolset.Editors
                 var rows = BaseItemRows();
                 var icons = BaseItemIcons();
 
-                // Filtering needs both services' own view of the row (label from one, ItemClass
-                // from the other); either being unavailable falls back to the unfiltered list rather
-                // than guessing.
+                // The item editor's established rule needs label and ItemClass together. Do not
+                // invent a weaker display-only merchant rule when that structural metadata is
+                // unavailable; fail closed instead of exposing reserved USER/CEP/Bio rows.
                 if (rows == null || icons == null)
-                {
-                    return options.Select(option => new BehaviorChoice(option.Id, option.Display)).ToList();
-                }
+                    return Array.Empty<BehaviorChoice>();
 
                 return options
                     .Where(option => Domain.Editors.Items.BaseItemChoicePolicy.IsOffered(
@@ -1413,8 +2021,409 @@ namespace SWLOR.Toolset.Editors
         private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice> DoorAppearances() =>
             _doorAppearances ??= Domain.Editors.Doors.DoorAppearanceCatalog.Read(_doorTypes);
 
+        private IReadOnlyList<BehaviorChoice> ResolveCreatureChoices(string key) =>
+            Cached("creature", key, BuildCreatureChoices);
+
+        private IReadOnlyList<BehaviorChoice> BuildCreatureChoices(string key)
+        {
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.PaletteCategories)
+                return ResolveCreatureCategories();
+
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Appearances && _appearances != null)
+            {
+                return _appearances.GetAll()
+                    .Select(row => new BehaviorChoice(
+                        row.Id,
+                        $"{row.DisplayName} ({row.Id})",
+                        modelResRef: string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase)
+                            ? null
+                            : row.Race))
+                    .ToList();
+            }
+
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Portraits && _portraits != null)
+                return ResolvePortraitChoices();
+
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Races)
+                return LookupChoices(LookupKeys.Races);
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Factions)
+                return LookupChoices(LookupKeys.Factions);
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Genders)
+                return LookupChoices(LookupKeys.Gender);
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Phenotypes)
+                return LookupChoices(LookupKeys.Phenotype);
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.SoundSets)
+            {
+                var table = _twoDaService?.TryGetTable("soundset", out var soundSets) == true
+                    ? soundSets
+                    : null;
+                return _lookups.GetOptions(LookupKeys.SoundSets)
+                    .Select(option => new BehaviorChoice(
+                        option.Id,
+                        $"{option.Display} ({option.Id})",
+                        canPreviewAudio: !string.IsNullOrWhiteSpace(
+                            table?.GetString((int)option.Id, "RESREF"))))
+                    .ToList();
+            }
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.MovementRates)
+                return LookupChoices(LookupKeys.CreatureMovementRates);
+
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Dialogs)
+                return CreatureBlueprintChoices(ResourceType.Dlg);
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.NpcGroups && _gameCodeIndex != null)
+                return _gameCodeIndex.NpcGroups.OrderBy(entry => entry.Value)
+                    .Select(entry => new BehaviorChoice(entry.Key, $"{entry.Value} ({entry.Key})")).ToList();
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.DialogDefinitions && _gameCodeIndex != null)
+                return _gameCodeIndex.DialogNames.Order(StringComparer.OrdinalIgnoreCase)
+                    .Select(name => new BehaviorChoice(name, name)).ToList();
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.Guilds)
+            {
+                return Enum.GetValues<SWLOR.Game.Server.Enumeration.GuildType>()
+                    .Where(value => value != SWLOR.Game.Server.Enumeration.GuildType.Invalid)
+                    .Select(value => new BehaviorChoice(
+                        (int)value,
+                        Humanize(value.ToString())))
+                    .ToList();
+            }
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.GuildStores)
+                return GuildStoreChoices();
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.BeastTypes)
+            {
+                return Enum.GetValues<SWLOR.Game.Server.Service.BeastMasteryService.BeastType>()
+                    .Where(value => value != SWLOR.Game.Server.Service.BeastMasteryService.BeastType.Invalid)
+                    .Select(value => new BehaviorChoice((int)value, $"{Humanize(value.ToString())} ({(int)value})"))
+                    .ToList();
+            }
+            if (key == Domain.Editors.Creatures.CreatureChoiceKeys.VisualEffects && _gameCodeIndex != null)
+            {
+                return Domain.Editors.Creatures.CreatureVisualEffectCatalog.Build(
+                    _gameCodeIndex.VisualEffects,
+                    _gameCodeIndex.VisualEffectReferences);
+            }
+
+            return Array.Empty<BehaviorChoice>();
+        }
+
+        private IReadOnlyList<BehaviorChoice> LookupChoices(string key) => _lookups.GetOptions(key)
+            .Select(option => new BehaviorChoice(option.Id, option.BehaviorDisplay))
+            .ToList();
+
+        private IReadOnlyList<BehaviorChoice> ResolvePortraitChoices() =>
+            Cached("shared", LookupKeys.Portraits, _ =>
+            {
+                if (_portraits == null)
+                    return Array.Empty<BehaviorChoice>();
+
+                var genders = _lookups.GetOptions(LookupKeys.Gender)
+                    .GroupBy(option => (int)option.Id)
+                    .ToDictionary(group => group.Key, group => group.First().Display);
+                var races = _lookups.GetOptions(LookupKeys.Races)
+                    .GroupBy(option => (int)option.Id)
+                    .ToDictionary(group => group.Key, group => group.First().Display);
+                return PortraitBehaviorChoiceCatalog.Build(_portraits.GetAll(), genders, races);
+            });
+
+        private IReadOnlyList<BehaviorChoice> ResolveCreatureCategories()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<BehaviorChoice>();
+            try
+            {
+                var path = Path.Combine(workspace.ModuleRoot, "itp", "creaturepalcus.itp.json");
+                return File.Exists(path)
+                    ? PaletteCategoryReader.Read(
+                        Domain.Documents.ItpDocument.Load(path),
+                        _tlkService != null ? _tlkService.GetString : null)
+                    : Array.Empty<BehaviorChoice>();
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not read the creature palette categories: {ex.Message}");
+                return Array.Empty<BehaviorChoice>();
+            }
+        }
+
+        private IReadOnlyList<BehaviorChoice> CreatureBlueprintChoices(ResourceType type)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<BehaviorChoice>();
+            var names = _workspaceContext.Catalog?.EntriesOfType(type)
+                .ToDictionary(entry => entry.ResRef, entry => entry.Name, StringComparer.OrdinalIgnoreCase)
+                ?? new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+            return workspace.EnumerateResRefs(type)
+                .Order(StringComparer.OrdinalIgnoreCase)
+                .Select(resRef => new BehaviorChoice(
+                    resRef,
+                    names.TryGetValue(resRef, out var name) && !string.IsNullOrWhiteSpace(name)
+                        ? $"{name} ({resRef})"
+                        : resRef))
+                .ToList();
+        }
+
+        private IReadOnlyList<BehaviorChoice> GuildStoreChoices()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<BehaviorChoice>();
+            var choices = new Dictionary<string, BehaviorChoice>(StringComparer.OrdinalIgnoreCase);
+            foreach (var resRef in workspace.EnumerateResRefs(ResourceType.Utm))
+            {
+                try
+                {
+                    var root = JsonGffDocument.Load(workspace.GetResourcePath(ResourceType.Utm, resRef)).Root;
+                    var tag = root.GetStringOrNull("Tag");
+                    if (string.IsNullOrWhiteSpace(tag))
+                        continue;
+                    var name = root.GetLocStringOrNull("LocName")?.Text;
+                    choices[tag] = new BehaviorChoice(
+                        tag,
+                        string.IsNullOrWhiteSpace(name) ? tag : $"{name} ({tag})");
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
+                {
+                }
+            }
+            return choices.Values.OrderBy(choice => choice.Display, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        /// <summary>
+         /// Supplies one visible equipment page. It follows the merchant editor's established
+         /// repository-backed picker: use the lightweight catalog to narrow names first, then parse
+         /// only enough matching blueprints to fill this slot's requested page. Stats and preview
+         /// renders therefore advance with the builder's search and scroll instead of blocking the
+         /// tab on every UTI in the module.
+         /// </summary>
+        private async Task<IReadOnlyList<Creatures.CreatureEquipmentChoice>> SearchCreatureEquipmentItems(
+            string query,
+            int slot,
+            int skip,
+            int take)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null || take <= 0)
+                return Array.Empty<Creatures.CreatureEquipmentChoice>();
+
+            var trimmed = query.Trim();
+            var candidates = MerchantItemCatalog()
+                .Where(item => trimmed.Length == 0 ||
+                               item.ResRef.Contains(trimmed, StringComparison.OrdinalIgnoreCase) ||
+                               item.Name.Contains(trimmed, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            var baseItemRows = BaseItemRows();
+            var costTables = ItemCostTables();
+            const string subtypePrefix = "item.subtypes:";
+            var subtypeChoiceSets = Domain.Editors.Items.ItemMultiEntryCatalog.All
+                .Select(definition => definition.SubtypeTableResRef)
+                .Concat(Domain.Editors.Items.ItemEngineLegacyCatalog.All
+                    .Select(definition => definition.SubtypeTableResRef))
+                .Where(table => !string.IsNullOrWhiteSpace(table))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    table => subtypePrefix + table,
+                    table => ResolveItemChoices(subtypePrefix + table),
+                    StringComparer.OrdinalIgnoreCase);
+            IReadOnlyList<BehaviorChoice> ResolveCachedItemChoices(string key) =>
+                subtypeChoiceSets.TryGetValue(key, out var choices)
+                    ? choices
+                    : Array.Empty<BehaviorChoice>();
+            var knownDetails = new Dictionary<string, Creatures.CreatureEquipmentChoice>(
+                _creatureEquipmentDetails,
+                StringComparer.OrdinalIgnoreCase);
+            var generation = _creatureEquipmentChoicesGeneration;
+
+            var page = await Task.Run(() =>
+            {
+                var matches = new List<Creatures.CreatureEquipmentChoice>();
+                var parsed = new List<Creatures.CreatureEquipmentChoice>();
+                var matched = 0;
+                foreach (var item in candidates)
+                {
+                    Creatures.CreatureEquipmentChoice? detailed;
+                    if (!knownDetails.TryGetValue(item.ResRef, out detailed))
+                    {
+                        try
+                        {
+                            detailed = BuildCreatureEquipmentDetails(
+                                item.ResRef,
+                                workspace.LoadBlueprint(ResourceType.Uti, item.ResRef).Fields,
+                                baseItemRows,
+                                costTables,
+                                ResolveCachedItemChoices);
+                            parsed.Add(detailed);
+                        }
+                        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
+                        {
+                            continue;
+                        }
+                    }
+
+                    if ((detailed.EquipableSlots & slot) == 0)
+                        continue;
+
+                    if (matched++ < Math.Max(0, skip))
+                        continue;
+
+                    matches.Add(detailed);
+                    if (matches.Count == take)
+                        break;
+                }
+
+                return (Matches: (IReadOnlyList<Creatures.CreatureEquipmentChoice>)matches,
+                    Parsed: (IReadOnlyList<Creatures.CreatureEquipmentChoice>)parsed);
+            }).ConfigureAwait(true);
+
+            if (generation != _creatureEquipmentChoicesGeneration ||
+                !ReferenceEquals(workspace, _workspaceContext.Workspace))
+            {
+                return await SearchCreatureEquipmentItems(query, slot, skip, take).ConfigureAwait(true);
+            }
+
+            foreach (var detailed in page.Parsed)
+                _creatureEquipmentDetails[detailed.ResRef] = detailed;
+            return page.Matches;
+        }
+
+        private void InvalidateCreatureEquipmentChoices(string? resRef = null)
+        {
+            _creatureEquipmentChoicesGeneration++;
+            if (string.IsNullOrWhiteSpace(resRef))
+                _creatureEquipmentDetails.Clear();
+            else
+                _creatureEquipmentDetails.Remove(resRef);
+        }
+
+        /// <summary>
+        /// Loads one equipped blueprint for the details pane without scanning every UTI. The
+        /// progressive equipment gallery fills this same cache as each requested page is published.
+        /// </summary>
+        private Creatures.CreatureEquipmentChoice? LoadCreatureEquipmentDetails(string resRef)
+        {
+            if (string.IsNullOrWhiteSpace(resRef))
+                return null;
+            if (_creatureEquipmentDetails.TryGetValue(resRef, out var cached))
+                return cached;
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return null;
+
+            try
+            {
+                var root = workspace.LoadBlueprint(ResourceType.Uti, resRef).Fields;
+                var details = BuildCreatureEquipmentDetails(resRef, root, BaseItemRows());
+                _creatureEquipmentDetails[resRef] = details;
+                return details;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
+            {
+                return null;
+            }
+        }
+
+        private Creatures.CreatureEquipmentChoice BuildCreatureEquipmentDetails(
+            string resRef,
+            JsonGffStruct root,
+            Func<int, BaseItemRow?>? baseItemRows,
+            Domain.Editors.Items.ItemCostTableRanges? costTables = null,
+            Func<string, IReadOnlyList<BehaviorChoice>>? resolveItemChoices = null)
+        {
+            var baseItem = root.GetIntOrNull("BaseItem") ?? -1;
+            var name = root.GetLocStringOrNull("LocalizedName")?.Text;
+            var stats = Items.ItemStatSummary.Build(
+                root,
+                costTables ?? ItemCostTables(),
+                resolveItemChoices ?? ResolveItemChoices);
+            return new Creatures.CreatureEquipmentChoice(
+                resRef,
+                string.IsNullOrWhiteSpace(name) ? resRef : $"{name} ({resRef})",
+                baseItem,
+                baseItemRows?.Invoke(baseItem)?.EquipableSlots ?? 0,
+                stats);
+        }
+
+        /// <summary>
+        /// The shared creature appearance option set used by both generic UTC fields and the
+        /// specialized creature editor. The projection is cached once per game-data generation.
+        /// </summary>
+        private IReadOnlyList<Appearance.AppearanceOption> CreatureAppearanceOptions()
+        {
+            lock (_creatureAppearanceOptionsGate)
+            {
+                if (_creatureAppearanceOptions != null)
+                    return _creatureAppearanceOptions;
+                if (_appearances == null)
+                    return Array.Empty<Appearance.AppearanceOption>();
+
+                _creatureAppearanceOptions = _appearances.GetAll()
+                    .Select(row => new Appearance.AppearanceOption(
+                        row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                        row.DisplayName,
+                        // The label rather than the model column: half of appearance.2da names a
+                        // phenotype there, and "H" tells a builder nothing about what they picked.
+                        $"row {row.Id} \u00b7 {row.Label}",
+                        CreatureAppearanceId: row.Id))
+                    .ToList();
+                return _creatureAppearanceOptions;
+            }
+        }
+
+        /// <summary>
+        /// Looks up a selected appearance through AppearanceService's cached ID index. Body-part
+        /// bindings ask for this repeatedly, so scanning the entire 2DA on every property read made
+        /// the Appearance tab cost proportional to the table size.
+        /// </summary>
+        private AppearanceRow? CreatureAppearance(int id)
+        {
+            if (_appearances == null)
+                return null;
+
+            try
+            {
+                return _appearances.Get(id);
+            }
+            catch (KeyNotFoundException)
+            {
+                return null;
+            }
+        }
+
+        private static string Humanize(string value) =>
+            System.Text.RegularExpressions.Regex.Replace(value, "([a-z0-9])([A-Z])", "$1 $2")
+                .Replace('_', ' ');
+
         private Behaviors.ChoicePreviewService ChoicePreviews() =>
-            _choicePreviews ??= new Behaviors.ChoicePreviewService(_resourceIndex, _thumbnails);
+            _choicePreviews ??= new Behaviors.ChoicePreviewService(_resourceIndex, _thumbnails, _vfxPreviews);
+
+        private string? PreviewCreatureAudio(BehaviorChoice choice)
+        {
+            var resolver = _creatureSoundSetPreviews ??=
+                new Creatures.CreatureSoundSetPreviewResolver(_twoDaService, _resourceIndex);
+            var sample = resolver.Resolve((int)choice.Value);
+            return sample == null
+                ? "This sound set has no preview sample."
+                : SoundPreviews().Play(sample);
+        }
+
+        private void OpenLootDefinition(string typeName)
+        {
+            var moduleRoot = _workspaceContext.Workspace?.ModuleRoot;
+            var repositoryRoot = moduleRoot == null ? null : Directory.GetParent(moduleRoot)?.FullName;
+            var definitionsRoot = repositoryRoot == null
+                ? null
+                : Path.Combine(repositoryRoot, "SWLOR.Game.Server", "Feature", "LootTableDefinition");
+            var path = definitionsRoot != null && Directory.Exists(definitionsRoot)
+                ? Directory.EnumerateFiles(definitionsRoot, typeName + ".cs", SearchOption.AllDirectories)
+                    .FirstOrDefault()
+                : null;
+            if (path == null || _externalLinks == null)
+            {
+                _log.AppendLine("The loot table source definition is not available in this workspace.");
+                return;
+            }
+            _externalLinks.OpenFile(path);
+        }
 
         /// <summary>
         /// One option set, built on first use and kept. Every one of these is a 2DA read, a palette
@@ -1427,21 +2436,38 @@ namespace SWLOR.Toolset.Editors
             Func<string, IReadOnlyList<BehaviorChoice>> build)
         {
             var cacheKey = scope + ":" + key;
-            if (_choiceSets.TryGetValue(cacheKey, out var cached))
-                return cached;
-
-            var built = build(key);
-            _choiceSets[cacheKey] = built;
-            return built;
+            var cached = _choiceSets.GetOrAdd(
+                cacheKey,
+                _ => new Lazy<IReadOnlyList<BehaviorChoice>>(
+                    () => build(key),
+                    LazyThreadSafetyMode.ExecutionAndPublication));
+            try
+            {
+                return cached.Value;
+            }
+            catch
+            {
+                // Do not permanently cache a transient parse/indexing failure.
+                _choiceSets.TryRemove(cacheKey, out _);
+                throw;
+            }
         }
 
         private void InvalidatePaletteChoices(string paletteResRef)
         {
             switch (paletteResRef.ToLowerInvariant())
             {
+                case "creaturepalcus":
+                    _choiceSets.TryRemove(
+                        "creature:" + Domain.Editors.Creatures.CreatureChoiceKeys.PaletteCategories,
+                        out _);
+                    foreach (var editor in _openCreatureEditors.Values)
+                        editor.Editor.RefreshPaletteChoices();
+                    break;
                 case "doorpalcus":
-                    _choiceSets.Remove(
-                        "door:" + Domain.Editors.Doors.DoorChoiceKeys.DoorPaletteCategories);
+                    _choiceSets.TryRemove(
+                        "door:" + Domain.Editors.Doors.DoorChoiceKeys.DoorPaletteCategories,
+                        out _);
                     foreach (var editor in _openDoorEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     foreach (var section in _openAreaEditors.Values.SelectMany(editor => editor.Sections)
@@ -1451,8 +2477,9 @@ namespace SWLOR.Toolset.Editors
                     }
                     break;
                 case "soundpalcus":
-                    _choiceSets.Remove(
-                        "sound:" + Domain.Editors.Sounds.SoundChoiceKeys.PaletteCategories);
+                    _choiceSets.TryRemove(
+                        "sound:" + Domain.Editors.Sounds.SoundChoiceKeys.PaletteCategories,
+                        out _);
                     foreach (var editor in _openSoundEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     foreach (var section in _openAreaEditors.Values.SelectMany(editor => editor.Sections)
@@ -1462,21 +2489,31 @@ namespace SWLOR.Toolset.Editors
                     }
                     break;
                 case "triggerpalcus":
-                    _choiceSets.Remove(
-                        "trigger:" + Domain.Editors.Triggers.TriggerChoiceKeys.PaletteCategories);
+                    _choiceSets.TryRemove(
+                        "trigger:" + Domain.Editors.Triggers.TriggerChoiceKeys.PaletteCategories,
+                        out _);
                     foreach (var editor in _openTriggerEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     break;
                 case "waypointpalcus":
-                    _choiceSets.Remove(
-                        "waypoint:" + Domain.Editors.Waypoints.WaypointChoiceKeys.PaletteCategories);
+                    _choiceSets.TryRemove(
+                        "waypoint:" + Domain.Editors.Waypoints.WaypointChoiceKeys.PaletteCategories,
+                        out _);
                     foreach (var editor in _openWaypointEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     break;
                 case "itempalcus":
-                    _choiceSets.Remove(
-                        "item:" + Domain.Editors.Items.ItemChoiceKeys.PaletteCategories);
+                    _choiceSets.TryRemove(
+                        "item:" + Domain.Editors.Items.ItemChoiceKeys.PaletteCategories,
+                        out _);
                     foreach (var editor in _openItemEditors.Values)
+                        editor.Editor.RefreshPaletteChoices();
+                    break;
+                case "storepalcus":
+                    _choiceSets.TryRemove(
+                        "merchant:" + Domain.Editors.Merchants.MerchantChoiceKeys.PaletteCategories,
+                        out _);
+                    foreach (var editor in _openMerchantEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     break;
             }
@@ -1497,14 +2534,7 @@ namespace SWLOR.Toolset.Editors
                 return Domain.Editors.Triggers.TrapTypeCatalog.Read(_twoDaService);
 
             if (key == Domain.Editors.Doors.DoorChoiceKeys.Portraits && _portraits != null)
-            {
-                return _portraits.GetAll()
-                    .Select(row => new Domain.Editors.Behaviors.BehaviorChoice(
-                        row.Id,
-                        row.BaseResRef,
-                        PortraitService.GetTgaVariants(row.BaseResRef).Medium))
-                    .ToList();
-            }
+                return ResolvePortraitChoices();
 
             return _lookups.GetOptions(key)
                 .Select(option => new Domain.Editors.Behaviors.BehaviorChoice(option.Id, option.Display))
@@ -1580,11 +2610,16 @@ namespace SWLOR.Toolset.Editors
                 _prompts,
                 ResolveSoundChoices,
                 SoundResources(),
-                SoundPreviews());
-            editor.Closed += _ => _openSoundEditors.Remove(filePath);
+                SoundPreviews(),
+                _blueprintSaves);
+            editor.Closed += closed => _openSoundEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
-                _workspaceContext.RefreshCatalogEntry(ResourceType.Uts, resRef);
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Uts, editor.ResRef);
+            editor.Renamed += (renamed, oldResRef, oldPath) =>
+                OnBlueprintRenamed(
+                    _openSoundEditors, renamed, ResourceType.Uts,
+                    oldResRef, oldPath, renamed.FilePath, renamed.ResRef);
             _openSoundEditors[filePath] = editor;
             _factory.OpenDocument(editor);
         }
@@ -1842,8 +2877,8 @@ namespace SWLOR.Toolset.Editors
                 // module-wide GIT scan is warmed in the background so opening a large area does not
                 // freeze Avalonia's UI thread.
                 var transitionDestinationTags =
-                    await workspace.TagIndex.GetTransitionDestinationTagsAsync().ConfigureAwait(true);
-                if (!ReferenceEquals(workspace, _workspaceContext.Workspace))
+                    await GetCurrentTransitionDestinationTagsAsync(workspace).ConfigureAwait(true);
+                if (transitionDestinationTags == null)
                     return;
 
                 if (_openAreaEditors.TryGetValue(resRef, out existing))

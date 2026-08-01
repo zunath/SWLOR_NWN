@@ -1,3 +1,5 @@
+using SWLOR.Toolset.Domain.GameData.Lookups;
+
 namespace SWLOR.Toolset.Domain.Editors.Items
 {
     /// <summary>
@@ -13,6 +15,12 @@ namespace SWLOR.Toolset.Domain.Editors.Items
         /// <summary>The literal text a broken base-game dialog.tlk strref resolves to.</summary>
         private const string BadStrrefSentinel = "Bad Strref";
 
+        private static bool IsDisplayOffered(string? display)
+        {
+            return TwoDaChoicePolicy.IsSelectableLabel(display) &&
+                   !string.Equals(display!.Trim(), BadStrrefSentinel, StringComparison.OrdinalIgnoreCase);
+        }
+
         /// <summary>True when this row belongs in the Base Type list.</summary>
         /// <param name="display">
         /// The row's resolved display text (label or TLK name), when the caller has one. Null skips
@@ -21,25 +29,14 @@ namespace SWLOR.Toolset.Domain.Editors.Items
         /// </param>
         public static bool IsOffered(string? label, string? itemClass, string? display = null)
         {
-            if (string.IsNullOrWhiteSpace(label))
-                return false;
-
-            var trimmed = label.Trim();
-            if (trimmed.Contains("deleted", StringComparison.OrdinalIgnoreCase))
-                return false;
-
-            if (string.Equals(trimmed, "padding", StringComparison.OrdinalIgnoreCase))
+            if (!TwoDaChoicePolicy.IsSelectableLabel(label))
                 return false;
 
             if (string.IsNullOrWhiteSpace(itemClass))
                 return false;
 
-            if (display != null &&
-                (string.IsNullOrWhiteSpace(display) ||
-                 string.Equals(display.Trim(), BadStrrefSentinel, StringComparison.OrdinalIgnoreCase)))
-            {
+            if (display != null && !IsDisplayOffered(display))
                 return false;
-            }
 
             return true;
         }

@@ -164,6 +164,56 @@ namespace SWLOR.Toolset.Tests
                 "2DA labels are identifiers; the picker shows names");
         }
 
+        [Test]
+        public void LoadScreensRejectSentinelAndScriptedRows()
+        {
+            File.WriteAllText(
+                Path.Combine(_tempDirectory, "loadscreens.2da"),
+                "2DA V2.0\r\n\r\n" +
+                "Label BMPResRef\r\n" +
+                "0 Random ****\r\n" +
+                "1 SWLOR_17_Tatooine load_tat\r\n" +
+                "2 DELETED load_deleted\r\n" +
+                "3 UNUSED_3 load_unused\r\n" +
+                "4 Padding load_padding\r\n" +
+                "5 UserDefined ****\r\n" +
+                "6 SWLOR_MissingArt ****\r\n" +
+                "7 SWLOR_BlankArt\r\n" +
+                "8 SWLOR_DeletedArt DELETED\r\n");
+
+            var screens = LoadScreenCatalog.Read(new Domain.GameData.TwoDa.TwoDaService(_tempDirectory));
+
+            screens.Select(screen => screen.Value).Should().Equal(0, 1);
+            screens[0].IsAny.Should().BeTrue();
+            screens[1].Display.Should().Be("17 Tatooine");
+        }
+
+        [Test]
+        public void TrapTypesRequireCompleteRuntimeMetadata()
+        {
+            var path = Path.Combine(_tempDirectory, "traps.2da");
+            File.WriteAllText(
+                path,
+                "2DA V2.0\r\n\r\n" +
+                "Label TrapScript SetDC DetectDCMod DisarmDCMod TrapName ResRef IconResRef\r\n" +
+                "0 MinorSpike trap_script 5 10 22 6846 trap_item trap_icon\r\n" +
+                "1 MissingScript **** 5 10 22 6847 trap_item trap_icon\r\n" +
+                "2 MissingItem trap_script 5 10 22 6848 **** trap_icon\r\n");
+
+            var traps = TrapTypeCatalog.Read(new Domain.GameData.TwoDa.TwoDaService(_tempDirectory));
+
+            traps.Select(trap => trap.Value).Should().Equal(0);
+
+            File.WriteAllText(
+                path,
+                "2DA V2.0\r\n\r\n" +
+                "Label TrapScript SetDC DetectDCMod DisarmDCMod TrapName ResRef\r\n" +
+                "0 MinorSpike trap_script 5 10 22 6846 trap_item\r\n");
+
+            TrapTypeCatalog.Read(new Domain.GameData.TwoDa.TwoDaService(_tempDirectory))
+                .Should().BeEmpty("a missing required column makes the table unsafe to offer");
+        }
+
         private string _tempDirectory = string.Empty;
 
         [SetUp]
@@ -356,9 +406,9 @@ namespace SWLOR.Toolset.Tests
             resRef.MaxLength.Should().Be(16);
             resRef.MaxLength.Should().Be(TriggerEditorLayout.MaxResRefLength);
             resRef.Label.Should().Be("ResRef");
-            resRef.IsReadOnly.Should().BeTrue(
-                "the trigger document save path never renames the file, so an edited ResRef here would " +
-                "leave the blueprint's identity disagreeing with its filename");
+            resRef.IsReadOnly.Should().BeFalse(
+                "rename-on-save keeps the internal identity, file name, and placements together");
+            resRef.IsRequired.Should().BeTrue();
             TriggerBehaviorCatalog.Get(TriggerBehaviorCatalog.NoSpawnZoneId).Manages
                 .Single(value => value.Name == "TemplateResRef").Label.Should().Be("ResRef");
 

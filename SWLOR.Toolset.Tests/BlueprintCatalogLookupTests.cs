@@ -95,6 +95,19 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task RefreshRemovesAResourceThatDisappearedBeforeItCouldBeRead()
+        {
+            var catalog = await BuiltCatalogAsync();
+            var path = Path.Combine(_moduleRoot, "utc", "npc_guard.utc.json");
+            File.Delete(path);
+
+            catalog.RefreshEntry(ResourceType.Utc, "npc_guard").Should().BeNull();
+
+            catalog.TryGetEntry(ResourceType.Utc, "npc_guard", out _).Should().BeFalse();
+            catalog.Entries.Should().NotContain(entry => entry.ResRef == "npc_guard");
+        }
+
+        [Test]
         public async Task SearchRanksExactThenPrefixThenContainsAndStopsAtTheLimit()
         {
             var catalog = await BuiltCatalogAsync();

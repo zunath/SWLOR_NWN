@@ -128,6 +128,30 @@ namespace SWLOR.Toolset.Tests
             field.GetLocStringId().Should().Be(12835u);
         }
 
+        [Test]
+        public void NonWesternLocalizedSubstringFallsBackToUtf8()
+        {
+            const string polishText = "Łódź";
+            var locString = new CExoLocString();
+            locString.SetString(10, polishText);
+
+            var root = new GffStruct { Type = 0 };
+            Add(root, GffField.CExoLocString, "LocalizedName", locString);
+            var gffFile = new GffFile
+            {
+                FileType = "UTI ",
+                FileVersion = "V3.2",
+                RootStruct = root
+            };
+
+            var document = GffJsonBridge.ToJsonDocument(gffFile);
+            var entry = document.Root.Get("LocalizedName").LocStringEntries!.Single();
+
+            entry.LanguageKey.Should().Be("10");
+            entry.GetText().Should().Be(polishText);
+            entry.RawText.Should().Equal(JsonStringCodec.Encode(polishText, useUtf8: true));
+        }
+
         private static void Add(GffStruct target, uint type, string label, object? value) =>
             target.Fields.Add(new GffField(type, label, value));
     }

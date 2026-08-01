@@ -246,6 +246,11 @@ namespace SWLOR.Toolset.Services
                 // Installed only now that the compiler reported success - the previous valid artifact
                 // is never visible in a partially-written state.
                 File.Move(temporaryOutput, output, overwrite: true);
+                new ScriptStalenessScanner(
+                        Path.Combine(workspace.ModuleRoot, "nss"),
+                        ncsDirectory,
+                        CanResolveExternalInclude)
+                    .RecordSuccessfulCompile(resRef);
                 _log.AppendLine($"Compiled {resRef}.nss -> ncs/{resRef}.ncs");
                 return new CompileOutcome(true, diagnostics);
             }

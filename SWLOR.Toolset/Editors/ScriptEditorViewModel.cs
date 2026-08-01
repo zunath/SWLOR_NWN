@@ -695,7 +695,7 @@ namespace SWLOR.Toolset.Editors
                         "was being prepared. Nothing was written - reload or save again.");
                     return false;
                 }
-                _session.MarkSaved(_text);
+                _session.MarkSaved(_text, saveBytes);
                 AfterHistoryChange();
                 _log.AppendLine($"Saved {_session.FilePath}.");
 

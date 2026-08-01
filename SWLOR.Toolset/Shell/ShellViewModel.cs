@@ -1,9 +1,11 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Controls;
 using SWLOR.Toolset.Archives;
+using SWLOR.Toolset.Factions;
 using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
@@ -55,8 +57,12 @@ namespace SWLOR.Toolset.Shell
         [ObservableProperty]
         private bool _isManagingErfArchives;
 
+        [ObservableProperty]
+        private bool _isManagingFactions;
+
         public bool IsModuleMutationLocked =>
-            IsPacking || IsValidationRunning || IsBuildingScripts || IsManagingErfArchives;
+            IsPacking || IsValidationRunning || IsBuildingScripts ||
+            IsManagingErfArchives || IsManagingFactions;
 
         /// <summary>
         /// The shared answer to <see cref="IsModuleMutationLocked"/>, published for the panels and
@@ -89,6 +95,7 @@ namespace SWLOR.Toolset.Shell
         private readonly ProblemsViewModel? _problems;
         private readonly AreaContentsViewModel? _areaContents;
         private readonly ErfArchiveService? _erfArchiveService;
+        private readonly ModuleCustomContentService? _moduleCustomContent;
 
         /// <summary>Guards against a second rescan starting while one is already reopening the catalog.</summary>
         private bool _isRescanningAfterWatcherOverflow;
@@ -116,8 +123,10 @@ namespace SWLOR.Toolset.Shell
             AreaContentsViewModel? areaContents = null,
             StartupNotice? startupNotice = null,
             ModuleMutationLock? mutationLock = null,
-            ErfArchiveService? erfArchiveService = null)
+            ErfArchiveService? erfArchiveService = null,
+            ModuleCustomContentService? moduleCustomContent = null)
         {
+            _moduleCustomContent = moduleCustomContent;
             _areaContents = areaContents;
             _erfArchiveService = erfArchiveService;
             _mutationLock = mutationLock ?? new ModuleMutationLock();
@@ -188,6 +197,23 @@ namespace SWLOR.Toolset.Shell
             Layout = factory.CreateLayout();
             if (Layout != null)
                 factory.InitLayout(Layout);
+
+            if (_moduleCustomContent != null)
+            {
+                _moduleCustomContent.Reloaded += result => Dispatcher.UIThread.Post(() =>
+                {
+                    // Clear first: open galleries re-request their visible page during the editor
+                    // reload below. Clearing afterward discarded those fresh results and left the
+                    // tiles on their letter placeholders until the editor was reopened.
+                    _thumbnails.ClearCache();
+                    if (_editorService.IsValueCreated)
+                        _editorService.Value.ReloadOpenGameResources();
+                    _palette.Refresh();
+                    StatusText = result.MissingHaks.Count == 0
+                        ? $"Custom content reloaded: {result.LoadedHakCount} HAK layer(s)."
+                        : $"Custom content reloaded with {result.MissingHaks.Count} missing HAK(s).";
+                });
+            }
         }
 
         /// <summary>
@@ -321,6 +347,47 @@ namespace SWLOR.Toolset.Shell
         [RelayCommand]
         private void FocusValidation() => _factory.Focus(_validation);
 
+        [RelayCommand(CanExecute = nameof(CanMutateModule))]
+        private void ModuleProperties()
+        {
+            _editorService.Value.OpenModuleProperties(new Editors.Module.ModulePropertiesActions(
+                RunValidationFromModulePropertiesAsync,
+                RunBuildAllFromModulePropertiesAsync,
+                RunPackFromModulePropertiesAsync,
+                OpenBuildConfiguration));
+        }
+
+        private async Task RunValidationFromModulePropertiesAsync()
+        {
+            _factory.Focus(_validation);
+            if (_validation.RunCommand.CanExecute(null))
+                await _validation.RunCommand.ExecuteAsync(null).ConfigureAwait(true);
+        }
+
+        private async Task RunBuildAllFromModulePropertiesAsync()
+        {
+            if (BuildAllScriptsCommand.CanExecute(null))
+                await BuildAllScriptsCommand.ExecuteAsync(null).ConfigureAwait(true);
+        }
+
+        private async Task RunPackFromModulePropertiesAsync()
+        {
+            if (PackModuleCommand.CanExecute(null))
+                await PackModuleCommand.ExecuteAsync(null).ConfigureAwait(true);
+        }
+
+        private void OpenBuildConfiguration(string path)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not open build configuration '{path}': {ex.Message}");
+            }
+        }
+
         /// <summary>
         /// Saves every open document before entering the modal archive workflow. That makes export's
         /// "saved snapshot" literal, and prevents an import from replacing a file while an older
@@ -360,6 +427,66 @@ namespace SWLOR.Toolset.Shell
             finally
             {
                 IsManagingErfArchives = false;
+            }
+        }
+
+        /// <summary>
+        /// Opens the module-wide faction workflow after saving every open editor. The window owns a
+        /// grouped transaction which writes repute.fac and any remapped blueprint/area references
+        /// together, so no other module writer may run while it is open.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanMutateModule))]
+        private async Task FactionEditor()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+            {
+                StatusText = "Faction Editor needs an open module.";
+                return;
+            }
+
+            if (ScriptCompileService.AnyCompilationActive)
+            {
+                StatusText = "Faction Editor will be available after the active script compile finishes.";
+                return;
+            }
+
+            IsManagingFactions = true;
+            try
+            {
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
+                    {
+                        StatusText = "Faction Editor cancelled: an open editor could not be saved.";
+                        return;
+                    }
+                }
+
+                StatusText = "Opening Faction Editor...";
+                IReadOnlyCollection<string> changedPaths;
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    changedPaths = await FactionEditorWindow.ShowAsync(
+                        workspace.ModuleRoot,
+                        _log,
+                        _prompts).ConfigureAwait(true);
+                }
+
+                _editorService.Value.RefreshAfterFactionSave(changedPaths);
+                StatusText = changedPaths.Count == 0
+                    ? "Faction Editor closed."
+                    : $"Faction Editor saved {changedPaths.Count} module file" +
+                      $"{(changedPaths.Count == 1 ? string.Empty : "s")}.";
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Faction Editor failed: {ex.Message}");
+                StatusText = "Faction Editor could not be opened; see Output.";
+            }
+            finally
+            {
+                IsManagingFactions = false;
             }
         }
 
@@ -502,9 +629,12 @@ namespace SWLOR.Toolset.Shell
         /// <summary>Returns true when the main window may close after handling unsaved editors.</summary>
         public Task<bool> TryCloseAsync()
         {
-            if (IsModuleMutationLocked)
+            var compilationActive = ScriptCompileService.AnyCompilationActive;
+            if (IsModuleMutationLocked || compilationActive)
             {
-                StatusText = "Wait for the active module operation to finish before closing.";
+                StatusText = compilationActive
+                    ? "Wait for the active script compile to finish before closing."
+                    : "Wait for the active module operation to finish before closing.";
                 return Task.FromResult(false);
             }
 
@@ -633,6 +763,11 @@ namespace SWLOR.Toolset.Shell
             NotifyMutationStateChanged();
         }
 
+        partial void OnIsManagingFactionsChanged(bool value)
+        {
+            NotifyMutationStateChanged();
+        }
+
         private void NotifyMutationStateChanged()
         {
             OnPropertyChanged(nameof(IsModuleMutationLocked));
@@ -642,8 +777,10 @@ namespace SWLOR.Toolset.Shell
             _mutationLock.Set(IsModuleMutationLocked);
             SaveAllCommand.NotifyCanExecuteChanged();
             ErfArchivesCommand.NotifyCanExecuteChanged();
+            FactionEditorCommand.NotifyCanExecuteChanged();
             PackModuleCommand.NotifyCanExecuteChanged();
             BuildAllScriptsCommand.NotifyCanExecuteChanged();
+            ModulePropertiesCommand.NotifyCanExecuteChanged();
             NotifyActiveEditorCommandsChanged();
         }
 

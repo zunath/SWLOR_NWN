@@ -6,9 +6,15 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Editors
 {
     /// <summary>One selectable option of a 2DA-backed dropdown.</summary>
-    public sealed record LookupOption(long Id, string Display)
+    public sealed record LookupOption(long Id, string Display, bool ShowId = true)
     {
-        public override string ToString() => $"{Id}: {Display}";
+        /// <summary>
+        /// Behavior editors put an optional id after the readable name; generic dropdowns put it
+        /// before. Both honor the same presentation rule so a lookup cannot drift between editors.
+        /// </summary>
+        public string BehaviorDisplay => ShowId ? $"{Display} ({Id})" : Display;
+
+        public override string ToString() => ShowId ? $"{Id}: {Display}" : Display;
     }
 
     /// <summary>
@@ -69,6 +75,9 @@ namespace SWLOR.Toolset.Editors
             return options;
         }
 
+        /// <summary>Discards lists derived from the active HAK/2DA/TLK stack.</summary>
+        public void Invalidate() => _cache.Clear();
+
         private IReadOnlyList<LookupOption> Build(string lookupKey)
         {
             try
@@ -100,15 +109,19 @@ namespace SWLOR.Toolset.Editors
                             .Select(row => new LookupOption(row.Id, row.DisplayName))
                             .ToList();
                     case LookupKeys.Gender:
-                        return FromTable(TwoDaLookupTables.Gender);
+                        return FromTable(TwoDaLookupTables.Gender, showId: false);
                     case LookupKeys.Phenotype:
-                        return FromTable(TwoDaLookupTables.Phenotype);
+                        return FromTable(TwoDaLookupTables.Phenotype, showId: false);
                     case LookupKeys.SoundSets:
                         return FromTable(TwoDaLookupTables.SoundSet);
                     case LookupKeys.BaseItems:
                         return FromTable(TwoDaLookupTables.BaseItem);
                     case LookupKeys.LoadScreens:
                         return FromTable(TwoDaLookupTables.LoadScreen);
+                    case LookupKeys.Races:
+                        return FromTable(TwoDaLookupTables.Race);
+                    case LookupKeys.CreatureMovementRates:
+                        return FromTable(TwoDaLookupTables.CreatureSpeed, showId: false);
                     case LookupKeys.TriggerTypes:
                         return TriggerTypeOptions;
                     case LookupKeys.WaypointAppearances when _waypointAppearances != null:
@@ -128,13 +141,13 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
-        private IReadOnlyList<LookupOption> FromTable(TwoDaLookupTable table)
+        private IReadOnlyList<LookupOption> FromTable(TwoDaLookupTable table, bool showId = true)
         {
             if (_twoDaLookups == null)
                 return Array.Empty<LookupOption>();
 
-            return _twoDaLookups.GetRows(table.TableName, table.LabelColumn, table.StrRefColumn)
-                .Select(row => new LookupOption(row.Id, row.DisplayName))
+            return _twoDaLookups.GetRows(table)
+                .Select(row => new LookupOption(row.Id, row.DisplayName, showId))
                 .ToList();
         }
 
@@ -178,7 +191,7 @@ namespace SWLOR.Toolset.Editors
             for (var i = 0; i < factionList.Elements.Count; i++)
             {
                 var name = factionList.Elements[i].GetOrNull("FactionName")?.GetString() ?? $"Faction {i}";
-                options.Add(new LookupOption(i, name));
+                options.Add(new LookupOption(i, name, ShowId: false));
             }
 
             return options;

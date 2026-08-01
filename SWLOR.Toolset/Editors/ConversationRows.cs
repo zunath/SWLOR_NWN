@@ -4,6 +4,28 @@ using SWLOR.Toolset.Domain.Documents;
 
 namespace SWLOR.Toolset.Editors
 {
+    public enum ConversationBehaviorKind
+    {
+        Merchant,
+        QuestGiver,
+        Conversation
+    }
+
+    /// <summary>One plain-language authoring shape offered by the dialogue editor.</summary>
+    public sealed record ConversationBehaviorOption(
+        ConversationBehaviorKind Kind,
+        string Name,
+        string Explanation)
+    {
+        public override string ToString() => Name;
+    }
+
+    /// <summary>A friendly label paired with the exact token NWN stores in dialogue text.</summary>
+    public sealed record DynamicTextTokenOption(string Name, string Token)
+    {
+        public override string ToString() => Name;
+    }
+
     /// <summary>One row of the situation rail: a circumstance the conversation answers.</summary>
     public sealed partial class SituationRowViewModel : ObservableObject
     {
@@ -44,6 +66,8 @@ namespace SWLOR.Toolset.Editors
         public bool IsUnreachable => Situation.State == SituationState.Unreachable;
 
         public bool IsEmpty => Situation.State == SituationState.Empty;
+
+        public bool HasCompetingLines { get; internal set; }
 
         private string Describe()
         {
@@ -130,6 +154,16 @@ namespace SWLOR.Toolset.Editors
 
         public string Text => IsDangling
             ? "(this choice points at a line that no longer exists)"
+            : FriendlyText(Target);
+
+        public string PreviewText => IsDangling
+            ? Text
+            : DynamicTextPreview.Resolve(FriendlyText(Target));
+
+        /// <summary>The stored words, without the friendly label used for structural blank replies.</summary>
+        public string AuthoringText => IsDangling || string.IsNullOrWhiteSpace(Target.Text)
+                                       || Target.Text == QuestConversationScaffold.Placeholder
+            ? string.Empty
             : Target.Text;
 
         /// <summary>What picking this does, in plain English, or where it leads when it does nothing.</summary>
@@ -143,6 +177,15 @@ namespace SWLOR.Toolset.Editors
         public bool IsVisible => HiddenBecause == null;
 
         public bool CanAddFollowUp => !IsDangling && Target.Links.Count == 0;
+
+        private static string FriendlyText(DlgNode target)
+        {
+            if (!string.IsNullOrWhiteSpace(target.Text)
+                && target.Text != QuestConversationScaffold.Placeholder)
+                return target.Text;
+
+            return target.Links.Count == 0 ? "End conversation" : "Continue automatically";
+        }
     }
 
     /// <summary>One finding, shown against the thing it is about.</summary>
@@ -169,6 +212,17 @@ namespace SWLOR.Toolset.Editors
         public bool IsUntidy => Problem.Severity == ProblemSeverity.Untidy;
 
         public bool IsHint => Problem.Severity == ProblemSeverity.Hint;
+
+        public bool CanFix => Problem.RuleId == "conditional-choice-no-fallback"
+                              || (Problem.RuleId == "unreachable-opening"
+                                  && Problem.Message.Contains("answers everybody", StringComparison.Ordinal));
+
+        public string FixLabel => Problem.RuleId switch
+        {
+            "unreachable-opening" => "Move fallback last",
+            "conditional-choice-no-fallback" => "Add Goodbye",
+            _ => string.Empty
+        };
 
         /// <summary>Where in the conversation this sits, for the row's right-hand caption.</summary>
         public string Where => Problem.Anchor switch
@@ -227,5 +281,26 @@ namespace SWLOR.Toolset.Editors
         }
 
         partial void OnSelectedOptionChanged(string value) => _onChanged();
+    }
+
+    internal static class DynamicTextPreview
+    {
+        private static readonly IReadOnlyDictionary<string, string> Samples =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["<FirstName>"] = "Kori",
+                ["<FullName>"] = "Kori Venn",
+                ["<Class>"] = "Scout",
+                ["<Day/Night>"] = "day",
+                ["<Boy/Girl>"] = "girl"
+            };
+
+        public static string Resolve(string text)
+        {
+            foreach (var (token, sample) in Samples)
+                text = text.Replace(token, sample, StringComparison.OrdinalIgnoreCase);
+
+            return text;
+        }
     }
 }

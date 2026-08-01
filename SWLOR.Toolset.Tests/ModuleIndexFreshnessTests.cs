@@ -172,7 +172,7 @@ namespace SWLOR.Toolset.Tests
                 Path.Combine(twoDaRoot, "placeables.2da"),
                 "2DA V2.0\r\n\r\nLabel StrRef ModelName\r\n" +
                 "0 Used **** plc_used\r\n" +
-                "1 Unused **** plc_unused\r\n");
+                "1 Available **** plc_unused\r\n");
             var catalog = new PlaceableModelCatalog(
                 new TwoDaService(twoDaRoot),
                 new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));

@@ -57,7 +57,13 @@ namespace SWLOR.Toolset.Editors.Triggers
         public string HeaderKind => _isInstance ? "instance" : "blueprint";
 
         /// <summary>Header: the file this trigger lives in — its own resref, or its area's.</summary>
-        public string HeaderOwner { get; }
+        public string HeaderOwner { get; private set; }
+
+        public void SetHeaderOwner(string value)
+        {
+            HeaderOwner = value;
+            OnPropertyChanged(nameof(HeaderOwner));
+        }
 
         public bool ShowsVariablesTab => Behavior.AllowsVariables;
 

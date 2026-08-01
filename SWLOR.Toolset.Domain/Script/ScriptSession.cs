@@ -97,13 +97,29 @@ namespace SWLOR.Toolset.Domain.Script
                 return Document.ToBytes(text);
         }
 
-        /// <summary>Marks <paramref name="text"/> as the saved baseline after a successful write.</summary>
-        public void MarkSaved(string text)
+        /// <summary>
+        /// Marks <paramref name="text"/> as the saved baseline after successfully writing
+        /// <paramref name="savedBytes"/>.
+        /// </summary>
+        /// <remarks>
+        /// The content fingerprint must come from the immutable bytes accepted by the atomic save,
+        /// not from rereading the path after its module lease has been released. An external writer
+        /// can replace the file in that gap; retaining our hash makes that replacement visible to
+        /// <see cref="HasExternalChange"/> instead of accidentally adopting it as the new baseline.
+        /// </remarks>
+        public void MarkSaved(string text, byte[] savedBytes)
         {
+            ArgumentNullException.ThrowIfNull(savedBytes);
+
             lock (_syncRoot)
             {
                 _savedText = NormaliseForCompare(text);
-                RecordCurrentFileState();
+                // A successful atomic save established an existing-file generation. Keep that
+                // fact non-null even if another writer deletes the path before this bookkeeping.
+                _loadedMTimeUtc = File.Exists(FilePath)
+                    ? File.GetLastWriteTimeUtc(FilePath)
+                    : DateTime.MinValue;
+                _loadedContentHash = System.Security.Cryptography.SHA256.HashData(savedBytes);
             }
         }
 

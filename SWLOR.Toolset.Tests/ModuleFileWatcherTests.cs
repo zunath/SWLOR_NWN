@@ -226,7 +226,13 @@ namespace SWLOR.Toolset.Tests
                     BindingFlags.Instance | BindingFlags.NonPublic);
                 method.Should().NotBeNull("the root Deleted/Renamed handlers use this path");
 
-                foreach (var directoryName in new[] { "packing", "palette-refresh", "temp0" })
+                foreach (var directoryName in new[]
+                         {
+                             "packing",
+                             "palette-refresh",
+                             "temp0",
+                             ".swlor-toolset-item-rename-0123456789abcdef"
+                         })
                 {
                     method!.Invoke(
                         watcher,

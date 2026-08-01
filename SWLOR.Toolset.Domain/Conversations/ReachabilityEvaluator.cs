@@ -244,8 +244,17 @@ namespace SWLOR.Toolset.Domain.Conversations
         public PretendPlayer ApplyActions(DlgNode node, PretendPlayer player)
         {
             var result = player.Clone();
-            foreach (var action in node.Actions)
+            var onceMarkers = node.Actions
+                .Where(action => action.IsOncePerPlayerMarker && !string.IsNullOrWhiteSpace(action.Value))
+                .GroupBy(action => action.MarkedActionKey, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(group => group.Key, group => group.First().Value, StringComparer.OrdinalIgnoreCase);
+
+            foreach (var action in node.Actions.Where(action => !action.IsOncePerPlayerMarker))
             {
+                var runsOnce = onceMarkers.TryGetValue(action.SnippetKey, out var onceMarker);
+                if (runsOnce && result.HasCompletedDialogueAction(onceMarker!))
+                    continue;
+
                 var arguments = action.Arguments;
                 switch (action.SnippetKey)
                 {
@@ -282,6 +291,9 @@ namespace SWLOR.Toolset.Domain.Conversations
                             ClampPoints);
                         break;
                 }
+
+                if (runsOnce)
+                    result.WithCompletedDialogueAction(onceMarker!);
             }
 
             return result;

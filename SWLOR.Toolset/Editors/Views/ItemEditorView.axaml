@@ -28,7 +28,7 @@
       <Panel>
         <ComboBox ItemsSource="{Binding Options}"
                   SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
-                  IsEnabled="{Binding IsEnabled}" HorizontalAlignment="Stretch"
+                  IsEnabled="{Binding IsEnabled}" MinWidth="96" HorizontalAlignment="Stretch"
                   IsVisible="{Binding HasOptions}" />
         <NumericUpDown Value="{Binding Number, Mode=TwoWay}"
                        Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
@@ -255,54 +255,10 @@
       </Grid>
     </DataTemplate>
 
-    <!-- One dye channel: the colour itself is the control. A dye value is an index into a palette
-         texture, so a number tells a builder nothing - the chip shows what is stored and the popup
-         offers the material's real palette. The numeric box behind HasPalette is the fallback for a
-         session with no base-game artwork, where there are no colours to draw. -->
+    <!-- Item and creature appearance both consume the same palette control. Item rows retain its
+         opt-in numeric fallback for sessions without base-game artwork; creature rows do not. -->
     <DataTemplate DataType="items:ItemDyeCellViewModel">
-      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,2">
-        <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
-                   Foreground="{DynamicResource InkSecondaryBrush}"
-                   TextTrimming="CharacterEllipsis" />
-
-        <Button Grid.Column="1" Padding="3" Command="{Binding TogglePickerCommand}"
-                IsVisible="{Binding HasPalette}"
-                ToolTip.Tip="Pick a colour">
-          <Border Width="46" Height="18" CornerRadius="2"
-                  Background="{Binding SelectedBrush}"
-                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" />
-          <Button.Flyout>
-            <Flyout Placement="Bottom" ShowMode="Standard">
-              <ScrollViewer MaxHeight="260" HorizontalScrollBarVisibility="Disabled">
-                <ItemsControl ItemsSource="{Binding Swatches}" Width="272">
-                  <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <WrapPanel />
-                    </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="items:ItemDyeSwatchViewModel">
-                      <Button Padding="0" Margin="1" Background="Transparent"
-                              Command="{Binding $parent[ItemsControl].((items:ItemDyeCellViewModel)DataContext).PickCommand}"
-                              CommandParameter="{Binding}"
-                              ToolTip.Tip="{Binding Tooltip}">
-                        <Border Classes.selected="{Binding IsSelected}"
-                                Width="20" Height="20" CornerRadius="2"
-                                Background="{Binding Brush}" BorderThickness="2" />
-                      </Button>
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
-              </ScrollViewer>
-            </Flyout>
-          </Button.Flyout>
-        </Button>
-
-        <NumericUpDown Grid.Column="1" Value="{Binding Number, Mode=TwoWay}"
-                       Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
-                       Increment="1" FormatString="0" Width="116"
-                       IsVisible="{Binding !HasPalette}" />
-      </Grid>
+      <items:PaletteColorPickerView />
     </DataTemplate>
 
     <!-- Two-column pane: body parts (flex) beside a fixed-width Colors panel, per the approved

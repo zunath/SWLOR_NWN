@@ -1809,11 +1809,11 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void CustomVariablesRole_HasNoDecorativeTagline()
+        public void CustomRole_HasNoDecorativeTagline()
         {
             var custom = CreatureRoleCatalog.All.Single(role => role.Id == CreatureRoleCatalog.CustomId);
 
-            custom.DisplayName.Should().Be("Custom Variables");
+            custom.DisplayName.Should().Be("Custom");
             custom.Tagline.Should().BeNull();
         }
 

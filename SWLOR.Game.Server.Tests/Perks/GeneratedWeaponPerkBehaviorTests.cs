@@ -85,6 +85,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.BleedingStatusExpiredNextSkillAbilityWindowSeconds, "30");
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.AbilityDamageToBleedingTargetSkillType, "(int)SkillType.Throwing");
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.AbilityDamageToBleedingTargetBonus, "12");
+        AssertSourceStat("ThrowingPerkDefinition.cs", StatType.SkillAbilityBleedingTargetStaminaRestoreSkillType, "(int)SkillType.Throwing");
+        AssertSourceStat("ThrowingPerkDefinition.cs", StatType.SkillAbilityBleedingTargetStaminaRestoreChance, "100");
+        AssertSourceStat("ThrowingPerkDefinition.cs", StatType.SkillAbilityBleedingTargetStaminaRestore, "2");
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.BleedingTargetAbilityBleedDurationExtensionSeconds, "6");
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.TargetLowHPStatusDamageThresholdPercent, "50");
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.TargetLowHPStatusDamageStatusCategory, "(int)StatusEffectCategory.Bleeding");
@@ -94,6 +97,10 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("TwinBladePerkDefinition.cs", StatType.BleedingTargetAbilityBleedSpreadDurationSeconds, "30");
         AssertSourceStat("TwinBladePerkDefinition.cs", StatType.DefeatedBleedingEnemyNearbyBleedDurationSeconds, "30");
         AssertSourceStat("TwinBladePerkDefinition.cs", StatType.TargetStatusCriticalRateStatusCategory, "(int)StatusEffectCategory.Bleeding");
+        AssertSourceStat("TwinBladePerkDefinition.cs", StatType.SkillDamageBleedingTargetStaminaRestoreSkillType, "(int)SkillType.TwinBlade");
+        AssertSourceStat("TwinBladePerkDefinition.cs", StatType.SkillDamageBleedingTargetStaminaRestoreChance, "100");
+        AssertSourceStat("TwinBladePerkDefinition.cs", StatType.SkillDamageBleedingTargetStaminaRestore, "1");
+        AssertSourceStat("TwinBladePerkDefinition.cs", StatType.SkillDamageBleedingTargetStaminaRestoreCooldownSeconds, "4");
 
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityStaminaCostFPRestorePercentSkillType, "(int)SkillType.Saberstaff");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityStaminaCostFPRestorePercent, "35");
@@ -572,17 +579,18 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyHostileAbilitySequenceEffects(activator, feat, ability)");
         combatSource.Should().Contain("ApplySameTargetHostileAbilityHitEffects(activator, target, ability)");
         combatSource.Should().Contain("ApplyNextDamageDealtBleedEffect(attacker, defender, damageType)");
-        combatSource.Should().Contain("ApplyBleedingTargetAbilityBleedSpread(attacker, defender, skillType, damageType)");
-        combatSource.Should().Contain("ApplyRangedHitSuppressionStack(activator, target, skillType, damageType)");
+        combatSource.Should().Contain("ApplyBleedingTargetAbilityBleedSpread(activator, target, skillType, damageType)");
+        combatSource.Should().Contain("ApplyRangedHitSuppressionStack(attacker, defender, skillType, damageType)");
         combatSource.Should().Contain("ApplySameTargetPressureDamageEffects(attacker, defender, skillType)");
         combatSource.Should().Contain("GetSameTargetPressureWeaponAbilityDamageBonus");
         combatSource.Should().Contain("ConsumeSameTargetPressureWeaponAbilityDamageBonus");
         combatSource.Should().Contain("typeof(SpottersRhythmStatusEffect)");
         var consumePressureIndex = abilitySource.IndexOf("ConsumeSameTargetPressureWeaponAbilityDamageBonus", StringComparison.Ordinal);
-        var applyDamageDealtIndex = abilitySource.IndexOf("ApplyDamageDealtEffects(activator, target, damage, skillType, damageType)", StringComparison.Ordinal);
+        var applyDamageDealtIndex = abilitySource.IndexOf("Combat.ApplyDamageDealtEffects(", StringComparison.Ordinal);
         consumePressureIndex.Should().BeGreaterThanOrEqualTo(0);
         applyDamageDealtIndex.Should().BeGreaterThanOrEqualTo(0);
         consumePressureIndex.Should().BeLessThan(applyDamageDealtIndex);
+        abilitySource.Should().Contain("isAbilityDamage: true");
         combatSource.Should().Contain("SuppressionStackEvasionPenaltyPercentAdjustment");
         combatSource.Should().Contain("if (adjustedEvasionPenaltyPercent <= 0)");
         combatSource.Should().Contain("TrackSuppressionAbilityUse(activator, now)");
@@ -787,6 +795,35 @@ public class GeneratedWeaponPerkBehaviorTests
         var tagIn = new TagInAbilityDefinition().BuildAbilities()[FeatType.TwinIntercept1];
         tagIn.IsSingleTargetAbility.Should().BeTrue();
         tagIn.RequiresTarget.Should().BeFalse();
+
+        var featRows = Read2da(root, "SWLOR_Haks", "sw_2da", "feat.2da");
+        var tagInFeat = featRows[(int)FeatType.TwinIntercept1];
+        tagInFeat["TARGETSELF"].Should().Be("1",
+            "Tag In activates immediately and resolves the current Guarded ally on the server");
+        tagInFeat["HostileFeat"].Should().Be("****");
+
+        var generator = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));
+        generator.Should().Contain("is_automatic_guarded_target_active(row[\"Description\"])",
+            "regeneration must preserve Tag In's no-cursor feat metadata");
+    }
+
+    [Test]
+    public void Flash_IsAStatusAndEnmityAreaWithoutWeaponDamage()
+    {
+        var root = RepoPaths.FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "HeavyVibroblade",
+            "FlashAbilityDefinition.cs"));
+
+        source.Should().Contain("statusEffectFactory: () => new FlashStatusEffect(20)");
+        source.Should().Contain("damagePercentAdjustment: _ => -100",
+            "the weapon-skill combat pipeline otherwise adds weapon damage even when base damage is zero");
+        source.Should().Contain("enmityBonus: 650");
+        source.Should().Contain("canCritical: false");
     }
 
     [Test]

@@ -134,7 +134,10 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
                 return;
             }
 
-            _lastRun = currentTime;
+            // Preserve the logical cadence instead of anchoring the next tick to a slightly late
+            // engine callback. Resetting to currentTime accumulates scheduler jitter and can turn a
+            // 3-second effect into a 4-second cadence, dropping the final tick of a fixed-duration HoT.
+            _lastRun = _lastRun.AddSeconds(Math.Max(1f, Frequency));
 
             // Reduce duration ticks and flag for removal if expired
             if (!_isPermanent && --_durationTicks <= 0)

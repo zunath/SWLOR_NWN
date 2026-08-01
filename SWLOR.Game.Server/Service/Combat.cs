@@ -1250,7 +1250,8 @@ namespace SWLOR.Game.Server.Service
             int damage,
             SkillType skillType = SkillType.Invalid,
             CombatDamageType damageType = CombatDamageType.Physical,
-            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
+            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct,
+            bool isAbilityDamage = false)
         {
             if (damage <= 0)
                 return;
@@ -1275,16 +1276,17 @@ namespace SWLOR.Game.Server.Service
             ApplySideAttackDamageEffects(attacker, defender, skillType, damage);
             ApplyDamageDealtStaminaRestore(attacker, skillType);
             ApplyDamageDealtAttackDelayReduction(attacker, skillType);
-            ApplyPredatorsMarkEffects(attacker, defender, skillType);
+            if (isAbilityDamage)
+                ApplyPredatorsMarkEffects(attacker, defender, skillType);
+            else
+                ApplyAutoAttackSuppressionStack(attacker, defender, skillType, damageType);
+
             ApplyDamageDealtForceErosionEffect(attacker, defender, deliveryType);
             ApplyDamageDealtHamstringEffect(attacker, defender, skillType, damageType);
             ApplyDamageDealtMimicryTraitProcs(attacker, defender);
             ApplyNextDamageDealtBleedEffect(attacker, defender, damageType);
-            ApplyAutoAttackSuppressionStack(attacker, defender, skillType, damageType);
             ApplyRangedHitSuppressionStack(attacker, defender, skillType, damageType);
-            ApplyBleedingTargetStaminaRestore(attacker, defender);
-            ApplyBleedingTargetAbilityBleedRefresh(attacker, defender, skillType);
-            ApplyBleedingTargetAbilityBleedSpread(attacker, defender, skillType, damageType);
+            ApplyBleedingTargetStaminaRestore(attacker, defender, skillType, isAbilityDamage);
             ApplyToxicRushDamageDealtEffects(attacker, defender, deliveryType);
             ApplyHeavyVibrobladeDefenseDamageRecovery(attacker, damage);
             ApplyFrenzySlashHasteRefresh(attacker);
@@ -1404,15 +1406,71 @@ namespace SWLOR.Game.Server.Service
             ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent);
         }
 
-        private static void ApplyBleedingTargetStaminaRestore(uint attacker, uint defender)
+        private static void ApplyBleedingTargetStaminaRestore(
+            uint attacker,
+            uint defender,
+            SkillType skillType,
+            bool isAbilityDamage)
         {
             if (!GetIsObjectValid(defender) ||
                 !StatusEffect.HasStatusEffectCategory(defender, StatusEffectCategory.Bleeding))
                 return;
 
-            var chance = Stat.GetStatAdjustment(attacker, StatType.DamageDealtBleedingTargetStaminaRestoreChance);
-            var staminaRestore = Stat.GetStatAdjustment(attacker, StatType.DamageDealtBleedingTargetStaminaRestore);
-            if (chance <= 0 || staminaRestore <= 0 || Random.D100(1) > chance)
+            ApplyBleedingTargetStaminaRestoreChannel(
+                attacker,
+                skillType,
+                SkillType.Invalid,
+                StatType.DamageDealtBleedingTargetStaminaRestoreChance,
+                StatType.DamageDealtBleedingTargetStaminaRestore);
+
+            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.SkillDamageBleedingTargetStaminaRestoreSkillType));
+            ApplyBleedingTargetStaminaRestoreChannel(
+                attacker,
+                skillType,
+                requiredSkillType,
+                StatType.SkillDamageBleedingTargetStaminaRestoreChance,
+                StatType.SkillDamageBleedingTargetStaminaRestore,
+                StatType.SkillDamageBleedingTargetStaminaRestoreCooldownSeconds);
+
+            if (!isAbilityDamage)
+                return;
+
+            requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.SkillAbilityBleedingTargetStaminaRestoreSkillType));
+            ApplyBleedingTargetStaminaRestoreChannel(
+                attacker,
+                skillType,
+                requiredSkillType,
+                StatType.SkillAbilityBleedingTargetStaminaRestoreChance,
+                StatType.SkillAbilityBleedingTargetStaminaRestore,
+                StatType.SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds);
+        }
+
+        private static void ApplyBleedingTargetStaminaRestoreChannel(
+            uint attacker,
+            SkillType skillType,
+            SkillType requiredSkillType,
+            StatType chanceStat,
+            StatType restoreStat,
+            StatType cooldownStat = StatType.Invalid)
+        {
+            var chance = Stat.GetStatAdjustment(attacker, chanceStat);
+            var staminaRestore = Stat.GetStatAdjustment(attacker, restoreStat);
+            if (chance <= 0 ||
+                staminaRestore <= 0 ||
+                !SkillTypeMatchesOrGlobal(skillType, requiredSkillType) ||
+                Random.D100(1) > chance)
+            {
+                return;
+            }
+
+            var cooldown = cooldownStat == StatType.Invalid
+                ? 0
+                : Stat.GetStatAdjustment(attacker, cooldownStat);
+            if (!TryUseStatTrigger(attacker, restoreStat, cooldown))
                 return;
 
             Stat.RestoreStamina(attacker, staminaRestore);
@@ -5176,7 +5234,6 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0)
                 return;
 
-            ApplyRangedHitSuppressionStack(activator, target, skillType, damageType);
             ApplyFoggyMindResourceDrain(activator, target, ability);
             ApplyBleedingTargetAbilityBleedRefresh(activator, target, skillType);
             ApplyBleedingTargetAbilityBleedSpread(activator, target, skillType, damageType);
@@ -6111,7 +6168,7 @@ namespace SWLOR.Game.Server.Service
 
             if (Stat.GetStatAdjustment(activator, StatType.SpearDisablerForceNullification) > 0 && appliesDisruption)
             {
-                StatusEffect.ApplyStatusEffect(activator, target, new ForceDisruptionStatusEffect(true), 30f, CombatDamageType.Force);
+                StatusEffect.ApplyStatusEffect(activator, target, new ForceDisruptionStatusEffect(), 30f, CombatDamageType.Force);
             }
 
             if (Stat.GetStatAdjustment(activator, StatType.SpearDisablerForcebane) > 0 && appliesSuppression)

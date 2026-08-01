@@ -4026,7 +4026,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory flags required for status-applied stat riders.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.BitwiseOr)]
         StatusAppliedRequiredCategory = 701,
 
         /// <summary>
@@ -5639,15 +5639,73 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         NextAttackStatusAppliedDMGBonus = 979,
 
+        /// <summary>
+        /// SkillType required for the skill-damage bleeding-target Stamina restore channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SkillDamageBleedingTargetStaminaRestoreSkillType = 980,
+
+        /// <summary>
+        /// Percent chance for matching skill damage to restore Stamina against a bleeding target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SkillDamageBleedingTargetStaminaRestoreChance = 981,
+
+        /// <summary>
+        /// Flat Stamina restored by matching skill damage against a bleeding target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SkillDamageBleedingTargetStaminaRestore = 982,
+
+        /// <summary>
+        /// Cooldown in seconds for the skill-damage bleeding-target Stamina restore channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SkillDamageBleedingTargetStaminaRestoreCooldownSeconds = 983,
+
+        /// <summary>
+        /// SkillType required for the skill-ability bleeding-target Stamina restore channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SkillAbilityBleedingTargetStaminaRestoreSkillType = 984,
+
+        /// <summary>
+        /// Percent chance for a matching skill ability to restore Stamina against a bleeding target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SkillAbilityBleedingTargetStaminaRestoreChance = 985,
+
+        /// <summary>
+        /// Flat Stamina restored by a matching skill ability against a bleeding target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SkillAbilityBleedingTargetStaminaRestore = 986,
+
+        /// <summary>
+        /// Cooldown in seconds for the skill-ability bleeding-target Stamina restore channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds = 987,
+
     }
 
     public class StatTypeAttribute : Attribute
     {
         public StatTypeCategory Category { get; }
+        public StatTypeAggregation Aggregation { get; }
 
-        public StatTypeAttribute(StatTypeCategory category)
+        public StatTypeAttribute(
+            StatTypeCategory category,
+            StatTypeAggregation aggregation = StatTypeAggregation.Additive)
         {
             Category = category;
+            Aggregation = aggregation;
         }
+    }
+
+    public enum StatTypeAggregation
+    {
+        Additive = 0,
+        BitwiseOr = 1
     }
 }

@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless.NUnit;
 using Avalonia.VisualTree;
 using FluentAssertions;
@@ -208,6 +209,58 @@ public sealed class ConversationEditorOpeningTests
                     value.Equals("PORTRAIT", StringComparison.OrdinalIgnoreCase) ||
                     value.Contains("portrait supplied", StringComparison.OrdinalIgnoreCase));
             view.GetVisualDescendants().OfType<Image>().Should().NotBeEmpty();
+        }
+        finally
+        {
+            window.Close();
+            model.OnClose();
+        }
+    }
+
+    [AvaloniaTest]
+    public void NuiPreviewMatchesTheRuntimeConversationListLayout()
+    {
+        const string id = "cz_receptionist";
+        var path = Path.Combine(
+            CorpusLocator.RepositoryRoot, "SWLOR.Game.Server", "ConversationData", id + ".conversation.json");
+        var model = new NuiConversationEditorViewModel(
+            path, id, SnippetCatalog.Build(), null, new OutputLogService(), new StubPrompts());
+        var view = new NuiConversationEditorView { DataContext = model };
+        var window = new Window { Content = view, Width = 1300, Height = 760 };
+        window.Show();
+
+        try
+        {
+            window.UpdateLayout();
+
+            var frame = view.FindControl<Border>("PreviewWindowFrame");
+            frame.Should().NotBeNull();
+            frame!.Width.Should().Be(650);
+            frame.Height.Should().Be(520);
+
+            var dialogueScroll = view.FindControl<ScrollViewer>("PreviewDialogueScroll");
+            var responseScroll = view.FindControl<ScrollViewer>("PreviewResponsesScroll");
+            dialogueScroll.Should().NotBeNull();
+            responseScroll.Should().NotBeNull();
+            dialogueScroll!.VerticalScrollBarVisibility.Should().Be(ScrollBarVisibility.Visible);
+            responseScroll!.VerticalScrollBarVisibility.Should().Be(ScrollBarVisibility.Visible);
+
+            var choiceItems = view.FindControl<ItemsControl>("PreviewChoiceItems");
+            choiceItems.Should().NotBeNull();
+            var responseButtons = choiceItems!.GetVisualDescendants().OfType<Button>().ToArray();
+            responseButtons.Should().NotBeEmpty();
+            responseButtons.Should().OnlyContain(button =>
+                Math.Abs(button.Bounds.Width - choiceItems.Bounds.Width) <= 2,
+                "runtime NUI list cells stretch each response across the available list width");
+            responseButtons.Should().OnlyContain(button => Math.Abs(button.Bounds.Height - 38) <= 0.1,
+                "runtime NUI response buttons are 38 units high inside 42-unit list rows");
+
+            var dialogueItems = view.FindControl<ItemsControl>("PreviewDialogueItems");
+            dialogueItems.Should().NotBeNull();
+            dialogueItems!.GetVisualDescendants().OfType<Grid>()
+                .Where(grid => grid.DataContext is NuiConversationPreviewTextRow)
+                .Should().OnlyContain(grid => Math.Abs(grid.Bounds.Height - 208) <= 0.1,
+                    "runtime NUI dialogue segments occupy 208-unit list rows");
         }
         finally
         {

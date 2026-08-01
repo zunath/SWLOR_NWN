@@ -279,7 +279,7 @@
         <!-- Fixed native dimensions, scaled as a unit, make this match the 650x520 NUI window
              without forcing the editor's right-hand pane to consume 650 desktop pixels. -->
         <Viewbox Grid.Row="2" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-          <Border Width="650" Height="520" Background="#030303" BorderBrush="#8A5427"
+          <Border x:Name="PreviewWindowFrame" Width="650" Height="520" Background="#030303" BorderBrush="#8A5427"
                   BorderThickness="2" CornerRadius="2">
             <Grid RowDefinitions="32,*">
               <Border Grid.Row="0" Background="#050505" BorderBrush="#8A5427" BorderThickness="0,0,0,2">
@@ -294,7 +294,7 @@
                 </Grid>
               </Border>
 
-              <Grid Grid.Row="1" RowDefinitions="228,28,*" Margin="14,10,14,12">
+              <Grid Grid.Row="1" RowDefinitions="228,24,*" Margin="14,10,14,12">
                 <Grid Grid.Row="0" ColumnDefinitions="140,*" ColumnSpacing="8">
                   <Grid Grid.Column="0" RowDefinitions="28,200">
                     <TextBlock Grid.Row="0" Text="{Binding PreviewSpeaker}" Foreground="#F3F3F3"
@@ -307,14 +307,26 @@
                   </Grid>
 
                   <ScrollViewer x:Name="PreviewDialogueScroll" Grid.Column="1"
-                                VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                                VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled"
                                 Background="#030303">
-                    <ItemsControl ItemsSource="{Binding PreviewTextBlocks}">
+                    <ItemsControl x:Name="PreviewDialogueItems" ItemsSource="{Binding PreviewTextBlocks}">
+                      <ItemsControl.Styles>
+                        <Style Selector="ItemsControl > ContentPresenter">
+                          <Setter Property="HorizontalAlignment" Value="Stretch" />
+                          <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                      </ItemsControl.Styles>
                       <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="editors:NuiConversationPreviewTextRow">
-                          <TextBlock Text="{Binding Text}" Foreground="{Binding Foreground}"
-                                     TextWrapping="Wrap" FontSize="16" LineHeight="23"
-                                     Margin="8,6,10,6" />
+                          <!-- Runtime NUI renders each dialogue segment in a 208-unit list row
+                               containing a 196-unit padded text cell. Keeping those dimensions here
+                               makes long and styled lines paginate exactly as they do in game. -->
+                          <Grid Height="208">
+                            <Border Height="196" Padding="8" VerticalAlignment="Top">
+                              <TextBlock Text="{Binding Text}" Foreground="{Binding Foreground}"
+                                         TextWrapping="Wrap" FontSize="16" LineHeight="23" />
+                            </Border>
+                          </Grid>
                         </DataTemplate>
                       </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -325,19 +337,30 @@
                            FontSize="15" VerticalAlignment="Center" />
 
                 <ScrollViewer x:Name="PreviewResponsesScroll" Grid.Row="2"
-                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled"
                               Background="#030303">
-                  <ItemsControl ItemsSource="{Binding PreviewChoices}" Margin="0,4,0,0">
+                  <ItemsControl x:Name="PreviewChoiceItems" ItemsSource="{Binding PreviewChoices}">
+                    <ItemsControl.Styles>
+                      <!-- ItemsControl sizes its generated presenters to their captions by default.
+                           NUI list cells always occupy the full list width, so force the preview's
+                           item presenters to do the same before drawing the response button. -->
+                      <Style Selector="ItemsControl > ContentPresenter">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                      </Style>
+                    </ItemsControl.Styles>
                     <ItemsControl.ItemTemplate>
                       <DataTemplate x:DataType="editors:NuiConversationChoiceRow">
-                        <Button Margin="0,3" MinHeight="38" Padding="12,6"
-                                Background="#030303" BorderBrush="#8A5427" BorderThickness="2"
-                                HorizontalContentAlignment="Center"
-                                Command="{Binding $parent[ItemsControl].((editors:NuiConversationEditorViewModel)DataContext).PickPreviewChoiceCommand}"
-                                CommandParameter="{Binding}">
-                          <TextBlock Text="{Binding DisplayText}" Foreground="#66B2FF"
-                                     TextWrapping="Wrap" TextAlignment="Center" FontSize="15" />
-                        </Button>
+                        <Grid Height="42">
+                          <Button Height="38" Padding="12,6" VerticalAlignment="Center"
+                                  Background="#030303" BorderBrush="#8A5427" BorderThickness="2"
+                                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                  Command="{Binding $parent[ItemsControl].((editors:NuiConversationEditorViewModel)DataContext).PickPreviewChoiceCommand}"
+                                  CommandParameter="{Binding}">
+                            <TextBlock Text="{Binding DisplayText}" Foreground="#66B2FF"
+                                       TextWrapping="Wrap" TextAlignment="Center" FontSize="15" />
+                          </Button>
+                        </Grid>
                       </DataTemplate>
                     </ItemsControl.ItemTemplate>
                   </ItemsControl>

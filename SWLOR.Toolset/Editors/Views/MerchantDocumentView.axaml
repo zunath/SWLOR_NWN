@@ -6,7 +6,7 @@
              x:DataType="merchants:MerchantDocumentViewModel">
 
   <Grid>
-    <DockPanel IsEnabled="{Binding !IsBusy}">
+    <DockPanel IsHitTestVisible="{Binding !IsBusy}">
       <behaviors:BehaviorEditorHeader DockPanel.Dock="Top"
                                       BehaviorName="{Binding Editor.HeaderName}"
                                       Kind="{Binding Editor.HeaderKind}"
@@ -24,14 +24,18 @@
       <merchants:MerchantEditorView DataContext="{Binding Editor}" />
     </DockPanel>
 
-    <Border Background="#D90C0F14" IsVisible="{Binding IsBusy}">
-      <Border Classes="card" Width="390" Padding="24"
+    <Border Background="#A60C0F14" IsVisible="{Binding IsBusy}">
+      <Border Width="420" Padding="24"
+              Background="{DynamicResource PanelRaisedBrush}"
+              BorderBrush="{DynamicResource AccentBorderBrush}"
+              BorderThickness="1"
+              CornerRadius="5"
               HorizontalAlignment="Center" VerticalAlignment="Center">
         <StackPanel Spacing="11">
           <TextBlock Text="{Binding Editor.InstanceOperationStatus}"
                      FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" />
           <ProgressBar Height="4" IsIndeterminate="True" />
-          <TextBlock Text="The merchant editor is locked until the module update and status scan finish."
+          <TextBlock Text="Writing the displayed out-of-date records. Editing resumes automatically."
                      Classes="dim" TextAlignment="Center" TextWrapping="Wrap" />
         </StackPanel>
       </Border>

@@ -61,19 +61,41 @@ namespace SWLOR.Toolset.Editors.Merchants
             return Task.Run(() => Find(workspace, catalog, merchantResRef));
         }
 
-        public async Task<int> UpdateOutOfDateAsync(string merchantResRef)
+        public async Task<int> UpdateOutOfDateAsync(
+            string merchantResRef,
+            IReadOnlyCollection<string> targetAreaResRefs)
         {
             var workspace = _workspaceContext.Workspace;
-            if (workspace == null)
+            if (workspace == null || targetAreaResRefs.Count == 0)
                 return 0;
+
+            // The Placed Instances tab already paid for a module-wide discovery scan. Updating only
+            // the areas displayed as out of date avoids reopening every GIT in the module here, and
+            // it gives the operation snapshot semantics: Refresh explicitly discovers later placements.
+            var availableAreas = workspace.EnumerateAreaResRefs()
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var requestedAreas = targetAreaResRefs
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(value => value, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            if (requestedAreas.Count == 0)
+                return 0;
+            var missingArea = requestedAreas.FirstOrDefault(area => !availableAreas.Contains(area));
+            if (missingArea != null)
+            {
+                throw new InvalidOperationException(
+                    $"Placed area '{missingArea}' changed after the status scan. Refresh the list and try again.");
+            }
+            var targetAreas = requestedAreas;
 
             var protectedAreas = _hasUnsavedAreaInstances == null
                 ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-                : workspace.EnumerateAreaResRefs()
+                : targetAreas
                     .Where(_hasUnsavedAreaInstances)
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
             var result = await Task.Run(
-                () => Update(workspace, merchantResRef, protectedAreas)).ConfigureAwait(true);
+                () => Update(workspace, merchantResRef, targetAreas, protectedAreas)).ConfigureAwait(true);
             foreach (var areaResRef in result.Areas)
                 _reloadOpenAreaInstances?.Invoke(areaResRef);
             if (result.Count > 0)
@@ -151,11 +173,12 @@ namespace SWLOR.Toolset.Editors.Merchants
         private static (int Count, IReadOnlyList<string> Areas) Update(
             ModuleWorkspace workspace,
             string merchantResRef,
+            IReadOnlyList<string> targetAreas,
             IReadOnlySet<string> protectedAreas)
         {
-            // Synchronization is one read/modify/write operation across the merchant, every GIT,
-            // and the referenced inventory blueprints. Keep pack/unpack and other writers out for
-            // the entire snapshot instead of acquiring only around each staged file operation.
+            // Synchronization is one read/modify/write operation across the merchant, the selected
+            // GITs, and the referenced inventory blueprints. Keep pack/unpack and other writers out
+            // for the entire snapshot instead of acquiring only around staged file operations.
             using var moduleWriteLock = ModuleWriteLock.Acquire(workspace.ModuleRoot);
             var merchant = JsonGffDocument.Load(
                 workspace.GetResourcePath(ResourceType.Utm, merchantResRef));
@@ -170,7 +193,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             var updated = 0;
             try
             {
-                foreach (var areaResRef in workspace.EnumerateAreaResRefs())
+                foreach (var areaResRef in targetAreas)
                 {
                     var path = Path.Combine(workspace.ModuleRoot, "git", areaResRef + ".git.json");
                     GitDocument git;
@@ -178,9 +201,11 @@ namespace SWLOR.Toolset.Editors.Merchants
                     {
                         git = GitDocument.Load(path);
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        continue;
+                        throw new InvalidOperationException(
+                            $"Placed area '{areaResRef}' could not be loaded. Refresh the list and try again.",
+                            ex);
                     }
 
                     var replacements = new List<(int Index, JsonGffStruct Expected)>();

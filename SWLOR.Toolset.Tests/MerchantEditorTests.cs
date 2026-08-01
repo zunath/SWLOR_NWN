@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Merchants;
 using SWLOR.Toolset.Domain.Gff;
@@ -704,6 +705,74 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task InstanceUpdateOnlyReadsAndWritesTheDisplayedTargetAreas()
+        {
+            var moduleRoot = Path.Combine(
+                Path.GetTempPath(),
+                "swlor-merchant-targeted-update-" + Guid.NewGuid().ToString("N"),
+                "Module");
+            Directory.CreateDirectory(Path.Combine(moduleRoot, "are"));
+            Directory.CreateDirectory(Path.Combine(moduleRoot, "git"));
+            Directory.CreateDirectory(Path.Combine(moduleRoot, "utm"));
+            Directory.CreateDirectory(Path.Combine(moduleRoot, "utc"));
+
+            var merchant = JsonGffDocument.Parse(
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utm, "probe_store", "Probe Store"));
+            WritePlacedMerchantArea(moduleRoot, "area_a", merchant);
+            WritePlacedMerchantArea(moduleRoot, "area_b", merchant);
+            merchant.Root.SetInt("MarkUp", GffFieldType.Int, 175);
+            File.WriteAllBytes(
+                Path.Combine(moduleRoot, "utm", "probe_store.utm.json"),
+                merchant.ToBytes());
+
+            var checkedForUnsavedEdits = new List<string>();
+            var reloadedAreas = new List<string>();
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(path => new ModuleWorkspace(path), log);
+            workspace.Open(moduleRoot);
+            var service = new MerchantInstanceService(
+                workspace,
+                log,
+                areaResRef =>
+                {
+                    checkedForUnsavedEdits.Add(areaResRef);
+                    return false;
+                },
+                reloadedAreas.Add);
+
+            try
+            {
+                var updated = await service.UpdateOutOfDateAsync(
+                    "probe_store",
+                    new[] { "area_a" });
+
+                updated.Should().Be(1);
+                checkedForUnsavedEdits.Should().Equal("area_a");
+                reloadedAreas.Should().Equal("area_a");
+                StoreInstanceSynchronizer.IsCurrent(
+                        merchant,
+                        GitDocument.Load(Path.Combine(moduleRoot, "git", "area_a.git.json"))
+                            .Stores.Single(),
+                        "probe_store",
+                        _ => null)
+                    .Should().BeTrue();
+                StoreInstanceSynchronizer.IsCurrent(
+                        merchant,
+                        GitDocument.Load(Path.Combine(moduleRoot, "git", "area_b.git.json"))
+                            .Stores.Single(),
+                        "probe_store",
+                        _ => null)
+                    .Should().BeFalse("an area outside the displayed update snapshot must be untouched");
+            }
+            finally
+            {
+                await workspace.Catalog!.BuildTask;
+                Directory.Delete(Directory.GetParent(moduleRoot)!.FullName, recursive: true);
+            }
+        }
+
+        [Test]
         public void InstanceSummaryReportsOutOfDateMerchantAndItemRecordCounts()
         {
             using var editor = new MerchantEditorViewModel(
@@ -735,6 +804,35 @@ namespace SWLOR.Toolset.Tests
             JsonGffDocument.Parse(
                 BlueprintTemplateFactory.CreateFileContent(
                     ResourceType.Utm, "probe_store", "Probe Store")).Root;
+
+        private static void WritePlacedMerchantArea(
+            string moduleRoot,
+            string areaResRef,
+            JsonGffDocument merchant)
+        {
+            File.WriteAllText(Path.Combine(moduleRoot, "are", areaResRef + ".are.json"), "{}");
+            var root = new JsonGffStruct();
+            using (EditScope.EnterConstruction())
+            {
+                var stores = JsonGffField.CreateList();
+                stores.InsertElement(
+                    0,
+                    InstanceFieldMap.CreateInstance(
+                        ResourceType.Utm,
+                        merchant,
+                        "probe_store",
+                        1,
+                        2,
+                        3,
+                        0,
+                        1));
+                root.Add("StoreList", stores);
+            }
+
+            File.WriteAllBytes(
+                Path.Combine(moduleRoot, "git", areaResRef + ".git.json"),
+                new JsonGffDocument("GIT ", root).ToBytes());
+        }
 
         private sealed class MerchantSavePrompts : IEditorPromptService
         {

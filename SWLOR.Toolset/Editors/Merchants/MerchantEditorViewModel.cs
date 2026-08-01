@@ -539,8 +539,32 @@ namespace SWLOR.Toolset.Editors.Merchants
             InstanceError = null;
             try
             {
-                await _instances.UpdateOutOfDateAsync(ResRef).ConfigureAwait(true);
-                await RefreshPlacedInstancesAsync().ConfigureAwait(true);
+                var targetAreas = PlacedInstances
+                    .Where(placement => !placement.IsCurrent)
+                    .Select(placement => placement.AreaResRef)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+                await _instances.UpdateOutOfDateAsync(ResRef, targetAreas).ConfigureAwait(true);
+
+                // The service rebuilds every matching merchant in each target area from the saved
+                // blueprint. Those displayed records are therefore current without a second full-
+                // module discovery scan. Refresh remains available to discover new placements.
+                for (var index = 0; index < PlacedInstances.Count; index++)
+                {
+                    var placement = PlacedInstances[index];
+                    if (targetAreas.Contains(placement.AreaResRef, StringComparer.OrdinalIgnoreCase))
+                    {
+                        PlacedInstances[index] = placement with
+                        {
+                            OutOfDateMerchantRecords = 0,
+                            OutOfDateItemRecords = 0
+                        };
+                    }
+                }
+
+                ArePlacedInstancesLoaded = true;
+                PlacedInstancesNeedRefresh = false;
+                NotifyInstanceShapeChanged();
             }
             catch (Exception ex)
             {

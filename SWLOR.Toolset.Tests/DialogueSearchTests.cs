@@ -6,8 +6,8 @@ using SWLOR.Toolset.Domain.Documents;
 namespace SWLOR.Toolset.Tests
 {
     /// <summary>
-    /// DialogueSearch backs Module Contents' "search what people say" - reading every conversation in
-    /// the module and reporting which ones mention a query. These check the two ways that scan used
+    /// DialogueSearch adds spoken-text matches to Module Contents' ordinary search by reading every
+    /// conversation and reporting which ones mention a query. These check the two ways that scan used
     /// to answer the wrong question: a common word could exhaust its cap on a handful of early,
     /// heavily-matching files and never reach the rest of the alphabetically ordered directory, and
     /// an open, unsaved conversation was always read from its last saved version rather than what the

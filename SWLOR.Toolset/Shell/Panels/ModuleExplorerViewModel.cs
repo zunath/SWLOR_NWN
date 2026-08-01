@@ -272,7 +272,6 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(CanOpenSelectedType));
             OnPropertyChanged(nameof(CanCompileSelectedType));
             OnPropertyChanged(nameof(CanCreateSelectedType));
-            OnPropertyChanged(nameof(HasDialogOptions));
             CompileSelectedCommand.NotifyCanExecuteChanged();
             SelectedRow = null;
             StatusMessage = null;
@@ -282,10 +281,25 @@ namespace SWLOR.Toolset.Shell.Panels
             Refresh();
         }
 
-        private int CountFor(ResourceType type) =>
-            IsCatalogIndexed(type) && _catalogByType != null && _catalogByType.TryGetValue(type, out var entries)
-                ? entries.Count
-                : _workspaceContext.Workspace?.EnumerateResRefs(type).Count ?? 0;
+        private int CountFor(ResourceType type)
+        {
+            if (IsCatalogIndexed(type)
+                && _catalogByType != null
+                && _catalogByType.TryGetValue(type, out var entries))
+            {
+                return type == ResourceType.Dlg
+                    ? entries.Count(entry => !UnreferencedConversationRule.IsGeneratedShell(entry.ResRef))
+                    : entries.Count;
+            }
+
+            var resRefs = _workspaceContext.Workspace?.EnumerateResRefs(type);
+            if (resRefs == null)
+                return 0;
+
+            return type == ResourceType.Dlg
+                ? resRefs.Count(resRef => !UnreferencedConversationRule.IsGeneratedShell(resRef))
+                : resRefs.Count;
+        }
 
         // ----- creating -----
 
@@ -730,23 +744,6 @@ namespace SWLOR.Toolset.Shell.Panels
             Refresh();
         }
 
-        /// <summary>Whether the filter box searches what people say rather than resrefs and names.</summary>
-        [ObservableProperty]
-        private bool _searchDialogueText;
-
-        /// <summary>Whether the generated <c>dialogN</c> shells are listed at all.</summary>
-        [ObservableProperty]
-        private bool _showGeneratedDialogs;
-
-        /// <summary>True only for Dialogs, which is where the two options above mean anything.</summary>
-        public bool HasDialogOptions => SelectedType == ResourceType.Dlg;
-
-        partial void OnSearchDialogueTextChanged(bool value)
-        {
-            QueueDialogueScan();
-            Refresh();
-        }
-
         /// <summary>True while a dialogue-text scan is running, so the tree can say so.</summary>
         [ObservableProperty]
         private bool _isSearchingDialogue;
@@ -784,7 +781,7 @@ namespace SWLOR.Toolset.Shell.Panels
             _dialogueScan = null;
 
             var needle = Filter?.Trim() ?? string.Empty;
-            if (!SearchDialogueText || SelectedType != ResourceType.Dlg || needle.Length == 0)
+            if (SelectedType != ResourceType.Dlg || needle.Length == 0)
             {
                 _dialogueHits = null;
                 _dialogueHitsQuery = null;
@@ -792,8 +789,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            // Already have it: retyping the same query, or toggling the checkbox back on, should not
-            // re-read the corpus.
+            // Already have it: retyping the same query should not re-read the corpus.
             if (string.Equals(_dialogueHitsQuery, needle, StringComparison.OrdinalIgnoreCase))
                 return;
 
@@ -874,8 +870,6 @@ namespace SWLOR.Toolset.Shell.Panels
             });
         }
 
-        partial void OnShowGeneratedDialogsChanged(bool value) => Refresh();
-
         partial void OnSelectedRowChanged(ExplorerNodeViewModel? value)
         {
             OnPropertyChanged(nameof(HasFolderSelected));
@@ -895,10 +889,9 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private IReadOnlyList<ExplorerItem> Filtered(IReadOnlyList<ExplorerItem> items)
         {
-            // The 255 numbered shells are generated for the C# Dialog service's runtime menus. They
-            // are two thirds of the folder and none of them is editable, so they are out of the way
-            // unless asked for.
-            if (SelectedType == ResourceType.Dlg && !ShowGeneratedDialogs)
+            // The 255 numbered shells are generated for the C# Dialog service's runtime menus. None
+            // is editable here, so they are not authoring content and never belong in this tree.
+            if (SelectedType == ResourceType.Dlg)
             {
                 items = items
                     .Where(item => !UnreferencedConversationRule.IsGeneratedShell(item.ResRef))
@@ -909,7 +902,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 return items;
 
             var needle = Filter.Trim();
-            if (SearchDialogueText && SelectedType == ResourceType.Dlg)
+            if (SelectedType == ResourceType.Dlg)
                 return DialogueMatches(items, needle);
 
             return items
@@ -920,8 +913,7 @@ namespace SWLOR.Toolset.Shell.Panels
         }
 
         /// <summary>
-        /// Conversations containing the query in something somebody says — "who says
-        /// <em>Veldite</em>?", which the resref/name filter cannot answer.
+        /// Conversations matching a ResRef, name, or something somebody says.
         /// </summary>
         /// <remarks>
         /// Reads whatever the last completed background scan found rather than scanning here: this
@@ -933,14 +925,19 @@ namespace SWLOR.Toolset.Shell.Panels
             if (_workspaceContext.Workspace == null)
                 return items;
 
-            // No result for this query yet. Showing the resref matches instead would be a different
-            // search wearing this one's answer, so the tree stays empty until the scan lands - which
-            // is what IsSearchingDialogue is on screen to explain.
+            var ordinaryMatch = new Func<ExplorerItem, bool>(item =>
+                item.ResRef.Contains(needle, StringComparison.OrdinalIgnoreCase) ||
+                (item.Name?.Contains(needle, StringComparison.OrdinalIgnoreCase) ?? false));
+
+            // Names and ResRefs are immediate. Spoken-text matches join them when the background
+            // corpus scan lands, so the single search box never blanks a result it already knows.
             if (_dialogueHits == null ||
                 !string.Equals(_dialogueHitsQuery, needle, StringComparison.OrdinalIgnoreCase))
-                return Array.Empty<ExplorerItem>();
+                return items.Where(ordinaryMatch).ToList();
 
-            return items.Where(item => _dialogueHits.Contains(item.ResRef)).ToList();
+            return items
+                .Where(item => ordinaryMatch(item) || _dialogueHits.Contains(item.ResRef))
+                .ToList();
         }
 
         private ExplorerNodeViewModel BuildFolderNode(

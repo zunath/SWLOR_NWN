@@ -1583,9 +1583,9 @@ kept as an alias, since two shortcuts for one action is just something else to d
   catalog), **Move up / Move down** on every situation, and the delete-cost statement.
 - **D8 — done.** Quest picker in the rail with a live preview of the situations it would create,
   driven by `QuestConversationScaffold.Preview(questId, document)`.
-- **D9 — done except the tree.** Generated shells excluded from the Dialogs list behind a
-  "Show generated" toggle; **"Search what people say"** runs `DialogueSearch` over all 609
-  conversations through the existing filter box (opt-in, because it reads every file);
+- **D9 — done except the tree.** Generated shells are excluded from the Dialogs list and counts;
+  the existing filter box always searches conversation names/resrefs and spoken text through the
+  debounced background `DialogueSearch` scan;
   `Conversation` on creatures, doors and placeables is now a picker over the real conversations
   (`EditorKind.ResourcePicker`) that still accepts a hak resref and says when a value names nothing.
   **The refusal is implemented** — `ConversationCompatibility` declines 15 of 354 authored

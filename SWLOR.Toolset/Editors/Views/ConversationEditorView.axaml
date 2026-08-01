@@ -36,8 +36,9 @@
             BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="12,8">
       <Grid ColumnDefinitions="Auto,230,*,Auto,Auto,Auto" ColumnSpacing="8">
         <TextBlock Grid.Column="0" Text="NPC BEHAVIOR" Classes="label" VerticalAlignment="Center" />
-        <ComboBox Grid.Column="1" ItemsSource="{Binding BehaviorOptions}"
+        <ComboBox Name="BehaviorSelector" Grid.Column="1" ItemsSource="{Binding BehaviorOptions}"
                   SelectedItem="{Binding SelectedBehavior, Mode=TwoWay}"
+                  HorizontalAlignment="Stretch"
                   IsVisible="{Binding ShowEditor}" />
         <TextBlock Grid.Column="2" Text="{Binding ValidationSummary}" Classes="mono"
                    FontSize="10.5" VerticalAlignment="Center" Margin="8,0" />
@@ -109,12 +110,19 @@
     </Grid>
 
     <TabControl IsVisible="{Binding ShowEditor}">
-      <TabItem Header="Write">
-        <Grid RowDefinitions="*,Auto">
+      <TabItem Header="Write" Content="{Binding}">
+        <TabItem.ContentTemplate>
+          <DataTemplate DataType="editors:ConversationEditorViewModel">
+            <Grid RowDefinitions="*,Auto">
 
           <!-- Merchant is intentionally a small form. The required outcome and Goodbye are structural. -->
-          <ScrollViewer Grid.Row="0" IsVisible="{Binding IsMerchant}">
-            <StackPanel Margin="24" Spacing="15" MaxWidth="760" HorizontalAlignment="Center">
+          <editors:DeferredContentControl Grid.Row="0" DeferredContent="{Binding}"
+                                          IsContentActive="{Binding IsMerchant}"
+                                          IsVisible="{Binding IsMerchant}">
+            <editors:DeferredContentControl.DeferredTemplate>
+              <DataTemplate DataType="editors:ConversationEditorViewModel">
+                <ScrollViewer>
+                  <StackPanel Margin="24" Spacing="15" MaxWidth="760" HorizontalAlignment="Center">
               <StackPanel Spacing="4">
                 <TextBlock Text="Merchant dialogue" FontSize="21" />
                 <TextBlock Text="A merchant needs a greeting and a shop choice. Goodbye is added automatically."
@@ -160,11 +168,19 @@
                   </StackPanel>
                 </StackPanel>
               </Border>
-            </StackPanel>
-          </ScrollViewer>
+                  </StackPanel>
+                </ScrollViewer>
+              </DataTemplate>
+            </editors:DeferredContentControl.DeferredTemplate>
+          </editors:DeferredContentControl>
 
           <!-- Quest giver and free conversation share the simple outline writer. -->
-          <Grid Grid.Row="0" ColumnDefinitions="310,*" IsVisible="{Binding IsOutlineBehavior}">
+          <editors:DeferredContentControl Grid.Row="0" DeferredContent="{Binding}"
+                                          IsContentActive="{Binding IsOutlineBehavior}"
+                                          IsVisible="{Binding IsOutlineBehavior}">
+            <editors:DeferredContentControl.DeferredTemplate>
+              <DataTemplate DataType="editors:ConversationEditorViewModel">
+                <Grid ColumnDefinitions="310,*">
             <Border Grid.Column="0" Background="{DynamicResource PanelBrush}"
                     BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0">
               <DockPanel>
@@ -356,11 +372,19 @@
                 </StackPanel>
               </StackPanel>
             </ScrollViewer>
-          </Grid>
+                </Grid>
+              </DataTemplate>
+            </editors:DeferredContentControl.DeferredTemplate>
+          </editors:DeferredContentControl>
 
           <!-- Plain-language checks and multiple outcomes. This opens only when requested. -->
-          <Border Grid.Row="1" Classes="section" Margin="12" MaxHeight="310"
-                  IsVisible="{Binding IsEditingRules}" BorderBrush="{DynamicResource AccentBorderBrush}">
+          <editors:DeferredContentControl Grid.Row="1" DeferredContent="{Binding}"
+                                          IsContentActive="{Binding IsEditingRules}"
+                                          IsVisible="{Binding IsEditingRules}">
+            <editors:DeferredContentControl.DeferredTemplate>
+              <DataTemplate DataType="editors:ConversationEditorViewModel">
+                <Border Classes="section" Margin="12" MaxHeight="310"
+                        BorderBrush="{DynamicResource AccentBorderBrush}">
             <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,*" ColumnSpacing="18">
               <Grid Grid.Row="0" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" Margin="0,0,0,9">
                 <TextBlock Grid.Column="0" Text="{Binding RulesTitle}" Classes="title" />
@@ -483,13 +507,20 @@
                 </StackPanel>
               </ScrollViewer>
             </Grid>
-          </Border>
-        </Grid>
+                </Border>
+              </DataTemplate>
+            </editors:DeferredContentControl.DeferredTemplate>
+          </editors:DeferredContentControl>
+            </Grid>
+          </DataTemplate>
+        </TabItem.ContentTemplate>
       </TabItem>
 
       <!-- Preview owns all pretend-player controls and never doubles as the writing surface. -->
-      <TabItem Header="Preview">
-        <DockPanel>
+      <TabItem Header="Preview" Content="{Binding}">
+        <TabItem.ContentTemplate>
+          <DataTemplate DataType="editors:ConversationEditorViewModel">
+            <DockPanel>
           <Border DockPanel.Dock="Top" Background="{DynamicResource PanelBrush}"
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="12,9">
             <StackPanel Spacing="7">
@@ -569,7 +600,9 @@
               </ItemsControl>
             </StackPanel>
           </ScrollViewer>
-        </DockPanel>
+            </DockPanel>
+          </DataTemplate>
+        </TabItem.ContentTemplate>
       </TabItem>
     </TabControl>
   </DockPanel>

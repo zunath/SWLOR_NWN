@@ -1,5 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
@@ -16,11 +18,9 @@ namespace SWLOR.Toolset.Tests
     /// than showing up as a grid of empty tiles.
     /// </summary>
     /// <remarks>
-    /// The floors asserted for placeables and doors are the measured coverage at the time this was
-    /// written, rounded down. They are regression guards, not targets: several thousand of the module's
-    /// placeables point at appearance rows that are blank in placeables.2da and legitimately have no
-    /// model to preview, so the interesting failure is coverage dropping, not coverage being short of
-    /// 100%.
+    /// Door coverage remains a measured regression floor because generic tileset doors legitimately
+    /// have no standalone model. Module-owned creature and placeable appearances are held to a stricter
+    /// standard: every requested model part must exist in the active base-game + HAK resource stack.
     /// <para>
     /// Note that a blueprint's appearance indexes placeables.2da by row <i>position</i>, not by the
     /// value printed in its first column - the two disagree in this corpus, where the labels run to
@@ -61,6 +61,7 @@ namespace SWLOR.Toolset.Tests
         {
             public required ResourceIndex Index { get; init; }
             public required ModuleWorkspace Workspace { get; init; }
+            public required TwoDaService TwoDa { get; init; }
             public required BaseItemIconService BaseItems { get; init; }
             public required PortraitService Portraits { get; init; }
             public required AppearanceService Appearances { get; init; }
@@ -87,6 +88,7 @@ namespace SWLOR.Toolset.Tests
                 {
                     Index = index,
                     Workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory, index),
+                    TwoDa = twoDa,
                     BaseItems = new BaseItemIconService(twoDa),
                     Portraits = new PortraitService(twoDa),
                     Appearances = new AppearanceService(twoDa, tlk),
@@ -132,7 +134,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void Every_Creature_Blueprint_Resolves_A_Portrait_Or_A_Model()
+        public void Every_Creature_Blueprint_Resolves_All_Requested_Model_Parts()
         {
             var unresolved = new List<string>();
 
@@ -140,44 +142,119 @@ namespace SWLOR.Toolset.Tests
             {
                 var root = Data.Workspace.LoadBlueprint(ResourceType.Utc, resRef).Fields;
 
-                if (ResolvesPortrait(root) || ResolvesModel(ResourceType.Utc, root))
-                    continue;
-
-                unresolved.Add(resRef);
+                var failure = ModelFailure(ResourceType.Utc, root, LoadItemBlueprint);
+                if (failure != null)
+                    unresolved.Add($"{resRef}: {failure}");
             }
 
             unresolved.Should().BeEmpty(
-                because: "creatures preview as their portrait, falling back to their model; " +
+                because: "a portrait must not conceal a broken creature appearance; " +
                          $"unresolved: {string.Join(", ", unresolved.Take(10))}");
         }
 
         /// <summary>
-        /// Placeables are the one type where "no preview" is common, so this guards both directions:
-        /// coverage must not fall, and the modelless residue must not grow.
+        /// Every module-owned placeable must be renderable. Placeholder rows and references to absent
+        /// MDLs produce invisible palette entries or area objects and are not valid appearances.
         /// </summary>
         /// <remarks>
-        /// A placeable that resolves no model becomes a palette tile that cannot draw itself. 2,911 of
-        /// the module's blueprints are in that state here: 2,899 name a blank placeables.2da row, and
-        /// the remaining dozen name a model file that is not shipped in any hak - which is why this
-        /// counts what <see cref="ResolvesModel"/> answers rather than what the 2DA says.
-        /// <para>
-        /// The ceiling is a ratchet against today's count, not a target: it exists so the number can
-        /// only shrink. <b>Retighten it when the placeable cleanup on the feature/combat-upgrade side
-        /// merges in</b> - that deletes the unreferenced ones and should leave only a handful.
-        /// </para>
+        /// The appearance is indexed by physical 2DA row and the row's model must also resolve through
+        /// the configured resource layers; a nonblank sentinel such as USER is therefore rejected.
         /// </remarks>
         [Test]
-        public void Placeable_Model_Coverage_Does_Not_Regress()
+        public void Every_Placeable_Blueprint_Resolves_Its_Model()
         {
             var resRefs = Data.Workspace.EnumerateResRefs(ResourceType.Utp).ToList();
-            var resolved = resRefs.Count(resRef => ResolvesModel(
-                ResourceType.Utp, Data.Workspace.LoadBlueprint(ResourceType.Utp, resRef).Fields));
+            var unresolved = resRefs
+                .Select(resRef => (ResRef: resRef, Failure: ModelFailure(
+                    ResourceType.Utp, Data.Workspace.LoadBlueprint(ResourceType.Utp, resRef).Fields)))
+                .Where(result => result.Failure != null)
+                .Select(result => $"{result.ResRef}: {result.Failure}")
+                .ToList();
 
-            resolved.Should().BeGreaterThanOrEqualTo(5440,
-                because: "5,444 placeables resolved a model when this was measured");
-            (resRefs.Count - resolved).Should().BeLessThanOrEqualTo(2915,
-                because: "2,911 placeables cannot draw themselves in the palette; that count should " +
-                         "only ever shrink");
+            resRefs.Should().NotBeEmpty();
+            unresolved.Should().BeEmpty(
+                because: $"every module placeable must render; unresolved: {string.Join(", ", unresolved.Take(10))}");
+        }
+
+        [Test]
+        public void Placed_Creatures_Placeables_And_Items_Resolve_Their_Appearances()
+        {
+            var failures = new List<string>();
+
+            foreach (var path in Directory.EnumerateFiles(
+                         Path.Combine(CorpusLocator.ModuleDirectory, "git"), "*.git.json"))
+            {
+                var root = JsonGffDocument.Load(path).Root;
+                var fileName = Path.GetFileName(path);
+
+                CheckPlacedModels(root, "Creature List", ResourceType.Utc, fileName, failures);
+                CheckPlacedModels(root, "Placeable List", ResourceType.Utp, fileName, failures);
+
+                foreach (var item in EnumerateStructs(root).Where(candidate =>
+                             candidate.Contains("BaseItem") && candidate.Contains("TemplateResRef")))
+                {
+                    var failure = ItemFailure(item);
+                    if (failure != null)
+                        failures.Add($"{fileName} item {item.GetStringOrNull("TemplateResRef")}: {failure}");
+                }
+            }
+
+            failures.Should().BeEmpty(
+                because: $"placed and embedded module assets must render; failures: {string.Join(", ", failures.Take(20))}");
+        }
+
+        [Test]
+        public void Module_Visual_References_Use_Valid_2Da_Rows_And_Artwork()
+        {
+            var failures = new List<string>();
+            var tailModels = Data.TwoDa.GetTable("tailmodel");
+            var wingModels = Data.TwoDa.GetTable("wingmodel");
+            var loadScreens = Data.TwoDa.GetTable("loadscreens");
+
+            foreach (var directoryName in new[] { "are", "git", "utc", "utp" })
+            {
+                var directory = Path.Combine(CorpusLocator.ModuleDirectory, directoryName);
+                foreach (var path in Directory.EnumerateFiles(directory, "*.json"))
+                {
+                    var fileName = Path.GetFileName(path);
+                    foreach (var item in EnumerateStructs(JsonGffDocument.Load(path).Root))
+                    {
+                        var portraitId = item.GetIntOrNull("PortraitId") ?? 0;
+                        if (portraitId > 0 && !ResolvesPortrait(item))
+                            failures.Add($"{fileName}: portrait {portraitId} has no artwork");
+
+                        CheckOptionalModelRow(item, "Tail_New", tailModels, fileName, failures);
+                        CheckOptionalModelRow(item, "Wings_New", wingModels, fileName, failures);
+
+                        var loadScreenId = item.GetIntOrNull("LoadScreenID") ?? 0;
+                        if (loadScreenId > 1)
+                        {
+                            var bitmap = loadScreens.GetString(loadScreenId, "BMPResRef");
+                            if (bitmap == null || !Data.HasTexture(bitmap))
+                                failures.Add($"{fileName}: load screen {loadScreenId} has no artwork");
+                        }
+                    }
+                }
+            }
+
+            failures.Should().BeEmpty(
+                because: $"optional visual references must resolve; failures: {string.Join(", ", failures.Take(20))}");
+        }
+
+        [Test]
+        public void Composite_Item_Blueprints_Resolve_Every_Model_Part()
+        {
+            var failures = new List<string>();
+
+            foreach (var resRef in Data.Workspace.EnumerateResRefs(ResourceType.Uti))
+            {
+                var failure = ItemFailure(Data.Workspace.LoadBlueprint(ResourceType.Uti, resRef).Fields);
+                if (failure != null)
+                    failures.Add($"{resRef}: {failure}");
+            }
+
+            failures.Should().BeEmpty(
+                because: $"item base types and composite model parts must resolve; failures: {string.Join(", ", failures.Take(20))}");
         }
 
         [Test]
@@ -224,6 +301,163 @@ namespace SWLOR.Toolset.Tests
             var variants = PortraitService.GetTgaVariants(row.BaseResRef);
             return Data.HasTexture(variants.Medium) || Data.HasTexture(variants.Large) ||
                    Data.HasTexture(variants.Small) || Data.HasTexture(variants.Huge);
+        }
+
+        private static void CheckPlacedModels(
+            JsonGffStruct root,
+            string listName,
+            ResourceType type,
+            string fileName,
+            ICollection<string> failures)
+        {
+            var elements = root.GetOrNull(listName)?.Elements;
+            if (elements == null)
+                return;
+
+            for (var index = 0; index < elements.Count; index++)
+            {
+                var element = elements[index];
+                JsonGffStruct? LoadPlacedItem(string resRef) =>
+                    element.GetOrNull("Equip_ItemList")?.Elements?
+                        .FirstOrDefault(item => string.Equals(
+                            item.GetStringOrNull("TemplateResRef"), resRef,
+                            StringComparison.OrdinalIgnoreCase))
+                    ?? LoadItemBlueprint(resRef);
+
+                var failure = ModelFailure(
+                    type, element, type == ResourceType.Utc ? LoadPlacedItem : null);
+                if (failure != null)
+                {
+                    failures.Add(
+                        $"{fileName} {listName}[{index}] ({element.GetStringOrNull("TemplateResRef")}): {failure}");
+                }
+            }
+        }
+
+        private static string? ModelFailure(
+            ResourceType type,
+            JsonGffStruct root,
+            Func<string, JsonGffStruct?>? itemBlueprintLoader = null)
+        {
+            var reference = BlueprintModelResolver.Resolve(
+                type,
+                root,
+                Data.Appearances,
+                Data.Placeables,
+                Data.Doors,
+                itemBlueprintLoader,
+                baseItems: Data.BaseItems.GetOrNull);
+
+            if (reference.Kind == BlueprintModelKind.None &&
+                type == ResourceType.Utc &&
+                reference.Status.EndsWith("segmented creature has no body parts.", StringComparison.Ordinal))
+            {
+                return null;
+            }
+
+            if (reference.Kind == BlueprintModelKind.None)
+                return reference.Status;
+
+            if (reference.Kind == BlueprintModelKind.Simple)
+            {
+                return Data.HasModel(reference.ModelResRef)
+                    ? null
+                    : $"missing model {reference.ModelResRef}.mdl";
+            }
+
+            if (reference.Kind == BlueprintModelKind.Segmented &&
+                !Data.HasModel(reference.SkeletonResRef))
+            {
+                return $"missing skeleton {reference.SkeletonResRef}.mdl";
+            }
+
+            var missing = reference.Parts
+                .Where(part => !Data.HasModel(part.ModelResRef))
+                .Select(part => $"{part.PartType}={part.ModelResRef}.mdl")
+                .ToList();
+            return missing.Count == 0 ? null : $"missing {string.Join(", ", missing)}";
+        }
+
+        private static string? ItemFailure(JsonGffStruct item)
+        {
+            var baseItem = item.GetIntOrNull("BaseItem") ?? -1;
+            var row = baseItem < 0 ? null : Data.BaseItems.GetOrNull(baseItem);
+            if (row == null)
+                return $"base item {baseItem} is reserved or missing";
+            if (row.ModelType != 2)
+                return null;
+
+            var reference = BlueprintModelResolver.Resolve(
+                ResourceType.Uti,
+                item,
+                Data.Appearances,
+                Data.Placeables,
+                Data.Doors,
+                baseItems: Data.BaseItems.GetOrNull);
+            if (!reference.Parts.Any(part => Data.HasModel(part.ModelResRef)))
+                return null;
+
+            var missing = reference.Parts
+                .Where(part => !Data.HasModel(part.ModelResRef))
+                .Select(part => part.ModelResRef + ".mdl")
+                .ToList();
+            return missing.Count == 0 ? null : $"missing {string.Join(", ", missing)}";
+        }
+
+        private static JsonGffStruct? LoadItemBlueprint(string resRef)
+        {
+            if (string.IsNullOrWhiteSpace(resRef))
+                return null;
+
+            try
+            {
+                return Data.Workspace.LoadBlueprint(ResourceType.Uti, resRef).Fields;
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
+            catch (KeyNotFoundException)
+            {
+                return null;
+            }
+        }
+
+        private static IEnumerable<JsonGffStruct> EnumerateStructs(JsonGffStruct root)
+        {
+            yield return root;
+
+            foreach (var (_, field) in root.Entries)
+            {
+                if (field.Struct != null)
+                {
+                    foreach (var nested in EnumerateStructs(field.Struct))
+                        yield return nested;
+                }
+
+                if (field.Elements == null)
+                    continue;
+
+                foreach (var element in field.Elements)
+                foreach (var nested in EnumerateStructs(element))
+                    yield return nested;
+            }
+        }
+
+        private static void CheckOptionalModelRow(
+            JsonGffStruct item,
+            string fieldName,
+            TwoDaTable table,
+            string fileName,
+            ICollection<string> failures)
+        {
+            var rowId = item.GetIntOrNull(fieldName) ?? 0;
+            if (rowId <= 0)
+                return;
+
+            var model = table.GetString(rowId, "MODEL");
+            if (model == null || !Data.HasModel(model))
+                failures.Add($"{fileName}: {fieldName} row {rowId} has no model");
         }
 
         /// <summary>

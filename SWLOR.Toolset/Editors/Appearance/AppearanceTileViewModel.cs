@@ -27,7 +27,11 @@ namespace SWLOR.Toolset.Editors.Appearance
         public string Glyph => Caption.Length > 0 ? Caption[..1].ToUpperInvariant() : "?";
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasPreview))]
         private Bitmap? _preview;
+
+        /// <summary>Whether the rendered picture should replace the temporary fallback glyph.</summary>
+        public bool HasPreview => Preview != null;
 
         /// <summary>
         /// Whether this tile has asked for its preview. The view sets this indirectly through

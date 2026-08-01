@@ -31344,7 +31344,7 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "Lockable": {
           "type": "byte",

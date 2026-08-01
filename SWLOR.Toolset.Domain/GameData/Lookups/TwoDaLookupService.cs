@@ -225,10 +225,11 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         /// <summary>
         /// appearance.2da - selectable creatures need the model classification and model/race
-        /// metadata used by the creature preview pipeline.
+        /// metadata used by the creature preview pipeline. NAME is not required: custom simple-model
+        /// rows commonly leave it blank and use LABEL for their builder-facing name.
         /// </summary>
         public static readonly TwoDaLookupTable CreatureAppearance =
-            new("appearance", "LABEL", "STRING_REF", ["NAME", "RACE", "MODELTYPE"]);
+            new("appearance", "LABEL", "STRING_REF", ["RACE", "MODELTYPE"]);
 
         /// <summary>waypoint.2da - a selectable marker needs a real model RESREF.</summary>
         public static readonly TwoDaLookupTable WaypointAppearance =

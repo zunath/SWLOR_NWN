@@ -219,11 +219,12 @@ namespace SWLOR.Toolset.Editors.Appearance
                             QueuePreviewRetry(tile);
                         }
                     },
+                    // A realized segmented row is a visible generic creature choice, not background
+                    // prefetch. Queue it with every other visible tile so the dynamic race models do
+                    // not remain behind placeholders while newer non-segmented work overtakes them.
                     tile.IsCurrent
                         ? AppearancePreviewPriority.Selected
-                        : tile.Option.IsSegmentedCreatureAppearance
-                            ? AppearancePreviewPriority.Deferred
-                            : AppearancePreviewPriority.Visible);
+                        : AppearancePreviewPriority.Visible);
                 if (!tile.PreviewRequested)
                     QueuePreviewRetry(tile);
                 return;

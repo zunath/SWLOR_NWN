@@ -6,8 +6,8 @@ using SWLOR.Toolset.Domain.Workspace;
 namespace SWLOR.Toolset.Domain.Validation
 {
     /// <summary>
-    /// Reports blueprints and placed instances whose <c>Conversation</c> names a dialog that does
-    /// not exist anywhere - not in the module, not in a hak, not in the base game.
+    /// Reports blueprints and placed instances whose <c>Conversation</c> names neither an authored
+    /// NUI graph nor an explicit legacy DLG available to the module.
     /// </summary>
     /// <remarks>
     /// The resource index is consulted before anything is reported, because several of these
@@ -89,11 +89,6 @@ namespace SWLOR.Toolset.Domain.Validation
     /// <summary>
     /// Reports hand-authored conversations that nothing points at, so nobody can ever hear them.
     /// </summary>
-    /// <remarks>
-    /// The 255 generated <c>dialogN</c> shells are skipped: the C# <c>Dialog</c> service assigns
-    /// them at runtime, so they are unreferenced by design and reporting them would bury the
-    /// handful of real findings under a wall of noise.
-    /// </remarks>
     public sealed class UnreferencedConversationRule : IValidationRule
     {
         public string RuleId => "UnreferencedConversation";
@@ -107,7 +102,7 @@ namespace SWLOR.Toolset.Domain.Validation
 
             foreach (var resRef in context.ResRefsFor(ResourceType.Dlg))
             {
-                if (IsGeneratedShell(resRef) || referenced.Contains(resRef))
+                if (referenced.Contains(resRef))
                     continue;
 
                 yield return new ValidationIssue(

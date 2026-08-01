@@ -40,6 +40,12 @@ namespace SWLOR.Toolset.Editors
                 viewModel.CommitMerchantCommand.Execute(null);
         }
 
+        private void OnMerchantStoreDropDownOpened(object? sender, EventArgs e)
+        {
+            if (DataContext is ConversationEditorViewModel viewModel)
+                _ = viewModel.LoadMerchantStoresAsync();
+        }
+
         private void OnAdvancedLostFocus(object? sender, RoutedEventArgs e)
         {
             if (DataContext is ConversationEditorViewModel viewModel)

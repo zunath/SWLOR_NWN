@@ -283,22 +283,21 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private int CountFor(ResourceType type)
         {
+            if (type == ResourceType.Dlg && _workspaceContext.Workspace is { } workspace)
+                return ConversationResRefs(workspace).Count;
+
             if (IsCatalogIndexed(type)
                 && _catalogByType != null
                 && _catalogByType.TryGetValue(type, out var entries))
             {
-                return type == ResourceType.Dlg
-                    ? entries.Count(entry => !UnreferencedConversationRule.IsGeneratedShell(entry.ResRef))
-                    : entries.Count;
+                return entries.Count;
             }
 
             var resRefs = _workspaceContext.Workspace?.EnumerateResRefs(type);
             if (resRefs == null)
                 return 0;
 
-            return type == ResourceType.Dlg
-                ? resRefs.Count(resRef => !UnreferencedConversationRule.IsGeneratedShell(resRef))
-                : resRefs.Count;
+            return resRefs.Count;
         }
 
         // ----- creating -----
@@ -339,8 +338,13 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            var path = workspace.GetResourcePath(SelectedType, resRef);
-            if (File.Exists(path))
+            var path = SelectedType == ResourceType.Dlg
+                ? workspace.GetConversationGraphPath(resRef)
+                : workspace.GetResourcePath(SelectedType, resRef);
+            var alreadyExists = File.Exists(path) ||
+                                (SelectedType == ResourceType.Dlg &&
+                                 File.Exists(workspace.GetResourcePath(ResourceType.Dlg, resRef)));
+            if (alreadyExists)
             {
                 StatusMessage = $"'{resRef}' already exists.";
                 return;
@@ -367,8 +371,11 @@ namespace SWLOR.Toolset.Shell.Panels
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
                 SaveService.WriteNewAtomic(
-                    path, ModuleResourceTemplateFactory.CreateFileContent(
-                        SelectedType, resRef, name.Trim(), scriptTemplateId));
+                    path,
+                    SelectedType == ResourceType.Dlg
+                        ? ConversationGraphTemplateFactory.CreateFileContent(resRef, name.Trim())
+                        : ModuleResourceTemplateFactory.CreateFileContent(
+                            SelectedType, resRef, name.Trim(), scriptTemplateId));
             }
             catch (Exception ex)
             {
@@ -818,6 +825,8 @@ namespace SWLOR.Toolset.Shell.Panels
                         // turns "read the corpus on every keystroke" into "read it once typing pauses".
                         await Task.Delay(DialogueSearchDebounce, token).ConfigureAwait(false);
 
+                        var graphDirectory = _workspaceContext.Workspace?.ConversationDataRoot;
+                        var openGraphs = _editorService?.Invoke().SnapshotOpenNuiConversationGraphs();
                         var matching = DialogueSearch
                             .Search(
                                 Path.Combine(moduleRoot, "dlg"),
@@ -826,6 +835,11 @@ namespace SWLOR.Toolset.Shell.Panels
                                 openDocument: resRef =>
                                     openDialogs != null && openDialogs.TryGetValue(resRef, out var open)
                                         ? open
+                                        : null,
+                                conversationGraphDirectory: graphDirectory,
+                                openGraph: resRef =>
+                                    openGraphs != null && openGraphs.TryGetValue(resRef, out var graph)
+                                        ? graph
                                         : null)
                             .Select(hit => hit.ResRef)
                             .ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -889,15 +903,6 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private IReadOnlyList<ExplorerItem> Filtered(IReadOnlyList<ExplorerItem> items)
         {
-            // The 255 numbered shells are generated for the C# Dialog service's runtime menus. None
-            // is editable here, so they are not authoring content and never belong in this tree.
-            if (SelectedType == ResourceType.Dlg)
-            {
-                items = items
-                    .Where(item => !UnreferencedConversationRule.IsGeneratedShell(item.ResRef))
-                    .ToList();
-            }
-
             if (string.IsNullOrWhiteSpace(Filter))
                 return items;
 
@@ -1057,6 +1062,13 @@ namespace SWLOR.Toolset.Shell.Panels
             if (workspace == null)
                 return Array.Empty<ExplorerItem>();
 
+            if (type == ResourceType.Dlg)
+            {
+                return ConversationResRefs(workspace)
+                    .Select(resRef => new ExplorerItem(resRef, null, null))
+                    .ToList();
+            }
+
             if (IsCatalogIndexed(type) &&
                 _catalogByType != null &&
                 _catalogByType.TryGetValue(type, out var entries))
@@ -1068,6 +1080,17 @@ namespace SWLOR.Toolset.Shell.Panels
                 .Select(resRef => new ExplorerItem(resRef, null, null))
                 .ToList();
         }
+
+        /// <summary>
+        /// Graph-native conversations and explicit legacy exceptions share the Dialogs explorer tab.
+        /// A graph wins a duplicate resref.
+        /// </summary>
+        private static IReadOnlyList<string> ConversationResRefs(ModuleWorkspace workspace) =>
+            workspace.EnumerateConversationGraphResRefs()
+                .Concat(workspace.EnumerateResRefs(ResourceType.Dlg))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(resRef => resRef, StringComparer.OrdinalIgnoreCase)
+                .ToList();
 
         /// <summary>
         /// Whether the background catalog indexes this type at all.

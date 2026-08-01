@@ -1,10 +1,10 @@
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 
 namespace SWLOR.Toolset.Domain.GameData.GameCode
 {
     /// <summary>
     /// Lists the conversations a placeable's <c>CONVERSATION</c> local can name: the concrete
-    /// subclasses of <c>DialogBase</c> in SWLOR.Game.Server.
+    /// subclasses of <c>ConversationMenuDefinition</c> in SWLOR.Game.Server.
     /// </summary>
     /// <remarks>
     /// The variable holds a class name, which nothing validates today - 23 uses across the module
@@ -23,9 +23,9 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
 
             try
             {
-                foreach (var type in typeof(DialogBase).Assembly.GetTypes())
+                foreach (var type in typeof(ConversationMenuDefinition).Assembly.GetTypes())
                 {
-                    if (type.IsAbstract || !typeof(DialogBase).IsAssignableFrom(type))
+                    if (type.IsAbstract || !typeof(ConversationMenuDefinition).IsAssignableFrom(type))
                         continue;
 
                     names.Add(type.Name);

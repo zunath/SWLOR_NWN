@@ -89,6 +89,43 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task OpeningAMerchantDoesNotScanPlacedStores()
+        {
+            var document = DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
+                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+            var choice = document.AddReply("Show me your stock.");
+            choice.AddAction("action-open-store").Value = "authored_store";
+            document.AddLink(document.Openings[0].Target, choice);
+            File.WriteAllBytes(_workingCopy, document.ToBytes());
+
+            var resolverCalls = 0;
+            using var editor = new Disposable(new ConversationEditorViewModel(
+                _workingCopy,
+                "test_convo",
+                Snippets,
+                GameCode,
+                new OutputLogService(),
+                new StubPrompts(),
+                _ =>
+                {
+                    Interlocked.Increment(ref resolverCalls);
+                    Thread.Sleep(250);
+                    return new[] { "authored_store", "other_store" };
+                }));
+
+            resolverCalls.Should().Be(0,
+                "opening a dialogue must not synchronously scan every placed store in the module");
+            editor.Value.SelectedMerchantStore!.Value.Should().Be("authored_store",
+                "the saved value remains visible before the optional list is loaded");
+
+            await editor.Value.LoadMerchantStoresAsync();
+
+            resolverCalls.Should().Be(1);
+            editor.Value.MerchantStores.Select(store => store.Value)
+                .Should().Contain(new[] { "authored_store", "other_store" });
+        }
+
+        [Test]
         public void TheCoverageStripListsBothQuests()
         {
             using var editor = new Disposable(Open());
@@ -346,6 +383,34 @@ namespace SWLOR.Toolset.Tests
             editor.Value.Choices.Should().HaveCount(before + 1);
             editor.Value.Choices.Last().Text.Should().Be("End conversation",
                 "the NWN placeholder is never exposed as player-facing authoring text");
+        }
+
+        [Test]
+        public void MovingAChoiceChangesItsDisplayOrderAndCanBeUndone()
+        {
+            using var editor = new Disposable(Open());
+            foreach (var situation in editor.Value.Situations.ToList())
+            {
+                editor.Value.SelectSituationCommand.Execute(situation);
+                if (editor.Value.Choices.Count >= 2)
+                    break;
+            }
+
+            editor.Value.Choices.Should().HaveCountGreaterThanOrEqualTo(2);
+            var before = editor.Value.Choices.Select(choice => choice.Text).ToList();
+            var first = editor.Value.Choices[0];
+
+            first.CanMoveUp.Should().BeFalse();
+            first.CanMoveDown.Should().BeTrue();
+            editor.Value.MoveChoiceDownCommand.Execute(first);
+
+            editor.Value.Choices.Select(choice => choice.Text).Take(2).Should()
+                .Equal(before[1], before[0]);
+            editor.Value.IsDirty.Should().BeTrue();
+
+            editor.Value.UndoCommand.Execute(null);
+
+            editor.Value.Choices.Select(choice => choice.Text).Should().Equal(before);
         }
 
         [Test]

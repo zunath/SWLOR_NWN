@@ -19,13 +19,12 @@ public class DialogPrivacyTests
     }
 
     [Test]
-    public void DynamicNpcDialogs_ForcePrivateConversations()
+    public void NuiNpcConversations_ForcePrivateConversations()
     {
-        var source = ReadSource("SWLOR.Game.Server", "Service", "Dialog.cs").Replace("\r\n", "\n");
+        var source = ReadSource("SWLOR.Game.Server", "Service", "Conversation.cs").Replace("\r\n", "\n");
         var scriptNames = ReadSource("SWLOR.Game.Server", "Core", "ScriptName.cs");
         var defaultConversationScript = ReadSource("Module", "nss", "nw_c2_default4.nss");
-        var makeStartingCreatureConversationPrivate = ExtractMethod(source, "public static void MakeStartingCreatureConversationPrivate()");
-        var startConversation = ExtractMethod(source, "public static void StartConversation(uint player, uint talkTo, string @class)");
+        var startAssigned = ExtractMethod(source, "public static void StartAssignedCreatureConversation()");
         var makeCreatureConversationPrivate = ExtractMethod(source, "private static void MakeCreatureConversationPrivate(uint creature)");
 
         scriptNames.Should().Contain("public const string OnCreatureConversationBefore = \"crea_convo_bef\";");
@@ -33,13 +32,11 @@ public class DialogPrivacyTests
         defaultConversationScript.IndexOf("ExecuteScript(\"crea_convo_bef\", OBJECT_SELF);", StringComparison.Ordinal)
             .Should()
             .BeLessThan(defaultConversationScript.IndexOf("BeginConversation();", StringComparison.Ordinal));
-        source.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureConversationBefore)]\n        public static void MakeStartingCreatureConversationPrivate()");
-        makeStartingCreatureConversationPrivate.Should().Contain("MakeCreatureConversationPrivate(OBJECT_SELF);");
-
-        startConversation.Should().Contain("MakeCreatureConversationPrivate(talkTo);");
-        startConversation.IndexOf("MakeCreatureConversationPrivate(talkTo);", StringComparison.Ordinal)
+        source.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureConversationBefore)]\n        public static void StartAssignedCreatureConversation()");
+        startAssigned.Should().Contain("MakeCreatureConversationPrivate(OBJECT_SELF);");
+        startAssigned.IndexOf("MakeCreatureConversationPrivate(OBJECT_SELF);", StringComparison.Ordinal)
             .Should()
-            .BeLessThan(startConversation.IndexOf("BeginConversation(\"dialog\" + dialog.DialogNumber);", StringComparison.Ordinal));
+            .BeLessThan(startAssigned.IndexOf("TryStartAssigned(player, OBJECT_SELF)", StringComparison.Ordinal));
 
         makeCreatureConversationPrivate.Should().Contain("GetIsPC(creature)");
         makeCreatureConversationPrivate.Should().Contain("GetIsDM(creature)");
@@ -48,14 +45,18 @@ public class DialogPrivacyTests
     }
 
     [Test]
-    public void DynamicDialogTokens_ArePlayerSpecific()
+    public void CodeDrivenNuiConversations_DoNotUseCustomTokenSlotsOrGeneratedShells()
     {
-        var source = ReadSource("SWLOR.Game.Server", "Service", "Dialog.cs");
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "ConversationService",
+            "ConversationMenuSession.cs");
 
-        source.Should().Contain("PlayerPlugin.SetCustomToken(player, 90000 + dialogOffset, newNodeText);");
-        source.Should().Contain("PlayerPlugin.SetCustomToken(player, 90001 + nodeId + dialogOffset, newNodeText);");
-        source.Should().NotContain("SetCustomToken(90000 + dialogOffset");
-        source.Should().NotContain("SetCustomToken(90001 + nodeId + dialogOffset");
+        source.Should().NotContain("SetCustomToken");
+        source.Should().NotContain("BeginConversation");
+        source.Should().NotContain("dialogOffset");
+        source.Should().Contain("NUI scrolls it");
     }
 
     [Test]

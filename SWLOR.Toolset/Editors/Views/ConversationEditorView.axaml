@@ -151,6 +151,7 @@
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Store" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding MerchantStores}"
                               SelectedItem="{Binding SelectedMerchantStore, Mode=TwoWay}"
+                              DropDownOpened="OnMerchantStoreDropDownOpened"
                               LostFocus="OnMerchantLostFocus" />
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Player choice" VerticalAlignment="Center" />
                     <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding MerchantChoiceText, Mode=TwoWay}"
@@ -305,16 +306,27 @@
                     <ItemsControl.ItemTemplate>
                       <DataTemplate DataType="editors:ChoiceRowViewModel">
                         <Border Classes="choice" Margin="0,0,0,7">
-                          <Grid ColumnDefinitions="24,*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="7">
+                          <Grid ColumnDefinitions="24,*,Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="7">
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Number}" Classes="mono"
                                        VerticalAlignment="Center" />
                             <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding AuthoringText, Mode=OneWay}"
                                      Tag="{Binding}" LostFocus="OnChoiceLostFocus"
                                      Watermark="What can the player say?" />
-                            <Button Grid.Row="0" Grid.Column="2" Content="Remove" Classes="link"
+                            <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" Spacing="2"
+                                        IsVisible="{Binding HasSiblings}">
+                              <Button Content="↑" Classes="link" ToolTip.Tip="Show this choice earlier"
+                                      IsEnabled="{Binding CanMoveUp}"
+                                      Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).MoveChoiceUpCommand}"
+                                      CommandParameter="{Binding}" />
+                              <Button Content="↓" Classes="link" ToolTip.Tip="Show this choice later"
+                                      IsEnabled="{Binding CanMoveDown}"
+                                      Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).MoveChoiceDownCommand}"
+                                      CommandParameter="{Binding}" />
+                            </StackPanel>
+                            <Button Grid.Row="0" Grid.Column="3" Content="Remove" Classes="link"
                                     Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).RemoveChoiceCommand}"
                                     CommandParameter="{Binding}" />
-                            <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                            <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
                                         Orientation="Horizontal" Spacing="10" Margin="0,4,0,0">
                               <TextBlock Text="{Binding Consequence}" Classes="dim" VerticalAlignment="Center" />
                               <Button Content="When shown / Also do…" Classes="link"

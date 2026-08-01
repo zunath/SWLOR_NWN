@@ -1,12 +1,12 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class PlaceCityHallDialog: DialogBase
+    public class PlaceCityHallDialog: ConversationMenuDefinition
     {
         private class Model
         {
@@ -20,9 +20,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private const string MainPageId = "MAIN_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialize)
                 .AddPage(MainPageId, MainPageInit);
@@ -32,8 +32,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private void Initialize()
         {
-            var player = GetPC();
-            var model = GetDataModel<Model>();
+            var player = Player;
+            var model = Data<Model>();
             model.Item = GetLocalObject(player, "PROPERTY_CITY_HALL_ITEM");
             model.X = GetLocalFloat(player, "PROPERTY_CITY_HALL_X");
             model.Y = GetLocalFloat(player, "PROPERTY_CITY_HALL_Y");
@@ -44,14 +44,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             DeleteLocalFloat(player, "PROPERTY_CITY_HALL_Z");
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
+            var player = Player;
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var area = GetArea(player);
             var propertyId = Property.GetPropertyId(area);
-            var model = GetDataModel<Model>();
+            var model = Data<Model>();
 
             if (!string.IsNullOrWhiteSpace(dbPlayer.CitizenPropertyId))
             {
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                         Property.CreateCity(player, area, model.Item, location);
 
-                        EndConversation();
+                        Close();
                     });
                 }
                 else

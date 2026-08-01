@@ -455,7 +455,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            Dialog.StartConversation(Player, Player, nameof(HoloComDialog));
+            ConversationMenu.Start(Player, Player, nameof(HoloComDialog));
         };
 
         public Action OnClickKeyItems() => () =>

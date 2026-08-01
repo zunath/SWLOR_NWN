@@ -88,6 +88,22 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void MovingAChoiceReordersOnlyItsParentsLinks()
+        {
+            var document = LoadDantHerbs();
+            var parent = document.Entries.First(entry => entry.Links.Count >= 2);
+            var before = parent.Links.Select(link => link.Target.Text).ToList();
+            var moved = parent.Links[0];
+
+            document.MoveLink(moved, parent.Links.Count - 1);
+
+            parent.Links.Select(link => link.Target.Text).Should()
+                .Equal(before.Skip(1).Append(before[0]));
+            parent.Links.Select(link => link.Struct.StructId).Should()
+                .Equal(Enumerable.Range(0, before.Count).Select(index => (uint?)index));
+        }
+
+        [Test]
         public void ALineCanOnlyLeadToTheOtherKindOfLine()
         {
             var document = LoadDantHerbs();

@@ -79,6 +79,46 @@ namespace SWLOR.Toolset.Domain.Workspace
         public string GetResourcePath(ResourceType type, string resRef) =>
             Path.Combine(GetResourceFolder(type), resRef + FileSuffix(type));
 
+        /// <summary>
+        /// The server-owned NUI conversation directory beside the unpacked Module directory.
+        /// Conversations are source data embedded into SWLOR.Game.Server at build time, not Aurora
+        /// DLG resources stored under Module/dlg.
+        /// </summary>
+        public string ConversationDataRoot => Path.GetFullPath(Path.Combine(
+            ModuleRoot,
+            "..",
+            "SWLOR.Game.Server",
+            "ConversationData"));
+
+        /// <summary>The authored graph path for one conversation resref.</summary>
+        public string GetConversationGraphPath(string resRef)
+        {
+            if (string.IsNullOrWhiteSpace(resRef))
+                throw new ArgumentException("ResRef must be provided.", nameof(resRef));
+
+            return Path.Combine(ConversationDataRoot, resRef + ".conversation.json");
+        }
+
+        /// <summary>
+        /// Enumerates graph-native conversations without parsing them. A malformed graph remains
+        /// visible in Module Contents so the builder can open it and see the error.
+        /// </summary>
+        public IReadOnlyList<string> EnumerateConversationGraphResRefs()
+        {
+            if (!Directory.Exists(ConversationDataRoot))
+                return Array.Empty<string>();
+
+            const string suffix = ".conversation.json";
+            var results = Directory.EnumerateFiles(ConversationDataRoot, "*" + suffix)
+                .Select(Path.GetFileName)
+                .Where(fileName => fileName != null && fileName.Length > suffix.Length)
+                .Select(fileName => fileName![..^suffix.Length])
+                .OrderBy(resRef => resRef, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            return results;
+        }
+
         /// <summary>The filename suffix a resource of this type carries, leading dot included.</summary>
         private static string FileSuffix(ResourceType type) =>
             type.IsJsonEncoded() ? "." + type.Extension() + ".json" : "." + type.Extension();

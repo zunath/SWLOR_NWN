@@ -1,4 +1,6 @@
 using SWLOR.Toolset.Domain.Documents;
+using Newtonsoft.Json;
+using SWLOR.Game.Server.Service.ConversationService;
 
 namespace SWLOR.Toolset.Domain.Conversations
 {
@@ -53,45 +55,56 @@ namespace SWLOR.Toolset.Domain.Conversations
         /// back to <see cref="DlgDocument.Load"/>. Wired from an open-editors registry such as
         /// <c>EditorService</c>'s conversation tab map.
         /// </param>
+        /// <param name="conversationGraphDirectory">
+        /// The server's graph-native <c>ConversationData</c> directory. When a graph and legacy DLG
+        /// share a resref, the graph is authoritative and the stale migration source is not searched.
+        /// </param>
+        /// <param name="openGraph">
+        /// A deep snapshot of an open graph-native editor, when available, so unsaved text participates
+        /// in search without exposing a mutable UI-owned graph to the worker thread.
+        /// </param>
         public static IReadOnlyList<DialogueHit> Search(
             string dialogDirectory,
             string query,
             int limit = 300,
             CancellationToken cancellationToken = default,
-            Func<string, DlgDocument?>? openDocument = null)
+            Func<string, DlgDocument?>? openDocument = null,
+            string? conversationGraphDirectory = null,
+            Func<string, ConversationGraph?>? openGraph = null)
         {
             var hits = new List<DialogueHit>();
-            if (string.IsNullOrWhiteSpace(query) || !Directory.Exists(dialogDirectory))
+            if (string.IsNullOrWhiteSpace(query))
                 return hits;
 
-            var files = Directory.EnumerateFiles(dialogDirectory, "*.json")
-                .OrderBy(path => path, StringComparer.OrdinalIgnoreCase);
+            var graphs = ConversationFiles(
+                conversationGraphDirectory,
+                ".conversation.json");
+            var dialogs = ConversationFiles(dialogDirectory, ".dlg.json");
+            var resRefs = graphs.Keys.Concat(dialogs.Keys)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(resRef => resRef, StringComparer.OrdinalIgnoreCase);
 
             var matchedConversations = 0;
-            foreach (var path in files)
+            foreach (var resRef in resRefs)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 if (matchedConversations >= limit)
                     break;
 
-                var resRef = Path.GetFileName(path).Replace(".dlg.json", string.Empty, StringComparison.OrdinalIgnoreCase);
-
-                var document = openDocument?.Invoke(resRef);
-                if (document == null)
+                DialogueHit? hit;
+                if (graphs.TryGetValue(resRef, out var graphPath))
                 {
-                    try
-                    {
-                        document = DlgDocument.Load(path);
-                    }
-                    catch (Exception)
-                    {
-                        // One unreadable conversation must not stop the search over the other 608.
-                        continue;
-                    }
+                    var graph = openGraph?.Invoke(resRef) ?? TryLoadGraph(graphPath);
+                    hit = graph == null ? null : FindFirstMatch(graph, resRef, query);
+                }
+                else
+                {
+                    var document = openDocument?.Invoke(resRef) ?? TryLoadDialog(dialogs[resRef]);
+                    hit = document == null ? null : FindFirstMatch(document, resRef, query);
                 }
 
-                if (FindFirstMatch(document, resRef, query) is { } hit)
+                if (hit != null)
                 {
                     hits.Add(hit);
                     matchedConversations++;
@@ -99,6 +112,47 @@ namespace SWLOR.Toolset.Domain.Conversations
             }
 
             return hits;
+        }
+
+        private static IReadOnlyDictionary<string, string> ConversationFiles(
+            string? directory,
+            string suffix)
+        {
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+                return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            return Directory.EnumerateFiles(directory, "*" + suffix)
+                .ToDictionary(
+                    path => Path.GetFileName(path)[..^suffix.Length],
+                    path => path,
+                    StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static ConversationGraph? TryLoadGraph(string path)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(path));
+            }
+            catch (Exception)
+            {
+                // A malformed graph remains visible in Module Contents, but it must not prevent a
+                // search across every other authored conversation.
+                return null;
+            }
+        }
+
+        private static DlgDocument? TryLoadDialog(string path)
+        {
+            try
+            {
+                return DlgDocument.Load(path);
+            }
+            catch (Exception)
+            {
+                // One unreadable legacy exception must not stop the rest of the corpus.
+                return null;
+            }
         }
 
         /// <summary>
@@ -120,6 +174,40 @@ namespace SWLOR.Toolset.Domain.Conversations
 
                     return new DialogueHit(resRef, kind, i, text);
                 }
+            }
+
+            return null;
+        }
+
+        private static DialogueHit? FindFirstMatch(
+            ConversationGraph graph,
+            string resRef,
+            string query)
+        {
+            var index = 0;
+            foreach (var node in graph.Nodes.Values)
+            {
+                var text = string.Concat(node.Text.Select(block => block.Text));
+                if (!string.IsNullOrEmpty(text) &&
+                    text.Contains(query, StringComparison.OrdinalIgnoreCase))
+                {
+                    return new DialogueHit(resRef, DlgNodeKind.Entry, index, text);
+                }
+
+                index++;
+            }
+
+            index = 0;
+            foreach (var choice in graph.Choices.Values)
+            {
+                var text = choice.Text?.Text ?? string.Empty;
+                if (!string.IsNullOrEmpty(text) &&
+                    text.Contains(query, StringComparison.OrdinalIgnoreCase))
+                {
+                    return new DialogueHit(resRef, DlgNodeKind.Reply, index, text);
+                }
+
+                index++;
             }
 
             return null;

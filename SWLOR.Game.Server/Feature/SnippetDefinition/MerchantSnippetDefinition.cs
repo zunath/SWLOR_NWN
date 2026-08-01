@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                 .ActionsTakenAction((player, args) =>
                 {
 
-                    var npc = OBJECT_SELF;
+                    var npc = Snippet.GetExecutionOwner();
                     var store = GetNearestObject(ObjectType.Store, npc);
                     if (args.Length > 0)
                     {

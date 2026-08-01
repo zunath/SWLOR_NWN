@@ -155,6 +155,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, ScriptEditorViewModel> _openScriptEditors = new(StringComparer.OrdinalIgnoreCase);
 
         private readonly Dictionary<string, ConversationEditorViewModel> _openConversations = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, NuiConversationEditorViewModel> _openNuiConversations = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Deep, independent snapshots of every open conversation editor's live document, keyed by
@@ -175,6 +176,20 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openConversations.Values)
                 documents[editor.ResRef] = DlgDocument.Parse(editor.LiveDialog.ToBytes());
             return documents;
+        }
+
+        /// <summary>
+        /// Independent snapshots of open graph-native conversations for the background text search.
+        /// The worker never observes a graph while the editor is mutating its ordered collections.
+        /// </summary>
+        public IReadOnlyDictionary<string, SWLOR.Game.Server.Service.ConversationService.ConversationGraph>
+            SnapshotOpenNuiConversationGraphs()
+        {
+            var graphs = new Dictionary<string, SWLOR.Game.Server.Service.ConversationService.ConversationGraph>(
+                StringComparer.OrdinalIgnoreCase);
+            foreach (var editor in _openNuiConversations.Values)
+                graphs[editor.ResRef] = editor.SnapshotGraph();
+            return graphs;
         }
 
         /// <summary>
@@ -1086,7 +1101,10 @@ namespace SWLOR.Toolset.Editors
                    || _openSoundEditors.ContainsKey(path)
                    || _openItemEditors.ContainsKey(path)
                    || _openMerchantEditors.ContainsKey(path)
-                   || _openConversations.ContainsKey(path);
+                   || _openConversations.ContainsKey(path)
+                   || (type == ResourceType.Dlg &&
+                       _openNuiConversations.Values.Any(editor =>
+                           editor.ResRef.Equals(resRef, StringComparison.OrdinalIgnoreCase)));
         }
 
         /// <summary>
@@ -1161,6 +1179,12 @@ namespace SWLOR.Toolset.Editors
                     return false;
             }
 
+            foreach (var editor in _openNuiConversations.Values.ToList())
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
             return await SaveScriptsAsync().ConfigureAwait(true);
         }
 
@@ -1197,7 +1221,8 @@ namespace SWLOR.Toolset.Editors
                 !_openMerchantEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openAreaEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openScriptEditors.Values.Any(editor => editor.IsDirty || editor.HasPendingCompileFailure) &&
-                !_openConversations.Values.Any(editor => editor.IsDirty))
+                !_openConversations.Values.Any(editor => editor.IsDirty) &&
+                !_openNuiConversations.Values.Any(editor => editor.IsDirty))
                 return true;
 
             var choice = await _prompts.ConfirmCloseAsync("all open editors").ConfigureAwait(true);
@@ -1230,6 +1255,8 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openScriptEditors.Values)
                 editor.ApproveApplicationClose();
             foreach (var editor in _openConversations.Values)
+                editor.ApproveApplicationClose();
+            foreach (var editor in _openNuiConversations.Values)
                 editor.ApproveApplicationClose();
 
             return true;
@@ -2749,18 +2776,38 @@ namespace SWLOR.Toolset.Editors
             };
         }
 
-        /// <summary>
-        /// Conversations open in the Play-it editor. The 255 <c>dialogN</c> shells are refused: they
-        /// are generated for the C# <c>Dialog</c> service's runtime menus and editing one by hand
-        /// would be edited back over on the next generation.
-        /// </summary>
+        /// <summary>Conversations open graph-first, with legacy DLG limited to explicit exceptions.</summary>
         private void OpenConversationEditor(Domain.Workspace.ModuleWorkspace workspace, string resRef)
         {
-            if (Domain.Validation.UnreferencedConversationRule.IsGeneratedShell(resRef))
+            var graphPath = workspace.GetConversationGraphPath(resRef);
+            if (File.Exists(graphPath))
             {
-                _log.AppendLine(
-                    $"'{resRef}' is one of the 255 conversation shells the C# Dialog service generates, "
-                    + "not hand-authored content. Open the C# dialog class instead.");
+                if (_openNuiConversations.TryGetValue(graphPath, out var openGraph))
+                {
+                    _factory.ActivateDocument(openGraph);
+                    return;
+                }
+
+                try
+                {
+                    _snippets ??= SnippetCatalog.Build();
+                    var graphEditor = new NuiConversationEditorViewModel(
+                        graphPath,
+                        resRef,
+                        _snippets,
+                        _gameCodeIndex,
+                        _log,
+                        _prompts,
+                        extension => TagsFor(extension));
+                    graphEditor.Closed += _ => _openNuiConversations.Remove(graphPath);
+                    graphEditor.CloseRequested += _ => _factory.CloseDocument(graphEditor);
+                    _openNuiConversations[graphPath] = graphEditor;
+                    _factory.OpenDocument(graphEditor);
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine($"Failed to open NUI conversation {resRef}: {ex.Message}");
+                }
                 return;
             }
 

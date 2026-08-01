@@ -30,6 +30,7 @@ namespace SWLOR.Toolset.Editors
         private readonly ConversationAnalyzer _analyzer;
         private readonly SnippetCatalog _snippets;
         private readonly SnippetArgumentOptions _argumentOptions;
+        private readonly SnippetArgument? _merchantStoreArgument;
         private readonly IGameCodeIndex? _gameCode;
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
@@ -86,6 +87,9 @@ namespace SWLOR.Toolset.Editors
 
         [ObservableProperty]
         private ArgumentOption? _selectedMerchantStore;
+
+        private bool _merchantStoresLoading;
+        private bool _merchantStoresLoaded;
 
         [ObservableProperty]
         private bool _showAdvanced;
@@ -337,12 +341,7 @@ namespace SWLOR.Toolset.Editors
 
             MerchantStores.Add(new ArgumentOption(string.Empty, "Nearest store"));
             var storeSnippet = snippets.Find("action-open-store");
-            var storeArgument = storeSnippet?.Arguments.FirstOrDefault();
-            if (storeArgument != null)
-            {
-                foreach (var option in _argumentOptions.For(storeArgument, Array.Empty<string>()))
-                    MerchantStores.Add(option);
-            }
+            _merchantStoreArgument = storeSnippet?.Arguments.FirstOrDefault();
 
             if (gameCode != null)
             {
@@ -468,8 +467,15 @@ namespace SWLOR.Toolset.Editors
                 var store = FindStoreChoice();
                 MerchantChoiceText = store == null ? string.Empty : EditableText(store.Value.Reply.Text);
                 var tag = store?.Action.Arguments.FirstOrDefault() ?? string.Empty;
-                SelectedMerchantStore = MerchantStores.FirstOrDefault(option => option.Value == tag)
-                                        ?? new ArgumentOption(tag, tag);
+                var selected = MerchantStores.FirstOrDefault(option => option.Value == tag);
+                if (selected == null)
+                {
+                    selected = new ArgumentOption(tag, tag);
+                    if (!string.IsNullOrWhiteSpace(tag))
+                        MerchantStores.Add(selected);
+                }
+
+                SelectedMerchantStore = selected;
             }
             finally
             {
@@ -477,6 +483,49 @@ namespace SWLOR.Toolset.Editors
             }
 
             OnPropertyChanged(nameof(MerchantRequiredOutcome));
+        }
+
+        /// <summary>
+        /// Loads placed store tags only when the builder opens the picker. Resolving them scans every
+        /// area's GIT (hundreds of megabytes in SWLOR), so doing it in the constructor made every
+        /// dialogue tab wait for merchant data it usually never uses.
+        /// </summary>
+        public async Task LoadMerchantStoresAsync()
+        {
+            if (_merchantStoresLoaded || _merchantStoresLoading || _merchantStoreArgument == null)
+                return;
+
+            _merchantStoresLoading = true;
+            try
+            {
+                var options = await Task.Run(() =>
+                    _argumentOptions.For(_merchantStoreArgument, Array.Empty<string>())).ConfigureAwait(true);
+                if (_disposed)
+                    return;
+
+                var selectedValue = SelectedMerchantStore?.Value ?? string.Empty;
+                foreach (var option in options)
+                {
+                    if (MerchantStores.All(existing =>
+                            !existing.Value.Equals(option.Value, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        MerchantStores.Add(option);
+                    }
+                }
+
+                SelectedMerchantStore = MerchantStores.FirstOrDefault(option =>
+                                            option.Value.Equals(selectedValue, StringComparison.OrdinalIgnoreCase))
+                                        ?? SelectedMerchantStore;
+                _merchantStoresLoaded = true;
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not load store choices for {_resRef}: {ex.Message}");
+            }
+            finally
+            {
+                _merchantStoresLoading = false;
+            }
         }
 
         private void RefreshAdvancedFields()
@@ -858,6 +907,26 @@ namespace SWLOR.Toolset.Editors
                 var reply = _dialog.AddReply(QuestConversationScaffold.Placeholder);
                 _dialog.AddLink(parent, reply);
             });
+        }
+
+        [RelayCommand]
+        private void MoveChoiceUp(ChoiceRowViewModel? choice)
+        {
+            if (choice == null || !choice.CanMoveUp)
+                return;
+
+            RunEdit("Move a player choice up", () =>
+                _dialog.MoveLink(choice.Link, choice.Order - 2));
+        }
+
+        [RelayCommand]
+        private void MoveChoiceDown(ChoiceRowViewModel? choice)
+        {
+            if (choice == null || !choice.CanMoveDown)
+                return;
+
+            RunEdit("Move a player choice down", () =>
+                _dialog.MoveLink(choice.Link, choice.Order));
         }
 
         /// <summary>Commits one inline player-choice text box on focus loss.</summary>
@@ -1617,8 +1686,11 @@ namespace SWLOR.Toolset.Editors
             }
 
             var number = 1;
-            foreach (var link in _currentLine.Links)
+            var links = _currentLine.Links;
+            for (var linkIndex = 0; linkIndex < links.Count; linkIndex++)
             {
+                var link = links[linkIndex];
+                var order = linkIndex + 1;
                 // An imported or externally edited DLG can carry a link whose index is outside
                 // ReplyList; dereferencing Target would throw before the tab could render at all.
                 // The row is shown (never hidden) so the builder can see the broken route and
@@ -1628,7 +1700,7 @@ namespace SWLOR.Toolset.Editors
                     Choices.Add(new ChoiceRowViewModel(
                         link, "!",
                         $"broken route — reply #{link.TargetIndex} does not exist",
-                        null, isDangling: true));
+                        null, order, links.Count, isDangling: true));
                     continue;
                 }
 
@@ -1641,7 +1713,8 @@ namespace SWLOR.Toolset.Editors
 
                 if (hiddenBecause != null && !ShowHiddenChoices)
                 {
-                    Choices.Add(new ChoiceRowViewModel(link, "—", string.Empty, hiddenBecause));
+                    Choices.Add(new ChoiceRowViewModel(
+                        link, "—", string.Empty, hiddenBecause, order, links.Count));
                     continue;
                 }
 
@@ -1649,7 +1722,9 @@ namespace SWLOR.Toolset.Editors
                     link,
                     hiddenBecause == null ? $"{number++}." : "—",
                     DescribeConsequence(link.Target),
-                    hiddenBecause));
+                    hiddenBecause,
+                    order,
+                    links.Count));
             }
 
             // The hidden ones are kept in the collection so the count is honest; the view filters

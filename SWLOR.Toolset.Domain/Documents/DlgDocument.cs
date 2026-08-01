@@ -282,6 +282,31 @@ namespace SWLOR.Toolset.Domain.Documents
         }
 
         /// <summary>
+        /// Reorders one route beneath its parent line. NWN presents an entry's reply links in this
+        /// exact order, so moving the link changes where that player choice appears without moving
+        /// or duplicating the reply node it targets.
+        /// </summary>
+        public void MoveLink(DlgLink link, int toIndex)
+        {
+            ArgumentNullException.ThrowIfNull(link);
+            if (link.Parent == null)
+                throw new ArgumentException("Use MoveOpening for a conversation opening.", nameof(link));
+
+            if (!link.Parent.Struct.TryGet(link.Parent.LinkListField, out var field)
+                || field.Elements == null)
+            {
+                return;
+            }
+
+            var fromIndex = IndexOfElement(field.Elements, link.Struct);
+            if (fromIndex < 0 || fromIndex == toIndex)
+                return;
+
+            field.MoveElement(fromIndex, toIndex);
+            RenumberStructIds(field.Elements, Math.Min(fromIndex, toIndex));
+        }
+
+        /// <summary>
         /// Removes one route without touching the node it pointed at. Renumbers nothing but the link
         /// list it came from, so it is the cheap way to detach a line — at the price of possibly
         /// leaving it unreachable. <see cref="FindOrphans"/> reports those.

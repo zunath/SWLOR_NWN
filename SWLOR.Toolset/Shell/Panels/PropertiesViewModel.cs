@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
+using Newtonsoft.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Dock.Model.Mvvm.Controls;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tlk;
@@ -67,7 +69,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 }
                 else if (entry.ResourceType == ResourceType.Dlg)
                 {
-                    ShowDialogSummary(workspace.GetResourcePath(ResourceType.Dlg, entry.ResRef));
+                    ShowConversationSummary(workspace, entry.ResRef);
                 }
                 else if (entry.ResourceType == ResourceType.Nss)
                 {
@@ -87,6 +89,24 @@ namespace SWLOR.Toolset.Shell.Panels
                 Rows.Add(new PropertyRow("Error", ex.Message));
                 _log.AppendLine($"Failed to load '{entry.ResRef}' ({entry.ResourceTypeDisplayName}): {ex.Message}");
             }
+        }
+
+        private void ShowConversationSummary(ModuleWorkspace workspace, string resRef)
+        {
+            var graphPath = workspace.GetConversationGraphPath(resRef);
+            if (!File.Exists(graphPath))
+            {
+                ShowDialogSummary(workspace.GetResourcePath(ResourceType.Dlg, resRef));
+                Rows.Add(new PropertyRow("Runtime", "Legacy DLG exception"));
+                return;
+            }
+
+            var graph = JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(graphPath))
+                        ?? throw new InvalidOperationException("The NUI conversation graph is empty.");
+            Rows.Add(new PropertyRow("NPC lines", graph.Nodes.Count.ToString(CultureInfo.InvariantCulture)));
+            Rows.Add(new PropertyRow("Player choices", graph.Choices.Count.ToString(CultureInfo.InvariantCulture)));
+            Rows.Add(new PropertyRow("Opening checks", graph.EntryPoints.Count.ToString(CultureInfo.InvariantCulture)));
+            Rows.Add(new PropertyRow("Runtime", "NUI conversation"));
         }
 
         private void ShowUtcSummary(UtcDocument utc)

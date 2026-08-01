@@ -129,12 +129,14 @@ namespace SWLOR.Toolset.Editors
     {
         public ChoiceRowViewModel(
             DlgLink link, string number, string consequence, string? hiddenBecause,
-            bool isDangling = false)
+            int order, int choiceCount, bool isDangling = false)
         {
             Link = link;
             Number = number;
             Consequence = consequence;
             HiddenBecause = hiddenBecause;
+            Order = order;
+            ChoiceCount = choiceCount;
             IsDangling = isDangling;
         }
 
@@ -146,6 +148,17 @@ namespace SWLOR.Toolset.Editors
         /// such a row, so every dereference checks this first.
         /// </summary>
         public bool IsDangling { get; }
+
+        /// <summary>One-based position in the parent line's reply list—the order NWN displays.</summary>
+        public int Order { get; }
+
+        public int ChoiceCount { get; }
+
+        public bool HasSiblings => ChoiceCount > 1;
+
+        public bool CanMoveUp => Order > 1;
+
+        public bool CanMoveDown => Order < ChoiceCount;
 
         public DlgNode Target => Link.Target;
 

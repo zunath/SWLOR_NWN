@@ -107,7 +107,10 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(conversation))
             {
                 var talker = GetLastSpeaker();
-                Dialog.StartConversation(talker, OBJECT_SELF, conversation);
+                if (Conversation.TryGetGraph(conversation, out _))
+                    Conversation.Start(talker, OBJECT_SELF, conversation);
+                else if (!ConversationMenu.TryStart(talker, OBJECT_SELF, conversation))
+                    AssignCommand(talker, () => ActionStartConversation(OBJECT_SELF, conversation, true, false));
             }
         }
 

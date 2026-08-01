@@ -543,7 +543,8 @@ namespace SWLOR.Game.Server.Service
             {
                 if (GetIsObjectValid(owner) && GetObjectType(owner) == ObjectType.Creature)
                 {
-                    AssignCommand(player, () => ActionStartConversation(owner, string.Empty, true, false));
+                    if (!Conversation.TryStartAssigned(player, owner))
+                        AssignCommand(player, () => ActionStartConversation(owner, string.Empty, true, false));
                 }
 
                 // The collector has served its purpose - destroy it so it doesn't linger on the

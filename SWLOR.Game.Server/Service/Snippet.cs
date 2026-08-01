@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Service
         private const string OncePerPlayerPrefix = "once-";
         private static readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new Dictionary<string, SnippetDetail>();
         private static readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new Dictionary<string, SnippetDetail>();
+        [ThreadStatic]
+        private static uint _executionOwner;
 
         /// <summary>
         /// When the module loads, all available conversation snippets are loaded into the cache.
@@ -34,11 +36,27 @@ namespace SWLOR.Game.Server.Service
                     if (snippet.ConditionAction != null)
                     {
                         _appearsWhenCommands.Add(key, snippet);
+                        Conversation.Runtime.RegisterCondition(
+                            key,
+                            (context, arguments) => EvaluateCondition(
+                                context.Player,
+                                key,
+                                arguments,
+                                context.Owner));
                     }
 
                     if (snippet.ActionsTakenAction != null)
                     {
                         _actionsTakenCommands.Add(key, snippet);
+                        Conversation.Runtime.RegisterAction(
+                            key,
+                            (context, arguments, oncePerPlayerId) =>
+                                ExecuteAction(
+                                    context.Player,
+                                    key,
+                                    arguments,
+                                    oncePerPlayerId,
+                                    context.Owner));
                     }
 
                 }
@@ -99,14 +117,8 @@ namespace SWLOR.Game.Server.Service
                 var args = param.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
                 var snippetName = condition.Key;
 
-                // A condition given the wrong number of arguments cannot be evaluated, so it fails
-                // rather than guessing. Checked here from the snippet's declared arguments so every
-                // snippet reports the same way.
-                if (!HasUsableArguments(snippetName, condition.Value, args.Count, player))
-                    return false;
-
                 // The first command that fails will result in failure.
-                var commandResult = _appearsWhenCommands[snippetName].ConditionAction(player, args.ToArray());
+                var commandResult = EvaluateCondition(player, snippetName, args);
 
                 // "Not" conditions check for the opposite condition.
                 if (notConditionEnabled && commandResult)
@@ -132,46 +144,108 @@ namespace SWLOR.Game.Server.Service
                 string onceMarker = null;
                 var onceKey = OncePerPlayerPrefix + action.Key;
                 if (UtilPlugin.GetScriptParamIsSet(onceKey))
-                {
                     onceMarker = GetScriptParam(onceKey);
-                    if (!string.IsNullOrWhiteSpace(onceMarker))
-                    {
-                        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-                        if (dbPlayer != null)
-                            dbPlayer.CompletedDialogueActions ??= new HashSet<string>();
-                        if (dbPlayer?.CompletedDialogueActions.Contains(onceMarker) == true)
-                            continue;
-                    }
-                }
 
                 var param = GetScriptParam(action.Key);
                 var args = param.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
-                var commandText = action.Key;
-
-                // Skipped rather than run with arguments it cannot read - a half-applied action is
-                // worse than none, and the conversation carries on either way.
-                if (!HasUsableArguments(commandText, action.Value, args.Count, player))
-                    continue;
-
-                var succeeded = _actionsTakenCommands[commandText]
-                    .ActionsTakenAction(player, args.ToArray());
-                if (!succeeded)
-                    continue;
-
-                if (!string.IsNullOrWhiteSpace(onceMarker))
-                {
-                    // Actions such as key-item and faction rewards load and save the Player entity
-                    // themselves. Reload after the delegate so adding the marker cannot write the
-                    // pre-action snapshot back over the reward that just succeeded.
-                    var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-                    if (dbPlayer == null)
-                        continue;
-
-                    dbPlayer.CompletedDialogueActions ??= new HashSet<string>();
-                    dbPlayer.CompletedDialogueActions.Add(onceMarker);
-                    DB.Set(dbPlayer);
-                }
+                ExecuteAction(player, action.Key, args, onceMarker);
             }
+        }
+
+        /// <summary>
+        /// Evaluates one registered snippet condition without relying on NWScript parameter state.
+        /// This is the entry point used by NUI conversations.
+        /// </summary>
+        public static bool EvaluateCondition(
+            uint player,
+            string key,
+            IReadOnlyList<string> arguments,
+            uint owner = OBJECT_INVALID)
+        {
+            if (!_appearsWhenCommands.TryGetValue(key, out var snippet))
+                throw new InvalidOperationException($"Conversation condition snippet '{key}' is not registered.");
+
+            arguments ??= Array.Empty<string>();
+            if (!HasUsableArguments(key, snippet, arguments.Count, player))
+                return false;
+
+            var previousOwner = _executionOwner;
+            _executionOwner = GetIsObjectValid(owner) ? owner : OBJECT_INVALID;
+            try
+            {
+                return snippet.ConditionAction(player, arguments.ToArray());
+            }
+            finally
+            {
+                _executionOwner = previousOwner;
+            }
+        }
+
+        /// <summary>
+        /// Executes one registered snippet action without relying on NWScript parameter state.
+        /// The once-per-player marker is preserved for migrated conversations.
+        /// </summary>
+        public static bool ExecuteAction(
+            uint player,
+            string key,
+            IReadOnlyList<string> arguments,
+            string oncePerPlayerId = null,
+            uint owner = OBJECT_INVALID)
+        {
+            if (!_actionsTakenCommands.TryGetValue(key, out var snippet))
+                throw new InvalidOperationException($"Conversation action snippet '{key}' is not registered.");
+
+            if (!string.IsNullOrWhiteSpace(oncePerPlayerId))
+            {
+                var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+                if (dbPlayer != null)
+                    dbPlayer.CompletedDialogueActions ??= new HashSet<string>();
+                if (dbPlayer?.CompletedDialogueActions.Contains(oncePerPlayerId) == true)
+                    return false;
+            }
+
+            arguments ??= Array.Empty<string>();
+            if (!HasUsableArguments(key, snippet, arguments.Count, player))
+                return false;
+
+            var previousOwner = _executionOwner;
+            _executionOwner = GetIsObjectValid(owner) ? owner : OBJECT_INVALID;
+            bool succeeded;
+            try
+            {
+                succeeded = snippet.ActionsTakenAction(player, arguments.ToArray());
+            }
+            finally
+            {
+                _executionOwner = previousOwner;
+            }
+
+            if (!succeeded)
+                return false;
+
+            if (!string.IsNullOrWhiteSpace(oncePerPlayerId))
+            {
+                // Reward actions may save the player themselves. Reload after the action so the
+                // once marker cannot overwrite the state that action just persisted.
+                var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+                if (dbPlayer == null)
+                    return true;
+
+                dbPlayer.CompletedDialogueActions ??= new HashSet<string>();
+                dbPlayer.CompletedDialogueActions.Add(oncePerPlayerId);
+                DB.Set(dbPlayer);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// The object that owns the active conversation. Snippet implementations use this instead
+        /// of OBJECT_SELF so they behave identically from native DLG scripts and NUI events.
+        /// </summary>
+        public static uint GetExecutionOwner()
+        {
+            return GetIsObjectValid(_executionOwner) ? _executionOwner : OBJECT_SELF;
         }
 
         /// <summary>

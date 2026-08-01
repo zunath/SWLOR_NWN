@@ -300,9 +300,8 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Every resource of one kind in the module, for a picker. Generated conversation shells are
-        /// left out: they are assigned by the C# Dialog service at runtime, so pointing a blueprint
-        /// at one by hand does nothing.
+        /// Every resource of one kind in the module, for a picker. Conversations merge NUI graphs
+        /// with the small set of explicit legacy DLG exceptions.
         /// </summary>
         private IReadOnlyList<string> ResourceChoices(string? lookupKey)
         {
@@ -310,13 +309,12 @@ namespace SWLOR.Toolset.Editors
             if (workspace == null || !ResourceTypeExtensions.TryFromExtension(lookupKey, out var type))
                 return Array.Empty<string>();
 
-            var resRefs = workspace.EnumerateResRefs(type);
-            if (type == ResourceType.Dlg)
-            {
-                resRefs = resRefs
-                    .Where(resRef => !Domain.Validation.UnreferencedConversationRule.IsGeneratedShell(resRef))
-                    .ToList();
-            }
+            var resRefs = type == ResourceType.Dlg
+                ? workspace.EnumerateConversationGraphResRefs()
+                    .Concat(workspace.EnumerateResRefs(ResourceType.Dlg))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList()
+                : workspace.EnumerateResRefs(type);
 
             return resRefs.OrderBy(resRef => resRef, StringComparer.OrdinalIgnoreCase).ToList();
         }

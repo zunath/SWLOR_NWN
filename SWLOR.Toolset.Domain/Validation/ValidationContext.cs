@@ -70,7 +70,16 @@ namespace SWLOR.Toolset.Domain.Validation
             if (_resRefsByType.TryGetValue(type, out var cached))
                 return cached;
 
-            var list = type == ResourceType.Area ? Workspace.EnumerateAreaResRefs() : Workspace.EnumerateResRefs(type);
+            var list = type switch
+            {
+                ResourceType.Area => Workspace.EnumerateAreaResRefs(),
+                ResourceType.Dlg => Workspace.EnumerateConversationGraphResRefs()
+                    .Concat(Workspace.EnumerateResRefs(ResourceType.Dlg))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(resRef => resRef, StringComparer.OrdinalIgnoreCase)
+                    .ToList(),
+                _ => Workspace.EnumerateResRefs(type)
+            };
             _resRefsByType[type] = list;
             return list;
         }

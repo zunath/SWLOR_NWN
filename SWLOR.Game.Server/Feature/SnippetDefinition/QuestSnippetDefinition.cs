@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     }
 
                     var questId = args[0];
-                    return Quest.AdvanceQuest(player, OBJECT_SELF, questId);
+                    return Quest.AdvanceQuest(player, Snippet.GetExecutionOwner(), questId);
                 });
         }
 

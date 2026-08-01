@@ -35,16 +35,22 @@ public sealed class ModulePaletteRefresherTests
     }
 
     [Test]
-    public void PackCommandBuildsAndRunsTheCurrentCliSource()
+    public void CliEntryPointsBuildAndRunTheCurrentSource()
     {
         var repositoryRoot = FindRepositoryRoot().FullName;
         var runner = File.ReadAllText(Path.Combine(repositoryRoot, "tools", "SWLOR.CLI", "RunCLI.cmd"));
         var packCommand = File.ReadAllText(Path.Combine(repositoryRoot, "Module", "PackModule.cmd"));
+        var serverProject = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "SWLOR.Game.Server",
+            "SWLOR.Game.Server.csproj"));
 
         runner.Should().Contain("dotnet build");
         runner.Should().Contain("-p:RunPostBuildEvent=Never");
         runner.Should().Contain("SWLOR.CLI.dll");
         packCommand.Should().Contain("RunCLI.cmd");
+        serverProject.Should().Contain("RunCLI.cmd");
+        serverProject.Should().NotContain("tools\\SWLOR.CLI\\SWLOR.CLI.exe");
         File.Exists(Path.Combine(repositoryRoot, "tools", "SWLOR.CLI", "SWLOR.CLI.exe"))
             .Should().BeFalse("the committed executable can silently fall behind the CLI source");
     }

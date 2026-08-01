@@ -55,11 +55,20 @@
     </DataTemplate>
 
     <DataTemplate DataType="creatures:CreatureOptionCellViewModel">
-      <Grid ColumnDefinitions="*,160" ColumnSpacing="8" Margin="0,2">
+      <Grid ColumnDefinitions="*,240" ColumnSpacing="8" Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
                    Foreground="{DynamicResource InkSecondaryBrush}" />
         <ComboBox Grid.Column="1" ItemsSource="{Binding Options}"
-                  SelectedItem="{Binding Selected, Mode=TwoWay}" />
+                  SelectedItem="{Binding Selected, Mode=TwoWay}"
+                  MinWidth="240" MaxDropDownHeight="400"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Left">
+          <ComboBox.ItemTemplate>
+            <DataTemplate DataType="creatures:CreatureOption">
+              <TextBlock Text="{Binding Display}" TextWrapping="Wrap" MinWidth="216" />
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
       </Grid>
     </DataTemplate>
 

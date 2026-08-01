@@ -242,6 +242,22 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void NaturalWeaponSelectors_KeepTheirOptionsReadable()
+        {
+            var view = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", "CreatureEditorView.axaml"));
+            var optionTemplateStart = view.IndexOf(
+                "DataType=\"creatures:CreatureOptionCellViewModel\"", StringComparison.Ordinal);
+            var optionTemplateEnd = view.IndexOf("</DataTemplate>", optionTemplateStart, StringComparison.Ordinal);
+            var optionTemplate = view[optionTemplateStart..optionTemplateEnd];
+
+            optionTemplate.Should().Contain("ColumnDefinitions=\"*,240\"");
+            optionTemplate.Should().Contain("MinWidth=\"240\"");
+            optionTemplate.Should().Contain("HorizontalAlignment=\"Stretch\"");
+            optionTemplate.Should().Contain("Text=\"{Binding Display}\"");
+        }
+
+        [Test]
         public void StatsTab_UsesAStableEditingOrderInsteadOfIndependentColumns()
         {
             var view = File.ReadAllText(Path.Combine(

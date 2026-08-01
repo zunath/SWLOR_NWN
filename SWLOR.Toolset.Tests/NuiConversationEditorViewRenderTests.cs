@@ -14,8 +14,8 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Tests;
 
 /// <summary>
-/// Protects the graph-native conversation editor's defining layout: writing and a faithful NUI
-/// preview are visible together, and the preview follows live edits instead of being a stale tab.
+/// Protects the graph-native conversation editor's defining layout: a compact tree drives editing,
+/// while a faithful NUI preview follows live edits on its own tab.
 /// </summary>
 public sealed class NuiConversationEditorViewRenderTests
 {
@@ -174,6 +174,8 @@ public sealed class NuiConversationEditorViewRenderTests
                 "the selected-node editor is the primary authoring surface");
             ScrollViewer.GetHorizontalScrollBarVisibility(tree!).Should().Be(ScrollBarVisibility.Auto);
             ScrollViewer.GetVerticalScrollBarVisibility(tree).Should().Be(ScrollBarVisibility.Auto);
+            tree.GetVisualDescendants().OfType<ListBoxItem>().Should().OnlyContain(item => item.Bounds.Height <= 32,
+                "tree nodes should remain single compact rows");
 
             var text = view.GetVisualDescendants().OfType<TextBlock>()
                 .Select(block => block.Text ?? string.Empty)
@@ -210,6 +212,60 @@ public sealed class NuiConversationEditorViewRenderTests
         viewModel.Conditions.Should().ContainSingle(condition => condition.Snippet.Key == "condition-has-quest",
             "nested NPC checks belong to the incoming route, not only to top-level openings");
         viewModel.PreviewSpeaker.Should().Be("Dockhand");
+    }
+
+    [Test]
+    public void TreeBranchesCanBeFoldedIndividuallyAndExpandedAgain()
+    {
+        var viewModel = OpenEditor();
+        var opening = viewModel.TreeRows.Single(row => row.IsNpc && row.Node?.Id == "first");
+        opening.HasChildren.Should().BeTrue();
+        opening.IsBranchExpanded.Should().BeTrue();
+
+        viewModel.ToggleTreeBranchCommand.Execute(opening);
+
+        var collapsedOpening = viewModel.TreeRows.Single(row => row.Key == opening.Key);
+        collapsedOpening.IsBranchExpanded.Should().BeFalse();
+        viewModel.TreeRows.Should().NotContain(row => row.Key.StartsWith(opening.Key + "/", StringComparison.Ordinal));
+
+        viewModel.ToggleTreeBranchCommand.Execute(collapsedOpening);
+
+        viewModel.TreeRows.Should().Contain(row => row.Key.StartsWith(opening.Key + "/", StringComparison.Ordinal));
+        viewModel.TreeRows.Single(row => row.Key == opening.Key).IsBranchExpanded.Should().BeTrue();
+    }
+
+    [Test]
+    public void AllTreeBranchesCanBeCollapsedAndExpandedWithoutEditingTheConversation()
+    {
+        var viewModel = OpenEditor();
+        var originalCount = viewModel.TreeRows.Count;
+        viewModel.IsDirty.Should().BeFalse();
+
+        viewModel.CollapseAllTreeBranchesCommand.Execute(null);
+
+        viewModel.TreeRows.Count.Should().BeLessThan(originalCount);
+        viewModel.TreeRows.Where(row => row.HasChildren).Should().OnlyContain(row => !row.IsBranchExpanded);
+        viewModel.IsDirty.Should().BeFalse("folding branches is editor view state, not conversation data");
+
+        viewModel.ExpandAllTreeBranchesCommand.Execute(null);
+
+        viewModel.TreeRows.Count.Should().Be(originalCount);
+        viewModel.IsDirty.Should().BeFalse();
+    }
+
+    [Test]
+    public void TreeStatusUsesTooltipIconsInsteadOfASecondLineOfText()
+    {
+        var viewModel = OpenEditor();
+        var opening = viewModel.TreeRows.Single(row => row.IsNpc && row.Node?.Id == "first");
+        var player = viewModel.TreeRows.Single(row => row.IsPlayer);
+        var conditionalNpc = viewModel.TreeRows.Single(row => row.IsNpc && row.Depth == 2);
+
+        opening.VisibilityIcon.Should().NotBeNullOrWhiteSpace();
+        opening.VisibilityToolTip.Should().Contain("Always shown");
+        player.HasActions.Should().BeTrue();
+        player.ActionToolTip.Should().Contain("1 action");
+        conditionalNpc.VisibilityToolTip.Should().Contain("Conditional");
     }
 
     [Test]

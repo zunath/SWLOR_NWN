@@ -104,7 +104,7 @@
                   <TextBlock Text="NPC lines and player responses are shown in the order the game evaluates them."
                              Classes="dim" TextWrapping="Wrap" />
                 </StackPanel>
-                <TextBlock Grid.Column="1" Text="Top route runs first  •  use ↑ ↓ to reorder"
+                <TextBlock Grid.Column="1" Text="Top route runs first  •  ↑ ↓ reorder  •  ▾ ▸ fold branches"
                            Foreground="#9CB6CF"
                            VerticalAlignment="Center" />
               </Grid>
@@ -115,32 +115,47 @@
                        ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListBox.ItemTemplate>
                   <DataTemplate x:DataType="editors:NuiConversationTreeRow">
-                    <Grid ColumnDefinitions="Auto,Auto" Margin="1">
+                    <Grid ColumnDefinitions="Auto,Auto" Margin="1" Height="24">
                       <Border Grid.Column="0" Width="{Binding IndentWidth}" />
-                      <Border Grid.Column="1" MinWidth="640" Padding="8,5"
+                      <Border Grid.Column="1" MinWidth="640" Padding="6,2"
                               Background="#121B25" BorderBrush="{Binding AccentBrush}"
                               BorderThickness="4,0,0,0" CornerRadius="4">
-                        <Grid ColumnDefinitions="70,*,Auto,Auto,Auto" RowDefinitions="Auto,Auto"
+                        <Grid ColumnDefinitions="22,68,*,Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowDefinitions="Auto"
                               ColumnSpacing="5">
-                          <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding KindLabel}"
+                          <Button Grid.Column="0" Content="{Binding BranchToggleIcon}" Width="20" Height="20"
+                                  Padding="0" IsVisible="{Binding HasChildren}"
+                                  ToolTip.Tip="{Binding BranchToggleToolTip}"
+                                  Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).ToggleTreeBranchCommand}"
+                                  CommandParameter="{Binding}" />
+                          <TextBlock Grid.Column="1" Text="{Binding KindLabel}"
                                      Foreground="{Binding AccentBrush}" FontWeight="Bold" FontSize="11"
                                      VerticalAlignment="Center" />
-                          <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Text}"
+                          <TextBlock Grid.Column="2" Text="{Binding Text}"
                                      TextTrimming="CharacterEllipsis" FontWeight="SemiBold"
                                      VerticalAlignment="Center" />
-                          <Button Grid.Row="0" Grid.Column="2" Content="↑" Padding="4,0"
+                          <TextBlock Grid.Column="3" Text="{Binding VisibilityIcon}"
+                                     Foreground="{Binding VisibilityBrush}" VerticalAlignment="Center"
+                                     ToolTip.Tip="{Binding VisibilityToolTip}" />
+                          <TextBlock Grid.Column="4" Text="⚡" IsVisible="{Binding HasActions}"
+                                     Foreground="#E8B25B" VerticalAlignment="Center"
+                                     ToolTip.Tip="{Binding ActionToolTip}" />
+                          <TextBlock Grid.Column="5" Text="■" IsVisible="{Binding EndsConversation}"
+                                     Foreground="#9CB6CF" VerticalAlignment="Center"
+                                     ToolTip.Tip="{Binding EndToolTip}" />
+                          <TextBlock Grid.Column="6" Text="↗" IsVisible="{Binding IsReference}"
+                                     Foreground="#9CB6CF" VerticalAlignment="Center"
+                                     ToolTip.Tip="{Binding ReferenceToolTip}" />
+                          <Button Grid.Column="7" Content="↑" Padding="4,0"
                                   IsEnabled="{Binding CanMoveUp}"
                                   Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).MoveTreeRowUpCommand}"
                                   CommandParameter="{Binding}" />
-                          <Button Grid.Row="0" Grid.Column="3" Content="↓" Padding="4,0"
+                          <Button Grid.Column="8" Content="↓" Padding="4,0"
                                   IsEnabled="{Binding CanMoveDown}"
                                   Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).MoveTreeRowDownCommand}"
                                   CommandParameter="{Binding}" />
-                          <Button Grid.Row="0" Grid.Column="4" Content="Remove" Padding="6,1"
+                          <Button Grid.Column="9" Content="Remove" Padding="6,1"
                                   Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).RemoveTreeRowCommand}"
                                   CommandParameter="{Binding}" />
-                          <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" Text="{Binding Details}"
-                                     Classes="dim" FontSize="11" Margin="0,1,0,0" />
                         </Grid>
                       </Border>
                     </Grid>
@@ -152,6 +167,8 @@
                 <Button Content="+ Add opening" Command="{Binding AddOpeningCommand}" />
                 <Button Content="+ Add player response" Command="{Binding AddChoiceCommand}"
                         IsVisible="{Binding IsNpcTreeRowSelected}" />
+                <Button Content="Expand all" Command="{Binding ExpandAllTreeBranchesCommand}" />
+                <Button Content="Collapse all" Command="{Binding CollapseAllTreeBranchesCommand}" />
               </StackPanel>
             </Grid>
           </Border>

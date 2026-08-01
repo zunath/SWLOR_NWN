@@ -32,6 +32,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     private readonly Behaviors.ChoicePreviewService? _choicePreviews;
     private readonly Stack<string> _undo = new();
     private readonly Stack<string> _redo = new();
+    private readonly HashSet<string> _collapsedTreeBranches = new(StringComparer.Ordinal);
     private ConversationGraph _graph;
     private string _savedJson;
     private string? _selectedNodeId;
@@ -378,6 +379,38 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
 
     [RelayCommand]
     private void MoveTreeRowDown(NuiConversationTreeRow? row) => MoveTreeRow(row, 1);
+
+    [RelayCommand]
+    private void ToggleTreeBranch(NuiConversationTreeRow? row)
+    {
+        if (row is not { HasChildren: true })
+            return;
+
+        SelectedTreeRow = row;
+        if (!_collapsedTreeBranches.Add(row.Key))
+            _collapsedTreeBranches.Remove(row.Key);
+        RefreshAll(selectFirst: false);
+    }
+
+    [RelayCommand]
+    private void ExpandAllTreeBranches()
+    {
+        if (_collapsedTreeBranches.Count == 0)
+            return;
+        _collapsedTreeBranches.Clear();
+        RefreshAll(selectFirst: false);
+    }
+
+    [RelayCommand]
+    private void CollapseAllTreeBranches()
+    {
+        var expandableRows = TreeRows.Where(row => row.HasChildren).ToArray();
+        if (expandableRows.Length == 0)
+            return;
+        foreach (var row in expandableRows)
+            _collapsedTreeBranches.Add(row.Key);
+        RefreshAll(selectFirst: false);
+    }
 
     [RelayCommand]
     private void RemoveTreeRow(NuiConversationTreeRow? row)
@@ -790,6 +823,8 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         }
 
         var isReference = !expandedNodes.Add(node.Id);
+        var hasChildren = !isReference && node.Choices.Any(choice => _graph.Choices.ContainsKey(choice.ChoiceId));
+        var isBranchExpanded = !_collapsedTreeBranches.Contains(key);
         TreeRows.Add(NuiConversationTreeRow.ForNpc(
             key,
             depth,
@@ -799,8 +834,10 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
             link,
             parentChoice,
             isEntryPoint,
-            isReference));
-        if (isReference)
+            isReference,
+            hasChildren,
+            isBranchExpanded));
+        if (isReference || (hasChildren && !isBranchExpanded))
             return;
 
         for (var choiceIndex = 0; choiceIndex < node.Choices.Count; choiceIndex++)
@@ -810,6 +847,8 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
                 continue;
 
             var choiceKey = $"{key}/choice:{choiceIndex}";
+            var choiceHasChildren = !choice.EndsConversation && choice.Next.Count > 0;
+            var choiceIsExpanded = !_collapsedTreeBranches.Contains(choiceKey);
             TreeRows.Add(NuiConversationTreeRow.ForPlayer(
                 choiceKey,
                 depth + 1,
@@ -819,7 +858,12 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
                 link,
                 isEntryPoint,
                 choice,
-                choiceLink));
+                choiceLink,
+                choiceHasChildren,
+                choiceIsExpanded));
+
+            if (choiceHasChildren && !choiceIsExpanded)
+                continue;
 
             for (var nextIndex = 0; nextIndex < choice.Next.Count; nextIndex++)
             {

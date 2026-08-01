@@ -25,6 +25,8 @@ public sealed partial class NuiConversationTreeRow : ObservableObject
     private static readonly IBrush NpcAccent = new SolidColorBrush(Color.FromRgb(222, 105, 113));
     private static readonly IBrush PlayerAccent = new SolidColorBrush(Color.FromRgb(91, 159, 255));
     private static readonly IBrush MissingAccent = new SolidColorBrush(Color.FromRgb(232, 178, 91));
+    private static readonly IBrush AlwaysVisibleAccent = new SolidColorBrush(Color.FromRgb(113, 196, 140));
+    private static readonly IBrush ConditionalAccent = new SolidColorBrush(Color.FromRgb(232, 178, 91));
 
     private NuiConversationTreeRow(
         string key,
@@ -42,6 +44,8 @@ public sealed partial class NuiConversationTreeRow : ObservableObject
         ConversationChoice? parentChoice,
         bool isEntryPoint,
         bool isReference,
+        bool hasChildren,
+        bool isBranchExpanded,
         string missingTargetId)
     {
         Key = key;
@@ -59,6 +63,8 @@ public sealed partial class NuiConversationTreeRow : ObservableObject
         ParentChoice = parentChoice;
         IsEntryPoint = isEntryPoint;
         IsReference = isReference;
+        HasChildren = hasChildren;
+        IsBranchExpanded = isBranchExpanded;
         MissingTargetId = missingTargetId;
     }
 
@@ -71,7 +77,9 @@ public sealed partial class NuiConversationTreeRow : ObservableObject
         ConversationLink nodeLink,
         ConversationChoice? parentChoice,
         bool isEntryPoint,
-        bool isReference) =>
+        bool isReference,
+        bool hasChildren,
+        bool isBranchExpanded) =>
         new(
             key,
             NuiConversationTreeRowKind.NpcLine,
@@ -88,6 +96,8 @@ public sealed partial class NuiConversationTreeRow : ObservableObject
             parentChoice,
             isEntryPoint,
             isReference,
+            hasChildren,
+            isBranchExpanded,
             string.Empty);
 
     public static NuiConversationTreeRow ForPlayer(
@@ -99,7 +109,9 @@ public sealed partial class NuiConversationTreeRow : ObservableObject
         ConversationLink parentNodeLink,
         bool parentNodeIsEntryPoint,
         ConversationChoice choice,
-        ConversationChoiceLink choiceLink) =>
+        ConversationChoiceLink choiceLink,
+        bool hasChildren,
+        bool isBranchExpanded) =>
         new(
             key,
             NuiConversationTreeRowKind.PlayerChoice,
@@ -116,6 +128,8 @@ public sealed partial class NuiConversationTreeRow : ObservableObject
             null,
             false,
             false,
+            hasChildren,
+            isBranchExpanded,
             string.Empty);
 
     public static NuiConversationTreeRow ForMissingTarget(
@@ -142,6 +156,8 @@ public sealed partial class NuiConversationTreeRow : ObservableObject
             parentChoice,
             isEntryPoint,
             false,
+            false,
+            true,
             nodeLink.TargetNodeId);
 
     public string Key { get; }
@@ -159,6 +175,8 @@ public sealed partial class NuiConversationTreeRow : ObservableObject
     public ConversationChoice? ParentChoice { get; }
     public bool IsEntryPoint { get; }
     public bool IsReference { get; }
+    public bool HasChildren { get; }
+    public bool IsBranchExpanded { get; }
     public string MissingTargetId { get; }
 
     public bool IsNpc => Kind == NuiConversationTreeRowKind.NpcLine;
@@ -166,7 +184,7 @@ public sealed partial class NuiConversationTreeRow : ObservableObject
     public bool IsMissing => Kind == NuiConversationTreeRowKind.MissingTarget;
     public bool CanMoveUp => Index > 0;
     public bool CanMoveDown => Index + 1 < SiblingCount;
-    public double IndentWidth => Depth * 30d;
+    public double IndentWidth => Depth * 22d;
     public IBrush AccentBrush => Kind switch
     {
         NuiConversationTreeRowKind.NpcLine => NpcAccent,
@@ -188,6 +206,29 @@ public sealed partial class NuiConversationTreeRow : ObservableObject
         NuiConversationTreeRowKind.PlayerChoice => Choice?.Text.Text ?? string.Empty,
         _ => $"Missing NPC line '{MissingTargetId}'"
     };
+
+    public int CheckCount => IsNpc || IsMissing
+        ? NodeLink?.Conditions.Count ?? 0
+        : ChoiceLink?.Conditions.Count ?? 0;
+    public int ActionCount => IsNpc ? Node?.OnEnterActions.Count ?? 0 : Choice?.Actions.Count ?? 0;
+    public bool HasActions => ActionCount > 0;
+    public bool EndsConversation => Choice?.EndsConversation == true;
+    public string BranchToggleIcon => IsBranchExpanded ? "▾" : "▸";
+    public string BranchToggleToolTip => IsBranchExpanded
+        ? "Hide the responses and follow-up lines in this branch."
+        : "Show the responses and follow-up lines in this branch.";
+    public string VisibilityIcon => CheckCount == 0 ? "●" : "◆";
+    public IBrush VisibilityBrush => CheckCount == 0 ? AlwaysVisibleAccent : ConditionalAccent;
+    public string VisibilityToolTip => CheckCount == 0
+        ? "Always shown: this route has no requirements."
+        : CheckCount == 1
+            ? "Conditional: shown only when its check passes."
+            : $"Conditional: shown only when all {CheckCount} checks pass.";
+    public string ActionToolTip => ActionCount == 1
+        ? "Runs 1 action when this line is used."
+        : $"Runs {ActionCount} actions when this line is used.";
+    public string EndToolTip => "Ends the conversation when the player selects this response.";
+    public string ReferenceToolTip => "This is a shared or looping line; its children are shown at the first occurrence.";
 
     public string Details
     {
@@ -219,6 +260,14 @@ public sealed partial class NuiConversationTreeRow : ObservableObject
         OnPropertyChanged(nameof(KindLabel));
         OnPropertyChanged(nameof(Text));
         OnPropertyChanged(nameof(Details));
+        OnPropertyChanged(nameof(CheckCount));
+        OnPropertyChanged(nameof(ActionCount));
+        OnPropertyChanged(nameof(HasActions));
+        OnPropertyChanged(nameof(EndsConversation));
+        OnPropertyChanged(nameof(VisibilityIcon));
+        OnPropertyChanged(nameof(VisibilityBrush));
+        OnPropertyChanged(nameof(VisibilityToolTip));
+        OnPropertyChanged(nameof(ActionToolTip));
     }
 }
 

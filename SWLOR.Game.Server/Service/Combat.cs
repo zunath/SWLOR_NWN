@@ -6107,7 +6107,7 @@ namespace SWLOR.Game.Server.Service
 
             if (Stat.GetStatAdjustment(activator, StatType.SpearDisablerForceNullification) > 0 && appliesDisruption)
             {
-                StatusEffect.ApplyStatusEffect(activator, target, new ForceDisruptionStatusEffect(true), 30f, CombatDamageType.Force);
+                StatusEffect.ApplyStatusEffect(activator, target, new ForceDisruptionStatusEffect(), 30f, CombatDamageType.Force);
             }
 
             if (Stat.GetStatAdjustment(activator, StatType.SpearDisablerForcebane) > 0 && appliesSuppression)

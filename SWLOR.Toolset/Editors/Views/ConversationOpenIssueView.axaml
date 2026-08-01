@@ -5,7 +5,7 @@
              x:DataType="editors:ConversationOpenIssueViewModel">
   <ScrollViewer VerticalScrollBarVisibility="Auto">
     <StackPanel Margin="32" Spacing="16" MaxWidth="900" HorizontalAlignment="Center">
-      <TextBlock Text="CONVERSATION COULD NOT BE EDITED" Classes="dim" />
+      <TextBlock Text="CONVERSATION COULD NOT BE OPENED" Classes="dim" />
       <TextBlock Text="{Binding Headline}" FontSize="24" FontWeight="SemiBold" TextWrapping="Wrap" />
 
       <Border Padding="18" CornerRadius="6" BorderBrush="#8C6631" BorderThickness="1" Background="#1B1710">
@@ -23,7 +23,7 @@
       </StackPanel>
 
       <StackPanel IsVisible="{Binding HasDetails}" Spacing="8">
-        <TextBlock Text="Why this remains a legacy exception" FontSize="16" FontWeight="SemiBold" />
+        <TextBlock Text="Technical details" FontSize="16" FontWeight="SemiBold" />
         <ItemsControl ItemsSource="{Binding Details}">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="x:String">

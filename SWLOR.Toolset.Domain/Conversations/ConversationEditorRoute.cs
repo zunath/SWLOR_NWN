@@ -20,6 +20,13 @@ public sealed record ConversationEditorRoute(
     string Reason,
     IReadOnlyList<string> Details)
 {
+    /// <summary>
+    /// Every valid authored conversation is editable. A legacy exception means only that Preview
+    /// cannot execute its dialog-context NWScript; it is not a reason to replace the editor with a
+    /// diagnostic document.
+    /// </summary>
+    public bool OpensEditor => Kind != ConversationEditorRouteKind.Missing;
+
     public static ConversationEditorRoute Resolve(
         string conversationId,
         string graphPath,

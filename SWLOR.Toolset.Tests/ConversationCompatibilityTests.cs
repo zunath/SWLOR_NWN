@@ -7,10 +7,8 @@ using SWLOR.Toolset.Domain.Validation;
 namespace SWLOR.Toolset.Tests
 {
     /// <summary>
-    /// Which conversations the Play-it editor will open, and which it refuses. Refusing is the
-    /// designed behaviour for anything it cannot represent honestly, so the size of that set is
-    /// worth pinning: too large and the editor is useless, too small and it is lying about
-    /// something.
+    /// Which conversations Preview can simulate exactly. The editor opens every one; this check
+    /// controls whether it needs to explain that legacy NWScript visibility cannot be predicted.
     /// </summary>
     public class ConversationCompatibilityTests
     {
@@ -23,10 +21,10 @@ namespace SWLOR.Toolset.Tests
             Path.GetFileName(path).Replace(".dlg.json", string.Empty, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
-        /// The hand-authored conversations Play-it declines — 9 of 346, about 3%. Every one decides
+        /// Preview cannot simulate 9 of 346 hand-authored conversations, about 3%. Every one decides
         /// what to SHOW with its own NWScript rather than with snippets: the DMFI DM menus and a
         /// handful of imported dialogs. The editor could not predict a single branch of them, so
-        /// the shell opens a read-only exception explanation and changes nothing.
+        /// the shell opens the editable legacy surface with a preview-fidelity notice.
         /// </summary>
         /// <remarks>
         /// An earlier version of the rule also refused a custom action script and turned away 28,
@@ -59,18 +57,18 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void ARefusalNamesTheScriptItDidNotUnderstand()
+        public void APreviewLimitationNamesTheScriptItCannotEvaluate()
         {
             var path = Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dmfi_universal.dlg.json");
             var support = ConversationCompatibility.Check(DlgDocument.Load(path));
 
             support.IsSupported.Should().BeFalse();
             support.Reason.Should().Contain("its own script");
-            support.Reason.Should().Contain("Nothing has been changed.");
+            support.Reason.Should().Contain("saved unchanged");
         }
 
         [Test]
-        public void AConversationThatCannotStartIsRefusedWithThatReason()
+        public void AConversationThatCannotStartReportsThatReason()
         {
             var document = DlgDocument.Load(
                 Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dantherbs.dlg.json"));

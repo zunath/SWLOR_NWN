@@ -5,6 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Toolset.Domain.Conversations;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
@@ -14,9 +15,8 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Tests;
 
 /// <summary>
-/// Opening a conversation is a corpus-level contract: every Explorer row either gets the NUI
-/// editor, the temporary legacy editor, or a visible explanation of the exact legacy exception.
-/// None may disappear into a log or a broken modal.
+/// Opening a conversation is a corpus-level contract: every Explorer row gets an editable NUI or
+/// legacy editor. Legacy dialog-context scripts may limit Preview, but never block authoring.
 /// </summary>
 public sealed class ConversationEditorOpeningTests
 {
@@ -42,13 +42,15 @@ public sealed class ConversationEditorOpeningTests
 
         routes.Should().HaveCount(346);
         routes.Should().NotContain(route => route.Kind == ConversationEditorRouteKind.Missing);
+        routes.Should().OnlyContain(route => route.OpensEditor,
+            "every authored conversation shown in Module Contents must open an editor");
         routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(320);
         routes.Count(route => route.Kind == ConversationEditorRouteKind.LegacyDialog).Should().Be(17);
         routes.Count(route => route.Kind == ConversationEditorRouteKind.LegacyException).Should().Be(9);
         routes.Where(route => route.Kind == ConversationEditorRouteKind.LegacyException)
             .Should().OnlyContain(route =>
                 !string.IsNullOrWhiteSpace(route.Reason) && route.Details.Count > 0,
-                "a legacy exception must open a useful explanation, not a blank tab");
+                "legacy-script conversations need an honest preview warning with useful details");
     }
 
     [Test]
@@ -88,17 +90,134 @@ public sealed class ConversationEditorOpeningTests
             "every graph shown in Module Contents must survive the same constructor used by a click");
     }
 
-    [AvaloniaTest]
-    public void LegacyExceptionRendersAsAReadableDocument()
+    [Test]
+    public void EveryLegacyConversationConstructsTheEditableLegacyViewModel()
     {
-        var model = new ConversationOpenIssueViewModel(
-            "zomb_telconv",
-            "zomb_telconv",
-            "'zomb_telconv' is a legacy NWN exception",
-            "This conversation decides what to show with its own script.",
-            @"Module\dlg\zomb_telconv.dlg.json",
-            new[] { "opening: Uses custom condition script 'can_accept_1'." });
-        var view = new ConversationOpenIssueView { DataContext = model };
+        var graphDirectory = Path.Combine(
+            CorpusLocator.RepositoryRoot,
+            "SWLOR.Game.Server",
+            "ConversationData");
+        var dialogDirectory = Path.Combine(CorpusLocator.ModuleDirectory, "dlg");
+        var snippets = SnippetCatalog.Build();
+        var failures = new List<string>();
+
+        foreach (var path in Directory.EnumerateFiles(dialogDirectory, "*.dlg.json")
+                     .Where(path => !File.Exists(Path.Combine(
+                         graphDirectory,
+                         Path.GetFileName(path)[..^".dlg.json".Length] + ".conversation.json")))
+                     .Where(path => !IsGeneratedShell(
+                         Path.GetFileName(path)[..^".dlg.json".Length]))
+                     .OrderBy(path => path, StringComparer.Ordinal))
+        {
+            var id = Path.GetFileName(path)[..^".dlg.json".Length];
+            try
+            {
+                var route = ConversationEditorRoute.Resolve(
+                    id,
+                    Path.Combine(graphDirectory, id + ".conversation.json"),
+                    path);
+                var editor = new ConversationEditorViewModel(
+                    path,
+                    id,
+                    snippets,
+                    null,
+                    new OutputLogService(),
+                    new StubPrompts(),
+                    legacyPreviewNotice: route.Kind == ConversationEditorRouteKind.LegacyException
+                        ? "Legacy NWScript conditions are preserved."
+                        : null);
+
+                editor.LiveDialog.Should().NotBeNull(id);
+                editor.OnClose();
+            }
+            catch (Exception ex)
+            {
+                failures.Add($"{id}: {ex}");
+            }
+        }
+
+        failures.Should().BeEmpty(
+            "legacy NWScript affects preview fidelity, not whether the conversation can be edited");
+    }
+
+    [Test]
+    public async Task EditingLegacyConversationPreservesScriptsAndCustomTokens()
+    {
+        const string id = "dt_barman_gen";
+        var source = Path.Combine(CorpusLocator.ModuleDirectory, "dlg", id + ".dlg.json");
+        var workingCopy = Path.Combine(Path.GetTempPath(), $"{id}-{Guid.NewGuid():N}.dlg.json");
+        File.Copy(source, workingCopy);
+
+        try
+        {
+            var before = DlgDocument.Load(workingCopy);
+            var conditionScripts = before.AllLinks()
+                .Select(link => link.Active)
+                .Where(script => !string.IsNullOrWhiteSpace(script))
+                .OrderBy(script => script, StringComparer.Ordinal)
+                .ToArray();
+            var actionScripts = before.Entries.Concat(before.Replies)
+                .Select(node => node.Script)
+                .Where(script => !string.IsNullOrWhiteSpace(script))
+                .OrderBy(script => script, StringComparer.Ordinal)
+                .ToArray();
+            var customTokens = System.Text.RegularExpressions.Regex
+                .Matches(File.ReadAllText(workingCopy), @"<CUSTOM\d+>")
+                .Select(match => match.Value)
+                .OrderBy(token => token, StringComparer.Ordinal)
+                .ToArray();
+
+            var editor = new ConversationEditorViewModel(
+                workingCopy,
+                id,
+                SnippetCatalog.Build(),
+                null,
+                new OutputLogService(),
+                new StubPrompts(),
+                legacyPreviewNotice: "Legacy NWScript conditions are preserved.");
+            editor.LineText += " ";
+
+            (await editor.TrySaveAsync()).Should().BeTrue();
+            editor.OnClose();
+
+            var after = DlgDocument.Load(workingCopy);
+            after.AllLinks()
+                .Select(link => link.Active)
+                .Where(script => !string.IsNullOrWhiteSpace(script))
+                .OrderBy(script => script, StringComparer.Ordinal)
+                .Should().Equal(conditionScripts);
+            after.Entries.Concat(after.Replies)
+                .Select(node => node.Script)
+                .Where(script => !string.IsNullOrWhiteSpace(script))
+                .OrderBy(script => script, StringComparer.Ordinal)
+                .Should().Equal(actionScripts);
+            System.Text.RegularExpressions.Regex
+                .Matches(File.ReadAllText(workingCopy), @"<CUSTOM\d+>")
+                .Select(match => match.Value)
+                .OrderBy(token => token, StringComparer.Ordinal)
+                .Should().Equal(customTokens);
+        }
+        finally
+        {
+            File.Delete(workingCopy);
+        }
+    }
+
+    [AvaloniaTest]
+    public void LegacyScriptConversationRendersTheRealEditor()
+    {
+        const string id = "dt_barman_gen";
+        var path = Path.Combine(CorpusLocator.ModuleDirectory, "dlg", id + ".dlg.json");
+        var model = new ConversationEditorViewModel(
+            path,
+            id,
+            SnippetCatalog.Build(),
+            null,
+            new OutputLogService(),
+            new StubPrompts(),
+            legacyPreviewNotice:
+                "This conversation uses legacy NWScript conditions. They stay attached and are saved unchanged.");
+        var view = new ConversationEditorView { DataContext = model };
         var window = new Window { Content = view, Width = 1100, Height = 760 };
         window.Show();
 
@@ -110,15 +229,15 @@ public sealed class ConversationEditorOpeningTests
                 .Select(block => block.Text ?? string.Empty)
                 .ToArray();
 
-            text.Should().Contain("CONVERSATION COULD NOT BE EDITED");
-            text.Should().Contain("'zomb_telconv' is a legacy NWN exception");
-            text.Should().Contain(item => item.Contains("can_accept_1", StringComparison.Ordinal));
-            view.GetVisualDescendants().OfType<ScrollViewer>().Should().ContainSingle(
-                "the exception document should have one predictable scrollbar");
+            text.Should().Contain("LEGACY PREVIEW");
+            text.Should().NotContain("CONVERSATION COULD NOT BE OPENED");
+            view.GetVisualDescendants().OfType<TextBox>().Should().NotBeEmpty(
+                "dt_barman_gen must render editable conversation fields, not a refusal page");
         }
         finally
         {
             window.Close();
+            model.OnClose();
         }
     }
 

@@ -2955,19 +2955,6 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
-            if (route.Kind == Domain.Conversations.ConversationEditorRouteKind.LegacyException)
-            {
-                _log.AppendLine($"{resRef}: {route.Reason}");
-                OpenConversationIssue(
-                    filePath,
-                    resRef,
-                    $"'{resRef}' is a legacy NWN exception",
-                    route.Reason,
-                    filePath,
-                    route.Details);
-                return;
-            }
-
             if (_openConversations.TryGetValue(filePath, out var existing))
             {
                 _factory.ActivateDocument(existing);
@@ -2979,7 +2966,10 @@ namespace SWLOR.Toolset.Editors
                 _snippets ??= SnippetCatalog.Build();
                 var editor = new ConversationEditorViewModel(
                     filePath, resRef, _snippets, _gameCodeIndex, _log, _prompts,
-                    extension => TagsFor(extension));
+                    extension => TagsFor(extension),
+                    route.Kind == Domain.Conversations.ConversationEditorRouteKind.LegacyException
+                        ? "This conversation uses legacy NWScript conditions. They stay attached and are saved unchanged. Preview cannot run those conditions, so it shows every authored route."
+                        : null);
                 editor.Closed += _ => _openConversations.Remove(filePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>

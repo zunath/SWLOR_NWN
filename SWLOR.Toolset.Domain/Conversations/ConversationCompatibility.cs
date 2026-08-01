@@ -9,7 +9,7 @@ namespace SWLOR.Toolset.Domain.Conversations
     }
 
     /// <summary>
-    /// Decides whether a conversation is one Play-it can represent.
+    /// Decides whether Preview can simulate a conversation's branch visibility.
     /// </summary>
     /// <remarks>
     /// Play-it shows the dialogue as a player would hear it, which it can only do when it
@@ -18,15 +18,13 @@ namespace SWLOR.Toolset.Domain.Conversations
     /// The line is drawn at the GUARDS, not at everything custom. A conversation whose visibility is
     /// decided by its own NWScript — the DMFI DM menus, the pazaak games — cannot be predicted at
     /// all: every branch would render "not simulated", which is technically shown and actually
-    /// useless. Those are refused, and the reason names the script, and nothing is opened or
-    /// changed.
+    /// useless. The editor still opens and preserves those scripts; the result of this check becomes
+    /// a preview-fidelity notice.
     /// </para>
     /// <para>
     /// A custom ACTION script is a different matter and is allowed through. It does not affect what
     /// a player can see, only what happens afterwards — so the walk stays accurate, and the editor
-    /// says "runs the script X" against that choice rather than pretending it is just talk. Refusing
-    /// those too was the first version of this rule and it turned away 28 conversations including
-    /// several ordinary ones; drawing the line at guards turns away 8.
+    /// says "runs the script X" against that choice rather than pretending it is just talk.
     /// </para>
     /// </remarks>
     public static class ConversationCompatibility
@@ -48,9 +46,8 @@ namespace SWLOR.Toolset.Domain.Conversations
 
                 return new ConversationSupport(false,
                     $"This conversation decides what to show with its own script ('{active}') rather than "
-                    + "with the snippet rules Play-it reads, so it cannot predict what a player would "
-                    + "see. Nothing has been changed. Edit it outside the toolset, or convert the "
-                    + "condition to a snippet first.");
+                    + "with the snippet rules Preview can evaluate. The script remains attached and "
+                    + "will be saved unchanged, but Preview must show every authored route.");
             }
 
             return ConversationSupport.Yes;

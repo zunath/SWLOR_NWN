@@ -40,6 +40,15 @@ namespace SWLOR.Toolset.Editors
         public string ResRef => _resRef;
 
         /// <summary>
+        /// A legacy DLG can contain NWScript conditions whose result depends on NWN's stock dialog
+        /// context. The editor preserves those scripts, but its pretend-player preview cannot run
+        /// them. This is an editor limitation, not a reason to make the document read-only.
+        /// </summary>
+        public string LegacyPreviewNotice { get; }
+
+        public bool HasLegacyPreviewNotice => !string.IsNullOrWhiteSpace(LegacyPreviewNotice);
+
+        /// <summary>
         /// The live in-editor document, including unsaved edits. Dialogue search overlays this over
         /// the on-disk copy so results reflect what the builder currently sees.
         /// </summary>
@@ -299,13 +308,15 @@ namespace SWLOR.Toolset.Editors
             IGameCodeIndex? gameCode,
             OutputLogService log,
             IEditorPromptService prompts,
-            Func<string, IReadOnlyList<string>>? tagsFor = null)
+            Func<string, IReadOnlyList<string>>? tagsFor = null,
+            string? legacyPreviewNotice = null)
         {
             _log = log;
             _prompts = prompts;
             _gameCode = gameCode;
             _snippets = snippets;
             _resRef = resRef;
+            LegacyPreviewNotice = legacyPreviewNotice ?? string.Empty;
             Id = $"conversation:{filePath}";
             Title = resRef;
 

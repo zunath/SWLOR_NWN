@@ -432,7 +432,9 @@ namespace SWLOR.Toolset.Tests
                 }),
                 new ItemStatSummaryGroup("Vitals", new[]
                 {
-                    new ItemStatSummaryEntry("HP", "25")
+                    new ItemStatSummaryEntry("HP", "25"),
+                    new ItemStatSummaryEntry("FP", "10"),
+                    new ItemStatSummaryEntry("STM", "15")
                 })
             };
             var item = new MerchantItemDefinition(
@@ -459,9 +461,15 @@ namespace SWLOR.Toolset.Tests
             inventoryRow.StatGroups.Should().BeSameAs(stats);
             inventoryRow.StatSummary.Should().Contain("Defense 12")
                 .And.Contain("Evasion 4")
-                .And.Contain("HP 25");
+                .And.Contain("HP 25")
+                .And.EndWith("+1 more");
+            inventoryRow.PrimaryStatSummary.Should().NotContain("STM 15");
+            inventoryRow.AdditionalStatSummary.Should().Be("+1 more");
+            inventoryRow.HasAdditionalStats.Should().BeTrue();
             var candidateRow = editor.ItemCandidates.Should().ContainSingle().Subject;
             candidateRow.StatSummary.Should().Be(inventoryRow.StatSummary);
+            candidateRow.PrimaryStatSummary.Should().Be(inventoryRow.PrimaryStatSummary);
+            candidateRow.AdditionalStatSummary.Should().Be(inventoryRow.AdditionalStatSummary);
             editor.SelectedItemStatGroups.Should().BeSameAs(stats);
             editor.HasSelectedItemStats.Should().BeTrue();
             editor.ShowsSelectedItemStatsStatus.Should().BeFalse();

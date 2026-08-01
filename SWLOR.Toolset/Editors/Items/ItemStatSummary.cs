@@ -13,6 +13,16 @@ namespace SWLOR.Toolset.Editors.Items
         IReadOnlyList<ItemStatSummaryEntry> Entries);
 
     /// <summary>
+    /// A compact stat summary split so a narrow row can trim the stats without hiding its
+    /// remaining-stat count.
+    /// </summary>
+    public sealed record ItemStatCompactSummary(string Primary, string Overflow)
+    {
+        public bool HasOverflow => !string.IsNullOrEmpty(Overflow);
+        public string Text => HasOverflow ? $"{Primary}  ·  {Overflow}" : Primary;
+    }
+
+    /// <summary>
     /// Builds item-property summaries from the same catalogs and cost-table labels as the item
     /// editor. Equipment, merchants, loot, and any future item browser can therefore show what an
     /// item does without maintaining another property-id list or exposing raw CostValue rows.
@@ -140,19 +150,29 @@ namespace SWLOR.Toolset.Editors.Items
             }
         }
 
-        /// <summary>A bounded two-line-friendly summary for progressive item search rows.</summary>
-        public static string Compact(IReadOnlyList<ItemStatSummaryGroup>? groups)
+        /// <summary>
+        /// A bounded row summary whose overflow is separate so the UI can reserve space for it.
+        /// </summary>
+        public static ItemStatCompactSummary CompactParts(
+            IReadOnlyList<ItemStatSummaryGroup>? groups)
         {
             var entries = groups?.SelectMany(group => group.Entries).ToList()
                           ?? new List<ItemStatSummaryEntry>();
             if (entries.Count == 0)
-                return "No gameplay stats";
+                return new ItemStatCompactSummary("No gameplay stats", string.Empty);
 
             const int shown = 4;
-            var text = string.Join("  ·  ", entries.Take(shown).Select(entry =>
+            var primary = string.Join("  ·  ", entries.Take(shown).Select(entry =>
                 $"{entry.Label} {entry.Value}"));
-            return entries.Count <= shown ? text : $"{text}  ·  +{entries.Count - shown} more";
+            var overflow = entries.Count > shown
+                ? $"+{entries.Count - shown} more"
+                : string.Empty;
+            return new ItemStatCompactSummary(primary, overflow);
         }
+
+        /// <summary>A plain-text form for consumers that do not control row layout.</summary>
+        public static string Compact(IReadOnlyList<ItemStatSummaryGroup>? groups) =>
+            CompactParts(groups).Text;
 
         private static int GroupRank(ItemStatGroup group)
         {

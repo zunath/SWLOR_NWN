@@ -14,8 +14,13 @@ namespace SWLOR.Toolset.Editors.Merchants
     {
         public IReadOnlyList<ItemStatSummaryGroup> Stats =>
             StatGroups ?? Array.Empty<ItemStatSummaryGroup>();
+        public ItemStatCompactSummary CompactStats { get; } =
+            ItemStatSummary.CompactParts(StatGroups);
         public bool HasStats => Stats.Count > 0;
-        public string StatSummary => ItemStatSummary.Compact(Stats);
+        public string PrimaryStatSummary => CompactStats.Primary;
+        public string AdditionalStatSummary => CompactStats.Overflow;
+        public bool HasAdditionalStats => CompactStats.HasOverflow;
+        public string StatSummary => CompactStats.Text;
         public string Display => string.IsNullOrWhiteSpace(Name) ||
                                  string.Equals(Name, ResRef, StringComparison.OrdinalIgnoreCase)
             ? ResRef
@@ -31,6 +36,9 @@ namespace SWLOR.Toolset.Editors.Merchants
             ? Definition.ResRef
             : Definition.Name;
         public bool HasStats => Definition.HasStats;
+        public string PrimaryStatSummary => Definition.PrimaryStatSummary;
+        public string AdditionalStatSummary => Definition.AdditionalStatSummary;
+        public bool HasAdditionalStats => Definition.HasAdditionalStats;
         public string StatSummary => Definition.StatSummary;
         public string Glyph => string.IsNullOrWhiteSpace(DisplayName)
             ? "?"
@@ -83,11 +91,15 @@ namespace SWLOR.Toolset.Editors.Merchants
         public long StoreSellsFor { get; }
         public long StoreBuysFor { get; }
         public IReadOnlyList<ItemStatSummaryGroup> StatGroups { get; }
+        public ItemStatCompactSummary CompactStats { get; }
         public bool HasStats => StatGroups.Count > 0;
         public string DisplayName => string.IsNullOrWhiteSpace(Name) ? ResRef : Name;
         public string SellPrice => $"{StoreSellsFor:N0} cr";
         public string BuyPrice => $"{StoreBuysFor:N0} cr";
-        public string StatSummary => ItemStatSummary.Compact(StatGroups);
+        public string PrimaryStatSummary => CompactStats.Primary;
+        public string AdditionalStatSummary => CompactStats.Overflow;
+        public bool HasAdditionalStats => CompactStats.HasOverflow;
+        public string StatSummary => CompactStats.Text;
 
         /// <summary>The same rendered UTI inventory artwork used by the item editor and palette.</summary>
         [ObservableProperty]
@@ -118,6 +130,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             Name = item.Name;
             BaseCost = item.BaseCost;
             StatGroups = item.Stats;
+            CompactStats = item.CompactStats;
             StoreSellsFor = Math.Max(0, item.BaseCost * markUp / 100);
             StoreBuysFor = Math.Max(0, item.BaseCost * markDown / 100);
             _setInfinite = setInfinite ?? throw new ArgumentNullException(nameof(setInfinite));

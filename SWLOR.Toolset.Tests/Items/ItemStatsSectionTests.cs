@@ -41,6 +41,35 @@ namespace SWLOR.Toolset.Tests.Items
             ItemStatSummary.Compact(groups).Should().Contain("DMG").And.Contain("Delay");
         }
 
+        [Test]
+        public void CompactSummaryKeepsItsRemainingStatCountSeparate()
+        {
+            var groups = new[]
+            {
+                new ItemStatSummaryGroup("Defense", new[]
+                {
+                    new ItemStatSummaryEntry("Force Defense", "3"),
+                    new ItemStatSummaryEntry("Physical Defense", "2")
+                }),
+                new ItemStatSummaryGroup("Vitals", new[]
+                {
+                    new ItemStatSummaryEntry("FP", "1"),
+                    new ItemStatSummaryEntry("FP Regen", "1"),
+                    new ItemStatSummaryEntry("HP", "20"),
+                    new ItemStatSummaryEntry("STM", "4")
+                })
+            };
+
+            var summary = ItemStatSummary.CompactParts(groups);
+
+            summary.Primary.Should().Contain("Force Defense 3")
+                .And.Contain("FP Regen 1")
+                .And.NotContain("HP 20");
+            summary.Overflow.Should().Be("+2 more");
+            summary.HasOverflow.Should().BeTrue();
+            summary.Text.Should().EndWith("+2 more");
+        }
+
         private static ItemStatsSectionViewModel OpenArmorSection(ItemValueStore store)
         {
             var section = new ItemStatsSectionViewModel(store, (_, mutation) => { mutation(); return true; });

@@ -82,8 +82,14 @@
                     <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"
                                TextTrimming="CharacterEllipsis" />
                     <TextBlock Text="{Binding ResRef}" Classes="resref" FontSize="10.5" />
-                    <TextBlock Text="{Binding StatSummary}" Classes="count"
-                               TextTrimming="CharacterEllipsis" IsVisible="{Binding HasStats}" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8"
+                          IsVisible="{Binding HasStats}">
+                      <TextBlock Text="{Binding PrimaryStatSummary}" Classes="count"
+                                 TextTrimming="CharacterEllipsis" />
+                      <TextBlock Grid.Column="1" Text="{Binding AdditionalStatSummary}"
+                                 Classes="count" Foreground="{DynamicResource InkSecondaryBrush}"
+                                 IsVisible="{Binding HasAdditionalStats}" />
+                    </Grid>
                   </StackPanel>
                   <StackPanel Grid.Column="3" HorizontalAlignment="Right"
                               VerticalAlignment="Center">
@@ -141,8 +147,15 @@
                             <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"
                                        TextTrimming="CharacterEllipsis" />
                             <TextBlock Text="{Binding ResRef}" Classes="resref" FontSize="10.5" />
-                            <TextBlock Text="{Binding StatSummary}" Classes="count"
-                                       TextTrimming="CharacterEllipsis" IsVisible="{Binding HasStats}" />
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8"
+                                  IsVisible="{Binding HasStats}">
+                              <TextBlock Text="{Binding PrimaryStatSummary}" Classes="count"
+                                         TextTrimming="CharacterEllipsis" />
+                              <TextBlock Grid.Column="1" Text="{Binding AdditionalStatSummary}"
+                                         Classes="count"
+                                         Foreground="{DynamicResource InkSecondaryBrush}"
+                                         IsVisible="{Binding HasAdditionalStats}" />
+                            </Grid>
                           </StackPanel>
                           <Button Grid.Column="2" Classes="utility-icon"
                                   Command="{Binding $parent[ListBox].((merchants:MerchantEditorViewModel)DataContext).OpenItemDetailsCommand}"

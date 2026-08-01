@@ -274,12 +274,8 @@
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="merchants:MerchantBuyingRuleViewModel">
-                  <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Margin="6,5">
-                    <StackPanel Orientation="Horizontal" Spacing="7">
-                      <TextBlock Text="{Binding Name}" />
-                      <TextBlock Text="{Binding IdDisplay}" Classes="dim" FontSize="10.5" />
-                    </StackPanel>
-                  </CheckBox>
+                  <CheckBox Content="{Binding Name}"
+                            IsChecked="{Binding IsSelected, Mode=TwoWay}" Margin="6,5" />
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>

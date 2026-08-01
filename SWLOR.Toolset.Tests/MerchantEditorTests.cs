@@ -685,6 +685,32 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BuyingRuleSearchUsesBuilderFacingNamesRatherThanInternalIds()
+        {
+            using var editor = new MerchantEditorViewModel(
+                NewMerchant(),
+                "probe_store",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                baseItems: new[]
+                {
+                    new BehaviorChoice(42, "Probe Type"),
+                    new BehaviorChoice(84, "Other Type")
+                });
+
+            editor.BuyingRuleSearchText = "42";
+            editor.BuyingRules.Should().BeEmpty(
+                "internal base item IDs are not part of the builder-facing picker");
+
+            editor.BuyingRuleSearchText = "probe";
+            editor.BuyingRules.Should().ContainSingle()
+                .Which.Name.Should().Be("Probe Type");
+        }
+
+        [Test]
         public void StoreSynchronizer_PreservesPlacementAndExpandsInventoryInCliOrder()
         {
             var merchant = JsonGffDocument.Parse(

@@ -921,8 +921,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             foreach (var rule in _allBuyingRules)
             {
                 if (query.Length > 0 &&
-                    !rule.Name.Contains(query, StringComparison.OrdinalIgnoreCase) &&
-                    !rule.IdDisplay.Contains(query, StringComparison.OrdinalIgnoreCase))
+                    !rule.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }

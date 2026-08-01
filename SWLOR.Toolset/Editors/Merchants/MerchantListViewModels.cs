@@ -168,7 +168,6 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         public int BaseItem { get; }
         public string Name { get; }
-        public string IdDisplay => BaseItem.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
         [ObservableProperty]
         private bool _isSelected;

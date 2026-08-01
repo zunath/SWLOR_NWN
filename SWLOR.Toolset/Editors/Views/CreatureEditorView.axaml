@@ -595,7 +595,7 @@
 
         <TabItem Header="AI">
           <ScrollViewer>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="14,10">
+            <Grid Margin="14,10">
               <StackPanel Spacing="8">
                 <Border Classes="card" Padding="12">
                   <StackPanel Spacing="5">
@@ -614,15 +614,6 @@
                   </StackPanel>
                 </Border>
               </StackPanel>
-              <Border Grid.Column="1" Classes="card" Padding="12">
-                <StackPanel Spacing="8">
-                  <TextBlock Text="Runtime Behavior" Classes="section" />
-                  <TextBlock Text="Aggro range" Classes="dim" /><TextBlock Text="8.5m" Classes="mono" />
-                  <TextBlock Text="Return range" Classes="dim" /><TextBlock Text="15m" Classes="mono" />
-                  <TextBlock Text="Leash range" Classes="dim" /><TextBlock Text="45m" Classes="mono" />
-                  <TextBlock Text="Decision cadence" Classes="dim" /><TextBlock Text="0.25s" Classes="mono" />
-                </StackPanel>
-              </Border>
             </Grid>
           </ScrollViewer>
         </TabItem>

@@ -31,6 +31,9 @@ namespace SWLOR.Toolset.Editors.Creatures
         private readonly Func<IReadOnlyList<AppearanceOption>>? _appearanceOptionsLoader;
         private readonly Dictionary<string, IReadOnlyList<BehaviorRowViewModel>> _roleRowCache =
             new(StringComparer.Ordinal);
+        private readonly object _choiceLoadSync = new();
+        private readonly Dictionary<string, Task<IReadOnlyList<BehaviorChoice>>> _choiceLoads =
+            new(StringComparer.Ordinal);
         private bool _previewSceneUpdateQueued;
         private int _previewModelGeneration;
         private readonly SemaphoreSlim _previewModelGate = new(1);
@@ -307,7 +310,8 @@ namespace SWLOR.Toolset.Editors.Creatures
         private BehaviorRowViewModel CreateRow(
             BehaviorFieldDefinition definition,
             bool deferSearchableChoices = false,
-            bool loadDeferredChoicesInBackground = false)
+            bool loadDeferredChoicesInBackground = false,
+            bool forceInlineSearch = false)
         {
             var defersChoices = deferSearchableChoices &&
                                 definition.IsSearchable &&
@@ -322,8 +326,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 : null;
             Func<Task<IReadOnlyList<BehaviorChoice>>>? asyncChoiceLoader =
                 defersChoices && loadDeferredChoicesInBackground
-                    ? () => Task.Run(() =>
-                        _resolveChoices?.Invoke(definition.ChoicesKey!) ?? Array.Empty<BehaviorChoice>())
+                    ? () => ResolveChoicesAsync(definition.ChoicesKey!)
                     : null;
             var row = new BehaviorRowViewModel(
                 definition,
@@ -334,9 +337,43 @@ namespace SWLOR.Toolset.Editors.Creatures
                 _choicePreviews,
                 _previewAudio,
                 choiceLoader,
-                asyncChoiceLoader);
+                asyncChoiceLoader,
+                forceInlineSearch: forceInlineSearch);
             row.Reload();
             return row;
+        }
+
+        /// <summary>
+        /// Shares the raw catalog between visible rows that browse the same source. Each row still
+        /// publishes its own bounded page, but five guild ranks no longer rescan module merchants
+        /// five times when the Guild Master behavior opens.
+        /// </summary>
+        private Task<IReadOnlyList<BehaviorChoice>> ResolveChoicesAsync(string key)
+        {
+            lock (_choiceLoadSync)
+            {
+                if (_choiceLoads.TryGetValue(key, out var existing))
+                    return existing;
+
+                var load = Task.Run(() =>
+                    _resolveChoices?.Invoke(key) ?? Array.Empty<BehaviorChoice>());
+                _choiceLoads[key] = load;
+                _ = load.ContinueWith(completed =>
+                {
+                    if (!completed.IsFaulted && !completed.IsCanceled)
+                        return;
+
+                    lock (_choiceLoadSync)
+                    {
+                        if (_choiceLoads.TryGetValue(key, out var current) &&
+                            ReferenceEquals(current, load))
+                        {
+                            _choiceLoads.Remove(key);
+                        }
+                    }
+                }, TaskScheduler.Default);
+                return load;
+            }
         }
 
         private void SelectRole(CreatureRole role)
@@ -345,7 +382,11 @@ namespace SWLOR.Toolset.Editors.Creatures
             SelectedRole = role;
             if (!_roleRowCache.TryGetValue(role.Id, out var rows))
             {
-                rows = role.Fields.Select(definition => CreateRow(definition, true)).ToList();
+                rows = role.Fields.Select(definition => CreateRow(
+                    definition,
+                    deferSearchableChoices: true,
+                    loadDeferredChoicesInBackground: true,
+                    forceInlineSearch: true)).ToList();
                 _roleRowCache[role.Id] = rows;
             }
             foreach (var row in rows)
@@ -353,6 +394,25 @@ namespace SWLOR.Toolset.Editors.Creatures
             BehaviorListItemViewModel.Select(RoleList, role.Id);
             OnPropertyChanged(nameof(ShowsVariablesTab));
             UpdateQuestUsage();
+            EnsureSelectedBehaviorChoicesLoaded();
+        }
+
+        private void EnsureSelectedBehaviorChoicesLoaded()
+        {
+            if (!IsBehaviorTabSelected || _disposed)
+                return;
+
+            _ = LoadSelectedBehaviorChoicesAsync();
+        }
+
+        private async Task LoadSelectedBehaviorChoicesAsync()
+        {
+            foreach (var row in RoleRows.Where(row => row.IsInlineSearchChoice))
+            {
+                await row.ActivateChoicesAsync().ConfigureAwait(true);
+                if (_disposed)
+                    return;
+            }
         }
 
         private void OnDirectValueChanged()
@@ -734,7 +794,10 @@ namespace SWLOR.Toolset.Editors.Creatures
         partial void OnIsBehaviorTabSelectedChanged(bool value)
         {
             if (value)
+            {
                 QueueReferenceWarningUpdate();
+                EnsureSelectedBehaviorChoicesLoaded();
+            }
         }
 
         partial void OnIsAppearanceTabSelectedChanged(bool value)

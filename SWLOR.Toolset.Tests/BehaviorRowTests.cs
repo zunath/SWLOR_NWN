@@ -217,6 +217,45 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task AVisibleWorkPaneCanShowADeferredSearchWithoutAChooseAction()
+        {
+            var calls = 0;
+            using var row = new BehaviorRowViewModel(
+                new BehaviorFieldDefinition
+                {
+                    Label = "Dialog", Name = "Conversation", Kind = BehaviorFieldKind.Choice,
+                    FieldType = GffFieldType.ResRef, IsSearchable = true
+                },
+                Store("""{ "__data_type": "UTC " }"""),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                asyncChoiceLoader: () =>
+                {
+                    calls++;
+                    return Task.FromResult<IReadOnlyList<BehaviorChoice>>(
+                        Enumerable.Range(0, 90)
+                            .Select(index => new BehaviorChoice($"dialog_{index}", $"Dialog {index}"))
+                            .ToList());
+                },
+                forceInlineSearch: true);
+
+            row.Reload();
+
+            row.IsInlineSearchChoice.Should().BeTrue();
+            row.IsSearchExpanded.Should().BeTrue();
+            calls.Should().Be(0, "displaying the picker shell must not block on its catalog");
+            row.FilteredChoices.Should().BeEmpty();
+
+            await row.ActivateChoicesAsync();
+
+            calls.Should().Be(1);
+            row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
+        }
+
+        [Test]
         public async Task AnExplicitInlineGalleryNeverFallsBackToAChooseButtonWhileItLoads()
         {
             using var row = new BehaviorRowViewModel(

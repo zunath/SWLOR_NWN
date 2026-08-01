@@ -1993,7 +1993,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void BehaviorChoices_LoadOnePickerAtATimeAndRoleRowsAreReused()
+        public void BehaviorChoices_LoadVisibleRolePickersAndRoleRowsAreReused()
         {
             var guildStoreLoads = 0;
             IReadOnlyList<BehaviorChoice> Resolve(string key)
@@ -2035,17 +2035,19 @@ namespace SWLOR.Toolset.Tests
                 "switching behaviors must create field shells without resolving their catalogs");
 
             var firstStore = editor.RoleRows.Single(row => row.Definition.Name == "STORE_TAG_RANK_1");
-            editor.RoleRows.Where(row => row.Definition.Name.StartsWith("STORE_TAG_RANK_"))
-                .Should().OnlyContain(row => !row.AreChoicesLoaded);
+            var storeRows = editor.RoleRows
+                .Where(row => row.Definition.Name.StartsWith("STORE_TAG_RANK_"))
+                .ToList();
+            storeRows.Should().OnlyContain(row => row.IsInlineSearchChoice && row.IsSearchExpanded);
+            storeRows.Should().OnlyContain(row => !row.AreChoicesLoaded);
 
-            firstStore.OpenSearchCommand.Execute(null);
+            editor.IsBehaviorTabSelected = true;
+            DrainUntil(() => storeRows.All(row => row.AreChoicesLoaded));
 
-            guildStoreLoads.Should().Be(1);
-            firstStore.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
-            editor.RoleRows.Where(row => row.Definition.Name.StartsWith("STORE_TAG_RANK_") &&
-                                         row.Definition.Name != "STORE_TAG_RANK_1")
-                .Should().OnlyContain(row => !row.AreChoicesLoaded,
-                    "opening one rank must not initialize the other four pickers");
+            guildStoreLoads.Should().Be(1,
+                "rows that use the same catalog must share its background load");
+            storeRows.Should().OnlyContain(row =>
+                row.FilteredChoices.Count == BehaviorRowViewModel.SearchPageSize);
 
             var presentation = CreatureRoleCatalog.All.Single(role => role.Id == "presentation");
             editor.ChooseRoleCommand.Execute(presentation);

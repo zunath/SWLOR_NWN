@@ -56,6 +56,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         private readonly ChoicePreviewService? _previews;
         private readonly Func<BehaviorChoice, string?>? _previewAudio;
         private readonly Func<string, int, int, Task<IReadOnlyList<BehaviorChoice>>>? _choicePageLoader;
+        private readonly bool _forceInlineSearch;
         private Func<IReadOnlyList<BehaviorChoice>>? _choiceLoader;
         private Func<Task<IReadOnlyList<BehaviorChoice>>>? _asyncChoiceLoader;
         private List<BehaviorChoiceViewModel> _searchMatches = new();
@@ -240,10 +241,12 @@ namespace SWLOR.Toolset.Editors.Behaviors
              AreChoicesLoaded && Choices.Count > SearchableChoiceThreshold);
 
         /// <summary>
-        /// A searchable list that remains visible in the form. Palette category fields use this
-        /// shared presentation in every blueprint editor; heavyweight catalogs stay collapsed.
+        /// A searchable list that remains visible in the form. Palette category fields declare
+        /// this presentation in their definitions; an owning editor may also opt a visible work
+        /// pane into it so builders can browse without an intermediate Choose action.
         /// </summary>
-        public bool IsInlineSearchChoice => IsSearchableChoice && Definition.IsInlineSearch;
+        public bool IsInlineSearchChoice =>
+            IsSearchableChoice && (Definition.IsInlineSearch || _forceInlineSearch);
 
         /// <summary>A plain drop-down: every choice row that is neither searchable nor a gallery.</summary>
         public virtual bool IsPlainChoice =>
@@ -452,7 +455,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
             Func<BehaviorChoice, string?>? previewAudio = null,
             Func<IReadOnlyList<BehaviorChoice>>? choiceLoader = null,
             Func<Task<IReadOnlyList<BehaviorChoice>>>? asyncChoiceLoader = null,
-            Func<string, int, int, Task<IReadOnlyList<BehaviorChoice>>>? choicePageLoader = null)
+            Func<string, int, int, Task<IReadOnlyList<BehaviorChoice>>>? choicePageLoader = null,
+            bool forceInlineSearch = false)
         {
             Definition = definition ?? throw new ArgumentNullException(nameof(definition));
             Store = store ?? throw new ArgumentNullException(nameof(store));
@@ -471,6 +475,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
             _choiceLoader = choiceLoader;
             _asyncChoiceLoader = asyncChoiceLoader;
             _choicePageLoader = choicePageLoader;
+            _forceInlineSearch = forceInlineSearch;
             // Wrapping the choices costs nothing: no picture is decoded or rendered until a tile
             // that shows one exists, and then only for the page that has been published. Building
             // the rows used to decode every load screen - around thirty megabytes of DDS - before
@@ -486,10 +491,10 @@ namespace SWLOR.Toolset.Editors.Behaviors
         public void Reload()
         {
             if (Definition.IsInlineSearch)
-            {
                 LoadSynchronousDeferredChoices();
+
+            if (IsInlineSearchChoice)
                 IsSearchExpanded = true;
-            }
 
             _loading = true;
             try

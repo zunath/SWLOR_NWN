@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
@@ -46,7 +47,7 @@ namespace SWLOR.Toolset.Editors
         /// The picker option sets, shared by every editor rather than rebuilt per tab. Each one is a
         /// module scan or a 2DA read, and opening a second door used to redo all of them.
         /// </summary>
-        private readonly Dictionary<string, IReadOnlyList<BehaviorChoice>> _choiceSets =
+        private readonly ConcurrentDictionary<string, Lazy<IReadOnlyList<BehaviorChoice>>> _choiceSets =
             new(StringComparer.Ordinal);
 
         /// <summary>
@@ -60,6 +61,7 @@ namespace SWLOR.Toolset.Editors
         /// The creature appearance rows, projected once. appearance.2da is thousands of rows and
         /// every creature editor asks for the same list.
         /// </summary>
+        private readonly object _creatureAppearanceOptionsGate = new();
         private IReadOnlyList<Appearance.AppearanceOption>? _creatureAppearanceOptions;
 
         /// <summary>Backs the placeable Appearance tab's model grid; null degrades it to an empty grid.</summary>
@@ -447,7 +449,8 @@ namespace SWLOR.Toolset.Editors
         {
             _lookups.Invalidate();
             _choiceSets.Clear();
-            _creatureAppearanceOptions = null;
+            lock (_creatureAppearanceOptionsGate)
+                _creatureAppearanceOptions = null;
             InvalidateCreatureEquipmentChoices();
             _creatureSoundSetPreviews = null;
             _soundResources = null;
@@ -1328,11 +1331,12 @@ namespace SWLOR.Toolset.Editors
                 ChoicePreviews(),
                 PreviewCreatureAudio,
                 OpenLootDefinition,
-                _appearances == null ? null : CreatureAppearanceOptions(),
+                null,
                 _thumbnails,
                 ArmorDyeSwatches(),
                 itemResRef => LoadMerchantItem(itemResRef)?.Name ?? itemResRef,
-                SearchCreatureEquipmentItems);
+                SearchCreatureEquipmentItems,
+                _appearances == null ? null : CreatureAppearanceOptions);
             editor.Closed += closed => _openCreatureEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -2316,21 +2320,24 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         private IReadOnlyList<Appearance.AppearanceOption> CreatureAppearanceOptions()
         {
-            if (_creatureAppearanceOptions != null)
-                return _creatureAppearanceOptions;
-            if (_appearances == null)
-                return Array.Empty<Appearance.AppearanceOption>();
+            lock (_creatureAppearanceOptionsGate)
+            {
+                if (_creatureAppearanceOptions != null)
+                    return _creatureAppearanceOptions;
+                if (_appearances == null)
+                    return Array.Empty<Appearance.AppearanceOption>();
 
-            _creatureAppearanceOptions = _appearances.GetAll()
-                .Select(row => new Appearance.AppearanceOption(
-                    row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                    row.DisplayName,
-                    // The label rather than the model column: half of appearance.2da names a
-                    // phenotype there, and "H" tells a builder nothing about what they picked.
-                    $"row {row.Id} \u00b7 {row.Label}",
-                    CreatureAppearanceId: row.Id))
-                .ToList();
-            return _creatureAppearanceOptions;
+                _creatureAppearanceOptions = _appearances.GetAll()
+                    .Select(row => new Appearance.AppearanceOption(
+                        row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                        row.DisplayName,
+                        // The label rather than the model column: half of appearance.2da names a
+                        // phenotype there, and "H" tells a builder nothing about what they picked.
+                        $"row {row.Id} \u00b7 {row.Label}",
+                        CreatureAppearanceId: row.Id))
+                    .ToList();
+                return _creatureAppearanceOptions;
+            }
         }
 
         /// <summary>
@@ -2400,12 +2407,21 @@ namespace SWLOR.Toolset.Editors
             Func<string, IReadOnlyList<BehaviorChoice>> build)
         {
             var cacheKey = scope + ":" + key;
-            if (_choiceSets.TryGetValue(cacheKey, out var cached))
-                return cached;
-
-            var built = build(key);
-            _choiceSets[cacheKey] = built;
-            return built;
+            var cached = _choiceSets.GetOrAdd(
+                cacheKey,
+                _ => new Lazy<IReadOnlyList<BehaviorChoice>>(
+                    () => build(key),
+                    LazyThreadSafetyMode.ExecutionAndPublication));
+            try
+            {
+                return cached.Value;
+            }
+            catch
+            {
+                // Do not permanently cache a transient parse/indexing failure.
+                _choiceSets.TryRemove(cacheKey, out _);
+                throw;
+            }
         }
 
         private void InvalidatePaletteChoices(string paletteResRef)
@@ -2413,14 +2429,16 @@ namespace SWLOR.Toolset.Editors
             switch (paletteResRef.ToLowerInvariant())
             {
                 case "creaturepalcus":
-                    _choiceSets.Remove(
-                        "creature:" + Domain.Editors.Creatures.CreatureChoiceKeys.PaletteCategories);
+                    _choiceSets.TryRemove(
+                        "creature:" + Domain.Editors.Creatures.CreatureChoiceKeys.PaletteCategories,
+                        out _);
                     foreach (var editor in _openCreatureEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     break;
                 case "doorpalcus":
-                    _choiceSets.Remove(
-                        "door:" + Domain.Editors.Doors.DoorChoiceKeys.DoorPaletteCategories);
+                    _choiceSets.TryRemove(
+                        "door:" + Domain.Editors.Doors.DoorChoiceKeys.DoorPaletteCategories,
+                        out _);
                     foreach (var editor in _openDoorEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     foreach (var section in _openAreaEditors.Values.SelectMany(editor => editor.Sections)
@@ -2430,8 +2448,9 @@ namespace SWLOR.Toolset.Editors
                     }
                     break;
                 case "soundpalcus":
-                    _choiceSets.Remove(
-                        "sound:" + Domain.Editors.Sounds.SoundChoiceKeys.PaletteCategories);
+                    _choiceSets.TryRemove(
+                        "sound:" + Domain.Editors.Sounds.SoundChoiceKeys.PaletteCategories,
+                        out _);
                     foreach (var editor in _openSoundEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     foreach (var section in _openAreaEditors.Values.SelectMany(editor => editor.Sections)
@@ -2441,26 +2460,30 @@ namespace SWLOR.Toolset.Editors
                     }
                     break;
                 case "triggerpalcus":
-                    _choiceSets.Remove(
-                        "trigger:" + Domain.Editors.Triggers.TriggerChoiceKeys.PaletteCategories);
+                    _choiceSets.TryRemove(
+                        "trigger:" + Domain.Editors.Triggers.TriggerChoiceKeys.PaletteCategories,
+                        out _);
                     foreach (var editor in _openTriggerEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     break;
                 case "waypointpalcus":
-                    _choiceSets.Remove(
-                        "waypoint:" + Domain.Editors.Waypoints.WaypointChoiceKeys.PaletteCategories);
+                    _choiceSets.TryRemove(
+                        "waypoint:" + Domain.Editors.Waypoints.WaypointChoiceKeys.PaletteCategories,
+                        out _);
                     foreach (var editor in _openWaypointEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     break;
                 case "itempalcus":
-                    _choiceSets.Remove(
-                        "item:" + Domain.Editors.Items.ItemChoiceKeys.PaletteCategories);
+                    _choiceSets.TryRemove(
+                        "item:" + Domain.Editors.Items.ItemChoiceKeys.PaletteCategories,
+                        out _);
                     foreach (var editor in _openItemEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     break;
                 case "storepalcus":
-                    _choiceSets.Remove(
-                        "merchant:" + Domain.Editors.Merchants.MerchantChoiceKeys.PaletteCategories);
+                    _choiceSets.TryRemove(
+                        "merchant:" + Domain.Editors.Merchants.MerchantChoiceKeys.PaletteCategories,
+                        out _);
                     foreach (var editor in _openMerchantEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
                     break;

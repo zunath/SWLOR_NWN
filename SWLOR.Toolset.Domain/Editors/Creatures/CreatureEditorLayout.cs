@@ -40,7 +40,7 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
         public static IReadOnlyList<BehaviorFieldDefinition> Appearance { get; } = new[]
         {
             Choice("Race", "Race", GffFieldType.Byte, CreatureChoiceKeys.Races, true),
-            Choice("Portrait", "PortraitId", GffFieldType.Word, CreatureChoiceKeys.Portraits),
+            Choice("Portrait", "PortraitId", GffFieldType.Word, CreatureChoiceKeys.Portraits, true),
             Choice("Gender", "Gender", GffFieldType.Byte, CreatureChoiceKeys.Genders),
             Choice("Phenotype", "Phenotype", GffFieldType.Int, CreatureChoiceKeys.Phenotypes),
             Choice("Sound Set", "SoundSetFile", GffFieldType.Word, CreatureChoiceKeys.SoundSets, true),

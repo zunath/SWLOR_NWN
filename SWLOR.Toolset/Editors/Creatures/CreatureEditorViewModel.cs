@@ -28,12 +28,17 @@ namespace SWLOR.Toolset.Editors.Creatures
         private readonly Func<JsonGffStruct, RenderModel?>? _resolveModel;
         private readonly ChoicePreviewService? _choicePreviews;
         private readonly Func<BehaviorChoice, string?>? _previewAudio;
+        private readonly Func<IReadOnlyList<AppearanceOption>>? _appearanceOptionsLoader;
         private readonly Dictionary<string, IReadOnlyList<BehaviorRowViewModel>> _roleRowCache =
             new(StringComparer.Ordinal);
         private bool _previewSceneUpdateQueued;
         private int _previewModelGeneration;
         private readonly SemaphoreSlim _previewModelGate = new(1);
         private ModelPreviewControl? _previewView;
+        private Task? _appearanceCatalogLoadTask;
+        private bool _appearanceCatalogLoaded;
+        private int _referenceWarningGeneration;
+        private bool _referenceWarningsRequested;
         private bool _disposed;
 
         public ObservableCollection<BehaviorRowViewModel> BasicRows { get; } = new();
@@ -65,6 +70,26 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         [ObservableProperty]
         private bool _isEquipmentTabSelected;
+
+        [ObservableProperty]
+        private bool _isBehaviorTabSelected;
+
+        [ObservableProperty]
+        private bool _isAppearanceTabSelected;
+
+        [ObservableProperty]
+        private bool _isAbilitiesTabSelected;
+
+        [ObservableProperty]
+        private bool _isLootTabSelected;
+
+        [ObservableProperty]
+        private bool _isAppearanceCatalogLoading;
+
+        [ObservableProperty]
+        private string _appearanceCatalogLoadError = string.Empty;
+
+        public bool HasAppearanceCatalogLoadError => AppearanceCatalogLoadError.Length > 0;
 
         [ObservableProperty]
         private int _selectedAppearanceSectionIndex;
@@ -139,7 +164,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             ArmorDyeSwatchService? colorPalettes = null,
             Func<string, string>? resolveItemName = null,
             Func<string, int, int, int,
-                Task<IReadOnlyList<CreatureEquipmentChoice>>>? equipmentSearch = null)
+                Task<IReadOnlyList<CreatureEquipmentChoice>>>? equipmentSearch = null,
+            Func<IReadOnlyList<AppearanceOption>>? appearanceOptionsLoader = null)
         {
             _store = new CreatureValueStore(creature);
             _runEdit = runEdit;
@@ -148,6 +174,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             _resolveModel = resolveModel;
             _choicePreviews = choicePreviews;
             _previewAudio = previewAudio;
+            _appearanceOptionsLoader = appearanceOptionsLoader;
             HeaderOwner = headerOwner;
             ResourceIndex = resourceIndex;
 
@@ -170,18 +197,23 @@ namespace SWLOR.Toolset.Editors.Creatures
                 _choicePreviews,
                 equipmentSearch);
             Variables = new VarTableSectionViewModel(RunEdit, _store.Locals, gameCodeIndex, IsCustomVariable);
-            if (appearanceOptions != null)
+            if (appearanceOptions != null || appearanceOptionsLoader != null)
             {
                 AppearanceGallery = new AppearanceGallerySectionViewModel(
-                    appearanceOptions,
+                    appearanceOptions ?? Array.Empty<AppearanceOption>(),
                     appearanceThumbnails,
                     CurrentAppearanceKey,
                     ApplyAppearance,
                     noun: "appearance");
+                _appearanceCatalogLoaded = appearanceOptions != null;
             }
 
             BuildRows(CreatureEditorLayout.Basic, BasicRows);
-            BuildRows(CreatureEditorLayout.Appearance, AppearanceRows);
+            BuildRows(
+                CreatureEditorLayout.Appearance,
+                AppearanceRows,
+                deferSearchableChoices: true,
+                loadDeferredChoicesInBackground: true);
             BuildRows(CreatureEditorLayout.Flags, FlagRows);
             BuildRows(CreatureEditorLayout.Ai, AiRows);
             BehaviorListItemViewModel.Build(RoleList, CreatureRoleCatalog.All);
@@ -211,6 +243,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             AppearanceGallery?.ReloadFromDocument();
             Variables.RefreshFromDocument();
             UpdateWarnings();
+            if (_referenceWarningsRequested)
+                QueueReferenceWarningUpdate();
             UpdateQuestUsage();
             UpdatePreviewScene();
             NotifySummary();
@@ -247,10 +281,15 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         private void BuildRows(
             IEnumerable<BehaviorFieldDefinition> definitions,
-            ObservableCollection<BehaviorRowViewModel> target)
+            ObservableCollection<BehaviorRowViewModel> target,
+            bool deferSearchableChoices = false,
+            bool loadDeferredChoicesInBackground = false)
         {
             foreach (var definition in definitions)
-                target.Add(CreateRow(definition));
+                target.Add(CreateRow(
+                    definition,
+                    deferSearchableChoices,
+                    loadDeferredChoicesInBackground));
         }
 
         private IEnumerable<BehaviorRowViewModel> DirectRows() =>
@@ -261,7 +300,8 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         private BehaviorRowViewModel CreateRow(
             BehaviorFieldDefinition definition,
-            bool deferSearchableChoices = false)
+            bool deferSearchableChoices = false,
+            bool loadDeferredChoicesInBackground = false)
         {
             var defersChoices = deferSearchableChoices &&
                                 definition.IsSearchable &&
@@ -271,9 +311,14 @@ namespace SWLOR.Toolset.Editors.Creatures
                 : definition.ChoicesKey == null
                     ? definition.Choices
                     : _resolveChoices?.Invoke(definition.ChoicesKey) ?? Array.Empty<BehaviorChoice>();
-            Func<IReadOnlyList<BehaviorChoice>>? choiceLoader = defersChoices
+            Func<IReadOnlyList<BehaviorChoice>>? choiceLoader = defersChoices && !loadDeferredChoicesInBackground
                 ? () => _resolveChoices?.Invoke(definition.ChoicesKey!) ?? Array.Empty<BehaviorChoice>()
                 : null;
+            Func<Task<IReadOnlyList<BehaviorChoice>>>? asyncChoiceLoader =
+                defersChoices && loadDeferredChoicesInBackground
+                    ? () => Task.Run(() =>
+                        _resolveChoices?.Invoke(definition.ChoicesKey!) ?? Array.Empty<BehaviorChoice>())
+                    : null;
             var row = new BehaviorRowViewModel(
                 definition,
                 _store,
@@ -282,7 +327,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 OnDirectValueChanged,
                 _choicePreviews,
                 _previewAudio,
-                choiceLoader);
+                choiceLoader,
+                asyncChoiceLoader);
             row.Reload();
             return row;
         }
@@ -308,6 +354,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             BodyParts.Reload();
             EnsureSelectedAppearanceSectionLoaded();
             UpdateWarnings();
+            if (_referenceWarningsRequested)
+                QueueReferenceWarningUpdate();
             UpdateQuestUsage();
             QueuePreviewSceneUpdate();
             NotifySummary();
@@ -379,36 +427,74 @@ namespace SWLOR.Toolset.Editors.Creatures
                 : deprecated.Count == 1
                     ? "This creature has one obsolete behavior setting. Remove it if it is no longer needed."
                     : $"This creature has {deprecated.Count} obsolete behavior settings. Remove those no longer needed.";
-            var referenceWarnings = new List<string>();
-            if (MissingFieldChoice("Conversation", CreatureChoiceKeys.Dialogs))
-                referenceWarnings.Add("The selected conversation is not available.");
-            if (MissingLocalChoice("CONVERSATION", CreatureChoiceKeys.DialogDefinitions))
-                referenceWarnings.Add("The selected scripted dialog is not registered.");
-            var missingStores = Enumerable.Range(1, 5).Count(rank =>
-                MissingLocalChoice($"STORE_TAG_RANK_{rank}", CreatureChoiceKeys.GuildStores));
-            if (missingStores > 0)
-                referenceWarnings.Add(missingStores == 1
-                    ? "One guild store does not resolve to a placed merchant."
-                    : $"{missingStores} guild stores do not resolve to placed merchants.");
-            ReferenceWarning = string.Join(" ", referenceWarnings);
             OnPropertyChanged(nameof(DeprecatedWarning));
             OnPropertyChanged(nameof(HasDeprecatedWarning));
-            OnPropertyChanged(nameof(ReferenceWarning));
-            OnPropertyChanged(nameof(HasReferenceWarning));
             OnPropertyChanged(nameof(StatWarning));
             OnPropertyChanged(nameof(HasStatWarning));
         }
 
-        private bool MissingFieldChoice(string fieldName, string choiceKey)
+        /// <summary>
+        /// Reference validation can scan every dialog and placed merchant in the module. It is
+        /// useful while editing behavior, but it must not be part of drawing the Basic tab.
+        /// Snapshot the few stored values on the UI thread and perform the catalog work in the
+        /// background after Behavior is selected.
+        /// </summary>
+        private void QueueReferenceWarningUpdate()
         {
-            var stored = _store.GetString(BehaviorFieldStorage.Field, fieldName);
-            return MissingChoice(stored, choiceKey);
+            if (_disposed || _resolveChoices == null)
+                return;
+
+            _referenceWarningsRequested = true;
+            var generation = ++_referenceWarningGeneration;
+            var snapshot = new ReferenceWarningSnapshot(
+                _store.GetString(BehaviorFieldStorage.Field, "Conversation"),
+                _store.Locals.GetString("CONVERSATION"),
+                Enumerable.Range(1, 5)
+                    .Select(rank => _store.Locals.GetString($"STORE_TAG_RANK_{rank}"))
+                    .ToArray());
+            _ = ResolveReferenceWarningsAsync(snapshot, generation);
         }
 
-        private bool MissingLocalChoice(string variableName, string choiceKey)
+        private async Task ResolveReferenceWarningsAsync(
+            ReferenceWarningSnapshot snapshot,
+            int generation)
         {
-            var stored = _store.Locals.GetString(variableName);
-            return MissingChoice(stored, choiceKey);
+            string warning;
+            try
+            {
+                warning = await Task.Run(() => BuildReferenceWarning(snapshot)).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                // A temporarily unavailable module index must not stop the editor from opening.
+                warning = string.Empty;
+            }
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (_disposed || generation != _referenceWarningGeneration)
+                    return;
+
+                ReferenceWarning = warning;
+                OnPropertyChanged(nameof(ReferenceWarning));
+                OnPropertyChanged(nameof(HasReferenceWarning));
+            });
+        }
+
+        private string BuildReferenceWarning(ReferenceWarningSnapshot snapshot)
+        {
+            var warnings = new List<string>();
+            if (MissingChoice(snapshot.Conversation, CreatureChoiceKeys.Dialogs))
+                warnings.Add("The selected conversation is not available.");
+            if (MissingChoice(snapshot.ScriptedConversation, CreatureChoiceKeys.DialogDefinitions))
+                warnings.Add("The selected scripted dialog is not registered.");
+            var missingStores = snapshot.GuildStores.Count(store =>
+                MissingChoice(store, CreatureChoiceKeys.GuildStores));
+            if (missingStores > 0)
+                warnings.Add(missingStores == 1
+                    ? "One guild store does not resolve to a placed merchant."
+                    : $"{missingStores} guild stores do not resolve to placed merchants.");
+            return string.Join(" ", warnings);
         }
 
         private bool MissingChoice(string? stored, string choiceKey)
@@ -419,6 +505,11 @@ namespace SWLOR.Toolset.Editors.Creatures
             return choices.Count > 0 && choices.All(choice =>
                 !string.Equals(choice.StringValue, stored, StringComparison.OrdinalIgnoreCase));
         }
+
+        private sealed record ReferenceWarningSnapshot(
+            string Conversation,
+            string? ScriptedConversation,
+            IReadOnlyList<string?> GuildStores);
 
         [RelayCommand]
         private void RemoveDeprecated(CreatureDeprecatedVariableViewModel? variable)
@@ -634,10 +725,74 @@ namespace SWLOR.Toolset.Editors.Creatures
         partial void OnSelectedAppearanceSectionIndexChanged(int value) =>
             EnsureSelectedAppearanceSectionLoaded();
 
+        partial void OnIsBehaviorTabSelectedChanged(bool value)
+        {
+            if (value)
+                QueueReferenceWarningUpdate();
+        }
+
+        partial void OnIsAppearanceTabSelectedChanged(bool value)
+        {
+            if (value)
+                _ = EnsureAppearanceCatalogLoadedAsync();
+        }
+
         partial void OnIsEquipmentTabSelectedChanged(bool value)
         {
             if (value)
                 EquipmentSlots.ActivateSelected();
+        }
+
+        partial void OnIsAbilitiesTabSelectedChanged(bool value)
+        {
+            if (value)
+                _ = Abilities.EnsureLoadedAsync();
+        }
+
+        partial void OnIsLootTabSelectedChanged(bool value)
+        {
+            if (value)
+                _ = Loot.EnsureLoadedAsync();
+        }
+
+        /// <summary>
+        /// appearance.2da is thousands of rows. Load and project it only when Appearance becomes
+        /// visible, then let the shared gallery keep its existing progressive tile behavior.
+        /// </summary>
+        public Task EnsureAppearanceCatalogLoadedAsync()
+        {
+            if (_appearanceCatalogLoaded || _disposed || _appearanceOptionsLoader == null)
+                return Task.CompletedTask;
+            if (_appearanceCatalogLoadTask != null)
+                return _appearanceCatalogLoadTask;
+
+            IsAppearanceCatalogLoading = true;
+            _appearanceCatalogLoadTask = LoadAppearanceCatalogAsync();
+            return _appearanceCatalogLoadTask;
+        }
+
+        private async Task LoadAppearanceCatalogAsync()
+        {
+            try
+            {
+                var options = await Task.Run(_appearanceOptionsLoader!).ConfigureAwait(true);
+                if (_disposed)
+                    return;
+
+                AppearanceGallery?.SetOptions(options);
+                _appearanceCatalogLoaded = true;
+                AppearanceCatalogLoadError = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                if (!_disposed)
+                    AppearanceCatalogLoadError = $"Appearances could not be loaded: {ex.Message}";
+            }
+            finally
+            {
+                IsAppearanceCatalogLoading = false;
+                _appearanceCatalogLoadTask = null;
+            }
         }
 
         private void EnsureSelectedAppearanceSectionLoaded()
@@ -670,16 +825,21 @@ namespace SWLOR.Toolset.Editors.Creatures
             OnPropertyChanged(nameof(TemplateResRef));
         }
 
+        partial void OnAppearanceCatalogLoadErrorChanged(string value) =>
+            OnPropertyChanged(nameof(HasAppearanceCatalogLoadError));
+
         public void Dispose()
         {
             if (_disposed)
                 return;
             _disposed = true;
             _previewModelGeneration++;
+            _referenceWarningGeneration++;
             _previewSceneUpdateQueued = false;
             IsModelPreviewLoading = false;
             foreach (var row in AllRows())
                 row.Dispose();
+            Abilities.Dispose();
             Loot.Dispose();
             AppearanceGallery?.Dispose();
             Equipment.Dispose();

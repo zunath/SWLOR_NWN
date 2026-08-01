@@ -8,16 +8,31 @@ namespace SWLOR.Toolset.Editors.Creatures
     /// <summary>Contiguous LOOT_TABLE_n editor with registered-table previews.</summary>
     public sealed partial class CreatureLootViewModel : ObservableObject, IDisposable
     {
-        private static readonly Lazy<IReadOnlyList<CreatureLootTableInfo>> SharedTables =
-            new(CreatureLootTableCatalog.Build);
+        private static readonly Lazy<Task<IReadOnlyList<CreatureLootTableInfo>>> SharedTables =
+            new(() => Task.Run(CreatureLootTableCatalog.Build));
         private readonly CreatureValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action<string>? _openDefinition;
         private readonly Func<string, string>? _resolveItemName;
+        private readonly Func<Task<IReadOnlyList<CreatureLootTableInfo>>>? _tableLoader;
         private bool _loading;
+        private bool _loaded;
+        private bool _disposed;
+        private Task? _loadTask;
 
-        public IReadOnlyList<CreatureLootTableInfo> Tables { get; }
+        public IReadOnlyList<CreatureLootTableInfo> Tables { get; private set; } =
+            Array.Empty<CreatureLootTableInfo>();
         public ObservableCollection<CreatureLootEntryViewModel> Entries { get; } = new();
+
+        public bool IsLoaded => _loaded;
+
+        [ObservableProperty]
+        private bool _isLoading;
+
+        [ObservableProperty]
+        private string _loadError = string.Empty;
+
+        public bool HasLoadError => LoadError.Length > 0;
 
         [ObservableProperty]
         private CreatureLootEntryViewModel? _selectedEntry;
@@ -57,17 +72,25 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<string, Action, bool> runEdit,
             IReadOnlyList<CreatureLootTableInfo>? tables = null,
             Action<string>? openDefinition = null,
-            Func<string, string>? resolveItemName = null)
+            Func<string, string>? resolveItemName = null,
+            Func<Task<IReadOnlyList<CreatureLootTableInfo>>>? tableLoader = null)
         {
             _store = store;
             _runEdit = runEdit;
             _openDefinition = openDefinition;
             _resolveItemName = resolveItemName;
-            Tables = tables ?? SharedTables.Value;
-            Reload();
+            if (tables != null)
+            {
+                ApplyTables(tables);
+            }
+            else
+            {
+                _tableLoader = tableLoader ?? (() => SharedTables.Value);
+                UpdateNormalizationState();
+            }
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanEdit))]
         private void Add()
         {
             var pending = Entries.FirstOrDefault(entry => entry.IsPending);
@@ -95,6 +118,12 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public void Reload()
         {
+            if (!_loaded)
+            {
+                UpdateNormalizationState();
+                return;
+            }
+
             _loading = true;
             try
             {
@@ -119,10 +148,83 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public void Normalize()
         {
-            _store.WriteLoot(Entries.Where(entry => entry.HasTable).Select(entry => entry.ToEntry()));
+            if (_loaded)
+            {
+                _store.WriteLoot(Entries.Where(entry => entry.HasTable).Select(entry => entry.ToEntry()));
+            }
+            else
+            {
+                var stored = _store.ReadLoot(out _);
+                _store.WriteLoot(stored);
+            }
             NeedsNormalization = false;
             RebuildWarning(false);
         }
+
+        /// <summary>
+        /// Reflects registered loot definitions only when the Loot tab is shown. The UTC's raw
+        /// numbering state is checked immediately so saving can still repair it without loading
+        /// the catalog or constructing hidden picker rows.
+        /// </summary>
+        public Task EnsureLoadedAsync()
+        {
+            if (_loaded || _disposed)
+                return Task.CompletedTask;
+            if (_loadTask != null)
+                return _loadTask;
+
+            IsLoading = true;
+            _loadTask = LoadAsync();
+            return _loadTask;
+        }
+
+        private async Task LoadAsync()
+        {
+            try
+            {
+                var tables = await _tableLoader!().ConfigureAwait(true);
+                if (_disposed)
+                    return;
+
+                ApplyTables(tables);
+            }
+            catch (Exception ex)
+            {
+                if (_disposed)
+                    return;
+
+                LoadError = $"Loot tables could not be loaded: {ex.Message}";
+                _loaded = true;
+                OnPropertyChanged(nameof(IsLoaded));
+            }
+            finally
+            {
+                IsLoading = false;
+                _loadTask = null;
+                AddCommand.NotifyCanExecuteChanged();
+            }
+        }
+
+        private void ApplyTables(IReadOnlyList<CreatureLootTableInfo> tables)
+        {
+            Tables = tables;
+            _loaded = true;
+            LoadError = string.Empty;
+            OnPropertyChanged(nameof(Tables));
+            OnPropertyChanged(nameof(IsLoaded));
+            OnPropertyChanged(nameof(HasLoadError));
+            Reload();
+            AddCommand.NotifyCanExecuteChanged();
+        }
+
+        private void UpdateNormalizationState()
+        {
+            _store.ReadLoot(out var hasGap);
+            NeedsNormalization = hasGap;
+            OnPropertyChanged(nameof(NeedsNormalization));
+        }
+
+        private bool CanEdit() => _loaded && !IsLoading && !HasLoadError;
 
         private CreatureLootEntryViewModel CreateEntry(CreatureLootEntry entry, int position) => new(
             entry,
@@ -293,7 +395,13 @@ namespace SWLOR.Toolset.Editors.Creatures
             OpenDefinitionCommand.NotifyCanExecuteChanged();
         }
 
-        public void Dispose() => DisposeEntries();
+        partial void OnLoadErrorChanged(string value) => OnPropertyChanged(nameof(HasLoadError));
+
+        public void Dispose()
+        {
+            _disposed = true;
+            DisposeEntries();
+        }
 
         private void DisposeEntries()
         {

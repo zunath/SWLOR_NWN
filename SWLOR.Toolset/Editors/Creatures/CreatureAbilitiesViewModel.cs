@@ -22,8 +22,12 @@ namespace SWLOR.Toolset.Editors.Creatures
         public override string ToString() => Label;
     }
 
+    public sealed record CreatureAbilityCatalogData(
+        IReadOnlyList<CreatureAbilityInfo> Abilities,
+        IReadOnlyDictionary<int, CreaturePerkInfo> Perks);
+
     /// <summary>Registered ability picker layered over the UTC FeatList.</summary>
-    public sealed partial class CreatureAbilitiesViewModel : ObservableObject
+    public sealed partial class CreatureAbilitiesViewModel : ObservableObject, IDisposable
     {
         // The result list contains controls with commands and wrapped descriptions. Publishing the
         // whole catalog makes a single assignment pay to construct every row again. Forty is enough
@@ -38,20 +42,38 @@ namespace SWLOR.Toolset.Editors.Creatures
             new(CreatureAbilityAudience.Player, "Player-intended")
         ];
 
-        private static readonly Lazy<IReadOnlyList<CreatureAbilityInfo>> SharedCatalog =
-            new(CreatureAbilityCatalog.Build);
-        private static readonly Lazy<IReadOnlyDictionary<int, CreaturePerkInfo>> SharedPerks =
-            new(CreaturePerkCatalog.Build);
+        // Reflection over every ability and perk definition is a one-time application catalog
+        // build, not part of opening a UTC. Keep one shared background task so opening the first
+        // creature does not block the UI thread and subsequent editors reuse the same result.
+        private static readonly Lazy<Task<CreatureAbilityCatalogData>> SharedCatalog = new(
+            () => Task.Run(() => new CreatureAbilityCatalogData(
+                CreatureAbilityCatalog.Build(),
+                CreaturePerkCatalog.Build())));
         private readonly CreatureValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
-        private readonly IReadOnlyList<CreatureAbilityInfo> _catalog;
-        private readonly IReadOnlyDictionary<int, CreaturePerkInfo> _perks;
+        private readonly Func<Task<CreatureAbilityCatalogData>>? _catalogLoader;
+        private IReadOnlyList<CreatureAbilityInfo> _catalog = Array.Empty<CreatureAbilityInfo>();
+        private IReadOnlyDictionary<int, CreaturePerkInfo> _perks =
+            new Dictionary<int, CreaturePerkInfo>();
         private List<CreatureAbilityInfo> _matches = new();
+        private Task? _loadTask;
+        private bool _loaded;
+        private bool _disposed;
 
         public ObservableCollection<CreatureAbilityEntryViewModel> Assigned { get; } = new();
         public ObservableCollection<CreatureAbilityInfo> Matching { get; } = new();
         public IReadOnlyList<CreatureAbilityAudienceFilter> AudienceFilters => SharedAudienceFilters;
-        public IReadOnlyList<CreatureAbilitySkillFilter> SkillFilters { get; }
+        public ObservableCollection<CreatureAbilitySkillFilter> SkillFilters { get; } = new();
+
+        public bool IsLoaded => _loaded;
+
+        [ObservableProperty]
+        private bool _isLoading;
+
+        [ObservableProperty]
+        private string _loadError = string.Empty;
+
+        public bool HasLoadError => LoadError.Length > 0;
 
         [ObservableProperty]
         private string _searchText = string.Empty;
@@ -82,34 +104,29 @@ namespace SWLOR.Toolset.Editors.Creatures
             CreatureValueStore store,
             Func<string, Action, bool> runEdit,
             IReadOnlyList<CreatureAbilityInfo>? catalog = null,
-            IReadOnlyDictionary<int, CreaturePerkInfo>? perks = null)
+            IReadOnlyDictionary<int, CreaturePerkInfo>? perks = null,
+            Func<Task<CreatureAbilityCatalogData>>? catalogLoader = null)
         {
             _store = store;
             _runEdit = runEdit;
-            _catalog = catalog ?? SharedCatalog.Value;
-            _perks = perks ?? SharedPerks.Value;
-
-            SkillFilters =
-            [
-                new CreatureAbilitySkillFilter(null, "All skills"),
-                .. _catalog
-                    .GroupBy(info => info.SkillId)
-                    .Select(group => new CreatureAbilitySkillFilter(
-                        group.Key,
-                        group.Key == 0
-                            ? "No skill"
-                            : group.Select(info => info.SkillName)
-                                .FirstOrDefault(name => !string.IsNullOrWhiteSpace(name)) ?? "No skill"))
-                    .OrderBy(filter => filter.SkillId == 0 ? 1 : 0)
-                    .ThenBy(filter => filter.Label, StringComparer.OrdinalIgnoreCase)
-            ];
+            SkillFilters.Add(new CreatureAbilitySkillFilter(null, "All skills"));
             _selectedAudienceFilter = AudienceFilters.Single(
                 filter => filter.Value == CreatureAbilityAudience.Npc);
             _selectedSkillFilter = SkillFilters[0];
-            Reload();
+
+            if (catalog != null || perks != null)
+            {
+                ApplyCatalog(new CreatureAbilityCatalogData(
+                    catalog ?? Array.Empty<CreatureAbilityInfo>(),
+                    perks ?? new Dictionary<int, CreaturePerkInfo>()));
+            }
+            else
+            {
+                _catalogLoader = catalogLoader ?? (() => SharedCatalog.Value);
+            }
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanEdit))]
         private void Add(CreatureAbilityInfo? info)
         {
             if (info == null || Assigned.Any(entry => entry.FeatId == info.FeatId))
@@ -123,6 +140,9 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public void Reload()
         {
+            if (!_loaded)
+                return;
+
             Assigned.Clear();
             var featIds = _store.Feats.ToHashSet();
             foreach (var info in _catalog.Where(info => featIds.Contains(info.FeatId)))
@@ -180,9 +200,98 @@ namespace SWLOR.Toolset.Editors.Creatures
         [RelayCommand]
         private void LoadMore() => PublishPage();
 
-        partial void OnSearchTextChanged(string value) => RebuildMatching();
-        partial void OnSelectedAudienceFilterChanged(CreatureAbilityAudienceFilter value) => RebuildMatching();
-        partial void OnSelectedSkillFilterChanged(CreatureAbilitySkillFilter value) => RebuildMatching();
+        partial void OnSearchTextChanged(string value)
+        {
+            if (_loaded)
+                RebuildMatching();
+        }
+
+        partial void OnSelectedAudienceFilterChanged(CreatureAbilityAudienceFilter value)
+        {
+            if (_loaded)
+                RebuildMatching();
+        }
+
+        partial void OnSelectedSkillFilterChanged(CreatureAbilitySkillFilter value)
+        {
+            if (_loaded)
+                RebuildMatching();
+        }
+
+        /// <summary>
+        /// Builds the registered definition catalogs only after the Abilities tab is selected.
+        /// The reflection work stays off the UI thread and every later creature reuses its task.
+        /// </summary>
+        public Task EnsureLoadedAsync()
+        {
+            if (_loaded || _disposed)
+                return Task.CompletedTask;
+            if (_loadTask != null)
+                return _loadTask;
+
+            IsLoading = true;
+            _loadTask = LoadAsync();
+            return _loadTask;
+        }
+
+        private async Task LoadAsync()
+        {
+            try
+            {
+                var data = await _catalogLoader!().ConfigureAwait(true);
+                if (_disposed)
+                    return;
+
+                ApplyCatalog(data);
+            }
+            catch (Exception ex)
+            {
+                if (_disposed)
+                    return;
+
+                LoadError = $"Registered abilities could not be loaded: {ex.Message}";
+                _loaded = true;
+                OnPropertyChanged(nameof(IsLoaded));
+            }
+            finally
+            {
+                IsLoading = false;
+                _loadTask = null;
+                AddCommand.NotifyCanExecuteChanged();
+            }
+        }
+
+        private void ApplyCatalog(CreatureAbilityCatalogData data)
+        {
+            _catalog = data.Abilities;
+            _perks = data.Perks;
+            _loaded = true;
+            LoadError = string.Empty;
+
+            SkillFilters.Clear();
+            SkillFilters.Add(new CreatureAbilitySkillFilter(null, "All skills"));
+            foreach (var filter in _catalog
+                         .GroupBy(info => info.SkillId)
+                         .Select(group => new CreatureAbilitySkillFilter(
+                             group.Key,
+                             group.Key == 0
+                                 ? "No skill"
+                                 : group.Select(info => info.SkillName)
+                                     .FirstOrDefault(name => !string.IsNullOrWhiteSpace(name)) ?? "No skill"))
+                         .OrderBy(filter => filter.SkillId == 0 ? 1 : 0)
+                         .ThenBy(filter => filter.Label, StringComparer.OrdinalIgnoreCase))
+            {
+                SkillFilters.Add(filter);
+            }
+
+            SelectedSkillFilter = SkillFilters[0];
+            OnPropertyChanged(nameof(IsLoaded));
+            OnPropertyChanged(nameof(HasLoadError));
+            Reload();
+            AddCommand.NotifyCanExecuteChanged();
+        }
+
+        private bool CanEdit() => _loaded && !IsLoading && !HasLoadError;
 
         private void RebuildMatching()
         {
@@ -285,6 +394,13 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             OnPropertyChanged(nameof(SearchSummary));
             OnPropertyChanged(nameof(CanLoadMore));
+        }
+
+        partial void OnLoadErrorChanged(string value) => OnPropertyChanged(nameof(HasLoadError));
+
+        public void Dispose()
+        {
+            _disposed = true;
         }
     }
 }

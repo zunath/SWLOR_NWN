@@ -269,7 +269,7 @@ namespace SWLOR.Toolset.Tests
             var statsEnd = view.IndexOf("</TabItem>", statsStart, StringComparison.Ordinal);
             var resistancesStart = view.IndexOf("<TabItem Header=\"Resistances\">", StringComparison.Ordinal);
             var resistancesCard = view.IndexOf("CreatureResistancesCard", StringComparison.Ordinal);
-            var abilitiesStart = view.IndexOf("<TabItem Header=\"Abilities\">", StringComparison.Ordinal);
+            var abilitiesStart = view.IndexOf("<TabItem Header=\"Abilities\"", StringComparison.Ordinal);
             resistancesStart.Should().BeGreaterThan(statsEnd,
                 "resistances should be removed from the long Stats form");
             resistancesCard.Should().BeGreaterThan(resistancesStart);
@@ -443,6 +443,114 @@ namespace SWLOR.Toolset.Tests
             viewModel.LoadMoreCommand.Execute(null);
             viewModel.Matching.Should().HaveCount(75);
             viewModel.CanLoadMore.Should().BeFalse();
+        }
+
+        [Test]
+        public async Task AbilityAndLootCatalogs_LoadOnlyWhenTheirTabsNeedThem()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "defer_catalogs", "Deferred Catalogs"));
+            var store = new CreatureValueStore(document.Root);
+            var abilityLoads = 0;
+            var lootLoads = 0;
+            var ability = new CreatureAbilityInfo(
+                42, "Deferred Ability", "Loaded on demand", 0, "", 0, "", true);
+            var table = new CreatureLootTableInfo(
+                "DEFERRED_TABLE", "Deferred Table", false,
+                Array.Empty<CreatureLootTableItemInfo>());
+            using var abilities = new CreatureAbilitiesViewModel(
+                store,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalogLoader: () =>
+                {
+                    abilityLoads++;
+                    return Task.FromResult(new CreatureAbilityCatalogData(
+                        [ability], new Dictionary<int, CreaturePerkInfo>()));
+                });
+            using var loot = new CreatureLootViewModel(
+                store,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                tableLoader: () =>
+                {
+                    lootLoads++;
+                    return Task.FromResult<IReadOnlyList<CreatureLootTableInfo>>([table]);
+                });
+
+            abilities.IsLoaded.Should().BeFalse();
+            loot.IsLoaded.Should().BeFalse();
+            abilityLoads.Should().Be(0);
+            lootLoads.Should().Be(0);
+
+            await abilities.EnsureLoadedAsync();
+            abilityLoads.Should().Be(1);
+            abilities.IsLoaded.Should().BeTrue();
+            abilities.Matching.Should().ContainSingle().Which.Should().Be(ability);
+            lootLoads.Should().Be(0, "opening Abilities must not load Loot");
+
+            await loot.EnsureLoadedAsync();
+            lootLoads.Should().Be(1);
+            loot.IsLoaded.Should().BeTrue();
+            loot.Tables.Should().ContainSingle().Which.Should().Be(table);
+        }
+
+        [AvaloniaTest]
+        public async Task CreatureEditor_DefersAppearanceProjectionUntilAppearanceIsSelected()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "defer_appear", "Deferred Appearance"));
+            var appearanceLoads = 0;
+            var referenceChoiceLoads = new Dictionary<string, int>(StringComparer.Ordinal);
+            using var editor = new CreatureEditorViewModel(
+                document.Root,
+                Path.Combine(Path.GetTempPath(), "utc", "defer_appear.utc.json"),
+                "defer_appear",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                key =>
+                {
+                    referenceChoiceLoads[key] = referenceChoiceLoads.GetValueOrDefault(key) + 1;
+                    return Array.Empty<BehaviorChoice>();
+                },
+                null,
+                null,
+                _ => null,
+                null,
+                appearanceOptionsLoader: () =>
+                {
+                    appearanceLoads++;
+                    return
+                    [
+                        new AppearanceOption("1", "Deferred Model", "row 1", CreatureAppearanceId: 1)
+                    ];
+                });
+
+            appearanceLoads.Should().Be(0);
+            editor.AppearanceGallery!.Tiles.Should().BeEmpty();
+            referenceChoiceLoads.Should().NotContainKey(CreatureChoiceKeys.Dialogs);
+            referenceChoiceLoads.Should().NotContainKey(CreatureChoiceKeys.DialogDefinitions);
+            referenceChoiceLoads.Should().NotContainKey(CreatureChoiceKeys.GuildStores);
+            editor.AppearanceRows
+                .Where(row => row.Definition.IsSearchable)
+                .Should().OnlyContain(row => !row.AreChoicesLoaded,
+                    "off-screen appearance choices should resolve only when their picker opens");
+
+            editor.IsAppearanceTabSelected = true;
+            await editor.EnsureAppearanceCatalogLoadedAsync();
+
+            appearanceLoads.Should().Be(1);
+            editor.AppearanceGallery.Tiles.Should().ContainSingle();
         }
 
         [Test]
@@ -833,7 +941,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
-        public void CreatureEditorView_RendersItsConditionalVariablesTab()
+        public async Task CreatureEditorView_RendersItsConditionalVariablesTab()
         {
             var root = Path.Combine(Path.GetTempPath(), "swlor-creature-view-" + Guid.NewGuid().ToString("N"));
             var utcDirectory = Path.Combine(root, "utc");
@@ -884,6 +992,14 @@ namespace SWLOR.Toolset.Tests
                 var flagsCard = view.FindControl<Border>("CreatureFlagsCard");
                 flagsCard.Should().NotBeNull();
                 flagsCard!.IsVisible.Should().BeTrue("Flags belong to the initially selected Basic tab");
+                FindVisual<TabControl>(view, "CreatureAppearanceSections").Should().BeNull(
+                    "the cold-open Basic surface must not realize the hidden Appearance editor");
+                FindVisual<ListBox>(view, "CreatureEquipmentSlots").Should().BeNull(
+                    "the cold-open Basic surface must not realize hidden equipment pickers");
+                FindVisual<Border>(view, "CreatureAvailableAbilities").Should().BeNull(
+                    "the cold-open Basic surface must not realize the hidden ability catalog");
+                FindVisual<ListBox>(view, "CreatureLootEntries").Should().BeNull(
+                    "the cold-open Basic surface must not realize the hidden loot editor");
                 var basicTab = tabItems.Single(tab => tab.Header?.ToString() == "Basic");
                 basicTab.Content.Should().BeAssignableTo<Control>().Which
                     .GetVisualDescendants().Should().Contain(flagsCard,
@@ -907,10 +1023,11 @@ namespace SWLOR.Toolset.Tests
                 variablesTab.Content.Should().BeOfType<VariablesSectionView>(
                     "Custom variables use the shared editor on their own tab");
 
-                tabs.SelectedIndex = 3;
+                tabs.SelectedItem = tabItems.Single(tab => tab.Header?.ToString() == "Appearance");
+                editor.IsAppearanceTabSelected = true;
                 Dispatcher.UIThread.RunJobs();
 
-                var appearanceSections = view.FindControl<TabControl>("CreatureAppearanceSections");
+                var appearanceSections = FindVisual<TabControl>(view, "CreatureAppearanceSections");
                 appearanceSections.Should().NotBeNull();
                 appearanceSections!.Items.Cast<TabItem>().Select(tab => tab.Header?.ToString()).Should().Equal(
                     "Model", "Details", "Body");
@@ -922,7 +1039,7 @@ namespace SWLOR.Toolset.Tests
 
                 tabs.SelectedIndex = 4;
                 Dispatcher.UIThread.RunJobs();
-                var equipmentSlots = view.FindControl<ListBox>("CreatureEquipmentSlots");
+                var equipmentSlots = FindVisual<ListBox>(view, "CreatureEquipmentSlots");
                 equipmentSlots.Should().NotBeNull();
                 equipmentSlots!.ItemCount.Should().Be(14);
                 equipmentSlots.SelectedItem.Should().BeSameAs(editor.EquipmentSlots.SelectedSlot);
@@ -933,26 +1050,27 @@ namespace SWLOR.Toolset.Tests
                     .Where(button => button.IsVisible &&
                                      button.Content?.ToString()?.StartsWith("Choose", StringComparison.Ordinal) == true)
                     .Should().BeEmpty("equipment options are the work pane, not a second button behind it");
-                view.FindControl<Border>("CreatureEquipmentStats").Should().NotBeNull(
+                FindVisual<Border>(view, "CreatureEquipmentStats").Should().NotBeNull(
                     "the selected item uses the reusable read-only stat summary");
-                view.FindControl<TextBlock>("CreatureEquipmentNoStats").Should().NotBeNull(
+                FindVisual<TextBlock>(view, "CreatureEquipmentNoStats").Should().NotBeNull(
                     "an equipped item with no gameplay properties must say so explicitly");
 
                 tabs.SelectedItem = tabItems.Single(tab => tab.Header?.ToString() == "Abilities");
+                await editor.Abilities.EnsureLoadedAsync();
                 Dispatcher.UIThread.RunJobs();
-                var availableAbilities = view.FindControl<Border>("CreatureAvailableAbilities");
-                var assignedAbilities = view.FindControl<ScrollViewer>("CreatureAssignedAbilities");
+                var availableAbilities = FindVisual<Border>(view, "CreatureAvailableAbilities");
+                var assignedAbilities = FindVisual<ScrollViewer>(view, "CreatureAssignedAbilities");
                 availableAbilities.Should().NotBeNull();
                 assignedAbilities.Should().NotBeNull();
                 Grid.GetColumn(availableAbilities!).Should().Be(0,
                     "available abilities belong in the left work pane");
                 Grid.GetColumn(assignedAbilities!).Should().Be(1,
                     "assigned abilities belong in the right summary pane");
-                var audienceFilter = view.FindControl<ComboBox>("CreatureAbilityAudienceFilter");
+                var audienceFilter = FindVisual<ComboBox>(view, "CreatureAbilityAudienceFilter");
                 audienceFilter.Should().NotBeNull();
                 audienceFilter!.Bounds.Width.Should().BeGreaterThanOrEqualTo(300,
                     "the longest ability audience option must remain readable in the field and its popup");
-                var skillFilter = view.FindControl<ComboBox>("CreatureAbilitySkillFilter");
+                var skillFilter = FindVisual<ComboBox>(view, "CreatureAbilitySkillFilter");
                 skillFilter.Should().NotBeNull();
                 skillFilter!.Bounds.Width.Should().BeGreaterThanOrEqualTo(300,
                     "the longest ability skill option must remain readable in the field and its popup");
@@ -972,10 +1090,11 @@ namespace SWLOR.Toolset.Tests
                 editor.Abilities.Assigned.Should().ContainSingle(entry => entry.FeatId == selectedAbility.FeatId);
 
                 tabs.SelectedItem = tabItems.Single(tab => tab.Header?.ToString() == "Loot");
+                await editor.Loot.EnsureLoadedAsync();
                 editor.Loot.AddCommand.Execute(null);
                 Dispatcher.UIThread.RunJobs();
                 var lootEntry = editor.Loot.Entries.Should().ContainSingle().Which;
-                var lootList = view.FindControl<ListBox>("CreatureLootEntries");
+                var lootList = FindVisual<ListBox>(view, "CreatureLootEntries");
                 lootList.Should().NotBeNull();
                 lootList!.SelectedItem.Should().BeSameAs(lootEntry);
                 var lootListItem = view.GetVisualDescendants().OfType<ListBoxItem>()
@@ -1042,7 +1161,13 @@ namespace SWLOR.Toolset.Tests
 
             window.Show();
             Dispatcher.UIThread.RunJobs();
-            var appearanceSections = view.FindControl<TabControl>("CreatureAppearanceSections");
+            var editorTabs = view.FindControl<TabControl>("CreatureTabs");
+            editorTabs.Should().NotBeNull();
+            editorTabs!.SelectedItem = editorTabs.Items.Cast<TabItem>()
+                .Single(tab => tab.Header?.ToString() == "Appearance");
+            editor.IsAppearanceTabSelected = true;
+            Dispatcher.UIThread.RunJobs();
+            var appearanceSections = FindVisual<TabControl>(view, "CreatureAppearanceSections");
             appearanceSections.Should().NotBeNull();
             var bodyTab = appearanceSections!.Items.Cast<TabItem>()
                 .Single(tab => tab.Header?.ToString() == "Body");
@@ -1061,16 +1186,14 @@ namespace SWLOR.Toolset.Tests
                 "changing away from a dynamic model cannot leave a hidden section selected");
             appearanceSections.SelectedIndex.Should().Be(0);
 
-            var editorTabs = view.FindControl<TabControl>("CreatureTabs");
-            editorTabs.Should().NotBeNull();
             editorTabs!.SelectedItem = editorTabs.Items.Cast<TabItem>()
                 .Single(tab => tab.Header?.ToString() == "Equipment");
             Dispatcher.UIThread.RunJobs();
-            var equipmentEditor = view.FindControl<Grid>("CreatureEquipmentEditor");
+            var equipmentEditor = FindVisual<Grid>(view, "CreatureEquipmentEditor");
             equipmentEditor.Should().NotBeNull();
             equipmentEditor!.IsVisible.Should().BeTrue(
                 "UTC equipment slots exist even when the full-body model does not render them");
-            view.FindControl<ListBox>("CreatureEquipmentSlots")!.ItemCount.Should().Be(14);
+            FindVisual<ListBox>(view, "CreatureEquipmentSlots")!.ItemCount.Should().Be(14);
 
             window.Close();
             Dispatcher.UIThread.RunJobs();
@@ -1693,5 +1816,8 @@ namespace SWLOR.Toolset.Tests
             catalog[(int)SWLOR.Game.Server.Service.PerkService.PerkType.CombatAnalyzer]
                 .MaximumLevel.Should().Be(4);
         }
+
+        private static T? FindVisual<T>(Control root, string name) where T : Control =>
+            root.GetVisualDescendants().OfType<T>().SingleOrDefault(control => control.Name == name);
     }
 }

@@ -114,12 +114,12 @@
 
     <DataTemplate DataType="creatures:CreatureLootEntryViewModel">
       <Border Padding="8,6">
-        <Grid ColumnDefinitions="26,*" ColumnSpacing="8">
+        <Grid ColumnDefinitions="26,Auto" ColumnSpacing="8">
           <TextBlock Text="{Binding Position}" Classes="mono" VerticalAlignment="Top"
                      HorizontalAlignment="Center" Margin="0,1,0,0" />
           <StackPanel Grid.Column="1" Spacing="2">
             <TextBlock Text="{Binding TablePicker.SelectedChoiceDisplay}"
-                       FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                       FontWeight="SemiBold" TextWrapping="NoWrap" />
             <TextBlock Text="{Binding ConfigurationSummary}" Classes="dim" FontSize="10.5" />
           </StackPanel>
         </Grid>
@@ -633,6 +633,7 @@
                 <ListBox Grid.Row="3" x:Name="CreatureLootEntries"
                          ItemsSource="{Binding Loot.Entries}"
                          SelectedItem="{Binding Loot.SelectedEntry, Mode=TwoWay}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
                          ScrollViewer.VerticalScrollBarVisibility="Auto">
                   <ListBox.Styles>
                     <Style Selector="ListBoxItem">

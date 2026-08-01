@@ -2,6 +2,7 @@ using System.Collections.Specialized;
 using System.Numerics;
 using System.Text;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless.NUnit;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -1167,6 +1168,8 @@ namespace SWLOR.Toolset.Tests
                 var lootList = FindVisual<ListBox>(view, "CreatureLootEntries");
                 lootList.Should().NotBeNull();
                 lootList!.SelectedItem.Should().BeSameAs(lootEntry);
+                ScrollViewer.GetHorizontalScrollBarVisibility(lootList).Should().Be(ScrollBarVisibility.Auto,
+                    "long loot-table names must be reachable without widening the configured-drop pane");
                 var lootListItem = view.GetVisualDescendants().OfType<ListBoxItem>()
                     .SingleOrDefault(item => ReferenceEquals(item.DataContext, lootEntry));
                 lootListItem.Should().NotBeNull();

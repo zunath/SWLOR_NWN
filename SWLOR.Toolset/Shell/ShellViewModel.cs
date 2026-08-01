@@ -211,6 +211,11 @@ namespace SWLOR.Toolset.Shell
                     if (_editorService.IsValueCreated)
                         _editorService.Value.ReloadOpenGameResources();
                     _palette.Refresh();
+                    // The stock dynamic-race rows do not have a fixed model resref. Their generic
+                    // segmented previews were warmed at startup, but the cache clear above correctly
+                    // invalidates those pixels after the module's final HAK stack is installed. Queue
+                    // fresh representatives now so Dwarf through Human cannot remain placeholders.
+                    _thumbnails.WarmGenericSegmentedCreaturePreviews();
                     StatusText = result.MissingHaks.Count == 0
                         ? $"Custom content reloaded: {result.LoadedHakCount} HAK layer(s)."
                         : $"Custom content reloaded with {result.MissingHaks.Count} missing HAK(s).";

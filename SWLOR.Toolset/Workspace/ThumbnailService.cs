@@ -59,6 +59,13 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         private const int MaxAppearanceWorkers = 2;
 
+        /// <summary>
+        /// Stock appearance.2da rows backed by NWN's segmented player-character model rather than
+        /// a single model resref: Dwarf, Elf, Gnome, Halfling, Half-Elf, Half-Orc, and Human.
+        /// </summary>
+        private static readonly int[] GenericSegmentedCreatureAppearanceIds =
+            { 0, 1, 2, 3, 4, 5, 6 };
+
         private readonly object _appearanceQueueGate = new();
         private readonly List<AppearanceRenderRequest> _appearanceQueue = new();
         private readonly Dictionary<string, AppearanceRenderRequest> _queuedAppearanceByKey =
@@ -472,6 +479,18 @@ namespace SWLOR.Toolset.Workspace
                     priority: AppearancePreviewPriority.Deferred);
             }
         }
+
+        /// <summary>
+        /// Queues representative creature previews for all seven stock dynamic-race appearances.
+        /// </summary>
+        /// <remarks>
+        /// This named operation is intentionally safe to call after every game-resource reload.
+        /// Reloading the module's HAK stack clears previews rendered against the old resources; the
+        /// dynamic rows otherwise remain on their placeholders because they have no model resref
+        /// that can be recovered by the ordinary fixed-model preview path.
+        /// </remarks>
+        public void WarmGenericSegmentedCreaturePreviews() =>
+            WarmAppearancePreviews(GenericSegmentedCreatureAppearanceIds);
 
         private void PromoteAppearanceRequest(string key, AppearancePreviewPriority priority)
         {

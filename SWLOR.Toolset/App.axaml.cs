@@ -204,8 +204,7 @@ namespace SWLOR.Toolset
             try
             {
                 await gameDataReady.ConfigureAwait(false);
-                provider.GetService<ThumbnailService>()?.WarmAppearancePreviews(
-                    Enumerable.Range(0, 7));
+                provider.GetService<ThumbnailService>()?.WarmGenericSegmentedCreaturePreviews();
             }
             catch (Exception ex)
             {

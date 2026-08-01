@@ -421,7 +421,7 @@ namespace SWLOR.Toolset.Tests
 
             try
             {
-                thumbnails.WarmAppearancePreviews(Enumerable.Range(0, 7));
+                thumbnails.WarmGenericSegmentedCreaturePreviews();
                 window.Show();
                 Dispatcher.UIThread.RunJobs();
                 section.SetOptions(appearances.GetAll()

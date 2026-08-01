@@ -126,6 +126,31 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void GenericSegmentedCreaturePreviewsAreRequeuedAfterACacheClear()
+        {
+            var source = new CountingSource();
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+
+            service.WarmGenericSegmentedCreaturePreviews();
+            Drain();
+
+            source.AppearanceOrder.Should().BeEquivalentTo(
+                new[] { 0, 1, 2, 3, 4, 5, 6 },
+                options => options.WithStrictOrdering(),
+                "every stock dynamic race needs a representative model");
+            Enumerable.Range(0, 7).Should().OnlyContain(id => service.CachedAppearance(id) != null);
+
+            service.ClearCache();
+            service.WarmGenericSegmentedCreaturePreviews();
+            Drain();
+
+            source.AppearanceCalls.Should().Be(14,
+                "a HAK reload invalidates the old pixels and all seven representatives must render again");
+            Enumerable.Range(0, 7).Should().OnlyContain(id => service.CachedAppearance(id) != null);
+        }
+
+        [AvaloniaTest]
         public void AnAppearanceMissIsRetriedWhenResourcesBecomeAvailable()
         {
             // The editor can publish its first gallery page while the replacement module HAK stack

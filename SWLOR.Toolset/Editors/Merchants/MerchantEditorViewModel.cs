@@ -8,6 +8,7 @@ using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Merchants;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
+using SWLOR.Toolset.Editors.Items;
 
 namespace SWLOR.Toolset.Editors.Merchants
 {
@@ -26,6 +27,7 @@ namespace SWLOR.Toolset.Editors.Merchants
         private readonly Func<string, int, int, int,
             IReadOnlyList<MerchantItemDefinition>>? _searchItems;
         private readonly Action<string, Action<Bitmap>>? _requestItemPreview;
+        private readonly Action<string>? _openItem;
         private readonly IReadOnlyList<BehaviorChoice> _baseItems;
         private readonly MerchantInstanceService? _instances;
         private readonly List<MerchantBuyingRuleViewModel> _allBuyingRules = new();
@@ -135,6 +137,14 @@ namespace SWLOR.Toolset.Editors.Merchants
         public Bitmap? SelectedItemPreview => SelectedInventoryItem?.Preview;
         public string SelectedItemSellPrice => SelectedInventoryItem?.SellPrice ?? "—";
         public string SelectedItemBuyPrice => SelectedInventoryItem?.BuyPrice ?? "—";
+        public IReadOnlyList<ItemStatSummaryGroup> SelectedItemStatGroups =>
+            SelectedInventoryItem?.StatGroups ?? Array.Empty<ItemStatSummaryGroup>();
+        public bool HasSelectedItemStats => SelectedItemStatGroups.Count > 0;
+        public bool ShowsSelectedItemStatsStatus =>
+            HasSelectedInventoryItem && !HasSelectedItemStats;
+        public string SelectedItemStatsStatus => ShowsSelectedItemStatsStatus
+            ? "This item has no gameplay stats."
+            : string.Empty;
         public bool SelectedItemInfinite
         {
             get => SelectedInventoryItem?.IsInfinite == true;
@@ -227,7 +237,8 @@ namespace SWLOR.Toolset.Editors.Merchants
             Func<string, int, int, int,
                 IReadOnlyList<MerchantItemDefinition>>? searchItems = null,
             MerchantInstanceService? instances = null,
-            Action<string, Action<Bitmap>>? requestItemPreview = null)
+            Action<string, Action<Bitmap>>? requestItemPreview = null,
+            Action<string>? openItem = null)
         {
             ArgumentNullException.ThrowIfNull(merchant);
             _store = new MerchantValueStore(merchant);
@@ -238,6 +249,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             _searchItems = searchItems;
             _instances = instances;
             _requestItemPreview = requestItemPreview;
+            _openItem = openItem;
             HeaderOwner = headerOwner;
 
             BuildRows();
@@ -340,6 +352,16 @@ namespace SWLOR.Toolset.Editors.Merchants
         private bool CanAddInventoryItem() =>
             SelectedInventoryCategory != null && SelectedItemCandidate != null;
 
+        [RelayCommand(CanExecute = nameof(CanOpenItemDetails))]
+        private void OpenItemDetails(string? resRef)
+        {
+            if (!string.IsNullOrWhiteSpace(resRef))
+                _openItem?.Invoke(resRef);
+        }
+
+        private bool CanOpenItemDetails(string? resRef) =>
+            _openItem != null && !string.IsNullOrWhiteSpace(resRef);
+
         [RelayCommand]
         private void RemoveInventoryItem(MerchantInventoryItemViewModel? item)
         {
@@ -407,6 +429,10 @@ namespace SWLOR.Toolset.Editors.Merchants
             OnPropertyChanged(nameof(SelectedItemPreview));
             OnPropertyChanged(nameof(SelectedItemSellPrice));
             OnPropertyChanged(nameof(SelectedItemBuyPrice));
+            OnPropertyChanged(nameof(SelectedItemStatGroups));
+            OnPropertyChanged(nameof(HasSelectedItemStats));
+            OnPropertyChanged(nameof(ShowsSelectedItemStatsStatus));
+            OnPropertyChanged(nameof(SelectedItemStatsStatus));
             OnPropertyChanged(nameof(SelectedItemInfinite));
         }
 

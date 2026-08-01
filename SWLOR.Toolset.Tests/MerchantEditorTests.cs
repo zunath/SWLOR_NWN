@@ -6,6 +6,7 @@ using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Merchants;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Editors.Items;
 using SWLOR.Toolset.Editors.Merchants;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
@@ -413,6 +414,62 @@ namespace SWLOR.Toolset.Tests
             deliverPreview.Should().NotBeNull();
             editor.InventoryItems.Should().ContainSingle();
             editor.SelectedInventoryItem.Should().BeSameAs(editor.InventoryItems[0]);
+        }
+
+        [Test]
+        public void InventoryAndCandidateRowsShareItemStatsAndOpenTheItemEditor()
+        {
+            var root = NewMerchant();
+            new MerchantValueStore(root).AddInventoryItem(
+                (int)MerchantInventoryCategory.Armor,
+                "probe_armor");
+            var stats = new[]
+            {
+                new ItemStatSummaryGroup("Defense", new[]
+                {
+                    new ItemStatSummaryEntry("Defense", "12"),
+                    new ItemStatSummaryEntry("Evasion", "4")
+                }),
+                new ItemStatSummaryGroup("Vitals", new[]
+                {
+                    new ItemStatSummaryEntry("HP", "25")
+                })
+            };
+            var item = new MerchantItemDefinition(
+                "probe_armor",
+                "Probe Armor",
+                100,
+                (int)MerchantInventoryCategory.Armor,
+                stats);
+            var opened = new List<string>();
+
+            using var editor = new MerchantEditorViewModel(
+                root,
+                "probe_store",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                loadItem: _ => item,
+                searchItems: (_, _, skip, take) => new[] { item }.Skip(skip).Take(take).ToList(),
+                openItem: opened.Add);
+
+            var inventoryRow = editor.InventoryItems.Should().ContainSingle().Subject;
+            inventoryRow.StatGroups.Should().BeSameAs(stats);
+            inventoryRow.StatSummary.Should().Contain("Defense 12")
+                .And.Contain("Evasion 4")
+                .And.Contain("HP 25");
+            var candidateRow = editor.ItemCandidates.Should().ContainSingle().Subject;
+            candidateRow.StatSummary.Should().Be(inventoryRow.StatSummary);
+            editor.SelectedItemStatGroups.Should().BeSameAs(stats);
+            editor.HasSelectedItemStats.Should().BeTrue();
+            editor.ShowsSelectedItemStatsStatus.Should().BeFalse();
+
+            editor.OpenItemDetailsCommand.CanExecute(inventoryRow.ResRef).Should().BeTrue();
+            editor.OpenItemDetailsCommand.Execute(inventoryRow.ResRef);
+
+            opened.Should().Equal("probe_armor");
         }
 
         [Test]

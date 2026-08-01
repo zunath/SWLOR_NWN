@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:merchants="using:SWLOR.Toolset.Editors.Merchants"
+             xmlns:items="using:SWLOR.Toolset.Editors.Items"
              x:Class="SWLOR.Toolset.Editors.Merchants.MerchantEditorView"
              x:DataType="merchants:MerchantEditorViewModel">
 
@@ -68,7 +69,7 @@
                    SelectedItem="{Binding SelectedInventoryItem, Mode=TwoWay}">
             <ListBox.ItemTemplate>
               <DataTemplate DataType="merchants:MerchantInventoryItemViewModel">
-                <Grid ColumnDefinitions="Auto,46,*,Auto" Margin="6,6" ColumnSpacing="10">
+                <Grid ColumnDefinitions="Auto,46,*,Auto,Auto" Margin="6,6" ColumnSpacing="10">
                   <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked, Mode=TwoWay}"
                             VerticalAlignment="Center" />
                   <Border Grid.Column="1" Width="42" Height="42"
@@ -81,6 +82,8 @@
                     <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"
                                TextTrimming="CharacterEllipsis" />
                     <TextBlock Text="{Binding ResRef}" Classes="resref" FontSize="10.5" />
+                    <TextBlock Text="{Binding StatSummary}" Classes="count"
+                               TextTrimming="CharacterEllipsis" IsVisible="{Binding HasStats}" />
                   </StackPanel>
                   <StackPanel Grid.Column="3" HorizontalAlignment="Right"
                               VerticalAlignment="Center">
@@ -88,6 +91,12 @@
                     <TextBlock Text="{Binding BuyPrice}" Classes="dim" FontSize="10.5"
                                HorizontalAlignment="Right" />
                   </StackPanel>
+                  <Button Grid.Column="4" Classes="utility-icon"
+                          Command="{Binding $parent[ListBox].((merchants:MerchantEditorViewModel)DataContext).OpenItemDetailsCommand}"
+                          CommandParameter="{Binding ResRef}"
+                          ToolTip.Tip="Open item details">
+                    <Path Data="{DynamicResource ToolsetOpenDocumentIconGeometry}" />
+                  </Button>
                 </Grid>
               </DataTemplate>
             </ListBox.ItemTemplate>
@@ -116,7 +125,7 @@
                   <ListBox.ItemTemplate>
                     <DataTemplate DataType="merchants:MerchantItemCandidateViewModel">
                       <Border Loaded="OnItemCandidateLoaded" Padding="6,5">
-                        <Grid ColumnDefinitions="40,*" ColumnSpacing="9">
+                        <Grid ColumnDefinitions="40,*,Auto" ColumnSpacing="9">
                           <Border Grid.Column="0" Width="36" Height="36" CornerRadius="2"
                                   Background="{DynamicResource FieldBrush}"
                                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
@@ -132,7 +141,15 @@
                             <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"
                                        TextTrimming="CharacterEllipsis" />
                             <TextBlock Text="{Binding ResRef}" Classes="resref" FontSize="10.5" />
+                            <TextBlock Text="{Binding StatSummary}" Classes="count"
+                                       TextTrimming="CharacterEllipsis" IsVisible="{Binding HasStats}" />
                           </StackPanel>
+                          <Button Grid.Column="2" Classes="utility-icon"
+                                  Command="{Binding $parent[ListBox].((merchants:MerchantEditorViewModel)DataContext).OpenItemDetailsCommand}"
+                                  CommandParameter="{Binding ResRef}"
+                                  ToolTip.Tip="Open item details">
+                            <Path Data="{DynamicResource ToolsetOpenDocumentIconGeometry}" />
+                          </Button>
                         </Grid>
                       </Border>
                     </DataTemplate>
@@ -145,7 +162,8 @@
 
         <Border Grid.Column="2" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1,0,0,0"
                 Padding="14">
-          <StackPanel Spacing="9">
+          <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel Spacing="9" Margin="0,0,6,0">
             <TextBlock Text="Selected item" Classes="section" />
             <Border Height="112" Background="{DynamicResource PanelRaisedBrush}"
                     BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
@@ -156,6 +174,10 @@
             <TextBlock Text="{Binding SelectedItemName}" FontSize="16"
                        FontWeight="SemiBold" TextWrapping="Wrap" />
             <TextBlock Text="{Binding SelectedItemResRef}" Classes="resref" />
+            <Button Content="Open item details"
+                    Command="{Binding OpenItemDetailsCommand}"
+                    CommandParameter="{Binding SelectedItemResRef}"
+                    IsEnabled="{Binding HasSelectedInventoryItem}" />
             <Separator Margin="0,3" />
             <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="6">
               <TextBlock Grid.Column="0" Grid.Row="0" Text="Store sells for" Classes="dim" />
@@ -163,6 +185,34 @@
               <TextBlock Grid.Column="0" Grid.Row="1" Text="Store buys for" Classes="dim" />
               <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SelectedItemBuyPrice}" />
             </Grid>
+            <Border Padding="10" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                    CornerRadius="3" IsVisible="{Binding HasSelectedItemStats}">
+              <StackPanel Spacing="8">
+                <TextBlock Text="Item stats" Classes="section" />
+                <ItemsControl ItemsSource="{Binding SelectedItemStatGroups}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="items:ItemStatSummaryGroup">
+                      <StackPanel Spacing="4" Margin="0,0,0,6">
+                        <TextBlock Text="{Binding Title}" Classes="label" />
+                        <ItemsControl ItemsSource="{Binding Entries}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="items:ItemStatSummaryEntry">
+                              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" Margin="0,2">
+                                <TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
+                                <TextBlock Grid.Column="1" Text="{Binding Value}"
+                                           FontFamily="{DynamicResource MonoFont}" />
+                              </Grid>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </Border>
+            <TextBlock Text="{Binding SelectedItemStatsStatus}" Classes="dim"
+                       TextWrapping="Wrap" IsVisible="{Binding ShowsSelectedItemStatsStatus}" />
             <CheckBox Content="Unlimited stock"
                       IsChecked="{Binding SelectedItemInfinite, Mode=TwoWay}"
                       IsEnabled="{Binding HasSelectedInventoryItem}" />
@@ -171,6 +221,7 @@
                     CommandParameter="{Binding SelectedInventoryItem}"
                     IsEnabled="{Binding HasSelectedInventoryItem}" />
           </StackPanel>
+          </ScrollViewer>
         </Border>
       </Grid>
     </TabItem>

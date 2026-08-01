@@ -52,6 +52,16 @@
     Z
   </StreamGeometry>
 
+  <!-- Opens the referenced blueprint in its document tab. The detached northeast arrow makes the
+       action distinct from selection, while the square anchors it to the document being opened. -->
+  <StreamGeometry x:Key="ToolsetOpenDocumentIconGeometry">
+    M9,2 H14 V7 H12 V5.41 L7.71,9.71 L6.29,8.29 L10.59,4 H9 Z
+    M3,3 H7 V5 H4 V12 H11 V9 H13 V13
+    C13,13.55 12.55,14 12,14 H3
+    C2.45,14 2,13.55 2,13 V4
+    C2,3.45 2.45,3 3,3 Z
+  </StreamGeometry>
+
   <StreamGeometry x:Key="ToolsetChevronDownIconGeometry">
     M3.18,5.3
     C2.94,5.06 2.55,5.06 2.31,5.3

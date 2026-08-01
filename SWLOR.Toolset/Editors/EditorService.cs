@@ -1473,7 +1473,8 @@ namespace SWLOR.Toolset.Editors
                 _thumbnails == null
                     ? null
                     : (itemResRef, onReady) =>
-                        _thumbnails.RequestAsync(ResourceType.Uti, itemResRef, onReady));
+                        _thumbnails.RequestAsync(ResourceType.Uti, itemResRef, onReady),
+                itemResRef => TryOpenEditor(ResourceType.Uti, itemResRef));
             editor.Closed += closed => _openMerchantEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -1810,7 +1811,8 @@ namespace SWLOR.Toolset.Editors
                     resRef,
                     string.IsNullOrWhiteSpace(name) ? resRef : name,
                     cost,
-                    storePanel);
+                    storePanel,
+                    Items.ItemStatSummary.Build(item, ItemCostTables(), ResolveItemChoices));
                 _merchantItemDetails[resRef] = definition;
                 return definition;
             }

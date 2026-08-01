@@ -173,13 +173,13 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="player">The player to request a reward from</param>
         /// <param name="questSource">The source of the quest reward giver</param>
-        private void RequestRewardSelectionFromPC(uint player, uint questSource)
+        private bool RequestRewardSelectionFromPC(uint player, uint questSource)
         {
             if (!GetIsPC(player) ||
                 GetIsDM(player) ||
                 GetIsDead(player) ||
                 GetCurrentHitPoints(player) <= 0)
-                return;
+                return false;
 
             if (AllowRewardSelection)
             {
@@ -190,6 +190,8 @@ namespace SWLOR.Game.Server.Service.QuestService
             {
                 Complete(player, questSource, null);
             }
+
+            return true;
         }
 
         /// <summary>
@@ -260,13 +262,13 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="player">The player accepting the quest.</param>
         /// <param name="questSource">The source of the quest giver</param>
-        public void Accept(uint player, uint questSource)
+        public bool Accept(uint player, uint questSource)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) || GetIsDM(player)) return false;
 
             if (!CanAccept(player))
             {
-                return;
+                return false;
             }
 
             // By this point, it's assumed the player will accept the quest.
@@ -313,6 +315,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
             QuestEncounter.RefreshVisibilityForPlayer(player);
             Gui.PublishRefreshEvent(player, new QuestAcquiredRefreshEvent(QuestId));
+            return true;
         }
 
         /// <summary>
@@ -320,13 +323,13 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="player">The player advancing to the next quest state</param>
         /// <param name="questSource">The source of quest advancement</param>
-        public void Advance(uint player, uint questSource)
+        public bool Advance(uint player, uint questSource)
         {
             if (!GetIsPC(player) ||
                 GetIsDM(player) ||
                 GetIsDead(player) ||
                 GetCurrentHitPoints(player) <= 0)
-                return;
+                return false;
 
             // Retrieve the player's current quest state.
             var playerId = GetObjectUUID(player);
@@ -338,13 +341,13 @@ namespace SWLOR.Game.Server.Service.QuestService
             if (playerQuest.CurrentState <= 0)
             {
                 SendMessageToPC(player, "You have not accepted this quest yet.");
-                return;
+                return false;
             }
 
             // If this quest has already been completed, exit early.
             // This is used in case a module builder incorrectly configures a quest.
             // We don't want to risk giving duplicate rewards.
-            if (playerQuest.TimesCompleted > 0 && !IsRepeatable) return;
+            if (playerQuest.TimesCompleted > 0 && !IsRepeatable) return false;
 
             var currentState = GetState(playerQuest.CurrentState);
 
@@ -352,7 +355,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             foreach (var objective in currentState.GetObjectives())
             {
                 if (!objective.IsComplete(player, QuestId))
-                    return;
+                    return false;
             }
 
             var lastState = GetStates().Last();
@@ -360,7 +363,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             // If this is the last state, the assumption is that it's time to complete the quest.
             if (playerQuest.CurrentState == lastState.Key)
             {
-                RequestRewardSelectionFromPC(player, questSource);
+                return RequestRewardSelectionFromPC(player, questSource);
             }
             else
             {
@@ -409,8 +412,8 @@ namespace SWLOR.Game.Server.Service.QuestService
 
                 QuestEncounter.RefreshVisibilityForPlayer(player);
                 Gui.PublishRefreshEvent(player, new QuestProgressedRefreshEvent(QuestId));
+                return true;
             }
-
         }
 
         /// <summary>

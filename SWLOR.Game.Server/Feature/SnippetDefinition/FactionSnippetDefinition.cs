@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-give-faction-points' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to find by faction Id
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-give-faction-points' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to read second argument as the amount
@@ -156,13 +156,13 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-give-faction-points' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var factionType = (FactionType)factionId;
                     amount = Math.Abs(amount);
                     Faction.AdjustPlayerFactionPoints(player, factionType, amount);
-
+                    return true;
                 });
         }
 
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-take-faction-points' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to find by faction Id
@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-take-faction-points' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to read second argument as the amount
@@ -198,12 +198,13 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-take-faction-points' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var factionType = (FactionType)factionId;
                     amount = Math.Abs(amount);
                     Faction.AdjustPlayerFactionPoints(player, factionType, -amount);
+                    return true;
                 });
         }
 
@@ -221,7 +222,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-give-faction-standing' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to find by faction Id
@@ -230,7 +231,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-give-faction-standing' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to read second argument as the amount
@@ -239,12 +240,13 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-give-faction-standing' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var factionType = (FactionType)factionId;
                     amount = Math.Abs(amount);
                     Faction.AdjustPlayerFactionStanding(player, factionType, amount);
+                    return true;
                 });
         }
 
@@ -262,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-take-faction-standing' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to find by faction Id
@@ -271,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-take-faction-standing' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to read second argument as the amount
@@ -280,12 +282,13 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-take-faction-standing' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var factionType = (FactionType)factionId;
                     amount = Math.Abs(amount);
                     Faction.AdjustPlayerFactionStanding(player, factionType, -amount);
+                    return true;
                 });
         }
 

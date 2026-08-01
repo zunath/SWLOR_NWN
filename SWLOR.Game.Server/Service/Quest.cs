@@ -226,9 +226,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player who is accepting the quest</param>
         /// <param name="questId">The Id of the quest to accept.</param>
-        public static void AcceptQuest(uint player, string questId)
+        public static bool AcceptQuest(uint player, string questId)
         {
-            _quests[questId].Accept(player, OBJECT_SELF);
+            return _quests[questId].Accept(player, OBJECT_SELF);
         }
 
         public static bool CanAcceptQuest(uint player, string questId)
@@ -243,9 +243,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player who is advancing to the next state of the quest.</param>
         /// <param name="questSource">The source of the quest. Typically an NPC or object.</param>
         /// <param name="questId">The Id of the quest to advance.</param>
-        public static void AdvanceQuest(uint player, uint questSource, string questId)
+        public static bool AdvanceQuest(uint player, uint questSource, string questId)
         {
-            _quests[questId].Advance(player, questSource);
+            return _quests[questId].Advance(player, questSource);
         }
 
         /// <summary>
@@ -253,7 +253,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player who will open the collection placeable.</param>
         /// <param name="questId">The quest to collect items for.</param>
-        public static void RequestItemsFromPlayer(uint player, string questId)
+        public static bool RequestItemsFromPlayer(uint player, string questId)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Service
             if (!dbPlayer.Quests.ContainsKey(questId))
             {
                 SendMessageToPC(player, "You have not accepted this quest yet.");
-                return;
+                return false;
             }
 
             var quest = dbPlayer.Quests[questId];
@@ -275,7 +275,7 @@ namespace SWLOR.Game.Server.Service
             if (!hasCollectItemObjective)
             {
                 SendMessageToPC(player, "There are no items to turn in for this quest. This is likely a bug. Please let the staff know.");
-                return;
+                return false;
             }
 
             var collector = CreateObject(ObjectType.Placeable, "qst_item_collect", GetLocation(player));
@@ -293,6 +293,8 @@ namespace SWLOR.Game.Server.Service
                 if (GetIsObjectValid(collector))
                     DestroyObject(collector);
             });
+
+            return true;
         }
 
         /// <summary>

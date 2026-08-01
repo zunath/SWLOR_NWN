@@ -13,7 +13,7 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                 return false;
 
             var trimmed = label.Trim();
-            if (trimmed == "****")
+            if (trimmed.All(character => character == '*'))
                 return false;
 
             var normalized = new string(trimmed

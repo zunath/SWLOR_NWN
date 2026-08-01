@@ -4,7 +4,12 @@ namespace SWLOR.Game.Server.Service.SnippetService
 {
     public delegate bool SnippetConditionDelegate(uint player, string[] args);
 
-    public delegate void SnippetActionDelegate(uint player, string[] args);
+    /// <summary>
+    /// Runs a conversation outcome and reports whether it completed successfully. Once-per-player
+    /// markers are persisted only when this returns true, so invalid or inapplicable outcomes can
+    /// be corrected and retried instead of being suppressed permanently.
+    /// </summary>
+    public delegate bool SnippetActionDelegate(uint player, string[] args);
     public class SnippetDetail
     {
         public string Description { get; set; }

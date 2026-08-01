@@ -173,11 +173,11 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-accept-quest' requires a questId argument.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var questId = args[0];
-                    Quest.AcceptQuest(player, questId);
+                    return Quest.AcceptQuest(player, questId);
                 });
         }
 
@@ -194,11 +194,11 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-advance-quest' requires a questId argument.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var questId = args[0];
-                    Quest.AdvanceQuest(player, OBJECT_SELF, questId);
+                    return Quest.AdvanceQuest(player, OBJECT_SELF, questId);
                 });
         }
 
@@ -210,18 +210,18 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                 .Argument("questId", SnippetArgumentType.QuestId)
                 .ActionsTakenAction((player, args) =>
                 {
-                    if (!GetIsPC(player) || GetIsDM(player)) return;
+                    if (!GetIsPC(player) || GetIsDM(player)) return false;
 
                     if (args.Length <= 0)
                     {
                         const string Error = "'action-request-quest-items' requires a questId argument.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var questId = args[0];
-                    Quest.RequestItemsFromPlayer(player, questId);
+                    return Quest.RequestItemsFromPlayer(player, questId);
                 });
         }
 

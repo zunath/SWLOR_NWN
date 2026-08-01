@@ -64,7 +64,7 @@ namespace SWLOR.Toolset.Tests.Items
                     "2DA V2.0\r\n\r\nName\r\n0 FIXTURE_TABLE\r\n");
                 File.WriteAllText(
                     Path.Combine(scratch, "fixture_table.2da"),
-                    "2DA V2.0\r\n\r\nName\r\n0 a\r\n1 b\r\n2 c\r\n");
+                    "2DA V2.0\r\n\r\nLabel\r\n0 a\r\n1 b\r\n2 c\r\n");
 
                 var ranges = new ItemCostTableRanges(new TwoDaService(scratch));
 
@@ -94,11 +94,67 @@ namespace SWLOR.Toolset.Tests.Items
                     "2DA V2.0\r\n\r\nName\r\n0 FIXTURE_TABLE\r\n");
                 File.WriteAllText(
                     Path.Combine(scratch, "fixture_table.2da"),
-                    "2DA V2.0\r\n\r\nName\r\n0 a\r\n1 b\r\n2 c\r\n3 ****\r\n4 ****\r\n");
+                    "2DA V2.0\r\n\r\nLabel\r\n0 a\r\n1 b\r\n2 c\r\n3 ****\r\n4 *****\r\n");
 
                 var ranges = new ItemCostTableRanges(new TwoDaService(scratch));
 
                 ranges.MaxFor(0).Should().Be(2, "empty padding rows are not selectable CostValues");
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
+        public void OptionsExcludeSharedPlaceholderLabels()
+        {
+            var scratch = Path.Combine(Path.GetTempPath(), "swlor-cost-table-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "iprp_costtable.2da"),
+                    "2DA V2.0\r\n\r\nName\r\n0 FIXTURE_TABLE\r\n");
+                File.WriteAllText(
+                    Path.Combine(scratch, "fixture_table.2da"),
+                    "2DA V2.0\r\n\r\nLabel Amount\r\n" +
+                    "0 Real_Value 10\r\n" +
+                    "1 DELETED 20\r\n" +
+                    "2 USER 30\r\n" +
+                    "3 Bio_reserved 40\r\n" +
+                    "4 ***** 50\r\n");
+
+                var ranges = new ItemCostTableRanges(new TwoDaService(scratch));
+
+                ranges.OptionsFor(0).Should().ContainSingle()
+                    .Which.Should().Be(new ItemCostTableOption(0, "10"));
+                ranges.MaxFor(0).Should().Be(0);
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
+        public void CostTableWithoutDeclaredLabelColumnFailsClosed()
+        {
+            var scratch = Path.Combine(Path.GetTempPath(), "swlor-cost-table-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "iprp_costtable.2da"),
+                    "2DA V2.0\r\n\r\nName\r\n0 FIXTURE_TABLE\r\n");
+                File.WriteAllText(
+                    Path.Combine(scratch, "fixture_table.2da"),
+                    "2DA V2.0\r\n\r\nName\r\n0 Looks_Real\r\n");
+
+                var ranges = new ItemCostTableRanges(new TwoDaService(scratch));
+
+                ranges.OptionsFor(0).Should().BeEmpty();
+                ranges.MaxFor(0).Should().BeNull();
             }
             finally
             {

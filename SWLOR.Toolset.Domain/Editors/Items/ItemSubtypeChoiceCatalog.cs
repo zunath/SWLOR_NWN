@@ -13,9 +13,6 @@ namespace SWLOR.Toolset.Domain.Editors.Items
     /// </summary>
     public static class ItemSubtypeChoiceCatalog
     {
-        private const string LabelColumn = "Label";
-        private const string NameColumn = "Name";
-
         /// <param name="twoDa">Null-tolerant, matching <see cref="ItemSpellChoiceCatalog"/>.</param>
         /// <param name="tableResRef">The 2da's file name without extension - matched case-insensitively.</param>
         /// <param name="tlk">
@@ -27,17 +24,26 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             if (twoDa == null || string.IsNullOrWhiteSpace(tableResRef))
                 return Array.Empty<BehaviorChoice>();
 
-            if (!twoDa.TryGetTable(tableResRef, out var table) || table == null)
+            if (!TwoDaLookupTables.TryGetItemSubtype(tableResRef, out var definition))
+                return Array.Empty<BehaviorChoice>();
+
+            var requiredColumns = definition.RequiredColumns ?? Array.Empty<string>();
+            if (!twoDa.TryGetTable(definition.TableName, out var table) ||
+                table == null ||
+                !table.HasColumn(definition.LabelColumn) ||
+                requiredColumns.Any(column => !table.HasColumn(column)))
                 return Array.Empty<BehaviorChoice>();
 
             var choices = new List<BehaviorChoice>();
             for (var row = 0; row < table.RowCount; row++)
             {
-                var label = table.GetString(row, LabelColumn);
-                if (!TwoDaChoicePolicy.IsSelectableLabel(label))
+                var label = table.GetString(row, definition.LabelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
+                    requiredColumns.Any(column =>
+                        !TwoDaChoicePolicy.IsSelectableLabel(table.GetString(row, column))))
                     continue;
 
-                var resolved = ResolveDisplay(table, row, tlk);
+                var resolved = ResolveDisplay(table, row, definition.StrRefColumn, tlk);
 
                 choices.Add(new BehaviorChoice(row, resolved ?? label!));
             }
@@ -45,16 +51,20 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             return choices;
         }
 
-        private static string? ResolveDisplay(TwoDaTable table, int row, Func<int, string?>? tlk)
+        private static string? ResolveDisplay(
+            TwoDaTable table,
+            int row,
+            string? strRefColumn,
+            Func<int, string?>? tlk)
         {
-            if (tlk == null)
+            if (tlk == null || strRefColumn == null || !table.HasColumn(strRefColumn))
                 return null;
 
-            var strRef = table.GetInt(row, NameColumn);
-            if (strRef is null)
+            var rawStrRef = table.GetString(row, strRefColumn);
+            if (!int.TryParse(rawStrRef, out var strRef))
                 return null;
 
-            var text = tlk(strRef.Value);
+            var text = tlk(strRef);
             return string.IsNullOrWhiteSpace(text) ? null : text;
         }
 

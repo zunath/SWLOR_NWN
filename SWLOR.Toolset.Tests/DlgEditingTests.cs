@@ -161,6 +161,26 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void DuplicatingANodeGivesOncePerPlayerOutcomesIndependentMarkers()
+        {
+            var document = LoadDantHerbs();
+            var reply = document.AddReply("One reward per player.");
+            var action = reply.AddAction("action-give-faction-points", "1 50");
+            reply.SetActionOncePerPlayer(action, oncePerPlayer: true, "dant_herbs:stable-marker");
+
+            var copy = document.DuplicateNode(reply);
+
+            var originalMarker = reply.Actions.Single(candidate => candidate.IsOncePerPlayerMarker);
+            var copiedMarker = copy.Actions.Single(candidate => candidate.IsOncePerPlayerMarker);
+            copiedMarker.Key.Should().Be(originalMarker.Key,
+                "the marker must remain paired with the same copied action");
+            copiedMarker.Value.Should().StartWith("dant_herbs:");
+            copiedMarker.Value.Should().NotBe(originalMarker.Value,
+                "the original and separate copy are independently completable outcomes");
+            copy.Actions.Single(candidate => !candidate.IsOncePerPlayerMarker).Value.Should().Be("1 50");
+        }
+
+        [Test]
         public void DuplicatingANodePreservesEveryLocalizedStringIndependently()
         {
             var document = LoadDantHerbs();

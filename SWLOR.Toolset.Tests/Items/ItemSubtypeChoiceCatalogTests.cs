@@ -21,20 +21,21 @@ namespace SWLOR.Toolset.Tests.Items
             _scratchDirectory = Path.Combine(Path.GetTempPath(), "swlor-subtype-choice-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(_scratchDirectory);
             File.WriteAllText(
-                Path.Combine(_scratchDirectory, "fixture_races.2da"),
-                "2DA V2.0\r\n\r\n     Label            Name\r\n" +
-                "0    Human            100\r\n" +
-                "1    Bio_reserved     ****\r\n" +
-                "2    cep_reserved     ****\r\n" +
-                "3    DELETED          ****\r\n" +
-                "4    Padding          ****\r\n" +
-                "5    Wookiee          ****\r\n" +
-                "6    Zabrak           200\r\n" +
-                "7    Bio_reserved     300\r\n" +
-                "8    USER             ****\r\n" +
-                "9    Unused           ****\r\n" +
-                "10   INVALID_RACE     ****\r\n" +
-                "11   NULL6            ****\r\n");
+                Path.Combine(_scratchDirectory, "racialtypes.2da"),
+                "2DA V2.0\r\n\r\n     Label            Name    Constant\r\n" +
+                "0    Human            100     RACIAL_TYPE_HUMAN\r\n" +
+                "1    Bio_reserved     ****    ****\r\n" +
+                "2    cep_reserved     ****    ****\r\n" +
+                "3    DELETED          ****    ****\r\n" +
+                "4    Padding          ****    ****\r\n" +
+                "5    Wookiee          ****    RACIAL_TYPE_WOOKIEE\r\n" +
+                "6    Zabrak           200     RACIAL_TYPE_ZABRAK\r\n" +
+                "7    Bio_reserved     300     RACIAL_TYPE_RESERVED\r\n" +
+                "8    USER             ****    ****\r\n" +
+                "9    Unused           ****    ****\r\n" +
+                "10   INVALID_RACE     ****    ****\r\n" +
+                "11   NULL6            ****    ****\r\n" +
+                "12   Looks_Real       400     ****\r\n");
         }
 
         [TearDown]
@@ -55,7 +56,7 @@ namespace SWLOR.Toolset.Tests.Items
                 _ => null
             };
 
-            return ItemSubtypeChoiceCatalog.Read(twoDa, "fixture_races", Tlk);
+            return ItemSubtypeChoiceCatalog.Read(twoDa, "racialtypes", Tlk);
         }
 
         [Test]
@@ -90,6 +91,26 @@ namespace SWLOR.Toolset.Tests.Items
             var choices = ReadFixture();
 
             choices.Should().NotContain(choice => choice.Display == "Real Bio-Reserved Name");
+        }
+
+        [Test]
+        public void ARealLookingRaceWithoutItsRequiredConstantIsExcluded()
+        {
+            ReadFixture().Should().NotContain(choice => choice.Display == "Looks_Real");
+        }
+
+        [Test]
+        public void AnUndeclaredDynamicSubtypeSourceFailsClosed()
+        {
+            File.WriteAllText(
+                Path.Combine(_scratchDirectory, "unexpected_subtypes.2da"),
+                "2DA V2.0\r\n\r\nLabel Name\r\n0 Looks_Real 100\r\n");
+
+            ItemSubtypeChoiceCatalog.Read(
+                    new TwoDaService(_scratchDirectory),
+                    "unexpected_subtypes",
+                    tlk: null)
+                .Should().BeEmpty();
         }
 
         [Test]

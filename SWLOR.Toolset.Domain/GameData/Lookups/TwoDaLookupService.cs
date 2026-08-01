@@ -166,6 +166,60 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         /// <summary>racialtypes.2da - a real race must declare the engine Constant it maps to.</summary>
         public static readonly TwoDaLookupTable Race = new("racialtypes", "Label", "Name", ["Constant"]);
 
+        // Item-property subtype tables are declared here rather than accepted by shape alone. The
+        // row index is the value stored in GFF, but some tables need additional metadata to prove a
+        // labeled row is usable by the engine (for example racialtypes.Constant).
+        public static readonly IReadOnlyList<TwoDaLookupTable> ItemSubtypeTables =
+        [
+            new("iprp_foodtype", "Label", "Name"),
+            new("iprp_enhancearm", "Label", "Name"),
+            new("iprp_enhancewpn", "Label", "Name"),
+            new("iprp_enhancestr", "Label", "Name"),
+            new("iprp_enhancefd", "Label", "Name"),
+            new("iprp_enhancesta", "Label", "Name"),
+            new("iprp_enhancemod", "Label", "Name"),
+            new("iprp_enhancedrd", "Label", "Name"),
+            new("iprp_droidpart", "Label", "Name"),
+            new("iprp_droidperk", "Label", "Name"),
+            new("iprp_dnatype", "Label", "Name"),
+            new("iprp_enzcolor", "Label", "Name"),
+            new("iprp_skill", "Label", "Name"),
+            new("iprp_c_dmgtype", "Label", "Name"),
+            new("iprp_resperk", "Label", "Name"),
+            Race,
+            new("iprp_abilities", "Label", "Name"),
+            new("iprp_feats", "Label", "Name", ["FeatIndex"]),
+            new("iprp_damagetype", "Label", "Name"),
+            new("iprp_protection", "Label", "Name"),
+            new("iprp_saveelement", "NameString", "Name"),
+            new("iprp_onhit", "Label", "Name"),
+            new("iprp_monsterhit", "Label", "Name"),
+            new("iprp_walk", "Label", "Name"),
+            new("iprp_onhitspell", "Label", "Name", ["SpellIndex"]),
+            new("iprp_visualfx", "Label", "Name", ["ModelSuffix"])
+        ];
+
+        /// <summary>
+        /// Resolves only tables explicitly supported as item-property subtype sources. Unknown
+        /// tables fail closed because their columns cannot prove a row is a real engine choice.
+        /// </summary>
+        public static bool TryGetItemSubtype(string tableName, out TwoDaLookupTable table)
+        {
+            table = ItemSubtypeTables.FirstOrDefault(candidate =>
+                candidate.TableName.Equals(tableName, StringComparison.OrdinalIgnoreCase))!;
+            return table != null;
+        }
+
+        /// <summary>The registry whose Name column identifies each item-property cost table.</summary>
+        public static readonly TwoDaLookupTable ItemCostTableRegistry =
+            new("iprp_costtable", "Name", null);
+
+        /// <summary>
+        /// Declares the common validity shape of registry-selected item-property cost tables.
+        /// </summary>
+        public static TwoDaLookupTable ItemCostTable(string tableName) =>
+            new(tableName, "Label", null);
+
         /// <summary>creaturespeed.2da - Label names each stored WalkRate row.</summary>
         public static readonly TwoDaLookupTable CreatureSpeed = new("creaturespeed", "Label", "Name");
 

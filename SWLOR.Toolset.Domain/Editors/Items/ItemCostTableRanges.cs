@@ -1,3 +1,4 @@
+using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 
 namespace SWLOR.Toolset.Domain.Editors.Items
@@ -21,13 +22,9 @@ namespace SWLOR.Toolset.Domain.Editors.Items
     /// </remarks>
     public sealed class ItemCostTableRanges
     {
-        private const string RegistryTable = "iprp_costtable";
-        private const string NameColumn = "Name";
-
         /// <summary>Fallback cap when a cell's CostTableId is absent or cannot be resolved.</summary>
         public const int DefaultMax = ushort.MaxValue;
 
-        private const string LabelColumn = "Label";
         private const string AmountColumn = "Amount";
 
         private readonly Lazy<IReadOnlyDictionary<int, int>> _maxByCostTableId;
@@ -53,16 +50,23 @@ namespace SWLOR.Toolset.Domain.Editors.Items
         private static IReadOnlyDictionary<int, IReadOnlyList<ItemCostTableOption>> BuildOptions(TwoDaService twoDa)
         {
             var result = new Dictionary<int, IReadOnlyList<ItemCostTableOption>>();
-            if (!twoDa.TryGetTable(RegistryTable, out var registry) || registry == null)
+            var registryDefinition = TwoDaLookupTables.ItemCostTableRegistry;
+            if (!twoDa.TryGetTable(registryDefinition.TableName, out var registry) ||
+                registry == null ||
+                !registry.HasColumn(registryDefinition.LabelColumn))
                 return result;
 
             for (var row = 0; row < registry.RowCount; row++)
             {
-                var name = registry.GetString(row, NameColumn);
-                if (string.IsNullOrWhiteSpace(name) || name == "****")
+                var name = registry.GetString(row, registryDefinition.LabelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(name))
                     continue;
 
-                if (!twoDa.TryGetTable(name, out var target) || target == null || target.RowCount == 0)
+                var targetDefinition = TwoDaLookupTables.ItemCostTable(name!);
+                if (!twoDa.TryGetTable(targetDefinition.TableName, out var target) ||
+                    target == null ||
+                    target.RowCount == 0 ||
+                    !target.HasColumn(targetDefinition.LabelColumn))
                     continue;
 
                 var options = new List<ItemCostTableOption>();
@@ -75,8 +79,8 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                     // asterisks, and the length of that run varies between tables, so the test is
                     // "nothing but asterisks" rather than a literal "****" - matching only the
                     // four-star spelling put rows of "*****" into the Utility dropdowns.
-                    var label = target.GetString(value, LabelColumn)?.Trim() ?? string.Empty;
-                    if (label.Length == 0 || label.All(character => character == '*'))
+                    var label = target.GetString(value, targetDefinition.LabelColumn)?.Trim();
+                    if (!TwoDaChoicePolicy.IsSelectableLabel(label))
                         continue;
 
                     // Cost-table labels are often engine-facing identifiers rather than the value a
@@ -84,7 +88,9 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                     // semantic value: SWLOR resistance row 101, for example, stores CostValue 101
                     // but means -1 resistance. Fall back to the authored label for coded tables.
                     var amount = target.GetString(value, AmountColumn)?.Trim();
-                    var display = string.IsNullOrWhiteSpace(amount) ? label : amount;
+                    if (!string.IsNullOrWhiteSpace(amount) && !TwoDaChoicePolicy.IsSelectableLabel(amount))
+                        continue;
+                    var display = string.IsNullOrWhiteSpace(amount) ? label! : amount;
 
                     options.Add(new ItemCostTableOption(value, display));
                 }
@@ -112,22 +118,30 @@ namespace SWLOR.Toolset.Domain.Editors.Items
         private static IReadOnlyDictionary<int, int> Build(TwoDaService twoDa)
         {
             var result = new Dictionary<int, int>();
-            if (!twoDa.TryGetTable(RegistryTable, out var registry) || registry == null)
+            var registryDefinition = TwoDaLookupTables.ItemCostTableRegistry;
+            if (!twoDa.TryGetTable(registryDefinition.TableName, out var registry) ||
+                registry == null ||
+                !registry.HasColumn(registryDefinition.LabelColumn))
                 return result;
 
             for (var row = 0; row < registry.RowCount; row++)
             {
-                var name = registry.GetString(row, NameColumn);
-                if (string.IsNullOrWhiteSpace(name) || name == "****")
+                var name = registry.GetString(row, registryDefinition.LabelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(name))
                     continue;
 
-                if (!twoDa.TryGetTable(name, out var target) || target == null || target.RowCount == 0)
+                var targetDefinition = TwoDaLookupTables.ItemCostTable(name!);
+                if (!twoDa.TryGetTable(targetDefinition.TableName, out var target) ||
+                    target == null ||
+                    target.RowCount == 0 ||
+                    !target.HasColumn(targetDefinition.LabelColumn))
                     continue;
 
                 var highestPopulated = -1;
                 for (var targetRow = 0; targetRow < target.RowCount; targetRow++)
                 {
-                    if (target.ColumnNames.Any(column => target.GetString(targetRow, column) != null))
+                    if (TwoDaChoicePolicy.IsSelectableLabel(
+                            target.GetString(targetRow, targetDefinition.LabelColumn)))
                         highestPopulated = targetRow;
                 }
 

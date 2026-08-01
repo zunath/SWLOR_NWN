@@ -10,6 +10,7 @@ namespace SWLOR.Toolset.Tests
     {
         [TestCase("")]
         [TestCase("****")]
+        [TestCase("*****")]
         [TestCase("DELETED")]
         [TestCase("USER")]
         [TestCase("User002")]

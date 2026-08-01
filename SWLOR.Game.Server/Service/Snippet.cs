@@ -129,7 +129,6 @@ namespace SWLOR.Game.Server.Service
             {
                 if (!UtilPlugin.GetScriptParamIsSet(action.Key)) continue;
 
-                Player dbPlayer = null;
                 string onceMarker = null;
                 var onceKey = OncePerPlayerPrefix + action.Key;
                 if (UtilPlugin.GetScriptParamIsSet(onceKey))
@@ -137,7 +136,7 @@ namespace SWLOR.Game.Server.Service
                     onceMarker = GetScriptParam(onceKey);
                     if (!string.IsNullOrWhiteSpace(onceMarker))
                     {
-                        dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+                        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
                         if (dbPlayer != null)
                             dbPlayer.CompletedDialogueActions ??= new HashSet<string>();
                         if (dbPlayer?.CompletedDialogueActions.Contains(onceMarker) == true)
@@ -154,10 +153,21 @@ namespace SWLOR.Game.Server.Service
                 if (!HasUsableArguments(commandText, action.Value, args.Count, player))
                     continue;
 
-                _actionsTakenCommands[commandText].ActionsTakenAction(player, args.ToArray());
+                var succeeded = _actionsTakenCommands[commandText]
+                    .ActionsTakenAction(player, args.ToArray());
+                if (!succeeded)
+                    continue;
 
-                if (dbPlayer != null && !string.IsNullOrWhiteSpace(onceMarker))
+                if (!string.IsNullOrWhiteSpace(onceMarker))
                 {
+                    // Actions such as key-item and faction rewards load and save the Player entity
+                    // themselves. Reload after the delegate so adding the marker cannot write the
+                    // pre-action snapshot back over the reward that just succeeded.
+                    var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+                    if (dbPlayer == null)
+                        continue;
+
+                    dbPlayer.CompletedDialogueActions ??= new HashSet<string>();
                     dbPlayer.CompletedDialogueActions.Add(onceMarker);
                     DB.Set(dbPlayer);
                 }

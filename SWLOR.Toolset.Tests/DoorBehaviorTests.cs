@@ -161,6 +161,19 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void KeyItemDoorExplainsItsDestinationWaypointField()
+        {
+            var destination = DoorBehaviorCatalog.Get(DoorBehaviorCatalog.KeyItemDoorId)
+                .Fields.Single(field => field.Name == "LOCKED_DOOR_INSIDE_WP");
+
+            destination.Label.Should().Be("Destination waypoint tag");
+            destination.Note.Should().Be(
+                "After the key-item check succeeds, the player and henchman move to this waypoint.");
+            destination.TagScope.Should().Be(BehaviorTagScope.Waypoint);
+            destination.IsRequired.Should().BeTrue();
+        }
+
+        [Test]
         public void SwappingAwayFromKeyItemDoorClearsOwnedFieldsAndRenumbersLocals()
         {
             var door = NewDoor();

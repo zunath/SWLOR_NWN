@@ -180,10 +180,11 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
                         },
                         new DoorFieldDefinition
                         {
-                            Label = "Puts you at", Name = "LOCKED_DOOR_INSIDE_WP",
+                            Label = "Destination waypoint tag", Name = "LOCKED_DOOR_INSIDE_WP",
                             Kind = BehaviorFieldKind.TagReference, Storage = BehaviorFieldStorage.Local,
                             FieldType = GffFieldType.CExoString, IsRequired = true,
-                            TagScope = BehaviorTagScope.Waypoint
+                            TagScope = BehaviorTagScope.Waypoint,
+                            Note = "After the key-item check succeeds, the player and henchman move to this waypoint."
                         }
                     },
                     Manages = new[]

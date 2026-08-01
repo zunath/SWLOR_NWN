@@ -37,11 +37,20 @@ namespace SWLOR.Toolset.Editors.Creatures
         [ObservableProperty]
         private CreatureLootEntryViewModel? _selectedEntry;
 
-        public IReadOnlyList<CreatureLootPreviewItemViewModel> PreviewItems => SelectedEntry?.Table == null
-            ? Array.Empty<CreatureLootPreviewItemViewModel>()
-            : SelectedEntry.Table.Items
-                .Select(item => new CreatureLootPreviewItemViewModel(item, _resolveItemName))
-                .ToList();
+        public IReadOnlyList<CreatureLootPreviewItemViewModel> PreviewItems
+        {
+            get
+            {
+                if (SelectedEntry?.Table == null)
+                    return Array.Empty<CreatureLootPreviewItemViewModel>();
+
+                var items = SelectedEntry.Table.Items;
+                var totalWeight = TotalPositiveWeight(items);
+                return items
+                    .Select(item => new CreatureLootPreviewItemViewModel(item, totalWeight, _resolveItemName))
+                    .ToList();
+            }
+        }
 
         public IReadOnlyList<CreatureExpectedLootItemViewModel> ExpectedItems => BuildExpectedItems();
         public string PreviewTitle => SelectedEntry?.Table == null
@@ -340,7 +349,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             foreach (var entry in Entries.Where(entry => entry.Table?.Items.Count > 0))
             {
                 var items = entry.Table!.Items;
-                var totalWeight = items.Where(item => item.Weight > 0).Sum(item => item.Weight);
+                var totalWeight = TotalPositiveWeight(items);
                 if (totalWeight <= 0)
                     continue;
 
@@ -362,6 +371,9 @@ namespace SWLOR.Toolset.Editors.Creatures
                 .ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase)
                 .ToList();
         }
+
+        private static long TotalPositiveWeight(IReadOnlyList<CreatureLootTableItemInfo> items) =>
+            items.Where(item => item.Weight > 0).Sum(item => (long)item.Weight);
 
         partial void OnSelectedEntryChanged(CreatureLootEntryViewModel? value)
         {

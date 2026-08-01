@@ -887,6 +887,10 @@ namespace SWLOR.Toolset.Tests
 
             viewModel.PreviewItems.Select(item => item.DisplayName)
                 .Should().Equal("Item A", "Item B");
+            viewModel.PreviewItems.Select(item => item.RelativeChance)
+                .Should().Equal(new[] { 50d, 50d },
+                    "each item shows its weight relative to the selected table's total weight");
+            viewModel.PreviewItems.Should().OnlyContain(item => item.WeightDisplay == "Weight 1 · 50%");
             viewModel.ExpectedItems.Should().ContainEquivalentOf(
                 new CreatureExpectedLootItemViewModel("Item A", "item_a", 0.5));
             viewModel.ExpectedItems.Should().ContainEquivalentOf(

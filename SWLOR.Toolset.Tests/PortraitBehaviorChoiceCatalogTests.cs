@@ -23,6 +23,7 @@ namespace SWLOR.Toolset.Tests
             choices.Should().HaveCount(3);
             choices[0].Display.Should().Be("hu_f_01_ (12)");
             choices[0].ImageResRef.Should().Be("po_hu_f_01_m");
+            choices[0].ImageCrop.Should().Be(BehaviorChoiceImageCrop.NeverwinterPortrait);
             choices[0].GalleryFacets.Should().ContainEquivalentOf(
                 new BehaviorChoiceFacet("gender", "Gender", "1", "Female", 1));
             choices[0].GalleryFacets.Should().ContainEquivalentOf(

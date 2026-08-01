@@ -904,13 +904,14 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             try
             {
-                foreach (var row in AppearanceRows.Where(row =>
-                             row.Definition.IsInlineSearch || row.Definition.IsInlineGallery))
-                {
-                    await row.ActivateChoicesAsync().ConfigureAwait(true);
-                    if (_disposed)
-                        return;
-                }
+                // Paint the Details view before resolving its deferred catalogs. Race, portrait,
+                // and sound-set data are independent, so they should not block one another.
+                await Task.Yield();
+                var activationTasks = AppearanceRows
+                    .Where(row => row.Definition.IsInlineSearch || row.Definition.IsInlineGallery)
+                    .Select(row => row.ActivateChoicesAsync())
+                    .ToArray();
+                await Task.WhenAll(activationTasks).ConfigureAwait(true);
             }
             finally
             {

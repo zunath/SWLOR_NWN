@@ -33,6 +33,13 @@ namespace SWLOR.Toolset.Editors.Behaviors
     /// </remarks>
     public sealed class ChoicePreviewService
     {
+        private enum ImageCropMode
+        {
+            None,
+            TransparentCanvas,
+            NeverwinterPortrait
+        }
+
         /// <summary>Gallery thumbnails. Small enough that twenty of them cost little memory.</summary>
         public const int ThumbnailWidth = 192;
 
@@ -73,7 +80,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 return _models?.CachedTile(model);
             if (choice.ImageUrl is { Length: > 0 } imageUrl)
                 return _remoteImages?.Cached(imageUrl);
-            return Cached(choice.ImageResRef, maxWidth, cropTransparentCanvas);
+            return CachedInternal(choice.ImageResRef, maxWidth, CropMode(choice, cropTransparentCanvas));
         }
 
         /// <summary>
@@ -123,10 +130,10 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 return;
             }
 
-            if (await ResolveAsync(
+            if (await ResolveInternalAsync(
                     choice.ImageResRef,
                     maxWidth,
-                    cropTransparentCanvas).ConfigureAwait(true) is { } bitmap)
+                    CropMode(choice, cropTransparentCanvas)).ConfigureAwait(true) is { } bitmap)
                 onReady(bitmap);
         }
 
@@ -139,10 +146,21 @@ namespace SWLOR.Toolset.Editors.Behaviors
             int maxWidth,
             bool cropTransparentCanvas = false)
         {
+            return await ResolveInternalAsync(
+                resRef,
+                maxWidth,
+                cropTransparentCanvas ? ImageCropMode.TransparentCanvas : ImageCropMode.None);
+        }
+
+        private async Task<Bitmap?> ResolveInternalAsync(
+            string? resRef,
+            int maxWidth,
+            ImageCropMode cropMode)
+        {
             if (_resources == null || string.IsNullOrWhiteSpace(resRef))
                 return null;
 
-            var key = CacheKey(resRef, maxWidth, cropTransparentCanvas);
+            var key = CacheKey(resRef, maxWidth, cropMode);
             lock (_syncRoot)
             {
                 if (_cache.TryGetValue(key, out var cached))
@@ -158,7 +176,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
             {
                 // Decode and scale on a worker; only the bitmap handoff needs the UI thread.
                 scaled = await Task.Run(
-                    () => Decode(resRef, maxWidth, cropTransparentCanvas)).ConfigureAwait(false);
+                    () => Decode(resRef, maxWidth, cropMode)).ConfigureAwait(false);
             }
             finally
             {
@@ -179,25 +197,44 @@ namespace SWLOR.Toolset.Editors.Behaviors
             int maxWidth,
             bool cropTransparentCanvas = false)
         {
+            return CachedInternal(
+                resRef,
+                maxWidth,
+                cropTransparentCanvas ? ImageCropMode.TransparentCanvas : ImageCropMode.None);
+        }
+
+        private Bitmap? CachedInternal(string? resRef, int maxWidth, ImageCropMode cropMode)
+        {
             if (string.IsNullOrWhiteSpace(resRef))
                 return null;
 
             lock (_syncRoot)
-                return _cache.GetValueOrDefault(CacheKey(resRef, maxWidth, cropTransparentCanvas));
+                return _cache.GetValueOrDefault(CacheKey(resRef, maxWidth, cropMode));
         }
 
-        private static string CacheKey(string resRef, int maxWidth, bool cropTransparentCanvas) =>
-            $"{resRef}@{maxWidth}:{(cropTransparentCanvas ? "cropped" : "full")}";
+        private static ImageCropMode CropMode(BehaviorChoice choice, bool cropTransparentCanvas) =>
+            cropTransparentCanvas
+                ? ImageCropMode.TransparentCanvas
+                : choice.ImageCrop == BehaviorChoiceImageCrop.NeverwinterPortrait
+                    ? ImageCropMode.NeverwinterPortrait
+                    : ImageCropMode.None;
 
-        private ScaledImage? Decode(string resRef, int maxWidth, bool cropTransparentCanvas)
+        private static string CacheKey(string resRef, int maxWidth, ImageCropMode cropMode) =>
+            $"{resRef}@{maxWidth}:{cropMode}";
+
+        private ScaledImage? Decode(string resRef, int maxWidth, ImageCropMode cropMode)
         {
             try
             {
                 if (TextureLoader.Load(_resources!, resRef) is not { } texture)
                     return null;
 
-                if (cropTransparentCanvas)
-                    texture = CropTransparentCanvas(texture);
+                texture = cropMode switch
+                {
+                    ImageCropMode.TransparentCanvas => CropTransparentCanvas(texture),
+                    ImageCropMode.NeverwinterPortrait => CropNeverwinterPortrait(texture),
+                    _ => texture
+                };
 
                 return Downscale(texture, maxWidth);
             }
@@ -264,6 +301,31 @@ namespace SWLOR.Toolset.Editors.Behaviors
             {
                 Width = width,
                 Height = height,
+                Pixels = pixels,
+                SourceFormat = texture.SourceFormat,
+                AlphaMean = texture.AlphaMean
+            };
+        }
+
+        /// <summary>
+        /// NWN portrait textures reserve the bottom 28 pixels of a 64x128 medium portrait for
+        /// engine data. The game displays only the 64x100 picture (a 16:25 aspect ratio), and the
+        /// Toolset should do the same at every portrait resolution.
+        /// </summary>
+        private static TextureImage CropNeverwinterPortrait(TextureImage texture)
+        {
+            var visibleHeight = Math.Min(
+                texture.Height,
+                Math.Max(1, (texture.Width * 25 + 15) / 16));
+            if (visibleHeight >= texture.Height)
+                return texture;
+
+            var pixels = new byte[checked(texture.Width * visibleHeight * 4)];
+            Buffer.BlockCopy(texture.Pixels, 0, pixels, 0, pixels.Length);
+            return new TextureImage
+            {
+                Width = texture.Width,
+                Height = visibleHeight,
                 Pixels = pixels,
                 SourceFormat = texture.SourceFormat,
                 AlphaMean = texture.AlphaMean

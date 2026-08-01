@@ -2,6 +2,12 @@ using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.Editors.Behaviors
 {
+    public enum BehaviorChoiceImageCrop
+    {
+        None,
+        NeverwinterPortrait
+    }
+
     /// <summary>
     /// One reusable filter value carried by a visual choice. The shared gallery discovers these
     /// facets rather than knowing which editor or resource type supplied them.
@@ -44,6 +50,12 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
 
         /// <summary>A texture this choice is pictured by: a load screen, a portrait.</summary>
         public string? ImageResRef { get; }
+
+        /// <summary>
+        /// Optional presentation crop applied by the shared preview pipeline. NWN portrait textures
+        /// contain a reserved strip beneath the picture which the game deliberately does not show.
+        /// </summary>
+        public BehaviorChoiceImageCrop ImageCrop { get; init; }
 
         /// <summary>
         /// A model this choice is pictured by, rendered rather than decoded. A waypoint's appearance

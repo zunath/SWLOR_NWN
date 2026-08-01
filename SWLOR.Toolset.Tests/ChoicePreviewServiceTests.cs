@@ -1,8 +1,10 @@
 using System.Buffers.Binary;
 using Avalonia;
 using Avalonia.Headless.NUnit;
+using Avalonia.Media.Imaging;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Editors.Behaviors;
 
@@ -50,6 +52,50 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        [AvaloniaTest]
+        public async Task NeverwinterPortraitChoiceHidesReservedBottomStrip()
+        {
+            var resourceDirectory = Path.Combine(
+                Path.GetTempPath(),
+                $"swlor-choice-preview-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(resourceDirectory);
+
+            try
+            {
+                File.WriteAllBytes(
+                    Path.Combine(resourceDirectory, "portrait.tga"),
+                    OpaqueTga(width: 64, height: 128));
+                var resources = new ResourceIndex(
+                    baseLayer: null,
+                    hakLayersInOrder:
+                    [
+                        new ResourceIndex.HakLayer("fixture", resourceDirectory)
+                    ]);
+                var service = new ChoicePreviewService(resources);
+                var portrait = new BehaviorChoice(1, "Portrait", "portrait")
+                {
+                    ImageCrop = BehaviorChoiceImageCrop.NeverwinterPortrait
+                };
+
+                Bitmap? cropped = null;
+                await service.RequestAsync(portrait, maxWidth: 192, bitmap => cropped = bitmap);
+                var ordinary = await service.ResolveAsync("portrait", maxWidth: 192);
+
+                cropped.Should().NotBeNull();
+                cropped!.PixelSize.Should().Be(
+                    new PixelSize(64, 100),
+                    "NWN reserves the bottom 28 pixels of a medium portrait for engine-only data");
+                ordinary.Should().NotBeNull();
+                ordinary!.PixelSize.Should().Be(
+                    new PixelSize(64, 128),
+                    "cropping must only apply to portrait choices");
+            }
+            finally
+            {
+                Directory.Delete(resourceDirectory, recursive: true);
+            }
+        }
+
         private static byte[] TransparentPartTga(ushort width, ushort height)
         {
             var bytes = new byte[18 + width * height * 4];
@@ -69,6 +115,26 @@ namespace SWLOR.Toolset.Tests
                     bytes[offset + 2] = 90;
                     bytes[offset + 3] = 255;
                 }
+            }
+
+            return bytes;
+        }
+
+        private static byte[] OpaqueTga(ushort width, ushort height)
+        {
+            var bytes = new byte[18 + width * height * 4];
+            bytes[2] = 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(12, 2), width);
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(14, 2), height);
+            bytes[16] = 32;
+            bytes[17] = 0x28; // Top-left origin, eight alpha bits.
+
+            for (var offset = 18; offset < bytes.Length; offset += 4)
+            {
+                bytes[offset] = 30;
+                bytes[offset + 1] = 60;
+                bytes[offset + 2] = 90;
+                bytes[offset + 3] = 255;
             }
 
             return bytes;

@@ -66,6 +66,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         private int _galleryPublished;
         private int _choicePageOffset;
         private int _choicePageRequestGeneration;
+        private int _galleryRebuildGeneration;
         private bool _choicePagesActivated;
         private bool _choicePagesExhausted;
         private bool _choicePageLoading;
@@ -118,6 +119,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 if (!SetProperty(ref _choices, value))
                     return;
 
+                _galleryRebuildGeneration++;
                 _galleryControlsBuilt = false;
                 GalleryFilters.Clear();
                 GallerySortOptions.Clear();
@@ -653,7 +655,16 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 return;
             }
 
-            if (IsInlineGallery || !IsSearchableChoice)
+            if (IsInlineGallery)
+            {
+                // The choices may have kicked off a presentation refresh while the
+                // catalog was loading. Await our own refresh so callers do not
+                // continue before the first visible page has been published.
+                await RebuildGalleryAsync().ConfigureAwait(true);
+                return;
+            }
+
+            if (!IsSearchableChoice)
                 return;
 
             IsSearchExpanded = true;
@@ -699,7 +710,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 return;
 
             _galleryBuilt = true;
-            RebuildGallery();
+            await RebuildGalleryAsync().ConfigureAwait(true);
         }
 
         [RelayCommand]
@@ -741,6 +752,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
             if (_disposed)
                 return;
 
+            var rebuildGeneration = ++_galleryRebuildGeneration;
             _galleryBuilt = true;
 
             // A repository-backed gallery owns only the pages it has published. Search starts a
@@ -766,26 +778,58 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 return;
             }
 
-            EnsureGalleryControls();
             var words = (GalleryQuery ?? string.Empty)
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            IEnumerable<BehaviorChoiceViewModel> matches = Choices
+            var choices = Choices;
+            var selectedFilters = GalleryFilters
+                .Where(filter => filter.SelectedOption.ValueKey != null)
+                .Select(filter => new GalleryFilterSelection(
+                    filter.GroupKey,
+                    filter.SelectedOption.ValueKey!))
+                .ToArray();
+            var sortMode = SelectedGallerySort?.Mode ?? GallerySortMode.Default;
+            var buildControls = !_galleryControlsBuilt;
+
+            // Catalog galleries can contain several thousand choices. Facet discovery, text
+            // matching, and sorting are pure work, so keep them off Avalonia's UI thread and only
+            // publish the first bounded page after the latest request completes. The generation
+            // check prevents a slower, stale search from replacing newer input.
+            var result = await Task.Run(() => new GalleryBuildResult(
+                    buildControls ? BuildGalleryControls(choices) : null,
+                    BuildGalleryMatches(choices, words, selectedFilters, sortMode)))
+                .ConfigureAwait(true);
+
+            if (_disposed || rebuildGeneration != _galleryRebuildGeneration)
+                return;
+
+            if (result.Controls != null)
+                ApplyGalleryControls(result.Controls);
+
+            _galleryMatches = result.Matches;
+            _galleryPublished = 0;
+            GalleryChoices.Clear();
+            PublishLoadedGalleryChoices();
+        }
+
+        private static List<BehaviorChoiceViewModel> BuildGalleryMatches(
+            IReadOnlyList<BehaviorChoiceViewModel> choices,
+            IReadOnlyList<string> words,
+            IReadOnlyList<GalleryFilterSelection> selectedFilters,
+            GallerySortMode sortMode)
+        {
+            IEnumerable<BehaviorChoiceViewModel> matches = choices
                 .Where(candidate => words.All(word =>
                     candidate.Display.Contains(word, StringComparison.OrdinalIgnoreCase) ||
                     (candidate.Detail?.Contains(word, StringComparison.OrdinalIgnoreCase) ?? false)));
 
-            foreach (var filter in GalleryFilters)
+            foreach (var filter in selectedFilters)
             {
-                var selected = filter.SelectedOption.ValueKey;
-                if (selected == null)
-                    continue;
-
                 matches = matches.Where(candidate => candidate.Choice.GalleryFacets.Any(facet =>
                     string.Equals(facet.GroupKey, filter.GroupKey, StringComparison.OrdinalIgnoreCase) &&
-                    string.Equals(facet.ValueKey, selected, StringComparison.OrdinalIgnoreCase)));
+                    string.Equals(facet.ValueKey, filter.ValueKey, StringComparison.OrdinalIgnoreCase)));
             }
 
-            matches = SelectedGallerySort?.Mode switch
+            matches = sortMode switch
             {
                 GallerySortMode.NameAscending => matches
                     .OrderBy(candidate => candidate.Display, StringComparer.OrdinalIgnoreCase)
@@ -798,10 +842,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 _ => matches
             };
 
-            _galleryMatches = matches.ToList();
-            _galleryPublished = 0;
-            GalleryChoices.Clear();
-            PublishLoadedGalleryChoices();
+            return matches.ToList();
         }
 
         private void EnsureGalleryControls()
@@ -809,11 +850,14 @@ namespace SWLOR.Toolset.Editors.Behaviors
             if (_galleryControlsBuilt)
                 return;
 
-            _galleryControlsBuilt = true;
-            GalleryFilters.Clear();
-            GallerySortOptions.Clear();
+            ApplyGalleryControls(BuildGalleryControls(Choices));
+        }
 
-            var facets = Choices.SelectMany(choice => choice.Choice.GalleryFacets).ToList();
+        private static GalleryControlSet BuildGalleryControls(
+            IReadOnlyList<BehaviorChoiceViewModel> choices)
+        {
+            var filters = new List<GalleryFilterDefinition>();
+            var facets = choices.SelectMany(choice => choice.Choice.GalleryFacets).ToList();
             foreach (var group in facets.GroupBy(
                          facet => facet.GroupKey,
                          StringComparer.OrdinalIgnoreCase))
@@ -833,17 +877,36 @@ namespace SWLOR.Toolset.Editors.Behaviors
                     continue;
 
                 values.Insert(0, new GalleryFilterOption(null, "All"));
-                GalleryFilters.Add(new GalleryFilterViewModel(
+                filters.Add(new GalleryFilterDefinition(
                     group.Key,
                     group.First().GroupLabel,
-                    values,
+                    values));
+            }
+
+            return new GalleryControlSet(
+                filters,
+                choices.All(choice => !choice.Choice.IsStringValue));
+        }
+
+        private void ApplyGalleryControls(GalleryControlSet controls)
+        {
+            _galleryControlsBuilt = true;
+            GalleryFilters.Clear();
+            GallerySortOptions.Clear();
+
+            foreach (var filter in controls.Filters)
+            {
+                GalleryFilters.Add(new GalleryFilterViewModel(
+                    filter.GroupKey,
+                    filter.GroupLabel,
+                    filter.Options,
                     RebuildGallery));
             }
 
             GallerySortOptions.Add(new GallerySortOption(GallerySortMode.Default, "Default order"));
             GallerySortOptions.Add(new GallerySortOption(GallerySortMode.NameAscending, "Name A-Z"));
             GallerySortOptions.Add(new GallerySortOption(GallerySortMode.NameDescending, "Name Z-A"));
-            if (Choices.All(choice => !choice.Choice.IsStringValue))
+            if (controls.SupportsIdSort)
             {
                 GallerySortOptions.Add(new GallerySortOption(GallerySortMode.IdAscending, "ID low-high"));
                 GallerySortOptions.Add(new GallerySortOption(GallerySortMode.IdDescending, "ID high-low"));
@@ -853,6 +916,21 @@ namespace SWLOR.Toolset.Editors.Behaviors
             OnPropertyChanged(nameof(SelectedGallerySort));
             OnPropertyChanged(nameof(HasGalleryFilters));
         }
+
+        private sealed record GalleryFilterSelection(string GroupKey, string ValueKey);
+
+        private sealed record GalleryFilterDefinition(
+            string GroupKey,
+            string GroupLabel,
+            IReadOnlyList<GalleryFilterOption> Options);
+
+        private sealed record GalleryControlSet(
+            IReadOnlyList<GalleryFilterDefinition> Filters,
+            bool SupportsIdSort);
+
+        private sealed record GalleryBuildResult(
+            GalleryControlSet? Controls,
+            List<BehaviorChoiceViewModel> Matches);
 
         private async Task PublishGalleryPageAsync()
         {
@@ -983,6 +1061,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 return;
 
             _disposed = true;
+            _galleryRebuildGeneration++;
             _searchDebounce?.Cancel();
             _searchDebounce?.Dispose();
             _searchDebounce = null;

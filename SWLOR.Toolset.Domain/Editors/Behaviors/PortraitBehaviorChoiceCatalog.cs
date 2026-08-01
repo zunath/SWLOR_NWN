@@ -30,6 +30,7 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
                     $"{row.BaseResRef} ({row.Id})",
                     PortraitService.GetTgaVariants(row.BaseResRef).Medium)
                 {
+                    ImageCrop = BehaviorChoiceImageCrop.NeverwinterPortrait,
                     GalleryFacets =
                     [
                         LookupFacet(

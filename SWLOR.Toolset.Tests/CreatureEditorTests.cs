@@ -292,16 +292,19 @@ namespace SWLOR.Toolset.Tests
             positions.Should().OnlyContain(index => index >= 0);
             positions.Should().BeInAscendingOrder(
                 "the Stats tab should read from core values through combat tuning");
-            view.Should().Contain("<UniformGrid Columns=\"2\" />",
-                "the eight resistances should use the full tab width instead of one tall side column");
-            view.Should().NotContain("Skill Overrides");
-            view.Should().NotContain("Stats.AddSkillOverrideCommand");
 
             var statsStart = view.IndexOf("<TabItem Header=\"Stats\">", StringComparison.Ordinal);
             var statsEnd = view.IndexOf("</TabItem>", statsStart, StringComparison.Ordinal);
             var resistancesStart = view.IndexOf("<TabItem Header=\"Resistances\">", StringComparison.Ordinal);
             var resistancesCard = view.IndexOf("CreatureResistancesCard", StringComparison.Ordinal);
             var abilitiesStart = view.IndexOf("<TabItem Header=\"Abilities\"", StringComparison.Ordinal);
+            var resistancesMarkup = view[resistancesStart..abilitiesStart];
+            resistancesMarkup.Should().Contain("<UniformGrid Columns=\"1\" />",
+                "each resistance should have a full-width row so its label cannot crowd another field's controls");
+            resistancesMarkup.Should().NotContain("<UniformGrid Columns=\"2\" />");
+            view.Should().NotContain("Skill Overrides");
+            view.Should().NotContain("Stats.AddSkillOverrideCommand");
+
             resistancesStart.Should().BeGreaterThan(statsEnd,
                 "resistances should be removed from the long Stats form");
             resistancesCard.Should().BeGreaterThan(resistancesStart);

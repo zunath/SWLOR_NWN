@@ -45,11 +45,19 @@ namespace SWLOR.Toolset.Workspace
         private const int MaxBuildWorkers = 4;
 
         /// <summary>
+        /// On-demand appearance renders compete with the editor itself for CPU and many segmented
+        /// creatures serialize through the shared part composer anyway. Two workers keep visible
+        /// thumbnails flowing without making a tab switch contend with four rasterizers.
+        /// </summary>
+        private const int MaxAppearanceWorkers = 2;
+
+        /// <summary>
         /// Appearance rows can compose an entire segmented creature. Keep their on-demand work at
         /// the same measured concurrency as the cache builder instead of queueing a thread-pool job
         /// for every published gallery tile at once.
         /// </summary>
-        private readonly SemaphoreSlim _appearanceRenderGate = new(MaxBuildWorkers, MaxBuildWorkers);
+        private readonly SemaphoreSlim _appearanceRenderGate =
+            new(MaxAppearanceWorkers, MaxAppearanceWorkers);
 
         private readonly WorkspaceContext _workspaceContext;
         private readonly IPreviewImageSource _renderer;
@@ -76,17 +84,23 @@ namespace SWLOR.Toolset.Workspace
 
         private sealed class InFlightRender
         {
-            public InFlightRender(long version, long epoch, Action<Bitmap> firstWaiter)
+            public InFlightRender(
+                long version,
+                long epoch,
+                Action<Bitmap> firstWaiter,
+                Action? firstFailure)
             {
                 Version = version;
                 Epoch = epoch;
-                Waiters.Add(firstWaiter);
+                Waiters.Add(new RenderWaiter(firstWaiter, firstFailure));
             }
 
             public long Version { get; }
             public long Epoch { get; }
-            public List<Action<Bitmap>> Waiters { get; } = new();
+            public List<RenderWaiter> Waiters { get; } = new();
         }
+
+        private readonly record struct RenderWaiter(Action<Bitmap> Ready, Action? Failed);
 
         private readonly record struct PreviewResolution(
             Bitmap? Bitmap,
@@ -357,12 +371,15 @@ namespace SWLOR.Toolset.Workspace
         /// still invalidated by the indexed-content version, so changing a HAK model or texture makes
         /// the representative creature render again.
         /// </remarks>
-        public void RequestAppearanceAsync(int appearanceId, Action<Bitmap> onReady)
+        public bool RequestAppearanceAsync(
+            int appearanceId,
+            Action<Bitmap> onReady,
+            Action? onFailed = null)
         {
             ArgumentNullException.ThrowIfNull(onReady);
 
             if (!IsAvailable || appearanceId < 0)
-                return;
+                return false;
 
             var key = AppearanceKey(appearanceId);
             if (_memory.TryGet(key, out var known))
@@ -370,11 +387,11 @@ namespace SWLOR.Toolset.Workspace
                 if (known != null)
                     Dispatcher.UIThread.Post(() => onReady(known));
 
-                return;
+                return known != null;
             }
 
-            if (!TryStartRender(key, onReady, null, out var operation))
-                return;
+            if (!TryStartRender(key, onReady, null, out var operation, onFailed))
+                return true;
 
             _ = Task.Run(async () =>
             {
@@ -401,6 +418,8 @@ namespace SWLOR.Toolset.Workspace
                     _appearanceRenderGate.Release();
                 }
             });
+
+            return true;
         }
 
         /// <summary>The cached appearance-row thumbnail if it is already decoded, else null.</summary>
@@ -443,9 +462,11 @@ namespace SWLOR.Toolset.Workspace
             string key,
             Action<Bitmap> onReady,
             Bitmap? fallback,
-            out InFlightRender operation)
+            out InFlightRender operation,
+            Action? onFailed = null)
         {
-            var mine = new InFlightRender(VersionOf(key), Volatile.Read(ref _cacheEpoch), onReady);
+            var mine = new InFlightRender(
+                VersionOf(key), Volatile.Read(ref _cacheEpoch), onReady, onFailed);
             operation = _inFlight.GetOrAdd(key, mine);
             if (ReferenceEquals(operation, mine))
                 return true;
@@ -460,11 +481,13 @@ namespace SWLOR.Toolset.Workspace
                     var resolved = _memory.TryGet(key, out var done) ? done ?? fallback : fallback;
                     if (resolved != null)
                         Dispatcher.UIThread.Post(() => onReady(resolved));
+                    else if (onFailed != null)
+                        Dispatcher.UIThread.Post(onFailed);
 
                     return false;
                 }
 
-                operation.Waiters.Add(onReady);
+                operation.Waiters.Add(new RenderWaiter(onReady, onFailed));
             }
 
             return false;
@@ -481,7 +504,8 @@ namespace SWLOR.Toolset.Workspace
             PreviewResolution? result,
             Bitmap? delivered)
         {
-            Action<Bitmap>[] callbacks;
+            RenderWaiter[] callbacks;
+            var publishResult = false;
             _cacheGate.EnterReadLock();
             try
             {
@@ -490,30 +514,44 @@ namespace SWLOR.Toolset.Workspace
                     if (!IsCurrent(key, operation))
                     {
                         result?.Bitmap?.Dispose();
-                        return;
+                        // Resource replacement removes the operation before its worker unwinds.
+                        // Wake its cells as failures so they clear PreviewRequested and join the
+                        // replacement render instead of remaining on their placeholder forever.
+                        lock (operation.Waiters)
+                            callbacks = operation.Waiters.ToArray();
                     }
-
-                    if (result is { } resolved)
+                    else
                     {
-                        if (resolved.Persist)
+                        if (result is { } resolved)
                         {
-                            if (resolved.Bitmap == null)
-                                resolved.Disk.StoreNoArtwork(
-                                    resolved.Type, resolved.ResRef, resolved.UseIndexedBlueprint);
-                            else
-                                resolved.Disk.Store(
-                                    resolved.Type, resolved.ResRef,
-                                    resolved.UseIndexedBlueprint, resolved.Bitmap);
+                            if (resolved.Persist)
+                            {
+                                if (resolved.Bitmap == null)
+                                    resolved.Disk.StoreNoArtwork(
+                                        resolved.Type, resolved.ResRef, resolved.UseIndexedBlueprint);
+                                else
+                                    resolved.Disk.Store(
+                                        resolved.Type, resolved.ResRef,
+                                        resolved.UseIndexedBlueprint, resolved.Bitmap);
+                            }
+
+                            _memory.Set(key, resolved.Bitmap);
                         }
 
-                        _memory.Set(key, resolved.Bitmap);
+                        if (!_inFlight.TryRemove(key, out var removed) ||
+                            !ReferenceEquals(removed, operation))
+                        {
+                            lock (operation.Waiters)
+                                callbacks = operation.Waiters.ToArray();
+                        }
+                        else
+                        {
+                            lock (operation.Waiters)
+                                callbacks = operation.Waiters.ToArray();
+
+                            publishResult = true;
+                        }
                     }
-
-                    if (!_inFlight.TryRemove(key, out var removed) || !ReferenceEquals(removed, operation))
-                        return;
-
-                    lock (operation.Waiters)
-                        callbacks = operation.Waiters.ToArray();
                 }
             }
             finally
@@ -521,13 +559,15 @@ namespace SWLOR.Toolset.Workspace
                 _cacheGate.ExitReadLock();
             }
 
-            if (delivered == null)
-                return;
-
             Dispatcher.UIThread.Post(() =>
             {
                 foreach (var callback in callbacks)
-                    callback(delivered);
+                {
+                    if (publishResult && delivered != null)
+                        callback.Ready(delivered);
+                    else
+                        callback.Failed?.Invoke();
+                }
             });
         }
 

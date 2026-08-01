@@ -40,7 +40,8 @@ namespace SWLOR.Toolset.Editors.Appearance
         {
             if (sender is not Control control ||
                 control.DataContext is not AppearanceGallerySectionViewModel section ||
-                !section.CanLoadMore)
+                !section.CanLoadMore ||
+                e.OffsetDelta.Y <= 0)
             {
                 return;
             }

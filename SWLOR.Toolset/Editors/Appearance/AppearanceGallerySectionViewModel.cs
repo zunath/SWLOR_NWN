@@ -34,6 +34,7 @@ namespace SWLOR.Toolset.Editors.Appearance
 
         /// <summary>How long typing has to pause before the grid re-filters.</summary>
         private static readonly TimeSpan SearchDebounce = TimeSpan.FromMilliseconds(250);
+        private const int MaxPreviewAttempts = 5;
 
         private IReadOnlyList<AppearanceOption> _options;
         private readonly ThumbnailService? _thumbnails;
@@ -44,12 +45,15 @@ namespace SWLOR.Toolset.Editors.Appearance
 
         private readonly string _noun;
         private List<AppearanceOption> _matches = new();
+        private readonly HashSet<AppearanceTileViewModel> _realizedTiles = new();
+        private readonly Dictionary<AppearanceTileViewModel, int> _previewAttempts = new();
         private CancellationTokenSource? _searchDebounce;
         private int _published;
         private bool _loading;
         private bool _disposed;
 
-        public ObservableCollection<AppearanceTileViewModel> Tiles { get; } = new();
+        [ObservableProperty]
+        private ObservableCollection<AppearanceTileViewModel> _tiles = new();
 
         [ObservableProperty]
         private string _query = string.Empty;
@@ -166,13 +170,13 @@ namespace SWLOR.Toolset.Editors.Appearance
 
             foreach (var tile in Tiles)
             {
-                var wasRequested = tile.PreviewRequested;
+                var wasRealized = _realizedTiles.Contains(tile);
                 tile.Preview = null;
                 tile.PreviewRequested = false;
 
                 // Retry only cells the view had already realized. Re-rendering the entire published
                 // page here would undo the same progressive-loading rule used by the palette.
-                if (wasRequested)
+                if (wasRealized)
                     EnsurePreview(tile);
             }
         }
@@ -183,19 +187,48 @@ namespace SWLOR.Toolset.Editors.Appearance
         /// </summary>
         public void EnsurePreview(AppearanceTileViewModel? tile)
         {
-            if (_disposed || tile == null || tile.PreviewRequested || _thumbnails == null)
+            if (_disposed || tile == null || _thumbnails == null)
                 return;
 
-            tile.PreviewRequested = true;
+            _realizedTiles.Add(tile);
+            if (tile.PreviewRequested)
+                return;
 
             if (tile.Option.CreatureAppearanceId is { } appearanceId)
             {
-                _thumbnails.RequestAppearanceAsync(appearanceId, bitmap => tile.Preview = bitmap);
+                _previewAttempts.TryGetValue(tile, out var attempts);
+                _previewAttempts[tile] = attempts + 1;
+                tile.PreviewRequested = _thumbnails.RequestAppearanceAsync(
+                    appearanceId,
+                    bitmap =>
+                    {
+                        if (!_disposed && Tiles.Contains(tile))
+                        {
+                            tile.Preview = bitmap;
+                            _previewAttempts.Remove(tile);
+                        }
+                    },
+                    () =>
+                    {
+                        // A render can race resource-index initialization or fail on one malformed
+                        // model. Keep the realized cell retryable instead of pinning its letter glyph
+                        // for the lifetime of the editor.
+                        if (!_disposed && Tiles.Contains(tile) && tile.Preview == null)
+                        {
+                            tile.PreviewRequested = false;
+                            QueuePreviewRetry(tile);
+                        }
+                    });
+                if (!tile.PreviewRequested)
+                    QueuePreviewRetry(tile);
                 return;
             }
 
             if (!string.IsNullOrWhiteSpace(tile.Option.ModelResRef))
+            {
+                tile.PreviewRequested = true;
                 _thumbnails.RequestTileAsync(tile.Option.ModelResRef, bitmap => tile.Preview = bitmap);
+            }
         }
 
         partial void OnQueryChanged(string value)
@@ -256,9 +289,26 @@ namespace SWLOR.Toolset.Editors.Appearance
                     option.SearchText.Contains(word, StringComparison.Ordinal)))
                 .ToList();
 
-            _published = 0;
-            Tiles.Clear();
-            PublishPage();
+            _realizedTiles.Clear();
+            _previewAttempts.Clear();
+
+            // Replace the first page as one collection notification. Adding 48 cells one at a time
+            // makes Avalonia repeat measure/arrange while the tab is becoming visible and was the
+            // largest UI-thread cost of opening the creature Appearance tab.
+            _published = Math.Min(PageSize, _matches.Count);
+            var current = _currentKey();
+            var firstPage = new List<AppearanceTileViewModel>(_published);
+            for (var index = 0; index < _published; index++)
+            {
+                var option = _matches[index];
+                var tile = new AppearanceTileViewModel(option, option.Key == current, TileSize);
+                firstPage.Add(tile);
+                ApplyCachedPreview(tile);
+            }
+
+            Tiles = new ObservableCollection<AppearanceTileViewModel>(firstPage);
+            OnPropertyChanged(nameof(MatchSummary));
+            OnPropertyChanged(nameof(CanLoadMore));
         }
 
         private void PublishPage()
@@ -307,6 +357,29 @@ namespace SWLOR.Toolset.Editors.Appearance
         {
             OnPropertyChanged(nameof(CurrentDescription));
             OnPropertyChanged(nameof(CurrentIsUnknown));
+        }
+
+        /// <summary>
+        /// Resource replacement can finish just after its single reload notification while an older
+        /// render is still unwinding. Retry a realized cell a few times with backoff so that race heals
+        /// itself; unpublished cells still do no work at all.
+        /// </summary>
+        private void QueuePreviewRetry(AppearanceTileViewModel tile)
+        {
+            if (_disposed || !_previewAttempts.TryGetValue(tile, out var attempts) ||
+                attempts >= MaxPreviewAttempts)
+            {
+                return;
+            }
+
+            var delay = TimeSpan.FromMilliseconds(250 * (1 << Math.Min(attempts - 1, 4)));
+            _ = Task.Delay(delay).ContinueWith(
+                _ => Dispatcher.UIThread.Post(() =>
+                {
+                    if (!_disposed && Tiles.Contains(tile) && tile.Preview == null)
+                        EnsurePreview(tile);
+                }),
+                TaskScheduler.Default);
         }
 
         public void Dispose()

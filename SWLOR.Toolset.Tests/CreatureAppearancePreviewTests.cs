@@ -68,6 +68,12 @@ namespace SWLOR.Toolset.Tests
                 renderer.RenderCreatureAppearance(row.Id).Should().NotBeNull(
                     $"{row.DisplayName} should use the generic segmented body for race code {row.Race}");
             }
+
+            foreach (var row in appearances.GetAll().Take(48))
+            {
+                renderer.RenderCreatureAppearance(row.Id).Should().NotBeNull(
+                    $"the initial Appearance gallery page must show a model preview for {row.DisplayName}");
+            }
         }
     }
 }

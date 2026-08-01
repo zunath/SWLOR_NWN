@@ -212,6 +212,54 @@ namespace SWLOR.Toolset.Tests
             section.Tiles.Skip(2).Should().OnlyContain(tile => tile.Preview == null);
         }
 
+        [AvaloniaTest]
+        public void TheRenderedGalleryRequestsPreviewsForItsVisibleCellsOnly()
+        {
+            var source = new AppearancePreviewSource { IsAvailable = true };
+            var thumbnails = new ThumbnailService(
+                new WorkspaceContext(_ => throw new NotSupportedException(), new OutputLogService()),
+                source);
+            using var section = new AppearanceGallerySectionViewModel(
+                Options(500), thumbnails, () => "0", _ => true, noun: "appearance");
+            var view = new AppearanceGalleryView { DataContext = section };
+            var window = new Window { Width = 760, Height = 560, Content = view };
+
+            try
+            {
+                window.Show();
+                DrainDispatcher();
+
+                source.AppearanceCalls.Should().BeGreaterThan(0,
+                    "realized gallery cells must request their model previews");
+                source.AppearanceCalls.Should().BeLessThanOrEqualTo(48,
+                    "opening the tab should render only the virtualized first page");
+                section.Tiles.Should().HaveCount(48,
+                    "initial layout is not a user scroll and must not publish a second page");
+            }
+            finally
+            {
+                window.Close();
+            }
+        }
+
+        [Test]
+        public void ReplacingTheCatalogPublishesItsFirstPageAsOneCollectionChange()
+        {
+            var section = Section(Array.Empty<AppearanceOption>(), out _);
+            var tilePropertyChanges = 0;
+            section.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName == nameof(section.Tiles))
+                    tilePropertyChanges++;
+            };
+
+            section.SetOptions(Options(2_000));
+
+            tilePropertyChanges.Should().Be(1,
+                "catalog loading must not make Avalonia lay out the tab once per published tile");
+            section.Tiles.Should().HaveCount(48);
+        }
+
         [Test]
         public void DisposingCancelsAPendingSearchRatherThanLettingItFire()
         {

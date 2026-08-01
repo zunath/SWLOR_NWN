@@ -184,6 +184,25 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void AnInvalidatedAppearanceRenderReleasesItsWaitingTileForRetry()
+        {
+            var source = new CountingSource { BlockUntilReleased = true };
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+            var delivered = 0;
+            var failed = 0;
+
+            service.RequestAppearanceAsync(3, _ => delivered++, () => failed++);
+            service.ClearCache();
+            source.Release();
+            Drain();
+
+            delivered.Should().Be(0, "stale appearance pixels must not be published");
+            failed.Should().Be(1,
+                "the realized tile must be told to clear its requested state and retry the new epoch");
+        }
+
+        [AvaloniaTest]
         public void AnUnavailableRendererMakesTheWholeCacheANoOp()
         {
             // What happens with no resolved repository layout: the palette falls back to letter

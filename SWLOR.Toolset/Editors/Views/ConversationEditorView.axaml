@@ -494,15 +494,20 @@
                       </DataTemplate>
                     </ItemsControl.ItemTemplate>
                   </ItemsControl>
+                  <TextBlock Text="Clear the custom action script before adding snippet outcomes."
+                             IsVisible="{Binding HasCustomActionScriptForOutcomes}"
+                             TextWrapping="Wrap" Opacity="0.75" />
                   <StackPanel Orientation="Horizontal" Spacing="7">
                     <ComboBox ItemsSource="{Binding AvailableConsequences}" MinWidth="230"
                               SelectedItem="{Binding ConsequenceToAdd, Mode=TwoWay}"
+                              IsEnabled="{Binding CanAddOutcome}"
                               PlaceholderText="Choose an outcome…">
                       <ComboBox.ItemTemplate>
                         <DataTemplate DataType="gamecode:SnippetDescriptor"><TextBlock Text="{Binding Phrase}" /></DataTemplate>
                       </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button Content="Add outcome" Command="{Binding AddConsequenceCommand}" />
+                    <Button Content="Add outcome" Command="{Binding AddConsequenceCommand}"
+                            IsEnabled="{Binding CanAddOutcome}" />
                   </StackPanel>
                 </StackPanel>
               </ScrollViewer>

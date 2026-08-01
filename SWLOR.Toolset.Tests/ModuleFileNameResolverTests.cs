@@ -45,5 +45,18 @@ namespace SWLOR.Toolset.Tests
 
             ModuleFileNameResolver.Read(_directory).Should().Be("Star Wars LOR.mod");
         }
+
+        [Test]
+        public void InterruptedPackingArchiveIsNeverUsedAsTheFallbackName()
+        {
+            var real = Path.Combine(_directory, "Star Wars LOR.mod");
+            var interrupted = Path.Combine(_directory, "Star Wars LOR.packing.mod");
+            File.WriteAllText(real, "complete");
+            File.WriteAllText(interrupted, "partial");
+            File.SetLastWriteTimeUtc(real, DateTime.UtcNow.AddMinutes(-5));
+            File.SetLastWriteTimeUtc(interrupted, DateTime.UtcNow);
+
+            ModuleFileNameResolver.Read(_directory).Should().Be("Star Wars LOR.mod");
+        }
     }
 }

@@ -11,20 +11,29 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
     /// </summary>
     public static class TrapTypeCatalog
     {
-        private const string TableName = "traps";
-        private const string LabelColumn = "Label";
-
         public static IReadOnlyList<BehaviorChoice> Read(TwoDaService? twoDa)
         {
-            if (twoDa == null || !twoDa.TryGetTable(TableName, out var table) || table == null)
+            var definition = TwoDaLookupTables.Trap;
+            var requiredColumns = definition.RequiredColumns!;
+            if (twoDa == null ||
+                !twoDa.TryGetTable(definition.TableName, out var table) ||
+                table == null ||
+                !table.HasColumn(definition.LabelColumn) ||
+                requiredColumns.Any(column => !table.HasColumn(column)))
+            {
                 return Array.Empty<BehaviorChoice>();
+            }
 
             var traps = new List<BehaviorChoice>();
             for (var row = 0; row < table.RowCount; row++)
             {
-                var label = table.GetString(row, LabelColumn);
-                if (!TwoDaChoicePolicy.IsSelectableLabel(label))
+                var label = table.GetString(row, definition.LabelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
+                    requiredColumns.Any(column =>
+                        !TwoDaChoicePolicy.IsSelectableLabel(table.GetString(row, column))))
+                {
                     continue;
+                }
 
                 traps.Add(new BehaviorChoice(row, Humanise(label!)));
             }

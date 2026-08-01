@@ -188,6 +188,32 @@ namespace SWLOR.Toolset.Tests
             screens[1].Display.Should().Be("17 Tatooine");
         }
 
+        [Test]
+        public void TrapTypesRequireCompleteRuntimeMetadata()
+        {
+            var path = Path.Combine(_tempDirectory, "traps.2da");
+            File.WriteAllText(
+                path,
+                "2DA V2.0\r\n\r\n" +
+                "Label TrapScript SetDC DetectDCMod DisarmDCMod TrapName ResRef IconResRef\r\n" +
+                "0 MinorSpike trap_script 5 10 22 6846 trap_item trap_icon\r\n" +
+                "1 MissingScript **** 5 10 22 6847 trap_item trap_icon\r\n" +
+                "2 MissingItem trap_script 5 10 22 6848 **** trap_icon\r\n");
+
+            var traps = TrapTypeCatalog.Read(new Domain.GameData.TwoDa.TwoDaService(_tempDirectory));
+
+            traps.Select(trap => trap.Value).Should().Equal(0);
+
+            File.WriteAllText(
+                path,
+                "2DA V2.0\r\n\r\n" +
+                "Label TrapScript SetDC DetectDCMod DisarmDCMod TrapName ResRef\r\n" +
+                "0 MinorSpike trap_script 5 10 22 6846 trap_item\r\n");
+
+            TrapTypeCatalog.Read(new Domain.GameData.TwoDa.TwoDaService(_tempDirectory))
+                .Should().BeEmpty("a missing required column makes the table unsafe to offer");
+        }
+
         private string _tempDirectory = string.Empty;
 
         [SetUp]

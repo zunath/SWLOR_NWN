@@ -544,6 +544,35 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void CustomActionScriptDisablesOutcomesUntilCleared()
+        {
+            var document = DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
+                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+            document.Openings[0].Target.Script = "custom_action";
+            File.WriteAllBytes(_workingCopy, document.ToBytes());
+            using var editor = new Disposable(Open());
+            editor.Value.EditCurrentLineCommand.Execute(null);
+
+            editor.Value.CanAddOutcome.Should().BeFalse();
+            editor.Value.HasCustomActionScriptForOutcomes.Should().BeTrue();
+            editor.Value.ConsequenceToAdd = Snippets.Find("action-open-store");
+
+            editor.Value.AddConsequenceCommand.Execute(null);
+
+            editor.Value.LiveDialog.Openings[0].Target.Actions.Should().BeEmpty();
+            editor.Value.WalkStatus.Should().Contain("Clear the custom action script");
+            editor.Value.IsDirty.Should().BeFalse();
+
+            editor.Value.AdvancedScript = string.Empty;
+            editor.Value.CommitAdvancedCommand.Execute(null);
+
+            editor.Value.CanAddOutcome.Should().BeTrue();
+            editor.Value.HasCustomActionScriptForOutcomes.Should().BeFalse();
+            editor.Value.AddConsequenceCommand.Execute(null);
+            editor.Value.LiveDialog.Openings[0].Target.Actions.Should().ContainSingle();
+        }
+
+        [Test]
         public void QuestItemHandInRemainsRepeatableUntilTheQuestActuallyCollectsTheItems()
         {
             using var editor = new Disposable(Open());

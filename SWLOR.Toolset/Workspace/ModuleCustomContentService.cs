@@ -92,7 +92,7 @@ namespace SWLOR.Toolset.Workspace
 
                 var retainHakLayers =
                     retainCurrentHaksWhenMissing && missing.Count > 0;
-                if (_resourceIndex != null && profile.HakDirectory != null && !retainHakLayers)
+                if (_resourceIndex != null && !retainHakLayers)
                     await _resourceIndex.ReloadHakLayersAsync(
                             layers,
                             cancellationToken,

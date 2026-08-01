@@ -153,6 +153,16 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         /// </summary>
         public static readonly TwoDaLookupTable LoadScreen = new("loadscreens", "Label", null);
 
+        /// <summary>
+        /// traps.2da - a usable trap must declare its runtime script, difficulty metadata, name,
+        /// inventory blueprint, and icon.
+        /// </summary>
+        public static readonly TwoDaLookupTable Trap = new(
+            "traps",
+            "Label",
+            null,
+            ["TrapScript", "SetDC", "DetectDCMod", "DisarmDCMod", "TrapName", "ResRef", "IconResRef"]);
+
         /// <summary>racialtypes.2da - a real race must declare the engine Constant it maps to.</summary>
         public static readonly TwoDaLookupTable Race = new("racialtypes", "Label", "Name", ["Constant"]);
 

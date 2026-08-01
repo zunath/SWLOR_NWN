@@ -102,5 +102,46 @@ namespace SWLOR.Toolset.Tests
                 Directory.Delete(root, recursive: true);
             }
         }
+
+        [Test]
+        public async Task ExplicitReloadWithoutAHakAliasClearsThePreviousLayers()
+        {
+            var root = Path.Combine(
+                Path.GetTempPath(), "swlor-custom-content-clear-" + Guid.NewGuid().ToString("N"));
+            var fallback = Path.Combine(root, "fallback");
+            var iniPath = Path.Combine(root, "nwn.ini");
+            Directory.CreateDirectory(fallback);
+            File.WriteAllText(Path.Combine(fallback, "fallback.2da"), "2DA V2.0\r\n");
+            File.WriteAllText(iniPath, "[Alias]\r\n");
+
+            try
+            {
+                var index = new ResourceIndex(
+                    baseLayer: null,
+                    hakLayersInOrder: new[]
+                    {
+                        new ResourceIndex.HakLayer("repository", fallback)
+                    });
+                var context = new WorkspaceContext(
+                    _ => throw new NotSupportedException(),
+                    new OutputLogService());
+                var service = new ModuleCustomContentService(
+                    context,
+                    new OutputLogService(),
+                    resourceIndex: index,
+                    iniPathOverride: iniPath);
+
+                var result = await service.ReloadAsync(new[] { "missing" }, customTlk: null);
+
+                result.LoadedHakCount.Should().Be(0);
+                result.MissingHaks.Should().Equal("missing");
+                result.RetainedHakLayers.Should().BeFalse();
+                index.HakLayers.Should().BeEmpty();
+            }
+            finally
+            {
+                Directory.Delete(root, recursive: true);
+            }
+        }
     }
 }

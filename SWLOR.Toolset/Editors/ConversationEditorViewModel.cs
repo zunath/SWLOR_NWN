@@ -251,6 +251,15 @@ namespace SWLOR.Toolset.Editors
                                            && (_currentLine.Actions.Count == 0
                                                || !DlgDocument.IsActionDispatcher(_currentLine.Script));
 
+        public bool CanAddOutcome => _editingNode != null &&
+                                     (string.IsNullOrWhiteSpace(_editingNode.Script) ||
+                                      DlgDocument.IsActionDispatcher(_editingNode.Script));
+
+        public bool HasCustomActionScriptForOutcomes =>
+            _editingNode != null &&
+            !string.IsNullOrWhiteSpace(_editingNode.Script) &&
+            !DlgDocument.IsActionDispatcher(_editingNode.Script);
+
         public bool HasCurrentOutcomes => CurrentOutcomeSummaries.Count > 0;
 
         public string MerchantRequiredOutcome
@@ -1245,6 +1254,12 @@ namespace SWLOR.Toolset.Editors
             if (node == null || ConsequenceToAdd == null)
                 return;
 
+            if (!CanAddOutcome)
+            {
+                WalkStatus = "Clear the custom action script before adding an outcome.";
+                return;
+            }
+
             var snippet = ConsequenceToAdd;
             if (node.Actions.Any(action =>
                     action.SnippetKey.Equals(snippet.Key, StringComparison.OrdinalIgnoreCase)))
@@ -1329,6 +1344,8 @@ namespace SWLOR.Toolset.Editors
         {
             Guards.Clear();
             Consequences.Clear();
+            OnPropertyChanged(nameof(CanAddOutcome));
+            OnPropertyChanged(nameof(HasCustomActionScriptForOutcomes));
 
             if (_editingLink == null && _editingNode == null)
             {

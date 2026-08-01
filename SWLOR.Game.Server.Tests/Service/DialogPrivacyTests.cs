@@ -22,8 +22,9 @@ public class DialogPrivacyTests
     public void NuiNpcConversations_ForcePrivateConversations()
     {
         var source = ReadSource("SWLOR.Game.Server", "Service", "Conversation.cs").Replace("\r\n", "\n");
+        var routerSource = ReadSource("SWLOR.Game.Server", "Service", "ConversationMenu.cs");
         var scriptNames = ReadSource("SWLOR.Game.Server", "Core", "ScriptName.cs");
-        var defaultConversationScript = ReadSource("Module", "nss", "nw_c2_default4.nss");
+        var defaultConversationScript = ReadSource("Module", "nss", "nw_c2_default4.nss").Replace("\r\n", "\n");
         var startAssigned = ExtractMethod(source, "public static void StartAssignedCreatureConversation()");
         var makeCreatureConversationPrivate = ExtractMethod(source, "private static void MakeCreatureConversationPrivate(uint creature)");
 
@@ -46,6 +47,11 @@ public class DialogPrivacyTests
         makeCreatureConversationPrivate.Should().Contain("GetIsDM(creature)");
         makeCreatureConversationPrivate.Should().Contain("GetIsDMPossessed(creature)");
         makeCreatureConversationPrivate.Should().Contain("ObjectPlugin.SetConversationPrivate(creature, true);");
+
+        routerSource.Should().Contain("EventScript.Creature_OnDialogue => GetLastSpeaker()",
+            "the creature OnConversation event exposes its initiating player as the last speaker");
+        routerSource.Should().NotContain("EventScript.Creature_OnDialogue => GetPCSpeaker()",
+            "GetPCSpeaker is only populated after NWN has already entered a native conversation");
     }
 
     [Test]

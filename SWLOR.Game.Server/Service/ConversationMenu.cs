@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Service
             var player = GetCurrentlyRunningEvent() switch
             {
                 EventScript.Placeable_OnUsed => GetLastUsedBy(),
-                EventScript.Creature_OnDialogue => GetPCSpeaker(),
+                EventScript.Creature_OnDialogue => GetLastSpeaker(),
                 EventScript.Door_OnFailToOpen => GetClickingObject(),
                 _ => OBJECT_INVALID
             };

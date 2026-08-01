@@ -268,8 +268,12 @@ namespace SWLOR.Toolset.Editors.Creatures
             _loaded = true;
             LoadError = string.Empty;
 
-            SkillFilters.Clear();
-            SkillFilters.Add(new CreatureAbilitySkillFilter(null, "All skills"));
+            // Keep the existing All skills row in place. Clearing the ItemsSource causes Avalonia's
+            // ComboBox to publish a transient null SelectedItem, which used to refilter immediately
+            // and dereference that null selection while the Abilities tab was opening.
+            while (SkillFilters.Count > 1)
+                SkillFilters.RemoveAt(SkillFilters.Count - 1);
+
             foreach (var filter in _catalog
                          .GroupBy(info => info.SkillId)
                          .Select(group => new CreatureAbilitySkillFilter(
@@ -311,13 +315,17 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         private bool MatchesFilters(CreatureAbilityInfo info, IReadOnlyList<string> words)
         {
-            if (SelectedAudienceFilter.Value == CreatureAbilityAudience.Npc && !info.IsNpcIntended ||
-                SelectedAudienceFilter.Value == CreatureAbilityAudience.Player && info.IsNpcIntended)
+            // Two-way ComboBox bindings may temporarily publish null while their controls are being
+            // attached or their item sources change. Retain the builder-facing defaults during that
+            // transition instead of allowing a tab switch to fail.
+            var audience = SelectedAudienceFilter?.Value ?? CreatureAbilityAudience.Npc;
+            if (audience == CreatureAbilityAudience.Npc && !info.IsNpcIntended ||
+                audience == CreatureAbilityAudience.Player && info.IsNpcIntended)
             {
                 return false;
             }
 
-            if (SelectedSkillFilter.SkillId is { } skillId && info.SkillId != skillId)
+            if (SelectedSkillFilter?.SkillId is { } skillId && info.SkillId != skillId)
                 return false;
 
             return words.Count == 0 || words.All(word =>

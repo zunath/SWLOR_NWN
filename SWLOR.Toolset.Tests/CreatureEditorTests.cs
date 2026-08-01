@@ -432,6 +432,38 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AbilityFilters_TolerateTransientNullComboBoxSelections()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "ability_null", "Ability Null Filter"));
+            var store = new CreatureValueStore(document.Root);
+            var npcAbility = new CreatureAbilityInfo(
+                1, "Warocas Ability", "Creature ability", 0, "", 0, "", true);
+            var playerAbility = new CreatureAbilityInfo(
+                2, "Player Ability", "Player ability", 0, "", 33, "Devices");
+            var viewModel = new CreatureAbilitiesViewModel(
+                store,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                [npcAbility, playerAbility],
+                new Dictionary<int, CreaturePerkInfo>());
+
+            var action = () =>
+            {
+                viewModel.SelectedSkillFilter = null!;
+                viewModel.SelectedAudienceFilter = null!;
+            };
+
+            action.Should().NotThrow(
+                "Avalonia can briefly clear a ComboBox selection while the Abilities tab is realized");
+            viewModel.Matching.Should().ContainSingle().Which.Should().Be(npcAbility,
+                "a transient null selection should retain the NPC and all-skills defaults");
+        }
+
+        [Test]
         public void AbilityAssignments_UpdatePublishedPageIncrementally()
         {
             var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
@@ -519,10 +551,13 @@ namespace SWLOR.Toolset.Tests
             loot.IsLoaded.Should().BeFalse();
             abilityLoads.Should().Be(0);
             lootLoads.Should().Be(0);
+            var initialSkillSelection = abilities.SelectedSkillFilter;
 
             await abilities.EnsureLoadedAsync();
             abilityLoads.Should().Be(1);
             abilities.IsLoaded.Should().BeTrue();
+            abilities.SelectedSkillFilter.Should().BeSameAs(initialSkillSelection,
+                "loading the catalog must not clear the ComboBox's active All skills row");
             abilities.Matching.Should().ContainSingle().Which.Should().Be(ability);
             lootLoads.Should().Be(0, "opening Abilities must not load Loot");
 

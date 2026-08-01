@@ -13916,7 +13916,7 @@
               },
               "ModelPart1": {
                 "type": "byte",
-                "value": 39
+                "value": 41
               },
               "ModelPart2": {
                 "type": "byte",
@@ -14085,7 +14085,7 @@
               },
               "xModelPart1": {
                 "type": "word",
-                "value": 39
+                "value": 41
               },
               "xModelPart2": {
                 "type": "word",
@@ -24699,7 +24699,7 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "Lockable": {
           "type": "byte",

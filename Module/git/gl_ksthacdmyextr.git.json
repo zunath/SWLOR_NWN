@@ -35761,7 +35761,7 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 75
+          "value": 19
         },
         "LocalizedName": {
           "id": 14760,

@@ -170738,7 +170738,7 @@
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 55
+                      "value": 58
                     },
                     "Plot": {
                       "type": "byte",
@@ -170969,7 +170969,7 @@
                     },
                     "xModelPart3": {
                       "type": "word",
-                      "value": 55
+                      "value": 58
                     },
                     "XOrientation": {
                       "type": "float",

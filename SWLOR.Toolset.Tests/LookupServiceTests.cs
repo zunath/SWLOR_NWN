@@ -64,6 +64,12 @@ namespace SWLOR.Toolset.Tests
             badger.ModelType.Should().Be("S");
             badger.Race.Should().Be("c_badger");
             badger.Portrait.Should().Be("po_Badger");
+
+            var monCalamariCruiser = service.Get(2170);
+            monCalamariCruiser.Label.Should().Be("[SWLOR] Mon Calamari Cruiser");
+            monCalamariCruiser.DisplayName.Should().Be("[SWLOR] Mon Calamari Cruiser");
+            monCalamariCruiser.ModelType.Should().Be("s");
+            monCalamariCruiser.Race.Should().Be("C_MON1");
         }
 
         [Test]

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(false)
                 .SetIsClosable(true)
                 .SetInitialGeometry(0f, 0f, 650f, 520f)
-                .BindTitle(model => model.WindowTitle)
+                .SetTitle("Conversation")
                 .BindOnClosed(model => model.OnWindowClosed())
                 .AddColumn(root =>
                 {
@@ -55,12 +55,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                             .BindText(model => model.LineTexts)
                                             .BindColor(model => model.LineColors)
                                             .SetShowBorder(false)
-                                            .SetScrollbars(NuiScrollbars.Auto)
-                                            .SetHeight(68f);
+                                            .SetScrollbars(NuiScrollbars.None)
+                                            .SetPadding(8f)
+                                            .SetHeight(196f);
                                     });
                                 })
                                     .BindRowCount(model => model.LineTexts)
-                                    .SetRowHeight(72f)
+                                    .SetRowHeight(208f)
                                     .SetShowBorders(false)
                                     .SetScrollbars(NuiScrollbars.Y);
                             });

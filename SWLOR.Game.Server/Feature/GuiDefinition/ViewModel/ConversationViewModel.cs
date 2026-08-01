@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -16,12 +17,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private uint _controllerPlayer;
         private bool _hasImplicitCloseChoice;
         private bool _isClosing;
-
-        public string WindowTitle
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
 
         public string SpeakerName
         {
@@ -140,7 +135,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (node == null)
                 throw new InvalidOperationException("The active conversation has no current NPC line.");
 
-            WindowTitle = NormalizeNuiText(_session.ResolveText(_session.Title));
             var speaker = ResolveSpeakerObject(node);
             SpeakerName = ResolveSpeakerName(node, speaker);
             PortraitResref = ResolvePortrait(node, speaker);
@@ -154,8 +148,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (block == null || string.IsNullOrWhiteSpace(block.Text))
                     continue;
 
-                lineTexts.Add(NormalizeNuiText(_session.ResolveText(block.Text)));
-                lineColors.Add(ToGuiColor(block));
+                var resolvedText = NormalizeNuiText(_session.ResolveText(block.Text));
+                foreach (var segment in SplitDialogueText(resolvedText))
+                {
+                    lineTexts.Add(segment);
+                    lineColors.Add(ToGuiColor(block));
+                }
             }
 
             if (lineTexts.Count == 0)
@@ -186,6 +184,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LineColors = lineColors;
             ChoiceTexts = choiceTexts;
             ChoiceColors = choiceColors;
+        }
+
+        private static IEnumerable<string> SplitDialogueText(string text)
+        {
+            const int segmentCharacterLimit = 320;
+            const int minimumPreferredSegmentLength = segmentCharacterLimit / 2;
+
+            if (string.IsNullOrWhiteSpace(text))
+                yield break;
+
+            var remaining = text.Trim();
+            while (remaining.Length > segmentCharacterLimit)
+            {
+                var splitIndex = remaining.LastIndexOf('\n', segmentCharacterLimit);
+                if (splitIndex < minimumPreferredSegmentLength)
+                    splitIndex = remaining.LastIndexOf(' ', segmentCharacterLimit);
+                if (splitIndex < minimumPreferredSegmentLength)
+                    splitIndex = segmentCharacterLimit;
+
+                var segment = remaining[..splitIndex].Trim();
+                if (segment.Length > 0)
+                    yield return segment;
+
+                remaining = remaining[splitIndex..].TrimStart();
+            }
+
+            if (remaining.Length > 0)
+                yield return remaining;
         }
 
         private uint ResolveSpeakerObject(ConversationNode node)

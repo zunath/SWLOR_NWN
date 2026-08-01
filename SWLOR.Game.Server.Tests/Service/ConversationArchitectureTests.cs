@@ -3,6 +3,7 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
 
@@ -138,6 +139,49 @@ public class ConversationArchitectureTests
 
         errors.Should().BeEmpty(
             "migrated conversations must bypass NWN's native dialogue window at the module-resource boundary");
+    }
+
+    [Test]
+    public void ConversationWindow_UsesOneNpcTextScrollbarAndAStableTitle()
+    {
+        var root = FindRepositoryRoot().FullName;
+        var definitionSource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ConversationWindowDefinition.cs"));
+
+        definitionSource.Should().Contain(".SetTitle(\"Conversation\")");
+        definitionSource.Should().NotContain(".BindTitle(model => model.WindowTitle)");
+
+        var textPanelStart = definitionSource.IndexOf(".BindText(model => model.LineTexts)", StringComparison.Ordinal);
+        var textPanelEnd = definitionSource.IndexOf("root.AddRow(row =>", textPanelStart, StringComparison.Ordinal);
+        textPanelStart.Should().BeGreaterThanOrEqualTo(0);
+        textPanelEnd.Should().BeGreaterThan(textPanelStart);
+
+        var textPanelSource = definitionSource[textPanelStart..textPanelEnd];
+        textPanelSource.Should().Contain(".SetScrollbars(NuiScrollbars.None)",
+            "dialogue text must wrap without adding a nested scrollbar");
+        textPanelSource.Should().Contain(".SetScrollbars(NuiScrollbars.Y)",
+            "the containing dialogue list owns the panel's only scrollbar");
+        textPanelSource.Should().NotContain(".SetScrollbars(NuiScrollbars.Auto)");
+    }
+
+    [Test]
+    public void OversizedConversationText_IsSplitIntoScrollableRowsWithoutCuttingWords()
+    {
+        var method = typeof(ConversationViewModel).GetMethod(
+            "SplitDialogueText",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        method.Should().NotBeNull();
+
+        var source = string.Join(" ", Enumerable.Repeat("dialogue", 100));
+        var segments = ((IEnumerable<string>)method!.Invoke(null, new object[] { source })!).ToArray();
+
+        segments.Should().HaveCountGreaterThan(1);
+        segments.Should().OnlyContain(segment => segment.Length <= 320);
+        string.Join(" ", segments).Should().Be(source);
     }
 
     private static bool IsGeneratedShell(string fileName)

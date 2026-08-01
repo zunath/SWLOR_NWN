@@ -67,7 +67,8 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                 FieldType = GffFieldType.Dword, IsReadOnly = true
             },
             // A UTI carries two descriptions, but SWLOR exposes one. DescIdentified is the value
-            // the UI edits and the save contract mirrors it into Description for the engine.
+            // the UI edits; that edit mirrors into Description while preserving distinct legacy
+            // values when the builder changes some unrelated field.
             new BehaviorFieldDefinition
             {
                 Label = "Description", Name = "DescIdentified", Kind = BehaviorFieldKind.Paragraph,

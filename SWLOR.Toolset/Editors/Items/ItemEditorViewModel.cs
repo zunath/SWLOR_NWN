@@ -153,14 +153,6 @@ namespace SWLOR.Toolset.Editors.Items
 
         public string TemplateResRef => _store.GetString(BehaviorFieldStorage.Field, "TemplateResRef");
 
-        /// <summary>
-        /// SWLOR exposes one item description. Aurora stores two, so a save must copy the visible
-        /// identified description into its engine companion even when an older blueprint has
-        /// divergent text and the builder made no other edit.
-        /// </summary>
-        public bool NeedsSaveNormalization =>
-            !_store.LocalizedValuesMatch("Description", "DescIdentified");
-
         /// <summary>What the preview caption calls the item: its family, in words.</summary>
         public string FamilyDisplay => Family switch
         {
@@ -310,14 +302,6 @@ namespace SWLOR.Toolset.Editors.Items
         /// </summary>
         public string? EnforceSaveInvariants()
         {
-            if (NeedsSaveNormalization &&
-                !RunEdit(
-                    "Synchronize item descriptions",
-                    () => _store.CopyLocalizedValue("DescIdentified", "Description")))
-            {
-                return "Could not synchronize the item's required engine description fields.";
-            }
-
             if (!Source.IsLoaded)
                 return null;
             if (!Source.IsReady)

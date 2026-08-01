@@ -273,35 +273,50 @@ namespace SWLOR.Toolset.Tests.Items
             row.Text = value;
         }
 
-        [Test]
-        public async Task SaveSynchronizesBothEngineDescriptionsWithoutAnotherUserEdit()
+        [TestCase(0, "", "The identified description")]
+        [TestCase(1, "Authored unidentified text", "Authored identified text")]
+        public async Task SaveAfterAnUnrelatedEditPreservesDistinctEngineDescriptions(
+            int identified,
+            string unidentifiedDescription,
+            string identifiedDescription)
         {
             var source = UtiDocument.Load(Scratch("adren_harness"));
             var store = new ItemValueStore(source.Fields);
-            store.SetLocalizedText("Description", "Stale unidentified text");
-            store.SetLocalizedText("DescIdentified", "The builder-facing description");
+            store.SetInteger(
+                BehaviorFieldStorage.Field,
+                "Identified",
+                GffFieldType.Byte,
+                identified);
+            store.SetLocalizedText("Description", unidentifiedDescription);
+            store.SetLocalizedText("DescIdentified", identifiedDescription);
+            source.Fields.GetLocStringOrNull("Description")!
+                .SetText("2", unidentifiedDescription.Length == 0 ? "" : "Localized unidentified text");
             source.Fields.GetLocStringOrNull("DescIdentified")!
-                .SetText("2", "The localized builder-facing description");
+                .SetText("2", "Localized identified text");
             File.WriteAllBytes(Scratch("adren_harness"), source.ToBytes());
 
             var document = OpenScratch("adren_harness");
             try
             {
                 document.IsDirty.Should().BeFalse();
-                document.Editor.NeedsSaveNormalization.Should().BeTrue();
+                document.Editor.BasicRows.Single(row => row.Definition.Name == "Tag").Text =
+                    "description_preservation";
+                document.IsDirty.Should().BeTrue();
 
                 Assert.That(await document.TrySaveAsync(), Is.True);
 
                 var savedDocument = UtiDocument.Load(Scratch("adren_harness"));
                 var saved = new ItemValueStore(savedDocument.Fields);
                 saved.GetLocalizedText("Description")
-                    .Should().Be("The builder-facing description");
+                    .Should().Be(unidentifiedDescription);
                 saved.GetLocalizedText("DescIdentified")
-                    .Should().Be("The builder-facing description");
+                    .Should().Be(identifiedDescription);
                 savedDocument.Fields.GetLocStringOrNull("Description")!
-                    .GetText("2").Should().Be("The localized builder-facing description");
-                saved.LocalizedValuesMatch("Description", "DescIdentified").Should().BeTrue();
-                document.Editor.NeedsSaveNormalization.Should().BeFalse();
+                    .GetText("2").Should().Be(
+                        unidentifiedDescription.Length == 0 ? "" : "Localized unidentified text");
+                savedDocument.Fields.GetLocStringOrNull("DescIdentified")!
+                    .GetText("2").Should().Be("Localized identified text");
+                savedDocument.Fields.GetIntOrNull("Identified").Should().Be(identified);
                 document.IsDirty.Should().BeFalse();
             }
             finally

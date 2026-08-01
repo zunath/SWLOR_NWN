@@ -50,12 +50,17 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
                 }
 
                 var selectableLabel = label!;
+                var isAny = selectableLabel.Equals(AnyLabel, StringComparison.OrdinalIgnoreCase);
+                var imageResRef = table.GetString(row, ImageColumn);
+                if (!isAny && !TwoDaChoicePolicy.IsSelectableLabel(imageResRef))
+                    continue;
+
                 screens.Add(new BehaviorChoice(
                     row,
                     Humanise(selectableLabel),
-                    table.GetString(row, ImageColumn))
+                    imageResRef)
                 {
-                    IsAny = selectableLabel.Equals(AnyLabel, StringComparison.OrdinalIgnoreCase)
+                    IsAny = isAny
                 });
             }
 

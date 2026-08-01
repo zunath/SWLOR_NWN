@@ -176,7 +176,10 @@ namespace SWLOR.Toolset.Tests
                 "2 DELETED load_deleted\r\n" +
                 "3 UNUSED_3 load_unused\r\n" +
                 "4 Padding load_padding\r\n" +
-                "5 UserDefined ****\r\n");
+                "5 UserDefined ****\r\n" +
+                "6 SWLOR_MissingArt ****\r\n" +
+                "7 SWLOR_BlankArt\r\n" +
+                "8 SWLOR_DeletedArt DELETED\r\n");
 
             var screens = LoadScreenCatalog.Read(new Domain.GameData.TwoDa.TwoDaService(_tempDirectory));
 

@@ -44,9 +44,10 @@ public sealed class ModuleWriteLock : IDisposable
         ArgumentException.ThrowIfNullOrWhiteSpace(moduleRoot);
         var moduleKey = NormalizeModuleRoot(moduleRoot);
         var ambient = AmbientLeases.Value;
-        if (ambient != null && ambient.TryGetValue(moduleKey, out var existing))
+        if (ambient != null &&
+            ambient.TryGetValue(moduleKey, out var existing) &&
+            existing.TryRetain())
         {
-            existing.Depth++;
             return new ModuleWriteLock(moduleKey, existing);
         }
 
@@ -89,9 +90,15 @@ public sealed class ModuleWriteLock : IDisposable
             throw new ModuleWriteLockException(moduleKey, lastFailure!);
 
         var held = new HeldLease(stream);
-        ambient ??= new Dictionary<string, HeldLease>(PathComparer);
-        ambient[moduleKey] = held;
-        AmbientLeases.Value = ambient;
+        // AsyncLocal values flow into child ExecutionContexts. Never mutate a dictionary inherited
+        // from the caller: an async operation can yield after acquiring this lease while the caller
+        // starts unrelated UI work. A private copy keeps that sibling operation from mistaking this
+        // lease for one of its own nested acquisitions.
+        var updated = ambient == null
+            ? new Dictionary<string, HeldLease>(PathComparer)
+            : new Dictionary<string, HeldLease>(ambient, PathComparer);
+        updated[moduleKey] = held;
+        AmbientLeases.Value = updated;
         return new ModuleWriteLock(moduleKey, held);
     }
 
@@ -127,12 +134,19 @@ public sealed class ModuleWriteLock : IDisposable
         if (held == null)
             return;
 
-        held.Depth--;
-        if (held.Depth > 0)
+        if (!held.Release())
             return;
 
         var ambient = AmbientLeases.Value;
-        ambient?.Remove(_moduleKey);
+        if (ambient != null &&
+            ambient.TryGetValue(_moduleKey, out var current) &&
+            ReferenceEquals(current, held))
+        {
+            var updated = new Dictionary<string, HeldLease>(ambient, PathComparer);
+            updated.Remove(_moduleKey);
+            AmbientLeases.Value = updated.Count == 0 ? null : updated;
+        }
+
         held.Stream.Dispose();
     }
 
@@ -149,8 +163,24 @@ public sealed class ModuleWriteLock : IDisposable
 
     private sealed class HeldLease(FileStream stream)
     {
+        private int _depth = 1;
+
         public FileStream Stream { get; } = stream;
-        public int Depth { get; set; } = 1;
+
+        public bool TryRetain()
+        {
+            while (true)
+            {
+                var depth = Volatile.Read(ref _depth);
+                if (depth <= 0)
+                    return false;
+
+                if (Interlocked.CompareExchange(ref _depth, depth + 1, depth) == depth)
+                    return true;
+            }
+        }
+
+        public bool Release() => Interlocked.Decrement(ref _depth) == 0;
     }
 }
 

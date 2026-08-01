@@ -564,6 +564,34 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void QuestProgressActionsDefaultToRepeatableButAllowExplicitOneTimeUse()
+        {
+            using var editor = new Disposable(Open());
+            editor.Value.SelectSituationCommand.Execute(
+                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
+            editor.Value.AddChoiceCommand.Execute(null);
+            var choice = editor.Value.Choices.Last();
+            editor.Value.EditChoiceCommand.Execute(choice);
+
+            editor.Value.ConsequenceToAdd = Snippets.Find("action-accept-quest");
+            editor.Value.AddConsequenceCommand.Execute(null);
+            editor.Value.ConsequenceToAdd = Snippets.Find("action-advance-quest");
+            editor.Value.AddConsequenceCommand.Execute(null);
+
+            var questActions = editor.Value.Consequences.Where(consequence =>
+                consequence.Snippet.Key is "action-accept-quest" or "action-advance-quest").ToList();
+            questActions.Should().HaveCount(2);
+            questActions.Should().OnlyContain(action =>
+                action.CanRunOncePerPlayer && !action.IsOncePerPlayer);
+            choice.Target.Actions.Should().NotContain(action => action.IsOncePerPlayerMarker,
+                "repeatable quests may reuse the same dialogue nodes on every cycle");
+
+            questActions[0].IsOncePerPlayer = true;
+            choice.Target.Actions.Should().Contain(action => action.IsOncePerPlayerMarker,
+                "builders can still opt a quest action into lifetime-once behavior deliberately");
+        }
+
+        [Test]
         public void UnmatchedDropdownValuesSurviveUnrelatedSnippetEdits()
         {
             var document = DlgDocument.Load(_workingCopy);

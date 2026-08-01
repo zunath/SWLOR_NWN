@@ -1256,7 +1256,7 @@ namespace SWLOR.Toolset.Editors
             if (RunEdit($"Add an effect", () =>
                 {
                     var action = node.AddAction(snippet.Key);
-                    if (CanRunOncePerPlayer(snippet.Key))
+                    if (DefaultsToOncePerPlayer(snippet.Key))
                     {
                         node.SetActionOncePerPlayer(
                             action,
@@ -1271,6 +1271,10 @@ namespace SWLOR.Toolset.Editors
             "action-open-store" and not
             "action-teleport" and not
             "action-request-quest-items";
+
+        private static bool DefaultsToOncePerPlayer(string actionKey) =>
+            CanRunOncePerPlayer(actionKey) &&
+            actionKey is not "action-accept-quest" and not "action-advance-quest";
 
         private void SetConsequenceOncePerPlayer(SnippetEditorViewModel editor, bool oncePerPlayer)
         {

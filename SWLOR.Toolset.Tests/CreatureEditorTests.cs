@@ -1886,6 +1886,7 @@ namespace SWLOR.Toolset.Tests
 
                 editor.IsEquipmentTabSelected = true;
                 var armor = editor.EquipmentSlots.Slots.Single(slot => slot.Label == "Armor");
+                DrainUntil(() => armor.GalleryChoices.Count == choices.Length);
                 var armorA = armor.GalleryChoices.Single(choice => choice.StringValue == "armor_a");
 
                 // A regressed synchronous selection releases itself after two seconds so the test

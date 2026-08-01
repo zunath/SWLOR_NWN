@@ -2,12 +2,33 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class ConversationArchitectureTests
 {
+    [Test]
+    public void ConversationGraphs_LoadOnlyAfterSnippetRegistrationCompletes()
+    {
+        var snippetCacheEvents = typeof(Snippet)
+            .GetMethod(nameof(Snippet.CacheData))!
+            .GetCustomAttributes(typeof(NWNEventHandler), false)
+            .Cast<NWNEventHandler>()
+            .Select(attribute => attribute.Script);
+        var conversationCacheEvents = typeof(Conversation)
+            .GetMethod(nameof(Conversation.CacheData))!
+            .GetCustomAttributes(typeof(NWNEventHandler), false)
+            .Cast<NWNEventHandler>()
+            .Select(attribute => attribute.Script);
+
+        snippetCacheEvents.Should().BeEquivalentTo(new[] { ScriptName.OnModuleCacheBefore });
+        conversationCacheEvents.Should().BeEquivalentTo(new[] { ScriptName.OnModuleCacheAfter },
+            "conversation graphs validate snippet operations and must load after every before-cache handler has completed");
+    }
+
     [Test]
     public void GeneratedDialogShellResources_DoNotExist()
     {

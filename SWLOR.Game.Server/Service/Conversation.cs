@@ -41,7 +41,10 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        [NWNEventHandler(ScriptName.OnSwlorSkillCache)]
+        // Snippet handlers are registered during OnModuleCacheBefore. Graphs must load in the
+        // after phase so operation validation never depends on reflection handler ordering within
+        // the before phase (Skill.CacheData raises OnSwlorSkillCache re-entrantly while it runs).
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public static void CacheData()
         {
             LoadEmbeddedGraphs();

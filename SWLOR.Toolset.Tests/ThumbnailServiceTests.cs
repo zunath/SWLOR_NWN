@@ -125,6 +125,31 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void AnAppearanceMissIsRetriedWhenResourcesBecomeAvailable()
+        {
+            // The editor can publish its first gallery page while the replacement module HAK stack
+            // is still loading. That miss is temporary and must not become a permanent null cache
+            // entry that defeats ReloadPreviews after ResourcesReloaded.
+            var source = new CountingSource { AppearanceResult = null };
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+
+            service.RequestAppearanceAsync(7, _ => { });
+            Drain();
+
+            service.CachedAppearance(7).Should().BeNull();
+            source.AppearanceCalls.Should().Be(1);
+
+            source.AppearanceResult = CountingSource.Image();
+            service.RequestAppearanceAsync(7, _ => { });
+            Drain();
+
+            source.AppearanceCalls.Should().Be(2,
+                "a failed early render must remain retryable after game resources reload");
+            service.CachedAppearance(7).Should().NotBeNull();
+        }
+
+        [AvaloniaTest]
         public void ClearingTheCacheMakesTheNextRequestRenderAgain()
         {
             var source = new CountingSource();
@@ -271,6 +296,8 @@ namespace SWLOR.Toolset.Tests
             public int ModelCalls;
             public int AppearanceCalls;
 
+            public IconImage? AppearanceResult { get; set; } = Image();
+
             public void Release() => _gate.Set();
 
             public IconImage? Render(ResourceType type, string resRef, bool useIndexedBlueprint = false) =>
@@ -294,10 +321,10 @@ namespace SWLOR.Toolset.Tests
             {
                 _gate.Wait(TimeSpan.FromSeconds(5));
                 Interlocked.Increment(ref AppearanceCalls);
-                return Image();
+                return AppearanceResult;
             }
 
-            private static IconImage Image() => new(2, 2, new byte[2 * 2 * 4]);
+            public static IconImage Image() => new(2, 2, new byte[2 * 2 * 4]);
         }
     }
 }

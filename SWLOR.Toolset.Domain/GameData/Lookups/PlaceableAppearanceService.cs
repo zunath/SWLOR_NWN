@@ -66,23 +66,32 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private static IReadOnlyList<PlaceableAppearanceRow> Build(TwoDaService twoDa, TlkService tlk)
         {
-            var table = twoDa.GetTable(TableName);
+            var definition = TwoDaLookupTables.PlaceableModel;
+            var modelColumn = definition.RequiredColumns!.Single();
+            var table = twoDa.GetTable(definition.TableName);
+            if (!table.HasColumn(definition.LabelColumn) || !table.HasColumn(modelColumn))
+                return Array.Empty<PlaceableAppearanceRow>();
+
             var results = new List<PlaceableAppearanceRow>();
 
             for (var row = 0; row < table.RowCount; row++)
             {
-                var label = table.GetString(row, "Label");
-                if (string.IsNullOrEmpty(label))
+                var label = table.GetString(row, definition.LabelColumn);
+                var model = table.GetString(row, modelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
+                    !TwoDaChoicePolicy.IsSelectableLabel(model))
+                {
                     continue;
+                }
 
-                var strref = table.GetInt(row, "StrRef");
-                var displayName = DisplayNameResolver.Resolve(tlk, strref, label);
+                var strref = table.GetInt(row, definition.StrRefColumn!);
+                var displayName = DisplayNameResolver.Resolve(tlk, strref, label!);
 
                 results.Add(new PlaceableAppearanceRow(
                     row,
-                    label,
+                    label!,
                     displayName,
-                    table.GetString(row, "ModelName")));
+                    model));
             }
 
             return results;

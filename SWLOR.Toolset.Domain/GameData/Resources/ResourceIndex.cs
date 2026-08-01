@@ -154,7 +154,8 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         /// </summary>
         public async Task ReloadHakLayersAsync(
             IReadOnlyList<HakLayer> hakLayersInOrder,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default,
+            bool rescanWhenUnchanged = true)
         {
             ArgumentNullException.ThrowIfNull(hakLayersInOrder);
             var specs = hakLayersInOrder.ToArray();
@@ -166,14 +167,14 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             // Startup can already be using module.ifo's packed HAK stack. ModuleCustomContentService
             // confirms that same saved list once the workspace opens; rescanning identical multi-GB
             // archives would add work without changing a single lookup.
-            if (SameHakLayers(Volatile.Read(ref _hakLayerSpecs), specs))
+            if (!rescanWhenUnchanged && SameHakLayers(Volatile.Read(ref _hakLayerSpecs), specs))
                 return;
 
             await _reloadGate.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 // Another reload may have published this list while this caller waited for the gate.
-                if (SameHakLayers(Volatile.Read(ref _hakLayerSpecs), specs))
+                if (!rescanWhenUnchanged && SameHakLayers(Volatile.Read(ref _hakLayerSpecs), specs))
                     return;
 
                 var scanned = await Task.Run(

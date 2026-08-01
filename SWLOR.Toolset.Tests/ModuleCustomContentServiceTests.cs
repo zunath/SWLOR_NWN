@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -53,6 +54,53 @@ namespace SWLOR.Toolset.Tests
             if (second != null)
                 await second;
             publicationCount.Should().Be(2);
+        }
+
+        [Test]
+        public async Task IncompleteSavedHakStackRetainsTheRepositoryFallback()
+        {
+            var root = Path.Combine(
+                Path.GetTempPath(), "swlor-custom-content-fallback-" + Guid.NewGuid().ToString("N"));
+            var fallback = Path.Combine(root, "fallback");
+            var hakDirectory = Path.Combine(root, "hak");
+            var iniPath = Path.Combine(root, "nwn.ini");
+            Directory.CreateDirectory(fallback);
+            Directory.CreateDirectory(hakDirectory);
+            File.WriteAllText(Path.Combine(fallback, "fallback.2da"), "2DA V2.0\r\n");
+            File.WriteAllText(Path.Combine(hakDirectory, "present.hak"), string.Empty);
+            File.WriteAllText(iniPath, $"[Alias]\r\nHAK={hakDirectory}\r\n");
+
+            try
+            {
+                var index = new ResourceIndex(
+                    baseLayer: null,
+                    hakLayersInOrder: new[]
+                    {
+                        new ResourceIndex.HakLayer("repository", fallback)
+                    });
+                var context = new WorkspaceContext(
+                    _ => throw new NotSupportedException(),
+                    new OutputLogService());
+                var service = new ModuleCustomContentService(
+                    context,
+                    new OutputLogService(),
+                    resourceIndex: index,
+                    iniPathOverride: iniPath);
+
+                var result = await service.ReloadAsync(
+                    new[] { "present", "missing" },
+                    customTlk: null,
+                    retainCurrentHaksWhenMissing: true);
+
+                result.RetainedHakLayers.Should().BeTrue();
+                result.MissingHaks.Should().Equal("missing");
+                index.HakLayers.Should().ContainSingle()
+                    .Which.Name.Should().Be("repository");
+            }
+            finally
+            {
+                Directory.Delete(root, recursive: true);
+            }
         }
     }
 }

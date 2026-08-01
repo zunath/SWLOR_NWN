@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
+using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -33,6 +34,39 @@ namespace SWLOR.Toolset.Tests
                     new[] { new ResourceIndex.HakLayer("second", secondDirectory) });
 
                 portraits.Get(0).BaseResRef.Should().Be("portrait_after");
+            }
+            finally
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
+        public async Task WalkmeshSurfaceClassifierRebuildsAfterHakReload()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            var firstDirectory = Path.Combine(tempRoot, "first");
+            var secondDirectory = Path.Combine(tempRoot, "second");
+            Directory.CreateDirectory(firstDirectory);
+            Directory.CreateDirectory(secondDirectory);
+
+            try
+            {
+                var index = new ResourceIndex(
+                    baseLayer: null,
+                    hakLayersInOrder: new[] { new ResourceIndex.HakLayer("first", firstDirectory) });
+                var builds = 0;
+                _ = new TileWalkmeshCache(index, () =>
+                {
+                    builds++;
+                    return _ => true;
+                });
+
+                await index.ReloadHakLayersAsync(
+                    new[] { new ResourceIndex.HakLayer("second", secondDirectory) });
+
+                builds.Should().Be(2,
+                    "surfacemat-derived state must be rebuilt along with cached WOK parses");
             }
             finally
             {

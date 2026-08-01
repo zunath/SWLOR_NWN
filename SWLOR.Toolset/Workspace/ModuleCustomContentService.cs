@@ -16,7 +16,8 @@ namespace SWLOR.Toolset.Workspace
         int LoadedHakCount,
         IReadOnlyList<string> MissingHaks,
         string? CustomTlk,
-        bool ResourceIndexAvailable);
+        bool ResourceIndexAvailable,
+        bool RetainedHakLayers = false);
 
     /// <summary>
     /// Resolves the open module's authoritative HAK/TLK assignments through nwn.ini and hot-swaps
@@ -67,7 +68,9 @@ namespace SWLOR.Toolset.Workspace
         public async Task<ModuleCustomContentReloadResult> ReloadAsync(
             IReadOnlyList<string> hakNames,
             string? customTlk,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default,
+            bool rescanUnchangedHaks = true,
+            bool retainCurrentHaksWhenMissing = false)
         {
             ArgumentNullException.ThrowIfNull(hakNames);
             await _reloadGate.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -87,8 +90,14 @@ namespace SWLOR.Toolset.Workspace
                     throw new FileNotFoundException(
                         $"The custom TLK '{normalizedTlk}.tlk' was not found in the nwn.ini TLK directory.");
 
-                if (_resourceIndex != null && profile.HakDirectory != null)
-                    await _resourceIndex.ReloadHakLayersAsync(layers, cancellationToken).ConfigureAwait(false);
+                var retainHakLayers =
+                    retainCurrentHaksWhenMissing && missing.Count > 0;
+                if (_resourceIndex != null && profile.HakDirectory != null && !retainHakLayers)
+                    await _resourceIndex.ReloadHakLayersAsync(
+                            layers,
+                            cancellationToken,
+                            rescanUnchangedHaks)
+                        .ConfigureAwait(false);
 
                 _tlkService?.ReloadCustomTlk(tlkPath);
 
@@ -97,7 +106,8 @@ namespace SWLOR.Toolset.Workspace
                     layers.Count,
                     missing,
                     normalizedTlk,
-                    _resourceIndex != null);
+                    _resourceIndex != null,
+                    retainHakLayers);
                 Reloaded?.Invoke(result);
                 return result;
             }
@@ -132,10 +142,19 @@ namespace SWLOR.Toolset.Workspace
         {
             try
             {
-                var result = await ReloadAsync(hakNames, customTlk).ConfigureAwait(false);
-                _log.AppendLine(
-                    $"Module custom content loaded: {result.LoadedHakCount}/{result.AssignedHakCount} HAKs" +
-                    (result.CustomTlk == null ? "." : $", {result.CustomTlk}.tlk."));
+                // App startup may already have indexed the saved module.ifo stack. Confirm that
+                // identical list without paying for another archive scan; explicit reloads keep
+                // the public default above and rescan even when the paths have not changed.
+                var result = await ReloadAsync(
+                        hakNames,
+                        customTlk,
+                        rescanUnchangedHaks: false,
+                        retainCurrentHaksWhenMissing: true)
+                    .ConfigureAwait(false);
+                _log.AppendLine(result.RetainedHakLayers
+                    ? "Module custom content retained the repository HAK fallback because the saved packed stack is incomplete."
+                    : $"Module custom content loaded: {result.LoadedHakCount}/{result.AssignedHakCount} HAKs" +
+                      (result.CustomTlk == null ? "." : $", {result.CustomTlk}.tlk."));
                 if (result.MissingHaks.Count > 0)
                     _log.AppendLine("Missing assigned HAKs: " + string.Join(", ", result.MissingHaks));
             }

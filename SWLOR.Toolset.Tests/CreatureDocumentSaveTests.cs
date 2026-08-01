@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
@@ -93,6 +94,51 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 document.RevertCommand.Execute(null);
+                document.OnClose();
+            }
+        }
+
+        [Test]
+        public async Task RevertReloadsLinkedEquipmentAfterSavedHistoryWasBranchedAway()
+        {
+            var document = new CreatureDocumentViewModel(
+                filePath: _path,
+                resRef: "save_race",
+                gameCodeIndex: null,
+                log: new OutputLogService(),
+                prompts: new EditorPromptService(),
+                resolveChoices: null,
+                resourceIndex: null,
+                resolveModel: null,
+                appearance: _ => null,
+                armorParts: null,
+                equipmentChoices: null,
+                equipmentDetails: null,
+                choicePreviews: null,
+                previewAudio: null,
+                openLootDefinition: null,
+                appearanceOptions: null,
+                appearanceThumbnails: null);
+
+            try
+            {
+                var level = document.Editor.Stats.Vitals.Single(cell => cell.Label == "NPC Level");
+                level.Number = 7;
+                (await document.TrySaveAsync()).Should().BeTrue();
+
+                document.Undo();
+                document.Editor.BasicRows.Single(row => row.Definition.Name == "Tag").Text =
+                    "branched_edit";
+                document.RevertCommand.Execute(null);
+
+                var skin = document.Editor.Equipment.ForSlot(CreaturePropertyCatalog.StatSkinSlot);
+                skin.Should().NotBeNull("the saved UTC still references its saved stat skin");
+                skin!.Store.GetPropertyValue(CreaturePropertyCatalog.Level, -1).Should().Be(7,
+                    "revert must reload linked item bytes, not retain the abandoned undo branch");
+                document.IsDirty.Should().BeFalse();
+            }
+            finally
+            {
                 document.OnClose();
             }
         }

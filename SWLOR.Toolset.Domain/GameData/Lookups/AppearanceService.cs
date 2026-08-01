@@ -69,21 +69,33 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private static IReadOnlyList<AppearanceRow> Build(TwoDaService twoDa, TlkService tlk)
         {
-            var table = twoDa.GetTable(TableName);
+            var definition = TwoDaLookupTables.CreatureAppearance;
+            var requiredColumns = definition.RequiredColumns!;
+            var table = twoDa.GetTable(definition.TableName);
+            if (!table.HasColumn(definition.LabelColumn) ||
+                requiredColumns.Any(column => !table.HasColumn(column)))
+            {
+                return Array.Empty<AppearanceRow>();
+            }
+
             var results = new List<AppearanceRow>();
 
             for (var row = 0; row < table.RowCount; row++)
             {
-                var label = table.GetString(row, "LABEL");
-                if (string.IsNullOrEmpty(label))
+                var label = table.GetString(row, definition.LabelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
+                    requiredColumns.Any(column =>
+                        string.IsNullOrWhiteSpace(table.GetString(row, column))))
+                {
                     continue;
+                }
 
-                var strref = table.GetInt(row, "STRING_REF");
-                var displayName = DisplayNameResolver.Resolve(tlk, strref, label);
+                var strref = table.GetInt(row, definition.StrRefColumn!);
+                var displayName = DisplayNameResolver.Resolve(tlk, strref, label!);
 
                 results.Add(new AppearanceRow(
                     row,
-                    label,
+                    label!,
                     displayName,
                     table.GetString(row, "MODELTYPE"),
                     table.GetString(row, "RACE"),

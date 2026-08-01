@@ -320,6 +320,43 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void SingletonDestinationRejectsAnotherPlacementButExemptsTheCurrentInstance()
+        {
+            var catalog = Catalog();
+            var taxiTag = catalog.Get(WaypointBehaviorCatalog.TaxiStopId).Fields
+                .Single(field => field.Name == "Tag")
+                .Choices.First().StringValue!;
+
+            var conflicting = new WaypointEditorViewModel(
+                Waypoint(taxiTag),
+                "area",
+                isInstance: true,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                },
+                catalog,
+                singletonTagInUse: _ => true);
+            conflicting.IsIncomplete.Should().BeTrue();
+            conflicting.PrepareForSave().Should().BeFalse();
+
+            var currentInstanceOnly = new WaypointEditorViewModel(
+                Waypoint(taxiTag),
+                "area",
+                isInstance: true,
+                (_, edit) =>
+                {
+                    edit();
+                    return true;
+                },
+                catalog,
+                singletonTagInUse: _ => false);
+            currentInstanceOnly.IsIncomplete.Should().BeFalse();
+            currentInstanceOnly.PrepareForSave().Should().BeTrue();
+        }
+
+        [Test]
         public void TransitionDestinationIdentityPersistsBeforeAnInboundLinkExists()
         {
             var catalog = new WaypointBehaviorCatalog(null, Array.Empty<string>());

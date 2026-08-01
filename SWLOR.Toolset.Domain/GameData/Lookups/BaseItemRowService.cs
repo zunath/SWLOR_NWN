@@ -31,12 +31,24 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             if (!twoDa.TryGetTable(TableName, out var table) || table == null)
                 return new Dictionary<int, BaseItemRow>();
 
+            var definition = TwoDaLookupTables.BaseItem;
+            var requiredColumns = definition.RequiredColumns!;
+            if (!table.HasColumn(definition.LabelColumn) ||
+                requiredColumns.Any(column => !table.HasColumn(column)))
+            {
+                return new Dictionary<int, BaseItemRow>();
+            }
+
             var rows = new Dictionary<int, BaseItemRow>(table.RowCount);
             for (var row = 0; row < table.RowCount; row++)
             {
-                var label = table.GetString(row, "label");
-                if (string.IsNullOrWhiteSpace(label))
+                var label = table.GetString(row, definition.LabelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
+                    requiredColumns.Any(column =>
+                        string.IsNullOrWhiteSpace(table.GetString(row, column))))
+                {
                     continue; // Reserved/deleted row: nothing to classify.
+                }
 
                 int modelType;
                 try
@@ -65,7 +77,7 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
                 rows[row] = new BaseItemRow(
                     row,
-                    label,
+                    label!,
                     modelType,
                     storePanel,
                     ParseEquipableSlots(table.GetString(row, "EquipableSlots")));

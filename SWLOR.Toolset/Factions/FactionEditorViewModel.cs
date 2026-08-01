@@ -694,6 +694,15 @@ namespace SWLOR.Toolset.Factions
             using var allowance = ModuleMutationLock.AllowModuleWrites();
             using var moduleWriteLock = ModuleWriteLock.Acquire(_moduleRoot);
 
+            // The prompt above establishes which external generation the builder accepted, but
+            // another process can save while this operation is waiting for the cross-process
+            // module lease. Recheck under that lease before any stale bytes are staged.
+            if (_session.HasExternalChange())
+            {
+                throw new IOException(
+                    $"{_factionPath} changed while the faction save was waiting to write. Nothing was written.");
+            }
+
             var rewrites = idMap.Any(pair => pair.Key != pair.Value)
                 ? FactionReferenceRewriter.BuildRewrites(_moduleRoot, idMap)
                 : Array.Empty<FactionReferenceRewrite>();

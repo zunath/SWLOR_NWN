@@ -258,7 +258,40 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>Applies save-time normalization required by the selected specialized editor.</summary>
-        public bool PrepareForSave() => WaypointEditor?.PrepareForSave() ?? true;
+        public bool PrepareForSave()
+        {
+            if (WaypointEditor?.PrepareForSave() == false)
+                return false;
+
+            return !HasSingletonWaypointTagConflicts();
+        }
+
+        private bool HasSingletonWaypointTagConflicts()
+        {
+            if (_blueprintType != ResourceType.Utw || _waypointEditorServices == null)
+                return false;
+
+            var list = _gitSession.Document.Root.GetOrNull(_listFieldName)?.Elements;
+            if (list == null)
+                return false;
+
+            var singletonTags = list
+                .Select(_workspace.TagIndex.ResolveWaypointTag)
+                .OfType<string>()
+                .Where(tag => _waypointEditorServices.Catalog.IsSingletonDestinationTag(tag))
+                .ToList();
+            if (singletonTags
+                .GroupBy(tag => tag, StringComparer.OrdinalIgnoreCase)
+                .Any(group => group.Count() > 1))
+            {
+                return true;
+            }
+
+            return singletonTags.Any(tag =>
+                _workspace.TagIndex.CountWaypointPlacementsOutsideArea(
+                    tag,
+                    _waypointEditorServices.HeaderOwner) > 0);
+        }
 
         /// <summary>Rebuilds the grid rows from the current document state for initial load,
         /// structural edits, and undo/redo. Detail-field edits update the selected row in place
@@ -343,7 +376,8 @@ namespace SWLOR.Toolset.Editors
                     _gameCodeIndex,
                     _waypointEditorServices.ResolveChoices,
                     _waypointEditorServices.ChoicePreviews,
-                    _prompts);
+                    _prompts,
+                    tag => IsSingletonWaypointTagInUse(value!.Index, tag));
             }
             else if (_blueprintType == ResourceType.Uts)
             {
@@ -380,6 +414,38 @@ namespace SWLOR.Toolset.Editors
         private bool RunWaypointEdit(string description, Action mutation)
         {
             return RunSpecializedEdit(description, mutation);
+        }
+
+        private bool IsSingletonWaypointTagInUse(int currentIndex, string tag)
+        {
+            if (_waypointEditorServices == null ||
+                !_waypointEditorServices.Catalog.IsSingletonDestinationTag(tag))
+            {
+                return false;
+            }
+
+            if (_workspace.TagIndex.CountWaypointPlacementsOutsideArea(
+                    tag,
+                    _waypointEditorServices.HeaderOwner) > 0)
+            {
+                return true;
+            }
+
+            var list = _gitSession.Document.Root.GetOrNull(_listFieldName)?.Elements;
+            if (list == null)
+                return false;
+
+            for (var index = 0; index < list.Count; index++)
+            {
+                if (index == currentIndex)
+                    continue;
+
+                var otherTag = _workspace.TagIndex.ResolveWaypointTag(list[index]);
+                if (string.Equals(otherTag, tag, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+
+            return false;
         }
 
         private bool RunSpecializedEdit(string description, Action mutation)

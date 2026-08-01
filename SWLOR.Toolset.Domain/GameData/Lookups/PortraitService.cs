@@ -86,19 +86,23 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private static IReadOnlyList<PortraitRow> Build(TwoDaService twoDa)
         {
-            var table = twoDa.GetTable(TableName);
+            var definition = TwoDaLookupTables.Portrait;
+            var table = twoDa.GetTable(definition.TableName);
+            if (!table.HasColumn(definition.LabelColumn))
+                return Array.Empty<PortraitRow>();
+
             var results = new List<PortraitRow>();
 
             for (var row = 0; row < table.RowCount; row++)
             {
-                var baseResRef = table.GetString(row, "BaseResRef");
-                if (string.IsNullOrEmpty(baseResRef))
+                var baseResRef = table.GetString(row, definition.LabelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(baseResRef))
                     continue;
 
                 results.Add(new PortraitRow(
                     row,
-                    baseResRef,
-                    baseResRef,
+                    baseResRef!,
+                    baseResRef!,
                     table.GetInt(row, "Sex"),
                     table.GetInt(row, "Race"),
                     table.GetInt(row, "InanimateType")));

@@ -436,6 +436,60 @@ namespace SWLOR.Toolset.Tests
             Path.Combine(CorpusLocator.ModuleDirectory, "utw", resRef + ".utw.json");
     }
 
+    public class SingletonWaypointDestinationRuleTests
+    {
+        [Test]
+        public void DuplicateDeclaredTaxiDestinationFiresError()
+        {
+            using var module = SyntheticModule.Create();
+            foreach (var area in new[] { "taxi_a", "taxi_b" })
+            {
+                module.WriteAreaStub(area);
+                var git = SyntheticGit.Create();
+                git.Fields.Add("WaypointList", SyntheticGit.ListOf(
+                    SyntheticGit.Instance(
+                        ("Tag", GffFieldType.CExoString, "TAXI_UNIQUE"),
+                        ("TemplateResRef", GffFieldType.ResRef, "taxi_wp"))));
+                module.WriteGit(area, git);
+            }
+
+            var gameCodeIndex = new FakeGameCodeIndex(
+                taxiDestinations: new[]
+                {
+                    new TaxiDestinationInfo("TAXI_UNIQUE", "Unique Taxi", 1, 10)
+                });
+
+            var issues = new SingletonWaypointDestinationRule()
+                .Validate(new ValidationContext(module.Workspace, gameCodeIndex))
+                .ToList();
+
+            issues.Should().ContainSingle(issue =>
+                issue.Severity == ValidationSeverity.Error &&
+                issue.Message.Contains("TAXI_UNIQUE") &&
+                issue.Message.Contains("2 times"));
+        }
+
+        [Test]
+        public void RepeatableTransitionDestinationTagIsNotRejected()
+        {
+            using var module = SyntheticModule.Create();
+            foreach (var area in new[] { "transition_a", "transition_b" })
+            {
+                module.WriteAreaStub(area);
+                var git = SyntheticGit.Create();
+                git.Fields.Add("WaypointList", SyntheticGit.ListOf(
+                    SyntheticGit.Instance(
+                        ("Tag", GffFieldType.CExoString, "ORDINARY_TRANSITION"),
+                        ("TemplateResRef", GffFieldType.ResRef, "transition_wp"))));
+                module.WriteGit(area, git);
+            }
+
+            new SingletonWaypointDestinationRule()
+                .Validate(new ValidationContext(module.Workspace, new FakeGameCodeIndex()))
+                .Should().BeEmpty();
+        }
+    }
+
     public class PaletteOrphanRuleTests
     {
         [Test]

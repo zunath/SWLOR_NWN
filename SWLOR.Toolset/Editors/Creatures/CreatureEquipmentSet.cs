@@ -96,6 +96,27 @@ namespace SWLOR.Toolset.Editors.Creatures
             return referenced.Select(Open).Where(document => document != null).Cast<CreatureEquipmentDocument>().ToList();
         }
 
+        /// <summary>
+        /// Restores every opened linked item to its on-disk generation. Equipment mutations are
+        /// captured by the creature's shared undo transaction, but when that undo history branches
+        /// past its saved marker the creature session must reload from disk. The linked sessions
+        /// need the same treatment or their live GFF graphs retain the abandoned branch.
+        /// </summary>
+        public void ReloadSavedDocuments()
+        {
+            foreach (var (resRef, document) in _documents.ToList())
+            {
+                if (document.IsNew)
+                {
+                    document.Dispose();
+                    _documents.Remove(resRef);
+                    continue;
+                }
+
+                document.Session.ReloadFromDisk();
+            }
+        }
+
         private string UniqueResRef(string creatureResRef, string suffix)
         {
             var prefixLength = Math.Max(1, 16 - suffix.Length);

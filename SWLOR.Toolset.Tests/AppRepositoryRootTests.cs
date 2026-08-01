@@ -85,5 +85,42 @@ namespace SWLOR.Toolset.Tests
                     Directory.Delete(root, recursive: true);
             }
         }
+
+        [Test]
+        public void StartupHakLayersFallBackToRepositorySourcesWhenAnyAssignedArchiveIsMissing()
+        {
+            var root = Path.Combine(
+                Path.GetTempPath(),
+                "swlor-app-startup-partial-haks-" + Guid.NewGuid().ToString("N"));
+            var moduleRoot = Path.Combine(root, "Module");
+            var ifoDirectory = Path.Combine(moduleRoot, "ifo");
+            var hakDirectory = Path.Combine(root, "hak");
+
+            try
+            {
+                Directory.CreateDirectory(ifoDirectory);
+                Directory.CreateDirectory(hakDirectory);
+                File.WriteAllText(Path.Combine(hakDirectory, "present.hak"), string.Empty);
+
+                var ifo = new IfoDocument(new JsonGffDocument("IFO ", new JsonGffStruct()));
+                ifo.SetHakNames(new[] { "present", "missing" });
+                File.WriteAllBytes(Path.Combine(ifoDirectory, "module.ifo.json"), ifo.ToBytes());
+
+                var profile = new NwnIniProfile("nwn.ini", hakDirectory, null, null);
+                var layers = typeof(App)
+                    .GetMethod(
+                        "ResolveStartupHakLayers",
+                        BindingFlags.NonPublic | BindingFlags.Static)!
+                    .Invoke(null, [moduleRoot, profile]);
+
+                layers.Should().BeNull(
+                    "a partial packed stack must not replace the complete loose repository fallback");
+            }
+            finally
+            {
+                if (Directory.Exists(root))
+                    Directory.Delete(root, recursive: true);
+            }
+        }
     }
 }

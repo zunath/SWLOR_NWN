@@ -55,22 +55,31 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private static IReadOnlyList<WaypointAppearanceRow> Build(TwoDaService twoDa, TlkService tlk)
         {
-            var table = twoDa.GetTable(TableName);
+            var definition = TwoDaLookupTables.WaypointAppearance;
+            var modelColumn = definition.RequiredColumns!.Single();
+            var table = twoDa.GetTable(definition.TableName);
+            if (!table.HasColumn(definition.LabelColumn) || !table.HasColumn(modelColumn))
+                return Array.Empty<WaypointAppearanceRow>();
+
             var results = new List<WaypointAppearanceRow>();
 
             for (var row = 0; row < table.RowCount; row++)
             {
-                var label = table.GetString(row, "LABEL");
-                if (string.IsNullOrEmpty(label))
+                var label = table.GetString(row, definition.LabelColumn);
+                var model = table.GetString(row, modelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
+                    !TwoDaChoicePolicy.IsSelectableLabel(model))
+                {
                     continue;
+                }
 
-                var strref = table.GetInt(row, "STRREF");
+                var strref = table.GetInt(row, definition.StrRefColumn!);
 
                 results.Add(new WaypointAppearanceRow(
                     row,
-                    label,
-                    DisplayNameResolver.Resolve(tlk, strref, label),
-                    table.GetString(row, "RESREF")));
+                    label!,
+                    DisplayNameResolver.Resolve(tlk, strref, label!),
+                    model));
             }
 
             return results;

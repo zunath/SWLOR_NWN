@@ -15,17 +15,37 @@ namespace SWLOR.Toolset.Domain.Render
         private static readonly ushort WokResourceType = ResourceIdentity.TypeFromExtension("wok");
 
         private readonly ResourceIndex _resourceIndex;
-        private readonly Func<int, bool> _isWalkable;
+        private readonly Func<Func<int, bool>> _buildWalkability;
+        private Func<int, bool> _isWalkable;
         private readonly ConcurrentDictionary<string, WalkMesh?> _cache =
             new(StringComparer.OrdinalIgnoreCase);
 
         /// <param name="resourceIndex">Resolves "&lt;resref&gt;.wok" resources, hak-over-base-game precedence.</param>
         /// <param name="isWalkable">Classifies a face's surfacemat.2da row id as walkable, passed through to <see cref="WokMeshLoader.Parse"/>.</param>
         public TileWalkmeshCache(ResourceIndex resourceIndex, Func<int, bool> isWalkable)
+            : this(resourceIndex, () => isWalkable)
+        {
+        }
+
+        /// <param name="resourceIndex">Resolves "&lt;resref&gt;.wok" resources, hak-over-base-game precedence.</param>
+        /// <param name="buildWalkability">
+        /// Rebuilds the surfacemat.2da classifier after a resource reload, once TwoDaService has
+        /// invalidated its table cache.
+        /// </param>
+        public TileWalkmeshCache(
+            ResourceIndex resourceIndex,
+            Func<Func<int, bool>> buildWalkability)
         {
             _resourceIndex = resourceIndex ?? throw new ArgumentNullException(nameof(resourceIndex));
-            _isWalkable = isWalkable ?? throw new ArgumentNullException(nameof(isWalkable));
-            _resourceIndex.ResourcesReloaded += _cache.Clear;
+            _buildWalkability = buildWalkability ?? throw new ArgumentNullException(nameof(buildWalkability));
+            _isWalkable = _buildWalkability();
+            _resourceIndex.ResourcesReloaded += OnResourcesReloaded;
+        }
+
+        private void OnResourcesReloaded()
+        {
+            Volatile.Write(ref _isWalkable, _buildWalkability());
+            _cache.Clear();
         }
 
         /// <summary>
@@ -56,7 +76,7 @@ namespace SWLOR.Toolset.Domain.Render
                 if (bytes.Length == 0)
                     return null;
 
-                return WokMeshLoader.Parse(bytes, _isWalkable);
+                return WokMeshLoader.Parse(bytes, Volatile.Read(ref _isWalkable));
             }
             catch (Exception)
             {

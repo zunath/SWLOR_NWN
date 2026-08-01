@@ -312,6 +312,7 @@ namespace SWLOR.Toolset.Editors
                 InvalidateCreatureEquipmentChoices();
                 _itemSourcesGeneration++;
                 _behaviorValues?.InvalidateModuleSources();
+                OnTagIndexInvalidated();
 
                 // Pay the obtainability scan's cost here, in the background, rather than on
                 // whichever item editor happens to open first.

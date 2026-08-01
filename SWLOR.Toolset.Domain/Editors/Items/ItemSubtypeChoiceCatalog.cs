@@ -34,19 +34,12 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             for (var row = 0; row < table.RowCount; row++)
             {
                 var label = table.GetString(row, LabelColumn);
-                if (string.IsNullOrWhiteSpace(label))
-                    continue; // Blank rows are unused 2da slots, not real choices.
+                if (!TwoDaChoicePolicy.IsSelectableLabel(label))
+                    continue;
 
                 var resolved = ResolveDisplay(table, row, tlk);
 
-                // A row with a real TLK Name always stays, whatever its label says - racialtypes.2da
-                // and similar tables only ever leave a placeholder label ("Bio_reserved",
-                // "cep_reserved", "Padding") on a row nobody wired a Name strref to. A row whose
-                // display would fall back to that same placeholder label is not a real choice.
-                if (resolved == null && !TwoDaChoicePolicy.IsSelectableLabel(label))
-                    continue;
-
-                choices.Add(new BehaviorChoice(row, resolved ?? label));
+                choices.Add(new BehaviorChoice(row, resolved ?? label!));
             }
 
             return choices;

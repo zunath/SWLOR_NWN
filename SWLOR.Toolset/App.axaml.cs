@@ -439,7 +439,7 @@ namespace SWLOR.Toolset
                 // surfacemat.2da's Walk column (for the overlay color + placement height-snap).
                 services.AddSingleton(sp => new Domain.Render.TileWalkmeshCache(
                     sp.GetRequiredService<ResourceIndex>(),
-                    BuildSurfaceWalkability(sp.GetService<TwoDaService>())));
+                    () => BuildSurfaceWalkability(sp.GetService<TwoDaService>())));
             }
             else if (hasTwoDa)
             {
@@ -522,7 +522,10 @@ namespace SWLOR.Toolset
                     return null;
 
                 var ifo = IfoDocument.Load(ifoPath);
-                return profile.ResolveHakLayers(ifo.HakNames).Layers;
+                var resolution = profile.ResolveHakLayers(ifo.HakNames);
+                return resolution.MissingHakNames.Count == 0
+                    ? resolution.Layers
+                    : null;
             }
             catch (Exception)
             {

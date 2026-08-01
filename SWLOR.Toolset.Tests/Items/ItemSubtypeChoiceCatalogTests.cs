@@ -7,8 +7,8 @@ namespace SWLOR.Toolset.Tests.Items
 {
     /// <summary>
     /// <see cref="ItemSubtypeChoiceCatalog"/>'s reserved-row filtering: a row whose display would
-    /// fall back to a placeholder Label is skipped, but a row with a real TLK Name always stays
-    /// regardless of what its label says.
+    /// fall back to a placeholder Label is skipped. The source Label is authoritative for whether
+    /// a row is real content, even when a reserved slot happens to carry a resolvable TLK Name.
     /// </summary>
     [TestFixture]
     public class ItemSubtypeChoiceCatalogTests
@@ -85,11 +85,11 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void ARowWithARealTlkNameStaysEvenWithAReservedLookingLabel()
+        public void ARowWithARealTlkNameIsStillExcludedWhenItsSourceLabelIsReserved()
         {
             var choices = ReadFixture();
 
-            choices.Should().Contain(choice => choice.Display == "Real Bio-Reserved Name");
+            choices.Should().NotContain(choice => choice.Display == "Real Bio-Reserved Name");
         }
 
         [Test]

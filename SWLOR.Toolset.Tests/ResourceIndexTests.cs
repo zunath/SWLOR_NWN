@@ -217,11 +217,39 @@ namespace SWLOR.Toolset.Tests
                 var reloads = 0;
                 index.ResourcesReloaded += () => reloads++;
 
-                await index.ReloadHakLayersAsync(layers);
+                await index.ReloadHakLayersAsync(layers, rescanWhenUnchanged: false);
 
                 reloads.Should().Be(0,
                     "confirming the module.ifo stack at startup must not invalidate every derived cache");
                 index.TryLookup(ResourceIdentity.FromFileName("stable.uti"), out _).Should().BeTrue();
+            }
+            finally
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
+        public async Task ReloadHakLayersAsync_ExplicitReloadRescansAnArchiveRebuiltAtTheSamePath()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempRoot);
+            var hakPath = Path.Combine(tempRoot, "rebuilt.hak");
+            var layers = new[] { new ResourceIndex.HakLayer("rebuilt", hakPath) };
+
+            try
+            {
+                WriteSingleResourceHak(hakPath, "before", "uti", Encoding.UTF8.GetBytes("before"));
+                var index = new ResourceIndex(baseLayer: null, hakLayersInOrder: layers);
+                index.EnsureInitialized();
+                index.TryLookup(ResourceIdentity.FromFileName("before.uti"), out _).Should().BeTrue();
+
+                WriteSingleResourceHak(hakPath, "after", "uti", Encoding.UTF8.GetBytes("after"));
+                await index.ReloadHakLayersAsync(layers);
+
+                index.TryLookup(ResourceIdentity.FromFileName("before.uti"), out _).Should().BeFalse();
+                index.TryLookup(ResourceIdentity.FromFileName("after.uti"), out var replacement).Should().BeTrue();
+                Encoding.UTF8.GetString(replacement.GetBytes()).Should().Be("after");
             }
             finally
             {

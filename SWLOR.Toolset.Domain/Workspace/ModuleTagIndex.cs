@@ -28,6 +28,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         private Dictionary<string, string>? _areasByTag;
         private HashSet<string>? _transitionDestinationTags;
         private Dictionary<string, string>? _waypointAreasByTag;
+        private Dictionary<string, Dictionary<string, int>>? _waypointCountsByArea;
         private Dictionary<string, string>? _doorAreasByTag;
         private Dictionary<string, string>? _storeAreasByTag;
         private Dictionary<string, string>? _itemResRefsByTag;
@@ -105,6 +106,56 @@ namespace SWLOR.Toolset.Domain.Workspace
         }
 
         /// <summary>
+        /// Counts placed waypoints carrying <paramref name="tag"/> outside one area. The live area
+        /// editor supplies its own in-memory placements and uses this to avoid counting the current
+        /// instance against itself while still seeing every other area on disk.
+        /// </summary>
+        public int CountWaypointPlacementsOutsideArea(string tag, string areaResRef)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+                return 0;
+
+            lock (_syncRoot)
+            {
+                _ = Index();
+                return _waypointCountsByArea!.TryGetValue(tag, out var byArea)
+                    ? byArea.Where(pair => !string.Equals(
+                            pair.Key, areaResRef, StringComparison.OrdinalIgnoreCase))
+                        .Sum(pair => pair.Value)
+                    : 0;
+            }
+        }
+
+        /// <summary>Every effective placed-waypoint tag and its module-wide occurrence count.</summary>
+        public IReadOnlyDictionary<string, int> WaypointTagCounts
+        {
+            get
+            {
+                lock (_syncRoot)
+                {
+                    _ = Index();
+                    return _waypointCountsByArea!.ToDictionary(
+                        pair => pair.Key,
+                        pair => pair.Value.Values.Sum(),
+                        StringComparer.OrdinalIgnoreCase);
+                }
+            }
+        }
+
+        /// <summary>Resolves a placed waypoint's own tag, falling back to its blueprint tag.</summary>
+        public string? ResolveWaypointTag(Gff.JsonGffStruct waypoint)
+        {
+            ArgumentNullException.ThrowIfNull(waypoint);
+            lock (_syncRoot)
+            {
+                var tag = waypoint.GetStringOrNull("Tag");
+                return string.IsNullOrWhiteSpace(tag)
+                    ? BlueprintTag(ResourceType.Utw, waypoint.GetStringOrNull("TemplateResRef"))
+                    : tag;
+            }
+        }
+
+        /// <summary>
         /// Every non-empty destination tag named by an area transition trigger or door.
         /// </summary>
         public IReadOnlyCollection<string> TransitionDestinationTags
@@ -159,6 +210,7 @@ namespace SWLOR.Toolset.Domain.Workspace
             {
                 _areasByTag = null;
                 _waypointAreasByTag = null;
+                _waypointCountsByArea = null;
                 _doorAreasByTag = null;
                 _storeAreasByTag = null;
                 _itemResRefsByTag = null;
@@ -217,6 +269,8 @@ namespace SWLOR.Toolset.Domain.Workspace
 
                 var index = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 var waypoints = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                var waypointCounts = new Dictionary<string, Dictionary<string, int>>(
+                    StringComparer.OrdinalIgnoreCase);
                 var doors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 var stores = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var areaResRef in _workspace.EnumerateAreaResRefs())
@@ -228,6 +282,7 @@ namespace SWLOR.Toolset.Domain.Workspace
                             waypoints,
                             doors,
                             stores,
+                            waypointCounts,
                             areaResRef);
                     }
                     catch (Exception)
@@ -238,6 +293,7 @@ namespace SWLOR.Toolset.Domain.Workspace
                 }
 
                 _waypointAreasByTag = waypoints;
+                _waypointCountsByArea = waypointCounts;
                 _doorAreasByTag = doors;
                 _storeAreasByTag = stores;
                 _areasByTag = index;
@@ -250,6 +306,7 @@ namespace SWLOR.Toolset.Domain.Workspace
             Dictionary<string, string> waypoints,
             Dictionary<string, string> doors,
             Dictionary<string, string> stores,
+            Dictionary<string, Dictionary<string, int>> waypointCounts,
             string areaResRef)
         {
             var path = Path.Combine(_workspace.ModuleRoot, "git", areaResRef + ".git.json");
@@ -259,7 +316,13 @@ namespace SWLOR.Toolset.Domain.Workspace
             // A GIT can contain tens of thousands of fields, but this index needs only two lists
             // and two scalar fields within their entries. JsonDocument avoids materializing the
             // complete editable GFF object graph that GitDocument.Load intentionally creates.
-            AddTags(index, waypoints, areaResRef, Instances(root, "WaypointList"), ResourceType.Utw);
+            AddTags(
+                index,
+                waypoints,
+                areaResRef,
+                Instances(root, "WaypointList"),
+                ResourceType.Utw,
+                countsByArea: waypointCounts);
             AddTags(index, doors, areaResRef, Instances(root, "Door List"), ResourceType.Utd);
             AddTags(
                 index,
@@ -452,7 +515,8 @@ namespace SWLOR.Toolset.Domain.Workspace
             string areaResRef,
             IEnumerable<JsonElement> instances,
             ResourceType blueprintType,
-            string templateField = "TemplateResRef")
+            string templateField = "TemplateResRef",
+            Dictionary<string, Dictionary<string, int>>? countsByArea = null)
         {
             foreach (var instance in instances)
             {
@@ -464,6 +528,16 @@ namespace SWLOR.Toolset.Domain.Workspace
                 {
                     index.TryAdd(tag, areaResRef);
                     typedIndex.TryAdd(tag, areaResRef);
+                    if (countsByArea != null)
+                    {
+                        if (!countsByArea.TryGetValue(tag, out var byArea))
+                        {
+                            byArea = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                            countsByArea.Add(tag, byArea);
+                        }
+
+                        byArea[areaResRef] = byArea.GetValueOrDefault(areaResRef) + 1;
+                    }
                 }
             }
         }

@@ -111,6 +111,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private void Revert()
         {
             _session.RevertToSaved();
+            Editor.Equipment.ReloadSavedDocuments();
             Editor.ReloadFromDocument();
             AfterHistoryChange();
         }

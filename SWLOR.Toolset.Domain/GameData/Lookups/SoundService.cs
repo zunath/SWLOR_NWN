@@ -60,13 +60,17 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private static IReadOnlyList<SoundRow> Build(TwoDaService twoDa, TlkService tlk)
         {
-            var table = twoDa.GetTable(TableName);
+            var definition = TwoDaLookupTables.AmbientSound;
+            var table = twoDa.GetTable(definition.TableName);
+            if (!table.HasColumn(definition.LabelColumn))
+                return Array.Empty<SoundRow>();
+
             var results = new List<SoundRow>();
 
             for (var row = 0; row < table.RowCount; row++)
             {
-                var resource = table.GetString(row, "Resource");
-                if (string.IsNullOrEmpty(resource))
+                var resource = table.GetString(row, definition.LabelColumn);
+                if (!TwoDaChoicePolicy.IsSelectableLabel(resource))
                     continue;
 
                 // Prefer the DisplayName override strref if a corpus entry ever populates it,
@@ -76,9 +80,9 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                 var descriptionStrref = table.GetInt(row, "Description");
 
                 var displayName = DisplayNameResolver.Resolve(tlk, displayNameStrref,
-                    DisplayNameResolver.Resolve(tlk, descriptionStrref, resource));
+                    DisplayNameResolver.Resolve(tlk, descriptionStrref, resource!));
 
-                results.Add(new SoundRow(row, resource, displayName));
+                results.Add(new SoundRow(row, resource!, displayName));
             }
 
             return results;

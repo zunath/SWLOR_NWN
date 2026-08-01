@@ -158,6 +158,24 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         /// <summary>creaturespeed.2da - Label names each stored WalkRate row.</summary>
         public static readonly TwoDaLookupTable CreatureSpeed = new("creaturespeed", "Label", "Name");
+
+        /// <summary>
+        /// appearance.2da - selectable creatures need the model classification and model/race
+        /// metadata used by the creature preview pipeline.
+        /// </summary>
+        public static readonly TwoDaLookupTable CreatureAppearance =
+            new("appearance", "LABEL", "STRING_REF", ["NAME", "RACE", "MODELTYPE"]);
+
+        /// <summary>waypoint.2da - a selectable marker needs a real model RESREF.</summary>
+        public static readonly TwoDaLookupTable WaypointAppearance =
+            new("waypoint", "LABEL", "STRREF", ["RESREF"]);
+
+        /// <summary>portraits.2da - BaseResRef is both the identifier and resource stem.</summary>
+        public static readonly TwoDaLookupTable Portrait = new("portraits", "BaseResRef", null);
+
+        /// <summary>ambientsound.2da - Resource is the playable sound resref.</summary>
+        public static readonly TwoDaLookupTable AmbientSound =
+            new("ambientsound", "Resource", "Description");
     }
 
     /// <summary>A 2DA table plus the columns <see cref="TwoDaLookupService"/> should read from it.</summary>

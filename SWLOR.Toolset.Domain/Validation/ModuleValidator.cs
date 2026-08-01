@@ -44,6 +44,7 @@ namespace SWLOR.Toolset.Domain.Validation
             new VarTableEnumRule(),
             new QuestActivatorNotInPaletteRule(),
             new SpawnWaypointPaletteRule(),
+            new SingletonWaypointDestinationRule(),
             new PaletteOrphanRule(),
             new DanglingConversationRule(),
             new UnreferencedConversationRule()

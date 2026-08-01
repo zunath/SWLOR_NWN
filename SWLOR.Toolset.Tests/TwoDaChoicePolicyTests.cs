@@ -136,5 +136,71 @@ namespace SWLOR.Toolset.Tests
                 Directory.Delete(scratch, recursive: true);
             }
         }
+
+        [Test]
+        public void SpecializedLookupsApplyTheSharedPolicyAndRequiredMetadata()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"specialized-two-da-choice-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "appearance.2da"),
+                    "2DA V2.0\r\n\r\nLABEL STRING_REF NAME RACE MODELTYPE PORTRAIT\r\n" +
+                    "0 RealCreature **** real_name c_real F real_portrait\r\n" +
+                    "1 Bio_reserved 123 reserved_name c_reserved F reserved_portrait\r\n" +
+                    "2 MissingModel **** missing_name **** F missing_portrait\r\n");
+                File.WriteAllText(
+                    Path.Combine(scratch, "placeables.2da"),
+                    "2DA V2.0\r\n\r\nLabel StrRef ModelName\r\n" +
+                    "0 RealPlaceable **** plc_real\r\n" +
+                    "1 DELETED 123 plc_deleted\r\n" +
+                    "2 MissingModel **** ****\r\n");
+                File.WriteAllText(
+                    Path.Combine(scratch, "waypoint.2da"),
+                    "2DA V2.0\r\n\r\nLABEL RESREF STRREF\r\n" +
+                    "0 RealWaypoint wpt_real ****\r\n" +
+                    "1 USER wpt_user 123\r\n" +
+                    "2 MissingModel **** ****\r\n");
+                File.WriteAllText(
+                    Path.Combine(scratch, "portraits.2da"),
+                    "2DA V2.0\r\n\r\nBaseResRef Sex Race InanimateType\r\n" +
+                    "0 portrait_real 0 0 ****\r\n" +
+                    "1 NULL6 0 0 ****\r\n");
+                File.WriteAllText(
+                    Path.Combine(scratch, "ambientsound.2da"),
+                    "2DA V2.0\r\n\r\nDescription Resource DisplayName\r\n" +
+                    "0 **** sound_real ****\r\n" +
+                    "1 123 UNUSED_42 ****\r\n");
+                File.WriteAllText(
+                    Path.Combine(scratch, "baseitems.2da"),
+                    "2DA V2.0\r\n\r\nlabel Name ItemClass ModelType StorePanel EquipableSlots\r\n" +
+                    "0 RealItem **** realclass 0 4 0\r\n" +
+                    "1 INVALID_ITEM 123 invalidclass 0 4 0\r\n" +
+                    "2 MissingClass **** **** 0 4 0\r\n");
+
+                var twoDa = new TwoDaService(scratch);
+                var tlk = new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}"));
+
+                new AppearanceService(twoDa, tlk).GetAll().Select(row => row.Label)
+                    .Should().Equal("RealCreature");
+                new PlaceableAppearanceService(twoDa, tlk).GetAll().Select(row => row.Label)
+                    .Should().Equal("RealPlaceable");
+                new WaypointAppearanceService(twoDa, tlk).GetAll().Select(row => row.Label)
+                    .Should().Equal("RealWaypoint");
+                new PortraitService(twoDa).GetAll().Select(row => row.BaseResRef)
+                    .Should().Equal("portrait_real");
+                new SoundService(twoDa, tlk).GetAll().Select(row => row.Resource)
+                    .Should().Equal("sound_real");
+                new BaseItemRowService(twoDa).All.Select(row => row.Label)
+                    .Should().Equal("RealItem");
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
     }
 }

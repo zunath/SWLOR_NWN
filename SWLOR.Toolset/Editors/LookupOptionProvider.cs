@@ -191,7 +191,7 @@ namespace SWLOR.Toolset.Editors
             for (var i = 0; i < factionList.Elements.Count; i++)
             {
                 var name = factionList.Elements[i].GetOrNull("FactionName")?.GetString() ?? $"Faction {i}";
-                options.Add(new LookupOption(i, name));
+                options.Add(new LookupOption(i, name, ShowId: false));
             }
 
             return options;

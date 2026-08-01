@@ -138,6 +138,41 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task FactionsUseNamesWithoutExposingTheirInternalIds()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"faction-presentation-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(Path.Combine(scratch, "are"));
+            Directory.CreateDirectory(Path.Combine(scratch, "utc"));
+            Directory.CreateDirectory(Path.Combine(scratch, "fac"));
+            File.Copy(
+                Path.Combine(CorpusLocator.ModuleDirectory, "fac", "repute.fac.json"),
+                Path.Combine(scratch, "fac", "repute.fac.json"));
+
+            var context = new WorkspaceContext(
+                path => new Domain.Workspace.ModuleWorkspace(path),
+                new OutputLogService());
+            try
+            {
+                context.Open(scratch);
+                var options = new LookupOptionProvider(context).GetOptions(LookupKeys.Factions);
+
+                options.Should().NotBeEmpty();
+                options.Select(option => option.Id).Should().ContainInOrder(0, 1, 2);
+                options.Select(option => option.BehaviorDisplay).Should().ContainInOrder(
+                    "PC", "Hostile", "Commoner");
+                options.Should().OnlyContain(option => !option.ShowId);
+
+                await context.Catalog!.BuildTask;
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
         public void OtherLookupsKeepTheirIdPresentationByDefault()
         {
             var option = new LookupOption(7, "Default");

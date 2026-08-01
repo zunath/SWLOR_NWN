@@ -33,14 +33,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetWidth(128f)
                                     .SetHeight(200f);
                             });
-                            portrait.AddRow(row =>
-                            {
-                                row.AddLabel()
-                                    .BindText(model => model.SpeakerName)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                    .SetHeight(28f);
-                            });
                         }).SetWidth(140f);
 
                         header.AddColumn(dialogue =>

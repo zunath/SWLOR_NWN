@@ -23,12 +23,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string SpeakerName
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
         public string PortraitResref
         {
             get => Get<string>();
@@ -140,9 +134,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (node == null)
                 throw new InvalidOperationException("The active conversation has no current NPC line.");
 
-            WindowTitle = NormalizeNuiText(_session.ResolveText(_session.Title));
             var speaker = ResolveSpeakerObject(node);
-            SpeakerName = ResolveSpeakerName(node, speaker);
+            var speakerName = ResolveSpeakerName(node, speaker);
+            var conversationTitle = NormalizeNuiText(_session.ResolveText(_session.Title));
+            WindowTitle = BuildWindowTitle(conversationTitle, speakerName);
             PortraitResref = ResolvePortrait(node, speaker);
             HasPortrait = !string.IsNullOrWhiteSpace(PortraitResref);
             PlayPresentation(speaker, node.SoundResref, node.Animation, node.AnimationLoops);
@@ -186,6 +181,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LineColors = lineColors;
             ChoiceTexts = choiceTexts;
             ChoiceColors = choiceColors;
+        }
+
+        private static string BuildWindowTitle(string conversationTitle, string speakerName)
+        {
+            if (string.IsNullOrWhiteSpace(speakerName))
+                return string.IsNullOrWhiteSpace(conversationTitle) ? "Conversation" : conversationTitle;
+
+            return string.IsNullOrWhiteSpace(conversationTitle)
+                ? speakerName
+                : $"{conversationTitle} - {speakerName}";
         }
 
         private uint ResolveSpeakerObject(ConversationNode node)

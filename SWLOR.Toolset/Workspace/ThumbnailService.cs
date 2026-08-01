@@ -9,6 +9,14 @@ using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Workspace
 {
+    /// <summary>How urgently an appearance gallery needs one of its model previews.</summary>
+    public enum AppearancePreviewPriority
+    {
+        Selected,
+        Visible,
+        Deferred
+    }
+
     /// <summary>
     /// Supplies palette tiles with their preview images, and owns the two caches that keep that cheap.
     /// </summary>
@@ -51,13 +59,12 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         private const int MaxAppearanceWorkers = 2;
 
-        /// <summary>
-        /// Appearance rows can compose an entire segmented creature. Keep their on-demand work at
-        /// the same measured concurrency as the cache builder instead of queueing a thread-pool job
-        /// for every published gallery tile at once.
-        /// </summary>
-        private readonly SemaphoreSlim _appearanceRenderGate =
-            new(MaxAppearanceWorkers, MaxAppearanceWorkers);
+        private readonly object _appearanceQueueGate = new();
+        private readonly List<AppearanceRenderRequest> _appearanceQueue = new();
+        private readonly Dictionary<string, AppearanceRenderRequest> _queuedAppearanceByKey =
+            new(StringComparer.OrdinalIgnoreCase);
+        private int _appearanceWorkersRunning;
+        private long _appearanceRequestSequence;
 
         private readonly WorkspaceContext _workspaceContext;
         private readonly IPreviewImageSource _renderer;
@@ -101,6 +108,29 @@ namespace SWLOR.Toolset.Workspace
         }
 
         private readonly record struct RenderWaiter(Action<Bitmap> Ready, Action? Failed);
+
+        private sealed class AppearanceRenderRequest
+        {
+            public AppearanceRenderRequest(
+                string key,
+                int appearanceId,
+                InFlightRender operation,
+                AppearancePreviewPriority priority,
+                long sequence)
+            {
+                Key = key;
+                AppearanceId = appearanceId;
+                Operation = operation;
+                Priority = priority;
+                Sequence = sequence;
+            }
+
+            public string Key { get; }
+            public int AppearanceId { get; }
+            public InFlightRender Operation { get; }
+            public AppearancePreviewPriority Priority { get; set; }
+            public long Sequence { get; }
+        }
 
         private readonly record struct PreviewResolution(
             Bitmap? Bitmap,
@@ -215,17 +245,30 @@ namespace SWLOR.Toolset.Workspace
 
         private void ResetForWorkspace()
         {
+            AppearanceRenderRequest[] abandoned;
             _cacheGate.EnterWriteLock();
             try
             {
                 Interlocked.Increment(ref _cacheEpoch);
                 _inFlight.Clear();
                 _memory.Clear();
+
+                lock (_appearanceQueueGate)
+                {
+                    abandoned = _appearanceQueue.ToArray();
+                    _appearanceQueue.Clear();
+                    _queuedAppearanceByKey.Clear();
+                }
             }
             finally
             {
                 _cacheGate.ExitWriteLock();
             }
+
+            // Queued requests have no worker left to complete them after replacement. Release their
+            // realized cells immediately so the new workspace can enqueue the same appearance keys.
+            foreach (var request in abandoned)
+                NotifyFailure(request.Operation);
         }
 
         /// <summary>True when game data is loaded well enough to produce any preview at all.</summary>
@@ -374,7 +417,8 @@ namespace SWLOR.Toolset.Workspace
         public bool RequestAppearanceAsync(
             int appearanceId,
             Action<Bitmap> onReady,
-            Action? onFailed = null)
+            Action? onFailed = null,
+            AppearancePreviewPriority priority = AppearancePreviewPriority.Visible)
         {
             ArgumentNullException.ThrowIfNull(onReady);
 
@@ -391,35 +435,125 @@ namespace SWLOR.Toolset.Workspace
             }
 
             if (!TryStartRender(key, onReady, null, out var operation, onFailed))
-                return true;
-
-            _ = Task.Run(async () =>
             {
-                await _appearanceRenderGate.WaitAsync().ConfigureAwait(false);
-                try
+                PromoteAppearanceRequest(key, priority);
+                return true;
+            }
+
+            QueueAppearanceRender(new AppearanceRenderRequest(
+                key,
+                appearanceId,
+                operation,
+                priority,
+                Interlocked.Increment(ref _appearanceRequestSequence)));
+
+            return true;
+        }
+
+        private void PromoteAppearanceRequest(string key, AppearancePreviewPriority priority)
+        {
+            lock (_appearanceQueueGate)
+            {
+                if (_queuedAppearanceByKey.TryGetValue(key, out var queued) && priority < queued.Priority)
+                    queued.Priority = priority;
+            }
+        }
+
+        private void QueueAppearanceRender(AppearanceRenderRequest request)
+        {
+            lock (_appearanceQueueGate)
+            {
+                _appearanceQueue.Add(request);
+                _queuedAppearanceByKey[request.Key] = request;
+                if (_appearanceWorkersRunning < MaxAppearanceWorkers)
                 {
-                    PreviewResolution? result = null;
+                    _appearanceWorkersRunning++;
+                    _ = Task.Run(ProcessAppearanceQueue);
+                }
+            }
+        }
+
+        private void ProcessAppearanceQueue()
+        {
+            try
+            {
+                while (true)
+                {
+                    AppearanceRenderRequest request;
+                    lock (_appearanceQueueGate)
+                    {
+                        if (_appearanceQueue.Count == 0)
+                            return;
+
+                        var next = 0;
+                        for (var index = 1; index < _appearanceQueue.Count; index++)
+                        {
+                            var candidate = _appearanceQueue[index];
+                            var current = _appearanceQueue[next];
+                            if (candidate.Priority < current.Priority ||
+                                candidate.Priority == current.Priority && candidate.Sequence < current.Sequence)
+                            {
+                                next = index;
+                            }
+                        }
+
+                        request = _appearanceQueue[next];
+                        _appearanceQueue.RemoveAt(next);
+                        if (_queuedAppearanceByKey.TryGetValue(request.Key, out var queued) &&
+                            ReferenceEquals(queued, request))
+                        {
+                            _queuedAppearanceByKey.Remove(request.Key);
+                        }
+                    }
+
                     try
                     {
-                        result = ResolveAppearance(appearanceId);
+                        if (!IsCurrent(request.Key, request.Operation))
+                        {
+                            CompleteRender(request.Key, request.Operation, result: null, delivered: null);
+                            continue;
+                        }
+
+                        PreviewResolution? result = null;
+                        try
+                        {
+                            result = ResolveAppearance(request.AppearanceId);
+                        }
+                        catch (Exception)
+                        {
+                            // A temporarily unavailable or malformed appearance remains retryable.
+                        }
+
+                        // Publish decoded pixels before PNG persistence. Disk I/O must not keep a visible
+                        // tile on its placeholder after the expensive model render has already succeeded.
+                        var published = CompleteRender(
+                            request.Key,
+                            request.Operation,
+                            result is { } resolved ? resolved with { Persist = false } : null,
+                            result?.Bitmap);
+                        if (published && result is { Persist: true } persistent)
+                            Persist(persistent);
                     }
                     catch (Exception)
                     {
-                        // A temporarily unavailable or malformed appearance remains retryable.
+                        // One malformed row or a dispatcher shutdown must not strand the rest of the
+                        // gallery behind a dead worker. Release this tile and continue the queue.
+                        CompleteRender(request.Key, request.Operation, result: null, delivered: null);
                     }
-
-                    // A null result is deliberately not cached. Appearance requests commonly begin
-                    // while the resource index or replacement module HAK stack is still loading; a
-                    // permanent cached null left every later retry on its letter placeholder.
-                    CompleteRender(key, operation, result, result?.Bitmap);
                 }
-                finally
+            }
+            finally
+            {
+                lock (_appearanceQueueGate)
                 {
-                    _appearanceRenderGate.Release();
+                    _appearanceWorkersRunning--;
+                    if (_appearanceQueue.Count > 0 && _appearanceWorkersRunning < MaxAppearanceWorkers)
+                    {
+                        _appearanceWorkersRunning++;
+                        _ = Task.Run(ProcessAppearanceQueue);
+                    }
                 }
-            });
-
-            return true;
+            }
         }
 
         /// <summary>The cached appearance-row thumbnail if it is already decoded, else null.</summary>
@@ -498,7 +632,7 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         /// <param name="result">What to cache; null means rendering failed and must be retried later.</param>
         /// <param name="delivered">What to hand the waiters, or null to tell them nothing.</param>
-        private void CompleteRender(
+        private bool CompleteRender(
             string key,
             InFlightRender operation,
             PreviewResolution? result,
@@ -568,6 +702,30 @@ namespace SWLOR.Toolset.Workspace
                     else
                         callback.Failed?.Invoke();
                 }
+            });
+
+            return publishResult;
+        }
+
+        private static void Persist(PreviewResolution resolved)
+        {
+            if (resolved.Bitmap == null)
+                resolved.Disk.StoreNoArtwork(resolved.Type, resolved.ResRef, resolved.UseIndexedBlueprint);
+            else
+                resolved.Disk.Store(
+                    resolved.Type, resolved.ResRef, resolved.UseIndexedBlueprint, resolved.Bitmap);
+        }
+
+        private static void NotifyFailure(InFlightRender operation)
+        {
+            RenderWaiter[] callbacks;
+            lock (operation.Waiters)
+                callbacks = operation.Waiters.ToArray();
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                foreach (var callback in callbacks)
+                    callback.Failed?.Invoke();
             });
         }
 
@@ -795,18 +953,33 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>Drops every cached preview, in memory and on disk, so the next build redoes them.</summary>
         public int ClearCache()
         {
+            AppearanceRenderRequest[] abandoned;
+            int removed;
             _cacheGate.EnterWriteLock();
             try
             {
                 Interlocked.Increment(ref _cacheEpoch);
                 _inFlight.Clear();
                 _memory.Clear();
-                return Disk.Clear();
+
+                lock (_appearanceQueueGate)
+                {
+                    abandoned = _appearanceQueue.ToArray();
+                    _appearanceQueue.Clear();
+                    _queuedAppearanceByKey.Clear();
+                }
+
+                removed = Disk.Clear();
             }
             finally
             {
                 _cacheGate.ExitWriteLock();
             }
+
+            foreach (var request in abandoned)
+                NotifyFailure(request.Operation);
+
+            return removed;
         }
 
         /// <summary>Deletes cache folders left by an older render pipeline. Returns the number removed.</summary>

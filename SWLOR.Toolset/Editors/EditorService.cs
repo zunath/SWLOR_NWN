@@ -2362,7 +2362,9 @@ namespace SWLOR.Toolset.Editors
                         // The label rather than the model column: half of appearance.2da names a
                         // phenotype there, and "H" tells a builder nothing about what they picked.
                         $"row {row.Id} \u00b7 {row.Label}",
-                        CreatureAppearanceId: row.Id))
+                        CreatureAppearanceId: row.Id,
+                        IsSegmentedCreatureAppearance:
+                            string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase)))
                     .ToList();
                 return _creatureAppearanceOptions;
             }

@@ -4,6 +4,7 @@ using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
+using SWLOR.Toolset.Domain.Render.Icons;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 
@@ -65,15 +66,25 @@ namespace SWLOR.Toolset.Tests
 
             foreach (var row in dynamicRows)
             {
-                renderer.RenderCreatureAppearance(row.Id).Should().NotBeNull(
+                AssertVisiblePreview(
+                    renderer.RenderCreatureAppearance(row.Id),
                     $"{row.DisplayName} should use the generic segmented body for race code {row.Race}");
             }
 
             foreach (var row in appearances.GetAll().Take(48))
             {
-                renderer.RenderCreatureAppearance(row.Id).Should().NotBeNull(
+                AssertVisiblePreview(
+                    renderer.RenderCreatureAppearance(row.Id),
                     $"the initial Appearance gallery page must show a model preview for {row.DisplayName}");
             }
+        }
+
+        private static void AssertVisiblePreview(IconImage? preview, string because)
+        {
+            preview.Should().NotBeNull(because);
+            preview!.Bgra
+                .Where((_, index) => index % 4 == 3)
+                .Should().Contain(alpha => alpha != 0, because);
         }
     }
 }

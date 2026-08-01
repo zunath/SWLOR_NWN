@@ -218,7 +218,12 @@ namespace SWLOR.Toolset.Editors.Appearance
                             tile.PreviewRequested = false;
                             QueuePreviewRetry(tile);
                         }
-                    });
+                    },
+                    tile.IsCurrent
+                        ? AppearancePreviewPriority.Selected
+                        : tile.Option.IsSegmentedCreatureAppearance
+                            ? AppearancePreviewPriority.Deferred
+                            : AppearancePreviewPriority.Visible);
                 if (!tile.PreviewRequested)
                     QueuePreviewRetry(tile);
                 return;
@@ -307,6 +312,11 @@ namespace SWLOR.Toolset.Editors.Appearance
             }
 
             Tiles = new ObservableCollection<AppearanceTileViewModel>(firstPage);
+
+            // The selected appearance is the one preview the builder needs immediately. Request it
+            // before Avalonia realizes the rest of the viewport so it cannot sit behind the costly
+            // dynamic rows that lead appearance.2da.
+            EnsurePreview(firstPage.FirstOrDefault(tile => tile.IsCurrent));
             OnPropertyChanged(nameof(MatchSummary));
             OnPropertyChanged(nameof(CanLoadMore));
         }

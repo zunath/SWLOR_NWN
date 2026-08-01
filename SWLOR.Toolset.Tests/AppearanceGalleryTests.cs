@@ -4,7 +4,12 @@ using Avalonia.Logging;
 using Avalonia.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Render.Icons;
+using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.GameData.Tlk;
+using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Appearance;
 using SWLOR.Toolset.Workspace;
@@ -198,8 +203,9 @@ namespace SWLOR.Toolset.Tests
             using var section = new AppearanceGallerySectionViewModel(
                 Options(100), thumbnails, () => "0", _ => true, noun: "appearance");
 
-            source.AppearanceCalls.Should().Be(0,
-                "publishing a page must not render cells outside the virtualized viewport");
+            DrainDispatcher();
+            source.AppearanceCalls.Should().Be(1,
+                "the selected appearance is prefetched, but unselected off-screen cells must wait");
 
             section.EnsurePreview(section.Tiles[0]);
             section.EnsurePreview(section.Tiles[1]);
@@ -207,7 +213,7 @@ namespace SWLOR.Toolset.Tests
             DrainDispatcher();
 
             source.AppearanceCalls.Should().Be(2,
-                "only realized cells render and repeated realization does not duplicate work");
+                "the selected cell and one newly realized cell render without duplicate work");
             section.Tiles.Take(2).Should().OnlyContain(tile => tile.Preview != null);
             section.Tiles.Skip(2).Should().OnlyContain(tile => tile.Preview == null);
         }
@@ -233,12 +239,220 @@ namespace SWLOR.Toolset.Tests
                     "realized gallery cells must request their model previews");
                 source.AppearanceCalls.Should().BeLessThanOrEqualTo(48,
                     "opening the tab should render only the virtualized first page");
+                section.Tiles.Should().Contain(tile => tile.Preview != null,
+                    "a request count is not sufficient: a visible cell must receive the rendered bitmap");
                 section.Tiles.Should().HaveCount(48,
                     "initial layout is not a user scroll and must not publish a second page");
             }
             finally
             {
                 window.Close();
+            }
+        }
+
+        [AvaloniaTest]
+        public void ADeferredCatalogDeliversPreviewsAfterTheGalleryIsAlreadyAttached()
+        {
+            var source = new AppearancePreviewSource { IsAvailable = true };
+            var thumbnails = new ThumbnailService(
+                new WorkspaceContext(_ => throw new NotSupportedException(), new OutputLogService()),
+                source);
+            using var section = new AppearanceGallerySectionViewModel(
+                Array.Empty<AppearanceOption>(), thumbnails, () => "0", _ => true, noun: "appearance");
+            var window = new Window
+            {
+                Width = 760,
+                Height = 560,
+                Content = new AppearanceGalleryView { DataContext = section }
+            };
+
+            try
+            {
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+
+                section.SetOptions(Options(500));
+                DrainDispatcher();
+
+                source.AppearanceCalls.Should().BeGreaterThan(0,
+                    "the creature catalog arrives after the Appearance view is already attached");
+                section.Tiles.Should().Contain(tile => tile.Preview != null,
+                    "realized cells created by the deferred catalog must receive their bitmaps");
+            }
+            finally
+            {
+                window.Close();
+            }
+        }
+
+        [AvaloniaTest, NonParallelizable]
+        public void TheRealCreatureGalleryDeliversAHakBackedPreviewToAVisibleTile()
+        {
+            var repositoryRoot = CorpusLocator.RepositoryRoot;
+            var haksRoot = Path.Combine(repositoryRoot, "SWLOR_Haks");
+            if (!Directory.Exists(Path.Combine(haksRoot, "sw_2da")))
+                haksRoot = Environment.GetEnvironmentVariable("SWLOR_TEST_HAKS_ROOT") ?? haksRoot;
+            if (!Directory.Exists(Path.Combine(haksRoot, "sw_2da")))
+            {
+                Assert.Ignore(
+                    "The SWLOR_Haks submodule is not initialized and SWLOR_TEST_HAKS_ROOT was not supplied.");
+            }
+
+            var installRoot = NwnInstallLocator.Locate();
+            if (installRoot == null)
+                Assert.Ignore("No local NWN:EE installation was found for appearance models.");
+
+            var twoDa = new TwoDaService(Path.Combine(haksRoot, "sw_2da"));
+            var tlk = TlkService.Load(Path.Combine(haksRoot, "sw_tlk", "sw_tlk.tlk.json"));
+            var appearances = new AppearanceService(twoDa, tlk);
+            var resources = ResourceIndex.FromHakBuilderConfig(
+                Path.Combine(repositoryRoot, "Build", "hakbuilder.json"),
+                haksRoot,
+                KeyBifCatalog.Load(Path.Combine(installRoot, "data")));
+            resources.EnsureInitialized();
+
+            var context = new WorkspaceContext(
+                path => new ModuleWorkspace(path, resources),
+                new OutputLogService());
+            context.Open(Path.Combine(repositoryRoot, "Module"));
+            var renderer = new BlueprintPreviewRenderer(
+                context,
+                resources,
+                appearances: appearances,
+                twoDa: twoDa,
+                tlk: tlk);
+            var thumbnails = new ThumbnailService(context, renderer);
+            using var section = new AppearanceGallerySectionViewModel(
+                Array.Empty<AppearanceOption>(), thumbnails, () => "6", _ => true, noun: "appearance");
+            var window = new Window
+            {
+                Width = 760,
+                Height = 560,
+                Content = new AppearanceGalleryView { DataContext = section }
+            };
+
+            try
+            {
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+                section.SetOptions(appearances.GetAll()
+                    .Take(96)
+                    .Select(row => new AppearanceOption(
+                        row.Id.ToString(), row.DisplayName, $"row {row.Id} · {row.Label}",
+                        CreatureAppearanceId: row.Id,
+                        IsSegmentedCreatureAppearance:
+                            string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase)))
+                    .ToList());
+
+                var deadline = DateTime.UtcNow.AddSeconds(20);
+                while (DateTime.UtcNow < deadline && section.Tiles.All(tile => tile.Preview == null))
+                {
+                    Dispatcher.UIThread.RunJobs();
+                    Thread.Sleep(25);
+                }
+                Dispatcher.UIThread.RunJobs();
+
+                section.Tiles.Should().Contain(tile => tile.Preview != null,
+                    "the production renderer must deliver a bitmap to a realized gallery cell");
+            }
+            finally
+            {
+                window.Close();
+            }
+        }
+
+        [AvaloniaTest, NonParallelizable]
+        public void TheStartupHakStackDeliversAVisibleCreatureAppearancePreview()
+        {
+            var repositoryRoot = CorpusLocator.RepositoryRoot;
+            var installRoot = NwnInstallLocator.Locate();
+            if (installRoot == null)
+                Assert.Ignore("No local NWN:EE installation was found for appearance models.");
+
+            var profile = NwnIniProfile.Load();
+            var ifoPath = Path.Combine(repositoryRoot, "Module", "ifo", "module.ifo.json");
+            if (profile.HakDirectory == null || !File.Exists(ifoPath))
+                Assert.Ignore("The local NWN profile does not expose the module's packed HAK stack.");
+
+            var resolution = profile.ResolveHakLayers(IfoDocument.Load(ifoPath).HakNames);
+            if (resolution.MissingHakNames.Count > 0)
+                Assert.Ignore("The local NWN profile is missing one or more module HAKs.");
+
+            var resources = ResourceIndex.CreateDeferred(
+                resolution.Layers,
+                () => KeyBifCatalog.Load(Path.Combine(installRoot, "data")));
+            var twoDa = new TwoDaService(resources);
+            var haksRoot = Path.Combine(repositoryRoot, "SWLOR_Haks");
+            if (!Directory.Exists(Path.Combine(haksRoot, "sw_tlk")))
+                haksRoot = Environment.GetEnvironmentVariable("SWLOR_TEST_HAKS_ROOT") ?? haksRoot;
+            if (!File.Exists(Path.Combine(haksRoot, "sw_tlk", "sw_tlk.tlk.json")))
+            {
+                Assert.Ignore(
+                    "The SWLOR_Haks submodule is not initialized and SWLOR_TEST_HAKS_ROOT was not supplied.");
+            }
+            var tlk = TlkService.Load(Path.Combine(haksRoot, "sw_tlk", "sw_tlk.tlk.json"));
+            var appearances = new AppearanceService(twoDa, tlk);
+
+            var context = new WorkspaceContext(
+                path => new ModuleWorkspace(path, resources),
+                new OutputLogService());
+            var coldModuleRoot = Path.Combine(
+                Path.GetTempPath(), "swlor-appearance-cold-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(Path.Combine(coldModuleRoot, "are"));
+            Directory.CreateDirectory(Path.Combine(coldModuleRoot, "utc"));
+            context.Open(coldModuleRoot);
+            var thumbnails = new ThumbnailService(
+                context,
+                new BlueprintPreviewRenderer(
+                    context,
+                    resources,
+                    appearances: appearances,
+                    twoDa: twoDa,
+                    tlk: tlk));
+            using var section = new AppearanceGallerySectionViewModel(
+                Array.Empty<AppearanceOption>(), thumbnails, () => "6", _ => true, noun: "appearance");
+            var window = new Window
+            {
+                Width = 760,
+                Height = 560,
+                Content = new AppearanceGalleryView { DataContext = section }
+            };
+
+            try
+            {
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+                section.SetOptions(appearances.GetAll()
+                    .Take(96)
+                    .Select(row => new AppearanceOption(
+                        row.Id.ToString(), row.DisplayName, $"row {row.Id} - {row.Label}",
+                        CreatureAppearanceId: row.Id,
+                        IsSegmentedCreatureAppearance:
+                            string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase)))
+                    .ToList());
+
+                var currentTile = section.Tiles.Single(tile => tile.Option.Key == "6");
+                var firstSimpleTile = section.Tiles.First(tile =>
+                    !tile.Option.IsSegmentedCreatureAppearance);
+                var deadline = DateTime.UtcNow.AddSeconds(10);
+                while (DateTime.UtcNow < deadline &&
+                       (currentTile.Preview == null || firstSimpleTile.Preview == null))
+                {
+                    Dispatcher.UIThread.RunJobs();
+                    Thread.Sleep(25);
+                }
+                Dispatcher.UIThread.RunJobs();
+
+                currentTile.Preview.Should().NotBeNull(
+                    "the currently selected appearance must not wait behind every earlier visible row");
+                firstSimpleTile.Preview.Should().NotBeNull(
+                    "a realized simple-model tile must receive pixels on a cold startup");
+            }
+            finally
+            {
+                window.Close();
+                thumbnails.ClearCache();
+                Directory.Delete(coldModuleRoot, recursive: true);
             }
         }
 

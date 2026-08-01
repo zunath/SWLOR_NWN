@@ -405,6 +405,27 @@ namespace SWLOR.Toolset.Workspace
             if (!IsAvailable || appearanceId < 0)
                 return null;
 
+            AppearanceRow? appearance = null;
+            try
+            {
+                appearance = _appearances?.Get(appearanceId);
+            }
+            catch (KeyNotFoundException)
+            {
+                // Let the synthetic resolver below make the same fail-closed decision it makes for
+                // a malformed UTC instead of turning one bad row into an exception for the gallery.
+            }
+
+            // MODELTYPE P rows are assembled from body parts. Every other selectable row names its
+            // concrete creature model in RACE, so render that model directly instead of constructing
+            // and resolving an otherwise empty synthetic UTC. This is both more faithful and far
+            // cheaper for the thousands of simple appearances in the gallery.
+            if (appearance is { Race.Length: > 0 } &&
+                !string.Equals(appearance.ModelType, "P", StringComparison.OrdinalIgnoreCase))
+            {
+                return RenderModel(appearance.Race);
+            }
+
             var root = new Domain.Gff.JsonGffStruct();
             root.SetInt("Appearance_Type", Domain.Gff.GffFieldType.Word, appearanceId);
             CreatureAppearanceDefaults.ApplyGenericSegmentedBody(root);

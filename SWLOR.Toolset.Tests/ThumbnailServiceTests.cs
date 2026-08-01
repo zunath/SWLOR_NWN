@@ -1,4 +1,5 @@
 using Avalonia.Headless.NUnit;
+using System.Collections.Concurrent;
 using Avalonia.Threading;
 using FluentAssertions;
 using NUnit.Framework;
@@ -203,6 +204,43 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void VisibleAppearanceRequestsOvertakeDeferredSegmentedRows()
+        {
+            var source = new CountingSource { BlockUntilReleased = true };
+            var service = new ThumbnailService(new WorkspaceContext(_ => throw new NotSupportedException(),
+                new OutputLogService()), source);
+
+            // Occupy both bounded workers as the first segmented rows in a gallery would. The
+            // remaining queue then has to prefer a newly realized simple row over more expensive
+            // off-screen segmented rows.
+            service.RequestAppearanceAsync(
+                0, _ => { }, priority: AppearancePreviewPriority.Deferred);
+            service.RequestAppearanceAsync(
+                1, _ => { }, priority: AppearancePreviewPriority.Deferred);
+            SpinWait.SpinUntil(() => source.AppearanceOrder.Count >= 2, TimeSpan.FromSeconds(2))
+                .Should().BeTrue();
+
+            service.RequestAppearanceAsync(
+                2, _ => { }, priority: AppearancePreviewPriority.Deferred);
+            service.RequestAppearanceAsync(
+                3, _ => { }, priority: AppearancePreviewPriority.Deferred);
+            service.RequestAppearanceAsync(
+                4, _ => { }, priority: AppearancePreviewPriority.Deferred);
+            service.RequestAppearanceAsync(
+                5, _ => { }, priority: AppearancePreviewPriority.Deferred);
+            service.RequestAppearanceAsync(
+                7, _ => { }, priority: AppearancePreviewPriority.Visible);
+
+            source.Release();
+            Drain();
+
+            var order = source.AppearanceOrder.ToArray();
+            order.Should().Contain(new[] { 2, 3, 4, 5, 7 });
+            Array.IndexOf(order, 7).Should().BeLessThanOrEqualTo(3,
+                "the two workers must start the visible preview before the deferred backlog");
+        }
+
+        [AvaloniaTest]
         public void AnUnavailableRendererMakesTheWholeCacheANoOp()
         {
             // What happens with no resolved repository layout: the palette falls back to letter
@@ -314,6 +352,7 @@ namespace SWLOR.Toolset.Tests
 
             public int ModelCalls;
             public int AppearanceCalls;
+            public ConcurrentQueue<int> AppearanceOrder { get; } = new();
 
             public IconImage? AppearanceResult { get; set; } = Image();
 
@@ -338,6 +377,7 @@ namespace SWLOR.Toolset.Tests
 
             public IconImage? RenderCreatureAppearance(int appearanceId)
             {
+                AppearanceOrder.Enqueue(appearanceId);
                 _gate.Wait(TimeSpan.FromSeconds(5));
                 Interlocked.Increment(ref AppearanceCalls);
                 return AppearanceResult;

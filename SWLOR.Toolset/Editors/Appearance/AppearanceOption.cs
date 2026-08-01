@@ -18,12 +18,17 @@ namespace SWLOR.Toolset.Editors.Appearance
     /// rather than a model, so those rows can only be drawn by composing a creature — which is what
     /// the renderer does with this.
     /// </param>
+    /// <param name="IsSegmentedCreatureAppearance">
+    /// True for MODELTYPE P rows, whose representative preview must compose a full body and is
+    /// therefore deferred behind the selected row and directly renderable visible models.
+    /// </param>
     public sealed record AppearanceOption(
         string Key,
         string Caption,
         string? Detail,
         string? ModelResRef = null,
-        int? CreatureAppearanceId = null)
+        int? CreatureAppearanceId = null,
+        bool IsSegmentedCreatureAppearance = false)
     {
         /// <summary>Everything the search box matches against, lowercased once at construction.</summary>
         public string SearchText { get; } =

@@ -83,6 +83,46 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void MerchantEditorKeepsItsSelectedSectionWhenTheViewIsRecreated()
+        {
+            using var editor = new MerchantEditorViewModel(
+                Struct("UTM "),
+                "store_test",
+                Accept,
+                key => key == MerchantChoiceKeys.PaletteCategories
+                    ? new[] { new BehaviorChoice(5, "Merchants") }
+                    : Array.Empty<BehaviorChoice>());
+            var window = new Window { Width = 1200, Height = 800 };
+
+            try
+            {
+                var firstView = new MerchantEditorView { DataContext = editor };
+                window.Content = firstView;
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+
+                var firstTabs = firstView.FindControl<TabControl>("MerchantTabs")!;
+                firstTabs.SelectedIndex = 1;
+                Dispatcher.UIThread.RunJobs();
+                editor.SelectedTabIndex.Should().Be(1);
+
+                window.Content = null;
+                Dispatcher.UIThread.RunJobs();
+                var recreatedView = new MerchantEditorView { DataContext = editor };
+                window.Content = recreatedView;
+                Dispatcher.UIThread.RunJobs();
+
+                recreatedView.FindControl<TabControl>("MerchantTabs")!
+                    .SelectedIndex.Should().Be(1);
+            }
+            finally
+            {
+                window.Close();
+                Dispatcher.UIThread.RunJobs();
+            }
+        }
+
+        [AvaloniaTest]
         public void TheSharedRowDrawsEveryFieldKind()
         {
             var store = new BehaviorValueStore(Struct("UTW "));

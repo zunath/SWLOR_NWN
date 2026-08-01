@@ -219,7 +219,7 @@ namespace SWLOR.Toolset.Editors.Merchants
         private string? _instanceError;
 
         [ObservableProperty]
-        private bool _isPlacedInstancesTabSelected;
+        private int _selectedTabIndex;
 
         [ObservableProperty]
         private bool _arePlacedInstancesLoaded;
@@ -497,9 +497,9 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         partial void OnBuyingRuleSearchTextChanged(string value) => FilterBuyingRules();
 
-        partial void OnIsPlacedInstancesTabSelectedChanged(bool value)
+        partial void OnSelectedTabIndexChanged(int value)
         {
-            if (value && !ArePlacedInstancesLoaded)
+            if (value == 3 && !ArePlacedInstancesLoaded)
                 _ = RefreshPlacedInstancesAsync();
         }
 

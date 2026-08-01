@@ -41,7 +41,7 @@ namespace SWLOR.Toolset.Tests
                 "Potions/Scrolls",
                 "Rings/Amulets",
                 "Miscellaneous");
-            editor.IsPlacedInstancesTabSelected.Should().BeFalse();
+            editor.SelectedTabIndex.Should().Be(0);
             editor.ArePlacedInstancesLoaded.Should().BeFalse();
             editor.IsLoadingInstances.Should().BeFalse();
             editor.InstanceSummary.Should().Be(

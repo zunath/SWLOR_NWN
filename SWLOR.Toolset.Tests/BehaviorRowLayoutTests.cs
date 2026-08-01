@@ -102,8 +102,8 @@ namespace SWLOR.Toolset.Tests
 
             TestContext.Out.WriteLine(
                 $"picker={picker.Bounds.Width:0.#} close={closeLeft:0.#}..{closeRight:0.#}");
-            closeRight.Should().BeLessThanOrEqualTo(picker.Bounds.Width - 12,
-                "the Close action needs a trailing gutter so an owning scroller cannot clip it");
+            closeRight.Should().BeLessThanOrEqualTo(picker.Bounds.Width - 24,
+                "the Close action needs a full scrollbar-width gutter so an owning scroller cannot clip it");
 
             window.Close();
             Dispatcher.UIThread.RunJobs();

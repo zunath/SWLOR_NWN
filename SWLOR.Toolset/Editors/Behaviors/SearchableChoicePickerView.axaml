@@ -28,10 +28,10 @@
             ToolTip.Tip="Choose a value" />
 
     <StackPanel IsVisible="{Binding IsSearchExpanded}" Spacing="6">
-      <!-- Leave the trailing scroll-viewport gutter inside the header. Without it the shared
-           field panel arranges Close exactly on its right boundary, where an owning vertical
-           scroller clips the button's final pixels. -->
-      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,0,12,0">
+      <!-- Leave a full scrollbar-width gutter plus breathing room inside the header. The Details
+           form owns another vertical scroller, so a token inset still left the final letters of
+           Close underneath its edge. -->
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,0,24,0">
         <TextBox Text="{Binding ChoiceSearchText, Mode=TwoWay}"
                  Watermark="{Binding SearchWatermark}" />
         <Button Grid.Column="1" Content="Close" Command="{Binding CloseSearchCommand}"

@@ -658,7 +658,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void QuestProgressActionsDefaultToRepeatableButAllowExplicitOneTimeUse()
+        public void QuestAdvanceStaysRepeatableThroughRewardSelectionWhileAcceptCanBeOneTime()
         {
             using var editor = new Disposable(Open());
             editor.Value.SelectSituationCommand.Execute(
@@ -675,14 +675,19 @@ namespace SWLOR.Toolset.Tests
             var questActions = editor.Value.Consequences.Where(consequence =>
                 consequence.Snippet.Key is "action-accept-quest" or "action-advance-quest").ToList();
             questActions.Should().HaveCount(2);
-            questActions.Should().OnlyContain(action =>
-                action.CanRunOncePerPlayer && !action.IsOncePerPlayer);
+            var accept = questActions.Single(action => action.Snippet.Key == "action-accept-quest");
+            var advance = questActions.Single(action => action.Snippet.Key == "action-advance-quest");
+            accept.CanRunOncePerPlayer.Should().BeTrue();
+            accept.IsOncePerPlayer.Should().BeFalse();
+            advance.CanRunOncePerPlayer.Should().BeFalse(
+                "the final advance may only open reward selection, which the player can close");
+            advance.IsOncePerPlayer.Should().BeFalse();
             choice.Target.Actions.Should().NotContain(action => action.IsOncePerPlayerMarker,
                 "repeatable quests may reuse the same dialogue nodes on every cycle");
 
-            questActions[0].IsOncePerPlayer = true;
+            accept.IsOncePerPlayer = true;
             choice.Target.Actions.Should().Contain(action => action.IsOncePerPlayerMarker,
-                "builders can still opt a quest action into lifetime-once behavior deliberately");
+                "a synchronous quest-accept outcome can still deliberately be lifetime-once");
         }
 
         [Test]

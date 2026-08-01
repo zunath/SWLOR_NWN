@@ -13,6 +13,13 @@ public class SnippetActionExecutionTests
     }
 
     [Test]
+    public void QuestAdvanceCannotUseAPermanentMarkerBeforeRewardSelectionCompletes()
+    {
+        SnippetActionPolicy.CanRunOncePerPlayer("action-advance-quest").Should().BeFalse();
+        SnippetActionPolicy.CanRunOncePerPlayer("action-give-key-items").Should().BeTrue();
+    }
+
+    [Test]
     public void OncePerPlayerMarkerIsSavedOnlyAfterSuccessAgainstPostActionPlayerState()
     {
         var source = File.ReadAllText(Path.Combine(
@@ -22,7 +29,7 @@ public class SnippetActionExecutionTests
             "Snippet.cs"));
 
         var actionIndex = source.IndexOf(
-            ".ActionsTakenAction(player, args.ToArray())",
+            "snippet.ActionsTakenAction(player, arguments.ToArray())",
             StringComparison.Ordinal);
         var successGateIndex = source.IndexOf(
             "if (!succeeded)",
@@ -33,7 +40,7 @@ public class SnippetActionExecutionTests
             successGateIndex,
             StringComparison.Ordinal);
         var markerIndex = source.IndexOf(
-            "dbPlayer.CompletedDialogueActions.Add(onceMarker);",
+            "dbPlayer.CompletedDialogueActions.Add(oncePerPlayerId);",
             postActionReloadIndex,
             StringComparison.Ordinal);
 
@@ -43,6 +50,27 @@ public class SnippetActionExecutionTests
         postActionReloadIndex.Should().BeGreaterThan(successGateIndex,
             "reward actions may save Player themselves, so the marker must use their resulting state");
         markerIndex.Should().BeGreaterThan(postActionReloadIndex);
+    }
+
+    [Test]
+    public void RuntimeDiscardsUnsupportedLegacyMarkersBeforeCheckingCompletion()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Snippet.cs"));
+
+        var policyIndex = source.IndexOf(
+            "if (!SnippetActionPolicy.CanRunOncePerPlayer(key))",
+            StringComparison.Ordinal);
+        var markerLookupIndex = source.IndexOf(
+            "CompletedDialogueActions.Contains(oncePerPlayerId)",
+            StringComparison.Ordinal);
+
+        policyIndex.Should().BeGreaterThanOrEqualTo(0);
+        markerLookupIndex.Should().BeGreaterThan(policyIndex,
+            "old quest-advance markers must not block a player from reopening reward selection");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

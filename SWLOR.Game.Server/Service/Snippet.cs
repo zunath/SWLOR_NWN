@@ -195,6 +195,12 @@ namespace SWLOR.Game.Server.Service
             if (!_actionsTakenCommands.TryGetValue(key, out var snippet))
                 throw new InvalidOperationException($"Conversation action snippet '{key}' is not registered.");
 
+            // Ignore markers authored before this policy existed. This both prevents an
+            // asynchronous outcome from being consumed prematurely and lets affected players
+            // retry a quest reward-selection flow that they previously closed.
+            if (!SnippetActionPolicy.CanRunOncePerPlayer(key))
+                oncePerPlayerId = null;
+
             if (!string.IsNullOrWhiteSpace(oncePerPlayerId))
             {
                 var dbPlayer = DB.Get<Player>(GetObjectUUID(player));

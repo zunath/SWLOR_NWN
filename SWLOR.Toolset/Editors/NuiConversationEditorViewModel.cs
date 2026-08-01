@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Services;
@@ -658,14 +659,15 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
             var snippet = _snippets.Find(action.Key);
             if (snippet == null)
                 continue;
+            var canRunOnce = SnippetActionPolicy.CanRunOncePerPlayer(action.Key);
             Actions.Add(new GraphSnippetEditorViewModel(
                 snippet,
                 action.Arguments,
                 _argumentOptions,
                 EditValue,
                 row => Edit(() => actionDestination.Remove(action)),
-                onceMarker: action.OncePerPlayerId,
-                setOnceMarker: value => action.OncePerPlayerId = value));
+                onceMarker: canRunOnce ? action.OncePerPlayerId : string.Empty,
+                setOnceMarker: canRunOnce ? value => action.OncePerPlayerId = value : null));
         }
     }
 

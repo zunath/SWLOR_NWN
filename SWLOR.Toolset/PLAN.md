@@ -11,7 +11,7 @@
 
 ## Context
 
-The team opens the legacy Aurora Toolset only for area work, instance placement, and blueprint editing — everything else (dialogs, quests, spawns, scripts, stores) already lives in C#. The module source of truth is diffable per-resource JSON (`Module/{are,git,gic,utc,uti,utp,...}/<resref>.<ext>.json` in neverwinter.nim `nwn_gff` format), packed via `tools\SWLOR.CLI\SWLOR.CLI.exe -p`. This plan adds a modern Avalonia desktop editor to the solution that reads/writes that JSON directly, reuses the existing pack pipeline unchanged, and understands SWLOR's C# content conventions.
+The team opens the legacy Aurora Toolset only for area work, instance placement, and blueprint editing — everything else (dialogs, quests, spawns, scripts, stores) already lives in C#. The module source of truth is diffable per-resource JSON (`Module/{are,git,gic,utc,uti,utp,...}/<resref>.<ext>.json` in neverwinter.nim `nwn_gff` format), packed via `tools\SWLOR.CLI\RunCLI.cmd -p`. This plan adds a modern Avalonia desktop editor to the solution that reads/writes that JSON directly, reuses the existing pack pipeline unchanged, and understands SWLOR's C# content conventions.
 
 **Foundation (user-directed):** [Radoub](https://github.com/LordOfMyatar/Radoub) — GPL-3.0, C#/.NET 9, Avalonia, active. Its `Radoub.Formats` library has binary parsers for GFF/ERF/KEY/BIF/TLK/2DA/MDL/MTR/PLT/DDS/TGA/SSF + typed wrappers + resource resolver; Quartermaster/Reliquary prove Avalonia+OpenGL MDL preview. Not on NuGet → pinned git submodule. Gaps we build: JSON-GFF serialization, GIT typed wrapper, SET parser, WOK, the area editor itself.
 
@@ -207,7 +207,7 @@ Deliverables in `Domain\Validation\`: `IValidationRule` + `ValidationIssue`; rul
 Acceptance: fixture tests per rule (seeded-error JSON + known-good corpus files as negative controls).
 
 **WP3.5 — Save + pack services.** Tier: **Low**.
-Deliverables: `SaveService` (dirty-docs only; atomic temp+`File.Replace`; EOL/trailing-newline preserving), `PackService` (shell `tools\SWLOR.CLI\SWLOR.CLI.exe -p "<mod>" --no-prompt` with CWD=`Module\`, stream output to Output panel).
+Deliverables: `SaveService` (dirty-docs only; atomic temp+`File.Replace`; EOL/trailing-newline preserving), `PackService` (shell a solution-built `SWLOR.CLI.exe -p "<mod>" --no-prompt` with CWD=`Module\`, stream output to Output panel).
 Acceptance: save-then-`git status` shows only edited files; pack completes from in-app.
 
 **WP3.6 — End-to-end daily-driver gate.** Tier: **Lead + human.**

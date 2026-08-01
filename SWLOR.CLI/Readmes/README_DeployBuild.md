@@ -6,9 +6,9 @@ The DeployBuild command automates the deployment process for the SWLOR game serv
 ## Command
 ```bash
 cd Build
-..\tools\SWLOR.CLI\SWLOR.CLI.exe -o
+..\tools\SWLOR.CLI\RunCLI.cmd -o
 # or
-..\tools\SWLOR.CLI\SWLOR.CLI.exe --outputDeploy
+..\tools\SWLOR.CLI\RunCLI.cmd --outputDeploy
 ```
 
 ## Functionality

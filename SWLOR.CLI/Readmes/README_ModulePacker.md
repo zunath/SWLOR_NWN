@@ -3,22 +3,24 @@
 ## Overview
 The ModulePacker provides functionality to pack and unpack NWN module files (.mod). It converts JSON files to GFF format and handles script compilation for module creation and extraction.
 
+`RunCLI.cmd` performs an incremental Release build before invoking the CLI, preventing the documented pack command from silently using an outdated committed executable.
+
 ## Commands
 
 ### Pack Module
 ```bash
 cd Module
-..\tools\SWLOR.CLI\SWLOR.CLI.exe -p ".\Star Wars LOR v2.mod"
+..\tools\SWLOR.CLI\RunCLI.cmd -p ".\Star Wars LOR v2.mod"
 # or
-..\tools\SWLOR.CLI\SWLOR.CLI.exe --pack ".\Star Wars LOR v2.mod"
+..\tools\SWLOR.CLI\RunCLI.cmd --pack ".\Star Wars LOR v2.mod"
 ```
 
 ### Unpack Module
 ```bash
 cd Module
-..\tools\SWLOR.CLI\SWLOR.CLI.exe -u ".\Star Wars LOR v2.mod"
+..\tools\SWLOR.CLI\RunCLI.cmd -u ".\Star Wars LOR v2.mod"
 # or
-..\tools\SWLOR.CLI\SWLOR.CLI.exe --unpack ".\Star Wars LOR v2.mod"
+..\tools\SWLOR.CLI\RunCLI.cmd --unpack ".\Star Wars LOR v2.mod"
 ```
 
 ## Functionality

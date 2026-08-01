@@ -49,7 +49,7 @@ BuildHaks.cmd
 
 # CLI operations
 cd Build
-..\tools\SWLOR.CLI\SWLOR.CLI.exe -o         # Deploy/build from Build working directory
+..\tools\SWLOR.CLI\RunCLI.cmd -o             # Deploy/build from Build working directory
 cd ..\Module
 PackModule.cmd                              # Pack module from Module working directory
 ```

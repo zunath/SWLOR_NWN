@@ -355,16 +355,19 @@ namespace SWLOR.Toolset.Domain.Conversations
                     var hasAction = node.Actions.Any(action =>
                         !action.IsOncePerPlayerMarker
                         && action.SnippetKey.Equals(marker.MarkedActionKey, StringComparison.OrdinalIgnoreCase));
-                    if (hasAction && !string.IsNullOrWhiteSpace(marker.Value))
+                    var canRunOnce = SnippetActionPolicy.CanRunOncePerPlayer(marker.MarkedActionKey);
+                    if (hasAction && canRunOnce && !string.IsNullOrWhiteSpace(marker.Value))
                         continue;
 
                     problems.Add(new ConversationProblem
                     {
                         RuleId = "invalid-once-marker",
                         Severity = ProblemSeverity.Broken,
-                        Message = hasAction
-                            ? "A once-per-player outcome is missing its stable player marker."
-                            : "A once-per-player marker no longer has an outcome to control.",
+                        Message = !hasAction
+                            ? "A once-per-player marker no longer has an outcome to control."
+                            : !canRunOnce
+                                ? $"{marker.MarkedActionKey} cannot run only once per player because it may open an incomplete flow."
+                                : "A once-per-player outcome is missing its stable player marker.",
                         Anchor = node.IsEntry ? ProblemAnchor.Line : ProblemAnchor.Choice,
                         Node = node
                     });

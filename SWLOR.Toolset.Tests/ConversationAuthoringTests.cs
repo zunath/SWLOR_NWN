@@ -402,6 +402,25 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void QuestAdvanceOnceMarkerIsRejectedBecauseRewardSelectionMayBeClosed()
+        {
+            var document = NewConversation();
+            var line = document.Openings[0].Target;
+            line.Text = "Hello.";
+            var action = line.AddAction("action-advance-quest", "field_tinctures");
+            line.SetActionOncePerPlayer(action, oncePerPlayer: true, "test_convo:advance");
+
+            Analyzer.Analyze(document).Should().Contain(problem =>
+                problem.RuleId == "invalid-once-marker" &&
+                problem.Message.Contains("action-advance-quest", StringComparison.Ordinal));
+
+            var result = Evaluator.ApplyActions(line, new PretendPlayer()
+                .WithQuest("field_tinctures", QuestProgress.OnStep(1)));
+            result.HasCompletedDialogueAction("test_convo:advance").Should().BeFalse(
+                "the editor preview must match the runtime's ignored legacy marker");
+        }
+
+        [Test]
         public void PreviewDoesNotApplyAOncePerPlayerRewardTwice()
         {
             var document = NewConversation();

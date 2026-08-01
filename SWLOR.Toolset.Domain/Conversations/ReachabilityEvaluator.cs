@@ -251,7 +251,9 @@ namespace SWLOR.Toolset.Domain.Conversations
 
             foreach (var action in node.Actions.Where(action => !action.IsOncePerPlayerMarker))
             {
-                var runsOnce = onceMarkers.TryGetValue(action.SnippetKey, out var onceMarker);
+                string? onceMarker = null;
+                var runsOnce = SnippetActionPolicy.CanRunOncePerPlayer(action.SnippetKey) &&
+                               onceMarkers.TryGetValue(action.SnippetKey, out onceMarker);
                 if (runsOnce && result.HasCompletedDialogueAction(onceMarker!))
                     continue;
 

@@ -35,6 +35,21 @@ public sealed class ModulePaletteRefresherTests
     }
 
     [Test]
+    public void PackCommandBuildsAndRunsTheCurrentCliSource()
+    {
+        var repositoryRoot = FindRepositoryRoot().FullName;
+        var runner = File.ReadAllText(Path.Combine(repositoryRoot, "tools", "SWLOR.CLI", "RunCLI.cmd"));
+        var packCommand = File.ReadAllText(Path.Combine(repositoryRoot, "Module", "PackModule.cmd"));
+
+        runner.Should().Contain("dotnet build");
+        runner.Should().Contain("-p:RunPostBuildEvent=Never");
+        runner.Should().Contain("SWLOR.CLI.dll");
+        packCommand.Should().Contain("RunCLI.cmd");
+        File.Exists(Path.Combine(repositoryRoot, "tools", "SWLOR.CLI", "SWLOR.CLI.exe"))
+            .Should().BeFalse("the committed executable can silently fall behind the CLI source");
+    }
+
+    [Test]
     public void Refresh_PreservesCategoryTreeAndSourceWhileReconcilingItemDescriptors()
     {
         var palettePath = WritePalette(
@@ -516,5 +531,14 @@ public sealed class ModulePaletteRefresherTests
         process.ExitCode.Should().Be(
             0,
             $"{toolName} failed: {standardOutput}{standardError}");
+    }
+
+    private static DirectoryInfo FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+
+        return directory ?? throw new DirectoryNotFoundException("Could not locate the repository root.");
     }
 }

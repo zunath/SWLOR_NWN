@@ -114,8 +114,14 @@ namespace SWLOR.Toolset
                 result.GetRequiredService<OutputLogService>().AppendLine(
                     $"Interactive shell ready in {stopwatch.ElapsedMilliseconds}ms; game data is loading in the background.");
 
-                _ = WarmGameDataServicesAsync(result);
+                var gameDataReady = WarmGameDataServicesAsync(result);
                 await shell.InitializeAsync().ConfigureAwait(true);
+
+                // ThumbnailService resets its queues when the workspace opens. Wait for both the
+                // workspace and immutable game data before warming the expensive segmented race
+                // previews, otherwise startup can discard the work and leave those first seven
+                // gallery cells spinning until the builder opens the Appearance tab.
+                _ = WarmDynamicAppearancePreviewsAsync(result, gameDataReady);
             }
             catch (Exception ex)
             {
@@ -183,6 +189,28 @@ namespace SWLOR.Toolset
                 log.AppendLine(
                     $"Background game-data load failed after {stopwatch.ElapsedMilliseconds}ms: " +
                     ex.GetBaseException().Message);
+            }
+        }
+
+        /// <summary>
+        /// Builds the seven stock dynamic-race thumbnails after workspace initialization has made
+        /// their cache identity stable. These are appearance.2da rows 0 through 6: Dwarf, Elf,
+        /// Gnome, Halfling, Half-Elf, Half-Orc, and Human.
+        /// </summary>
+        private static async Task WarmDynamicAppearancePreviewsAsync(
+            IServiceProvider provider,
+            Task gameDataReady)
+        {
+            try
+            {
+                await gameDataReady.ConfigureAwait(false);
+                provider.GetService<ThumbnailService>()?.WarmAppearancePreviews(
+                    Enumerable.Range(0, 7));
+            }
+            catch (Exception ex)
+            {
+                provider.GetRequiredService<OutputLogService>().AppendLine(
+                    "Dynamic creature preview warm-up failed: " + ex.GetBaseException().Message);
             }
         }
 

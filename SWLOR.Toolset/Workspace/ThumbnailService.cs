@@ -450,6 +450,29 @@ namespace SWLOR.Toolset.Workspace
             return true;
         }
 
+        /// <summary>
+        /// Starts the small, known set of generic segmented-creature previews before an appearance
+        /// gallery is opened.
+        /// </summary>
+        /// <remarks>
+        /// Dynamic race rows are much more expensive than ordinary appearance rows because their
+        /// thumbnails assemble a skeleton, head, torso, and limbs. Warming them after game-data
+        /// initialization keeps that work off the Appearance-tab transition. A later visible request
+        /// joins the same in-flight operation and promotes it, so this never duplicates a render.
+        /// </remarks>
+        public void WarmAppearancePreviews(IEnumerable<int> appearanceIds)
+        {
+            ArgumentNullException.ThrowIfNull(appearanceIds);
+
+            foreach (var appearanceId in appearanceIds.Where(id => id >= 0).Distinct())
+            {
+                RequestAppearanceAsync(
+                    appearanceId,
+                    _ => { },
+                    priority: AppearancePreviewPriority.Deferred);
+            }
+        }
+
         private void PromoteAppearanceRequest(string key, AppearancePreviewPriority priority)
         {
             lock (_appearanceQueueGate)

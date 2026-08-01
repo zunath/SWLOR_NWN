@@ -324,7 +324,7 @@ namespace SWLOR.Toolset.Tests
                 tlk: tlk);
             var thumbnails = new ThumbnailService(context, renderer);
             using var section = new AppearanceGallerySectionViewModel(
-                Array.Empty<AppearanceOption>(), thumbnails, () => "6", _ => true, noun: "appearance");
+                Array.Empty<AppearanceOption>(), thumbnails, () => "7", _ => true, noun: "appearance");
             var window = new Window
             {
                 Width = 760,
@@ -411,7 +411,7 @@ namespace SWLOR.Toolset.Tests
                     twoDa: twoDa,
                     tlk: tlk));
             using var section = new AppearanceGallerySectionViewModel(
-                Array.Empty<AppearanceOption>(), thumbnails, () => "6", _ => true, noun: "appearance");
+                Array.Empty<AppearanceOption>(), thumbnails, () => "2039", _ => true, noun: "appearance");
             var window = new Window
             {
                 Width = 760,
@@ -421,6 +421,7 @@ namespace SWLOR.Toolset.Tests
 
             try
             {
+                thumbnails.WarmAppearancePreviews(Enumerable.Range(0, 7));
                 window.Show();
                 Dispatcher.UIThread.RunJobs();
                 section.SetOptions(appearances.GetAll()
@@ -432,12 +433,16 @@ namespace SWLOR.Toolset.Tests
                             string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase)))
                     .ToList());
 
-                var currentTile = section.Tiles.Single(tile => tile.Option.Key == "6");
-                var firstSimpleTile = section.Tiles.First(tile =>
-                    !tile.Option.IsSegmentedCreatureAppearance);
+                var dynamicTiles = section.Tiles
+                    .Where(tile => tile.Option.IsSegmentedCreatureAppearance)
+                    .Take(7)
+                    .ToList();
+                dynamicTiles.Should().HaveCount(7,
+                    "the cold-gallery regression covers Dwarf through Human");
+                var currentTile = section.Tiles.Single(tile => tile.Option.Key == "7");
                 var deadline = DateTime.UtcNow.AddSeconds(10);
                 while (DateTime.UtcNow < deadline &&
-                       (currentTile.Preview == null || firstSimpleTile.Preview == null))
+                       (currentTile.Preview == null || dynamicTiles.Any(tile => tile.Preview == null)))
                 {
                     Dispatcher.UIThread.RunJobs();
                     Thread.Sleep(25);
@@ -445,9 +450,9 @@ namespace SWLOR.Toolset.Tests
                 Dispatcher.UIThread.RunJobs();
 
                 currentTile.Preview.Should().NotBeNull(
-                    "the currently selected appearance must not wait behind every earlier visible row");
-                firstSimpleTile.Preview.Should().NotBeNull(
-                    "a realized simple-model tile must receive pixels on a cold startup");
+                    "an ordinary appearance must load while dynamic creatures render");
+                dynamicTiles.Should().OnlyContain(tile => tile.Preview != null,
+                    "all seven unselected base dynamic creatures must show representative models on a cold gallery");
             }
             finally
             {

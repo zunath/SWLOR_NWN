@@ -26,6 +26,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             portrait.AddRow(row =>
                             {
+                                row.AddLabel()
+                                    .BindText(model => model.SpeakerName)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHeight(28f);
+                            });
+                            portrait.AddRow(row =>
+                            {
                                 row.AddImage()
                                     .BindResref(model => model.PortraitResref)
                                     .BindIsVisible(model => model.HasPortrait)

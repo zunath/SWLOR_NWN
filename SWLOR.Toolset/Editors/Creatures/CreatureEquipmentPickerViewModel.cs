@@ -61,11 +61,10 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         protected override bool SelectsFirstChoiceWhenUnset => false;
 
-        // Equipment owns the whole work pane. The shared gallery still publishes only 48 tiles at
-        // a time, so a large item catalog remains bounded without hiding it behind another action.
+        // Equipment owns the whole work pane. The shared gallery still publishes only 48 compact
+        // tiles at a time, so a large item catalog remains bounded without hiding it behind another
+        // action. Keep the shared tile dimensions: this pane is narrow enough to need two columns.
         protected override int InlineGalleryLimit => int.MaxValue;
-        public override double GalleryTileWidth => 168;
-        public override double GalleryThumbnailHeight => 92;
         public override double GalleryViewportHeight => 430;
 
         public CreatureEquipmentPickerViewModel(

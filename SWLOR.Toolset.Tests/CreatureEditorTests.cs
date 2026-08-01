@@ -1494,6 +1494,9 @@ namespace SWLOR.Toolset.Tests
                 editor.EquipmentSlots.Slots.Single(slot => slot.Label == "Armor"));
             editor.EquipmentSlots.SelectedSlot!.AreChoicesLoaded.Should().BeTrue();
             editor.EquipmentSlots.SelectedSlot.IsInlineGallery.Should().BeTrue();
+            editor.EquipmentSlots.SelectedSlot.GalleryTileWidth.Should().Be(104,
+                "equipment uses the shared compact gallery tiles so the pane fits two columns");
+            editor.EquipmentSlots.SelectedSlot.GalleryThumbnailHeight.Should().Be(78);
             editor.EquipmentSlots.SelectedSlot.GalleryChoices.Should()
                 .HaveCount(BehaviorRowViewModel.GalleryPageSize);
             editor.EquipmentSlots.Slots.Where(slot => slot.Label != "Armor")

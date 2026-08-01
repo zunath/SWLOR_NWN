@@ -258,6 +258,21 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void CreatureBodyPartSelectors_ReserveSpaceForThreeDigitVariants()
+        {
+            var view = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", "CreatureEditorView.axaml"));
+            var templateStart = view.IndexOf(
+                "x:Key=\"CreaturePartValueTemplate\"", StringComparison.Ordinal);
+            var templateEnd = view.IndexOf("</DataTemplate>", templateStart, StringComparison.Ordinal);
+            var template = view[templateStart..templateEnd];
+
+            template.Should().Contain("MinWidth=\"96\"",
+                "three-digit body-part variants must remain visible beside the popup scrollbar");
+            template.Should().Contain("HorizontalAlignment=\"Stretch\"");
+        }
+
+        [Test]
         public void StatsTab_UsesAStableEditingOrderInsteadOfIndependentColumns()
         {
             var view = File.ReadAllText(Path.Combine(

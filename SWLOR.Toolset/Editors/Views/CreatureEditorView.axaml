@@ -16,7 +16,8 @@
       <Grid>
         <ComboBox ItemsSource="{Binding Options}"
                   SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
-                  IsEnabled="{Binding IsEnabled}" IsVisible="{Binding HasOptions}" />
+                  IsEnabled="{Binding IsEnabled}" IsVisible="{Binding HasOptions}"
+                  MinWidth="96" HorizontalAlignment="Stretch" />
         <NumericUpDown Value="{Binding Number, Mode=TwoWay}"
                        Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
                        IsEnabled="{Binding IsEnabled}" IsVisible="{Binding !HasOptions}"

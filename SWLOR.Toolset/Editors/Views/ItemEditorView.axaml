@@ -28,7 +28,7 @@
       <Panel>
         <ComboBox ItemsSource="{Binding Options}"
                   SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
-                  IsEnabled="{Binding IsEnabled}" HorizontalAlignment="Stretch"
+                  IsEnabled="{Binding IsEnabled}" MinWidth="96" HorizontalAlignment="Stretch"
                   IsVisible="{Binding HasOptions}" />
         <NumericUpDown Value="{Binding Number, Mode=TwoWay}"
                        Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"

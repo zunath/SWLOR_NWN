@@ -115,8 +115,12 @@
                        Watermark="Find an item blueprint to add" />
               <Button Grid.Column="1" Grid.Row="0" Content="Add item"
                       Command="{Binding AddInventoryItemCommand}" />
-              <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
-                         Text="{Binding CandidateSummary}" Classes="count" Margin="2,7" />
+              <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
+                    ColumnDefinitions="*,100" ColumnSpacing="10" Margin="2,7">
+                <TextBlock Text="{Binding CandidateSummary}" Classes="count" />
+                <ProgressBar Grid.Column="1" IsIndeterminate="True"
+                             IsVisible="{Binding IsLoadingItemCandidates}" />
+              </Grid>
               <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
                       BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
                       CornerRadius="2" ClipToBounds="True">

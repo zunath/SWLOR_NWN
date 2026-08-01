@@ -3,8 +3,17 @@ using SWLOR.Toolset.Domain.Documents;
 
 namespace SWLOR.Toolset.Domain.Workspace
 {
-    /// <summary>One indexed area or blueprint: its type, resref, parsed Name/Tag (if resolvable), and file path.</summary>
-    public sealed record CatalogEntry(ResourceType ResourceType, string ResRef, string? Name, string? Tag, string FilePath)
+    /// <summary>
+    /// One indexed area or blueprint: its type, resref, parsed Name/Tag (if resolvable), file path,
+    /// and the BaseItem already read while indexing an item blueprint.
+    /// </summary>
+    public sealed record CatalogEntry(
+        ResourceType ResourceType,
+        string ResRef,
+        string? Name,
+        string? Tag,
+        string FilePath,
+        int? BaseItem = null)
     {
         /// <summary>The friendly name for this entry's kind ("Creature", not "Utc"), for result lists.</summary>
         public string ResourceTypeDisplayName => ResourceType.SingularDisplayName();
@@ -112,7 +121,7 @@ namespace SWLOR.Toolset.Domain.Workspace
             if (type != ResourceType.Area && !ModuleWorkspace.BlueprintTypes.Contains(type))
                 return null;
 
-            return ExtractNameAndTag(type, content).Name;
+            return ExtractMetadata(type, content).Name;
         }
 
         /// <summary>Every indexed entry of one type, without filtering the whole snapshot.</summary>
@@ -254,8 +263,14 @@ namespace SWLOR.Toolset.Domain.Workspace
             try
             {
                 var bytes = File.ReadAllBytes(path);
-                var (name, tag) = ExtractNameAndTag(type, bytes);
-                return new CatalogEntry(type, resRef, name, tag, path);
+                var metadata = ExtractMetadata(type, bytes);
+                return new CatalogEntry(
+                    type,
+                    resRef,
+                    metadata.Name,
+                    metadata.Tag,
+                    path,
+                    metadata.BaseItem);
             }
             catch (FileNotFoundException)
             {
@@ -274,56 +289,58 @@ namespace SWLOR.Toolset.Domain.Workspace
             }
         }
 
-        private (string? Name, string? Tag) ExtractNameAndTag(ResourceType type, byte[] bytes)
+        private (string? Name, string? Tag, int? BaseItem) ExtractMetadata(
+            ResourceType type,
+            byte[] bytes)
         {
             switch (type)
             {
                 case ResourceType.Area:
                 {
                     var doc = AreDocument.Parse(bytes);
-                    return (ResolveLocString(doc.Name), doc.Tag);
+                    return (ResolveLocString(doc.Name), doc.Tag, null);
                 }
                 case ResourceType.Utc:
                 {
                     var doc = UtcDocument.Parse(bytes);
                     return (JoinName(
                         ResolveLocString(doc.FirstName),
-                        ResolveLocString(doc.LastName)), doc.Tag);
+                        ResolveLocString(doc.LastName)), doc.Tag, null);
                 }
                 case ResourceType.Uti:
                 {
                     var doc = UtiDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocalizedName), doc.Tag);
+                    return (ResolveLocString(doc.LocalizedName), doc.Tag, doc.BaseItem);
                 }
                 case ResourceType.Utp:
                 {
                     var doc = UtpDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocName), doc.Tag);
+                    return (ResolveLocString(doc.LocName), doc.Tag, null);
                 }
                 case ResourceType.Utd:
                 {
                     var doc = UtdDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocName), doc.Tag);
+                    return (ResolveLocString(doc.LocName), doc.Tag, null);
                 }
                 case ResourceType.Utm:
                 {
                     var doc = UtmDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocName), doc.Tag);
+                    return (ResolveLocString(doc.LocName), doc.Tag, null);
                 }
                 case ResourceType.Utt:
                 {
                     var doc = UttDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocalizedName), doc.Tag);
+                    return (ResolveLocString(doc.LocalizedName), doc.Tag, null);
                 }
                 case ResourceType.Uts:
                 {
                     var doc = UtsDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocName), doc.Tag);
+                    return (ResolveLocString(doc.LocName), doc.Tag, null);
                 }
                 case ResourceType.Utw:
                 {
                     var doc = UtwDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocalizedName), doc.Tag);
+                    return (ResolveLocString(doc.LocalizedName), doc.Tag, null);
                 }
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown resource type.");

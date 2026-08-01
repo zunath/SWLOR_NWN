@@ -417,7 +417,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void InventoryAndCandidateRowsShareItemStatsAndOpenTheItemEditor()
+        public async Task InventoryAndCandidateRowsShareItemStatsAndOpenTheItemEditor()
         {
             var root = NewMerchant();
             new MerchantValueStore(root).AddInventoryItem(
@@ -454,8 +454,12 @@ namespace SWLOR.Toolset.Tests
                     return true;
                 },
                 loadItem: _ => item,
-                searchItems: (_, _, skip, take) => new[] { item }.Skip(skip).Take(take).ToList(),
+                searchItems: (_, _, skip, take, _) =>
+                    Task.FromResult<IReadOnlyList<MerchantItemDefinition>>(
+                        new[] { item }.Skip(skip).Take(take).ToList()),
                 openItem: opened.Add);
+
+            await WaitForItemCandidatesAsync(editor);
 
             var inventoryRow = editor.InventoryItems.Should().ContainSingle().Subject;
             inventoryRow.StatGroups.Should().BeSameAs(stats);
@@ -481,7 +485,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void InventoryCategoriesAndSaveFollowBaseItemsStorePanel()
+        public async Task InventoryCategoriesAndSaveFollowBaseItemsStorePanel()
         {
             var root = NewMerchant();
             var store = new MerchantValueStore(root);
@@ -505,19 +509,22 @@ namespace SWLOR.Toolset.Tests
                     "Probe Ring",
                     100,
                     (int)MerchantInventoryCategory.RingsAmulets),
-                searchItems: (_, _, skip, take) => new[]
-                {
-                    new MerchantItemDefinition(
-                        "probe_ring",
-                        "Probe Ring",
-                        100,
-                        (int)MerchantInventoryCategory.RingsAmulets),
-                    new MerchantItemDefinition(
-                        "probe_sword",
-                        "Probe Sword",
-                        100,
-                        (int)MerchantInventoryCategory.Weapons)
-                }.Skip(skip).Take(take).ToList());
+                searchItems: (_, _, skip, take, _) =>
+                    Task.FromResult<IReadOnlyList<MerchantItemDefinition>>(new[]
+                    {
+                        new MerchantItemDefinition(
+                            "probe_ring",
+                            "Probe Ring",
+                            100,
+                            (int)MerchantInventoryCategory.RingsAmulets),
+                        new MerchantItemDefinition(
+                            "probe_sword",
+                            "Probe Sword",
+                            100,
+                            (int)MerchantInventoryCategory.Weapons)
+                    }.Skip(skip).Take(take).ToList()));
+
+            await WaitForItemCandidatesAsync(editor);
 
             editor.InventoryCategories.Single(category =>
                     category.Index == (int)MerchantInventoryCategory.PotionsScrolls)
@@ -580,7 +587,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void ItemCandidatePickerPublishesPagesAndRequestsPreviewsOnlyWhenRowsAreRealized()
+        public async Task ItemCandidatePickerPublishesPagesAndRequestsPreviewsOnlyWhenRowsAreRealized()
         {
             var candidates = Enumerable.Range(0, 60)
                 .Select(index => new MerchantItemDefinition(
@@ -600,12 +607,15 @@ namespace SWLOR.Toolset.Tests
                     mutation();
                     return true;
                 },
-                searchItems: (_, _, skip, take) =>
+                searchItems: (_, _, skip, take, _) =>
                 {
                     searches.Add((skip, take));
-                    return candidates.Skip(skip).Take(take).ToList();
+                    return Task.FromResult<IReadOnlyList<MerchantItemDefinition>>(
+                        candidates.Skip(skip).Take(take).ToList());
                 },
                 requestItemPreview: (resRef, _) => previewRequests.Add(resRef));
+
+            await WaitForItemCandidatesAsync(editor);
 
             editor.ItemCandidates.Should().HaveCount(48);
             editor.CanLoadMoreItemCandidates.Should().BeTrue();
@@ -617,11 +627,162 @@ namespace SWLOR.Toolset.Tests
             editor.EnsureItemCandidatePreview(first);
             previewRequests.Should().Equal("item_000");
 
-            editor.LoadMoreItemCandidatesCommand.Execute(null);
+            await editor.LoadMoreItemCandidatesCommand.ExecuteAsync(null);
 
             editor.ItemCandidates.Should().HaveCount(60);
             editor.CanLoadMoreItemCandidates.Should().BeFalse();
             searches.Should().Equal((0, 49), (48, 49));
+        }
+
+        [Test]
+        public async Task CandidateCategoryChangesIgnoreSlowStaleResults()
+        {
+            var requests = new Dictionary<int,
+                TaskCompletionSource<IReadOnlyList<MerchantItemDefinition>>>();
+            using var editor = new MerchantEditorViewModel(
+                NewMerchant(),
+                "probe_store",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                searchItems: (_, storePanel, _, _, _) =>
+                {
+                    var request = new TaskCompletionSource<IReadOnlyList<MerchantItemDefinition>>(
+                        TaskCreationOptions.RunContinuationsAsynchronously);
+                    requests[storePanel] = request;
+                    return request.Task;
+                });
+
+            requests.Should().ContainKey((int)MerchantInventoryCategory.Armor);
+            var potions = editor.InventoryCategories.Single(category =>
+                category.Index == (int)MerchantInventoryCategory.PotionsScrolls);
+
+            editor.SelectedInventoryCategory = potions;
+
+            editor.SelectedInventoryCategory.Should().BeSameAs(potions);
+            editor.IsLoadingItemCandidates.Should().BeTrue();
+            requests.Should().ContainKey((int)MerchantInventoryCategory.PotionsScrolls);
+
+            requests[(int)MerchantInventoryCategory.Armor].SetResult(new[]
+            {
+                new MerchantItemDefinition(
+                    "stale_armor",
+                    "Stale Armor",
+                    1,
+                    (int)MerchantInventoryCategory.Armor)
+            });
+            await Task.Yield();
+            editor.ItemCandidates.Should().BeEmpty();
+
+            requests[(int)MerchantInventoryCategory.PotionsScrolls].SetResult(new[]
+            {
+                new MerchantItemDefinition(
+                    "probe_potion",
+                    "Probe Potion",
+                    1,
+                    (int)MerchantInventoryCategory.PotionsScrolls)
+            });
+            await WaitForItemCandidatesAsync(editor);
+
+            editor.ItemCandidates.Should().ContainSingle()
+                .Which.ResRef.Should().Be("probe_potion");
+        }
+
+        [Test]
+        public async Task CandidateIndexReusesClassificationAcrossEveryStorePanel()
+        {
+            var catalog = Enumerable.Range(0, 20)
+                .Select(index => new MerchantItemDefinition(
+                    $"item_{index:00}",
+                    $"Item {index:00}",
+                    1))
+                .ToList();
+            var summaryLoads = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            var summaries = catalog.Select((item, index) => new MerchantItemDefinition(
+                    item.ResRef,
+                    item.Name,
+                    1,
+                    index % 2 == 0
+                        ? (int)MerchantInventoryCategory.Armor
+                        : (int)MerchantInventoryCategory.PotionsScrolls))
+                .ToDictionary(item => item.ResRef, StringComparer.OrdinalIgnoreCase);
+            var index = new MerchantItemSearchIndex(
+                catalog,
+                resRef =>
+                {
+                    summaryLoads[resRef] = summaryLoads.GetValueOrDefault(resRef) + 1;
+                    return summaries[resRef];
+                },
+                resRef => summaries[resRef]);
+
+            (await index.SearchAsync(
+                    string.Empty,
+                    (int)MerchantInventoryCategory.Armor,
+                    0,
+                    4,
+                    CancellationToken.None))
+                .Should().HaveCount(4);
+            (await index.SearchAsync(
+                    string.Empty,
+                    (int)MerchantInventoryCategory.PotionsScrolls,
+                    0,
+                    4,
+                    CancellationToken.None))
+                .Should().HaveCount(4);
+            (await index.SearchAsync(
+                    string.Empty,
+                    (int)MerchantInventoryCategory.Armor,
+                    0,
+                    4,
+                    CancellationToken.None))
+                .Should().HaveCount(4);
+
+            summaryLoads.Should().HaveCount(8,
+                "the shared progressive scan only needs eight alternating records for both pages");
+            summaryLoads.Values.Should().OnlyContain(count => count == 1,
+                "switching categories must reuse classifications instead of reparsing blueprints");
+        }
+
+        [Test]
+        public async Task EmptyCategoryUsesCatalogMetadataWithoutReparsingItems()
+        {
+            var catalog = Enumerable.Range(0, 200)
+                .Select(index => new MerchantItemDefinition(
+                    $"armor_{index:000}",
+                    $"Armor {index:000}",
+                    1,
+                    (int)MerchantInventoryCategory.Armor,
+                    HasKnownStorePanel: true))
+                .ToList();
+            var summaryLoads = 0;
+            var detailLoads = 0;
+            var index = new MerchantItemSearchIndex(
+                catalog,
+                _ =>
+                {
+                    summaryLoads++;
+                    return null;
+                },
+                _ =>
+                {
+                    detailLoads++;
+                    return null;
+                });
+
+            var results = await index.SearchAsync(
+                string.Empty,
+                (int)MerchantInventoryCategory.PotionsScrolls,
+                0,
+                49,
+                CancellationToken.None);
+
+            results.Should().BeEmpty();
+            summaryLoads.Should().Be(0,
+                "the catalog already retained each item's BaseItem-derived category");
+            detailLoads.Should().Be(0,
+                "an empty category has no visible rows that need complete stat details");
         }
 
         [Test]
@@ -895,6 +1056,15 @@ namespace SWLOR.Toolset.Tests
             JsonGffDocument.Parse(
                 BlueprintTemplateFactory.CreateFileContent(
                     ResourceType.Utm, "probe_store", "Probe Store")).Root;
+
+        private static async Task WaitForItemCandidatesAsync(MerchantEditorViewModel editor)
+        {
+            for (var attempt = 0; attempt < 500 && editor.IsLoadingItemCandidates; attempt++)
+                await Task.Delay(10);
+
+            editor.IsLoadingItemCandidates.Should().BeFalse(
+                "candidate loading should finish within the test timeout");
+        }
 
         private static void WritePlacedMerchantArea(
             string moduleRoot,

@@ -26,10 +26,12 @@ namespace SWLOR.Toolset.Tests
             Directory.CreateDirectory(Path.Combine(_moduleRoot, "are"));
             Directory.CreateDirectory(Path.Combine(_moduleRoot, "utc"));
             Directory.CreateDirectory(Path.Combine(_moduleRoot, "utp"));
+            Directory.CreateDirectory(Path.Combine(_moduleRoot, "uti"));
 
             WriteCreature("npc_guard", "Guard", "GUARD_TAG");
             WriteCreature("npc_sentry", "Sentry", "SENTRY_TAG");
             WritePlaceable("crate_small", "Small Crate", "CRATE");
+            WriteItem("probe_item", "Probe Item", "PROBE_ITEM", 75);
         }
 
         [TearDown]
@@ -74,6 +76,17 @@ namespace SWLOR.Toolset.Tests
             catalog.EntriesOfType(ResourceType.Utp)
                 .Select(entry => entry.ResRef)
                 .Should().BeEquivalentTo("crate_small");
+        }
+
+        [Test]
+        public async Task ItemBaseTypeIsRetainedFromTheCatalogParse()
+        {
+            var catalog = await BuiltCatalogAsync();
+
+            catalog.TryGetEntry(ResourceType.Uti, "probe_item", out var item).Should().BeTrue();
+            item.Name.Should().Be("Probe Item");
+            item.BaseItem.Should().Be(75,
+                "merchant category searches should reuse catalog metadata instead of parsing the item again");
         }
 
         [Test]
@@ -167,6 +180,18 @@ namespace SWLOR.Toolset.Tests
                   "__data_type": "UTP ",
                   "LocName": { "type": "cexolocstring", "value": { "0": "{{name}}" } },
                   "Tag": { "type": "cexostring", "value": "{{tag}}" }
+                }
+                """));
+
+        private void WriteItem(string resRef, string name, string tag, int baseItem) =>
+            File.WriteAllBytes(
+                Path.Combine(_moduleRoot, "uti", resRef + ".uti.json"),
+                Encoding.UTF8.GetBytes($$"""
+                {
+                  "__data_type": "UTI ",
+                  "LocalizedName": { "type": "cexolocstring", "value": { "0": "{{name}}" } },
+                  "Tag": { "type": "cexostring", "value": "{{tag}}" },
+                  "BaseItem": { "type": "int", "value": {{baseItem}} }
                 }
                 """));
     }

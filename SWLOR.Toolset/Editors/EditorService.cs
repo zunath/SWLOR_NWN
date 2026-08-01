@@ -111,7 +111,10 @@ namespace SWLOR.Toolset.Editors
             new(StringComparer.OrdinalIgnoreCase);
         private Merchants.MerchantInstanceService? _merchantInstances;
         private IReadOnlyList<Merchants.MerchantItemDefinition>? _merchantItemCatalog;
-        private readonly Dictionary<string, Merchants.MerchantItemDefinition> _merchantItemDetails =
+        private Merchants.MerchantItemSearchIndex? _merchantItemSearchIndex;
+        private readonly ConcurrentDictionary<string, Merchants.MerchantItemDefinition>
+            _merchantItemSummaries = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, Merchants.MerchantItemDefinition> _merchantItemDetails =
             new(StringComparer.OrdinalIgnoreCase);
         private BaseItemRowService? _baseItemRowService;
         private BaseItemIconService? _baseItemIconService;
@@ -323,6 +326,8 @@ namespace SWLOR.Toolset.Editors
                 _doorAppearances = null;
                 _itemSources = null;
                 _merchantItemCatalog = null;
+                _merchantItemSearchIndex = null;
+                _merchantItemSummaries.Clear();
                 _merchantItemDetails.Clear();
                 InvalidateCreatureEquipmentChoices();
                 _itemSourcesGeneration++;
@@ -349,7 +354,9 @@ namespace SWLOR.Toolset.Editors
                 if (type == ResourceType.Uti)
                 {
                     _merchantItemCatalog = null;
-                    _merchantItemDetails.Remove(refreshedResRef);
+                    _merchantItemSearchIndex = null;
+                    _merchantItemSummaries.TryRemove(refreshedResRef, out _);
+                    _merchantItemDetails.TryRemove(refreshedResRef, out _);
                     InvalidateCreatureEquipmentChoices(refreshedResRef);
                     foreach (var merchant in _openMerchantEditors.Values)
                         merchant.Editor.RefreshItemCatalog();
@@ -472,6 +479,9 @@ namespace SWLOR.Toolset.Editors
             _soundResources = null;
             _doorAppearances = null;
             _merchantItemCatalog = null;
+            _merchantItemSearchIndex = null;
+            _merchantItemSummaries.Clear();
+            _merchantItemDetails.Clear();
             _baseItemRowService = null;
             _baseItemIconService = null;
             _itemCostTableRanges = null;
@@ -488,6 +498,8 @@ namespace SWLOR.Toolset.Editors
                 editor.Editor.ReloadGameResources();
             foreach (var editor in _openItemEditors.Values)
                 editor.Editor.ReloadGameResources();
+            foreach (var editor in _openMerchantEditors.Values)
+                editor.Editor.RefreshItemCatalog();
         }
 
         /// <summary>
@@ -1786,78 +1798,151 @@ namespace SWLOR.Toolset.Editors
 
         private Merchants.MerchantItemDefinition? LoadMerchantItem(string resRef)
         {
+            return LoadMerchantItemDetails(
+                resRef,
+                BaseItemRows(),
+                ItemCostTables(),
+                ResolveItemChoices);
+        }
+
+        private Merchants.MerchantItemDefinition? LoadMerchantItemSummary(
+            string resRef,
+            Func<int, BaseItemRow?>? baseItemRows)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null || string.IsNullOrWhiteSpace(resRef))
+                return null;
+            if (_merchantItemDetails.TryGetValue(resRef, out var detailed))
+                return detailed;
+            if (_merchantItemSummaries.TryGetValue(resRef, out var cached))
+                return cached;
+
+            Merchants.MerchantItemDefinition definition;
+            try
+            {
+                definition = BuildMerchantItemDefinition(
+                    resRef,
+                    workspace.LoadBlueprint(ResourceType.Uti, resRef).Fields,
+                    baseItemRows);
+            }
+            catch
+            {
+                definition = new Merchants.MerchantItemDefinition(resRef, resRef, 0);
+            }
+
+            return _merchantItemSummaries.GetOrAdd(resRef, definition);
+        }
+
+        private Merchants.MerchantItemDefinition? LoadMerchantItemDetails(
+            string resRef,
+            Func<int, BaseItemRow?>? baseItemRows,
+            Domain.Editors.Items.ItemCostTableRanges? costTables,
+            Func<string, IReadOnlyList<BehaviorChoice>> resolveChoices)
+        {
             var workspace = _workspaceContext.Workspace;
             if (workspace == null || string.IsNullOrWhiteSpace(resRef))
                 return null;
             if (_merchantItemDetails.TryGetValue(resRef, out var cached))
                 return cached;
 
+            Merchants.MerchantItemDefinition definition;
             try
             {
                 var item = workspace.LoadBlueprint(ResourceType.Uti, resRef).Fields;
-                var name = _workspaceContext.Catalog?.TryGetEntry(
-                               ResourceType.Uti, resRef, out var entry) == true
-                    ? entry.Name
-                    : null;
-                if (string.IsNullOrWhiteSpace(name))
-                    name = item.GetLocStringOrNull("LocalizedName")?.Text;
-
-                var cost = (long)(item.GetUIntOrNull("Cost") ?? 0) +
-                           (item.GetUIntOrNull("AddCost") ?? 0);
-                var baseItem = item.GetIntOrNull("BaseItem") ?? -1;
-                var storePanel = BaseItemRows()?.Invoke(baseItem)?.StorePanel
-                                 ?? (int)Domain.Editors.Merchants.MerchantInventoryCategory.Miscellaneous;
-                var definition = new Merchants.MerchantItemDefinition(
+                definition = BuildMerchantItemDefinition(
                     resRef,
-                    string.IsNullOrWhiteSpace(name) ? resRef : name,
-                    cost,
-                    storePanel,
-                    Items.ItemStatSummary.Build(item, ItemCostTables(), ResolveItemChoices));
-                _merchantItemDetails[resRef] = definition;
-                return definition;
+                    item,
+                    baseItemRows,
+                    Items.ItemStatSummary.Build(item, costTables, resolveChoices));
             }
             catch
             {
-                var definition = new Merchants.MerchantItemDefinition(resRef, resRef, 0);
-                _merchantItemDetails[resRef] = definition;
-                return definition;
+                definition = new Merchants.MerchantItemDefinition(resRef, resRef, 0);
             }
+
+            definition = _merchantItemDetails.GetOrAdd(resRef, definition);
+            _merchantItemSummaries[resRef] = definition;
+            return definition;
         }
 
-        private IReadOnlyList<Merchants.MerchantItemDefinition> SearchMerchantItems(
+        private Merchants.MerchantItemDefinition BuildMerchantItemDefinition(
+            string resRef,
+            JsonGffStruct item,
+            Func<int, BaseItemRow?>? baseItemRows,
+            IReadOnlyList<Items.ItemStatSummaryGroup>? statGroups = null)
+        {
+            var name = _workspaceContext.Catalog?.TryGetEntry(
+                           ResourceType.Uti, resRef, out var entry) == true
+                ? entry.Name
+                : null;
+            if (string.IsNullOrWhiteSpace(name))
+                name = item.GetLocStringOrNull("LocalizedName")?.Text;
+
+            var cost = (long)(item.GetUIntOrNull("Cost") ?? 0) +
+                       (item.GetUIntOrNull("AddCost") ?? 0);
+            var baseItem = item.GetIntOrNull("BaseItem") ?? -1;
+            var storePanel = baseItemRows?.Invoke(baseItem)?.StorePanel
+                             ?? (int)Domain.Editors.Merchants.MerchantInventoryCategory.Miscellaneous;
+            return new Merchants.MerchantItemDefinition(
+                resRef,
+                string.IsNullOrWhiteSpace(name) ? resRef : name,
+                cost,
+                storePanel,
+                statGroups,
+                HasKnownStorePanel: true);
+        }
+
+        private async Task<IReadOnlyList<Merchants.MerchantItemDefinition>> SearchMerchantItems(
             string query,
             int storePanel,
             int skip,
-            int take)
+            int take,
+            CancellationToken cancellationToken)
         {
             if (_workspaceContext.Workspace == null || take <= 0)
                 return Array.Empty<Merchants.MerchantItemDefinition>();
 
-            var trimmed = query.Trim();
-            var matches = new List<Merchants.MerchantItemDefinition>();
-            var matched = 0;
-            foreach (var item in MerchantItemCatalog())
+            if (_workspaceContext.Catalog is { } catalog && !catalog.BuildTask.IsCompleted)
+                await catalog.BuildTask.WaitAsync(cancellationToken).ConfigureAwait(true);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (_merchantItemSearchIndex == null)
             {
-                if (trimmed.Length > 0 &&
-                    !item.ResRef.Contains(trimmed, StringComparison.OrdinalIgnoreCase) &&
-                    !item.Name.Contains(trimmed, StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                var detailed = LoadMerchantItem(item.ResRef);
-                if (detailed == null || detailed.StorePanel != storePanel)
-                    continue;
-
-                if (matched++ < Math.Max(0, skip))
-                    continue;
-
-                matches.Add(detailed);
-                if (matches.Count == take)
-                    break;
+                var baseItemRows = BaseItemRows();
+                var costTables = ItemCostTables();
+                var resolveChoices = CacheItemSubtypeChoices();
+                _merchantItemSearchIndex = new Merchants.MerchantItemSearchIndex(
+                    MerchantItemCatalog(),
+                    resRef => LoadMerchantItemSummary(resRef, baseItemRows),
+                    resRef => LoadMerchantItemDetails(
+                        resRef, baseItemRows, costTables, resolveChoices));
             }
 
-            return matches;
+            return await _merchantItemSearchIndex.SearchAsync(
+                query,
+                storePanel,
+                skip,
+                take,
+                cancellationToken).ConfigureAwait(true);
+        }
+
+        private Func<string, IReadOnlyList<BehaviorChoice>> CacheItemSubtypeChoices()
+        {
+            const string subtypePrefix = "item.subtypes:";
+            var choiceSets = Domain.Editors.Items.ItemMultiEntryCatalog.All
+                .Select(definition => definition.SubtypeTableResRef)
+                .Concat(Domain.Editors.Items.ItemEngineLegacyCatalog.All
+                    .Select(definition => definition.SubtypeTableResRef))
+                .Where(table => !string.IsNullOrWhiteSpace(table))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    table => subtypePrefix + table,
+                    table => ResolveItemChoices(subtypePrefix + table),
+                    StringComparer.OrdinalIgnoreCase);
+            return key => choiceSets.TryGetValue(key, out var choices)
+                ? choices
+                : Array.Empty<BehaviorChoice>();
         }
 
         private IReadOnlyList<string> FindUnsavedBlueprintReferences(string resRef)
@@ -1908,12 +1993,18 @@ namespace SWLOR.Toolset.Editors
 
             if (_workspaceContext.Catalog is { } catalog)
             {
+                var baseItemRows = BaseItemRows();
                 foreach (var entry in catalog.EntriesOfType(ResourceType.Uti))
                 {
+                    var storePanel = entry.BaseItem is { } baseItem
+                        ? baseItemRows?.Invoke(baseItem)?.StorePanel
+                        : null;
                     items[entry.ResRef] = new Merchants.MerchantItemDefinition(
                         entry.ResRef,
                         string.IsNullOrWhiteSpace(entry.Name) ? entry.ResRef : entry.Name!,
-                        0);
+                        0,
+                        storePanel ?? (int)Domain.Editors.Merchants.MerchantInventoryCategory.Miscellaneous,
+                        HasKnownStorePanel: storePanel.HasValue);
                 }
             }
 

@@ -24,8 +24,8 @@ namespace SWLOR.Toolset.Editors.Merchants
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly Func<string, MerchantItemDefinition?>? _loadItem;
-        private readonly Func<string, int, int, int,
-            IReadOnlyList<MerchantItemDefinition>>? _searchItems;
+        private readonly Func<string, int, int, int, CancellationToken,
+            Task<IReadOnlyList<MerchantItemDefinition>>>? _searchItems;
         private readonly Action<string, Action<Bitmap>>? _requestItemPreview;
         private readonly Action<string>? _openItem;
         private readonly IReadOnlyList<BehaviorChoice> _baseItems;
@@ -37,8 +37,8 @@ namespace SWLOR.Toolset.Editors.Merchants
         private int _itemCandidateRefreshGeneration;
         private int _itemCandidateOffset;
         private bool _itemCandidatesExhausted;
-        private bool _isLoadingItemCandidates;
         private CancellationTokenSource? _itemSearchDebounce;
+        private CancellationTokenSource? _itemCandidateRequest;
         private bool _isUpdatingInventoryChecks;
         private bool _loading;
         private bool _disposed;
@@ -81,7 +81,7 @@ namespace SWLOR.Toolset.Editors.Merchants
         public bool CanToggleShownInventoryItems => InventoryItems.Count > 0;
         public bool HasItemCandidates => ItemCandidates.Count > 0;
         public bool CanLoadMoreItemCandidates =>
-            !_isLoadingItemCandidates && !_itemCandidatesExhausted && SelectedInventoryCategory != null;
+            !IsLoadingItemCandidates && !_itemCandidatesExhausted && SelectedInventoryCategory != null;
         public bool IsInstanceOperationBusy => IsLoadingInstances || IsUpdatingInstances;
         public string InstanceOperationStatus => IsUpdatingInstances
             ? "Updating placed merchant instances..."
@@ -94,11 +94,15 @@ namespace SWLOR.Toolset.Editors.Merchants
             PlacedInstances.Sum(instance => instance.OutOfDateItemRecords);
         public string InventorySummary =>
             $"{InventoryItems.Count} item{(InventoryItems.Count == 1 ? string.Empty : "s")} shown";
-        public string CandidateSummary => ItemCandidates.Count == 0
-            ? "No matching items"
-            : CanLoadMoreItemCandidates
-                ? $"{ItemCandidates.Count} items loaded · scroll for more"
-                : $"{ItemCandidates.Count} item{(ItemCandidates.Count == 1 ? string.Empty : "s")}";
+        public string CandidateSummary => IsLoadingItemCandidates && ItemCandidates.Count == 0
+            ? "Loading items..."
+            : ItemCandidates.Count == 0
+                ? "No matching items"
+                : IsLoadingItemCandidates
+                    ? $"{ItemCandidates.Count} items loaded · loading more..."
+                    : CanLoadMoreItemCandidates
+                        ? $"{ItemCandidates.Count} items loaded · scroll for more"
+                        : $"{ItemCandidates.Count} item{(ItemCandidates.Count == 1 ? string.Empty : "s")}";
         public string BuyingRuleSummary =>
             $"{BuyingRules.Count} of {_allBuyingRules.Count} base item types";
         public string InstanceSummary
@@ -219,6 +223,9 @@ namespace SWLOR.Toolset.Editors.Merchants
         private string? _instanceError;
 
         [ObservableProperty]
+        private bool _isLoadingItemCandidates;
+
+        [ObservableProperty]
         private int _selectedTabIndex;
 
         [ObservableProperty]
@@ -234,8 +241,8 @@ namespace SWLOR.Toolset.Editors.Merchants
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             IReadOnlyList<BehaviorChoice>? baseItems = null,
             Func<string, MerchantItemDefinition?>? loadItem = null,
-            Func<string, int, int, int,
-                IReadOnlyList<MerchantItemDefinition>>? searchItems = null,
+            Func<string, int, int, int, CancellationToken,
+                Task<IReadOnlyList<MerchantItemDefinition>>>? searchItems = null,
             MerchantInstanceService? instances = null,
             Action<string, Action<Bitmap>>? requestItemPreview = null,
             Action<string>? openItem = null)
@@ -758,30 +765,60 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         private void RefreshItemCandidates()
         {
-            _itemCandidateRefreshGeneration++;
+            var generation = ++_itemCandidateRefreshGeneration;
+            _itemCandidateRequest?.Cancel();
+            _itemCandidateRequest?.Dispose();
+            _itemCandidateRequest = new CancellationTokenSource();
             ItemCandidates.Clear();
             SelectedItemCandidate = null;
             _itemCandidateOffset = 0;
             _itemCandidatesExhausted = SelectedInventoryCategory == null || _searchItems == null;
-            LoadMoreItemCandidates();
+            IsLoadingItemCandidates = false;
             NotifyItemCandidateShapeChanged();
+            if (!_itemCandidatesExhausted)
+                _ = LoadItemCandidatePageAsync(generation, _itemCandidateRequest.Token);
         }
 
         [RelayCommand(CanExecute = nameof(CanLoadMoreItemCandidates))]
-        private void LoadMoreItemCandidates()
+        private async Task LoadMoreItemCandidates()
         {
-            var category = SelectedInventoryCategory;
-            if (category == null || _searchItems == null || !CanLoadMoreItemCandidates)
+            if (!CanLoadMoreItemCandidates || _itemCandidateRequest == null)
                 return;
 
-            _isLoadingItemCandidates = true;
+            await LoadItemCandidatePageAsync(
+                _itemCandidateRefreshGeneration,
+                _itemCandidateRequest.Token).ConfigureAwait(true);
+        }
+
+        private async Task LoadItemCandidatePageAsync(
+            int generation,
+            CancellationToken cancellationToken)
+        {
+            var category = SelectedInventoryCategory;
+            var searchItems = _searchItems;
+            if (category == null || searchItems == null || _disposed ||
+                generation != _itemCandidateRefreshGeneration)
+            {
+                return;
+            }
+
+            IsLoadingItemCandidates = true;
+            NotifyItemCandidateShapeChanged();
             try
             {
-                var page = _searchItems(
+                var page = await searchItems(
                     ItemSearchText.Trim(),
                     category.Index,
                     _itemCandidateOffset,
-                    ItemCandidatePageSize + 1);
+                    ItemCandidatePageSize + 1,
+                    cancellationToken).ConfigureAwait(true);
+                if (_disposed || cancellationToken.IsCancellationRequested ||
+                    generation != _itemCandidateRefreshGeneration ||
+                    !ReferenceEquals(category, SelectedInventoryCategory))
+                {
+                    return;
+                }
+
                 var published = 0;
                 foreach (var candidate in page.Take(ItemCandidatePageSize))
                 {
@@ -795,12 +832,17 @@ namespace SWLOR.Toolset.Editors.Merchants
                 _itemCandidateOffset += published;
                 _itemCandidatesExhausted = page.Count <= ItemCandidatePageSize || published == 0;
             }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+            }
             finally
             {
-                _isLoadingItemCandidates = false;
+                if (generation == _itemCandidateRefreshGeneration)
+                {
+                    IsLoadingItemCandidates = false;
+                    NotifyItemCandidateShapeChanged();
+                }
             }
-
-            NotifyItemCandidateShapeChanged();
         }
 
         /// <summary>Requests a candidate picture only after the virtualized list realizes its row.</summary>
@@ -978,6 +1020,9 @@ namespace SWLOR.Toolset.Editors.Merchants
             _disposed = true;
             _instanceRefreshGeneration++;
             _itemCandidateRefreshGeneration++;
+            _itemCandidateRequest?.Cancel();
+            _itemCandidateRequest?.Dispose();
+            _itemCandidateRequest = null;
             _itemSearchDebounce?.Cancel();
             _itemSearchDebounce?.Dispose();
             _itemSearchDebounce = null;

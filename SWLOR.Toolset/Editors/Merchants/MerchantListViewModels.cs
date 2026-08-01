@@ -10,7 +10,8 @@ namespace SWLOR.Toolset.Editors.Merchants
         string Name,
         long BaseCost,
         int StorePanel = (int)global::SWLOR.Toolset.Domain.Editors.Merchants.MerchantInventoryCategory.Miscellaneous,
-        IReadOnlyList<ItemStatSummaryGroup>? StatGroups = null)
+        IReadOnlyList<ItemStatSummaryGroup>? StatGroups = null,
+        bool HasKnownStorePanel = false)
     {
         public IReadOnlyList<ItemStatSummaryGroup> Stats =>
             StatGroups ?? Array.Empty<ItemStatSummaryGroup>();

@@ -19,8 +19,8 @@ namespace SWLOR.Toolset.Editors.Appearance
     /// the renderer does with this.
     /// </param>
     /// <param name="IsSegmentedCreatureAppearance">
-    /// True for MODELTYPE P rows, whose representative preview must compose a full body and is
-    /// therefore deferred behind the selected row and directly renderable visible models.
+    /// True for MODELTYPE P rows, whose representative preview composes a generic full creature
+    /// for that row's race rather than rendering one fixed model resource.
     /// </param>
     public sealed record AppearanceOption(
         string Key,

@@ -123,6 +123,7 @@ namespace SWLOR.Toolset.Tests
             var section = Section(Options(3), out _);
 
             section.Tiles[0].Preview.Should().BeNull("no thumbnail service was supplied");
+            section.Tiles[0].HasPreview.Should().BeFalse();
             section.Tiles[0].Glyph.Should().Be("A");
             section.Tiles[0].HasDetail.Should().BeTrue();
         }
@@ -522,6 +523,10 @@ namespace SWLOR.Toolset.Tests
             appearanceView.Should().Contain("<controls:VirtualizingWrapPanel />");
             appearanceView.Should().Contain("Loaded=\"OnTileLoaded\"",
                 "appearance previews must follow the palette's viewport-driven loading pattern");
+            appearanceView.Should().Contain("IsVisible=\"{Binding !HasPreview}\"",
+                "the letter is only a temporary placeholder and must not remain behind real artwork");
+            appearanceView.Should().Contain("IsVisible=\"{Binding HasPreview}\"",
+                "the rendered model replaces rather than overlays the fallback letter");
 
             Directory.Exists(Path.Combine(
                     CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Appearance"))

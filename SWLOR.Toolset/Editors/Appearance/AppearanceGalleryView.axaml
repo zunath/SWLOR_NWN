@@ -51,8 +51,10 @@
                 <!-- The letter stands in until the render lands, so the grid is never a field of
                      empty boxes while it fills. -->
                 <TextBlock Text="{Binding Glyph}" FontSize="26" Classes="dim"
+                           IsVisible="{Binding !HasPreview}"
                            HorizontalAlignment="Center" VerticalAlignment="Center" />
-                <Image Source="{Binding Preview}" Stretch="Uniform" />
+                <Image Source="{Binding Preview}" Stretch="Uniform"
+                       IsVisible="{Binding HasPreview}" />
               </Panel>
               <TextBlock Text="{Binding Caption}" FontSize="10.5"
                          TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" />

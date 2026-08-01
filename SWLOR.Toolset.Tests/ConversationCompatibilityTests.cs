@@ -25,8 +25,8 @@ namespace SWLOR.Toolset.Tests
         /// <summary>
         /// The hand-authored conversations Play-it declines — 9 of 346, about 3%. Every one decides
         /// what to SHOW with its own NWScript rather than with snippets: the DMFI DM menus and a
-        /// handful of imported dialogs. The editor could not predict a single branch of them, so it
-        /// opens nothing and changes nothing.
+        /// handful of imported dialogs. The editor could not predict a single branch of them, so
+        /// the shell opens a read-only exception explanation and changes nothing.
         /// </summary>
         /// <remarks>
         /// An earlier version of the rule also refused a custom action script and turned away 28,

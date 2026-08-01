@@ -17,6 +17,19 @@ namespace SWLOR.Toolset.Shell.Views
             InitializeComponent();
         }
 
+        public ErrorDialog(
+            string headline,
+            string message,
+            IReadOnlyList<string>? details = null)
+            : this()
+        {
+            var safeDetails = details ?? Array.Empty<string>();
+            HeadlineText.Text = headline;
+            MessageText.Text = message;
+            DetailsList.ItemsSource = safeDetails;
+            DetailsBorder.IsVisible = safeDetails.Count > 0;
+        }
+
         private void OnOkClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => Close();
 
         /// <summary>
@@ -24,7 +37,10 @@ namespace SWLOR.Toolset.Shell.Views
         /// window exists yet (headless/startup) - in that case the dialog is skipped rather than
         /// throwing, since a failed diagnostic must never take the app down.
         /// </summary>
-        public static void Show(string headline, string message, IReadOnlyList<string> details)
+        public static void Show(
+            string headline,
+            string message,
+            IReadOnlyList<string>? details = null)
         {
             if (!Dispatcher.UIThread.CheckAccess())
             {
@@ -37,11 +53,7 @@ namespace SWLOR.Toolset.Shell.Views
                 var owner = (Avalonia.Application.Current?.ApplicationLifetime
                     as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
-                var dialog = new ErrorDialog();
-                dialog.HeadlineText.Text = headline;
-                dialog.MessageText.Text = message;
-                dialog.DetailsList.ItemsSource = details;
-                dialog.DetailsBorder.IsVisible = details.Count > 0;
+                var dialog = new ErrorDialog(headline, message, details);
 
                 if (owner != null)
                     _ = dialog.ShowDialog(owner);

@@ -159,6 +159,7 @@ namespace SWLOR.Toolset.Editors
 
         private readonly Dictionary<string, ConversationEditorViewModel> _openConversations = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, NuiConversationEditorViewModel> _openNuiConversations = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ConversationOpenIssueViewModel> _openConversationIssues = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Deep, independent snapshots of every open conversation editor's live document, keyed by
@@ -2883,7 +2884,26 @@ namespace SWLOR.Toolset.Editors
         private void OpenConversationEditor(Domain.Workspace.ModuleWorkspace workspace, string resRef)
         {
             var graphPath = workspace.GetConversationGraphPath(resRef);
-            if (File.Exists(graphPath))
+            var filePath = workspace.GetResourcePath(ResourceType.Dlg, resRef);
+            Domain.Conversations.ConversationEditorRoute route;
+            try
+            {
+                route = Domain.Conversations.ConversationEditorRoute.Resolve(resRef, graphPath, filePath);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Failed to inspect conversation {resRef}: {ex}");
+                OpenConversationIssue(
+                    filePath,
+                    resRef,
+                    $"Could not inspect '{resRef}'",
+                    "The conversation source could not be read.",
+                    filePath,
+                    ExceptionDetails(ex));
+                return;
+            }
+
+            if (route.Kind == Domain.Conversations.ConversationEditorRouteKind.NuiGraph)
             {
                 if (_openNuiConversations.TryGetValue(graphPath, out var openGraph))
                 {
@@ -2910,15 +2930,41 @@ namespace SWLOR.Toolset.Editors
                 }
                 catch (Exception ex)
                 {
-                    _log.AppendLine($"Failed to open NUI conversation {resRef}: {ex.Message}");
+                    _log.AppendLine($"Failed to open NUI conversation {resRef}: {ex}");
+                    OpenConversationIssue(
+                        graphPath,
+                        resRef,
+                        $"Could not open '{resRef}'",
+                        "The NUI conversation graph exists, but the editor could not load it.",
+                        graphPath,
+                        ExceptionDetails(ex));
                 }
                 return;
             }
 
-            var filePath = workspace.GetResourcePath(ResourceType.Dlg, resRef);
-            if (!File.Exists(filePath))
+            if (route.Kind == Domain.Conversations.ConversationEditorRouteKind.Missing)
             {
-                _log.AppendLine($"File not found: {filePath}");
+                _log.AppendLine($"{resRef}: {route.Reason}");
+                OpenConversationIssue(
+                    filePath,
+                    resRef,
+                    $"Could not find '{resRef}'",
+                    route.Reason,
+                    filePath,
+                    route.Details);
+                return;
+            }
+
+            if (route.Kind == Domain.Conversations.ConversationEditorRouteKind.LegacyException)
+            {
+                _log.AppendLine($"{resRef}: {route.Reason}");
+                OpenConversationIssue(
+                    filePath,
+                    resRef,
+                    $"'{resRef}' is a legacy NWN exception",
+                    route.Reason,
+                    filePath,
+                    route.Details);
                 return;
             }
 
@@ -2930,17 +2976,6 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                // Refused rather than half-shown. See ConversationCompatibility for why that is the
-                // safer failure; the file is left untouched either way.
-                var support = Domain.Conversations.ConversationCompatibility.Check(
-                    Domain.Documents.DlgDocument.Load(filePath));
-                if (!support.IsSupported)
-                {
-                    _log.AppendLine($"{resRef}: {support.Reason}");
-                    Shell.Views.ErrorDialog.Show($"Cannot open '{resRef}'", support.Reason, null);
-                    return;
-                }
-
                 _snippets ??= SnippetCatalog.Build();
                 var editor = new ConversationEditorViewModel(
                     filePath, resRef, _snippets, _gameCodeIndex, _log, _prompts,
@@ -2954,9 +2989,46 @@ namespace SWLOR.Toolset.Editors
             }
             catch (Exception ex)
             {
-                _log.AppendLine($"Failed to open conversation {resRef}: {ex.Message}");
+                _log.AppendLine($"Failed to open legacy conversation {resRef}: {ex}");
+                OpenConversationIssue(
+                    filePath,
+                    resRef,
+                    $"Could not open '{resRef}'",
+                    "The legacy NWN conversation exists, but the editor could not load it.",
+                    filePath,
+                    ExceptionDetails(ex));
             }
         }
+
+        private void OpenConversationIssue(
+            string identity,
+            string resRef,
+            string headline,
+            string message,
+            string filePath,
+            IReadOnlyList<string> details)
+        {
+            if (_openConversationIssues.TryGetValue(identity, out var existing))
+            {
+                _factory.ActivateDocument(existing);
+                return;
+            }
+
+            var issue = new ConversationOpenIssueViewModel(
+                identity,
+                resRef,
+                headline,
+                message,
+                filePath,
+                details);
+            issue.Closed += _ => _openConversationIssues.Remove(identity);
+            _openConversationIssues[identity] = issue;
+            _factory.OpenDocument(issue);
+        }
+
+        private static IReadOnlyList<string> ExceptionDetails(Exception exception) =>
+            exception.ToString()
+                .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
         /// <summary>
         /// Tags of placed objects of one kind, so a store or waypoint argument names something the

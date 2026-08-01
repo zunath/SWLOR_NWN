@@ -108,6 +108,36 @@ namespace SWLOR.Toolset.Editors.Items
             return colors;
         }
 
+        /// <summary>
+        /// Finds the palette row whose rendered mid-tone most closely matches
+        /// <paramref name="target"/>, or null when the palette is unavailable.
+        /// </summary>
+        public int? FindClosestColorIndex(
+            DyeMaterial material,
+            (byte R, byte G, byte B) target)
+        {
+            var colors = GetPaletteColors(material);
+            if (colors.Count == 0)
+                return null;
+
+            var bestIndex = 0;
+            var bestDistance = long.MaxValue;
+            for (var index = 0; index < colors.Count; index++)
+            {
+                var red = colors[index].R - target.R;
+                var green = colors[index].G - target.G;
+                var blue = colors[index].B - target.B;
+                var distance = (long)red * red + (long)green * green + (long)blue * blue;
+                if (distance >= bestDistance)
+                    continue;
+
+                bestIndex = index;
+                bestDistance = distance;
+            }
+
+            return bestIndex;
+        }
+
         private static string PaletteResRef(DyeMaterial material) => material switch
         {
             DyeMaterial.Cloth => "pal_cloth01",

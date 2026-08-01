@@ -121,6 +121,39 @@ namespace SWLOR.Toolset.Tests.Items
             }
         }
 
+        [Test]
+        public void FindsTheClosestRenderedPaletteColor()
+        {
+            var directory = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                "closest-dye-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                File.WriteAllBytes(
+                    Path.Combine(directory, "pal_cloth01.tga"),
+                    VerticalColorsTga(
+                        ((byte)10, (byte)20, (byte)30),
+                        ((byte)40, (byte)50, (byte)60),
+                        ((byte)70, (byte)80, (byte)90)));
+                var index = new ResourceIndex(
+                    null,
+                    new[] { new ResourceIndex.HakLayer("fixture", directory) });
+                var service = new ArmorDyeSwatchService(index);
+                var target = service.GetColor(ArmorDyeSwatchService.DyeMaterial.Cloth, 1);
+
+                target.Should().NotBeNull();
+                service.FindClosestColorIndex(
+                        ArmorDyeSwatchService.DyeMaterial.Cloth,
+                        target!.Value)
+                    .Should().Be(1);
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+
         private static byte[] SolidColorTga(byte red, byte green, byte blue)
         {
             var bytes = new byte[21];
@@ -131,6 +164,26 @@ namespace SWLOR.Toolset.Tests.Items
             bytes[18] = blue;
             bytes[19] = green;
             bytes[20] = red;
+            return bytes;
+        }
+
+        private static byte[] VerticalColorsTga(params (byte R, byte G, byte B)[] colors)
+        {
+            var bytes = new byte[18 + colors.Length * 3];
+            bytes[2] = 2;
+            System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(12, 2), 1);
+            System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(
+                bytes.AsSpan(14, 2),
+                checked((ushort)colors.Length));
+            bytes[16] = 24;
+            for (var index = 0; index < colors.Length; index++)
+            {
+                var offset = 18 + index * 3;
+                bytes[offset] = colors[index].B;
+                bytes[offset + 1] = colors[index].G;
+                bytes[offset + 2] = colors[index].R;
+            }
+
             return bytes;
         }
     }

@@ -1,4 +1,5 @@
 using SWLOR.NWN.Formats.Mdl;
+using SWLOR.NWN.Formats.Plt;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -6,6 +7,7 @@ using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Render.Icons;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Editors.Items;
 using SWLOR.Toolset.Viewport;
 
 namespace SWLOR.Toolset.Workspace
@@ -52,6 +54,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly BaseItemIconService? _baseItems;
         private readonly PortraitService? _portraits;
         private readonly TwoDaService? _twoDa;
+        private readonly ArmorDyeSwatchService _dyeSwatches;
 
         /// <summary>Authored part textures for the compose run in flight; guarded by _composerGate.</summary>
         private readonly Domain.Render.ComposedPartTextures _partTextures = new();
@@ -89,6 +92,7 @@ namespace SWLOR.Toolset.Workspace
             _baseItems = baseItems;
             _portraits = portraits;
             _twoDa = twoDa;
+            _dyeSwatches = new ArmorDyeSwatchService(resourceIndex);
 
             if (resourceIndex != null)
             {
@@ -322,7 +326,8 @@ namespace SWLOR.Toolset.Workspace
         private IconImage? RenderModel(
             ResourceType type,
             Domain.Gff.JsonGffStruct root,
-            bool useIndexedBlueprint)
+            bool useIndexedBlueprint,
+            IReadOnlyDictionary<int, int>? layerColorOverrides = null)
         {
             var reference = BlueprintModelResolver.Resolve(
                 type, root, _appearances, _placeables, _doors,
@@ -337,9 +342,18 @@ namespace SWLOR.Toolset.Workspace
                 _ => null
             };
 
+            IReadOnlyDictionary<int, int> layerColors = reference.LayerColorIndices;
+            if (layerColorOverrides is { Count: > 0 })
+            {
+                var merged = reference.LayerColorIndices.ToDictionary(pair => pair.Key, pair => pair.Value);
+                foreach (var pair in layerColorOverrides)
+                    merged[pair.Key] = pair.Value;
+                layerColors = merged;
+            }
+
             Func<string, TextureImage?>? resolveTexture = _textures == null
                 ? null
-                : texture => _textures.Get(texture, reference.LayerColorIndices);
+                : texture => _textures.Get(texture, layerColors);
             var pixels = ThumbnailRenderer.Render(
                 model, ModelRenderSize, palette: null, resolveTexture: resolveTexture);
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
@@ -430,7 +444,52 @@ namespace SWLOR.Toolset.Workspace
             root.SetInt("Appearance_Type", Domain.Gff.GffFieldType.Word, appearanceId);
             CreatureAppearanceDefaults.ApplyGenericSegmentedBody(root);
 
-            return RenderModel(ResourceType.Utc, root, useIndexedBlueprint: false);
+            return RenderModel(
+                ResourceType.Utc,
+                root,
+                useIndexedBlueprint: false,
+                GenericSegmentedLayerColorOverrides(appearanceId));
+        }
+
+        /// <summary>
+        /// The base Dwarf, Elf, and Half-Orc bodies expose clothing palette layers in areas that
+        /// the other generic dynamic bodies expose as skin. Their synthetic gallery previews need
+        /// those auxiliary layers matched to the neutral skin swatch so all seven race examples
+        /// use the same visible complexion.
+        /// </summary>
+        public static bool UsesNeutralSkinPalette(int appearanceId) =>
+            appearanceId is 0 or 1 or 5;
+
+        private IReadOnlyDictionary<int, int>? GenericSegmentedLayerColorOverrides(int appearanceId)
+        {
+            if (!UsesNeutralSkinPalette(appearanceId))
+                return null;
+
+            var skin = _dyeSwatches.GetColor(ArmorDyeSwatchService.DyeMaterial.Skin, 1);
+            if (skin == null)
+                return null;
+
+            var target = (skin.Value.R, skin.Value.G, skin.Value.B);
+            var metal1 = _dyeSwatches.FindClosestColorIndex(
+                ArmorDyeSwatchService.DyeMaterial.Metal1, target);
+            var metal2 = _dyeSwatches.FindClosestColorIndex(
+                ArmorDyeSwatchService.DyeMaterial.Metal2, target);
+            var cloth = _dyeSwatches.FindClosestColorIndex(
+                ArmorDyeSwatchService.DyeMaterial.Cloth, target);
+            var leather = _dyeSwatches.FindClosestColorIndex(
+                ArmorDyeSwatchService.DyeMaterial.Leather, target);
+            if (metal1 == null || metal2 == null || cloth == null || leather == null)
+                return null;
+
+            return new Dictionary<int, int>
+            {
+                [PltLayers.Metal1] = metal1.Value,
+                [PltLayers.Metal2] = metal2.Value,
+                [PltLayers.Cloth1] = cloth.Value,
+                [PltLayers.Cloth2] = cloth.Value,
+                [PltLayers.Leather1] = leather.Value,
+                [PltLayers.Leather2] = leather.Value
+            };
         }
 
         private RenderModel? BuildRenderModel(string modelResRef)

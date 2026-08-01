@@ -603,13 +603,26 @@ namespace SWLOR.Toolset.Workspace
             _memory.TryGet(AppearanceKey(appearanceId), out var bitmap) ? bitmap : null;
 
         private static string AppearanceKey(int appearanceId) =>
-            "appearance:" + appearanceId.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            "appearance:" +
+            appearanceId.ToString(System.Globalization.CultureInfo.InvariantCulture) +
+            AppearancePreviewRevisionSuffix(appearanceId);
+
+        private static string AppearancePreviewRevisionSuffix(int appearanceId) =>
+            BlueprintPreviewRenderer.UsesNeutralSkinPalette(appearanceId)
+                ? ":neutral-skin-v2"
+                : string.Empty;
+
+        private static string AppearancePreviewDiskSuffix(int appearanceId) =>
+            BlueprintPreviewRenderer.UsesNeutralSkinPalette(appearanceId)
+                ? "_neutral_skin_v2"
+                : string.Empty;
 
         private PreviewResolution? ResolveAppearance(int appearanceId)
         {
             var disk = Disk;
             var diskResRef = "$appearance_" +
-                             appearanceId.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                             appearanceId.ToString(System.Globalization.CultureInfo.InvariantCulture) +
+                             AppearancePreviewDiskSuffix(appearanceId);
             if (disk.TryLoad(
                     ResourceType.Utc,
                     diskResRef,

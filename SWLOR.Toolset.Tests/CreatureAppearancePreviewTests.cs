@@ -15,6 +15,16 @@ namespace SWLOR.Toolset.Tests
     public sealed class CreatureAppearancePreviewTests
     {
         [Test]
+        public void NeutralSkinPaletteIsOnlyAppliedToAffectedBaseDynamicRaces()
+        {
+            foreach (var appearanceId in new[] { 0, 1, 5 })
+                BlueprintPreviewRenderer.UsesNeutralSkinPalette(appearanceId).Should().BeTrue();
+
+            foreach (var appearanceId in new[] { 2, 3, 4, 6 })
+                BlueprintPreviewRenderer.UsesNeutralSkinPalette(appearanceId).Should().BeFalse();
+        }
+
+        [Test]
         public void EveryDynamicAppearanceRendersARepresentativeCreatureForItsRace()
         {
             var repositoryRoot = CorpusLocator.RepositoryRoot;

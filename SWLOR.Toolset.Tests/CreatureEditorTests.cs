@@ -959,7 +959,8 @@ namespace SWLOR.Toolset.Tests
             picker.Should().BeAssignableTo<BehaviorRowViewModel>();
             picker.AreChoicesLoaded.Should().BeFalse();
             picker.FilteredChoices.Should().BeEmpty();
-            picker.SelectedChoiceDisplay.Should().Be("Table 400 (TABLE_400)");
+            picker.SelectedChoiceDisplay.Should().Be("Table 400");
+            picker.SelectedChoiceIdentifier.Should().Be("TABLE_400");
 
             picker.OpenSearchCommand.Execute(null);
 
@@ -968,6 +969,8 @@ namespace SWLOR.Toolset.Tests
                 "the stored table remains visible above the first progressive page");
             picker.ChoiceSearchText = "TABLE_321";
             var match = picker.FilteredChoices.Should().ContainSingle().Which;
+            match.Display.Should().Be("Table 321");
+            match.Identifier.Should().Be("TABLE_321");
 
             picker.PickChoiceCommand.Execute(match);
 

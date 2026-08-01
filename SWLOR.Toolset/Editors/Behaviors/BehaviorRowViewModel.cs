@@ -315,6 +315,15 @@ namespace SWLOR.Toolset.Editors.Behaviors
         public virtual string SelectedChoiceDisplay => Choice?.Display ?? StoredChoiceDisplay();
 
         /// <summary>
+        /// Optional stable identifier shown beneath the selected friendly name. Most choices do not
+        /// need one; resource-backed pickers can expose it without folding it into the display text.
+        /// </summary>
+        public virtual string? SelectedChoiceIdentifier => Choice?.Identifier;
+
+        public bool HasSelectedChoiceIdentifier =>
+            !string.IsNullOrWhiteSpace(SelectedChoiceIdentifier);
+
+        /// <summary>
         /// Whether this choice row can remove its stored value. Most engine fields always carry a
         /// value; linked-resource pickers such as creature equipment opt in and reuse the same
         /// progressive chooser rather than building a second search-list control.
@@ -1051,6 +1060,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
         protected virtual void OnChoiceSelected(BehaviorChoiceViewModel? value)
         {
             OnPropertyChanged(nameof(SelectedChoiceDisplay));
+            OnPropertyChanged(nameof(SelectedChoiceIdentifier));
+            OnPropertyChanged(nameof(HasSelectedChoiceIdentifier));
             OnPropertyChanged(nameof(CanClearChoice));
 
             // Mark only the two entries whose state changed. Walking thousands of choices on every
@@ -1274,6 +1285,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
         protected void NotifyValueShapeChanged()
         {
             OnPropertyChanged(nameof(SelectedChoiceDisplay));
+            OnPropertyChanged(nameof(SelectedChoiceIdentifier));
+            OnPropertyChanged(nameof(HasSelectedChoiceIdentifier));
             OnPropertyChanged(nameof(Counter));
             OnPropertyChanged(nameof(HasValue));
             OnPropertyChanged(nameof(IsEmpty));

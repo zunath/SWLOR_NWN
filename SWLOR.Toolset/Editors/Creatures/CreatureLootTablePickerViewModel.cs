@@ -22,7 +22,10 @@ namespace SWLOR.Toolset.Editors.Creatures
         private CreatureLootTableInfo? _pendingTable;
 
         public override string SelectedChoiceDisplay =>
-            Choice?.Display ?? Display(_entry.Table);
+            Choice?.Display ?? DisplayName(_entry.Table);
+
+        public override string? SelectedChoiceIdentifier =>
+            Choice?.Identifier ?? _entry.Table?.Id;
 
         public override bool HasValue => _entry.Table != null;
 
@@ -48,7 +51,10 @@ namespace SWLOR.Toolset.Editors.Creatures
                 store,
                 runEdit,
                 choiceLoader: () => tables
-                    .Select(table => new BehaviorChoice(table.Id, Display(table)))
+                    .Select(table => new BehaviorChoice(table.Id, DisplayName(table))
+                    {
+                        Identifier = table.Id
+                    })
                     .ToList())
         {
             _entry = entry;
@@ -87,15 +93,15 @@ namespace SWLOR.Toolset.Editors.Creatures
             base.OnApplied();
         }
 
-        private static string Display(CreatureLootTableInfo? table)
+        private static string DisplayName(CreatureLootTableInfo? table)
         {
             if (table == null)
                 return "Choose a loot table...";
 
-            var idSuffix = $"({table.Id})";
+            var idSuffix = $" ({table.Id})";
             return table.DisplayName.EndsWith(idSuffix, StringComparison.OrdinalIgnoreCase)
-                ? table.DisplayName
-                : $"{table.DisplayName} {idSuffix}";
+                ? table.DisplayName[..^idSuffix.Length]
+                : table.DisplayName;
         }
     }
 }

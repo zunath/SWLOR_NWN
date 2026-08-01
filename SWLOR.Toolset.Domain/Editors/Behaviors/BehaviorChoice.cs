@@ -29,6 +29,13 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         public string Display { get; }
 
         /// <summary>
+        /// Optional stable identifier shown beneath the friendly name. Resource-backed choices use
+        /// the same subdued monospace treatment as blueprint ResRefs instead of appending an opaque
+        /// ID to the builder-facing name.
+        /// </summary>
+        public string? Identifier { get; init; }
+
+        /// <summary>
         /// Optional secondary, builder-facing description shown by the shared searchable picker.
         /// Item choices use it for a compact stat line; choices without one retain the existing
         /// single-line presentation.

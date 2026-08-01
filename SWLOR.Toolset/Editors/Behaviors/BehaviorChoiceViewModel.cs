@@ -19,6 +19,10 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
         public string Display => Choice.Display;
 
+        public string? Identifier => Choice.Identifier;
+
+        public bool HasIdentifier => !string.IsNullOrWhiteSpace(Identifier);
+
         public string? Summary => Choice.Summary;
 
         public bool HasSummary => !string.IsNullOrWhiteSpace(Summary);

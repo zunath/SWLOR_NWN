@@ -21,11 +21,16 @@
     </StackPanel>
 
     <Button IsVisible="{Binding Compact, ElementName=Root}"
-            Content="{Binding SelectedChoiceDisplay}"
             Command="{Binding OpenSearchCommand}"
             HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Left"
-            ToolTip.Tip="Choose a value" />
+            ToolTip.Tip="Choose a value">
+      <StackPanel Spacing="2">
+        <TextBlock Text="{Binding SelectedChoiceDisplay}" TextTrimming="CharacterEllipsis" />
+        <TextBlock Text="{Binding SelectedChoiceIdentifier}" Classes="resref"
+                   IsVisible="{Binding HasSelectedChoiceIdentifier}" />
+      </StackPanel>
+    </Button>
 
     <StackPanel IsVisible="{Binding IsSearchExpanded}" Spacing="6">
       <!-- Leave a full scrollbar-width gutter plus breathing room inside the header. The Details
@@ -59,6 +64,8 @@
                         CommandParameter="{Binding}">
                   <StackPanel Spacing="2">
                     <TextBlock Text="{Binding Display}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Identifier}" Classes="resref"
+                               IsVisible="{Binding HasIdentifier}" />
                     <TextBlock Text="{Binding Summary}" Classes="dim" FontSize="10.5"
                                TextWrapping="Wrap" IsVisible="{Binding HasSummary}" />
                   </StackPanel>

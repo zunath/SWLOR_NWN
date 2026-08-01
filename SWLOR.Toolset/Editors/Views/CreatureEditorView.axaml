@@ -125,6 +125,9 @@
           <StackPanel Grid.Column="1" Spacing="2">
             <TextBlock Text="{Binding TablePicker.SelectedChoiceDisplay}"
                        FontWeight="SemiBold" TextWrapping="NoWrap" />
+            <TextBlock Text="{Binding TablePicker.SelectedChoiceIdentifier}" Classes="resref"
+                       TextWrapping="NoWrap"
+                       IsVisible="{Binding TablePicker.HasSelectedChoiceIdentifier}" />
             <TextBlock Text="{Binding ConfigurationSummary}" Classes="dim" FontSize="10.5" />
           </StackPanel>
         </Grid>

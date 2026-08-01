@@ -31,6 +31,10 @@ namespace SWLOR.Game.Server.Service
             Runtime.RegisterToken("player.gender.sir-madam", context => SelectGendered(context.Player, "sir", "madam"));
             Runtime.RegisterToken("player.gender.man-woman", context => SelectGendered(context.Player, "man", "woman"));
             Runtime.RegisterToken("player.race", context => ResolveRaceName(context.Player));
+            Runtime.RegisterToken("skyrace.record-holder", _ => ResolveModuleText("SWLOR_SKYRACE_RECORD_HOLDER", "Nobody"));
+            Runtime.RegisterToken("skyrace.record-time", _ => ResolveModuleText("SWLOR_SKYRACE_RECORD_TIME", "No time recorded"));
+            Runtime.RegisterToken("skyrace.entry-fee", _ => "50");
+            Runtime.RegisterToken("skyrace.prize", _ => "250");
             Runtime.RegisterAction("system.execute-owner-script", (context, arguments, _) =>
             {
                 if (arguments.Count == 0 || string.IsNullOrWhiteSpace(arguments[0]))
@@ -194,6 +198,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             ObjectPlugin.SetConversationPrivate(creature, true);
+        }
+
+        private static string ResolveModuleText(string variable, string fallback)
+        {
+            var value = GetLocalString(GetModule(), variable);
+            return string.IsNullOrWhiteSpace(value) ? fallback : value;
         }
 
         public static void Start(uint player, uint owner, string conversationId, uint uiTarget = OBJECT_INVALID)

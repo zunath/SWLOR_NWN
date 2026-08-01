@@ -16,7 +16,7 @@ namespace SWLOR.Toolset.Tests;
 
 /// <summary>
 /// Opening a conversation is a corpus-level contract: every Explorer row gets an editable NUI or
-/// legacy editor. Legacy dialog-context scripts may limit Preview, but never block authoring.
+/// native-exception editor. Ordinary module conversations must use the graph-native editor.
 /// </summary>
 public sealed class ConversationEditorOpeningTests
 {
@@ -44,13 +44,12 @@ public sealed class ConversationEditorOpeningTests
         routes.Should().NotContain(route => route.Kind == ConversationEditorRouteKind.Missing);
         routes.Should().OnlyContain(route => route.OpensEditor,
             "every authored conversation shown in Module Contents must open an editor");
-        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(320);
-        routes.Count(route => route.Kind == ConversationEditorRouteKind.LegacyDialog).Should().Be(17);
-        routes.Count(route => route.Kind == ConversationEditorRouteKind.LegacyException).Should().Be(9);
-        routes.Where(route => route.Kind == ConversationEditorRouteKind.LegacyException)
-            .Should().OnlyContain(route =>
-                !string.IsNullOrWhiteSpace(route.Reason) && route.Details.Count > 0,
-                "legacy-script conversations need an honest preview warning with useful details");
+        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(329);
+        routes.Count(route => route.Kind == ConversationEditorRouteKind.LegacyDialog).Should().Be(16);
+        routes.Count(route => route.Kind == ConversationEditorRouteKind.LegacyException).Should().Be(1);
+        routes.Single(route => route.Kind == ConversationEditorRouteKind.LegacyException).Path
+            .Should().EndWith("dmfi_universal.dlg.json",
+                "DMFI is the deliberate native NWN exception");
     }
 
     [Test]
@@ -112,20 +111,13 @@ public sealed class ConversationEditorOpeningTests
             var id = Path.GetFileName(path)[..^".dlg.json".Length];
             try
             {
-                var route = ConversationEditorRoute.Resolve(
-                    id,
-                    Path.Combine(graphDirectory, id + ".conversation.json"),
-                    path);
                 var editor = new ConversationEditorViewModel(
                     path,
                     id,
                     snippets,
                     null,
                     new OutputLogService(),
-                    new StubPrompts(),
-                    legacyPreviewNotice: route.Kind == ConversationEditorRouteKind.LegacyException
-                        ? "Legacy NWScript conditions are preserved."
-                        : null);
+                    new StubPrompts());
 
                 editor.LiveDialog.Should().NotBeNull(id);
                 editor.OnClose();
@@ -137,87 +129,41 @@ public sealed class ConversationEditorOpeningTests
         }
 
         failures.Should().BeEmpty(
-            "legacy NWScript affects preview fidelity, not whether the conversation can be edited");
+            "native exceptions must remain editable while their dedicated systems are retained");
     }
 
     [Test]
-    public async Task EditingLegacyConversationPreservesScriptsAndCustomTokens()
+    public void MigratedScriptConversationUsesTheNuiGraph()
     {
         const string id = "dt_barman_gen";
-        var source = Path.Combine(CorpusLocator.ModuleDirectory, "dlg", id + ".dlg.json");
-        var workingCopy = Path.Combine(Path.GetTempPath(), $"{id}-{Guid.NewGuid():N}.dlg.json");
-        File.Copy(source, workingCopy);
+        var graphPath = Path.Combine(
+            CorpusLocator.RepositoryRoot, "SWLOR.Game.Server", "ConversationData", id + ".conversation.json");
+        var route = ConversationEditorRoute.Resolve(
+            id,
+            graphPath,
+            Path.Combine(CorpusLocator.ModuleDirectory, "dlg", id + ".dlg.json"));
 
-        try
-        {
-            var before = DlgDocument.Load(workingCopy);
-            var conditionScripts = before.AllLinks()
-                .Select(link => link.Active)
-                .Where(script => !string.IsNullOrWhiteSpace(script))
-                .OrderBy(script => script, StringComparer.Ordinal)
-                .ToArray();
-            var actionScripts = before.Entries.Concat(before.Replies)
-                .Select(node => node.Script)
-                .Where(script => !string.IsNullOrWhiteSpace(script))
-                .OrderBy(script => script, StringComparer.Ordinal)
-                .ToArray();
-            var customTokens = System.Text.RegularExpressions.Regex
-                .Matches(File.ReadAllText(workingCopy), @"<CUSTOM\d+>")
-                .Select(match => match.Value)
-                .OrderBy(token => token, StringComparer.Ordinal)
-                .ToArray();
-
-            var editor = new ConversationEditorViewModel(
-                workingCopy,
-                id,
-                SnippetCatalog.Build(),
-                null,
-                new OutputLogService(),
-                new StubPrompts(),
-                legacyPreviewNotice: "Legacy NWScript conditions are preserved.");
-            editor.LineText += " ";
-
-            (await editor.TrySaveAsync()).Should().BeTrue();
-            editor.OnClose();
-
-            var after = DlgDocument.Load(workingCopy);
-            after.AllLinks()
-                .Select(link => link.Active)
-                .Where(script => !string.IsNullOrWhiteSpace(script))
-                .OrderBy(script => script, StringComparer.Ordinal)
-                .Should().Equal(conditionScripts);
-            after.Entries.Concat(after.Replies)
-                .Select(node => node.Script)
-                .Where(script => !string.IsNullOrWhiteSpace(script))
-                .OrderBy(script => script, StringComparer.Ordinal)
-                .Should().Equal(actionScripts);
-            System.Text.RegularExpressions.Regex
-                .Matches(File.ReadAllText(workingCopy), @"<CUSTOM\d+>")
-                .Select(match => match.Value)
-                .OrderBy(token => token, StringComparer.Ordinal)
-                .Should().Equal(customTokens);
-        }
-        finally
-        {
-            File.Delete(workingCopy);
-        }
+        route.Kind.Should().Be(ConversationEditorRouteKind.NuiGraph);
+        var editor = new NuiConversationEditorViewModel(
+            graphPath, id, SnippetCatalog.Build(), null, new OutputLogService(), new StubPrompts());
+        ConversationGraphValidator.Validate(editor.SnapshotGraph()).Should().BeEmpty();
+        editor.OnClose();
     }
 
     [AvaloniaTest]
-    public void LegacyScriptConversationRendersTheRealEditor()
+    public void MigratedScriptConversationRendersNuiEditorWithoutLegacyWarning()
     {
         const string id = "dt_barman_gen";
-        var path = Path.Combine(CorpusLocator.ModuleDirectory, "dlg", id + ".dlg.json");
-        var model = new ConversationEditorViewModel(
+        var path = Path.Combine(
+            CorpusLocator.RepositoryRoot, "SWLOR.Game.Server", "ConversationData", id + ".conversation.json");
+        var model = new NuiConversationEditorViewModel(
             path,
             id,
             SnippetCatalog.Build(),
             null,
             new OutputLogService(),
-            new StubPrompts(),
-            legacyPreviewNotice:
-                "This conversation uses legacy NWScript conditions. They stay attached and are saved unchanged.");
-        var view = new ConversationEditorView { DataContext = model };
+            new StubPrompts());
+        var view = new NuiConversationEditorView { DataContext = model };
         var window = new Window { Content = view, Width = 1100, Height = 760 };
         window.Show();
 
@@ -229,10 +175,39 @@ public sealed class ConversationEditorOpeningTests
                 .Select(block => block.Text ?? string.Empty)
                 .ToArray();
 
-            text.Should().Contain("LEGACY PREVIEW");
+            text.Should().NotContain(value => value.Contains("legacy", StringComparison.OrdinalIgnoreCase));
             text.Should().NotContain("CONVERSATION COULD NOT BE OPENED");
             view.GetVisualDescendants().OfType<TextBox>().Should().NotBeEmpty(
-                "dt_barman_gen must render editable conversation fields, not a refusal page");
+                "dt_barman_gen must render editable NUI graph fields");
+        }
+        finally
+        {
+            window.Close();
+            model.OnClose();
+        }
+    }
+
+    [AvaloniaTest]
+    public void NuiPreviewUsesHumanPortraitFallbackWithoutPlaceholderCopy()
+    {
+        const string id = "cz_receptionist";
+        var path = Path.Combine(
+            CorpusLocator.RepositoryRoot, "SWLOR.Game.Server", "ConversationData", id + ".conversation.json");
+        var model = new NuiConversationEditorViewModel(
+            path, id, SnippetCatalog.Build(), null, new OutputLogService(), new StubPrompts());
+        var view = new NuiConversationEditorView { DataContext = model };
+        var window = new Window { Content = view, Width = 1300, Height = 760 };
+        window.Show();
+
+        try
+        {
+            window.UpdateLayout();
+            model.PreviewPortraitSourceResref.Should().Be(NuiConversationEditorViewModel.DefaultPreviewPortraitResref);
+            view.GetVisualDescendants().OfType<TextBlock>().Select(block => block.Text ?? string.Empty)
+                .Should().NotContain(value =>
+                    value.Equals("PORTRAIT", StringComparison.OrdinalIgnoreCase) ||
+                    value.Contains("portrait supplied", StringComparison.OrdinalIgnoreCase));
+            view.GetVisualDescendants().OfType<Image>().Should().NotBeEmpty();
         }
         finally
         {

@@ -302,17 +302,7 @@
                                TextTrimming="CharacterEllipsis" />
                     <Border Grid.Row="1" Width="128" Height="200" Background="#101010"
                             BorderBrush="#3B3128" BorderThickness="1" HorizontalAlignment="Center">
-                      <Grid>
-                        <Image Source="{Binding PreviewPortrait}" Stretch="Fill"
-                               IsVisible="{Binding HasPreviewPortrait}" />
-                        <StackPanel IsVisible="{Binding ShowsPreviewPortraitPlaceholder}"
-                                    VerticalAlignment="Center" Margin="8" Spacing="8">
-                          <TextBlock Text="PORTRAIT" Foreground="#766B61" FontSize="14"
-                                     FontWeight="SemiBold" HorizontalAlignment="Center" />
-                          <TextBlock Text="{Binding PreviewPortraitHint}" Foreground="#766B61"
-                                     TextAlignment="Center" TextWrapping="Wrap" FontSize="11" />
-                        </StackPanel>
-                      </Grid>
+                      <Image Source="{Binding PreviewPortrait}" Stretch="Fill" />
                     </Border>
                   </Grid>
 

@@ -59,6 +59,37 @@ public sealed class DlgConversationMigratorTests
             issue.Message.Contains("open_train_store", StringComparison.Ordinal));
     }
 
+    [TestCase("dt_barman_gen")]
+    [TestCase("dt_barman_gen03")]
+    [TestCase("dt_cntr_magasin")]
+    [TestCase("dt_doc_velpo")]
+    [TestCase("q1_nikka_larson")]
+    [TestCase("quest_example")]
+    [TestCase("red_journal_mand")]
+    [TestCase("spawn_banner")]
+    [TestCase("zomb_telconv")]
+    public void Convert_TranslatesKnownModuleScriptsIntoNuiOperations(string id)
+    {
+        var result = DlgConversationMigrator.Convert(id, Load(id));
+
+        result.CanRunInNui.Should().BeTrue();
+        result.Issues.Should().NotContain(issue =>
+            issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException);
+        result.Graph.Nodes.Values.SelectMany(node => node.Text)
+            .Concat(result.Graph.Choices.Values.Select(choice => choice.Text))
+            .Should().NotContain(block => block.Text.Contains("<CUSTOM", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Test]
+    public void Convert_KeepsDmfiAsTheExplicitNativeException()
+    {
+        var result = DlgConversationMigrator.Convert("dmfi_universal", Load("dmfi_universal"));
+
+        result.CanRunInNui.Should().BeFalse();
+        result.Issues.Should().Contain(issue =>
+            issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException);
+    }
+
     [Test]
     public void GeneratedCorpus_ExactlyMatchesEverySafeAuthoredDialogAndEveryGraphValidates()
     {

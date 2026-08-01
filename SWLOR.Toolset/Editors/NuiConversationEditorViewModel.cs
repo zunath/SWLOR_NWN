@@ -19,6 +19,8 @@ namespace SWLOR.Toolset.Editors;
 /// </summary>
 public sealed partial class NuiConversationEditorViewModel : Document, IEditorDocument
 {
+    public const string DefaultPreviewPortraitResref = "po_hu_m_01_l";
+
     private readonly string _filePath;
     private readonly string _resRef;
     private readonly SnippetCatalog _snippets;
@@ -109,12 +111,10 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     private string _previewStatus = string.Empty;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasPreviewPortrait))]
-    [NotifyPropertyChangedFor(nameof(ShowsPreviewPortraitPlaceholder))]
     private Bitmap? _previewPortrait;
 
     [ObservableProperty]
-    private string _previewPortraitHint = string.Empty;
+    private string _previewPortraitSourceResref = DefaultPreviewPortraitResref;
 
     public NuiConversationEditorViewModel(
         string filePath,
@@ -186,9 +186,6 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     public bool IsDirty => Serialize(_graph) != _savedJson;
     public bool CanUndo => _undo.Count > 0;
     public bool CanRedo => _redo.Count > 0;
-    public bool HasPreviewPortrait => PreviewPortrait != null;
-    public bool ShowsPreviewPortraitPlaceholder => PreviewPortrait == null;
-
     /// <summary>
     /// Returns a deep copy suitable for background readers such as conversation search. The live
     /// graph stays owned by the UI thread.
@@ -998,11 +995,12 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     {
         var requestVersion = ++_portraitRequestVersion;
         PreviewPortrait = null;
-        PreviewPortraitHint = string.IsNullOrWhiteSpace(portraitResref)
-            ? "NPC portrait supplied in game"
+        portraitResref = string.IsNullOrWhiteSpace(portraitResref)
+            ? DefaultPreviewPortraitResref
             : portraitResref;
+        PreviewPortraitSourceResref = portraitResref;
 
-        if (_choicePreviews == null || string.IsNullOrWhiteSpace(portraitResref))
+        if (_choicePreviews == null)
             return;
 
         if (_choicePreviews.Cached(portraitResref, 128) is { } cached)
@@ -1019,6 +1017,16 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         var bitmap = await _choicePreviews!.ResolveAsync(portraitResref, 128).ConfigureAwait(true);
         if (_disposed || requestVersion != _portraitRequestVersion)
             return;
+
+        if (bitmap == null && !portraitResref.Equals(DefaultPreviewPortraitResref, StringComparison.OrdinalIgnoreCase))
+        {
+            portraitResref = DefaultPreviewPortraitResref;
+            bitmap = _choicePreviews.Cached(portraitResref, 128) ??
+                     await _choicePreviews.ResolveAsync(portraitResref, 128).ConfigureAwait(true);
+            if (_disposed || requestVersion != _portraitRequestVersion)
+                return;
+            PreviewPortraitSourceResref = portraitResref;
+        }
 
         PreviewPortrait = bitmap;
     }

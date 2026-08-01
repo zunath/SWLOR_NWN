@@ -21,9 +21,8 @@ public sealed record ConversationEditorRoute(
     IReadOnlyList<string> Details)
 {
     /// <summary>
-    /// Every valid authored conversation is editable. A legacy exception means only that Preview
-    /// cannot execute its dialog-context NWScript; it is not a reason to replace the editor with a
-    /// diagnostic document.
+    /// Every valid authored conversation is editable. A native exception such as DMFI remains in
+    /// the DLG editor while ordinary conversations use the graph-native editor.
     /// </summary>
     public bool OpensEditor => Kind != ConversationEditorRouteKind.Missing;
 

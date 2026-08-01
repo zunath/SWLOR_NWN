@@ -48,18 +48,6 @@
       </Grid>
     </Border>
 
-    <Border DockPanel.Dock="Top"
-            IsVisible="{Binding HasLegacyPreviewNotice}"
-            Background="#1B1710" BorderBrush="#8C6631" BorderThickness="0,0,0,1"
-            Padding="13,9">
-      <Grid ColumnDefinitions="Auto,*" ColumnSpacing="9">
-        <TextBlock Grid.Column="0" Text="LEGACY PREVIEW" Classes="label"
-                   Foreground="#D6A85C" VerticalAlignment="Top" />
-        <TextBlock Grid.Column="1" Text="{Binding LegacyPreviewNotice}"
-                   TextWrapping="Wrap" VerticalAlignment="Center" />
-      </Grid>
-    </Border>
-
     <!-- Validation is continuous. Only broken findings block save; deterministic fixes are offered. -->
     <Border DockPanel.Dock="Bottom" Background="{DynamicResource PanelBrush}"
             BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="0,1,0,0"

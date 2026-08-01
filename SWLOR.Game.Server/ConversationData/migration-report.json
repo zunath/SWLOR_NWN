@@ -10474,110 +10474,13 @@
   },
   {
     "ConversationId": "dt_barman_gen",
-    "Status": "RequiresLegacyException",
-    "Issues": [
-      {
-        "Severity": 1,
-        "Location": "entry 0",
-        "Message": "Uses custom action script 'race_price_token'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 0 -> reply 10",
-        "Message": "Uses custom condition script 'var_courreur_a_1'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 0 -> reply 5",
-        "Message": "Uses custom condition script 'var_courreur_a_0'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 0 -> reply 1",
-        "Message": "Uses custom condition script 'var_courreur_a_1'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 1",
-        "Message": "Uses custom action script 'desinscrit_race'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 2",
-        "Message": "Uses unsupported text token '<CUSTOM4000>'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 2",
-        "Message": "Uses unsupported text token '<CUSTOM4001>'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 4",
-        "Message": "Uses unsupported text token '<CUSTOM4003>'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 5",
-        "Message": "Uses unsupported text token '<CUSTOM4002>'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 5 -> reply 9",
-        "Message": "Uses custom condition script 'pc_a_50_or'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 6",
-        "Message": "Uses custom action script 'inscript_skyrace'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 10",
-        "Message": "Uses custom action script 'space_remove_hen'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 3",
-        "Message": "Uses custom action script 'race_record_toke'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 5 -> entry 8",
-        "Message": "Uses custom condition script 'var_encour_a_1'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 5 -> entry 7",
-        "Message": "Uses custom condition script 'var_skyracer_a_6'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 10 -> entry 9",
-        "Message": "Uses custom condition script 'var_skyracer_m_6'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 14",
-        "Message": "Uses custom action script 'launch_race'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 15",
-        "Message": "Uses custom action script 'ouvmag_bar_gen'."
-      }
-    ]
+    "Status": "Converted",
+    "Issues": []
   },
   {
     "ConversationId": "dt_barman_gen03",
-    "Status": "RequiresLegacyException",
-    "Issues": [
-      {
-        "Severity": 1,
-        "Location": "reply 1",
-        "Message": "Uses custom action script 'ouvmag_bar_gen'."
-      }
-    ]
+    "Status": "Converted",
+    "Issues": []
   },
   {
     "ConversationId": "dt_cantina002",
@@ -10629,55 +10532,13 @@
   },
   {
     "ConversationId": "dt_cntr_magasin",
-    "Status": "RequiresLegacyException",
-    "Issues": [
-      {
-        "Severity": 1,
-        "Location": "reply 0 -> entry 2",
-        "Message": "Uses custom condition script 'dt_test_canaille'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 1 -> entry 2",
-        "Message": "Uses custom condition script 'dt_test_canaille'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 3",
-        "Message": "Uses custom action script 'ouvmag_cntrbande'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 5",
-        "Message": "Uses custom action script 'ouvmag_cntrbnd_c'."
-      }
-    ]
+    "Status": "Converted",
+    "Issues": []
   },
   {
     "ConversationId": "dt_doc_velpo",
-    "Status": "RequiresLegacyException",
-    "Issues": [
-      {
-        "Severity": 1,
-        "Location": "entry 1",
-        "Message": "Uses custom action script 'doc_pc_mort_d_0'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 4 -> reply 5",
-        "Message": "Uses custom condition script 'pc_a_50_or'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 5",
-        "Message": "Uses custom action script 'doc_soigne_pc'."
-      },
-      {
-        "Severity": 1,
-        "Location": "opening -> entry 1",
-        "Message": "Uses custom condition script 'doc_pc_mort_a_1'."
-      }
-    ]
+    "Status": "Converted",
+    "Issues": []
   },
   {
     "ConversationId": "dt_gocorp_anchor",
@@ -11227,55 +11088,13 @@
   },
   {
     "ConversationId": "q1_nikka_larson",
-    "Status": "RequiresLegacyException",
-    "Issues": [
-      {
-        "Severity": 1,
-        "Location": "opening -> entry 2",
-        "Message": "Uses custom condition script 'q1_quest_eor_a_1'."
-      },
-      {
-        "Severity": 1,
-        "Location": "opening -> entry 1",
-        "Message": "Uses custom condition script 'q1_femme_eor_a_2'."
-      }
-    ]
+    "Status": "Converted",
+    "Issues": []
   },
   {
     "ConversationId": "quest_example",
-    "Status": "RequiresLegacyException",
-    "Issues": [
-      {
-        "Severity": 1,
-        "Location": "entry 0 -> reply 3",
-        "Message": "Uses custom condition script 'has_quest_1'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 0 -> reply 2",
-        "Message": "Uses custom condition script 'has_quest_2'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 0 -> reply 1",
-        "Message": "Uses custom condition script 'on_qst1_state_1'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 1 -> entry 2",
-        "Message": "Uses custom condition script 'on_qst1_state_2'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 2",
-        "Message": "Uses custom action script 'accept_quest_2'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 3",
-        "Message": "Uses custom action script 'accept_quest_1'."
-      }
-    ]
+    "Status": "Converted",
+    "Issues": []
   },
   {
     "ConversationId": "rawsewagesys",
@@ -11284,19 +11103,8 @@
   },
   {
     "ConversationId": "red_journal_mand",
-    "Status": "RequiresLegacyException",
-    "Issues": [
-      {
-        "Severity": 1,
-        "Location": "entry 0 -> reply 1",
-        "Message": "Uses custom condition script 'sc_journal_int'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 3 -> reply 8",
-        "Message": "Uses custom condition script 'sc_rng_journal'."
-      }
-    ]
+    "Status": "Converted",
+    "Issues": []
   },
   {
     "ConversationId": "refugee",
@@ -11616,124 +11424,8 @@
   },
   {
     "ConversationId": "spawn_banner",
-    "Status": "RequiresLegacyException",
-    "Issues": [
-      {
-        "Severity": 1,
-        "Location": "entry 0",
-        "Message": "Uses unsupported text token '<CUSTOM1000>'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 0",
-        "Message": "Uses unsupported text token '<CUSTOM999>'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 0",
-        "Message": "Uses unsupported text token '<CUSTOM1001>'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 0 -> reply 10",
-        "Message": "Uses custom condition script 'spawnb_cc_activ'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 0 -> reply 9",
-        "Message": "Uses custom condition script 'spawnb_cc_dactiv'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 0 -> reply 8",
-        "Message": "Uses custom condition script 'spawnb_cc_trck'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 0 -> reply 7",
-        "Message": "Uses custom condition script 'spawnb_cc_notrck'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 0 -> reply 6",
-        "Message": "Uses custom condition script 'spawnb_cc_dump'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 0 -> reply 5",
-        "Message": "Uses custom condition script 'spawnb_cc_nodump'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 1 -> reply 4",
-        "Message": "Uses custom condition script 'spawnb_cc_sdlog'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 1 -> reply 3",
-        "Message": "Uses custom condition script 'spawnb_cc_nsdlog'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 1 -> reply 2",
-        "Message": "Uses custom condition script 'spawnb_cc_sclog'."
-      },
-      {
-        "Severity": 1,
-        "Location": "entry 1 -> reply 1",
-        "Message": "Uses custom condition script 'spawnb_cc_nsclog'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 1",
-        "Message": "Uses custom action script 'spawnb_sc_snclog'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 2",
-        "Message": "Uses custom action script 'spawnb_sc_sclog'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 3",
-        "Message": "Uses custom action script 'spawnb_sc_nsdlog'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 4",
-        "Message": "Uses custom action script 'spawnb_sc_sdlog'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 5",
-        "Message": "Uses custom action script 'spawnb_sc_nodump'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 6",
-        "Message": "Uses custom action script 'spawnb_sc_dump'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 7",
-        "Message": "Uses custom action script 'spawnb_sc_notrck'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 8",
-        "Message": "Uses custom action script 'spawnb_sc_trck'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 9",
-        "Message": "Uses custom action script 'spawnb_sc_dactiv'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 10",
-        "Message": "Uses custom action script 'spawnb_sc_activ'."
-      }
-    ]
+    "Status": "Converted",
+    "Issues": []
   },
   {
     "ConversationId": "spy1",
@@ -14567,43 +14259,7 @@
   },
   {
     "ConversationId": "zomb_telconv",
-    "Status": "RequiresLegacyException",
-    "Issues": [
-      {
-        "Severity": 1,
-        "Location": "reply 5",
-        "Message": "Uses custom action script 'accept_quest_1'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 10",
-        "Message": "Uses custom action script 'tel_aban_station'."
-      },
-      {
-        "Severity": 1,
-        "Location": "reply 11",
-        "Message": "Uses custom action script 'finish_quest_1'."
-      },
-      {
-        "Severity": 1,
-        "Location": "opening -> entry 10",
-        "Message": "Uses custom condition script 'quest_done_1'."
-      },
-      {
-        "Severity": 1,
-        "Location": "opening -> entry 7",
-        "Message": "Uses custom condition script 'on_qst1_state_2'."
-      },
-      {
-        "Severity": 1,
-        "Location": "opening -> entry 5",
-        "Message": "Uses custom condition script 'on_qst1_state_1'."
-      },
-      {
-        "Severity": 1,
-        "Location": "opening -> entry 1",
-        "Message": "Uses custom condition script 'can_accept_1'."
-      }
-    ]
+    "Status": "Converted",
+    "Issues": []
   }
 ]

@@ -164,34 +164,6 @@
     ]
   },
   {
-    "ConversationId": "dt_barman_gen",
-    "Reasons": [
-      "Uses custom action script 'desinscrit_race'.",
-      "Uses custom action script 'inscript_skyrace'.",
-      "Uses custom action script 'launch_race'.",
-      "Uses custom action script 'ouvmag_bar_gen'.",
-      "Uses custom action script 'race_price_token'.",
-      "Uses custom action script 'race_record_toke'.",
-      "Uses custom action script 'space_remove_hen'.",
-      "Uses custom condition script 'pc_a_50_or'.",
-      "Uses custom condition script 'var_courreur_a_0'.",
-      "Uses custom condition script 'var_courreur_a_1'.",
-      "Uses custom condition script 'var_encour_a_1'.",
-      "Uses custom condition script 'var_skyracer_a_6'.",
-      "Uses custom condition script 'var_skyracer_m_6'.",
-      "Uses unsupported text token '<CUSTOM4000>'.",
-      "Uses unsupported text token '<CUSTOM4001>'.",
-      "Uses unsupported text token '<CUSTOM4002>'.",
-      "Uses unsupported text token '<CUSTOM4003>'."
-    ]
-  },
-  {
-    "ConversationId": "dt_barman_gen03",
-    "Reasons": [
-      "Uses custom action script 'ouvmag_bar_gen'."
-    ]
-  },
-  {
     "ConversationId": "dt_cantina002",
     "Reasons": [
       "Uses unsupported root script 'dial_end_drink'."
@@ -207,23 +179,6 @@
     "ConversationId": "dt_cantina010",
     "Reasons": [
       "Uses unsupported root script 'dial_end_drink'."
-    ]
-  },
-  {
-    "ConversationId": "dt_cntr_magasin",
-    "Reasons": [
-      "Uses custom action script 'ouvmag_cntrbande'.",
-      "Uses custom action script 'ouvmag_cntrbnd_c'.",
-      "Uses custom condition script 'dt_test_canaille'."
-    ]
-  },
-  {
-    "ConversationId": "dt_doc_velpo",
-    "Reasons": [
-      "Uses custom action script 'doc_pc_mort_d_0'.",
-      "Uses custom action script 'doc_soigne_pc'.",
-      "Uses custom condition script 'doc_pc_mort_a_1'.",
-      "Uses custom condition script 'pc_a_50_or'."
     ]
   },
   {
@@ -259,62 +214,9 @@
     ]
   },
   {
-    "ConversationId": "q1_nikka_larson",
-    "Reasons": [
-      "Uses custom condition script 'q1_femme_eor_a_2'.",
-      "Uses custom condition script 'q1_quest_eor_a_1'."
-    ]
-  },
-  {
-    "ConversationId": "quest_example",
-    "Reasons": [
-      "Uses custom action script 'accept_quest_1'.",
-      "Uses custom action script 'accept_quest_2'.",
-      "Uses custom condition script 'has_quest_1'.",
-      "Uses custom condition script 'has_quest_2'.",
-      "Uses custom condition script 'on_qst1_state_1'.",
-      "Uses custom condition script 'on_qst1_state_2'."
-    ]
-  },
-  {
-    "ConversationId": "red_journal_mand",
-    "Reasons": [
-      "Uses custom condition script 'sc_journal_int'.",
-      "Uses custom condition script 'sc_rng_journal'."
-    ]
-  },
-  {
     "ConversationId": "refugee",
     "Reasons": [
       "Uses custom action script 'at_002'."
-    ]
-  },
-  {
-    "ConversationId": "spawn_banner",
-    "Reasons": [
-      "Uses custom action script 'spawnb_sc_activ'.",
-      "Uses custom action script 'spawnb_sc_dactiv'.",
-      "Uses custom action script 'spawnb_sc_dump'.",
-      "Uses custom action script 'spawnb_sc_nodump'.",
-      "Uses custom action script 'spawnb_sc_notrck'.",
-      "Uses custom action script 'spawnb_sc_nsdlog'.",
-      "Uses custom action script 'spawnb_sc_sclog'.",
-      "Uses custom action script 'spawnb_sc_sdlog'.",
-      "Uses custom action script 'spawnb_sc_snclog'.",
-      "Uses custom action script 'spawnb_sc_trck'.",
-      "Uses custom condition script 'spawnb_cc_activ'.",
-      "Uses custom condition script 'spawnb_cc_dactiv'.",
-      "Uses custom condition script 'spawnb_cc_dump'.",
-      "Uses custom condition script 'spawnb_cc_nodump'.",
-      "Uses custom condition script 'spawnb_cc_notrck'.",
-      "Uses custom condition script 'spawnb_cc_nsclog'.",
-      "Uses custom condition script 'spawnb_cc_nsdlog'.",
-      "Uses custom condition script 'spawnb_cc_sclog'.",
-      "Uses custom condition script 'spawnb_cc_sdlog'.",
-      "Uses custom condition script 'spawnb_cc_trck'.",
-      "Uses unsupported text token '<CUSTOM1000>'.",
-      "Uses unsupported text token '<CUSTOM1001>'.",
-      "Uses unsupported text token '<CUSTOM999>'."
     ]
   },
   {
@@ -357,18 +259,6 @@
     "Reasons": [
       "Uses unsupported root script 'x2_im_cancel'.",
       "Uses unsupported root script 'x2_im_finished'."
-    ]
-  },
-  {
-    "ConversationId": "zomb_telconv",
-    "Reasons": [
-      "Uses custom action script 'accept_quest_1'.",
-      "Uses custom action script 'finish_quest_1'.",
-      "Uses custom action script 'tel_aban_station'.",
-      "Uses custom condition script 'can_accept_1'.",
-      "Uses custom condition script 'on_qst1_state_1'.",
-      "Uses custom condition script 'on_qst1_state_2'.",
-      "Uses custom condition script 'quest_done_1'."
     ]
   }
 ]

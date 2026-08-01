@@ -21,7 +21,7 @@ public sealed class ConversationGraphCorpusTests
                            name.EndsWith(".conversation.json", StringComparison.OrdinalIgnoreCase))
             .ToArray();
 
-        resources.Should().HaveCount(320);
+        resources.Should().HaveCount(329);
         foreach (var resource in resources)
         {
             using var stream = assembly.GetManifestResourceStream(resource);

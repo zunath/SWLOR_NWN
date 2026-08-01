@@ -1,3 +1,4 @@
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Editors.Creatures;
@@ -11,6 +12,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action<CreatureAbilityEntryViewModel> _remove;
         private bool _loading;
+        private int _iconRequested;
 
         public CreatureAbilityInfo Info { get; }
         public string Name => Info.Name;
@@ -27,6 +29,9 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         [ObservableProperty]
         private decimal _effectiveLevel;
+
+        [ObservableProperty]
+        private Bitmap? _icon;
 
         public CreatureAbilityEntryViewModel(
             CreatureAbilityInfo info,
@@ -83,5 +88,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         [RelayCommand]
         private void Remove() => _remove(this);
+
+        internal bool TryBeginIconRequest() => Interlocked.Exchange(ref _iconRequested, 1) == 0;
     }
 }

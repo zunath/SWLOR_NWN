@@ -40,6 +40,18 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
                     foreach (var (perk, detail) in perks)
                     {
                         var id = Convert.ToInt32(perk);
+                        var grantedFeatDescriptions = detail.PerkLevels
+                            .OrderBy(pair => pair.Key)
+                            .SelectMany(pair => pair.Value.GrantedFeats.Select(feat => new
+                            {
+                                FeatId = (int)feat,
+                                pair.Value.Description
+                            }))
+                            .Where(item => !string.IsNullOrWhiteSpace(item.Description))
+                            .GroupBy(item => item.FeatId)
+                            .ToDictionary(
+                                group => group.Key,
+                                group => group.Last().Description!.Trim());
                         result[id] = new CreaturePerkInfo(
                             id,
                             string.IsNullOrWhiteSpace(detail.Name) ? Humanize(perk.ToString()) : detail.Name,
@@ -47,7 +59,8 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
                             detail.PerkLevels.Values
                                 .SelectMany(level => level.GrantedFeats)
                                 .Select(feat => (int)feat)
-                                .ToHashSet());
+                                .ToHashSet(),
+                            grantedFeatDescriptions);
                     }
                 }
                 catch (Exception ex) when (ex is TargetInvocationException or InvalidOperationException or ArgumentException)

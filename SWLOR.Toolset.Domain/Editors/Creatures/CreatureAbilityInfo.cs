@@ -14,7 +14,7 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
         public string IntendedFor => IsNpcIntended ? "NPC-intended" : "Player-intended";
 
         public string Classification => string.IsNullOrWhiteSpace(SkillName)
-            ? $"{IntendedFor} · No skill"
-            : $"{IntendedFor} · {SkillName}";
+            ? $"{IntendedFor} \u00b7 No skill"
+            : $"{IntendedFor} \u00b7 {SkillName}";
     }
 }

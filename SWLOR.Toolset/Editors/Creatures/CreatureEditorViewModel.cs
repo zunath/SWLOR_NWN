@@ -166,7 +166,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<string, string>? resolveItemName = null,
             Func<string, int, int, int,
                 Task<IReadOnlyList<CreatureEquipmentChoice>>>? equipmentSearch = null,
-            Func<IReadOnlyList<AppearanceOption>>? appearanceOptionsLoader = null)
+            Func<IReadOnlyList<AppearanceOption>>? appearanceOptionsLoader = null,
+            Func<int, string?>? abilityIcon = null)
         {
             _store = new CreatureValueStore(creature);
             _runEdit = runEdit;
@@ -181,7 +182,11 @@ namespace SWLOR.Toolset.Editors.Creatures
 
             Equipment = new CreatureEquipmentSet(_store, filePath);
             Stats = new CreatureStatsViewModel(_store, Equipment, RunEdit);
-            Abilities = new CreatureAbilitiesViewModel(_store, RunEdit);
+            Abilities = new CreatureAbilitiesViewModel(
+                _store,
+                RunEdit,
+                choicePreviews: _choicePreviews,
+                iconResolver: abilityIcon);
             Ai = new CreatureAiViewModel(_store, RunEdit);
             Loot = new CreatureLootViewModel(
                 _store, RunEdit, openDefinition: openLootDefinition, resolveItemName: resolveItemName);

@@ -1,7 +1,11 @@
 using System.Collections.ObjectModel;
+using System.Collections.Concurrent;
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
+using SWLOR.Toolset.Editors.Behaviors;
 
 namespace SWLOR.Toolset.Editors.Creatures
 {
@@ -46,12 +50,13 @@ namespace SWLOR.Toolset.Editors.Creatures
         // build, not part of opening a UTC. Keep one shared background task so opening the first
         // creature does not block the UI thread and subsequent editors reuse the same result.
         private static readonly Lazy<Task<CreatureAbilityCatalogData>> SharedCatalog = new(
-            () => Task.Run(() => new CreatureAbilityCatalogData(
-                CreatureAbilityCatalog.Build(),
-                CreaturePerkCatalog.Build())));
+            () => Task.Run(BuildSharedCatalog));
         private readonly CreatureValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<Task<CreatureAbilityCatalogData>>? _catalogLoader;
+        private readonly ChoicePreviewService? _choicePreviews;
+        private readonly Func<int, string?>? _iconResolver;
+        private readonly ConcurrentDictionary<int, Task<string?>> _iconResRefs = new();
         private IReadOnlyList<CreatureAbilityInfo> _catalog = Array.Empty<CreatureAbilityInfo>();
         private IReadOnlyDictionary<int, CreaturePerkInfo> _perks =
             new Dictionary<int, CreaturePerkInfo>();
@@ -61,7 +66,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private bool _disposed;
 
         public ObservableCollection<CreatureAbilityEntryViewModel> Assigned { get; } = new();
-        public ObservableCollection<CreatureAbilityInfo> Matching { get; } = new();
+        public ObservableCollection<CreatureAbilityChoiceViewModel> Matching { get; } = new();
         public IReadOnlyList<CreatureAbilityAudienceFilter> AudienceFilters => SharedAudienceFilters;
         public ObservableCollection<CreatureAbilitySkillFilter> SkillFilters { get; } = new();
 
@@ -105,10 +110,14 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<string, Action, bool> runEdit,
             IReadOnlyList<CreatureAbilityInfo>? catalog = null,
             IReadOnlyDictionary<int, CreaturePerkInfo>? perks = null,
-            Func<Task<CreatureAbilityCatalogData>>? catalogLoader = null)
+            Func<Task<CreatureAbilityCatalogData>>? catalogLoader = null,
+            ChoicePreviewService? choicePreviews = null,
+            Func<int, string?>? iconResolver = null)
         {
             _store = store;
             _runEdit = runEdit;
+            _choicePreviews = choicePreviews;
+            _iconResolver = iconResolver;
             SkillFilters.Add(new CreatureAbilitySkillFilter(null, "All skills"));
             _selectedAudienceFilter = AudienceFilters.Single(
                 filter => filter.Value == CreatureAbilityAudience.Npc);
@@ -339,8 +348,65 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             var end = Math.Min(Matching.Count + PageSize, _matches.Count);
             for (var index = Matching.Count; index < end; index++)
-                Matching.Add(_matches[index]);
+                Matching.Add(new CreatureAbilityChoiceViewModel(_matches[index]));
             NotifyMatchStateChanged();
+        }
+
+        public Task EnsureIconAsync(CreatureAbilityChoiceViewModel row)
+        {
+            if (!row.TryBeginIconRequest())
+                return Task.CompletedTask;
+
+            return LoadIconAsync(row.FeatId, icon => row.Icon = icon);
+        }
+
+        public Task EnsureIconAsync(CreatureAbilityEntryViewModel row)
+        {
+            if (!row.TryBeginIconRequest())
+                return Task.CompletedTask;
+
+            return LoadIconAsync(row.FeatId, icon => row.Icon = icon);
+        }
+
+        private async Task LoadIconAsync(int featId, Action<Bitmap> apply)
+        {
+            if (_choicePreviews == null || _iconResolver == null || _disposed)
+                return;
+
+            try
+            {
+                // The first feat.2da parse can be noticeable. Resolve it off the UI thread and let
+                // the shared preview service bound image decoding to its existing worker pool.
+                var resource = await _iconResRefs.GetOrAdd(
+                    featId,
+                    id => Task.Run(() => _iconResolver(id))).ConfigureAwait(true);
+                if (_disposed || string.IsNullOrWhiteSpace(resource))
+                    return;
+
+                var choice = new BehaviorChoice(
+                    featId,
+                    string.Empty,
+                    resource);
+                if (_choicePreviews.Cached(choice, 48, cropTransparentCanvas: true) is { } cached)
+                {
+                    apply(cached);
+                    return;
+                }
+
+                await _choicePreviews.RequestAsync(
+                    choice,
+                    48,
+                    icon =>
+                    {
+                        if (!_disposed)
+                            apply(icon);
+                    },
+                    cropTransparentCanvas: true).ConfigureAwait(true);
+            }
+            catch
+            {
+                // A missing or malformed icon must not prevent the ability from being edited.
+            }
         }
 
         /// <summary>
@@ -358,7 +424,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             {
                 Matching.RemoveAt(index);
                 if (Matching.Count < _matches.Count)
-                    Matching.Add(_matches[Matching.Count]);
+                    Matching.Add(new CreatureAbilityChoiceViewModel(_matches[Matching.Count]));
             }
 
             NotifyMatchStateChanged();
@@ -384,7 +450,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             var targetVisible = wasFullyPublished ? Matching.Count + 1 : Matching.Count;
             if (index < targetVisible)
             {
-                Matching.Insert(index, info);
+                Matching.Insert(index, new CreatureAbilityChoiceViewModel(info));
                 if (Matching.Count > targetVisible)
                     Matching.RemoveAt(Matching.Count - 1);
             }
@@ -396,6 +462,12 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             var byName = StringComparer.OrdinalIgnoreCase.Compare(left.Name, right.Name);
             return byName != 0 ? byName : left.FeatId.CompareTo(right.FeatId);
+        }
+
+        private static CreatureAbilityCatalogData BuildSharedCatalog()
+        {
+            var perks = CreaturePerkCatalog.Build();
+            return new CreatureAbilityCatalogData(CreatureAbilityCatalog.Build(perks), perks);
         }
 
         private void NotifyMatchStateChanged()

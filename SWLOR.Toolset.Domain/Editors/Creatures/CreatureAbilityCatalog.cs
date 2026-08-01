@@ -11,9 +11,15 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
     {
         private const string NpcAbilityNamespace = "SWLOR.Game.Server.Feature.AbilityDefinition.NPC";
 
-        public static IReadOnlyList<CreatureAbilityInfo> Build()
+        public static IReadOnlyList<CreatureAbilityInfo> Build(
+            IReadOnlyDictionary<int, CreaturePerkInfo>? perks = null)
         {
-            var result = new Dictionary<int, CreatureAbilityInfo>();
+            perks ??= CreaturePerkCatalog.Build();
+            var descriptions = perks.Values
+                .SelectMany(perk => perk.GrantedFeatDescriptions ?? new Dictionary<int, string>())
+                .GroupBy(pair => pair.Key)
+                .ToDictionary(group => group.Key, group => group.Last().Value);
+            var definitions = new Dictionary<int, (AbilityDetail Detail, Type Type, string Name)>();
             var assembly = typeof(IAbilityListDefinition).Assembly;
             foreach (var type in assembly.GetTypes()
                          .Where(type => typeof(IAbilityListDefinition).IsAssignableFrom(type) &&
@@ -27,25 +33,10 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
                     foreach (var (feat, detail) in definition.BuildAbilities())
                     {
                         var featId = Convert.ToInt32(feat);
-                        var perkId = Convert.ToInt32(detail.EffectiveLevelPerkType);
-                        var perkName = detail.EffectiveLevelPerkType == PerkType.Invalid
-                            ? string.Empty
-                            : Humanize(detail.EffectiveLevelPerkType.ToString());
-                        var skillId = Convert.ToInt32(detail.SkillType);
-                        var skillName = detail.SkillType == SkillType.Invalid
-                            ? string.Empty
-                            : typeof(SkillType).GetField(detail.SkillType.ToString())?
-                                .GetCustomAttribute<SkillAttribute>()?.Name ??
-                              Humanize(detail.SkillType.ToString());
-                        result[featId] = new CreatureAbilityInfo(
-                            featId,
-                            string.IsNullOrWhiteSpace(detail.Name) ? Humanize(feat.ToString()) : detail.Name,
-                            Describe(detail),
-                            perkId,
-                            perkName,
-                            skillId,
-                            skillName,
-                            type.Namespace == NpcAbilityNamespace);
+                        definitions[featId] = (
+                            detail,
+                            type,
+                            string.IsNullOrWhiteSpace(detail.Name) ? Humanize(feat.ToString()) : detail.Name);
                     }
                 }
                 catch (Exception ex) when (ex is TargetInvocationException or InvalidOperationException or ArgumentException)
@@ -54,48 +45,97 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
                 }
             }
 
-            return result.Values
+            // NPC abilities are separate feats that mimic player abilities. Reuse the player-facing
+            // perk description for those NPC feats instead of showing implementation metadata.
+            foreach (var (featId, definition) in definitions)
+            {
+                if (definition.Detail.MimicrySourceFeat == FeatType.Invalid ||
+                    !descriptions.TryGetValue(
+                        Convert.ToInt32(definition.Detail.MimicrySourceFeat),
+                        out var description))
+                    continue;
+
+                descriptions.TryAdd(featId, description);
+            }
+
+            return definitions.Select(pair =>
+                {
+                    var (featId, definition) = pair;
+                    var detail = definition.Detail;
+                    var perkId = Convert.ToInt32(detail.EffectiveLevelPerkType);
+                    var perkName = detail.EffectiveLevelPerkType == PerkType.Invalid
+                        ? string.Empty
+                        : Humanize(detail.EffectiveLevelPerkType.ToString());
+                    var skillId = Convert.ToInt32(detail.SkillType);
+                    var skillName = detail.SkillType == SkillType.Invalid
+                        ? string.Empty
+                        : typeof(SkillType).GetField(detail.SkillType.ToString())?
+                            .GetCustomAttribute<SkillAttribute>()?.Name ??
+                          Humanize(detail.SkillType.ToString());
+                    return new CreatureAbilityInfo(
+                        featId,
+                        definition.Name,
+                        descriptions.TryGetValue(featId, out var description)
+                            ? Concise(description)
+                            : DescribeFallback(detail),
+                        perkId,
+                        perkName,
+                        skillId,
+                        skillName,
+                        definition.Type.Namespace == NpcAbilityNamespace);
+                })
                 .OrderBy(info => info.Name, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(info => info.FeatId)
                 .ToList();
         }
 
-        private static string Describe(AbilityDetail detail)
+        private static string DescribeFallback(AbilityDetail detail)
         {
-            var parts = new List<string>();
+            string scope;
             if (detail.Targeting != null && detail.Targeting.Shape != AbilityTargetingShapeType.None)
             {
-                var shape = detail.Targeting.Shape switch
+                scope = detail.Targeting.Shape switch
                 {
-                    AbilityTargetingShapeType.Sphere => $"{detail.Targeting.SizeX:0.##}m radius",
-                    AbilityTargetingShapeType.HSphere => $"{detail.Targeting.SizeX:0.##}m radius",
+                    AbilityTargetingShapeType.Sphere =>
+                        $"Affects enemies in a {detail.Targeting.SizeX:0.##}m radius.",
+                    AbilityTargetingShapeType.HSphere =>
+                        $"Affects enemies in a {detail.Targeting.SizeX:0.##}m radius.",
                     AbilityTargetingShapeType.Rect =>
-                        $"{detail.Targeting.SizeX:0.##}m × {detail.Targeting.SizeY:0.##}m line",
+                        $"Hits enemies in a {detail.Targeting.SizeX:0.##}m \u00d7 {detail.Targeting.SizeY:0.##}m line.",
                     AbilityTargetingShapeType.Cone =>
-                        $"{detail.Targeting.SizeX:0.##}m × {detail.Targeting.SizeY:0.##}m cone",
-                    _ => Humanize(detail.Targeting.Shape.ToString())
+                        $"Hits enemies in a {detail.Targeting.SizeX:0.##}m \u00d7 {detail.Targeting.SizeY:0.##}m cone.",
+                    _ => $"Uses a {Humanize(detail.Targeting.Shape.ToString()).ToLowerInvariant()} area."
                 };
-                parts.Add(shape);
             }
             else if (detail.IsSingleTargetAbility || detail.RequiresTarget)
             {
-                parts.Add("single target");
+                scope = detail.IsHostileAbility ? "Hits one target." : "Affects one target.";
             }
             else
             {
-                parts.Add("self or passive");
+                scope = "Affects the creature itself or grants a passive effect.";
             }
 
-            if (detail.CombatImpactDamageAbility != AbilityType.Invalid)
-                parts.Add($"{Humanize(detail.CombatImpactDamageAbility.ToString())} damage scaling");
-            if (detail.RecastGroup != RecastGroup.Invalid)
-                parts.Add($"{Humanize(detail.RecastGroup.ToString())} recast");
-            if (detail.IsHostileAbility)
-                parts.Add("hostile");
-            if (detail.EffectiveLevelPerkType != PerkType.Invalid)
-                parts.Add($"level from {Humanize(detail.EffectiveLevelPerkType.ToString())}");
+            if (detail.CombatImpactDamageAbility == AbilityType.Invalid)
+                return scope;
 
-            return string.Join(" · ", parts);
+            return $"{scope} Damage scales with " +
+                   $"{Humanize(detail.CombatImpactDamageAbility.ToString())}.";
+        }
+
+        private static string Concise(string description)
+        {
+            const int maximumLength = 180;
+            var normalized = System.Text.RegularExpressions.Regex.Replace(description, "\\s+", " ").Trim();
+            if (normalized.Length <= maximumLength)
+                return normalized;
+
+            var sentenceEnd = normalized.LastIndexOfAny(['.', '!', '?'], maximumLength - 1);
+            if (sentenceEnd >= maximumLength / 2)
+                return normalized[..(sentenceEnd + 1)];
+
+            var wordEnd = normalized.LastIndexOf(' ', maximumLength - 1);
+            return $"{normalized[..Math.Max(1, wordEnd)]}\u2026";
         }
 
         private static string Humanize(string value) =>

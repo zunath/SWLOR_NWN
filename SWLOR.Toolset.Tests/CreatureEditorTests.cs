@@ -463,8 +463,60 @@ namespace SWLOR.Toolset.Tests
 
             action.Should().NotThrow(
                 "Avalonia can briefly clear a ComboBox selection while the Abilities tab is realized");
-            viewModel.Matching.Should().ContainSingle().Which.Should().Be(npcAbility,
+            viewModel.Matching.Should().ContainSingle().Which.Info.Should().Be(npcAbility,
                 "a transient null selection should retain the NPC and all-skills defaults");
+        }
+
+        [Test]
+        public void AbilityCatalog_UsesConciseGameplayDescriptionsWithoutRecastMetadata()
+        {
+            var catalog = CreatureAbilityCatalog.Build(CreaturePerkCatalog.Build());
+
+            catalog.Should().NotBeEmpty();
+            catalog.Should().OnlyContain(info => !string.IsNullOrWhiteSpace(info.Description));
+            catalog.Should().OnlyContain(info =>
+                !info.Description.Contains("recast", StringComparison.OrdinalIgnoreCase),
+                "the picker should describe what an ability does rather than repeat recast metadata");
+            catalog.Should().Contain(info =>
+                info.Description.StartsWith("Hits ", StringComparison.Ordinal) ||
+                info.Description.StartsWith("Affects ", StringComparison.Ordinal),
+                "abilities without a registered perk description should still explain their target or area");
+        }
+
+        [Test]
+        public async Task AbilityIcons_AreResolvedLazilyAndOnlyOncePerPublishedRow()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "ability_icon", "Ability Icon"));
+            var store = new CreatureValueStore(document.Root);
+            var resolverCalls = 0;
+            var ability = new CreatureAbilityInfo(
+                42, "Icon Ability", "A useful effect description.", 0, "", 0, "", true);
+            using var viewModel = new CreatureAbilitiesViewModel(
+                store,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                [ability],
+                new Dictionary<int, CreaturePerkInfo>(),
+                choicePreviews: new ChoicePreviewService(null),
+                iconResolver: _ =>
+                {
+                    resolverCalls++;
+                    return null;
+                });
+
+            resolverCalls.Should().Be(0,
+                "opening the Abilities tab must not synchronously resolve icons for its result page");
+            var row = viewModel.Matching.Should().ContainSingle().Which;
+
+            await viewModel.EnsureIconAsync(row);
+            await viewModel.EnsureIconAsync(row);
+
+            resolverCalls.Should().Be(1,
+                "a realized row should share its single asynchronous icon lookup across repeated loads");
         }
 
         [Test]
@@ -493,7 +545,7 @@ namespace SWLOR.Toolset.Tests
             viewModel.Matching.CollectionChanged += (_, change) => changes.Add(change.Action);
             var selected = viewModel.Matching[5];
 
-            viewModel.AddCommand.Execute(selected);
+            viewModel.AddCommand.Execute(selected.Info);
 
             changes.Should().NotContain(NotifyCollectionChangedAction.Reset,
                 "assigning one ability must not reconstruct the published result page");
@@ -506,7 +558,7 @@ namespace SWLOR.Toolset.Tests
 
             changes.Should().NotContain(NotifyCollectionChangedAction.Reset,
                 "removing one assignment must return only its sorted result row");
-            viewModel.Matching.Should().Contain(selected);
+            viewModel.Matching.Should().Contain(row => row.Info == selected.Info);
             viewModel.LoadMoreCommand.Execute(null);
             viewModel.Matching.Should().HaveCount(75);
             viewModel.CanLoadMore.Should().BeFalse();
@@ -562,7 +614,7 @@ namespace SWLOR.Toolset.Tests
             abilities.IsLoaded.Should().BeTrue();
             abilities.SelectedSkillFilter.Should().BeSameAs(initialSkillSelection,
                 "loading the catalog must not clear the ComboBox's active All skills row");
-            abilities.Matching.Should().ContainSingle().Which.Should().Be(ability);
+            abilities.Matching.Should().ContainSingle().Which.Info.Should().Be(ability);
             lootLoads.Should().Be(0, "opening Abilities must not load Loot");
 
             await loot.EnsureLoadedAsync();
@@ -1198,7 +1250,7 @@ namespace SWLOR.Toolset.Tests
                     "both ability filters should receive the full card width");
                 var abilityButton = view.GetVisualDescendants()
                     .OfType<Button>()
-                    .FirstOrDefault(button => button.DataContext is CreatureAbilityInfo);
+                    .FirstOrDefault(button => button.DataContext is CreatureAbilityChoiceViewModel);
                 abilityButton.Should().NotBeNull("registered abilities must render as actionable choices");
                 abilityButton!.IsEnabled.Should().BeTrue();
                 abilityButton.Command.Should().NotBeNull();

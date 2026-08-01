@@ -5,7 +5,6 @@
              xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
              xmlns:items="using:SWLOR.Toolset.Editors.Items"
              xmlns:editors="using:SWLOR.Toolset.Editors"
-             xmlns:cdom="using:SWLOR.Toolset.Domain.Editors.Creatures"
              x:Class="SWLOR.Toolset.Editors.Creatures.CreatureEditorView"
              x:DataType="creatures:CreatureEditorViewModel">
 
@@ -93,13 +92,19 @@
     </DataTemplate>
 
     <DataTemplate DataType="creatures:CreatureAbilityEntryViewModel">
-      <Border Classes="card" Margin="0,0,0,8" Padding="12">
-        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
-          <TextBlock Text="{Binding Name}" Classes="section" />
-          <Button Grid.Column="1" Content="Remove" Command="{Binding RemoveCommand}" />
-          <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Description}"
+      <Border Classes="card" Margin="0,0,0,8" Padding="12" Loaded="OnAbilityRowLoaded">
+        <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="10" RowDefinitions="Auto,Auto,Auto">
+          <Border Grid.RowSpan="3" Width="36" Height="36" VerticalAlignment="Top"
+                  Background="{DynamicResource PanelSunkenBrush}"
+                  BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="3">
+            <Image Source="{Binding Icon}" Stretch="Uniform" Margin="2" />
+          </Border>
+          <TextBlock Grid.Column="1" Text="{Binding Name}" Classes="section" />
+          <Button Grid.Column="2" Content="Remove" Command="{Binding RemoveCommand}" />
+          <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Description}"
                      Classes="dim" TextWrapping="Wrap" Margin="0,4,0,4" />
-          <Grid Grid.Row="2" Grid.ColumnSpan="2" ColumnDefinitions="*,116" ColumnSpacing="8"
+          <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                ColumnDefinitions="*,116" ColumnSpacing="8"
                 IsVisible="{Binding HasEffectiveLevel}">
             <StackPanel>
               <TextBlock Text="{Binding EffectiveLevelLabel}" />
@@ -542,16 +547,24 @@
                     </Style>
                   </ListBox.Styles>
                   <ListBox.ItemTemplate>
-                    <DataTemplate DataType="cdom:CreatureAbilityInfo">
+                    <DataTemplate DataType="creatures:CreatureAbilityChoiceViewModel">
                       <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Margin="0,2"
+                              Loaded="OnAbilityRowLoaded"
                               Command="{Binding $parent[ListBox].((creatures:CreatureAbilitiesViewModel)DataContext).AddCommand}"
-                              CommandParameter="{Binding}">
-                        <StackPanel>
-                          <TextBlock Text="{Binding Name}" />
-                          <TextBlock Text="{Binding Classification}" Classes="mono" FontSize="9.5" />
-                          <TextBlock Text="{Binding Description}" Classes="dim" FontSize="10"
-                                     TextWrapping="Wrap" MaxWidth="290" />
-                        </StackPanel>
+                              CommandParameter="{Binding Info}">
+                        <Grid ColumnDefinitions="40,*" ColumnSpacing="8">
+                          <Border Width="32" Height="32" VerticalAlignment="Top"
+                                  Background="{DynamicResource PanelSunkenBrush}"
+                                  BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="3">
+                            <Image Source="{Binding Icon}" Stretch="Uniform" Margin="2" />
+                          </Border>
+                          <StackPanel Grid.Column="1">
+                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Text="{Binding Classification}" Classes="mono" FontSize="9.5" />
+                            <TextBlock Text="{Binding Description}" Classes="dim" FontSize="10"
+                                       TextWrapping="Wrap" MaxWidth="250" />
+                          </StackPanel>
+                        </Grid>
                       </Button>
                     </DataTemplate>
                   </ListBox.ItemTemplate>

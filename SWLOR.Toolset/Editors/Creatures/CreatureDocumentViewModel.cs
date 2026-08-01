@@ -57,7 +57,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<string, string>? resolveItemName = null,
             Func<string, int, int, int,
                 Task<IReadOnlyList<CreatureEquipmentChoice>>>? equipmentSearch = null,
-            Func<IReadOnlyList<AppearanceOption>>? appearanceOptionsLoader = null)
+            Func<IReadOnlyList<AppearanceOption>>? appearanceOptionsLoader = null,
+            Func<int, string?>? abilityIcon = null)
         {
             _log = log;
             _prompts = prompts;
@@ -85,7 +86,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 colorPalettes,
                 resolveItemName,
                 equipmentSearch,
-                appearanceOptionsLoader);
+                appearanceOptionsLoader,
+                abilityIcon);
             UpdateTitle();
         }
 

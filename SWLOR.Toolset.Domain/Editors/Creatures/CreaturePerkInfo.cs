@@ -5,5 +5,6 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
         int Id,
         string Name,
         int MaximumLevel,
-        IReadOnlySet<int>? GrantedFeatIds = null);
+        IReadOnlySet<int>? GrantedFeatIds = null,
+        IReadOnlyDictionary<int, string>? GrantedFeatDescriptions = null);
 }

@@ -1376,7 +1376,8 @@ namespace SWLOR.Toolset.Editors
                 ArmorDyeSwatches(),
                 itemResRef => LoadMerchantItem(itemResRef)?.Name ?? itemResRef,
                 SearchCreatureEquipmentItems,
-                _appearances == null ? null : CreatureAppearanceOptions);
+                _appearances == null ? null : CreatureAppearanceOptions,
+                CreatureAbilityIcon);
             editor.Closed += closed => _openCreatureEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -2489,6 +2490,13 @@ namespace SWLOR.Toolset.Editors
 
         private Behaviors.ChoicePreviewService ChoicePreviews() =>
             _choicePreviews ??= new Behaviors.ChoicePreviewService(_resourceIndex, _thumbnails, _vfxPreviews);
+
+        private string? CreatureAbilityIcon(int featId)
+        {
+            return _twoDaService?.TryGetTable("feat", out var feats) == true
+                ? feats?.GetString(featId, "ICON")?.Trim()
+                : null;
+        }
 
         private string? PreviewCreatureAudio(BehaviorChoice choice)
         {

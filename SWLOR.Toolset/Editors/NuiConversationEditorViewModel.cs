@@ -64,9 +64,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsMerchant))]
-    [NotifyPropertyChangedFor(nameof(IsQuestGiver))]
     [NotifyPropertyChangedFor(nameof(IsConversation))]
-    [NotifyPropertyChangedFor(nameof(OutlineTitle))]
     private ConversationBehaviorOption? _selectedBehavior;
 
     [ObservableProperty]
@@ -159,10 +157,6 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
             "Merchant",
             "Greeting and shop choice; Goodbye is always supplied."));
         BehaviorOptions.Add(new ConversationBehaviorOption(
-            ConversationBehaviorKind.QuestGiver,
-            "Quest giver",
-            "Ordered quest moments with checks and outcomes."));
-        BehaviorOptions.Add(new ConversationBehaviorOption(
             ConversationBehaviorKind.Conversation,
             "Conversation",
             "Flexible NPC lines, player choices, branches, and loops."));
@@ -185,10 +179,8 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
 
     public string ResRef => _resRef;
     public bool IsMerchant => SelectedBehavior?.Kind == ConversationBehaviorKind.Merchant;
-    public bool IsQuestGiver => SelectedBehavior?.Kind == ConversationBehaviorKind.QuestGiver;
     public bool IsConversation => SelectedBehavior?.Kind == ConversationBehaviorKind.Conversation;
     public bool IsGeneral => !IsMerchant;
-    public string OutlineTitle => IsQuestGiver ? "Quest moments" : "Opening lines";
     public bool HasSelectedLine => CurrentNode != null;
     public bool HasSelectedChoice => SelectedChoice != null;
     public bool HasSelectedTreeRow => SelectedTreeRow is { IsMissing: false };
@@ -1440,8 +1432,6 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
             .ToArray();
         if (actionKeys.Contains("action-open-store", StringComparer.OrdinalIgnoreCase))
             return ConversationBehaviorKind.Merchant;
-        if (actionKeys.Any(key => key.Contains("quest", StringComparison.OrdinalIgnoreCase)))
-            return ConversationBehaviorKind.QuestGiver;
         return ConversationBehaviorKind.Conversation;
     }
 

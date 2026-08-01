@@ -269,6 +269,17 @@ public sealed class NuiConversationEditorViewRenderTests
     }
 
     [Test]
+    public void NuiEditorOffersOnlyBehaviorChoicesWithDistinctAuthoringSurfaces()
+    {
+        var viewModel = OpenEditor();
+
+        viewModel.BehaviorOptions.Select(option => option.Name).Should().Equal("Merchant", "Conversation");
+        viewModel.BehaviorOptions.Should().NotContain(option => option.Kind == ConversationBehaviorKind.QuestGiver);
+        viewModel.SelectedBehavior!.Kind.Should().Be(ConversationBehaviorKind.Conversation,
+            "quest snippets are authored directly in the general conversation graph editor");
+    }
+
+    [Test]
     public void TreeOrderingCommandsChangeTheRuntimeEvaluationOrder()
     {
         var viewModel = OpenEditor();

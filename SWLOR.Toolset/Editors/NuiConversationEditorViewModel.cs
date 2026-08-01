@@ -36,6 +36,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     private string _savedJson;
     private string? _selectedNodeId;
     private ConversationLink? _selectedOpeningLink;
+    private ConversationLink? _selectedIncomingNodeLink;
     private ConversationChoiceLink? _selectedChoiceLink;
     private bool _loading;
     private bool _closeApproved;
@@ -49,6 +50,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     public ObservableCollection<ConversationBehaviorOption> BehaviorOptions { get; } = new();
     public ObservableCollection<DynamicTextTokenOption> DynamicTextTokens { get; } = new();
     public ObservableCollection<NuiConversationOpeningRow> OpeningLines { get; } = new();
+    public ObservableCollection<NuiConversationTreeRow> TreeRows { get; } = new();
     public ObservableCollection<NuiConversationTextBlockRow> TextBlocks { get; } = new();
     public ObservableCollection<NuiConversationChoiceRow> Choices { get; } = new();
     public ObservableCollection<GraphSnippetEditorViewModel> Conditions { get; } = new();
@@ -71,6 +73,18 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
 
     [ObservableProperty]
     private NuiConversationChoiceRow? _selectedChoice;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSelectedTreeRow))]
+    [NotifyPropertyChangedFor(nameof(IsNpcTreeRowSelected))]
+    [NotifyPropertyChangedFor(nameof(IsPlayerTreeRowSelected))]
+    [NotifyPropertyChangedFor(nameof(SelectedTreeRowTitle))]
+    [NotifyPropertyChangedFor(nameof(SelectedTreeRowHelp))]
+    [NotifyPropertyChangedFor(nameof(ConditionSectionTitle))]
+    [NotifyPropertyChangedFor(nameof(ConditionSectionHelp))]
+    [NotifyPropertyChangedFor(nameof(ActionSectionTitle))]
+    [NotifyPropertyChangedFor(nameof(ActionSectionHelp))]
+    private NuiConversationTreeRow? _selectedTreeRow;
 
     [ObservableProperty]
     private SnippetDescriptor? _conditionToAdd;
@@ -176,6 +190,29 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     public string OutlineTitle => IsQuestGiver ? "Quest moments" : "Opening lines";
     public bool HasSelectedLine => CurrentNode != null;
     public bool HasSelectedChoice => SelectedChoice != null;
+    public bool HasSelectedTreeRow => SelectedTreeRow is { IsMissing: false };
+    public bool IsNpcTreeRowSelected => SelectedTreeRow?.IsNpc == true;
+    public bool IsPlayerTreeRowSelected => SelectedTreeRow?.IsPlayer == true;
+    public string SelectedTreeRowTitle => SelectedTreeRow?.IsMissing == true
+        ? "Missing route"
+        : IsPlayerTreeRowSelected ? "Player response" : "NPC line";
+    public string SelectedTreeRowHelp => SelectedTreeRow?.IsMissing == true
+        ? "Remove this route or repair its target in the conversation source."
+        : IsPlayerTreeRowSelected
+            ? "Edit what the player can say and what happens after they choose it."
+            : "Edit what the NPC says and what must be true for this route to appear.";
+    public string ConditionSectionTitle => IsPlayerTreeRowSelected
+        ? "Show this response when…"
+        : "Show this line when…";
+    public string ConditionSectionHelp => Conditions.Count == 0
+        ? "Always shown. Add a check only when this route needs a restriction."
+        : "Every check below must pass. They run from top to bottom.";
+    public string ActionSectionTitle => IsPlayerTreeRowSelected
+        ? "When the player selects it…"
+        : "When this line appears…";
+    public string ActionSectionHelp => Actions.Count == 0
+        ? "Nothing else happens."
+        : "These actions run from top to bottom.";
     public string ActionScopeHelp => SelectedChoice == null
         ? "Outcomes run top-to-bottom when this NPC line appears."
         : "Outcomes run top-to-bottom after the player picks this choice.";
@@ -212,7 +249,8 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         if (_loading || value == null)
             return;
         _selectedOpeningLink = value.Link;
-        SelectNode(value.Node.Id);
+        _selectedIncomingNodeLink = value.Link;
+        SelectNode(value.Node.Id, value.Link);
     }
 
     partial void OnSelectedChoiceChanged(NuiConversationChoiceRow? value)
@@ -223,6 +261,13 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         RebuildOperations();
         OnPropertyChanged(nameof(HasSelectedChoice));
         OnPropertyChanged(nameof(ActionScopeHelp));
+    }
+
+    partial void OnSelectedTreeRowChanged(NuiConversationTreeRow? value)
+    {
+        if (_loading || value == null || value.IsMissing)
+            return;
+        ApplyTreeSelection(value);
     }
 
     partial void OnSpeakerNameChanged(string value) => EditNode(node => node.SpeakerName = value ?? string.Empty);
@@ -256,9 +301,12 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         Edit(() =>
         {
             var node = CreateNode("New NPC line");
-            _graph.EntryPoints.Add(new ConversationLink { TargetNodeId = node.Id });
+            var link = new ConversationLink { TargetNodeId = node.Id };
+            _graph.EntryPoints.Add(link);
             _selectedNodeId = node.Id;
-            _selectedOpeningLink = _graph.EntryPoints[^1];
+            _selectedOpeningLink = link;
+            _selectedIncomingNodeLink = link;
+            _selectedChoiceLink = null;
         });
     }
 
@@ -326,6 +374,58 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     private void MoveChoiceDown(NuiConversationChoiceRow? row) => MoveChoice(row, 1);
 
     [RelayCommand]
+    private void MoveTreeRowUp(NuiConversationTreeRow? row) => MoveTreeRow(row, -1);
+
+    [RelayCommand]
+    private void MoveTreeRowDown(NuiConversationTreeRow? row) => MoveTreeRow(row, 1);
+
+    [RelayCommand]
+    private void RemoveTreeRow(NuiConversationTreeRow? row)
+    {
+        if (row == null)
+            return;
+
+        if (row.IsPlayer && row.ParentNode != null && row.ChoiceLink != null && row.Choice != null)
+        {
+            Edit(() =>
+            {
+                row.ParentNode.Choices.Remove(row.ChoiceLink);
+                _selectedChoiceLink = null;
+                var stillUsed = _graph.Nodes.Values.SelectMany(node => node.Choices)
+                    .Any(link => link.ChoiceId == row.Choice.Id);
+                if (!stillUsed)
+                    _graph.Choices.Remove(row.Choice.Id);
+                SelectNearestTreeContext(row.ParentNode.Id, row.ParentNodeLink);
+            });
+            return;
+        }
+
+        if (row.IsPlayer || row.NodeLink == null)
+            return;
+        if (row.IsEntryPoint)
+        {
+            if (_graph.EntryPoints.Count <= 1)
+                return;
+            Edit(() =>
+            {
+                _graph.EntryPoints.Remove(row.NodeLink);
+                SelectFirstOpeningContext();
+            });
+            return;
+        }
+
+        if (row.ParentChoice == null)
+            return;
+        Edit(() =>
+        {
+            row.ParentChoice.Next.Remove(row.NodeLink);
+            row.ParentChoice.EndsConversation = row.ParentChoice.Next.Count == 0;
+            _selectedChoiceLink = null;
+            SelectFirstOpeningContext();
+        });
+    }
+
+    [RelayCommand]
     private void AddFollowUp(NuiConversationChoiceRow? row)
     {
         if (row == null)
@@ -334,9 +434,11 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         {
             var node = CreateNode("New NPC line");
             row.Choice.EndsConversation = false;
-            row.Choice.Next.Add(new ConversationLink { TargetNodeId = node.Id });
+            var link = new ConversationLink { TargetNodeId = node.Id };
+            row.Choice.Next.Add(link);
             _selectedNodeId = node.Id;
             _selectedOpeningLink = null;
+            _selectedIncomingNodeLink = link;
             _selectedChoiceLink = null;
         });
     }
@@ -348,7 +450,8 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         if (next != null && _graph.Nodes.ContainsKey(next.TargetNodeId))
         {
             _selectedOpeningLink = null;
-            SelectNode(next.TargetNodeId);
+            _selectedIncomingNodeLink = next;
+            SelectNode(next.TargetNodeId, next);
         }
     }
 
@@ -573,6 +676,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         _undo.Push(before);
         _redo.Clear();
         Validate();
+        RefreshTreeDisplay();
         ShowSelectedNodeInPreview();
         NotifyHistoryChanged();
     }
@@ -589,6 +693,9 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         _loading = true;
         try
         {
+            var selectedTreeKey = SelectedTreeRow?.Key;
+            var selectedChoiceId = SelectedTreeRow?.Choice?.Id;
+            var selectedParentNodeId = SelectedTreeRow?.ParentNode?.Id;
             var selectedOpeningIndex = _selectedOpeningLink == null ? -1 : _graph.EntryPoints.IndexOf(_selectedOpeningLink);
             OpeningLines.Clear();
             for (var index = 0; index < _graph.EntryPoints.Count; index++)
@@ -603,8 +710,28 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
                 var first = OpeningLines.FirstOrDefault();
                 _selectedNodeId = first?.Node.Id;
                 _selectedOpeningLink = first?.Link;
+                _selectedIncomingNodeLink = first?.Link;
+                _selectedChoiceLink = null;
                 selectedOpeningIndex = 0;
             }
+
+            RebuildTreeRows();
+            var selectedTreeRow = TreeRows.FirstOrDefault(row =>
+                                      row.IsPlayer && ReferenceEquals(row.ChoiceLink, _selectedChoiceLink))
+                                  ?? TreeRows.FirstOrDefault(row =>
+                                      row.IsPlayer &&
+                                      row.Choice?.Id == selectedChoiceId &&
+                                      row.ParentNode?.Id == selectedParentNodeId)
+                                  ?? TreeRows.FirstOrDefault(row =>
+                                      row.IsNpc &&
+                                      row.Node?.Id == _selectedNodeId &&
+                                      ReferenceEquals(row.NodeLink, _selectedIncomingNodeLink))
+                                  ?? TreeRows.FirstOrDefault(row => row.Key == selectedTreeKey)
+                                  ?? TreeRows.FirstOrDefault(row => row.IsNpc && row.Node?.Id == _selectedNodeId)
+                                  ?? TreeRows.FirstOrDefault(row => !row.IsMissing);
+            SelectedTreeRow = selectedTreeRow;
+            if (selectedTreeRow != null && !selectedTreeRow.IsMissing)
+                ApplyTreeSelectionContext(selectedTreeRow);
 
             SelectedOpening = selectedOpeningIndex >= 0 && selectedOpeningIndex < OpeningLines.Count
                 ? OpeningLines[selectedOpeningIndex]
@@ -619,6 +746,140 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
             _loading = false;
         }
         NotifyHistoryChanged();
+    }
+
+    private void RebuildTreeRows()
+    {
+        TreeRows.Clear();
+        var expandedNodes = new HashSet<string>(StringComparer.Ordinal);
+        for (var index = 0; index < _graph.EntryPoints.Count; index++)
+        {
+            AddTreeNodeBranch(
+                _graph.EntryPoints[index],
+                parentChoice: null,
+                depth: 0,
+                key: $"entry:{index}",
+                index,
+                _graph.EntryPoints.Count,
+                isEntryPoint: true,
+                expandedNodes);
+        }
+    }
+
+    private void AddTreeNodeBranch(
+        ConversationLink link,
+        ConversationChoice? parentChoice,
+        int depth,
+        string key,
+        int index,
+        int siblingCount,
+        bool isEntryPoint,
+        ISet<string> expandedNodes)
+    {
+        if (!_graph.Nodes.TryGetValue(link.TargetNodeId, out var node))
+        {
+            TreeRows.Add(NuiConversationTreeRow.ForMissingTarget(
+                key,
+                depth,
+                index,
+                siblingCount,
+                link,
+                parentChoice,
+                isEntryPoint));
+            return;
+        }
+
+        var isReference = !expandedNodes.Add(node.Id);
+        TreeRows.Add(NuiConversationTreeRow.ForNpc(
+            key,
+            depth,
+            index,
+            siblingCount,
+            node,
+            link,
+            parentChoice,
+            isEntryPoint,
+            isReference));
+        if (isReference)
+            return;
+
+        for (var choiceIndex = 0; choiceIndex < node.Choices.Count; choiceIndex++)
+        {
+            var choiceLink = node.Choices[choiceIndex];
+            if (!_graph.Choices.TryGetValue(choiceLink.ChoiceId, out var choice))
+                continue;
+
+            var choiceKey = $"{key}/choice:{choiceIndex}";
+            TreeRows.Add(NuiConversationTreeRow.ForPlayer(
+                choiceKey,
+                depth + 1,
+                choiceIndex,
+                node.Choices.Count,
+                node,
+                link,
+                isEntryPoint,
+                choice,
+                choiceLink));
+
+            for (var nextIndex = 0; nextIndex < choice.Next.Count; nextIndex++)
+            {
+                AddTreeNodeBranch(
+                    choice.Next[nextIndex],
+                    choice,
+                    depth + 2,
+                    $"{choiceKey}/next:{nextIndex}",
+                    nextIndex,
+                    choice.Next.Count,
+                    isEntryPoint: false,
+                    expandedNodes);
+            }
+        }
+    }
+
+    private void RefreshTreeDisplay()
+    {
+        foreach (var row in TreeRows)
+            row.RefreshDisplay();
+        OnPropertyChanged(nameof(ConditionSectionHelp));
+        OnPropertyChanged(nameof(ActionSectionHelp));
+    }
+
+    private void ApplyTreeSelection(NuiConversationTreeRow row)
+    {
+        _loading = true;
+        try
+        {
+            ApplyTreeSelectionContext(row);
+            SelectedOpening = _selectedOpeningLink == null
+                ? null
+                : OpeningLines.FirstOrDefault(opening => ReferenceEquals(opening.Link, _selectedOpeningLink));
+            RebuildSelectedLine();
+        }
+        finally
+        {
+            _loading = false;
+        }
+        ShowSelectedNodeInPreview();
+    }
+
+    private void ApplyTreeSelectionContext(NuiConversationTreeRow row)
+    {
+        if (row.IsNpc && row.Node != null && row.NodeLink != null)
+        {
+            _selectedNodeId = row.Node.Id;
+            _selectedIncomingNodeLink = row.NodeLink;
+            _selectedOpeningLink = row.IsEntryPoint ? row.NodeLink : null;
+            _selectedChoiceLink = null;
+            return;
+        }
+
+        if (row.IsPlayer && row.ParentNode != null && row.ChoiceLink != null)
+        {
+            _selectedNodeId = row.ParentNode.Id;
+            _selectedIncomingNodeLink = row.ParentNodeLink;
+            _selectedOpeningLink = row.ParentNodeIsEntryPoint ? row.ParentNodeLink : null;
+            _selectedChoiceLink = row.ChoiceLink;
+        }
     }
 
     private void RebuildSelectedLine()
@@ -641,7 +902,13 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         {
             var link = node.Choices[index];
             if (_graph.Choices.TryGetValue(link.ChoiceId, out var choice))
-                Choices.Add(new NuiConversationChoiceRow(link, choice, index, node.Choices.Count, EditValue));
+                Choices.Add(new NuiConversationChoiceRow(
+                    link,
+                    choice,
+                    index,
+                    node.Choices.Count,
+                    EditValue,
+                    structuralEdit: Edit));
         }
         SelectedChoice = _selectedChoiceLink == null
             ? null
@@ -676,50 +943,73 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         }
 
         var actionDestination = CurrentActionDestination();
-        if (actionDestination == null)
-            return;
-        foreach (var action in actionDestination)
+        if (actionDestination != null)
         {
-            var snippet = _snippets.Find(action.Key);
-            if (snippet == null)
-                continue;
-            var canRunOnce = SnippetActionPolicy.CanRunOncePerPlayer(action.Key);
-            Actions.Add(new GraphSnippetEditorViewModel(
-                snippet,
-                action.Arguments,
-                _argumentOptions,
-                EditValue,
-                row => Edit(() => actionDestination.Remove(action)),
-                onceMarker: canRunOnce ? action.OncePerPlayerId : string.Empty,
-                setOnceMarker: canRunOnce ? value => action.OncePerPlayerId = value : null));
+            foreach (var action in actionDestination)
+            {
+                var snippet = _snippets.Find(action.Key);
+                if (snippet == null)
+                    continue;
+                var canRunOnce = SnippetActionPolicy.CanRunOncePerPlayer(action.Key);
+                Actions.Add(new GraphSnippetEditorViewModel(
+                    snippet,
+                    action.Arguments,
+                    _argumentOptions,
+                    EditValue,
+                    row => Edit(() => actionDestination.Remove(action)),
+                    onceMarker: canRunOnce ? action.OncePerPlayerId : string.Empty,
+                    setOnceMarker: canRunOnce ? value => action.OncePerPlayerId = value : null));
+            }
         }
+        OnPropertyChanged(nameof(ConditionSectionHelp));
+        OnPropertyChanged(nameof(ActionSectionHelp));
     }
 
     private IList<ConversationCondition>? CurrentConditionDestination()
     {
         if (_selectedChoiceLink != null)
             return _selectedChoiceLink.Conditions;
-        return _selectedOpeningLink?.Conditions;
+        return _selectedIncomingNodeLink?.Conditions;
     }
 
     private IList<ConversationAction>? CurrentActionDestination()
     {
-        if (SelectedChoice != null)
-            return SelectedChoice.Choice.Actions;
+        if (_selectedChoiceLink != null &&
+            _graph.Choices.TryGetValue(_selectedChoiceLink.ChoiceId, out var choice))
+            return choice.Actions;
         return CurrentNode?.OnEnterActions;
     }
 
-    private void SelectNode(string nodeId)
+    private void SelectNode(string nodeId, ConversationLink? incomingLink = null)
     {
         if (!_graph.Nodes.ContainsKey(nodeId))
             return;
+        var treeRow = TreeRows.FirstOrDefault(row =>
+                          row.IsNpc &&
+                          row.Node?.Id == nodeId &&
+                          (incomingLink == null || ReferenceEquals(row.NodeLink, incomingLink)))
+                      ?? TreeRows.FirstOrDefault(row => row.IsNpc && row.Node?.Id == nodeId);
+        if (treeRow != null)
+        {
+            if (ReferenceEquals(SelectedTreeRow, treeRow))
+                ApplyTreeSelection(treeRow);
+            else
+                SelectedTreeRow = treeRow;
+            return;
+        }
         _selectedNodeId = nodeId;
+        _selectedIncomingNodeLink = incomingLink ?? FindIncomingNodeLink(nodeId);
         _selectedChoiceLink = null;
         _loading = true;
         RebuildSelectedLine();
         _loading = false;
         ShowSelectedNodeInPreview();
     }
+
+    private ConversationLink? FindIncomingNodeLink(string nodeId) =>
+        _graph.EntryPoints.FirstOrDefault(link => link.TargetNodeId == nodeId)
+        ?? _graph.Choices.Values.SelectMany(choice => choice.Next)
+            .FirstOrDefault(link => link.TargetNodeId == nodeId);
 
     private void MoveOpening(NuiConversationOpeningRow? opening, int direction)
     {
@@ -749,6 +1039,61 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
             CurrentNode.Choices.Insert(target, row.Link);
             _selectedChoiceLink = row.Link;
         });
+    }
+
+    private void MoveTreeRow(NuiConversationTreeRow? row, int direction)
+    {
+        if (row == null)
+            return;
+        var target = row.Index + direction;
+        if (target < 0 || target >= row.SiblingCount)
+            return;
+
+        if (row.IsPlayer && row.ParentNode != null && row.ChoiceLink != null)
+        {
+            Edit(() =>
+            {
+                row.ParentNode.Choices.RemoveAt(row.Index);
+                row.ParentNode.Choices.Insert(target, row.ChoiceLink);
+                _selectedNodeId = row.ParentNode.Id;
+                _selectedIncomingNodeLink = row.ParentNodeLink;
+                _selectedOpeningLink = row.ParentNodeIsEntryPoint ? row.ParentNodeLink : null;
+                _selectedChoiceLink = row.ChoiceLink;
+            });
+            return;
+        }
+
+        if (row.IsPlayer || row.NodeLink == null)
+            return;
+        var siblings = row.IsEntryPoint ? _graph.EntryPoints : row.ParentChoice?.Next;
+        if (siblings == null)
+            return;
+        Edit(() =>
+        {
+            siblings.RemoveAt(row.Index);
+            siblings.Insert(target, row.NodeLink);
+            _selectedNodeId = row.Node?.Id;
+            _selectedIncomingNodeLink = row.NodeLink;
+            _selectedOpeningLink = row.IsEntryPoint ? row.NodeLink : null;
+            _selectedChoiceLink = null;
+        });
+    }
+
+    private void SelectNearestTreeContext(string nodeId, ConversationLink? incomingLink)
+    {
+        _selectedNodeId = nodeId;
+        _selectedIncomingNodeLink = incomingLink;
+        _selectedOpeningLink = _graph.EntryPoints.FirstOrDefault(link => ReferenceEquals(link, incomingLink));
+        _selectedChoiceLink = null;
+    }
+
+    private void SelectFirstOpeningContext()
+    {
+        var first = _graph.EntryPoints.FirstOrDefault(link => _graph.Nodes.ContainsKey(link.TargetNodeId));
+        _selectedNodeId = first?.TargetNodeId;
+        _selectedIncomingNodeLink = first;
+        _selectedOpeningLink = first;
+        _selectedChoiceLink = null;
     }
 
     private void EnsureMerchantStructure()

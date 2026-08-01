@@ -9,6 +9,219 @@ using SWLOR.Toolset.Domain.GameData.GameCode;
 
 namespace SWLOR.Toolset.Editors;
 
+public enum NuiConversationTreeRowKind
+{
+    NpcLine,
+    PlayerChoice,
+    MissingTarget
+}
+
+/// <summary>
+/// A flattened row in the conversation tree. The row keeps the exact graph link it represents so
+/// checks and ordering are edited on the route where they run, including nested NPC lines.
+/// </summary>
+public sealed partial class NuiConversationTreeRow : ObservableObject
+{
+    private static readonly IBrush NpcAccent = new SolidColorBrush(Color.FromRgb(222, 105, 113));
+    private static readonly IBrush PlayerAccent = new SolidColorBrush(Color.FromRgb(91, 159, 255));
+    private static readonly IBrush MissingAccent = new SolidColorBrush(Color.FromRgb(232, 178, 91));
+
+    private NuiConversationTreeRow(
+        string key,
+        NuiConversationTreeRowKind kind,
+        int depth,
+        int index,
+        int siblingCount,
+        ConversationNode? node,
+        ConversationChoice? choice,
+        ConversationLink? nodeLink,
+        ConversationChoiceLink? choiceLink,
+        ConversationNode? parentNode,
+        ConversationLink? parentNodeLink,
+        bool parentNodeIsEntryPoint,
+        ConversationChoice? parentChoice,
+        bool isEntryPoint,
+        bool isReference,
+        string missingTargetId)
+    {
+        Key = key;
+        Kind = kind;
+        Depth = depth;
+        Index = index;
+        SiblingCount = siblingCount;
+        Node = node;
+        Choice = choice;
+        NodeLink = nodeLink;
+        ChoiceLink = choiceLink;
+        ParentNode = parentNode;
+        ParentNodeLink = parentNodeLink;
+        ParentNodeIsEntryPoint = parentNodeIsEntryPoint;
+        ParentChoice = parentChoice;
+        IsEntryPoint = isEntryPoint;
+        IsReference = isReference;
+        MissingTargetId = missingTargetId;
+    }
+
+    public static NuiConversationTreeRow ForNpc(
+        string key,
+        int depth,
+        int index,
+        int siblingCount,
+        ConversationNode node,
+        ConversationLink nodeLink,
+        ConversationChoice? parentChoice,
+        bool isEntryPoint,
+        bool isReference) =>
+        new(
+            key,
+            NuiConversationTreeRowKind.NpcLine,
+            depth,
+            index,
+            siblingCount,
+            node,
+            null,
+            nodeLink,
+            null,
+            null,
+            null,
+            false,
+            parentChoice,
+            isEntryPoint,
+            isReference,
+            string.Empty);
+
+    public static NuiConversationTreeRow ForPlayer(
+        string key,
+        int depth,
+        int index,
+        int siblingCount,
+        ConversationNode parentNode,
+        ConversationLink parentNodeLink,
+        bool parentNodeIsEntryPoint,
+        ConversationChoice choice,
+        ConversationChoiceLink choiceLink) =>
+        new(
+            key,
+            NuiConversationTreeRowKind.PlayerChoice,
+            depth,
+            index,
+            siblingCount,
+            null,
+            choice,
+            null,
+            choiceLink,
+            parentNode,
+            parentNodeLink,
+            parentNodeIsEntryPoint,
+            null,
+            false,
+            false,
+            string.Empty);
+
+    public static NuiConversationTreeRow ForMissingTarget(
+        string key,
+        int depth,
+        int index,
+        int siblingCount,
+        ConversationLink nodeLink,
+        ConversationChoice? parentChoice,
+        bool isEntryPoint) =>
+        new(
+            key,
+            NuiConversationTreeRowKind.MissingTarget,
+            depth,
+            index,
+            siblingCount,
+            null,
+            null,
+            nodeLink,
+            null,
+            null,
+            null,
+            false,
+            parentChoice,
+            isEntryPoint,
+            false,
+            nodeLink.TargetNodeId);
+
+    public string Key { get; }
+    public NuiConversationTreeRowKind Kind { get; }
+    public int Depth { get; }
+    public int Index { get; }
+    public int SiblingCount { get; }
+    public ConversationNode? Node { get; }
+    public ConversationChoice? Choice { get; }
+    public ConversationLink? NodeLink { get; }
+    public ConversationChoiceLink? ChoiceLink { get; }
+    public ConversationNode? ParentNode { get; }
+    public ConversationLink? ParentNodeLink { get; }
+    public bool ParentNodeIsEntryPoint { get; }
+    public ConversationChoice? ParentChoice { get; }
+    public bool IsEntryPoint { get; }
+    public bool IsReference { get; }
+    public string MissingTargetId { get; }
+
+    public bool IsNpc => Kind == NuiConversationTreeRowKind.NpcLine;
+    public bool IsPlayer => Kind == NuiConversationTreeRowKind.PlayerChoice;
+    public bool IsMissing => Kind == NuiConversationTreeRowKind.MissingTarget;
+    public bool CanMoveUp => Index > 0;
+    public bool CanMoveDown => Index + 1 < SiblingCount;
+    public double IndentWidth => Depth * 30d;
+    public IBrush AccentBrush => Kind switch
+    {
+        NuiConversationTreeRowKind.NpcLine => NpcAccent,
+        NuiConversationTreeRowKind.PlayerChoice => PlayerAccent,
+        _ => MissingAccent
+    };
+
+    public string KindLabel => Kind switch
+    {
+        NuiConversationTreeRowKind.NpcLine => IsEntryPoint ? $"OPENING {Index + 1}" : "NPC",
+        NuiConversationTreeRowKind.PlayerChoice when Choice?.IsAutomatic == true => "CONTINUE",
+        NuiConversationTreeRowKind.PlayerChoice => "PLAYER",
+        _ => "MISSING"
+    };
+
+    public string Text => Kind switch
+    {
+        NuiConversationTreeRowKind.NpcLine => NuiConversationText.Summarize(Node?.Text ?? []),
+        NuiConversationTreeRowKind.PlayerChoice => Choice?.Text.Text ?? string.Empty,
+        _ => $"Missing NPC line '{MissingTargetId}'"
+    };
+
+    public string Details
+    {
+        get
+        {
+            if (IsMissing)
+                return "This route points to a line that no longer exists.";
+
+            var checks = IsNpc ? NodeLink?.Conditions.Count ?? 0 : ChoiceLink?.Conditions.Count ?? 0;
+            var actions = IsNpc ? Node?.OnEnterActions.Count ?? 0 : Choice?.Actions.Count ?? 0;
+            var parts = new List<string>
+            {
+                checks == 0 ? "always shown" : checks == 1 ? "1 check" : $"{checks} checks"
+            };
+            if (actions > 0)
+                parts.Add(actions == 1 ? "1 action" : $"{actions} actions");
+            if (Choice?.EndsConversation == true)
+                parts.Add("ends conversation");
+            else if (Choice?.Next.Count > 1)
+                parts.Add($"{Choice.Next.Count} next lines");
+            if (IsReference)
+                parts.Add("shared or looping line");
+            return string.Join("  •  ", parts);
+        }
+    }
+
+    public void RefreshDisplay()
+    {
+        OnPropertyChanged(nameof(KindLabel));
+        OnPropertyChanged(nameof(Text));
+        OnPropertyChanged(nameof(Details));
+    }
+}
+
 public sealed class NuiConversationOpeningRow
 {
     public NuiConversationOpeningRow(ConversationLink link, ConversationNode node, int index, int count)
@@ -114,6 +327,7 @@ public sealed partial class NuiConversationChoiceRow : ObservableObject
 {
     private readonly ConversationChoice _choice;
     private readonly Action<Action> _edit;
+    private readonly Action<Action> _structuralEdit;
     private readonly Func<string, string>? _displayText;
 
     public NuiConversationChoiceRow(
@@ -122,13 +336,15 @@ public sealed partial class NuiConversationChoiceRow : ObservableObject
         int index,
         int count,
         Action<Action> edit,
-        Func<string, string>? displayText = null)
+        Func<string, string>? displayText = null,
+        Action<Action>? structuralEdit = null)
     {
         Link = link;
         _choice = choice;
         Index = index;
         Count = count;
         _edit = edit;
+        _structuralEdit = structuralEdit ?? edit;
         _displayText = displayText;
     }
 
@@ -163,7 +379,7 @@ public sealed partial class NuiConversationChoiceRow : ObservableObject
         {
             if (_choice.EndsConversation == value)
                 return;
-            _edit(() =>
+            _structuralEdit(() =>
             {
                 _choice.EndsConversation = value;
                 if (value)

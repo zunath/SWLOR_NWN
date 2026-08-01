@@ -3,6 +3,38 @@
              xmlns:editors="using:SWLOR.Toolset.Editors"
              x:Class="SWLOR.Toolset.Editors.NuiConversationEditorView"
              x:DataType="editors:NuiConversationEditorViewModel">
+  <UserControl.Resources>
+    <DataTemplate x:Key="SnippetEditorTemplate" x:DataType="editors:GraphSnippetEditorViewModel">
+      <Border Padding="10" Margin="0,4" Background="#141E29" BorderBrush="#293B4E"
+              BorderThickness="1" CornerRadius="4">
+        <StackPanel Spacing="6">
+          <TextBlock Text="{Binding Sentence}" FontWeight="SemiBold" TextWrapping="Wrap" />
+          <CheckBox Content="Not" IsChecked="{Binding IsNegated}" IsVisible="{Binding CanNegate}" />
+          <ItemsControl ItemsSource="{Binding Arguments}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="editors:ArgumentEditorViewModel">
+                <Grid ColumnDefinitions="120,*" ColumnSpacing="8" Margin="0,2">
+                  <TextBlock Grid.Column="0" Text="{Binding Name}" Classes="dim" VerticalAlignment="Center" />
+                  <TextBox Grid.Column="1" Text="{Binding FreeText, Mode=TwoWay}" IsVisible="{Binding IsFreeText}" />
+                  <ComboBox Grid.Column="1" ItemsSource="{Binding Options}" SelectedItem="{Binding Selected}"
+                            IsVisible="{Binding HasOptions}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Button Content="+ More inputs" Command="{Binding AddArgumentsCommand}" />
+            <Button Content="− Input" Command="{Binding RemoveArgumentsCommand}" />
+          </StackPanel>
+          <CheckBox Content="Only once per player" IsChecked="{Binding RunOnce}" IsVisible="{Binding CanRunOnce}" />
+          <TextBox Text="{Binding OnceMarker, Mode=TwoWay}" IsVisible="{Binding RunOnce}"
+                   Watermark="Stable once-only ID" />
+          <Button Content="Remove" Command="{Binding RemoveCommand}" HorizontalAlignment="Left" />
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+  </UserControl.Resources>
+
   <Grid RowDefinitions="Auto,*" Background="#0C1118">
     <Border Grid.Row="0" Padding="12,8" Background="#111923" BorderBrush="#2C3A4B" BorderThickness="0,0,0,1">
       <Grid ColumnDefinitions="Auto,220,*,Auto,Auto,Auto" ColumnSpacing="10">
@@ -17,247 +49,232 @@
 
     <Grid Grid.Row="1" Margin="12" ColumnDefinitions="*,6,470">
       <Grid Grid.Column="0">
-          <ScrollViewer IsVisible="{Binding IsMerchant}" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="26" Spacing="16" MaxWidth="840" HorizontalAlignment="Center">
-              <StackPanel Spacing="4">
-                <TextBlock Text="Merchant dialogue" FontSize="24" FontWeight="SemiBold" />
-                <TextBlock Text="A merchant needs a greeting and a shop choice. Goodbye is included automatically."
-                           Classes="dim" TextWrapping="Wrap" />
-              </StackPanel>
-              <Border Padding="16" CornerRadius="6" BorderBrush="#34465A" BorderThickness="1" Background="#111821">
-                <StackPanel Spacing="10">
-                  <TextBlock Text="Greeting" Classes="dim" />
-                  <TextBox Text="{Binding MerchantGreeting, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="100" />
-                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                    <ComboBox Grid.Column="0" ItemsSource="{Binding DynamicTextTokens}"
-                              SelectedItem="{Binding DynamicTextToInsert}" />
-                    <Button Grid.Column="1" Content="Insert" Command="{Binding InsertDynamicTextCommand}" />
-                  </Grid>
-                </StackPanel>
-              </Border>
-              <Border Padding="16" CornerRadius="6" BorderBrush="#34465A" BorderThickness="1" Background="#111821">
-                <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="150,*" RowSpacing="10" ColumnSpacing="12">
-                  <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Shop" Classes="dim" />
-                  <TextBlock Grid.Row="1" Grid.Column="0" Text="Store tag" VerticalAlignment="Center" />
-                  <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding MerchantStoreTag, Mode=TwoWay}" Watermark="Nearest store when blank" />
-                  <TextBlock Grid.Row="2" Grid.Column="0" Text="Player choice" VerticalAlignment="Center" />
-                  <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MerchantChoiceText, Mode=TwoWay}" />
-                  <TextBlock Grid.Row="3" Grid.Column="0" Text="Included" VerticalAlignment="Center" />
-                  <TextBlock Grid.Row="3" Grid.Column="1" Text="Opens the shop  •  Goodbye." Classes="dim" VerticalAlignment="Center" />
-                </Grid>
-              </Border>
-              <ItemsControl ItemsSource="{Binding Problems}" IsVisible="{Binding HasProblems}">
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate x:DataType="editors:NuiConversationProblem">
-                    <Border Padding="8" Margin="0,2" Background="#23171A" CornerRadius="4">
-                      <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
-                    </Border>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
+        <ScrollViewer IsVisible="{Binding IsMerchant}" VerticalScrollBarVisibility="Auto">
+          <StackPanel Margin="26" Spacing="16" MaxWidth="840" HorizontalAlignment="Center">
+            <StackPanel Spacing="4">
+              <TextBlock Text="Merchant dialogue" FontSize="24" FontWeight="SemiBold" />
+              <TextBlock Text="A merchant needs a greeting and a shop choice. Goodbye is included automatically."
+                         Classes="dim" TextWrapping="Wrap" />
             </StackPanel>
-          </ScrollViewer>
-
-          <Grid IsVisible="{Binding IsGeneral}" ColumnDefinitions="235,*" ColumnSpacing="12">
-            <Border Grid.Column="0" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="5" Padding="10" Background="#101720">
-              <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="8">
-                <TextBlock Grid.Row="0" Text="{Binding OutlineTitle}" FontWeight="SemiBold" FontSize="16" />
-                <TextBlock Grid.Row="1" Text="The first opening whose checks pass is used." Classes="dim" TextWrapping="Wrap" />
-                <ListBox Grid.Row="2" ItemsSource="{Binding OpeningLines}" SelectedItem="{Binding SelectedOpening}">
-                  <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="editors:NuiConversationOpeningRow">
-                      <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto,Auto" Margin="2,5" ColumnSpacing="4">
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Title}" FontWeight="SemiBold" />
-                        <Button Grid.Row="0" Grid.Column="1" Content="↑" IsEnabled="{Binding CanMoveUp}"
-                                Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).MoveOpeningUpCommand}"
-                                CommandParameter="{Binding}" Padding="5,1" />
-                        <Button Grid.Row="0" Grid.Column="2" Content="↓" IsEnabled="{Binding CanMoveDown}"
-                                Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).MoveOpeningDownCommand}"
-                                CommandParameter="{Binding}" Padding="5,1" />
-                        <TextBlock Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding Summary}" Classes="dim" TextWrapping="Wrap" />
-                      </Grid>
-                    </DataTemplate>
-                  </ListBox.ItemTemplate>
-                </ListBox>
-                <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="6">
-                  <Button Content="+ Add opening" Command="{Binding AddOpeningCommand}" />
-                  <Button Content="Remove" Command="{Binding RemoveOpeningCommand}" CommandParameter="{Binding SelectedOpening}" />
-                </StackPanel>
+            <Border Padding="16" CornerRadius="6" BorderBrush="#34465A" BorderThickness="1" Background="#111821">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Greeting" Classes="dim" />
+                <TextBox Text="{Binding MerchantGreeting, Mode=TwoWay}" AcceptsReturn="True"
+                         TextWrapping="Wrap" MinHeight="100" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                  <ComboBox Grid.Column="0" ItemsSource="{Binding DynamicTextTokens}"
+                            SelectedItem="{Binding DynamicTextToInsert}" />
+                  <Button Grid.Column="1" Content="Insert" Command="{Binding InsertDynamicTextCommand}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+            <Border Padding="16" CornerRadius="6" BorderBrush="#34465A" BorderThickness="1" Background="#111821">
+              <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="150,*" RowSpacing="10" ColumnSpacing="12">
+                <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Shop" Classes="dim" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Store tag" VerticalAlignment="Center" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding MerchantStoreTag, Mode=TwoWay}"
+                         Watermark="Nearest store when blank" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Player choice" VerticalAlignment="Center" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MerchantChoiceText, Mode=TwoWay}" />
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Included" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="Opens the shop  •  Goodbye."
+                           Classes="dim" VerticalAlignment="Center" />
               </Grid>
             </Border>
+            <ItemsControl ItemsSource="{Binding Problems}" IsVisible="{Binding HasProblems}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="editors:NuiConversationProblem">
+                  <Border Padding="8" Margin="0,2" Background="#23171A" CornerRadius="4">
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </ScrollViewer>
 
-            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
-              <StackPanel Margin="6,0,12,18" Spacing="14" IsVisible="{Binding HasSelectedLine}">
-                <StackPanel Spacing="4">
-                  <TextBlock Text="NPC line" Classes="dim" />
-                  <ItemsControl ItemsSource="{Binding TextBlocks}">
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate x:DataType="editors:NuiConversationTextBlockRow">
-                        <Grid ColumnDefinitions="140,*" ColumnSpacing="8" Margin="0,3">
-                          <ComboBox Grid.Column="0" ItemsSource="{Binding Styles}" SelectedItem="{Binding Style}" />
-                          <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" AcceptsReturn="True"
-                                   TextWrapping="Wrap" MinHeight="72" />
-                        </Grid>
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                  </ItemsControl>
-                  <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Button Content="+ Add styled text" Command="{Binding AddTextBlockCommand}" />
-                    <ComboBox Width="220" ItemsSource="{Binding DynamicTextTokens}" SelectedItem="{Binding DynamicTextToInsert}"
-                              />
-                    <Button Content="Insert" Command="{Binding InsertDynamicTextCommand}" />
-                  </StackPanel>
+        <Grid x:Name="AuthoringWorkspace" IsVisible="{Binding IsGeneral}" RowDefinitions="3*,6,2*">
+          <Border x:Name="ConversationTreePanel" Grid.Row="0" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="5"
+                  Background="#101720">
+            <Grid RowDefinitions="Auto,Auto,*,Auto">
+              <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="14,12,14,4">
+                <StackPanel Grid.Column="0" Spacing="2">
+                  <TextBlock Text="Conversation tree" FontWeight="SemiBold" FontSize="17" />
+                  <TextBlock Text="NPC lines and player responses are shown in the order the game evaluates them."
+                             Classes="dim" TextWrapping="Wrap" />
                 </StackPanel>
+                <TextBlock Grid.Column="1" Text="First passing route wins" Classes="dim"
+                           VerticalAlignment="Center" />
+              </Grid>
 
-                <Border Padding="12" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="5">
-                  <StackPanel Spacing="8">
-                    <TextBlock Text="Player choices" Classes="dim" />
-                    <ListBox ItemsSource="{Binding Choices}" SelectedItem="{Binding SelectedChoice}">
-                      <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="editors:NuiConversationChoiceRow">
-                          <Grid ColumnDefinitions="28,*,Auto,Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="5" Margin="0,4">
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Number}" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" />
-                            <Button Grid.Row="0" Grid.Column="2" Content="↑" IsEnabled="{Binding CanMoveUp}"
-                                    Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).MoveChoiceUpCommand}"
-                                    CommandParameter="{Binding}" Padding="5,1" />
-                            <Button Grid.Row="0" Grid.Column="3" Content="↓" IsEnabled="{Binding CanMoveDown}"
-                                    Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).MoveChoiceDownCommand}"
-                                    CommandParameter="{Binding}" Padding="5,1" />
-                            <Button Grid.Row="0" Grid.Column="4" Content="Remove"
-                                    Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).RemoveChoiceCommand}"
-                                    CommandParameter="{Binding}" />
-                            <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" Orientation="Horizontal" Spacing="10" Margin="0,4,0,0">
-                              <CheckBox Content="Ends conversation" IsChecked="{Binding EndsConversation}" />
-                              <Button Content="Add follow-up" IsVisible="{Binding EndsConversation}"
-                                      Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).AddFollowUpCommand}"
-                                      CommandParameter="{Binding}" />
-                              <Button Content="Open next line" IsVisible="{Binding HasNextLine}"
-                                      Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).OpenNextLineCommand}"
-                                      CommandParameter="{Binding}" />
-                              <TextBlock Text="Select this row to edit its checks and outcomes." Classes="dim" VerticalAlignment="Center" />
-                            </StackPanel>
-                          </Grid>
-                        </DataTemplate>
-                      </ListBox.ItemTemplate>
-                    </ListBox>
-                    <Button Content="+ Add player choice" Command="{Binding AddChoiceCommand}" HorizontalAlignment="Left" />
-                  </StackPanel>
-                </Border>
+              <Border Grid.Row="1" Margin="14,4,14,8" Padding="10,6" Background="#111D29"
+                      BorderBrush="#29435C" BorderThickness="1" CornerRadius="4">
+                <TextBlock Text="Order matters: use the arrows to move a route earlier or later."
+                           Foreground="#9CB6CF" TextWrapping="Wrap" />
+              </Border>
 
-                <Border Padding="12" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="5">
-                  <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
-                    <StackPanel Grid.Column="0" Spacing="7">
-                      <TextBlock Text="When shown" FontWeight="SemiBold" />
-                      <TextBlock Text="Add as many checks as needed. All must pass." Classes="dim" TextWrapping="Wrap" />
-                      <ItemsControl ItemsSource="{Binding Conditions}">
-                        <ItemsControl.ItemTemplate>
-                          <DataTemplate x:DataType="editors:GraphSnippetEditorViewModel">
-                            <Border Padding="8" Margin="0,3" Background="#141E29" CornerRadius="4">
-                              <StackPanel Spacing="5">
-                                <TextBlock Text="{Binding Sentence}" TextWrapping="Wrap" />
-                                <CheckBox Content="Not" IsChecked="{Binding IsNegated}" IsVisible="{Binding CanNegate}" />
-                                <ItemsControl ItemsSource="{Binding Arguments}">
-                                  <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="editors:ArgumentEditorViewModel">
-                                      <Grid ColumnDefinitions="120,*" Margin="0,2">
-                                        <TextBlock Grid.Column="0" Text="{Binding Name}" Classes="dim" />
-                                        <TextBox Grid.Column="1" Text="{Binding FreeText, Mode=TwoWay}" IsVisible="{Binding IsFreeText}" />
-                                        <ComboBox Grid.Column="1" ItemsSource="{Binding Options}" SelectedItem="{Binding Selected}"
-                                                  IsVisible="{Binding HasOptions}" />
-                                      </Grid>
-                                    </DataTemplate>
-                                  </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                                <StackPanel Orientation="Horizontal" Spacing="5">
-                                  <Button Content="+ More inputs" Command="{Binding AddArgumentsCommand}" />
-                                  <Button Content="− Input" Command="{Binding RemoveArgumentsCommand}" />
-                                </StackPanel>
-                                <Button Content="Remove" Command="{Binding RemoveCommand}" HorizontalAlignment="Left" />
-                              </StackPanel>
-                            </Border>
-                          </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                      </ItemsControl>
-                      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-                        <ComboBox Grid.Column="0" ItemsSource="{Binding AvailableConditions}" SelectedItem="{Binding ConditionToAdd}"
-                                  DisplayMemberBinding="{Binding Phrase}" />
-                        <Button Grid.Column="1" Content="Add" Command="{Binding AddConditionCommand}" />
-                      </Grid>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="1" Spacing="7">
-                      <TextBlock Text="Also do" FontWeight="SemiBold" />
-                      <TextBlock Text="{Binding ActionScopeHelp}" Classes="dim" TextWrapping="Wrap" />
-                      <ItemsControl ItemsSource="{Binding Actions}">
-                        <ItemsControl.ItemTemplate>
-                          <DataTemplate x:DataType="editors:GraphSnippetEditorViewModel">
-                            <Border Padding="8" Margin="0,3" Background="#141E29" CornerRadius="4">
-                              <StackPanel Spacing="5">
-                                <TextBlock Text="{Binding Sentence}" TextWrapping="Wrap" />
-                                <ItemsControl ItemsSource="{Binding Arguments}">
-                                  <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="editors:ArgumentEditorViewModel">
-                                      <Grid ColumnDefinitions="120,*" Margin="0,2">
-                                        <TextBlock Grid.Column="0" Text="{Binding Name}" Classes="dim" />
-                                        <TextBox Grid.Column="1" Text="{Binding FreeText, Mode=TwoWay}" IsVisible="{Binding IsFreeText}" />
-                                        <ComboBox Grid.Column="1" ItemsSource="{Binding Options}" SelectedItem="{Binding Selected}"
-                                                  IsVisible="{Binding HasOptions}" />
-                                      </Grid>
-                                    </DataTemplate>
-                                  </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                                <StackPanel Orientation="Horizontal" Spacing="5">
-                                  <Button Content="+ More inputs" Command="{Binding AddArgumentsCommand}" />
-                                  <Button Content="− Input" Command="{Binding RemoveArgumentsCommand}" />
-                                </StackPanel>
-                                <CheckBox Content="Only once per player" IsChecked="{Binding RunOnce}" IsVisible="{Binding CanRunOnce}" />
-                                <TextBox Text="{Binding OnceMarker, Mode=TwoWay}" IsVisible="{Binding RunOnce}" Watermark="Stable once-only ID" />
-                                <Button Content="Remove" Command="{Binding RemoveCommand}" HorizontalAlignment="Left" />
-                              </StackPanel>
-                            </Border>
-                          </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                      </ItemsControl>
-                      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-                        <ComboBox Grid.Column="0" ItemsSource="{Binding AvailableActions}" SelectedItem="{Binding ActionToAdd}"
-                                  DisplayMemberBinding="{Binding Phrase}" />
-                        <Button Grid.Column="1" Content="Add" Command="{Binding AddActionCommand}" />
-                      </Grid>
-                    </StackPanel>
-                  </Grid>
-                </Border>
-
-                <Expander Header="Presentation">
-                  <Grid ColumnDefinitions="130,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="7" Margin="8">
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Speaker name" />
-                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SpeakerName, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Speaker tag" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SpeakerTag, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Portrait" />
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PortraitResref, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Sound" />
-                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SoundResref, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Animation" />
-                    <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding Animation, Mode=TwoWay}" Minimum="0" />
-                  </Grid>
-                </Expander>
-
-                <ItemsControl ItemsSource="{Binding Problems}" IsVisible="{Binding HasProblems}">
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="editors:NuiConversationProblem">
-                      <Border Padding="8" Margin="0,2" Background="#23171A" CornerRadius="4">
-                        <Grid ColumnDefinitions="70,*" ColumnSpacing="8">
-                          <TextBlock Grid.Column="0" Text="{Binding Severity}" FontWeight="Bold" />
-                          <TextBlock Grid.Column="1" Text="{Binding Message}" TextWrapping="Wrap" />
+              <ListBox x:Name="ConversationTree" Grid.Row="2" Margin="8,0"
+                       ItemsSource="{Binding TreeRows}" SelectedItem="{Binding SelectedTreeRow}"
+                       ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                       ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListBox.ItemTemplate>
+                  <DataTemplate x:DataType="editors:NuiConversationTreeRow">
+                    <Grid ColumnDefinitions="Auto,Auto" Margin="2,3">
+                      <Border Grid.Column="0" Width="{Binding IndentWidth}" />
+                      <Border Grid.Column="1" MinWidth="720" Padding="12,9"
+                              Background="#121B25" BorderBrush="{Binding AccentBrush}"
+                              BorderThickness="4,0,0,0" CornerRadius="4">
+                        <Grid ColumnDefinitions="78,*,Auto,Auto,Auto" RowDefinitions="Auto,Auto"
+                              ColumnSpacing="7">
+                          <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding KindLabel}"
+                                     Foreground="{Binding AccentBrush}" FontWeight="Bold" FontSize="11"
+                                     VerticalAlignment="Center" />
+                          <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Text}"
+                                     TextTrimming="CharacterEllipsis" FontWeight="SemiBold"
+                                     VerticalAlignment="Center" />
+                          <Button Grid.Row="0" Grid.Column="2" Content="↑" Padding="6,1"
+                                  IsEnabled="{Binding CanMoveUp}"
+                                  Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).MoveTreeRowUpCommand}"
+                                  CommandParameter="{Binding}" />
+                          <Button Grid.Row="0" Grid.Column="3" Content="↓" Padding="6,1"
+                                  IsEnabled="{Binding CanMoveDown}"
+                                  Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).MoveTreeRowDownCommand}"
+                                  CommandParameter="{Binding}" />
+                          <Button Grid.Row="0" Grid.Column="4" Content="Remove" Padding="8,2"
+                                  Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).RemoveTreeRowCommand}"
+                                  CommandParameter="{Binding}" />
+                          <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" Text="{Binding Details}"
+                                     Classes="dim" FontSize="12" Margin="0,3,0,0" />
                         </Grid>
                       </Border>
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                    </Grid>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+
+              <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8" Margin="14,9,14,12">
+                <Button Content="+ Add opening" Command="{Binding AddOpeningCommand}" />
+                <Button Content="+ Add player response" Command="{Binding AddChoiceCommand}"
+                        IsVisible="{Binding IsNpcTreeRowSelected}" />
               </StackPanel>
-            </ScrollViewer>
-          </Grid>
+            </Grid>
+          </Border>
+
+          <GridSplitter Grid.Row="1" Background="#253344" ResizeDirection="Rows" />
+
+          <Border x:Name="SelectedNodePanel" Grid.Row="2" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="5"
+                  Background="#0F151E">
+            <Grid RowDefinitions="Auto,*">
+              <StackPanel Grid.Row="0" Margin="14,11,14,8" Spacing="2">
+                <TextBlock Text="{Binding SelectedTreeRowTitle}" FontSize="17" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding SelectedTreeRowHelp}" Classes="dim" TextWrapping="Wrap" />
+              </StackPanel>
+
+              <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                            HorizontalScrollBarVisibility="Disabled">
+                <Grid Margin="14,4,14,18" ColumnDefinitions="1.12*,*" ColumnSpacing="18"
+                      IsVisible="{Binding HasSelectedTreeRow}">
+                  <StackPanel Grid.Column="0" Spacing="12">
+                    <StackPanel IsVisible="{Binding IsNpcTreeRowSelected}" Spacing="7">
+                      <TextBlock Text="NPC dialogue" FontWeight="SemiBold" />
+                      <ItemsControl ItemsSource="{Binding TextBlocks}">
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate x:DataType="editors:NuiConversationTextBlockRow">
+                            <Grid ColumnDefinitions="120,*" ColumnSpacing="8" Margin="0,3">
+                              <ComboBox Grid.Column="0" ItemsSource="{Binding Styles}" SelectedItem="{Binding Style}" />
+                              <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" AcceptsReturn="True"
+                                       TextWrapping="Wrap" MinHeight="76" />
+                            </Grid>
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="7">
+                        <Button Grid.Column="0" Content="+ Styled text" Command="{Binding AddTextBlockCommand}" />
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding DynamicTextTokens}"
+                                  SelectedItem="{Binding DynamicTextToInsert}" />
+                        <Button Grid.Column="2" Content="Insert" Command="{Binding InsertDynamicTextCommand}" />
+                      </Grid>
+                    </StackPanel>
+
+                    <StackPanel IsVisible="{Binding IsPlayerTreeRowSelected}" Spacing="7">
+                      <TextBlock Text="Player response" FontWeight="SemiBold" />
+                      <TextBox Text="{Binding SelectedChoice.Text, Mode=TwoWay}" AcceptsReturn="True"
+                               TextWrapping="Wrap" MinHeight="76" />
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <CheckBox Content="Ends conversation" IsChecked="{Binding SelectedChoice.EndsConversation}" />
+                        <Button Content="Add next NPC line" IsVisible="{Binding SelectedChoice.EndsConversation}"
+                                Command="{Binding AddFollowUpCommand}" CommandParameter="{Binding SelectedChoice}" />
+                        <Button Content="Open next NPC line" IsVisible="{Binding SelectedChoice.HasNextLine}"
+                                Command="{Binding OpenNextLineCommand}" CommandParameter="{Binding SelectedChoice}" />
+                      </StackPanel>
+                    </StackPanel>
+
+                    <Expander Header="More options" IsVisible="{Binding IsNpcTreeRowSelected}">
+                      <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                            ColumnSpacing="8" RowSpacing="7" Margin="8">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Speaker name" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SpeakerName, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Speaker tag" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SpeakerTag, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Portrait" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PortraitResref, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Sound" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SoundResref, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Animation" />
+                        <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding Animation, Mode=TwoWay}" Minimum="0" />
+                      </Grid>
+                    </Expander>
+
+                    <ItemsControl ItemsSource="{Binding Problems}" IsVisible="{Binding HasProblems}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="editors:NuiConversationProblem">
+                          <Border Padding="8" Margin="0,2" Background="#23171A" CornerRadius="4">
+                            <Grid ColumnDefinitions="64,*" ColumnSpacing="8">
+                              <TextBlock Grid.Column="0" Text="{Binding Severity}" FontWeight="Bold" />
+                              <TextBlock Grid.Column="1" Text="{Binding Message}" TextWrapping="Wrap" />
+                            </Grid>
+                          </Border>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+
+                  <StackPanel Grid.Column="1" Spacing="14">
+                    <Border Padding="12" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="5">
+                      <StackPanel Spacing="7">
+                        <TextBlock Text="{Binding ConditionSectionTitle}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding ConditionSectionHelp}" Classes="dim" TextWrapping="Wrap" />
+                        <ItemsControl ItemsSource="{Binding Conditions}"
+                                      ItemTemplate="{StaticResource SnippetEditorTemplate}" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                          <ComboBox Grid.Column="0" ItemsSource="{Binding AvailableConditions}"
+                                    SelectedItem="{Binding ConditionToAdd}"
+                                    DisplayMemberBinding="{Binding Phrase}" />
+                          <Button Grid.Column="1" Content="+ And" Command="{Binding AddConditionCommand}" />
+                        </Grid>
+                      </StackPanel>
+                    </Border>
+
+                    <Border Padding="12" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="5">
+                      <StackPanel Spacing="7">
+                        <TextBlock Text="{Binding ActionSectionTitle}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding ActionSectionHelp}" Classes="dim" TextWrapping="Wrap" />
+                        <ItemsControl ItemsSource="{Binding Actions}"
+                                      ItemTemplate="{StaticResource SnippetEditorTemplate}" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                          <ComboBox Grid.Column="0" ItemsSource="{Binding AvailableActions}"
+                                    SelectedItem="{Binding ActionToAdd}"
+                                    DisplayMemberBinding="{Binding Phrase}" />
+                          <Button Grid.Column="1" Content="+ Then" Command="{Binding AddActionCommand}" />
+                        </Grid>
+                      </StackPanel>
+                    </Border>
+                  </StackPanel>
+                </Grid>
+              </ScrollViewer>
+            </Grid>
+          </Border>
+        </Grid>
       </Grid>
 
       <GridSplitter Grid.Column="1" Background="#253344" ResizeDirection="Columns" />
@@ -276,11 +293,9 @@
         <TextBlock Grid.Row="1" Text="{Binding PreviewStatus}" Classes="dim" TextWrapping="Wrap"
                    MinHeight="22" Margin="0,0,0,6" />
 
-        <!-- Fixed native dimensions, scaled as a unit, make this match the 650x520 NUI window
-             without forcing the editor's right-hand pane to consume 650 desktop pixels. -->
         <Viewbox Grid.Row="2" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-          <Border x:Name="PreviewWindowFrame" Width="650" Height="520" Background="#030303" BorderBrush="#8A5427"
-                  BorderThickness="2" CornerRadius="2">
+          <Border x:Name="PreviewWindowFrame" Width="650" Height="520" Background="#030303"
+                  BorderBrush="#8A5427" BorderThickness="2" CornerRadius="2">
             <Grid RowDefinitions="32,*">
               <Border Grid.Row="0" Background="#050505" BorderBrush="#8A5427" BorderThickness="0,0,0,2">
                 <Grid ColumnDefinitions="*,30" Margin="6,0,4,0">
@@ -318,9 +333,6 @@
                       </ItemsControl.Styles>
                       <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="editors:NuiConversationPreviewTextRow">
-                          <!-- Runtime NUI renders each dialogue segment in a 208-unit list row
-                               containing a 196-unit padded text cell. Keeping those dimensions here
-                               makes long and styled lines paginate exactly as they do in game. -->
                           <Grid Height="208">
                             <Border Height="196" Padding="8" VerticalAlignment="Top">
                               <TextBlock Text="{Binding Text}" Foreground="{Binding Foreground}"
@@ -341,9 +353,6 @@
                               Background="#030303">
                   <ItemsControl x:Name="PreviewChoiceItems" ItemsSource="{Binding PreviewChoices}">
                     <ItemsControl.Styles>
-                      <!-- ItemsControl sizes its generated presenters to their captions by default.
-                           NUI list cells always occupy the full list width, so force the preview's
-                           item presenters to do the same before drawing the response button. -->
                       <Style Selector="ItemsControl > ContentPresenter">
                         <Setter Property="HorizontalAlignment" Value="Stretch" />
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />

@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless.NUnit;
 using Avalonia.VisualTree;
 using FluentAssertions;
@@ -59,7 +60,23 @@ public sealed class NuiConversationEditorViewRenderTests
                 Style = ConversationTextStyle.PlayerReply
             }
         };
-        choice.Next.Add(new ConversationLink { TargetNodeId = second.Id });
+        choice.Actions.Add(new ConversationAction
+        {
+            Key = "action-accept-quest",
+            Arguments = { "preview_quest" }
+        });
+        choice.Next.Add(new ConversationLink
+        {
+            TargetNodeId = second.Id,
+            Conditions =
+            {
+                new ConversationCondition
+                {
+                    Key = "condition-has-quest",
+                    Arguments = { "preview_quest" }
+                }
+            }
+        });
 
         graph.Nodes.Add(first.Id, first);
         graph.Nodes.Add(second.Id, second);
@@ -109,6 +126,95 @@ public sealed class NuiConversationEditorViewRenderTests
         {
             window.Close();
         }
+    }
+
+    [AvaloniaTest]
+    public void TreeUsesTheFullAuthoringWidthAboveTheSelectedNodeEditor()
+    {
+        var viewModel = OpenEditor();
+        var view = new NuiConversationEditorView { DataContext = viewModel };
+        var window = new Window { Content = view, Width = 1500, Height = 900 };
+        window.Show();
+
+        try
+        {
+            window.UpdateLayout();
+
+            var treePanel = view.FindControl<Border>("ConversationTreePanel");
+            var selectedPanel = view.FindControl<Border>("SelectedNodePanel");
+            var tree = view.FindControl<ListBox>("ConversationTree");
+            treePanel.Should().NotBeNull();
+            selectedPanel.Should().NotBeNull();
+            tree.Should().NotBeNull();
+
+            treePanel!.Bounds.Width.Should().BeApproximately(selectedPanel!.Bounds.Width, 0.1,
+                "the tree and inspector occupy separate full-width rows instead of cramped columns");
+            treePanel.Bounds.Bottom.Should().BeLessThanOrEqualTo(selectedPanel.Bounds.Top,
+                "the selected-node controls sit below the tree");
+            ScrollViewer.GetHorizontalScrollBarVisibility(tree!).Should().Be(ScrollBarVisibility.Auto);
+            ScrollViewer.GetVerticalScrollBarVisibility(tree).Should().Be(ScrollBarVisibility.Auto);
+
+            var text = view.GetVisualDescendants().OfType<TextBlock>()
+                .Select(block => block.Text ?? string.Empty)
+                .ToArray();
+            text.Should().Contain("Conversation tree");
+            text.Should().Contain("Show this line when…");
+            text.Should().Contain("When this line appears…");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    [Test]
+    public void TreeShowsNestedRoutesAndEditsOperationsOnTheSelectedRoute()
+    {
+        var viewModel = OpenEditor();
+
+        viewModel.TreeRows.Select(row => (row.Kind, row.Depth, row.Text)).Should().ContainInOrder(
+            (NuiConversationTreeRowKind.NpcLine, 0, "Welcome, {{player.name}}.This matters."),
+            (NuiConversationTreeRowKind.PlayerChoice, 1, "Tell me more."),
+            (NuiConversationTreeRowKind.NpcLine, 2, "The second line."));
+
+        var playerRow = viewModel.TreeRows.Single(row => row.IsPlayer);
+        viewModel.SelectedTreeRow = playerRow;
+        viewModel.IsPlayerTreeRowSelected.Should().BeTrue();
+        viewModel.Actions.Should().ContainSingle(action => action.Snippet.Key == "action-accept-quest");
+        viewModel.ActionSectionTitle.Should().Be("When the player selects it…");
+
+        var nestedNpcRow = viewModel.TreeRows.Single(row => row.IsNpc && row.Depth == 2);
+        viewModel.SelectedTreeRow = nestedNpcRow;
+        viewModel.IsNpcTreeRowSelected.Should().BeTrue();
+        viewModel.Conditions.Should().ContainSingle(condition => condition.Snippet.Key == "condition-has-quest",
+            "nested NPC checks belong to the incoming route, not only to top-level openings");
+        viewModel.PreviewSpeaker.Should().Be("Dockhand");
+    }
+
+    [Test]
+    public void TreeOrderingCommandsChangeTheRuntimeEvaluationOrder()
+    {
+        var viewModel = OpenEditor();
+        var secondOpening = viewModel.TreeRows.Single(row =>
+            row.IsNpc && row.IsEntryPoint && row.Node?.Id == "second");
+
+        viewModel.MoveTreeRowUpCommand.Execute(secondOpening);
+
+        viewModel.SnapshotGraph().EntryPoints.Select(link => link.TargetNodeId)
+            .Should().Equal(["second", "first"],
+                "the highest opening is evaluated first by the runtime");
+    }
+
+    [Test]
+    public void EndingAResponseImmediatelyRemovesItsNestedBranchFromTheTree()
+    {
+        var viewModel = OpenEditor();
+        viewModel.SelectedTreeRow = viewModel.TreeRows.Single(row => row.IsPlayer);
+
+        viewModel.SelectedChoice!.EndsConversation = true;
+
+        viewModel.TreeRows.Should().NotContain(row => row.Depth == 2);
+        viewModel.SnapshotGraph().Choices["ask"].Next.Should().BeEmpty();
     }
 
     [Test]

@@ -15,14 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public ForceDisruptionStatusEffect()
         {
-        }
-
-        public ForceDisruptionStatusEffect(bool disablesForceAbilities)
-        {
-            if (disablesForceAbilities)
-            {
-                StatGroup.Stats[StatType.ForceAbilityActivationDisabled] = 1;
-            }
+            StatGroup.Stats[StatType.ForceAbilityActivationDisabled] = 1;
         }
     }
 }

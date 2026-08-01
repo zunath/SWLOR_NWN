@@ -80,6 +80,10 @@ namespace SWLOR.Toolset.Editors.Merchants
         public bool HasItemCandidates => ItemCandidates.Count > 0;
         public bool CanLoadMoreItemCandidates =>
             !_isLoadingItemCandidates && !_itemCandidatesExhausted && SelectedInventoryCategory != null;
+        public bool IsInstanceOperationBusy => IsLoadingInstances || IsUpdatingInstances;
+        public string InstanceOperationStatus => IsUpdatingInstances
+            ? "Updating placed merchant instances..."
+            : "Refreshing placed merchant instance status...";
         public bool HasPlacedInstances => PlacedInstances.Count > 0;
         public bool HasOutOfDateInstances => PlacedInstances.Any(instance => !instance.IsCurrent);
         public int OutOfDateMerchantRecords =>
@@ -438,7 +442,7 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         partial void OnBuyingRuleSearchTextChanged(string value) => FilterBuyingRules();
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanRefreshPlacedInstances))]
         public async Task RefreshPlacedInstancesAsync()
         {
             if (_instances == null || _disposed)
@@ -470,6 +474,9 @@ namespace SWLOR.Toolset.Editors.Merchants
             }
         }
 
+        private bool CanRefreshPlacedInstances() =>
+            _instances != null && !IsInstanceOperationBusy;
+
         [RelayCommand(CanExecute = nameof(CanUpdateOutOfDateInstances))]
         private async Task UpdateOutOfDateInstances()
         {
@@ -495,7 +502,21 @@ namespace SWLOR.Toolset.Editors.Merchants
         }
 
         private bool CanUpdateOutOfDateInstances() =>
-            _instances != null && HasOutOfDateInstances && !IsUpdatingInstances;
+            _instances != null && HasOutOfDateInstances && !IsInstanceOperationBusy;
+
+        partial void OnIsLoadingInstancesChanged(bool value) =>
+            NotifyInstanceOperationStateChanged();
+
+        partial void OnIsUpdatingInstancesChanged(bool value) =>
+            NotifyInstanceOperationStateChanged();
+
+        private void NotifyInstanceOperationStateChanged()
+        {
+            OnPropertyChanged(nameof(IsInstanceOperationBusy));
+            OnPropertyChanged(nameof(InstanceOperationStatus));
+            RefreshPlacedInstancesCommand.NotifyCanExecuteChanged();
+            UpdateOutOfDateInstancesCommand.NotifyCanExecuteChanged();
+        }
 
         private void BuildRows()
         {

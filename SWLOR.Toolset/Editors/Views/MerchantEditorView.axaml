@@ -237,7 +237,9 @@
         </Grid>
 
         <StackPanel Grid.Row="1" Spacing="5">
-          <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsLoadingInstances}" />
+          <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsInstanceOperationBusy}" />
+          <TextBlock Text="{Binding InstanceOperationStatus}" Classes="count"
+                     IsVisible="{Binding IsInstanceOperationBusy}" />
           <TextBlock Text="{Binding InstanceError}" Foreground="{DynamicResource AmberBrush}"
                      TextWrapping="Wrap" />
         </StackPanel>

@@ -112,7 +112,7 @@
            makes those valid compiled bindings report five null-path errors before bootstrap finishes. -->
       <ContentControl Content="{Binding Layout}"
                       Margin="4"
-                      IsEnabled="{Binding !IsModuleMutationLocked}">
+                      IsEnabled="{Binding !IsInteractionBlocked}">
         <ContentControl.ContentTemplate>
           <DataTemplate x:DataType="dockModel:IRootDock">
             <DockControl Layout="{Binding}" />

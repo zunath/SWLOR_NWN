@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using Avalonia.Media.Imaging;
+using System.ComponentModel;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Workspace;
@@ -24,8 +25,9 @@ namespace SWLOR.Toolset.Editors.Merchants
         public MerchantEditorViewModel Editor { get; }
 
         public bool IsDirty => _session.UndoStack.IsDirty;
-        public bool CanUndo => _session.UndoStack.CanUndo;
-        public bool CanRedo => _session.UndoStack.CanRedo;
+        public bool IsBusy => Editor.IsInstanceOperationBusy;
+        public bool CanUndo => !IsBusy && _session.UndoStack.CanUndo;
+        public bool CanRedo => !IsBusy && _session.UndoStack.CanRedo;
         public string FilePath => _session.FilePath;
         public string ResRef => _resRef;
 
@@ -64,11 +66,15 @@ namespace SWLOR.Toolset.Editors.Merchants
                 searchItems,
                 instances,
                 requestItemPreview);
+            Editor.PropertyChanged += OnEditorPropertyChanged;
             UpdateTitle();
         }
 
         private bool RunEdit(string description, Action mutation)
         {
+            if (IsBusy)
+                return false;
+
             try
             {
                 _session.Execute(description, mutation);
@@ -82,10 +88,12 @@ namespace SWLOR.Toolset.Editors.Merchants
             }
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanSave))]
         private async Task Save() => await TrySaveAsync().ConfigureAwait(true);
 
-        [RelayCommand(CanExecute = nameof(IsDirty))]
+        private bool CanSave() => !IsBusy;
+
+        [RelayCommand(CanExecute = nameof(CanRevert))]
         private void Revert()
         {
             _session.RevertToSaved();
@@ -93,8 +101,17 @@ namespace SWLOR.Toolset.Editors.Merchants
             AfterHistoryChange();
         }
 
+        private bool CanRevert() => !IsBusy && IsDirty;
+
         public async Task<bool> TrySaveAsync()
         {
+            if (IsBusy)
+            {
+                _log.AppendLine(
+                    $"Save deferred for {_session.FilePath}: placed merchant instances are still updating.");
+                return false;
+            }
+
             if (!IsDirty && !Editor.NeedsSaveNormalization)
                 return true;
 
@@ -191,6 +208,9 @@ namespace SWLOR.Toolset.Editors.Merchants
         [RelayCommand(CanExecute = nameof(CanUndo))]
         public void Undo()
         {
+            if (IsBusy)
+                return;
+
             _session.Undo();
             Editor.ReloadFromDocument();
             AfterHistoryChange();
@@ -199,6 +219,9 @@ namespace SWLOR.Toolset.Editors.Merchants
         [RelayCommand(CanExecute = nameof(CanRedo))]
         public void Redo()
         {
+            if (IsBusy)
+                return;
+
             _session.Redo();
             Editor.ReloadFromDocument();
             AfterHistoryChange();
@@ -208,6 +231,9 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         public override bool OnClose()
         {
+            if (IsBusy)
+                return false;
+
             if (!_closeApproved && IsDirty)
             {
                 if (!_closePromptOpen)
@@ -223,6 +249,7 @@ namespace SWLOR.Toolset.Editors.Merchants
                 return base.OnClose();
 
             _disposed = true;
+            Editor.PropertyChanged -= OnEditorPropertyChanged;
             Editor.Dispose();
             _session.Dispose();
             Closed?.Invoke(this);
@@ -258,6 +285,20 @@ namespace SWLOR.Toolset.Editors.Merchants
             OnPropertyChanged(nameof(IsDirty));
             OnPropertyChanged(nameof(CanUndo));
             OnPropertyChanged(nameof(CanRedo));
+        }
+
+        private void OnEditorPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(MerchantEditorViewModel.IsInstanceOperationBusy))
+                return;
+
+            OnPropertyChanged(nameof(IsBusy));
+            OnPropertyChanged(nameof(CanUndo));
+            OnPropertyChanged(nameof(CanRedo));
+            SaveCommand.NotifyCanExecuteChanged();
+            RevertCommand.NotifyCanExecuteChanged();
+            UndoCommand.NotifyCanExecuteChanged();
+            RedoCommand.NotifyCanExecuteChanged();
         }
 
         private void UpdateTitle() => Title = IsDirty ? $"{_resRef} *" : _resRef;

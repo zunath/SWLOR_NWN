@@ -63,6 +63,8 @@ namespace SWLOR.Toolset.Shell
         public bool IsModuleMutationLocked =>
             IsPacking || IsValidationRunning || IsBuildingScripts ||
             IsManagingErfArchives || IsManagingFactions;
+        public bool IsActiveEditorBusy => _activeEditor?.IsBusy == true;
+        public bool IsInteractionBlocked => IsModuleMutationLocked || IsActiveEditorBusy;
 
         /// <summary>
         /// The shared answer to <see cref="IsModuleMutationLocked"/>, published for the panels and
@@ -277,7 +279,7 @@ namespace SWLOR.Toolset.Shell
                 : null);
             _factory.ShowRightTool(script != null);
 
-            NotifyActiveEditorCommandsChanged();
+            NotifyInteractionStateChanged();
             OnPropertyChanged(nameof(StatusDetail));
             CompileActiveScriptCommand.NotifyCanExecuteChanged();
         }
@@ -295,7 +297,10 @@ namespace SWLOR.Toolset.Shell
         // differ between the blueprint and area editors.
         private void OnActiveEditorPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            NotifyActiveEditorCommandsChanged();
+            if (e.PropertyName == nameof(IEditorDocument.IsBusy))
+                NotifyInteractionStateChanged();
+            else
+                NotifyActiveEditorCommandsChanged();
             OnPropertyChanged(nameof(StatusDetail));
         }
 
@@ -318,7 +323,7 @@ namespace SWLOR.Toolset.Shell
             StatusText = saved ? "Saved." : "Save cancelled or failed - see Output.";
         }
 
-        private bool CanSave() => !IsModuleMutationLocked && _activeEditor != null;
+        private bool CanSave() => !IsInteractionBlocked && _activeEditor != null;
 
         [RelayCommand(CanExecute = nameof(CanMutateModule))]
         private async Task SaveAll()
@@ -330,12 +335,12 @@ namespace SWLOR.Toolset.Shell
         [RelayCommand(CanExecute = nameof(CanUndo))]
         private void Undo() => _activeEditor?.Undo();
 
-        private bool CanUndo() => !IsModuleMutationLocked && _activeEditor?.CanUndo == true;
+        private bool CanUndo() => !IsInteractionBlocked && _activeEditor?.CanUndo == true;
 
         [RelayCommand(CanExecute = nameof(CanRedo))]
         private void Redo() => _activeEditor?.Redo();
 
-        private bool CanRedo() => !IsModuleMutationLocked && _activeEditor?.CanRedo == true;
+        private bool CanRedo() => !IsInteractionBlocked && _activeEditor?.CanRedo == true;
 
         /// <summary>
         /// The window title, which names the module rather than just the program - a builder often has
@@ -630,11 +635,13 @@ namespace SWLOR.Toolset.Shell
         public Task<bool> TryCloseAsync()
         {
             var compilationActive = ScriptCompileService.AnyCompilationActive;
-            if (IsModuleMutationLocked || compilationActive)
+            if (IsInteractionBlocked || compilationActive)
             {
                 StatusText = compilationActive
                     ? "Wait for the active script compile to finish before closing."
-                    : "Wait for the active module operation to finish before closing.";
+                    : IsActiveEditorBusy
+                        ? "Wait for the active editor operation to finish before closing."
+                        : "Wait for the active module operation to finish before closing.";
                 return Task.FromResult(false);
             }
 
@@ -741,7 +748,7 @@ namespace SWLOR.Toolset.Shell
             return false;
         }
 
-        private bool CanMutateModule() => !IsModuleMutationLocked;
+        private bool CanMutateModule() => !IsInteractionBlocked;
 
         partial void OnIsPackingChanged(bool value)
         {
@@ -775,6 +782,13 @@ namespace SWLOR.Toolset.Shell
             // about the lock from here, and they should all flip in the same frame the menu does.
             // The palette, explorer, validation panel and script tabs all subscribe to it.
             _mutationLock.Set(IsModuleMutationLocked);
+            NotifyInteractionStateChanged();
+        }
+
+        private void NotifyInteractionStateChanged()
+        {
+            OnPropertyChanged(nameof(IsActiveEditorBusy));
+            OnPropertyChanged(nameof(IsInteractionBlocked));
             SaveAllCommand.NotifyCanExecuteChanged();
             ErfArchivesCommand.NotifyCanExecuteChanged();
             FactionEditorCommand.NotifyCanExecuteChanged();

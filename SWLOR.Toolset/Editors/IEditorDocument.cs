@@ -12,6 +12,12 @@ namespace SWLOR.Toolset.Editors
     /// </remarks>
     public interface IEditorDocument
     {
+        /// <summary>
+        /// True while this document owns a long-running operation that must finish before another
+        /// editor action can safely enter the module. Most documents never become busy.
+        /// </summary>
+        bool IsBusy => false;
+
         bool CanUndo { get; }
 
         bool CanRedo { get; }

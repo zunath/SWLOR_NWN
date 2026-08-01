@@ -157,6 +157,75 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task InstanceUpdateBlocksDocumentActionsUntilSynchronizationFinishes()
+        {
+            var moduleRoot = Path.Combine(
+                Path.GetTempPath(),
+                "swlor-merchant-busy-state-" + Guid.NewGuid().ToString("N"),
+                "Module");
+            var directory = Path.Combine(moduleRoot, "utm");
+            Directory.CreateDirectory(directory);
+            var path = Path.Combine(directory, "probe_store.utm.json");
+            File.WriteAllBytes(
+                path,
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utm, "probe_store", "Probe Store"));
+
+            var document = new MerchantDocumentViewModel(
+                path,
+                "probe_store",
+                new OutputLogService(),
+                new MerchantSavePrompts());
+            try
+            {
+                var tagRow = document.Editor.DetailRows.Single(
+                    row => row.Definition.Name == "Tag");
+                tagRow.Text = "PROBE_STORE_CHANGED";
+                document.IsDirty.Should().BeTrue();
+                document.CanUndo.Should().BeTrue();
+
+                var busyNotifications = 0;
+                document.PropertyChanged += (_, args) =>
+                {
+                    if (args.PropertyName == nameof(MerchantDocumentViewModel.IsBusy))
+                        busyNotifications++;
+                };
+
+                document.Editor.IsUpdatingInstances = true;
+
+                document.IsBusy.Should().BeTrue();
+                document.Editor.IsInstanceOperationBusy.Should().BeTrue();
+                document.Editor.InstanceOperationStatus.Should().Be(
+                    "Updating placed merchant instances...");
+                document.SaveCommand.CanExecute(null).Should().BeFalse();
+                document.RevertCommand.CanExecute(null).Should().BeFalse();
+                document.UndoCommand.CanExecute(null).Should().BeFalse();
+                document.CanUndo.Should().BeFalse();
+                tagRow.Text = "MUST_NOT_APPLY";
+                tagRow.Text.Should().Be("PROBE_STORE_CHANGED");
+                (await document.TrySaveAsync()).Should().BeFalse();
+                document.OnClose().Should().BeFalse();
+
+                document.Editor.IsUpdatingInstances = false;
+
+                document.IsBusy.Should().BeFalse();
+                document.SaveCommand.CanExecute(null).Should().BeTrue();
+                document.RevertCommand.CanExecute(null).Should().BeTrue();
+                document.UndoCommand.CanExecute(null).Should().BeTrue();
+                document.CanUndo.Should().BeTrue();
+                busyNotifications.Should().Be(2);
+            }
+            finally
+            {
+                document.Editor.IsUpdatingInstances = false;
+                if (document.IsDirty)
+                    await document.TrySaveAsync();
+                document.OnClose();
+                Directory.Delete(Directory.GetParent(moduleRoot)!.FullName, recursive: true);
+            }
+        }
+
+        [Test]
         public void InventoryAndBuyingRules_WriteTheNativeUtmLists()
         {
             var root = NewMerchant();

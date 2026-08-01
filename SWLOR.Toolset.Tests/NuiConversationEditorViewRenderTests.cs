@@ -95,7 +95,7 @@ public sealed class NuiConversationEditorViewRenderTests
     }
 
     [AvaloniaTest]
-    public void WritingAndGamePreviewRenderSideBySide()
+    public void EditingAndGamePreviewRenderInSeparateTabs()
     {
         var viewModel = OpenEditor();
         var view = new NuiConversationEditorView { DataContext = viewModel };
@@ -105,22 +105,39 @@ public sealed class NuiConversationEditorViewRenderTests
         try
         {
             window.UpdateLayout();
-            var text = view.GetVisualDescendants()
+            var tabs = view.FindControl<TabControl>("ConversationEditorTabs");
+            tabs.Should().NotBeNull();
+            tabs!.Items.OfType<TabItem>().Select(tab => tab.Header?.ToString())
+                .Should().Equal("Edit", "Preview");
+            tabs.SelectedIndex.Should().Be(0, "editing is the primary workflow");
+
+            var editText = view.GetVisualDescendants()
                 .OfType<TextBlock>()
                 .Select(block => block.Text ?? string.Empty)
                 .ToList();
-
-            view.GetVisualDescendants().OfType<TabControl>().Should().BeEmpty(
-                "preview is no longer hidden behind a separate tab");
-            text.Should().Contain("IN-GAME PREVIEW");
-            text.Should().Contain("Conversation", "the simulated title matches the runtime NUI window");
-            text.Should().Contain("Selan Flembek");
-            text.Should().Contain("Welcome, Player.", "dynamic tokens use representative preview values");
-            text.Should().Contain("Tell me more.");
+            editText.Should().Contain("Conversation tree");
             view.GetVisualDescendants().OfType<TextBox>().Should().NotBeEmpty(
-                "the writing controls remain visible beside the preview");
+                "the Edit tab contains the writing controls");
+
+            var selectedRow = viewModel.SelectedTreeRow;
+            tabs.SelectedIndex = 1;
+            window.UpdateLayout();
+            var previewText = view.GetVisualDescendants()
+                .OfType<TextBlock>()
+                .Select(block => block.Text ?? string.Empty)
+                .ToList();
+            previewText.Should().Contain("IN-GAME PREVIEW");
+            previewText.Should().Contain("Conversation", "the simulated title matches the runtime NUI window");
+            previewText.Should().Contain("Selan Flembek");
+            previewText.Should().Contain("Welcome, Player.", "dynamic tokens use representative preview values");
+            previewText.Should().Contain("Tell me more.");
             view.FindControl<ScrollViewer>("PreviewDialogueScroll").Should().NotBeNull();
             view.FindControl<ScrollViewer>("PreviewResponsesScroll").Should().NotBeNull();
+
+            tabs.SelectedIndex = 0;
+            window.UpdateLayout();
+            viewModel.SelectedTreeRow.Should().BeSameAs(selectedRow,
+                "switching tabs must not lose the author's place in the tree");
         }
         finally
         {

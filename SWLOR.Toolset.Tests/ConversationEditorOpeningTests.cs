@@ -203,6 +203,11 @@ public sealed class ConversationEditorOpeningTests
         try
         {
             window.UpdateLayout();
+            var tabs = view.FindControl<TabControl>("ConversationEditorTabs");
+            tabs.Should().NotBeNull();
+            tabs!.SelectedIndex = 1;
+            window.UpdateLayout();
+
             model.PreviewPortraitSourceResref.Should().Be(NuiConversationEditorViewModel.DefaultPreviewPortraitResref);
             view.GetVisualDescendants().OfType<TextBlock>().Select(block => block.Text ?? string.Empty)
                 .Should().NotContain(value =>
@@ -231,6 +236,10 @@ public sealed class ConversationEditorOpeningTests
 
         try
         {
+            window.UpdateLayout();
+            var tabs = view.FindControl<TabControl>("ConversationEditorTabs");
+            tabs.Should().NotBeNull();
+            tabs!.SelectedIndex = 1;
             window.UpdateLayout();
 
             var frame = view.FindControl<Border>("PreviewWindowFrame");

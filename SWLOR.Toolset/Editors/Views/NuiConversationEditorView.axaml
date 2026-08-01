@@ -47,8 +47,9 @@
       </Grid>
     </Border>
 
-    <Grid Grid.Row="1" Margin="12" ColumnDefinitions="*,6,470">
-      <Grid Grid.Column="0">
+    <TabControl x:Name="ConversationEditorTabs" Grid.Row="1" Margin="12">
+      <TabItem Header="Edit">
+        <Grid>
         <ScrollViewer IsVisible="{Binding IsMerchant}" VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="26" Spacing="16" MaxWidth="840" HorizontalAlignment="Center">
             <StackPanel Spacing="4">
@@ -275,11 +276,12 @@
             </Grid>
           </Border>
         </Grid>
-      </Grid>
+        </Grid>
+      </TabItem>
 
-      <GridSplitter Grid.Column="1" Background="#253344" ResizeDirection="Columns" />
-
-      <Grid Grid.Column="2" Margin="14,0,0,0" RowDefinitions="Auto,Auto,*">
+      <TabItem Header="Preview">
+        <Grid Margin="24,16" RowDefinitions="Auto,Auto,*" MaxWidth="1000"
+              HorizontalAlignment="Stretch">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,6">
           <StackPanel Grid.Column="0" Spacing="2">
             <TextBlock Text="IN-GAME PREVIEW" Classes="dim" FontWeight="SemiBold" />
@@ -378,7 +380,8 @@
             </Grid>
           </Border>
         </Viewbox>
-      </Grid>
-    </Grid>
+        </Grid>
+      </TabItem>
+    </TabControl>
   </Grid>
 </UserControl>

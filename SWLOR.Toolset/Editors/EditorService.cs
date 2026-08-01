@@ -2152,7 +2152,7 @@ namespace SWLOR.Toolset.Editors
                 return _lookups.GetOptions(LookupKeys.SoundSets)
                     .Select(option => new BehaviorChoice(
                         option.Id,
-                        $"{option.Display} ({option.Id})",
+                        option.Display,
                         canPreviewAudio: !string.IsNullOrWhiteSpace(
                             table?.GetString((int)option.Id, "RESREF"))))
                     .ToList();

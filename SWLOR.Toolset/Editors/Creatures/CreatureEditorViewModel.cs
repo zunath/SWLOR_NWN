@@ -36,6 +36,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private readonly SemaphoreSlim _previewModelGate = new(1);
         private ModelPreviewControl? _previewView;
         private Task? _appearanceCatalogLoadTask;
+        private Task? _appearanceDetailsLoadTask;
         private bool _appearanceCatalogLoaded;
         private int _referenceWarningGeneration;
         private bool _referenceWarningsRequested;
@@ -733,8 +734,11 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         partial void OnIsAppearanceTabSelectedChanged(bool value)
         {
-            if (value)
-                _ = EnsureAppearanceCatalogLoadedAsync();
+            if (!value)
+                return;
+
+            _ = EnsureAppearanceCatalogLoadedAsync();
+            EnsureSelectedAppearanceSectionLoaded();
         }
 
         partial void OnIsEquipmentTabSelectedChanged(bool value)
@@ -797,6 +801,12 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         private void EnsureSelectedAppearanceSectionLoaded()
         {
+            if (SelectedAppearanceSectionIndex == 1)
+            {
+                _ = EnsureAppearanceDetailsLoadedAsync();
+                return;
+            }
+
             if (SelectedAppearanceSectionIndex != 2)
                 return;
 
@@ -807,6 +817,37 @@ namespace SWLOR.Toolset.Editors.Creatures
             }
 
             _ = BodyParts.EnsureLoadedAsync();
+        }
+
+        /// <summary>
+        /// Details owns three catalogs that builders browse directly. Resolve them off the UI
+        /// thread only when that section becomes visible, then let the shared controls publish a
+        /// bounded search page or gallery page and request only visible previews.
+        /// </summary>
+        public Task EnsureAppearanceDetailsLoadedAsync()
+        {
+            if (_disposed)
+                return Task.CompletedTask;
+
+            return _appearanceDetailsLoadTask ??= LoadAppearanceDetailsAsync();
+        }
+
+        private async Task LoadAppearanceDetailsAsync()
+        {
+            try
+            {
+                foreach (var row in AppearanceRows.Where(row =>
+                             row.Definition.IsInlineSearch || row.Definition.IsInlineGallery))
+                {
+                    await row.ActivateChoicesAsync().ConfigureAwait(true);
+                    if (_disposed)
+                        return;
+                }
+            }
+            finally
+            {
+                _appearanceDetailsLoadTask = null;
+            }
         }
 
         public void ReloadGameResources()

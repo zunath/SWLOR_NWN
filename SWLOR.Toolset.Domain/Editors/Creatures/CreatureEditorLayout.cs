@@ -21,6 +21,7 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
                 maxLength: MaxResRefLength, readOnly: true),
             Choice("Category", "PaletteID", GffFieldType.Byte, CreatureChoiceKeys.PaletteCategories,
                 searchable: true, inlineSearch: true),
+            Choice("Movement", "WalkRate", GffFieldType.Int, CreatureChoiceKeys.MovementRates),
             Field("Description", "Description", BehaviorFieldKind.Paragraph, GffFieldType.CExoLocString)
         };
 
@@ -39,12 +40,14 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
 
         public static IReadOnlyList<BehaviorFieldDefinition> Appearance { get; } = new[]
         {
-            Choice("Race", "Race", GffFieldType.Byte, CreatureChoiceKeys.Races, true),
-            Choice("Portrait", "PortraitId", GffFieldType.Word, CreatureChoiceKeys.Portraits, true),
+            Choice("Race", "Race", GffFieldType.Byte, CreatureChoiceKeys.Races,
+                searchable: true, inlineSearch: true),
+            Choice("Portrait", "PortraitId", GffFieldType.Word, CreatureChoiceKeys.Portraits,
+                searchable: true, inlineGallery: true),
             Choice("Gender", "Gender", GffFieldType.Byte, CreatureChoiceKeys.Genders),
             Choice("Phenotype", "Phenotype", GffFieldType.Int, CreatureChoiceKeys.Phenotypes),
-            Choice("Sound Set", "SoundSetFile", GffFieldType.Word, CreatureChoiceKeys.SoundSets, true),
-            Choice("Movement", "WalkRate", GffFieldType.Int, CreatureChoiceKeys.MovementRates)
+            Choice("Sound Set", "SoundSetFile", GffFieldType.Word, CreatureChoiceKeys.SoundSets,
+                searchable: true, inlineSearch: true)
         };
 
         public static IReadOnlyList<BehaviorFieldDefinition> QuestTarget { get; } = new[]
@@ -122,7 +125,8 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
             string choicesKey,
             bool searchable = false,
             bool local = false,
-            bool inlineSearch = false) => new()
+            bool inlineSearch = false,
+            bool inlineGallery = false) => new()
         {
             Label = label,
             Name = name,
@@ -131,7 +135,8 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
             Storage = local ? BehaviorFieldStorage.Local : BehaviorFieldStorage.Field,
             ChoicesKey = choicesKey,
             IsSearchable = searchable,
-            IsInlineSearch = inlineSearch
+            IsInlineSearch = inlineSearch,
+            IsInlineGallery = inlineGallery
         };
     }
 }

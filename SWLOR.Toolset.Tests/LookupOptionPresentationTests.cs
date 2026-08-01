@@ -138,6 +138,77 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void RacesUseNamesWithoutExposingTheirEngineRowIds()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"race-presentation-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "racialtypes.2da"),
+                    "2DA V2.0\r\n\r\nLabel Name Constant\r\n" +
+                    "0 Dwarf **** RACIAL_TYPE_DWARF\r\n" +
+                    "6 Human **** RACIAL_TYPE_HUMAN\r\n");
+                var lookup = new TwoDaLookupService(
+                    new TwoDaService(scratch),
+                    new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
+                var provider = new LookupOptionProvider(
+                    new WorkspaceContext(
+                        path => new Domain.Workspace.ModuleWorkspace(path),
+                        new OutputLogService()),
+                    twoDaLookups: lookup);
+
+                var options = provider.GetOptions(LookupKeys.Races);
+
+                options.Select(option => option.Id).Should().Equal(0, 1);
+                options.Select(option => option.BehaviorDisplay).Should().Equal("Dwarf", "Human");
+                options.Should().OnlyContain(option => !option.ShowId);
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
+        public void SoundSetsUseNamesWithoutExposingTheirEngineRowIds()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"soundset-presentation-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "soundset.2da"),
+                    "2DA V2.0\r\n\r\nLABEL STRREF RESREF\r\n" +
+                    "0 Female_Seductress **** ss_femsed\r\n" +
+                    "85 Monodrone **** ss_monodrone\r\n");
+                var lookup = new TwoDaLookupService(
+                    new TwoDaService(scratch),
+                    new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
+                var provider = new LookupOptionProvider(
+                    new WorkspaceContext(
+                        path => new Domain.Workspace.ModuleWorkspace(path),
+                        new OutputLogService()),
+                    twoDaLookups: lookup);
+
+                var options = provider.GetOptions(LookupKeys.SoundSets);
+
+                options.Select(option => option.Id).Should().Equal(0, 1);
+                options.Select(option => option.BehaviorDisplay)
+                    .Should().Equal("Female_Seductress", "Monodrone");
+                options.Should().OnlyContain(option => !option.ShowId);
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
         public async Task FactionsUseNamesWithoutExposingTheirInternalIds()
         {
             var scratch = Path.Combine(

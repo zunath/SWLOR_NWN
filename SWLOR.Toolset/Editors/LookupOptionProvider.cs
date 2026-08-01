@@ -113,13 +113,13 @@ namespace SWLOR.Toolset.Editors
                     case LookupKeys.Phenotype:
                         return FromTable(TwoDaLookupTables.Phenotype, showId: false);
                     case LookupKeys.SoundSets:
-                        return FromTable(TwoDaLookupTables.SoundSet);
+                        return FromTable(TwoDaLookupTables.SoundSet, showId: false);
                     case LookupKeys.BaseItems:
                         return FromTable(TwoDaLookupTables.BaseItem);
                     case LookupKeys.LoadScreens:
                         return FromTable(TwoDaLookupTables.LoadScreen);
                     case LookupKeys.Races:
-                        return FromTable(TwoDaLookupTables.Race);
+                        return FromTable(TwoDaLookupTables.Race, showId: false);
                     case LookupKeys.CreatureMovementRates:
                         return FromTable(TwoDaLookupTables.CreatureSpeed, showId: false);
                     case LookupKeys.TriggerTypes:

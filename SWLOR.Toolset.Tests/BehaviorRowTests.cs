@@ -217,6 +217,39 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task AnExplicitInlineGalleryNeverFallsBackToAChooseButtonWhileItLoads()
+        {
+            using var row = new BehaviorRowViewModel(
+                new BehaviorFieldDefinition
+                {
+                    Label = "Portrait", Name = "PortraitId", Kind = BehaviorFieldKind.Choice,
+                    FieldType = GffFieldType.Word, IsSearchable = true, IsInlineGallery = true
+                },
+                Store("""{ "__data_type": "UTC ", "PortraitId": { "type": "word", "value": 4 } }"""),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                asyncChoiceLoader: () => Task.FromResult<IReadOnlyList<BehaviorChoice>>(
+                    Enumerable.Range(0, 140)
+                        .Select(index => new BehaviorChoice(index, $"Portrait {index}", $"po_{index}"))
+                        .ToList()));
+            row.Reload();
+
+            row.IsSearchableChoice.Should().BeFalse(
+                "an inline gallery must not flash a Choose button while its deferred catalog loads");
+            row.IsPlainChoice.Should().BeFalse();
+            row.SearchSummary.Should().BeEmpty();
+
+            await row.ActivateChoicesAsync();
+
+            row.IsInlineGallery.Should().BeTrue();
+            row.IsPopupGallery.Should().BeFalse();
+            row.GalleryChoices.Should().HaveCount(BehaviorRowViewModel.GalleryPageSize);
+        }
+
+        [Test]
         public void AVisualCatalogGetsSharedFacetFiltersAndSortsWithoutEditorSpecificCode()
         {
             var choices = Enumerable.Range(0, 140)

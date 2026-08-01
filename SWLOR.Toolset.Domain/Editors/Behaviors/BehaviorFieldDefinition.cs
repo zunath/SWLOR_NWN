@@ -58,6 +58,13 @@ namespace SWLOR.Toolset.Domain.Editors.Behaviors
         public bool IsInlineSearch { get; init; }
 
         /// <summary>
+        /// Keeps a visual choice gallery in the editor page even when its catalog is large. The
+        /// gallery still publishes tiles and requests artwork progressively; this only removes the
+        /// extra click needed to reveal a picker whose options are the page's primary content.
+        /// </summary>
+        public bool IsInlineGallery { get; init; }
+
+        /// <summary>
         /// Lookup key for a Choice row whose values come from game data rather than from this file -
         /// the load screens, say. The app layer resolves it; an unresolved key leaves the row empty
         /// rather than inventing values.

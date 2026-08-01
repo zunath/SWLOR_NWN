@@ -620,6 +620,48 @@ namespace SWLOR.Toolset.Tests
             editor.AppearanceGallery.Tiles.Should().ContainSingle();
         }
 
+        [AvaloniaTest]
+        public async Task AppearanceDetails_ShowTheirProgressivePickersWithoutChooseActions()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "appear_details", "Appearance Details"));
+            using var editor = new CreatureEditorViewModel(
+                document.Root,
+                Path.Combine(Path.GetTempPath(), "utc", "appear_details.utc.json"),
+                "appear_details",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                key => key switch
+                {
+                    CreatureChoiceKeys.Races => [new BehaviorChoice(6, "Human")],
+                    CreatureChoiceKeys.Portraits =>
+                        [new BehaviorChoice(4, "Human portrait", "po_human")],
+                    CreatureChoiceKeys.SoundSets => [new BehaviorChoice(85, "Monodrone")],
+                    _ => Array.Empty<BehaviorChoice>()
+                },
+                null,
+                null,
+                _ => null,
+                null);
+
+            editor.SelectedAppearanceSectionIndex = 1;
+            await editor.EnsureAppearanceDetailsLoadedAsync();
+
+            var race = editor.AppearanceRows.Single(row => row.Definition.Name == "Race");
+            var portrait = editor.AppearanceRows.Single(row => row.Definition.Name == "PortraitId");
+            var soundSet = editor.AppearanceRows.Single(row => row.Definition.Name == "SoundSetFile");
+            race.IsInlineSearchChoice.Should().BeTrue();
+            race.IsSearchExpanded.Should().BeTrue();
+            portrait.IsInlineGallery.Should().BeTrue();
+            portrait.IsPopupGallery.Should().BeFalse();
+            soundSet.IsInlineSearchChoice.Should().BeTrue();
+            soundSet.IsSearchExpanded.Should().BeTrue();
+        }
+
         [Test]
         public void AbilitiesTab_UsesMetadataFiltersAndVirtualizedProgressiveResults()
         {
@@ -1364,9 +1406,11 @@ namespace SWLOR.Toolset.Tests
             CreatureEditorLayout.Basic.Single(field => field.Name == "TemplateResRef")
                 .IsReadOnly.Should().BeTrue();
             CreatureEditorLayout.Basic.Should().Contain(field => field.Name == "PaletteID");
+            CreatureEditorLayout.Basic.Should().Contain(field => field.Name == "WalkRate");
             var movedFields = new[] { "Race", "FactionID", "Conversation" };
             CreatureEditorLayout.Basic.Should().NotContain(field => movedFields.Contains(field.Name));
             CreatureEditorLayout.Appearance.Should().Contain(field => field.Name == "Race");
+            CreatureEditorLayout.Appearance.Should().NotContain(field => field.Name == "WalkRate");
             CreatureEditorLayout.Appearance.Should().NotContain(field => field.Name == "Appearance_Type",
                 "the model uses the shared paged appearance gallery instead of a generic choice row");
             CreatureEditorLayout.Ai.Should().ContainSingle(field => field.Name == "FactionID");

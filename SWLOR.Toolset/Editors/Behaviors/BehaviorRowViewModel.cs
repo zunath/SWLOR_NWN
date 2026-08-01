@@ -208,7 +208,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// picture picker exists because the difference between its options is visible and not
         /// sayable, so hiding it leaves the row showing exactly the names it was meant to replace.
         /// </summary>
-        public bool IsInlineGallery => IsGallery && Choices.Count <= InlineGalleryLimit;
+        public bool IsInlineGallery =>
+            IsGallery && (Definition.IsInlineGallery || Choices.Count <= InlineGalleryLimit);
 
         /// <summary>
         /// A gallery too large to sit on the page — the portraits, which run to four figures. Its
@@ -234,7 +235,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// browsable picker, so it never becomes a search list as well.
         /// </summary>
         public virtual bool IsSearchableChoice =>
-            IsChoice && !IsGallery &&
+            IsChoice && !IsGallery && !Definition.IsInlineGallery &&
             (Definition.IsSearchable || Definition.IsInlineSearch ||
              AreChoicesLoaded && Choices.Count > SearchableChoiceThreshold);
 
@@ -245,7 +246,11 @@ namespace SWLOR.Toolset.Editors.Behaviors
         public bool IsInlineSearchChoice => IsSearchableChoice && Definition.IsInlineSearch;
 
         /// <summary>A plain drop-down: every choice row that is neither searchable nor a gallery.</summary>
-        public virtual bool IsPlainChoice => IsChoice && !IsGallery && !IsSearchableChoice;
+        public virtual bool IsPlainChoice =>
+            IsChoice &&
+            !IsGallery &&
+            !Definition.IsInlineGallery &&
+            !IsSearchableChoice;
 
         /// <summary>
         /// Choice count past which a row becomes searchable whether or not it asked to be. Set at the
@@ -277,7 +282,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
             get
             {
                 if (!AreChoicesLoaded)
-                    return "Options load when opened";
+                    return string.Empty;
                 if (!IsSearchExpanded)
                     return $"{Choices.Count} option{(Choices.Count == 1 ? string.Empty : "s")}";
                 if (_searchMatches.Count == 0)
@@ -1184,6 +1189,13 @@ namespace SWLOR.Toolset.Editors.Behaviors
             Reload();
         }
 
+        /// <summary>
+        /// Resolves a deferred picker because its owning work pane is now visible. Editors use the
+        /// same progressive search and gallery machinery as an explicit open action without adding
+        /// a second button in front of the choices.
+        /// </summary>
+        public Task ActivateChoicesAsync() => EnsureChoicesLoadedAsync();
+
         private async Task<bool> LoadDeferredChoicesAsync()
         {
             var loader = _choiceLoader;
@@ -1196,10 +1208,11 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
             // Resolve before clearing the loader so a malformed source can be retried instead of
             // leaving the row claiming that an empty set loaded successfully. The resolver itself
-            // is cached by the editor service; this row pays only for its wrappers and only after
-            // explicit interaction.
+            // is cached by the editor service; this row pays only for its wrappers after its owning
+            // pane becomes visible or the builder explicitly opens it.
             var choices = await asyncLoader!().ConfigureAwait(true);
-            var loaded = BehaviorChoiceViewModel.From(choices);
+            var loaded = await Task.Run(() => BehaviorChoiceViewModel.From(choices))
+                .ConfigureAwait(true);
             _asyncChoiceLoader = null;
             Choices = loaded;
             OnPropertyChanged(nameof(AreChoicesLoaded));

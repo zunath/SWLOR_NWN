@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The Rod of Spawn Banners allows you to control spawnpoints from Neshke's Extendable Spawn System.\n\nUse on the ground to Show/Hide Spawn Banners.\n\nUse on a Banner to control that spawnpoint."
     }
   },
   "Identified": {

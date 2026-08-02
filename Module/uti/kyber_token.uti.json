@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A rare kyber crystal attuned to its bearer, issued in recognition of their journey toward constructing a lightsaber.\n\nUse this item to attune the crystal, adding one Kyber Token to your currencies. Then visit a Lightsaber Workbench to construct a lightsaber or saberstaff. Workbenches are known to exist at the Sith Academy on Korriban, the Jedi Enclave on Dantooine, and - so the rumors say - somewhere within a hidden cave on Dathomir.\n\nOne Kyber Token is consumed when the weapon is constructed. This item cannot be traded, sold, stored, or dropped."
     }
   },
   "Identified": {

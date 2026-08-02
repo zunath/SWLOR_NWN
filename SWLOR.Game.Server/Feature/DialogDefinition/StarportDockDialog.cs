@@ -3,14 +3,14 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class StarportDockDialog: DialogBase
+    public class StarportDockDialog: ConversationMenuDefinition
     {
         private class Model
         {
@@ -20,9 +20,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private const string MainPageId = "MAIN_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialize)
                 .AddPage(MainPageId, MainPageInit);
@@ -33,16 +33,16 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private void Initialize()
         {
-            var self = OBJECT_SELF;
+            var self = Owner;
             var planetType = (PlanetType)GetLocalInt(self, "PLANET_TYPE_ID");
             var spaceWaypointTag = GetLocalString(self, "STARPORT_TELEPORT_WAYPOINT");
-            var player = GetPC();
+            var player = Player;
 
             if (string.IsNullOrWhiteSpace(spaceWaypointTag))
             {
                 Log.Write(LogGroup.Error, $"{GetName(self)} is missing the local variable 'STARPORT_TELEPORT_WAYPOINT' and cannot be used by players to dock their ships.");
                 SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
-                EndConversation();
+                Close();
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 Log.Write(LogGroup.Error, $"The waypoint associated with '{GetName(self)}' cannot be found. Did you place it in an area?");
                 SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
-                EndConversation();
+                Close();
                 return;
             }
 
@@ -60,20 +60,20 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 Log.Write(LogGroup.Error, $"{GetName(self)} is missing the local variable 'PLANET_TYPE_ID' or has an invalid value specified..");
                 SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
-                EndConversation();
+                Close();
                 return;
             }
 
-            var model = GetDataModel<Model>();
+            var model = Data<Model>();
             model.SpaceLocation = GetLocation(spaceWaypoint);
             model.Planet = planetType;
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
+            var player = Player;
             var playerId = GetObjectUUID(player);
-            var model = GetDataModel<Model>();
+            var model = Data<Model>();
             var dockPoints = Space.GetDockPointsByPlanet(model.Planet);
 
             page.Header = "Please select a location.";

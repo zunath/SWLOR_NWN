@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Additional weapons increase your starship's weapons rating, meaning you do more damage when you hit.  But they also mean that you burn more stronidium when you attack. "
     }
   },
   "Identified": {

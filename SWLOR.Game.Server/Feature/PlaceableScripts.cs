@@ -153,9 +153,12 @@ namespace SWLOR.Game.Server.Feature
 
             if (!string.IsNullOrWhiteSpace(conversation))
             {
-                Dialog.StartConversation(user, target, conversation);
+                if (Conversation.TryGetGraph(conversation, out _))
+                    Conversation.Start(user, target, conversation);
+                else if (!ConversationMenu.TryStart(user, target, conversation))
+                    AssignCommand(user, () => ActionStartConversation(target, conversation, true, false));
             }
-            else
+            else if (!Conversation.TryStartAssigned(user, target))
             {
                 AssignCommand(user, () => ActionStartConversation(target, string.Empty, true, false));
             }

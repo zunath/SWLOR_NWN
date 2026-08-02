@@ -1,12 +1,12 @@
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.DisguiseService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class IdentityBrokerDialog: DialogBase
+    public class IdentityBrokerDialog: ConversationMenuDefinition
     {
         private class Model
         {
@@ -18,9 +18,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private const string PaymentPageId = "PAYMENT_PAGE";
         private const string ConfirmationPageId = "CONFIRMATION_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .WithDataModel(new Model())
                 .AddPage(MainPageId, MainPageInit)
                 .AddPage(PaymentPageId, PaymentPageInit)
@@ -29,9 +29,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             return builder.Build();
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
+            var player = Player;
             var playerId = GetObjectUUID(player);
             var retiredDisguises = Disguise.GetDisguises(playerId, true);
 
@@ -48,17 +48,17 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse(disguise.PrivateName, () =>
                 {
-                    var model = GetDataModel<Model>();
+                    var model = Data<Model>();
                     model.DisguiseId = disguise.Id;
-                    ChangePage(PaymentPageId);
+                    GoToPage(PaymentPageId);
                 });
             }
         }
 
-        private void PaymentPageInit(DialogPage page)
+        private void PaymentPageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
-            var model = GetDataModel<Model>();
+            var player = Player;
+            var model = Data<Model>();
             var disguise = DB.Get<PlayerDisguise>(model.DisguiseId);
 
             if (!CanUseDisguise(player, disguise))
@@ -74,20 +74,20 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             page.AddResponse($"Pay {Disguise.WipeCreditCost:N0} credits", () =>
             {
                 model.PaymentMethod = DisguisePaymentMethod.Credits;
-                ChangePage(ConfirmationPageId);
+                GoToPage(ConfirmationPageId);
             });
 
             page.AddResponse($"Spend {Disguise.WipeRoleplayXPCost:N0} RP XP", () =>
             {
                 model.PaymentMethod = DisguisePaymentMethod.RoleplayXP;
-                ChangePage(ConfirmationPageId);
+                GoToPage(ConfirmationPageId);
             });
         }
 
-        private void ConfirmationPageInit(DialogPage page)
+        private void ConfirmationPageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
-            var model = GetDataModel<Model>();
+            var player = Player;
+            var model = Data<Model>();
             var disguise = DB.Get<PlayerDisguise>(model.DisguiseId);
 
             if (!CanUseDisguise(player, disguise))
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 if (result == DeleteRetiredDisguiseResult.Success)
                 {
                     SendMessageToPC(player, ColorToken.Green(message));
-                    EndConversation();
+                    Close();
                     return;
                 }
 

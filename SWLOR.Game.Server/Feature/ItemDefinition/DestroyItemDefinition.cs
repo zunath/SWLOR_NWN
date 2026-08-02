@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
-using Dialog = SWLOR.Game.Server.Service.Dialog;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     SetLocalObject(user, "DESTROY_ITEM", item);
-                    Dialog.StartConversation(user, user, nameof(DestroyItemDialog));
+                    ConversationMenu.Start(user, user, nameof(DestroyItemDialog));
                 });
 
             return _builder.Build();

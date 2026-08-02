@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Uses the original DM Wand player listing feature, mainly for PW or modules with a bunch of players.\n\nNow just holds basic functions.\n\nNo object or npc functions now.  Target a PC or target the ground to bring up a \"list players\" option.\n\nOptions are the classic penguin / unpenguin / boot / jump to and jump to me plus the listing function."
     }
   },
   "Identified": {

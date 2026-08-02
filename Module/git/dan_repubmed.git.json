@@ -326,7 +326,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -2496,7 +2496,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 331
+          "value": 0
         },
         "Race": {
           "type": "byte",
@@ -2520,7 +2520,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",

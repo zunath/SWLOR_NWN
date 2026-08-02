@@ -3046,7 +3046,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalFloat(player, "PROPERTY_CITY_HALL_X", position.X);
                 SetLocalFloat(player, "PROPERTY_CITY_HALL_Y", position.Y);
                 SetLocalFloat(player, "PROPERTY_CITY_HALL_Z", position.Z);
-                Dialog.StartConversation(player, player, nameof(PlaceCityHallDialog));
+                ConversationMenu.Start(player, player, nameof(PlaceCityHallDialog));
                 return;
             }
 

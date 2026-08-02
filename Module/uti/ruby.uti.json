@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Bright and beautiful, the ruby is famous for its clear and bloody hue. To some it is the gem of love, to others the gem of revenge. To all it is unquestionably precious, and the largest, most flawless specimens are more highly prized than diamonds. "
+    }
   },
   "Description": {
     "id": 13301,

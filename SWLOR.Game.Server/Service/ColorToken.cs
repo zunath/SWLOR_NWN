@@ -19,6 +19,16 @@ namespace SWLOR.Game.Server.Service
     {
         private static string ColorArray => "     !##$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]]^_`abcdefghijklmnopqrstuvwxyz{|}~€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþþ";
 
+        // Some byte values collapse to the same Unicode character after the engine's CP1252 mapping.
+        // Prefer the semantic colors SWLOR actually emits before falling back to a component lookup.
+        private static readonly (byte Red, byte Green, byte Blue)[] KnownColors =
+        {
+            (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 255),
+            (0, 0, 0), (255, 255, 0), (0, 255, 255), (255, 127, 0),
+            (127, 127, 127), (102, 178, 255), (1, 254, 1), (254, 1, 1),
+            (1, 1, 254), (175, 48, 255), (255, 0, 255), (127, 0, 255)
+        };
+
         public static string TokenStart(byte red, byte green, byte blue)
         {
             if (red > 255) throw new ArgumentOutOfRangeException(nameof(red), "Red must be between 0 and 255.");
@@ -45,6 +55,56 @@ namespace SWLOR.Game.Server.Service
         public static string TokenEnd()
         {
             return "</c>";
+        }
+
+        /// <summary>
+        /// Decodes an NWN color start token at <paramref name="startIndex"/> without calling native
+        /// APIs. NUI conversation rendering uses this while translating legacy colored strings into
+        /// explicit text blocks.
+        /// </summary>
+        public static bool TryDecodeStartToken(
+            string text,
+            int startIndex,
+            out byte red,
+            out byte green,
+            out byte blue)
+        {
+            red = 0;
+            green = 0;
+            blue = 0;
+            if (string.IsNullOrEmpty(text) ||
+                startIndex < 0 ||
+                startIndex + 5 >= text.Length ||
+                text[startIndex] != '<' ||
+                text[startIndex + 1] != 'c' ||
+                text[startIndex + 5] != '>')
+            {
+                return false;
+            }
+
+            foreach (var known in KnownColors)
+            {
+                if (ColorArray[known.Red] == text[startIndex + 2] &&
+                    ColorArray[known.Green] == text[startIndex + 3] &&
+                    ColorArray[known.Blue] == text[startIndex + 4])
+                {
+                    red = known.Red;
+                    green = known.Green;
+                    blue = known.Blue;
+                    return true;
+                }
+            }
+
+            var redIndex = ColorArray.IndexOf(text[startIndex + 2]);
+            var greenIndex = ColorArray.IndexOf(text[startIndex + 3]);
+            var blueIndex = ColorArray.IndexOf(text[startIndex + 4]);
+            if (redIndex < 0 || greenIndex < 0 || blueIndex < 0)
+                return false;
+
+            red = (byte)redIndex;
+            green = (byte)greenIndex;
+            blue = (byte)blueIndex;
+            return true;
         }
 
         public static string Black(string text)

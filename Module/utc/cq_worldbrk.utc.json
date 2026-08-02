@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 48
+    "value": 4
   },
   "Appearance_Type": {
     "type": "word",
@@ -380,7 +380,7 @@
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": ""
+    "value": "dialog_start"
   },
   "ScriptDisturbed": {
     "type": "resref",
@@ -673,7 +673,7 @@
   },
   "xAppearance_Head": {
     "type": "word",
-    "value": 48
+    "value": 4
   },
   "xArmorPart_RFoot": {
     "type": "word",

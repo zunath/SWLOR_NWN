@@ -5,9 +5,9 @@ The StructureItemCreator generates JSON files for structure items used in the SW
 
 ## Command
 ```bash
-SWLOR.CLI.exe -s
+RunCLI.cmd -s
 # or
-SWLOR.CLI.exe --structure
+RunCLI.cmd --structure
 ```
 
 ## Functionality
@@ -75,4 +75,4 @@ This tool is used during development to:
 - Uses zero-padded 4-digit IDs for consistent naming
 - Requires proper attribute definitions on enum values
 - Generates JSON files compatible with the NWN module system
-- Automatically processes all enum values without manual configuration 
+- Automatically processes all enum values without manual configuration

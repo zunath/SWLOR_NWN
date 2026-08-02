@@ -1,30 +1,30 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class LockedDoorDialog: DialogBase
+    public class LockedDoorDialog: ConversationMenuDefinition
     {
         private const string MainPageId = "MAIN_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .AddPage(MainPageId, MainPageInit);
 
 
             return builder.Build();
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
             page.Header = "This door is locked. It looks like you need a key to open it.";
 
-            var door = OBJECT_SELF;
-            var player = GetPC();
+            var door = Owner;
+            var player = Player;
             var keyItemIds = new List<KeyItemType>();
 
             var count = 1;
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         }
                     }
 
-                    EndConversation();
+                    Close();
                 });
             }
         }

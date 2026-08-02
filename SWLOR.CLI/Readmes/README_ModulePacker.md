@@ -3,32 +3,37 @@
 ## Overview
 The ModulePacker provides functionality to pack and unpack NWN module files (.mod). It converts JSON files to GFF format and handles script compilation for module creation and extraction.
 
+`RunCLI.cmd` performs an incremental Release build before invoking the CLI, preventing the documented pack command from silently using an outdated committed executable.
+
 ## Commands
 
 ### Pack Module
 ```bash
 cd Module
-..\tools\SWLOR.CLI\SWLOR.CLI.exe -p ".\Star Wars LOR v2.mod"
+..\tools\SWLOR.CLI\RunCLI.cmd -p ".\Star Wars LOR v2.mod"
 # or
-..\tools\SWLOR.CLI\SWLOR.CLI.exe --pack ".\Star Wars LOR v2.mod"
+..\tools\SWLOR.CLI\RunCLI.cmd --pack ".\Star Wars LOR v2.mod"
 ```
 
 ### Unpack Module
 ```bash
 cd Module
-..\tools\SWLOR.CLI\SWLOR.CLI.exe -u ".\Star Wars LOR v2.mod"
+..\tools\SWLOR.CLI\RunCLI.cmd -u ".\Star Wars LOR v2.mod"
 # or
-..\tools\SWLOR.CLI\SWLOR.CLI.exe --unpack ".\Star Wars LOR v2.mod"
+..\tools\SWLOR.CLI\RunCLI.cmd --unpack ".\Star Wars LOR v2.mod"
 ```
 
 ## Functionality
 
 ### Pack Module Process
-1. **Temporary Directory Creation**: Creates `./packing/` directory for temporary files
-2. **JSON to GFF Conversion**: Converts all JSON files in module folders to GFF format using `nwn_gff`
-3. **Script File Copying**: Copies both `.nss` (source) and `.ncs` (compiled) script files
-4. **Module Assembly**: Uses `nwn_erf` to create the final `.mod` file
-5. **Cleanup**: Removes temporary files and directories
+1. **Temporary Directory Creation**: Creates isolated packing and palette-refresh directories
+2. **Palette Refresh**: Rebuilds temporary custom blueprint palette entries from the module's
+   creature, door, encounter, item, placeable, sound, store, trigger, and waypoint blueprints,
+   matching Aurora Toolset refresh behavior without modifying the source JSON
+3. **JSON to GFF Conversion**: Converts all JSON files in module folders to GFF format using `nwn_gff`
+4. **Script File Copying**: Copies both `.nss` (source) and `.ncs` (compiled) script files
+5. **Module Assembly**: Uses `nwn_erf` to create the final `.mod` file
+6. **Cleanup**: Removes temporary files and directories
 
 ### Unpack Module Process
 1. **Directory Preparation**: Creates and cleans module folders
@@ -49,6 +54,7 @@ The tool processes the following module folder types:
 - `./jrl` - Journal entries
 - `./utc` - Creature templates
 - `./utd` - Door templates
+- `./ute` - Encounter templates
 - `./uti` - Item templates
 - `./utm` - Merchant templates
 - `./utp` - Placeable templates

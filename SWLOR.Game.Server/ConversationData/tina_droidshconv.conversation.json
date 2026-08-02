@@ -1,0 +1,40 @@
+{
+  "Id": "tina_droidshconv",
+  "Title": "tina_droidshconv",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "entry-00000",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "entry-00000": {
+      "Id": "entry-00000",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Sorry chum... I've been told i'm not allowed to sell anymore droids... Apparently I've had to many complaints about them randomly combusting and exploding. I mean, I did tell them it was a possibility and that it's a perk of having a droid like that? Maybe they didn't read the fine print or maybe they ju-... *The woman seems to ramble on and on about droids she has sold, you decide it is best to just walk away.*",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": []
+    }
+  },
+  "Choices": {},
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [],
+  "OnAbortActions": []
+}

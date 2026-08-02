@@ -7,7 +7,7 @@ SWLOR first-party source is licensed under the repository's MIT license in `LICE
 The current toolset dependency graph is:
 
 ```text
-SWLOR.Toolset → SWLOR.Toolset.Domain → { SWLOR.NWN.Formats, SWLOR.Game.Server }
+{ SWLOR.Toolset, SWLOR.ConversationMigrator } → SWLOR.Toolset.Domain → { SWLOR.NWN.Formats, SWLOR.Game.Server }
 ```
 
 `SWLOR.NWN.Formats` is a standalone first-party, read-only implementation of the Aurora resource
@@ -23,11 +23,13 @@ authoritative version inventory.
 
 ## Architecture rule
 
-The desktop toolset is an outer application layer. Shared libraries, command-line tools, and the
-game server must not reference `SWLOR.Toolset` or `SWLOR.Toolset.Domain`. The formats library does
-not reference the toolset or game server. `ToolsetLicenseBoundaryTests` enforces both dependency
-direction and the absence of the retired external format dependency from executable first-party
-source and project references.
+The desktop toolset and the dedicated conversation-migration utility are outer application layers.
+Shared libraries and the game server must not reference `SWLOR.Toolset` or
+`SWLOR.Toolset.Domain`. The migration utility is an explicitly reviewed leaf consumer of the
+headless domain library; it must not be referenced by shared or runtime projects. The formats
+library does not reference the toolset or game server. `ToolsetLicenseBoundaryTests` enforces the
+approved dependency direction and the absence of the retired external format dependency from
+executable first-party source and project references.
 
 ## Historical attribution
 

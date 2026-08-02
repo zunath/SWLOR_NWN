@@ -617,7 +617,8 @@ namespace SWLOR.Toolset.Tests
                 // need, so without it a resource that will not read at all was reported by nobody.
                 "GffParse",
                 "ResRefLength", "DanglingInstanceTemplate", "VarTableEnum",
-                "QuestActivatorNotInPalette", "SpawnWaypointPalette", "PaletteOrphan",
+                "QuestActivatorNotInPalette", "SpawnWaypointPalette", "SingletonWaypointDestination",
+                "PaletteOrphan",
                 "DanglingConversation", "UnreferencedConversation"
             });
         }

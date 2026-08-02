@@ -124,7 +124,7 @@ namespace SWLOR.Toolset.Tests
         /// Conversations whose stored NumWords no longer matches their text — edited at some point
         /// by something that did not update the count. They disagree in both directions and by as
         /// much as 69 words (nar_sniper_q), so they are stale rather than evidence of a different
-        /// counting rule: the rule below reproduces the stored value for the other 549 files that
+        /// counting rule: the rule below reproduces the stored value for the other 286 files that
         /// carry one. Recomputing on save will correct each of these the first time it is edited.
         /// </summary>
         private static readonly string[] KnownStaleWordCounts =
@@ -156,7 +156,8 @@ namespace SWLOR.Toolset.Tests
             }
 
             disagreements.Should().BeEquivalentTo(KnownStaleWordCounts);
-            counted.Should().Be(570, "the number of conversations carrying a word count at all");
+            counted.Should().Be(307,
+                "the generated DLG shells were removed, leaving only authored conversations with stored counts");
         }
 
         [TestCaseSource(nameof(SampleDialogs))]

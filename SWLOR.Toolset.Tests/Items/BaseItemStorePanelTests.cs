@@ -19,15 +19,15 @@ namespace SWLOR.Toolset.Tests.Items
             {
                 File.WriteAllText(
                     Path.Combine(scratch, "baseitems.2da"),
-                    "2DA V2.0\r\n\r\nlabel ModelType StorePanel EquipableSlots\r\n" +
-                    "0 armor 3 0 0x2\r\n" +
-                    "1 longsword 2 1 0x1C030\r\n" +
-                    "2 potions 0 2 ****\r\n" +
-                    "3 amulet 0 3 512\r\n" +
-                    "4 miscmedium 0 4 invalid\r\n" +
-                    "5 missing_panel 0 **** 0\r\n" +
-                    "6 invalid_panel 0 99 0\r\n" +
-                    "7 malformed_panel 0 nonsense 0\r\n");
+                    "2DA V2.0\r\n\r\nlabel ModelType StorePanel EquipableSlots ItemClass\r\n" +
+                    "0 armor 3 0 0x2 armor\r\n" +
+                    "1 longsword 2 1 0x1C030 sword\r\n" +
+                    "2 potions 0 2 **** potion\r\n" +
+                    "3 amulet 0 3 512 amulet\r\n" +
+                    "4 miscmedium 0 4 invalid misc\r\n" +
+                    "5 missing_panel 0 **** 0 missing\r\n" +
+                    "6 bad_panel 0 99 0 invalid\r\n" +
+                    "7 malformed_panel 0 nonsense 0 malformed\r\n");
 
                 var rows = new BaseItemRowService(new TwoDaService(scratch));
 

@@ -289,7 +289,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void AVisualCatalogGetsSharedFacetFiltersAndSortsWithoutEditorSpecificCode()
+        public async Task AVisualCatalogGetsSharedFacetFiltersAndSortsWithoutEditorSpecificCode()
         {
             var choices = Enumerable.Range(0, 140)
                 .Select(index => new BehaviorChoice(
@@ -316,7 +316,7 @@ namespace SWLOR.Toolset.Tests
                 Store("""{ "__data_type": "UTC " }"""),
                 new List<string>());
 
-            row.OpenGalleryCommand.Execute(null);
+            await row.OpenGalleryCommand.ExecuteAsync(null);
 
             var gender = row.GalleryFilters.Should().ContainSingle().Subject;
             gender.Label.Should().Be("Gender");

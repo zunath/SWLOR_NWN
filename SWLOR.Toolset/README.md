@@ -65,12 +65,13 @@ SWLOR.Toolset/          Avalonia app  — shell, docked panels, editors, OpenGL 
 SWLOR.Toolset.Domain/   headless lib  — all logic lives here (no UI dependency)
 SWLOR.Toolset.Tests/    NUnit         — unit tests + full-corpus gates
 SWLOR.NWN.Formats/      headless lib  — standalone read-only Aurora resource formats
+tools/SWLOR.ConversationMigrator/     — one-shot dialog migration CLI
 ```
 
 References flow strictly one way:
 
 ```
-SWLOR.Toolset → SWLOR.Toolset.Domain → { SWLOR.NWN.Formats, SWLOR.Game.Server }
+{ SWLOR.Toolset, SWLOR.ConversationMigrator } → SWLOR.Toolset.Domain → { SWLOR.NWN.Formats, SWLOR.Game.Server }
 ```
 
 **Logic belongs in `Domain`, not in the app project.** The test project references `Domain` only —

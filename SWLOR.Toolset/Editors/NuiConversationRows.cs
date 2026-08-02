@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using Avalonia.Media;
+using Avalonia.Media.Immutable;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Game.Server.Service.ConversationService;
@@ -22,11 +23,11 @@ public enum NuiConversationTreeRowKind
 /// </summary>
 public sealed partial class NuiConversationTreeRow : ObservableObject
 {
-    private static readonly IBrush NpcAccent = new SolidColorBrush(Color.FromRgb(222, 105, 113));
-    private static readonly IBrush PlayerAccent = new SolidColorBrush(Color.FromRgb(91, 159, 255));
-    private static readonly IBrush MissingAccent = new SolidColorBrush(Color.FromRgb(232, 178, 91));
-    private static readonly IBrush AlwaysVisibleAccent = new SolidColorBrush(Color.FromRgb(113, 196, 140));
-    private static readonly IBrush ConditionalAccent = new SolidColorBrush(Color.FromRgb(232, 178, 91));
+    private static readonly IBrush NpcAccent = new ImmutableSolidColorBrush(Color.FromRgb(222, 105, 113));
+    private static readonly IBrush PlayerAccent = new ImmutableSolidColorBrush(Color.FromRgb(91, 159, 255));
+    private static readonly IBrush MissingAccent = new ImmutableSolidColorBrush(Color.FromRgb(232, 178, 91));
+    private static readonly IBrush AlwaysVisibleAccent = new ImmutableSolidColorBrush(Color.FromRgb(113, 196, 140));
+    private static readonly IBrush ConditionalAccent = new ImmutableSolidColorBrush(Color.FromRgb(232, 178, 91));
 
     private NuiConversationTreeRow(
         string key,
@@ -344,7 +345,7 @@ public sealed class NuiConversationPreviewTextRow
     public NuiConversationPreviewTextRow(ConversationTextBlock block, string text)
     {
         Text = text;
-        Foreground = new SolidColorBrush(PreviewColor(block));
+        Foreground = new ImmutableSolidColorBrush(PreviewColor(block));
     }
 
     public string Text { get; }

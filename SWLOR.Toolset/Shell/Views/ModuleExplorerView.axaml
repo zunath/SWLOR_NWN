@@ -52,12 +52,18 @@
     </Grid>
 
     <Grid Grid.Row="2">
-      <ListBox Background="Transparent" BorderThickness="0"
+      <ListBox x:Name="ModuleTree" Background="Transparent" BorderThickness="0"
                ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}"
                DoubleTapped="OnItemsDoubleTapped">
         <ListBox.Styles>
           <Style Selector="ListBoxItem">
             <Setter Property="Padding" Value="0,2" />
+          </Style>
+          <Style Selector="ListBoxItem.drag-source">
+            <Setter Property="Opacity" Value="0.4" />
+          </Style>
+          <Style Selector="ListBoxItem.drag-target">
+            <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
           </Style>
         </ListBox.Styles>
         <ListBox.ItemTemplate>
@@ -65,7 +71,11 @@
             <!-- ContextRequested selects the row first: Avalonia does not select on right-click, and
                  every command on these menus acts on the selection. -->
             <Grid ColumnDefinitions="Auto,*,Auto" Margin="{Binding Indent}"
-                  Background="Transparent" ContextRequested="OnRowContextRequested">
+                  Background="Transparent" ContextRequested="OnRowContextRequested"
+                  PointerPressed="OnRowPointerPressed"
+                  PointerMoved="OnRowPointerMoved"
+                  PointerReleased="OnRowPointerReleased"
+                  PointerCaptureLost="OnRowPointerCaptureLost">
               <Grid.ContextMenu>
                 <ContextMenu>
                   <!-- Folder actions. Hidden rather than greyed out on a resource row and on Unsorted,

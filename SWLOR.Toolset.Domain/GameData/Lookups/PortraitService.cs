@@ -15,7 +15,8 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         string DisplayName,
         int? Sex,
         int? Race,
-        int? InanimateType);
+        int? InanimateType,
+        bool IsPlot = false);
 
     /// <summary>
     /// The five actual portrait TGA resrefs a <see cref="PortraitRow.BaseResRef"/> expands to,
@@ -105,7 +106,8 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     baseResRef!,
                     table.GetInt(row, "Sex"),
                     table.GetInt(row, "Race"),
-                    table.GetInt(row, "InanimateType")));
+                    table.GetInt(row, "InanimateType"),
+                    string.Equals(table.GetString(row, "Plot"), "1", StringComparison.Ordinal)));
             }
 
             return results;

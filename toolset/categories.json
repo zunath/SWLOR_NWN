@@ -383,6 +383,11 @@
             "prefabdarkbase",
             "prefabfighter",
             "prefabwarehouse",
+            "prefabgriddesert",
+            "prefabgridgrass",
+            "prefabgridsnowy",
+            "prefabgridwaste",
+            "prefabgridwater",
             "prefab_beachside",
             "prefab_desoutp",
             "prefab_hauntcave",
@@ -470,6 +475,7 @@
         {
           "name": "Building Template",
           "members": [
+            "area_template",
             "bank",
             "cantina",
             "city_hall",
@@ -829,25 +835,44 @@
         {
           "name": "CZ-220",
           "members": [
+            "avixtatham",
+            "banissgolladio",
+            "bruenortyuth",
+            "cherissordo",
+            "cr_t_d_operator",
             "cz220_5cr4pconvo",
             "cz220_datapad",
-            "cz_captainbertha",
-            "cz_employee1",
-            "cz_employee2",
-            "cz_employee3",
-            "cz_receptionist"
+            "dariobeto",
+            "darrynbeto",
+            "galateaallerti",
+            "halronlinth",
+            "henry",
+            "maureenliagri",
+            "night_galaxybar",
+            "selanflembek"
           ]
         },
         {
           "name": "Dantooine",
           "members": [
+            "cavedweller",
             "dan_bo",
             "dan_cafebar",
             "dan_hayquest",
             "dan_lizards",
             "dan_medisupp",
             "dan_questmilk",
-            "dan_thuneconvo"
+            "dan_thuneconvo",
+            "danciv",
+            "dandialog",
+            "dangym",
+            "daninfo",
+            "dantherbs",
+            "dantkinrath",
+            "dantlibjedi",
+            "danttrainer",
+            "docjoe",
+            "tat_civ1"
           ]
         },
         {
@@ -870,7 +895,9 @@
             "dt_medic_anchor",
             "dt_verpex",
             "dt_visi_medic001",
-            "dt_visi_medic003"
+            "dt_visi_medic003",
+            "magasindial",
+            "vendor_merchant"
           ]
         },
         {
@@ -879,22 +906,27 @@
             {
               "name": "Dac City",
               "members": [
+                "lu_shang",
                 "mcdce_doctor",
-                "mcdce_gamemstr",
                 "mcdce_onmofo",
-                "mcdce_reception",
-                "mcdce_sergeant"
+                "mcdce_sergeant",
+                "mon_p3dr0oilpit"
               ]
             }
           ]
         },
         {
-          "name": "Nar Shaddaa",
+          "name": "Smuggler\u0027s Moon",
           "members": [
+            "gsiquest1",
+            "mcdce_gamemstr",
+            "mcdce_reception",
             "nar_datasmg_q",
             "nar_pirate_q",
             "nar_slaver_q",
-            "nar_sniper_q"
+            "nar_sniper_q",
+            "veles_colonist1",
+            "veles_colonist2"
           ]
         },
         {
@@ -1003,14 +1035,28 @@
         },
         {
           "name": "Tatooine",
+          "children": [
+            {
+              "name": "Anchorhead",
+              "members": [
+                "can_ash",
+                "leny",
+                "tat_czerka",
+                "tat_militmurder",
+                "tat_smug",
+                "tat_womp",
+                "tatsmugglerquest",
+                "tina_droidshconv",
+                "verpex"
+              ]
+            }
+          ],
           "members": [
-            "tat_cantinaconvo",
-            "tat_civ1",
-            "tat_czerka",
-            "tat_militia",
-            "tat_militmurder",
-            "tat_smug",
-            "tat_womp"
+            "jawa",
+            "merchant1",
+            "q1_nikka_larson",
+            "smesk_naia",
+            "tat_cantinaconvo"
           ]
         },
         {
@@ -1019,10 +1065,32 @@
             {
               "name": "Veles",
               "members": [
+                "cleanwatertube",
+                "czerka_concierge",
+                "czerkapatrol",
+                "czerkasoda",
+                "cz_captainbertha",
+                "cz_employee1",
+                "cz_employee2",
+                "cz_employee3",
+                "cz_receptionist",
+                "defmachineconsol",
+                "duskhaven_thug",
+                "fnote_vendor",
+                "jhoren_veles",
+                "night_viscaccess",
+                "night_viscflower",
+                "rawsewagesys",
+                "republicsoldier0",
+                "republicsoldier1",
+                "sera_vonn",
+                "sewermstrconsole",
+                "sewersecconsole",
+                "sewertreatconsol",
+                "star_attend_lau",
                 "veles_bankteller",
                 "veles_captisabel",
                 "veles_chef",
-                "veles_colonist1",
                 "veles_colonist10",
                 "veles_colonist11",
                 "veles_colonist12",
@@ -1030,7 +1098,6 @@
                 "veles_colonist14",
                 "veles_colonist15",
                 "veles_colonist16",
-                "veles_colonist2",
                 "veles_colonist3",
                 "veles_colonist4",
                 "veles_colonist5",
@@ -1059,10 +1126,153 @@
                 "veles_smugglers1",
                 "veles_smugshop",
                 "veles_techvendor",
-                "veles_thug1",
-                "veles_volnatu"
+                "veles_volnatu",
+                "visc_spicesteph"
               ]
             }
+          ],
+          "members": [
+            "cooks_journal",
+            "crystal",
+            "denam_reyholm",
+            "dessta_bocktorb",
+            "dlg_selendar",
+            "farah_oersted",
+            "harry_mason",
+            "irene_colsstaad",
+            "leg_med",
+            "legreception",
+            "mine_foreman",
+            "moirahalaz",
+            "npc_l",
+            "orlando_doon",
+            "red_journal_mand",
+            "reid_coxxion",
+            "rennatarsk",
+            "roy_moss",
+            "spy1",
+            "spy2",
+            "szaansynko",
+            "talgarmeyne",
+            "tristan_talyron",
+            "veles_thug1",
+            "wf_droid",
+            "wf_engineer"
+          ]
+        },
+        {
+          "name": "Force Vision",
+          "members": [
+            "jhoren_firstrite"
+          ]
+        },
+        {
+          "name": "Hutlar",
+          "members": [
+            "cyylan_forevia",
+            "guylan_verruchi",
+            "hut_sharbyskbrek",
+            "kieun_xorxca",
+            "moricho_deine",
+            "rorrska_buvvien",
+            "tohnden_dahkson",
+            "voryx_ooang"
+          ]
+        },
+        {
+          "name": "Korriban",
+          "children": [
+            {
+              "name": "Wastelands",
+              "members": [
+                "korrislugs",
+                "sithguide"
+              ]
+            }
+          ],
+          "members": [
+            "korrdralquest",
+            "korrifactory",
+            "korrinstructor",
+            "nather_addams",
+            "refugee2",
+            "smugthide",
+            "trooperquest",
+            "tulak_start",
+            "vordlg"
+          ]
+        },
+        {
+          "name": "Shared",
+          "children": [
+            {
+              "name": "Bounty hunters",
+              "members": [
+                "bh",
+                "bh2",
+                "bh3",
+                "bh4"
+              ]
+            },
+            {
+              "name": "Cantina patrons",
+              "members": [
+                "bartender",
+                "gambler",
+                "patron1",
+                "patron2",
+                "patron3",
+                "patron4",
+                "patron5",
+                "patron6",
+                "patron7",
+                "patron8"
+              ]
+            },
+            {
+              "name": "Czerka",
+              "members": [
+                "czerkaranger"
+              ]
+            },
+            {
+              "name": "Services",
+              "members": [
+                "chefmasteryu",
+                "fishmaster",
+                "train_terminal",
+                "yastin_fettias"
+              ]
+            }
+          ],
+          "members": [
+            "nima_poy",
+            "refugee",
+            "tat_militia"
+          ]
+        },
+        {
+          "name": "System",
+          "members": [
+            "capn_sluuk",
+            "factiontesting",
+            "quest_example",
+            "sithbasement",
+            "spawn_banner",
+            "starting_items"
+          ]
+        },
+        {
+          "name": "Toolkits",
+          "members": [
+            "dmfi_universal",
+            "tk_omnidye"
+          ]
+        },
+        {
+          "name": "Twilight Praxeum",
+          "members": [
+            "dialognova"
           ]
         },
         {
@@ -1150,6 +1360,7 @@
         {
           "name": "ZEP toolkit",
           "members": [
+            "colors_inc",
             "zep_demi_bone_us",
             "zep_doorkill",
             "zep_doorspawn",
@@ -3749,7 +3960,7 @@
               ]
             },
             {
-              "name": "Skin/Hide",
+              "name": "Skin-Hide",
               "members": [
                 "alchfrogboss_sk",
                 "amphihydrus_sk",
@@ -5525,7 +5736,7 @@
               ]
             },
             {
-              "name": "Crafting/Tradeskill Material",
+              "name": "Crafting-Tradeskill Material",
               "members": [
                 "abdamaryllia",
                 "abdamarylx",

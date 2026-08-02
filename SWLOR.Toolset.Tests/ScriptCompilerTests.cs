@@ -288,9 +288,10 @@ namespace SWLOR.Toolset.Tests
             outcome.Succeeded.Should().BeTrue();
             var ncsDirectory = Path.Combine(module, "ncs");
             File.Exists(Path.Combine(ncsDirectory, "spike_atomic.ncs")).Should().BeTrue();
-            Directory.EnumerateFiles(ncsDirectory)
-                .Should().ContainSingle("a successful compile must not leave its staging file behind")
-                .Which.Should().Be(Path.Combine(ncsDirectory, "spike_atomic.ncs"));
+            Directory.EnumerateFiles(ncsDirectory).Select(Path.GetFileName)
+                .Should().BeEquivalentTo(
+                    [".script-staleness-cache.json", "spike_atomic.ncs"],
+                    "a successful compile may persist its fingerprint cache but must not leave its staging file behind");
         }
 
         /// <summary>
@@ -328,9 +329,10 @@ namespace SWLOR.Toolset.Tests
             outcome.Succeeded.Should().BeFalse();
             (await File.ReadAllBytesAsync(output)).Should().Equal(before,
                 "a failed compile must never replace the last good bytecode");
-            Directory.EnumerateFiles(Path.Combine(module, "ncs"))
-                .Should().ContainSingle("a failed compile must clean up its own staging file")
-                .Which.Should().Be(output);
+            Directory.EnumerateFiles(Path.Combine(module, "ncs")).Select(Path.GetFileName)
+                .Should().BeEquivalentTo(
+                    [".script-staleness-cache.json", "spike_atomic2.ncs"],
+                    "a failed compile may retain its fingerprint cache but must clean up its own staging file");
         }
 
         /// <summary>

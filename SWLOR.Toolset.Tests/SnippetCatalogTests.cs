@@ -19,9 +19,9 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void TheRegistryHoldsEverySnippetTheGameDefines()
         {
-            Catalog.All.Should().HaveCount(20);
-            Catalog.Conditions.Should().HaveCount(10);
-            Catalog.Actions.Should().HaveCount(10);
+            Catalog.All.Should().HaveCount(28);
+            Catalog.Conditions.Should().HaveCount(14);
+            Catalog.Actions.Should().HaveCount(14);
         }
 
         [Test]

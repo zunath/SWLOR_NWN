@@ -73,6 +73,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
         private bool _reusePagedChoicesOnNextRebuild;
         private bool _galleryBuilt;
         private bool _galleryControlsBuilt;
+        private bool _suppressAutomaticGalleryRebuild;
         private bool _disposed;
         private bool _loading;
         private BehaviorChoiceViewModel? _markedChoice;
@@ -524,7 +525,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
             // row. Only the published page costs anything: the tiles beyond it are not realized and
             // their pictures are not requested until the builder scrolls to them. A popup gallery
             // still waits to be opened - four figures of portraits is not a page's worth of anything.
-            if (IsInlineGallery)
+            if (IsInlineGallery && !_suppressAutomaticGalleryRebuild)
                 RebuildGallery();
 
             RefreshStatus();
@@ -1274,14 +1275,33 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 if (!await LoadChoicePageAsync(reset: true).ConfigureAwait(true))
                     return;
                 _reusePagedChoicesOnNextRebuild = true;
-                Reload();
+                ReloadWithoutStartingGalleryRebuild();
+                if (IsInlineGallery)
+                    await RebuildGalleryAsync().ConfigureAwait(true);
                 return;
             }
 
-            if (!await LoadDeferredChoicesAsync().ConfigureAwait(true))
-                return;
+            if (await LoadDeferredChoicesAsync().ConfigureAwait(true))
+                ReloadWithoutStartingGalleryRebuild();
 
-            Reload();
+            // Reload starts inline presentation without blocking the editor's first paint. An
+            // explicit activation is different: its caller is waiting for the visible picker, so
+            // do not complete until the first bounded page and its facet controls are published.
+            if (IsInlineGallery)
+                await RebuildGalleryAsync().ConfigureAwait(true);
+        }
+
+        private void ReloadWithoutStartingGalleryRebuild()
+        {
+            _suppressAutomaticGalleryRebuild = true;
+            try
+            {
+                Reload();
+            }
+            finally
+            {
+                _suppressAutomaticGalleryRebuild = false;
+            }
         }
 
         /// <summary>

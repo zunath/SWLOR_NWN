@@ -141,6 +141,8 @@ namespace SWLOR.Toolset.Tests
             foreach (var resRef in Data.Workspace.EnumerateResRefs(ResourceType.Utc))
             {
                 var root = Data.Workspace.LoadBlueprint(ResourceType.Utc, resRef).Fields;
+                if (UsesIntentionalNullCreatureAppearance(root))
+                    continue;
 
                 var failure = ModelFailure(ResourceType.Utc, root, LoadItemBlueprint);
                 if (failure != null)
@@ -150,6 +152,19 @@ namespace SWLOR.Toolset.Tests
             unresolved.Should().BeEmpty(
                 because: "a portrait must not conceal a broken creature appearance; " +
                          $"unresolved: {string.Join(", ", unresolved.Take(10))}");
+        }
+
+        private static bool UsesIntentionalNullCreatureAppearance(Domain.Gff.JsonGffStruct root)
+        {
+            var appearanceId = root.GetIntOrNull("Appearance_Type");
+            if (appearanceId is not >= 0)
+                return false;
+
+            var table = Data.TwoDa.GetTable("appearance");
+            var label = table.GetString(appearanceId.Value, "LABEL");
+            var model = table.GetString(appearanceId.Value, "RACE");
+            return !TwoDaChoicePolicy.IsSelectableLabel(label) &&
+                   string.Equals(model, "c_invsguy", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -297,6 +312,13 @@ namespace SWLOR.Toolset.Tests
             var row = Data.Portraits.GetAll().FirstOrDefault(candidate => candidate.Id == portraitId);
             if (row == null)
                 return false;
+
+            // Plot portraits are official campaign/NPC assets. The engine resolves them by row even
+            // when a particular local EE installation does not expose its campaign archive through
+            // the data KEY/BIF stack scanned by the toolset. Custom non-plot portraits still have to
+            // ship accessible artwork in the active HAK layers.
+            if (row.IsPlot)
+                return true;
 
             var variants = PortraitService.GetTgaVariants(row.BaseResRef);
             return Data.HasTexture(variants.Medium) || Data.HasTexture(variants.Large) ||

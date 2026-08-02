@@ -18,11 +18,17 @@ namespace SWLOR.Toolset.Tests
             "SWLOR.Toolset.Tests"
         };
 
+        private static readonly HashSet<string> ApprovedToolsetReferences = new(StringComparer.Ordinal)
+        {
+            "SWLOR.ConversationMigrator -> SWLOR.Toolset.Domain"
+        };
+
         private static readonly string[] ExecutableSourceRoots =
         {
             "SWLOR.Toolset",
             "SWLOR.Toolset.Domain",
             "SWLOR.Toolset.Tests",
+            Path.Combine("tools", "SWLOR.ConversationMigrator"),
             "SWLOR.NWN.Formats",
             "SWLOR.NWN.Formats.Tests",
             "SWLOR.NWN.Formats.Corpus.Tests"
@@ -83,7 +89,7 @@ namespace SWLOR.Toolset.Tests
         private static string ProjectName(string path) => Path.GetFileNameWithoutExtension(path);
 
         [Test]
-        public void NoFirstPartyProjectReferencesTheToolset()
+        public void OnlyApprovedApplicationLayersReferenceTheToolset()
         {
             var violations = new List<string>();
 
@@ -98,13 +104,17 @@ namespace SWLOR.Toolset.Tests
                              RegexOptions.IgnoreCase))
                 {
                     var referenced = ProjectName(reference.Groups[1].Value);
-                    if (ToolsetProjects.Contains(referenced))
-                        violations.Add($"{ProjectName(project)} -> {referenced}");
+                    if (!ToolsetProjects.Contains(referenced))
+                        continue;
+
+                    var dependency = $"{ProjectName(project)} -> {referenced}";
+                    if (!ApprovedToolsetReferences.Contains(dependency))
+                        violations.Add(dependency);
                 }
             }
 
             violations.Should().BeEmpty(
-                "the desktop toolset must remain an outer application layer that no shared project consumes");
+                "only explicitly reviewed outer application layers may consume the headless toolset domain");
         }
 
         [Test]

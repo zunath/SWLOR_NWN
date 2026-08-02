@@ -228,8 +228,10 @@ namespace SWLOR.Toolset.Shell.Panels
                 .Select(resRef => byResRef[resRef])
                 .ToList();
 
-            if (unsorted.Count > 0)
-                _roots.Add(BuildUnsortedNode(unsorted));
+            // Unsorted is also the drag target that takes a resource back out of a folder. Keep it
+            // visible when empty; otherwise a completely filed section has no drag-and-drop route out
+            // of its folders and the feature disappears precisely when the arrangement is tidiest.
+            _roots.Add(BuildUnsortedNode(unsorted));
 
             foreach (var node in _roots.SelectMany(Flatten))
                 node.IsExpanded = expanded.Contains(node.Name);
@@ -621,37 +623,82 @@ namespace SWLOR.Toolset.Shell.Panels
         /// <summary>Files the selected resource into a folder, which is how a builder organises by hand.</summary>
         private void MoveSelectedInto(CategoryFolder target)
         {
-            var section = _categories.Section(SelectedType);
-            if (section == null || SelectedRow?.Item is not { } item)
+            if (SelectedRow is not { } source)
                 return;
 
-            // Out of wherever it was first: a resref may legally sit in several folders, but a move the
-            // builder asked for means one destination, not an extra one.
-            foreach (var folder in section.AllFolders())
-                folder.RemoveMember(item.ResRef);
-
-            target.AddMember(item.ResRef);
-            SaveCategories();
-            Refresh();
+            MoveResource(source, target);
         }
 
         /// <summary>Takes the selected resource out of every folder, back to Unsorted.</summary>
         [RelayCommand]
         private void RemoveFromFolder()
         {
+            if (SelectedRow is not { } source)
+                return;
+
+            MoveResource(source, target: null);
+        }
+
+        /// <summary>
+        /// Whether a resource row can be dropped on a folder row. The synthetic Unsorted row is a
+        /// valid destination even though it has no <see cref="CategoryFolder"/> behind it.
+        /// </summary>
+        public bool CanDropResource(ExplorerNodeViewModel? source, ExplorerNodeViewModel? target)
+        {
+            if (source?.Item == null || target?.IsBranch != true ||
+                source.Type != SelectedType || target.Type != SelectedType)
+            {
+                return false;
+            }
+
             var section = _categories.Section(SelectedType);
-            if (section == null || SelectedRow?.Item is not { } item)
-                return;
+            if (section == null ||
+                (target.Folder == null &&
+                 !string.Equals(target.Name, CategorySection.UnsortedFolderName, StringComparison.Ordinal)))
+            {
+                return false;
+            }
 
-            var removed = false;
+            var current = section.FoldersContaining(source.Item.ResRef).ToList();
+            return target.Folder == null
+                ? current.Count > 0
+                : current.Count != 1 || !ReferenceEquals(current[0], target.Folder);
+        }
+
+        /// <summary>
+        /// Commits a drag from a resource row to a real folder or to Unsorted. Source and destination
+        /// are passed explicitly rather than read from selection: pointer movement and auto-scroll may
+        /// change selection during a drag, and the item under the pointer must not become the item moved.
+        /// </summary>
+        public bool DropResource(ExplorerNodeViewModel? source, ExplorerNodeViewModel? target)
+        {
+            if (!CanDropResource(source, target))
+                return false;
+
+            return MoveResource(source!, target!.Folder);
+        }
+
+        private bool MoveResource(ExplorerNodeViewModel source, CategoryFolder? target)
+        {
+            var section = _categories.Section(SelectedType);
+            if (section == null || source.Item is not { } item || source.Type != SelectedType)
+                return false;
+
+            // Out of wherever it was first: a resref may legally sit in several folders, but a move the
+            // builder asked for means one destination, not an extra one. A null destination is Unsorted.
+            var changed = false;
             foreach (var folder in section.AllFolders())
-                removed |= folder.RemoveMember(item.ResRef);
+                changed |= folder.RemoveMember(item.ResRef);
 
-            if (!removed)
-                return;
+            if (target != null)
+                changed |= target.AddMember(item.ResRef);
 
-            SaveCategories();
+            if (!changed)
+                return false;
+
+            var saved = SaveCategories();
             Refresh();
+            return saved;
         }
 
 
@@ -1087,6 +1134,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private static IReadOnlyList<string> ConversationResRefs(ModuleWorkspace workspace) =>
             workspace.EnumerateConversationGraphResRefs()
                 .Concat(workspace.EnumerateResRefs(ResourceType.Dlg))
+                .Where(resRef => !UnreferencedConversationRule.IsGeneratedShell(resRef))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .OrderBy(resRef => resRef, StringComparer.OrdinalIgnoreCase)
                 .ToList();

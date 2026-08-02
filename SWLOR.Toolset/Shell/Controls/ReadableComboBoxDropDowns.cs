@@ -61,21 +61,24 @@ namespace SWLOR.Toolset.Shell.Controls
             maximumWidth = Math.Max(fieldWidth, maximumWidth);
 
             var preferredWidth = Math.Max(fieldWidth, MinimumReadableWidth);
+            var measurement = new TextBlock
+            {
+                FontFamily = comboBox.FontFamily,
+                FontSize = comboBox.FontSize,
+                FontStyle = comboBox.FontStyle,
+                FontWeight = comboBox.FontWeight,
+                TextWrapping = Avalonia.Media.TextWrapping.NoWrap
+            };
             foreach (var item in comboBox.ItemsView)
             {
                 var label = DisplayLabel(item);
                 if (string.IsNullOrWhiteSpace(label))
                     continue;
 
-                var measurement = new TextBlock
-                {
-                    Text = label,
-                    FontFamily = comboBox.FontFamily,
-                    FontSize = comboBox.FontSize,
-                    FontStyle = comboBox.FontStyle,
-                    FontWeight = comboBox.FontWeight,
-                    TextWrapping = Avalonia.Media.TextWrapping.NoWrap
-                };
+                // Reuse one measuring control for every label. Character count is not a safe proxy
+                // in a proportional font ("WWW" can be wider than a longer run of "i"), while one
+                // TextBlock avoids allocating thousands of controls for a large 2DA choice list.
+                measurement.Text = label;
                 measurement.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 preferredWidth = Math.Max(
                     preferredWidth,

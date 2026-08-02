@@ -21,8 +21,8 @@ public sealed class ConversationGraphCorpusTests
                            name.EndsWith(".conversation.json", StringComparison.OrdinalIgnoreCase))
             .ToArray();
 
-        resources.Should().HaveCount(328,
-            "dt_cntr_magasin remains native until its missing predicate and store scripts can be implemented faithfully");
+        resources.Should().HaveCount(327,
+            "dt_barman_gen and dt_cntr_magasin remain native until their missing race and store behavior can be implemented faithfully");
         foreach (var resource in resources)
         {
             using var stream = assembly.GetManifestResourceStream(resource);

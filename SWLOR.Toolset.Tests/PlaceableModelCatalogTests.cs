@@ -41,8 +41,8 @@ namespace SWLOR.Toolset.Tests
                 "reserved model resrefs are engine slots rather than builder choices");
             rows.Should().OnlyContain(row => !string.IsNullOrEmpty(row.DisplayName),
                 "an unlabelled row falls back to its model resref, so a caption is always present");
-            rows.Count(row => !row.HasLabel).Should().BeGreaterThan(0,
-                "most of the table has no label - that is why the grid exists");
+            rows.Select(row => row.Id).Should().OnlyHaveUniqueItems(
+                "each selectable 2DA row must appear exactly once in the gallery");
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void Search_MatchesLabelOrModelResRef_AndTolleratesEveryRow()
+        public void Search_MatchesLabelOrModelResRef_AndToleratesEveryRow()
         {
             var catalog = TryCreate();
             if (catalog == null)

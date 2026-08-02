@@ -95,8 +95,8 @@
       <Border Classes="card" Margin="0,0,0,8" Padding="12" Loaded="OnAbilityRowLoaded">
         <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="10" RowDefinitions="Auto,Auto,Auto">
           <Border Grid.RowSpan="3" Width="36" Height="36" VerticalAlignment="Top"
-                  Background="{DynamicResource PanelSunkenBrush}"
-                  BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="3">
+                  Background="{DynamicResource FieldBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
             <Image Source="{Binding Icon}" Stretch="Uniform" Margin="2" />
           </Border>
           <TextBlock Grid.Column="1" Text="{Binding Name}" Classes="section" />
@@ -557,8 +557,8 @@
                               CommandParameter="{Binding Info}">
                         <Grid ColumnDefinitions="40,*" ColumnSpacing="8">
                           <Border Width="32" Height="32" VerticalAlignment="Top"
-                                  Background="{DynamicResource PanelSunkenBrush}"
-                                  BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="3">
+                                  Background="{DynamicResource FieldBrush}"
+                                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
                             <Image Source="{Binding Icon}" Stretch="Uniform" Margin="2" />
                           </Border>
                           <StackPanel Grid.Column="1">

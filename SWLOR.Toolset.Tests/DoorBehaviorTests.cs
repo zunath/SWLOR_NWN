@@ -480,9 +480,10 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void ASmallPictureSetIsShownOnThePageAndPaged()
+        public async Task ASmallPictureSetIsShownOnThePageAndPaged()
         {
             using var row = PictureRow(60);
+            await row.ActivateChoicesAsync();
 
             row.IsGallery.Should().BeTrue();
             row.IsInlineGallery.Should().BeTrue("a set this size fits on the page");
@@ -496,7 +497,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void ALargePictureSetStaysBehindItsPreviewUntilOpened()
+        public async Task ALargePictureSetStaysBehindItsPreviewUntilOpened()
         {
             using var row = PictureRow(400);
 
@@ -504,7 +505,7 @@ namespace SWLOR.Toolset.Tests
             row.IsPopupGallery.Should().BeTrue();
             row.GalleryChoices.Should().BeEmpty("opening the editor must not realize portrait tiles");
 
-            row.OpenGalleryCommand.Execute(null);
+            await row.OpenGalleryCommand.ExecuteAsync(null);
             row.IsGalleryOpen.Should().BeTrue();
             row.GalleryChoices.Should().HaveCount(48);
 

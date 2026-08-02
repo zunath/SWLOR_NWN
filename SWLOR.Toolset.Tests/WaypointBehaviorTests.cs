@@ -634,7 +634,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void AnAppearanceRowIsPickedFromPicturesOnThePage()
+        public async Task AnAppearanceRowIsPickedFromPicturesOnThePage()
         {
             var appearances = Enumerable.Range(1, 76)
                 .Select(id => new BehaviorChoice(id, $"marker {id}", modelResRef: $"gi_waypoint{id:00}"))
@@ -654,6 +654,7 @@ namespace SWLOR.Toolset.Tests
             row.IsGallery.Should().BeTrue();
             row.IsInlineGallery.Should().BeTrue();
             row.IsSearchableChoice.Should().BeFalse();
+            await row.OpenGalleryCommand.ExecuteAsync(null);
             row.GalleryChoices.Should().NotBeEmpty();
             row.GalleryChoices[0].Detail.Should().Be("gi_waypoint01");
         }

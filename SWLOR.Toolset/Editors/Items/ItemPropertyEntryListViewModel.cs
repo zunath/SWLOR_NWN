@@ -83,8 +83,10 @@ namespace SWLOR.Toolset.Editors.Items
                 return;
 
             var subtypeId = (int)choice.Value;
+            var storedCostTableId = Math.Max(0, _definition.CostTableId);
+            var initialCostValue = _definition.CostTableId < 0 ? 0 : 1;
             var applied = _runEdit($"Add {Label} - {choice.Display}", () =>
-                _store.SetPropertyValue(_definition.PropertyId, subtypeId, _definition.CostTableId, 1));
+                _store.SetPropertyValue(_definition.PropertyId, subtypeId, storedCostTableId, initialCostValue));
 
             if (!applied)
                 return;

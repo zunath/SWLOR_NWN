@@ -22,6 +22,9 @@ namespace SWLOR.Toolset.Tests.Items
         private static ItemValueStore OpenStore() =>
             new(UtiDocument.Load(AdrenHarnessPath).Fields);
 
+        private static ItemCostTableRanges OpenCostTables() =>
+            new(new TwoDaService(Sw2DaDirectory));
+
         [Test]
         public void ReadOnlySummaryUsesTheItemEditorsStatCatalog()
         {
@@ -72,7 +75,8 @@ namespace SWLOR.Toolset.Tests.Items
 
         private static ItemStatsSectionViewModel OpenArmorSection(ItemValueStore store)
         {
-            var section = new ItemStatsSectionViewModel(store, (_, mutation) => { mutation(); return true; });
+            var section = new ItemStatsSectionViewModel(
+                store, (_, mutation) => { mutation(); return true; }, costTables: OpenCostTables());
             section.Rebuild(ItemFamily.Armor, ItemRoleCatalog.CustomId);
             return section;
         }
@@ -184,7 +188,7 @@ namespace SWLOR.Toolset.Tests.Items
         {
             var store = OpenStore();
             var section = new ItemStatsSectionViewModel(
-                store, (_, mutation) => { mutation(); return true; });
+                store, (_, mutation) => { mutation(); return true; }, costTables: OpenCostTables());
             section.Rebuild(ItemFamily.Miscellaneous, ItemRoleCatalog.CustomId);
 
             var defense = section.Groups.Single(group => group.Group == ItemStatGroup.Defense);
@@ -511,11 +515,39 @@ namespace SWLOR.Toolset.Tests.Items
         [Test]
         public void MaximumFallsBackToTheDefaultWhenNoCostTableResolverIsSupplied()
         {
-            var section = OpenArmorSection(OpenStore());
+            var section = new ItemStatsSectionViewModel(
+                OpenStore(), (_, mutation) => { mutation(); return true; });
+            section.Rebuild(ItemFamily.Armor, ItemRoleCatalog.CustomId);
 
             var defense = section.Groups.Single(group => group.Group == ItemStatGroup.Defense);
             defense.Cells.Single(cell => cell.Label == "Physical Defense").Maximum
                 .Should().Be(ItemCostTableRanges.DefaultMax);
+        }
+
+        [Test]
+        public void MissingCostTableMetadataKeepsTheStoredValueReadOnly()
+        {
+            var store = OpenStore();
+            var editCount = 0;
+            var section = new ItemStatsSectionViewModel(store, (_, mutation) =>
+            {
+                editCount++;
+                mutation();
+                return true;
+            });
+            section.Rebuild(ItemFamily.Armor, ItemRoleCatalog.CustomId);
+            var physicalDefense = section.Groups
+                .Single(group => group.Group == ItemStatGroup.Defense)
+                .Cells.Single(cell => cell.Label == "Physical Defense");
+
+            physicalDefense.HasOptions.Should().BeFalse();
+            physicalDefense.LookupUnavailableMessage.Should().Contain("read-only");
+
+            physicalDefense.Number = 99;
+
+            physicalDefense.Number.Should().Be(26);
+            store.GetPropertyValue(94, 1).Should().Be(26);
+            editCount.Should().Be(0);
         }
 
         [Test]

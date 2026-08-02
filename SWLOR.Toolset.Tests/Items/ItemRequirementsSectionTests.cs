@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
+using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Items;
 
@@ -18,8 +19,12 @@ namespace SWLOR.Toolset.Tests.Items
         private static ItemValueStore OpenStore() =>
             new(UtiDocument.Load(AdrenHarnessPath).Fields);
 
+        private static string Sw2DaDirectory =>
+            Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks", "sw_2da");
+
         private static ItemRequirementsSectionViewModel OpenSection(ItemValueStore store) =>
-            new(store, (_, mutation) => { mutation(); return true; });
+            new(store, (_, mutation) => { mutation(); return true; },
+                costTables: new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory)));
 
         [Test]
         public void ArmorSkillRequirementShowsTheStoredLevel()

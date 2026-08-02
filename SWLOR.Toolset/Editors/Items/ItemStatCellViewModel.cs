@@ -5,7 +5,8 @@ namespace SWLOR.Toolset.Editors.Items
 {
     /// <summary>
     /// One stat's value selector: a single itemprop.2da property (and subtype) shown as the real
-    /// populated rows of its cost table, with a capped number box only when game data is unavailable.
+    /// populated rows of its cost table. When game data is unavailable, the stored number remains
+    /// visible but read-only so a constrained CostValue never turns into arbitrary numeric input.
     /// A null <see cref="Number"/> means the property is absent from PropertiesList; any other value
     /// is its CostValue.
     /// </summary>
@@ -31,7 +32,7 @@ namespace SWLOR.Toolset.Editors.Items
 
         /// <summary>
         /// The populated rows this stat's cost table actually offers; empty only when the table
-        /// cannot be resolved and a number-box fallback is required.
+        /// cannot be resolved and the stored value must remain read-only.
         /// </summary>
         /// <remarks>
         /// Delay is the clearest case: iprp_delay's rows start at 11 and row 11 is labelled "110",
@@ -41,6 +42,9 @@ namespace SWLOR.Toolset.Editors.Items
         public IReadOnlyList<ItemCostTableOption> Options { get; }
 
         public bool HasOptions => Options.Count > 0;
+
+        public string LookupUnavailableMessage =>
+            "2DA cost-table metadata unavailable. The stored value is shown read-only.";
 
         /// <summary>The clear choice followed by every real row in the cost table.</summary>
         public IReadOnlyList<ItemCostTableOption> SelectableOptions { get; }
@@ -107,6 +111,12 @@ namespace SWLOR.Toolset.Editors.Items
 
             if (_loading)
                 return;
+
+            if (!HasOptions)
+            {
+                Reload();
+                return;
+            }
 
             if (value.HasValue &&
                 (decimal.Truncate(value.Value) != value.Value ||

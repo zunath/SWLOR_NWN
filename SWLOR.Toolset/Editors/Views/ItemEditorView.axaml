@@ -76,21 +76,28 @@
   </UserControl.Resources>
 
   <UserControl.DataTemplates>
-    <!-- One stat's value selector. Resolved cost tables list their real populated rows; the number
-         box is retained only as a fallback for sessions where game data is unavailable. -->
+    <!-- One stat's value selector. Resolved cost tables list their real populated rows. If game
+         data is unavailable, the stored number remains visible but read-only with an explanation. -->
     <DataTemplate DataType="items:ItemStatCellViewModel">
       <Grid ColumnDefinitions="*,150" ColumnSpacing="8" Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
                    Foreground="{DynamicResource InkSecondaryBrush}"
                    TextTrimming="CharacterEllipsis" />
-        <!-- Both coded tables and numeric ladders list only their legal gameplay-facing values. -->
-        <ComboBox Grid.Column="1" ItemsSource="{Binding SelectableOptions}"
-                  SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
-                  HorizontalAlignment="Stretch" IsVisible="{Binding HasOptions}" />
-        <NumericUpDown Grid.Column="1" Value="{Binding Number, Mode=TwoWay}"
-                       Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
-                       IsVisible="{Binding !HasOptions}"
-                       Increment="1" FormatString="0" />
+        <StackPanel Grid.Column="1">
+          <!-- Both coded tables and numeric ladders list only their legal gameplay-facing values. -->
+          <ComboBox ItemsSource="{Binding SelectableOptions}"
+                    SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                    HorizontalAlignment="Stretch" IsVisible="{Binding HasOptions}" />
+          <NumericUpDown Value="{Binding Number, Mode=OneWay}"
+                         Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                         IsEnabled="False" IsVisible="{Binding !HasOptions}"
+                         Increment="1" FormatString="0"
+                         ToolTip.Tip="2DA cost-table metadata unavailable; stored value shown read-only." />
+          <TextBlock Text="{Binding LookupUnavailableMessage}"
+                     IsVisible="{Binding !HasOptions}"
+                     Foreground="{DynamicResource InkTertiaryBrush}"
+                     FontSize="10" TextWrapping="Wrap" Margin="0,3,0,0" />
+        </StackPanel>
       </Grid>
     </DataTemplate>
 
@@ -102,7 +109,13 @@
                    TextTrimming="CharacterEllipsis" />
         <NumericUpDown Grid.Column="1" Value="{Binding Number, Mode=TwoWay}"
                        Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                       IsVisible="{Binding HasEditableValue}"
                        Increment="1" FormatString="0" />
+        <TextBlock Grid.Column="1" Text="No value"
+                   IsVisible="{Binding !HasEditableValue}"
+                   Foreground="{DynamicResource InkTertiaryBrush}"
+                   HorizontalAlignment="Right" VerticalAlignment="Center"
+                   ToolTip.Tip="This property is a subtype marker and has no cost value." />
         <Button Grid.Column="2" Content="&#x00D7;" Classes="close"
                 Command="{Binding RemoveCommand}" />
       </Grid>
@@ -368,9 +381,20 @@
                   <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
                              Foreground="{DynamicResource InkSecondaryBrush}"
                              TextTrimming="CharacterEllipsis" />
-                  <NumericUpDown Grid.Column="1" Value="{Binding Number, Mode=TwoWay}"
-                                 Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
-                                 Increment="1" FormatString="0" />
+                  <StackPanel Grid.Column="1">
+                    <ComboBox ItemsSource="{Binding SelectableOptions}"
+                              SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                              HorizontalAlignment="Stretch" IsVisible="{Binding HasOptions}" />
+                    <NumericUpDown Value="{Binding Number, Mode=OneWay}"
+                                   Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                                   IsEnabled="False" IsVisible="{Binding !HasOptions}"
+                                   Increment="1" FormatString="0"
+                                   ToolTip.Tip="2DA cost-table metadata unavailable; stored value shown read-only." />
+                    <TextBlock Text="{Binding LookupUnavailableMessage}"
+                               IsVisible="{Binding !HasOptions}"
+                               Foreground="{DynamicResource InkTertiaryBrush}"
+                               FontSize="10" TextWrapping="Wrap" Margin="0,3,0,0" />
+                  </StackPanel>
                 </Grid>
               </DataTemplate>
             </ItemsControl.ItemTemplate>

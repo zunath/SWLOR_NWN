@@ -31,6 +31,12 @@ namespace SWLOR.Toolset.Editors.Items
         /// <summary>The property's real engine cap, resolved from its CostTableId.</summary>
         public int Maximum { get; }
 
+        /// <summary>
+        /// False when itempropdef.2da declares no cost table. Such entries are subtype markers:
+        /// their normalized CostValue is zero and only the entry itself can be added or removed.
+        /// </summary>
+        public bool HasEditableValue { get; }
+
         [ObservableProperty]
         private decimal? _number;
 
@@ -48,7 +54,8 @@ namespace SWLOR.Toolset.Editors.Items
             ItemCostTableRanges? costTables = null)
         {
             _propertyId = propertyId;
-            _costTableId = costTableId;
+            HasEditableValue = costTableId >= 0;
+            _costTableId = Math.Max(0, costTableId);
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _valueChanged = valueChanged;
@@ -69,6 +76,12 @@ namespace SWLOR.Toolset.Editors.Items
         {
             if (_loading)
                 return;
+
+            if (!HasEditableValue)
+            {
+                RestoreValue();
+                return;
+            }
 
             if (value.HasValue &&
                 (decimal.Truncate(value.Value) != value.Value ||

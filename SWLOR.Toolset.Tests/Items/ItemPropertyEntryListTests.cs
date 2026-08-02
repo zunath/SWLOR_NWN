@@ -61,6 +61,34 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public void AddingANoCostPropertyNormalizesItsStoredTableAndValue()
+        {
+            var document = UtiDocument.Load(AdrenHarnessPath);
+            var store = new ItemValueStore(document.Fields);
+            var choices = new[] { new BehaviorChoice(2, "Astromech") };
+            var list = new ItemPropertyEntryListViewModel(
+                ItemMultiEntryCatalog.ByPropertyId(122)!, store,
+                (_, mutation) => { mutation(); return true; }, choices);
+
+            list.AddCommand.Execute(new BehaviorChoiceViewModel(choices[0]));
+
+            store.GetPropertyValue(122, 2).Should().Be(0);
+            var added = document.PropertiesList.Single(entry =>
+                entry.Get("PropertyName").GetInteger() == 122 &&
+                entry.Get("Subtype").GetInteger() == 2);
+            added.Get("CostTable").GetInteger().Should().Be(0,
+                "Aurora stores zero when itempropdef.2da declares no cost table");
+            added.Get("CostValue").GetInteger().Should().Be(0,
+                "a no-cost property is a subtype marker rather than a numeric value");
+
+            var row = list.Entries.Single();
+            row.HasEditableValue.Should().BeFalse();
+            row.Number = 7;
+            row.Number.Should().Be(0);
+            store.GetPropertyValue(122, 2).Should().Be(0);
+        }
+
+        [Test]
         public void RemoveCommandClearsTheStoreAndDropsTheEntry()
         {
             var store = OpenStore();

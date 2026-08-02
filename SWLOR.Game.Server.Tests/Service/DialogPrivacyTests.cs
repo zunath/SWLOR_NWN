@@ -28,13 +28,24 @@ public class DialogPrivacyTests
         var startAssigned = ExtractMethod(source, "public static void StartAssignedCreatureConversation()");
         var makeCreatureConversationPrivate = ExtractMethod(source, "private static void MakeCreatureConversationPrivate(uint creature)");
 
+        var resetIndex = defaultConversationScript.IndexOf(
+            "DeleteLocalInt(OBJECT_SELF, \"SWLOR_NUI_CONVO\");", StringComparison.Ordinal);
+        var petrifiedIndex = defaultConversationScript.IndexOf(
+            "if (GetHasEffect(EFFECT_TYPE_PETRIFY, OBJECT_SELF) == TRUE)", StringComparison.Ordinal);
+        var deadIndex = defaultConversationScript.IndexOf(
+            "if (GetIsDead(OBJECT_SELF) == TRUE)", StringComparison.Ordinal);
+        var beforeHookIndex = defaultConversationScript.IndexOf(
+            "ExecuteScript(\"crea_convo_bef\", OBJECT_SELF);", StringComparison.Ordinal);
+
         scriptNames.Should().Contain("public const string OnCreatureConversationBefore = \"crea_convo_bef\";");
         defaultConversationScript.Should().Contain("ExecuteScript(\"crea_convo_bef\", OBJECT_SELF);");
-        defaultConversationScript.Should().Contain("DeleteLocalInt(OBJECT_SELF, \"SWLOR_NUI_CONVO\");\n    ExecuteScript(\"crea_convo_bef\", OBJECT_SELF);");
         defaultConversationScript.Should().Contain("if (GetLocalInt(OBJECT_SELF, \"SWLOR_NUI_CONVO\"))");
-        defaultConversationScript.IndexOf("ExecuteScript(\"crea_convo_bef\", OBJECT_SELF);", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(defaultConversationScript.IndexOf("BeginConversation();", StringComparison.Ordinal));
+        resetIndex.Should().BeLessThan(petrifiedIndex);
+        petrifiedIndex.Should().BeLessThan(deadIndex);
+        deadIndex.Should().BeLessThan(beforeHookIndex,
+            "the migrated-conversation hook runs only after the native creature state guards");
+        beforeHookIndex.Should().BeLessThan(
+            defaultConversationScript.IndexOf("BeginConversation();", StringComparison.Ordinal));
         source.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureConversationBefore)]\n        public static void StartAssignedCreatureConversation()");
         startAssigned.Should().Contain("MakeCreatureConversationPrivate(OBJECT_SELF);");
         startAssigned.IndexOf("MakeCreatureConversationPrivate(OBJECT_SELF);", StringComparison.Ordinal)
@@ -52,6 +63,39 @@ public class DialogPrivacyTests
             "the creature OnConversation event exposes its initiating player as the last speaker");
         routerSource.Should().NotContain("EventScript.Creature_OnDialogue => GetPCSpeaker()",
             "GetPCSpeaker is only populated after NWN has already entered a native conversation");
+    }
+
+    [Test]
+    public void DirectNuiRouter_PreservesCreatureGuardsAndDmPossession()
+    {
+        var conversationSource = ReadSource("SWLOR.Game.Server", "Service", "Conversation.cs")
+            .Replace("\r\n", "\n");
+        var routerSource = ReadSource("SWLOR.Game.Server", "Service", "ConversationMenu.cs")
+            .Replace("\r\n", "\n");
+        var participantGuard = ExtractMethod(
+            conversationSource, "internal static bool IsValidParticipant(uint player)");
+        var assignedStart = ExtractMethod(
+            conversationSource, "public static void StartAssignedCreatureConversation()");
+        var graphStart = ExtractMethod(
+            conversationSource, "public static void Start(\n            uint player,");
+        var objectRoute = ExtractMethod(
+            routerSource, "public static void StartFromObjectEvent()");
+        var creatureGuard = ExtractMethod(
+            routerSource, "private static bool CanStartCreatureConversation(uint creature)");
+        var menuStart = ExtractMethod(
+            routerSource, "public static void Start(uint player, uint owner, string name,");
+
+        participantGuard.Should().Contain("GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)");
+        assignedStart.Should().Contain("if (!IsValidParticipant(player))");
+        graphStart.Should().Contain("if (!IsValidParticipant(player))");
+        objectRoute.Should().Contain("if (!Conversation.IsValidParticipant(player))");
+        objectRoute.Should().Contain("eventScript == EventScript.Creature_OnDialogue");
+        objectRoute.Should().Contain("!CanStartCreatureConversation(OBJECT_SELF)");
+        menuStart.Should().Contain("if (!Conversation.IsValidParticipant(player))");
+
+        creatureGuard.Should().Contain("effectType == EffectTypeScript.Petrify");
+        creatureGuard.Should().Contain("if (GetIsDead(creature))");
+        creatureGuard.Should().Contain("return GetCommandable(creature) || isCharmed;");
     }
 
     [Test]

@@ -16,6 +16,19 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             if (trimmed.All(character => character == '*'))
                 return false;
 
+            // appearance.2da uses wrapper punctuation for internal null models such as
+            // "(Null Human)". Treat a separated Null prefix as a sentinel while retaining real
+            // content words such as "Nullifier".
+            var unwrapped = trimmed.TrimStart('(', '[', '{').TrimStart();
+            if (unwrapped.StartsWith("null", StringComparison.OrdinalIgnoreCase) &&
+                (unwrapped.Length == "null".Length ||
+                 char.IsWhiteSpace(unwrapped["null".Length]) ||
+                 unwrapped["null".Length] is '_' or '-' ||
+                 char.IsDigit(unwrapped["null".Length])))
+            {
+                return false;
+            }
+
             var normalized = new string(trimmed
                 .Where(character => !char.IsWhiteSpace(character) && character is not '_' and not '-')
                 .ToArray());

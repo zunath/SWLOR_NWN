@@ -41,14 +41,23 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDialogStart)]
         public static void StartFromObjectEvent()
         {
-            var player = GetCurrentlyRunningEvent() switch
+            var eventScript = GetCurrentlyRunningEvent();
+            var player = eventScript switch
             {
                 EventScript.Placeable_OnUsed => GetLastUsedBy(),
                 EventScript.Creature_OnDialogue => GetLastSpeaker(),
                 EventScript.Door_OnFailToOpen => GetClickingObject(),
                 _ => OBJECT_INVALID
             };
-            if (!GetIsObjectValid(player) || (!GetIsPC(player) && !GetIsDM(player)))
+            if (!Conversation.IsValidParticipant(player))
+                return;
+
+            // ModuleConversationRouter replaces a migrated creature's native OnConversation script
+            // with this direct route. Preserve nw_c2_default4's creature state gate before opening
+            // the NUI graph: petrified/dead creatures refuse, while charmed creatures retain the
+            // native exception to the commandability check.
+            if (eventScript == EventScript.Creature_OnDialogue &&
+                !CanStartCreatureConversation(OBJECT_SELF))
                 return;
 
             var name = GetLocalString(OBJECT_SELF, "CONVERSATION");
@@ -63,6 +72,29 @@ namespace SWLOR.Game.Server.Service
 
             if (!Conversation.TryStartAssigned(player, OBJECT_SELF))
                 AssignCommand(player, () => ActionStartConversation(OBJECT_SELF, string.Empty, true, false));
+        }
+
+        private static bool CanStartCreatureConversation(uint creature)
+        {
+            if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
+                return false;
+
+            var isCharmed = false;
+            for (var effect = GetFirstEffect(creature);
+                 GetIsEffectValid(effect);
+                 effect = GetNextEffect(creature))
+            {
+                var effectType = GetEffectType(effect);
+                if (effectType == EffectTypeScript.Petrify)
+                    return false;
+                if (effectType == EffectTypeScript.Charmed)
+                    isCharmed = true;
+            }
+
+            if (GetIsDead(creature))
+                return false;
+
+            return GetCommandable(creature) || isCharmed;
         }
 
         [NWNEventHandler(ScriptName.OnDialogStartConversation)]
@@ -90,7 +122,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void Start(uint player, uint owner, string name, uint uiTarget = OBJECT_INVALID)
         {
-            if (!GetIsObjectValid(player) || !GetIsPC(player))
+            if (!Conversation.IsValidParticipant(player))
             {
                 Log.Write(LogGroup.Error, $"Conversation menu '{name}' needs a valid player.");
                 return;

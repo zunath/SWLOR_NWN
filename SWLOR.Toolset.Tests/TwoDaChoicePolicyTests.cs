@@ -21,6 +21,7 @@ namespace SWLOR.Toolset.Tests
         [TestCase("cep reserved")]
         [TestCase("Padding")]
         [TestCase("NULL6")]
+        [TestCase("(Null Human)")]
         public void PlaceholderLabelsAreNeverSelectable(string label)
         {
             TwoDaChoicePolicy.IsSelectableLabel(label).Should().BeFalse();
@@ -28,6 +29,7 @@ namespace SWLOR.Toolset.Tests
 
         [TestCase("Human")]
         [TestCase("Outsider")]
+        [TestCase("Nullifier")]
         [TestCase("User Interface")]
         public void ContentLabelsRemainSelectable(string label)
         {
@@ -179,7 +181,8 @@ namespace SWLOR.Toolset.Tests
                     "2DA V2.0\r\n\r\nLABEL STRING_REF NAME RACE MODELTYPE PORTRAIT\r\n" +
                     "0 RealCreature **** real_name c_real F real_portrait\r\n" +
                     "1 Bio_reserved 123 reserved_name c_reserved F reserved_portrait\r\n" +
-                    "2 MissingModel **** missing_name **** F missing_portrait\r\n");
+                    "2 MissingModel **** missing_name **** F missing_portrait\r\n" +
+                    "3 \"(Null Human)\" **** null_human c_invsguy F ****\r\n");
                 File.WriteAllText(
                     Path.Combine(scratch, "placeables.2da"),
                     "2DA V2.0\r\n\r\nLabel StrRef ModelName\r\n" +

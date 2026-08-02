@@ -148,6 +148,12 @@ namespace SWLOR.Game.Server.Service
             return Graphs.TryGetValue(id, out graph);
         }
 
+        internal static bool IsValidParticipant(uint player)
+        {
+            return GetIsObjectValid(player) &&
+                   (GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player));
+        }
+
         /// <summary>
         /// Starts the NUI graph assigned to an object's native Dialog ResRef, when that resource
         /// has been migrated. Returning false leaves the caller free to use an explicit legacy
@@ -174,7 +180,7 @@ namespace SWLOR.Game.Server.Service
         public static void StartAssignedCreatureConversation()
         {
             var player = GetLastSpeaker();
-            if (!GetIsObjectValid(player) || !GetIsPC(player))
+            if (!IsValidParticipant(player))
                 return;
 
             MakeCreatureConversationPrivate(OBJECT_SELF);
@@ -226,7 +232,7 @@ namespace SWLOR.Game.Server.Service
             uint uiTarget = OBJECT_INVALID)
         {
             var conversationId = graph?.Id ?? "<null>";
-            if (!GetIsObjectValid(player) || !GetIsPC(player))
+            if (!IsValidParticipant(player))
             {
                 ReportStartFailure(player, conversationId, "The conversation target is not a valid player.");
                 return;

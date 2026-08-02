@@ -38,6 +38,7 @@ namespace SWLOR.Toolset
             // rather than anything the layout owns, so it belongs with the styles rather than with
             // the container built in OnFrameworkInitializationCompleted.
             Shell.Controls.RailToolTabs.Register();
+            Shell.Controls.ReadableComboBoxDropDowns.Register();
         }
 
         /// <summary>

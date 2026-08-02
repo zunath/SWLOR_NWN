@@ -318,6 +318,18 @@
     <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
   </Style>
 
+  <!-- Popup width is calculated globally when a ComboBox opens. Wrapping is the final guard for
+       sentence-like choices that are wider than the largest comfortable popup. -->
+  <Style Selector="ComboBoxItem TextBlock">
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="TextTrimming" Value="None" />
+  </Style>
+
+  <Style Selector="ComboBoxItem /template/ ContentPresenter">
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="TextTrimming" Value="None" />
+  </Style>
+
   <Style Selector="CheckBox">
     <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
     <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />

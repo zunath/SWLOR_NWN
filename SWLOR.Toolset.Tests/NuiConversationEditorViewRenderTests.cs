@@ -163,6 +163,11 @@ public sealed class NuiConversationEditorViewRenderTests
             treePanel.Should().NotBeNull();
             selectedPanel.Should().NotBeNull();
             tree.Should().NotBeNull();
+            var dragPreview = view.FindControl<Border>("TreeDragPreview");
+            dragPreview.Should().NotBeNull();
+            dragPreview!.IsVisible.Should().BeFalse("the destination preview only appears during a drag");
+            dragPreview.Opacity.Should().BeLessThan(1d,
+                "the dragged branch preview should remain translucent so its destination stays visible");
 
             treePanel!.Bounds.Width.Should().BeApproximately(selectedPanel!.Bounds.Width, 0.1,
                 "the tree and inspector occupy separate full-width rows instead of cramped columns");
@@ -181,8 +186,13 @@ public sealed class NuiConversationEditorViewRenderTests
                 .Select(block => block.Text ?? string.Empty)
                 .ToArray();
             text.Should().Contain("Conversation tree");
+            text.Should().Contain(value => value.Contains("drag to reorder", StringComparison.Ordinal));
             text.Should().Contain("Show this line when…");
             text.Should().Contain("When this line appears…");
+            view.GetVisualDescendants().OfType<Button>()
+                .Select(button => button.Content?.ToString())
+                .Should().NotContain(content => content == "↑" || content == "↓",
+                    "dragging replaces the small reorder arrows");
         }
         finally
         {
@@ -280,17 +290,38 @@ public sealed class NuiConversationEditorViewRenderTests
     }
 
     [Test]
-    public void TreeOrderingCommandsChangeTheRuntimeEvaluationOrder()
+    public void TreeDragDropChangesTheRuntimeEvaluationOrder()
     {
         var viewModel = OpenEditor();
+        var firstOpening = viewModel.TreeRows.Single(row =>
+            row.IsNpc && row.IsEntryPoint && row.Node?.Id == "first");
         var secondOpening = viewModel.TreeRows.Single(row =>
             row.IsNpc && row.IsEntryPoint && row.Node?.Id == "second");
 
-        viewModel.MoveTreeRowUpCommand.Execute(secondOpening);
+        viewModel.CanDropTreeRow(secondOpening, firstOpening).Should().BeTrue();
+        viewModel.DropTreeRow(secondOpening, firstOpening, insertAfter: false).Should().BeTrue();
 
         viewModel.SnapshotGraph().EntryPoints.Select(link => link.TargetNodeId)
             .Should().Equal(["second", "first"],
                 "the highest opening is evaluated first by the runtime");
+
+        viewModel.CanUndo.Should().BeTrue();
+        viewModel.UndoCommand.Execute(null);
+        viewModel.SnapshotGraph().EntryPoints.Select(link => link.TargetNodeId)
+            .Should().Equal(["first", "second"], "a drag should be one undoable edit");
+    }
+
+    [Test]
+    public void TreeDragDropDoesNotReparentConversationBranches()
+    {
+        var viewModel = OpenEditor();
+        var opening = viewModel.TreeRows.Single(row => row.IsNpc && row.IsEntryPoint && row.Node?.Id == "first");
+        var response = viewModel.TreeRows.Single(row => row.IsPlayer);
+        var followUp = viewModel.TreeRows.Single(row => row.IsNpc && row.Depth == 2);
+
+        viewModel.CanDropTreeRow(response, opening).Should().BeFalse();
+        viewModel.CanDropTreeRow(followUp, opening).Should().BeFalse();
+        viewModel.DropTreeRow(followUp, opening, insertAfter: false).Should().BeFalse();
     }
 
     [Test]

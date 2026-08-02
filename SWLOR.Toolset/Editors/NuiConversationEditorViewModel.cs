@@ -367,12 +367,6 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     private void MoveChoiceDown(NuiConversationChoiceRow? row) => MoveChoice(row, 1);
 
     [RelayCommand]
-    private void MoveTreeRowUp(NuiConversationTreeRow? row) => MoveTreeRow(row, -1);
-
-    [RelayCommand]
-    private void MoveTreeRowDown(NuiConversationTreeRow? row) => MoveTreeRow(row, 1);
-
-    [RelayCommand]
     private void ToggleTreeBranch(NuiConversationTreeRow? row)
     {
         if (row is not { HasChildren: true })
@@ -1077,42 +1071,78 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         });
     }
 
-    private void MoveTreeRow(NuiConversationTreeRow? row, int direction)
+    /// <summary>
+    /// A tree drag may only change evaluation order within the exact list that already owns the
+    /// route. Dropping never reparents a branch: an opening stays an opening, a response stays on
+    /// its NPC line, and a follow-up stays on its player response.
+    /// </summary>
+    public bool CanDropTreeRow(NuiConversationTreeRow? source, NuiConversationTreeRow? target)
     {
-        if (row == null)
-            return;
-        var target = row.Index + direction;
-        if (target < 0 || target >= row.SiblingCount)
-            return;
+        if (source == null || target == null || ReferenceEquals(source, target))
+            return false;
 
-        if (row.IsPlayer && row.ParentNode != null && row.ChoiceLink != null)
+        if (source.IsPlayer || target.IsPlayer)
+        {
+            return source.IsPlayer &&
+                   target.IsPlayer &&
+                   ReferenceEquals(source.ParentNode, target.ParentNode) &&
+                   ReferenceEquals(source.ParentNodeLink, target.ParentNodeLink);
+        }
+
+        if (source.NodeLink == null || target.NodeLink == null)
+            return false;
+        if (source.IsEntryPoint || target.IsEntryPoint)
+            return source.IsEntryPoint && target.IsEntryPoint;
+        return source.ParentChoice != null && ReferenceEquals(source.ParentChoice, target.ParentChoice);
+    }
+
+    /// <summary>
+    /// Commits the insertion slot shown by the tree drag preview. Returns false when the proposed
+    /// slot is invalid or would leave the row where it already is.
+    /// </summary>
+    public bool DropTreeRow(
+        NuiConversationTreeRow? source,
+        NuiConversationTreeRow? target,
+        bool insertAfter)
+    {
+        if (!CanDropTreeRow(source, target))
+            return false;
+
+        var insertionIndex = target!.Index + (insertAfter ? 1 : 0);
+        if (source!.Index < insertionIndex)
+            insertionIndex--;
+        if (insertionIndex == source.Index)
+            return false;
+
+        if (source.IsPlayer && source.ParentNode != null && source.ChoiceLink != null)
         {
             Edit(() =>
             {
-                row.ParentNode.Choices.RemoveAt(row.Index);
-                row.ParentNode.Choices.Insert(target, row.ChoiceLink);
-                _selectedNodeId = row.ParentNode.Id;
-                _selectedIncomingNodeLink = row.ParentNodeLink;
-                _selectedOpeningLink = row.ParentNodeIsEntryPoint ? row.ParentNodeLink : null;
-                _selectedChoiceLink = row.ChoiceLink;
+                source.ParentNode.Choices.RemoveAt(source.Index);
+                source.ParentNode.Choices.Insert(insertionIndex, source.ChoiceLink);
+                _selectedNodeId = source.ParentNode.Id;
+                _selectedIncomingNodeLink = source.ParentNodeLink;
+                _selectedOpeningLink = source.ParentNodeIsEntryPoint ? source.ParentNodeLink : null;
+                _selectedChoiceLink = source.ChoiceLink;
             });
-            return;
+            return true;
         }
 
-        if (row.IsPlayer || row.NodeLink == null)
-            return;
-        var siblings = row.IsEntryPoint ? _graph.EntryPoints : row.ParentChoice?.Next;
+        if (source.IsPlayer || source.NodeLink == null)
+            return false;
+        var siblings = source.IsEntryPoint ? _graph.EntryPoints : source.ParentChoice?.Next;
         if (siblings == null)
-            return;
+            return false;
         Edit(() =>
         {
-            siblings.RemoveAt(row.Index);
-            siblings.Insert(target, row.NodeLink);
-            _selectedNodeId = row.Node?.Id;
-            _selectedIncomingNodeLink = row.NodeLink;
-            _selectedOpeningLink = row.IsEntryPoint ? row.NodeLink : null;
+            siblings.RemoveAt(source.Index);
+            siblings.Insert(insertionIndex, source.NodeLink);
+            _selectedNodeId = source.Node?.Id;
+            _selectedIncomingNodeLink = source.NodeLink;
+            _selectedOpeningLink = source.IsEntryPoint ? source.NodeLink : null;
             _selectedChoiceLink = null;
         });
+        return true;
     }
 
     private void SelectNearestTreeContext(string nodeId, ConversationLink? incomingLink)

@@ -203,22 +203,17 @@
                   <StackPanel Grid.Column="0" Spacing="12">
                     <StackPanel IsVisible="{Binding IsNpcTreeRowSelected}" Spacing="7">
                       <TextBlock Text="NPC dialogue" FontWeight="SemiBold" />
-                      <ItemsControl ItemsSource="{Binding TextBlocks}">
-                        <ItemsControl.ItemTemplate>
-                          <DataTemplate x:DataType="editors:NuiConversationTextBlockRow">
-                            <Grid ColumnDefinitions="120,*" ColumnSpacing="8" Margin="0,3">
-                              <ComboBox Grid.Column="0" ItemsSource="{Binding Styles}" SelectedItem="{Binding Style}" />
-                              <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" AcceptsReturn="True"
-                                       TextWrapping="Wrap" MinHeight="76" />
-                            </Grid>
-                          </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                      </ItemsControl>
-                      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="7">
-                        <Button Grid.Column="0" Content="+ Styled text" Command="{Binding AddTextBlockCommand}" />
-                        <ComboBox Grid.Column="1" ItemsSource="{Binding DynamicTextTokens}"
+                      <Grid ColumnDefinitions="120,*" ColumnSpacing="8">
+                        <ComboBox Grid.Column="0" ItemsSource="{Binding PrimaryTextBlock.Styles}"
+                                  SelectedItem="{Binding PrimaryTextBlock.Style}" />
+                        <TextBox x:Name="PrimaryNpcDialogueTextBox" Grid.Column="1"
+                                 Text="{Binding PrimaryTextBlock.Text, Mode=TwoWay}" AcceptsReturn="True"
+                                 TextWrapping="Wrap" MinHeight="76" />
+                      </Grid>
+                      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="7">
+                        <ComboBox Grid.Column="0" ItemsSource="{Binding DynamicTextTokens}"
                                   SelectedItem="{Binding DynamicTextToInsert}" />
-                        <Button Grid.Column="2" Content="Insert" Command="{Binding InsertDynamicTextCommand}" />
+                        <Button Grid.Column="1" Content="Insert" Command="{Binding InsertDynamicTextCommand}" />
                       </Grid>
                     </StackPanel>
 
@@ -235,20 +230,48 @@
                       </StackPanel>
                     </StackPanel>
 
-                    <Expander Header="More options" IsVisible="{Binding IsNpcTreeRowSelected}">
-                      <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
-                            ColumnSpacing="8" RowSpacing="7" Margin="8">
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Speaker name" />
-                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SpeakerName, Mode=TwoWay}" />
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Speaker tag" />
-                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SpeakerTag, Mode=TwoWay}" />
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Portrait" />
-                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PortraitResref, Mode=TwoWay}" />
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Sound" />
-                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SoundResref, Mode=TwoWay}" />
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Animation" />
-                        <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding Animation, Mode=TwoWay}" Minimum="0" />
-                      </Grid>
+                    <Expander x:Name="NpcMoreOptionsExpander" Header="{Binding MoreOptionsHeader}"
+                              IsVisible="{Binding IsNpcTreeRowSelected}">
+                      <StackPanel Margin="8" Spacing="12">
+                        <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                              ColumnSpacing="8" RowSpacing="7">
+                          <TextBlock Grid.Row="0" Grid.Column="0" Text="Speaker name" />
+                          <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SpeakerName, Mode=TwoWay}" />
+                          <TextBlock Grid.Row="1" Grid.Column="0" Text="Speaker tag" />
+                          <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SpeakerTag, Mode=TwoWay}" />
+                          <TextBlock Grid.Row="2" Grid.Column="0" Text="Portrait" />
+                          <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PortraitResref, Mode=TwoWay}" />
+                          <TextBlock Grid.Row="3" Grid.Column="0" Text="Sound" />
+                          <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SoundResref, Mode=TwoWay}" />
+                          <TextBlock Grid.Row="4" Grid.Column="0" Text="Animation" />
+                          <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding Animation, Mode=TwoWay}" Minimum="0" />
+                        </Grid>
+
+                        <Border Padding="10" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="4">
+                          <StackPanel Spacing="7">
+                            <TextBlock Text="Formatted passages" FontWeight="SemiBold" />
+                            <TextBlock Classes="dim" TextWrapping="Wrap"
+                                       Text="Optional colored passages displayed as part of this same NPC line." />
+                            <ItemsControl x:Name="FormattedPassagesItems" ItemsSource="{Binding AdditionalTextBlocks}">
+                              <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="editors:NuiConversationTextBlockRow">
+                                  <Grid ColumnDefinitions="120,*,Auto" ColumnSpacing="7" Margin="0,3">
+                                    <ComboBox Grid.Column="0" ItemsSource="{Binding Styles}" SelectedItem="{Binding Style}" />
+                                    <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" AcceptsReturn="True"
+                                             TextWrapping="Wrap" MinHeight="54" />
+                                    <Button Grid.Column="2" Content="Remove"
+                                            Command="{Binding $parent[UserControl].DataContext.RemoveTextBlockCommand}"
+                                            CommandParameter="{Binding}" />
+                                  </Grid>
+                                </DataTemplate>
+                              </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Button Content="+ Add formatted passage" HorizontalAlignment="Left"
+                                    Command="{Binding AddTextBlockCommand}"
+                                    ToolTip.Tip="Adds another colored passage to this same NPC line." />
+                          </StackPanel>
+                        </Border>
+                      </StackPanel>
                     </Expander>
 
                     <ItemsControl ItemsSource="{Binding Problems}" IsVisible="{Binding HasProblems}">

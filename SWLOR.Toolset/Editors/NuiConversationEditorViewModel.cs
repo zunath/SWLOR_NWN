@@ -52,6 +52,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     public ObservableCollection<NuiConversationOpeningRow> OpeningLines { get; } = new();
     public ObservableCollection<NuiConversationTreeRow> TreeRows { get; } = new();
     public ObservableCollection<NuiConversationTextBlockRow> TextBlocks { get; } = new();
+    public ObservableCollection<NuiConversationTextBlockRow> AdditionalTextBlocks { get; } = new();
     public ObservableCollection<NuiConversationChoiceRow> Choices { get; } = new();
     public ObservableCollection<GraphSnippetEditorViewModel> Conditions { get; } = new();
     public ObservableCollection<GraphSnippetEditorViewModel> Actions { get; } = new();
@@ -208,6 +209,11 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     public string ActionScopeHelp => SelectedChoice == null
         ? "Outcomes run top-to-bottom when this NPC line appears."
         : "Outcomes run top-to-bottom after the player picks this choice.";
+    public NuiConversationTextBlockRow? PrimaryTextBlock => TextBlocks.FirstOrDefault();
+    public string MoreOptionsHeader => AdditionalTextBlocks.Count == 0
+        ? "More options"
+        : $"More options · {AdditionalTextBlocks.Count} formatted " +
+          (AdditionalTextBlocks.Count == 1 ? "passage" : "passages");
     public bool HasProblems => Problems.Count > 0;
     public bool HasErrors => Problems.Any(problem => problem.IsError);
     public string ValidationSummary => HasErrors
@@ -315,7 +321,19 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     {
         if (CurrentNode == null)
             return;
-        Edit(() => CurrentNode.Text.Add(new ConversationTextBlock { Style = ConversationTextStyle.Normal }));
+        Edit(() => CurrentNode.Text.Add(new ConversationTextBlock { Style = ConversationTextStyle.Highlight }));
+    }
+
+    [RelayCommand]
+    private void RemoveTextBlock(NuiConversationTextBlockRow? row)
+    {
+        if (CurrentNode == null || row == null || CurrentNode.Text.Count <= 1 ||
+            ReferenceEquals(row, PrimaryTextBlock))
+        {
+            return;
+        }
+
+        Edit(() => CurrentNode.Text.Remove(row.Block));
     }
 
     [RelayCommand]
@@ -914,10 +932,15 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     private void RebuildSelectedLine()
     {
         TextBlocks.Clear();
+        AdditionalTextBlocks.Clear();
         Choices.Clear();
         var node = CurrentNode;
         if (node == null)
+        {
+            OnPropertyChanged(nameof(PrimaryTextBlock));
+            OnPropertyChanged(nameof(MoreOptionsHeader));
             return;
+        }
 
         SpeakerName = node.SpeakerName;
         SpeakerTag = node.SpeakerTag;
@@ -926,6 +949,10 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         Animation = node.Animation;
         foreach (var block in node.Text)
             TextBlocks.Add(new NuiConversationTextBlockRow(block, EditValue));
+        foreach (var block in TextBlocks.Skip(1))
+            AdditionalTextBlocks.Add(block);
+        OnPropertyChanged(nameof(PrimaryTextBlock));
+        OnPropertyChanged(nameof(MoreOptionsHeader));
 
         for (var index = 0; index < node.Choices.Count; index++)
         {

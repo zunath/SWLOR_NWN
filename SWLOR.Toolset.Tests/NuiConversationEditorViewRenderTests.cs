@@ -118,6 +118,19 @@ public sealed class NuiConversationEditorViewRenderTests
             editText.Should().Contain("Conversation tree");
             view.GetVisualDescendants().OfType<TextBox>().Should().NotBeEmpty(
                 "the Edit tab contains the writing controls");
+            view.FindControl<TextBox>("PrimaryNpcDialogueTextBox").Should().NotBeNull(
+                "one NPC node should expose one primary dialogue field");
+            view.GetVisualDescendants().OfType<Button>()
+                .Select(button => button.Content?.ToString())
+                .Should().NotContain("+ Styled text");
+            var moreOptions = view.FindControl<Expander>("NpcMoreOptionsExpander");
+            moreOptions.Should().NotBeNull();
+            moreOptions!.IsExpanded = true;
+            window.UpdateLayout();
+            view.FindControl<ItemsControl>("FormattedPassagesItems")!.ItemCount.Should().Be(1);
+            view.GetVisualDescendants().OfType<Button>()
+                .Select(button => button.Content?.ToString())
+                .Should().Contain("Remove", "every optional formatted passage must be removable");
             view.GetVisualDescendants().OfType<CheckBox>()
                 .Select(checkBox => checkBox.Content?.ToString())
                 .Should().NotContain("Only once per player",
@@ -368,6 +381,28 @@ public sealed class NuiConversationEditorViewRenderTests
 
         viewModel.TextBlocks[0].Text = "The edited second line.";
         viewModel.PreviewTextBlocks.Single().Text.Should().Be("The edited second line.");
+    }
+
+    [Test]
+    public void FormattedPassagesBelongToOneNpcLineAndCanBeRemoved()
+    {
+        var viewModel = OpenEditor();
+
+        viewModel.PrimaryTextBlock!.Text.Should().Be("Welcome, {{player.name}}.");
+        viewModel.AdditionalTextBlocks.Should().ContainSingle();
+        viewModel.MoreOptionsHeader.Should().Be("More options · 1 formatted passage");
+
+        var passage = viewModel.AdditionalTextBlocks.Single();
+        passage.Style.Should().Be(ConversationTextStyle.Highlight);
+        viewModel.RemoveTextBlockCommand.Execute(passage);
+
+        viewModel.SnapshotGraph().Nodes["first"].Text.Should().ContainSingle();
+        viewModel.AdditionalTextBlocks.Should().BeEmpty();
+        viewModel.MoreOptionsHeader.Should().Be("More options");
+
+        viewModel.AddTextBlockCommand.Execute(null);
+        viewModel.AdditionalTextBlocks.Should().ContainSingle();
+        viewModel.AdditionalTextBlocks[0].Style.Should().Be(ConversationTextStyle.Highlight);
     }
 
     [Test]

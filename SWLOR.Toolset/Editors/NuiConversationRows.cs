@@ -307,6 +307,7 @@ public sealed partial class NuiConversationTextBlockRow : ObservableObject
     }
 
     public IReadOnlyList<ConversationTextStyle> Styles { get; } = Enum.GetValues<ConversationTextStyle>();
+    internal ConversationTextBlock Block => _block;
 
     public string Text
     {

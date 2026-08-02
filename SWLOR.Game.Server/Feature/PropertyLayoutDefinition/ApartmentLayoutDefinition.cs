@@ -50,9 +50,32 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .InitialPrice(7000)
                 .PricePerDay(300)
                 .AreaInstance("playerap_s_fur");
-        }
 
-        private void MediumApartments()
+			_builder.Create(PropertyLayoutType.ApartmentSmallStyleUnfurnished)
+                .PropertyType(PropertyType.Apartment)
+                .Name("Player Apartment: Small - Unfurnished")
+                .StructureLimit(30)
+                .ItemStorageLimit(25)
+                .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
+                .InitialPrice(7000)
+                .PricePerDay(300)
+                .AreaInstance("v_apartment_s00");
+
+			_builder.Create(PropertyLayoutType.ApartmentSmallStyleFurnished)
+                .PropertyType(PropertyType.Apartment)
+                .Name("Player Apartment: Small - Furnished")
+                .StructureLimit(30)
+                .ItemStorageLimit(25)
+                .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
+                .InitialPrice(7000)
+                .PricePerDay(300)
+				.AreaInstance("v_apartment_s01");
+
+		}
+
+		private void MediumApartments()
         {
             _builder.Create(PropertyLayoutType.ApartmentMediumStyle1)
                 .PropertyType(PropertyType.Apartment)
@@ -86,9 +109,32 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .InitialPrice(13000)
                 .PricePerDay(400)
                 .AreaInstance("playerap_m_fur");
-        }
 
-        private void LargeApartments()
+			_builder.Create(PropertyLayoutType.ApartmentMediumStyleUnfurnished)
+			    .PropertyType(PropertyType.Apartment)
+			    .Name("Player Apartment: Medium - Unfurnished")
+			    .StructureLimit(50)
+			    .ItemStorageLimit(40)
+			    .BuildingLimit(0)
+			    .ResearchDeviceLimit(0)
+			    .InitialPrice(13000)
+			    .PricePerDay(400)
+			    .AreaInstance("v_apartment_m00");
+
+			_builder.Create(PropertyLayoutType.ApartmentMediumStyleFurnished)
+                .PropertyType(PropertyType.Apartment)
+                .Name("Player Apartment: Medium - Furnished")
+                .StructureLimit(50)
+                .ItemStorageLimit(40)
+                .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
+                .InitialPrice(13000)
+                .PricePerDay(400)
+                .AreaInstance("v_apartment_m01");
+
+		}
+
+		private void LargeApartments()
         {
             _builder.Create(PropertyLayoutType.ApartmentLargeStyle1)
                 .PropertyType(PropertyType.Apartment)

@@ -77,9 +77,9 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void UnavailableLookup_IsNotTreatedAsAnError()
         {
-            // No ids means the 2DA/service did not load. The editor already degrades those fields to
-            // a numeric box that shows and preserves the raw value, so there is nothing to protect
-            // against - blocking here would make a missing data file lock every blueprint.
+            // No ids means the 2DA/service did not load. The editor shows the raw value read-only,
+            // so there is nothing to protect against - blocking here would make a missing data file
+            // lock every blueprint even though the existing value remains preserved.
             var unresolved = DropdownValueValidator.FindUnresolved(
                 Document(("Appearance", 1005)),
                 SchemaWithDropdown("Appearance", "placeables"),

@@ -249,11 +249,16 @@ namespace SWLOR.Toolset.Editors
         }
     }
 
-    /// <summary>2DA-backed dropdown; degrades to a numeric box when no options resolve.</summary>
+    /// <summary>
+    /// 2DA-backed dropdown. When its lookup is unavailable, the stored numeric value remains
+    /// visible but read-only so missing metadata cannot turn a constrained field into free input.
+    /// </summary>
     public partial class DropdownFieldViewModel : FieldViewModel
     {
         public IReadOnlyList<LookupOption> Options { get; }
         public bool HasOptions => Options.Count > 0;
+        public string LookupUnavailableMessage =>
+            "2DA metadata unavailable. The stored value is shown read-only.";
 
         [ObservableProperty]
         private LookupOption? _selectedOption;
@@ -290,15 +295,6 @@ namespace SWLOR.Toolset.Editors
                 RefreshFromDocument();
         }
 
-        partial void OnRawValueChanged(long value)
-        {
-            if (Context.IsRefreshing || HasOptions)
-                return;
-
-            if (!Context.RunEdit($"Change {Label}",
-                    () => SchemaFieldAccessor.SetInteger(Context.Document, Descriptor, value)))
-                RefreshFromDocument();
-        }
     }
 
     /// <summary>

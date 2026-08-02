@@ -117,9 +117,31 @@ public class ConversationSessionTests
 
         var session = new ConversationSession(graph, new ConversationContext(1, 2), runtime);
 
-        session.Start().Should().BeTrue();
+        session.Start().Should().BeFalse();
         session.HasEnded.Should().BeTrue();
         session.EndReason.Should().Be(ConversationEndReason.RuntimeError);
+    }
+
+    [Test]
+    public void Start_ReturnsFalseWhenInitialAutomaticTraversalCompletesTheConversation()
+    {
+        var runtime = CreateRuntime();
+        var graph = CreateGraph();
+        graph.EntryPoints.Add(Link("start"));
+        var start = Node("start", "Starting.");
+        var automatic = Choice("automatic", string.Empty);
+        automatic.IsAutomatic = true;
+        automatic.EndsConversation = true;
+        automatic.Next.Clear();
+        AddChoice(graph, start, automatic, true);
+        graph.Nodes.Add(start.Id, start);
+        graph.Nodes.Add("end", Node("end", "Done."));
+
+        var session = new ConversationSession(graph, new ConversationContext(1, 2), runtime);
+
+        session.Start().Should().BeFalse();
+        session.HasEnded.Should().BeTrue();
+        session.EndReason.Should().Be(ConversationEndReason.Completed);
     }
 
     [Test]

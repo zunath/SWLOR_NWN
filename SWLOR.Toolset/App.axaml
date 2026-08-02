@@ -77,15 +77,20 @@
       <behaviors:LabeledFieldPanel Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
                    Classes="dim" TextWrapping="Wrap" />
-        <Panel>
+        <StackPanel>
           <ComboBox IsVisible="{Binding HasOptions}" HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Left"
                     ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
                     MaxDropDownHeight="400" />
           <NumericUpDown IsVisible="{Binding !HasOptions}" MinWidth="110" MaxWidth="220"
                          HorizontalAlignment="Left"
-                         Value="{Binding RawValue, Mode=TwoWay}" FormatString="0" Increment="1" />
-        </Panel>
+                         Value="{Binding RawValue, Mode=OneWay}" FormatString="0" Increment="1"
+                         IsEnabled="False"
+                         ToolTip.Tip="2DA metadata unavailable; stored value shown read-only." />
+          <TextBlock IsVisible="{Binding !HasOptions}"
+                     Text="{Binding LookupUnavailableMessage}"
+                     Classes="dim" FontSize="11" TextWrapping="Wrap" Margin="0,3,0,0" />
+        </StackPanel>
       </behaviors:LabeledFieldPanel>
     </DataTemplate>
 

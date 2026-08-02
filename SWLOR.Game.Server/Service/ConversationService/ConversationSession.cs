@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Service.ConversationService
             }
 
             EnterNode(entry.TargetNodeId);
-            return true;
+            return !HasEnded;
         }
 
         public ConversationSelectionResult SelectChoice(int visibleChoiceIndex)

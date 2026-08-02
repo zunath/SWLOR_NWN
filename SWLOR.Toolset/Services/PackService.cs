@@ -5,10 +5,9 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Services
 {
     /// <summary>
-    /// Packs the module by invoking the existing SWLOR.CLI pipeline (which shells out to
-    /// nwn_gff/nwn_erf), streaming its output to the Output panel. Only a solution-built CLI that
-    /// supports --no-prompt is used; an older interactive tools binary can block or fail when
-    /// launched without a console, so it is deliberately not a fallback.
+    /// Packs the module by rebuilding and invoking the solution SWLOR.CLI pipeline (which shells
+    /// out to nwn_gff/nwn_erf), streaming its output to the Output panel. The CLI build also rebuilds
+    /// its SWLOR.Game.Server project reference so embedded conversation graphs stay current.
     /// </summary>
     public sealed class PackService
     {
@@ -41,19 +40,19 @@ namespace SWLOR.Toolset.Services
                     return -1;
                 }
 
+                var cliBuildExitCode = await BuildCliAsync(repoRoot).ConfigureAwait(false);
+                if (cliBuildExitCode != 0)
+                {
+                    _log.AppendLine(
+                        $"Pack stopped because the CLI build failed with exit code {cliBuildExitCode}.");
+                    return cliBuildExitCode;
+                }
+
                 var cliPath = ResolveCli(repoRoot);
                 if (cliPath == null)
                 {
-                    _log.AppendLine("A solution-built SWLOR.CLI.exe was not found. Build SWLOR.CLI before packing.");
+                    _log.AppendLine("The SWLOR.CLI build succeeded but its executable was not found.");
                     return -1;
-                }
-
-                var serverBuildExitCode = await BuildServerAsync(repoRoot).ConfigureAwait(false);
-                if (serverBuildExitCode != 0)
-                {
-                    _log.AppendLine(
-                        $"Pack stopped because the server build failed with exit code {serverBuildExitCode}.");
-                    return serverBuildExitCode;
                 }
 
                 var moduleFileName = ReadModuleFileName(moduleRoot);
@@ -109,20 +108,20 @@ namespace SWLOR.Toolset.Services
         }
 
         /// <summary>
-        /// Rebuilds the server before packing. Conversation graphs are embedded resources, so a
-        /// module-only pack would otherwise leave graph edits out of the playable assembly. The
-        /// post-build event is disabled explicitly to avoid recursively invoking the CLI deploy.
+        /// Rebuilds the CLI from the current checkout before packing. Its server project reference
+        /// also refreshes embedded conversation graphs. The post-build event is disabled explicitly
+        /// to avoid recursively invoking the CLI deploy.
         /// </summary>
-        private async Task<int> BuildServerAsync(string repoRoot)
+        private async Task<int> BuildCliAsync(string repoRoot)
         {
-            var projectPath = Path.Combine(repoRoot, "SWLOR.Game.Server", "SWLOR.Game.Server.csproj");
+            var projectPath = Path.Combine(repoRoot, "SWLOR.CLI", "SWLOR.CLI.csproj");
             if (!File.Exists(projectPath))
             {
-                _log.AppendLine($"Cannot build conversation data: server project not found at {projectPath}.");
+                _log.AppendLine($"Cannot pack: CLI project not found at {projectPath}.");
                 return -1;
             }
 
-            _log.AppendLine("Building SWLOR.Game.Server so conversation graph edits are embedded...");
+            _log.AppendLine("Building SWLOR.CLI and its server dependency before packing...");
             var startInfo = new ProcessStartInfo("dotnet")
             {
                 WorkingDirectory = repoRoot,
@@ -141,12 +140,12 @@ namespace SWLOR.Toolset.Services
             process.OutputDataReceived += (_, e) =>
             {
                 if (!string.IsNullOrWhiteSpace(e.Data))
-                    _log.AppendLine($"[server-build] {e.Data}");
+                    _log.AppendLine($"[cli-build] {e.Data}");
             };
             process.ErrorDataReceived += (_, e) =>
             {
                 if (!string.IsNullOrWhiteSpace(e.Data))
-                    _log.AppendLine($"[server-build:err] {e.Data}");
+                    _log.AppendLine($"[cli-build:err] {e.Data}");
             };
 
             process.Start();
@@ -205,15 +204,11 @@ namespace SWLOR.Toolset.Services
             }
         }
 
-        /// <summary>Finds the newest solution-built CLI that supports the required --no-prompt option.</summary>
+        /// <summary>Finds the Debug CLI produced immediately before packing.</summary>
         internal static string? ResolveCli(string repoRoot)
         {
-            return new[] { "Debug", "Release" }
-                .Select(configuration =>
-                    Path.Combine(repoRoot, "SWLOR.CLI", "bin", configuration, "net10.0", "SWLOR.CLI.exe"))
-                .Where(File.Exists)
-                .OrderByDescending(File.GetLastWriteTimeUtc)
-                .FirstOrDefault();
+            var path = Path.Combine(repoRoot, "SWLOR.CLI", "bin", "Debug", "net10.0", "SWLOR.CLI.exe");
+            return File.Exists(path) ? path : null;
         }
 
         internal static string ReadModuleFileName(string moduleRoot)

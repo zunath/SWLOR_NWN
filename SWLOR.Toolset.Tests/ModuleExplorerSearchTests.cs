@@ -193,6 +193,28 @@ namespace SWLOR.Toolset.Tests
                 "the declared debounce must be awaited before the scan runs, not skipped");
         }
 
+        [Test]
+        public void OpenConversationSnapshotsAreCapturedBeforeTheSearchWorkerStarts()
+        {
+            var source = File.ReadAllText(Path.Combine(
+                FindRepositoryRoot().FullName,
+                "SWLOR.Toolset",
+                "Shell",
+                "Panels",
+                "ModuleExplorerViewModel.cs"));
+            var openDialogsIndex = source.IndexOf(
+                "SnapshotOpenConversationDocuments();", StringComparison.Ordinal);
+            var openGraphsIndex = source.IndexOf(
+                "SnapshotOpenNuiConversationGraphs();", StringComparison.Ordinal);
+            var workerIndex = source.IndexOf("_ = Task.Run(", StringComparison.Ordinal);
+
+            openDialogsIndex.Should().BeGreaterThanOrEqualTo(0);
+            openGraphsIndex.Should().BeGreaterThanOrEqualTo(0);
+            workerIndex.Should().BeGreaterThan(openDialogsIndex);
+            workerIndex.Should().BeGreaterThan(openGraphsIndex,
+                "the UI-owned graph editors must be snapshotted before background work begins");
+        }
+
         [AvaloniaTest]
         public async Task SavingAConversationInvalidatesHitsForTheSameQuery()
         {
@@ -277,6 +299,17 @@ namespace SWLOR.Toolset.Tests
             return rows.Any(row =>
                 (row.Item != null && row.Item.ResRef == resRef) ||
                 ContainsResRef(row.Children, resRef));
+        }
+
+        private static DirectoryInfo FindRepositoryRoot()
+        {
+            DirectoryInfo? directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+            while (directory != null &&
+                   !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+                directory = directory.Parent;
+
+            directory.Should().NotBeNull("the tests should run inside the repository checkout");
+            return directory!;
         }
 
         private static async Task WaitUntilAsync(Func<bool> condition)

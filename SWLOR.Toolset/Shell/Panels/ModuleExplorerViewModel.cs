@@ -810,11 +810,11 @@ namespace SWLOR.Toolset.Shell.Panels
             _dialogueScan = pending;
             var token = pending.Token;
 
-            // Deep-snapshot open-editor documents on the UI thread so the worker-side search sees
-            // unsaved edits instead of the stale on-disk copies, without ever touching the live
-            // DlgDocument an open editor may be mutating concurrently - see
-            // EditorService.SnapshotOpenConversationDocuments.
+            // Deep-snapshot open-editor documents and graphs on the UI thread so the worker-side
+            // search sees unsaved edits instead of stale on-disk copies, without ever touching live
+            // editor state that the UI may mutate concurrently.
             var openDialogs = _editorService?.Invoke().SnapshotOpenConversationDocuments();
+            var openGraphs = _editorService?.Invoke().SnapshotOpenNuiConversationGraphs();
 
             _ = Task.Run(
                 async () =>
@@ -826,7 +826,6 @@ namespace SWLOR.Toolset.Shell.Panels
                         await Task.Delay(DialogueSearchDebounce, token).ConfigureAwait(false);
 
                         var graphDirectory = _workspaceContext.Workspace?.ConversationDataRoot;
-                        var openGraphs = _editorService?.Invoke().SnapshotOpenNuiConversationGraphs();
                         var matching = DialogueSearch
                             .Search(
                                 Path.Combine(moduleRoot, "dlg"),

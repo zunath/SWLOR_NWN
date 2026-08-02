@@ -119,6 +119,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
                     var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
                     dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
+
+                    // Leaving a capital hangar for a planet dock — free the hangar slot.
+                    Space.UnregisterFromHangar(dbProperty);
                     
                     // Docking at an NPC starport will update the safety location to that dock.
                     // In the event that the ship is docked at a player starport and it gets destroyed or

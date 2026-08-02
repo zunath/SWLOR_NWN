@@ -501,20 +501,20 @@ namespace SWLOR.Game.Server.Service
                     property.Positions.Remove(PropertyLocationType.CurrentPosition);
                 }
 
-                // In the event this starship was docked at a deleted player starport,
+                // In the event this starship was docked at a deleted player starport or capital hangar,
                 // it needs to be relocated to the NPC starport found on the planet
                 var dockPosition = property.Positions[PropertyLocationType.DockPosition];
                 if (!string.IsNullOrWhiteSpace(dockPosition.InstancePropertyId))
                 {
-                    var dbStarport = DB.Get<WorldProperty>(dockPosition.InstancePropertyId);
-                    if (dbStarport == null)
+                    var dbDockHost = DB.Get<WorldProperty>(dockPosition.InstancePropertyId);
+                    if (dbDockHost == null)
                     {
-                        // The PC starport no longer exists (probably destroyed by the previous cleanup)
+                        // The PC starport / hangar host no longer exists (probably destroyed by the previous cleanup)
                         // Luckily we track the last NPC starport they visited so we can simply replace
                         // their docked position with it.
                         property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition];
 
-                        Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
+                        Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent instance property. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
                     }
                 }
                 
@@ -1033,11 +1033,19 @@ namespace SWLOR.Game.Server.Service
 
         public static void DeleteProperty(WorldProperty property)
         {
+            // Relocate any guest ships hangared aboard this starship before it is deleted.
+            if (property.PropertyType == PropertyType.Starship &&
+                property.ChildPropertyIds.ContainsKey(PropertyChildType.DockedStarship))
+            {
+                Space.RelocateShipsDockedAtHangar(property.Id);
+            }
+
             // Recursively clear any children properties tied to this property.
             foreach (var (childType, propertyIds) in property.ChildPropertyIds)
             {
                 if (childType == PropertyChildType.RegisteredStarport ||
-                    childType == PropertyChildType.Starship)
+                    childType == PropertyChildType.Starship ||
+                    childType == PropertyChildType.DockedStarship)
                     continue;
 
                 if (propertyIds.Count > 0)

@@ -7,5 +7,6 @@
         Interior = 2,
         Starship = 3,
         RegisteredStarport = 4,
+        DockedStarship = 5,
     }
 }

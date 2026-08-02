@@ -182,7 +182,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "*Through inspecting the lock you can see some numbers are faded more than others. Through your intellgence, you crack the code. The journal opens up.*"
+            "0": "*Through inspecting the lock you can see some numbers are faded more than others. Through your perception, you crack the code. The journal opens up.*"
           }
         }
       },
@@ -552,7 +552,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "*Inspect the lock* (Intelligence 14)"
+            "0": "*Inspect the lock* (Perception 14)"
           }
         }
       },

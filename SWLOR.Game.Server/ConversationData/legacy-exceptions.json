@@ -182,6 +182,14 @@
     ]
   },
   {
+    "ConversationId": "dt_cntr_magasin",
+    "Reasons": [
+      "Uses custom action script 'ouvmag_cntrbande'.",
+      "Uses custom action script 'ouvmag_cntrbnd_c'.",
+      "Uses custom condition script 'dt_test_canaille'."
+    ]
+  },
+  {
     "ConversationId": "dt_verpex",
     "Reasons": [
       "Uses custom action script 'ouvmag_verpex'."

@@ -61,7 +61,6 @@ public sealed class DlgConversationMigratorTests
 
     [TestCase("dt_barman_gen")]
     [TestCase("dt_barman_gen03")]
-    [TestCase("dt_cntr_magasin")]
     [TestCase("dt_doc_velpo")]
     [TestCase("q1_nikka_larson")]
     [TestCase("quest_example")]
@@ -78,6 +77,35 @@ public sealed class DlgConversationMigratorTests
         result.Graph.Nodes.Values.SelectMany(node => node.Text)
             .Concat(result.Graph.Choices.Values.Select(choice => choice.Text))
             .Should().NotContain(block => block.Text.Contains("<CUSTOM", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Test]
+    public void Convert_KeepsContrabandMerchantAsLegacyWhenItsPredicateAndStoresAreUnknown()
+    {
+        var result = DlgConversationMigrator.Convert("dt_cntr_magasin", Load("dt_cntr_magasin"));
+
+        result.CanRunInNui.Should().BeFalse();
+        result.Issues.Where(issue =>
+                issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException)
+            .Select(issue => issue.Message)
+            .Should().Contain(message => message.Contains("dt_test_canaille", StringComparison.Ordinal))
+            .And.Contain(message => message.Contains("ouvmag_cntrbande", StringComparison.Ordinal))
+            .And.Contain(message => message.Contains("ouvmag_cntrbnd_c", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void Convert_UsesPerceptionForTheJournalLockPromptAndCondition()
+    {
+        var result = DlgConversationMigrator.Convert("red_journal_mand", Load("red_journal_mand"));
+        var choice = result.Graph.Choices["reply-00001"];
+
+        choice.Text.Text.Should().Contain("Perception 14");
+        result.Graph.Nodes["entry-00001"].Text.Select(block => block.Text)
+            .Should().Contain(text => text.Contains("perception", StringComparison.OrdinalIgnoreCase));
+        result.Graph.Nodes["entry-00000"].Choices
+            .Single(link => link.ChoiceId == choice.Id)
+            .Conditions.Should().ContainSingle()
+            .Which.Arguments.Should().Equal("Perception", "14");
     }
 
     [Test]

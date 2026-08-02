@@ -10532,8 +10532,29 @@
   },
   {
     "ConversationId": "dt_cntr_magasin",
-    "Status": "Converted",
-    "Issues": []
+    "Status": "RequiresLegacyException",
+    "Issues": [
+      {
+        "Severity": 1,
+        "Location": "reply 0 -> entry 2",
+        "Message": "Uses custom condition script 'dt_test_canaille'."
+      },
+      {
+        "Severity": 1,
+        "Location": "reply 1 -> entry 2",
+        "Message": "Uses custom condition script 'dt_test_canaille'."
+      },
+      {
+        "Severity": 1,
+        "Location": "reply 3",
+        "Message": "Uses custom action script 'ouvmag_cntrbande'."
+      },
+      {
+        "Severity": 1,
+        "Location": "reply 5",
+        "Message": "Uses custom action script 'ouvmag_cntrbnd_c'."
+      }
+    ]
   },
   {
     "ConversationId": "dt_doc_velpo",

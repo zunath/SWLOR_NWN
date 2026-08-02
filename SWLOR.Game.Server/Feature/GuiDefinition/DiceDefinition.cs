@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.Dice)
-                .SetInitialGeometry(0, 0, 190f, 430f)
+                .SetInitialGeometry(0, 0, 190f, 490f)
                 .SetTitle("Dice Bag")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -135,6 +135,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("d100")
                             .SetHeight(18f)
                             .BindOnClicked(model => model.OnClickRollD100());
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("Custom Roll")
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHeight(20f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddTextEdit()
+                            .SetPlaceholder("4d6kh3+2, adv, ...")
+                            .SetMaxLength(100)
+                            .BindValue(model => model.CustomExpression);
+
+                        row.AddButton()
+                            .SetText("Roll")
+                            .SetWidth(40f)
+                            .SetHeight(32f)
+                            .BindOnClicked(model => model.OnClickRollCustom());
                     });
                 });
 

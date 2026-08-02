@@ -40,6 +40,10 @@ public class DialogPrivacyTests
             "if (GetCommandable(OBJECT_SELF) ||", StringComparison.Ordinal);
         var beforeHookIndex = defaultConversationScript.IndexOf(
             "ExecuteScript(\"crea_convo_bef\", OBJECT_SELF);", StringComparison.Ordinal);
+        var handledBranch = ExtractMethod(
+            defaultConversationScript,
+            "if (GetLocalInt(OBJECT_SELF, \"SWLOR_NUI_CONVO\"))");
+        var tailHooks = ExtractMethod(defaultConversationScript, "void RunDialogueTailHooks()");
 
         scriptNames.Should().Contain("public const string OnCreatureConversationBefore = \"crea_convo_bef\";");
         defaultConversationScript.Should().Contain("ExecuteScript(\"crea_convo_bef\", OBJECT_SELF);");
@@ -52,6 +56,12 @@ public class DialogPrivacyTests
             "the migrated-conversation hook runs only after the native creature state guards");
         beforeHookIndex.Should().BeLessThan(
             defaultConversationScript.IndexOf("BeginConversation();", StringComparison.Ordinal));
+        handledBranch.Should().Contain("RunDialogueTailHooks();");
+        handledBranch.IndexOf("RunDialogueTailHooks();", StringComparison.Ordinal).Should().BeLessThan(
+            handledBranch.IndexOf("return;", StringComparison.Ordinal));
+        handledBranch.Should().NotContain("BeginConversation();");
+        tailHooks.Should().Contain("SignalEvent(OBJECT_SELF, EventUserDefined(EVENT_DIALOGUE));");
+        tailHooks.Should().Contain("ExecuteScript(\"crea_convo_aft\", OBJECT_SELF);");
         source.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureConversationBefore)]\n        public static void StartAssignedCreatureConversation()");
         startAssigned.Should().Contain("MakeCreatureConversationPrivate(OBJECT_SELF);");
         startAssigned.IndexOf("MakeCreatureConversationPrivate(OBJECT_SELF);", StringComparison.Ordinal)

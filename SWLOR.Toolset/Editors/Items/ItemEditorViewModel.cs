@@ -682,6 +682,20 @@ namespace SWLOR.Toolset.Editors.Items
             UpdatePreview();
         }
 
+        /// <summary>
+        /// Refreshes immutable picker and cost-table models after the module's custom content changes.
+        /// </summary>
+        public void ReloadGameResources(ItemCostTableRanges? costTables)
+        {
+            if (_disposed)
+                return;
+
+            Stats.ReloadGameResources(costTables);
+            Requirements.ReloadGameResources(costTables);
+            OnPropertyChanged(nameof(ShowsStatsTab));
+            ReloadGameResources();
+        }
+
         private async Task ResolvePreviewModelAsync(
             byte[] snapshot,
             bool female,

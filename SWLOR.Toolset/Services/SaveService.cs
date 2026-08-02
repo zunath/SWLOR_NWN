@@ -78,7 +78,7 @@ namespace SWLOR.Toolset.Services
 
             ModuleMutationLock.ThrowIfModuleLocked();
             using var moduleWriteLock =
-                ModuleWriteLock.AcquireForResourcePath(session.FilePath);
+                ModuleWriteLock.AcquireForResourcePath(session.FilePath, TimeSpan.Zero);
             if (session.HasExternalChange())
                 return false;
 
@@ -97,7 +97,7 @@ namespace SWLOR.Toolset.Services
 
             ModuleMutationLock.ThrowIfModuleLocked();
             using var moduleWriteLock =
-                ModuleWriteLock.AcquireForResourcePath(session.FilePath);
+                ModuleWriteLock.AcquireForResourcePath(session.FilePath, TimeSpan.Zero);
             if (session.HasExternalChange())
                 return false;
 

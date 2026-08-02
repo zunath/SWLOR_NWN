@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
 
@@ -17,7 +18,28 @@ namespace SWLOR.Toolset.Factions
         string Path,
         byte[] Bytes,
         int ChangedReferences,
-        bool IsAreaInstanceFile);
+        bool IsAreaInstanceFile,
+        byte[] SourceSha256)
+    {
+        /// <summary>Whether the resource still contains the exact bytes this rewrite was built from.</summary>
+        public bool SourceMatchesCurrentFile()
+        {
+            try
+            {
+                return File.Exists(Path) && CryptographicOperations.FixedTimeEquals(
+                    SourceSha256,
+                    SHA256.HashData(File.ReadAllBytes(Path)));
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+    }
 
     /// <summary>
     /// Finds and remaps numeric faction references outside <c>repute.fac</c>. A faction id is a
@@ -85,7 +107,8 @@ namespace SWLOR.Toolset.Factions
             var rewrites = new List<FactionReferenceRewrite>();
             foreach (var path in EnumerateFactionResources(moduleRoot))
             {
-                var document = JsonGffDocument.Load(path);
+                var sourceBytes = File.ReadAllBytes(path);
+                var document = JsonGffDocument.Parse(sourceBytes);
                 var changes = 0;
                 VisitFactionFields(document.Root, field =>
                 {
@@ -112,7 +135,8 @@ namespace SWLOR.Toolset.Factions
                     path,
                     session.ToBytes(),
                     changes,
-                    IsAreaInstanceFile(path)));
+                    IsAreaInstanceFile(path),
+                    SHA256.HashData(sourceBytes)));
             }
 
             return rewrites;

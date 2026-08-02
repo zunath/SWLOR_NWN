@@ -1,8 +1,10 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Services;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -187,6 +189,56 @@ namespace SWLOR.Toolset.Tests
 
             SaveService.TryWriteAtomicIfUnchanged(session, preparedBytes).Should().BeFalse();
             File.ReadAllText(_path).Should().Be("newer external generation");
+        }
+
+        [Test]
+        public async Task OrdinarySaveFailsFastWhenAnotherProcessOwnsTheModuleLease()
+        {
+            var moduleRoot = Path.Combine(
+                Path.GetTempPath(), $"swlor_save_lock_{Guid.NewGuid():N}");
+            var utcDirectory = Path.Combine(moduleRoot, "utc");
+            Directory.CreateDirectory(utcDirectory);
+            var path = Path.Combine(utcDirectory, "guard.utc.json");
+            File.Copy(CorpusFiles.FindFileWithMutableInteger("utc"), path);
+            var originalBytes = File.ReadAllBytes(path);
+            var acquired = new TaskCompletionSource(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            var release = new TaskCompletionSource(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            Task holder;
+            using (ExecutionContext.SuppressFlow())
+            {
+                holder = Task.Run(async () =>
+                {
+                    using var moduleWriteLock = ModuleWriteLock.Acquire(moduleRoot);
+                    acquired.SetResult();
+                    await release.Task;
+                });
+            }
+
+            try
+            {
+                await acquired.Task.WaitAsync(TimeSpan.FromSeconds(5));
+                using var session = DocumentSession.Open(path);
+                var field = CorpusFiles.FindFirstMutableInteger(session.Document.Root)!;
+                using (session.Begin("edit"))
+                    field.SetInteger(field.GetInteger() + 1);
+                var log = new OutputLogService();
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+                new SaveService(log).Save(session).Should().BeFalse();
+
+                stopwatch.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(1));
+                File.ReadAllBytes(path).Should().Equal(originalBytes);
+                log.Lines.Should().Contain(line => line.Contains("module writer", StringComparison.Ordinal));
+            }
+            finally
+            {
+                release.TrySetResult();
+                await holder;
+                if (Directory.Exists(moduleRoot))
+                    Directory.Delete(moduleRoot, recursive: true);
+            }
         }
     }
 }

@@ -83,6 +83,33 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public void GameResourceReloadRebuildsSubtypeChoicesAndCostTableModels()
+        {
+            IReadOnlyList<BehaviorChoice> choices = new[] { new BehaviorChoice(12, "Weapon Focus") };
+            var section = new ItemRequirementsSectionViewModel(
+                OpenStore(),
+                (_, mutation) => { mutation(); return true; },
+                resolveChoices: _ => choices,
+                costTables: new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory)));
+
+            section.EntryLists.Single(list => list.Label == "Required Perk").AddChoices
+                .Should().Contain(choice => choice.Display == "Weapon Focus");
+            section.Groups.Single(group => group.Title == "Combat skills")
+                .Cells.Single(cell => cell.Label == "Armor").Maximum
+                .Should().NotBe(ItemCostTableRanges.DefaultMax);
+
+            choices = new[] { new BehaviorChoice(34, "Martial Arts") };
+            section.ReloadGameResources(costTables: null);
+
+            var perks = section.EntryLists.Single(list => list.Label == "Required Perk").AddChoices;
+            perks.Should().Contain(choice => choice.Display == "Martial Arts");
+            perks.Should().NotContain(choice => choice.Display == "Weapon Focus");
+            section.Groups.Single(group => group.Title == "Combat skills")
+                .Cells.Single(cell => cell.Label == "Armor").Maximum
+                .Should().Be(ItemCostTableRanges.DefaultMax);
+        }
+
+        [Test]
         public void AddingAPerkRequirementRoundTripsAsSubtypeAndLevel()
         {
             var store = OpenStore();

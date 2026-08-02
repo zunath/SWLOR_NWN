@@ -21,7 +21,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action? _valueChanged;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
-        private readonly ItemCostTableRanges? _costTables;
+        private ItemCostTableRanges? _costTables;
 
         private ItemFamily _family;
         private string _roleId = string.Empty;
@@ -236,6 +236,15 @@ namespace SWLOR.Toolset.Editors.Items
         /// </summary>
         public void ReloadFromDocument()
         {
+            Rebuild(_family, _roleId);
+        }
+
+        /// <summary>
+        /// Rebuilds controls whose immutable option lists came from the assigned HAK stack.
+        /// </summary>
+        public void ReloadGameResources(ItemCostTableRanges? costTables)
+        {
+            _costTables = costTables;
             Rebuild(_family, _roleId);
         }
 

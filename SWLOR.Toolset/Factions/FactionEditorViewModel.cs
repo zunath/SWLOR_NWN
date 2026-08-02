@@ -712,6 +712,16 @@ namespace SWLOR.Toolset.Factions
                 staged.Add(SaveService.Stage(_factionPath, facBytes));
                 foreach (var rewrite in rewrites)
                     staged.Add(SaveService.Stage(rewrite.Path, rewrite.Bytes));
+
+                var externallyChanged = rewrites.FirstOrDefault(
+                    rewrite => !rewrite.SourceMatchesCurrentFile());
+                if (externallyChanged != null)
+                {
+                    throw new IOException(
+                        $"{externallyChanged.Path} changed while faction references were being prepared. " +
+                        "Nothing was written.");
+                }
+
                 SaveService.CommitAll(staged);
             }
             catch

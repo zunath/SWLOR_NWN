@@ -95,6 +95,21 @@ namespace SWLOR.Toolset.Tests
             git.Get("Placeable List").Elements![0].Get("Faction").GetInteger().Should().Be(7);
         }
 
+        [Test]
+        public void RewriteFingerprintDetectsAResourceChangedAfterTheScan()
+        {
+            var rewrite = FactionReferenceRewriter.BuildRewrites(
+                    _moduleRoot,
+                    new Dictionary<int, int> { [7] = 1 })
+                .Single(candidate => candidate.Path.EndsWith("pilot.utc.json"));
+
+            rewrite.SourceMatchesCurrentFile().Should().BeTrue();
+
+            File.AppendAllText(rewrite.Path, " ");
+
+            rewrite.SourceMatchesCurrentFile().Should().BeFalse();
+        }
+
         private void Write(string directory, string fileName, string json)
         {
             var path = Path.Combine(_moduleRoot, directory, fileName);

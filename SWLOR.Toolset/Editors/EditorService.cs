@@ -129,6 +129,9 @@ namespace SWLOR.Toolset.Editors
         private Task? _itemSourcesBuild;
 
         private static readonly TimeSpan ItemSourcesRetryDelay = TimeSpan.FromMilliseconds(250);
+        private const int MaximumAutomaticItemSourceFailureRetries = 1;
+        private int _itemSourceFailureRetries;
+        private bool _itemSourceRetryBlocked;
 
         /// <summary>The background scan implementation; injectable to make generation races testable.</summary>
         private readonly Func<Domain.Workspace.ModuleWorkspace, string?, ItemObtainabilityIndex>
@@ -332,6 +335,8 @@ namespace SWLOR.Toolset.Editors
                 _choiceSets.Clear();
                 _doorAppearances = null;
                 _itemSources = null;
+                _itemSourceFailureRetries = 0;
+                _itemSourceRetryBlocked = false;
                 _merchantItemCatalog = null;
                 _merchantItemSearchIndex = null;
                 _merchantItemSummaries.Clear();
@@ -355,6 +360,8 @@ namespace SWLOR.Toolset.Editors
                 if (type is ResourceType.Utm or ResourceType.Uti or ResourceType.Utc or ResourceType.Utp)
                 {
                     _itemSources = null;
+                    _itemSourceFailureRetries = 0;
+                    _itemSourceRetryBlocked = false;
                     _itemSourcesGeneration++;
                     _ = WarmItemSourcesAsync();
                 }
@@ -507,7 +514,7 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openCreatureEditors.Values)
                 editor.Editor.ReloadGameResources();
             foreach (var editor in _openItemEditors.Values)
-                editor.Editor.ReloadGameResources();
+                editor.Editor.ReloadGameResources(ItemCostTables());
             foreach (var editor in _openMerchantEditors.Values)
                 editor.Editor.RefreshItemCatalog();
         }
@@ -1680,7 +1687,7 @@ namespace SWLOR.Toolset.Editors
         public Task WarmItemSourcesAsync()
         {
             var workspace = _workspaceContext.Workspace;
-            if (workspace == null || _itemSources != null)
+            if (workspace == null || _itemSources != null || _itemSourceRetryBlocked)
                 return Task.CompletedTask;
 
             return _itemSourcesBuild ??= BuildItemSourcesAsync(workspace);
@@ -1723,6 +1730,8 @@ namespace SWLOR.Toolset.Editors
                 else
                 {
                     _itemSources = index;
+                    _itemSourceFailureRetries = 0;
+                    _itemSourceRetryBlocked = false;
                     foreach (var editor in _openItemEditors.Values.ToList())
                         editor.Editor.RefreshSource();
                 }
@@ -1730,11 +1739,25 @@ namespace SWLOR.Toolset.Editors
             catch (Exception ex)
             {
                 _log.AppendLine($"Could not build the item source index: {ex.Message}");
-                // A transient enumeration/read failure must not leave every open item editor in a
-                // permanent "still building" state. Queue another background attempt after the
-                // shared task slot is cleared; the delay prevents a persistent filesystem failure
-                // from becoming a tight retry loop.
-                retryNeeded = _workspaceContext.Workspace != null;
+                var currentWorkspace = _workspaceContext.Workspace;
+                var invalidated = !ReferenceEquals(currentWorkspace, workspace) ||
+                                  _itemSourcesGeneration != generation;
+                if (currentWorkspace != null && invalidated)
+                {
+                    retryNeeded = true;
+                }
+                else if (currentWorkspace != null &&
+                         _itemSourceFailureRetries < MaximumAutomaticItemSourceFailureRetries)
+                {
+                    _itemSourceFailureRetries++;
+                    retryNeeded = true;
+                }
+                else
+                {
+                    // A persistent read failure must not rescan the whole module forever. The next
+                    // workspace/catalog invalidation clears this block and permits a fresh attempt.
+                    _itemSourceRetryBlocked = true;
+                }
             }
             finally
             {

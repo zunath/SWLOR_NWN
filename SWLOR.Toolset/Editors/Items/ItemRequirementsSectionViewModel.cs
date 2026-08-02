@@ -26,7 +26,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action? _valueChanged;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
-        private readonly ItemCostTableRanges? _costTables;
+        private ItemCostTableRanges? _costTables;
 
         public ObservableCollection<ItemRequirementGroupViewModel> Groups { get; } = new();
 
@@ -59,6 +59,15 @@ namespace SWLOR.Toolset.Editors.Items
 
             foreach (var entryList in EntryLists)
                 entryList.Reload();
+        }
+
+        /// <summary>
+        /// Rebuilds controls whose immutable option lists came from the assigned HAK stack.
+        /// </summary>
+        public void ReloadGameResources(ItemCostTableRanges? costTables)
+        {
+            _costTables = costTables;
+            Build();
         }
 
         private void Build()

@@ -12,6 +12,17 @@
 
 #include "nw_i0_generic"
 
+void RunDialogueTailHooks()
+{
+    // Send the user-defined event if appropriate
+    if(GetSpawnInCondition(NW_FLAG_ON_DIALOGUE_EVENT))
+    {
+        SignalEvent(OBJECT_SELF, EventUserDefined(EVENT_DIALOGUE));
+    }
+
+    ExecuteScript("crea_convo_aft", OBJECT_SELF);
+}
+
 void main()
 {
     DeleteLocalInt(OBJECT_SELF, "SWLOR_NUI_CONVO");
@@ -49,6 +60,7 @@ void main()
             {
                 DeleteLocalInt(OBJECT_SELF, "SWLOR_NUI_CONVO");
                 ClearActions(CLEAR_NW_C2_DEFAULT4_29);
+                RunDialogueTailHooks();
                 return;
             }
 
@@ -88,11 +100,5 @@ void main()
         //RespondToShout(oShouter, nMatch, oIntruder);
     }
 
-    // Send the user-defined event if appropriate
-    if(GetSpawnInCondition(NW_FLAG_ON_DIALOGUE_EVENT))
-    {
-        SignalEvent(OBJECT_SELF, EventUserDefined(EVENT_DIALOGUE));
-    }
-
-    ExecuteScript("crea_convo_aft", OBJECT_SELF);
+    RunDialogueTailHooks();
 }

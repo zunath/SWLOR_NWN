@@ -525,6 +525,32 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public void GameResourceReloadRebuildsSubtypeChoicesAndCostTableModels()
+        {
+            IReadOnlyList<BehaviorChoice> choices = new[] { new BehaviorChoice(3, "Fire") };
+            var section = new ItemStatsSectionViewModel(
+                OpenStore(),
+                (_, mutation) => { mutation(); return true; },
+                resolveChoices: _ => choices,
+                costTables: new ItemCostTableRanges(new TwoDaService(Sw2DaDirectory)));
+            section.Rebuild(ItemFamily.MeleeWeapon, ItemRoleCatalog.CustomId);
+
+            var originalCombat = section.Groups.Single(group => group.Group == ItemStatGroup.Combat);
+            originalCombat.ExclusiveChoices.Single().Options.Should().Contain(option => option.Display == "Fire");
+            originalCombat.Cells.Single(cell => cell.Label == "Delay").Maximum
+                .Should().NotBe(ItemCostTableRanges.DefaultMax);
+
+            choices = new[] { new BehaviorChoice(5, "Electrical") };
+            section.ReloadGameResources(costTables: null);
+
+            var refreshedCombat = section.Groups.Single(group => group.Group == ItemStatGroup.Combat);
+            refreshedCombat.ExclusiveChoices.Single().Options.Should().Contain(option => option.Display == "Electrical");
+            refreshedCombat.ExclusiveChoices.Single().Options.Should().NotContain(option => option.Display == "Fire");
+            refreshedCombat.Cells.Single(cell => cell.Label == "Delay").Maximum
+                .Should().Be(ItemCostTableRanges.DefaultMax);
+        }
+
+        [Test]
         public void MissingCostTableMetadataKeepsTheStoredValueReadOnly()
         {
             var store = OpenStore();

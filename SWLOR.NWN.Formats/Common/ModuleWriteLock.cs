@@ -106,7 +106,9 @@ public sealed class ModuleWriteLock : IDisposable
     /// Acquires the module containing a loose resource path. Resource files live one directory
     /// below the module root; root-level transaction markers use their containing directory.
     /// </summary>
-    public static ModuleWriteLock AcquireForResourcePath(string resourcePath)
+    public static ModuleWriteLock AcquireForResourcePath(
+        string resourcePath,
+        TimeSpan? timeout = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(resourcePath);
         var fullPath = Path.GetFullPath(resourcePath);
@@ -125,7 +127,7 @@ public sealed class ModuleWriteLock : IDisposable
                   $"Could not determine the module root containing '{resourcePath}'.")
             : directory;
 
-        return Acquire(moduleRoot);
+        return Acquire(moduleRoot, timeout);
     }
 
     public void Dispose()

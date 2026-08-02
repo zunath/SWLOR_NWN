@@ -59,7 +59,6 @@ public sealed class DlgConversationMigratorTests
             issue.Message.Contains("open_train_store", StringComparison.Ordinal));
     }
 
-    [TestCase("dt_barman_gen")]
     [TestCase("dt_barman_gen03")]
     [TestCase("dt_doc_velpo")]
     [TestCase("q1_nikka_larson")]
@@ -91,6 +90,17 @@ public sealed class DlgConversationMigratorTests
             .Should().Contain(message => message.Contains("dt_test_canaille", StringComparison.Ordinal))
             .And.Contain(message => message.Contains("ouvmag_cntrbande", StringComparison.Ordinal))
             .And.Contain(message => message.Contains("ouvmag_cntrbnd_c", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void Convert_KeepsSkyRaceAsLegacyUntilRaceStartGameplayExists()
+    {
+        var result = DlgConversationMigrator.Convert("dt_barman_gen", Load("dt_barman_gen"));
+
+        result.CanRunInNui.Should().BeFalse();
+        result.Issues.Should().Contain(issue =>
+            issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException &&
+            issue.Message.Contains("launch_race", StringComparison.Ordinal));
     }
 
     [Test]

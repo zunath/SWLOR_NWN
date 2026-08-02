@@ -45,8 +45,9 @@ public static class DlgConversationMigrator
             ["nw_walk_wp"] = OwnerScriptAction
         };
 
-    // These old one-off scripts are no longer present in the module. Their intent is expressed as
-    // registered NUI operations so the migrated conversations remain editable and executable.
+    // These old one-off scripts are no longer present in the module. Only scripts whose complete
+    // behavior can be expressed by registered NUI operations are translated here; anything else
+    // remains an explicit legacy exception.
     private static readonly Dictionary<string, OperationMapping[]> CustomConditions =
         new(StringComparer.OrdinalIgnoreCase)
         {
@@ -96,7 +97,6 @@ public static class DlgConversationMigrator
                 SetLocal("player", "SWLOR_SKYRACE_REGISTERED", "1"),
                 AdjustLocal("module", "SWLOR_SKYRACE_PARTICIPANTS", "1")
             ],
-            ["launch_race"] = [SetLocal("module", "SWLOR_SKYRACE_RUNNING", "1")],
             ["ouvmag_bar_gen"] = [new OperationMapping("action-open-store")],
             ["doc_pc_mort_d_0"] = [SetLocal("player", "SWLOR_DOCTOR_RESCUE", "0")],
             ["doc_soigne_pc"] = [new OperationMapping("action-heal-player", "50")],

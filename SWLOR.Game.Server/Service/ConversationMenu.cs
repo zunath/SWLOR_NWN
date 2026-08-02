@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDialogStart)]
         public static void StartFromObjectEvent()
         {
+            var owner = OBJECT_SELF;
             var eventScript = GetCurrentlyRunningEvent();
             var player = eventScript switch
             {
@@ -57,21 +58,21 @@ namespace SWLOR.Game.Server.Service
             // the NUI graph: petrified/dead creatures refuse, while charmed creatures retain the
             // native exception to the commandability check.
             if (eventScript == EventScript.Creature_OnDialogue &&
-                !CanStartCreatureConversation(OBJECT_SELF))
+                !CanStartCreatureConversation(owner))
                 return;
 
-            var name = GetLocalString(OBJECT_SELF, "CONVERSATION");
+            var name = GetLocalString(owner, "CONVERSATION");
             if (!string.IsNullOrWhiteSpace(name))
             {
                 if (Conversation.TryGetGraph(name, out _))
-                    Conversation.Start(player, OBJECT_SELF, name);
-                else if (!TryStart(player, OBJECT_SELF, name))
-                    Log.Write(LogGroup.Error, $"Object '{GetTag(OBJECT_SELF)}' references unknown conversation '{name}'.");
+                    Conversation.Start(player, owner, name);
+                else if (!TryStart(player, owner, name))
+                    Log.Write(LogGroup.Error, $"Object '{GetTag(owner)}' references unknown conversation '{name}'.");
                 return;
             }
 
-            if (!Conversation.TryStartAssigned(player, OBJECT_SELF))
-                AssignCommand(player, () => ActionStartConversation(OBJECT_SELF, string.Empty, true, false));
+            if (!Conversation.TryStartAssigned(player, owner))
+                AssignCommand(player, () => ActionStartConversation(owner, string.Empty, true, false));
         }
 
         private static bool CanStartCreatureConversation(uint creature)

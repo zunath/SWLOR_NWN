@@ -164,6 +164,12 @@
     ]
   },
   {
+    "ConversationId": "dt_barman_gen",
+    "Reasons": [
+      "Uses custom action script 'launch_race'."
+    ]
+  },
+  {
     "ConversationId": "dt_cantina002",
     "Reasons": [
       "Uses unsupported root script 'dial_end_drink'."

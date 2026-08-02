@@ -10474,8 +10474,14 @@
   },
   {
     "ConversationId": "dt_barman_gen",
-    "Status": "Converted",
-    "Issues": []
+    "Status": "RequiresLegacyException",
+    "Issues": [
+      {
+        "Severity": 1,
+        "Location": "reply 14",
+        "Message": "Uses custom action script 'launch_race'."
+      }
+    ]
   },
   {
     "ConversationId": "dt_barman_gen03",

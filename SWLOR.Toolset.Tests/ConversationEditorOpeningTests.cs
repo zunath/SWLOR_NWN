@@ -45,12 +45,15 @@ public sealed class ConversationEditorOpeningTests
         routes.Should().NotContain(route => route.Kind == ConversationEditorRouteKind.Missing);
         routes.Should().OnlyContain(route => route.OpensEditor,
             "every authored conversation shown in Module Contents must open an editor");
-        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(329);
+        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(327);
         routes.Count(route => route.Kind == ConversationEditorRouteKind.LegacyDialog).Should().Be(16);
-        routes.Count(route => route.Kind == ConversationEditorRouteKind.LegacyException).Should().Be(1);
-        routes.Single(route => route.Kind == ConversationEditorRouteKind.LegacyException).Path
-            .Should().EndWith("dmfi_universal.dlg.json",
-                "DMFI is the deliberate native NWN exception");
+        routes.Count(route => route.Kind == ConversationEditorRouteKind.LegacyException).Should().Be(3);
+        routes.Where(route => route.Kind == ConversationEditorRouteKind.LegacyException)
+            .Select(route => Path.GetFileName(route.Path))
+            .Should().BeEquivalentTo(
+                "dmfi_universal.dlg.json",
+                "dt_barman_gen.dlg.json",
+                "dt_cntr_magasin.dlg.json");
     }
 
     [Test]
@@ -134,7 +137,7 @@ public sealed class ConversationEditorOpeningTests
     }
 
     [Test]
-    public void MigratedScriptConversationUsesTheNuiGraph()
+    public void SkyRaceConversationStaysLegacyUntilRaceStartGameplayExists()
     {
         const string id = "dt_barman_gen";
         var graphPath = Path.Combine(
@@ -144,48 +147,9 @@ public sealed class ConversationEditorOpeningTests
             graphPath,
             Path.Combine(CorpusLocator.ModuleDirectory, "dlg", id + ".dlg.json"));
 
-        route.Kind.Should().Be(ConversationEditorRouteKind.NuiGraph);
-        var editor = new NuiConversationEditorViewModel(
-            graphPath, id, SnippetCatalog.Build(), null, new OutputLogService(), new StubPrompts());
-        ConversationGraphValidator.Validate(editor.SnapshotGraph()).Should().BeEmpty();
-        editor.OnClose();
-    }
-
-    [AvaloniaTest]
-    public void MigratedScriptConversationRendersNuiEditorWithoutLegacyWarning()
-    {
-        const string id = "dt_barman_gen";
-        var path = Path.Combine(
-            CorpusLocator.RepositoryRoot, "SWLOR.Game.Server", "ConversationData", id + ".conversation.json");
-        var model = new NuiConversationEditorViewModel(
-            path,
-            id,
-            SnippetCatalog.Build(),
-            null,
-            new OutputLogService(),
-            new StubPrompts());
-        var view = new NuiConversationEditorView { DataContext = model };
-        var window = new Window { Content = view, Width = 1100, Height = 760 };
-        window.Show();
-
-        try
-        {
-            window.UpdateLayout();
-            var text = view.GetVisualDescendants()
-                .OfType<TextBlock>()
-                .Select(block => block.Text ?? string.Empty)
-                .ToArray();
-
-            text.Should().NotContain(value => value.Contains("legacy", StringComparison.OrdinalIgnoreCase));
-            text.Should().NotContain("CONVERSATION COULD NOT BE OPENED");
-            view.GetVisualDescendants().OfType<TextBox>().Should().NotBeEmpty(
-                "dt_barman_gen must render editable NUI graph fields");
-        }
-        finally
-        {
-            window.Close();
-            model.OnClose();
-        }
+        File.Exists(graphPath).Should().BeFalse();
+        route.Kind.Should().Be(ConversationEditorRouteKind.LegacyException);
+        route.Details.Should().Contain(detail => detail.Contains("launch_race", StringComparison.Ordinal));
     }
 
     [AvaloniaTest]

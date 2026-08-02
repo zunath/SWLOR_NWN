@@ -103,14 +103,15 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnCreatureConversationAfter)]
         public static void CreatureConversation()
         {
-            var conversation = GetLocalString(OBJECT_SELF, "CONVERSATION");
+            var owner = OBJECT_SELF;
+            var conversation = GetLocalString(owner, "CONVERSATION");
             if (!string.IsNullOrWhiteSpace(conversation))
             {
                 var talker = GetLastSpeaker();
                 if (Conversation.TryGetGraph(conversation, out _))
-                    Conversation.Start(talker, OBJECT_SELF, conversation);
-                else if (!ConversationMenu.TryStart(talker, OBJECT_SELF, conversation))
-                    AssignCommand(talker, () => ActionStartConversation(OBJECT_SELF, conversation, true, false));
+                    Conversation.Start(talker, owner, conversation);
+                else if (!ConversationMenu.TryStart(talker, owner, conversation))
+                    AssignCommand(talker, () => ActionStartConversation(owner, conversation, true, false));
             }
         }
 

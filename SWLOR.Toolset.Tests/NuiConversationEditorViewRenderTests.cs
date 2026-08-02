@@ -118,6 +118,10 @@ public sealed class NuiConversationEditorViewRenderTests
             editText.Should().Contain("Conversation tree");
             view.GetVisualDescendants().OfType<TextBox>().Should().NotBeEmpty(
                 "the Edit tab contains the writing controls");
+            view.GetVisualDescendants().OfType<CheckBox>()
+                .Select(checkBox => checkBox.Content?.ToString())
+                .Should().NotContain("Only once per player",
+                    "repeat behavior is expressed through explicit conversation conditions and action state");
 
             var selectedRow = viewModel.SelectedTreeRow;
             tabs.SelectedIndex = 1;

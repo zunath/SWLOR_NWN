@@ -111,15 +111,11 @@ namespace SWLOR.Toolset.Editors
     {
         private readonly Action<SnippetEditorViewModel> _onCommit;
         private readonly Action<SnippetEditorViewModel> _onRemove;
-        private readonly Action<SnippetEditorViewModel, bool>? _onOncePerPlayerChanged;
         private readonly SnippetArgumentOptions _options;
         private bool _loading;
 
         [ObservableProperty]
         private bool _isNegated;
-
-        [ObservableProperty]
-        private bool _isOncePerPlayer;
 
         private readonly Func<SnippetArgument, string, string?>? _display;
 
@@ -131,25 +127,19 @@ namespace SWLOR.Toolset.Editors
             Action<SnippetEditorViewModel> onCommit,
             Action<SnippetEditorViewModel> onRemove,
             Func<SnippetArgument, string, string?>? display = null,
-            bool canRemove = true,
-            bool canRunOncePerPlayer = false,
-            bool isOncePerPlayer = false,
-            Action<SnippetEditorViewModel, bool>? onOncePerPlayerChanged = null)
+            bool canRemove = true)
         {
             Param = param;
             Snippet = snippet;
             CanNegate = canNegate;
             CanRemove = canRemove;
-            CanRunOncePerPlayer = canRunOncePerPlayer;
             _onCommit = onCommit;
             _onRemove = onRemove;
-            _onOncePerPlayerChanged = onOncePerPlayerChanged;
             _options = options;
             _display = display;
 
             _loading = true;
             _isNegated = param.IsNegated;
-            _isOncePerPlayer = isOncePerPlayer;
 
             var values = param.Arguments;
             var count = Math.Max(values.Length, snippet.MinimumArgumentCount);
@@ -180,8 +170,6 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>False for outcomes supplied by the selected guided behavior.</summary>
         public bool CanRemove { get; }
-
-        public bool CanRunOncePerPlayer { get; }
 
         public ObservableCollection<ArgumentEditorViewModel> Arguments { get; } = new();
 
@@ -288,10 +276,5 @@ namespace SWLOR.Toolset.Editors
 
         partial void OnIsNegatedChanged(bool value) => Commit();
 
-        partial void OnIsOncePerPlayerChanged(bool value)
-        {
-            if (!_loading)
-                _onOncePerPlayerChanged?.Invoke(this, value);
-        }
     }
 }

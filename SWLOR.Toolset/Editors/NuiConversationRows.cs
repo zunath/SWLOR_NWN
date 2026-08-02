@@ -447,7 +447,6 @@ public sealed partial class GraphSnippetEditorViewModel : ObservableObject
     private readonly Action<GraphSnippetEditorViewModel> _remove;
     private readonly SnippetArgumentOptions _options;
     private readonly Action<bool>? _setNegated;
-    private readonly Action<string>? _setOnceMarker;
     private bool _loading;
 
     public GraphSnippetEditorViewModel(
@@ -457,9 +456,7 @@ public sealed partial class GraphSnippetEditorViewModel : ObservableObject
         Action<Action> edit,
         Action<GraphSnippetEditorViewModel> remove,
         bool isNegated = false,
-        Action<bool>? setNegated = null,
-        string onceMarker = "",
-        Action<string>? setOnceMarker = null)
+        Action<bool>? setNegated = null)
     {
         Snippet = snippet;
         _arguments = arguments;
@@ -467,10 +464,7 @@ public sealed partial class GraphSnippetEditorViewModel : ObservableObject
         _edit = edit;
         _remove = remove;
         _setNegated = setNegated;
-        _setOnceMarker = setOnceMarker;
         _isNegated = isNegated;
-        _runOnce = !string.IsNullOrWhiteSpace(onceMarker);
-        _onceMarker = onceMarker;
 
         _loading = true;
         var count = Math.Max(arguments.Count, snippet.MinimumArgumentCount);
@@ -494,7 +488,6 @@ public sealed partial class GraphSnippetEditorViewModel : ObservableObject
     public SnippetDescriptor Snippet { get; }
     public string Description => Snippet.Description;
     public bool CanNegate => _setNegated != null;
-    public bool CanRunOnce => _setOnceMarker != null;
     public ObservableCollection<ArgumentEditorViewModel> Arguments { get; } = new();
     public string Sentence => Snippet.ToSentence(Arguments.Select(argument => argument.Value).ToArray(), IsNegated);
     public bool CanAddArguments => Snippet.RepeatGroupSize > 0 || Arguments.Count < Snippet.Arguments.Count;
@@ -504,33 +497,11 @@ public sealed partial class GraphSnippetEditorViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(Sentence))]
     private bool _isNegated;
 
-    [ObservableProperty]
-    private bool _runOnce;
-
-    [ObservableProperty]
-    private string _onceMarker = string.Empty;
-
     partial void OnIsNegatedChanged(bool value)
     {
         if (_loading || _setNegated == null)
             return;
         _edit(() => _setNegated(value));
-    }
-
-    partial void OnRunOnceChanged(bool value)
-    {
-        if (_loading || _setOnceMarker == null)
-            return;
-        _edit(() => _setOnceMarker(value ? DefaultOnceMarker() : string.Empty));
-        if (value && string.IsNullOrWhiteSpace(OnceMarker))
-            OnceMarker = DefaultOnceMarker();
-    }
-
-    partial void OnOnceMarkerChanged(string value)
-    {
-        if (_loading || _setOnceMarker == null || !RunOnce)
-            return;
-        _edit(() => _setOnceMarker(value ?? string.Empty));
     }
 
     [RelayCommand]
@@ -610,8 +581,6 @@ public sealed partial class GraphSnippetEditorViewModel : ObservableObject
         AddArgumentsCommand.NotifyCanExecuteChanged();
         RemoveArgumentsCommand.NotifyCanExecuteChanged();
     }
-
-    private string DefaultOnceMarker() => $"conversation-{Snippet.Key}";
 }
 
 public sealed record NuiConversationProblem(string Message, bool IsError, string Location)

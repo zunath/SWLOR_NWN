@@ -429,13 +429,8 @@ namespace SWLOR.Toolset.Domain.Documents
 
             // AddAction owns the dispatcher field. Copy the params first, then restore the exact
             // script so custom-script and historical hybrid nodes round-trip unchanged.
-            foreach (var action in node.Actions)
-            {
-                var value = action.IsOncePerPlayerMarker
-                    ? RegenerateOncePerPlayerMarker(action.Value)
-                    : action.Value;
-                copy.AddAction(action.Key, value);
-            }
+            foreach (var action in node.Actions.Where(action => !action.IsOncePerPlayerMarker))
+                copy.AddAction(action.Key, action.Value);
             copy.Script = node.Script;
 
             foreach (var link in node.Links)
@@ -447,16 +442,6 @@ namespace SWLOR.Toolset.Domain.Documents
             }
 
             return copy;
-        }
-
-        private static string RegenerateOncePerPlayerMarker(string marker)
-        {
-            // Keep the conversation-resref prefix used by the editor for diagnostics, but give the
-            // copied outcome a distinct permanent identity. Without this, completing the original
-            // node suppresses its separate copy (and vice versa) for that player.
-            var separator = marker.LastIndexOf(':');
-            var prefix = separator >= 0 ? marker[..(separator + 1)] : string.Empty;
-            return $"{prefix}{Guid.NewGuid():N}";
         }
 
         /// <summary>Points an existing route at a different line, leaving its guards alone.</summary>

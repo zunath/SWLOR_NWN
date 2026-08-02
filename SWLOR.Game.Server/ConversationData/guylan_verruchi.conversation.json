@@ -422,8 +422,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "hut_power_invest"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -512,8 +511,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "hut_power_invest"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -579,8 +577,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "hut_power_invest"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -597,8 +594,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -606,8 +602,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

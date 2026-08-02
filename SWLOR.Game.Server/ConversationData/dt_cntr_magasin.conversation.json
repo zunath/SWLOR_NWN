@@ -186,8 +186,7 @@
           "Key": "action-open-store",
           "Arguments": [
             "tosche_contrebande_cantina"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -230,8 +229,7 @@
           "Key": "action-open-store",
           "Arguments": [
             "tosche_cantina_contrebande"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],

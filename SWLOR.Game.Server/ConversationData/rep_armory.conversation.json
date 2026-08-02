@@ -145,8 +145,7 @@
       "Actions": [
         {
           "Key": "action-open-store",
-          "Arguments": [],
-          "OncePerPlayerId": ""
+          "Arguments": []
         }
       ],
       "Next": [],

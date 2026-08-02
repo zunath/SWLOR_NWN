@@ -524,8 +524,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "harvest_herbs"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -555,8 +554,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "harvest_herbs"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -599,8 +597,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "harvest_herbs"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -671,8 +668,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "field_tinctures"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -702,8 +698,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "field_tinctures"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -746,8 +741,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "field_tinctures"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -764,8 +758,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -773,8 +766,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

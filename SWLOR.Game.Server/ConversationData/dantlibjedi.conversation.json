@@ -338,8 +338,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "collect_herbs_librarian"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -387,8 +386,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "collect_herbs_librarian"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -431,8 +429,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "collect_herbs_librarian"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -449,8 +446,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -458,8 +454,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

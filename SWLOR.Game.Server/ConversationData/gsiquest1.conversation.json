@@ -451,8 +451,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "nar_great_arkanian_dragon"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -500,8 +499,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "nar_great_arkanian_dragon"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -544,8 +542,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "nar_great_arkanian_dragon"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -562,8 +559,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -571,8 +567,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

@@ -251,8 +251,7 @@
             "area",
             "SWLOR_SPAWN_COUNT_LOG",
             "0"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -279,8 +278,7 @@
             "area",
             "SWLOR_SPAWN_COUNT_LOG",
             "1"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -307,8 +305,7 @@
             "area",
             "SWLOR_SPAWN_DELAY_LOG",
             "0"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -335,8 +332,7 @@
             "area",
             "SWLOR_SPAWN_DELAY_LOG",
             "1"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -363,8 +359,7 @@
             "owner",
             "SWLOR_SPAWN_DUMP",
             "0"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -391,8 +386,7 @@
             "owner",
             "SWLOR_SPAWN_DUMP",
             "1"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -419,8 +413,7 @@
             "owner",
             "SWLOR_SPAWN_TRACKING",
             "0"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -447,8 +440,7 @@
             "owner",
             "SWLOR_SPAWN_TRACKING",
             "1"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -475,8 +467,7 @@
             "owner",
             "SWLOR_SPAWN_ACTIVE",
             "0"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -503,8 +494,7 @@
             "owner",
             "SWLOR_SPAWN_ACTIVE",
             "1"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -521,8 +511,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -530,8 +519,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

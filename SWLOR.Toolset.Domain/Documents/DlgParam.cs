@@ -19,7 +19,7 @@ namespace SWLOR.Toolset.Domain.Documents
     /// </remarks>
     public sealed class DlgParam
     {
-        public const string OncePerPlayerPrefix = "once-";
+        private const string OncePerPlayerPrefix = "once-";
 
         internal const string KeyField = "Key";
         internal const string ValueField = "Value";
@@ -53,16 +53,15 @@ namespace SWLOR.Toolset.Domain.Documents
         public bool IsNegated => Key.StartsWith('!');
 
         /// <summary>
-        /// Metadata paired with an action of the remaining key. The runtime uses its value as the
-        /// player's stable completion marker and does not execute it as a snippet itself.
+        /// Obsolete metadata from an earlier DLG authoring experiment. It is recognized only so
+        /// legacy files can be opened, converted, and copied without treating it as an executable
+        /// snippet; the graph-native format deliberately discards it.
         /// </summary>
         public bool IsOncePerPlayerMarker => Key.StartsWith(OncePerPlayerPrefix, StringComparison.Ordinal);
 
         public string MarkedActionKey => IsOncePerPlayerMarker
             ? Key[OncePerPlayerPrefix.Length..]
             : string.Empty;
-
-        public static string OncePerPlayerKey(string actionKey) => OncePerPlayerPrefix + actionKey;
 
         /// <summary>The raw argument string; arguments are separated by spaces.</summary>
         public string Value

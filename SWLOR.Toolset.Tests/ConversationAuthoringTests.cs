@@ -383,58 +383,22 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void OncePerPlayerMetadataIsValidatedButNotTreatedAsAnUnknownSnippet()
+        public void LegacyOnceMarkerIsIgnoredAndDoesNotSuppressTheOutcome()
         {
             var document = NewConversation();
             var line = document.Openings[0].Target;
             line.Text = "Hello.";
-            var action = line.AddAction("action-give-key-items", "79");
-            line.SetActionOncePerPlayer(action, oncePerPlayer: true, "test_convo:stable-marker");
+            line.AddAction("action-give-faction-points", "7 5");
+            line.AddAction("once-action-give-faction-points", "legacy:marker");
 
             var problems = Analyzer.Analyze(document);
-
-            problems.Should().NotContain(problem =>
-                problem.RuleId == "unknown-rule" || problem.RuleId == "invalid-once-marker");
-
-            line.RemoveAction(action);
-            line.Actions.Should().NotContain(candidate => candidate.IsOncePerPlayerMarker,
-                "removing the outcome also removes its execution-frequency metadata");
-        }
-
-        [Test]
-        public void QuestAdvanceOnceMarkerIsRejectedBecauseRewardSelectionMayBeClosed()
-        {
-            var document = NewConversation();
-            var line = document.Openings[0].Target;
-            line.Text = "Hello.";
-            var action = line.AddAction("action-advance-quest", "field_tinctures");
-            line.SetActionOncePerPlayer(action, oncePerPlayer: true, "test_convo:advance");
-
-            Analyzer.Analyze(document).Should().Contain(problem =>
-                problem.RuleId == "invalid-once-marker" &&
-                problem.Message.Contains("action-advance-quest", StringComparison.Ordinal));
-
-            var result = Evaluator.ApplyActions(line, new PretendPlayer()
-                .WithQuest("field_tinctures", QuestProgress.OnStep(1)));
-            result.HasCompletedDialogueAction("test_convo:advance").Should().BeFalse(
-                "the editor preview must match the runtime's ignored legacy marker");
-        }
-
-        [Test]
-        public void PreviewDoesNotApplyAOncePerPlayerRewardTwice()
-        {
-            var document = NewConversation();
-            var line = document.Openings[0].Target;
-            line.Text = "Hello.";
-            var action = line.AddAction("action-give-faction-points", "7 5");
-            line.SetActionOncePerPlayer(action, oncePerPlayer: true, "test_convo:faction-reward");
-
             var firstVisit = Evaluator.ApplyActions(line, new PretendPlayer());
             var secondVisit = Evaluator.ApplyActions(line, firstVisit);
 
+            problems.Should().NotContain(problem => problem.RuleId == "unknown-rule");
             firstVisit.GetFactionPoints(7).Should().Be(5);
-            secondVisit.GetFactionPoints(7).Should().Be(5,
-                "the separate Preview tab mirrors the runtime's once-per-player guard");
+            secondVisit.GetFactionPoints(7).Should().Be(10,
+                "legacy marker metadata no longer changes runtime or preview behavior");
         }
 
         // ---------- the scaffold ----------

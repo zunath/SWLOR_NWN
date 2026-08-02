@@ -480,8 +480,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "caxx_repair"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -547,8 +546,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "caxx_repair"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -632,8 +630,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "caxx_repair_2"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -681,8 +678,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "caxx_repair_2"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -699,8 +695,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -708,8 +703,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

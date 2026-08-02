@@ -40,7 +40,6 @@ namespace SWLOR.Toolset.Domain.Conversations
         private readonly Dictionary<string, int> _skillRanks = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<int, int> _factionStanding = new();
         private readonly Dictionary<int, int> _factionPoints = new();
-        private readonly HashSet<string> _completedDialogueActions = new(StringComparer.Ordinal);
 
         /// <summary>Whether this player has finished the tutorial on some character.</summary>
         public bool HasCompletedTutorial { get; set; }
@@ -96,14 +95,6 @@ namespace SWLOR.Toolset.Domain.Conversations
             _quests.TryGetValue(questId, out var progress) ? progress : QuestProgress.None;
 
         public bool HasKeyItem(string keyItem) => _keyItems.Contains(Canonicalize(keyItem));
-
-        public bool HasCompletedDialogueAction(string marker) => _completedDialogueActions.Contains(marker);
-
-        public PretendPlayer WithCompletedDialogueAction(string marker)
-        {
-            _completedDialogueActions.Add(marker);
-            return this;
-        }
 
         /// <summary>
         /// A conversation may give a key item by its <c>KeyItemType</c> member name and later check
@@ -172,9 +163,6 @@ namespace SWLOR.Toolset.Domain.Conversations
                 clone._factionStanding[faction] = standing;
             foreach (var (faction, points) in _factionPoints)
                 clone._factionPoints[faction] = points;
-            foreach (var marker in _completedDialogueActions)
-                clone._completedDialogueActions.Add(marker);
-
             return clone;
         }
     }

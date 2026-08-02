@@ -567,8 +567,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "joining_the_republic"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -634,8 +633,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "joining_the_republic"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -701,8 +699,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "joining_the_republic"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -978,8 +975,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "joining_the_republic"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1114,8 +1110,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -1123,8 +1118,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

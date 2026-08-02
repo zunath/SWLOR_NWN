@@ -287,8 +287,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "partyroom_pedro"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -331,8 +330,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "partyroom_pedro"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -357,8 +355,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "partyroom_pedro"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -398,8 +395,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -407,8 +403,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

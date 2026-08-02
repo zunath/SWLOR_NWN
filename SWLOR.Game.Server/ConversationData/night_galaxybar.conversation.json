@@ -143,8 +143,7 @@
           "Key": "action-open-store",
           "Arguments": [
             "GalaxyBar"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],

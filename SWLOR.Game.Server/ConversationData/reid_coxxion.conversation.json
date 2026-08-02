@@ -909,8 +909,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "help_talyron_family"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1040,8 +1039,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "help_talyron_family"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1419,8 +1417,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "vanquish_vellen"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1450,8 +1447,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "vanquish_vellen"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1517,8 +1513,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "vanquish_vellen"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1604,8 +1599,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -1613,8 +1607,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

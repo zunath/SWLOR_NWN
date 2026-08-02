@@ -76,8 +76,7 @@
           "Key": "action-open-store",
           "Arguments": [
             "NIGHT_ACCESSORY_SHOP"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],

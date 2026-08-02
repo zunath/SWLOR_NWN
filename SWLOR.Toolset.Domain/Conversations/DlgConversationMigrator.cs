@@ -333,15 +333,10 @@ public static class DlgConversationMigrator
 
         foreach (var action in actions.Where(action => !action.IsOncePerPlayerMarker))
         {
-            var marker = actions.FirstOrDefault(candidate =>
-                candidate.IsOncePerPlayerMarker &&
-                candidate.MarkedActionKey.Equals(action.SnippetKey, StringComparison.OrdinalIgnoreCase));
-
             destination.Add(new ConversationAction
             {
                 Key = action.SnippetKey,
-                Arguments = action.Arguments.ToList(),
-                OncePerPlayerId = marker?.Value ?? string.Empty
+                Arguments = action.Arguments.ToList()
             });
         }
     }

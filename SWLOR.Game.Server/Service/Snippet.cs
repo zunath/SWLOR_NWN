@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.NWN.API.NWNX;
@@ -10,7 +9,6 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Snippet
     {
-        private const string OncePerPlayerPrefix = "once-";
         private static readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new Dictionary<string, SnippetDetail>();
         private static readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new Dictionary<string, SnippetDetail>();
         [ThreadStatic]
@@ -50,12 +48,11 @@ namespace SWLOR.Game.Server.Service
                         _actionsTakenCommands.Add(key, snippet);
                         Conversation.Runtime.RegisterAction(
                             key,
-                            (context, arguments, oncePerPlayerId) =>
+                            (context, arguments) =>
                                 ExecuteAction(
                                     context.Player,
                                     key,
                                     arguments,
-                                    oncePerPlayerId,
                                     context.Owner));
                     }
 
@@ -141,14 +138,9 @@ namespace SWLOR.Game.Server.Service
             {
                 if (!UtilPlugin.GetScriptParamIsSet(action.Key)) continue;
 
-                string onceMarker = null;
-                var onceKey = OncePerPlayerPrefix + action.Key;
-                if (UtilPlugin.GetScriptParamIsSet(onceKey))
-                    onceMarker = GetScriptParam(onceKey);
-
                 var param = GetScriptParam(action.Key);
                 var args = param.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
-                ExecuteAction(player, action.Key, args, onceMarker);
+                ExecuteAction(player, action.Key, args);
             }
         }
 
@@ -183,32 +175,15 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Executes one registered snippet action without relying on NWScript parameter state.
-        /// The once-per-player marker is preserved for migrated conversations.
         /// </summary>
         public static bool ExecuteAction(
             uint player,
             string key,
             IReadOnlyList<string> arguments,
-            string oncePerPlayerId = null,
             uint owner = OBJECT_INVALID)
         {
             if (!_actionsTakenCommands.TryGetValue(key, out var snippet))
                 throw new InvalidOperationException($"Conversation action snippet '{key}' is not registered.");
-
-            // Ignore markers authored before this policy existed. This both prevents an
-            // asynchronous outcome from being consumed prematurely and lets affected players
-            // retry a quest reward-selection flow that they previously closed.
-            if (!SnippetActionPolicy.CanRunOncePerPlayer(key))
-                oncePerPlayerId = null;
-
-            if (!string.IsNullOrWhiteSpace(oncePerPlayerId))
-            {
-                var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-                if (dbPlayer != null)
-                    dbPlayer.CompletedDialogueActions ??= new HashSet<string>();
-                if (dbPlayer?.CompletedDialogueActions.Contains(oncePerPlayerId) == true)
-                    return true;
-            }
 
             arguments ??= Array.Empty<string>();
             if (!HasUsableArguments(key, snippet, arguments.Count, player))
@@ -226,23 +201,7 @@ namespace SWLOR.Game.Server.Service
                 _executionOwner = previousOwner;
             }
 
-            if (!succeeded)
-                return false;
-
-            if (!string.IsNullOrWhiteSpace(oncePerPlayerId))
-            {
-                // Reward actions may save the player themselves. Reload after the action so the
-                // once marker cannot overwrite the state that action just persisted.
-                var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-                if (dbPlayer == null)
-                    return true;
-
-                dbPlayer.CompletedDialogueActions ??= new HashSet<string>();
-                dbPlayer.CompletedDialogueActions.Add(oncePerPlayerId);
-                DB.Set(dbPlayer);
-            }
-
-            return true;
+            return succeeded;
         }
 
         /// <summary>

@@ -244,19 +244,9 @@ namespace SWLOR.Toolset.Domain.Conversations
         public PretendPlayer ApplyActions(DlgNode node, PretendPlayer player)
         {
             var result = player.Clone();
-            var onceMarkers = node.Actions
-                .Where(action => action.IsOncePerPlayerMarker && !string.IsNullOrWhiteSpace(action.Value))
-                .GroupBy(action => action.MarkedActionKey, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(group => group.Key, group => group.First().Value, StringComparer.OrdinalIgnoreCase);
 
             foreach (var action in node.Actions.Where(action => !action.IsOncePerPlayerMarker))
             {
-                string? onceMarker = null;
-                var runsOnce = SnippetActionPolicy.CanRunOncePerPlayer(action.SnippetKey) &&
-                               onceMarkers.TryGetValue(action.SnippetKey, out onceMarker);
-                if (runsOnce && result.HasCompletedDialogueAction(onceMarker!))
-                    continue;
-
                 var arguments = action.Arguments;
                 switch (action.SnippetKey)
                 {
@@ -294,8 +284,6 @@ namespace SWLOR.Toolset.Domain.Conversations
                         break;
                 }
 
-                if (runsOnce)
-                    result.WithCompletedDialogueAction(onceMarker!);
             }
 
             return result;

@@ -46,7 +46,9 @@ namespace SWLOR.Toolset.Services
                 // the graph files until the matching module/server generation has been deployed, so
                 // another editor cannot successfully save a graph that the just-built assembly lacks.
                 var conversationDataRoot = ModuleWorkspace.ResolveConversationDataRoot(moduleRoot);
-                using var conversationSourceLock = ModuleWriteLock.Acquire(conversationDataRoot);
+                using var conversationSourceLock = await Task.Run(
+                        () => ModuleWriteLock.Acquire(conversationDataRoot))
+                    .ConfigureAwait(false);
 
                 var cliBuildExitCode = await BuildCliAsync(repoRoot).ConfigureAwait(false);
                 if (cliBuildExitCode != 0)

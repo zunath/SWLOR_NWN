@@ -9,6 +9,22 @@ namespace SWLOR.Toolset.Tests;
 public class PackServiceTests
 {
     [Test]
+    public void ConversationLeaseAcquisitionRunsOffTheCallingThread()
+    {
+        var source = File.ReadAllText(Path.Combine(
+                FindRepositoryRoot().FullName,
+                "SWLOR.Toolset",
+                "Services",
+                "PackService.cs"))
+            .Replace("\r\n", "\n");
+
+        source.Should().Contain(
+            "using var conversationSourceLock = await Task.Run(\n" +
+            "                        () => ModuleWriteLock.Acquire(conversationDataRoot))",
+            "waiting for another process's conversation lease must not block the Avalonia UI thread");
+    }
+
+    [Test]
     public void DebugDeploymentReplacesTheModuleAndServerAsOneGeneration()
     {
         var fixture = CreateDeploymentFixture();
@@ -96,6 +112,16 @@ public class PackServiceTests
                 Path.Combine(repositoryRoot, "debugserver"),
                 ".swlor-toolset-debug-deploy-*")
             .ToList();
+
+    private static DirectoryInfo FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+
+        directory.Should().NotBeNull("the tests should run inside the repository checkout");
+        return directory!;
+    }
 
     private sealed record DeploymentFixture(
         string RepositoryRoot,

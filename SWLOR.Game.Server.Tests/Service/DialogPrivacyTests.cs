@@ -84,6 +84,8 @@ public class DialogPrivacyTests
             conversationSource, "public static void StartAssignedCreatureConversation()");
         var graphStart = ExtractMethod(
             conversationSource, "public static void Start(\n            uint player,");
+        var openSession = ExtractMethod(
+            conversationSource, "public static void OpenSession(");
         var objectRoute = ExtractMethod(
             routerSource, "public static void StartFromObjectEvent()");
         var creatureGuard = ExtractMethod(
@@ -94,6 +96,15 @@ public class DialogPrivacyTests
         participantGuard.Should().Contain("GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)");
         assignedStart.Should().Contain("if (!IsValidParticipant(player))");
         graphStart.Should().Contain("if (!IsValidParticipant(player))");
+        openSession.Should().Contain("if (GetIsDMPossessed(player))");
+        openSession.Should().Contain("uiTarget = player;");
+        openSession.Should().Contain("player = GetMaster(player);");
+        openSession.IndexOf("player = GetMaster(player);", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(openSession.IndexOf(
+                "Gui.TogglePlayerWindow(player, GuiWindowType.Conversation, payload, tetherObject, uiTarget);",
+                StringComparison.Ordinal),
+                "possessed DMs use their master-owned GUI state while the creature remains the NUI target");
         objectRoute.Should().Contain("if (!Conversation.IsValidParticipant(player))");
         objectRoute.Should().Contain("eventScript == EventScript.Creature_OnDialogue");
         objectRoute.Should().Contain("!CanStartCreatureConversation(OBJECT_SELF)");

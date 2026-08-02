@@ -263,6 +263,14 @@ namespace SWLOR.Game.Server.Service
             IConversationSession session,
             uint uiTarget = OBJECT_INVALID)
         {
+            if (GetIsDMPossessed(player))
+            {
+                if (uiTarget == OBJECT_INVALID)
+                    uiTarget = player;
+
+                player = GetMaster(player);
+            }
+
             if (Gui.IsWindowOpen(player, GuiWindowType.Conversation))
                 Gui.TogglePlayerWindow(player, GuiWindowType.Conversation);
 

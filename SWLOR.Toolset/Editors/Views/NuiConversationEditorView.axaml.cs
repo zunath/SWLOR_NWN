@@ -13,7 +13,6 @@ public partial class NuiConversationEditorView : UserControl
     private Control? _dragHandle;
     private ListBoxItem? _dragSourceContainer;
     private Point _dragStart;
-    private bool _dropAfter;
     private bool _isDragging;
 
     public NuiConversationEditorView()
@@ -76,12 +75,11 @@ public partial class NuiConversationEditorView : UserControl
     {
         var source = _dragSource;
         var target = _dropTarget;
-        var dropAfter = _dropAfter;
         var commit = _isDragging && source != null && target != null;
 
         CancelTreeDrag(e.Pointer);
         if (commit && DataContext is NuiConversationEditorViewModel viewModel)
-            viewModel.DropTreeRow(source, target, dropAfter);
+            viewModel.DropTreeRow(source, target);
         e.Handled = true;
     }
 
@@ -101,11 +99,10 @@ public partial class NuiConversationEditorView : UserControl
             return;
         }
 
-        var pointerInRow = e.GetPosition(hoveredContainer);
         _dropTarget = hovered;
-        _dropAfter = pointerInRow.Y >= hoveredContainer.Bounds.Height / 2d;
+        var insertAfter = viewModel.TreeDropInsertsAfter(_dragSource, hovered);
 
-        var previewAnchor = _dropAfter ? FindLastVisibleDescendant(hovered, viewModel) : hovered;
+        var previewAnchor = insertAfter ? FindLastVisibleDescendant(hovered, viewModel) : hovered;
         var anchorContainer = FindTreeContainer(previewAnchor);
         var anchorOrigin = anchorContainer?.TranslatePoint(default, TreeDragSurface);
         if (anchorContainer == null || anchorOrigin == null)
@@ -115,7 +112,7 @@ public partial class NuiConversationEditorView : UserControl
         }
 
         var left = Math.Max(0d, anchorOrigin.Value.X + hovered.IndentWidth + 1d);
-        var top = anchorOrigin.Value.Y + (_dropAfter ? anchorContainer.Bounds.Height : 0d);
+        var top = anchorOrigin.Value.Y + (insertAfter ? anchorContainer.Bounds.Height : 0d);
         var availableWidth = Math.Max(360d, TreeDragSurface.Bounds.Width - left - 20d);
         TreeDragPreview.Width = Math.Min(720d, availableWidth);
         Canvas.SetLeft(TreeDragPreview, left);
@@ -188,7 +185,6 @@ public partial class NuiConversationEditorView : UserControl
         _dropTarget = null;
         _dragHandle = null;
         _dragSourceContainer = null;
-        _dropAfter = false;
         _isDragging = false;
         pointer?.Capture(null);
     }

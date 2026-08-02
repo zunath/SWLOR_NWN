@@ -299,7 +299,7 @@ public sealed class NuiConversationEditorViewRenderTests
             row.IsNpc && row.IsEntryPoint && row.Node?.Id == "second");
 
         viewModel.CanDropTreeRow(secondOpening, firstOpening).Should().BeTrue();
-        viewModel.DropTreeRow(secondOpening, firstOpening, insertAfter: false).Should().BeTrue();
+        viewModel.DropTreeRow(secondOpening, firstOpening).Should().BeTrue();
 
         viewModel.SnapshotGraph().EntryPoints.Select(link => link.TargetNodeId)
             .Should().Equal(["second", "first"],
@@ -312,6 +312,23 @@ public sealed class NuiConversationEditorViewRenderTests
     }
 
     [Test]
+    public void DraggingAnAdjacentPlayerResponseDownPlacesItAfterTheHoveredResponse()
+    {
+        var viewModel = OpenEditor();
+        viewModel.AddChoiceCommand.Execute(null);
+        var firstResponse = viewModel.TreeRows.Single(row => row.IsPlayer && row.Choice?.Id == "ask");
+        var secondResponse = viewModel.TreeRows.Single(row =>
+            row.IsPlayer && row.ParentNode?.Id == "first" && row.Choice?.Id != "ask");
+
+        viewModel.TreeDropInsertsAfter(firstResponse, secondResponse).Should().BeTrue(
+            "a downward drag onto a compact row should not require hitting its lower 12 pixels");
+        viewModel.DropTreeRow(firstResponse, secondResponse).Should().BeTrue();
+
+        viewModel.SnapshotGraph().Nodes["first"].Choices.Select(link => link.ChoiceId)
+            .Should().Equal([secondResponse.Choice!.Id, "ask"]);
+    }
+
+    [Test]
     public void TreeDragDropDoesNotReparentConversationBranches()
     {
         var viewModel = OpenEditor();
@@ -321,7 +338,7 @@ public sealed class NuiConversationEditorViewRenderTests
 
         viewModel.CanDropTreeRow(response, opening).Should().BeFalse();
         viewModel.CanDropTreeRow(followUp, opening).Should().BeFalse();
-        viewModel.DropTreeRow(followUp, opening, insertAfter: false).Should().BeFalse();
+        viewModel.DropTreeRow(followUp, opening).Should().BeFalse();
     }
 
     [Test]

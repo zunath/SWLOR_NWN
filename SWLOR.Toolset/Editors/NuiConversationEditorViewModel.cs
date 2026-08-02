@@ -1097,17 +1097,23 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     }
 
     /// <summary>
+    /// The compact rows use direction rather than tiny upper/lower hit zones: moving down inserts
+    /// after the hovered sibling, while moving up inserts before it. The preview and commit both
+    /// consume this answer so the displayed destination is the destination that will be saved.
+    /// </summary>
+    public bool TreeDropInsertsAfter(NuiConversationTreeRow? source, NuiConversationTreeRow? target) =>
+        CanDropTreeRow(source, target) && source!.Index < target!.Index;
+
+    /// <summary>
     /// Commits the insertion slot shown by the tree drag preview. Returns false when the proposed
     /// slot is invalid or would leave the row where it already is.
     /// </summary>
-    public bool DropTreeRow(
-        NuiConversationTreeRow? source,
-        NuiConversationTreeRow? target,
-        bool insertAfter)
+    public bool DropTreeRow(NuiConversationTreeRow? source, NuiConversationTreeRow? target)
     {
         if (!CanDropTreeRow(source, target))
             return false;
 
+        var insertAfter = TreeDropInsertsAfter(source, target);
         var insertionIndex = target!.Index + (insertAfter ? 1 : 0);
         if (source!.Index < insertionIndex)
             insertionIndex--;

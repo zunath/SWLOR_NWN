@@ -77,6 +77,33 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        [TestCase("StrRef ModelName", "**** real_model")]
+        [TestCase("Label StrRef", "Real_Placeable ****")]
+        public void GetAll_FailsClosedWhenDeclaredMetadataIsMissing(string columns, string row)
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"placeable-model-metadata-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "placeables.2da"),
+                    $"2DA V2.0\r\n\r\n{columns}\r\n0 {row}\r\n");
+                var catalog = new PlaceableModelCatalog(
+                    new TwoDaService(scratch),
+                    new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
+
+                catalog.GetAll().Should().BeEmpty(
+                    "a gallery cannot prove rows are selectable without every declared metadata column");
+                catalog.TryGet(0, out _).Should().BeFalse();
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
         [Test]
         public void Search_MatchesLabelOrModelResRef_AndToleratesEveryRow()
         {

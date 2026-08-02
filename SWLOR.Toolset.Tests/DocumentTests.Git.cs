@@ -74,6 +74,19 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TatooineCantinaItemCommentsStayParallelWithItemPlacements()
+        {
+            var git = GitDocument.Load(Path.Combine(
+                CorpusLocator.ModuleDirectory, "git", "tat_anc_cantina.git.json"));
+            var gic = GicDocument.Load(Path.Combine(
+                CorpusLocator.ModuleDirectory, "gic", "tat_anc_cantina.gic.json"));
+
+            git.Items.Should().HaveCount(2);
+            gic.Items.Should().HaveCount(git.Items.Count,
+                "GIC comment rows are addressed by the matching GIT placement index");
+        }
+
+        [Test]
         public void BankGic_PlaceableComment_ReadsEmptyString()
         {
             var document = GicDocument.Load(BankGicPath);

@@ -99,8 +99,16 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         private static IReadOnlyList<PlaceableModelRow> Build(TwoDaService twoDa, TlkService tlk)
         {
             var definition = TwoDaLookupTables.PlaceableModel;
-            var modelColumn = definition.RequiredColumns!.Single();
-            var table = twoDa.GetTable(definition.TableName);
+            var requiredColumns = definition.RequiredColumns!;
+            var modelColumn = requiredColumns.Single();
+            if (!twoDa.TryGetTable(definition.TableName, out var table) ||
+                table == null ||
+                !table.HasColumn(definition.LabelColumn) ||
+                requiredColumns.Any(column => !table.HasColumn(column)))
+            {
+                return Array.Empty<PlaceableModelRow>();
+            }
+
             var rows = new List<PlaceableModelRow>();
 
             for (var row = 0; row < table.RowCount; row++)

@@ -84,11 +84,21 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// Conversations are source data embedded into SWLOR.Game.Server at build time, not Aurora
         /// DLG resources stored under Module/dlg.
         /// </summary>
-        public string ConversationDataRoot => Path.GetFullPath(Path.Combine(
-            ModuleRoot,
-            "..",
-            "SWLOR.Game.Server",
-            "ConversationData"));
+        public string ConversationDataRoot => ResolveConversationDataRoot(ModuleRoot);
+
+        /// <summary>
+        /// Resolves the server-owned conversation source directory beside an unpacked module.
+        /// Shared by the workspace, file watcher, and pack lock so all three agree on its identity.
+        /// </summary>
+        public static string ResolveConversationDataRoot(string moduleRoot)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(moduleRoot);
+            return Path.GetFullPath(Path.Combine(
+                moduleRoot,
+                "..",
+                "SWLOR.Game.Server",
+                "ConversationData"));
+        }
 
         /// <summary>The authored graph path for one conversation resref.</summary>
         public string GetConversationGraphPath(string resRef)

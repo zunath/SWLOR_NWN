@@ -15,6 +15,7 @@ namespace SWLOR.Toolset.Tests
         [TestCase(@"C:\module\utc\alask.utc.json", ResourceType.Utc, "alask")]
         [TestCase(@"C:\module\nss\on_enter.nss", ResourceType.Nss, "on_enter")]
         [TestCase(@"C:\module\nss\ON_EXIT.NSS", ResourceType.Nss, "ON_EXIT")]
+        [TestCase(@"C:\repo\SWLOR.Game.Server\ConversationData\intro.conversation.json", ResourceType.Dlg, "intro")]
         public void SupportedResourcePathsResolveTheirTypeAndResRef(
             string path,
             ResourceType expectedType,
@@ -98,6 +99,41 @@ namespace SWLOR.Toolset.Tests
             string directoryName)
         {
             ModuleFileWatcher.IsNwnToolsetTemporaryDirectoryName(directoryName).Should().BeFalse();
+        }
+
+        [Test]
+        [NonParallelizable]
+        public void WatchIncludesTheSiblingConversationDataDirectory()
+        {
+            var repositoryRoot = Path.Combine(
+                Path.GetTempPath(), $"swlor_conversation_watch_{Guid.NewGuid():N}");
+            var moduleRoot = Path.Combine(repositoryRoot, "Module");
+            var conversationRoot = Path.Combine(
+                repositoryRoot, "SWLOR.Game.Server", "ConversationData");
+            Directory.CreateDirectory(moduleRoot);
+            Directory.CreateDirectory(conversationRoot);
+            using var watcher = new ModuleFileWatcher(new OutputLogService());
+
+            try
+            {
+                watcher.Watch(moduleRoot);
+
+                var field = typeof(ModuleFileWatcher).GetField(
+                    "_watchers", BindingFlags.Instance | BindingFlags.NonPublic);
+                field.Should().NotBeNull();
+                var watchers = field!.GetValue(watcher) as Dictionary<string, FileSystemWatcher>;
+
+                watchers.Should().NotBeNull();
+                watchers!.Keys.Should().Contain(
+                    Path.TrimEndingDirectorySeparator(Path.GetFullPath(conversationRoot)),
+                    "graph-native conversations live outside Module and need their own watcher");
+            }
+            finally
+            {
+                watcher.Stop();
+                if (Directory.Exists(repositoryRoot))
+                    Directory.Delete(repositoryRoot, recursive: true);
+            }
         }
 
         [Test]

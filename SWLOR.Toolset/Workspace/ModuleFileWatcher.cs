@@ -4,8 +4,9 @@ using SWLOR.Toolset.Services;
 namespace SWLOR.Toolset.Workspace
 {
     /// <summary>
-    /// Watches a module root and its resource directories for external changes and logs them to
-    /// the Output panel. The packer's transient "packing" and "palette-refresh" directories and
+    /// Watches a module root, its resource directories, and the sibling conversation source
+    /// directory for external changes and logs them to the Output panel. The packer's transient
+    /// "packing" and "palette-refresh" directories and
     /// item-rename transaction directories, and the NWN toolset's temp# workspaces are excluded
     /// from recursive monitoring; packed .mod artifacts and this app's atomic-save .tmp files are
     /// filtered before reporting.
@@ -18,6 +19,7 @@ namespace SWLOR.Toolset.Workspace
             new(StringComparer.OrdinalIgnoreCase);
         private string? _moduleRoot;
         private string? _packingDirectoryPrefix;
+        private string? _conversationDataRoot;
 
         /// <summary>The catalog to keep in step with the disk, or null in a test with none.</summary>
         private readonly WorkspaceContext? _workspaceContext;
@@ -175,7 +177,8 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>
         /// Reads a module resource path as its type and resref - "…/utc/foo.utc.json" is a UTC named
         /// "foo", and "…/nss/on_enter.nss" is a script named "on_enter". False for anything that is not
-        /// a module resource, which is most of what the recursive watcher sees.
+        /// a module resource. Graph-native <c>*.conversation.json</c> files in the sibling source
+        /// directory are resolved as dialogs; false is returned for everything else.
         /// </summary>
         public static bool TryResolveResource(string path, out ResourceType type, out string resRef)
         {
@@ -183,6 +186,14 @@ namespace SWLOR.Toolset.Workspace
             resRef = string.Empty;
 
             var fileName = Path.GetFileName(path);
+            const string conversationSuffix = ".conversation.json";
+            if (fileName.EndsWith(conversationSuffix, StringComparison.OrdinalIgnoreCase))
+            {
+                type = ResourceType.Dlg;
+                resRef = fileName[..^conversationSuffix.Length];
+                return !string.IsNullOrEmpty(resRef);
+            }
+
             if (fileName.EndsWith(".nss", StringComparison.OrdinalIgnoreCase))
             {
                 type = ResourceType.Nss;
@@ -215,6 +226,7 @@ namespace SWLOR.Toolset.Workspace
                 _moduleRoot = Path.GetFullPath(moduleRoot);
                 _packingDirectoryPrefix =
                     Path.Combine(_moduleRoot, "packing") + Path.DirectorySeparatorChar;
+                _conversationDataRoot = ModuleWorkspace.ResolveConversationDataRoot(_moduleRoot);
 
                 // FileSystemWatcher has no directory-exclusion filter. Watching the module root
                 // recursively and discarding temp# events here still lets those events overflow the
@@ -223,6 +235,7 @@ namespace SWLOR.Toolset.Workspace
                 AddWatcher(_moduleRoot, includeSubdirectories: false);
                 foreach (var directory in Directory.EnumerateDirectories(_moduleRoot))
                     AddTopLevelDirectoryWatcher(directory);
+                AddWatcher(_conversationDataRoot, includeSubdirectories: true);
 
                 _log.AppendLine($"Watching '{moduleRoot}' for external changes.");
             }
@@ -436,6 +449,7 @@ namespace SWLOR.Toolset.Workspace
             {
                 _moduleRoot = null;
                 _packingDirectoryPrefix = null;
+                _conversationDataRoot = null;
                 watchers = _watchers.Values.ToArray();
                 _watchers.Clear();
             }

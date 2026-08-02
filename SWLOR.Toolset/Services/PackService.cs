@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 
@@ -11,6 +12,7 @@ namespace SWLOR.Toolset.Services
     /// </summary>
     public sealed class PackService
     {
+        private const string DeploymentTransactionPrefix = ".swlor-toolset-debug-deploy-";
         private readonly OutputLogService _log;
         private int _isPacking;
 
@@ -39,6 +41,12 @@ namespace SWLOR.Toolset.Services
                     _log.AppendLine("Cannot determine repository root from the module root.");
                     return -1;
                 }
+
+                // Conversation saves use this same cross-process key. Hold it before MSBuild reads
+                // the graph files until the matching module/server generation has been deployed, so
+                // another editor cannot successfully save a graph that the just-built assembly lacks.
+                var conversationDataRoot = ModuleWorkspace.ResolveConversationDataRoot(moduleRoot);
+                using var conversationSourceLock = ModuleWriteLock.Acquire(conversationDataRoot);
 
                 var cliBuildExitCode = await BuildCliAsync(repoRoot).ConfigureAwait(false);
                 if (cliBuildExitCode != 0)
@@ -155,12 +163,17 @@ namespace SWLOR.Toolset.Services
             return process.ExitCode;
         }
 
-        /// <summary>Copies the packed module and rebuilt server output into debugserver.</summary>
+        /// <summary>
+        /// Stages the packed module and rebuilt server output, then installs them as one generation.
+        /// If either installation fails, the previous generation is restored before returning.
+        /// </summary>
         private bool DeployToDebugServer(string repoRoot, string moduleRoot, string moduleFileName)
         {
+            var transactionRoot = string.Empty;
             try
             {
-                var modulesDirectory = Path.Combine(repoRoot, "debugserver", "modules");
+                var debugServerRoot = Path.Combine(repoRoot, "debugserver");
+                var modulesDirectory = Path.Combine(debugServerRoot, "modules");
                 if (!Directory.Exists(modulesDirectory))
                 {
                     _log.AppendLine(
@@ -170,37 +183,141 @@ namespace SWLOR.Toolset.Services
 
                 var source = Path.Combine(moduleRoot, moduleFileName);
                 var destination = Path.Combine(modulesDirectory, moduleFileName);
-                File.Copy(source, destination, overwrite: true);
-                _log.AppendLine($"Deployed '{moduleFileName}' to debugserver\\modules.");
-
                 var serverOutput = Path.Combine(
                     repoRoot, "SWLOR.Game.Server", "bin", "Debug", "net10.0");
-                var dotnetDirectory = Path.Combine(repoRoot, "debugserver", "dotnet");
                 if (!Directory.Exists(serverOutput))
                     throw new DirectoryNotFoundException(
                         $"The server build output was not found at {serverOutput}.");
-                Directory.CreateDirectory(dotnetDirectory);
-                CopyDirectory(serverOutput, dotnetDirectory);
+
+                var dotnetDirectory = Path.Combine(debugServerRoot, "dotnet");
+                transactionRoot = Path.Combine(
+                    debugServerRoot,
+                    DeploymentTransactionPrefix + Guid.NewGuid().ToString("N"));
+                var stagedModule = Path.Combine(
+                    transactionRoot, "staged", "modules", moduleFileName);
+                var stagedDotnet = Path.Combine(transactionRoot, "staged", "dotnet");
+                var backupModule = Path.Combine(
+                    transactionRoot, "backup", "modules", moduleFileName);
+                var backupDotnet = Path.Combine(transactionRoot, "backup", "dotnet");
+
+                Directory.CreateDirectory(Path.GetDirectoryName(stagedModule)!);
+                File.Copy(source, stagedModule);
+                CopyDirectory(serverOutput, stagedDotnet);
+
+                var hadModule = File.Exists(destination);
+                var hadDotnet = Directory.Exists(dotnetDirectory);
+                var installedModule = false;
+                var installedDotnet = false;
+
+                try
+                {
+                    if (hadModule)
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(backupModule)!);
+                        File.Move(destination, backupModule);
+                    }
+
+                    if (hadDotnet)
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(backupDotnet)!);
+                        Directory.Move(dotnetDirectory, backupDotnet);
+                    }
+
+                    File.Move(stagedModule, destination);
+                    installedModule = true;
+                    Directory.Move(stagedDotnet, dotnetDirectory);
+                    installedDotnet = true;
+                }
+                catch (Exception installException)
+                {
+                    var rollbackErrors = new List<string>();
+                    if (installedDotnet)
+                        TryRollback(
+                            () => Directory.Delete(dotnetDirectory, recursive: true),
+                            "remove the partially installed server output",
+                            rollbackErrors);
+                    if (hadDotnet && Directory.Exists(backupDotnet))
+                        TryRollback(
+                            () => Directory.Move(backupDotnet, dotnetDirectory),
+                            "restore the previous server output",
+                            rollbackErrors);
+                    if (installedModule)
+                        TryRollback(
+                            () => File.Delete(destination),
+                            "remove the partially installed module",
+                            rollbackErrors);
+                    if (hadModule && File.Exists(backupModule))
+                        TryRollback(
+                            () => File.Move(backupModule, destination),
+                            "restore the previous module",
+                            rollbackErrors);
+
+                    if (rollbackErrors.Count == 0)
+                        TryDeleteTransactionDirectory(transactionRoot);
+                    else
+                        _log.AppendLine(
+                            $"Deployment rollback needs manual recovery from '{transactionRoot}': " +
+                            string.Join("; ", rollbackErrors));
+
+                    _log.AppendLine(
+                        $"Pack succeeded but the debugserver deployment was rolled back: {installException.Message}");
+                    return false;
+                }
+
+                TryDeleteTransactionDirectory(transactionRoot);
+                _log.AppendLine($"Deployed '{moduleFileName}' to debugserver\\modules.");
                 _log.AppendLine("Deployed the rebuilt server assembly to debugserver\\dotnet.");
                 return true;
             }
             catch (Exception ex)
             {
-                _log.AppendLine($"Pack succeeded but the debugserver copy failed: {ex.Message}");
+                TryDeleteTransactionDirectory(transactionRoot);
+                _log.AppendLine($"Pack succeeded but the debugserver staging failed: {ex.Message}");
                 return false;
             }
         }
 
         private static void CopyDirectory(string source, string destination)
         {
+            Directory.CreateDirectory(destination);
             foreach (var file in Directory.EnumerateFiles(source))
                 File.Copy(file, Path.Combine(destination, Path.GetFileName(file)), overwrite: true);
 
             foreach (var directory in Directory.EnumerateDirectories(source))
             {
                 var childDestination = Path.Combine(destination, Path.GetFileName(directory));
-                Directory.CreateDirectory(childDestination);
                 CopyDirectory(directory, childDestination);
+            }
+        }
+
+        private static void TryRollback(
+            Action rollback,
+            string description,
+            ICollection<string> errors)
+        {
+            try
+            {
+                rollback();
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"could not {description}: {ex.Message}");
+            }
+        }
+
+        private void TryDeleteTransactionDirectory(string transactionRoot)
+        {
+            if (string.IsNullOrEmpty(transactionRoot) || !Directory.Exists(transactionRoot))
+                return;
+
+            try
+            {
+                Directory.Delete(transactionRoot, recursive: true);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine(
+                    $"Debugserver deployment cleanup left '{transactionRoot}': {ex.Message}");
             }
         }
 

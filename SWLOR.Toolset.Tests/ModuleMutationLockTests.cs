@@ -576,6 +576,50 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ConversationSaveWaitsForTheSourceLeaseUsedByPacking()
+        {
+            var conversationRoot = Path.Combine(
+                Path.GetTempPath(), $"swlor_conversation_lock_{Guid.NewGuid():N}");
+            Directory.CreateDirectory(conversationRoot);
+            var path = Path.Combine(conversationRoot, "guard.conversation.json");
+            File.WriteAllText(path, "{\"original\":true}");
+
+            try
+            {
+                var heldLock = ModuleWriteLock.Acquire(conversationRoot);
+                try
+                {
+                    Task attemptedSave;
+                    using (ExecutionContext.SuppressFlow())
+                    {
+                        attemptedSave = Task.Run(() => SaveService.WriteAtomic(
+                            path,
+                            System.Text.Encoding.UTF8.GetBytes("{\"raced\":true}")));
+                    }
+
+                    await Task.Delay(100);
+                    attemptedSave.IsCompleted.Should().BeFalse(
+                        "packing holds the conversation source lease from build through deployment");
+                    File.ReadAllText(path).Should().Be("{\"original\":true}");
+
+                    heldLock.Dispose();
+                    await attemptedSave;
+                }
+                finally
+                {
+                    heldLock.Dispose();
+                }
+
+                File.ReadAllText(path).Should().Be("{\"raced\":true}");
+            }
+            finally
+            {
+                if (Directory.Exists(conversationRoot))
+                    Directory.Delete(conversationRoot, recursive: true);
+            }
+        }
+
+        [Test]
         public async Task ALeaseHeldAcrossAwaitDoesNotFlowBackIntoSiblingWork()
         {
             var moduleRoot = Path.Combine(

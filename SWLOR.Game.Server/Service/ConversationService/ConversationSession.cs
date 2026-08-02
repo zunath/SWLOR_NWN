@@ -7,11 +7,13 @@ namespace SWLOR.Game.Server.Service.ConversationService
     {
         private readonly ConversationGraph _graph;
         private readonly IConversationRuntime _runtime;
+        private List<ConversationTextBlock> _currentText = new();
         private List<ConversationChoice> _visibleChoices = new();
         private bool _hasStarted;
 
         public ConversationContext Context { get; }
         public ConversationNode CurrentNode { get; private set; }
+        public IReadOnlyList<ConversationTextBlock> CurrentText => _currentText;
         public IReadOnlyList<ConversationChoice> VisibleChoices => _visibleChoices;
         public bool HasEnded { get; private set; }
         public ConversationEndReason? EndReason { get; private set; }
@@ -111,6 +113,7 @@ namespace SWLOR.Game.Server.Service.ConversationService
 
         private void EnterNode(string nodeId)
         {
+            _currentText = new List<ConversationTextBlock>();
             var automaticPath = new HashSet<string>(StringComparer.Ordinal);
             while (!HasEnded)
             {
@@ -126,6 +129,9 @@ namespace SWLOR.Game.Server.Service.ConversationService
                     End(ConversationEndReason.RuntimeError);
                     return;
                 }
+
+                if (CurrentNode.Text != null)
+                    _currentText.AddRange(CurrentNode.Text);
 
                 var passingChoices = (CurrentNode.Choices ?? new List<ConversationChoiceLink>())
                     .Where(link => ConditionsPass(link.Conditions))

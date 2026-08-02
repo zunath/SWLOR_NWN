@@ -34,6 +34,10 @@ public class DialogPrivacyTests
             "if (GetHasEffect(EFFECT_TYPE_PETRIFY, OBJECT_SELF) == TRUE)", StringComparison.Ordinal);
         var deadIndex = defaultConversationScript.IndexOf(
             "if (GetIsDead(OBJECT_SELF) == TRUE)", StringComparison.Ordinal);
+        var ordinaryConversationIndex = defaultConversationScript.IndexOf(
+            "if (nMatch == -1)", StringComparison.Ordinal);
+        var commandableIndex = defaultConversationScript.IndexOf(
+            "if (GetCommandable(OBJECT_SELF) ||", StringComparison.Ordinal);
         var beforeHookIndex = defaultConversationScript.IndexOf(
             "ExecuteScript(\"crea_convo_bef\", OBJECT_SELF);", StringComparison.Ordinal);
 
@@ -42,7 +46,9 @@ public class DialogPrivacyTests
         defaultConversationScript.Should().Contain("if (GetLocalInt(OBJECT_SELF, \"SWLOR_NUI_CONVO\"))");
         resetIndex.Should().BeLessThan(petrifiedIndex);
         petrifiedIndex.Should().BeLessThan(deadIndex);
-        deadIndex.Should().BeLessThan(beforeHookIndex,
+        deadIndex.Should().BeLessThan(ordinaryConversationIndex);
+        ordinaryConversationIndex.Should().BeLessThan(commandableIndex);
+        commandableIndex.Should().BeLessThan(beforeHookIndex,
             "the migrated-conversation hook runs only after the native creature state guards");
         beforeHookIndex.Should().BeLessThan(
             defaultConversationScript.IndexOf("BeginConversation();", StringComparison.Ordinal));

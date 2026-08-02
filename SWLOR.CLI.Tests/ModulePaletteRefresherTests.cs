@@ -44,10 +44,17 @@ public sealed class ModulePaletteRefresherTests
             repositoryRoot,
             "SWLOR.Game.Server",
             "SWLOR.Game.Server.csproj"));
+        var deployBuild = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "SWLOR.CLI",
+            "DeployBuild.cs"));
 
         runner.Should().Contain("dotnet build");
+        runner.Should().Contain("-c Release");
         runner.Should().Contain("-p:RunPostBuildEvent=Never");
         runner.Should().Contain("SWLOR.CLI.dll");
+        deployBuild.Should().Contain("../SWLOR.Game.Server/bin/Release/net10.0/");
+        deployBuild.Should().NotContain("../SWLOR.Game.Server/bin/Debug/net10.0/");
         packCommand.Should().Contain("RunCLI.cmd");
         serverProject.Should().Contain("RunCLI.cmd");
         serverProject.Should().NotContain("tools\\SWLOR.CLI\\SWLOR.CLI.exe");

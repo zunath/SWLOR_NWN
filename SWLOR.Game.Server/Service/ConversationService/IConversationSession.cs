@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Service.ConversationService
     {
         ConversationContext Context { get; }
         ConversationNode CurrentNode { get; }
+        IReadOnlyList<ConversationTextBlock> CurrentText { get; }
         IReadOnlyList<ConversationChoice> VisibleChoices { get; }
         bool HasEnded { get; }
         string Title { get; }

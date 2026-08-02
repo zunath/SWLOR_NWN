@@ -25,7 +25,7 @@ Creates the debug server directory structure:
 ```
 
 ### 2. Binary Deployment
-- Copies all files from `../SWLOR.Game.Server/bin/Debug/net10.0/` to `../debugserver/dotnet/`
+- Copies all files from `../SWLOR.Game.Server/bin/Release/net10.0/` to `../debugserver/dotnet/`
 - Excludes the `swlor.env` file to preserve existing configuration
 - Maintains directory structure during copy operations
 
@@ -49,7 +49,7 @@ The tool expects the following structure:
 SWLOR_NWN/
 ├── SWLOR.CLI/
 ├── SWLOR.Game.Server/
-│   ├── bin/Debug/net10.0/
+│   ├── bin/Release/net10.0/
 │   └── Docker/
 └── Module/
     └── Star Wars LOR v2.mod

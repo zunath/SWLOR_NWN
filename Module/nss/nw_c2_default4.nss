@@ -29,14 +29,6 @@ void main()
         return;
     }
 
-    ExecuteScript("crea_convo_bef", OBJECT_SELF);
-    if (GetLocalInt(OBJECT_SELF, "SWLOR_NUI_CONVO"))
-    {
-        DeleteLocalInt(OBJECT_SELF, "SWLOR_NUI_CONVO");
-        ClearActions(CLEAR_NW_C2_DEFAULT4_29);
-        return;
-    }
-
     // See if what we just 'heard' matches any of our
     // predefined patterns
     int nMatch = GetListenPatternNumber();
@@ -45,18 +37,21 @@ void main()
     if (nMatch == -1)
     {
         // Not a match -- start an ordinary conversation
-        if (GetCommandable(OBJECT_SELF))
-        {
-            ClearActions(CLEAR_NW_C2_DEFAULT4_29);
-            BeginConversation();
-        }
-        else
         // * July 31 2004
         // * If only charmed then allow conversation
         // * so you can have a better chance of convincing
         // * people of lowering prices
-        if (GetHasEffect(EFFECT_TYPE_CHARMED) == TRUE)
+        if (GetCommandable(OBJECT_SELF) ||
+            GetHasEffect(EFFECT_TYPE_CHARMED) == TRUE)
         {
+            ExecuteScript("crea_convo_bef", OBJECT_SELF);
+            if (GetLocalInt(OBJECT_SELF, "SWLOR_NUI_CONVO"))
+            {
+                DeleteLocalInt(OBJECT_SELF, "SWLOR_NUI_CONVO");
+                ClearActions(CLEAR_NW_C2_DEFAULT4_29);
+                return;
+            }
+
             ClearActions(CLEAR_NW_C2_DEFAULT4_29);
             BeginConversation();
         }

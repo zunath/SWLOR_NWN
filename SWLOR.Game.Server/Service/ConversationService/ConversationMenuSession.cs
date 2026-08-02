@@ -20,6 +20,16 @@ namespace SWLOR.Game.Server.Service.ConversationService
         internal ConversationMenuSpec Menu { get; }
         public ConversationContext Context { get; }
         public ConversationNode CurrentNode { get; private set; }
+        public IReadOnlyList<ConversationTextBlock> CurrentText
+        {
+            get
+            {
+                if (CurrentNode == null)
+                    return Array.Empty<ConversationTextBlock>();
+
+                return CurrentNode.Text;
+            }
+        }
         public IReadOnlyList<ConversationChoice> VisibleChoices => _visibleChoices;
         public bool HasEnded { get; private set; }
         public string Title => Menu.Title;

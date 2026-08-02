@@ -72,7 +72,7 @@ public class ConversationSessionTests
     }
 
     [Test]
-    public void Start_FollowsTheSolePassingAutomaticChoiceWithoutDisplayingIt()
+    public void Start_FollowsTheSolePassingAutomaticChoiceAndPreservesEachNpcLine()
     {
         var executed = new List<string>();
         var runtime = CreateRuntime(executed);
@@ -96,6 +96,7 @@ public class ConversationSessionTests
 
         session.Start().Should().BeTrue();
         session.CurrentNode.Id.Should().Be("continued");
+        session.CurrentText.Select(block => block.Text).Should().Equal("Starting.", "Continued.");
         session.VisibleChoices.Should().BeEmpty();
         executed.Should().Equal("automatic");
     }

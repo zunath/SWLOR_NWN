@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var lineTexts = new GuiBindingList<string>();
             var lineColors = new GuiBindingList<GuiColor>();
-            foreach (var block in node.Text)
+            foreach (var block in _session.CurrentText)
             {
                 if (block == null || string.IsNullOrWhiteSpace(block.Text))
                     continue;

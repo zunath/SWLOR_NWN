@@ -740,16 +740,21 @@ namespace SWLOR.Toolset.Shell
 
             var remaining = _compileService.ScanStale();
             var remainingWarning = ScriptPackReadiness.Evaluate(remaining);
-            if (remainingWarning == null)
+            if (ScriptPackReadiness.CanPackAfterBuild(failed, remaining))
                 return true;
 
             _log.AppendLine(failed == 0
                 ? "Pack cancelled: stale compiled scripts remain after Build All Scripts."
                 : $"Pack cancelled: Build All Scripts failed for {failed} script(s).");
-            foreach (var line in remainingWarning.OutputLines)
-                _log.AppendLine($"  {line}");
+            if (remainingWarning != null)
+            {
+                foreach (var line in remainingWarning.OutputLines)
+                    _log.AppendLine($"  {line}");
+            }
 
-            StatusText = "Pack cancelled: stale scripts remain.";
+            StatusText = failed == 0
+                ? "Pack cancelled: stale scripts remain."
+                : "Pack cancelled: script build failed.";
             return false;
         }
 

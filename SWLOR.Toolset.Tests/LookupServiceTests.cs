@@ -85,6 +85,27 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AppearanceService_GetAll_ReturnsNoChoicesWhenTableIsUnavailable()
+        {
+            var emptyTwoDaDirectory = Path.Combine(
+                Path.GetTempPath(), $"swlor_missing_appearance_{Guid.NewGuid():N}");
+            Directory.CreateDirectory(emptyTwoDaDirectory);
+            try
+            {
+                var service = new AppearanceService(
+                    new TwoDaService(emptyTwoDaDirectory),
+                    CreateTlkService());
+
+                service.GetAll().Should().BeEmpty(
+                    "a missing appearance.2da must disable the picker rather than crash the editor");
+            }
+            finally
+            {
+                Directory.Delete(emptyTwoDaDirectory, recursive: true);
+            }
+        }
+
+        [Test]
         public void AppearanceService_UnknownId_Throws()
         {
             var service = new AppearanceService(CreateTwoDaService(), CreateTlkService());

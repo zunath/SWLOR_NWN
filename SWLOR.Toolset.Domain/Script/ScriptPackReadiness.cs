@@ -30,6 +30,17 @@ namespace SWLOR.Toolset.Domain.Script
                 lines);
         }
 
+        /// <summary>
+        /// A Build All attempt is safe to pack only when every compile succeeded and the follow-up
+        /// scan found no stale bytecode. An old .ncs can otherwise survive a compiler failure and
+        /// make the timestamp scan look clean even though the requested build did not complete.
+        /// </summary>
+        public static bool CanPackAfterBuild(int failed, IReadOnlyList<StaleScript> remaining)
+        {
+            ArgumentNullException.ThrowIfNull(remaining);
+            return failed == 0 && remaining.Count == 0;
+        }
+
         private static string Pluralize(int count, string singular) =>
             count == 1 ? singular : singular + "s";
     }

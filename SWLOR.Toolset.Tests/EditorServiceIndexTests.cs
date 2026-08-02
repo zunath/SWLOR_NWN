@@ -84,6 +84,40 @@ namespace SWLOR.Toolset.Tests
                 builtRoots.Should().Equal(firstRoot, secondRoot);
         }
 
+        [Test]
+        public void FailedItemSourceBuildRetriesWithoutAnotherWorkspaceAction()
+        {
+            var moduleRoot = NewModuleRoot();
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            var attempts = 0;
+
+            var editors = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                factory: null!,
+                prompts: null!,
+                itemSourcesBuilder: (module, _) =>
+                {
+                    if (Interlocked.Increment(ref attempts) == 1)
+                        throw new IOException("transient scan failure");
+
+                    return ItemObtainabilityIndex.Build(module, gameSourceRoot: null);
+                });
+
+            workspace.Open(moduleRoot);
+
+            SpinWait.SpinUntil(
+                    () => Volatile.Read(ref attempts) >= 2,
+                    TimeSpan.FromSeconds(5))
+                .Should().BeTrue("the failed background scan should queue its own retry");
+            editors.WarmItemSourcesAsync().GetAwaiter().GetResult();
+
+            attempts.Should().Be(2);
+            log.Lines.Should().Contain(line => line.Contains("transient scan failure"));
+        }
+
         private string NewModuleRoot()
         {
             var root = Path.Combine(Path.GetTempPath(), $"swlor_editor_index_{Guid.NewGuid():N}");

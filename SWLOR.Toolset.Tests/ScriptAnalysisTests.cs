@@ -570,6 +570,21 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PackReadiness_RejectsFailedBuildEvenWhenFollowUpScanIsClean()
+        {
+            ScriptPackReadiness.CanPackAfterBuild(
+                    failed: 1,
+                    remaining: Array.Empty<StaleScript>())
+                .Should().BeFalse(
+                    "surviving old bytecode can make the stale scan look clean after a compiler failure");
+
+            ScriptPackReadiness.CanPackAfterBuild(
+                    failed: 0,
+                    remaining: Array.Empty<StaleScript>())
+                .Should().BeTrue();
+        }
+
+        [Test]
         public void PackReadiness_NamesEveryStaleScriptAndOffersBuildThenPack()
         {
             Compiled("a", DateTime.UtcNow.AddHours(-2));

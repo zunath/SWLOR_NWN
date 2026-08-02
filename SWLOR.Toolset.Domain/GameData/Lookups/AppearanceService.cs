@@ -71,8 +71,9 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         {
             var definition = TwoDaLookupTables.CreatureAppearance;
             var requiredColumns = definition.RequiredColumns!;
-            var table = twoDa.GetTable(definition.TableName);
-            if (!table.HasColumn(definition.LabelColumn) ||
+            if (!twoDa.TryGetTable(definition.TableName, out var table) ||
+                table == null ||
+                !table.HasColumn(definition.LabelColumn) ||
                 requiredColumns.Any(column => !table.HasColumn(column)))
             {
                 return Array.Empty<AppearanceRow>();

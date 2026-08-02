@@ -128,6 +128,8 @@ namespace SWLOR.Toolset.Editors
         /// <summary>The in-flight background index build, so concurrent callers share one scan.</summary>
         private Task? _itemSourcesBuild;
 
+        private static readonly TimeSpan ItemSourcesRetryDelay = TimeSpan.FromMilliseconds(250);
+
         /// <summary>The background scan implementation; injectable to make generation races testable.</summary>
         private readonly Func<Domain.Workspace.ModuleWorkspace, string?, ItemObtainabilityIndex>
             _itemSourcesBuilder;
@@ -1728,6 +1730,11 @@ namespace SWLOR.Toolset.Editors
             catch (Exception ex)
             {
                 _log.AppendLine($"Could not build the item source index: {ex.Message}");
+                // A transient enumeration/read failure must not leave every open item editor in a
+                // permanent "still building" state. Queue another background attempt after the
+                // shared task slot is cleared; the delay prevents a persistent filesystem failure
+                // from becoming a tight retry loop.
+                retryNeeded = _workspaceContext.Workspace != null;
             }
             finally
             {
@@ -1740,7 +1747,10 @@ namespace SWLOR.Toolset.Editors
             // invalidated queues its own single follow-up, so a save storm converges rather than
             // looping.
             if (retryNeeded)
+            {
+                await Task.Delay(ItemSourcesRetryDelay).ConfigureAwait(true);
                 _ = WarmItemSourcesAsync();
+            }
         }
 
         /// <summary>

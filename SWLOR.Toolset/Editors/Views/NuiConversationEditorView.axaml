@@ -26,9 +26,6 @@
             <Button Content="+ More inputs" Command="{Binding AddArgumentsCommand}" />
             <Button Content="− Input" Command="{Binding RemoveArgumentsCommand}" />
           </StackPanel>
-          <CheckBox Content="Only once per player" IsChecked="{Binding RunOnce}" IsVisible="{Binding CanRunOnce}" />
-          <TextBox Text="{Binding OnceMarker, Mode=TwoWay}" IsVisible="{Binding RunOnce}"
-                   Watermark="Stable once-only ID" />
           <Button Content="Remove" Command="{Binding RemoveCommand}" HorizontalAlignment="Left" />
         </StackPanel>
       </Border>

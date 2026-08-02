@@ -74,7 +74,6 @@ namespace SWLOR.Game.Server.Entity
             Perks = new Dictionary<PerkType, int>();
             RecastTimes = new Dictionary<RecastGroup, DateTime>();
             EncounterCooldowns = new Dictionary<string, DateTime>();
-            CompletedDialogueActions = new HashSet<string>();
             Quests = new Dictionary<string, PlayerQuest>();
             UnlockedPerks = new Dictionary<PerkType, DateTime>();
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
@@ -189,8 +188,6 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<PerkType, int> Perks { get; set; }
         public Dictionary<RecastGroup, DateTime> RecastTimes { get; set; }
         public Dictionary<string, DateTime> EncounterCooldowns { get; set; }
-        /// <summary>Stable DLG action markers already executed for this character.</summary>
-        public HashSet<string> CompletedDialogueActions { get; set; }
         public Dictionary<string, PlayerQuest> Quests { get; set; }
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }

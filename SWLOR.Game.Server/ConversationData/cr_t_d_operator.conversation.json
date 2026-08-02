@@ -523,8 +523,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "cz220_scavenging"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -554,8 +553,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "cz220_fabrication"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -585,8 +583,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "cz220_smithery"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -675,8 +672,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "cz220_smithery"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -742,8 +738,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "cz220_scavenging"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -809,8 +804,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "cz220_fabrication"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -835,8 +829,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "cz220_smithery"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -861,8 +854,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "cz220_scavenging"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -887,8 +879,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "cz220_fabrication"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -905,8 +896,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -914,8 +904,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

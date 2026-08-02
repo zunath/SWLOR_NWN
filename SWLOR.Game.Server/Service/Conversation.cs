@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Service
             Runtime.RegisterToken("skyrace.record-time", _ => ResolveModuleText("SWLOR_SKYRACE_RECORD_TIME", "No time recorded"));
             Runtime.RegisterToken("skyrace.entry-fee", _ => "50");
             Runtime.RegisterToken("skyrace.prize", _ => "250");
-            Runtime.RegisterAction("system.execute-owner-script", (context, arguments, _) =>
+            Runtime.RegisterAction("system.execute-owner-script", (context, arguments) =>
             {
                 if (arguments.Count == 0 || string.IsNullOrWhiteSpace(arguments[0]))
                     throw new InvalidOperationException("The owner-script action requires a script resref.");

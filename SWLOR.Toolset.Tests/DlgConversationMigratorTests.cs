@@ -91,6 +91,25 @@ public sealed class DlgConversationMigratorTests
     }
 
     [Test]
+    public void Convert_DiscardsObsoleteOnceMarkersInsteadOfAddingGraphMetadata()
+    {
+        var document = Load("avixtatham");
+        var node = document.Entries.Concat(document.Replies)
+            .First(candidate => candidate.Actions.Any(action => !action.IsOncePerPlayerMarker));
+        var action = node.Actions.First(candidate => !candidate.IsOncePerPlayerMarker);
+        node.AddAction("once-" + action.SnippetKey, "legacy:marker");
+
+        var result = DlgConversationMigrator.Convert("avixtatham", document);
+        var json = JsonConvert.SerializeObject(result.Graph);
+
+        result.CanRunInNui.Should().BeTrue();
+        json.Should().NotContain("OncePerPlayerId");
+        result.Graph.Nodes.Values.SelectMany(item => item.OnEnterActions)
+            .Concat(result.Graph.Choices.Values.SelectMany(item => item.Actions))
+            .Should().NotContain(item => item.Key.StartsWith("once-", StringComparison.Ordinal));
+    }
+
+    [Test]
     public void GeneratedCorpus_ExactlyMatchesEverySafeAuthoredDialogAndEveryGraphValidates()
     {
         var conversationDirectory = Path.Combine(

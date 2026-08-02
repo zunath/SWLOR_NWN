@@ -290,8 +290,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "dantooine_herbs"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -339,8 +338,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "dantooine_herbs"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -383,8 +381,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "dantooine_herbs"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -401,8 +398,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -410,8 +406,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

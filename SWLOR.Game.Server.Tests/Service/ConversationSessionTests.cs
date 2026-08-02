@@ -127,7 +127,7 @@ public class ConversationSessionTests
     {
         var executed = new List<string>();
         var runtime = CreateRuntime(executed);
-        runtime.RegisterAction("fail", (_, _, _) => false);
+        runtime.RegisterAction("fail", (_, _) => false);
         var graph = CreateGraph();
         graph.EntryPoints.Add(Link("start"));
         var start = Node("start", "Choose.");
@@ -197,37 +197,11 @@ public class ConversationSessionTests
             .Should().Contain(error => error.Contains("missing node 'missing'"));
     }
 
-    [Test]
-    public void ValidatorRejectsOnceOnlyQuestAdvanceButAllowsImmediateRewards()
-    {
-        var graph = CreateGraph();
-        graph.EntryPoints.Add(Link("start"));
-        var start = Node("start", "Choose.");
-        var choice = Choice("continue", "Continue");
-        choice.Actions.Add(new ConversationAction
-        {
-            Key = "action-advance-quest",
-            OncePerPlayerId = "test:advance"
-        });
-        choice.Actions.Add(new ConversationAction
-        {
-            Key = "action-give-key-items",
-            OncePerPlayerId = "test:key-item"
-        });
-        AddChoice(graph, start, choice, true);
-        graph.Nodes.Add(start.Id, start);
-        graph.Nodes.Add("end", Node("end", "Done."));
-
-        ConversationGraphValidator.Validate(graph).Should().ContainSingle(error =>
-            error.Contains("action-advance-quest", StringComparison.Ordinal) &&
-            error.Contains("cannot run once per player", StringComparison.Ordinal));
-    }
-
     private static ConversationRuntime CreateRuntime(List<string> executed = null)
     {
         var runtime = new ConversationRuntime();
         runtime.RegisterCondition("test", (_, args) => bool.Parse(args[0]));
-        runtime.RegisterAction("record", (_, args, _) =>
+        runtime.RegisterAction("record", (_, args) =>
         {
             executed?.Add(args[0]);
             return true;

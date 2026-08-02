@@ -589,13 +589,6 @@ namespace SWLOR.Toolset.Tests
                 "a line can carry multiple distinct snippet outcomes");
             editor.Value.Consequences.Select(consequence => consequence.Snippet.Key).Should()
                 .BeEquivalentTo("action-open-store", "action-give-key-items");
-            var onceOutcome = editor.Value.Consequences.Single(consequence =>
-                consequence.Snippet.Key == "action-give-key-items");
-            onceOutcome.IsOncePerPlayer.Should().BeTrue(
-                "reward-style optional outcomes default to safe one-time execution");
-            choice.Target.Actions.Should().Contain(action => action.IsOncePerPlayerMarker);
-
-            onceOutcome.IsOncePerPlayer = false;
             choice.Target.Actions.Should().NotContain(action => action.IsOncePerPlayerMarker);
 
             editor.Value.GuardToAdd = Snippets.Find("condition-completed-quest");
@@ -638,27 +631,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void QuestItemHandInRemainsRepeatableUntilTheQuestActuallyCollectsTheItems()
-        {
-            using var editor = new Disposable(Open());
-            editor.Value.SelectSituationCommand.Execute(
-                editor.Value.Situations.Single(row => row.Title == "Doing Field Tinctures"));
-            editor.Value.AddChoiceCommand.Execute(null);
-            var choice = editor.Value.Choices.Last();
-            editor.Value.EditChoiceCommand.Execute(choice);
-
-            editor.Value.ConsequenceToAdd = Snippets.Find("action-request-quest-items");
-            editor.Value.AddConsequenceCommand.Execute(null);
-
-            var handIn = editor.Value.Consequences.Should().ContainSingle().Which;
-            handIn.CanRunOncePerPlayer.Should().BeFalse();
-            handIn.IsOncePerPlayer.Should().BeFalse();
-            choice.Target.Actions.Should().NotContain(action => action.IsOncePerPlayerMarker,
-                "closing or failing the collection flow must not suppress every later hand-in attempt");
-        }
-
-        [Test]
-        public void QuestAdvanceStaysRepeatableThroughRewardSelectionWhileAcceptCanBeOneTime()
+        public void QuestOutcomesDoNotCreateHiddenExecutionMetadata()
         {
             using var editor = new Disposable(Open());
             editor.Value.SelectSituationCommand.Execute(
@@ -671,23 +644,15 @@ namespace SWLOR.Toolset.Tests
             editor.Value.AddConsequenceCommand.Execute(null);
             editor.Value.ConsequenceToAdd = Snippets.Find("action-advance-quest");
             editor.Value.AddConsequenceCommand.Execute(null);
+            editor.Value.ConsequenceToAdd = Snippets.Find("action-request-quest-items");
+            editor.Value.AddConsequenceCommand.Execute(null);
 
-            var questActions = editor.Value.Consequences.Where(consequence =>
-                consequence.Snippet.Key is "action-accept-quest" or "action-advance-quest").ToList();
-            questActions.Should().HaveCount(2);
-            var accept = questActions.Single(action => action.Snippet.Key == "action-accept-quest");
-            var advance = questActions.Single(action => action.Snippet.Key == "action-advance-quest");
-            accept.CanRunOncePerPlayer.Should().BeTrue();
-            accept.IsOncePerPlayer.Should().BeFalse();
-            advance.CanRunOncePerPlayer.Should().BeFalse(
-                "the final advance may only open reward selection, which the player can close");
-            advance.IsOncePerPlayer.Should().BeFalse();
+            editor.Value.Consequences.Select(consequence => consequence.Snippet.Key).Should().Contain(
+                "action-accept-quest",
+                "action-advance-quest",
+                "action-request-quest-items");
             choice.Target.Actions.Should().NotContain(action => action.IsOncePerPlayerMarker,
-                "repeatable quests may reuse the same dialogue nodes on every cycle");
-
-            accept.IsOncePerPlayer = true;
-            choice.Target.Actions.Should().Contain(action => action.IsOncePerPlayerMarker,
-                "a synchronous quest-accept outcome can still deliberately be lifetime-once");
+                "quest state and explicit conditions, not hidden permanent markers, control repetition");
         }
 
         [Test]

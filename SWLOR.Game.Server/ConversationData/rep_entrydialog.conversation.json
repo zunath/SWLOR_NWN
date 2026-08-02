@@ -183,8 +183,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -192,8 +191,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

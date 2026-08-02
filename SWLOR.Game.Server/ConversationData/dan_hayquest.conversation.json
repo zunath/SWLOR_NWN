@@ -120,8 +120,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "hay_bundles"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Choices": [
@@ -278,8 +277,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "hay_bundles"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -322,8 +320,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "hay_bundles"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -366,8 +363,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "hay_bundles"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -384,8 +380,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -393,8 +388,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

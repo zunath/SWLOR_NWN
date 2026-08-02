@@ -84,7 +84,6 @@ namespace SWLOR.Game.Server.Service.ConversationService
     {
         public string Key { get; set; } = string.Empty;
         public List<string> Arguments { get; set; } = new();
-        public string OncePerPlayerId { get; set; } = string.Empty;
     }
 
     /// <summary>

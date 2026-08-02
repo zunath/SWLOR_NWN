@@ -803,8 +803,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "sith_code_test"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Choices": [
@@ -1154,8 +1153,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "meet_inquisitor"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1203,8 +1201,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "meet_inquisitor"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1242,8 +1239,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "artifact_recovery"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1296,8 +1292,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "artifact_recovery"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1327,8 +1322,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "artifact_recovery"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1371,8 +1365,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "artifact_recovery"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1397,8 +1390,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "artifact_recovery"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1464,8 +1456,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "sith_code_test"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1816,8 +1807,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "sith_code_test"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -2016,8 +2006,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "prove_dominance"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -2088,8 +2077,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "prove_dominance"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -2111,8 +2099,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -2120,8 +2107,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

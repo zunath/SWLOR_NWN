@@ -469,8 +469,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "k_hound_hunting"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -518,8 +517,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "k_hound_hunting"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -559,8 +557,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -568,8 +565,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

@@ -810,8 +810,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "mynock_mayhem"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -877,8 +876,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "mynock_mayhem"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1077,8 +1075,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "malfun_droids"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1144,8 +1141,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "malfun_droids"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1257,8 +1253,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "the_colicoid_experiment"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1347,8 +1342,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "the_colicoid_experiment"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1365,8 +1359,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -1374,8 +1367,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

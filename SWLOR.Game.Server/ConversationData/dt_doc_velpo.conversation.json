@@ -78,8 +78,7 @@
             "player",
             "SWLOR_DOCTOR_RESCUE",
             "0"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Choices": [
@@ -312,8 +311,7 @@
           "Key": "action-heal-player",
           "Arguments": [
             "50"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],

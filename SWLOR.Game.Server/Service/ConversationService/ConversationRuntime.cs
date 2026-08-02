@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service.ConversationService
             RegexOptions.Compiled);
 
         private readonly Dictionary<string, Func<ConversationContext, IReadOnlyList<string>, bool>> _conditions = new();
-        private readonly Dictionary<string, Func<ConversationContext, IReadOnlyList<string>, string, bool>> _actions = new();
+        private readonly Dictionary<string, Func<ConversationContext, IReadOnlyList<string>, bool>> _actions = new();
         private readonly Dictionary<string, Func<ConversationContext, string>> _tokens = new();
 
         public void RegisterCondition(
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service.ConversationService
 
         public void RegisterAction(
             string key,
-            Func<ConversationContext, IReadOnlyList<string>, string, bool> handler)
+            Func<ConversationContext, IReadOnlyList<string>, bool> handler)
         {
             ValidateRegistration(key, handler);
             _actions.Add(key, handler);
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Service.ConversationService
             if (!_actions.TryGetValue(action.Key, out var handler))
                 throw new InvalidOperationException($"Conversation action '{action.Key}' is not registered.");
 
-            return handler(context, action.Arguments, action.OncePerPlayerId);
+            return handler(context, action.Arguments);
         }
 
         public string ResolveText(ConversationContext context, string text)

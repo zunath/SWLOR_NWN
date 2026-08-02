@@ -1385,8 +1385,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "blood_frenzy_blade"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1416,8 +1415,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "blood_frenzy_blade"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1460,8 +1458,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "blood_frenzy_blade"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1491,8 +1488,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "blood_frenzy_beat"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1522,8 +1518,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "blood_frenzy_beat"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1566,8 +1561,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "blood_frenzy_beat"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1597,8 +1591,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "blood_frenzy_glass"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1628,8 +1621,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "blood_frenzy_glass"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1672,8 +1664,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "blood_frenzy_glass"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1703,8 +1694,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "blood_frenzy_restraint"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1734,8 +1724,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "blood_frenzy_restraint"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1778,8 +1767,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "blood_frenzy_restraint"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1809,8 +1797,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "blood_frenzy_mastery"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -1858,8 +1845,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "blood_frenzy_mastery"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -2175,8 +2161,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -2184,8 +2169,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

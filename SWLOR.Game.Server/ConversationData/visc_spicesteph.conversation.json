@@ -1167,8 +1167,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1211,8 +1210,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1296,8 +1294,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1340,8 +1337,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1425,8 +1421,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1469,8 +1464,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1554,8 +1548,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1598,8 +1591,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1683,8 +1675,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1727,8 +1718,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1812,8 +1802,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1856,8 +1845,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1941,8 +1929,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1985,8 +1972,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -2070,8 +2056,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -2114,8 +2099,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -2140,8 +2124,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "spice_onesmallfavour"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -2176,8 +2159,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -2185,8 +2167,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

@@ -525,8 +525,7 @@
             "player",
             "SWLOR_ABANDONED_STATION_QUEST",
             "1"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -633,8 +632,7 @@
           "Key": "action-teleport",
           "Arguments": [
             "ABAN_STATION_LANDING"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -661,8 +659,7 @@
             "player",
             "SWLOR_ABANDONED_STATION_QUEST",
             "3"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -766,8 +763,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -775,8 +771,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

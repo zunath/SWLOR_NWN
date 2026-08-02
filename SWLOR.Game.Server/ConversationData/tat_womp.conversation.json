@@ -243,8 +243,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "stinky_womprats"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -292,8 +291,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "stinky_womprats"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],

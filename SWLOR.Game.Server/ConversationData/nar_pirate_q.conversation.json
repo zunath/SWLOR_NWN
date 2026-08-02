@@ -328,8 +328,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "nar_space_pirate_hideout"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -372,8 +371,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "nar_space_pirate_hideout"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -395,8 +393,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -404,8 +401,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

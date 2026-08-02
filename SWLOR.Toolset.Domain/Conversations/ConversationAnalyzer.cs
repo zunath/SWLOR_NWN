@@ -102,7 +102,6 @@ namespace SWLOR.Toolset.Domain.Conversations
             AddConditionalChoiceFallbacks(document, problems);
             AddAutomaticContinuationLoops(document, problems);
             AddDuplicateSnippetKeys(document, problems);
-            AddOncePerPlayerMarkerProblems(document, problems);
             AddDispatcherProblems(document, problems);
             AddSnippetProblems(document, problems);
             AddOrphans(document, problems);
@@ -337,37 +336,6 @@ namespace SWLOR.Toolset.Domain.Conversations
                         RuleId = "duplicate-action",
                         Severity = ProblemSeverity.Broken,
                         Message = $"This line repeats the same outcome ({duplicate.Key}). NWN reads one value per outcome name, so one of them is ignored.",
-                        Anchor = node.IsEntry ? ProblemAnchor.Line : ProblemAnchor.Choice,
-                        Node = node
-                    });
-                }
-            }
-        }
-
-        private static void AddOncePerPlayerMarkerProblems(
-            DlgDocument document,
-            List<ConversationProblem> problems)
-        {
-            foreach (var node in document.Entries.Concat(document.Replies))
-            {
-                foreach (var marker in node.Actions.Where(action => action.IsOncePerPlayerMarker))
-                {
-                    var hasAction = node.Actions.Any(action =>
-                        !action.IsOncePerPlayerMarker
-                        && action.SnippetKey.Equals(marker.MarkedActionKey, StringComparison.OrdinalIgnoreCase));
-                    var canRunOnce = SnippetActionPolicy.CanRunOncePerPlayer(marker.MarkedActionKey);
-                    if (hasAction && canRunOnce && !string.IsNullOrWhiteSpace(marker.Value))
-                        continue;
-
-                    problems.Add(new ConversationProblem
-                    {
-                        RuleId = "invalid-once-marker",
-                        Severity = ProblemSeverity.Broken,
-                        Message = !hasAction
-                            ? "A once-per-player marker no longer has an outcome to control."
-                            : !canRunOnce
-                                ? $"{marker.MarkedActionKey} cannot run only once per player because it may open an incomplete flow."
-                                : "A once-per-player outcome is missing its stable player marker.",
                         Anchor = node.IsEntry ? ProblemAnchor.Line : ProblemAnchor.Choice,
                         Node = node
                     });

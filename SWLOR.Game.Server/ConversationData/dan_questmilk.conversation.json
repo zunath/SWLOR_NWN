@@ -361,8 +361,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "bantha_milk_quest"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -410,8 +409,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "bantha_milk_quest"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -454,8 +452,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "bantha_milk_quest"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -472,8 +469,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -481,8 +477,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

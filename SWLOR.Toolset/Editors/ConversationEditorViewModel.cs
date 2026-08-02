@@ -1337,38 +1337,8 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
-            if (RunEdit($"Add an effect", () =>
-                {
-                    var action = node.AddAction(snippet.Key);
-                    if (DefaultsToOncePerPlayer(snippet.Key))
-                    {
-                        node.SetActionOncePerPlayer(
-                            action,
-                            oncePerPlayer: true,
-                            $"{_resRef}:{Guid.NewGuid():N}");
-                    }
-                }))
+            if (RunEdit($"Add an effect", () => node.AddAction(snippet.Key)))
                 ConsequenceToAdd = null;
-        }
-
-        private static bool CanRunOncePerPlayer(string actionKey) =>
-            SnippetActionPolicy.CanRunOncePerPlayer(actionKey);
-
-        private static bool DefaultsToOncePerPlayer(string actionKey) =>
-            CanRunOncePerPlayer(actionKey) &&
-            actionKey is not "action-accept-quest";
-
-        private void SetConsequenceOncePerPlayer(SnippetEditorViewModel editor, bool oncePerPlayer)
-        {
-            var node = _editingNode;
-            if (node == null || !CanRunOncePerPlayer(editor.Snippet.Key))
-                return;
-
-            RunEdit("Change how often an outcome runs", () =>
-                node.SetActionOncePerPlayer(
-                    editor.Param,
-                    oncePerPlayer,
-                    $"{_resRef}:{Guid.NewGuid():N}"));
         }
 
         /// <summary>
@@ -1442,10 +1412,7 @@ namespace SWLOR.Toolset.Editors
                     Consequences.Add(new SnippetEditorViewModel(
                         action, snippet, _argumentOptions, canNegate: false, CommitSnippet, RemoveConsequence,
                         _evaluator.DisplayValue,
-                        canRemove: !(IsMerchant && action.SnippetKey.Equals("action-open-store", StringComparison.OrdinalIgnoreCase)),
-                        canRunOncePerPlayer: CanRunOncePerPlayer(action.SnippetKey),
-                        isOncePerPlayer: _editingNode!.IsActionOncePerPlayer(action),
-                        onOncePerPlayerChanged: SetConsequenceOncePerPlayer));
+                        canRemove: !(IsMerchant && action.SnippetKey.Equals("action-open-store", StringComparison.OrdinalIgnoreCase))));
                 }
             }
 

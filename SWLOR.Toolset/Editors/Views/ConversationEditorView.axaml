@@ -470,14 +470,11 @@
                         <Border Background="{DynamicResource PanelRaisedBrush}" CornerRadius="3"
                                 Padding="8" Margin="0,0,0,5">
                           <StackPanel Spacing="6">
-                            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                            <Grid ColumnDefinitions="*,Auto,Auto">
                               <TextBlock Grid.Column="0" Text="{Binding Sentence}" TextWrapping="Wrap" />
-                              <CheckBox Grid.Column="1" Content="Once per player" Margin="8,0"
-                                        IsVisible="{Binding CanRunOncePerPlayer}"
-                                        IsChecked="{Binding IsOncePerPlayer, Mode=TwoWay}" />
-                              <TextBlock Grid.Column="2" Text="Required" Classes="dim" Margin="8,0"
+                              <TextBlock Grid.Column="1" Text="Required" Classes="dim" Margin="8,0"
                                          IsVisible="{Binding !CanRemove}" />
-                              <Button Grid.Column="3" Content="Remove" Classes="link"
+                              <Button Grid.Column="2" Content="Remove" Classes="link"
                                       IsEnabled="{Binding CanRemove}" Command="{Binding RemoveCommand}" />
                             </Grid>
                             <ItemsControl ItemsSource="{Binding Arguments}">

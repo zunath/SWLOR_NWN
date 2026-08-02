@@ -753,8 +753,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "ore_collection"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -820,8 +819,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "ore_collection"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -846,8 +844,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "ore_collection"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -959,8 +956,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "refinery_trainee"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1026,8 +1022,7 @@
           "Key": "action-request-quest-items",
           "Arguments": [
             "refinery_trainee"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1070,8 +1065,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "refinery_trainee"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -1088,8 +1082,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ],
   "OnAbortActions": [
@@ -1097,8 +1090,7 @@
       "Key": "system.execute-owner-script",
       "Arguments": [
         "nw_walk_wp"
-      ],
-      "OncePerPlayerId": ""
+      ]
     }
   ]
 }

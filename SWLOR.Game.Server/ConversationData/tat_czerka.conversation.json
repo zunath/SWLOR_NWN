@@ -273,8 +273,7 @@
           "Key": "action-accept-quest",
           "Arguments": [
             "workin_for_man"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [
@@ -322,8 +321,7 @@
           "Key": "action-advance-quest",
           "Arguments": [
             "workin_for_man"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Service.SnippetService;
 
 namespace SWLOR.Game.Server.Service.ConversationService
 {
@@ -43,8 +42,6 @@ namespace SWLOR.Game.Server.Service.ConversationService
                 else if (!string.Equals(nodeId, node.Id, StringComparison.Ordinal))
                     errors.Add($"Node key '{nodeId}' does not match node ID '{node.Id}'.");
 
-                ValidateActions(node.OnEnterActions, $"node '{nodeId}'", errors);
-
                 foreach (var choiceLink in node.Choices ?? new List<ConversationChoiceLink>())
                 {
                     if (choiceLink == null)
@@ -82,34 +79,9 @@ namespace SWLOR.Game.Server.Service.ConversationService
                     errors.Add($"Choice '{choiceId}' neither ends the conversation nor links to another line.");
 
                 ValidateLinks(graph, choice.Next, $"choice '{choiceId}'", errors);
-                ValidateActions(choice.Actions, $"choice '{choiceId}'", errors);
             }
-
-            ValidateActions(graph.OnStartActions, "conversation start", errors);
-            ValidateActions(graph.OnEndActions, "conversation end", errors);
-            ValidateActions(graph.OnAbortActions, "conversation abort", errors);
 
             return errors;
-        }
-
-        private static void ValidateActions(
-            IEnumerable<ConversationAction> actions,
-            string owner,
-            ICollection<string> errors)
-        {
-            if (actions == null)
-                return;
-
-            foreach (var action in actions)
-            {
-                if (action != null &&
-                    !string.IsNullOrWhiteSpace(action.OncePerPlayerId) &&
-                    !SnippetActionPolicy.CanRunOncePerPlayer(action.Key))
-                {
-                    errors.Add(
-                        $"Action '{action.Key}' in {owner} cannot run once per player because it may open an incomplete flow.");
-                }
-            }
         }
 
         private static void ValidateLinks(

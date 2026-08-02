@@ -218,30 +218,6 @@ namespace SWLOR.Toolset.Domain.Documents
                 Script = string.Empty;
         }
 
-        public bool IsActionOncePerPlayer(DlgParam action) => Actions.Any(candidate =>
-            candidate.IsOncePerPlayerMarker
-            && candidate.MarkedActionKey.Equals(action.SnippetKey, StringComparison.OrdinalIgnoreCase));
-
-        /// <summary>Adds/removes the stable marker the runtime uses to suppress repeat execution.</summary>
-        public void SetActionOncePerPlayer(DlgParam action, bool oncePerPlayer, string markerId)
-        {
-            var marker = Actions.FirstOrDefault(candidate =>
-                candidate.IsOncePerPlayerMarker
-                && candidate.MarkedActionKey.Equals(action.SnippetKey, StringComparison.OrdinalIgnoreCase));
-
-            if (oncePerPlayer)
-            {
-                if (marker == null)
-                    AddAction(DlgParam.OncePerPlayerKey(action.SnippetKey), markerId);
-                else if (!string.IsNullOrWhiteSpace(markerId))
-                    marker.Value = markerId;
-            }
-            else if (marker != null)
-            {
-                RemoveAction(marker);
-            }
-        }
-
         private JsonGffField GetOrCreateActionParams()
         {
             if (Struct.TryGet(ActionParamsField, out var existing))

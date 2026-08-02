@@ -112,8 +112,7 @@
             "player",
             "SWLOR_SKYRACE_REGISTERED",
             "0"
-          ],
-          "OncePerPlayerId": ""
+          ]
         },
         {
           "Key": "action-adjust-local-number",
@@ -121,8 +120,7 @@
             "module",
             "SWLOR_SKYRACE_PARTICIPANTS",
             "-1"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Choices": [
@@ -271,8 +269,7 @@
           "Key": "action-take-player-credits",
           "Arguments": [
             "50"
-          ],
-          "OncePerPlayerId": ""
+          ]
         },
         {
           "Key": "action-set-local-number",
@@ -280,8 +277,7 @@
             "player",
             "SWLOR_SKYRACE_REGISTERED",
             "1"
-          ],
-          "OncePerPlayerId": ""
+          ]
         },
         {
           "Key": "action-adjust-local-number",
@@ -289,8 +285,7 @@
             "module",
             "SWLOR_SKYRACE_PARTICIPANTS",
             "1"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Choices": []
@@ -776,8 +771,7 @@
             "module",
             "SWLOR_SKYRACE_RUNNING",
             "1"
-          ],
-          "OncePerPlayerId": ""
+          ]
         }
       ],
       "Next": [],
@@ -800,8 +794,7 @@
       "Actions": [
         {
           "Key": "action-open-store",
-          "Arguments": [],
-          "OncePerPlayerId": ""
+          "Arguments": []
         }
       ],
       "Next": [],

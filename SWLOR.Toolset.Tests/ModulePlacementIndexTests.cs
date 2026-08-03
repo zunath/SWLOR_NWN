@@ -78,12 +78,14 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public async Task FindAsync_PreservesWindows1252ThatAlsoLooksLikeValidUtf8()
+        public async Task FindAsync_DecodesUnmarkedUtf8Git()
         {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            var expectedTag = "GUARD_\u00C2\u00A9";
+            var expectedTag = "GUARD_\u6771\u4EAC";
             var json = File.ReadAllText(_gitPath).Replace("GUARD_TAG", expectedTag);
-            File.WriteAllBytes(_gitPath, Encoding.GetEncoding(1252).GetBytes(json));
+            File.WriteAllText(
+                _gitPath,
+                json,
+                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
             var index = new ModuleWorkspace(_moduleRoot).PlacementIndex;
 
             var placement = (await index.FindAsync(ResourceType.Utc, "guard_a"))

@@ -465,6 +465,13 @@ void main()
         private float _initialDistance = 50f;
         private Vector3 _cameraEye;
 
+        /// <summary>
+        /// A Go To request can arrive while an area is still being built. Applying it immediately
+        /// would be lost when the first scene performs its initial framing, so retain the newest
+        /// request until that scene has been attached.
+        /// </summary>
+        private Vector3? _pendingFocus;
+
         /// <summary>Whether this control has ever framed a scene - see the <c>Scene</c> setter.</summary>
         private bool _cameraFramed;
 
@@ -1067,6 +1074,12 @@ void main()
                 {
                     _cameraFramed = true;
                     ResetCameraForScene(value);
+                }
+
+                if (value != null && _pendingFocus is { } pendingFocus)
+                {
+                    _pendingFocus = null;
+                    ApplyFocus(pendingFocus);
                 }
 
                 RequestNextFrameRendering();
@@ -2270,11 +2283,22 @@ void main()
         /// </remarks>
         public void FocusOn(Vector3 position)
         {
+            if (Scene == null)
+            {
+                _pendingFocus = position;
+                return;
+            }
+
+            _pendingFocus = null;
+            ApplyFocus(position);
+            RequestNextFrameRendering();
+        }
+
+        private void ApplyFocus(Vector3 position)
+        {
             _target = position;
             _distance = AreaCameraMath.ClampDistance(
                 MathF.Min(_distance, FocusDistance), _initialDistance);
-
-            RequestNextFrameRendering();
         }
 
         public void HandlePointerWheel(PointerWheelEventArgs e)

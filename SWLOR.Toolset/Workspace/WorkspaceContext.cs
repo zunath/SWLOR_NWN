@@ -21,7 +21,9 @@ namespace SWLOR.Toolset.Workspace
         public BlueprintCatalog? Catalog { get; private set; }
 
         public event Action? WorkspaceOpened;
+        public event Action? CatalogBuildCompleted;
         public event Action<ResourceType, string>? CatalogEntryRefreshed;
+        public event Action? PlacementIndexInvalidated;
         public event Action? ScriptUsagesInvalidated;
         public event Action? TagIndexInvalidated;
         public event Action<string>? PaletteChoicesInvalidated;
@@ -66,7 +68,10 @@ namespace SWLOR.Toolset.Workspace
                 _log.AppendLine($"Recovered '{recovered}' from an interrupted ERF import.");
 
             var openStopwatch = Stopwatch.StartNew();
-            Workspace = _workspaceFactory(moduleRoot);
+            var replacementWorkspace = _workspaceFactory(moduleRoot);
+            Workspace?.PlacementIndex.Invalidate();
+            Workspace = replacementWorkspace;
+            Catalog = null;
             openStopwatch.Stop();
             _log.AppendLine($"Opened module root '{moduleRoot}' in {openStopwatch.ElapsedMilliseconds}ms.");
 
@@ -82,6 +87,12 @@ namespace SWLOR.Toolset.Workspace
                 {
                     _log.AppendLine(
                         "Placement index ready. " +
+                        $"DurationMs={placementIndexStopwatch.ElapsedMilliseconds}.");
+                }
+                else if (task.IsCanceled)
+                {
+                    _log.AppendLine(
+                        "Placement index warm-up canceled because its snapshot was invalidated. " +
                         $"DurationMs={placementIndexStopwatch.ElapsedMilliseconds}.");
                 }
                 else if (task.Exception != null)
@@ -138,6 +149,8 @@ namespace SWLOR.Toolset.Workspace
                 {
                     _log.AppendLine(
                         $"Catalog build complete: {catalog.Entries.Count} entries in {catalogStopwatch.ElapsedMilliseconds}ms.");
+                    if (ReferenceEquals(catalog, Catalog))
+                        CatalogBuildCompleted?.Invoke();
                 }
                 else if (task.Exception != null)
                 {
@@ -204,8 +217,20 @@ namespace SWLOR.Toolset.Workspace
         public void InvalidateTagIndex()
         {
             Workspace?.TagIndex.Invalidate();
-            Workspace?.PlacementIndex.Invalidate();
+            InvalidatePlacementIndex();
             TagIndexInvalidated?.Invoke();
+        }
+
+        /// <summary>
+        /// Drops the module-wide placement snapshot and tells open Source tabs to reload it.
+        /// </summary>
+        public void InvalidatePlacementIndex()
+        {
+            if (Workspace == null)
+                return;
+
+            Workspace.PlacementIndex.Invalidate();
+            PlacementIndexInvalidated?.Invoke();
         }
 
         /// <summary>
@@ -236,7 +261,7 @@ namespace SWLOR.Toolset.Workspace
         private void InvalidatePlacementIndexWhenRelevant(ResourceType type)
         {
             if (type == ResourceType.Area || ModuleWorkspace.BlueprintTypes.Contains(type))
-                Workspace?.PlacementIndex.Invalidate();
+                InvalidatePlacementIndex();
         }
 
         private void InvalidateScriptUsagesWhenRelevant(ResourceType type)

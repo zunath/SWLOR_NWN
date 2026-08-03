@@ -136,6 +136,37 @@ namespace SWLOR.Toolset.Tests
                 "a failed build must be discarded so Refresh can retry it");
         }
 
+        [Test]
+        public async Task Invalidate_CancelsAnObsoleteBuildAndAllowsANewQuery()
+        {
+            File.WriteAllText(Path.Combine(_moduleRoot, "are", "broken.are.json"), "{}");
+            var brokenGit = Path.Combine(_moduleRoot, "git", "broken.git.json");
+            File.WriteAllText(brokenGit, "{");
+            var index = new ModuleWorkspace(_moduleRoot).PlacementIndex;
+            using var readFailed = new ManualResetEventSlim();
+            using var releaseFailure = new ManualResetEventSlim();
+            index.AreaReadFailed += (area, _) =>
+            {
+                if (area != "broken")
+                    return;
+
+                readFailed.Set();
+                releaseFailure.Wait(TimeSpan.FromSeconds(5));
+            };
+
+            var obsoleteWarmup = index.WarmAsync();
+            readFailed.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+            index.Invalidate();
+            releaseFailure.Set();
+
+            var awaitObsoleteWarmup = async () => await obsoleteWarmup;
+            await awaitObsoleteWarmup.Should().ThrowAsync<OperationCanceledException>();
+
+            File.WriteAllText(brokenGit, "{}");
+            (await index.FindAsync(ResourceType.Utc, "guard_a")).Should().ContainSingle(
+                "the canceled generation must not poison the next placement query");
+        }
+
         private void WriteGit(string creatureResRef)
         {
             File.WriteAllText(_gitPath, $$"""

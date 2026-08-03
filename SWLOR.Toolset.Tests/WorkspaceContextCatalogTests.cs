@@ -105,5 +105,33 @@ namespace SWLOR.Toolset.Tests
         {
             WorkspaceContext.IsCatalogIndexedType(type).Should().Be(expected);
         }
+
+        [Test]
+        public async Task SuccessfulCatalogBuildPublishesCompletionForLateNameResolution()
+        {
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            var completed = new TaskCompletionSource(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            workspace.CatalogBuildCompleted += () => completed.TrySetResult();
+
+            workspace.Open(_root);
+
+            await completed.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        }
+
+        [Test]
+        public void PlacementInvalidationPublishesARefreshNotification()
+        {
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            workspace.Open(_root);
+            var notifications = 0;
+            workspace.PlacementIndexInvalidated += () => notifications++;
+
+            workspace.InvalidatePlacementIndex();
+
+            notifications.Should().Be(1);
+        }
     }
 }

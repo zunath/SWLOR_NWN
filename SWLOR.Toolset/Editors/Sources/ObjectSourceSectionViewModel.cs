@@ -87,6 +87,23 @@ namespace SWLOR.Toolset.Editors.Sources
             await LoadAsync().ConfigureAwait(true);
         }
 
+        /// <summary>Reloads placements after the workspace snapshot was invalidated.</summary>
+        public void Reload() => _ = LoadAsync();
+
+        /// <summary>
+        /// Re-resolves area labels after the background catalog has finished indexing names.
+        /// </summary>
+        public void RefreshAreaNames()
+        {
+            for (var index = 0; index < Placements.Count; index++)
+            {
+                var row = Placements[index];
+                var areaName = _resolveAreaName(row.AreaResRef);
+                if (!string.Equals(areaName, row.AreaName, StringComparison.Ordinal))
+                    Placements[index] = row with { AreaName = areaName };
+            }
+        }
+
         [RelayCommand]
         private void GoTo(ObjectPlacementRowViewModel? row)
         {

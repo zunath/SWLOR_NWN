@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
+using SWLOR.Toolset.Editors.Sources;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -215,6 +216,104 @@ namespace SWLOR.Toolset.Tests
             placements.Should().ContainSingle().Which.Should().BeSameAs(expected);
             queriedRoots.Should().Equal(firstRoot, secondRoot);
             log.Lines.Should().Contain(line => line.Contains("Retrying placement scan"));
+        }
+
+        [Test]
+        public async Task PlacementInvalidationReloadsAnOpenObjectSource()
+        {
+            var moduleRoot = NewModuleRoot();
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            var first = new ObjectPlacement(
+                ResourceType.Utw, "arrival_wp", "old_area", 0, "OLD", 1f, 2f, 3f);
+            var replacement = new ObjectPlacement(
+                ResourceType.Utw, "arrival_wp", "new_area", 1, "NEW", 4f, 5f, 6f);
+            IReadOnlyList<ObjectPlacement> current = new[] { first };
+            var editors = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                factory: null!,
+                prompts: null!,
+                objectPlacementsFinder: (_, _, _) => Task.FromResult(current));
+            workspace.Open(moduleRoot);
+            var createSource = typeof(EditorService).GetMethod(
+                "CreateObjectSource",
+                BindingFlags.Instance | BindingFlags.NonPublic)!;
+            var source = (ObjectSourceSectionViewModel)createSource.Invoke(
+                editors,
+                new object[] { ResourceType.Utw, "arrival_wp" })!;
+            await WaitUntilAsync(() =>
+                !source.IsLoading &&
+                source.Placements.Count == 1 &&
+                ReferenceEquals(source.Placements[0].Placement, first));
+
+            current = new[] { replacement };
+            workspace.InvalidatePlacementIndex();
+            await WaitUntilAsync(() =>
+                !source.IsLoading &&
+                source.Placements.Count == 1 &&
+                ReferenceEquals(source.Placements[0].Placement, replacement));
+
+            source.Placements.Should().ContainSingle()
+                .Which.Placement.Should().BeSameAs(replacement);
+        }
+
+        [Test]
+        public async Task ReplacingAWorkspaceCancelsItsObsoletePlacementWarmup()
+        {
+            var firstRoot = NewModuleRoot();
+            var secondRoot = NewModuleRoot();
+            File.WriteAllText(Path.Combine(firstRoot, "are", "broken.are.json"), "{}");
+            File.WriteAllText(Path.Combine(firstRoot, "git", "broken.git.json"), "{");
+            var firstWorkspace = new ModuleWorkspace(firstRoot);
+            using var readFailed = new ManualResetEventSlim();
+            using var releaseFailure = new ManualResetEventSlim();
+            firstWorkspace.PlacementIndex.AreaReadFailed += (area, _) =>
+            {
+                if (area != "broken")
+                    return;
+
+                readFailed.Set();
+                releaseFailure.Wait(TimeSpan.FromSeconds(5));
+            };
+            var log = new OutputLogService();
+            var cancellationLogged = new TaskCompletionSource(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            log.Lines.CollectionChanged += (_, args) =>
+            {
+                if (args.NewItems?.Cast<string>().Any(line => line.Contains(
+                        "Placement index warm-up canceled because its snapshot was invalidated")) == true)
+                {
+                    cancellationLogged.TrySetResult();
+                }
+            };
+            var workspace = new WorkspaceContext(
+                root => root == firstRoot ? firstWorkspace : new ModuleWorkspace(root),
+                log);
+
+            workspace.Open(firstRoot);
+            var firstCatalog = workspace.Catalog!.BuildTask;
+            readFailed.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+            workspace.Open(secondRoot);
+            var secondCatalog = workspace.Catalog!.BuildTask;
+            releaseFailure.Set();
+
+            await cancellationLogged.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            await Task.WhenAll(firstCatalog, secondCatalog);
+        }
+
+        private static async Task WaitUntilAsync(Func<bool> condition)
+        {
+            var timeout = DateTime.UtcNow.AddSeconds(5);
+            while (!condition() && DateTime.UtcNow < timeout)
+            {
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+                await Task.Delay(10);
+            }
+
+            Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+            condition().Should().BeTrue();
         }
 
         private string NewModuleRoot()

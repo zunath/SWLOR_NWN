@@ -31,6 +31,55 @@ namespace SWLOR.Toolset.Tests
             navigated.Should().BeSameAs(placement);
         }
 
+        [Test]
+        public async Task RefreshAreaNames_ReplacesCatalogFallbacksAfterTheCatalogBuilds()
+        {
+            var placement = new ObjectPlacement(
+                ResourceType.Utw, "arrival_wp", "dan_enclave", 7, "ARRIVAL", 1f, 2f, 3f);
+            var resolvedName = "dan_enclave";
+            var source = new ObjectSourceSectionViewModel(
+                ResourceType.Utw,
+                "arrival_wp",
+                (_, _) => Task.FromResult<IReadOnlyList<ObjectPlacement>>(new[] { placement }),
+                _ => resolvedName,
+                _ => { });
+            await WaitUntilAsync(() => !source.IsLoading);
+            source.Placements.Should().ContainSingle().Which.AreaName.Should().Be("dan_enclave");
+
+            resolvedName = "Dantooine Jedi Enclave";
+            source.RefreshAreaNames();
+
+            source.Placements.Should().ContainSingle()
+                .Which.AreaName.Should().Be("Dantooine Jedi Enclave");
+        }
+
+        [Test]
+        public async Task Reload_ReplacesAStalePlacementSnapshot()
+        {
+            var oldPlacement = new ObjectPlacement(
+                ResourceType.Utw, "arrival_wp", "old_area", 0, "OLD", 1f, 2f, 3f);
+            var newPlacement = new ObjectPlacement(
+                ResourceType.Utw, "arrival_wp", "new_area", 1, "NEW", 4f, 5f, 6f);
+            IReadOnlyList<ObjectPlacement> current = new[] { oldPlacement };
+            var source = new ObjectSourceSectionViewModel(
+                ResourceType.Utw,
+                "arrival_wp",
+                (_, _) => Task.FromResult(current),
+                area => area,
+                _ => { });
+            await WaitUntilAsync(() => !source.IsLoading);
+
+            current = new[] { newPlacement };
+            source.Reload();
+            await WaitUntilAsync(() =>
+                !source.IsLoading &&
+                source.Placements.Count == 1 &&
+                ReferenceEquals(source.Placements[0].Placement, newPlacement));
+
+            source.Placements.Should().ContainSingle()
+                .Which.Placement.Should().BeSameAs(newPlacement);
+        }
+
         [Test, NonParallelizable]
         public void Position_UsesInvariantFormattingUnderCommaDecimalCulture()
         {

@@ -45,6 +45,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         private readonly ModuleWorkspace _workspace;
         private readonly object _syncRoot = new();
         private Task<IReadOnlyDictionary<string, IReadOnlyList<ObjectPlacement>>>? _buildTask;
+        private CancellationTokenSource? _buildCancellation;
         private int _generation;
 
         public ModulePlacementIndex(ModuleWorkspace workspace) =>
@@ -78,7 +79,16 @@ namespace SWLOR.Toolset.Domain.Workspace
                 lock (_syncRoot)
                 {
                     generation = _generation;
-                    task = _buildTask ??= Task.Run(Build);
+                    if (_buildTask == null)
+                    {
+                        _buildCancellation = new CancellationTokenSource();
+                        var cancellationToken = _buildCancellation.Token;
+                        _buildTask = Task.Run(
+                            () => Build(cancellationToken),
+                            CancellationToken.None);
+                    }
+
+                    task = _buildTask;
                 }
 
                 IReadOnlyDictionary<string, IReadOnlyList<ObjectPlacement>> index;
@@ -88,20 +98,38 @@ namespace SWLOR.Toolset.Domain.Workspace
                 }
                 catch
                 {
+                    CancellationTokenSource? completedCancellation = null;
                     lock (_syncRoot)
                     {
                         if (ReferenceEquals(_buildTask, task))
+                        {
                             _buildTask = null;
+                            completedCancellation = _buildCancellation;
+                            _buildCancellation = null;
+                        }
                     }
 
+                    completedCancellation?.Dispose();
                     throw;
                 }
 
+                CancellationTokenSource? successfulCancellation = null;
+                var retry = false;
                 lock (_syncRoot)
                 {
+                    if (ReferenceEquals(_buildTask, task))
+                    {
+                        successfulCancellation = _buildCancellation;
+                        _buildCancellation = null;
+                    }
+
                     if (generation != _generation)
-                        continue;
+                        retry = true;
                 }
+
+                successfulCancellation?.Dispose();
+                if (retry)
+                    continue;
 
                 return index;
             }
@@ -109,15 +137,38 @@ namespace SWLOR.Toolset.Domain.Workspace
 
         public void Invalidate()
         {
+            Task<IReadOnlyDictionary<string, IReadOnlyList<ObjectPlacement>>>? obsoleteTask;
+            CancellationTokenSource? obsoleteCancellation;
             lock (_syncRoot)
             {
                 _generation++;
+                obsoleteTask = _buildTask;
                 _buildTask = null;
+                obsoleteCancellation = _buildCancellation;
+                _buildCancellation = null;
             }
+
+            if (obsoleteCancellation == null)
+                return;
+
+            obsoleteCancellation.Cancel();
+            if (obsoleteTask == null || obsoleteTask.IsCompleted)
+            {
+                obsoleteCancellation.Dispose();
+                return;
+            }
+
+            _ = obsoleteTask.ContinueWith(
+                _ => obsoleteCancellation.Dispose(),
+                CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously,
+                TaskScheduler.Default);
         }
 
-        private IReadOnlyDictionary<string, IReadOnlyList<ObjectPlacement>> Build()
+        private IReadOnlyDictionary<string, IReadOnlyList<ObjectPlacement>> Build(
+            CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var areas = _workspace.EnumerateAreaResRefs();
             var perArea = new List<ObjectPlacement>?[areas.Count];
             var failures = new (string AreaResRef, Exception Error)?[areas.Count];
@@ -126,10 +177,12 @@ namespace SWLOR.Toolset.Domain.Workspace
                 areas.Count,
                 new ParallelOptions
                 {
-                    MaxDegreeOfParallelism = Math.Max(1, Math.Min(Environment.ProcessorCount, 4))
+                    MaxDegreeOfParallelism = Math.Max(1, Math.Min(Environment.ProcessorCount, 4)),
+                    CancellationToken = cancellationToken
                 },
                 index =>
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     try
                     {
                         perArea[index] = ReadArea(areas[index]);
@@ -139,8 +192,11 @@ namespace SWLOR.Toolset.Domain.Workspace
                         failures[index] = (areas[index], ex);
                         AreaReadFailed?.Invoke(areas[index], ex);
                     }
+
+                    cancellationToken.ThrowIfCancellationRequested();
                 });
 
+            cancellationToken.ThrowIfCancellationRequested();
             var failedAreas = failures
                 .Where(failure => failure.HasValue)
                 .Select(failure => failure!.Value)

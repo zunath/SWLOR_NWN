@@ -99,6 +99,7 @@ namespace SWLOR.Toolset.Editors
         private readonly HashSet<string> _openingAreaEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, ObjectPlacement> _pendingAreaReveals =
             new(StringComparer.OrdinalIgnoreCase);
+        private readonly List<WeakReference<Sources.ObjectSourceSectionViewModel>> _objectSources = new();
         private readonly Dictionary<string, Triggers.TriggerDocumentViewModel> _openTriggerEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Waypoints.WaypointDocumentViewModel> _openWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _openingWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -344,6 +345,8 @@ namespace SWLOR.Toolset.Editors
             });
             _workspaceContext.ScriptUsagesInvalidated += _scriptUsageIndex.Invalidate;
             _workspaceContext.TagIndexInvalidated += OnTagIndexInvalidated;
+            _workspaceContext.PlacementIndexInvalidated += ReloadObjectSources;
+            _workspaceContext.CatalogBuildCompleted += RefreshObjectSourceAreaNames;
 
             // Opening another module invalidates every module-derived picker; saving a blueprint
             // invalidates only the ones built out of the module's own content.
@@ -363,6 +366,7 @@ namespace SWLOR.Toolset.Editors
                 _itemSourcesGeneration++;
                 _behaviorValues?.InvalidateModuleSources();
                 OnTagIndexInvalidated();
+                ReloadObjectSources();
 
                 // Pay the obtainability scan's cost here, in the background, rather than on
                 // whichever item editor happens to open first.
@@ -371,6 +375,8 @@ namespace SWLOR.Toolset.Editors
             _workspaceContext.CatalogEntryRefreshed += (type, refreshedResRef) =>
             {
                 _behaviorValues?.InvalidateModuleSources();
+                if (type == ResourceType.Area)
+                    RefreshObjectSourceAreaNames();
 
                 // A saved store, item, creature, or placeable can change where items are
                 // obtainable; the index is cheap to rebuild, so it is dropped rather than patched.
@@ -975,15 +981,42 @@ namespace SWLOR.Toolset.Editors
 
         private Sources.ObjectSourceSectionViewModel CreateObjectSource(
             ResourceType type,
-            string resRef) =>
-            new(
+            string resRef)
+        {
+            var source = new Sources.ObjectSourceSectionViewModel(
                 type,
                 resRef,
                 FindObjectPlacementsAsync,
                 ResolveAreaName,
                 GoToObjectPlacement,
-                () => _workspaceContext.Workspace?.PlacementIndex.Invalidate(),
+                _workspaceContext.InvalidatePlacementIndex,
                 _log);
+            _objectSources.Add(new WeakReference<Sources.ObjectSourceSectionViewModel>(source));
+            return source;
+        }
+
+        private void ReloadObjectSources() =>
+            VisitObjectSources(source => source.Reload());
+
+        private void RefreshObjectSourceAreaNames() =>
+            VisitObjectSources(source => source.RefreshAreaNames());
+
+        private void VisitObjectSources(Action<Sources.ObjectSourceSectionViewModel> visit)
+        {
+            if (!Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
+            {
+                Avalonia.Threading.Dispatcher.UIThread.Post(() => VisitObjectSources(visit));
+                return;
+            }
+
+            for (var index = _objectSources.Count - 1; index >= 0; index--)
+            {
+                if (_objectSources[index].TryGetTarget(out var source))
+                    visit(source);
+                else
+                    _objectSources.RemoveAt(index);
+            }
+        }
 
         private async Task<IReadOnlyList<ObjectPlacement>> FindObjectPlacementsAsync(
             ResourceType type,

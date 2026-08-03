@@ -11,6 +11,25 @@ namespace SWLOR.Toolset.Shell.Views
             InitializeComponent();
         }
 
+        /// <summary>Right-click selects the row under the pointer before its menu is evaluated.</summary>
+        private void OnRowPointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (!e.GetCurrentPoint(this).Properties.IsRightButtonPressed ||
+                sender is not Control { DataContext: AreaContentsNodeViewModel node } ||
+                DataContext is not AreaContentsViewModel viewModel)
+                return;
+
+            viewModel.SelectedRow = node;
+        }
+
+        /// <summary>Branches have no properties menu; their right-click remains inert.</summary>
+        private void OnRowContextRequested(object? sender, ContextRequestedEventArgs e)
+        {
+            if (DataContext is not AreaContentsViewModel
+                { SelectedRow.Kind: AreaContentsNodeKind.Instance })
+                e.Handled = true;
+        }
+
         /// <summary>Opening a row sends the camera to the object, or opens the branch.</summary>
         private void OnRowDoubleTapped(object? sender, TappedEventArgs e)
         {

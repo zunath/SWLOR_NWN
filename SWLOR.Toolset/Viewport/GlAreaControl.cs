@@ -468,6 +468,37 @@ void main()
         /// <summary>Whether this control has ever framed a scene - see the <c>Scene</c> setter.</summary>
         private bool _cameraFramed;
 
+        /// <summary>Captures the current orbit camera once a scene has supplied its framing scale.</summary>
+        public AreaViewportState? CaptureViewportState()
+        {
+            if (!_cameraFramed)
+                return null;
+
+            return new AreaViewportState(
+                _target, _distance, _initialDistance, _azimuth, _elevation);
+        }
+
+        /// <summary>Restores a camera saved by the owning area document.</summary>
+        public void RestoreViewportState(AreaViewportState state)
+        {
+            if (!IsFinite(state.Target) ||
+                !float.IsFinite(state.Distance) || state.Distance <= 0f ||
+                !float.IsFinite(state.InitialDistance) || state.InitialDistance <= 0f ||
+                !float.IsFinite(state.Azimuth) || !float.IsFinite(state.Elevation))
+                return;
+
+            _target = state.Target;
+            _initialDistance = state.InitialDistance;
+            _distance = AreaCameraMath.ClampDistance(state.Distance, _initialDistance);
+            _azimuth = state.Azimuth;
+            _elevation = AreaCameraMath.ClampElevation(state.Elevation);
+            _cameraFramed = true;
+            RequestNextFrameRendering();
+        }
+
+        private static bool IsFinite(Vector3 value) =>
+            float.IsFinite(value.X) && float.IsFinite(value.Y) && float.IsFinite(value.Z);
+
         /// <summary>What the camera was last fitted to, so <see cref="NeedsRefit"/> can tell a
         /// same-size rebuild from a genuinely different model.</summary>
         private Vector3 _framedTarget;

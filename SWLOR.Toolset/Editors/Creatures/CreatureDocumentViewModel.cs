@@ -25,6 +25,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private bool _disposed;
 
         public CreatureEditorViewModel Editor { get; }
+        public Sources.ObjectSourceSectionViewModel? Source { get; }
         public bool IsDirty => _session.UndoStack.IsDirty;
         public bool CanUndo => _session.UndoStack.CanUndo;
         public bool CanRedo => _session.UndoStack.CanRedo;
@@ -58,10 +59,12 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<string, int, int, int,
                 Task<IReadOnlyList<CreatureEquipmentChoice>>>? equipmentSearch = null,
             Func<IReadOnlyList<AppearanceOption>>? appearanceOptionsLoader = null,
-            Func<int, string?>? abilityIcon = null)
+            Func<int, string?>? abilityIcon = null,
+            Sources.ObjectSourceSectionViewModel? source = null)
         {
             _log = log;
             _prompts = prompts;
+            Source = source;
             ResRef = resRef;
             Id = $"creature:{filePath}";
             _session = DocumentSession.Open(filePath);

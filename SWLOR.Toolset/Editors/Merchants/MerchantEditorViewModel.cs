@@ -28,6 +28,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             Task<IReadOnlyList<MerchantItemDefinition>>>? _searchItems;
         private readonly Action<string, Action<Bitmap>>? _requestItemPreview;
         private readonly Action<string>? _openItem;
+        private readonly Action<string, MerchantInstancePlacement>? _goToInstance;
         private readonly IReadOnlyList<BehaviorChoice> _baseItems;
         private readonly MerchantInstanceService? _instances;
         private readonly List<MerchantBuyingRuleViewModel> _allBuyingRules = new();
@@ -245,7 +246,8 @@ namespace SWLOR.Toolset.Editors.Merchants
                 Task<IReadOnlyList<MerchantItemDefinition>>>? searchItems = null,
             MerchantInstanceService? instances = null,
             Action<string, Action<Bitmap>>? requestItemPreview = null,
-            Action<string>? openItem = null)
+            Action<string>? openItem = null,
+            Action<string, MerchantInstancePlacement>? goToInstance = null)
         {
             ArgumentNullException.ThrowIfNull(merchant);
             _store = new MerchantValueStore(merchant);
@@ -257,6 +259,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             _instances = instances;
             _requestItemPreview = requestItemPreview;
             _openItem = openItem;
+            _goToInstance = goToInstance;
             HeaderOwner = headerOwner;
 
             BuildRows();
@@ -270,6 +273,13 @@ namespace SWLOR.Toolset.Editors.Merchants
             RefreshBuyingRuleSelections();
 
             SelectedInventoryCategory = InventoryCategories[0];
+        }
+
+        [RelayCommand]
+        private void GoToInstance(MerchantInstancePlacement? placement)
+        {
+            if (placement != null)
+                _goToInstance?.Invoke(ResRef, placement);
         }
 
         public void ReloadFromDocument()

@@ -97,6 +97,8 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public Appearance.AppearanceGallerySectionViewModel? AppearanceGallery { get; }
 
+        public Sources.ObjectSourceSectionViewModel? Source { get; }
+
         /// <summary>
         /// The generic blueprint view hosts the placeable editor too; only that editor shows the
         /// Waypoint-style Save/Revert footer requested for its multi-tab authoring workflow.
@@ -135,7 +137,8 @@ namespace SWLOR.Toolset.Editors
             Func<Domain.Workspace.ModuleWorkspace?>? resourceLister = null,
             Func<EditorFieldContext, Func<string, Action, bool>,
                 Appearance.AppearanceGallerySectionViewModel?>? appearanceGallery = null,
-            BlueprintSaveCoordinator? saveCoordinator = null)
+            BlueprintSaveCoordinator? saveCoordinator = null,
+            Sources.ObjectSourceSectionViewModel? source = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resourceLister = resourceLister;
@@ -143,6 +146,7 @@ namespace SWLOR.Toolset.Editors
             _prompts = prompts;
             _gameCodeIndex = gameCodeIndex;
             _saveCoordinator = saveCoordinator;
+            Source = source;
             _resRef = resRef;
             BlueprintType = type;
             Id = $"editor:{filePath}";
@@ -228,6 +232,9 @@ namespace SWLOR.Toolset.Editors
             if (VarTableSection != null && ShouldShowVariablesTab())
                 Tabs.Add(new EditorTabViewModel("Variables", VarTableSection));
 
+            if (Source != null)
+                Tabs.Add(new EditorTabViewModel("Source", Source));
+
             NotifyTabsChanged();
         }
 
@@ -275,7 +282,9 @@ namespace SWLOR.Toolset.Editors
             var wanted = VarTableSection != null && ShouldShowVariablesTab();
 
             if (wanted && existing == null)
-                Tabs.Add(new EditorTabViewModel("Variables", VarTableSection!));
+                Tabs.Insert(
+                    Source == null ? Tabs.Count : Math.Max(0, Tabs.Count - 1),
+                    new EditorTabViewModel("Variables", VarTableSection!));
             else if (wanted && !ReferenceEquals(existing!.Content, VarTableSection))
                 Tabs[Tabs.IndexOf(existing)] = new EditorTabViewModel("Variables", VarTableSection!);
             else if (!wanted && existing != null)
@@ -448,6 +457,7 @@ namespace SWLOR.Toolset.Editors
                 {
                     _resRef = targetResRef;
                     Id = $"editor:{_session.FilePath}";
+                    Source?.SetResRef(targetResRef);
                 }
 
                 _session.UndoStack.MarkSaved();

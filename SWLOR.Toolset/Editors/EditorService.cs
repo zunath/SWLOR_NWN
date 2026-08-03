@@ -97,6 +97,8 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _openingAreaEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ObjectPlacement> _pendingAreaReveals =
+            new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Triggers.TriggerDocumentViewModel> _openTriggerEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Waypoints.WaypointDocumentViewModel> _openWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _openingWaypointEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -932,7 +934,8 @@ namespace SWLOR.Toolset.Editors
                     type == ResourceType.Utp ? CreatePlaceableSections : null,
                     () => _workspaceContext.Workspace,
                     type == ResourceType.Utc ? CreateCreatureAppearanceGallery : null,
-                    _blueprintSaves);
+                    _blueprintSaves,
+                    CreateObjectSource(type, resRef));
                 editor.Closed += closed => _openEditors.Remove(closed.FilePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
@@ -953,6 +956,62 @@ namespace SWLOR.Toolset.Editors
             {
                 _log.AppendLine($"Failed to open editor for {resRef}: {ex.Message}");
             }
+        }
+
+        private Sources.ObjectSourceSectionViewModel CreateObjectSource(
+            ResourceType type,
+            string resRef) =>
+            new(
+                type,
+                resRef,
+                FindObjectPlacementsAsync,
+                ResolveAreaName,
+                GoToObjectPlacement);
+
+        private async Task<IReadOnlyList<ObjectPlacement>> FindObjectPlacementsAsync(
+            ResourceType type,
+            string resRef)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<ObjectPlacement>();
+
+            var placements = await workspace.PlacementIndex.FindAsync(type, resRef).ConfigureAwait(true);
+            return ReferenceEquals(workspace, _workspaceContext.Workspace)
+                ? placements
+                : Array.Empty<ObjectPlacement>();
+        }
+
+        private string ResolveAreaName(string areaResRef)
+        {
+            if (_workspaceContext.Catalog?.TryGetEntry(
+                    ResourceType.Area, areaResRef, out var entry) == true &&
+                !string.IsNullOrWhiteSpace(entry!.Name))
+                return entry.Name!;
+
+            return areaResRef;
+        }
+
+        private void GoToObjectPlacement(ObjectPlacement placement)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return;
+
+            _pendingAreaReveals[placement.AreaResRef] = placement;
+            OpenAreaEditor(workspace, placement.AreaResRef);
+        }
+
+        private void DispatchPendingAreaReveal(AreaEditorViewModel editor)
+        {
+            if (!_pendingAreaReveals.Remove(editor.AreaResRef, out var placement))
+                return;
+
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                _factory.ActivateDocument(editor);
+                editor.RevealPlacement(placement);
+            });
         }
 
         private async Task<bool> CompileOnSaveAsync(
@@ -1298,7 +1357,8 @@ namespace SWLOR.Toolset.Editors
                 filePath, resRef, _gameCodeIndex, _log, _prompts, ResolveTriggerTagArea,
                 ResolveTriggerChoices,
                 ChoicePreviews(),
-                _blueprintSaves);
+                _blueprintSaves,
+                CreateObjectSource(ResourceType.Utt, resRef));
             editor.Closed += closed => _openTriggerEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -1345,7 +1405,8 @@ namespace SWLOR.Toolset.Editors
                     catalog,
                     ResolveWaypointChoices,
                     ChoicePreviews(),
-                    _blueprintSaves);
+                    _blueprintSaves,
+                    CreateObjectSource(ResourceType.Utw, resRef));
                 editor.Closed += closed => _openWaypointEditors.Remove(closed.FilePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
@@ -1394,7 +1455,8 @@ namespace SWLOR.Toolset.Editors
                 itemResRef => LoadMerchantItem(itemResRef)?.Name ?? itemResRef,
                 SearchCreatureEquipmentItems,
                 _appearances == null ? null : CreatureAppearanceOptions,
-                CreatureAbilityIcon);
+                CreatureAbilityIcon,
+                CreateObjectSource(ResourceType.Utc, resRef));
             editor.Closed += closed => _openCreatureEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -1421,7 +1483,8 @@ namespace SWLOR.Toolset.Editors
                     : null,
                 _thumbnails,
                 ChoicePreviews(),
-                _blueprintSaves);
+                _blueprintSaves,
+                CreateObjectSource(ResourceType.Utd, resRef));
             editor.Closed += closed => _openDoorEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -1462,7 +1525,8 @@ namespace SWLOR.Toolset.Editors
                 findReferences: FindItemReferences,
                 canRefileCategories: CanRefileItemCategories,
                 refileCategories: RefileItemCategories,
-                saveCoordinator: _blueprintSaves);
+                saveCoordinator: _blueprintSaves,
+                placementSource: CreateObjectSource(ResourceType.Uti, resRef));
             editor.Closed += closed => _openItemEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -1504,7 +1568,16 @@ namespace SWLOR.Toolset.Editors
                     ? null
                     : (itemResRef, onReady) =>
                         _thumbnails.RequestAsync(ResourceType.Uti, itemResRef, onReady),
-                itemResRef => TryOpenEditor(ResourceType.Uti, itemResRef));
+                itemResRef => TryOpenEditor(ResourceType.Uti, itemResRef),
+                (merchantResRef, placement) => GoToObjectPlacement(new ObjectPlacement(
+                    ResourceType.Utm,
+                    merchantResRef,
+                    placement.AreaResRef,
+                    placement.InstanceIndex,
+                    placement.Tag,
+                    0f,
+                    0f,
+                    0f)));
             editor.Closed += closed => _openMerchantEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -2778,7 +2851,8 @@ namespace SWLOR.Toolset.Editors
                 ResolveSoundChoices,
                 SoundResources(),
                 SoundPreviews(),
-                _blueprintSaves);
+                _blueprintSaves,
+                CreateObjectSource(ResourceType.Uts, resRef));
             editor.Closed += closed => _openSoundEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -3103,6 +3177,7 @@ namespace SWLOR.Toolset.Editors
             if (_openAreaEditors.TryGetValue(resRef, out var existing))
             {
                 _factory.ActivateDocument(existing);
+                DispatchPendingAreaReveal(existing);
                 return;
             }
 
@@ -3113,17 +3188,21 @@ namespace SWLOR.Toolset.Editors
             {
                 var arePath = workspace.GetResourcePath(ResourceType.Area, resRef);
                 var gitPath = Path.Combine(workspace.ModuleRoot, "git", resRef + ".git.json");
-                if (!File.Exists(arePath) || !File.Exists(gitPath))
+                var gicPath = Path.Combine(workspace.ModuleRoot, "gic", resRef + ".gic.json");
+                if (!File.Exists(arePath) || !File.Exists(gitPath) || !File.Exists(gicPath))
                 {
-                    _log.AppendLine($"Area files not found for '{resRef}' (.are/.git pair required).");
+                    _log.AppendLine($"Area files not found for '{resRef}' (.are/.git/.gic set required).");
                     return;
                 }
 
-                // Placed waypoints use the same transition classifier as blueprint waypoints. Its
-                // module-wide GIT scan is warmed in the background so opening a large area does not
-                // freeze Avalonia's UI thread.
-                var transitionDestinationTags =
-                    await GetCurrentTransitionDestinationTagsAsync(workspace).ConfigureAwait(true);
+                // Both cold operations start together: the module-wide waypoint scan and this
+                // area's file read/JSON parse. Neither owns Avalonia's UI thread, so a large area can
+                // load while the builder keeps working in another document.
+                var transitionTagsTask = GetCurrentTransitionDestinationTagsAsync(workspace);
+                var documentLoadTask = Task.Run(() =>
+                    AreaEditorDocumentLoad.Load(arePath, gitPath, gicPath));
+                var transitionDestinationTags = await transitionTagsTask.ConfigureAwait(true);
+                var loadedDocuments = await documentLoadTask.ConfigureAwait(true);
                 if (transitionDestinationTags == null)
                     return;
 
@@ -3167,7 +3246,8 @@ namespace SWLOR.Toolset.Editors
                         ChoicePreviews()),
                     ResolveSoundChoices,
                     SoundResources(),
-                    SoundPreviews());
+                    SoundPreviews(),
+                    loadedDocuments);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
@@ -3175,6 +3255,7 @@ namespace SWLOR.Toolset.Editors
                     _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
                 _openAreaEditors[resRef] = editor;
                 _factory.OpenDocument(editor);
+                DispatchPendingAreaReveal(editor);
             }
             catch (Exception ex)
             {
@@ -3183,6 +3264,8 @@ namespace SWLOR.Toolset.Editors
             finally
             {
                 _openingAreaEditors.Remove(resRef);
+                if (!_openAreaEditors.ContainsKey(resRef))
+                    _pendingAreaReveals.Remove(resRef);
             }
         }
 

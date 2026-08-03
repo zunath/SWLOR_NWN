@@ -27,6 +27,7 @@ namespace SWLOR.Toolset.Editors.Triggers
         private bool _disposed;
 
         public TriggerEditorViewModel Editor { get; }
+        public Sources.ObjectSourceSectionViewModel? Source { get; }
 
         public bool IsDirty => _session.UndoStack.IsDirty;
 
@@ -55,12 +56,14 @@ namespace SWLOR.Toolset.Editors.Triggers
             Func<BehaviorTagScope, string, string?>? resolveTag = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             ChoicePreviewService? previews = null,
-            BlueprintSaveCoordinator? saveCoordinator = null)
+            BlueprintSaveCoordinator? saveCoordinator = null,
+            Sources.ObjectSourceSectionViewModel? source = null)
         {
             _log = log;
             _prompts = prompts;
             _resRef = resRef;
             _saveCoordinator = saveCoordinator;
+            Source = source;
             Id = $"trigger:{filePath}";
             _session = DocumentSession.Open(filePath);
 
@@ -162,6 +165,7 @@ namespace SWLOR.Toolset.Editors.Triggers
                     _resRef = targetResRef;
                     Id = $"trigger:{_session.FilePath}";
                     Editor.SetHeaderOwner(targetResRef);
+                    Source?.SetResRef(targetResRef);
                 }
 
                 _session.UndoStack.MarkSaved();

@@ -49,7 +49,8 @@ namespace SWLOR.Toolset.Editors.Merchants
             MerchantInstanceService? instances = null,
             BlueprintSaveCoordinator? saveCoordinator = null,
             Action<string, Action<Bitmap>>? requestItemPreview = null,
-            Action<string>? openItem = null)
+            Action<string>? openItem = null,
+            Action<string, MerchantInstancePlacement>? goToInstance = null)
         {
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _prompts = prompts ?? throw new ArgumentNullException(nameof(prompts));
@@ -67,7 +68,8 @@ namespace SWLOR.Toolset.Editors.Merchants
                 searchItems,
                 instances,
                 requestItemPreview,
-                openItem);
+                openItem,
+                goToInstance);
             Editor.PropertyChanged += OnEditorPropertyChanged;
             UpdateTitle();
         }

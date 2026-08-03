@@ -36,7 +36,15 @@
          list is where the key lands. -->
     <ListBox Grid.Row="1" Background="Transparent" BorderThickness="0"
              ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}"
-             DoubleTapped="OnRowDoubleTapped" KeyDown="OnRowKeyDown">
+             DoubleTapped="OnRowDoubleTapped" KeyDown="OnRowKeyDown"
+             ContextRequested="OnRowContextRequested">
+      <ListBox.ContextMenu>
+        <ContextMenu>
+          <MenuItem Header="Open properties..."
+                    Command="{Binding OpenPropertiesCommand}"
+                    CommandParameter="{Binding SelectedRow}" />
+        </ContextMenu>
+      </ListBox.ContextMenu>
       <ListBox.Styles>
         <Style Selector="ListBoxItem">
           <Setter Property="Padding" Value="0,2" />
@@ -44,7 +52,8 @@
       </ListBox.Styles>
       <ListBox.ItemTemplate>
         <DataTemplate DataType="panels:AreaContentsNodeViewModel">
-          <Grid ColumnDefinitions="Auto,*,Auto" Margin="{Binding Indent}" Background="Transparent">
+          <Grid ColumnDefinitions="Auto,*,Auto" Margin="{Binding Indent}" Background="Transparent"
+                PointerPressed="OnRowPointerPressed">
 
             <!-- The same wide, short hit box Module Contents gives its twisty: it is the thing
                  aimed at most in a tree and the glyph itself is a 10px target. -->

@@ -178,6 +178,7 @@ namespace SWLOR.Toolset.Workspace
         public void InvalidateTagIndex()
         {
             Workspace?.TagIndex.Invalidate();
+            Workspace?.PlacementIndex.Invalidate();
             TagIndexInvalidated?.Invoke();
         }
 

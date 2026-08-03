@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
         private bool _disposed;
 
         public WaypointEditorViewModel Editor { get; }
+        public Sources.ObjectSourceSectionViewModel? Source { get; }
 
         public bool IsDirty => _session.UndoStack.IsDirty;
         public bool CanUndo => _session.UndoStack.CanUndo;
@@ -43,12 +44,14 @@ namespace SWLOR.Toolset.Editors.Waypoints
             WaypointBehaviorCatalog catalog,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             Behaviors.ChoicePreviewService? previews = null,
-            BlueprintSaveCoordinator? saveCoordinator = null)
+            BlueprintSaveCoordinator? saveCoordinator = null,
+            Sources.ObjectSourceSectionViewModel? source = null)
         {
             _log = log;
             _prompts = prompts;
             _resRef = resRef;
             _saveCoordinator = saveCoordinator;
+            Source = source;
             Id = $"waypoint:{filePath}";
             _session = DocumentSession.Open(filePath);
 
@@ -164,6 +167,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
                     _resRef = targetResRef;
                     Id = $"waypoint:{_session.FilePath}";
                     Editor.SetHeaderOwner(targetResRef);
+                    Source?.SetResRef(targetResRef);
                 }
 
                 _session.UndoStack.MarkSaved();

@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
+             xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
              x:Class="SWLOR.Toolset.Editors.Doors.DoorDocumentView"
              x:DataType="doors:DoorDocumentViewModel">
   <DockPanel>
@@ -19,6 +20,13 @@
       </Grid>
     </Border>
 
-    <doors:DoorEditorView DataContext="{Binding Editor}" />
+    <TabControl>
+      <TabItem Header="Edit">
+        <doors:DoorEditorView DataContext="{Binding Editor}" />
+      </TabItem>
+      <TabItem Header="Source" IsVisible="{Binding Source, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <sources:ObjectSourceView DataContext="{Binding Source}" />
+      </TabItem>
+    </TabControl>
   </DockPanel>
 </UserControl>

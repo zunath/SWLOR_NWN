@@ -237,6 +237,21 @@ namespace SWLOR.Toolset.Tests
                 "a single click picks the object out; flying the camera on every arrow-key step would be unusable");
         }
 
+        [Test]
+        public void OpeningProperties_FromContents_RetainsTheSelectedKindAndPropertiesPage()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor);
+            var row = FirstInstanceUnder(KindNode(panel, "Creatures"));
+            var section = editor.SectionFor(ResourceType.Utc)!;
+
+            panel.OpenPropertiesCommand.Execute(row);
+
+            editor.SelectedRootTabIndex.Should().Be(1);
+            section.IsExpanded.Should().BeTrue();
+            section.SelectedRow.Should().BeSameAs(section.Rows[row.Indices[0]]);
+        }
+
         // ----- deleting -----
 
         [Test]

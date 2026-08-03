@@ -405,6 +405,17 @@ namespace SWLOR.Toolset.Shell.Panels
             _editor.RevealInstance(node.BlueprintType, node.Indices[0], frameCamera: true);
         }
 
+        /// <summary>Opens the selected placement's editable details in the owning area tab.</summary>
+        [RelayCommand]
+        private void OpenProperties(AreaContentsNodeViewModel? node)
+        {
+            node ??= SelectedRow;
+            if (_editor == null || node is not { Kind: AreaContentsNodeKind.Instance })
+                return;
+
+            _editor.OpenInstanceProperties(node.BlueprintType, node.Indices[0]);
+        }
+
         /// <summary>
         /// Delete: removes the selected row's objects from the area.
         /// </summary>

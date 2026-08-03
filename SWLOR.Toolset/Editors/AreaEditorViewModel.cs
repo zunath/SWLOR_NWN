@@ -108,6 +108,20 @@ namespace SWLOR.Toolset.Editors
 
         public ObservableCollection<InstanceListSectionViewModel> Sections { get; } = new();
 
+        /// <summary>
+        /// The front page of this area document (0 = Scene, 1 = Properties). This belongs to the
+        /// document rather than its transient view so changing document tabs returns the builder to
+        /// the page they were using.
+        /// </summary>
+        [ObservableProperty]
+        private int _selectedRootTabIndex;
+
+        /// <summary>The Properties page's retained scroll position, stored without an Avalonia dependency.</summary>
+        public Vector2 PropertiesScrollOffset { get; set; }
+
+        /// <summary>The last camera owned by this open area tab, restored when its view is recreated.</summary>
+        public Viewport.AreaViewportState? ViewportState { get; set; }
+
         public bool IsDirty =>
             _areSession.UndoStack.IsDirty ||
             _gitSession.UndoStack.IsDirty ||
@@ -211,6 +225,7 @@ namespace SWLOR.Toolset.Editors
                 OnPropertyChanged(nameof(SelectionCoordinates));
                 OnPropertyChanged(nameof(IDocumentStatusSource.StatusDetail));
                 EditSelectedBlueprintCommand.NotifyCanExecuteChanged();
+                OpenSelectedInstancePropertiesCommand.NotifyCanExecuteChanged();
             }
         }
 
@@ -1464,7 +1479,8 @@ namespace SWLOR.Toolset.Editors
             Waypoints.WaypointEditorServices? waypointEditorServices = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveSoundChoices = null,
             IReadOnlyList<string>? audioResources = null,
-            Services.SoundPreviewService? soundPreview = null)
+            Services.SoundPreviewService? soundPreview = null,
+            AreaEditorDocumentLoad? loadedDocuments = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resolveBlueprintModel = resolveBlueprintModel;
@@ -1488,9 +1504,18 @@ namespace SWLOR.Toolset.Editors
             var gitPath = Path.Combine(workspace.ModuleRoot, "git", areResRef + ".git.json");
             var gicPath = Path.Combine(workspace.ModuleRoot, "gic", areResRef + ".gic.json");
 
-            _areSession = DocumentSession.Open(arePath);
-            _gitSession = DocumentSession.Open(gitPath);
-            _gicSession = DocumentSession.Open(gicPath);
+            _areSession = loadedDocuments == null
+                ? DocumentSession.Open(arePath)
+                : DocumentSession.FromLoadedContent(
+                    arePath, loadedDocuments.Are, loadedDocuments.AreBytes);
+            _gitSession = loadedDocuments == null
+                ? DocumentSession.Open(gitPath)
+                : DocumentSession.FromLoadedContent(
+                    gitPath, loadedDocuments.Git, loadedDocuments.GitBytes);
+            _gicSession = loadedDocuments == null
+                ? DocumentSession.Open(gicPath)
+                : DocumentSession.FromLoadedContent(
+                    gicPath, loadedDocuments.Gic, loadedDocuments.GicBytes);
             _savedGicBytes = _gicSession.ToBytes();
 
             var areContext = new EditorFieldContext(
@@ -1606,6 +1631,66 @@ namespace SWLOR.Toolset.Editors
 
             if (frameCamera)
                 CameraFocusRequested?.Invoke(new Vector3(row.X, row.Y, row.Z));
+        }
+
+        /// <summary>
+        /// Opens the placed instance's own editable details, rather than the blueprint it was copied
+        /// from. Used by both Area Contents and the scene's right-click menu.
+        /// </summary>
+        public void OpenInstanceProperties(ResourceType type, int index)
+        {
+            if (SectionFor(type) is not { } section || index < 0 || index >= section.Rows.Count)
+                return;
+
+            RevealInstance(type, index, frameCamera: false);
+            section.IsExpanded = true;
+            SelectedRootTabIndex = 1;
+        }
+
+        /// <summary>
+        /// Reveals an indexed source placement. The saved list index is preferred, then a
+        /// resref-and-position match protects navigation when an already-open area has unsaved
+        /// insertions or deletions that shifted its indices.
+        /// </summary>
+        public void RevealPlacement(ObjectPlacement placement)
+        {
+            if (SectionFor(placement.BlueprintType) is not { } section)
+                return;
+
+            var index = placement.InstanceIndex;
+            if (index < 0 || index >= section.Rows.Count ||
+                !string.Equals(
+                    section.Rows[index].TemplateResRef,
+                    placement.BlueprintResRef,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                index = section.Rows
+                    .Where(row => string.Equals(
+                        row.TemplateResRef,
+                        placement.BlueprintResRef,
+                        StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(row =>
+                        MathF.Abs(row.X - placement.X) +
+                        MathF.Abs(row.Y - placement.Y) +
+                        MathF.Abs(row.Z - placement.Z))
+                    .Select(row => row.Index)
+                    .FirstOrDefault(-1);
+            }
+
+            if (index >= 0)
+                RevealInstance(placement.BlueprintType, index, frameCamera: true);
+        }
+
+        [RelayCommand(CanExecute = nameof(HasSceneSelection))]
+        private void OpenSelectedInstanceProperties()
+        {
+            if (SelectedSceneInstance is not { } instance ||
+                MapKindToSectionType(instance.Kind) is not { } type)
+                return;
+
+            var index = IndexWithinKind(instance);
+            if (index >= 0)
+                OpenInstanceProperties(type, index);
         }
 
         /// <summary>Deletes placements of one kind as a single undo entry.</summary>

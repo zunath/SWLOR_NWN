@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Editors.Sounds
         private bool _disposed;
 
         public SoundEditorViewModel Editor { get; }
+        public Sources.ObjectSourceSectionViewModel? Source { get; }
 
         public bool IsDirty => _session.UndoStack.IsDirty;
 
@@ -47,12 +48,14 @@ namespace SWLOR.Toolset.Editors.Sounds
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             IReadOnlyList<string>? audioResources = null,
             Services.SoundPreviewService? preview = null,
-            BlueprintSaveCoordinator? saveCoordinator = null)
+            BlueprintSaveCoordinator? saveCoordinator = null,
+            Sources.ObjectSourceSectionViewModel? source = null)
         {
             _log = log;
             _prompts = prompts;
             _resRef = resRef;
             _saveCoordinator = saveCoordinator;
+            Source = source;
             Id = $"sound:{filePath}";
             _session = DocumentSession.Open(filePath);
 
@@ -158,6 +161,7 @@ namespace SWLOR.Toolset.Editors.Sounds
                     _resRef = targetResRef;
                     Id = $"sound:{_session.FilePath}";
                     Editor.SetHeaderOwner(targetResRef);
+                    Source?.SetResRef(targetResRef);
                 }
 
                 _session.UndoStack.MarkSaved();

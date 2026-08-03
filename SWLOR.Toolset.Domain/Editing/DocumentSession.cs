@@ -26,13 +26,19 @@ namespace SWLOR.Toolset.Domain.Editing
 
         /// <summary>Binds an already-parsed document to a path, recording the file's current mtime (if it exists) for HasExternalChange().</summary>
         public DocumentSession(string filePath, JsonGffDocument document)
+            : this(filePath, document, loadedContent: null)
+        {
+        }
+
+        private DocumentSession(string filePath, JsonGffDocument document, byte[]? loadedContent)
         {
             FilePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
             Document = document ?? throw new ArgumentNullException(nameof(document));
             UndoStack = new UndoStack();
             _loadedMTimeUtc = File.Exists(filePath) ? File.GetLastWriteTimeUtc(filePath) : null;
             _loadedContentHash = _loadedMTimeUtc != null
-                ? System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(filePath))
+                ? System.Security.Cryptography.SHA256.HashData(
+                    loadedContent ?? File.ReadAllBytes(filePath))
                 : null;
             _guard = EditScope.EnterGuard();
         }
@@ -41,8 +47,22 @@ namespace SWLOR.Toolset.Domain.Editing
         public static DocumentSession Open(string filePath)
         {
             var content = File.ReadAllBytes(filePath);
-            var session = new DocumentSession(filePath, JsonGffDocument.Parse(content));
-            session.RecordCurrentFileState(content);
+            return FromLoadedContent(filePath, JsonGffDocument.Parse(content), content);
+        }
+
+        /// <summary>
+        /// Binds bytes and a document already parsed on a worker thread. The session itself is
+        /// created on the caller's context so its ambient edit guard belongs to the editor, while
+        /// the expensive file read and JSON parse stay off the UI thread.
+        /// </summary>
+        public static DocumentSession FromLoadedContent(
+            string filePath,
+            JsonGffDocument document,
+            byte[] loadedContent)
+        {
+            ArgumentNullException.ThrowIfNull(loadedContent);
+            var session = new DocumentSession(filePath, document, loadedContent);
+            session.RecordCurrentFileState(loadedContent);
             return session;
         }
 

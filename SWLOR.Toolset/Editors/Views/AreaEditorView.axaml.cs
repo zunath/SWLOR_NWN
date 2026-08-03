@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Numerics;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Editors
@@ -10,6 +11,7 @@ namespace SWLOR.Toolset.Editors
     public partial class AreaEditorView : UserControl
     {
         private AreaEditorViewModel? _viewModel;
+        private bool _viewportStateRestored;
 
         public AreaEditorView()
         {
@@ -54,6 +56,7 @@ namespace SWLOR.Toolset.Editors
                 _display.PropertyChanged -= OnDisplayPropertyChanged;
             if (_viewModel != null)
             {
+                SaveViewState(_viewModel);
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
                 _viewModel.CameraFocusRequested -= OnCameraFocusRequested;
                 _viewModel.PaintRejected -= OnPaintRejected;
@@ -80,20 +83,28 @@ namespace SWLOR.Toolset.Editors
 
         private void AttachViewModel()
         {
+            var next = DataContext as AreaEditorViewModel;
+            if (ReferenceEquals(next, _viewModel))
+                return;
+
             if (_viewModel != null)
             {
+                SaveViewState(_viewModel);
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
                 _viewModel.CameraFocusRequested -= OnCameraFocusRequested;
                 _viewModel.PaintRejected -= OnPaintRejected;
             }
 
-            _viewModel = DataContext as AreaEditorViewModel;
+            _viewModel = next;
             if (_viewModel == null)
                 return;
+
+            _viewportStateRestored = false;
 
             AreaView.ResourceIndex = _viewModel.ResourceIndex;
             AreaView.InvalidateGameResources();
             AreaView.Scene = _viewModel.AreaScene;
+            RestoreViewportStateWhenReady();
             AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
             AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
             AreaView.PlacementGhost = _viewModel.PlacementGhost;
@@ -113,6 +124,35 @@ namespace SWLOR.Toolset.Editors
             // (it is the first tab), and reading IsSelected here raced the TabControl's own setup - the
             // case where a second area opened to an empty viewport that never built.
             _viewModel.EnsureSceneBuilt();
+
+            // Layout owns the scrollable extent, so wait until this view has measured before
+            // restoring the document's last offset.
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (_viewModel != null)
+                {
+                    var offset = _viewModel.PropertiesScrollOffset;
+                    PropertiesScroll.Offset = new Avalonia.Vector(offset.X, offset.Y);
+                }
+            });
+        }
+
+        private void SaveViewState(AreaEditorViewModel viewModel)
+        {
+            viewModel.ViewportState = AreaView.CaptureViewportState() ?? viewModel.ViewportState;
+            viewModel.PropertiesScrollOffset = new Vector2(
+                (float)PropertiesScroll.Offset.X,
+                (float)PropertiesScroll.Offset.Y);
+        }
+
+        private void RestoreViewportStateWhenReady()
+        {
+            if (_viewportStateRestored || _viewModel?.AreaScene == null ||
+                _viewModel.ViewportState is not { } state)
+                return;
+
+            AreaView.RestoreViewportState(state);
+            _viewportStateRestored = true;
         }
 
         private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -121,7 +161,10 @@ namespace SWLOR.Toolset.Editors
                 return;
 
             if (e.PropertyName == nameof(AreaEditorViewModel.AreaScene))
+            {
                 AreaView.Scene = _viewModel.AreaScene;
+                RestoreViewportStateWhenReady();
+            }
             else if (e.PropertyName == nameof(AreaEditorViewModel.GameResourceRevision))
                 AreaView.InvalidateGameResources();
             else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedSceneInstance))
@@ -154,7 +197,8 @@ namespace SWLOR.Toolset.Editors
         /// </remarks>
         private void OnCameraFocusRequested(Vector3 position)
         {
-            RootTabs.SelectedItem = ViewTab3D;
+            if (_viewModel != null)
+                _viewModel.SelectedRootTabIndex = 0;
             AreaView.FocusOn(position);
         }
 

@@ -95,6 +95,29 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task FindAsync_DecodesUtf8AndWindows1252TokensInTheSameGit()
+        {
+            var expectedTag = "GUARD_\u6771\u4EAC";
+            var json = File.ReadAllText(_gitPath)
+                .Replace("GUARD_TAG", expectedTag)
+                .Replace("CRATE_TAG", "CRATE_X");
+            var bytes = Encoding.UTF8.GetBytes(json);
+            var legacyMarker = Encoding.ASCII.GetBytes("CRATE_X");
+            var markerOffset = bytes.AsSpan().IndexOf(legacyMarker);
+            markerOffset.Should().BeGreaterThanOrEqualTo(0);
+            bytes[markerOffset + legacyMarker.Length - 1] = 0x97;
+            File.WriteAllBytes(_gitPath, bytes);
+            var index = new ModuleWorkspace(_moduleRoot).PlacementIndex;
+
+            var placement = (await index.FindAsync(ResourceType.Utc, "guard_a"))
+                .Should().ContainSingle().Subject;
+
+            placement.Tag.Should().Be(
+                expectedTag,
+                "a legacy token elsewhere in the GIT must not force genuine UTF-8 tags through Windows-1252");
+        }
+
+        [Test]
         public async Task FindAsync_DecodesBomMarkedUtf8Git()
         {
             var expectedTag = "GUARD_\u6771\u4EAC";

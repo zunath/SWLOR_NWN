@@ -1672,6 +1672,7 @@ namespace SWLOR.Toolset.Editors
             _openItemEditors[editor.FilePath] = editor;
             _workspaceContext.RemoveCatalogEntry(ResourceType.Uti, oldResRef);
             _workspaceContext.RefreshCatalogEntry(ResourceType.Uti, editor.ResRef);
+            _workspaceContext.InvalidatePlacementIndex();
 
             // The membership already moved during the save itself (see RefileItemCategories),
             // before the original was deleted, so there is nothing left to reconcile here beyond
@@ -1980,6 +1981,7 @@ namespace SWLOR.Toolset.Editors
             openEditors[newPath] = editor;
             _workspaceContext.RemoveCatalogEntry(type, oldResRef);
             _workspaceContext.RefreshCatalogEntry(type, newResRef);
+            _workspaceContext.InvalidatePlacementIndex();
         }
 
         private Merchants.MerchantItemDefinition? LoadMerchantItem(string resRef)

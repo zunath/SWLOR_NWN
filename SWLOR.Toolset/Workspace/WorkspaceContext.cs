@@ -260,7 +260,10 @@ namespace SWLOR.Toolset.Workspace
 
         private void InvalidatePlacementIndexWhenRelevant(ResourceType type)
         {
-            if (type == ResourceType.Area || ModuleWorkspace.BlueprintTypes.Contains(type))
+            // Blueprint contents are not placement-index inputs. Their ordinary saves must not
+            // restart a module-wide GIT scan; rename workflows that rewrite GIT references call
+            // InvalidatePlacementIndex explicitly after the rename commits.
+            if (type == ResourceType.Area)
                 InvalidatePlacementIndex();
         }
 

@@ -35,11 +35,17 @@ namespace SWLOR.Toolset.Domain.Editing
             FilePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
             Document = document ?? throw new ArgumentNullException(nameof(document));
             UndoStack = new UndoStack();
-            _loadedMTimeUtc = File.Exists(filePath) ? File.GetLastWriteTimeUtc(filePath) : null;
-            _loadedContentHash = _loadedMTimeUtc != null
-                ? System.Security.Cryptography.SHA256.HashData(
-                    loadedContent ?? File.ReadAllBytes(filePath))
-                : null;
+            var fileExists = File.Exists(filePath);
+            _loadedMTimeUtc = fileExists
+                ? File.GetLastWriteTimeUtc(filePath)
+                : loadedContent != null
+                    ? DateTime.MinValue
+                    : null;
+            _loadedContentHash = loadedContent != null
+                ? System.Security.Cryptography.SHA256.HashData(loadedContent)
+                : fileExists
+                    ? System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(filePath))
+                    : null;
             _guard = EditScope.EnterGuard();
         }
 

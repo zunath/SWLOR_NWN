@@ -133,5 +133,39 @@ namespace SWLOR.Toolset.Tests
 
             notifications.Should().Be(1);
         }
+
+        [TestCase(ResourceType.Utc)]
+        [TestCase(ResourceType.Uti)]
+        [TestCase(ResourceType.Utp)]
+        public void OrdinaryBlueprintCatalogRefreshDoesNotInvalidatePlacements(ResourceType type)
+        {
+            var workspace = new WorkspaceContext(
+                root => new ModuleWorkspace(root),
+                new OutputLogService());
+            workspace.Open(_root);
+            var notifications = 0;
+            workspace.PlacementIndexInvalidated += () => notifications++;
+
+            workspace.RefreshCatalogEntry(type, "ordinary_save");
+
+            notifications.Should().Be(0,
+                "blueprint contents are not inputs to the module-wide GIT placement index");
+        }
+
+        [Test]
+        public void AreaCatalogRefreshInvalidatesPlacements()
+        {
+            var workspace = new WorkspaceContext(
+                root => new ModuleWorkspace(root),
+                new OutputLogService());
+            workspace.Open(_root);
+            var notifications = 0;
+            workspace.PlacementIndexInvalidated += () => notifications++;
+
+            workspace.RefreshCatalogEntry(ResourceType.Area, "changed_area");
+
+            notifications.Should().Be(1,
+                "an area save includes its GIT placement data");
+        }
     }
 }

@@ -34,6 +34,7 @@ namespace SWLOR.Toolset.Editors.Merchants
         private readonly List<MerchantBuyingRuleViewModel> _allBuyingRules = new();
         private readonly HashSet<(int PaneIndex, int ItemIndex)> _checkedInventoryItems = new();
         private int _instanceRefreshGeneration;
+        private string? _loadedPlacementResRef;
         private int _inventoryRefreshGeneration;
         private int _itemCandidateRefreshGeneration;
         private int _itemCandidateOffset;
@@ -275,12 +276,15 @@ namespace SWLOR.Toolset.Editors.Merchants
             SelectedInventoryCategory = InventoryCategories[0];
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanGoToInstance))]
         private void GoToInstance(MerchantInstancePlacement? placement)
         {
             if (placement != null)
-                _goToInstance?.Invoke(ResRef, placement);
+                _goToInstance?.Invoke(_loadedPlacementResRef ?? HeaderOwner, placement);
         }
+
+        private bool CanGoToInstance(MerchantInstancePlacement? placement) =>
+            _goToInstance != null && placement != null;
 
         public void ReloadFromDocument()
         {
@@ -531,10 +535,12 @@ namespace SWLOR.Toolset.Editors.Merchants
             InstanceError = null;
             try
             {
-                var found = await _instances.FindAsync(ResRef).ConfigureAwait(true);
+                var sourceResRef = ResRef;
+                var found = await _instances.FindAsync(sourceResRef).ConfigureAwait(true);
                 if (_disposed || generation != _instanceRefreshGeneration)
                     return;
 
+                _loadedPlacementResRef = sourceResRef;
                 PlacedInstances.Clear();
                 foreach (var placement in found)
                     PlacedInstances.Add(placement);
@@ -568,6 +574,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             ArePlacedInstancesLoaded = false;
             PlacedInstancesNeedRefresh = true;
             InstanceError = null;
+            _loadedPlacementResRef = null;
             PlacedInstances.Clear();
             NotifyInstanceShapeChanged();
         }

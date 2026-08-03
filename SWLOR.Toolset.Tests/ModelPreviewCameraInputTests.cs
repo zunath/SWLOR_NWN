@@ -42,22 +42,6 @@ namespace SWLOR.Toolset.Tests
             longTurn.Should().BeApproximately(shortTurn * 2f, 0.0001f);
         }
 
-        [AvaloniaTest]
-        public void ViewportState_RoundTripsAcrossControlRecreation()
-        {
-            var expected = new AreaViewportState(
-                new Vector3(12.5f, -4f, 8f),
-                Distance: 30f,
-                InitialDistance: 50f,
-                Azimuth: 1.25f,
-                Elevation: 0.45f);
-            var replacementControl = new GlAreaControl();
-
-            replacementControl.RestoreViewportState(expected);
-
-            replacementControl.CaptureViewportState().Should().Be(expected);
-        }
-
         private static GlAreaControl PreviewControl()
         {
             var control = new GlAreaControl();

@@ -61,9 +61,7 @@ namespace SWLOR.Toolset.Domain.Editing
             byte[] loadedContent)
         {
             ArgumentNullException.ThrowIfNull(loadedContent);
-            var session = new DocumentSession(filePath, document, loadedContent);
-            session.RecordCurrentFileState(loadedContent);
-            return session;
+            return new DocumentSession(filePath, document, loadedContent);
         }
 
         /// <summary>Begins a transaction on this session's undo stack.</summary>

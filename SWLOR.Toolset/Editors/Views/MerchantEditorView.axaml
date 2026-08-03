@@ -325,7 +325,8 @@
                 <DataTemplate DataType="merchants:MerchantInstancePlacement">
                   <Button Content="Go To"
                           Command="{Binding $parent[DataGrid].((merchants:MerchantEditorViewModel)DataContext).GoToInstanceCommand}"
-                          CommandParameter="{Binding}" Margin="4,1" />
+                          CommandParameter="{Binding}" Margin="4,1"
+                          ToolTip.Tip="Go to instance" />
                 </DataTemplate>
               </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>

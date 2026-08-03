@@ -70,6 +70,26 @@ namespace SWLOR.Toolset.Workspace
             openStopwatch.Stop();
             _log.AppendLine($"Opened module root '{moduleRoot}' in {openStopwatch.ElapsedMilliseconds}ms.");
 
+            var placementIndex = Workspace.PlacementIndex;
+            placementIndex.AreaReadFailed += (areaResRef, ex) =>
+                _log.AppendLine($"Placement index skipped area '{areaResRef}': {ex.Message}");
+            var placementIndexStopwatch = Stopwatch.StartNew();
+            _ = placementIndex.WarmAsync().ContinueWith(task =>
+            {
+                placementIndexStopwatch.Stop();
+                if (task.IsCompletedSuccessfully)
+                {
+                    _log.AppendLine(
+                        $"Placement index ready in {placementIndexStopwatch.ElapsedMilliseconds}ms.");
+                }
+                else if (task.Exception != null)
+                {
+                    _log.AppendLine(
+                        $"Placement index failed after {placementIndexStopwatch.ElapsedMilliseconds}ms: " +
+                        task.Exception.GetBaseException().Message);
+                }
+            }, TaskScheduler.Default);
+
             var catalogStopwatch = Stopwatch.StartNew();
             var lastLoggedPercent = -1;
 
@@ -151,6 +171,7 @@ namespace SWLOR.Toolset.Workspace
         public void RefreshCatalogEntry(ResourceType type, string resRef)
         {
             InvalidateTagIndexWhenRelevant(type);
+            InvalidatePlacementIndexWhenRelevant(type);
             InvalidateScriptUsagesWhenRelevant(type);
             if (IsCatalogIndexedType(type))
                 Catalog?.RefreshEntry(type, resRef);
@@ -165,6 +186,7 @@ namespace SWLOR.Toolset.Workspace
         public void RemoveCatalogEntry(ResourceType type, string resRef)
         {
             InvalidateTagIndexWhenRelevant(type);
+            InvalidatePlacementIndexWhenRelevant(type);
             InvalidateScriptUsagesWhenRelevant(type);
             if (IsCatalogIndexedType(type))
                 Catalog?.RemoveEntry(type, resRef);
@@ -172,8 +194,9 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
-        /// Drops the lazy transition-tag lookup after a paired GIT file changes. GIT is not a
-        /// first-class <see cref="ResourceType"/>, so the file watcher calls this directly.
+        /// Drops the lazy transition-tag lookup and module placement index after a paired GIT file
+        /// changes. GIT is not a first-class <see cref="ResourceType"/>, so the file watcher calls
+        /// this directly.
         /// </summary>
         public void InvalidateTagIndex()
         {
@@ -201,7 +224,16 @@ namespace SWLOR.Toolset.Workspace
         private void InvalidateTagIndexWhenRelevant(ResourceType type)
         {
             if (type is ResourceType.Area or ResourceType.Utd or ResourceType.Utw or ResourceType.Uti)
-                InvalidateTagIndex();
+            {
+                Workspace?.TagIndex.Invalidate();
+                TagIndexInvalidated?.Invoke();
+            }
+        }
+
+        private void InvalidatePlacementIndexWhenRelevant(ResourceType type)
+        {
+            if (type == ResourceType.Area || ModuleWorkspace.BlueprintTypes.Contains(type))
+                Workspace?.PlacementIndex.Invalidate();
         }
 
         private void InvalidateScriptUsagesWhenRelevant(ResourceType type)

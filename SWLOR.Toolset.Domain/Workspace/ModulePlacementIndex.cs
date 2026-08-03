@@ -1,9 +1,28 @@
-using System.Text;
 using System.Text.Json;
-using System.Text.Unicode;
 
 namespace SWLOR.Toolset.Domain.Workspace
 {
+    /// <summary>
+    /// The module placement scan could not read every area, so its results would be incomplete.
+    /// The failed areas are retained for diagnostics and a later query retries the complete scan.
+    /// </summary>
+    public sealed class PlacementIndexIncompleteException : IOException
+    {
+        public IReadOnlyList<string> AreaResRefs { get; }
+
+        internal PlacementIndexIncompleteException(
+            IReadOnlyList<(string AreaResRef, Exception Error)> failures)
+            : base(
+                $"Could not scan placements in {failures.Count} " +
+                $"area{(failures.Count == 1 ? string.Empty : "s")}: " +
+                $"{string.Join(", ", failures.Select(failure => failure.AreaResRef))}. " +
+                "Refresh to retry.",
+                new AggregateException(failures.Select(failure => failure.Error)))
+        {
+            AreaResRefs = failures.Select(failure => failure.AreaResRef).ToList();
+        }
+    }
+
     /// <summary>
     /// Module-wide map from a blueprint to every area instance placed from it. The first query builds
     /// all supported kinds together on a bounded worker pool; subsequent Source tabs are lookups.
@@ -31,6 +50,12 @@ namespace SWLOR.Toolset.Domain.Workspace
         public ModulePlacementIndex(ModuleWorkspace workspace) =>
             _workspace = workspace ?? throw new ArgumentNullException(nameof(workspace));
 
+        /// <summary>Raised on the scanning worker when one area's GIT cannot be indexed.</summary>
+        public event Action<string, Exception>? AreaReadFailed;
+
+        /// <summary>Starts or joins the shared module-wide scan without requesting a specific blueprint.</summary>
+        public async Task WarmAsync() => _ = await GetIndexAsync().ConfigureAwait(false);
+
         public async Task<IReadOnlyList<ObjectPlacement>> FindAsync(
             ResourceType type,
             string blueprintResRef)
@@ -38,6 +63,14 @@ namespace SWLOR.Toolset.Domain.Workspace
             if (string.IsNullOrWhiteSpace(blueprintResRef))
                 return Array.Empty<ObjectPlacement>();
 
+            var index = await GetIndexAsync().ConfigureAwait(false);
+            return index.TryGetValue(Key(type, blueprintResRef), out var placements)
+                ? placements
+                : Array.Empty<ObjectPlacement>();
+        }
+
+        private async Task<IReadOnlyDictionary<string, IReadOnlyList<ObjectPlacement>>> GetIndexAsync()
+        {
             while (true)
             {
                 Task<IReadOnlyDictionary<string, IReadOnlyList<ObjectPlacement>>> task;
@@ -48,16 +81,29 @@ namespace SWLOR.Toolset.Domain.Workspace
                     task = _buildTask ??= Task.Run(Build);
                 }
 
-                var index = await task.ConfigureAwait(false);
+                IReadOnlyDictionary<string, IReadOnlyList<ObjectPlacement>> index;
+                try
+                {
+                    index = await task.ConfigureAwait(false);
+                }
+                catch
+                {
+                    lock (_syncRoot)
+                    {
+                        if (ReferenceEquals(_buildTask, task))
+                            _buildTask = null;
+                    }
+
+                    throw;
+                }
+
                 lock (_syncRoot)
                 {
                     if (generation != _generation)
                         continue;
                 }
 
-                return index.TryGetValue(Key(type, blueprintResRef), out var placements)
-                    ? placements
-                    : Array.Empty<ObjectPlacement>();
+                return index;
             }
         }
 
@@ -74,6 +120,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         {
             var areas = _workspace.EnumerateAreaResRefs();
             var perArea = new List<ObjectPlacement>?[areas.Count];
+            var failures = new (string AreaResRef, Exception Error)?[areas.Count];
             Parallel.For(
                 0,
                 areas.Count,
@@ -87,11 +134,19 @@ namespace SWLOR.Toolset.Domain.Workspace
                     {
                         perArea[index] = ReadArea(areas[index]);
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // One malformed GIT must not hide valid placements in every other area.
+                        failures[index] = (areas[index], ex);
+                        AreaReadFailed?.Invoke(areas[index], ex);
                     }
                 });
+
+            var failedAreas = failures
+                .Where(failure => failure.HasValue)
+                .Select(failure => failure!.Value)
+                .ToList();
+            if (failedAreas.Count > 0)
+                throw new PlacementIndexIncompleteException(failedAreas);
 
             var result = new Dictionary<string, List<ObjectPlacement>>(StringComparer.OrdinalIgnoreCase);
             foreach (var placements in perArea)
@@ -119,7 +174,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         private List<ObjectPlacement> ReadArea(string areaResRef)
         {
             var path = Path.Combine(_workspace.ModuleRoot, "git", areaResRef + ".git.json");
-            using var document = JsonDocument.Parse(ReadAsUtf8(path));
+            using var document = JsonDocument.Parse(NwnJsonEncoding.ReadFileAsUtf8(path));
             var root = document.RootElement;
             var placements = new List<ObjectPlacement>();
 
@@ -171,18 +226,5 @@ namespace SWLOR.Toolset.Domain.Workspace
                 ? result
                 : 0f;
 
-        private static byte[] ReadAsUtf8(string path)
-        {
-            var raw = File.ReadAllBytes(path);
-            return Utf8.IsValid(raw) ? raw : Encoding.UTF8.GetBytes(NwnText.GetString(raw));
-        }
-
-        private static readonly Encoding NwnText = CreateNwnTextEncoding();
-
-        private static Encoding CreateNwnTextEncoding()
-        {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            return Encoding.GetEncoding(1252);
-        }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Workspace;
@@ -11,7 +12,9 @@ namespace SWLOR.Toolset.Editors.Sources
     {
         public string AreaResRef => Placement.AreaResRef;
         public string Tag => Placement.Tag;
-        public string Position => $"{Placement.X:0.0}, {Placement.Y:0.0}, {Placement.Z:0.0}";
+        public string Position => string.Create(
+            CultureInfo.InvariantCulture,
+            $"{Placement.X:0.0}, {Placement.Y:0.0}, {Placement.Z:0.0}");
         public string Detail => string.IsNullOrWhiteSpace(Tag)
             ? $"Position {Position}"
             : $"{Tag} · {Position}";
@@ -23,6 +26,7 @@ namespace SWLOR.Toolset.Editors.Sources
         private readonly Func<ResourceType, string, Task<IReadOnlyList<ObjectPlacement>>> _find;
         private readonly Func<string, string> _resolveAreaName;
         private readonly Action<ObjectPlacement> _goTo;
+        private readonly Action? _invalidate;
         private int _loadGeneration;
         private string _resRef;
 
@@ -31,13 +35,15 @@ namespace SWLOR.Toolset.Editors.Sources
             string resRef,
             Func<ResourceType, string, Task<IReadOnlyList<ObjectPlacement>>> find,
             Func<string, string> resolveAreaName,
-            Action<ObjectPlacement> goTo)
+            Action<ObjectPlacement> goTo,
+            Action? invalidate = null)
         {
             BlueprintType = blueprintType;
             _resRef = resRef;
             _find = find ?? throw new ArgumentNullException(nameof(find));
             _resolveAreaName = resolveAreaName ?? throw new ArgumentNullException(nameof(resolveAreaName));
             _goTo = goTo ?? throw new ArgumentNullException(nameof(goTo));
+            _invalidate = invalidate;
             _ = LoadAsync();
         }
 
@@ -66,11 +72,16 @@ namespace SWLOR.Toolset.Editors.Sources
                 return;
 
             _resRef = resRef;
+            _invalidate?.Invoke();
             _ = LoadAsync();
         }
 
         [RelayCommand]
-        private async Task RefreshAsync() => await LoadAsync().ConfigureAwait(true);
+        private async Task RefreshAsync()
+        {
+            _invalidate?.Invoke();
+            await LoadAsync().ConfigureAwait(true);
+        }
 
         [RelayCommand]
         private void GoTo(ObjectPlacementRowViewModel? row)
@@ -100,7 +111,10 @@ namespace SWLOR.Toolset.Editors.Sources
             catch (Exception ex)
             {
                 if (generation == _loadGeneration)
+                {
+                    Placements.Clear();
                     LoadError = $"Could not scan placements: {ex.Message}";
+                }
             }
             finally
             {

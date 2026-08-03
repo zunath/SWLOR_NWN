@@ -244,12 +244,44 @@ namespace SWLOR.Toolset.Tests
             var panel = CreatePanel(editor);
             var row = FirstInstanceUnder(KindNode(panel, "Creatures"));
             var section = editor.SectionFor(ResourceType.Utc)!;
+            InstanceListSectionViewModel? requestedSection = null;
+            editor.InstancePropertiesRequested += value => requestedSection = value;
 
             panel.OpenPropertiesCommand.Execute(row);
 
             editor.SelectedRootTabIndex.Should().Be(1);
             section.IsExpanded.Should().BeTrue();
             section.SelectedRow.Should().BeSameAs(section.Rows[row.Indices[0]]);
+            requestedSection.Should().BeSameAs(
+                section,
+                "the view must bring the requested editor into view after switching pages");
+        }
+
+        [Test]
+        public void RevealingPlacement_VerifiesIdentityBeforeTrustingAStaleIndex()
+        {
+            var editor = CreateEditor();
+            var section = editor.SectionFor(ResourceType.Utp)!;
+            var sameBlueprint = section.Rows
+                .Where(row => row.TemplateResRef == ReusedBlueprint)
+                .Take(2)
+                .ToList();
+            sameBlueprint.Should().HaveCount(2);
+            var staleIndexRow = sameBlueprint[0];
+            var expected = sameBlueprint[1];
+            var placement = new ObjectPlacement(
+                ResourceType.Utp,
+                expected.TemplateResRef,
+                AreaResRef,
+                staleIndexRow.Index,
+                expected.Tag,
+                expected.X,
+                expected.Y,
+                expected.Z);
+
+            editor.RevealPlacement(placement);
+
+            section.SelectedRow.Should().BeSameAs(expected);
         }
 
         // ----- deleting -----

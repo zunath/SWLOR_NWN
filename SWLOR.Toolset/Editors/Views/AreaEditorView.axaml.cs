@@ -4,6 +4,7 @@ using System.Numerics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Editors
@@ -59,6 +60,7 @@ namespace SWLOR.Toolset.Editors
                 SaveViewState(_viewModel);
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
                 _viewModel.CameraFocusRequested -= OnCameraFocusRequested;
+                _viewModel.InstancePropertiesRequested -= OnInstancePropertiesRequested;
                 _viewModel.PaintRejected -= OnPaintRejected;
             }
 
@@ -92,6 +94,7 @@ namespace SWLOR.Toolset.Editors
                 SaveViewState(_viewModel);
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
                 _viewModel.CameraFocusRequested -= OnCameraFocusRequested;
+                _viewModel.InstancePropertiesRequested -= OnInstancePropertiesRequested;
                 _viewModel.PaintRejected -= OnPaintRejected;
             }
 
@@ -118,6 +121,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.SelectedTileCell = _viewModel.SelectedTile;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
             _viewModel.CameraFocusRequested += OnCameraFocusRequested;
+            _viewModel.InstancePropertiesRequested += OnInstancePropertiesRequested;
             _viewModel.PaintRejected += OnPaintRejected;
 
             // Opening an area shows its map. Not gated on the 3D View tab being selected: it always is
@@ -143,6 +147,21 @@ namespace SWLOR.Toolset.Editors
             viewModel.PropertiesScrollOffset = new Vector2(
                 (float)PropertiesScroll.Offset.X,
                 (float)PropertiesScroll.Offset.Y);
+        }
+
+        private void OnInstancePropertiesRequested(InstanceListSectionViewModel section)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (_viewModel == null)
+                    return;
+
+                PropertiesScroll
+                    .GetVisualDescendants()
+                    .OfType<Expander>()
+                    .FirstOrDefault(expander => ReferenceEquals(expander.DataContext, section))
+                    ?.BringIntoView();
+            }, DispatcherPriority.Render);
         }
 
         private void RestoreViewportStateWhenReady()

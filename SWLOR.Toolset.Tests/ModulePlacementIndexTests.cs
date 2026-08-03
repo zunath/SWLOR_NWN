@@ -1,3 +1,4 @@
+using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Workspace;
@@ -60,6 +61,47 @@ namespace SWLOR.Toolset.Tests
 
             (await index.FindAsync(ResourceType.Utc, "guard_a")).Should().BeEmpty();
             (await index.FindAsync(ResourceType.Utc, "guard_b")).Should().ContainSingle();
+        }
+
+        [Test]
+        public async Task FindAsync_DecodesWindows1252Git()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            var json = File.ReadAllText(_gitPath).Replace("GUARD_TAG", "GUARD_CAFÉ");
+            File.WriteAllBytes(_gitPath, Encoding.GetEncoding(1252).GetBytes(json));
+            var index = new ModuleWorkspace(_moduleRoot).PlacementIndex;
+
+            var placement = (await index.FindAsync(ResourceType.Utc, "guard_a"))
+                .Should().ContainSingle().Subject;
+
+            placement.Tag.Should().Be("GUARD_CAFÉ");
+        }
+
+        [Test]
+        public async Task IncompleteScan_NamesLogsAndRetriesFailedArea()
+        {
+            File.WriteAllText(Path.Combine(_moduleRoot, "are", "broken.are.json"), "{}");
+            var brokenGit = Path.Combine(_moduleRoot, "git", "broken.git.json");
+            File.WriteAllText(brokenGit, "{");
+            var index = new ModuleWorkspace(_moduleRoot).PlacementIndex;
+            string? loggedArea = null;
+            Exception? loggedError = null;
+            index.AreaReadFailed += (area, error) =>
+            {
+                loggedArea = area;
+                loggedError = error;
+            };
+
+            var act = async () => await index.FindAsync(ResourceType.Utc, "guard_a");
+
+            var failure = await act.Should().ThrowAsync<PlacementIndexIncompleteException>();
+            failure.Which.AreaResRefs.Should().Equal("broken");
+            loggedArea.Should().Be("broken");
+            loggedError.Should().NotBeNull();
+
+            File.WriteAllText(brokenGit, "{}");
+            (await index.FindAsync(ResourceType.Utc, "guard_a")).Should().ContainSingle(
+                "a failed build must be discarded so Refresh can retry it");
         }
 
         private void WriteGit(string creatureResRef)

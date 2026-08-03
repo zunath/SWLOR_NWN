@@ -966,7 +966,8 @@ namespace SWLOR.Toolset.Editors
                 resRef,
                 FindObjectPlacementsAsync,
                 ResolveAreaName,
-                GoToObjectPlacement);
+                GoToObjectPlacement,
+                () => _workspaceContext.Workspace?.PlacementIndex.Invalidate());
 
         private async Task<IReadOnlyList<ObjectPlacement>> FindObjectPlacementsAsync(
             ResourceType type,
@@ -974,12 +975,18 @@ namespace SWLOR.Toolset.Editors
         {
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
+            {
+                _log.AppendLine("Cannot scan object placements: no module workspace is open.");
                 return Array.Empty<ObjectPlacement>();
+            }
 
             var placements = await workspace.PlacementIndex.FindAsync(type, resRef).ConfigureAwait(true);
-            return ReferenceEquals(workspace, _workspaceContext.Workspace)
-                ? placements
-                : Array.Empty<ObjectPlacement>();
+            if (ReferenceEquals(workspace, _workspaceContext.Workspace))
+                return placements;
+
+            _log.AppendLine(
+                $"Discarded placement results for '{resRef}' because the module workspace changed during the scan.");
+            return Array.Empty<ObjectPlacement>();
         }
 
         private string ResolveAreaName(string areaResRef)
@@ -996,7 +1003,12 @@ namespace SWLOR.Toolset.Editors
         {
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
+            {
+                _log.AppendLine(
+                    $"Cannot navigate to '{placement.BlueprintResRef}' in '{placement.AreaResRef}': " +
+                    "no module workspace is open.");
                 return;
+            }
 
             _pendingAreaReveals[placement.AreaResRef] = placement;
             OpenAreaEditor(workspace, placement.AreaResRef);
@@ -1575,9 +1587,9 @@ namespace SWLOR.Toolset.Editors
                     placement.AreaResRef,
                     placement.InstanceIndex,
                     placement.Tag,
-                    0f,
-                    0f,
-                    0f)));
+                    placement.XPosition,
+                    placement.YPosition,
+                    placement.ZPosition)));
             editor.Closed += closed => _openMerchantEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -3201,6 +3213,7 @@ namespace SWLOR.Toolset.Editors
                 var transitionTagsTask = GetCurrentTransitionDestinationTagsAsync(workspace);
                 var documentLoadTask = Task.Run(() =>
                     AreaEditorDocumentLoad.Load(arePath, gitPath, gicPath));
+                await Task.WhenAll(transitionTagsTask, documentLoadTask).ConfigureAwait(true);
                 var transitionDestinationTags = await transitionTagsTask.ConfigureAwait(true);
                 var loadedDocuments = await documentLoadTask.ConfigureAwait(true);
                 if (transitionDestinationTags == null)

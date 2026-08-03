@@ -995,6 +995,14 @@ namespace SWLOR.Toolset.Tests
 
             try
             {
+                var placements = await service.FindAsync("probe_store");
+                placements.Should().HaveCount(2);
+                placements.Should().OnlyContain(placement =>
+                    Math.Abs(placement.XPosition - 1f) < 0.001f &&
+                    Math.Abs(placement.YPosition - 2f) < 0.001f &&
+                    Math.Abs(placement.ZPosition - 3f) < 0.001f,
+                    "merchant Go To needs the scanned coordinates when a saved index becomes stale");
+
                 var updated = await service.UpdateOutOfDateAsync(
                     "probe_store",
                     new[] { "area_a" });
@@ -1050,6 +1058,39 @@ namespace SWLOR.Toolset.Tests
                 "1 merchant record, 2 item records out of date");
             editor.PlacedInstances[0].SyncState.Should().Be("Out of date");
             editor.PlacedInstances[2].SyncState.Should().Be("Up to date");
+        }
+
+        [Test]
+        public void GoToInstance_UsesSavedSourceResRefAndRequiresNavigationCallback()
+        {
+            string? navigatedResRef = null;
+            var placement = new MerchantInstancePlacement(
+                "Area A", "area_a", "store_a", 0, 0, 0, 1f, 2f, 3f);
+            using var editor = new MerchantEditorViewModel(
+                NewMerchant(),
+                "probe_store",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                goToInstance: (resRef, _) => navigatedResRef = resRef);
+
+            editor.DetailRows.Single(row => row.Definition.Name == "ResRef").Text = "unsaved_name";
+
+            editor.GoToInstanceCommand.CanExecute(placement).Should().BeTrue();
+            editor.GoToInstanceCommand.Execute(placement);
+            navigatedResRef.Should().Be(
+                "probe_store",
+                "the displayed placement was loaded for the saved source, not the unsaved field value");
+
+            using var withoutNavigation = new MerchantEditorViewModel(
+                NewMerchant(), "probe_store", (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                });
+            withoutNavigation.GoToInstanceCommand.CanExecute(placement).Should().BeFalse();
         }
 
         private static JsonGffStruct NewMerchant() =>

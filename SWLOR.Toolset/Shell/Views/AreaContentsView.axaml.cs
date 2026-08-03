@@ -1,11 +1,14 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using SWLOR.Toolset.Shell.Panels;
 
 namespace SWLOR.Toolset.Shell.Views
 {
     public partial class AreaContentsView : UserControl
     {
+        private AreaContentsNodeViewModel? _contextRow;
+
         public AreaContentsView()
         {
             InitializeComponent();
@@ -22,12 +25,31 @@ namespace SWLOR.Toolset.Shell.Views
             viewModel.SelectedRow = node;
         }
 
-        /// <summary>Branches have no properties menu; their right-click remains inert.</summary>
+        /// <summary>
+        /// The menu belongs to the realised row rather than the ListBox, so empty-space clicks have
+        /// no menu to open and can never act on an earlier selection.
+        /// </summary>
         private void OnRowContextRequested(object? sender, ContextRequestedEventArgs e)
         {
-            if (DataContext is not AreaContentsViewModel
-                { SelectedRow.Kind: AreaContentsNodeKind.Instance })
+            if (sender is not Control
+                { DataContext: AreaContentsNodeViewModel { IsInstance: true } node } ||
+                DataContext is not AreaContentsViewModel viewModel)
+            {
+                _contextRow = null;
                 e.Handled = true;
+                return;
+            }
+
+            _contextRow = node;
+            viewModel.SelectedRow = node;
+        }
+
+        private void OnOpenPropertiesClick(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is AreaContentsViewModel viewModel && _contextRow != null)
+                viewModel.OpenPropertiesCommand.Execute(_contextRow);
+
+            _contextRow = null;
         }
 
         /// <summary>Opening a row sends the camera to the object, or opens the branch.</summary>

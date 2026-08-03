@@ -282,9 +282,11 @@ namespace SWLOR.Toolset.Editors
             var wanted = VarTableSection != null && ShouldShowVariablesTab();
 
             if (wanted && existing == null)
-                Tabs.Insert(
-                    Source == null ? Tabs.Count : Math.Max(0, Tabs.Count - 1),
-                    new EditorTabViewModel("Variables", VarTableSection!));
+            {
+                var sourceTab = Tabs.FirstOrDefault(tab => ReferenceEquals(tab.Content, Source));
+                var index = sourceTab == null ? Tabs.Count : Tabs.IndexOf(sourceTab);
+                Tabs.Insert(index, new EditorTabViewModel("Variables", VarTableSection!));
+            }
             else if (wanted && !ReferenceEquals(existing!.Content, VarTableSection))
                 Tabs[Tabs.IndexOf(existing)] = new EditorTabViewModel("Variables", VarTableSection!);
             else if (!wanted && existing != null)

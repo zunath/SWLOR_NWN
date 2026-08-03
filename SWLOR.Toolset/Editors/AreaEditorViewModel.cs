@@ -1584,6 +1584,9 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public event Action<Vector3>? CameraFocusRequested;
 
+        /// <summary>Asks the view to scroll the requested instance editor into view.</summary>
+        public event Action<InstanceListSectionViewModel>? InstancePropertiesRequested;
+
         /// <summary>
         /// The name to show for one placement: its own if it has one, then its blueprint's, then its
         /// tag, and the resref last. Never blank, so no row in the contents tree is nameless.
@@ -1645,6 +1648,7 @@ namespace SWLOR.Toolset.Editors
             RevealInstance(type, index, frameCamera: false);
             section.IsExpanded = true;
             SelectedRootTabIndex = 1;
+            InstancePropertiesRequested?.Invoke(section);
         }
 
         /// <summary>
@@ -1659,17 +1663,18 @@ namespace SWLOR.Toolset.Editors
 
             var index = placement.InstanceIndex;
             if (index < 0 || index >= section.Rows.Count ||
-                !string.Equals(
-                    section.Rows[index].TemplateResRef,
-                    placement.BlueprintResRef,
-                    StringComparison.OrdinalIgnoreCase))
+                !MatchesPlacementIdentity(section.Rows[index], placement))
             {
                 index = section.Rows
                     .Where(row => string.Equals(
                         row.TemplateResRef,
                         placement.BlueprintResRef,
                         StringComparison.OrdinalIgnoreCase))
-                    .OrderBy(row =>
+                    .OrderByDescending(row => string.Equals(
+                        row.Tag,
+                        placement.Tag,
+                        StringComparison.OrdinalIgnoreCase))
+                    .ThenBy(row =>
                         MathF.Abs(row.X - placement.X) +
                         MathF.Abs(row.Y - placement.Y) +
                         MathF.Abs(row.Z - placement.Z))
@@ -1680,6 +1685,16 @@ namespace SWLOR.Toolset.Editors
             if (index >= 0)
                 RevealInstance(placement.BlueprintType, index, frameCamera: true);
         }
+
+        private static bool MatchesPlacementIdentity(InstanceRow row, ObjectPlacement placement) =>
+            string.Equals(
+                row.TemplateResRef,
+                placement.BlueprintResRef,
+                StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(row.Tag, placement.Tag, StringComparison.OrdinalIgnoreCase) &&
+            MathF.Abs(row.X - placement.X) < 0.001f &&
+            MathF.Abs(row.Y - placement.Y) < 0.001f &&
+            MathF.Abs(row.Z - placement.Z) < 0.001f;
 
         [RelayCommand(CanExecute = nameof(HasSceneSelection))]
         private void OpenSelectedInstanceProperties()

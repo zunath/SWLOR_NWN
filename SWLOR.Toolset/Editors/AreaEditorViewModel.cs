@@ -1666,18 +1666,7 @@ namespace SWLOR.Toolset.Editors
                 !MatchesPlacementIdentity(section.Rows[index], placement))
             {
                 index = section.Rows
-                    .Where(row => string.Equals(
-                        row.TemplateResRef,
-                        placement.BlueprintResRef,
-                        StringComparison.OrdinalIgnoreCase))
-                    .OrderByDescending(row => string.Equals(
-                        row.Tag,
-                        placement.Tag,
-                        StringComparison.OrdinalIgnoreCase))
-                    .ThenBy(row =>
-                        MathF.Abs(row.X - placement.X) +
-                        MathF.Abs(row.Y - placement.Y) +
-                        MathF.Abs(row.Z - placement.Z))
+                    .Where(row => MatchesPlacementIdentity(row, placement))
                     .Select(row => row.Index)
                     .FirstOrDefault(-1);
             }

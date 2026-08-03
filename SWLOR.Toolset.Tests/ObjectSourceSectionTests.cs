@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Sources;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -107,6 +108,28 @@ namespace SWLOR.Toolset.Tests
             source.Placements.Should().BeEmpty();
             source.LoadError.Should().Contain("broken GIT");
             source.Status.Should().Be(source.LoadError);
+        }
+
+        [Test]
+        public async Task FailedLoad_WritesTheFullFailureAndBlueprintIdentityToOutput()
+        {
+            var log = new OutputLogService();
+            var source = new ObjectSourceSectionViewModel(
+                ResourceType.Utw,
+                "broken_wp",
+                (_, _) => Task.FromException<IReadOnlyList<ObjectPlacement>>(
+                    new IOException("broken GIT", new InvalidDataException("bad token"))),
+                area => area,
+                _ => { },
+                log: log);
+
+            await WaitUntilAsync(() => !source.IsLoading);
+
+            log.Lines.Should().Contain(line =>
+                line.Contains("Utw") &&
+                line.Contains("broken_wp") &&
+                line.Contains("InvalidDataException") &&
+                line.Contains("bad token"));
         }
 
         private static async Task WaitUntilAsync(Func<bool> condition)

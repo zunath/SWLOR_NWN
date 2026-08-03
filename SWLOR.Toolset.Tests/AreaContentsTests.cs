@@ -284,6 +284,38 @@ namespace SWLOR.Toolset.Tests
             section.SelectedRow.Should().BeSameAs(expected);
         }
 
+        [Test]
+        public void RevealingPlacement_DoesNotSelectAnotherInstanceWhenTheSourceWasDeleted()
+        {
+            var editor = CreateEditor();
+            var section = editor.SectionFor(ResourceType.Utp)!;
+            var sameBlueprint = section.Rows
+                .Where(row => row.TemplateResRef == ReusedBlueprint)
+                .Take(2)
+                .ToList();
+            sameBlueprint.Should().HaveCount(2);
+            var deleted = sameBlueprint[0];
+            var placement = new ObjectPlacement(
+                ResourceType.Utp,
+                deleted.TemplateResRef,
+                AreaResRef,
+                deleted.Index,
+                deleted.Tag,
+                deleted.X,
+                deleted.Y,
+                deleted.Z);
+            section.DeleteInstances(new[] { deleted.Index }).Should().BeTrue();
+            section.SelectedRow = null;
+            var cameraMoved = false;
+            editor.CameraFocusRequested += _ => cameraMoved = true;
+
+            editor.RevealPlacement(placement);
+
+            section.SelectedRow.Should().BeNull();
+            cameraMoved.Should().BeFalse(
+                "a stale Source row must not silently navigate to another copy of the blueprint");
+        }
+
         // ----- deleting -----
 
         [Test]

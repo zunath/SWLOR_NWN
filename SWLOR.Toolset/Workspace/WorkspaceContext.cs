@@ -72,7 +72,8 @@ namespace SWLOR.Toolset.Workspace
 
             var placementIndex = Workspace.PlacementIndex;
             placementIndex.AreaReadFailed += (areaResRef, ex) =>
-                _log.AppendLine($"Placement index skipped area '{areaResRef}': {ex.Message}");
+                _log.AppendLine(
+                    $"Placement index area read failed. AreaResRef='{areaResRef}'. Exception={ex}");
             var placementIndexStopwatch = Stopwatch.StartNew();
             _ = placementIndex.WarmAsync().ContinueWith(task =>
             {
@@ -80,13 +81,15 @@ namespace SWLOR.Toolset.Workspace
                 if (task.IsCompletedSuccessfully)
                 {
                     _log.AppendLine(
-                        $"Placement index ready in {placementIndexStopwatch.ElapsedMilliseconds}ms.");
+                        "Placement index ready. " +
+                        $"DurationMs={placementIndexStopwatch.ElapsedMilliseconds}.");
                 }
                 else if (task.Exception != null)
                 {
                     _log.AppendLine(
-                        $"Placement index failed after {placementIndexStopwatch.ElapsedMilliseconds}ms: " +
-                        task.Exception.GetBaseException().Message);
+                        "Placement index warm-up failed. " +
+                        $"DurationMs={placementIndexStopwatch.ElapsedMilliseconds}. " +
+                        $"Exception={task.Exception.GetBaseException()}");
                 }
             }, TaskScheduler.Default);
 

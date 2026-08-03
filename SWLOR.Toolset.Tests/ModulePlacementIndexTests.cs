@@ -78,6 +78,38 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task FindAsync_PreservesWindows1252ThatAlsoLooksLikeValidUtf8()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            var expectedTag = "GUARD_\u00C2\u00A9";
+            var json = File.ReadAllText(_gitPath).Replace("GUARD_TAG", expectedTag);
+            File.WriteAllBytes(_gitPath, Encoding.GetEncoding(1252).GetBytes(json));
+            var index = new ModuleWorkspace(_moduleRoot).PlacementIndex;
+
+            var placement = (await index.FindAsync(ResourceType.Utc, "guard_a"))
+                .Should().ContainSingle().Subject;
+
+            placement.Tag.Should().Be(expectedTag);
+        }
+
+        [Test]
+        public async Task FindAsync_DecodesBomMarkedUtf8Git()
+        {
+            var expectedTag = "GUARD_\u6771\u4EAC";
+            var json = File.ReadAllText(_gitPath).Replace("GUARD_TAG", expectedTag);
+            File.WriteAllText(
+                _gitPath,
+                json,
+                new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+            var index = new ModuleWorkspace(_moduleRoot).PlacementIndex;
+
+            var placement = (await index.FindAsync(ResourceType.Utc, "guard_a"))
+                .Should().ContainSingle().Subject;
+
+            placement.Tag.Should().Be(expectedTag);
+        }
+
+        [Test]
         public async Task IncompleteScan_NamesLogsAndRetriesFailedArea()
         {
             File.WriteAllText(Path.Combine(_moduleRoot, "are", "broken.are.json"), "{}");

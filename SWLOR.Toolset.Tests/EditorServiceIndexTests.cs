@@ -1,3 +1,4 @@
+using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.GameData.Lookups;
@@ -156,6 +157,64 @@ namespace SWLOR.Toolset.Tests
 
             await Task.Delay(750);
             attempts.Should().Be(4);
+        }
+
+        [Test]
+        public async Task ReplacingAWorkspaceDuringPlacementLookupRetriesAgainstTheReplacement()
+        {
+            var firstRoot = NewModuleRoot();
+            var secondRoot = NewModuleRoot();
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            var firstStarted = new TaskCompletionSource(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            var releaseFirst = new TaskCompletionSource(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            var expected = new ObjectPlacement(
+                ResourceType.Utw,
+                "arrival_wp",
+                "replacement_area",
+                0,
+                "ARRIVAL",
+                1f,
+                2f,
+                3f);
+            var queriedRoots = new List<string>();
+            var editors = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                factory: null!,
+                prompts: null!,
+                objectPlacementsFinder: async (module, _, _) =>
+                {
+                    queriedRoots.Add(module.ModuleRoot);
+                    if (module.ModuleRoot == firstRoot)
+                    {
+                        firstStarted.SetResult();
+                        await releaseFirst.Task;
+                        return Array.Empty<ObjectPlacement>();
+                    }
+
+                    return new[] { expected };
+                });
+            workspace.Open(firstRoot);
+
+            var method = typeof(EditorService).GetMethod(
+                "FindObjectPlacementsAsync",
+                BindingFlags.Instance | BindingFlags.NonPublic)!;
+            var lookup = (Task<IReadOnlyList<ObjectPlacement>>)method.Invoke(
+                editors,
+                new object[] { ResourceType.Utw, "arrival_wp" })!;
+            await firstStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            workspace.Open(secondRoot);
+            releaseFirst.SetResult();
+
+            var placements = await lookup.WaitAsync(TimeSpan.FromSeconds(5));
+
+            placements.Should().ContainSingle().Which.Should().BeSameAs(expected);
+            queriedRoots.Should().Equal(firstRoot, secondRoot);
+            log.Lines.Should().Contain(line => line.Contains("Retrying placement scan"));
         }
 
         private string NewModuleRoot()

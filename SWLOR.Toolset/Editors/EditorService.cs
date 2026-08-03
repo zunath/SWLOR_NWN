@@ -139,6 +139,13 @@ namespace SWLOR.Toolset.Editors
         private readonly Func<Domain.Workspace.ModuleWorkspace, string?, ItemObtainabilityIndex>
             _itemSourcesBuilder;
 
+        /// <summary>The placement lookup implementation; injectable to verify workspace races.</summary>
+        private readonly Func<
+            Domain.Workspace.ModuleWorkspace,
+            ResourceType,
+            string,
+            Task<IReadOnlyList<ObjectPlacement>>> _objectPlacementsFinder;
+
         /// <summary>
         /// Bumped every time <see cref="_itemSources"/> is invalidated (a module opens, or a store,
         /// item, creature, or placeable is saved). <see cref="BuildItemSourcesAsync"/> captures this at
@@ -265,7 +272,12 @@ namespace SWLOR.Toolset.Editors
             Func<Domain.Workspace.ModuleWorkspace, string?, ItemObtainabilityIndex>?
                 itemSourcesBuilder = null,
             Workspace.ModuleCustomContentService? moduleCustomContent = null,
-            IExternalLinkService? externalLinks = null)
+            IExternalLinkService? externalLinks = null,
+            Func<
+                Domain.Workspace.ModuleWorkspace,
+                ResourceType,
+                string,
+                Task<IReadOnlyList<ObjectPlacement>>>? objectPlacementsFinder = null)
         {
             _moduleCustomContent = moduleCustomContent;
             _externalLinks = externalLinks;
@@ -285,6 +297,9 @@ namespace SWLOR.Toolset.Editors
             _itemSourcesBuilder = itemSourcesBuilder ??
                                   ((workspace, gameSourceRoot) =>
                                       ItemObtainabilityIndex.Build(workspace, gameSourceRoot));
+            _objectPlacementsFinder = objectPlacementsFinder ??
+                                      ((workspace, type, resRef) =>
+                                          workspace.PlacementIndex.FindAsync(type, resRef));
             _mutationLock = mutationLock;
             _placeableModels = placeableModels;
             _thumbnails = thumbnails;
@@ -967,26 +982,37 @@ namespace SWLOR.Toolset.Editors
                 FindObjectPlacementsAsync,
                 ResolveAreaName,
                 GoToObjectPlacement,
-                () => _workspaceContext.Workspace?.PlacementIndex.Invalidate());
+                () => _workspaceContext.Workspace?.PlacementIndex.Invalidate(),
+                _log);
 
         private async Task<IReadOnlyList<ObjectPlacement>> FindObjectPlacementsAsync(
             ResourceType type,
             string resRef)
         {
-            var workspace = _workspaceContext.Workspace;
-            if (workspace == null)
+            while (true)
             {
-                _log.AppendLine("Cannot scan object placements: no module workspace is open.");
-                return Array.Empty<ObjectPlacement>();
+                var workspace = _workspaceContext.Workspace;
+                if (workspace == null)
+                    throw new InvalidOperationException(
+                        "Cannot scan object placements because no module workspace is open.");
+
+                try
+                {
+                    var placements = await _objectPlacementsFinder(workspace, type, resRef)
+                        .ConfigureAwait(true);
+                    if (ReferenceEquals(workspace, _workspaceContext.Workspace))
+                        return placements;
+                }
+                catch when (!ReferenceEquals(workspace, _workspaceContext.Workspace))
+                {
+                    // The result belongs to an obsolete workspace generation. Retry below against
+                    // the replacement rather than surfacing an error from a module that is gone.
+                }
+
+                _log.AppendLine(
+                    $"Retrying placement scan for '{resRef}' because the module workspace " +
+                    "changed during the scan.");
             }
-
-            var placements = await workspace.PlacementIndex.FindAsync(type, resRef).ConfigureAwait(true);
-            if (ReferenceEquals(workspace, _workspaceContext.Workspace))
-                return placements;
-
-            _log.AppendLine(
-                $"Discarded placement results for '{resRef}' because the module workspace changed during the scan.");
-            return Array.Empty<ObjectPlacement>();
         }
 
         private string ResolveAreaName(string areaResRef)

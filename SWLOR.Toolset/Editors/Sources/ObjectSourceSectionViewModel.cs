@@ -3,6 +3,7 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors.Sources
 {
@@ -27,6 +28,7 @@ namespace SWLOR.Toolset.Editors.Sources
         private readonly Func<string, string> _resolveAreaName;
         private readonly Action<ObjectPlacement> _goTo;
         private readonly Action? _invalidate;
+        private readonly OutputLogService? _log;
         private int _loadGeneration;
         private string _resRef;
 
@@ -36,7 +38,8 @@ namespace SWLOR.Toolset.Editors.Sources
             Func<ResourceType, string, Task<IReadOnlyList<ObjectPlacement>>> find,
             Func<string, string> resolveAreaName,
             Action<ObjectPlacement> goTo,
-            Action? invalidate = null)
+            Action? invalidate = null,
+            OutputLogService? log = null)
         {
             BlueprintType = blueprintType;
             _resRef = resRef;
@@ -44,6 +47,7 @@ namespace SWLOR.Toolset.Editors.Sources
             _resolveAreaName = resolveAreaName ?? throw new ArgumentNullException(nameof(resolveAreaName));
             _goTo = goTo ?? throw new ArgumentNullException(nameof(goTo));
             _invalidate = invalidate;
+            _log = log;
             _ = LoadAsync();
         }
 
@@ -113,6 +117,8 @@ namespace SWLOR.Toolset.Editors.Sources
                 if (generation == _loadGeneration)
                 {
                     Placements.Clear();
+                    _log?.AppendLine(
+                        $"Placement scan failed for {BlueprintType} '{resRef}': {ex}");
                     LoadError = $"Could not scan placements: {ex.Message}";
                 }
             }

@@ -13,7 +13,6 @@ namespace SWLOR.Toolset.Editors
     {
         private AreaEditorViewModel? _viewModel;
         private bool _viewportStateRestored;
-        private Vector3? _pendingCameraFocus;
 
         public AreaEditorView()
         {
@@ -66,7 +65,6 @@ namespace SWLOR.Toolset.Editors
             }
 
             _viewModel = null;
-            _pendingCameraFocus = null;
 
             base.OnDetachedFromVisualTree(e);
         }
@@ -100,7 +98,6 @@ namespace SWLOR.Toolset.Editors
                 _viewModel.PaintRejected -= OnPaintRejected;
             }
 
-            _pendingCameraFocus = null;
             _viewModel = next;
             if (_viewModel == null)
                 return;
@@ -111,7 +108,6 @@ namespace SWLOR.Toolset.Editors
             AreaView.InvalidateGameResources();
             AreaView.Scene = _viewModel.AreaScene;
             RestoreViewportStateWhenReady();
-            ApplyPendingCameraFocus();
             AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
             AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
             AreaView.PlacementGhost = _viewModel.PlacementGhost;
@@ -127,6 +123,8 @@ namespace SWLOR.Toolset.Editors
             _viewModel.CameraFocusRequested += OnCameraFocusRequested;
             _viewModel.InstancePropertiesRequested += OnInstancePropertiesRequested;
             _viewModel.PaintRejected += OnPaintRejected;
+
+            ConsumePendingCameraFocus();
 
             // Opening an area shows its map. Not gated on the 3D View tab being selected: it always is
             // (it is the first tab), and reading IsSelected here raced the TabControl's own setup - the
@@ -187,7 +185,7 @@ namespace SWLOR.Toolset.Editors
             {
                 AreaView.Scene = _viewModel.AreaScene;
                 RestoreViewportStateWhenReady();
-                ApplyPendingCameraFocus();
+                ConsumePendingCameraFocus();
             }
             else if (e.PropertyName == nameof(AreaEditorViewModel.GameResourceRevision))
                 AreaView.InvalidateGameResources();
@@ -219,31 +217,32 @@ namespace SWLOR.Toolset.Editors
         /// The tab switch is not optional. Double-clicking a row while Properties is in front would
         /// otherwise move a camera nobody can see, which reads as the row having done nothing.
         /// </remarks>
-        private void OnCameraFocusRequested(Vector3 position)
+        private void OnCameraFocusRequested(Vector3 _)
+        {
+            ConsumePendingCameraFocus();
+        }
+
+        /// <summary>
+        /// Takes a retained request from the document only after its normal scene-change path has
+        /// restored the area's saved camera. Until then the document keeps the position.
+        /// </summary>
+        private void ConsumePendingCameraFocus()
+        {
+            // Leave the request on the document until a scene exists. That makes it survive a tab
+            // swap while a large area is still loading; the next view consumes it only after it has
+            // restored this area's retained camera.
+            if (AreaView.Scene == null ||
+                _viewModel?.TryTakePendingCameraFocus(out var position) != true)
+                return;
+
+            ApplyCameraFocus(position);
+        }
+
+        private void ApplyCameraFocus(Vector3 position)
         {
             if (_viewModel != null)
                 _viewModel.SelectedRootTabIndex = 0;
 
-            if (AreaView.Scene == null)
-            {
-                _pendingCameraFocus = position;
-                return;
-            }
-
-            _pendingCameraFocus = null;
-            AreaView.FocusOn(position);
-        }
-
-        /// <summary>
-        /// Applies a Go To request only after the area's retained camera has been restored. Focusing
-        /// from the scene setter would let the later restore overwrite the requested object.
-        /// </summary>
-        private void ApplyPendingCameraFocus()
-        {
-            if (AreaView.Scene == null || _pendingCameraFocus is not { } position)
-                return;
-
-            _pendingCameraFocus = null;
             AreaView.FocusOn(position);
         }
 

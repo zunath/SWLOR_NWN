@@ -1096,6 +1096,7 @@ namespace SWLOR.Toolset.Editors
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
                 _factory.ActivateDocument(editor);
+                _factory.ShowAreaContents();
                 editor.RevealPlacement(placement);
             });
         }

@@ -154,7 +154,25 @@ namespace SWLOR.Toolset.Editors.Doors
             if (descriptor is not DoorBehavior behavior || behavior.Id == Behavior.Id)
                 return;
 
-            _ = ChooseBehaviorAsync(behavior);
+            _ = ChooseBehaviorGuardedAsync(behavior);
+        }
+
+        /// <summary>
+        /// Observes the command's fire-and-forget switch. A fault would otherwise vanish as an
+        /// unobserved task while the rail stayed highlighting a behavior the document never got, so
+        /// it is handled the way a declined prompt is: put the highlight back on what the door
+        /// actually is.
+        /// </summary>
+        private async Task ChooseBehaviorGuardedAsync(DoorBehavior behavior)
+        {
+            try
+            {
+                await ChooseBehaviorAsync(behavior).ConfigureAwait(true);
+            }
+            catch (Exception)
+            {
+                BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);
+            }
         }
 
         /// <summary>Asks before a switch throws something away. Null in tests, which never lose data.</summary>

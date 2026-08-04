@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Disruption,
                 VisualEffect.Vfx_Imp_Negative_Energy,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Evil,
-                maxRange: 8f)
+                maxRange: 8f,
+                centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)

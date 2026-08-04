@@ -31,7 +31,10 @@ namespace SWLOR.Toolset.Domain.Documents
 
         public static int? GetIntOrNull(this JsonGffStruct target, string name)
         {
-            return target.TryGet(name, out var field) ? (int)field.GetInteger() : null;
+            // Checked: a Dword sentinel such as 0xFFFFFFFF must surface as an error rather than
+            // silently wrapping to -1. Fields that legitimately hold such values are read through
+            // GetUIntOrNull.
+            return target.TryGet(name, out var field) ? checked((int)field.GetInteger()) : null;
         }
 
         public static void SetInt(this JsonGffStruct target, string name, GffFieldType type, int value)
@@ -98,6 +101,7 @@ namespace SWLOR.Toolset.Domain.Documents
 
         public static void SetSingle(this JsonGffStruct target, string name, float value)
         {
+            JsonGffField.ValidateFiniteValue(value);
             if (target.TryGet(name, out var field))
             {
                 field.SetSingle(value);

@@ -606,7 +606,7 @@ namespace SWLOR.Game.Server.Service
                 percentAdjustment += Stat.GetStatAdjustment(source, StatType.OutgoingControlDurationPercentAdjustment);
             }
 
-            if (statusEffect is ForceDisruptionStatusEffect)
+            if ((statusEffect.Categories & StatusEffectCategory.ForceDisruption) == StatusEffectCategory.ForceDisruption)
             {
                 percentAdjustment += Stat.GetStatAdjustment(source, StatType.OutgoingForceDisruptionDurationPercentAdjustment);
             }
@@ -633,7 +633,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(source))
                 return;
 
-            if (statusEffect is ForceDisruptionStatusEffect)
+            if ((statusEffect.Categories & StatusEffectCategory.ForceDisruption) == StatusEffectCategory.ForceDisruption)
             {
                 var forceDefenseAdjustment = Stat.GetStatAdjustment(source, StatType.OutgoingForceDisruptionForceDefensePercentAdjustment);
                 if (forceDefenseAdjustment != 0)

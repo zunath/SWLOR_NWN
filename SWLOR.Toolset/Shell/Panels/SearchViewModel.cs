@@ -23,6 +23,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private readonly WorkspaceContext _workspaceContext;
         private readonly PropertiesViewModel _properties;
+        private readonly OutputLogService _log;
         private CancellationTokenSource? _pending;
 
         [ObservableProperty]
@@ -33,10 +34,11 @@ namespace SWLOR.Toolset.Shell.Panels
 
         public ObservableCollection<CatalogSearchResult> Results { get; } = new();
 
-        public SearchViewModel(WorkspaceContext workspaceContext, PropertiesViewModel properties)
+        public SearchViewModel(WorkspaceContext workspaceContext, PropertiesViewModel properties, OutputLogService log)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _properties = properties ?? throw new ArgumentNullException(nameof(properties));
+            _log = log ?? throw new ArgumentNullException(nameof(log));
             Id = "Search";
             Title = "Search";
             _workspaceContext.CatalogEntryRefreshed += (_, _) => Refresh();
@@ -91,8 +93,28 @@ namespace SWLOR.Toolset.Shell.Panels
                     {
                         // Another keystroke arrived; its search is the one that matters.
                     }
+                    catch (Exception ex)
+                    {
+                        PublishSearchFailure(ex, token);
+                    }
                 },
                 token);
+        }
+
+        /// <summary>
+        /// Surfaces a scan failure the way the sibling script search does: clear whatever stale
+        /// results are on screen and log why, rather than leaving a result set nobody can trust.
+        /// </summary>
+        private void PublishSearchFailure(Exception ex, CancellationToken token)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (token.IsCancellationRequested)
+                    return;
+
+                Results.Clear();
+                _log.AppendLine($"Search failed: {ex.Message}");
+            });
         }
 
         /// <summary>Re-runs the current query after the background catalog publishes more entries.</summary>

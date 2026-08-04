@@ -59,6 +59,19 @@ namespace SWLOR.Toolset.Editors
             {
                 _bound.TextReplaced -= ReplaceText;
                 _bound.DiagnosticsChanged -= OnDiagnosticsChanged;
+
+                // Fully unhook, symmetric with AreaEditorView.AttachViewModel: these delegates close
+                // over this view's _editor, so leaving them set on the outgoing view model would let
+                // a docking host that reuses this view act on the wrong document if that view model
+                // is ever queried again.
+                _bound.CanUndoProbe = null;
+                _bound.CanRedoProbe = null;
+                _bound.UndoRequested = null;
+                _bound.RedoRequested = null;
+                _bound.InsertAtCursorRequested = null;
+                _bound.GoToOffsetRequested = null;
+                _bound.GoToLineRequested = null;
+                _bound.ReplaceAllRequested = null;
             }
 
             _bound = DataContext as ScriptEditorViewModel;

@@ -802,6 +802,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
             _activeAbility.MimicrySkillRequirement = skillRequirement;
             _activeAbility.MimicrySlotCost = slotCost;
 
+            // The NPC original keeps RequiresTarget so the AI only selects it with an enemy in
+            // hand, but the player-facing technique aims with a cursor: a mandatory creature
+            // target would break empty-ground casts of its line/cone/placed area.
+            if (_activeAbility.IsAreaAbility)
+            {
+                _activeAbility.RequiresTarget = false;
+            }
+
             return this;
         }
 

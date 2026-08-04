@@ -321,12 +321,26 @@ namespace SWLOR.Toolset.Tests
             var gender = row.GalleryFilters.Should().ContainSingle().Subject;
             gender.Label.Should().Be("Gender");
             gender.SelectedOption = gender.Options.Single(option => option.Display == "Female");
+
+            // Changing a filter or sort fires an un-awaited background rebuild (Task.Run inside
+            // RebuildGalleryAsync); wait for it to publish before asserting or the test races it.
+            await WaitForGalleryRebuildAsync(() => row.GallerySummary == "48 of 70 choices");
             row.GalleryChoices.Should().OnlyContain(choice => choice.Value % 2 == 0);
             row.GallerySummary.Should().Be("48 of 70 choices");
 
             row.SelectedGallerySort = row.GallerySortOptions.Single(option =>
                 option.Mode == GallerySortMode.NameAscending);
+            await WaitForGalleryRebuildAsync(() =>
+                row.GalleryChoices.Count > 0 &&
+                row.GalleryChoices.Select(choice => choice.Display).SequenceEqual(
+                    row.GalleryChoices.Select(choice => choice.Display).OrderBy(display => display, StringComparer.Ordinal)));
             row.GalleryChoices.Select(choice => choice.Display).Should().BeInAscendingOrder();
+        }
+
+        private static async Task WaitForGalleryRebuildAsync(Func<bool> published)
+        {
+            for (var attempt = 0; attempt < 400 && !published(); attempt++)
+                await Task.Delay(10);
         }
 
         [Test]

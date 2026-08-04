@@ -14,7 +14,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCategory Categories =>
             StatusEffectCategory.Debuff |
             StatusEffectCategory.Control |
-            StatusEffectCategory.Incapacitating;
+            StatusEffectCategory.Incapacitating |
+            StatusEffectCategory.HardCrowdControl;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;
 

@@ -819,6 +819,26 @@ namespace SWLOR.Toolset.Editors
             });
         }
 
+        /// <summary>
+        /// Whether the Advanced panel holds edits not yet written to the current line. The fields
+        /// commit on LostFocus, which a keyboard-shortcut save never fires — so the save path asks
+        /// this and flushes, instead of silently discarding what was typed.
+        /// </summary>
+        private bool AdvancedDraftDiffers()
+        {
+            if (_currentLine == null)
+                return false;
+
+            var displayedScript = DlgDocument.IsActionDispatcher(_currentLine.Script)
+                ? string.Empty
+                : _currentLine.Script;
+            return _currentLine.Speaker != AdvancedSpeaker
+                   || _currentLine.Sound != AdvancedSound
+                   || _currentLine.Animation != decimal.ToUInt32(Math.Max(0, AdvancedAnimation))
+                   || _currentLine.Comment != AdvancedComment
+                   || displayedScript != AdvancedScript;
+        }
+
         [RelayCommand]
         private void CommitAdvanced()
         {
@@ -1905,6 +1925,8 @@ namespace SWLOR.Toolset.Editors
         public async Task<bool> TrySaveAsync()
         {
             CommitLine();
+            if (AdvancedDraftDiffers())
+                CommitAdvanced();
             if (IsMerchant && MerchantDraftDiffers())
                 RunEdit("Finish merchant dialogue", EnsureMerchantStructure);
 

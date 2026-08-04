@@ -261,9 +261,7 @@ namespace SWLOR.Toolset.Editors.Placeables
 
                 if (!confirmed)
                 {
-                    _switching = true;
-                    SelectedItem = Items.FirstOrDefault(item => ReferenceEquals(item.Behavior, Current));
-                    _switching = false;
+                    RestoreSelection();
                     return;
                 }
             }

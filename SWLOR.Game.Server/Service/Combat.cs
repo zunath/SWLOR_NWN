@@ -78,6 +78,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, float> _attackSwingDebts = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _repeatedTargetDamageStates = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _meleeRepeatedTargetDamageStates = new();
+        private static readonly Dictionary<uint, RepeatedTargetDamageState> _rangedRepeatedTargetDamageStates = new();
         private static readonly Dictionary<uint, int> _meleeAutoAttackCycleCounts = new();
         private static readonly Dictionary<uint, SameTargetPressureState> _sameTargetPressureStates = new();
         private static readonly Dictionary<(uint Creature, AbilityDetail Ability), AbilityStaminaCostState> _abilityStaminaCosts = new();
@@ -612,17 +613,35 @@ namespace SWLOR.Game.Server.Service
                 GameMath.PercentOf(damage, Math.Min(100, redirectPercent)));
 
             StatusEffect.RemoveStatusEffectsWithStat(defender, StatType.DamageTakenRedirectToStatusSourcePercent, false);
-            AssignCommand(
-                defender,
-                () => ApplyEffectToObject(
-                    DurationType.Instant,
-                    EffectDamage(redirectedDamage, damageType.GetNWScriptDamageType()),
-                    redirectTarget));
+
+            // The redirect target takes a real hit from the attacker, so it gets the same
+            // treatment as the Share sibling below: the target's own damage-taken mitigation
+            // applies, and the damage dispatches under the attacker so the combat log does not
+            // show the covered ally hurting their protector.
+            var finalRedirectedDamage = ApplyDamageTakenModifiers(
+                redirectTarget,
+                redirectedDamage,
+                attacker,
+                damageType,
+                CombatDamageDeliveryType.Transferred);
+
+            if (finalRedirectedDamage > 0)
+            {
+                var damageSource = GetIsObjectValid(attacker) ? attacker : defender;
+                AssignCommand(
+                    damageSource,
+                    () => ApplyEffectToObject(
+                        DurationType.Instant,
+                        EffectDamage(finalRedirectedDamage, damageType.GetNWScriptDamageType()),
+                        redirectTarget));
+            }
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), redirectTarget);
 
-            if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, redirectTarget))
+            if (finalRedirectedDamage > 0 &&
+                GetIsObjectValid(attacker) &&
+                GetIsReactionTypeHostile(attacker, redirectTarget))
             {
-                Enmity.ModifyEnmity(redirectTarget, attacker, redirectedDamage);
+                Enmity.ModifyEnmity(redirectTarget, attacker, finalRedirectedDamage);
             }
 
             return damage - redirectedDamage;
@@ -864,6 +883,7 @@ namespace SWLOR.Game.Server.Service
                 canApplyRandomFlatBonuses);
             damage = ApplyRepeatedTargetDamageModifier(attacker, defender, skillType, damage, isAbilityDamage);
             damage = ApplyMeleeRepeatedTargetDamageModifier(attacker, defender, skillType, damage, isAbilityDamage);
+            damage = ApplyRangedRepeatedTargetDamageModifier(attacker, defender, skillType, damage);
 
             var maxBonusDamage = damageBeforePercentStages +
                 (int)Math.Ceiling(damageBeforePercentStages * (MaximumDamageBonusPercent / 100f));
@@ -1108,7 +1128,7 @@ namespace SWLOR.Game.Server.Service
             var requiredCount = Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleRequiredCount);
             var cycleDamage = Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleDamage);
             var radius = Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleRadiusMeters);
-            if (!SkillTypeMatches(skillType, requiredSkillType) ||
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType) ||
                 requiredCount <= 0 ||
                 cycleDamage <= 0 ||
                 radius > 0)
@@ -1155,11 +1175,13 @@ namespace SWLOR.Game.Server.Service
                 skillType == SkillType.Invalid)
                 return;
 
+            // No declared skill means every auto-attack advances the cycle - "every third
+            // auto-attack" wording carries no weapon qualifier.
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleDamageSkillType));
             var requiredCount = Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleRequiredCount);
             var cycleDamage = Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleDamage);
             var radius = Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleRadiusMeters);
-            if (!SkillTypeMatches(skillType, requiredSkillType) ||
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType) ||
                 requiredCount <= 0 ||
                 cycleDamage <= 0 ||
                 radius <= 0)
@@ -2039,7 +2061,10 @@ namespace SWLOR.Game.Server.Service
 
             if (TryUseStatTrigger(attacker, StatType.CriticalNextAbilityNoDelaySkillType, cooldown))
             {
-                GrantNextAbilityNoDelay(attacker, noDelaySkillType, duration);
+                var delayReductionPercent = Stat.GetStatAdjustment(
+                    attacker,
+                    StatType.CriticalNextAbilityDelayReductionPercent);
+                GrantNextAbilityNoDelay(attacker, noDelaySkillType, duration, delayReductionPercent);
             }
         }
 
@@ -2888,10 +2913,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(attacker) || skillType == SkillType.Invalid)
                 return 0;
 
-            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleCriticalRateSkillType));
-            var requiredCount = Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleCriticalRateRequiredCount);
-            var criticalRate = Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleCriticalRatePercentAdjustment);
-            if (!SkillTypeMatches(skillType, requiredSkillType) || requiredCount <= 0 || criticalRate <= 0)
+            var requiredCount = Stat.GetStatAdjustment(attacker, StatType.RangedAutoAttackCycleCriticalRateRequiredCount);
+            var criticalRate = Stat.GetStatAdjustment(attacker, StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment);
+            if (!IsRangedWeaponSkill(skillType) || requiredCount <= 0 || criticalRate <= 0)
                 return 0;
 
             _autoAttackCycleCriticalCounts.TryGetValue(attacker, out var count);
@@ -3612,12 +3636,7 @@ namespace SWLOR.Game.Server.Service
                 Random.D100(1) > chance)
                 return;
 
-            TemporaryStatModifier.Replace(
-                defender,
-                StatType.NextAttackNoDelay,
-                (int)skillType,
-                window,
-                StatType.NextAttackNoDelay);
+            GrantNextAbilityNoDelay(defender, skillType, window);
         }
 
         private static bool DidCrossHPThreshold(uint creature, int damage, int thresholdPercent)
@@ -4129,6 +4148,49 @@ namespace SWLOR.Game.Server.Service
             _meleeRepeatedTargetDamageStates[attacker] = state;
 
             MeleeRepeatedTargetDamageStatusEffect.Refresh(attacker, state.Stacks, statusEffectIcon);
+            return damage + Math.Min(maxBonus, state.Stacks * bonusPerHit);
+        }
+
+        /// <summary>
+        /// Cross-skill ranged sibling of the melee modifier above: "each consecutive ranged hit"
+        /// builds and benefits regardless of which ranged weapon dealt it, so switching from rifle
+        /// to pistol keeps the stacks instead of clearing them. Unlike the melee variant, ability
+        /// hits count too - the wording is "hit", not "attack" - and stacks expire on their own
+        /// timer.
+        /// </summary>
+        private static int ApplyRangedRepeatedTargetDamageModifier(
+            uint attacker,
+            uint defender,
+            SkillType skillType,
+            int damage)
+        {
+            if (damage <= 0 || !GetIsObjectValid(attacker) || !GetIsObjectValid(defender) || attacker == defender)
+                return damage;
+
+            var bonusPerHit = Stat.GetStatAdjustment(attacker, StatType.RangedRepeatedTargetDamageBonusPerHit);
+            var maxBonus = Stat.GetStatAdjustment(attacker, StatType.RangedRepeatedTargetDamageBonusMax);
+            var durationSeconds = Stat.GetStatAdjustment(attacker, StatType.RangedRepeatedTargetDamageDurationSeconds);
+            if (!IsRangedWeaponSkill(skillType) ||
+                bonusPerHit <= 0 ||
+                maxBonus <= 0)
+            {
+                _rangedRepeatedTargetDamageStates.Remove(attacker);
+                return damage;
+            }
+
+            var now = DateTime.UtcNow;
+            if (!_rangedRepeatedTargetDamageStates.TryGetValue(attacker, out var state) ||
+                state.Target != defender ||
+                durationSeconds > 0 && (now - state.LastHit).TotalSeconds > durationSeconds)
+            {
+                state = new RepeatedTargetDamageState(defender);
+            }
+
+            var maxStacks = Math.Max(1, (int)Math.Ceiling(maxBonus / (float)bonusPerHit));
+            state.Stacks = Math.Min(state.Stacks + 1, maxStacks);
+            state.LastHit = now;
+            _rangedRepeatedTargetDamageStates[attacker] = state;
+
             return damage + Math.Min(maxBonus, state.Stacks * bonusPerHit);
         }
 
@@ -7585,33 +7647,47 @@ namespace SWLOR.Game.Server.Service
             return ability?.IsHostileAbility == true;
         }
 
-        public static bool ConsumeNextAbilityNoDelay(uint creature, AbilityDetail ability)
+        /// <summary>
+        /// Consumes the armed next-ability delay buff and returns the percent (1-100) the
+        /// activation delay is reduced by, or 0 when nothing is armed for this ability. An armed
+        /// buff with no partial-reduction partner removes the delay entirely (100).
+        /// </summary>
+        public static int ConsumeNextAbilityDelayReductionPercent(uint creature, AbilityDetail ability)
         {
             if (!CanConsumeNextAbilityNoDelay(ability))
-                return false;
+                return 0;
 
             var skillType = GetAbilitySkillType(creature, ability);
-            return ConsumeNextAbilityNoDelay(creature, skillType);
+            return ConsumeNextAbilityDelayReductionPercent(creature, skillType);
         }
 
-        private static bool ConsumeNextAbilityNoDelay(uint creature, SkillType skillType)
+        private static int ConsumeNextAbilityDelayReductionPercent(uint creature, SkillType skillType)
         {
             if (skillType == SkillType.Invalid)
-                return false;
+                return 0;
 
             var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
                 creature,
                 StatType.NextAttackNoDelay,
                 StatType.NextAttackNoDelay));
             if (storedSkillType != skillType)
-                return false;
+                return 0;
+
+            var reductionPercent = TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.NextAttackDelayReductionPercent,
+                StatType.NextAttackNoDelay);
 
             TemporaryStatModifier.Consume(
                 creature,
                 StatType.NextAttackNoDelay,
                 StatType.NextAttackNoDelay);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextAttackDelayReductionPercent,
+                StatType.NextAttackNoDelay);
 
-            return true;
+            return reductionPercent is > 0 and < 100 ? reductionPercent : 100;
         }
 
         public static bool HasNextAutoAttackNoDelay(uint creature, SkillType skillType)
@@ -7709,7 +7785,15 @@ namespace SWLOR.Game.Server.Service
             GrantNextAbilityNoDelay(creature, skillType, durationSeconds);
         }
 
-        public static void GrantNextAbilityNoDelay(uint creature, SkillType skillType, int durationSeconds)
+        /// <summary>
+        /// Arms the next matching ability's delay buff. A <paramref name="delayReductionPercent"/>
+        /// of 1-99 reduces the activation delay by that percent; 0 or 100+ removes it entirely.
+        /// </summary>
+        public static void GrantNextAbilityNoDelay(
+            uint creature,
+            SkillType skillType,
+            int durationSeconds,
+            int delayReductionPercent = 0)
         {
             if (!GetIsObjectValid(creature) || skillType == SkillType.Invalid || durationSeconds <= 0)
                 return;
@@ -7720,6 +7804,25 @@ namespace SWLOR.Game.Server.Service
                 (int)skillType,
                 durationSeconds,
                 StatType.NextAttackNoDelay);
+
+            if (delayReductionPercent is > 0 and < 100)
+            {
+                TemporaryStatModifier.Replace(
+                    creature,
+                    StatType.NextAttackDelayReductionPercent,
+                    delayReductionPercent,
+                    durationSeconds,
+                    StatType.NextAttackNoDelay);
+            }
+            else
+            {
+                // A full no-delay arm must not inherit a partial percent left over from an earlier
+                // partial arm that has not expired yet.
+                TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.NextAttackDelayReductionPercent,
+                    StatType.NextAttackNoDelay);
+            }
         }
 
         public static SkillType GetAbilitySkillType(uint creature, AbilityDetail ability)

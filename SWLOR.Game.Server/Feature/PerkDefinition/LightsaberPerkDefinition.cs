@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("After landing a critical hit, your next auto-attack within 16 seconds is quickened to your fastest possible swing speed.")
                 .IncreasesStat(StatType.CriticalNextAutoAttackNoDelayTriggerSkillType, (int)SkillType.Lightsaber)
                 .IncreasesStat(StatType.CriticalNextAutoAttackNoDelaySkillType, (int)SkillType.Lightsaber)
-                .IncreasesStat(StatType.CriticalNextAutoAttackNoDelayDurationSeconds, 30)
+                .IncreasesStat(StatType.CriticalNextAutoAttackNoDelayDurationSeconds, 16)
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 8)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

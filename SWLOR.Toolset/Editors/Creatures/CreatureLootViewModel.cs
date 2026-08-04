@@ -8,8 +8,9 @@ namespace SWLOR.Toolset.Editors.Creatures
     /// <summary>Contiguous LOOT_TABLE_n editor with registered-table previews.</summary>
     public sealed partial class CreatureLootViewModel : ObservableObject, IDisposable
     {
-        private static readonly Lazy<Task<IReadOnlyList<CreatureLootTableInfo>>> SharedTables =
-            new(() => Task.Run(CreatureLootTableCatalog.Build));
+        private static readonly object SharedTablesLock = new();
+        private static Lazy<Task<IReadOnlyList<CreatureLootTableInfo>>> _sharedTables =
+            CreateSharedTables();
         private readonly CreatureValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action<string>? _openDefinition;
@@ -94,7 +95,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             }
             else
             {
-                _tableLoader = tableLoader ?? (() => SharedTables.Value);
+                _tableLoader = tableLoader ?? GetSharedTablesAsync;
                 UpdateNormalizationState();
             }
         }
@@ -183,8 +184,15 @@ namespace SWLOR.Toolset.Editors.Creatures
                 return _loadTask;
 
             IsLoading = true;
-            _loadTask = LoadAsync();
-            return _loadTask;
+            var task = LoadAsync();
+
+            // A loader that completes synchronously (e.g. an already-faulted or already-resolved
+            // Task, as tests use) runs LoadAsync's own finally - which clears _loadTask - before
+            // this assignment executes, so this would otherwise stomp that null right back to a
+            // completed task and make every later EnsureLoadedAsync call believe a load is still
+            // in flight, permanently blocking retry after a failure.
+            _loadTask = task.IsCompleted ? null : task;
+            return task;
         }
 
         private async Task LoadAsync()
@@ -202,9 +210,10 @@ namespace SWLOR.Toolset.Editors.Creatures
                 if (_disposed)
                     return;
 
+                // Left retryable, the same way CreatureEditorViewModel.LoadAppearanceCatalogAsync
+                // leaves _appearanceCatalogLoaded false: a transient failure must not permanently
+                // disable this tab for the life of the editor instance.
                 LoadError = $"Loot tables could not be loaded: {ex.Message}";
-                _loaded = true;
-                OnPropertyChanged(nameof(IsLoaded));
             }
             finally
             {
@@ -419,6 +428,32 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             foreach (var entry in Entries)
                 entry.Dispose();
+        }
+
+        private static Lazy<Task<IReadOnlyList<CreatureLootTableInfo>>> CreateSharedTables() =>
+            new(() => Task.Run(CreatureLootTableCatalog.Build));
+
+        /// <summary>
+        /// Returns the shared table catalog task, rebuilding it if the previous attempt faulted.
+        /// Without this, one transient failure would poison the process-wide <see cref="Lazy{T}"/>
+        /// and permanently disable the Loot tab for every creature editor opened for the rest of
+        /// the session.
+        /// </summary>
+        private static Task<IReadOnlyList<CreatureLootTableInfo>> GetSharedTablesAsync()
+        {
+            var current = _sharedTables;
+            if (current.IsValueCreated && current.Value.IsFaulted)
+            {
+                lock (SharedTablesLock)
+                {
+                    if (ReferenceEquals(_sharedTables, current))
+                        _sharedTables = CreateSharedTables();
+                }
+
+                current = _sharedTables;
+            }
+
+            return current.Value;
         }
     }
 }

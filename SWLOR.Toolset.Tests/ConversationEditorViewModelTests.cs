@@ -631,6 +631,23 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task SaveFlushesUncommittedAdvancedEdits()
+        {
+            ReplaceWithCleanConversation();
+            using var editor = new Disposable(Open());
+
+            // Typed into the Advanced panel, then saved by keyboard shortcut: no LostFocus ever
+            // fires, so nothing but the save path itself can commit these fields.
+            editor.Value.AdvancedComment = "Typed just before Ctrl+S.";
+
+            (await editor.Value.TrySaveAsync()).Should().BeTrue();
+
+            DlgDocument.Load(_workingCopy).Openings[0].Target.Comment
+                .Should().Be("Typed just before Ctrl+S.",
+                    "a save must flush Advanced-panel edits that never lost focus");
+        }
+
+        [Test]
         public void QuestOutcomesDoNotCreateHiddenExecutionMetadata()
         {
             using var editor = new Disposable(Open());

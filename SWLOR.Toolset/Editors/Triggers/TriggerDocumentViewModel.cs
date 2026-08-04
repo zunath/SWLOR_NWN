@@ -225,6 +225,7 @@ namespace SWLOR.Toolset.Editors.Triggers
                 return base.OnClose();
 
             _disposed = true;
+            Editor.Dispose();
             _session.Dispose();
             Closed?.Invoke(this);
             return base.OnClose();

@@ -553,9 +553,12 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-
             SaveCategories();
             Refresh();
+
+            // Refresh() rebuilds every node, so the pre-rebuild SelectedRow is now orphaned. Rename
+            // mutates the CategoryFolder in place, so the same reference finds its rebuilt row.
+            SelectedRow = Rows.FirstOrDefault(row => ReferenceEquals(row.Folder, folder));
         }
 
         /// <summary>

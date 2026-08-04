@@ -52,15 +52,20 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             ArgumentNullException.ThrowIfNull(item);
             ArgumentException.ThrowIfNullOrWhiteSpace(primaryField);
 
+            var primary = item.TryGet(primaryField, out var primaryValue)
+                ? checked((int)primaryValue.GetInteger())
+                : (int?)null;
+
             if (ExtendedFieldFor(primaryField) is { } extended &&
                 item.TryGet(extended, out var extendedValue))
             {
-                return checked((int)extendedValue.GetInteger());
+                // The companion is authoritative only for values above the byte range. Write keeps
+                // the pair in sync, but a file whose primary byte was edited directly (Aurora, hand
+                // edits) can carry a stale companion of 0 - which must not shadow the real value.
+                return Math.Max(primary ?? 0, checked((int)extendedValue.GetInteger()));
             }
 
-            return item.TryGet(primaryField, out var primaryValue)
-                ? checked((int)primaryValue.GetInteger())
-                : null;
+            return primary;
         }
 
         /// <summary>

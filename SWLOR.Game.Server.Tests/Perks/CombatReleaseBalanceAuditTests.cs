@@ -186,7 +186,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.LowHPCriticalRatePercentAdjustment,
         StatType.StatusAppliedNextSkillAbilityCriticalRatePercentAdjustment,
         StatType.TargetStatusCriticalRatePercentAdjustment,
-        StatType.AutoAttackCycleCriticalRatePercentAdjustment,
+        StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment,
         StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment,
         StatType.BackAttackCriticalRatePercentAdjustment
     };

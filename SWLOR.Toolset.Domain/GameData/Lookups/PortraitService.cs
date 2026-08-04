@@ -104,13 +104,29 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     row,
                     baseResRef!,
                     baseResRef!,
-                    table.GetInt(row, "Sex"),
-                    table.GetInt(row, "Race"),
-                    table.GetInt(row, "InanimateType"),
+                    TryGetInt(table, row, "Sex"),
+                    TryGetInt(table, row, "Race"),
+                    TryGetInt(table, row, "InanimateType"),
                     string.Equals(table.GetString(row, "Plot"), "1", StringComparison.Ordinal)));
             }
 
             return results;
+        }
+
+        /// <summary>
+        /// Reads a cell as an integer, treating a non-numeric cell as "no value" rather than
+        /// letting <see cref="FormatException"/> propagate and poison the caller's cached lookup.
+        /// </summary>
+        private static int? TryGetInt(TwoDaTable table, int row, string column)
+        {
+            try
+            {
+                return table.GetInt(row, column);
+            }
+            catch (FormatException)
+            {
+                return null;
+            }
         }
     }
 }

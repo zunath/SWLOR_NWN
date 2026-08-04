@@ -235,6 +235,34 @@ public class NativeControlStatusEffectTests
         throw new InvalidOperationException($"Could not extract method '{signature}'.");
     }
 
+    [Test]
+    public void HardCrowdControlEffects_DeclareTheCategoryTheSharedGateReads()
+    {
+        // While one hard CC runs, a different one must not land: Ability.HasHardCrowdControlImmunity
+        // treats any active status carrying StatusEffectCategory.HardCrowdControl as immunity. An
+        // effect that grants post-control immunity on Remove but forgets the category would be
+        // stackable during its own duration - the regression this pins down.
+        var root = FindRepositoryRoot();
+        var definitionDirectory = Path.Combine(
+            root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition");
+
+        foreach (var file in Directory.EnumerateFiles(definitionDirectory, "*.cs"))
+        {
+            var source = File.ReadAllText(file);
+            var grantsPostControlImmunity = source.Contains("ApplyPostControlImmunity");
+            var declaresHardCrowdControl = source.Contains("StatusEffectCategory.HardCrowdControl");
+
+            declaresHardCrowdControl.Should().Be(grantsPostControlImmunity,
+                $"{Path.GetFileName(file)}: hard-CC effects grant post-control immunity AND " +
+                "declare StatusEffectCategory.HardCrowdControl - one without the other either " +
+                "stacks during its duration or blocks without ever releasing");
+        }
+
+        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Ability.cs"))
+            .Should().Contain("HasActiveHardCrowdControlStatus(target)",
+                "the shared immunity gate must treat an active hard-CC status as immunity");
+    }
+
     private sealed class RemovalProbeStatusEffect : StatusEffectBase
     {
         public override string Name => "Removal Probe";

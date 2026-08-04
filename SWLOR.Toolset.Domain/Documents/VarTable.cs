@@ -85,6 +85,7 @@ namespace SWLOR.Toolset.Domain.Documents
 
         public void SetFloat(string name, float value)
         {
+            JsonGffField.ValidateFiniteValue(value);
             SetValue(name, TypeFloat, GffFieldType.Float,
                 () => Encoding.ASCII.GetBytes(NimFloatFormatter.Format(value)),
                 field => field.SetSingle(value));

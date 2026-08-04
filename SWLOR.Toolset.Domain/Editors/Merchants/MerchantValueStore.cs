@@ -241,12 +241,7 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
             }
 
             foreach (var pane in storeList.Elements)
-            {
-                var items = pane.GetListOrEmpty("ItemList");
-                Renumber(items);
-                for (var index = 0; index < items.Count; index++)
-                    SetInventoryPosition(items[index], index);
-            }
+                Renumber(pane.GetListOrEmpty("ItemList"));
         }
 
         public void EnsureBuyingRuleLists()
@@ -291,10 +286,20 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
             return list;
         }
 
+        /// <summary>
+        /// Re-derives every slot's struct id and repository position from its list index. Position
+        /// must follow the id: <see cref="AddInventoryItem"/> places a new item purely from the
+        /// list count, so a survivor left on its pre-removal cell would collide with the next add,
+        /// and the overlap persists into the saved UTM and every placed store instance cloned from
+        /// it.
+        /// </summary>
         private static void Renumber(IReadOnlyList<JsonGffStruct> items)
         {
             for (var index = 0; index < items.Count; index++)
+            {
                 items[index].SetStructId((uint)index);
+                SetInventoryPosition(items[index], index);
+            }
         }
 
         private static void SetInventoryPosition(JsonGffStruct item, int index)

@@ -87,7 +87,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 resolveItemName,
                 equipmentSearch,
                 appearanceOptionsLoader,
-                abilityIcon);
+                abilityIcon,
+                log);
             UpdateTitle();
         }
 

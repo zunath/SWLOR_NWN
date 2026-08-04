@@ -3,11 +3,13 @@ using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Doors;
+using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Placeables;
 using SWLOR.Toolset.Editors.Doors;
+using SWLOR.Toolset.Editors.Sounds;
 using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Editors.Waypoints;
 using SWLOR.Toolset.Services;
@@ -183,6 +185,79 @@ namespace SWLOR.Toolset.Tests
             new BehaviorValueStore(waypoint).GetLocalizedText("MapNote").Should().BeEmpty();
         }
 
+        // ----- sounds -----
+
+        [Test]
+        public async Task SwitchingASoundAsksBeforeDiscardingScatterConfiguration()
+        {
+            var sound = ScatteredAmbienceStruct();
+            var prompts = new RecordingPrompts(answer: false);
+            var editor = new SoundEditorViewModel(
+                sound, "snd_test", isInstance: true, Accept, prompts: prompts);
+
+            editor.Behavior.Id.Should().Be(SoundBehaviorCatalog.ScatteredAmbienceId);
+
+            await editor.ChooseBehaviorAsync(SoundBehaviorCatalog.Get(SoundBehaviorCatalog.AreaLoopId));
+
+            prompts.Asked.Should().HaveCount(1);
+            prompts.Asked[0].Message.Should().Contain("RandomRangeX").And.Contain("RandomRangeY");
+        }
+
+        [Test]
+        public async Task DecliningTheSoundPromptKeepsEverything()
+        {
+            var sound = ScatteredAmbienceStruct();
+            var prompts = new RecordingPrompts(answer: false);
+            var editor = new SoundEditorViewModel(
+                sound, "snd_test", isInstance: true, Accept, prompts: prompts);
+
+            await editor.ChooseBehaviorAsync(SoundBehaviorCatalog.Get(SoundBehaviorCatalog.AreaLoopId));
+
+            editor.Behavior.Id.Should().Be(SoundBehaviorCatalog.ScatteredAmbienceId);
+            var store = new SoundValueStore(sound);
+            store.GetFloat(BehaviorFieldStorage.Field, "RandomRangeX").Should().Be(22);
+            store.GetFloat(BehaviorFieldStorage.Field, "RandomRangeY").Should().Be(13);
+            store.GetSounds().Should().Equal("wind_one", "wind_two");
+        }
+
+        [Test]
+        public async Task AcceptingTheSoundPromptGoesThroughWithTheSwitch()
+        {
+            var sound = ScatteredAmbienceStruct();
+            var prompts = new RecordingPrompts(answer: true);
+            var editor = new SoundEditorViewModel(
+                sound, "snd_test", isInstance: true, Accept, prompts: prompts);
+
+            await editor.ChooseBehaviorAsync(SoundBehaviorCatalog.Get(SoundBehaviorCatalog.AreaLoopId));
+
+            editor.Behavior.Id.Should().Be(SoundBehaviorCatalog.AreaLoopId);
+            var store = new SoundValueStore(sound);
+            store.GetFloat(BehaviorFieldStorage.Field, "RandomRangeX").Should().Be(0);
+            store.GetFloat(BehaviorFieldStorage.Field, "RandomRangeY").Should().Be(0);
+            store.GetSounds().Should().Equal("wind_one");
+        }
+
+        [Test]
+        public async Task ASoundWithNothingInItSwitchesWithoutAsking()
+        {
+            var sound = JsonGffDocument.Parse(
+                System.Text.Encoding.UTF8.GetBytes("""{"__data_type":"UTS "}""")).Root;
+            var store = new SoundValueStore(sound);
+            store.SetInteger(BehaviorFieldStorage.Field, "Positional", GffFieldType.Byte, 1);
+            store.SetInteger(BehaviorFieldStorage.Field, "RandomPosition", GffFieldType.Byte, 1);
+            store.SetInteger(BehaviorFieldStorage.Field, "Continuous", GffFieldType.Byte, 1);
+
+            var prompts = new RecordingPrompts(answer: true);
+            var editor = new SoundEditorViewModel(
+                sound, "snd_test", isInstance: true, Accept, prompts: prompts);
+            var target = SoundBehaviorCatalog.Get(SoundBehaviorCatalog.AreaLoopId);
+
+            await editor.ChooseBehaviorAsync(target);
+
+            prompts.Asked.Should().BeEmpty();
+            editor.Behavior.Id.Should().Be(target.Id);
+        }
+
         // ----- placeables -----
 
         /// <summary>
@@ -237,6 +312,21 @@ namespace SWLOR.Toolset.Tests
 
         private static JsonGffStruct DoorStruct() =>
             JsonGffDocument.Parse(System.Text.Encoding.UTF8.GetBytes("""{"__data_type":"UTD "}""")).Root;
+
+        private static JsonGffStruct ScatteredAmbienceStruct()
+        {
+            var sound = JsonGffDocument.Parse(
+                System.Text.Encoding.UTF8.GetBytes("""{"__data_type":"UTS "}""")).Root;
+            var store = new SoundValueStore(sound);
+            store.SetInteger(BehaviorFieldStorage.Field, "Positional", GffFieldType.Byte, 1);
+            store.SetInteger(BehaviorFieldStorage.Field, "RandomPosition", GffFieldType.Byte, 1);
+            store.SetInteger(BehaviorFieldStorage.Field, "Continuous", GffFieldType.Byte, 1);
+            store.SetFloat(BehaviorFieldStorage.Field, "RandomRangeX", 22);
+            store.SetFloat(BehaviorFieldStorage.Field, "RandomRangeY", 13);
+            store.AddSound("wind_one");
+            store.AddSound("wind_two");
+            return sound;
+        }
 
         private static JsonGffStruct MapNoteStruct()
         {

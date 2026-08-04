@@ -247,16 +247,16 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
             (FeatType.EmergencyBunker1, "ife_mrgncybnkr1", "M", "0x3E", "0", "sphere", "4", "****", "1", "****"),
             (FeatType.Flamethrower1, "ife_flmthrwr1", "M", "0x3E", "1", "cone", "6", "5", "17", "****"),
             (FeatType.WristRocket1, "ife_wrstrckt1", "M", "0x02", "1", "****", "****", "****", "****", "****"),
-            (FeatType.SonicBurst1, "ife_sncburst1", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
+            (FeatType.SonicBurst1, "ife_sncburst1", "M", "0x3E", "1", "sphere", "5", "****", "17", "1"),
             (FeatType.Flamethrower2, "ife_flmthrwr2", "M", "0x3E", "1", "cone", "6", "5", "17", "****"),
             (FeatType.RailDart1, "ife_rldrt1", "M", "0x02", "1", "****", "****", "****", "****", "****"),
             (FeatType.WristRocket2, "ife_wrstrckt2", "M", "0x02", "1", "****", "****", "****", "****", "****"),
-            (FeatType.SonicBurst2, "ife_sncburst2", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
+            (FeatType.SonicBurst2, "ife_sncburst2", "M", "0x3E", "1", "sphere", "5", "****", "17", "1"),
             (FeatType.CryoSprayer1, "ife_cryspryr1", "M", "0x3E", "1", "cone", "6", "5", "17", "****"),
             (FeatType.Flamethrower3, "ife_flmthrwr3", "M", "0x3E", "1", "cone", "6", "5", "17", "****"),
             (FeatType.RailDart2, "ife_rldrt2", "M", "0x02", "1", "****", "****", "****", "****", "****"),
             (FeatType.WristRocket3, "ife_wrstrckt3", "M", "0x02", "1", "****", "****", "****", "****", "****"),
-            (FeatType.SonicBurst3, "ife_sncburst3", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
+            (FeatType.SonicBurst3, "ife_sncburst3", "M", "0x3E", "1", "sphere", "5", "****", "17", "1"),
             (FeatType.OverloadBarrage1, "ife_ovldbarr1", "M", "0x02", "1", "****", "****", "****", "****", "****")
         };
         var seenIcons = new HashSet<string>();

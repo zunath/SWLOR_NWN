@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using SWLOR.Toolset.Settings;
 
 namespace SWLOR.Toolset.Shell
@@ -96,8 +97,11 @@ namespace SWLOR.Toolset.Shell
             // ever been opened. Avalonia stops walking KeyBindings once the event is handled, so a
             // focused text box keeps its own Ctrl+Z for text and only unhandled presses reach the
             // active editor's document history.
-            Bind(Key.S, KeyModifiers.Control, viewModel.SaveCommand);
-            Bind(Key.S, KeyModifiers.Control | KeyModifiers.Shift, viewModel.SaveAllCommand);
+            // Save shortcuts flush the focused spinner first: NumericUpDown only pushes its typed
+            // text into Value on Enter/spin/focus loss, so a keyboard save with the caret still in
+            // the box would otherwise write the file without the number the builder can see.
+            Bind(Key.S, KeyModifiers.Control, viewModel.SaveCommand, flushPendingEdits: true);
+            Bind(Key.S, KeyModifiers.Control | KeyModifiers.Shift, viewModel.SaveAllCommand, flushPendingEdits: true);
             Bind(Key.Z, KeyModifiers.Control, viewModel.UndoCommand);
             Bind(Key.Y, KeyModifiers.Control, viewModel.RedoCommand);
 
@@ -118,6 +122,11 @@ namespace SWLOR.Toolset.Shell
 
         private async void OnClosing(object? sender, WindowClosingEventArgs args)
         {
+            // A number still being typed has not reached the document yet, and the title-bar close
+            // button does not move keyboard focus - without this the dirty check below would not
+            // even know there is an edit to prompt about.
+            CommitPendingSpinnerEdit();
+
             // Recorded on the first close attempt, before the unsaved-changes prompt can cancel
             // it: the prompt is a window of its own, and by the time a cancelled attempt comes
             // back around this window may have been moved by it.
@@ -277,13 +286,31 @@ namespace SWLOR.Toolset.Shell
             _settings.Window = basis with { IsMaximized = _isMaximized };
         }
 
-        private void Bind(Key key, KeyModifiers modifiers, ICommand command)
+        private void Bind(Key key, KeyModifiers modifiers, ICommand command, bool flushPendingEdits = false)
         {
             KeyBindings.Add(new KeyBinding
             {
                 Gesture = new KeyGesture(key, modifiers),
-                Command = command
+                Command = flushPendingEdits ? new PendingEditFlushingCommand(this, command) : command
             });
+        }
+
+        /// <summary>
+        /// Commits a spinner edit still sitting in the focused control by cycling focus through the
+        /// window, which fires the LostFocus commit the control was waiting for, then hands focus
+        /// back so the builder's caret does not jump.
+        /// </summary>
+        internal void CommitPendingSpinnerEdit()
+        {
+            if (FocusManager?.GetFocusedElement() is not Control focused)
+                return;
+
+            var spinner = focused as NumericUpDown ?? focused.FindAncestorOfType<NumericUpDown>();
+            if (spinner == null)
+                return;
+
+            Focus();
+            focused.Focus();
         }
     }
 }

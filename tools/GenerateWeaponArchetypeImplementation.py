@@ -991,14 +991,15 @@ def description_stat_entries(row, base):
         add_stat(stats, "RepeatedTargetDamagePercentMax", maximum)
 
     if "consecutive ranged hit against the same target" in lowered:
-        add_stat(stats, "RepeatedTargetDamageSkillType", skill_expr)
+        # "ranged hit" is cross-skill: any ranged weapon builds and benefits, so this uses the
+        # class-gated Ranged* family rather than the exact-skill generic one.
         damage = parse_count(r"grants \+(\d+) DMG", description)
         stacks = parse_count(r"up to (\d+) stacks", description)
         if not stacks and "five stacks" in lowered:
             stacks = 5
-        add_stat(stats, "RepeatedTargetDamageBonusPerHit", damage)
-        add_stat(stats, "RepeatedTargetDamageBonusMax", damage * (stacks or 5))
-        add_stat(stats, "RepeatedTargetDamageDurationSeconds", parse_count(r"expire after (\d+) seconds", description))
+        add_stat(stats, "RangedRepeatedTargetDamageBonusPerHit", damage)
+        add_stat(stats, "RangedRepeatedTargetDamageBonusMax", damage * (stacks or 5))
+        add_stat(stats, "RangedRepeatedTargetDamageDurationSeconds", parse_count(r"expire after (\d+) seconds", description))
 
     if "consecutive melee attack against the same target" in lowered:
         damage = parse_count(r"giving \+(\d+) DMG", description)
@@ -1193,7 +1194,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "AreaAbilityUsedEvasionPercentAdjustment", parse_percent(r"gain \+(\d+)% Evasion", description))
         add_stat(stats, "AreaAbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
     if base == "Edge Rhythm":
-        add_stat(stats, "AutoAttackCycleDamageSkillType", skill_expr)
+        # "Every third auto-attack" names no weapon: omitting the skill gate makes the cycle
+        # advance on any auto-attack (SkillTypeMatchesOrGlobal on the consumption side).
         add_stat(stats, "AutoAttackCycleRequiredCount", 3)
         add_stat(stats, "AutoAttackCycleDamage", parse_count(r"deals \+(\d+) DMG", description))
         add_stat(stats, "AutoAttackCycleRadiusMeters", 5)
@@ -1329,9 +1331,9 @@ def description_stat_entries(row, base):
         add_stat(stats, "RangedAbilityHitNearTargetRangeMeters", parse_count(r"within (\d+)m", description) or 5)
         add_stat(stats, "RangedAbilityHitNearTargetDurationSeconds", parse_duration(description) or 30)
     if base == "Lucky Chamber":
-        add_stat(stats, "AutoAttackCycleCriticalRateSkillType", skill_expr)
-        add_stat(stats, "AutoAttackCycleCriticalRateRequiredCount", 4)
-        add_stat(stats, "AutoAttackCycleCriticalRatePercentAdjustment", parse_percent(r"gains \+(\d+)% Critical Rate", description))
+        # "Every fourth ranged attack" is cross-skill ranged, mirroring the melee cycle family.
+        add_stat(stats, "RangedAutoAttackCycleCriticalRateRequiredCount", 4)
+        add_stat(stats, "RangedAutoAttackCycleCriticalRatePercentAdjustment", parse_percent(r"gains \+(\d+)% Critical Rate", description))
     if base == "Deadeye Reload":
         add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRateSkillType", skill_expr)
         add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment", parse_percent(r"gain \+(\d+)% Critical Rate", description))

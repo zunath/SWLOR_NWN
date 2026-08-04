@@ -231,7 +231,8 @@ public class AreaAbilityTargetingTests
         bool RequiresTarget,
         bool RequiresLocationTarget,
         bool HasExplicitMaxRange,
-        SkillType SkillType);
+        SkillType SkillType,
+        bool IsMimicryTechnique);
 
     /// <summary>
     /// Beast abilities originate on the companion, not the player, so there is nothing for the
@@ -281,7 +282,8 @@ public class AreaAbilityTargetingTests
                     ability.RequiresTarget,
                     ability.RequiresLocationTarget,
                     ability.HasExplicitMaxRange,
-                    ability.SkillType);
+                    ability.SkillType,
+                    ability.IsMimicryTechnique);
             }
         }
     }
@@ -311,6 +313,14 @@ public class AreaAbilityTargetingTests
         }
 
         feats.Should().NotBeEmpty("the perk definition sources should declare granted feats");
+
+        // Mimicry techniques reach players through learning slots rather than GrantsFeat, so the
+        // source scan alone silently skips every *Technique feat - the blind spot that let twenty
+        // aimed techniques ship without a targeting cursor.
+        foreach (var ability in GetAllAbilities().Where(x => x.IsMimicryTechnique))
+        {
+            feats.Add(ability.Feat);
+        }
 
         return feats;
     }

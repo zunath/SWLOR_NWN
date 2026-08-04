@@ -34,7 +34,10 @@ public class ForceLightConsularTests
         var confusion = new ConfusionStatusEffect();
         confusion.Name.Should().Be("Confusion");
         confusion.Icon.Should().Be(EffectIconType.ConfusionStatusEffect);
-        confusion.Categories.Should().Be(StatusEffectCategory.Debuff | StatusEffectCategory.Control);
+        confusion.Categories.Should().Be(
+            StatusEffectCategory.Debuff |
+            StatusEffectCategory.Control |
+            StatusEffectCategory.HardCrowdControl);
         confusion.CleanseTypes.Should().Be(StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet);
         confusion.ResistanceType.Should().Be(ResistanceType.Mind);
 

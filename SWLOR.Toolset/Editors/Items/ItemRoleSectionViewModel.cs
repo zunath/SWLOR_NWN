@@ -91,56 +91,66 @@ namespace SWLOR.Toolset.Editors.Items
             if (role.Id == previous.Id)
                 return;
 
-            // A property both roles own (Meal and Enhancement share 108) survives the switch: the
-            // prompt promises to clear only what is "not part of" the target role, and deleting a
-            // shared property would empty the incoming card of the very value it exists to show.
-            var owned = ItemRoleOwnership.OwnedProperties(previous.Id);
-            var kept = ItemRoleOwnership.OwnedProperties(role.Id);
-            var losing = _store.Properties
-                .Where(property => owned.Contains(property.PropertyId) &&
-                                   !kept.Contains(property.PropertyId))
-                .ToList();
-
-            if (losing.Count > 0 && _prompts != null)
+            try
             {
-                var labels = losing
-                    .Select(property => ItemRoleOwnership.LabelFor(property.PropertyId))
-                    .Distinct(StringComparer.Ordinal)
+                // A property both roles own (Meal and Enhancement share 108) survives the switch: the
+                // prompt promises to clear only what is "not part of" the target role, and deleting a
+                // shared property would empty the incoming card of the very value it exists to show.
+                var owned = ItemRoleOwnership.OwnedProperties(previous.Id);
+                var kept = ItemRoleOwnership.OwnedProperties(role.Id);
+                var losing = _store.Properties
+                    .Where(property => owned.Contains(property.PropertyId) &&
+                                       !kept.Contains(property.PropertyId))
                     .ToList();
 
-                var confirmed = await _prompts.ConfirmDestructiveAsync(
-                    $"Change behavior to {role.DisplayName}?",
-                    $"This clears {string.Join(", ", labels)}, which " +
-                    $"{(labels.Count == 1 ? "is" : "are")} not part of {role.DisplayName}. " +
-                    "Undo will put it back until the item is saved.",
-                    "Change behavior").ConfigureAwait(true);
-
-                if (!confirmed)
+                if (losing.Count > 0 && _prompts != null)
                 {
-                    SelectRail(previous.Id);
-                    return;
-                }
-            }
+                    var labels = losing
+                        .Select(property => ItemRoleOwnership.LabelFor(property.PropertyId))
+                        .Distinct(StringComparer.Ordinal)
+                        .ToList();
 
-            if (losing.Count > 0)
+                    var confirmed = await _prompts.ConfirmDestructiveAsync(
+                        $"Change behavior to {role.DisplayName}?",
+                        $"This clears {string.Join(", ", labels)}, which " +
+                        $"{(labels.Count == 1 ? "is" : "are")} not part of {role.DisplayName}. " +
+                        "Undo will put it back until the item is saved.",
+                        "Change behavior").ConfigureAwait(true);
+
+                    if (!confirmed)
+                    {
+                        SelectRail(previous.Id);
+                        return;
+                    }
+                }
+
+                if (losing.Count > 0)
+                {
+                    var applied = _runEdit($"Change behavior to {role.DisplayName}", () =>
+                    {
+                        foreach (var property in losing)
+                            _store.SetPropertyValue(property.PropertyId, property.SubtypeId, 0, null);
+                    });
+
+                    if (!applied)
+                    {
+                        SelectRail(previous.Id);
+                        return;
+                    }
+                }
+
+                Role = role;
+                SelectRail(role.Id);
+                Card = BuildCard(role);
+                _roleChanged?.Invoke(role);
+            }
+            catch (Exception)
             {
-                var applied = _runEdit($"Change behavior to {role.DisplayName}", () =>
-                {
-                    foreach (var property in losing)
-                        _store.SetPropertyValue(property.PropertyId, property.SubtypeId, 0, null);
-                });
-
-                if (!applied)
-                {
-                    SelectRail(previous.Id);
-                    return;
-                }
+                // A failed prompt or apply must not leave the rail highlighting a role the card
+                // never switched to - put the highlight back where the item's Role actually is,
+                // the same recovery the declined-confirmation path above already performs.
+                SelectRail(previous.Id);
             }
-
-            Role = role;
-            SelectRail(role.Id);
-            Card = BuildCard(role);
-            _roleChanged?.Invoke(role);
         }
 
         private void BuildRoleList(IReadOnlyList<ItemRole> roles)

@@ -361,7 +361,8 @@ namespace SWLOR.Toolset.Editors
                     _gitSession.UndoStack.IsDirty,
                     _doorEditorServices?.Thumbnails,
                     _doorEditorServices?.ChoicePreviews,
-                    _prompts);
+                    _prompts,
+                    log: _log);
                 VarTableSection = null;
             }
             else if (_blueprintType == ResourceType.Utw && _waypointEditorServices != null)
@@ -377,7 +378,8 @@ namespace SWLOR.Toolset.Editors
                     _waypointEditorServices.ResolveChoices,
                     _waypointEditorServices.ChoicePreviews,
                     _prompts,
-                    tag => IsSingletonWaypointTagInUse(value!.Index, tag));
+                    tag => IsSingletonWaypointTagInUse(value!.Index, tag),
+                    log: _log);
             }
             else if (_blueprintType == ResourceType.Uts)
             {
@@ -390,7 +392,9 @@ namespace SWLOR.Toolset.Editors
                     _gameCodeIndex,
                     _resolveSoundChoices,
                     _audioResources,
-                    _soundPreview);
+                    _soundPreview,
+                    _prompts,
+                    _log);
                 SoundEditor.ValueChanged += () =>
                 {
                     if (SelectedRow is { } row)

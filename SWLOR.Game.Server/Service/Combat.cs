@@ -551,7 +551,8 @@ namespace SWLOR.Game.Server.Service
             uint attacker = OBJECT_INVALID,
             CombatDamageType damageType = CombatDamageType.Physical,
             CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct,
-            int? preTargetStatusStageDamage = null)
+            int? preTargetStatusStageDamage = null,
+            bool isLandedAttack = true)
         {
             if (damage <= 0)
                 return damage;
@@ -575,6 +576,13 @@ namespace SWLOR.Game.Server.Service
             }
 
             damage = Math.Max(1, damage);
+
+            // The math above is pure; everything below consumes one-shot effects or deals real
+            // damage to third parties. A swing the engine later discards must not burn a redirect
+            // or fatal-prevention charge, transfer damage to a protector, or grant temporary HP.
+            if (!isLandedAttack)
+                return damage;
+
             damage = ApplyDamageTakenRedirectToStatusSource(defender, attacker, damage, damageType);
             if (deliveryType != CombatDamageDeliveryType.Transferred)
                 damage = ApplyDamageTakenShareToStatusSource(defender, attacker, damage, damageType);

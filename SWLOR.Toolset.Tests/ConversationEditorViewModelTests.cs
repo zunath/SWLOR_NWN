@@ -648,6 +648,25 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task SaveKeepsAdvancedEditsWhenTheLineTextIsAlsoDirty()
+        {
+            ReplaceWithCleanConversation();
+            using var editor = new Disposable(Open());
+
+            // Both halves pending: CommitLine's history refresh used to rewrite the Advanced
+            // fields from the old node before the save could commit them.
+            editor.Value.LineText = "Rewritten line.";
+            editor.Value.AdvancedComment = "Typed alongside the line edit.";
+
+            (await editor.Value.TrySaveAsync()).Should().BeTrue();
+
+            var saved = DlgDocument.Load(_workingCopy).Openings[0].Target;
+            saved.Text.Should().Be("Rewritten line.");
+            saved.Comment.Should().Be("Typed alongside the line edit.",
+                "a save must flush the Advanced draft even when the line text also changed");
+        }
+
+        [Test]
         public async Task SaveClampsAnOutOfRangeAdvancedAnimationInsteadOfThrowing()
         {
             ReplaceWithCleanConversation();

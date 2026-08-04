@@ -1938,9 +1938,23 @@ namespace SWLOR.Toolset.Editors
 
         public async Task<bool> TrySaveAsync()
         {
+            // Captured ahead of CommitLine: when the line text is also dirty, CommitLine's
+            // history refresh rewrites the Advanced fields from the still-old node values, and an
+            // un-snapshotted Advanced draft would compare clean and be silently dropped.
+            var advancedDraft = AdvancedDraftDiffers()
+                ? (Speaker: AdvancedSpeaker,
+                   Sound: AdvancedSound,
+                   Animation: AdvancedAnimation,
+                   Comment: AdvancedComment,
+                   Script: AdvancedScript)
+                : ((string, string, decimal, string, string)?)null;
+
             CommitLine();
-            if (AdvancedDraftDiffers())
+            if (advancedDraft is { } draft)
+            {
+                (AdvancedSpeaker, AdvancedSound, AdvancedAnimation, AdvancedComment, AdvancedScript) = draft;
                 CommitAdvanced();
+            }
             if (IsMerchant && MerchantDraftDiffers())
                 RunEdit("Finish merchant dialogue", EnsureMerchantStructure);
 

@@ -1203,12 +1203,14 @@ namespace SWLOR.Toolset.Editors
             RenderModel? model = null;
             try
             {
-                // Built through the same path as the palette thumbnail the builder just clicked, so
-                // the two agree - including for segmented creatures, whose body parts have to be
-                // composed and which an earlier local resolve could not produce at all (it passed no
-                // appearance service and handled only the single-resref case, so every creature
-                // ghosted as a bare marker).
-                model = _resolveBlueprintModel?.Invoke(type, resRef, useIndexedBlueprint);
+                // A store has no appearance of its own. Aurora always previews it as the yellow
+                // waypoint flag, which must be the same model the completed scene build uses.
+                model = kind == InstanceMarkerKind.Store
+                    ? _tileModelCache?.GetOrBuild(WaypointMarkerModel.MerchantModelResRef)
+                    // Everything else is built through the same path as the palette thumbnail the
+                    // builder just clicked, including segmented creatures whose body parts have to
+                    // be composed.
+                    : _resolveBlueprintModel?.Invoke(type, resRef, useIndexedBlueprint);
             }
             catch (Exception ex)
             {
@@ -1223,10 +1225,12 @@ namespace SWLOR.Toolset.Editors
                 Position = Vector3.Zero,
                 Orientation = new Vector2(1f, 0f),
                 // The ghost has to be turned the same way the placed model will be, or creature and
-                // waypoint artwork would swing a quarter turn the instant it was committed.
+                // waypoint artwork would swing a quarter turn the instant it was committed. Stores
+                // use waypoint artwork too.
                 VisualTransform = kind.Value switch
                 {
                     InstanceMarkerKind.Creature => CreatureModelFacing.ForwardCorrection,
+                    InstanceMarkerKind.Store => WaypointMarkerModel.ForwardCorrection,
                     InstanceMarkerKind.Waypoint => WaypointMarkerModel.ForwardCorrection,
                     _ => Matrix4x4.Identity
                 },

@@ -15,8 +15,9 @@ namespace SWLOR.Toolset.Tests
     /// <remarks>
     /// The area transform uses model +X as its forward axis. Creature bodies and the toolset's
     /// waypoint flag artwork are authored pointing +Y, so each is turned onto that convention before
-    /// the stored heading is applied. These tests guard both corrections and keep them away from
-    /// objects such as doors whose artwork already follows the transform's convention.
+    /// the stored heading is applied. Stores use that same flag artwork. These tests guard the
+    /// corrections and keep them away from objects such as doors whose artwork already follows the
+    /// transform's convention.
     /// </remarks>
     public class InstanceFacingTests
     {
@@ -136,13 +137,13 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
-        /// The correction is scoped to creatures and waypoints. Doors are the proof it must not
-        /// spread: across the corpus a door's Bearing matches its doorway's orientation to 0 or 180
-        /// degrees and never 90, so a door model - whose leaf spans +X - is already laid along its
-        /// wall by a plain rotation.
+        /// The correction is scoped to creatures and waypoint artwork (including stores). Doors are
+        /// the proof it must not spread: across the corpus a door's Bearing matches its doorway's
+        /// orientation to 0 or 180 degrees and never 90, so a door model - whose leaf spans +X - is
+        /// already laid along its wall by a plain rotation.
         /// </summary>
         [Test]
-        public void CreatureAndWaypointMarkers_CarryTheirForwardCorrection()
+        public void CreatureWaypointAndStoreMarkers_CarryTheirForwardCorrection()
         {
             var scene = HangarScene.Value;
 
@@ -152,7 +153,10 @@ namespace SWLOR.Toolset.Tests
             var creatures = scene.Instances.Where(i => i.Kind == InstanceMarkerKind.Creature).ToList();
             creatures.Should().NotBeEmpty("czs220_hangar should carry creatures");
 
-            foreach (var corrected in creatures.Concat(waypoints))
+            var stores = scene.Instances.Where(i => i.Kind == InstanceMarkerKind.Store).ToList();
+            stores.Should().NotBeEmpty("czs220_hangar should carry a merchant store");
+
+            foreach (var corrected in creatures.Concat(waypoints).Concat(stores))
             {
                 // Both corrections turn model +Y onto +X; check where they send the Y axis.
                 var turned = Vector3.TransformNormal(Vector3.UnitY, corrected.VisualTransform);
@@ -161,12 +165,43 @@ namespace SWLOR.Toolset.Tests
             }
 
             foreach (var other in scene.Instances.Where(i =>
-                         i.Kind != InstanceMarkerKind.Creature && i.Kind != InstanceMarkerKind.Waypoint))
+                         i.Kind != InstanceMarkerKind.Creature && i.Kind != InstanceMarkerKind.Store &&
+                         i.Kind != InstanceMarkerKind.Waypoint))
             {
                 var turned = Vector3.TransformNormal(Vector3.UnitY, other.VisualTransform);
                 turned.X.Should().BeApproximately(0f, 0.001f,
                     $"a {other.Kind} must keep the transform's native convention");
             }
+        }
+
+        [Test]
+        public void PlacedStore_UsesYellowWaypointArtworkCenteredOnItsStoredPositionAndFacing()
+        {
+            var index = BuildIndexWithBaseGame();
+            if (index == null)
+            {
+                Assert.Ignore("No local NWN:EE installation found; merchant marker artwork is a base-game resource.");
+                return;
+            }
+
+            var area = LoadArea("czs220_hangar");
+            var scene = AreaSceneBuilder.Build(
+                area.Are, area.Git, new TilesetCatalog(index), new TileModelCache(index));
+            var store = scene.Instances.Single(i => i.Kind == InstanceMarkerKind.Store);
+
+            store.Model.Should().NotBeNull("Aurora represents a merchant with the yellow waypoint model");
+            store.Model!.Name.Should().BeEquivalentTo(WaypointMarkerModel.MerchantModelResRef);
+
+            var transform = AreaPicking.ComputeInstanceTransform(store);
+            Vector3.Transform(Vector3.Zero, transform).Should().Be(store.Position,
+                "the waypoint pole's origin belongs at the store instead of a pyramid face beside it");
+
+            var tip = ArrowTip(index, WaypointMarkerModel.MerchantModelResRef);
+            tip.Should().NotBeNull();
+            var drawn = Vector3.Normalize(Vector3.Transform(tip!.Value, transform) - store.Position);
+            var heading = Vector2.Normalize(store.Orientation);
+            drawn.X.Should().BeApproximately(heading.X, 0.02f);
+            drawn.Y.Should().BeApproximately(heading.Y, 0.02f);
         }
 
         [Test]
@@ -205,6 +240,11 @@ namespace SWLOR.Toolset.Tests
             if (index == null)
                 return null;
 
+            return ArrowTip(index, resRef);
+        }
+
+        private static Vector3? ArrowTip(ResourceIndex index, string resRef)
+        {
             var identity = new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("mdl"));
             if (!index.TryLookup(identity, out var handle))
                 return null;

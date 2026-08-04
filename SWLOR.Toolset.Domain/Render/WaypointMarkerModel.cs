@@ -30,6 +30,13 @@ namespace SWLOR.Toolset.Domain.Render
     public static class WaypointMarkerModel
     {
         /// <summary>
+        /// Aurora draws placed stores with the yellow waypoint flag rather than with a generic
+        /// object marker. Stores have no appearance field of their own, so this is their fixed
+        /// editor-only model.
+        /// </summary>
+        public const string MerchantModelResRef = "gi_waypoint04";
+
+        /// <summary>
         /// Turns the flag artwork's <c>+Y</c> arrow onto the transform's <c>+X</c> forward.
         /// Composed in model space, before the instance's own heading.
         /// </summary>

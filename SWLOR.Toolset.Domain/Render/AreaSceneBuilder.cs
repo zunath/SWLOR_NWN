@@ -236,7 +236,12 @@ namespace SWLOR.Toolset.Domain.Render
             AddMarkers(markers, git.Placeables, InstanceMarkerKind.Placeable, ResourceType.Utp,
                 resolveModel: instance => ResolvePlaceableModel(instance, placeableAppearances, modelCache));
             AddMarkers(markers, git.Sounds, InstanceMarkerKind.Sound, ResourceType.Uts);
-            AddMarkers(markers, git.Stores, InstanceMarkerKind.Store, ResourceType.Utm);
+            // Aurora gives stores a fixed yellow waypoint flag. A store carries no Appearance field,
+            // so leaving this unresolved falls through to the generic pyramid: its apex is at the
+            // store while its broad face hangs beside the merchant, and its symmetry loses facing.
+            AddMarkers(markers, git.Stores, InstanceMarkerKind.Store, ResourceType.Utm,
+                resolveModel: _ => modelCache.GetOrBuild(WaypointMarkerModel.MerchantModelResRef),
+                modelCorrection: WaypointMarkerModel.ForwardCorrection);
             AddMarkers(markers, git.Triggers, InstanceMarkerKind.Trigger, ResourceType.Utt, includeGeometry: true,
                 tiles: tiles);
             AddMarkers(markers, git.Waypoints, InstanceMarkerKind.Waypoint, ResourceType.Utw,

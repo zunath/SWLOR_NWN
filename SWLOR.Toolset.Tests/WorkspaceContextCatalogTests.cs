@@ -149,6 +149,43 @@ namespace SWLOR.Toolset.Tests
             notifications.Should().Be(1);
         }
 
+        [Test]
+        public void PairedGitInvalidationPublishesTagAndPlacementRefreshNotifications()
+        {
+            var workspace = new WorkspaceContext(
+                root => new ModuleWorkspace(root),
+                new OutputLogService());
+            OpenWorkspace(workspace);
+            var tagNotifications = 0;
+            var placementNotifications = 0;
+            workspace.TagIndexInvalidated += () => tagNotifications++;
+            workspace.PlacementIndexInvalidated += () => placementNotifications++;
+
+            workspace.InvalidateGitIndexes();
+
+            tagNotifications.Should().Be(1);
+            placementNotifications.Should().Be(1);
+        }
+
+        [Test]
+        public void TagOnlyInvalidationDoesNotPublishAPlacementRefreshNotification()
+        {
+            var workspace = new WorkspaceContext(
+                root => new ModuleWorkspace(root),
+                new OutputLogService());
+            OpenWorkspace(workspace);
+            var tagNotifications = 0;
+            var placementNotifications = 0;
+            workspace.TagIndexInvalidated += () => tagNotifications++;
+            workspace.PlacementIndexInvalidated += () => placementNotifications++;
+
+            workspace.InvalidateTagIndex();
+
+            tagNotifications.Should().Be(1);
+            placementNotifications.Should().Be(0,
+                "ARE and blueprint tag changes do not change any GIT placement row");
+        }
+
         [TestCase(ResourceType.Utc)]
         [TestCase(ResourceType.Uti)]
         [TestCase(ResourceType.Utp)]

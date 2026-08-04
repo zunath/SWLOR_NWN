@@ -212,15 +212,25 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
-        /// Drops the lazy transition-tag lookup and module placement index after a paired GIT file
-        /// changes. GIT is not a first-class <see cref="ResourceType"/>, so the file watcher calls
-        /// this directly.
+        /// Drops the lazy transition-tag lookup after a resource that contributes behavior tags
+        /// changes. Blueprint and ARE changes affect tags without changing any placed-instance row,
+        /// so placement invalidation is deliberately separate.
         /// </summary>
         public void InvalidateTagIndex()
         {
             Workspace?.TagIndex.Invalidate();
-            InvalidatePlacementIndex();
             TagIndexInvalidated?.Invoke();
+        }
+
+        /// <summary>
+        /// Drops every index whose source is a paired GIT file. GIT is not a first-class
+        /// <see cref="ResourceType"/>, so file-watcher, import, and merchant-update paths call this
+        /// explicitly instead of routing through catalog refresh.
+        /// </summary>
+        public void InvalidateGitIndexes()
+        {
+            InvalidateTagIndex();
+            InvalidatePlacementIndex();
         }
 
         /// <summary>

@@ -66,6 +66,16 @@ namespace SWLOR.Toolset.Tests
             ModuleFileWatcher.AffectsTagIndex(path).Should().BeFalse();
         }
 
+        [TestCase(@"C:\module\git\area.git.json", true)]
+        [TestCase(@"C:\module\are\area.are.json", false)]
+        [TestCase(@"C:\module\utd\door.utd.json", false)]
+        [TestCase(@"C:\module\uti\door_key.uti.json", false)]
+        [TestCase(@"C:\module\utw\waypoint.utw.json", false)]
+        public void OnlyPairedGitResourcesInvalidateThePlacementIndex(string path, bool expected)
+        {
+            ModuleFileWatcher.AffectsPlacementIndex(path).Should().Be(expected);
+        }
+
         [TestCase(@"C:\module\git\area.git.json")]
         [TestCase(@"C:\module\utc\creature.utc.json")]
         [TestCase(@"C:\module\dlg\conversation.dlg.json")]

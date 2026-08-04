@@ -103,7 +103,7 @@ namespace SWLOR.Toolset.Editors.Merchants
                 _reloadOpenAreaInstances?.Invoke(areaResRef);
             if (result.Count > 0)
             {
-                _workspaceContext.InvalidateTagIndex();
+                _workspaceContext.InvalidateGitIndexes();
                 _workspaceContext.InvalidateScriptUsages();
                 _log.AppendLine(
                     $"Updated {result.Count} placed instance{(result.Count == 1 ? string.Empty : "s")} of merchant " +

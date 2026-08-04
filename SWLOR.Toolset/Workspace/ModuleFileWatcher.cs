@@ -66,15 +66,19 @@ namespace SWLOR.Toolset.Workspace
                 return;
 
             var affectsTagIndex = AffectsTagIndex(path);
+            var affectsPlacementIndex = AffectsPlacementIndex(path);
             var affectsScriptUsages = AffectsScriptUsages(path);
             var affectsPaletteChoices = TryResolvePalette(path, out var paletteResRef);
             var resolved = TryResolveResource(path, out var type, out var resRef);
-            if (!affectsTagIndex && !affectsScriptUsages && !affectsPaletteChoices && !resolved)
+            if (!affectsTagIndex && !affectsPlacementIndex && !affectsScriptUsages &&
+                !affectsPaletteChoices && !resolved)
                 return;
 
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
-                if (affectsTagIndex)
+                if (affectsPlacementIndex)
+                    _workspaceContext.InvalidateGitIndexes();
+                else if (affectsTagIndex)
                     _workspaceContext.InvalidateTagIndex();
                 if (affectsPaletteChoices)
                     _workspaceContext.InvalidatePaletteChoices(paletteResRef);
@@ -144,6 +148,13 @@ namespace SWLOR.Toolset.Workspace
                    fileName.EndsWith(".uti.json", StringComparison.OrdinalIgnoreCase) ||
                    fileName.EndsWith(".utw.json", StringComparison.OrdinalIgnoreCase);
         }
+
+        /// <summary>
+        /// True only when changing this file can add, remove, reorder, or move a placed instance.
+        /// ARE and blueprint files affect names/tags but are not inputs to the placement scan.
+        /// </summary>
+        public static bool AffectsPlacementIndex(string path) =>
+            Path.GetFileName(path).EndsWith(".git.json", StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// True when changing this file can alter Find Usages or the script picker's usage counts.

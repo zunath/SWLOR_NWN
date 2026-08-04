@@ -675,7 +675,10 @@ function Get-StatusEffectClasses([string]$path) {
         # application from a StatType adjustment and belongs to the configuring perk, whose own
         # anchor class carries the enum member, manifest row, TLK entry, and artwork. It therefore
         # has no per-class row to audit or generate. See IconStandards.md, "Stat-Configured Icons".
-        if ($content -match '\[StatConfiguredIcon\]') {
+        # Only a real attribute declaration on the class counts: the marker must start its own line
+        # (never inside a comment or string) with nothing but other attributes between it and the
+        # class declaration.
+        if ($content -match '(?ms)^\s*\[StatConfiguredIcon\]\s*(?:^\s*\[[^\]\r\n]+\]\s*)*public\s+(?:sealed\s+)?class\s') {
             continue
         }
 

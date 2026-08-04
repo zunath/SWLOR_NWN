@@ -127,7 +127,8 @@ namespace SWLOR.Toolset.Editors.Items
                 resolveModel: resolveModel,
                 resourceIndex: resourceIndex,
                 armorDyeSwatches: armorDyeSwatches,
-                armorPartModels: armorPartModels);
+                armorPartModels: armorPartModels,
+                log: log);
             UpdateTitle();
         }
 

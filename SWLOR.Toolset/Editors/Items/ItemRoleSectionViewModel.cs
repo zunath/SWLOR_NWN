@@ -37,13 +37,18 @@ namespace SWLOR.Toolset.Editors.Items
         [ObservableProperty]
         private ItemRoleCardViewModel? _card;
 
+        private readonly Workspace.OutputLogService? _log;
+
+
         public ItemRoleSectionViewModel(
             ItemValueStore store,
             Func<string, Action, bool> runEdit,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices,
             IEditorPromptService? prompts,
-            Action<ItemRole>? roleChanged)
+            Action<ItemRole>? roleChanged,
+            Workspace.OutputLogService? log = null)
         {
+            _log = log;
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _resolveChoices = resolveChoices;
@@ -144,11 +149,12 @@ namespace SWLOR.Toolset.Editors.Items
                 Card = BuildCard(role);
                 _roleChanged?.Invoke(role);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // A failed prompt or apply must not leave the rail highlighting a role the card
                 // never switched to - put the highlight back where the item's Role actually is,
                 // the same recovery the declined-confirmation path above already performs.
+                _log?.AppendLine($"Role switch to '{role.DisplayName}' failed: {ex.Message}");
                 SelectRail(previous.Id);
             }
         }

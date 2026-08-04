@@ -1287,8 +1287,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "GuardedHitSecondaryNextAttackEnmityBonus", parse_count(r"\+(\d+) Enmity", description))
         add_stat(stats, "GuardedHitSecondaryNextAttackWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     if base == "Impenetrable Grip":
-        add_stat(stats, "MobilityResistance", parse_percent(r"\+(\d+)% Knockdown Resistance", description))
-        add_stat(stats, "MindResistance", parse_percent(r"\+(\d+)% Daze Resistance", description))
+        add_stat(stats, "MobilityResistance", parse_count(r"\+(\d+) Mobility Resistance", description))
+        add_stat(stats, "MindResistance", parse_count(r"\+(\d+) Mind Resistance", description))
         add_stat(stats, "GuardStaminaRestore", parse_count(r"restore (\d+) STM", description))
     if base == "Guardian Reflexes":
         add_stat(stats, "LowHPGuardThresholdPercent", parse_percent(r"below (\d+)% HP", description))
@@ -1346,6 +1346,9 @@ def description_stat_entries(row, base):
         add_stat(stats, "CriticalNextAbilityNoDelayTriggerSkillType", skill_expr)
         add_stat(stats, "CriticalNextAbilityNoDelaySkillType", skill_expr)
         add_stat(stats, "CriticalNextAbilityNoDelayDurationSeconds", parse_count(r"within (\d+) seconds", description) or 30)
+        # An absent percent means the armed buff removes the delay entirely, so the described
+        # partial reduction has to be emitted or a regeneration silently promotes 20% to 100%.
+        add_stat(stats, "CriticalNextAbilityDelayReductionPercent", parse_percent(r"attack delay reduced by (\d+)%", description))
     if base == "Spotter's Rhythm":
         add_stat(stats, "SameTargetPressureBuildSkillType", skill_expr)
         add_stat(stats, "SameTargetPressureBuildSeconds", parse_count(r"same target for (\d+) seconds", description) or 12)

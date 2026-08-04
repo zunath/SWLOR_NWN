@@ -263,6 +263,33 @@ public class NativeControlStatusEffectTests
                 "the shared immunity gate must treat an active hard-CC status as immunity");
     }
 
+    [Test]
+    public void StatConfiguredIconMarkers_AreRealAttributeDeclarationsOnTheClass()
+    {
+        // The icon audit exempts a status effect from the one-class-one-icon model when
+        // [StatConfiguredIcon] decorates the class declaration. The audit matches the marker at
+        // the start of a line directly above the class, so a marker that only appears in a
+        // comment, doc block, or string must not exist - it would read as exempt to a human
+        // while the audit still enforces the full model (or vice versa if the audit regressed
+        // to a substring match).
+        var root = FindRepositoryRoot();
+        var definitionDirectory = Path.Combine(
+            root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition");
+        var declarationPattern = new System.Text.RegularExpressions.Regex(
+            @"(?m)^\s*\[StatConfiguredIcon\]\s*(?:^\s*\[[^\]\r\n]+\]\s*)*public\s+(?:sealed\s+)?class\s");
+
+        foreach (var file in Directory.EnumerateFiles(definitionDirectory, "*.cs"))
+        {
+            var source = File.ReadAllText(file);
+            if (!source.Contains("StatConfiguredIcon"))
+                continue;
+
+            declarationPattern.IsMatch(source).Should().BeTrue(
+                $"{Path.GetFileName(file)} mentions StatConfiguredIcon but does not declare it as " +
+                "an attribute on the class - the audit only honors a real declaration");
+        }
+    }
+
     private sealed class RemovalProbeStatusEffect : StatusEffectBase
     {
         public override string Name => "Removal Probe";

@@ -204,7 +204,8 @@ namespace SWLOR.Toolset.Editors.Items
             Func<JsonGffStruct, bool, RenderModel?>? resolveModel = null,
             ResourceIndex? resourceIndex = null,
             ArmorDyeSwatchService? armorDyeSwatches = null,
-            ArmorPartCatalog? armorPartModels = null)
+            ArmorPartCatalog? armorPartModels = null,
+            Workspace.OutputLogService? log = null)
         {
             ArgumentNullException.ThrowIfNull(item);
 
@@ -231,7 +232,7 @@ namespace SWLOR.Toolset.Editors.Items
                 costTables);
             Stats.Rebuild(Family, Role.Id);
             Requirements = new ItemRequirementsSectionViewModel(_store, RunEdit, null, resolveChoices, costTables);
-            Roles = new ItemRoleSectionViewModel(_store, RunEdit, resolveChoices, prompts, OnRoleChosen);
+            Roles = new ItemRoleSectionViewModel(_store, RunEdit, resolveChoices, prompts, OnRoleChosen, log);
             Roles.Rebuild(Family, Role, FamilyDisplay);
             if (baseItemIcons != null && textureExists != null)
             {

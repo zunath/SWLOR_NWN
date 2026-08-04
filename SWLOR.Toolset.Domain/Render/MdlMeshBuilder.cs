@@ -98,6 +98,13 @@ namespace SWLOR.Toolset.Domain.Render
         public IReadOnlyDictionary<string, IReadOnlyList<float[]>> AnimationNormals { get; init; } =
             new Dictionary<string, IReadOnlyList<float[]>>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Item-specific PLT palette rows for this mesh. Usually empty, in which case the owning
+        /// creature/model palette applies; weighted equipment such as a cloak carries its own dyes.
+        /// </summary>
+        public IReadOnlyDictionary<int, int> LayerColorIndices { get; set; } =
+            new Dictionary<int, int>();
+
         public int VertexCount => Positions.Length / 3;
         public int TriangleCount => Indices.Length / 3;
     }
@@ -353,7 +360,7 @@ namespace SWLOR.Toolset.Domain.Render
                 // arrives at the default of true, and it carries no bitmap - which drew it as a flat
                 // grey slab across the ground of every tile that had one. The area view gets its
                 // walkmesh from the tile's .wok (see TileWalkmeshCache), never from here.
-                if (mesh.IsWalkmesh || !mesh.Render || PlaceholderNames.Contains(mesh.Name))
+                if (!IsRenderableMesh(mesh))
                     continue;
 
                 var built = BuildMesh(
@@ -407,6 +414,27 @@ namespace SWLOR.Toolset.Domain.Render
                 Emitters = renderEmitters,
                 DefaultAnimationName = defaultAnimationName
             };
+        }
+
+        /// <summary>
+        /// Whether a source trimesh produces one <see cref="RenderMesh"/> in <see cref="Build"/>.
+        /// Consumers that retain metadata parallel to the built mesh list must use this predicate
+        /// rather than approximating the builder's filtering by node name or geometry counts.
+        /// </summary>
+        public static bool IsRenderableMesh(MdlTrimeshNode mesh)
+        {
+            ArgumentNullException.ThrowIfNull(mesh);
+            if (mesh.IsWalkmesh || !mesh.Render || PlaceholderNames.Contains(mesh.Name) ||
+                mesh.Vertices.Length == 0 || mesh.Faces.Length == 0)
+            {
+                return false;
+            }
+
+            var vertexCount = mesh.Vertices.Length;
+            return mesh.Faces.Any(face =>
+                face.VertexIndex0 < vertexCount &&
+                face.VertexIndex1 < vertexCount &&
+                face.VertexIndex2 < vertexCount);
         }
 
         private static RenderMesh? BuildMesh(

@@ -64,6 +64,12 @@ namespace SWLOR.Toolset.Tests
             return new DoorTypeService(twoDa, tlk);
         }
 
+        private static BaseItemIconService BaseItems() =>
+            new(new TwoDaService(Sw2DaDirectory));
+
+        private static CloakModelService CloakModels() =>
+            new(new TwoDaService(Sw2DaDirectory));
+
         private static Domain.Gff.JsonGffStruct BlueprintRoot(ResourceType type, string resRef)
         {
             var workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory);
@@ -159,6 +165,120 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void Resolve_PlacedCreature_UsesItsEmbeddedArmorPartsAndDyes()
+        {
+            // Placed GIT creatures contain the complete equipped UTI struct rather than the
+            // EquippedRes-only entry stored in a UTC. Bruenor's embedded Czerka uniform is torso
+            // 189 / Cloth1 107; ignoring that struct produced the naked part-1 body in the area view.
+            var workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory);
+            var (_, git, _) = workspace.LoadArea("czs220_hangar");
+            var root = git.Creatures.First();
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Utc,
+                root,
+                Appearances(),
+                null,
+                null,
+                _ => throw new InvalidOperationException("embedded armor must not reload its source UTI"),
+                _ => true,
+                baseItems: BaseItems().GetOrNull);
+
+            result.Parts.Should().Contain(
+                part => part.PartType == "chest" && part.ModelResRef == "pmh0_chest189");
+            result.LayerColorIndices[PltLayers.Cloth1].Should().Be(107);
+            BlueprintModelResolver.GetEquippedChestArmorResRef(root).Should().Be("czerkauniform");
+        }
+
+        [Test]
+        public void Resolve_PlacedCreature_AttachesEveryCompositeRightHandWeaponPart()
+        {
+            // Find the first Anchorhead creature carrying an item in slot 16. Its embedded
+            // three-part rifle retains shared item-space coordinates and every part attaches to the
+            // right-hand skeleton hook.
+            var workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory);
+            var (_, git, _) = workspace.LoadArea("anchor_entreenor");
+            var root = git.Creatures.First(creature => creature.GetListOrEmpty("Equip_ItemList")
+                .Any(item => System.Text.Encoding.ASCII.GetString(item.RawStructId ?? []) == "16"));
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Utc,
+                root,
+                Appearances(),
+                null,
+                null,
+                _ => throw new InvalidOperationException("embedded weapon must not reload its source UTI"),
+                _ => true,
+                baseItems: BaseItems().GetOrNull);
+
+            var weaponParts = result.Parts.Where(part => part.PartType == "weaponr").ToList();
+            weaponParts.Should().HaveCount(3);
+            weaponParts.Select(part => part.ModelResRef).Should()
+                .Contain(model => model.EndsWith("_b_011", StringComparison.OrdinalIgnoreCase))
+                .And.Contain(model => model.EndsWith("_m_121", StringComparison.OrdinalIgnoreCase))
+                .And.Contain(model => model.EndsWith("_t_011", StringComparison.OrdinalIgnoreCase));
+        }
+
+        [Test]
+        public void Resolve_EquippedCloak_UsesTheWearersBodyPrefixAndItsOwnDyes()
+        {
+            // Darth Gravius is a female dynamic elf (pfe0). The cloak item preview itself uses a
+            // generic pmh0 mannequin, but the equipped garment must use the wearer's skeleton and
+            // retain Cloth1 45 instead of inheriting the robe's Cloth1 97.
+            var root = BlueprintRoot(ResourceType.Utc, "darthgravius");
+            root.SetInt("BodyPart_LShoul", GffFieldType.Byte, 1);
+            root.SetInt("BodyPart_RShoul", GffFieldType.Byte, 1);
+            JsonGffStruct? LoadItem(string resRef) => BlueprintRoot(ResourceType.Uti, resRef);
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Utc, root, Appearances(), null, null,
+                LoadItem, _ => true, baseItems: BaseItems().GetOrNull,
+                cloakModels: CloakModels());
+
+            result.SkeletonResRef.Should().Be("pfe0");
+            var cloak = result.Parts.Single(part => part.PartType == "cloak");
+            cloak.ModelResRef.Should().Be("pfe0_cloak_007",
+                "cloak appearance 10 maps to geometry 7 through cloakmodel.2da");
+            cloak.TextureResRef.Should().Be("pfe0_cloak_014",
+                "cloak appearance 10 selects texture 14 independently of its shared geometry");
+            cloak.LayerColorIndices.Should().NotBeNull();
+            cloak.LayerColorIndices![PltLayers.Cloth1].Should().Be(45);
+            result.LayerColorIndices[PltLayers.Cloth1].Should().Be(97,
+                "the chest robe and cloak intentionally use independent palettes");
+            result.Parts.Should().NotContain(
+                part => part.PartType == "shol" || part.PartType == "shor",
+                "cloak appearance 10 hides both wearer shoulder parts in cloakmodel.2da");
+        }
+
+        [Test]
+        public void Resolve_EquippedHelmet_UsesTheItemsOwnDyes()
+        {
+            var root = BlueprintRoot(ResourceType.Utc, "sith_commando");
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Utc, root, Appearances(), null, null,
+                resRef => BlueprintRoot(ResourceType.Uti, resRef),
+                _ => true, baseItems: BaseItems().GetOrNull,
+                cloakModels: CloakModels());
+
+            var helmet = result.Parts.Single(part => part.PartType == "helmet");
+            helmet.ModelResRef.Should().Be("helm_120");
+            helmet.LayerColorIndices.Should().NotBeNull();
+            helmet.LayerColorIndices![PltLayers.Metal1].Should().Be(17);
+            helmet.LayerColorIndices[PltLayers.Metal2].Should().Be(0);
+            helmet.LayerColorIndices[PltLayers.Cloth1].Should().Be(63);
+        }
+
+        [Test]
+        public void VisibleEquipmentDependenciesIncludeArmorCloakAndHeldItems()
+        {
+            var root = BlueprintRoot(ResourceType.Utc, "darthgravius");
+
+            BlueprintModelResolver.GetVisibleEquippedItemResRefs(root).Should().BeEquivalentTo(
+                new[] { "graviusrobe001", "d_gravius_saber", "jeweled_cloak" });
+        }
+
+        [Test]
         public void Resolve_SegmentedCreatureWithRobeArmor_EmitsRobeAlongsideAllBodyParts()
         {
             // The resolver never suppresses parts for a robe — whether a robe replaces the body
@@ -168,7 +288,9 @@ namespace SWLOR.Toolset.Tests
             // when its model resolves.
             var root = BlueprintRoot(ResourceType.Utc, "agr_guildmaster");
             var robeArmor = BlueprintRoot(ResourceType.Uti, "noble_gr");
+            // This corpus item carries the EE word companion, which is authoritative over the byte.
             robeArmor.Get("ArmorPart_Robe").SetInteger(7);
+            robeArmor.Get("xArmorPart_Robe").SetInteger(7);
 
             var withRobe = BlueprintModelResolver.Resolve(
                 ResourceType.Utc, root, Appearances(), null, null, _ => robeArmor, _ => true);

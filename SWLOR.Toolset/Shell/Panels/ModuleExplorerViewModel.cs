@@ -53,6 +53,8 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private readonly List<ExplorerNodeViewModel> _roots = new();
         private Dictionary<ResourceType, List<CatalogEntry>>? _catalogByType;
+        private readonly Stack<ResourceMoveEdit> _resourceMoveUndo = new();
+        private readonly Stack<ResourceMoveEdit> _resourceMoveRedo = new();
 
         /// <summary>Types whose sidecar section has already been seeded this session.</summary>
         private readonly HashSet<ResourceType> _seeded = new();
@@ -120,8 +122,10 @@ namespace SWLOR.Toolset.Shell.Panels
 
             PublishTabs();
 
-            _workspaceContext.CatalogEntryRefreshed += (type, _) =>
+            _workspaceContext.CatalogEntryRefreshed += (type, resRef) =>
             {
+                InvalidateMoveHistoryForMissingResource(type, resRef);
+
                 if (type == ResourceType.Dlg)
                 {
                     _dialogueHitsQuery = null;
@@ -131,6 +135,31 @@ namespace SWLOR.Toolset.Shell.Panels
                 if (_workspaceContext.Catalog is { } catalog)
                     RefreshFromCatalog(catalog);
             };
+        }
+
+        /// <summary>
+        /// Rename and delete notifications name the resource that just disappeared. A move edit for
+        /// that identity can no longer be replayed safely: adding its stale resref back to the
+        /// category sidecar would corrupt membership while leaving the renamed file where it is.
+        /// </summary>
+        private void InvalidateMoveHistoryForMissingResource(ResourceType type, string resRef)
+        {
+            if (!_resourceMoveUndo.Concat(_resourceMoveRedo).Any(edit =>
+                    edit.Type == type &&
+                    edit.ResRef.Equals(resRef, StringComparison.OrdinalIgnoreCase)))
+            {
+                return;
+            }
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return;
+
+            var stillExists = type == ResourceType.Dlg
+                ? ConversationResRefs(workspace).Contains(resRef, StringComparer.OrdinalIgnoreCase)
+                : workspace.EnumerateResRefs(type).Contains(resRef, StringComparer.OrdinalIgnoreCase);
+            if (!stillExists)
+                ClearResourceMoveHistory();
         }
 
         /// <summary>
@@ -172,6 +201,7 @@ namespace SWLOR.Toolset.Shell.Panels
         /// <summary>Builds the tree for the selected tab.</summary>
         public void Initialize()
         {
+            ClearResourceMoveHistory();
             _catalogByType = null;
             Refresh();
         }
@@ -430,6 +460,7 @@ namespace SWLOR.Toolset.Shell.Panels
                     FileNewResource(resRef, targetFolder);
 
                     _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
+                    _workspaceContext.InvalidatePlacementIndex();
                     Refresh();
                     _editorService?.Invoke().TryOpenEditor(ResourceType.Area, resRef);
                 },
@@ -555,6 +586,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
 
             SaveCategories();
+            ClearResourceMoveHistory();
             Refresh();
         }
 
@@ -587,6 +619,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
             section.RemoveFolder(folder);
             SaveCategories();
+            ClearResourceMoveHistory();
             SelectedRow = null;
             Refresh();
         }
@@ -684,6 +717,13 @@ namespace SWLOR.Toolset.Shell.Panels
             if (section == null || source.Item is not { } item || source.Type != SelectedType)
                 return false;
 
+            var beforeFolderPaths = section.FoldersContaining(item.ResRef)
+                .Select(section.PathKey)
+                .ToArray();
+            var afterFolderPaths = target == null
+                ? Array.Empty<string>()
+                : new[] { section.PathKey(target) };
+
             // Out of wherever it was first: a resref may legally sit in several folders, but a move the
             // builder asked for means one destination, not an extra one. A null destination is Unsorted.
             var changed = false;
@@ -698,8 +738,125 @@ namespace SWLOR.Toolset.Shell.Panels
 
             var saved = SaveCategories();
             Refresh();
+            if (!saved)
+                return false;
+
+            _resourceMoveUndo.Push(new ResourceMoveEdit(
+                SelectedType,
+                item.ResRef,
+                item.PrimaryText,
+                beforeFolderPaths,
+                afterFolderPaths));
+            _resourceMoveRedo.Clear();
+            NotifyResourceMoveHistoryChanged();
+            StatusMessage = target == null
+                ? $"Moved '{item.PrimaryText}' to Unsorted."
+                : $"Moved '{item.PrimaryText}' to '{string.Join(" / ", section.PathTo(target))}'.";
             return saved;
         }
+
+        private bool CanUndoResourceMove() => _resourceMoveUndo.Count > 0;
+
+        [RelayCommand(CanExecute = nameof(CanUndoResourceMove))]
+        private void UndoResourceMove()
+        {
+            if (!_resourceMoveUndo.TryPeek(out var edit) ||
+                !ApplyResourceMove(edit, edit.BeforeFolderPaths, "undo"))
+            {
+                return;
+            }
+
+            _resourceMoveUndo.Pop();
+            _resourceMoveRedo.Push(edit);
+            NotifyResourceMoveHistoryChanged();
+            StatusMessage = $"Undid move of '{edit.DisplayName}'.";
+        }
+
+        private bool CanRedoResourceMove() => _resourceMoveRedo.Count > 0;
+
+        [RelayCommand(CanExecute = nameof(CanRedoResourceMove))]
+        private void RedoResourceMove()
+        {
+            if (!_resourceMoveRedo.TryPeek(out var edit) ||
+                !ApplyResourceMove(edit, edit.AfterFolderPaths, "redo"))
+            {
+                return;
+            }
+
+            _resourceMoveRedo.Pop();
+            _resourceMoveUndo.Push(edit);
+            NotifyResourceMoveHistoryChanged();
+            StatusMessage = $"Redid move of '{edit.DisplayName}'.";
+        }
+
+        private bool ApplyResourceMove(
+            ResourceMoveEdit edit,
+            IReadOnlyList<string> destinationFolderPaths,
+            string operation)
+        {
+            var section = _categories.Section(edit.Type);
+            if (section == null)
+            {
+                ClearResourceMoveHistory();
+                StatusMessage = $"Cannot {operation} the move because its resource section no longer exists.";
+                return false;
+            }
+
+            var destinations = new List<CategoryFolder>();
+            foreach (var path in destinationFolderPaths)
+            {
+                var folder = section.FindByPathKey(path);
+                if (folder == null)
+                {
+                    ClearResourceMoveHistory();
+                    StatusMessage = $"Cannot {operation} the move because folder '{path}' no longer exists.";
+                    Refresh();
+                    return false;
+                }
+
+                destinations.Add(folder);
+            }
+
+            foreach (var folder in section.AllFolders())
+                folder.RemoveMember(edit.ResRef);
+            foreach (var folder in destinations)
+                folder.AddMember(edit.ResRef);
+
+            // Persist even when the in-memory tree already matches the requested destination. This
+            // can be a retry after a refused write: the history entry is intentionally retained, and
+            // success must mean the sidecar on disk now matches the undo/redo state too.
+            if (!SaveCategories())
+            {
+                Refresh();
+                return false;
+            }
+
+            Refresh();
+            return true;
+        }
+
+        private void ClearResourceMoveHistory()
+        {
+            if (_resourceMoveUndo.Count == 0 && _resourceMoveRedo.Count == 0)
+                return;
+
+            _resourceMoveUndo.Clear();
+            _resourceMoveRedo.Clear();
+            NotifyResourceMoveHistoryChanged();
+        }
+
+        private void NotifyResourceMoveHistoryChanged()
+        {
+            UndoResourceMoveCommand.NotifyCanExecuteChanged();
+            RedoResourceMoveCommand.NotifyCanExecuteChanged();
+        }
+
+        private sealed record ResourceMoveEdit(
+            ResourceType Type,
+            string ResRef,
+            string DisplayName,
+            IReadOnlyList<string> BeforeFolderPaths,
+            IReadOnlyList<string> AfterFolderPaths);
 
 
         /// <summary>

@@ -49,6 +49,19 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void FromLoadedContent_FileDeletedAfterRead_IsAnExternalChange()
+        {
+            var content = File.ReadAllBytes(_path);
+            var document = JsonGffDocument.Parse(content);
+            File.Delete(_path);
+
+            using var session = DocumentSession.FromLoadedContent(_path, document, content);
+
+            session.HasExternalChange().Should().BeTrue(
+                "bytes loaded from an existing file must retain a baseline when that file disappears before binding");
+        }
+
+        [Test]
         public void RevertAfterTheSavedHistoryWasDiscarded_ReloadsTheDiskState()
         {
             using var session = DocumentSession.Open(_path);

@@ -68,8 +68,12 @@ namespace SWLOR.Toolset.Workspace
         /// v15: generic door appearances resolve through genericdoors.2da instead of treating their
         /// GenericType_New value as a doortypes.2da row.
         /// </para>
+        /// <para>
+        /// v16: creature thumbnails compose visible armor, helmets, cloaks, held weapons, equipment
+        /// dyes, cloak texture mappings, and cloak visibility flags.
+        /// </para>
         /// </remarks>
-        private const string FormatVersion = "v15";
+        private const string FormatVersion = "v16";
 
         private const string MissingArtworkExtension = ".none";
 

@@ -15,7 +15,7 @@
        Undo prefers whichever of this editor's two histories (.git instances / .are properties) was
        touched most recently, falling back to the other. -->
   <DockPanel>
-    <TabControl x:Name="RootTabs">
+    <TabControl x:Name="RootTabs" SelectedIndex="{Binding SelectedRootTabIndex, Mode=TwoWay}">
       <TabItem Header="Scene" x:Name="ViewTab3D">
         <!-- No toolbar at all now. Placement comes from the Palette panel, the scene rebuilds itself
              after every edit, and the view options that were here either had no audience or are simply
@@ -56,7 +56,10 @@
                 <MenuItem Header="{Binding SelectionKindLabel}" IsEnabled="False"
                           ToolTip.Tip="{Binding SelectionResRef}" />
                 <Separator />
-                <MenuItem Header="Edit object..."
+                <MenuItem Header="Open properties..."
+                          Command="{Binding OpenSelectedInstancePropertiesCommand}"
+                          ToolTip.Tip="Edit this placed object's instance properties" />
+                <MenuItem Header="Edit blueprint..."
                           Command="{Binding EditSelectedBlueprintCommand}"
                           ToolTip.Tip="Open the blueprint this was placed from" />
               </ContextMenu>
@@ -183,9 +186,11 @@
         </Grid>
       </TabItem>
       <TabItem Header="Properties">
-    <ScrollViewer>
+    <ScrollViewer x:Name="PropertiesScroll">
       <StackPanel Margin="8" Spacing="6">
-        <Expander Header="Area Properties" IsExpanded="False" HorizontalAlignment="Stretch">
+        <Expander Header="Area Properties"
+                  IsExpanded="{Binding AreaPropertiesExpanded, Mode=TwoWay}"
+                  HorizontalAlignment="Stretch">
           <ItemsControl ItemsSource="{Binding AreaPropertyGroups}" Margin="8,4">
             <ItemsControl.ItemTemplate>
               <DataTemplate DataType="editors:EditorGroup">
@@ -201,7 +206,8 @@
         <ItemsControl ItemsSource="{Binding Sections}">
           <ItemsControl.ItemTemplate>
             <DataTemplate DataType="editors:InstanceListSectionViewModel">
-              <Expander HorizontalAlignment="Stretch" Margin="0,0,0,6" IsExpanded="False">
+              <Expander HorizontalAlignment="Stretch" Margin="0,0,0,6"
+                        IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
                 <Expander.Header>
                   <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="{Binding Title}" FontWeight="Bold" />

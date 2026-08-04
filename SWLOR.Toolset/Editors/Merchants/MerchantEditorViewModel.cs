@@ -28,11 +28,13 @@ namespace SWLOR.Toolset.Editors.Merchants
             Task<IReadOnlyList<MerchantItemDefinition>>>? _searchItems;
         private readonly Action<string, Action<Bitmap>>? _requestItemPreview;
         private readonly Action<string>? _openItem;
+        private readonly Action<string, MerchantInstancePlacement>? _goToInstance;
         private readonly IReadOnlyList<BehaviorChoice> _baseItems;
         private readonly MerchantInstanceService? _instances;
         private readonly List<MerchantBuyingRuleViewModel> _allBuyingRules = new();
         private readonly HashSet<(int PaneIndex, int ItemIndex)> _checkedInventoryItems = new();
         private int _instanceRefreshGeneration;
+        private string? _loadedPlacementResRef;
         private int _inventoryRefreshGeneration;
         private int _itemCandidateRefreshGeneration;
         private int _itemCandidateOffset;
@@ -245,7 +247,8 @@ namespace SWLOR.Toolset.Editors.Merchants
                 Task<IReadOnlyList<MerchantItemDefinition>>>? searchItems = null,
             MerchantInstanceService? instances = null,
             Action<string, Action<Bitmap>>? requestItemPreview = null,
-            Action<string>? openItem = null)
+            Action<string>? openItem = null,
+            Action<string, MerchantInstancePlacement>? goToInstance = null)
         {
             ArgumentNullException.ThrowIfNull(merchant);
             _store = new MerchantValueStore(merchant);
@@ -257,6 +260,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             _instances = instances;
             _requestItemPreview = requestItemPreview;
             _openItem = openItem;
+            _goToInstance = goToInstance;
             HeaderOwner = headerOwner;
 
             BuildRows();
@@ -271,6 +275,16 @@ namespace SWLOR.Toolset.Editors.Merchants
 
             SelectedInventoryCategory = InventoryCategories[0];
         }
+
+        [RelayCommand(CanExecute = nameof(CanGoToInstance))]
+        private void GoToInstance(MerchantInstancePlacement? placement)
+        {
+            if (placement != null)
+                _goToInstance?.Invoke(_loadedPlacementResRef ?? HeaderOwner, placement);
+        }
+
+        private bool CanGoToInstance(MerchantInstancePlacement? placement) =>
+            _goToInstance != null && placement != null;
 
         public void ReloadFromDocument()
         {
@@ -521,10 +535,12 @@ namespace SWLOR.Toolset.Editors.Merchants
             InstanceError = null;
             try
             {
-                var found = await _instances.FindAsync(ResRef).ConfigureAwait(true);
+                var sourceResRef = ResRef;
+                var found = await _instances.FindAsync(sourceResRef).ConfigureAwait(true);
                 if (_disposed || generation != _instanceRefreshGeneration)
                     return;
 
+                _loadedPlacementResRef = sourceResRef;
                 PlacedInstances.Clear();
                 foreach (var placement in found)
                     PlacedInstances.Add(placement);
@@ -558,6 +574,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             ArePlacedInstancesLoaded = false;
             PlacedInstancesNeedRefresh = true;
             InstanceError = null;
+            _loadedPlacementResRef = null;
             PlacedInstances.Clear();
             NotifyInstanceShapeChanged();
         }
@@ -572,7 +589,11 @@ namespace SWLOR.Toolset.Editors.Merchants
             InstanceError = null;
             try
             {
-                var targetAreas = PlacedInstances
+                // Updating invalidates the module placement index, which tells every open Source tab
+                // to discard its derived rows. This command deliberately operates on the displayed
+                // snapshot, so retain it across that notification and republish it as current below.
+                var displayedPlacements = PlacedInstances.ToList();
+                var targetAreas = displayedPlacements
                     .Where(placement => !placement.IsCurrent)
                     .Select(placement => placement.AreaResRef)
                     .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -582,17 +603,17 @@ namespace SWLOR.Toolset.Editors.Merchants
                 // The service rebuilds every matching merchant in each target area from the saved
                 // blueprint. Those displayed records are therefore current without a second full-
                 // module discovery scan. Refresh remains available to discover new placements.
-                for (var index = 0; index < PlacedInstances.Count; index++)
+                PlacedInstances.Clear();
+                foreach (var placement in displayedPlacements)
                 {
-                    var placement = PlacedInstances[index];
-                    if (targetAreas.Contains(placement.AreaResRef, StringComparer.OrdinalIgnoreCase))
-                    {
-                        PlacedInstances[index] = placement with
-                        {
-                            OutOfDateMerchantRecords = 0,
-                            OutOfDateItemRecords = 0
-                        };
-                    }
+                    PlacedInstances.Add(
+                        targetAreas.Contains(placement.AreaResRef, StringComparer.OrdinalIgnoreCase)
+                            ? placement with
+                            {
+                                OutOfDateMerchantRecords = 0,
+                                OutOfDateItemRecords = 0
+                            }
+                            : placement);
                 }
 
                 ArePlacedInstancesLoaded = true;

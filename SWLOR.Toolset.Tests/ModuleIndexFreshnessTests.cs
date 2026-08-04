@@ -70,6 +70,26 @@ namespace SWLOR.Toolset.Tests
             index.Tags.Should().Contain("WP_DETRITUS");
         }
 
+        [Test]
+        public void AnAreaWithMixedUtf8AndWindows1252TokensPreservesItsUtf8Tag()
+        {
+            const string expectedTag = "WP_D\u00C9TRITUS";
+            WriteArea("anchor", waypointTag: expectedTag, displayName: "LEGACY_X", asUtf8: true);
+            var path = Path.Combine(_root, "git", "anchor.git.json");
+            var bytes = File.ReadAllBytes(path);
+            var legacyMarker = Encoding.ASCII.GetBytes("LEGACY_X");
+            var markerOffset = bytes.AsSpan().IndexOf(legacyMarker);
+            markerOffset.Should().BeGreaterThanOrEqualTo(0);
+            bytes[markerOffset + legacyMarker.Length - 1] = 0x97;
+            File.WriteAllBytes(path, bytes);
+
+            var index = new ModuleTagIndex(new ModuleWorkspace(_root));
+
+            index.Tags.Should().Contain(
+                expectedTag,
+                "a legacy display-name token must not change the encoding of a genuine UTF-8 tag token");
+        }
+
         /// <summary>
         /// Every dictionary here used to be built once and held for the life of the workspace, which
         /// is right for a module nobody is editing and wrong for the one open in the toolset.

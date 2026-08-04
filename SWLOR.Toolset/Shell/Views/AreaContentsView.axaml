@@ -44,7 +44,13 @@
       </ListBox.Styles>
       <ListBox.ItemTemplate>
         <DataTemplate DataType="panels:AreaContentsNodeViewModel">
-          <Grid ColumnDefinitions="Auto,*,Auto" Margin="{Binding Indent}" Background="Transparent">
+          <Grid ColumnDefinitions="Auto,*,Auto" Margin="{Binding Indent}" Background="Transparent"
+                PointerPressed="OnRowPointerPressed" ContextRequested="OnRowContextRequested">
+            <Grid.ContextMenu>
+              <ContextMenu>
+                <MenuItem Header="{Binding OpenPropertiesLabel}" Click="OnOpenPropertiesClick" />
+              </ContextMenu>
+            </Grid.ContextMenu>
 
             <!-- The same wide, short hit box Module Contents gives its twisty: it is the thing
                  aimed at most in a tree and the glyph itself is a 10px target. -->

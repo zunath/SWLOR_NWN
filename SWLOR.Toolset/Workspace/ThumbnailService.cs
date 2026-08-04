@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using Serilog;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Render.Icons;
@@ -233,19 +234,22 @@ namespace SWLOR.Toolset.Workspace
                     }
 
                     var creature = creatureBlueprint.Fields;
-                    if (string.Equals(
-                            BlueprintModelResolver.GetEquippedChestArmorResRef(creature),
-                            itemResRef,
-                            StringComparison.OrdinalIgnoreCase))
+                    if (BlueprintModelResolver.GetVisibleEquippedItemResRefs(creature)
+                        .Contains(itemResRef, StringComparer.OrdinalIgnoreCase))
                     {
                         // A loose module UTI cannot affect the independent Standard-content preview.
                         InvalidateOne(ResourceType.Utc, creatureResRef, useIndexedBlueprint: false);
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     // A malformed creature is independently unrenderable and must not prevent the
                     // remaining dependency invalidations.
+                    Log.ForContext<ThumbnailService>().Warning(
+                        ex,
+                        "Failed to scan visible equipment for creature {CreatureResRef} while invalidating item {ItemResRef}.",
+                        creatureResRef,
+                        itemResRef);
                 }
             }
         }
@@ -1090,10 +1094,11 @@ namespace SWLOR.Toolset.Workspace
                     return Array.Empty<string>();
 
                 var creature = creatureBlueprint.Fields;
-                var itemResRef = BlueprintModelResolver.GetEquippedChestArmorResRef(creature);
-                return string.IsNullOrWhiteSpace(itemResRef)
-                    ? Array.Empty<string>()
-                    : new[] { workspace.GetResourcePath(ResourceType.Uti, itemResRef) };
+                return BlueprintModelResolver.GetVisibleEquippedItemResRefs(creature)
+                    .Select(itemResRef => workspace.GetResourcePath(ResourceType.Uti, itemResRef))
+                    .Where(File.Exists)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
             }
             catch (Exception)
             {

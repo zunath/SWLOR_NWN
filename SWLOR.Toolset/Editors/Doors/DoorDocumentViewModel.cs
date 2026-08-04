@@ -26,8 +26,10 @@ namespace SWLOR.Toolset.Editors.Doors
         private bool _closeApproved;
         private bool _closePromptOpen;
         private bool _disposed;
+        private int _selectedTabIndex;
 
         public DoorEditorViewModel Editor { get; }
+        public Sources.ObjectSourceSectionViewModel? Source { get; }
 
         public bool IsDirty => _session.UndoStack.IsDirty;
 
@@ -36,6 +38,17 @@ namespace SWLOR.Toolset.Editors.Doors
         public bool CanRedo => _session.UndoStack.CanRedo;
         public string FilePath => _session.FilePath;
         public string ResRef => _resRef;
+        public int SelectedTabIndex
+        {
+            get => _selectedTabIndex;
+            set
+            {
+                if (_selectedTabIndex == value)
+                    return;
+                _selectedTabIndex = value;
+                OnPropertyChanged();
+            }
+        }
 
         public event Action<DoorDocumentViewModel>? Closed;
 
@@ -57,12 +70,14 @@ namespace SWLOR.Toolset.Editors.Doors
             Func<JsonGffStruct, RenderModel?>? resolveModel = null,
             ThumbnailService? thumbnails = null,
             ChoicePreviewService? choicePreviews = null,
-            BlueprintSaveCoordinator? saveCoordinator = null)
+            BlueprintSaveCoordinator? saveCoordinator = null,
+            Sources.ObjectSourceSectionViewModel? source = null)
         {
             _log = log;
             _prompts = prompts;
             _resRef = resRef;
             _saveCoordinator = saveCoordinator;
+            Source = source;
             Id = $"door:{filePath}";
             _session = DocumentSession.Open(filePath);
 
@@ -173,6 +188,7 @@ namespace SWLOR.Toolset.Editors.Doors
                     _resRef = targetResRef;
                     Id = $"door:{_session.FilePath}";
                     Editor.SetHeaderOwner(targetResRef);
+                    Source?.SetResRef(targetResRef);
                 }
 
                 _session.UndoStack.MarkSaved();

@@ -52,6 +52,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly DoorTypeService? _doors;
         private readonly WaypointAppearanceService? _waypoints;
         private readonly BaseItemIconService? _baseItems;
+        private readonly CloakModelService? _cloakModels;
         private readonly PortraitService? _portraits;
         private readonly TwoDaService? _twoDa;
         private readonly ArmorDyeSwatchService _dyeSwatches;
@@ -90,6 +91,7 @@ namespace SWLOR.Toolset.Workspace
             _doors = doors;
             _waypoints = waypoints;
             _baseItems = baseItems;
+            _cloakModels = twoDa == null ? null : new CloakModelService(twoDa);
             _portraits = portraits;
             _twoDa = twoDa;
             _dyeSwatches = new ArmorDyeSwatchService(resourceIndex);
@@ -211,21 +213,43 @@ namespace SWLOR.Toolset.Workspace
                 type, root, _appearances, _placeables, _doors,
                 itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
                 PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull,
-                armorPreviewFemale);
+                armorPreviewFemale, _cloakModels);
 
-            var model = reference.Kind switch
-            {
-                BlueprintModelKind.Simple when reference.ModelResRef != null =>
-                    type == ResourceType.Utc
-                        ? BuildCreatureRenderModel(reference.ModelResRef)
-                        : BuildRenderModel(reference.ModelResRef),
-                BlueprintModelKind.Segmented => ComposeSegmented(reference, type == ResourceType.Utc),
-                BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
-                _ => null
-            };
+            var model = BuildResolvedModel(
+                type, reference, includeCreatureAnimations: type == ResourceType.Utc);
 
             return WithLayerColors(model, reference);
         }
+
+        /// <summary>
+        /// Builds one resolved reference for both live editor geometry and software thumbnails.
+        /// Keeping the switch shared prevents simple-model creatures from losing helmets, cloaks,
+        /// and held weapons only in the palette thumbnail path.
+        /// </summary>
+        private RenderModel? BuildResolvedModel(
+            ResourceType type,
+            BlueprintModelReference reference,
+            bool includeCreatureAnimations)
+        {
+            return reference.Kind switch
+            {
+                BlueprintModelKind.Simple when reference.ModelResRef != null =>
+                    type == ResourceType.Utc
+                        ? reference.Parts.Count > 0
+                            ? ComposeSegmented(reference, includeCreatureAnimations) ??
+                              BuildCreatureModel(reference.ModelResRef, includeCreatureAnimations)
+                            : BuildCreatureModel(reference.ModelResRef, includeCreatureAnimations)
+                        : BuildRenderModel(reference.ModelResRef),
+                BlueprintModelKind.Segmented => ComposeSegmented(reference, includeCreatureAnimations),
+                BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
+                _ => null
+            };
+        }
+
+        private RenderModel? BuildCreatureModel(string modelResRef, bool includeCreatureAnimations) =>
+            includeCreatureAnimations
+                ? BuildCreatureRenderModel(modelResRef)
+                : BuildRenderModel(modelResRef);
 
         /// <summary>
         /// Hands the blueprint's dye choices to the model so the viewport can colour its PLT layers.
@@ -332,15 +356,10 @@ namespace SWLOR.Toolset.Workspace
             var reference = BlueprintModelResolver.Resolve(
                 type, root, _appearances, _placeables, _doors,
                 itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
-                PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull);
+                PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull,
+                cloakModels: _cloakModels);
 
-            var model = reference.Kind switch
-            {
-                BlueprintModelKind.Simple when reference.ModelResRef != null => BuildRenderModel(reference.ModelResRef),
-                BlueprintModelKind.Segmented => ComposeSegmented(reference, includeCreatureAnimations: false),
-                BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
-                _ => null
-            };
+            var model = BuildResolvedModel(type, reference, includeCreatureAnimations: false);
 
             IReadOnlyDictionary<int, int> layerColors = reference.LayerColorIndices;
             if (layerColorOverrides is { Count: > 0 })
@@ -351,11 +370,15 @@ namespace SWLOR.Toolset.Workspace
                 layerColors = merged;
             }
 
-            Func<string, TextureImage?>? resolveTexture = _textures == null
-                ? null
-                : texture => _textures.Get(texture, layerColors);
+            Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture =
+                _textures == null
+                    ? null
+                    : (texture, meshColors) => _textures.Get(
+                        texture,
+                        meshColors is { Count: > 0 } ? meshColors : layerColors);
             var pixels = ThumbnailRenderer.Render(
-                model, ModelRenderSize, palette: null, resolveTexture: resolveTexture);
+                model, ModelRenderSize, palette: null,
+                resolveLayeredTexture: resolveLayeredTexture);
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
 
@@ -533,7 +556,8 @@ namespace SWLOR.Toolset.Workspace
             BlueprintModelReference reference,
             bool includeCreatureAnimations)
         {
-            if (_partComposer == null || reference.SkeletonResRef == null)
+            var skeletonResRef = reference.SkeletonResRef ?? reference.ModelResRef;
+            if (_partComposer == null || skeletonResRef == null)
                 return null;
 
             var parts = ApplyRobeCoverage(reference.Parts);
@@ -544,21 +568,21 @@ namespace SWLOR.Toolset.Workspace
             // an overlay: it supplies coat-helper tracks and body rotations, but deliberately omits
             // translations shared with the wearer. Those missing channels must inherit the wearer's
             // bind pose; taking them from the robe's zeroed skin skeleton collapses the legs upward.
-            var skinParts = new List<(string PartType, MdlModel Model)>();
-            var rigidParts = new List<(string PartType, string ModelResRef)>();
+            var skinParts = new List<(BlueprintModelPart Part, MdlModel Model)>();
+            var rigidParts = new List<BlueprintModelPart>();
             foreach (var part in parts)
             {
                 var model = LoadMdl(part.ModelResRef, withSupermodelAnims: false);
                 if (model != null && MdlMeshBuilder.ContainsNamedSkinWeights(model))
-                    skinParts.Add((part.PartType, model));
+                    skinParts.Add((part, model));
                 else
-                    rigidParts.Add((part.PartType, part.ModelResRef));
+                    rigidParts.Add(part);
             }
 
             var renderModels = new List<RenderModel>();
-            var skeleton = LoadMdl(reference.SkeletonResRef, withSupermodelAnims: false);
+            var skeleton = LoadMdl(skeletonResRef, withSupermodelAnims: false);
             var weightedRobe = skinParts
-                .Where(part => part.PartType.Equals("robe", StringComparison.OrdinalIgnoreCase))
+                .Where(part => part.Part.PartType.Equals("robe", StringComparison.OrdinalIgnoreCase))
                 .Select(part => part.Model)
                 .FirstOrDefault();
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? sharedFrames = null;
@@ -592,34 +616,148 @@ namespace SWLOR.Toolset.Workspace
             if (rigidParts.Count > 0)
             {
                 MdlModel? composed;
+                IReadOnlyList<IReadOnlyDictionary<int, int>?> rigidLayerColors =
+                    Array.Empty<IReadOnlyDictionary<int, int>?>();
                 lock (_composerGate)
                 {
                     // _partTextures is filled by LoadComposerModel as the composer pulls each part in,
                     // so it has to be cleared and read inside the same lock that owns the compose run.
                     _partTextures.Clear();
-                    composed = _partComposer.Compose(reference.SkeletonResRef, rigidParts, adjustSeams: true);
+                    composed = _partComposer.Compose(
+                        skeletonResRef,
+                        rigidParts.Select(part => (part.PartType, part.ModelResRef)).ToList(),
+                        adjustSeams: true);
                     if (composed != null)
+                    {
+                        rigidLayerColors = CaptureComposedLayerColors(composed, rigidParts);
+                        ApplyComposedTextureOverrides(composed, rigidParts);
                         _partTextures.Restore(composed, TextureExists);
+                    }
                 }
 
                 if (composed != null)
                 {
                     var frames = sharedFrames ?? IdleFrames(composed);
-                    renderModels.Add(includeCreatureAnimations
+                    var rigidModel = includeCreatureAnimations
                         ? MdlMeshBuilder.BuildAnimatedPreview(composed, frames, sharedAnimations)
-                        : MdlMeshBuilder.Build(composed, frames));
+                        : MdlMeshBuilder.Build(composed, frames);
+                    ApplyLayerColors(rigidModel, rigidLayerColors);
+                    renderModels.Add(rigidModel);
                 }
+            }
+
+            // A simple creature model already carries its body geometry in the skeleton model. If
+            // its only attachment is a weighted cloak, there are no rigid parts to make Compose()
+            // clone that body, so include it explicitly before adding the garment overlay.
+            if (rigidParts.Count == 0 && reference.ModelResRef != null && skeleton != null)
+            {
+                var frames = sharedFrames ?? IdleFrames(skeleton);
+                renderModels.Add(includeCreatureAnimations
+                    ? MdlMeshBuilder.BuildAnimatedPreview(skeleton, frames, sharedAnimations)
+                    : MdlMeshBuilder.Build(skeleton, frames));
             }
 
             renderModels.AddRange(skinParts.Select(part =>
             {
+                ApplyTextureOverride(part.Model, part.Part.TextureResRef);
                 var frames = sharedFrames ?? IdleFrames(part.Model);
-                return includeCreatureAnimations
+                var model = includeCreatureAnimations
                     ? MdlMeshBuilder.BuildAnimatedPreview(part.Model, frames, sharedAnimations)
                     : MdlMeshBuilder.Build(part.Model, frames);
+                if (part.Part.LayerColorIndices is { Count: > 0 } partColors)
+                {
+                    foreach (var mesh in model.Meshes)
+                        mesh.LayerColorIndices = partColors;
+                }
+
+                return model;
             }));
 
-            return CombineRenderModels(reference.SkeletonResRef, renderModels);
+            return CombineRenderModels(skeletonResRef, renderModels);
+        }
+
+        /// <summary>
+        /// Applies cloakmodel.2da's surface selection before authored-texture restoration. The part
+        /// composer stamps each attached mesh with its source model resref, which makes that value a
+        /// reliable key even when two cloak appearances share the same geometry.
+        /// </summary>
+        private static void ApplyComposedTextureOverrides(
+            MdlModel composed,
+            IReadOnlyList<BlueprintModelPart> parts)
+        {
+            var overrides = parts
+                .Where(part => !string.IsNullOrWhiteSpace(part.TextureResRef))
+                .GroupBy(part => part.ModelResRef, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Last().TextureResRef!,
+                    StringComparer.OrdinalIgnoreCase);
+            if (overrides.Count == 0)
+                return;
+
+            foreach (var mesh in composed.GetMeshNodes())
+            {
+                if (overrides.TryGetValue(mesh.Bitmap, out var textureResRef))
+                    mesh.Bitmap = textureResRef;
+            }
+        }
+
+        /// <summary>
+        /// Captures each composed mesh's equipment palette while the composer's model-resref stamp is
+        /// still present. Texture restoration deliberately replaces that stamp, so the association
+        /// must be retained before surfaces are corrected.
+        /// </summary>
+        private static IReadOnlyList<IReadOnlyDictionary<int, int>?> CaptureComposedLayerColors(
+            MdlModel composed,
+            IReadOnlyList<BlueprintModelPart> parts)
+        {
+            var colorsByModel = parts
+                .Where(part => part.LayerColorIndices is { Count: > 0 })
+                .GroupBy(part => part.ModelResRef, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Last().LayerColorIndices!,
+                    StringComparer.OrdinalIgnoreCase);
+            var result = new List<IReadOnlyDictionary<int, int>?>();
+            foreach (var mesh in composed.GetMeshNodes())
+            {
+                // The source-node order is stable even when names are duplicated. Use the builder's
+                // exact predicate so this list remains parallel to its RenderMesh output, including
+                // when a malformed source node has faces but none with valid vertex indices.
+                if (!MdlMeshBuilder.IsRenderableMesh(mesh))
+                    continue;
+
+                result.Add(colorsByModel.TryGetValue(mesh.Bitmap, out var colors) ? colors : null);
+            }
+
+            return result;
+        }
+
+        private static void ApplyLayerColors(
+            RenderModel model,
+            IReadOnlyList<IReadOnlyDictionary<int, int>?> layerColors)
+        {
+            if (model.Meshes.Count != layerColors.Count)
+            {
+                throw new InvalidDataException(
+                    $"Composed mesh palette count {layerColors.Count} does not match rendered mesh count {model.Meshes.Count}.");
+            }
+
+            for (var index = 0; index < model.Meshes.Count; index++)
+            {
+                if (layerColors[index] is { Count: > 0 } colors)
+                    model.Meshes[index].LayerColorIndices = colors;
+            }
+        }
+
+        /// <summary>Applies a selected surface to a weighted garment before its meshes are built.</summary>
+        private static void ApplyTextureOverride(MdlModel model, string? textureResRef)
+        {
+            if (string.IsNullOrWhiteSpace(textureResRef))
+                return;
+
+            foreach (var mesh in model.GetMeshNodes())
+                mesh.Bitmap = textureResRef;
         }
 
         /// <summary>

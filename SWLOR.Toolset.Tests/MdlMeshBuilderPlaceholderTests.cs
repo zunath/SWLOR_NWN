@@ -96,6 +96,19 @@ namespace SWLOR.Toolset.Tests
                 .Which.NodeName.Should().Be("ground");
         }
 
+        [Test]
+        public void AMeshWhoseFacesAllReferenceMissingVertices_IsNotBuilt()
+        {
+            var malformed = Trimesh("malformed");
+            malformed.Faces =
+            [
+                new MdlFace { VertexIndex0 = 0, VertexIndex1 = 1, VertexIndex2 = 99 }
+            ];
+
+            MdlMeshBuilder.IsRenderableMesh(malformed).Should().BeFalse();
+            MdlMeshBuilder.Build(ModelOf(malformed)).Meshes.Should().BeEmpty();
+        }
+
         /// <summary>
         /// The Aurora "no texture" literal must resolve the same way whether it came from an ASCII
         /// MDL (already lowercased/blanked by <see cref="AsciiMdlReader"/>) or a binary MDL (which

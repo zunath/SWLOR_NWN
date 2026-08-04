@@ -49,6 +49,7 @@ namespace SWLOR.Toolset.Domain.Workspace
             ModuleRoot = fullPath;
             ResourceIndex = resourceIndex;
             _tagIndex = new Lazy<ModuleTagIndex>(() => new ModuleTagIndex(this));
+            _placementIndex = new Lazy<ModulePlacementIndex>(() => new ModulePlacementIndex(this));
         }
 
         /// <summary>
@@ -69,6 +70,11 @@ namespace SWLOR.Toolset.Domain.Workspace
         public ModuleTagIndex TagIndex => _tagIndex.Value;
 
         private readonly Lazy<ModuleTagIndex> _tagIndex;
+
+        /// <summary>Every blueprint-backed object placement in the module, built lazily in the background.</summary>
+        public ModulePlacementIndex PlacementIndex => _placementIndex.Value;
+
+        private readonly Lazy<ModulePlacementIndex> _placementIndex;
 
         public string GetResourceFolder(ResourceType type) => Path.Combine(ModuleRoot, type.Extension());
 

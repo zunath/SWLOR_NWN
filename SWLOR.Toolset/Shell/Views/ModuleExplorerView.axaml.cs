@@ -11,6 +11,7 @@ namespace SWLOR.Toolset.Shell.Views
         private ExplorerNodeViewModel? _dragSource;
         private ExplorerNodeViewModel? _dropTarget;
         private Control? _dragSurface;
+        private IPointer? _capturedPointer;
         private ListBoxItem? _dragSourceContainer;
         private ListBoxItem? _dropTargetContainer;
         private Avalonia.Point _dragStart;
@@ -53,7 +54,35 @@ namespace SWLOR.Toolset.Shell.Views
             _dragStart = e.GetPosition(ModuleTree);
             if (DataContext is ModuleExplorerViewModel viewModel)
                 viewModel.SelectedRow = row;
+            _capturedPointer = e.Pointer;
             e.Pointer.Capture(surface);
+        }
+
+        private void OnModuleTreeKeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape && _dragSource != null)
+            {
+                CancelRowDrag();
+                e.Handled = true;
+                return;
+            }
+
+            if (DataContext is not ModuleExplorerViewModel viewModel)
+                return;
+
+            if (e.Key == Key.Z && e.KeyModifiers == KeyModifiers.Control &&
+                viewModel.UndoResourceMoveCommand.CanExecute(null))
+            {
+                viewModel.UndoResourceMoveCommand.Execute(null);
+                e.Handled = true;
+            }
+            else if (((e.Key == Key.Y && e.KeyModifiers == KeyModifiers.Control) ||
+                      (e.Key == Key.Z && e.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift))) &&
+                     viewModel.RedoResourceMoveCommand.CanExecute(null))
+            {
+                viewModel.RedoResourceMoveCommand.Execute(null);
+                e.Handled = true;
+            }
         }
 
         private void OnRowPointerMoved(object? sender, PointerEventArgs e)
@@ -163,13 +192,15 @@ namespace SWLOR.Toolset.Shell.Views
 
         private void CancelRowDrag(IPointer? pointer = null)
         {
+            var pointerToRelease = pointer ?? _capturedPointer;
             _dragSourceContainer?.Classes.Remove("drag-source");
             ClearDropTarget();
             _dragSource = null;
             _dragSurface = null;
+            _capturedPointer = null;
             _dragSourceContainer = null;
             _isDragging = false;
-            pointer?.Capture(null);
+            pointerToRelease?.Capture(null);
         }
     }
 }

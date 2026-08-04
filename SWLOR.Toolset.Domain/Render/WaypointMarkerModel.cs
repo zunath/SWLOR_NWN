@@ -6,8 +6,8 @@ namespace SWLOR.Toolset.Domain.Render
     /// Corrects the axis the toolset's waypoint flag artwork is authored along.
     /// </summary>
     /// <remarks>
-    /// Every other placed object follows one convention: the model's forward is <c>+X</c>, and the
-    /// instance's heading is applied as a plain rotation about Z. That is not a guess - across the
+    /// The area transform treats model <c>+X</c> as forward and applies the instance's heading as a
+    /// plain rotation about Z. That is the correct convention for doors: across the
     /// corpus, 515 doors that sit in a doorway their tile declares carry a Bearing equal to that
     /// doorway's orientation to within 0 or 180 degrees, never 90. Since a door's leaf spans model
     /// +X (TTR_UDoor_01 measures 3.32m across X against 0.44m across Y), rotating it by its bearing
@@ -17,7 +17,7 @@ namespace SWLOR.Toolset.Domain.Render
     /// put their ground direction arrow at model <c>+Y</c>: the arrow tip measures (0.00, 1.20) with
     /// the flag above it. Rotated by the heading like everything else, the arrow ends up pointing a
     /// quarter turn anticlockwise of the facing the waypoint actually carries, so a waypoint set to
-    /// face east drew pointing north. This turns the artwork onto the shared convention first, and
+    /// face east drew pointing north. This turns the artwork onto the transform's convention first, and
     /// leaves everything downstream - rendering, picking, the gizmo - unchanged.
     /// </para>
     /// <para>
@@ -30,8 +30,15 @@ namespace SWLOR.Toolset.Domain.Render
     public static class WaypointMarkerModel
     {
         /// <summary>
-        /// Turns the flag artwork's <c>+Y</c> arrow onto the <c>+X</c> forward every other model
-        /// uses. Composed in model space, before the instance's own heading.
+        /// Aurora draws placed stores with the yellow waypoint flag rather than with a generic
+        /// object marker. Stores have no appearance field of their own, so this is their fixed
+        /// editor-only model.
+        /// </summary>
+        public const string MerchantModelResRef = "gi_waypoint04";
+
+        /// <summary>
+        /// Turns the flag artwork's <c>+Y</c> arrow onto the transform's <c>+X</c> forward.
+        /// Composed in model space, before the instance's own heading.
         /// </summary>
         public static readonly Matrix4x4 ForwardCorrection = Matrix4x4.CreateRotationZ(-MathF.PI / 2f);
     }

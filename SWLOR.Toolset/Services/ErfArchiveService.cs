@@ -1922,7 +1922,7 @@ namespace SWLOR.Toolset.Services
 
             if (extension.Equals("git", StringComparison.OrdinalIgnoreCase))
             {
-                _workspaceContext.InvalidateTagIndex();
+                _workspaceContext.InvalidateGitIndexes();
                 _workspaceContext.InvalidateScriptUsages();
             }
             else if (extension.Equals("itp", StringComparison.OrdinalIgnoreCase))

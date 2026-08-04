@@ -1,4 +1,5 @@
 using Avalonia;
+using Serilog;
 
 namespace SWLOR.Toolset
 {
@@ -17,6 +18,35 @@ namespace SWLOR.Toolset
 
         [STAThread]
         public static void Main(string[] args)
-            => BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        {
+            var logPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "SWLOR Toolset",
+                "Logs",
+                "toolset-.log");
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.WithProperty("Application", "SWLOR.Toolset")
+                .WriteTo.File(
+                    logPath,
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 14,
+                    shared: true)
+                .CreateLogger();
+
+            try
+            {
+                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "SWLOR Toolset terminated unexpectedly.");
+                throw;
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
+        }
     }
 }

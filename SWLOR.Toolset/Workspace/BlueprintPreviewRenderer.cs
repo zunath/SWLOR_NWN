@@ -217,7 +217,10 @@ namespace SWLOR.Toolset.Workspace
             {
                 BlueprintModelKind.Simple when reference.ModelResRef != null =>
                     type == ResourceType.Utc
-                        ? BuildCreatureRenderModel(reference.ModelResRef)
+                        ? reference.Parts.Count > 0
+                            ? ComposeSegmented(reference, includeCreatureAnimations: true) ??
+                              BuildCreatureRenderModel(reference.ModelResRef)
+                            : BuildCreatureRenderModel(reference.ModelResRef)
                         : BuildRenderModel(reference.ModelResRef),
                 BlueprintModelKind.Segmented => ComposeSegmented(reference, type == ResourceType.Utc),
                 BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
@@ -533,7 +536,8 @@ namespace SWLOR.Toolset.Workspace
             BlueprintModelReference reference,
             bool includeCreatureAnimations)
         {
-            if (_partComposer == null || reference.SkeletonResRef == null)
+            var skeletonResRef = reference.SkeletonResRef ?? reference.ModelResRef;
+            if (_partComposer == null || skeletonResRef == null)
                 return null;
 
             var parts = ApplyRobeCoverage(reference.Parts);
@@ -556,7 +560,7 @@ namespace SWLOR.Toolset.Workspace
             }
 
             var renderModels = new List<RenderModel>();
-            var skeleton = LoadMdl(reference.SkeletonResRef, withSupermodelAnims: false);
+            var skeleton = LoadMdl(skeletonResRef, withSupermodelAnims: false);
             var weightedRobe = skinParts
                 .Where(part => part.PartType.Equals("robe", StringComparison.OrdinalIgnoreCase))
                 .Select(part => part.Model)
@@ -597,7 +601,7 @@ namespace SWLOR.Toolset.Workspace
                     // _partTextures is filled by LoadComposerModel as the composer pulls each part in,
                     // so it has to be cleared and read inside the same lock that owns the compose run.
                     _partTextures.Clear();
-                    composed = _partComposer.Compose(reference.SkeletonResRef, rigidParts, adjustSeams: true);
+                    composed = _partComposer.Compose(skeletonResRef, rigidParts, adjustSeams: true);
                     if (composed != null)
                         _partTextures.Restore(composed, TextureExists);
                 }
@@ -611,6 +615,17 @@ namespace SWLOR.Toolset.Workspace
                 }
             }
 
+            // A simple creature model already carries its body geometry in the skeleton model. If
+            // its only attachment is a weighted cloak, there are no rigid parts to make Compose()
+            // clone that body, so include it explicitly before adding the garment overlay.
+            if (rigidParts.Count == 0 && reference.ModelResRef != null && skeleton != null)
+            {
+                var frames = sharedFrames ?? IdleFrames(skeleton);
+                renderModels.Add(includeCreatureAnimations
+                    ? MdlMeshBuilder.BuildAnimatedPreview(skeleton, frames, sharedAnimations)
+                    : MdlMeshBuilder.Build(skeleton, frames));
+            }
+
             renderModels.AddRange(skinParts.Select(part =>
             {
                 var frames = sharedFrames ?? IdleFrames(part.Model);
@@ -619,7 +634,7 @@ namespace SWLOR.Toolset.Workspace
                     : MdlMeshBuilder.Build(part.Model, frames);
             }));
 
-            return CombineRenderModels(reference.SkeletonResRef, renderModels);
+            return CombineRenderModels(skeletonResRef, renderModels);
         }
 
         /// <summary>

@@ -64,6 +64,9 @@ namespace SWLOR.Toolset.Tests
             return new DoorTypeService(twoDa, tlk);
         }
 
+        private static BaseItemIconService BaseItems() =>
+            new(new TwoDaService(Sw2DaDirectory));
+
         private static Domain.Gff.JsonGffStruct BlueprintRoot(ResourceType type, string resRef)
         {
             var workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory);
@@ -156,6 +159,60 @@ namespace SWLOR.Toolset.Tests
                 .Should().Be((int)armor.Get("Cloth2Color").GetInteger());
             result.LayerColorIndices[PltLayers.Leather1]
                 .Should().Be((int)armor.Get("Leather1Color").GetInteger());
+        }
+
+        [Test]
+        public void Resolve_PlacedCreature_UsesItsEmbeddedArmorPartsAndDyes()
+        {
+            // Placed GIT creatures contain the complete equipped UTI struct rather than the
+            // EquippedRes-only entry stored in a UTC. Bruenor's embedded Czerka uniform is torso
+            // 189 / Cloth1 107; ignoring that struct produced the naked part-1 body in the area view.
+            var workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory);
+            var (_, git, _) = workspace.LoadArea("czs220_hangar");
+            var root = git.Creatures.First();
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Utc,
+                root,
+                Appearances(),
+                null,
+                null,
+                _ => throw new InvalidOperationException("embedded armor must not reload its source UTI"),
+                _ => true,
+                baseItems: BaseItems().GetOrNull);
+
+            result.Parts.Should().Contain(
+                part => part.PartType == "chest" && part.ModelResRef == "pmh0_chest189");
+            result.LayerColorIndices[PltLayers.Cloth1].Should().Be(107);
+            BlueprintModelResolver.GetEquippedChestArmorResRef(root).Should().Be("czerkauniform");
+        }
+
+        [Test]
+        public void Resolve_PlacedCreature_AttachesEveryCompositeRightHandWeaponPart()
+        {
+            // The first Anchorhead creature embeds a three-part rifle in slot 16. Item parts retain
+            // their shared item-space coordinates and all attach to the right-hand skeleton hook.
+            var workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory);
+            var (_, git, _) = workspace.LoadArea("anchor_entreenor");
+            var root = git.Creatures.First(creature => creature.GetListOrEmpty("Equip_ItemList")
+                .Any(item => System.Text.Encoding.ASCII.GetString(item.RawStructId ?? []) == "16"));
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Utc,
+                root,
+                Appearances(),
+                null,
+                null,
+                _ => throw new InvalidOperationException("embedded weapon must not reload its source UTI"),
+                _ => true,
+                baseItems: BaseItems().GetOrNull);
+
+            var weaponParts = result.Parts.Where(part => part.PartType == "weaponr").ToList();
+            weaponParts.Should().HaveCount(3);
+            weaponParts.Select(part => part.ModelResRef).Should()
+                .Contain(model => model.EndsWith("_b_011", StringComparison.OrdinalIgnoreCase))
+                .And.Contain(model => model.EndsWith("_m_121", StringComparison.OrdinalIgnoreCase))
+                .And.Contain(model => model.EndsWith("_t_011", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]

@@ -36,6 +36,13 @@ namespace SWLOR.Toolset.Domain.Render
                 ["footr"] = ["rfoot_g", "rfoot"],
                 ["robe"] = ["torso_g", "pelvis_g", "torso", "pelvis"],
 
+                // Equipped item models use their own authored origin and hang directly from the
+                // creature skeleton's visible attachment bones. Distinct part names keep robe
+                // coverage from mistaking a held weapon for the hand body part beneath it.
+                ["helmet"] = ["head_g", "head"],
+                ["weaponl"] = ["lhand_g", "lhand"],
+                ["weaponr"] = ["rhand_g", "rhand"],
+
                 // A cloak hangs from the skeleton's own Cloak_g, which sits under torso_g and carries
                 // the CL*/CM*/CR* chain the cloak's skinmesh is weighted to. Verified against pmh0.
                 ["cloak"] = ["Cloak_g", "cloak_g", "torso_g"],

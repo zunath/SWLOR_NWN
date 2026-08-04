@@ -949,6 +949,20 @@ void main()
         /// <summary>True when this instance should draw its resolved model rather than a marker.</summary>
         private static bool DrawsAsModel(InstanceMarker instance) => instance.Model != null;
 
+        /// <summary>
+        /// Whether the placed model can use NWN's ordinary back-face culling pass.
+        /// </summary>
+        /// <remarks>
+        /// Dynamic creature bodies are assembled from independently-authored body, armor, helmet,
+        /// cloak, and weapon parts. Their triangle winding is not consistent across those resources;
+        /// applying the tile/placeable culling rule to the combined model discards visible equipment
+        /// even though the same geometry renders correctly in the two-sided blueprint preview.
+        /// Creature counts are small compared with area placeables, so drawing them two-sided fixes
+        /// the authored equipment without giving up culling on the thousands of props in dense areas.
+        /// </remarks>
+        private static bool CullInstanceModelFaces(InstanceMarkerKind kind) =>
+            kind != InstanceMarkerKind.Creature;
+
         /// <summary>Layered resource index used to resolve tile/mesh textures and MTR materials. Null degrades every mesh to a flat gray fallback.</summary>
         public ResourceIndex? ResourceIndex { get; set; }
 
@@ -3072,51 +3086,67 @@ void main()
             var preview = PreviewAnimation();
             var previewNeedsFrames = false;
 
-            BeginModelFaceCulling();
-            foreach (var raw in scene.Instances)
+            var faceCullingEnabled = false;
+            try
             {
-                if (!DrawsAsModel(raw))
-                    continue;
-
-                var instance = Displayed(raw);
-
-                // Culled like the tile pass already is. esriauncharted holds 5,249 placeables and each
-                // visible-model instance issues several draw calls, so submitting every one of them every
-                // frame made a dense area unusable however little of it was on screen.
-                if (!IsInstanceVisible(instance))
-                    continue;
-
-                var instanceTransform = AreaPicking.ComputeInstanceTransform(instance);
-
-                var buffer = GetOrBuildModelBuffer(raw.Model!);
-                previewNeedsFrames |= preview.Running &&
-                                      buffer.Animations.Any(animation =>
-                                          string.Equals(
-                                              animation.Name,
-                                              preview.Name,
-                                              StringComparison.OrdinalIgnoreCase) &&
-                                          animation.IsPlayable);
-                _gl!.BindVertexArray(buffer.Vao);
-                SetUniformBool("unlit", false);
-                UseLayerColors(instance.LayerColorIndices, raw.Model);
-
-                foreach (var meshRange in buffer.MeshRanges)
+                foreach (var raw in scene.Instances)
                 {
-                    SetUniformMatrix4(
-                        "model",
-                        PreviewMeshTransform(meshRange, buffer, preview, idleElapsed) * instanceTransform);
-                    BindMeshTexture(meshRange.TextureName);
+                    if (!DrawsAsModel(raw))
+                        continue;
 
-                    unsafe
+                    var instance = Displayed(raw);
+
+                    // Culled like the tile pass already is. esriauncharted holds 5,249 placeables and each
+                    // visible-model instance issues several draw calls, so submitting every one of them every
+                    // frame made a dense area unusable however little of it was on screen.
+                    if (!IsInstanceVisible(instance))
+                        continue;
+
+                    var shouldCullFaces = CullInstanceModelFaces(raw.Kind);
+                    if (shouldCullFaces != faceCullingEnabled)
                     {
-                        _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
-                            DrawElementsType.UnsignedInt,
-                            (void*)PreviewMeshIndexOffset(meshRange, buffer, preview, idleElapsed));
+                        if (shouldCullFaces)
+                            BeginModelFaceCulling();
+                        else
+                            EndModelFaceCulling();
+                        faceCullingEnabled = shouldCullFaces;
+                    }
+
+                    var instanceTransform = AreaPicking.ComputeInstanceTransform(instance);
+
+                    var buffer = GetOrBuildModelBuffer(raw.Model!);
+                    previewNeedsFrames |= preview.Running &&
+                                          buffer.Animations.Any(animation =>
+                                              string.Equals(
+                                                  animation.Name,
+                                                  preview.Name,
+                                                  StringComparison.OrdinalIgnoreCase) &&
+                                              animation.IsPlayable);
+                    _gl!.BindVertexArray(buffer.Vao);
+                    SetUniformBool("unlit", false);
+                    UseLayerColors(instance.LayerColorIndices, raw.Model);
+
+                    foreach (var meshRange in buffer.MeshRanges)
+                    {
+                        SetUniformMatrix4(
+                            "model",
+                            PreviewMeshTransform(meshRange, buffer, preview, idleElapsed) * instanceTransform);
+                        BindMeshTexture(meshRange.TextureName);
+
+                        unsafe
+                        {
+                            _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
+                                DrawElementsType.UnsignedInt,
+                                (void*)PreviewMeshIndexOffset(meshRange, buffer, preview, idleElapsed));
+                        }
                     }
                 }
             }
-
-            EndModelFaceCulling();
+            finally
+            {
+                if (faceCullingEnabled)
+                    EndModelFaceCulling();
+            }
 
             DrawPreviewEmitters(scene, preview);
             if (previewNeedsFrames)
@@ -3544,6 +3574,7 @@ void main()
                 Position = position,
                 Orientation = _snappedDoorAnchor?.Orientation ?? ghost.Orientation,
                 VisualTransform = ghost.VisualTransform,
+                LayerColorIndices = ghost.LayerColorIndices,
                 Model = ghost.Model
             };
 
@@ -3564,6 +3595,7 @@ void main()
             {
                 var buffer = GetOrBuildModelBuffer(placed.Model!);
                 _gl.BindVertexArray(buffer.Vao);
+                UseLayerColors(placed.LayerColorIndices, placed.Model);
 
                 if (refused)
                 {
@@ -3573,7 +3605,9 @@ void main()
                     SetUniformVec3("flatColor", PlacementRefusedColor);
                 }
 
-                BeginModelFaceCulling();
+                var cullFaces = CullInstanceModelFaces(placed.Kind);
+                if (cullFaces)
+                    BeginModelFaceCulling();
                 try
                 {
                     foreach (var meshRange in buffer.MeshRanges)
@@ -3591,7 +3625,8 @@ void main()
                 }
                 finally
                 {
-                    EndModelFaceCulling();
+                    if (cullFaces)
+                        EndModelFaceCulling();
                 }
             }
             else if (_markerMeshBuffer is { } marker)

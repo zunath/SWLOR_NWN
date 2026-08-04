@@ -1,6 +1,8 @@
 using System.Numerics;
+using System.Reflection;
 using Avalonia.Headless.NUnit;
 using FluentAssertions;
+using NUnit.Framework;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Viewport;
 
@@ -8,6 +10,20 @@ namespace SWLOR.Toolset.Tests
 {
     public sealed class AreaViewportStateTests
     {
+        [Test]
+        public void CreatureModelsDrawTwoSidedWithoutDisablingPropCulling()
+        {
+            var policy = typeof(GlAreaControl).GetMethod(
+                "CullInstanceModelFaces",
+                BindingFlags.NonPublic | BindingFlags.Static)!;
+
+            policy.Invoke(null, [InstanceMarkerKind.Creature]).Should().Be(false,
+                "segmented creature equipment has mixed winding and otherwise disappears in the area view");
+            policy.Invoke(null, [InstanceMarkerKind.Placeable]).Should().Be(true,
+                "dense areas still need ordinary prop face culling");
+            policy.Invoke(null, [InstanceMarkerKind.Door]).Should().Be(true);
+        }
+
         [AvaloniaTest]
         public void ViewportState_RoundTripsAcrossControlRecreation()
         {

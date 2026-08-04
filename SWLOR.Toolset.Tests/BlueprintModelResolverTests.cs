@@ -225,7 +225,9 @@ namespace SWLOR.Toolset.Tests
             // when its model resolves.
             var root = BlueprintRoot(ResourceType.Utc, "agr_guildmaster");
             var robeArmor = BlueprintRoot(ResourceType.Uti, "noble_gr");
+            // This corpus item carries the EE word companion, which is authoritative over the byte.
             robeArmor.Get("ArmorPart_Robe").SetInteger(7);
+            robeArmor.Get("xArmorPart_Robe").SetInteger(7);
 
             var withRobe = BlueprintModelResolver.Resolve(
                 ResourceType.Utc, root, Appearances(), null, null, _ => robeArmor, _ => true);

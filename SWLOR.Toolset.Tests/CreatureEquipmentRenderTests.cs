@@ -72,6 +72,20 @@ namespace SWLOR.Toolset.Tests
             dressed.Meshes.Should().Contain(
                 mesh => mesh.TextureName.Equals("pmh0_chest189", StringComparison.OrdinalIgnoreCase),
                 "the embedded Czerka uniform's torso geometry must replace the naked chest");
+            dressed.Meshes.Should().NotContain(
+                mesh => mesh.TextureName.Equals("pmh0_chest001", StringComparison.OrdinalIgnoreCase),
+                "the equipped torso must not coexist with the naked torso");
+
+            var dockhandRoot = hangarGit.Creatures.First(creature =>
+                creature.GetListOrEmpty("Equip_ItemList").Any(item =>
+                    System.Text.Encoding.ASCII.GetString(item.RawStructId ?? []) == "2" &&
+                    item.GetIntOrNull("ArmorPart_Torso") == 102));
+            var dockhand = renderer.BuildModel(ResourceType.Utc, dockhandRoot);
+            dockhand.Should().NotBeNull();
+            dockhand!.Meshes.Should().Contain(
+                mesh => mesh.TextureName.Equals("pmh0_chest102", StringComparison.OrdinalIgnoreCase));
+            dockhand.Meshes.Should().NotContain(
+                mesh => mesh.TextureName.Equals("pmh0_chest001", StringComparison.OrdinalIgnoreCase));
 
             var (_, anchorGit, _) = workspace.LoadArea("anchor_entreenor");
             var armedRoot = anchorGit.Creatures.First(creature => creature.GetListOrEmpty("Equip_ItemList")

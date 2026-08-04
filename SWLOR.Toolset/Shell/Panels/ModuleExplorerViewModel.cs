@@ -122,8 +122,10 @@ namespace SWLOR.Toolset.Shell.Panels
 
             PublishTabs();
 
-            _workspaceContext.CatalogEntryRefreshed += (type, _) =>
+            _workspaceContext.CatalogEntryRefreshed += (type, resRef) =>
             {
+                InvalidateMoveHistoryForMissingResource(type, resRef);
+
                 if (type == ResourceType.Dlg)
                 {
                     _dialogueHitsQuery = null;
@@ -133,6 +135,31 @@ namespace SWLOR.Toolset.Shell.Panels
                 if (_workspaceContext.Catalog is { } catalog)
                     RefreshFromCatalog(catalog);
             };
+        }
+
+        /// <summary>
+        /// Rename and delete notifications name the resource that just disappeared. A move edit for
+        /// that identity can no longer be replayed safely: adding its stale resref back to the
+        /// category sidecar would corrupt membership while leaving the renamed file where it is.
+        /// </summary>
+        private void InvalidateMoveHistoryForMissingResource(ResourceType type, string resRef)
+        {
+            if (!_resourceMoveUndo.Concat(_resourceMoveRedo).Any(edit =>
+                    edit.Type == type &&
+                    edit.ResRef.Equals(resRef, StringComparison.OrdinalIgnoreCase)))
+            {
+                return;
+            }
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return;
+
+            var stillExists = type == ResourceType.Dlg
+                ? ConversationResRefs(workspace).Contains(resRef, StringComparer.OrdinalIgnoreCase)
+                : workspace.EnumerateResRefs(type).Contains(resRef, StringComparer.OrdinalIgnoreCase);
+            if (!stillExists)
+                ClearResourceMoveHistory();
         }
 
         /// <summary>

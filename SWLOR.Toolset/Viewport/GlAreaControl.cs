@@ -4437,6 +4437,8 @@ void main()
             return data;
         }
 
+        private static readonly Vector3 AuroraWaypointMarkerColor = new(0.98f, 0.80f, 0.10f);
+
         private static Vector3 MarkerColor(InstanceMarkerKind kind) => kind switch
         {
             InstanceMarkerKind.Creature => new Vector3(0.85f, 0.15f, 0.15f),
@@ -4444,10 +4446,11 @@ void main()
             InstanceMarkerKind.Item => new Vector3(0.9f, 0.85f, 0.2f),
             InstanceMarkerKind.Placeable => new Vector3(0.2f, 0.45f, 0.9f),
             InstanceMarkerKind.Sound => new Vector3(0.2f, 0.8f, 0.8f),
-            InstanceMarkerKind.Store => new Vector3(0.2f, 0.8f, 0.3f),
+            // Aurora represents merchants with the same yellow marker it uses for waypoints.
+            InstanceMarkerKind.Store => AuroraWaypointMarkerColor,
             InstanceMarkerKind.Trigger => new Vector3(0.95f, 0.55f, 0.15f),
             // Aurora's waypoint yellow, for a waypoint whose appearance row names no model.
-            InstanceMarkerKind.Waypoint => new Vector3(0.98f, 0.80f, 0.10f),
+            InstanceMarkerKind.Waypoint => AuroraWaypointMarkerColor,
             _ => new Vector3(0.7f, 0.7f, 0.7f)
         };
 

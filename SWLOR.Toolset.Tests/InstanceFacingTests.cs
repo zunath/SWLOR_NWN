@@ -13,11 +13,10 @@ namespace SWLOR.Toolset.Tests
     /// Guards that a placed instance is drawn facing the heading its data carries.
     /// </summary>
     /// <remarks>
-    /// Everything shares one convention - model forward is +X, and the heading is a plain rotation
-    /// about Z - except the toolset's waypoint flag artwork, which is authored pointing +Y and is
-    /// turned onto the convention by <see cref="WaypointMarkerModel.ForwardCorrection"/>. These tests
-    /// assert both halves: that the correction lands the flag's arrow on the stored heading, and that
-    /// no other kind is quietly turned with it.
+    /// The area transform uses model +X as its forward axis. Creature bodies and the toolset's
+    /// waypoint flag artwork are authored pointing +Y, so each is turned onto that convention before
+    /// the stored heading is applied. These tests guard both corrections and keep them away from
+    /// objects such as doors whose artwork already follows the transform's convention.
     /// </remarks>
     public class InstanceFacingTests
     {
@@ -135,35 +134,59 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
-        /// The correction is scoped to waypoints. Doors are the proof it must not spread: across the
-        /// corpus a door's Bearing matches its doorway's orientation to 0 or 180 degrees and never 90,
-        /// so a door model - whose leaf spans +X - is already laid along its wall by a plain rotation.
+        /// The correction is scoped to creatures and waypoints. Doors are the proof it must not
+        /// spread: across the corpus a door's Bearing matches its doorway's orientation to 0 or 180
+        /// degrees and never 90, so a door model - whose leaf spans +X - is already laid along its
+        /// wall by a plain rotation.
         /// </summary>
         [Test]
-        public void OnlyWaypointMarkers_CarryTheForwardCorrection()
+        public void CreatureAndWaypointMarkers_CarryTheirForwardCorrection()
         {
             var index = BuildIndex();
+            var area = LoadArea("czs220_hangar");
             var scene = AreaSceneBuilder.Build(
-                LoadArea("cz220shipbreakin").Are, LoadArea("cz220shipbreakin").Git,
+                area.Are, area.Git,
                 new TilesetCatalog(index), new TileModelCache(index));
 
             var waypoints = scene.Instances.Where(i => i.Kind == InstanceMarkerKind.Waypoint).ToList();
-            waypoints.Should().NotBeEmpty("cz220shipbreakin should carry waypoints");
+            waypoints.Should().NotBeEmpty("czs220_hangar should carry waypoints");
 
-            foreach (var waypoint in waypoints)
+            var creatures = scene.Instances.Where(i => i.Kind == InstanceMarkerKind.Creature).ToList();
+            creatures.Should().NotBeEmpty("czs220_hangar should carry creatures");
+
+            foreach (var corrected in creatures.Concat(waypoints))
             {
-                // The correction turns model +Y onto +X; check it by where it sends the Y axis.
-                var turned = Vector3.TransformNormal(Vector3.UnitY, waypoint.VisualTransform);
+                // Both corrections turn model +Y onto +X; check where they send the Y axis.
+                var turned = Vector3.TransformNormal(Vector3.UnitY, corrected.VisualTransform);
                 turned.X.Should().BeApproximately(1f, 0.001f);
                 turned.Y.Should().BeApproximately(0f, 0.001f);
             }
 
-            foreach (var other in scene.Instances.Where(i => i.Kind != InstanceMarkerKind.Waypoint))
+            foreach (var other in scene.Instances.Where(i =>
+                         i.Kind != InstanceMarkerKind.Creature && i.Kind != InstanceMarkerKind.Waypoint))
             {
                 var turned = Vector3.TransformNormal(Vector3.UnitY, other.VisualTransform);
                 turned.X.Should().BeApproximately(0f, 0.001f,
-                    $"a {other.Kind} must keep the shared convention, not the waypoint artwork's");
+                    $"a {other.Kind} must keep the transform's native convention");
             }
+        }
+
+        [Test]
+        public void PlacedCreature_DrawsItsFrontAlongTheStoredHeading()
+        {
+            var index = BuildIndex();
+            var area = LoadArea("czs220_hangar");
+            var scene = AreaSceneBuilder.Build(
+                area.Are, area.Git, new TilesetCatalog(index), new TileModelCache(index));
+            var maureen = scene.Instances.Single(i =>
+                i.Kind == InstanceMarkerKind.Creature && i.TemplateResRef == "maureenliagri");
+
+            var drawnFront = Vector3.Normalize(Vector3.TransformNormal(
+                Vector3.UnitY, AreaPicking.ComputeInstanceTransform(maureen)));
+            var storedHeading = Vector2.Normalize(maureen.Orientation);
+
+            drawnFront.X.Should().BeApproximately(storedHeading.X, 0.001f);
+            drawnFront.Y.Should().BeApproximately(storedHeading.Y, 0.001f);
         }
 
         private static (Domain.Documents.AreDocument Are, Domain.Documents.GitDocument Git) LoadArea(string resRef)

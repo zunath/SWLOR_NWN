@@ -24,6 +24,20 @@ namespace SWLOR.Toolset.Tests
             policy.Invoke(null, [InstanceMarkerKind.Door]).Should().Be(true);
         }
 
+        [Test]
+        public void StoreMarkersUseAurorasWaypointYellow()
+        {
+            var markerColor = typeof(GlAreaControl).GetMethod(
+                "MarkerColor",
+                BindingFlags.NonPublic | BindingFlags.Static)!;
+
+            var store = (Vector3)markerColor.Invoke(null, [InstanceMarkerKind.Store])!;
+            var waypoint = (Vector3)markerColor.Invoke(null, [InstanceMarkerKind.Waypoint])!;
+
+            store.Should().Be(new Vector3(0.98f, 0.80f, 0.10f));
+            store.Should().Be(waypoint, "Aurora draws merchants as yellow waypoint markers");
+        }
+
         [AvaloniaTest]
         public void ViewportState_RoundTripsAcrossControlRecreation()
         {

@@ -228,7 +228,8 @@ namespace SWLOR.Toolset.Domain.Render
             // and a dozen part models, which needs the composer that lives in the app layer. The caller
             // supplies it, and without one a creature falls back to its marker as before.
             AddMarkers(markers, git.Creatures, InstanceMarkerKind.Creature, ResourceType.Utc,
-                resolveModel: resolveCreatureModel);
+                resolveModel: resolveCreatureModel,
+                modelCorrection: CreatureModelFacing.ForwardCorrection);
             AddMarkers(markers, git.Doors, InstanceMarkerKind.Door, ResourceType.Utd,
                 resolveModel: instance => ResolveDoorModel(instance, doorTypes, modelCache));
             AddMarkers(markers, git.Items, InstanceMarkerKind.Item, ResourceType.Uti);

@@ -50,8 +50,18 @@ namespace SWLOR.Toolset.Tests
             var replacementControl = new GlAreaControl();
 
             replacementControl.RestoreViewportState(expected);
+            replacementControl.Scene = new AreaScene
+            {
+                Tileset = "tcn01",
+                Width = 8,
+                Height = 8,
+                Tiles = Array.Empty<TilePlacement>(),
+                Instances = Array.Empty<InstanceMarker>(),
+                Diagnostics = new AreaSceneDiagnostics()
+            };
 
-            replacementControl.CaptureViewportState().Should().Be(expected);
+            replacementControl.CaptureViewportState().Should().Be(expected,
+                "the first scene must establish a rebuild baseline without replacing restored camera state");
         }
 
         [AvaloniaTest]

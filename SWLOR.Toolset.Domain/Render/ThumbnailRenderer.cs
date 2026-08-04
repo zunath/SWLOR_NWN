@@ -192,7 +192,7 @@ namespace SWLOR.Toolset.Domain.Render
                 string.IsNullOrWhiteSpace(mesh.TextureName))
                 return null;
 
-            var paletteKey = mesh.LayerColorIndices.Count == 0
+            var paletteKey = resolveLayeredTexture == null || mesh.LayerColorIndices.Count == 0
                 ? string.Empty
                 : "|" + string.Join(
                     ",",

@@ -2,8 +2,14 @@ using SWLOR.Toolset.Domain.GameData.TwoDa;
 
 namespace SWLOR.Toolset.Domain.GameData.Lookups
 {
-    /// <summary>The geometry and surface rows selected by one cloak appearance.</summary>
-    public readonly record struct CloakModelMapping(int Model, int Texture);
+    /// <summary>
+    /// The geometry, surface, and wearer-part visibility selected by one cloak appearance.
+    /// </summary>
+    public readonly record struct CloakModelMapping(
+        int Model,
+        int Texture,
+        bool HideLeftShoulder,
+        bool HideRightShoulder);
 
     /// <summary>
     /// Resolves a cloak appearance (a UTI's ModelPart1) to the shared geometry and texture numbers
@@ -51,7 +57,11 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                         // Keep valid geometry usable; the appearance row is the safest texture fallback.
                     }
 
-                    mappings[row] = new CloakModelMapping(model.Value, texture);
+                    mappings[row] = new CloakModelMapping(
+                        model.Value,
+                        texture,
+                        ReadFlag(table, row, "HIDESHOL"),
+                        ReadFlag(table, row, "HIDESHOR"));
                 }
                 catch (FormatException)
                 {
@@ -60,6 +70,19 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             }
 
             return mappings;
+        }
+
+        private static bool ReadFlag(TwoDaTable table, int row, string column)
+        {
+            try
+            {
+                return table.GetInt(row, column) == 1;
+            }
+            catch (FormatException)
+            {
+                // A malformed optional flag must not discard otherwise usable cloak geometry.
+                return false;
+            }
         }
     }
 }

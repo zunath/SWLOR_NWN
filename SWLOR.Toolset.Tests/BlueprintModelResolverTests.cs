@@ -193,8 +193,9 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Resolve_PlacedCreature_AttachesEveryCompositeRightHandWeaponPart()
         {
-            // The first Anchorhead creature embeds a three-part rifle in slot 16. Item parts retain
-            // their shared item-space coordinates and all attach to the right-hand skeleton hook.
+            // Find the first Anchorhead creature carrying an item in slot 16. Its embedded
+            // three-part rifle retains shared item-space coordinates and every part attaches to the
+            // right-hand skeleton hook.
             var workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory);
             var (_, git, _) = workspace.LoadArea("anchor_entreenor");
             var root = git.Creatures.First(creature => creature.GetListOrEmpty("Equip_ItemList")
@@ -225,6 +226,8 @@ namespace SWLOR.Toolset.Tests
             // generic pmh0 mannequin, but the equipped garment must use the wearer's skeleton and
             // retain Cloth1 45 instead of inheriting the robe's Cloth1 97.
             var root = BlueprintRoot(ResourceType.Utc, "darthgravius");
+            root.SetInt("BodyPart_LShoul", GffFieldType.Byte, 1);
+            root.SetInt("BodyPart_RShoul", GffFieldType.Byte, 1);
             JsonGffStruct? LoadItem(string resRef) => BlueprintRoot(ResourceType.Uti, resRef);
 
             var result = BlueprintModelResolver.Resolve(
@@ -242,6 +245,9 @@ namespace SWLOR.Toolset.Tests
             cloak.LayerColorIndices![PltLayers.Cloth1].Should().Be(45);
             result.LayerColorIndices[PltLayers.Cloth1].Should().Be(97,
                 "the chest robe and cloak intentionally use independent palettes");
+            result.Parts.Should().NotContain(
+                part => part.PartType == "shol" || part.PartType == "shor",
+                "cloak appearance 10 hides both wearer shoulder parts in cloakmodel.2da");
         }
 
         [Test]

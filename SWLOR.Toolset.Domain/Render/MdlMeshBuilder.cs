@@ -360,7 +360,7 @@ namespace SWLOR.Toolset.Domain.Render
                 // arrives at the default of true, and it carries no bitmap - which drew it as a flat
                 // grey slab across the ground of every tile that had one. The area view gets its
                 // walkmesh from the tile's .wok (see TileWalkmeshCache), never from here.
-                if (mesh.IsWalkmesh || !mesh.Render || PlaceholderNames.Contains(mesh.Name))
+                if (!IsRenderableMesh(mesh))
                     continue;
 
                 var built = BuildMesh(
@@ -414,6 +414,27 @@ namespace SWLOR.Toolset.Domain.Render
                 Emitters = renderEmitters,
                 DefaultAnimationName = defaultAnimationName
             };
+        }
+
+        /// <summary>
+        /// Whether a source trimesh produces one <see cref="RenderMesh"/> in <see cref="Build"/>.
+        /// Consumers that retain metadata parallel to the built mesh list must use this predicate
+        /// rather than approximating the builder's filtering by node name or geometry counts.
+        /// </summary>
+        public static bool IsRenderableMesh(MdlTrimeshNode mesh)
+        {
+            ArgumentNullException.ThrowIfNull(mesh);
+            if (mesh.IsWalkmesh || !mesh.Render || PlaceholderNames.Contains(mesh.Name) ||
+                mesh.Vertices.Length == 0 || mesh.Faces.Length == 0)
+            {
+                return false;
+            }
+
+            var vertexCount = mesh.Vertices.Length;
+            return mesh.Faces.Any(face =>
+                face.VertexIndex0 < vertexCount &&
+                face.VertexIndex1 < vertexCount &&
+                face.VertexIndex2 < vertexCount);
         }
 
         private static RenderMesh? BuildMesh(

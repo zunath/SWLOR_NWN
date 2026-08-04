@@ -479,6 +479,12 @@ void main()
         /// <summary>Whether this control has ever framed a scene - see the <c>Scene</c> setter.</summary>
         private bool _cameraFramed;
 
+        /// <summary>
+        /// A restored camera arrived before its first scene. That scene still supplies the baseline
+        /// used to compare later rebuilds, but must not replace the restored orbit itself.
+        /// </summary>
+        private bool _restoredCameraAwaitingScene;
+
         /// <summary>Captures the current orbit camera once a scene has supplied its framing scale.</summary>
         public AreaViewportState? CaptureViewportState()
         {
@@ -504,6 +510,18 @@ void main()
             _azimuth = state.Azimuth;
             _elevation = AreaCameraMath.ClampElevation(state.Elevation);
             _cameraFramed = true;
+            if (Scene == null)
+            {
+                _framedTarget = _target;
+                _framedDistance = _distance;
+                _restoredCameraAwaitingScene = true;
+            }
+            else
+            {
+                // The current scene has already supplied the correct comparison baseline. Restoring
+                // a panned/zoomed camera must not replace it with the user's current orbit.
+                _restoredCameraAwaitingScene = false;
+            }
             RequestNextFrameRendering();
         }
 
@@ -1088,7 +1106,12 @@ void main()
                 // that distance when the base type changed to a 1.9m mannequin (and the reverse
                 // showing an item as a speck). An appearance edit rebuilds geometry of about the
                 // same size, so it compares equal here and keeps the builder's view.
-                if (value != null && (!_cameraFramed || NeedsRefit(value)))
+                if (value != null && _restoredCameraAwaitingScene)
+                {
+                    _restoredCameraAwaitingScene = false;
+                    RecordSceneFramingBaseline(value);
+                }
+                else if (value != null && (!_cameraFramed || NeedsRefit(value)))
                 {
                     _cameraFramed = true;
                     ResetCameraForScene(value);
@@ -1155,15 +1178,10 @@ void main()
 
         private void ResetCameraForScene(AreaScene scene)
         {
-            var aspect = _viewportWidth > 0 && _viewportHeight > 0
-                ? (float)_viewportWidth / _viewportHeight
-                : 1.5f;
-
             // A single-model preview scene frames the MODEL where it stands, not the grid it
             // nominally sits on - otherwise the camera sits back far enough to hold a whole 10m
             // tile and an item renders as a speck.
-            var (target, distance) = AreaCameraMath.ComputeSceneFraming(
-                scene, AreaSceneBuilder.TileSize, VerticalFovRadians, aspect);
+            var (target, distance) = SceneFraming(scene);
 
             _target = target;
             _distance = distance;
@@ -1179,6 +1197,20 @@ void main()
             _elevation = isSingleModelPreview
                 ? PreviewElevationRadians
                 : AreaCameraMath.DefaultElevationRadians;
+        }
+
+        private void RecordSceneFramingBaseline(AreaScene scene)
+        {
+            (_framedTarget, _framedDistance) = SceneFraming(scene);
+        }
+
+        private (Vector3 Target, float Distance) SceneFraming(AreaScene scene)
+        {
+            var aspect = _viewportWidth > 0 && _viewportHeight > 0
+                ? (float)_viewportWidth / _viewportHeight
+                : 1.5f;
+            return AreaCameraMath.ComputeSceneFraming(
+                scene, AreaSceneBuilder.TileSize, VerticalFovRadians, aspect);
         }
 
         // ----- Pointer input: middle orbits, middle+left pans, wheel zooms -----

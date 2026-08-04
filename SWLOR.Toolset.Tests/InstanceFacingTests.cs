@@ -20,6 +20,8 @@ namespace SWLOR.Toolset.Tests
     /// </remarks>
     public class InstanceFacingTests
     {
+        private static readonly Lazy<AreaScene> HangarScene = new(BuildHangarScene);
+
         private static string RepoRoot
         {
             get
@@ -142,11 +144,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void CreatureAndWaypointMarkers_CarryTheirForwardCorrection()
         {
-            var index = BuildIndex();
-            var area = LoadArea("czs220_hangar");
-            var scene = AreaSceneBuilder.Build(
-                area.Are, area.Git,
-                new TilesetCatalog(index), new TileModelCache(index));
+            var scene = HangarScene.Value;
 
             var waypoints = scene.Instances.Where(i => i.Kind == InstanceMarkerKind.Waypoint).ToList();
             waypoints.Should().NotBeEmpty("czs220_hangar should carry waypoints");
@@ -174,10 +172,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void PlacedCreature_DrawsItsFrontAlongTheStoredHeading()
         {
-            var index = BuildIndex();
-            var area = LoadArea("czs220_hangar");
-            var scene = AreaSceneBuilder.Build(
-                area.Are, area.Git, new TilesetCatalog(index), new TileModelCache(index));
+            var scene = HangarScene.Value;
             var maureen = scene.Instances.Single(i =>
                 i.Kind == InstanceMarkerKind.Creature && i.TemplateResRef == "maureenliagri");
 
@@ -187,6 +182,14 @@ namespace SWLOR.Toolset.Tests
 
             drawnFront.X.Should().BeApproximately(storedHeading.X, 0.001f);
             drawnFront.Y.Should().BeApproximately(storedHeading.Y, 0.001f);
+        }
+
+        private static AreaScene BuildHangarScene()
+        {
+            var index = BuildIndex();
+            var area = LoadArea("czs220_hangar");
+            return AreaSceneBuilder.Build(
+                area.Are, area.Git, new TilesetCatalog(index), new TileModelCache(index));
         }
 
         private static (Domain.Documents.AreDocument Are, Domain.Documents.GitDocument Git) LoadArea(string resRef)

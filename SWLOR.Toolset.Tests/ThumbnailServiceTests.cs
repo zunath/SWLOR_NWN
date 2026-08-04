@@ -192,7 +192,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
-        public void EditingACloakInvalidatesEveryCreatureThumbnailThatWearsIt()
+        public async Task EditingACloakInvalidatesEveryCreatureThumbnailThatWearsIt()
         {
             var moduleRoot = Path.Combine(
                 Path.GetTempPath(), "swlor-thumbnail-equipment-" + Guid.NewGuid().ToString("N"));
@@ -208,6 +208,7 @@ namespace SWLOR.Toolset.Tests
                 var context = new WorkspaceContext(
                     path => new ModuleWorkspace(path), new OutputLogService());
                 context.Open(moduleRoot);
+                await context.Catalog!.BuildTask;
                 var service = new ThumbnailService(context, new CountingSource());
                 var invalidated = new List<(ResourceType Type, string ResRef)>();
                 service.InvalidatedForResRef += (type, resRef) => invalidated.Add((type, resRef));

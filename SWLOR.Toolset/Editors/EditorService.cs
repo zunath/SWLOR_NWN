@@ -3293,6 +3293,7 @@ namespace SWLOR.Toolset.Editors
                 if (_openAreaEditors.TryGetValue(resRef, out existing))
                 {
                     _factory.ActivateDocument(existing);
+                    DispatchPendingAreaReveal(existing);
                     return;
                 }
 

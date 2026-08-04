@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using Serilog;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Render.Icons;
@@ -240,10 +241,15 @@ namespace SWLOR.Toolset.Workspace
                         InvalidateOne(ResourceType.Utc, creatureResRef, useIndexedBlueprint: false);
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     // A malformed creature is independently unrenderable and must not prevent the
                     // remaining dependency invalidations.
+                    Log.ForContext<ThumbnailService>().Warning(
+                        ex,
+                        "Failed to scan visible equipment for creature {CreatureResRef} while invalidating item {ItemResRef}.",
+                        creatureResRef,
+                        itemResRef);
                 }
             }
         }

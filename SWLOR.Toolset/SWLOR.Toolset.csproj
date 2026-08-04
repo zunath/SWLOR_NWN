@@ -47,6 +47,8 @@
     <PackageReference Include="Dock.Model.Mvvm" Version="11.3.12.1" />
     <!-- GlAreaControl uses Silk.NET.OpenGL types directly. -->
     <PackageReference Include="Silk.NET.OpenGL" Version="2.23.0" />
+    <PackageReference Include="Serilog" Version="4.4.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

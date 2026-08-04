@@ -23,20 +23,35 @@ namespace SWLOR.Toolset.Tests
     public class WorkspaceContextCatalogTests
     {
         private string _root = string.Empty;
+        private readonly List<Task> _catalogBuildTasks = new();
 
         [SetUp]
         public void SetUp()
         {
+            _catalogBuildTasks.Clear();
             _root = Path.Combine(Path.GetTempPath(), $"swlor_wscatalog_{Guid.NewGuid():N}");
             foreach (var folder in new[] { "are", "utc", "git", "gic", "dlg", "nss" })
                 Directory.CreateDirectory(Path.Combine(_root, folder));
         }
 
         [TearDown]
-        public void TearDown()
+        public async Task TearDown()
         {
-            if (Directory.Exists(_root))
-                Directory.Delete(_root, recursive: true);
+            try
+            {
+                await Task.WhenAll(_catalogBuildTasks);
+            }
+            finally
+            {
+                if (Directory.Exists(_root))
+                    Directory.Delete(_root, recursive: true);
+            }
+        }
+
+        private void OpenWorkspace(WorkspaceContext workspace)
+        {
+            workspace.Open(_root);
+            _catalogBuildTasks.Add(workspace.Catalog!.BuildTask);
         }
 
         [TestCase(ResourceType.Dlg)]
@@ -45,7 +60,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            OpenWorkspace(workspace);
             workspace.Catalog!.BuildTask.GetAwaiter().GetResult();
 
             var notified = new List<(ResourceType Type, string ResRef)>();
@@ -65,7 +80,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            OpenWorkspace(workspace);
             workspace.Catalog!.BuildTask.GetAwaiter().GetResult();
 
             var notified = new List<(ResourceType Type, string ResRef)>();
@@ -83,7 +98,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            OpenWorkspace(workspace);
             workspace.Catalog!.BuildTask.GetAwaiter().GetResult();
 
             File.WriteAllText(
@@ -115,7 +130,7 @@ namespace SWLOR.Toolset.Tests
                 TaskCreationOptions.RunContinuationsAsynchronously);
             workspace.CatalogBuildCompleted += () => completed.TrySetResult();
 
-            workspace.Open(_root);
+            OpenWorkspace(workspace);
 
             await completed.Task.WaitAsync(TimeSpan.FromSeconds(5));
         }
@@ -125,7 +140,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            OpenWorkspace(workspace);
             var notifications = 0;
             workspace.PlacementIndexInvalidated += () => notifications++;
 
@@ -142,7 +157,7 @@ namespace SWLOR.Toolset.Tests
             var workspace = new WorkspaceContext(
                 root => new ModuleWorkspace(root),
                 new OutputLogService());
-            workspace.Open(_root);
+            OpenWorkspace(workspace);
             var notifications = 0;
             workspace.PlacementIndexInvalidated += () => notifications++;
 
@@ -158,7 +173,7 @@ namespace SWLOR.Toolset.Tests
             var workspace = new WorkspaceContext(
                 root => new ModuleWorkspace(root),
                 new OutputLogService());
-            workspace.Open(_root);
+            OpenWorkspace(workspace);
             var notifications = 0;
             workspace.PlacementIndexInvalidated += () => notifications++;
 
@@ -174,7 +189,7 @@ namespace SWLOR.Toolset.Tests
             var workspace = new WorkspaceContext(
                 root => new ModuleWorkspace(root),
                 new OutputLogService());
-            workspace.Open(_root);
+            OpenWorkspace(workspace);
             var notifications = 0;
             workspace.PlacementIndexInvalidated += () => notifications++;
 

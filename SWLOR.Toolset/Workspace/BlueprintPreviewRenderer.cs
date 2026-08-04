@@ -370,9 +370,6 @@ namespace SWLOR.Toolset.Workspace
                 layerColors = merged;
             }
 
-            Func<string, TextureImage?>? resolveTexture = _textures == null
-                ? null
-                : texture => _textures.Get(texture, layerColors);
             Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture =
                 _textures == null
                     ? null
@@ -380,7 +377,7 @@ namespace SWLOR.Toolset.Workspace
                         texture,
                         meshColors is { Count: > 0 } ? meshColors : layerColors);
             var pixels = ThumbnailRenderer.Render(
-                model, ModelRenderSize, palette: null, resolveTexture: resolveTexture,
+                model, ModelRenderSize, palette: null,
                 resolveLayeredTexture: resolveLayeredTexture);
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
@@ -724,15 +721,11 @@ namespace SWLOR.Toolset.Workspace
             var result = new List<IReadOnlyDictionary<int, int>?>();
             foreach (var mesh in composed.GetMeshNodes())
             {
-                // Keep this filter aligned with MdlMeshBuilder.BuildInternal so list indices match
-                // the RenderMesh sequence produced immediately afterwards.
-                if (mesh.IsWalkmesh || !mesh.Render ||
-                    mesh.Name.Equals("sam", StringComparison.OrdinalIgnoreCase) ||
-                    mesh.Name.Equals("rootdummy", StringComparison.OrdinalIgnoreCase) ||
-                    mesh.Vertices.Length == 0 || mesh.Faces.Length == 0)
-                {
+                // The source-node order is stable even when names are duplicated. Use the builder's
+                // exact predicate so this list remains parallel to its RenderMesh output, including
+                // when a malformed source node has faces but none with valid vertex indices.
+                if (!MdlMeshBuilder.IsRenderableMesh(mesh))
                     continue;
-                }
 
                 result.Add(colorsByModel.TryGetValue(mesh.Bitmap, out var colors) ? colors : null);
             }
@@ -744,7 +737,13 @@ namespace SWLOR.Toolset.Workspace
             RenderModel model,
             IReadOnlyList<IReadOnlyDictionary<int, int>?> layerColors)
         {
-            for (var index = 0; index < Math.Min(model.Meshes.Count, layerColors.Count); index++)
+            if (model.Meshes.Count != layerColors.Count)
+            {
+                throw new InvalidDataException(
+                    $"Composed mesh palette count {layerColors.Count} does not match rendered mesh count {model.Meshes.Count}.");
+            }
+
+            for (var index = 0; index < model.Meshes.Count; index++)
             {
                 if (layerColors[index] is { Count: > 0 } colors)
                     model.Meshes[index].LayerColorIndices = colors;

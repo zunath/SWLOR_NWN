@@ -17,19 +17,19 @@ namespace SWLOR.Toolset.Tests
     {
         [AvaloniaTest]
         public void RightClickingAnInstanceRowOpensItsPropertiesMenu() =>
-            RightClickingAPlacementRowOpensItsPropertiesMenu(
+            RightClickingARowMatchesItsPropertiesMenu(
                 AreaContentsNodeKind.Instance, "Open properties...");
 
         [AvaloniaTest]
         public void RightClickingAGroupRowOpensItsFirstInstancePropertiesMenu() =>
-            RightClickingAPlacementRowOpensItsPropertiesMenu(
+            RightClickingARowMatchesItsPropertiesMenu(
                 AreaContentsNodeKind.Group, "Open first instance properties...");
 
         [AvaloniaTest]
         public void RightClickingAKindHeadingDoesNotOpenAStalePropertiesMenu() =>
-            RightClickingAPlacementRowOpensItsPropertiesMenu(AreaContentsNodeKind.Kind, null);
+            RightClickingARowMatchesItsPropertiesMenu(AreaContentsNodeKind.Kind, null);
 
-        private static void RightClickingAPlacementRowOpensItsPropertiesMenu(
+        private static void RightClickingARowMatchesItsPropertiesMenu(
             AreaContentsNodeKind kind,
             string? expectedLabel)
         {

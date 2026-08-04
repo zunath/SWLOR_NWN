@@ -345,6 +345,28 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void APlainTextureResolverIgnoresUnusedMeshPalettesInItsCacheKey()
+        {
+            var first = TexturedQuad("shared").Meshes[0];
+            first.LayerColorIndices = new Dictionary<int, int> { [2] = 45 };
+            var second = TexturedQuad("shared").Meshes[0];
+            second.LayerColorIndices = new Dictionary<int, int> { [2] = 97 };
+            var lookups = 0;
+
+            ThumbnailRenderer.Render(
+                new RenderModel { Name = "plain-texture", Meshes = [first, second] },
+                Size,
+                resolveTexture: _ =>
+                {
+                    lookups++;
+                    return SolidTexture(10, 10, 10);
+                });
+
+            lookups.Should().Be(1,
+                "the plain resolver cannot use layer colors and should share one decoded texture");
+        }
+
+        [Test]
         public void Fully_Transparent_Texels_Are_Cut_Out_Rather_Than_Drawn()
         {
             var opaque = ThumbnailRenderer.Render(

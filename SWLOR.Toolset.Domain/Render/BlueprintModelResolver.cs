@@ -444,7 +444,7 @@ namespace SWLOR.Toolset.Domain.Render
                 ModelResRef = modelResRef,
                 Parts = ResolveVisibleEquipment(
                     root, itemBlueprintLoader, partModelExists, baseItems, cloakModels,
-                    wearerPrefix: null)
+                    wearerPrefix: null).Parts
             };
         }
 
@@ -465,7 +465,7 @@ namespace SWLOR.Toolset.Domain.Render
             string prefix,
             Func<string, JsonGffStruct?>? itemBlueprintLoader,
             Func<string, bool>? partModelExists,
-            IReadOnlyList<BlueprintModelPart> visibleEquipment)
+            VisibleEquipment visibleEquipment)
         {
             var armor = LoadEquippedChestArmor(root, itemBlueprintLoader);
             var parts = new List<BlueprintModelPart>();
@@ -490,6 +490,9 @@ namespace SWLOR.Toolset.Domain.Render
 
             foreach (var (creatureField, armorKey, partType) in BodyPartFields)
             {
+                if (visibleEquipment.HiddenBodyParts.Contains(partType))
+                    continue;
+
                 var number = ResolvePartNumber(
                     root.GetIntOrNull(creatureField) ?? 0,
                     armor == null
@@ -499,7 +502,7 @@ namespace SWLOR.Toolset.Domain.Render
                     parts.Add(new BlueprintModelPart(partType, BuildPartName(prefix, partType, number)));
             }
 
-            parts.AddRange(visibleEquipment);
+            parts.AddRange(visibleEquipment.Parts);
 
             if (parts.Count == 0)
                 return BlueprintModelReference.NoneWith($"{row.DisplayName}: segmented creature has no body parts.");
@@ -559,7 +562,11 @@ namespace SWLOR.Toolset.Domain.Render
         /// Resolves the models for equipment the game draws on a creature. Ordinary right- and
         /// left-hand items are held props; creature natural-weapon/stat slots are deliberately not.
         /// </summary>
-        private static IReadOnlyList<BlueprintModelPart> ResolveVisibleEquipment(
+        private readonly record struct VisibleEquipment(
+            IReadOnlyList<BlueprintModelPart> Parts,
+            IReadOnlySet<string> HiddenBodyParts);
+
+        private static VisibleEquipment ResolveVisibleEquipment(
             JsonGffStruct root,
             Func<string, JsonGffStruct?>? itemBlueprintLoader,
             Func<string, bool>? partModelExists,
@@ -568,7 +575,11 @@ namespace SWLOR.Toolset.Domain.Render
             string? wearerPrefix)
         {
             if (baseItems == null)
-                return Array.Empty<BlueprintModelPart>();
+            {
+                return new VisibleEquipment(
+                    Array.Empty<BlueprintModelPart>(),
+                    new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+            }
 
             var parts = new List<BlueprintModelPart>();
             AddVisibleEquipmentPart(
@@ -583,7 +594,27 @@ namespace SWLOR.Toolset.Domain.Render
             AddVisibleEquipmentPart(
                 parts, root, LeftHandSlotStructId, "weaponl",
                 itemBlueprintLoader, partModelExists, baseItems, cloakModels, wearerPrefix);
-            return parts;
+            return new VisibleEquipment(
+                parts,
+                ResolveCloakHiddenBodyParts(root, itemBlueprintLoader, cloakModels));
+        }
+
+        private static IReadOnlySet<string> ResolveCloakHiddenBodyParts(
+            JsonGffStruct creature,
+            Func<string, JsonGffStruct?>? itemBlueprintLoader,
+            CloakModelService? cloakModels)
+        {
+            var hidden = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var cloak = LoadEquippedItem(creature, CloakSlotStructId, itemBlueprintLoader);
+            var appearance = cloak == null
+                ? null
+                : ItemAppearanceValues.Read(cloak, "ModelPart1");
+            var mapping = appearance is { } value ? cloakModels?.GetOrNull(value) : null;
+            if (mapping?.HideLeftShoulder == true)
+                hidden.Add("shol");
+            if (mapping?.HideRightShoulder == true)
+                hidden.Add("shor");
+            return hidden;
         }
 
         private static void AddVisibleEquipmentPart(

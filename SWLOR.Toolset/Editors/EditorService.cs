@@ -345,7 +345,7 @@ namespace SWLOR.Toolset.Editors
             });
             _workspaceContext.ScriptUsagesInvalidated += _scriptUsageIndex.Invalidate;
             _workspaceContext.TagIndexInvalidated += OnTagIndexInvalidated;
-            _workspaceContext.PlacementIndexInvalidated += ReloadObjectSources;
+            _workspaceContext.PlacementIndexInvalidated += ReloadPlacementSources;
             _workspaceContext.CatalogBuildCompleted += RefreshObjectSourceAreaNames;
 
             // Opening another module invalidates every module-derived picker; saving a blueprint
@@ -366,7 +366,7 @@ namespace SWLOR.Toolset.Editors
                 _itemSourcesGeneration++;
                 _behaviorValues?.InvalidateModuleSources();
                 OnTagIndexInvalidated();
-                ReloadObjectSources();
+                ReloadPlacementSources();
 
                 // Pay the obtainability scan's cost here, in the background, rather than on
                 // whichever item editor happens to open first.
@@ -995,8 +995,18 @@ namespace SWLOR.Toolset.Editors
             return source;
         }
 
-        private void ReloadObjectSources() =>
+        private void ReloadPlacementSources()
+        {
+            if (!Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
+            {
+                Avalonia.Threading.Dispatcher.UIThread.Post(ReloadPlacementSources);
+                return;
+            }
+
             VisitObjectSources(source => source.Reload());
+            foreach (var merchant in _openMerchantEditors.Values)
+                merchant.Editor.InvalidatePlacedInstances();
+        }
 
         private void RefreshObjectSourceAreaNames() =>
             VisitObjectSources(source => source.RefreshAreaNames());

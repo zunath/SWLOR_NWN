@@ -1,10 +1,13 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
+using SWLOR.Toolset.Editors.Merchants;
 using SWLOR.Toolset.Editors.Sources;
+using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -260,6 +263,57 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PlacementInvalidationClearsAnOpenMerchantSourceSnapshot()
+        {
+            var moduleRoot = NewModuleRoot();
+            var merchantFolder = Path.Combine(moduleRoot, "utm");
+            Directory.CreateDirectory(merchantFolder);
+            var merchantPath = Path.Combine(merchantFolder, "probe_store.utm.json");
+            File.WriteAllBytes(
+                merchantPath,
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utm, "probe_store", "Probe Store"));
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            var editors = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                factory: null!,
+                prompts: null!);
+            workspace.Open(moduleRoot);
+            Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+            var merchant = new MerchantDocumentViewModel(
+                merchantPath,
+                "probe_store",
+                log,
+                new StubPrompts());
+
+            try
+            {
+                var openEditors = (Dictionary<string, MerchantDocumentViewModel>)typeof(EditorService)
+                    .GetField("_openMerchantEditors", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .GetValue(editors)!;
+                openEditors[merchantPath] = merchant;
+                merchant.Editor.ArePlacedInstancesLoaded = true;
+                merchant.Editor.PlacedInstances.Add(new MerchantInstancePlacement(
+                    "Old Area", "old_area", "OLD_STORE", 0, 0, 0));
+
+                workspace.InvalidatePlacementIndex();
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+
+                merchant.Editor.ArePlacedInstancesLoaded.Should().BeFalse();
+                merchant.Editor.PlacedInstancesNeedRefresh.Should().BeTrue();
+                merchant.Editor.PlacedInstances.Should().BeEmpty(
+                    "stale merchant coordinates must not remain available to Go To");
+            }
+            finally
+            {
+                merchant.OnClose();
+            }
+        }
+
+        [Test]
         public async Task ReplacingAWorkspaceCancelsItsObsoletePlacementWarmup()
         {
             var firstRoot = NewModuleRoot();
@@ -323,6 +377,28 @@ namespace SWLOR.Toolset.Tests
                 Directory.CreateDirectory(Path.Combine(root, folder));
             _roots.Add(root);
             return root;
+        }
+
+        private sealed class StubPrompts : IEditorPromptService
+        {
+            public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) =>
+                Task.FromResult(ExternalChangeChoice.Cancel);
+
+            public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) =>
+                Task.FromResult(UnsavedChangesChoice.Cancel);
+
+            public Task<bool> ConfirmDestructiveAsync(
+                string headline,
+                string message,
+                string confirmLabel) =>
+                Task.FromResult(false);
+
+            public Task<string?> PromptForTextAsync(
+                string headline,
+                string message,
+                string initialValue,
+                string confirmLabel) =>
+                Task.FromResult<string?>(null);
         }
     }
 }

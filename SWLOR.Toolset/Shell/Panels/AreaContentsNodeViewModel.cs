@@ -61,6 +61,17 @@ namespace SWLOR.Toolset.Shell.Panels
 
         public bool IsInstance => Kind == AreaContentsNodeKind.Instance;
 
+        /// <summary>
+        /// True when this row identifies placements whose properties can be opened. A group is an
+        /// object-bearing row too; its action opens the first member and says so explicitly.
+        /// </summary>
+        public bool CanOpenProperties =>
+            (Kind is AreaContentsNodeKind.Instance or AreaContentsNodeKind.Group) && Indices.Count > 0;
+
+        public string OpenPropertiesLabel => Kind == AreaContentsNodeKind.Group
+            ? "Open first instance properties..."
+            : "Open properties...";
+
         /// <summary>True for anything a Delete keypress may act on.</summary>
         public bool IsDeletable => Indices.Count > 0;
 

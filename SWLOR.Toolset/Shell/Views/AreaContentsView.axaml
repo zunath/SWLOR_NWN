@@ -48,7 +48,7 @@
                 PointerPressed="OnRowPointerPressed" ContextRequested="OnRowContextRequested">
             <Grid.ContextMenu>
               <ContextMenu>
-                <MenuItem Header="Open properties..." Click="OnOpenPropertiesClick" />
+                <MenuItem Header="{Binding OpenPropertiesLabel}" Click="OnOpenPropertiesClick" />
               </ContextMenu>
             </Grid.ContextMenu>
 

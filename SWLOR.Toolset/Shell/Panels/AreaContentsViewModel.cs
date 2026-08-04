@@ -410,7 +410,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private void OpenProperties(AreaContentsNodeViewModel? node)
         {
             node ??= SelectedRow;
-            if (_editor == null || node is not { Kind: AreaContentsNodeKind.Instance })
+            if (_editor == null || node is not { CanOpenProperties: true })
                 return;
 
             _editor.OpenInstanceProperties(node.BlueprintType, node.Indices[0]);

@@ -32,7 +32,7 @@ namespace SWLOR.Toolset.Shell.Views
         private void OnRowContextRequested(object? sender, ContextRequestedEventArgs e)
         {
             if (sender is not Control
-                { DataContext: AreaContentsNodeViewModel { IsInstance: true } node } ||
+                { DataContext: AreaContentsNodeViewModel { CanOpenProperties: true } node } ||
                 DataContext is not AreaContentsViewModel viewModel)
             {
                 _contextRow = null;
@@ -42,6 +42,14 @@ namespace SWLOR.Toolset.Shell.Views
 
             _contextRow = node;
             viewModel.SelectedRow = node;
+
+            // Open explicitly instead of depending on the ContextMenu attached-property handler's
+            // ordering relative to the ListBox's routed event. The latter works headlessly but can
+            // be swallowed by the realised ListBoxItem on Windows before the popup opens.
+            if (sender is Control { ContextMenu: { } menu } owner && !menu.IsOpen)
+                menu.Open(owner);
+
+            e.Handled = true;
         }
 
         private void OnOpenPropertiesClick(object? sender, RoutedEventArgs e)

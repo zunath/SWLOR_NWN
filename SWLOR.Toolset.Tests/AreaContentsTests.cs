@@ -258,6 +258,23 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void OpeningProperties_FromAGroup_OpensItsFirstPlacement()
+        {
+            var editor = CreateEditor();
+            var panel = CreatePanel(editor, AreaContentsGrouping.Blueprint);
+            var group = KindNode(panel, "Placeables").Children
+                .First(child => child.Kind == AreaContentsNodeKind.Group);
+            var section = editor.SectionFor(ResourceType.Utp)!;
+            InstanceListSectionViewModel? requestedSection = null;
+            editor.InstancePropertiesRequested += value => requestedSection = value;
+
+            panel.OpenPropertiesCommand.Execute(group);
+
+            section.SelectedRow.Should().BeSameAs(section.Rows[group.Indices[0]]);
+            requestedSection.Should().BeSameAs(section);
+        }
+
+        [Test]
         public void RevealingPlacement_VerifiesIdentityBeforeTrustingAStaleIndex()
         {
             var editor = CreateEditor();

@@ -103,6 +103,38 @@ namespace SWLOR.Toolset.Tests
             armed!.Meshes.Sum(mesh => mesh.VertexCount).Should().BeGreaterThan(
                 unarmed!.Meshes.Sum(mesh => mesh.VertexCount),
                 "the embedded rifle parts must add geometry to the right-hand skeleton bone");
+
+            var gravius = renderer.BuildModel(
+                ResourceType.Utc,
+                workspace.LoadBlueprint(ResourceType.Utc, "darthgravius").Fields);
+            gravius.Should().NotBeNull();
+            gravius!.LayerColorIndices[SWLOR.NWN.Formats.Plt.PltLayers.Cloth1].Should().Be(97);
+            var cloakMeshes = gravius.Meshes.Where(mesh =>
+                mesh.TextureName.Contains("cloak", StringComparison.OrdinalIgnoreCase)).ToList();
+            cloakMeshes.Should().NotBeEmpty(
+                "the female elf must wear the cloak model authored for her own skeleton");
+            cloakMeshes.Should().OnlyContain(mesh => mesh.LayerColorIndices.ContainsKey(
+                SWLOR.NWN.Formats.Plt.PltLayers.Cloth1));
+            cloakMeshes.Select(mesh =>
+                    mesh.LayerColorIndices[SWLOR.NWN.Formats.Plt.PltLayers.Cloth1])
+                .Should().OnlyContain(cloth => cloth == 45,
+                    "the cloak's dyes must not be replaced by the equipped chest robe's palette");
+
+            // Fixed-model creatures still need their attachments composed. This is also the model
+            // path shared by software thumbnails, which previously rendered only the bare base MDL.
+            var fixedCreature = workspace.LoadBlueprint(ResourceType.Utc, "bf_butcher").Fields;
+            var armedFixed = renderer.BuildModel(ResourceType.Utc, fixedCreature);
+            var fixedEquipment = fixedCreature.GetOrNull("Equip_ItemList")!;
+            var fixedRightHand = fixedEquipment.Elements!.FindIndex(item =>
+                System.Text.Encoding.ASCII.GetString(item.RawStructId ?? []) == "16");
+            fixedEquipment.Elements.RemoveAt(fixedRightHand);
+            var unarmedFixed = renderer.BuildModel(ResourceType.Utc, fixedCreature);
+
+            armedFixed.Should().NotBeNull();
+            unarmedFixed.Should().NotBeNull();
+            armedFixed!.Meshes.Sum(mesh => mesh.VertexCount).Should().BeGreaterThan(
+                unarmedFixed!.Meshes.Sum(mesh => mesh.VertexCount),
+                "a simple creature's held item must be composed with its base model");
         }
     }
 }

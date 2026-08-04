@@ -192,6 +192,44 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void EditingACloakInvalidatesEveryCreatureThumbnailThatWearsIt()
+        {
+            var moduleRoot = Path.Combine(
+                Path.GetTempPath(), "swlor-thumbnail-equipment-" + Guid.NewGuid().ToString("N"));
+            try
+            {
+                var utcDirectory = Path.Combine(moduleRoot, "utc");
+                Directory.CreateDirectory(utcDirectory);
+                Directory.CreateDirectory(Path.Combine(moduleRoot, "are"));
+                File.Copy(
+                    Path.Combine(CorpusLocator.ModuleDirectory, "utc", "darthgravius.utc.json"),
+                    Path.Combine(utcDirectory, "darthgravius.utc.json"));
+
+                var context = new WorkspaceContext(
+                    path => new ModuleWorkspace(path), new OutputLogService());
+                context.Open(moduleRoot);
+                var service = new ThumbnailService(context, new CountingSource());
+                var invalidated = new List<(ResourceType Type, string ResRef)>();
+                service.InvalidatedForResRef += (type, resRef) => invalidated.Add((type, resRef));
+
+                service.RequestAsync(ResourceType.Utc, "darthgravius", _ => { });
+                Drain();
+                service.Cached(ResourceType.Utc, "darthgravius").Should().NotBeNull();
+
+                service.Invalidate(ResourceType.Uti, "jeweled_cloak");
+
+                service.Cached(ResourceType.Utc, "darthgravius").Should().BeNull();
+                invalidated.Should().Contain((ResourceType.Utc, "darthgravius"),
+                    "cloak, helmet, and held-item edits must invalidate wearers just like chest armor");
+            }
+            finally
+            {
+                if (Directory.Exists(moduleRoot))
+                    Directory.Delete(moduleRoot, recursive: true);
+            }
+        }
+
+        [AvaloniaTest]
         public void ARenderInvalidatedWhileItWasRunningIsNotPublished()
         {
             // The whole point of the epoch: a render that started before the cache was cleared is

@@ -67,6 +67,9 @@ namespace SWLOR.Toolset.Tests
         private static BaseItemIconService BaseItems() =>
             new(new TwoDaService(Sw2DaDirectory));
 
+        private static CloakModelService CloakModels() =>
+            new(new TwoDaService(Sw2DaDirectory));
+
         private static Domain.Gff.JsonGffStruct BlueprintRoot(ResourceType type, string resRef)
         {
             var workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory);
@@ -213,6 +216,39 @@ namespace SWLOR.Toolset.Tests
                 .Contain(model => model.EndsWith("_b_011", StringComparison.OrdinalIgnoreCase))
                 .And.Contain(model => model.EndsWith("_m_121", StringComparison.OrdinalIgnoreCase))
                 .And.Contain(model => model.EndsWith("_t_011", StringComparison.OrdinalIgnoreCase));
+        }
+
+        [Test]
+        public void Resolve_EquippedCloak_UsesTheWearersBodyPrefixAndItsOwnDyes()
+        {
+            // Darth Gravius is a female dynamic elf (pfe0). The cloak item preview itself uses a
+            // generic pmh0 mannequin, but the equipped garment must use the wearer's skeleton and
+            // retain Cloth1 45 instead of inheriting the robe's Cloth1 97.
+            var root = BlueprintRoot(ResourceType.Utc, "darthgravius");
+            JsonGffStruct? LoadItem(string resRef) => BlueprintRoot(ResourceType.Uti, resRef);
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Utc, root, Appearances(), null, null,
+                LoadItem, _ => true, baseItems: BaseItems().GetOrNull,
+                cloakModels: CloakModels());
+
+            result.SkeletonResRef.Should().Be("pfe0");
+            var cloak = result.Parts.Single(part => part.PartType == "cloak");
+            cloak.ModelResRef.Should().Be("pfe0_cloak_007",
+                "cloak appearance 10 maps to geometry 7 through cloakmodel.2da");
+            cloak.LayerColorIndices.Should().NotBeNull();
+            cloak.LayerColorIndices![PltLayers.Cloth1].Should().Be(45);
+            result.LayerColorIndices[PltLayers.Cloth1].Should().Be(97,
+                "the chest robe and cloak intentionally use independent palettes");
+        }
+
+        [Test]
+        public void VisibleEquipmentDependenciesIncludeArmorCloakAndHeldItems()
+        {
+            var root = BlueprintRoot(ResourceType.Utc, "darthgravius");
+
+            BlueprintModelResolver.GetVisibleEquippedItemResRefs(root).Should().BeEquivalentTo(
+                new[] { "graviusrobe001", "d_gravius_saber", "jeweled_cloak" });
         }
 
         [Test]

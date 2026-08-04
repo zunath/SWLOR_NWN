@@ -98,6 +98,13 @@ namespace SWLOR.Toolset.Domain.Render
         public IReadOnlyDictionary<string, IReadOnlyList<float[]>> AnimationNormals { get; init; } =
             new Dictionary<string, IReadOnlyList<float[]>>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Item-specific PLT palette rows for this mesh. Usually empty, in which case the owning
+        /// creature/model palette applies; weighted equipment such as a cloak carries its own dyes.
+        /// </summary>
+        public IReadOnlyDictionary<int, int> LayerColorIndices { get; set; } =
+            new Dictionary<int, int>();
+
         public int VertexCount => Positions.Length / 3;
         public int TriangleCount => Indices.Length / 3;
     }

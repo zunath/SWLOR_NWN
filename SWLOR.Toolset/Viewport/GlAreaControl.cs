@@ -323,6 +323,10 @@ void main()
 
             public string? TextureName { get; init; }
 
+            /// <summary>Equipment-specific PLT dyes; empty means use the instance/model palette.</summary>
+            public IReadOnlyDictionary<int, int> LayerColorIndices { get; init; } =
+                new Dictionary<int, int>();
+
             /// <summary>
             /// The source node's MDL <c>tilefade</c> flag - see <see cref="RenderMesh.TileFade"/>.
             /// Non-zero marks the tileset's own overhead geometry, which the tile pass drops unless
@@ -3124,13 +3128,13 @@ void main()
                                               animation.IsPlayable);
                     _gl!.BindVertexArray(buffer.Vao);
                     SetUniformBool("unlit", false);
-                    UseLayerColors(instance.LayerColorIndices, raw.Model);
-
                     foreach (var meshRange in buffer.MeshRanges)
                     {
                         SetUniformMatrix4(
                             "model",
                             PreviewMeshTransform(meshRange, buffer, preview, idleElapsed) * instanceTransform);
+                        UseLayerColors(
+                            meshRange.LayerColorIndices, instance.LayerColorIndices, raw.Model);
                         BindMeshTexture(meshRange.TextureName);
 
                         unsafe
@@ -3595,8 +3599,6 @@ void main()
             {
                 var buffer = GetOrBuildModelBuffer(placed.Model!);
                 _gl.BindVertexArray(buffer.Vao);
-                UseLayerColors(placed.LayerColorIndices, placed.Model);
-
                 if (refused)
                 {
                     SetUniformBool("hasTexture", false);
@@ -3614,7 +3616,11 @@ void main()
                     {
                         SetUniformMatrix4("model", meshRange.MeshTransform * transform);
                         if (!refused)
+                        {
+                            UseLayerColors(
+                                meshRange.LayerColorIndices, placed.LayerColorIndices, placed.Model);
                             BindMeshTexture(meshRange.TextureName);
+                        }
 
                         unsafe
                         {
@@ -4555,6 +4561,7 @@ void main()
                     AnimationFrames = mesh.AnimationFrames,
                     AnimationIndexOffsets = animationIndexOffsets,
                     TextureName = string.IsNullOrEmpty(mesh.TextureName) ? null : mesh.TextureName,
+                    LayerColorIndices = mesh.LayerColorIndices,
                     TileFade = mesh.TileFade
                 });
             }
@@ -4596,10 +4603,18 @@ void main()
         /// trigger. PLT surfaces are only coloured at load, so this has to be set before the first
         /// BindMeshTexture of the model and stays set for the rest of its draw.
         /// </summary>
-        private void UseLayerColors(IReadOnlyDictionary<int, int>? instanceColors, RenderModel? model)
+        private void UseLayerColors(
+            IReadOnlyDictionary<int, int>? meshColors,
+            IReadOnlyDictionary<int, int>? instanceColors,
+            RenderModel? model)
         {
-            // The instance wins: it can change dye without the model being rebuilt.
-            var colors = instanceColors is { Count: > 0 } ? instanceColors : model?.LayerColorIndices;
+            // A garment's own item dyes win over the creature instance's chest-armor palette. The
+            // instance remains next because it can change its body/armor dye without rebuilding.
+            var colors = meshColors is { Count: > 0 }
+                ? meshColors
+                : instanceColors is { Count: > 0 }
+                    ? instanceColors
+                    : model?.LayerColorIndices;
             if (colors == null || colors.Count == 0)
             {
                 _layerColors = null;

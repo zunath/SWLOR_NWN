@@ -233,10 +233,8 @@ namespace SWLOR.Toolset.Workspace
                     }
 
                     var creature = creatureBlueprint.Fields;
-                    if (string.Equals(
-                            BlueprintModelResolver.GetEquippedChestArmorResRef(creature),
-                            itemResRef,
-                            StringComparison.OrdinalIgnoreCase))
+                    if (BlueprintModelResolver.GetVisibleEquippedItemResRefs(creature)
+                        .Contains(itemResRef, StringComparer.OrdinalIgnoreCase))
                     {
                         // A loose module UTI cannot affect the independent Standard-content preview.
                         InvalidateOne(ResourceType.Utc, creatureResRef, useIndexedBlueprint: false);
@@ -1090,10 +1088,10 @@ namespace SWLOR.Toolset.Workspace
                     return Array.Empty<string>();
 
                 var creature = creatureBlueprint.Fields;
-                var itemResRef = BlueprintModelResolver.GetEquippedChestArmorResRef(creature);
-                return string.IsNullOrWhiteSpace(itemResRef)
-                    ? Array.Empty<string>()
-                    : new[] { workspace.GetResourcePath(ResourceType.Uti, itemResRef) };
+                return BlueprintModelResolver.GetVisibleEquippedItemResRefs(creature)
+                    .Select(itemResRef => workspace.GetResourcePath(ResourceType.Uti, itemResRef))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
             }
             catch (Exception)
             {

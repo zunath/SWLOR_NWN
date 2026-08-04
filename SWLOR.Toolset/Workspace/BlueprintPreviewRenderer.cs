@@ -52,6 +52,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly DoorTypeService? _doors;
         private readonly WaypointAppearanceService? _waypoints;
         private readonly BaseItemIconService? _baseItems;
+        private readonly CloakModelService? _cloakModels;
         private readonly PortraitService? _portraits;
         private readonly TwoDaService? _twoDa;
         private readonly ArmorDyeSwatchService _dyeSwatches;
@@ -90,6 +91,7 @@ namespace SWLOR.Toolset.Workspace
             _doors = doors;
             _waypoints = waypoints;
             _baseItems = baseItems;
+            _cloakModels = twoDa == null ? null : new CloakModelService(twoDa);
             _portraits = portraits;
             _twoDa = twoDa;
             _dyeSwatches = new ArmorDyeSwatchService(resourceIndex);
@@ -211,24 +213,43 @@ namespace SWLOR.Toolset.Workspace
                 type, root, _appearances, _placeables, _doors,
                 itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
                 PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull,
-                armorPreviewFemale);
+                armorPreviewFemale, _cloakModels);
 
-            var model = reference.Kind switch
+            var model = BuildResolvedModel(
+                type, reference, includeCreatureAnimations: type == ResourceType.Utc);
+
+            return WithLayerColors(model, reference);
+        }
+
+        /// <summary>
+        /// Builds one resolved reference for both live editor geometry and software thumbnails.
+        /// Keeping the switch shared prevents simple-model creatures from losing helmets, cloaks,
+        /// and held weapons only in the palette thumbnail path.
+        /// </summary>
+        private RenderModel? BuildResolvedModel(
+            ResourceType type,
+            BlueprintModelReference reference,
+            bool includeCreatureAnimations)
+        {
+            return reference.Kind switch
             {
                 BlueprintModelKind.Simple when reference.ModelResRef != null =>
                     type == ResourceType.Utc
                         ? reference.Parts.Count > 0
-                            ? ComposeSegmented(reference, includeCreatureAnimations: true) ??
-                              BuildCreatureRenderModel(reference.ModelResRef)
-                            : BuildCreatureRenderModel(reference.ModelResRef)
+                            ? ComposeSegmented(reference, includeCreatureAnimations) ??
+                              BuildCreatureModel(reference.ModelResRef, includeCreatureAnimations)
+                            : BuildCreatureModel(reference.ModelResRef, includeCreatureAnimations)
                         : BuildRenderModel(reference.ModelResRef),
-                BlueprintModelKind.Segmented => ComposeSegmented(reference, type == ResourceType.Utc),
+                BlueprintModelKind.Segmented => ComposeSegmented(reference, includeCreatureAnimations),
                 BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
                 _ => null
             };
-
-            return WithLayerColors(model, reference);
         }
+
+        private RenderModel? BuildCreatureModel(string modelResRef, bool includeCreatureAnimations) =>
+            includeCreatureAnimations
+                ? BuildCreatureRenderModel(modelResRef)
+                : BuildRenderModel(modelResRef);
 
         /// <summary>
         /// Hands the blueprint's dye choices to the model so the viewport can colour its PLT layers.
@@ -335,15 +356,10 @@ namespace SWLOR.Toolset.Workspace
             var reference = BlueprintModelResolver.Resolve(
                 type, root, _appearances, _placeables, _doors,
                 itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
-                PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull);
+                PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull,
+                cloakModels: _cloakModels);
 
-            var model = reference.Kind switch
-            {
-                BlueprintModelKind.Simple when reference.ModelResRef != null => BuildRenderModel(reference.ModelResRef),
-                BlueprintModelKind.Segmented => ComposeSegmented(reference, includeCreatureAnimations: false),
-                BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
-                _ => null
-            };
+            var model = BuildResolvedModel(type, reference, includeCreatureAnimations: false);
 
             IReadOnlyDictionary<int, int> layerColors = reference.LayerColorIndices;
             if (layerColorOverrides is { Count: > 0 })
@@ -357,8 +373,15 @@ namespace SWLOR.Toolset.Workspace
             Func<string, TextureImage?>? resolveTexture = _textures == null
                 ? null
                 : texture => _textures.Get(texture, layerColors);
+            Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture =
+                _textures == null
+                    ? null
+                    : (texture, meshColors) => _textures.Get(
+                        texture,
+                        meshColors is { Count: > 0 } ? meshColors : layerColors);
             var pixels = ThumbnailRenderer.Render(
-                model, ModelRenderSize, palette: null, resolveTexture: resolveTexture);
+                model, ModelRenderSize, palette: null, resolveTexture: resolveTexture,
+                resolveLayeredTexture: resolveLayeredTexture);
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
 
@@ -548,13 +571,13 @@ namespace SWLOR.Toolset.Workspace
             // an overlay: it supplies coat-helper tracks and body rotations, but deliberately omits
             // translations shared with the wearer. Those missing channels must inherit the wearer's
             // bind pose; taking them from the robe's zeroed skin skeleton collapses the legs upward.
-            var skinParts = new List<(string PartType, MdlModel Model)>();
+            var skinParts = new List<(BlueprintModelPart Part, MdlModel Model)>();
             var rigidParts = new List<(string PartType, string ModelResRef)>();
             foreach (var part in parts)
             {
                 var model = LoadMdl(part.ModelResRef, withSupermodelAnims: false);
                 if (model != null && MdlMeshBuilder.ContainsNamedSkinWeights(model))
-                    skinParts.Add((part.PartType, model));
+                    skinParts.Add((part, model));
                 else
                     rigidParts.Add((part.PartType, part.ModelResRef));
             }
@@ -562,7 +585,7 @@ namespace SWLOR.Toolset.Workspace
             var renderModels = new List<RenderModel>();
             var skeleton = LoadMdl(skeletonResRef, withSupermodelAnims: false);
             var weightedRobe = skinParts
-                .Where(part => part.PartType.Equals("robe", StringComparison.OrdinalIgnoreCase))
+                .Where(part => part.Part.PartType.Equals("robe", StringComparison.OrdinalIgnoreCase))
                 .Select(part => part.Model)
                 .FirstOrDefault();
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? sharedFrames = null;
@@ -629,9 +652,16 @@ namespace SWLOR.Toolset.Workspace
             renderModels.AddRange(skinParts.Select(part =>
             {
                 var frames = sharedFrames ?? IdleFrames(part.Model);
-                return includeCreatureAnimations
+                var model = includeCreatureAnimations
                     ? MdlMeshBuilder.BuildAnimatedPreview(part.Model, frames, sharedAnimations)
                     : MdlMeshBuilder.Build(part.Model, frames);
+                if (part.Part.LayerColorIndices is { Count: > 0 } partColors)
+                {
+                    foreach (var mesh in model.Meshes)
+                        mesh.LayerColorIndices = partColors;
+                }
+
+                return model;
             }));
 
             return CombineRenderModels(skeletonResRef, renderModels);

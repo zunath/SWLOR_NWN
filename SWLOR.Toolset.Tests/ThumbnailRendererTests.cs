@@ -318,6 +318,33 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TheSameTextureWithDifferentEquipmentPalettesIsResolvedPerMesh()
+        {
+            var first = TexturedQuad("shared_plt").Meshes[0];
+            first.LayerColorIndices = new Dictionary<int, int> { [2] = 45 };
+            var second = TexturedQuad("shared_plt").Meshes[0];
+            second.LayerColorIndices = new Dictionary<int, int> { [2] = 97 };
+            var seen = new List<int>();
+            var model = new RenderModel
+            {
+                Name = "independent-dyes",
+                Meshes = new[] { first, second }
+            };
+
+            ThumbnailRenderer.Render(
+                model,
+                Size,
+                resolveLayeredTexture: (_, colors) =>
+                {
+                    seen.Add(colors![2]);
+                    return SolidTexture(10, 10, 10);
+                });
+
+            seen.Should().BeEquivalentTo(new[] { 45, 97 },
+                "a cloak and chest can share a PLT name while selecting different palette rows");
+        }
+
+        [Test]
         public void Fully_Transparent_Texels_Are_Cut_Out_Rather_Than_Drawn()
         {
             var opaque = ThumbnailRenderer.Render(

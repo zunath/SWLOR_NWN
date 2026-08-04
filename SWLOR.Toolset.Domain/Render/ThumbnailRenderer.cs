@@ -90,18 +90,24 @@ namespace SWLOR.Toolset.Domain.Render
         /// the palette's flat tone, which is how the pipeline behaves when no resource index is loaded.
         /// The callback is invoked at most once per distinct texture per render.
         /// </param>
+        /// <param name="resolveLayeredTexture">
+        /// Resolves a texture with the palette carried by its individual mesh. When supplied it
+        /// takes precedence over <paramref name="resolveTexture"/> and lets equipped garments keep
+        /// dyes that differ from the creature's chest armor.
+        /// </param>
         public static byte[]? Render(
             RenderModel? model,
             int size,
             ThumbnailPalette? palette = null,
-            Func<string, TextureImage?>? resolveTexture = null)
+            Func<string, TextureImage?>? resolveTexture = null,
+            Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture = null)
         {
             if (model == null || size <= 0)
                 return null;
 
             palette ??= ThumbnailPalette.Default;
 
-            var triangles = CollectTriangles(model, resolveTexture);
+            var triangles = CollectTriangles(model, resolveTexture, resolveLayeredTexture);
             if (triangles.Count == 0)
                 return null;
 
@@ -123,7 +129,9 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         private static List<SourceTriangle> CollectTriangles(
-            RenderModel model, Func<string, TextureImage?>? resolveTexture)
+            RenderModel model,
+            Func<string, TextureImage?>? resolveTexture,
+            Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture)
         {
             var triangles = new List<SourceTriangle>();
 
@@ -135,7 +143,8 @@ namespace SWLOR.Toolset.Domain.Render
                 if (mesh.Indices.Length < 3 || mesh.Positions.Length < 9)
                     continue;
 
-                var texture = ResolveMeshTexture(mesh, resolveTexture, decoded);
+                var texture = ResolveMeshTexture(
+                    mesh, resolveTexture, resolveLayeredTexture, decoded);
                 var hasUvs = texture != null && mesh.TexCoords.Length * 3 >= mesh.Positions.Length * 2;
 
                 for (var i = 0; i + 2 < mesh.Indices.Length; i += 3)
@@ -176,18 +185,29 @@ namespace SWLOR.Toolset.Domain.Render
         private static TextureImage? ResolveMeshTexture(
             RenderMesh mesh,
             Func<string, TextureImage?>? resolveTexture,
+            Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture,
             Dictionary<string, TextureImage?> decoded)
         {
-            if (resolveTexture == null || string.IsNullOrWhiteSpace(mesh.TextureName))
+            if ((resolveTexture == null && resolveLayeredTexture == null) ||
+                string.IsNullOrWhiteSpace(mesh.TextureName))
                 return null;
 
-            if (decoded.TryGetValue(mesh.TextureName, out var cached))
+            var paletteKey = mesh.LayerColorIndices.Count == 0
+                ? string.Empty
+                : "|" + string.Join(
+                    ",",
+                    mesh.LayerColorIndices.OrderBy(pair => pair.Key)
+                        .Select(pair => $"{pair.Key}:{pair.Value}"));
+            var cacheKey = mesh.TextureName + paletteKey;
+            if (decoded.TryGetValue(cacheKey, out var cached))
                 return cached;
 
             TextureImage? texture = null;
             try
             {
-                texture = resolveTexture(mesh.TextureName);
+                texture = resolveLayeredTexture != null
+                    ? resolveLayeredTexture(mesh.TextureName, mesh.LayerColorIndices)
+                    : resolveTexture!(mesh.TextureName);
             }
             catch (Exception)
             {
@@ -197,7 +217,7 @@ namespace SWLOR.Toolset.Domain.Render
             if (texture != null && texture.Pixels.Length < texture.Width * texture.Height * 4)
                 texture = null;
 
-            decoded[mesh.TextureName] = texture;
+            decoded[cacheKey] = texture;
             return texture;
         }
 

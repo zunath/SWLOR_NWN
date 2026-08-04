@@ -589,7 +589,11 @@ namespace SWLOR.Toolset.Editors.Merchants
             InstanceError = null;
             try
             {
-                var targetAreas = PlacedInstances
+                // Updating invalidates the module placement index, which tells every open Source tab
+                // to discard its derived rows. This command deliberately operates on the displayed
+                // snapshot, so retain it across that notification and republish it as current below.
+                var displayedPlacements = PlacedInstances.ToList();
+                var targetAreas = displayedPlacements
                     .Where(placement => !placement.IsCurrent)
                     .Select(placement => placement.AreaResRef)
                     .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -599,17 +603,17 @@ namespace SWLOR.Toolset.Editors.Merchants
                 // The service rebuilds every matching merchant in each target area from the saved
                 // blueprint. Those displayed records are therefore current without a second full-
                 // module discovery scan. Refresh remains available to discover new placements.
-                for (var index = 0; index < PlacedInstances.Count; index++)
+                PlacedInstances.Clear();
+                foreach (var placement in displayedPlacements)
                 {
-                    var placement = PlacedInstances[index];
-                    if (targetAreas.Contains(placement.AreaResRef, StringComparer.OrdinalIgnoreCase))
-                    {
-                        PlacedInstances[index] = placement with
-                        {
-                            OutOfDateMerchantRecords = 0,
-                            OutOfDateItemRecords = 0
-                        };
-                    }
+                    PlacedInstances.Add(
+                        targetAreas.Contains(placement.AreaResRef, StringComparer.OrdinalIgnoreCase)
+                            ? placement with
+                            {
+                                OutOfDateMerchantRecords = 0,
+                                OutOfDateItemRecords = 0
+                            }
+                            : placement);
                 }
 
                 ArePlacedInstancesLoaded = true;

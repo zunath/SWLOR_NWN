@@ -1033,6 +1033,64 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task InstanceUpdatePreservesDisplayedRowsAcrossPlacementInvalidation()
+        {
+            var moduleRoot = Path.Combine(
+                Path.GetTempPath(),
+                "swlor-merchant-update-invalidation-" + Guid.NewGuid().ToString("N"),
+                "Module");
+            Directory.CreateDirectory(Path.Combine(moduleRoot, "are"));
+            Directory.CreateDirectory(Path.Combine(moduleRoot, "git"));
+            Directory.CreateDirectory(Path.Combine(moduleRoot, "utm"));
+            Directory.CreateDirectory(Path.Combine(moduleRoot, "utc"));
+
+            var merchant = JsonGffDocument.Parse(
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utm, "probe_store", "Probe Store"));
+            WritePlacedMerchantArea(moduleRoot, "area_a", merchant);
+            merchant.Root.SetInt("MarkUp", GffFieldType.Int, 175);
+            File.WriteAllBytes(
+                Path.Combine(moduleRoot, "utm", "probe_store.utm.json"),
+                merchant.ToBytes());
+
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(path => new ModuleWorkspace(path), log);
+            workspace.Open(moduleRoot);
+            var service = new MerchantInstanceService(workspace, log);
+            using var editor = new MerchantEditorViewModel(
+                merchant.Root,
+                "probe_store",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                instances: service);
+            workspace.PlacementIndexInvalidated += editor.InvalidatePlacedInstances;
+
+            try
+            {
+                await editor.RefreshPlacedInstancesAsync();
+                editor.PlacedInstances.Should().ContainSingle()
+                    .Which.IsCurrent.Should().BeFalse();
+
+                await editor.UpdateOutOfDateInstancesCommand.ExecuteAsync(null);
+
+                editor.PlacedInstances.Should().ContainSingle()
+                    .Which.IsCurrent.Should().BeTrue(
+                        "the command must restore its displayed snapshot after its own invalidation");
+                editor.ArePlacedInstancesLoaded.Should().BeTrue();
+                editor.PlacedInstancesNeedRefresh.Should().BeFalse();
+            }
+            finally
+            {
+                workspace.PlacementIndexInvalidated -= editor.InvalidatePlacedInstances;
+                await workspace.Catalog!.BuildTask;
+                Directory.Delete(Directory.GetParent(moduleRoot)!.FullName, recursive: true);
+            }
+        }
+
+        [Test]
         public void InstanceSummaryReportsOutOfDateMerchantAndItemRecordCounts()
         {
             using var editor = new MerchantEditorViewModel(

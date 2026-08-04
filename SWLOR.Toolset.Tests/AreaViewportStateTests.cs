@@ -81,9 +81,12 @@ namespace SWLOR.Toolset.Tests
                 Diagnostics = new AreaSceneDiagnostics()
             };
 
-            control.CaptureViewportState()!.Value.Target.Should().Be(
+            var focused = control.CaptureViewportState()!.Value;
+            focused.Target.Should().Be(
                 expectedTarget,
                 "the first scene's default framing must not overwrite a Go To request made while it loaded");
+            focused.Distance.Should().BeLessThanOrEqualTo(15f,
+                "Go To must zoom from the full-area framing to an object-scale view");
         }
 
         [AvaloniaTest]

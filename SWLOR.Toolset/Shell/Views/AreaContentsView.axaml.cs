@@ -1,6 +1,9 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using SWLOR.Toolset.Shell.Panels;
 
 namespace SWLOR.Toolset.Shell.Views
@@ -8,10 +11,61 @@ namespace SWLOR.Toolset.Shell.Views
     public partial class AreaContentsView : UserControl
     {
         private AreaContentsNodeViewModel? _contextRow;
+        private AreaContentsViewModel? _viewModel;
 
         public AreaContentsView()
         {
             InitializeComponent();
+            DataContextChanged += (_, _) => AttachViewModel();
+        }
+
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            AttachViewModel();
+            QueuePendingRowReveal();
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            if (_viewModel != null)
+                _viewModel.RowRevealRequested -= QueuePendingRowReveal;
+
+            _viewModel = null;
+            base.OnDetachedFromVisualTree(e);
+        }
+
+        private void AttachViewModel()
+        {
+            var next = DataContext as AreaContentsViewModel;
+            if (ReferenceEquals(next, _viewModel))
+                return;
+
+            if (_viewModel != null)
+                _viewModel.RowRevealRequested -= QueuePendingRowReveal;
+
+            _viewModel = next;
+            if (_viewModel != null)
+            {
+                _viewModel.RowRevealRequested += QueuePendingRowReveal;
+                QueuePendingRowReveal();
+            }
+        }
+
+        /// <summary>
+        /// Scroll after Dock has activated this tool and ListBox has generated its containers. The
+        /// row stays pending on the view model until this callback actually runs in a visual tree.
+        /// </summary>
+        private void QueuePendingRowReveal()
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (VisualRoot == null ||
+                    _viewModel?.TryTakePendingRowReveal(out var row) != true)
+                    return;
+
+                RowsList.ScrollIntoView(row);
+            }, DispatcherPriority.Render);
         }
 
         /// <summary>Right-click selects the row under the pointer before its menu is evaluated.</summary>

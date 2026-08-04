@@ -45,6 +45,16 @@ namespace SWLOR.Toolset.Shell.Panels
         private readonly List<AreaContentsNodeViewModel> _roots = new();
 
         private AreaEditorViewModel? _editor;
+        private (ResourceType Type, int Index)? _forcedVisibleInstance;
+        private AreaContentsNodeViewModel? _pendingRowReveal;
+        private bool _syncingSelection;
+
+        /// <summary>
+        /// Raised after a Go To has made its exact instance row visible. The view consumes the
+        /// retained row after layout and scrolls it into view; retaining it matters when the Area
+        /// Contents tool tab is activated in the same dispatcher turn as the request.
+        /// </summary>
+        public event Action? RowRevealRequested;
 
         /// <summary>The visible rows: every node whose ancestors are all expanded.</summary>
         public ObservableCollection<AreaContentsNodeViewModel> Rows { get; } = new();
@@ -106,17 +116,50 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
 
             if (_editor != null)
+            {
                 _editor.ContentsChanged -= Rebuild;
+                _editor.AreaContentsRevealRequested -= OnAreaContentsRevealRequested;
+            }
 
             _editor = editor;
 
             if (_editor != null)
+            {
                 _editor.ContentsChanged += Rebuild;
+                _editor.AreaContentsRevealRequested += OnAreaContentsRevealRequested;
+            }
 
             AreaResRef = _editor?.AreaResRef ?? string.Empty;
+            _forcedVisibleInstance = null;
+            _pendingRowReveal = null;
             OnPropertyChanged(nameof(HasArea));
             SelectedRow = null;
             Rebuild();
+
+            ConsumePendingEditorReveal();
+        }
+
+        private void OnAreaContentsRevealRequested(ResourceType _, int __) =>
+            ConsumePendingEditorReveal();
+
+        private void ConsumePendingEditorReveal()
+        {
+            if (_editor?.TryTakePendingAreaContentsReveal(out var type, out var index) == true)
+                RevealInstanceRow(type, index);
+        }
+
+        /// <summary>Lets the attached view take exactly one retained scroll request.</summary>
+        public bool TryTakePendingRowReveal(out AreaContentsNodeViewModel row)
+        {
+            if (_pendingRowReveal == null)
+            {
+                row = null!;
+                return false;
+            }
+
+            row = _pendingRowReveal;
+            _pendingRowReveal = null;
+            return true;
         }
 
         partial void OnFilterChanged(string value) => Rebuild();
@@ -219,11 +262,12 @@ namespace SWLOR.Toolset.Shell.Panels
 
             if (Grouping == AreaContentsGrouping.Flat)
             {
-                foreach (var row in rows.Take(MaxRealizedGroupMembers))
+                var realized = RealizedRows(section.BlueprintType, rows);
+                foreach (var row in realized)
                     node.Children.Add(BuildInstanceNode(section, row, depth: 1, leadWithName: true));
 
-                if (rows.Count > MaxRealizedGroupMembers)
-                    node.Children.Add(BuildOverflowNode(type, rows.Count - MaxRealizedGroupMembers, depth: 1));
+                if (rows.Count > realized.Count)
+                    node.Children.Add(BuildOverflowNode(type, rows.Count - realized.Count, depth: 1));
 
                 return node;
             }
@@ -260,20 +304,40 @@ namespace SWLOR.Toolset.Shell.Panels
                 Indices = members.Select(row => row.Index).ToList()
             };
 
-            foreach (var row in members.Take(MaxRealizedGroupMembers))
+            var realized = RealizedRows(section.BlueprintType, members);
+            foreach (var row in realized)
             {
                 // Inside a group the members share a name by definition, so the position leads and
                 // the resref trails - a column of the same word repeated tells you nothing.
                 node.Children.Add(BuildInstanceNode(section, row, depth: 2, leadWithName: false));
             }
 
-            if (members.Count > MaxRealizedGroupMembers)
+            if (members.Count > realized.Count)
             {
                 node.Children.Add(BuildOverflowNode(
-                    section.BlueprintType, members.Count - MaxRealizedGroupMembers, depth: 2));
+                    section.BlueprintType, members.Count - realized.Count, depth: 2));
             }
 
             return node;
+        }
+
+        /// <summary>
+        /// Keeps the normal 200-row performance cap while ensuring an explicitly requested source
+        /// instance is realised even when it is the 648th copy in a large group.
+        /// </summary>
+        private IReadOnlyList<InstanceRow> RealizedRows(
+            ResourceType type, IReadOnlyList<InstanceRow> rows)
+        {
+            var realized = rows.Take(MaxRealizedGroupMembers).ToList();
+            if (_forcedVisibleInstance is not { } forced || forced.Type != type ||
+                realized.Any(row => row.Index == forced.Index))
+                return realized;
+
+            var requested = rows.FirstOrDefault(row => row.Index == forced.Index);
+            if (requested != null)
+                realized.Add(requested);
+
+            return realized;
         }
 
         private AreaContentsNodeViewModel BuildInstanceNode(
@@ -364,6 +428,66 @@ namespace SWLOR.Toolset.Shell.Panels
                 Publish(child);
         }
 
+        /// <summary>
+        /// Clears any filter hiding the target, realises it past the large-group cap, opens every
+        /// ancestor, selects it, and retains a scroll request for the view.
+        /// </summary>
+        private void RevealInstanceRow(ResourceType type, int index)
+        {
+            _forcedVisibleInstance = (type, index);
+            _syncingSelection = true;
+            try
+            {
+                if (HasFilter)
+                    Filter = string.Empty;
+                else
+                    Rebuild();
+
+                var path = new List<AreaContentsNodeViewModel>();
+                var found = _roots
+                    .Where(root => root.BlueprintType == type)
+                    .Any(root => TryFindPath(
+                        root,
+                        node => node.Kind == AreaContentsNodeKind.Instance &&
+                                node.Indices.Count == 1 && node.Indices[0] == index,
+                        path));
+                if (!found || path.Count == 0)
+                    return;
+
+                foreach (var ancestor in path.Take(path.Count - 1))
+                    ancestor.IsExpanded = true;
+
+                PublishVisibleRows();
+                SelectedRow = path[^1];
+                _pendingRowReveal = SelectedRow;
+            }
+            finally
+            {
+                _syncingSelection = false;
+            }
+
+            RowRevealRequested?.Invoke();
+        }
+
+        private static bool TryFindPath(
+            AreaContentsNodeViewModel node,
+            Func<AreaContentsNodeViewModel, bool> predicate,
+            List<AreaContentsNodeViewModel> path)
+        {
+            path.Add(node);
+            if (predicate(node))
+                return true;
+
+            foreach (var child in node.Children)
+            {
+                if (TryFindPath(child, predicate, path))
+                    return true;
+            }
+
+            path.RemoveAt(path.Count - 1);
+            return false;
+        }
+
         // ----- what the rows do -----
 
         [RelayCommand]
@@ -382,7 +506,8 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </summary>
         partial void OnSelectedRowChanged(AreaContentsNodeViewModel? value)
         {
-            if (_editor == null || value is not { Kind: AreaContentsNodeKind.Instance } instance)
+            if (_syncingSelection || _editor == null ||
+                value is not { Kind: AreaContentsNodeKind.Instance } instance)
                 return;
 
             _editor.RevealInstance(instance.BlueprintType, instance.Indices[0], frameCamera: false);

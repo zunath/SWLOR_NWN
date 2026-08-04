@@ -54,7 +54,7 @@
     <Grid Grid.Row="2">
       <ListBox x:Name="ModuleTree" Background="Transparent" BorderThickness="0"
                ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}"
-               DoubleTapped="OnItemsDoubleTapped">
+               DoubleTapped="OnItemsDoubleTapped" KeyDown="OnModuleTreeKeyDown">
         <ListBox.Styles>
           <Style Selector="ListBoxItem">
             <Setter Property="Padding" Value="0,2" />

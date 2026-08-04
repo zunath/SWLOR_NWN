@@ -66,6 +66,16 @@ namespace SWLOR.Toolset.Tests
             first.Members.Should().NotContain("resource_one");
             second.Members.Should().Contain("resource_one");
 
+            explorer.UndoResourceMoveCommand.CanExecute(null).Should().BeTrue();
+            explorer.UndoResourceMoveCommand.Execute(null);
+            first.Members.Should().Contain("resource_one");
+            second.Members.Should().NotContain("resource_one");
+            explorer.RedoResourceMoveCommand.CanExecute(null).Should().BeTrue();
+
+            explorer.RedoResourceMoveCommand.Execute(null);
+            first.Members.Should().NotContain("resource_one");
+            second.Members.Should().Contain("resource_one");
+
             source = explorer.Rows.Single(row => row.Folder == second).Children
                 .Single(row => row.ResRef == "resource_one");
             var unsorted = explorer.Rows.Single(row =>
@@ -76,6 +86,51 @@ namespace SWLOR.Toolset.Tests
             section.FoldersContaining("resource_one").Should().BeEmpty();
             explorer.Rows.Single(row => row.Name == "Unsorted").Children
                 .Should().ContainSingle(row => row.ResRef == "resource_one");
+
+            explorer.UndoResourceMoveCommand.Execute(null);
+            second.Members.Should().Contain("resource_one");
+            explorer.RedoResourceMoveCommand.Execute(null);
+            section.FoldersContaining("resource_one").Should().BeEmpty();
+        }
+
+        [Test]
+        public void UndoRestoresEveryPreviousFolderMembership()
+        {
+            File.WriteAllText(Path.Combine(_module, "nss", "resource_one.nss"), "void main() {}");
+
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            workspace.Open(_module);
+            var categories = new CategoryService(workspace, log);
+            var section = categories.Section(ResourceType.Nss)!;
+            section.IsSeeded = true;
+            var first = section.AddFolder("First");
+            var second = section.AddFolder("Second");
+            var third = section.AddFolder("Third");
+            first.AddMember("resource_one");
+            third.AddMember("resource_one");
+            categories.SaveChanges().Saved.Should().BeTrue();
+
+            var explorer = new ModuleExplorerViewModel(
+                workspace,
+                new PropertiesViewModel(workspace, log),
+                categories,
+                log)
+            {
+                SelectedType = ResourceType.Nss
+            };
+            explorer.Initialize();
+
+            var source = explorer.Rows.Single(row => row.Folder == first).Children
+                .Single(row => row.ResRef == "resource_one");
+            var target = explorer.Rows.Single(row => row.Folder == second);
+            explorer.DropResource(source, target).Should().BeTrue();
+
+            explorer.UndoResourceMoveCommand.Execute(null);
+
+            first.Members.Should().Contain("resource_one");
+            second.Members.Should().NotContain("resource_one");
+            third.Members.Should().Contain("resource_one");
         }
 
         [Test]

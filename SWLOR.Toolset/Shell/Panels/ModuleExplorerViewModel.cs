@@ -53,6 +53,8 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private readonly List<ExplorerNodeViewModel> _roots = new();
         private Dictionary<ResourceType, List<CatalogEntry>>? _catalogByType;
+        private readonly Stack<ResourceMoveEdit> _resourceMoveUndo = new();
+        private readonly Stack<ResourceMoveEdit> _resourceMoveRedo = new();
 
         /// <summary>Types whose sidecar section has already been seeded this session.</summary>
         private readonly HashSet<ResourceType> _seeded = new();
@@ -172,6 +174,7 @@ namespace SWLOR.Toolset.Shell.Panels
         /// <summary>Builds the tree for the selected tab.</summary>
         public void Initialize()
         {
+            ClearResourceMoveHistory();
             _catalogByType = null;
             Refresh();
         }
@@ -556,6 +559,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
 
             SaveCategories();
+            ClearResourceMoveHistory();
             Refresh();
         }
 
@@ -588,6 +592,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
             section.RemoveFolder(folder);
             SaveCategories();
+            ClearResourceMoveHistory();
             SelectedRow = null;
             Refresh();
         }
@@ -685,6 +690,13 @@ namespace SWLOR.Toolset.Shell.Panels
             if (section == null || source.Item is not { } item || source.Type != SelectedType)
                 return false;
 
+            var beforeFolderPaths = section.FoldersContaining(item.ResRef)
+                .Select(section.PathKey)
+                .ToArray();
+            var afterFolderPaths = target == null
+                ? Array.Empty<string>()
+                : new[] { section.PathKey(target) };
+
             // Out of wherever it was first: a resref may legally sit in several folders, but a move the
             // builder asked for means one destination, not an extra one. A null destination is Unsorted.
             var changed = false;
@@ -699,8 +711,123 @@ namespace SWLOR.Toolset.Shell.Panels
 
             var saved = SaveCategories();
             Refresh();
+            if (!saved)
+                return false;
+
+            _resourceMoveUndo.Push(new ResourceMoveEdit(
+                SelectedType,
+                item.ResRef,
+                item.PrimaryText,
+                beforeFolderPaths,
+                afterFolderPaths));
+            _resourceMoveRedo.Clear();
+            NotifyResourceMoveHistoryChanged();
+            StatusMessage = target == null
+                ? $"Moved '{item.PrimaryText}' to Unsorted."
+                : $"Moved '{item.PrimaryText}' to '{string.Join(" / ", section.PathTo(target))}'.";
             return saved;
         }
+
+        private bool CanUndoResourceMove() => _resourceMoveUndo.Count > 0;
+
+        [RelayCommand(CanExecute = nameof(CanUndoResourceMove))]
+        private void UndoResourceMove()
+        {
+            if (!_resourceMoveUndo.TryPeek(out var edit) ||
+                !ApplyResourceMove(edit, edit.BeforeFolderPaths, "undo"))
+            {
+                return;
+            }
+
+            _resourceMoveUndo.Pop();
+            _resourceMoveRedo.Push(edit);
+            NotifyResourceMoveHistoryChanged();
+            StatusMessage = $"Undid move of '{edit.DisplayName}'.";
+        }
+
+        private bool CanRedoResourceMove() => _resourceMoveRedo.Count > 0;
+
+        [RelayCommand(CanExecute = nameof(CanRedoResourceMove))]
+        private void RedoResourceMove()
+        {
+            if (!_resourceMoveRedo.TryPeek(out var edit) ||
+                !ApplyResourceMove(edit, edit.AfterFolderPaths, "redo"))
+            {
+                return;
+            }
+
+            _resourceMoveRedo.Pop();
+            _resourceMoveUndo.Push(edit);
+            NotifyResourceMoveHistoryChanged();
+            StatusMessage = $"Redid move of '{edit.DisplayName}'.";
+        }
+
+        private bool ApplyResourceMove(
+            ResourceMoveEdit edit,
+            IReadOnlyList<string> destinationFolderPaths,
+            string operation)
+        {
+            var section = _categories.Section(edit.Type);
+            if (section == null)
+            {
+                ClearResourceMoveHistory();
+                StatusMessage = $"Cannot {operation} the move because its resource section no longer exists.";
+                return false;
+            }
+
+            var destinations = new List<CategoryFolder>();
+            foreach (var path in destinationFolderPaths)
+            {
+                var folder = section.FindByPathKey(path);
+                if (folder == null)
+                {
+                    ClearResourceMoveHistory();
+                    StatusMessage = $"Cannot {operation} the move because folder '{path}' no longer exists.";
+                    Refresh();
+                    return false;
+                }
+
+                destinations.Add(folder);
+            }
+
+            var changed = false;
+            foreach (var folder in section.AllFolders())
+                changed |= folder.RemoveMember(edit.ResRef);
+            foreach (var folder in destinations)
+                changed |= folder.AddMember(edit.ResRef);
+
+            if (changed && !SaveCategories())
+            {
+                Refresh();
+                return false;
+            }
+
+            Refresh();
+            return true;
+        }
+
+        private void ClearResourceMoveHistory()
+        {
+            if (_resourceMoveUndo.Count == 0 && _resourceMoveRedo.Count == 0)
+                return;
+
+            _resourceMoveUndo.Clear();
+            _resourceMoveRedo.Clear();
+            NotifyResourceMoveHistoryChanged();
+        }
+
+        private void NotifyResourceMoveHistoryChanged()
+        {
+            UndoResourceMoveCommand.NotifyCanExecuteChanged();
+            RedoResourceMoveCommand.NotifyCanExecuteChanged();
+        }
+
+        private sealed record ResourceMoveEdit(
+            ResourceType Type,
+            string ResRef,
+            string DisplayName,
+            IReadOnlyList<string> BeforeFolderPaths,
+            IReadOnlyList<string> AfterFolderPaths);
 
 
         /// <summary>

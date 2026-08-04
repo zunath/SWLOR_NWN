@@ -671,11 +671,20 @@ function Get-StatusEffectClasses([string]$path) {
 
         $className = $Matches[2]
 
-        # Every status effect that can be applied to a creature must carry a gameplay icon so the
-        # player can see it is active; an effect with nothing worth showing on the icon bar should be
-        # modelled as a static stat contribution instead of a status effect. So no class is exempt
-        # here: a definition left on EffectIconType.Invalid is picked up, assigned a real icon by
-        # -UpdateStatusEffectCode, and required to carry an effecticons.2da row and TLK entry.
+        # A [StatConfiguredIcon] effect owns no icon identity of its own: its icon arrives per
+        # application from a StatType adjustment and belongs to the configuring perk, whose own
+        # anchor class carries the enum member, manifest row, TLK entry, and artwork. It therefore
+        # has no per-class row to audit or generate. See IconStandards.md, "Stat-Configured Icons".
+        if ($content -match '\[StatConfiguredIcon\]') {
+            continue
+        }
+
+        # Every other status effect that can be applied to a creature must carry a gameplay icon so
+        # the player can see it is active; an effect with nothing worth showing on the icon bar
+        # should be modelled as a static stat contribution instead of a status effect. So no class
+        # is otherwise exempt here: a definition left on EffectIconType.Invalid is picked up,
+        # assigned a real icon by -UpdateStatusEffectCode, and required to carry an
+        # effecticons.2da row and TLK entry.
 
         $name = $className -replace "StatusEffect$", ""
         if ($content -match 'public\s+override\s+string\s+Name\s*=>\s*"([^"]+)"') {

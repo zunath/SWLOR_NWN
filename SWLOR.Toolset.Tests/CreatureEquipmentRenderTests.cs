@@ -115,10 +115,25 @@ namespace SWLOR.Toolset.Tests
                 "the female elf must wear the cloak model authored for her own skeleton");
             cloakMeshes.Should().OnlyContain(mesh => mesh.LayerColorIndices.ContainsKey(
                 SWLOR.NWN.Formats.Plt.PltLayers.Cloth1));
+            cloakMeshes.Should().OnlyContain(mesh =>
+                mesh.TextureName.Equals("pfe0_cloak_014", StringComparison.OrdinalIgnoreCase),
+                "cloak appearance 10 reuses geometry 7 but selects texture 14");
             cloakMeshes.Select(mesh =>
                     mesh.LayerColorIndices[SWLOR.NWN.Formats.Plt.PltLayers.Cloth1])
                 .Should().OnlyContain(cloth => cloth == 45,
                     "the cloak's dyes must not be replaced by the equipped chest robe's palette");
+
+            var commando = renderer.BuildModel(
+                ResourceType.Utc,
+                workspace.LoadBlueprint(ResourceType.Utc, "sith_commando").Fields);
+            commando.Should().NotBeNull();
+            var helmetMeshes = commando!.Meshes.Where(mesh =>
+                mesh.LayerColorIndices.ContainsKey(SWLOR.NWN.Formats.Plt.PltLayers.Cloth1) &&
+                mesh.LayerColorIndices[SWLOR.NWN.Formats.Plt.PltLayers.Cloth1] == 63 &&
+                mesh.LayerColorIndices.ContainsKey(SWLOR.NWN.Formats.Plt.PltLayers.Metal2) &&
+                mesh.LayerColorIndices[SWLOR.NWN.Formats.Plt.PltLayers.Metal2] == 0).ToList();
+            helmetMeshes.Should().NotBeEmpty(
+                "the helmet's Cloth1 63 / Metal2 0 UTI palette must not inherit the armor's 23 / 17 dyes");
 
             // Fixed-model creatures still need their attachments composed. This is also the model
             // path shared by software thumbnails, which previously rendered only the bare base MDL.

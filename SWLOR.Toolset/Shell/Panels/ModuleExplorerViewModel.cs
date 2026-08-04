@@ -817,13 +817,15 @@ namespace SWLOR.Toolset.Shell.Panels
                 destinations.Add(folder);
             }
 
-            var changed = false;
             foreach (var folder in section.AllFolders())
-                changed |= folder.RemoveMember(edit.ResRef);
+                folder.RemoveMember(edit.ResRef);
             foreach (var folder in destinations)
-                changed |= folder.AddMember(edit.ResRef);
+                folder.AddMember(edit.ResRef);
 
-            if (changed && !SaveCategories())
+            // Persist even when the in-memory tree already matches the requested destination. This
+            // can be a retry after a refused write: the history entry is intentionally retained, and
+            // success must mean the sidecar on disk now matches the undo/redo state too.
+            if (!SaveCategories())
             {
                 Refresh();
                 return false;

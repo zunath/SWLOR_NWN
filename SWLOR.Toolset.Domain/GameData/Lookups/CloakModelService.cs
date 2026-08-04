@@ -2,38 +2,56 @@ using SWLOR.Toolset.Domain.GameData.TwoDa;
 
 namespace SWLOR.Toolset.Domain.GameData.Lookups
 {
+    /// <summary>The geometry and surface rows selected by one cloak appearance.</summary>
+    public readonly record struct CloakModelMapping(int Model, int Texture);
+
     /// <summary>
-    /// Resolves a cloak appearance (a UTI's ModelPart1) to the shared geometry number named by
-    /// cloakmodel.2da. Multiple appearances intentionally reuse one model with different textures.
+    /// Resolves a cloak appearance (a UTI's ModelPart1) to the shared geometry and texture numbers
+    /// named by cloakmodel.2da. Multiple appearances intentionally reuse one model with different
+    /// textures, so neither half of the mapping may be discarded.
     /// </summary>
     public sealed class CloakModelService
     {
         private const string TableName = "cloakmodel";
-        private readonly ReloadableLazy<IReadOnlyDictionary<int, int>> _models;
+        private readonly ReloadableLazy<IReadOnlyDictionary<int, CloakModelMapping>> _mappings;
 
         public CloakModelService(TwoDaService twoDa)
         {
             ArgumentNullException.ThrowIfNull(twoDa);
-            _models = new ReloadableLazy<IReadOnlyDictionary<int, int>>(() => Build(twoDa));
-            twoDa.TablesReloaded += _models.Reset;
+            _mappings = new ReloadableLazy<IReadOnlyDictionary<int, CloakModelMapping>>(() => Build(twoDa));
+            twoDa.TablesReloaded += _mappings.Reset;
         }
 
-        public int? GetModelOrNull(int appearance) =>
-            _models.Value.TryGetValue(appearance, out var model) ? model : null;
+        public CloakModelMapping? GetOrNull(int appearance) =>
+            _mappings.Value.TryGetValue(appearance, out var mapping) ? mapping : null;
 
-        private static IReadOnlyDictionary<int, int> Build(TwoDaService twoDa)
+        private static IReadOnlyDictionary<int, CloakModelMapping> Build(TwoDaService twoDa)
         {
             if (!twoDa.TryGetTable(TableName, out var table) || table == null)
-                return new Dictionary<int, int>();
+                return new Dictionary<int, CloakModelMapping>();
 
-            var models = new Dictionary<int, int>();
+            var mappings = new Dictionary<int, CloakModelMapping>();
             for (var row = 0; row < table.RowCount; row++)
             {
                 try
                 {
                     var model = table.GetInt(row, "MODEL");
-                    if (model is > 0)
-                        models[row] = model.Value;
+                    if (model is not > 0)
+                        continue;
+
+                    var texture = row;
+                    try
+                    {
+                        texture = table.GetInt(row, "TEXTURE") is > 0 and var mappedTexture
+                            ? mappedTexture
+                            : row;
+                    }
+                    catch (FormatException)
+                    {
+                        // Keep valid geometry usable; the appearance row is the safest texture fallback.
+                    }
+
+                    mappings[row] = new CloakModelMapping(model.Value, texture);
                 }
                 catch (FormatException)
                 {
@@ -41,7 +59,7 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                 }
             }
 
-            return models;
+            return mappings;
         }
     }
 }

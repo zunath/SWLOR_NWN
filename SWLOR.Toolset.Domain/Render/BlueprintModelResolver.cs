@@ -31,14 +31,17 @@ namespace SWLOR.Toolset.Domain.Render
     }
 
     /// <summary>
-    /// One resolved body/equipment part: the MdlPartComposer attachment type, its MDL resref, and any
-    /// item-specific PLT palette choices. Equipment palettes live here because a cloak and the chest
-    /// armor beneath it can intentionally use different dye rows.
+    /// One resolved body/equipment part: the MdlPartComposer attachment type, its MDL resref, any
+    /// item-specific PLT palette choices, and an optional texture selected independently of geometry.
+    /// Equipment palettes live here because a cloak and the chest armor beneath it can intentionally
+    /// use different dye rows; cloakmodel.2da similarly lets multiple appearances share geometry while
+    /// selecting different surfaces.
     /// </summary>
     public readonly record struct BlueprintModelPart(
         string PartType,
         string ModelResRef,
-        IReadOnlyDictionary<int, int>? LayerColorIndices = null);
+        IReadOnlyDictionary<int, int>? LayerColorIndices = null,
+        string? TextureResRef = null);
 
     /// <summary>
     /// The resolved preview-model description for a blueprint, produced by <see cref="BlueprintModelResolver"/>.
@@ -249,9 +252,12 @@ namespace SWLOR.Toolset.Domain.Render
                     // is meant to, which is the only way to judge one.
                     if (string.Equals(itemClass, CloakItemClass, StringComparison.OrdinalIgnoreCase))
                     {
-                        var cloakModel = cloakModels?.GetModelOrNull(part1) ?? part1;
+                        var cloakMapping = cloakModels?.GetOrNull(part1);
+                        var cloakModel = cloakMapping?.Model ?? part1;
+                        var cloakTexture = cloakMapping?.Texture ?? part1;
                         return ResolveCapeMannequin(
-                            root, itemClass, armorPreviewFemale, partModelExists, cloakModel);
+                            root, itemClass, armorPreviewFemale, partModelExists,
+                            cloakModel, cloakTexture);
                     }
 
                     var modelResRef = $"{itemClass}_{part1:D3}";
@@ -262,7 +268,8 @@ namespace SWLOR.Toolset.Domain.Render
                     {
                         Kind = BlueprintModelKind.Simple,
                         Status = $"{modelResRef}.mdl",
-                        ModelResRef = modelResRef
+                        ModelResRef = modelResRef,
+                        LayerColorIndices = ResolveLayerColors(root, root)
                     };
                 }
 
@@ -363,14 +370,19 @@ namespace SWLOR.Toolset.Domain.Render
             string itemClass,
             bool female,
             Func<string, bool>? partModelExists,
-            int cloakNumber)
+            int cloakNumber,
+            int cloakTextureNumber)
         {
             var prefix = female ? "pfh0" : "pmh0";
             var cloakResRef = $"{prefix}_cloak_{cloakNumber:D3}";
+            var cloakTextureResRef = $"{prefix}_cloak_{cloakTextureNumber:D3}";
             if (partModelExists != null && !partModelExists(cloakResRef))
                 return LootBagFallback(itemClass, partModelExists, $"no cloak model '{cloakResRef}'");
 
-            var parts = new List<BlueprintModelPart> { new("cloak", cloakResRef) };
+            var parts = new List<BlueprintModelPart>
+            {
+                new("cloak", cloakResRef, TextureResRef: cloakTextureResRef)
+            };
             parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", 1)));
             foreach (var (_, _, partType) in BodyPartFields)
             {
@@ -598,17 +610,23 @@ namespace SWLOR.Toolset.Domain.Render
                              part => part.PartType.Equals("cloak", StringComparison.OrdinalIgnoreCase)))
                 {
                     var modelResRef = part.ModelResRef;
+                    var textureResRef = part.TextureResRef;
                     if (!string.IsNullOrWhiteSpace(wearerPrefix))
                     {
                         var cloakSuffix = modelResRef.IndexOf("_cloak_", StringComparison.OrdinalIgnoreCase);
                         if (cloakSuffix >= 0)
                             modelResRef = wearerPrefix + modelResRef[cloakSuffix..];
+
+                        var textureSuffix = textureResRef?.IndexOf(
+                            "_cloak_", StringComparison.OrdinalIgnoreCase) ?? -1;
+                        if (textureSuffix >= 0)
+                            textureResRef = wearerPrefix + textureResRef![textureSuffix..];
                     }
 
                     if (partModelExists?.Invoke(modelResRef) ?? true)
                     {
                         destination.Add(new BlueprintModelPart(
-                            attachmentType, modelResRef, reference.LayerColorIndices));
+                            attachmentType, modelResRef, reference.LayerColorIndices, textureResRef));
                     }
                 }
 

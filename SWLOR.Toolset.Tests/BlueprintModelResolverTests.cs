@@ -236,10 +236,31 @@ namespace SWLOR.Toolset.Tests
             var cloak = result.Parts.Single(part => part.PartType == "cloak");
             cloak.ModelResRef.Should().Be("pfe0_cloak_007",
                 "cloak appearance 10 maps to geometry 7 through cloakmodel.2da");
+            cloak.TextureResRef.Should().Be("pfe0_cloak_014",
+                "cloak appearance 10 selects texture 14 independently of its shared geometry");
             cloak.LayerColorIndices.Should().NotBeNull();
             cloak.LayerColorIndices![PltLayers.Cloth1].Should().Be(45);
             result.LayerColorIndices[PltLayers.Cloth1].Should().Be(97,
                 "the chest robe and cloak intentionally use independent palettes");
+        }
+
+        [Test]
+        public void Resolve_EquippedHelmet_UsesTheItemsOwnDyes()
+        {
+            var root = BlueprintRoot(ResourceType.Utc, "sith_commando");
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Utc, root, Appearances(), null, null,
+                resRef => BlueprintRoot(ResourceType.Uti, resRef),
+                _ => true, baseItems: BaseItems().GetOrNull,
+                cloakModels: CloakModels());
+
+            var helmet = result.Parts.Single(part => part.PartType == "helmet");
+            helmet.ModelResRef.Should().Be("helm_120");
+            helmet.LayerColorIndices.Should().NotBeNull();
+            helmet.LayerColorIndices![PltLayers.Metal1].Should().Be(17);
+            helmet.LayerColorIndices[PltLayers.Metal2].Should().Be(0);
+            helmet.LayerColorIndices[PltLayers.Cloth1].Should().Be(63);
         }
 
         [Test]

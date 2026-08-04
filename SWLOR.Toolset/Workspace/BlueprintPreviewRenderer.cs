@@ -572,14 +572,14 @@ namespace SWLOR.Toolset.Workspace
             // translations shared with the wearer. Those missing channels must inherit the wearer's
             // bind pose; taking them from the robe's zeroed skin skeleton collapses the legs upward.
             var skinParts = new List<(BlueprintModelPart Part, MdlModel Model)>();
-            var rigidParts = new List<(string PartType, string ModelResRef)>();
+            var rigidParts = new List<BlueprintModelPart>();
             foreach (var part in parts)
             {
                 var model = LoadMdl(part.ModelResRef, withSupermodelAnims: false);
                 if (model != null && MdlMeshBuilder.ContainsNamedSkinWeights(model))
                     skinParts.Add((part, model));
                 else
-                    rigidParts.Add((part.PartType, part.ModelResRef));
+                    rigidParts.Add(part);
             }
 
             var renderModels = new List<RenderModel>();
@@ -619,22 +619,33 @@ namespace SWLOR.Toolset.Workspace
             if (rigidParts.Count > 0)
             {
                 MdlModel? composed;
+                IReadOnlyList<IReadOnlyDictionary<int, int>?> rigidLayerColors =
+                    Array.Empty<IReadOnlyDictionary<int, int>?>();
                 lock (_composerGate)
                 {
                     // _partTextures is filled by LoadComposerModel as the composer pulls each part in,
                     // so it has to be cleared and read inside the same lock that owns the compose run.
                     _partTextures.Clear();
-                    composed = _partComposer.Compose(skeletonResRef, rigidParts, adjustSeams: true);
+                    composed = _partComposer.Compose(
+                        skeletonResRef,
+                        rigidParts.Select(part => (part.PartType, part.ModelResRef)).ToList(),
+                        adjustSeams: true);
                     if (composed != null)
+                    {
+                        rigidLayerColors = CaptureComposedLayerColors(composed, rigidParts);
+                        ApplyComposedTextureOverrides(composed, rigidParts);
                         _partTextures.Restore(composed, TextureExists);
+                    }
                 }
 
                 if (composed != null)
                 {
                     var frames = sharedFrames ?? IdleFrames(composed);
-                    renderModels.Add(includeCreatureAnimations
+                    var rigidModel = includeCreatureAnimations
                         ? MdlMeshBuilder.BuildAnimatedPreview(composed, frames, sharedAnimations)
-                        : MdlMeshBuilder.Build(composed, frames));
+                        : MdlMeshBuilder.Build(composed, frames);
+                    ApplyLayerColors(rigidModel, rigidLayerColors);
+                    renderModels.Add(rigidModel);
                 }
             }
 
@@ -651,6 +662,7 @@ namespace SWLOR.Toolset.Workspace
 
             renderModels.AddRange(skinParts.Select(part =>
             {
+                ApplyTextureOverride(part.Model, part.Part.TextureResRef);
                 var frames = sharedFrames ?? IdleFrames(part.Model);
                 var model = includeCreatureAnimations
                     ? MdlMeshBuilder.BuildAnimatedPreview(part.Model, frames, sharedAnimations)
@@ -665,6 +677,88 @@ namespace SWLOR.Toolset.Workspace
             }));
 
             return CombineRenderModels(skeletonResRef, renderModels);
+        }
+
+        /// <summary>
+        /// Applies cloakmodel.2da's surface selection before authored-texture restoration. The part
+        /// composer stamps each attached mesh with its source model resref, which makes that value a
+        /// reliable key even when two cloak appearances share the same geometry.
+        /// </summary>
+        private static void ApplyComposedTextureOverrides(
+            MdlModel composed,
+            IReadOnlyList<BlueprintModelPart> parts)
+        {
+            var overrides = parts
+                .Where(part => !string.IsNullOrWhiteSpace(part.TextureResRef))
+                .GroupBy(part => part.ModelResRef, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Last().TextureResRef!,
+                    StringComparer.OrdinalIgnoreCase);
+            if (overrides.Count == 0)
+                return;
+
+            foreach (var mesh in composed.GetMeshNodes())
+            {
+                if (overrides.TryGetValue(mesh.Bitmap, out var textureResRef))
+                    mesh.Bitmap = textureResRef;
+            }
+        }
+
+        /// <summary>
+        /// Captures each composed mesh's equipment palette while the composer's model-resref stamp is
+        /// still present. Texture restoration deliberately replaces that stamp, so the association
+        /// must be retained before surfaces are corrected.
+        /// </summary>
+        private static IReadOnlyList<IReadOnlyDictionary<int, int>?> CaptureComposedLayerColors(
+            MdlModel composed,
+            IReadOnlyList<BlueprintModelPart> parts)
+        {
+            var colorsByModel = parts
+                .Where(part => part.LayerColorIndices is { Count: > 0 })
+                .GroupBy(part => part.ModelResRef, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Last().LayerColorIndices!,
+                    StringComparer.OrdinalIgnoreCase);
+            var result = new List<IReadOnlyDictionary<int, int>?>();
+            foreach (var mesh in composed.GetMeshNodes())
+            {
+                // Keep this filter aligned with MdlMeshBuilder.BuildInternal so list indices match
+                // the RenderMesh sequence produced immediately afterwards.
+                if (mesh.IsWalkmesh || !mesh.Render ||
+                    mesh.Name.Equals("sam", StringComparison.OrdinalIgnoreCase) ||
+                    mesh.Name.Equals("rootdummy", StringComparison.OrdinalIgnoreCase) ||
+                    mesh.Vertices.Length == 0 || mesh.Faces.Length == 0)
+                {
+                    continue;
+                }
+
+                result.Add(colorsByModel.TryGetValue(mesh.Bitmap, out var colors) ? colors : null);
+            }
+
+            return result;
+        }
+
+        private static void ApplyLayerColors(
+            RenderModel model,
+            IReadOnlyList<IReadOnlyDictionary<int, int>?> layerColors)
+        {
+            for (var index = 0; index < Math.Min(model.Meshes.Count, layerColors.Count); index++)
+            {
+                if (layerColors[index] is { Count: > 0 } colors)
+                    model.Meshes[index].LayerColorIndices = colors;
+            }
+        }
+
+        /// <summary>Applies a selected surface to a weighted garment before its meshes are built.</summary>
+        private static void ApplyTextureOverride(MdlModel model, string? textureResRef)
+        {
+            if (string.IsNullOrWhiteSpace(textureResRef))
+                return;
+
+            foreach (var mesh in model.GetMeshNodes())
+                mesh.Bitmap = textureResRef;
         }
 
         /// <summary>

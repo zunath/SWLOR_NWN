@@ -147,6 +147,9 @@ namespace SWLOR.Toolset.Editors
             string,
             Task<IReadOnlyList<ObjectPlacement>>> _objectPlacementsFinder;
 
+        /// <summary>The area file parser; injectable to verify workspace replacement during a slow load.</summary>
+        private readonly Func<string, string, string, AreaEditorDocumentLoad> _areaDocumentsLoader;
+
         /// <summary>
         /// Bumped every time <see cref="_itemSources"/> is invalidated (a module opens, or a store,
         /// item, creature, or placeable is saved). <see cref="BuildItemSourcesAsync"/> captures this at
@@ -278,7 +281,8 @@ namespace SWLOR.Toolset.Editors
                 Domain.Workspace.ModuleWorkspace,
                 ResourceType,
                 string,
-                Task<IReadOnlyList<ObjectPlacement>>>? objectPlacementsFinder = null)
+                Task<IReadOnlyList<ObjectPlacement>>>? objectPlacementsFinder = null,
+            Func<string, string, string, AreaEditorDocumentLoad>? areaDocumentsLoader = null)
         {
             _moduleCustomContent = moduleCustomContent;
             _externalLinks = externalLinks;
@@ -301,6 +305,7 @@ namespace SWLOR.Toolset.Editors
             _objectPlacementsFinder = objectPlacementsFinder ??
                                       ((workspace, type, resRef) =>
                                           workspace.PlacementIndex.FindAsync(type, resRef));
+            _areaDocumentsLoader = areaDocumentsLoader ?? AreaEditorDocumentLoad.Load;
             _mutationLock = mutationLock;
             _placeableModels = placeableModels;
             _thumbnails = thumbnails;
@@ -3283,11 +3288,12 @@ namespace SWLOR.Toolset.Editors
                 // load while the builder keeps working in another document.
                 var transitionTagsTask = GetCurrentTransitionDestinationTagsAsync(workspace);
                 var documentLoadTask = Task.Run(() =>
-                    AreaEditorDocumentLoad.Load(arePath, gitPath, gicPath));
+                    _areaDocumentsLoader(arePath, gitPath, gicPath));
                 await Task.WhenAll(transitionTagsTask, documentLoadTask).ConfigureAwait(true);
                 var transitionDestinationTags = await transitionTagsTask.ConfigureAwait(true);
                 var loadedDocuments = await documentLoadTask.ConfigureAwait(true);
-                if (transitionDestinationTags == null)
+                if (transitionDestinationTags == null ||
+                    !ReferenceEquals(workspace, _workspaceContext.Workspace))
                     return;
 
                 if (_openAreaEditors.TryGetValue(resRef, out existing))

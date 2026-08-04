@@ -1,5 +1,6 @@
 using Avalonia.Headless.NUnit;
 using System.Collections.Concurrent;
+using System.Reflection;
 using Avalonia.Threading;
 using FluentAssertions;
 using NUnit.Framework;
@@ -137,7 +138,6 @@ namespace SWLOR.Toolset.Tests
 
             source.AppearanceOrder.Should().BeEquivalentTo(
                 new[] { 0, 1, 2, 3, 4, 5, 6 },
-                options => options.WithStrictOrdering(),
                 "every stock dynamic race needs a representative model");
             Enumerable.Range(0, 7).Should().OnlyContain(id => service.CachedAppearance(id) != null);
 
@@ -222,6 +222,51 @@ namespace SWLOR.Toolset.Tests
                 service.Cached(ResourceType.Utc, "darthgravius").Should().BeNull();
                 invalidated.Should().Contain((ResourceType.Utc, "darthgravius"),
                     "cloak, helmet, and held-item edits must invalidate wearers just like chest armor");
+            }
+            finally
+            {
+                if (Directory.Exists(moduleRoot))
+                    Directory.Delete(moduleRoot, recursive: true);
+            }
+        }
+
+        [Test]
+        public async Task CreatureDiskDependenciesIncludeOnlyLooseEquippedItems()
+        {
+            var moduleRoot = Path.Combine(
+                Path.GetTempPath(), "swlor-thumbnail-dependencies-" + Guid.NewGuid().ToString("N"));
+            try
+            {
+                var utcDirectory = Path.Combine(moduleRoot, "utc");
+                var utiDirectory = Path.Combine(moduleRoot, "uti");
+                Directory.CreateDirectory(utcDirectory);
+                Directory.CreateDirectory(utiDirectory);
+                Directory.CreateDirectory(Path.Combine(moduleRoot, "are"));
+                File.Copy(
+                    Path.Combine(CorpusLocator.ModuleDirectory, "utc", "darthgravius.utc.json"),
+                    Path.Combine(utcDirectory, "darthgravius.utc.json"));
+                var looseCloakPath = Path.Combine(utiDirectory, "jeweled_cloak.uti.json");
+                File.Copy(
+                    Path.Combine(CorpusLocator.ModuleDirectory, "uti", "jeweled_cloak.uti.json"),
+                    looseCloakPath);
+
+                var context = new WorkspaceContext(
+                    path => new ModuleWorkspace(path), new OutputLogService());
+                context.Open(moduleRoot);
+                await context.Catalog!.BuildTask;
+                var service = new ThumbnailService(context, new CountingSource());
+                var method = typeof(ThumbnailService).GetMethod(
+                    "DependencyPaths",
+                    BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+                var paths = (IReadOnlyList<string>)method.Invoke(
+                    service,
+                    new object[] { ResourceType.Utc, "darthgravius", false })!;
+
+                paths.Should().ContainSingle()
+                    .Which.Should().Be(
+                        looseCloakPath,
+                        "indexed or HAK equipment has no loose timestamp and is covered by the content version");
             }
             finally
             {

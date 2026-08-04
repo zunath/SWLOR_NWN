@@ -222,6 +222,69 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ReplacingAWorkspaceDuringAreaDocumentLoadingDoesNotOpenTheObsoleteArea()
+        {
+            const string areaResRef = "bank";
+            var firstRoot = NewModuleRoot();
+            var secondRoot = NewModuleRoot();
+            foreach (var extension in new[] { "are", "git", "gic" })
+            {
+                File.Copy(
+                    Path.Combine(
+                        CorpusLocator.ModuleDirectory,
+                        extension,
+                        $"{areaResRef}.{extension}.json"),
+                    Path.Combine(firstRoot, extension, $"{areaResRef}.{extension}.json"));
+            }
+
+            var firstWorkspace = new ModuleWorkspace(firstRoot);
+            var secondWorkspace = new ModuleWorkspace(secondRoot);
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(
+                root => root == firstRoot ? firstWorkspace : secondWorkspace,
+                log);
+            using var loadStarted = new ManualResetEventSlim();
+            using var releaseLoad = new ManualResetEventSlim();
+            var editors = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                factory: null!,
+                prompts: null!,
+                areaDocumentsLoader: (arePath, gitPath, gicPath) =>
+                {
+                    loadStarted.Set();
+                    if (!releaseLoad.Wait(TimeSpan.FromSeconds(5)))
+                        throw new TimeoutException("The area-load race test was not released.");
+
+                    return AreaEditorDocumentLoad.Load(arePath, gitPath, gicPath);
+                });
+
+            workspace.Open(firstRoot);
+            var firstCatalog = workspace.Catalog!.BuildTask;
+            await firstWorkspace.TagIndex.GetTransitionDestinationTagsAsync();
+            editors.TryOpenEditor(ResourceType.Area, areaResRef);
+            loadStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+
+            workspace.Open(secondRoot);
+            var secondCatalog = workspace.Catalog!.BuildTask;
+            releaseLoad.Set();
+
+            var openingAreas = (HashSet<string>)typeof(EditorService)
+                .GetField("_openingAreaEditors", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(editors)!;
+            await WaitUntilAsync(() => !openingAreas.Contains(areaResRef));
+            await Task.WhenAll(firstCatalog, secondCatalog);
+
+            var openAreas = (Dictionary<string, AreaEditorViewModel>)typeof(EditorService)
+                .GetField("_openAreaEditors", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(editors)!;
+            openAreas.Should().NotContainKey(areaResRef,
+                "an area parsed for the previous module must not be published into the replacement workspace");
+            log.Lines.Should().NotContain(line => line.Contains("Failed to open area editor"));
+        }
+
+        [Test]
         public async Task PlacementInvalidationReloadsAnOpenObjectSource()
         {
             var moduleRoot = NewModuleRoot();
@@ -373,7 +436,7 @@ namespace SWLOR.Toolset.Tests
         private string NewModuleRoot()
         {
             var root = Path.Combine(Path.GetTempPath(), $"swlor_editor_index_{Guid.NewGuid():N}");
-            foreach (var folder in new[] { "are", "git", "utc" })
+            foreach (var folder in new[] { "are", "git", "gic", "utc" })
                 Directory.CreateDirectory(Path.Combine(root, folder));
             _roots.Add(root);
             return root;

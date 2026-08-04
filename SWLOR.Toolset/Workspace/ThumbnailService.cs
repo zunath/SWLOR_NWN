@@ -1096,6 +1096,7 @@ namespace SWLOR.Toolset.Workspace
                 var creature = creatureBlueprint.Fields;
                 return BlueprintModelResolver.GetVisibleEquippedItemResRefs(creature)
                     .Select(itemResRef => workspace.GetResourcePath(ResourceType.Uti, itemResRef))
+                    .Where(File.Exists)
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToList();
             }

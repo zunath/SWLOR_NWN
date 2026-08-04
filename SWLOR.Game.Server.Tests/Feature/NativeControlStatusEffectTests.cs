@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -264,30 +265,42 @@ public class NativeControlStatusEffectTests
     }
 
     [Test]
-    public void StatConfiguredIconMarkers_AreRealAttributeDeclarationsOnTheClass()
+    public void StatConfiguredIconAuditDetection_AgreesWithTheCompiledAttribute()
     {
         // The icon audit exempts a status effect from the one-class-one-icon model when
-        // [StatConfiguredIcon] decorates the class declaration. The audit matches the marker at
-        // the start of a line directly above the class, so a marker that only appears in a
-        // comment, doc block, or string must not exist - it would read as exempt to a human
-        // while the audit still enforces the full model (or vice versa if the audit regressed
-        // to a substring match).
+        // [StatConfiguredIcon] decorates the class declaration, detected textually in PowerShell.
+        // The compiler is the ground truth for what is actually an attribute, so every definition
+        // file's textual detection must agree with reflection: a marker sitting in a comment,
+        // doc block, or string would make the audit skip a class the compiler never exempted,
+        // and a declaration shape the pattern cannot see (partial, internal, abstract) would
+        // make the audit enforce the full model on a class that is genuinely stat-configured.
         var root = FindRepositoryRoot();
         var definitionDirectory = Path.Combine(
             root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition");
+
+        // Mirrors the detection in tools/UpdateGameplayIconStandards.ps1 - keep the two in sync.
         var declarationPattern = new System.Text.RegularExpressions.Regex(
-            @"(?m)^\s*\[StatConfiguredIcon\]\s*(?:^\s*\[[^\]\r\n]+\]\s*)*public\s+(?:sealed\s+)?class\s");
+            @"(?m)^\s*\[StatConfiguredIcon\]\s*(?:^\s*\[[^\]\r\n]+\]\s*)*(?:public|internal)\s+(?:(?:sealed|abstract|partial)\s+)*class\s");
+
+        var attributedTypes = typeof(StatusEffectBase).Assembly
+            .GetTypes()
+            .Where(type => type.GetCustomAttributes(typeof(StatConfiguredIconAttribute), false).Length > 0)
+            .Select(type => type.Name)
+            .ToHashSet();
 
         foreach (var file in Directory.EnumerateFiles(definitionDirectory, "*.cs"))
         {
-            var source = File.ReadAllText(file);
-            if (!source.Contains("StatConfiguredIcon"))
-                continue;
+            var className = Path.GetFileNameWithoutExtension(file);
+            var textualDetection = declarationPattern.IsMatch(File.ReadAllText(file));
 
-            declarationPattern.IsMatch(source).Should().BeTrue(
-                $"{Path.GetFileName(file)} mentions StatConfiguredIcon but does not declare it as " +
-                "an attribute on the class - the audit only honors a real declaration");
+            textualDetection.Should().Be(attributedTypes.Contains(className),
+                $"{className}: the audit's textual [StatConfiguredIcon] detection must agree with " +
+                "the compiled attribute - neither a marker in a comment/string nor an unsupported " +
+                "declaration shape may make them diverge");
         }
+
+        attributedTypes.Should().Contain(nameof(MeleeRepeatedTargetDamageStatusEffect),
+            "the known stat-configured effect anchors this test's positive case");
     }
 
     private sealed class RemovalProbeStatusEffect : StatusEffectBase

@@ -678,7 +678,7 @@ function Get-StatusEffectClasses([string]$path) {
         # Only a real attribute declaration on the class counts: the marker must start its own line
         # (never inside a comment or string) with nothing but other attributes between it and the
         # class declaration.
-        if ($content -match '(?ms)^\s*\[StatConfiguredIcon\]\s*(?:^\s*\[[^\]\r\n]+\]\s*)*public\s+(?:sealed\s+)?class\s') {
+        if ($content -match '(?ms)^\s*\[StatConfiguredIcon\]\s*(?:^\s*\[[^\]\r\n]+\]\s*)*(?:public|internal)\s+(?:(?:sealed|abstract|partial)\s+)*class\s') {
             continue
         }
 

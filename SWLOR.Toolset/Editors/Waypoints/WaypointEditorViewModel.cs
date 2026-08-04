@@ -48,6 +48,9 @@ namespace SWLOR.Toolset.Editors.Waypoints
         public string? Incomplete { get; private set; }
         public bool IsIncomplete => Incomplete != null;
 
+        private readonly Workspace.OutputLogService? _log;
+
+
         public WaypointEditorViewModel(
             JsonGffStruct waypoint,
             string headerOwner,
@@ -58,9 +61,11 @@ namespace SWLOR.Toolset.Editors.Waypoints
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             ChoicePreviewService? previews = null,
             Services.IEditorPromptService? prompts = null,
-            Func<string, bool>? singletonTagInUse = null)
+            Func<string, bool>? singletonTagInUse = null,
+            Workspace.OutputLogService? log = null)
         {
             ArgumentNullException.ThrowIfNull(waypoint);
+            _log = log;
             _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
             _store = new BehaviorValueStore(waypoint);
             _runEdit = runEdit;
@@ -99,8 +104,10 @@ namespace SWLOR.Toolset.Editors.Waypoints
             {
                 await ChooseBehaviorAsync(behavior).ConfigureAwait(true);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _log?.AppendLine(
+                    $"Behavior switch to '{behavior.DisplayName}' failed: {ex.Message}");
                 BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);
             }
         }

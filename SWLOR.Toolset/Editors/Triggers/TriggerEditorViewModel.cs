@@ -73,6 +73,9 @@ namespace SWLOR.Toolset.Editors.Triggers
 
         public bool IsIncomplete => Incomplete != null;
 
+        private readonly Workspace.OutputLogService? _log;
+
+
         public TriggerEditorViewModel(
             JsonGffStruct trigger,
             string headerOwner,
@@ -82,9 +85,11 @@ namespace SWLOR.Toolset.Editors.Triggers
             Func<BehaviorTagScope, string, string?>? resolveTag = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             ChoicePreviewService? previews = null,
-            Services.IEditorPromptService? prompts = null)
+            Services.IEditorPromptService? prompts = null,
+            Workspace.OutputLogService? log = null)
         {
             ArgumentNullException.ThrowIfNull(trigger);
+            _log = log;
 
             _prompts = prompts;
             _store = new BehaviorValueStore(trigger);
@@ -130,8 +135,10 @@ namespace SWLOR.Toolset.Editors.Triggers
             {
                 await ChooseBehaviorAsync(behavior).ConfigureAwait(true);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _log?.AppendLine(
+                    $"Behavior switch to '{behavior.DisplayName}' failed: {ex.Message}");
                 BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);
             }
         }

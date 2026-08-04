@@ -93,6 +93,9 @@ namespace SWLOR.Toolset.Editors.Doors
             }
         }
 
+        private readonly Workspace.OutputLogService? _log;
+
+
         public DoorEditorViewModel(
             JsonGffStruct door,
             string headerOwner,
@@ -107,9 +110,11 @@ namespace SWLOR.Toolset.Editors.Doors
             bool isDirty = false,
             ThumbnailService? thumbnails = null,
             ChoicePreviewService? choicePreviews = null,
-            Services.IEditorPromptService? prompts = null)
+            Services.IEditorPromptService? prompts = null,
+            Workspace.OutputLogService? log = null)
         {
             ArgumentNullException.ThrowIfNull(door);
+            _log = log;
 
             _prompts = prompts;
             _store = new DoorValueStore(door);
@@ -169,8 +174,10 @@ namespace SWLOR.Toolset.Editors.Doors
             {
                 await ChooseBehaviorAsync(behavior).ConfigureAwait(true);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _log?.AppendLine(
+                    $"Behavior switch to '{behavior.DisplayName}' failed: {ex.Message}");
                 BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);
             }
         }

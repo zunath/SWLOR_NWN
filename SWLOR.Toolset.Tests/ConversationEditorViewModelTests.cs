@@ -648,6 +648,21 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task SaveClampsAnOutOfRangeAdvancedAnimationInsteadOfThrowing()
+        {
+            ReplaceWithCleanConversation();
+            using var editor = new Disposable(Open());
+
+            // The NumericUpDown bounds interactive input, but the property is settable to anything;
+            // the save path converts it before entering its try block and must never throw.
+            editor.Value.AdvancedAnimation = (decimal)uint.MaxValue + 1;
+
+            (await editor.Value.TrySaveAsync()).Should().BeTrue();
+
+            DlgDocument.Load(_workingCopy).Openings[0].Target.Animation.Should().Be(uint.MaxValue);
+        }
+
+        [Test]
         public void QuestOutcomesDoNotCreateHiddenExecutionMetadata()
         {
             using var editor = new Disposable(Open());

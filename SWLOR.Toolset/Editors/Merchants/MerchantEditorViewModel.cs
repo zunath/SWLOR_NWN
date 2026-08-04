@@ -812,6 +812,9 @@ namespace SWLOR.Toolset.Editors.Merchants
             }
 
             IsLoadingItemCandidates = true;
+            // A stale failure must not outlive the retry that fixes it - the summary reports the
+            // error ahead of the results, so a successful reload would otherwise still read as failed.
+            ItemCandidateError = null;
             NotifyItemCandidateShapeChanged();
             try
             {

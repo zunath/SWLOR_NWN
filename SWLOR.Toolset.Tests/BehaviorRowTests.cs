@@ -291,10 +291,15 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task AVisualCatalogGetsSharedFacetFiltersAndSortsWithoutEditorSpecificCode()
         {
+            // Female (even-index) names run Zulu-block first, Alpha-block second, so the filtered
+            // subset is NOT ascending by default - the sort assertion below must observe a real
+            // reorder, not the incidental order the fixture was published in.
             var choices = Enumerable.Range(0, 140)
                 .Select(index => new BehaviorChoice(
                     index,
-                    index % 2 == 0 ? $"Zulu {index:D3}" : $"Alpha {index:D3}",
+                    index % 2 == 0
+                        ? index < 70 ? $"Zulu {index:D3}" : $"Alpha {index:D3}"
+                        : $"Mike {index:D3}",
                     $"portrait_{index}")
                 {
                     GalleryFacets =
@@ -331,9 +336,9 @@ namespace SWLOR.Toolset.Tests
             row.SelectedGallerySort = row.GallerySortOptions.Single(option =>
                 option.Mode == GallerySortMode.NameAscending);
             await WaitForGalleryRebuildAsync(() =>
-                row.GalleryChoices.Count > 0 &&
-                row.GalleryChoices.Select(choice => choice.Display).SequenceEqual(
-                    row.GalleryChoices.Select(choice => choice.Display).OrderBy(display => display, StringComparer.Ordinal)));
+                row.GalleryChoices.Count > 0 && row.GalleryChoices[0].Display == "Alpha 070");
+            row.GalleryChoices[0].Display.Should().Be("Alpha 070",
+                "the ascending sort must reorder the Zulu-block-first default order");
             row.GalleryChoices.Select(choice => choice.Display).Should().BeInAscendingOrder();
         }
 

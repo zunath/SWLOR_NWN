@@ -167,8 +167,12 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
             }
         }
 
-        /// <summary>Whether all inventory entries are in the pane selected by their BaseItem row.
-        /// A null resolver result preserves an unresolvable legacy entry in its current valid pane.</summary>
+        /// <summary>Whether all inventory entries are in the pane selected by their BaseItem row,
+        /// with index-derived struct ids and repository positions. A null resolver result preserves
+        /// an unresolvable legacy entry in its current valid pane. Slot metadata is part of the
+        /// check because this answer short-circuits <see cref="NormalizeInventoryPanes"/> - a file
+        /// whose panes are category-correct but carries stale or colliding ids/positions must still
+        /// be repaired on save.</summary>
         public bool InventoryMatchesCategories(Func<string, int?> resolveStorePanel)
         {
             ArgumentNullException.ThrowIfNull(resolveStorePanel);
@@ -179,16 +183,28 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
 
             for (var paneIndex = 0; paneIndex < panes.Count; paneIndex++)
             {
-                foreach (var item in panes[paneIndex].GetListOrEmpty("ItemList"))
+                var items = panes[paneIndex].GetListOrEmpty("ItemList");
+                for (var index = 0; index < items.Count; index++)
                 {
+                    var item = items[index];
                     var resRef = item.GetStringOrNull("InventoryRes") ?? string.Empty;
                     var expected = resolveStorePanel(resRef);
                     if (expected.HasValue && NormalizePane(expected.Value) != paneIndex)
+                        return false;
+
+                    if (!HasIndexDerivedSlotMetadata(item, index))
                         return false;
                 }
             }
 
             return true;
+        }
+
+        private static bool HasIndexDerivedSlotMetadata(JsonGffStruct item, int index)
+        {
+            return item.StructId == (uint)index &&
+                   item.GetIntOrNull("Repos_PosX") == index % InventoryColumns * InventoryCellSpacing &&
+                   item.GetIntOrNull("Repos_Posy") == index / InventoryColumns * InventoryCellSpacing;
         }
 
         /// <summary>Moves every resolvable inventory entry into its baseitems.2da StorePanel,

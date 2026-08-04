@@ -180,6 +180,21 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void SetString_CreatingAnAbsentVoidField_Throws_AndAddsNothing()
+        {
+            // The existing-field setter rejects Void; the create path must too, or a caller could
+            // smuggle a text-encoded payload past the binary codec only when the field is absent.
+            var document = ParseDocument("{\"__data_type\":\"UTC \"}");
+            var original = document.ToBytes();
+
+            var act = () => document.Root.SetString("Payload", GffFieldType.Void, "oops");
+
+            act.Should().Throw<ArgumentException>();
+            document.Root.GetOrNull("Payload").Should().BeNull();
+            document.ToBytes().Should().Equal(original);
+        }
+
+        [Test]
         public void AVoidPayload_RemainsReachableThroughTheLosslessByteCodec()
         {
             var document = ParseDocument(VoidDocument);

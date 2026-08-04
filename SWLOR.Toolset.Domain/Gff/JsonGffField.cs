@@ -164,11 +164,19 @@ namespace SWLOR.Toolset.Domain.Gff
         /// <summary>
         /// Validates an editable string value against the storage rules of its GFF field type.
         /// ResRefs are ASCII resource identifiers capped at 16 characters; an empty ResRef is
-        /// valid for optional references such as unused script slots.
+        /// valid for optional references such as unused script slots. Non-string types (Void
+        /// included - its payload is binary, not text) are rejected outright so a text setter can
+        /// never create a field the string accessors themselves refuse to touch.
         /// </summary>
         public static void ValidateStringValue(GffFieldType type, string value)
         {
             ArgumentNullException.ThrowIfNull(value);
+            if (!GffFieldTypeNames.IsString(type))
+            {
+                throw new ArgumentException(
+                    $"{type} does not hold an editable text value.", nameof(type));
+            }
+
             if (type != GffFieldType.ResRef)
                 return;
 

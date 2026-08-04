@@ -66,7 +66,7 @@ namespace SWLOR.Toolset.Editors.Triggers
 
             Editor = new TriggerEditorViewModel(
                 _session.Document.Root, resRef, isInstance: false, RunEdit, gameCodeIndex, resolveTag,
-                resolveChoices, previews, prompts);
+                resolveChoices, previews, prompts, log);
 
             UpdateTitle();
         }

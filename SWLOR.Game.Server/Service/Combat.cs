@@ -853,6 +853,7 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType,
             bool isAbilityDamage,
             bool canApplyRandomFlatBonuses,
+            bool isLandedAttack,
             out int damageBeforeTargetStatusStage)
         {
             damageBeforeTargetStatusStage = 0;
@@ -881,9 +882,15 @@ namespace SWLOR.Game.Server.Service
                 damageType,
                 isAbilityDamage,
                 canApplyRandomFlatBonuses);
-            damage = ApplyRepeatedTargetDamageModifier(attacker, defender, skillType, damage, isAbilityDamage);
-            damage = ApplyMeleeRepeatedTargetDamageModifier(attacker, defender, skillType, damage, isAbilityDamage);
-            damage = ApplyRangedRepeatedTargetDamageModifier(attacker, defender, skillType, damage);
+            // The repeated-target modifiers keep per-attacker stack state, so a swing the engine
+            // later discards must not advance (or reset) their counters - the damage value itself
+            // is thrown away with the swing.
+            if (isLandedAttack)
+            {
+                damage = ApplyRepeatedTargetDamageModifier(attacker, defender, skillType, damage, isAbilityDamage);
+                damage = ApplyMeleeRepeatedTargetDamageModifier(attacker, defender, skillType, damage, isAbilityDamage);
+                damage = ApplyRangedRepeatedTargetDamageModifier(attacker, defender, skillType, damage);
+            }
 
             var maxBonusDamage = damageBeforePercentStages +
                 (int)Math.Ceiling(damageBeforePercentStages * (MaximumDamageBonusPercent / 100f));
@@ -921,7 +928,8 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType = SkillType.Invalid,
             CombatDamageType damageType = CombatDamageType.Physical,
             bool isAbilityDamage = false,
-            bool canApplyRandomFlatBonuses = true)
+            bool canApplyRandomFlatBonuses = true,
+            bool isLandedAttack = true)
         {
             return ApplyDamageDealtModifiers(
                 attacker,
@@ -931,6 +939,7 @@ namespace SWLOR.Game.Server.Service
                 damageType,
                 isAbilityDamage,
                 canApplyRandomFlatBonuses,
+                isLandedAttack,
                 out _);
         }
 
@@ -4625,6 +4634,7 @@ namespace SWLOR.Game.Server.Service
             _attackSwingDebts.Remove(creature);
             _repeatedTargetDamageStates.Remove(creature);
             _meleeRepeatedTargetDamageStates.Remove(creature);
+            _rangedRepeatedTargetDamageStates.Remove(creature);
             _meleeAutoAttackCycleCounts.Remove(creature);
             ClearSameTargetPressureState(creature);
             foreach (var pressureState in _sameTargetPressureStates.Where(x => x.Value.Target == creature).Select(x => x.Key).ToList())

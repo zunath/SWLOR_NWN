@@ -834,9 +834,23 @@ namespace SWLOR.Toolset.Editors
                 : _currentLine.Script;
             return _currentLine.Speaker != AdvancedSpeaker
                    || _currentLine.Sound != AdvancedSound
-                   || _currentLine.Animation != decimal.ToUInt32(Math.Max(0, AdvancedAnimation))
+                   || _currentLine.Animation != ClampedAnimation()
                    || _currentLine.Comment != AdvancedComment
                    || displayedScript != AdvancedScript;
+        }
+
+        /// <summary>
+        /// The Advanced panel's animation value bounded to its uint storage. The NumericUpDown
+        /// constrains normal input, but the property itself is settable to anything, and this runs
+        /// on the save path before its try block - it must never throw.
+        /// </summary>
+        private uint ClampedAnimation()
+        {
+            return AdvancedAnimation <= 0
+                ? 0u
+                : AdvancedAnimation >= uint.MaxValue
+                    ? uint.MaxValue
+                    : decimal.ToUInt32(AdvancedAnimation);
         }
 
         [RelayCommand]
@@ -850,7 +864,7 @@ namespace SWLOR.Toolset.Editors
             {
                 line.Speaker = AdvancedSpeaker;
                 line.Sound = AdvancedSound;
-                line.Animation = decimal.ToUInt32(Math.Max(0, AdvancedAnimation));
+                line.Animation = ClampedAnimation();
                 line.Comment = AdvancedComment;
                 if (line.Actions.Count == 0)
                 {

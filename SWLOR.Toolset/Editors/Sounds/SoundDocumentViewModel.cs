@@ -65,7 +65,8 @@ namespace SWLOR.Toolset.Editors.Sounds
                 resolveChoices,
                 audioResources,
                 preview,
-                prompts);
+                prompts,
+                log);
             UpdateTitle();
         }
 

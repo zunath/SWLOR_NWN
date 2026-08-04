@@ -61,7 +61,8 @@ namespace SWLOR.Toolset.Editors.Waypoints
                 gameCodeIndex,
                 resolveChoices,
                 previews,
-                prompts);
+                prompts,
+                log: log);
 
             UpdateTitle();
         }

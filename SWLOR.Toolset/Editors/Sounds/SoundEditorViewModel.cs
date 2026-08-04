@@ -60,6 +60,9 @@ namespace SWLOR.Toolset.Editors.Sounds
 
         public event Action? ValueChanged;
 
+        private readonly Workspace.OutputLogService? _log;
+
+
         public SoundEditorViewModel(
             JsonGffStruct sound,
             string headerOwner,
@@ -69,9 +72,11 @@ namespace SWLOR.Toolset.Editors.Sounds
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             IReadOnlyList<string>? audioResources = null,
             Services.SoundPreviewService? preview = null,
-            Services.IEditorPromptService? prompts = null)
+            Services.IEditorPromptService? prompts = null,
+            Workspace.OutputLogService? log = null)
         {
             ArgumentNullException.ThrowIfNull(sound);
+            _log = log;
 
             _store = new SoundValueStore(sound);
             _runEdit = runEdit;
@@ -110,8 +115,10 @@ namespace SWLOR.Toolset.Editors.Sounds
             {
                 await ChooseBehaviorAsync(behavior).ConfigureAwait(true);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _log?.AppendLine(
+                    $"Behavior switch to '{behavior.DisplayName}' failed: {ex.Message}");
                 BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);
             }
         }
@@ -156,12 +163,26 @@ namespace SWLOR.Toolset.Editors.Sounds
                         : previous.Fields.Where(field => !keptByIncoming.Contains(field.Name)),
                     behavior.Manages);
 
-            if (losses.Count > 0 && _prompts != null)
+            // Dropped sound entries are as much a loss as cleared fields: a loop switch that
+            // truncates the playlist must ask first even when no field is cleared.
+            var clauses = new List<string>();
+            if (losses.Count > 0)
+            {
+                clauses.Add(
+                    $"clears {Describe(losses)}, which {(losses.Count == 1 ? "is" : "are")} " +
+                    $"not part of {behavior.DisplayName}");
+            }
+            if (droppedSounds.Count > 0)
+            {
+                clauses.Add(
+                    $"drops {Describe(droppedSounds)} because a loop plays a single sound");
+            }
+
+            if (clauses.Count > 0 && _prompts != null)
             {
                 var confirmed = await _prompts.ConfirmDestructiveAsync(
                     $"Change behavior to {behavior.DisplayName}?",
-                    $"This clears {Describe(losses)}, which {(losses.Count == 1 ? "is" : "are")} " +
-                    $"not part of {behavior.DisplayName}. Undo will put {(losses.Count == 1 ? "it" : "them")} back " +
+                    $"This {string.Join(" and ", clauses)}. Undo will put everything back " +
                     "until the sound is saved.",
                     "Change behavior").ConfigureAwait(true);
 

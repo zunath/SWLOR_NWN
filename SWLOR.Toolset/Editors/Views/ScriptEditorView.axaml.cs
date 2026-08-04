@@ -15,6 +15,7 @@ namespace SWLOR.Toolset.Editors
         private readonly DiagnosticSquiggleRenderer _squiggles = new();
         private TextEditor? _editor;
         private ScriptEditorViewModel? _bound;
+        private Action<IReadOnlyList<Domain.Script.Syntax.ScriptAnalysisDiagnostic>>? _diagnosticsHandler;
         private CompletionWindow? _completionWindow;
         private bool _suppressTextChanged;
         private Border? _searchPanel;
@@ -58,7 +59,9 @@ namespace SWLOR.Toolset.Editors
             if (_bound != null)
             {
                 _bound.TextReplaced -= ReplaceText;
-                _bound.DiagnosticsChanged -= OnDiagnosticsChanged;
+                if (_diagnosticsHandler != null)
+                    _bound.DiagnosticsChanged -= _diagnosticsHandler;
+                _diagnosticsHandler = null;
 
                 // Fully unhook, symmetric with AreaEditorView.AttachViewModel: these delegates close
                 // over this view's _editor, so leaving them set on the outgoing view model would let
@@ -98,7 +101,13 @@ namespace SWLOR.Toolset.Editors
             _bound.GoToOffsetRequested = GoToOffset;
             _bound.GoToLineRequested = GoToLine;
             _bound.ReplaceAllRequested = ReplaceAllAsOneEdit;
-            _bound.DiagnosticsChanged += OnDiagnosticsChanged;
+
+            // The handler carries the view model it was subscribed for: unsubscribing cannot recall
+            // a dispatcher callback that is already queued, so the callback itself has to notice its
+            // source lost the binding race and drop the stale diagnostics.
+            var source = _bound;
+            _diagnosticsHandler = diagnostics => OnDiagnosticsChanged(source, diagnostics);
+            _bound.DiagnosticsChanged += _diagnosticsHandler;
             _bound.AnalyzeNow();
             RefreshFolding();
         }
@@ -546,11 +555,16 @@ namespace SWLOR.Toolset.Editors
 
         private AvaloniaEdit.Folding.FoldingManager? _foldingManager;
 
-        private void OnDiagnosticsChanged(IReadOnlyList<Domain.Script.Syntax.ScriptAnalysisDiagnostic> diagnostics)
+        private void OnDiagnosticsChanged(
+            ScriptEditorViewModel source,
+            IReadOnlyList<Domain.Script.Syntax.ScriptAnalysisDiagnostic> diagnostics)
         {
             // Analysis runs on a background thread; the renderer touches visual state.
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
+                if (!ReferenceEquals(source, _bound))
+                    return;
+
                 _squiggles.SetDiagnostics(diagnostics);
                 _editor?.TextArea.TextView.InvalidateLayer(AvaloniaEdit.Rendering.KnownLayer.Selection);
                 RefreshFolding();

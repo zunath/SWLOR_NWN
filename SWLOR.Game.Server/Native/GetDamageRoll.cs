@@ -597,6 +597,7 @@ namespace SWLOR.Game.Server.Native
                 damageType,
                 false,
                 canApplyRandomFlatBonusesThisDamage,
+                isLandedAttack,
                 out var damageBeforeTargetStatusStage);
 
             // Saber Ward / Aegis Eternal: re-type a share of the physical hit into a real Force

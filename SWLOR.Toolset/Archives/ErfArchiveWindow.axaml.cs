@@ -47,6 +47,7 @@ namespace SWLOR.Toolset.Archives
             if (_viewModel == null)
                 return;
 
+            string? path;
             try
             {
                 var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
@@ -55,13 +56,24 @@ namespace SWLOR.Toolset.Archives
                     AllowMultiple = false,
                     FileTypeFilter = new[] { ErfFileType }
                 }).ConfigureAwait(true);
-                var path = files.FirstOrDefault()?.TryGetLocalPath();
-                if (path != null)
-                    await _viewModel.LoadArchiveAsync(path).ConfigureAwait(true);
+                path = files.FirstOrDefault()?.TryGetLocalPath();
             }
             catch (Exception ex)
             {
                 _viewModel.StatusText = $"Could not open the file picker: {ex.GetBaseException().Message}";
+                return;
+            }
+
+            if (path == null)
+                return;
+
+            try
+            {
+                await _viewModel.LoadArchiveAsync(path).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _viewModel.StatusText = $"Could not load '{path}': {ex.GetBaseException().Message}";
             }
         }
 
@@ -110,6 +122,7 @@ namespace SWLOR.Toolset.Archives
             if (_viewModel == null)
                 return;
 
+            string? path;
             try
             {
                 var destination = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
@@ -120,13 +133,24 @@ namespace SWLOR.Toolset.Archives
                     ShowOverwritePrompt = true,
                     FileTypeChoices = new[] { ErfFileType }
                 }).ConfigureAwait(true);
-                var path = destination?.TryGetLocalPath();
-                if (path != null)
-                    await _viewModel.ExportAsync(path).ConfigureAwait(true);
+                path = destination?.TryGetLocalPath();
             }
             catch (Exception ex)
             {
                 _viewModel.StatusText = $"Could not open the file picker: {ex.GetBaseException().Message}";
+                return;
+            }
+
+            if (path == null)
+                return;
+
+            try
+            {
+                await _viewModel.ExportAsync(path).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _viewModel.StatusText = $"Could not export to '{path}': {ex.GetBaseException().Message}";
             }
         }
 

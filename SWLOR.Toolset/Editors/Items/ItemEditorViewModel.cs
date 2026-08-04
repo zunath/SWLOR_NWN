@@ -58,7 +58,9 @@ namespace SWLOR.Toolset.Editors.Items
 
         public ItemSourceSectionViewModel Source { get; }
 
-        public bool ShowsSourceTab => Source.IsLoaded;
+        public Sources.ObjectSourceSectionViewModel? PlacementSource { get; }
+
+        public bool ShowsSourceTab => Source.IsLoaded || PlacementSource != null;
 
         [ObservableProperty]
         private VarTableSectionViewModel? _variables;
@@ -74,6 +76,9 @@ namespace SWLOR.Toolset.Editors.Items
 
         [ObservableProperty]
         private bool _isModelPreviewLoading;
+
+        [ObservableProperty]
+        private int _selectedTabIndex;
 
         /// <summary>Null unless a resolver was supplied and the item's base type has a world model to preview.</summary>
         public AreaScene? PreviewScene { get; private set; }
@@ -205,6 +210,7 @@ namespace SWLOR.Toolset.Editors.Items
             ResourceIndex? resourceIndex = null,
             ArmorDyeSwatchService? armorDyeSwatches = null,
             ArmorPartCatalog? armorPartModels = null,
+            Sources.ObjectSourceSectionViewModel? placementSource = null,
             Workspace.OutputLogService? log = null)
         {
             ArgumentNullException.ThrowIfNull(item);
@@ -241,6 +247,7 @@ namespace SWLOR.Toolset.Editors.Items
                     armorDyeSwatches, armorPartModels);
             }
             Source = new ItemSourceSectionViewModel(headerOwner, sourceLookup, itemSourcesReady);
+            PlacementSource = placementSource;
             _lastAppearanceBaseItem = CurrentBaseItem();
             RebuildVariablesSection();
             RefreshCompleteness();
@@ -264,6 +271,7 @@ namespace SWLOR.Toolset.Editors.Items
         {
             HeaderOwner = resRef;
             Source.Refresh(resRef);
+            PlacementSource?.SetResRef(resRef);
             OnPropertyChanged(nameof(HeaderOwner));
             OnPropertyChanged(nameof(HeaderName));
             OnPropertyChanged(nameof(Source));

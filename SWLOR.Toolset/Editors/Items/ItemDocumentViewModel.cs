@@ -96,7 +96,8 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, string, IReadOnlyList<string>>? findReferences = null,
             Func<string, bool>? canRefileCategories = null,
             Func<string, string, CategorySaveResult>? refileCategories = null,
-            BlueprintSaveCoordinator? saveCoordinator = null)
+            BlueprintSaveCoordinator? saveCoordinator = null,
+            Sources.ObjectSourceSectionViewModel? placementSource = null)
         {
             _log = log;
             _prompts = prompts;
@@ -128,6 +129,7 @@ namespace SWLOR.Toolset.Editors.Items
                 resourceIndex: resourceIndex,
                 armorDyeSwatches: armorDyeSwatches,
                 armorPartModels: armorPartModels,
+                placementSource: placementSource,
                 log: log);
             UpdateTitle();
         }

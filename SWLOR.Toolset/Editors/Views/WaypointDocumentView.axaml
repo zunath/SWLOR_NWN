@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:waypoints="using:SWLOR.Toolset.Editors.Waypoints"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
              x:Class="SWLOR.Toolset.Editors.Waypoints.WaypointDocumentView"
              x:DataType="waypoints:WaypointDocumentViewModel">
 
@@ -26,6 +27,13 @@
       </Grid>
     </Border>
 
-    <waypoints:WaypointEditorView DataContext="{Binding Editor}" />
+    <TabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+      <TabItem Header="Edit">
+        <waypoints:WaypointEditorView DataContext="{Binding Editor}" />
+      </TabItem>
+      <TabItem Header="Source" IsVisible="{Binding Source, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <sources:ObjectSourceView DataContext="{Binding Source}" />
+      </TabItem>
+    </TabControl>
   </DockPanel>
 </UserControl>

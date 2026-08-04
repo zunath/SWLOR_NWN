@@ -30,8 +30,18 @@ namespace SWLOR.Toolset.Domain.Render
         ItemComposite
     }
 
-    /// <summary>One resolved body part of a segmented creature: the MdlPartComposer bone-part type and its MDL resref.</summary>
-    public readonly record struct BlueprintModelPart(string PartType, string ModelResRef);
+    /// <summary>
+    /// One resolved body/equipment part: the MdlPartComposer attachment type, its MDL resref, any
+    /// item-specific PLT palette choices, and an optional texture selected independently of geometry.
+    /// Equipment palettes live here because a cloak and the chest armor beneath it can intentionally
+    /// use different dye rows; cloakmodel.2da similarly lets multiple appearances share geometry while
+    /// selecting different surfaces.
+    /// </summary>
+    public readonly record struct BlueprintModelPart(
+        string PartType,
+        string ModelResRef,
+        IReadOnlyDictionary<int, int>? LayerColorIndices = null,
+        string? TextureResRef = null);
 
     /// <summary>
     /// The resolved preview-model description for a blueprint, produced by <see cref="BlueprintModelResolver"/>.
@@ -51,7 +61,10 @@ namespace SWLOR.Toolset.Domain.Render
         /// <summary>The skeleton/supermodel resref for <see cref="BlueprintModelKind.Segmented"/>; null otherwise.</summary>
         public string? SkeletonResRef { get; init; }
 
-        /// <summary>The body parts (MdlPartComposer part type → resref) for <see cref="BlueprintModelKind.Segmented"/>.</summary>
+        /// <summary>
+        /// Body parts for <see cref="BlueprintModelKind.Segmented"/>, or visible equipment attached
+        /// to a <see cref="BlueprintModelKind.Simple"/> creature (MdlPartComposer part type → resref).
+        /// </summary>
         public IReadOnlyList<BlueprintModelPart> Parts { get; init; } = Array.Empty<BlueprintModelPart>();
 
         /// <summary>
@@ -119,8 +132,12 @@ namespace SWLOR.Toolset.Domain.Render
             "forel", "forer", "handl", "handr", "shinl", "shinr",
         };
 
-        /// <summary>Equip_ItemList struct id for the chest slot (bit flags per the Aurora UTC format).</summary>
+        /// <summary>Visible Equip_ItemList struct ids (bit flags per the Aurora UTC/GIT format).</summary>
+        private const int HeadSlotStructId = 1;
         private const int ChestSlotStructId = 2;
+        private const int RightHandSlotStructId = 16;
+        private const int LeftHandSlotStructId = 32;
+        private const int CloakSlotStructId = 64;
 
         /// <summary>
         /// Resolves the preview model for a blueprint. Returns a <see cref="BlueprintModelKind.None"/>
@@ -138,8 +155,8 @@ namespace SWLOR.Toolset.Domain.Render
         /// ModelType 0/1 item's single ground model. Null = assume exists.
         /// </param>
         /// <param name="baseItems">
-        /// baseitems.2da row lookup by BaseItem id, for <see cref="ResourceType.Uti"/>. Null = no item
-        /// preview (the caller has no 2DA layer loaded).
+        /// baseitems.2da row lookup by BaseItem id, for <see cref="ResourceType.Uti"/> and visible
+        /// creature equipment. Null = item models cannot be resolved (the caller has no 2DA layer loaded).
         /// </param>
         public static BlueprintModelReference Resolve(
             ResourceType type,
@@ -151,17 +168,20 @@ namespace SWLOR.Toolset.Domain.Render
             Func<string, bool>? partModelExists = null,
             WaypointAppearanceService? waypoints = null,
             Func<int, BaseItemIconRow?>? baseItems = null,
-            bool armorPreviewFemale = false)
+            bool armorPreviewFemale = false,
+            CloakModelService? cloakModels = null)
         {
             ArgumentNullException.ThrowIfNull(root);
 
             return type switch
             {
-                ResourceType.Utc => ResolveCreature(root, appearances, itemBlueprintLoader, partModelExists),
+                ResourceType.Utc => ResolveCreature(
+                    root, appearances, itemBlueprintLoader, partModelExists, baseItems, cloakModels),
                 ResourceType.Utp => ResolvePlaceable(root, placeables),
                 ResourceType.Utd => ResolveDoor(root, doors),
                 ResourceType.Utw => ResolveWaypoint(root, waypoints),
-                ResourceType.Uti => ResolveItem(root, baseItems, partModelExists, armorPreviewFemale),
+                ResourceType.Uti => ResolveItem(
+                    root, baseItems, partModelExists, armorPreviewFemale, cloakModels),
                 _ => BlueprintModelReference.NoneWith("No model preview for this blueprint type.")
             };
         }
@@ -182,7 +202,8 @@ namespace SWLOR.Toolset.Domain.Render
             JsonGffStruct root,
             Func<int, BaseItemIconRow?>? baseItems,
             Func<string, bool>? partModelExists,
-            bool armorPreviewFemale = false)
+            bool armorPreviewFemale = false,
+            CloakModelService? cloakModels = null)
         {
             if (baseItems == null)
                 return BlueprintModelReference.NoneWith("Item preview unavailable (base item data not loaded).");
@@ -230,7 +251,14 @@ namespace SWLOR.Toolset.Domain.Render
                     // by itself it is a flat sheet in mid-air. Worn on the mannequin it hangs where it
                     // is meant to, which is the only way to judge one.
                     if (string.Equals(itemClass, CloakItemClass, StringComparison.OrdinalIgnoreCase))
-                        return ResolveCapeMannequin(root, itemClass, armorPreviewFemale, partModelExists, part1);
+                    {
+                        var cloakMapping = cloakModels?.GetOrNull(part1);
+                        var cloakModel = cloakMapping?.Model ?? part1;
+                        var cloakTexture = cloakMapping?.Texture ?? part1;
+                        return ResolveCapeMannequin(
+                            root, itemClass, armorPreviewFemale, partModelExists,
+                            cloakModel, cloakTexture);
+                    }
 
                     var modelResRef = $"{itemClass}_{part1:D3}";
                     if (partModelExists != null && !partModelExists(modelResRef))
@@ -240,7 +268,8 @@ namespace SWLOR.Toolset.Domain.Render
                     {
                         Kind = BlueprintModelKind.Simple,
                         Status = $"{modelResRef}.mdl",
-                        ModelResRef = modelResRef
+                        ModelResRef = modelResRef,
+                        LayerColorIndices = ResolveLayerColors(root, root)
                     };
                 }
 
@@ -341,14 +370,19 @@ namespace SWLOR.Toolset.Domain.Render
             string itemClass,
             bool female,
             Func<string, bool>? partModelExists,
-            int cloakNumber)
+            int cloakNumber,
+            int cloakTextureNumber)
         {
             var prefix = female ? "pfh0" : "pmh0";
             var cloakResRef = $"{prefix}_cloak_{cloakNumber:D3}";
+            var cloakTextureResRef = $"{prefix}_cloak_{cloakTextureNumber:D3}";
             if (partModelExists != null && !partModelExists(cloakResRef))
                 return LootBagFallback(itemClass, partModelExists, $"no cloak model '{cloakResRef}'");
 
-            var parts = new List<BlueprintModelPart> { new("cloak", cloakResRef) };
+            var parts = new List<BlueprintModelPart>
+            {
+                new("cloak", cloakResRef, TextureResRef: cloakTextureResRef)
+            };
             parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", 1)));
             foreach (var (_, _, partType) in BodyPartFields)
             {
@@ -374,7 +408,9 @@ namespace SWLOR.Toolset.Domain.Render
             JsonGffStruct root,
             AppearanceService? appearances,
             Func<string, JsonGffStruct?>? itemBlueprintLoader,
-            Func<string, bool>? partModelExists)
+            Func<string, bool>? partModelExists,
+            Func<int, BaseItemIconRow?>? baseItems,
+            CloakModelService? cloakModels)
         {
             if (appearances == null)
                 return BlueprintModelReference.NoneWith("Creature preview unavailable (appearance data not loaded).");
@@ -385,7 +421,17 @@ namespace SWLOR.Toolset.Domain.Render
                 return BlueprintModelReference.NoneWith($"Unknown appearance id {appearanceId}.");
 
             if (string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase))
-                return ResolveSegmentedCreature(root, row, itemBlueprintLoader, partModelExists);
+            {
+                var prefix = SegmentedCreaturePrefix(root, row);
+                if (prefix == null)
+                    return BlueprintModelReference.NoneWith(
+                        $"{row.DisplayName}: segmented appearance has no race letter.");
+
+                var visibleEquipment = ResolveVisibleEquipment(
+                    root, itemBlueprintLoader, partModelExists, baseItems, cloakModels, prefix);
+                return ResolveSegmentedCreature(
+                    root, row, prefix, itemBlueprintLoader, partModelExists, visibleEquipment);
+            }
 
             var modelResRef = row.Race;
             if (string.IsNullOrWhiteSpace(modelResRef))
@@ -395,25 +441,32 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 Kind = BlueprintModelKind.Simple,
                 Status = $"{row.DisplayName} ({modelResRef}.mdl)",
-                ModelResRef = modelResRef
+                ModelResRef = modelResRef,
+                Parts = ResolveVisibleEquipment(
+                    root, itemBlueprintLoader, partModelExists, baseItems, cloakModels,
+                    wearerPrefix: null).Parts
             };
+        }
+
+        private static string? SegmentedCreaturePrefix(JsonGffStruct root, AppearanceRow row)
+        {
+            if (string.IsNullOrWhiteSpace(row.Race))
+                return null;
+
+            // NWN player-body prefix: p{gender}{race}{phenotype}, e.g. "pmh0".
+            var gender = (root.GetIntOrNull("Gender") ?? 0) == 1 ? 'f' : 'm';
+            var phenotype = root.GetIntOrNull("Phenotype") ?? 0;
+            return $"p{gender}{char.ToLowerInvariant(row.Race[0])}{phenotype}";
         }
 
         private static BlueprintModelReference ResolveSegmentedCreature(
             JsonGffStruct root,
             AppearanceRow row,
+            string prefix,
             Func<string, JsonGffStruct?>? itemBlueprintLoader,
-            Func<string, bool>? partModelExists)
+            Func<string, bool>? partModelExists,
+            VisibleEquipment visibleEquipment)
         {
-            var raceLetter = row.Race;
-            if (string.IsNullOrWhiteSpace(raceLetter))
-                return BlueprintModelReference.NoneWith($"{row.DisplayName}: segmented appearance has no race letter.");
-
-            // NWN player-body prefix: p{gender}{race}{phenotype}, e.g. "pmh0" (player, male, human, phenotype 0).
-            var gender = (root.GetIntOrNull("Gender") ?? 0) == 1 ? 'f' : 'm';
-            var phenotype = root.GetIntOrNull("Phenotype") ?? 0;
-            var prefix = $"p{gender}{char.ToLowerInvariant(raceLetter[0])}{phenotype}";
-
             var armor = LoadEquippedChestArmor(root, itemBlueprintLoader);
             var parts = new List<BlueprintModelPart>();
 
@@ -437,6 +490,9 @@ namespace SWLOR.Toolset.Domain.Render
 
             foreach (var (creatureField, armorKey, partType) in BodyPartFields)
             {
+                if (visibleEquipment.HiddenBodyParts.Contains(partType))
+                    continue;
+
                 var number = ResolvePartNumber(
                     root.GetIntOrNull(creatureField) ?? 0,
                     armor == null
@@ -445,6 +501,8 @@ namespace SWLOR.Toolset.Domain.Render
                 if (number > 0)
                     parts.Add(new BlueprintModelPart(partType, BuildPartName(prefix, partType, number)));
             }
+
+            parts.AddRange(visibleEquipment.Parts);
 
             if (parts.Count == 0)
                 return BlueprintModelReference.NoneWith($"{row.DisplayName}: segmented creature has no body parts.");
@@ -500,16 +558,186 @@ namespace SWLOR.Toolset.Domain.Render
             return armorValue > 0 ? armorValue : creatureValue;
         }
 
-        /// <summary>Loads the equipped chest-slot armor's root struct from Equip_ItemList, if any.</summary>
+        /// <summary>
+        /// Resolves the models for equipment the game draws on a creature. Ordinary right- and
+        /// left-hand items are held props; creature natural-weapon/stat slots are deliberately not.
+        /// </summary>
+        private readonly record struct VisibleEquipment(
+            IReadOnlyList<BlueprintModelPart> Parts,
+            IReadOnlySet<string> HiddenBodyParts);
+
+        private static VisibleEquipment ResolveVisibleEquipment(
+            JsonGffStruct root,
+            Func<string, JsonGffStruct?>? itemBlueprintLoader,
+            Func<string, bool>? partModelExists,
+            Func<int, BaseItemIconRow?>? baseItems,
+            CloakModelService? cloakModels,
+            string? wearerPrefix)
+        {
+            if (baseItems == null)
+            {
+                return new VisibleEquipment(
+                    Array.Empty<BlueprintModelPart>(),
+                    new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+            }
+
+            var parts = new List<BlueprintModelPart>();
+            AddVisibleEquipmentPart(
+                parts, root, HeadSlotStructId, "helmet",
+                itemBlueprintLoader, partModelExists, baseItems, cloakModels, wearerPrefix);
+            AddVisibleEquipmentPart(
+                parts, root, CloakSlotStructId, "cloak",
+                itemBlueprintLoader, partModelExists, baseItems, cloakModels, wearerPrefix);
+            AddVisibleEquipmentPart(
+                parts, root, RightHandSlotStructId, "weaponr",
+                itemBlueprintLoader, partModelExists, baseItems, cloakModels, wearerPrefix);
+            AddVisibleEquipmentPart(
+                parts, root, LeftHandSlotStructId, "weaponl",
+                itemBlueprintLoader, partModelExists, baseItems, cloakModels, wearerPrefix);
+            return new VisibleEquipment(
+                parts,
+                ResolveCloakHiddenBodyParts(root, itemBlueprintLoader, cloakModels));
+        }
+
+        private static IReadOnlySet<string> ResolveCloakHiddenBodyParts(
+            JsonGffStruct creature,
+            Func<string, JsonGffStruct?>? itemBlueprintLoader,
+            CloakModelService? cloakModels)
+        {
+            var hidden = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var cloak = LoadEquippedItem(creature, CloakSlotStructId, itemBlueprintLoader);
+            var appearance = cloak == null
+                ? null
+                : ItemAppearanceValues.Read(cloak, "ModelPart1");
+            var mapping = appearance is { } value ? cloakModels?.GetOrNull(value) : null;
+            if (mapping?.HideLeftShoulder == true)
+                hidden.Add("shol");
+            if (mapping?.HideRightShoulder == true)
+                hidden.Add("shor");
+            return hidden;
+        }
+
+        private static void AddVisibleEquipmentPart(
+            ICollection<BlueprintModelPart> destination,
+            JsonGffStruct creature,
+            int slot,
+            string attachmentType,
+            Func<string, JsonGffStruct?>? itemBlueprintLoader,
+            Func<string, bool>? partModelExists,
+            Func<int, BaseItemIconRow?> baseItems,
+            CloakModelService? cloakModels,
+            string? wearerPrefix)
+        {
+            var item = LoadEquippedItem(creature, slot, itemBlueprintLoader);
+            if (item == null)
+                return;
+
+            var reference = ResolveItem(
+                item, baseItems, partModelExists, armorPreviewFemale: false,
+                cloakModels: cloakModels);
+            if (attachmentType == "cloak")
+            {
+                foreach (var part in reference.Parts.Where(
+                             part => part.PartType.Equals("cloak", StringComparison.OrdinalIgnoreCase)))
+                {
+                    var modelResRef = part.ModelResRef;
+                    var textureResRef = part.TextureResRef;
+                    if (!string.IsNullOrWhiteSpace(wearerPrefix))
+                    {
+                        var cloakSuffix = modelResRef.IndexOf("_cloak_", StringComparison.OrdinalIgnoreCase);
+                        if (cloakSuffix >= 0)
+                            modelResRef = wearerPrefix + modelResRef[cloakSuffix..];
+
+                        var textureSuffix = textureResRef?.IndexOf(
+                            "_cloak_", StringComparison.OrdinalIgnoreCase) ?? -1;
+                        if (textureSuffix >= 0)
+                            textureResRef = wearerPrefix + textureResRef![textureSuffix..];
+                    }
+
+                    if (partModelExists?.Invoke(modelResRef) ?? true)
+                    {
+                        destination.Add(new BlueprintModelPart(
+                            attachmentType, modelResRef, reference.LayerColorIndices, textureResRef));
+                    }
+                }
+
+                return;
+            }
+
+            if (reference.Kind == BlueprintModelKind.ItemComposite)
+            {
+                foreach (var part in reference.Parts)
+                {
+                    destination.Add(new BlueprintModelPart(
+                        attachmentType, part.ModelResRef, reference.LayerColorIndices));
+                }
+                return;
+            }
+
+            if (reference.Kind == BlueprintModelKind.Simple &&
+                !string.IsNullOrWhiteSpace(reference.ModelResRef) &&
+                !reference.ModelResRef.Equals("it_bag", StringComparison.OrdinalIgnoreCase))
+            {
+                destination.Add(new BlueprintModelPart(
+                    attachmentType, reference.ModelResRef, reference.LayerColorIndices));
+            }
+        }
+
+        /// <summary>Loads the equipped chest-slot armor's embedded item or referenced blueprint.</summary>
         private static JsonGffStruct? LoadEquippedChestArmor(
             JsonGffStruct root, Func<string, JsonGffStruct?>? itemBlueprintLoader)
         {
-            if (itemBlueprintLoader == null)
+            return LoadEquippedItem(root, ChestSlotStructId, itemBlueprintLoader);
+        }
+
+        /// <summary>
+        /// GIT creatures embed the complete equipped UTI struct; UTC blueprints usually store only
+        /// an EquippedRes reference. Prefer the embedded copy because it carries per-instance part
+        /// and dye overrides, then fall back to loading either supported resref spelling.
+        /// </summary>
+        private static JsonGffStruct? LoadEquippedItem(
+            JsonGffStruct root,
+            int slot,
+            Func<string, JsonGffStruct?>? itemBlueprintLoader)
+        {
+            var equipped = root.GetListOrEmpty("Equip_ItemList")
+                .FirstOrDefault(item => ParseStructId(item.RawStructId) == slot);
+            if (equipped == null)
                 return null;
 
-            var resRef = GetEquippedChestArmorResRef(root);
+            if (equipped.GetIntOrNull("BaseItem").HasValue ||
+                equipped.GetIntOrNull("ArmorPart_Torso").HasValue ||
+                equipped.GetIntOrNull("ModelPart1").HasValue)
+            {
+                return IsDegenerateEmbeddedItem(equipped) ? null : equipped;
+            }
 
-            return string.IsNullOrWhiteSpace(resRef) ? null : itemBlueprintLoader(resRef);
+            var resRef = GetEquippedItemResRef(equipped);
+            return string.IsNullOrWhiteSpace(resRef) || itemBlueprintLoader == null
+                ? null
+                : itemBlueprintLoader(resRef);
+        }
+
+        /// <summary>
+        /// Several shipped areas carry a leftover equipped-slot struct with a blank TemplateResRef,
+        /// BaseItem 0, and every appearance part zeroed - no blueprint identity and nothing to
+        /// draw. Rendering it would fabricate a part-000 prop no model exists for, so it counts as
+        /// an empty hand instead. Anything with a resref or a real appearance value is an item.
+        /// </summary>
+        private static bool IsDegenerateEmbeddedItem(JsonGffStruct equipped)
+        {
+            if (!string.IsNullOrWhiteSpace(equipped.GetStringOrNull("TemplateResRef")))
+                return false;
+
+            if ((equipped.GetIntOrNull("BaseItem") ?? 0) != 0 ||
+                equipped.GetIntOrNull("ArmorPart_Torso").HasValue)
+            {
+                return false;
+            }
+
+            return (ItemAppearanceValues.Read(equipped, "ModelPart1") ?? 0) == 0 &&
+                   (ItemAppearanceValues.Read(equipped, "ModelPart2") ?? 0) == 0 &&
+                   (ItemAppearanceValues.Read(equipped, "ModelPart3") ?? 0) == 0;
         }
 
         /// <summary>
@@ -521,8 +749,37 @@ namespace SWLOR.Toolset.Domain.Render
             ArgumentNullException.ThrowIfNull(root);
             var chest = root.GetListOrEmpty("Equip_ItemList")
                 .FirstOrDefault(item => ParseStructId(item.RawStructId) == ChestSlotStructId);
-            return chest?.GetStringOrNull("EquippedRes");
+            return chest == null ? null : GetEquippedItemResRef(chest);
         }
+
+        /// <summary>
+        /// Every equipped item blueprint that can change a creature preview: chest armor, helmet,
+        /// cloak, and both held items. Thumbnail dependency tracking uses the same slot set as model
+        /// resolution so editing any visible item invalidates every creature wearing it.
+        /// </summary>
+        public static IReadOnlyList<string> GetVisibleEquippedItemResRefs(JsonGffStruct root)
+        {
+            ArgumentNullException.ThrowIfNull(root);
+            var visibleSlots = new HashSet<int>
+            {
+                HeadSlotStructId,
+                ChestSlotStructId,
+                RightHandSlotStructId,
+                LeftHandSlotStructId,
+                CloakSlotStructId
+            };
+
+            return root.GetListOrEmpty("Equip_ItemList")
+                .Where(item => visibleSlots.Contains(ParseStructId(item.RawStructId)))
+                .Select(GetEquippedItemResRef)
+                .Where(resRef => !string.IsNullOrWhiteSpace(resRef))
+                .Select(resRef => resRef!)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        private static string? GetEquippedItemResRef(JsonGffStruct item) =>
+            item.GetStringOrNull("EquippedRes") ?? item.GetStringOrNull("TemplateResRef");
 
         private static int ParseStructId(byte[]? raw)
         {

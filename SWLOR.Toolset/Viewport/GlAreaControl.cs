@@ -323,6 +323,10 @@ void main()
 
             public string? TextureName { get; init; }
 
+            /// <summary>Equipment-specific PLT dyes; empty means use the instance/model palette.</summary>
+            public IReadOnlyDictionary<int, int> LayerColorIndices { get; init; } =
+                new Dictionary<int, int>();
+
             /// <summary>
             /// The source node's MDL <c>tilefade</c> flag - see <see cref="RenderMesh.TileFade"/>.
             /// Non-zero marks the tileset's own overhead geometry, which the tile pass drops unless
@@ -479,8 +483,64 @@ void main()
         private float _initialDistance = 50f;
         private Vector3 _cameraEye;
 
+        /// <summary>
+        /// A Go To request can arrive while an area is still being built. Applying it immediately
+        /// would be lost when the first scene performs its initial framing, so retain the newest
+        /// request until that scene has been attached.
+        /// </summary>
+        private Vector3? _pendingFocus;
+
         /// <summary>Whether this control has ever framed a scene - see the <c>Scene</c> setter.</summary>
         private bool _cameraFramed;
+
+        /// <summary>
+        /// A restored camera arrived before its first scene. That scene still supplies the baseline
+        /// used to compare later rebuilds, but must not replace the restored orbit itself.
+        /// </summary>
+        private bool _restoredCameraAwaitingScene;
+
+        /// <summary>Captures the current orbit camera once a scene has supplied its framing scale.</summary>
+        public AreaViewportState? CaptureViewportState()
+        {
+            if (!_cameraFramed)
+                return null;
+
+            return new AreaViewportState(
+                _target, _distance, _initialDistance, _azimuth, _elevation);
+        }
+
+        /// <summary>Restores a camera saved by the owning area document.</summary>
+        public void RestoreViewportState(AreaViewportState state)
+        {
+            if (!IsFinite(state.Target) ||
+                !float.IsFinite(state.Distance) || state.Distance <= 0f ||
+                !float.IsFinite(state.InitialDistance) || state.InitialDistance <= 0f ||
+                !float.IsFinite(state.Azimuth) || !float.IsFinite(state.Elevation))
+                return;
+
+            _target = state.Target;
+            _initialDistance = state.InitialDistance;
+            _distance = AreaCameraMath.ClampDistance(state.Distance, _initialDistance);
+            _azimuth = state.Azimuth;
+            _elevation = AreaCameraMath.ClampElevation(state.Elevation);
+            _cameraFramed = true;
+            if (Scene == null)
+            {
+                _framedTarget = _target;
+                _framedDistance = _distance;
+                _restoredCameraAwaitingScene = true;
+            }
+            else
+            {
+                // The current scene has already supplied the correct comparison baseline. Restoring
+                // a panned/zoomed camera must not replace it with the user's current orbit.
+                _restoredCameraAwaitingScene = false;
+            }
+            RequestNextFrameRendering();
+        }
+
+        private static bool IsFinite(Vector3 value) =>
+            float.IsFinite(value.X) && float.IsFinite(value.Y) && float.IsFinite(value.Z);
 
         /// <summary>What the camera was last fitted to, so <see cref="NeedsRefit"/> can tell a
         /// same-size rebuild from a genuinely different model.</summary>
@@ -925,6 +985,20 @@ void main()
         /// <summary>True when this instance should draw its resolved model rather than a marker.</summary>
         private static bool DrawsAsModel(InstanceMarker instance) => instance.Model != null;
 
+        /// <summary>
+        /// Whether the placed model can use NWN's ordinary back-face culling pass.
+        /// </summary>
+        /// <remarks>
+        /// Dynamic creature bodies are assembled from independently-authored body, armor, helmet,
+        /// cloak, and weapon parts. Their triangle winding is not consistent across those resources;
+        /// applying the tile/placeable culling rule to the combined model discards visible equipment
+        /// even though the same geometry renders correctly in the two-sided blueprint preview.
+        /// Creature counts are small compared with area placeables, so drawing them two-sided fixes
+        /// the authored equipment without giving up culling on the thousands of props in dense areas.
+        /// </remarks>
+        private static bool CullInstanceModelFaces(InstanceMarkerKind kind) =>
+            kind != InstanceMarkerKind.Creature;
+
         /// <summary>Layered resource index used to resolve tile/mesh textures and MTR materials. Null degrades every mesh to a flat gray fallback.</summary>
         public ResourceIndex? ResourceIndex { get; set; }
 
@@ -1046,10 +1120,21 @@ void main()
                 // that distance when the base type changed to a 1.9m mannequin (and the reverse
                 // showing an item as a speck). An appearance edit rebuilds geometry of about the
                 // same size, so it compares equal here and keeps the builder's view.
-                if (value != null && (!_cameraFramed || NeedsRefit(value)))
+                if (value != null && _restoredCameraAwaitingScene)
+                {
+                    _restoredCameraAwaitingScene = false;
+                    RecordSceneFramingBaseline(value);
+                }
+                else if (value != null && (!_cameraFramed || NeedsRefit(value)))
                 {
                     _cameraFramed = true;
                     ResetCameraForScene(value);
+                }
+
+                if (value != null && _pendingFocus is { } pendingFocus)
+                {
+                    _pendingFocus = null;
+                    ApplyFocus(pendingFocus);
                 }
 
                 RequestNextFrameRendering();
@@ -1107,15 +1192,10 @@ void main()
 
         private void ResetCameraForScene(AreaScene scene)
         {
-            var aspect = _viewportWidth > 0 && _viewportHeight > 0
-                ? (float)_viewportWidth / _viewportHeight
-                : 1.5f;
-
             // A single-model preview scene frames the MODEL where it stands, not the grid it
             // nominally sits on - otherwise the camera sits back far enough to hold a whole 10m
             // tile and an item renders as a speck.
-            var (target, distance) = AreaCameraMath.ComputeSceneFraming(
-                scene, AreaSceneBuilder.TileSize, VerticalFovRadians, aspect);
+            var (target, distance) = SceneFraming(scene);
 
             _target = target;
             _distance = distance;
@@ -1131,6 +1211,20 @@ void main()
             _elevation = isSingleModelPreview
                 ? PreviewElevationRadians
                 : AreaCameraMath.DefaultElevationRadians;
+        }
+
+        private void RecordSceneFramingBaseline(AreaScene scene)
+        {
+            (_framedTarget, _framedDistance) = SceneFraming(scene);
+        }
+
+        private (Vector3 Target, float Distance) SceneFraming(AreaScene scene)
+        {
+            var aspect = _viewportWidth > 0 && _viewportHeight > 0
+                ? (float)_viewportWidth / _viewportHeight
+                : 1.5f;
+            return AreaCameraMath.ComputeSceneFraming(
+                scene, AreaSceneBuilder.TileSize, VerticalFovRadians, aspect);
         }
 
         // ----- Pointer input: middle orbits, middle+left pans, wheel zooms -----
@@ -2253,11 +2347,22 @@ void main()
         /// </remarks>
         public void FocusOn(Vector3 position)
         {
+            if (Scene == null)
+            {
+                _pendingFocus = position;
+                return;
+            }
+
+            _pendingFocus = null;
+            ApplyFocus(position);
+            RequestNextFrameRendering();
+        }
+
+        private void ApplyFocus(Vector3 position)
+        {
             _target = position;
             _distance = AreaCameraMath.ClampDistance(
                 MathF.Min(_distance, FocusDistance), _initialDistance);
-
-            RequestNextFrameRendering();
         }
 
         public void HandlePointerWheel(PointerWheelEventArgs e)
@@ -3034,51 +3139,67 @@ void main()
             var preview = PreviewAnimation();
             var previewNeedsFrames = false;
 
-            BeginModelFaceCulling();
-            foreach (var raw in scene.Instances)
+            var faceCullingEnabled = false;
+            try
             {
-                if (!DrawsAsModel(raw))
-                    continue;
-
-                var instance = Displayed(raw);
-
-                // Culled like the tile pass already is. esriauncharted holds 5,249 placeables and each
-                // visible-model instance issues several draw calls, so submitting every one of them every
-                // frame made a dense area unusable however little of it was on screen.
-                if (!IsInstanceVisible(instance))
-                    continue;
-
-                var instanceTransform = AreaPicking.ComputeInstanceTransform(instance);
-
-                var buffer = GetOrBuildModelBuffer(raw.Model!);
-                previewNeedsFrames |= preview.Running &&
-                                      buffer.Animations.Any(animation =>
-                                          string.Equals(
-                                              animation.Name,
-                                              preview.Name,
-                                              StringComparison.OrdinalIgnoreCase) &&
-                                          animation.IsPlayable);
-                _gl!.BindVertexArray(buffer.Vao);
-                SetUniformBool("unlit", false);
-                UseLayerColors(instance.LayerColorIndices, raw.Model);
-
-                foreach (var meshRange in buffer.MeshRanges)
+                foreach (var raw in scene.Instances)
                 {
-                    SetUniformMatrix4(
-                        "model",
-                        PreviewMeshTransform(meshRange, buffer, preview, idleElapsed) * instanceTransform);
-                    BindMeshTexture(meshRange.TextureName);
+                    if (!DrawsAsModel(raw))
+                        continue;
 
-                    unsafe
+                    var instance = Displayed(raw);
+
+                    // Culled like the tile pass already is. esriauncharted holds 5,249 placeables and each
+                    // visible-model instance issues several draw calls, so submitting every one of them every
+                    // frame made a dense area unusable however little of it was on screen.
+                    if (!IsInstanceVisible(instance))
+                        continue;
+
+                    var shouldCullFaces = CullInstanceModelFaces(raw.Kind);
+                    if (shouldCullFaces != faceCullingEnabled)
                     {
-                        _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
-                            DrawElementsType.UnsignedInt,
-                            (void*)PreviewMeshIndexOffset(meshRange, buffer, preview, idleElapsed));
+                        if (shouldCullFaces)
+                            BeginModelFaceCulling();
+                        else
+                            EndModelFaceCulling();
+                        faceCullingEnabled = shouldCullFaces;
+                    }
+
+                    var instanceTransform = AreaPicking.ComputeInstanceTransform(instance);
+
+                    var buffer = GetOrBuildModelBuffer(raw.Model!);
+                    previewNeedsFrames |= preview.Running &&
+                                          buffer.Animations.Any(animation =>
+                                              string.Equals(
+                                                  animation.Name,
+                                                  preview.Name,
+                                                  StringComparison.OrdinalIgnoreCase) &&
+                                              animation.IsPlayable);
+                    _gl!.BindVertexArray(buffer.Vao);
+                    SetUniformBool("unlit", false);
+                    foreach (var meshRange in buffer.MeshRanges)
+                    {
+                        SetUniformMatrix4(
+                            "model",
+                            PreviewMeshTransform(meshRange, buffer, preview, idleElapsed) * instanceTransform);
+                        UseLayerColors(
+                            meshRange.LayerColorIndices, instance.LayerColorIndices, raw.Model);
+                        BindMeshTexture(meshRange.TextureName);
+
+                        unsafe
+                        {
+                            _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
+                                DrawElementsType.UnsignedInt,
+                                (void*)PreviewMeshIndexOffset(meshRange, buffer, preview, idleElapsed));
+                        }
                     }
                 }
             }
-
-            EndModelFaceCulling();
+            finally
+            {
+                if (faceCullingEnabled)
+                    EndModelFaceCulling();
+            }
 
             DrawPreviewEmitters(scene, preview);
             if (previewNeedsFrames)
@@ -3506,6 +3627,7 @@ void main()
                 Position = position,
                 Orientation = _snappedDoorAnchor?.Orientation ?? ghost.Orientation,
                 VisualTransform = ghost.VisualTransform,
+                LayerColorIndices = ghost.LayerColorIndices,
                 Model = ghost.Model
             };
 
@@ -3526,7 +3648,6 @@ void main()
             {
                 var buffer = GetOrBuildModelBuffer(placed.Model!);
                 _gl.BindVertexArray(buffer.Vao);
-
                 if (refused)
                 {
                     SetUniformBool("hasTexture", false);
@@ -3535,14 +3656,20 @@ void main()
                     SetUniformVec3("flatColor", PlacementRefusedColor);
                 }
 
-                BeginModelFaceCulling();
+                var cullFaces = CullInstanceModelFaces(placed.Kind);
+                if (cullFaces)
+                    BeginModelFaceCulling();
                 try
                 {
                     foreach (var meshRange in buffer.MeshRanges)
                     {
                         SetUniformMatrix4("model", meshRange.MeshTransform * transform);
                         if (!refused)
+                        {
+                            UseLayerColors(
+                                meshRange.LayerColorIndices, placed.LayerColorIndices, placed.Model);
                             BindMeshTexture(meshRange.TextureName);
+                        }
 
                         unsafe
                         {
@@ -3553,7 +3680,8 @@ void main()
                 }
                 finally
                 {
-                    EndModelFaceCulling();
+                    if (cullFaces)
+                        EndModelFaceCulling();
                 }
             }
             else if (_markerMeshBuffer is { } marker)
@@ -4358,6 +4486,8 @@ void main()
             return data;
         }
 
+        private static readonly Vector3 AuroraWaypointMarkerColor = new(0.98f, 0.80f, 0.10f);
+
         private static Vector3 MarkerColor(InstanceMarkerKind kind) => kind switch
         {
             InstanceMarkerKind.Creature => new Vector3(0.85f, 0.15f, 0.15f),
@@ -4365,10 +4495,11 @@ void main()
             InstanceMarkerKind.Item => new Vector3(0.9f, 0.85f, 0.2f),
             InstanceMarkerKind.Placeable => new Vector3(0.2f, 0.45f, 0.9f),
             InstanceMarkerKind.Sound => new Vector3(0.2f, 0.8f, 0.8f),
-            InstanceMarkerKind.Store => new Vector3(0.2f, 0.8f, 0.3f),
+            // Aurora represents merchants with the same yellow marker it uses for waypoints.
+            InstanceMarkerKind.Store => AuroraWaypointMarkerColor,
             InstanceMarkerKind.Trigger => new Vector3(0.95f, 0.55f, 0.15f),
             // Aurora's waypoint yellow, for a waypoint whose appearance row names no model.
-            InstanceMarkerKind.Waypoint => new Vector3(0.98f, 0.80f, 0.10f),
+            InstanceMarkerKind.Waypoint => AuroraWaypointMarkerColor,
             _ => new Vector3(0.7f, 0.7f, 0.7f)
         };
 
@@ -4539,6 +4670,7 @@ void main()
                     AnimationFrames = mesh.AnimationFrames,
                     AnimationIndexOffsets = animationIndexOffsets,
                     TextureName = string.IsNullOrEmpty(mesh.TextureName) ? null : mesh.TextureName,
+                    LayerColorIndices = mesh.LayerColorIndices,
                     TileFade = mesh.TileFade
                 });
             }
@@ -4580,10 +4712,18 @@ void main()
         /// trigger. PLT surfaces are only coloured at load, so this has to be set before the first
         /// BindMeshTexture of the model and stays set for the rest of its draw.
         /// </summary>
-        private void UseLayerColors(IReadOnlyDictionary<int, int>? instanceColors, RenderModel? model)
+        private void UseLayerColors(
+            IReadOnlyDictionary<int, int>? meshColors,
+            IReadOnlyDictionary<int, int>? instanceColors,
+            RenderModel? model)
         {
-            // The instance wins: it can change dye without the model being rebuilt.
-            var colors = instanceColors is { Count: > 0 } ? instanceColors : model?.LayerColorIndices;
+            // A garment's own item dyes win over the creature instance's chest-armor palette. The
+            // instance remains next because it can change its body/armor dye without rebuilding.
+            var colors = meshColors is { Count: > 0 }
+                ? meshColors
+                : instanceColors is { Count: > 0 }
+                    ? instanceColors
+                    : model?.LayerColorIndices;
             if (colors == null || colors.Count == 0)
             {
                 _layerColors = null;

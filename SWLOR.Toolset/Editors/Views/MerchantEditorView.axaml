@@ -288,7 +288,7 @@
       </Grid>
     </TabItem>
 
-    <TabItem Header="Placed instances">
+    <TabItem Header="Source">
       <Grid RowDefinitions="Auto,Auto,*" Margin="16,12,22,16" RowSpacing="10">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
           <StackPanel Grid.Column="0">
@@ -320,6 +320,16 @@
             <DataGridTextColumn Header="Item records"
                                 Binding="{Binding OutOfDateItemRecords}" Width="105" />
             <DataGridTextColumn Header="Status" Binding="{Binding SyncState}" Width="110" />
+            <DataGridTemplateColumn Header="" Width="78">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="merchants:MerchantInstancePlacement">
+                  <Button Content="Go To"
+                          Command="{Binding $parent[DataGrid].((merchants:MerchantEditorViewModel)DataContext).GoToInstanceCommand}"
+                          CommandParameter="{Binding}" Margin="4,1"
+                          ToolTip.Tip="Go to instance" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
           </DataGrid.Columns>
         </DataGrid>
       </Grid>

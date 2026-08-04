@@ -3,6 +3,7 @@
              xmlns:editors="using:SWLOR.Toolset.Editors"
              xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
              xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
+             xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
              x:Class="SWLOR.Toolset.Editors.BlueprintEditorView"
              x:DataType="editors:BlueprintEditorViewModel">
 
@@ -10,6 +11,10 @@
        shared app-wide from App.axaml's Application.DataTemplates. The four templates below are tab
        CONTENTS, which only this editor hosts. -->
   <UserControl.DataTemplates>
+
+    <DataTemplate DataType="sources:ObjectSourceSectionViewModel">
+      <sources:ObjectSourceView />
+    </DataTemplate>
 
     <!-- A schema-driven tab: its groups, one after another. Headings rather than expanders - a group
          holds two or three fields, so collapsing one buys a couple of rows in exchange for a page

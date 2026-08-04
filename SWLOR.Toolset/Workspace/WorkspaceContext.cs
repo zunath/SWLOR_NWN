@@ -21,7 +21,9 @@ namespace SWLOR.Toolset.Workspace
         public BlueprintCatalog? Catalog { get; private set; }
 
         public event Action? WorkspaceOpened;
+        public event Action? CatalogBuildCompleted;
         public event Action<ResourceType, string>? CatalogEntryRefreshed;
+        public event Action? PlacementIndexInvalidated;
         public event Action? ScriptUsagesInvalidated;
         public event Action? TagIndexInvalidated;
         public event Action<string>? PaletteChoicesInvalidated;
@@ -66,9 +68,41 @@ namespace SWLOR.Toolset.Workspace
                 _log.AppendLine($"Recovered '{recovered}' from an interrupted ERF import.");
 
             var openStopwatch = Stopwatch.StartNew();
-            Workspace = _workspaceFactory(moduleRoot);
+            var replacementWorkspace = _workspaceFactory(moduleRoot);
+            Workspace?.PlacementIndex.Invalidate();
+            Workspace = replacementWorkspace;
+            Catalog = null;
             openStopwatch.Stop();
             _log.AppendLine($"Opened module root '{moduleRoot}' in {openStopwatch.ElapsedMilliseconds}ms.");
+
+            var placementIndex = Workspace.PlacementIndex;
+            placementIndex.AreaReadFailed += (areaResRef, ex) =>
+                _log.AppendLine(
+                    $"Placement index area read failed. AreaResRef='{areaResRef}'. Exception={ex}");
+            var placementIndexStopwatch = Stopwatch.StartNew();
+            _ = placementIndex.WarmAsync().ContinueWith(task =>
+            {
+                placementIndexStopwatch.Stop();
+                if (task.IsCompletedSuccessfully)
+                {
+                    _log.AppendLine(
+                        "Placement index ready. " +
+                        $"DurationMs={placementIndexStopwatch.ElapsedMilliseconds}.");
+                }
+                else if (task.IsCanceled)
+                {
+                    _log.AppendLine(
+                        "Placement index warm-up canceled because its snapshot was invalidated. " +
+                        $"DurationMs={placementIndexStopwatch.ElapsedMilliseconds}.");
+                }
+                else if (task.Exception != null)
+                {
+                    _log.AppendLine(
+                        "Placement index warm-up failed. " +
+                        $"DurationMs={placementIndexStopwatch.ElapsedMilliseconds}. " +
+                        $"Exception={task.Exception.GetBaseException()}");
+                }
+            }, TaskScheduler.Default);
 
             var catalogStopwatch = Stopwatch.StartNew();
             var lastLoggedPercent = -1;
@@ -115,6 +149,8 @@ namespace SWLOR.Toolset.Workspace
                 {
                     _log.AppendLine(
                         $"Catalog build complete: {catalog.Entries.Count} entries in {catalogStopwatch.ElapsedMilliseconds}ms.");
+                    if (ReferenceEquals(catalog, Catalog))
+                        CatalogBuildCompleted?.Invoke();
                 }
                 else if (task.Exception != null)
                 {
@@ -165,6 +201,10 @@ namespace SWLOR.Toolset.Workspace
         public void RemoveCatalogEntry(ResourceType type, string resRef)
         {
             InvalidateTagIndexWhenRelevant(type);
+            // Removing an area also removes every placement in its paired GIT. Ordinary ARE saves
+            // do not affect placements and deliberately avoid this module-wide rebuild.
+            if (type == ResourceType.Area)
+                InvalidatePlacementIndex();
             InvalidateScriptUsagesWhenRelevant(type);
             if (IsCatalogIndexedType(type))
                 Catalog?.RemoveEntry(type, resRef);
@@ -172,13 +212,37 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
-        /// Drops the lazy transition-tag lookup after a paired GIT file changes. GIT is not a
-        /// first-class <see cref="ResourceType"/>, so the file watcher calls this directly.
+        /// Drops the lazy transition-tag lookup after a resource that contributes behavior tags
+        /// changes. Blueprint and ARE changes affect tags without changing any placed-instance row,
+        /// so placement invalidation is deliberately separate.
         /// </summary>
         public void InvalidateTagIndex()
         {
             Workspace?.TagIndex.Invalidate();
             TagIndexInvalidated?.Invoke();
+        }
+
+        /// <summary>
+        /// Drops every index whose source is a paired GIT file. GIT is not a first-class
+        /// <see cref="ResourceType"/>, so file-watcher, import, and merchant-update paths call this
+        /// explicitly instead of routing through catalog refresh.
+        /// </summary>
+        public void InvalidateGitIndexes()
+        {
+            InvalidateTagIndex();
+            InvalidatePlacementIndex();
+        }
+
+        /// <summary>
+        /// Drops the module-wide placement snapshot and tells open Source tabs to reload it.
+        /// </summary>
+        public void InvalidatePlacementIndex()
+        {
+            if (Workspace == null)
+                return;
+
+            Workspace.PlacementIndex.Invalidate();
+            PlacementIndexInvalidated?.Invoke();
         }
 
         /// <summary>
@@ -200,7 +264,10 @@ namespace SWLOR.Toolset.Workspace
         private void InvalidateTagIndexWhenRelevant(ResourceType type)
         {
             if (type is ResourceType.Area or ResourceType.Utd or ResourceType.Utw or ResourceType.Uti)
-                InvalidateTagIndex();
+            {
+                Workspace?.TagIndex.Invalidate();
+                TagIndexInvalidated?.Invoke();
+            }
         }
 
         private void InvalidateScriptUsagesWhenRelevant(ResourceType type)

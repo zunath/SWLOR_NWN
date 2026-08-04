@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:items="using:SWLOR.Toolset.Editors.Items"
+             xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
              xmlns:dworkspace="using:SWLOR.Toolset.Domain.Workspace"
              x:Class="SWLOR.Toolset.Editors.Items.ItemEditorView"
@@ -472,7 +473,7 @@
         </Grid>
       </Border>
 
-      <TabControl Grid.Column="1">
+      <TabControl Grid.Column="1" SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
         <TabItem Header="Basic">
           <ScrollViewer>
             <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto"
@@ -600,10 +601,16 @@
         </TabItem>
 
         <TabItem Header="Source" IsVisible="{Binding ShowsSourceTab}">
-          <ScrollViewer>
+          <Grid RowDefinitions="Auto,*">
+            <Border Grid.Row="0" Height="260"
+                    IsVisible="{Binding PlacementSource, Converter={x:Static ObjectConverters.IsNotNull}}">
+              <sources:ObjectSourceView DataContext="{Binding PlacementSource}" />
+            </Border>
+          <ScrollViewer Grid.Row="1">
             <StackPanel Margin="14,10,22,10" Spacing="8"
                         DataContext="{Binding Source}"
                         x:DataType="items:ItemSourceSectionViewModel">
+              <TextBlock Text="Player obtainability" Classes="section" Margin="0,2,0,3" />
               <TextBlock Text="{Binding Verdict}" FontSize="12.5"
                          Foreground="{DynamicResource GreenBrush}"
                          IsVisible="{Binding IsObtainable}" />
@@ -645,6 +652,7 @@
               </ItemsControl>
             </StackPanel>
           </ScrollViewer>
+          </Grid>
         </TabItem>
 
         <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">

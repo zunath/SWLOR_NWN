@@ -15,7 +15,10 @@ namespace SWLOR.Toolset.Editors.Merchants
         string Tag,
         int InstanceIndex,
         int OutOfDateMerchantRecords,
-        int OutOfDateItemRecords)
+        int OutOfDateItemRecords,
+        float XPosition = 0f,
+        float YPosition = 0f,
+        float ZPosition = 0f)
     {
         public bool IsCurrent => OutOfDateMerchantRecords == 0 && OutOfDateItemRecords == 0;
         public string SyncState => IsCurrent ? "Up to date" : "Out of date";
@@ -100,7 +103,7 @@ namespace SWLOR.Toolset.Editors.Merchants
                 _reloadOpenAreaInstances?.Invoke(areaResRef);
             if (result.Count > 0)
             {
-                _workspaceContext.InvalidateTagIndex();
+                _workspaceContext.InvalidateGitIndexes();
                 _workspaceContext.InvalidateScriptUsages();
                 _log.AppendLine(
                     $"Updated {result.Count} placed instance{(result.Count == 1 ? string.Empty : "s")} of merchant " +
@@ -159,7 +162,10 @@ namespace SWLOR.Toolset.Editors.Merchants
                         store.GetStringOrNull("Tag") ?? string.Empty,
                         index,
                         status.OutOfDateMerchantRecords,
-                        status.OutOfDateItemRecords));
+                        status.OutOfDateItemRecords,
+                        store.GetOrNull("XPosition")?.GetSingle() ?? 0f,
+                        store.GetOrNull("YPosition")?.GetSingle() ?? 0f,
+                        store.GetOrNull("ZPosition")?.GetSingle() ?? 0f));
                 }
             }
 

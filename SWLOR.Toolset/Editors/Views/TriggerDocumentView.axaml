@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:triggers="using:SWLOR.Toolset.Editors.Triggers"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
              x:Class="SWLOR.Toolset.Editors.Triggers.TriggerDocumentView"
              x:DataType="triggers:TriggerDocumentViewModel">
 
@@ -29,7 +30,8 @@
       </Grid>
     </Border>
 
-    <TabControl DataContext="{Binding Editor}" x:DataType="triggers:TriggerEditorViewModel">
+    <TabControl DataContext="{Binding Editor}" x:DataType="triggers:TriggerEditorViewModel"
+                SelectedIndex="{Binding $parent[UserControl].((triggers:TriggerDocumentViewModel)DataContext).SelectedTabIndex, Mode=TwoWay}">
       <TabItem Header="Basic">
         <ScrollViewer>
           <ItemsControl ItemsSource="{Binding BasicRows}" Margin="14,10" />
@@ -59,6 +61,12 @@
       <!-- Variables exist only under Custom. -->
       <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
         <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
+      </TabItem>
+
+      <TabItem Header="Source"
+               DataContext="{Binding $parent[UserControl].((triggers:TriggerDocumentViewModel)DataContext).Source}"
+               IsVisible="{Binding Converter={x:Static ObjectConverters.IsNotNull}}">
+        <sources:ObjectSourceView />
       </TabItem>
     </TabControl>
   </DockPanel>

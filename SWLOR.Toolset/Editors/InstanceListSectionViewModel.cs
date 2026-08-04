@@ -131,6 +131,13 @@ namespace SWLOR.Toolset.Editors
         [ObservableProperty]
         private bool _hasSelection;
 
+        /// <summary>
+        /// Whether this kind's placed-instance details are open on the area's Properties tab.
+        /// Kept on the view model so switching document tabs does not collapse the builder's work.
+        /// </summary>
+        [ObservableProperty]
+        private bool _isExpanded;
+
         [ObservableProperty]
         private string _detailTag = string.Empty;
 

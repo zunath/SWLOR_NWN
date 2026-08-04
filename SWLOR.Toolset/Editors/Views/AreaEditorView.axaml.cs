@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Numerics;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Editors
@@ -10,6 +12,8 @@ namespace SWLOR.Toolset.Editors
     public partial class AreaEditorView : UserControl
     {
         private AreaEditorViewModel? _viewModel;
+        private bool _viewportStateRestored;
+        private Vector3? _pendingCameraFocus;
 
         public AreaEditorView()
         {
@@ -54,12 +58,15 @@ namespace SWLOR.Toolset.Editors
                 _display.PropertyChanged -= OnDisplayPropertyChanged;
             if (_viewModel != null)
             {
+                SaveViewState(_viewModel);
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
                 _viewModel.CameraFocusRequested -= OnCameraFocusRequested;
+                _viewModel.InstancePropertiesRequested -= OnInstancePropertiesRequested;
                 _viewModel.PaintRejected -= OnPaintRejected;
             }
 
             _viewModel = null;
+            _pendingCameraFocus = null;
 
             base.OnDetachedFromVisualTree(e);
         }
@@ -80,20 +87,31 @@ namespace SWLOR.Toolset.Editors
 
         private void AttachViewModel()
         {
+            var next = DataContext as AreaEditorViewModel;
+            if (ReferenceEquals(next, _viewModel))
+                return;
+
             if (_viewModel != null)
             {
+                SaveViewState(_viewModel);
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
                 _viewModel.CameraFocusRequested -= OnCameraFocusRequested;
+                _viewModel.InstancePropertiesRequested -= OnInstancePropertiesRequested;
                 _viewModel.PaintRejected -= OnPaintRejected;
             }
 
-            _viewModel = DataContext as AreaEditorViewModel;
+            _pendingCameraFocus = null;
+            _viewModel = next;
             if (_viewModel == null)
                 return;
+
+            _viewportStateRestored = false;
 
             AreaView.ResourceIndex = _viewModel.ResourceIndex;
             AreaView.InvalidateGameResources();
             AreaView.Scene = _viewModel.AreaScene;
+            RestoreViewportStateWhenReady();
+            ApplyPendingCameraFocus();
             AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
             AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
             AreaView.PlacementGhost = _viewModel.PlacementGhost;
@@ -107,12 +125,57 @@ namespace SWLOR.Toolset.Editors
             AreaView.SelectedTileCell = _viewModel.SelectedTile;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
             _viewModel.CameraFocusRequested += OnCameraFocusRequested;
+            _viewModel.InstancePropertiesRequested += OnInstancePropertiesRequested;
             _viewModel.PaintRejected += OnPaintRejected;
 
             // Opening an area shows its map. Not gated on the 3D View tab being selected: it always is
             // (it is the first tab), and reading IsSelected here raced the TabControl's own setup - the
             // case where a second area opened to an empty viewport that never built.
             _viewModel.EnsureSceneBuilt();
+
+            // Layout owns the scrollable extent, so wait until this view has measured before
+            // restoring the document's last offset.
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (_viewModel != null)
+                {
+                    var offset = _viewModel.PropertiesScrollOffset;
+                    PropertiesScroll.Offset = new Avalonia.Vector(offset.X, offset.Y);
+                }
+            });
+        }
+
+        private void SaveViewState(AreaEditorViewModel viewModel)
+        {
+            viewModel.ViewportState = AreaView.CaptureViewportState() ?? viewModel.ViewportState;
+            viewModel.PropertiesScrollOffset = new Vector2(
+                (float)PropertiesScroll.Offset.X,
+                (float)PropertiesScroll.Offset.Y);
+        }
+
+        private void OnInstancePropertiesRequested(InstanceListSectionViewModel section)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (_viewModel == null)
+                    return;
+
+                PropertiesScroll
+                    .GetVisualDescendants()
+                    .OfType<Expander>()
+                    .FirstOrDefault(expander => ReferenceEquals(expander.DataContext, section))
+                    ?.BringIntoView();
+            }, DispatcherPriority.Render);
+        }
+
+        private void RestoreViewportStateWhenReady()
+        {
+            if (_viewportStateRestored || _viewModel?.AreaScene == null ||
+                _viewModel.ViewportState is not { } state)
+                return;
+
+            AreaView.RestoreViewportState(state);
+            _viewportStateRestored = true;
         }
 
         private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -121,7 +184,11 @@ namespace SWLOR.Toolset.Editors
                 return;
 
             if (e.PropertyName == nameof(AreaEditorViewModel.AreaScene))
+            {
                 AreaView.Scene = _viewModel.AreaScene;
+                RestoreViewportStateWhenReady();
+                ApplyPendingCameraFocus();
+            }
             else if (e.PropertyName == nameof(AreaEditorViewModel.GameResourceRevision))
                 AreaView.InvalidateGameResources();
             else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedSceneInstance))
@@ -154,7 +221,29 @@ namespace SWLOR.Toolset.Editors
         /// </remarks>
         private void OnCameraFocusRequested(Vector3 position)
         {
-            RootTabs.SelectedItem = ViewTab3D;
+            if (_viewModel != null)
+                _viewModel.SelectedRootTabIndex = 0;
+
+            if (AreaView.Scene == null)
+            {
+                _pendingCameraFocus = position;
+                return;
+            }
+
+            _pendingCameraFocus = null;
+            AreaView.FocusOn(position);
+        }
+
+        /// <summary>
+        /// Applies a Go To request only after the area's retained camera has been restored. Focusing
+        /// from the scene setter would let the later restore overwrite the requested object.
+        /// </summary>
+        private void ApplyPendingCameraFocus()
+        {
+            if (AreaView.Scene == null || _pendingCameraFocus is not { } position)
+                return;
+
+            _pendingCameraFocus = null;
             AreaView.FocusOn(position);
         }
 

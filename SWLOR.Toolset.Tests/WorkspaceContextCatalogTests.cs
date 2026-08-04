@@ -23,20 +23,35 @@ namespace SWLOR.Toolset.Tests
     public class WorkspaceContextCatalogTests
     {
         private string _root = string.Empty;
+        private readonly List<Task> _catalogBuildTasks = new();
 
         [SetUp]
         public void SetUp()
         {
+            _catalogBuildTasks.Clear();
             _root = Path.Combine(Path.GetTempPath(), $"swlor_wscatalog_{Guid.NewGuid():N}");
             foreach (var folder in new[] { "are", "utc", "git", "gic", "dlg", "nss" })
                 Directory.CreateDirectory(Path.Combine(_root, folder));
         }
 
         [TearDown]
-        public void TearDown()
+        public async Task TearDown()
         {
-            if (Directory.Exists(_root))
-                Directory.Delete(_root, recursive: true);
+            try
+            {
+                await Task.WhenAll(_catalogBuildTasks);
+            }
+            finally
+            {
+                if (Directory.Exists(_root))
+                    Directory.Delete(_root, recursive: true);
+            }
+        }
+
+        private void OpenWorkspace(WorkspaceContext workspace)
+        {
+            workspace.Open(_root);
+            _catalogBuildTasks.Add(workspace.Catalog!.BuildTask);
         }
 
         [TestCase(ResourceType.Dlg)]
@@ -45,7 +60,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            OpenWorkspace(workspace);
             workspace.Catalog!.BuildTask.GetAwaiter().GetResult();
 
             var notified = new List<(ResourceType Type, string ResRef)>();
@@ -65,7 +80,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            OpenWorkspace(workspace);
             workspace.Catalog!.BuildTask.GetAwaiter().GetResult();
 
             var notified = new List<(ResourceType Type, string ResRef)>();
@@ -83,7 +98,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            OpenWorkspace(workspace);
             workspace.Catalog!.BuildTask.GetAwaiter().GetResult();
 
             File.WriteAllText(
@@ -104,6 +119,121 @@ namespace SWLOR.Toolset.Tests
         public void IsCatalogIndexedType_MatchesWhatTheInitialBuildIndexes(ResourceType type, bool expected)
         {
             WorkspaceContext.IsCatalogIndexedType(type).Should().Be(expected);
+        }
+
+        [Test]
+        public async Task SuccessfulCatalogBuildPublishesCompletionForLateNameResolution()
+        {
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            var completed = new TaskCompletionSource(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            workspace.CatalogBuildCompleted += () => completed.TrySetResult();
+
+            OpenWorkspace(workspace);
+
+            await completed.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        }
+
+        [Test]
+        public void PlacementInvalidationPublishesARefreshNotification()
+        {
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            OpenWorkspace(workspace);
+            var notifications = 0;
+            workspace.PlacementIndexInvalidated += () => notifications++;
+
+            workspace.InvalidatePlacementIndex();
+
+            notifications.Should().Be(1);
+        }
+
+        [Test]
+        public void PairedGitInvalidationPublishesTagAndPlacementRefreshNotifications()
+        {
+            var workspace = new WorkspaceContext(
+                root => new ModuleWorkspace(root),
+                new OutputLogService());
+            OpenWorkspace(workspace);
+            var tagNotifications = 0;
+            var placementNotifications = 0;
+            workspace.TagIndexInvalidated += () => tagNotifications++;
+            workspace.PlacementIndexInvalidated += () => placementNotifications++;
+
+            workspace.InvalidateGitIndexes();
+
+            tagNotifications.Should().Be(1);
+            placementNotifications.Should().Be(1);
+        }
+
+        [Test]
+        public void TagOnlyInvalidationDoesNotPublishAPlacementRefreshNotification()
+        {
+            var workspace = new WorkspaceContext(
+                root => new ModuleWorkspace(root),
+                new OutputLogService());
+            OpenWorkspace(workspace);
+            var tagNotifications = 0;
+            var placementNotifications = 0;
+            workspace.TagIndexInvalidated += () => tagNotifications++;
+            workspace.PlacementIndexInvalidated += () => placementNotifications++;
+
+            workspace.InvalidateTagIndex();
+
+            tagNotifications.Should().Be(1);
+            placementNotifications.Should().Be(0,
+                "ARE and blueprint tag changes do not change any GIT placement row");
+        }
+
+        [TestCase(ResourceType.Utc)]
+        [TestCase(ResourceType.Uti)]
+        [TestCase(ResourceType.Utp)]
+        public void OrdinaryBlueprintCatalogRefreshDoesNotInvalidatePlacements(ResourceType type)
+        {
+            var workspace = new WorkspaceContext(
+                root => new ModuleWorkspace(root),
+                new OutputLogService());
+            OpenWorkspace(workspace);
+            var notifications = 0;
+            workspace.PlacementIndexInvalidated += () => notifications++;
+
+            workspace.RefreshCatalogEntry(type, "ordinary_save");
+
+            notifications.Should().Be(0,
+                "blueprint contents are not inputs to the module-wide GIT placement index");
+        }
+
+        [Test]
+        public void AreaCatalogRefreshDoesNotInvalidatePlacements()
+        {
+            var workspace = new WorkspaceContext(
+                root => new ModuleWorkspace(root),
+                new OutputLogService());
+            OpenWorkspace(workspace);
+            var notifications = 0;
+            workspace.PlacementIndexInvalidated += () => notifications++;
+
+            workspace.RefreshCatalogEntry(ResourceType.Area, "changed_area");
+
+            notifications.Should().Be(0,
+                "ARE metadata is not an input to the module-wide GIT placement index");
+        }
+
+        [Test]
+        public void AreaCatalogRemovalInvalidatesPlacements()
+        {
+            var workspace = new WorkspaceContext(
+                root => new ModuleWorkspace(root),
+                new OutputLogService());
+            OpenWorkspace(workspace);
+            var notifications = 0;
+            workspace.PlacementIndexInvalidated += () => notifications++;
+
+            workspace.RemoveCatalogEntry(ResourceType.Area, "deleted_area");
+
+            notifications.Should().Be(1,
+                "removing an area removes all placements from its paired GIT");
         }
     }
 }

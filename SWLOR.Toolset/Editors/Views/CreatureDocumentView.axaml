@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:creatures="using:SWLOR.Toolset.Editors.Creatures"
+             xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
              x:Class="SWLOR.Toolset.Editors.Creatures.CreatureDocumentView"
              x:DataType="creatures:CreatureDocumentViewModel">
   <DockPanel>
@@ -36,6 +37,13 @@
         </StackPanel>
       </Grid>
     </Border>
-    <creatures:CreatureEditorView DataContext="{Binding Editor}" />
+    <TabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+      <TabItem Header="Edit">
+        <creatures:CreatureEditorView DataContext="{Binding Editor}" />
+      </TabItem>
+      <TabItem Header="Source" IsVisible="{Binding Source, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <sources:ObjectSourceView DataContext="{Binding Source}" />
+      </TabItem>
+    </TabControl>
   </DockPanel>
 </UserControl>

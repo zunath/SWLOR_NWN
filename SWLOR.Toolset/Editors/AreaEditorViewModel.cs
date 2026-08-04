@@ -108,6 +108,24 @@ namespace SWLOR.Toolset.Editors
 
         public ObservableCollection<InstanceListSectionViewModel> Sections { get; } = new();
 
+        /// <summary>
+        /// The front page of this area document (0 = Scene, 1 = Properties). This belongs to the
+        /// document rather than its transient view so changing document tabs returns the builder to
+        /// the page they were using.
+        /// </summary>
+        [ObservableProperty]
+        private int _selectedRootTabIndex;
+
+        /// <summary>Whether the top-level Area Properties card is expanded in this open document.</summary>
+        [ObservableProperty]
+        private bool _areaPropertiesExpanded;
+
+        /// <summary>The Properties page's retained scroll position, stored without an Avalonia dependency.</summary>
+        public Vector2 PropertiesScrollOffset { get; set; }
+
+        /// <summary>The last camera owned by this open area tab, restored when its view is recreated.</summary>
+        public Viewport.AreaViewportState? ViewportState { get; set; }
+
         public bool IsDirty =>
             _areSession.UndoStack.IsDirty ||
             _gitSession.UndoStack.IsDirty ||
@@ -211,6 +229,7 @@ namespace SWLOR.Toolset.Editors
                 OnPropertyChanged(nameof(SelectionCoordinates));
                 OnPropertyChanged(nameof(IDocumentStatusSource.StatusDetail));
                 EditSelectedBlueprintCommand.NotifyCanExecuteChanged();
+                OpenSelectedInstancePropertiesCommand.NotifyCanExecuteChanged();
             }
         }
 
@@ -1184,12 +1203,14 @@ namespace SWLOR.Toolset.Editors
             RenderModel? model = null;
             try
             {
-                // Built through the same path as the palette thumbnail the builder just clicked, so
-                // the two agree - including for segmented creatures, whose body parts have to be
-                // composed and which an earlier local resolve could not produce at all (it passed no
-                // appearance service and handled only the single-resref case, so every creature
-                // ghosted as a bare marker).
-                model = _resolveBlueprintModel?.Invoke(type, resRef, useIndexedBlueprint);
+                // A store has no appearance of its own. Aurora always previews it as the yellow
+                // waypoint flag, which must be the same model the completed scene build uses.
+                model = kind == InstanceMarkerKind.Store
+                    ? _tileModelCache?.GetOrBuild(WaypointMarkerModel.MerchantModelResRef)
+                    // Everything else is built through the same path as the palette thumbnail the
+                    // builder just clicked, including segmented creatures whose body parts have to
+                    // be composed.
+                    : _resolveBlueprintModel?.Invoke(type, resRef, useIndexedBlueprint);
             }
             catch (Exception ex)
             {
@@ -1203,11 +1224,16 @@ namespace SWLOR.Toolset.Editors
                 Tag = resRef,
                 Position = Vector3.Zero,
                 Orientation = new Vector2(1f, 0f),
-                // The ghost has to be turned the same way the placed marker will be, or a waypoint
-                // would swing a quarter turn the instant it was committed.
-                VisualTransform = kind.Value == InstanceMarkerKind.Waypoint
-                    ? WaypointMarkerModel.ForwardCorrection
-                    : Matrix4x4.Identity,
+                // The ghost has to be turned the same way the placed model will be, or creature and
+                // waypoint artwork would swing a quarter turn the instant it was committed. Stores
+                // use waypoint artwork too.
+                VisualTransform = kind.Value switch
+                {
+                    InstanceMarkerKind.Creature => CreatureModelFacing.ForwardCorrection,
+                    InstanceMarkerKind.Store => WaypointMarkerModel.ForwardCorrection,
+                    InstanceMarkerKind.Waypoint => WaypointMarkerModel.ForwardCorrection,
+                    _ => Matrix4x4.Identity
+                },
                 Model = model
             };
         }
@@ -1464,7 +1490,8 @@ namespace SWLOR.Toolset.Editors
             Waypoints.WaypointEditorServices? waypointEditorServices = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveSoundChoices = null,
             IReadOnlyList<string>? audioResources = null,
-            Services.SoundPreviewService? soundPreview = null)
+            Services.SoundPreviewService? soundPreview = null,
+            AreaEditorDocumentLoad? loadedDocuments = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resolveBlueprintModel = resolveBlueprintModel;
@@ -1488,9 +1515,18 @@ namespace SWLOR.Toolset.Editors
             var gitPath = Path.Combine(workspace.ModuleRoot, "git", areResRef + ".git.json");
             var gicPath = Path.Combine(workspace.ModuleRoot, "gic", areResRef + ".gic.json");
 
-            _areSession = DocumentSession.Open(arePath);
-            _gitSession = DocumentSession.Open(gitPath);
-            _gicSession = DocumentSession.Open(gicPath);
+            _areSession = loadedDocuments == null
+                ? DocumentSession.Open(arePath)
+                : DocumentSession.FromLoadedContent(
+                    arePath, loadedDocuments.Are, loadedDocuments.AreBytes);
+            _gitSession = loadedDocuments == null
+                ? DocumentSession.Open(gitPath)
+                : DocumentSession.FromLoadedContent(
+                    gitPath, loadedDocuments.Git, loadedDocuments.GitBytes);
+            _gicSession = loadedDocuments == null
+                ? DocumentSession.Open(gicPath)
+                : DocumentSession.FromLoadedContent(
+                    gicPath, loadedDocuments.Gic, loadedDocuments.GicBytes);
             _savedGicBytes = _gicSession.ToBytes();
 
             var areContext = new EditorFieldContext(
@@ -1559,6 +1595,9 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public event Action<Vector3>? CameraFocusRequested;
 
+        /// <summary>Asks the view to scroll the requested instance editor into view.</summary>
+        public event Action<InstanceListSectionViewModel>? InstancePropertiesRequested;
+
         /// <summary>
         /// The name to show for one placement: its own if it has one, then its blueprint's, then its
         /// tag, and the resref last. Never blank, so no row in the contents tree is nameless.
@@ -1606,6 +1645,67 @@ namespace SWLOR.Toolset.Editors
 
             if (frameCamera)
                 CameraFocusRequested?.Invoke(new Vector3(row.X, row.Y, row.Z));
+        }
+
+        /// <summary>
+        /// Opens the placed instance's own editable details, rather than the blueprint it was copied
+        /// from. Used by both Area Contents and the scene's right-click menu.
+        /// </summary>
+        public void OpenInstanceProperties(ResourceType type, int index)
+        {
+            if (SectionFor(type) is not { } section || index < 0 || index >= section.Rows.Count)
+                return;
+
+            RevealInstance(type, index, frameCamera: false);
+            section.IsExpanded = true;
+            SelectedRootTabIndex = 1;
+            InstancePropertiesRequested?.Invoke(section);
+        }
+
+        /// <summary>
+        /// Reveals an indexed source placement. The saved list index is preferred, then a
+        /// resref-and-position match protects navigation when an already-open area has unsaved
+        /// insertions or deletions that shifted its indices.
+        /// </summary>
+        public void RevealPlacement(ObjectPlacement placement)
+        {
+            if (SectionFor(placement.BlueprintType) is not { } section)
+                return;
+
+            var index = placement.InstanceIndex;
+            if (index < 0 || index >= section.Rows.Count ||
+                !MatchesPlacementIdentity(section.Rows[index], placement))
+            {
+                index = section.Rows
+                    .Where(row => MatchesPlacementIdentity(row, placement))
+                    .Select(row => row.Index)
+                    .FirstOrDefault(-1);
+            }
+
+            if (index >= 0)
+                RevealInstance(placement.BlueprintType, index, frameCamera: true);
+        }
+
+        private static bool MatchesPlacementIdentity(InstanceRow row, ObjectPlacement placement) =>
+            string.Equals(
+                row.TemplateResRef,
+                placement.BlueprintResRef,
+                StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(row.Tag, placement.Tag, StringComparison.OrdinalIgnoreCase) &&
+            MathF.Abs(row.X - placement.X) < 0.001f &&
+            MathF.Abs(row.Y - placement.Y) < 0.001f &&
+            MathF.Abs(row.Z - placement.Z) < 0.001f;
+
+        [RelayCommand(CanExecute = nameof(HasSceneSelection))]
+        private void OpenSelectedInstanceProperties()
+        {
+            if (SelectedSceneInstance is not { } instance ||
+                MapKindToSectionType(instance.Kind) is not { } type)
+                return;
+
+            var index = IndexWithinKind(instance);
+            if (index >= 0)
+                OpenInstanceProperties(type, index);
         }
 
         /// <summary>Deletes placements of one kind as a single undo entry.</summary>
@@ -1963,6 +2063,7 @@ namespace SWLOR.Toolset.Editors
             var catalogEntryChanged =
                 _areSession.UndoStack.IsDirty ||
                 _gitSession.UndoStack.IsDirty;
+            var placementsChanged = _gitSession.UndoStack.IsDirty;
             var instancePairReloaded = false;
             var tilesetBefore = TilesetResRef;
 
@@ -2079,6 +2180,8 @@ namespace SWLOR.Toolset.Editors
             {
                 CatalogEntryChanged?.Invoke();
             }
+            if (placementsChanged || gitResult.Reloaded || instancePairReloaded)
+                PlacementsChanged?.Invoke();
             return true;
         }
 
@@ -2440,8 +2543,11 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Raised after an async close prompt approves closing this tab.</summary>
         public event Action<AreaEditorViewModel>? CloseRequested;
 
-        /// <summary>Raised after the ARE resource is saved or reloaded so catalog views can re-index it.</summary>
+        /// <summary>Raised after ARE or GIT data is saved/reloaded so area-backed catalog indexes can refresh.</summary>
         public event Action? CatalogEntryChanged;
+
+        /// <summary>Raised after the paired GIT is saved or reloaded so object-source indexes can refresh.</summary>
+        public event Action? PlacementsChanged;
 
         /// <summary>Suppresses a second tab-level prompt after the window-level discard decision.</summary>
         internal void ApproveApplicationClose() => _closeApproved = true;

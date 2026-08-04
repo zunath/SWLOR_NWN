@@ -248,6 +248,9 @@ namespace SWLOR.Toolset.Shell
                 SetFocusedDockable(owner, dockable);
         }
 
+        /// <summary>Brings Area Contents to the front for an explicit Source-tab Go To.</summary>
+        public void ShowAreaContents() => Focus(_areaContents);
+
         /// <summary>Requests that Dock close a document after the editor has approved any prompt.</summary>
         public void CloseDocument(Document document)
         {

@@ -1,5 +1,9 @@
 using System.Numerics;
 using System.Text;
+using Avalonia.Controls;
+using Avalonia.Headless.NUnit;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
@@ -9,6 +13,7 @@ using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Shell.Panels;
+using SWLOR.Toolset.Shell.Views;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -302,6 +307,73 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void RevealingPlacement_BeforePanelsAttach_RetainsCameraAndContentsNavigation()
+        {
+            var editor = CreateEditor();
+            var expected = editor.SectionFor(ResourceType.Utp)!.Rows[0];
+            var placement = PlacementFor(expected);
+
+            editor.RevealPlacement(placement);
+
+            editor.TryTakePendingCameraFocus(out var cameraTarget).Should().BeTrue(
+                "a cold area has no view to consume the Go To camera request yet");
+            cameraTarget.Should().Be(new Vector3(expected.X, expected.Y, expected.Z));
+
+            var panel = CreatePanel(editor);
+            panel.SelectedRow.Should().NotBeNull();
+            panel.SelectedRow!.Kind.Should().Be(AreaContentsNodeKind.Instance);
+            panel.SelectedRow.Indices.Should().Equal(expected.Index);
+            panel.Rows.Should().Contain(panel.SelectedRow,
+                "the selected placement must be in the expanded visible tree");
+            panel.TryTakePendingRowReveal(out var scrollTarget).Should().BeTrue();
+            scrollTarget.Should().BeSameAs(panel.SelectedRow);
+        }
+
+        [AvaloniaTest]
+        public void RevealingPlacement_ScrollsToAnInstancePastTheLargeGroupCap()
+        {
+            var editor = CreateEditor();
+            var section = editor.SectionFor(ResourceType.Utp)!;
+            var copies = section.Rows
+                .Where(row => row.TemplateResRef == ReusedBlueprint)
+                .ToList();
+            copies.Should().HaveCountGreaterThan(200,
+                "the regression needs a target that the normal group cap does not realise");
+            var expected = copies[^1];
+            var panel = CreatePanel(editor, AreaContentsGrouping.Blueprint);
+            panel.Filter = "no-object-is-called-this-zzz";
+
+            var view = new AreaContentsView { DataContext = panel };
+            var window = new Window { Content = view, Width = 360, Height = 180 };
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            try
+            {
+                editor.RevealPlacement(PlacementFor(expected));
+                Dispatcher.UIThread.RunJobs();
+                Dispatcher.UIThread.RunJobs();
+
+                panel.Filter.Should().BeEmpty("Go To must remove a filter that hides its target");
+                panel.SelectedRow.Should().NotBeNull();
+                panel.SelectedRow!.Indices.Should().Equal(expected.Index);
+                panel.Rows.Should().Contain(panel.SelectedRow,
+                    "the exact capped placement must be realised and its ancestors expanded");
+
+                var list = view.FindControl<ListBox>("RowsList")!;
+                list.SelectedItem.Should().BeSameAs(panel.SelectedRow);
+                var scroller = list.GetVisualDescendants().OfType<ScrollViewer>().Single();
+                scroller.Offset.Y.Should().BeGreaterThan(0,
+                    "the selected row is beyond the first screen and Go To must move the scrollbar to it");
+            }
+            finally
+            {
+                window.Close();
+                Dispatcher.UIThread.RunJobs();
+            }
+        }
+
+        [Test]
         public void RevealingPlacement_DoesNotSelectAnotherInstanceWhenTheSourceWasDeleted()
         {
             var editor = CreateEditor();
@@ -567,6 +639,16 @@ namespace SWLOR.Toolset.Tests
 
             throw new InvalidOperationException($"No placement under '{kind.Name}'.");
         }
+
+        private static ObjectPlacement PlacementFor(InstanceRow row) => new(
+            ResourceType.Utp,
+            row.TemplateResRef,
+            AreaResRef,
+            row.Index,
+            row.Tag,
+            row.X,
+            row.Y,
+            row.Z);
 
         private sealed class StubPrompts : IEditorPromptService
         {

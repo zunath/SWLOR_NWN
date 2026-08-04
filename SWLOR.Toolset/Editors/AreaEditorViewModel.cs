@@ -200,6 +200,15 @@ namespace SWLOR.Toolset.Editors
 
         private (ResourceType Type, int Index)? _pendingSectionSelection;
 
+        /// <summary>
+        /// A Source-tab Go To can run before either the area view or the Area Contents panel has
+        /// attached to this document. Keep both requests on the document until their respective
+        /// views consume them, otherwise opening a cold area selects the row but loses the visible
+        /// camera/list navigation that made the action useful.
+        /// </summary>
+        private Vector3? _pendingCameraFocusRequest;
+        private (ResourceType Type, int Index)? _pendingAreaContentsReveal;
+
         private InstanceMarker? _selectedSceneInstance;
 
         /// <summary>
@@ -1595,8 +1604,59 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public event Action<Vector3>? CameraFocusRequested;
 
+        /// <summary>Asks Area Contents to expand, select, and scroll to one exact placement.</summary>
+        public event Action<ResourceType, int>? AreaContentsRevealRequested;
+
         /// <summary>Asks the view to scroll the requested instance editor into view.</summary>
         public event Action<InstanceListSectionViewModel>? InstancePropertiesRequested;
+
+        /// <summary>
+        /// Consumes the newest camera request. The request remains here when Go To opens an area
+        /// whose visual tree has not been created yet, and is taken when that view attaches.
+        /// </summary>
+        public bool TryTakePendingCameraFocus(out Vector3 position)
+        {
+            if (_pendingCameraFocusRequest is not { } pending)
+            {
+                position = default;
+                return false;
+            }
+
+            _pendingCameraFocusRequest = null;
+            position = pending;
+            return true;
+        }
+
+        /// <summary>
+        /// Consumes the newest Area Contents reveal. This mirrors the camera hand-off so a newly
+        /// activated area cannot outrun the singleton panel's active-document update.
+        /// </summary>
+        public bool TryTakePendingAreaContentsReveal(out ResourceType type, out int index)
+        {
+            if (_pendingAreaContentsReveal is not { } pending)
+            {
+                type = default;
+                index = -1;
+                return false;
+            }
+
+            _pendingAreaContentsReveal = null;
+            type = pending.Type;
+            index = pending.Index;
+            return true;
+        }
+
+        private void RequestCameraFocus(Vector3 position)
+        {
+            _pendingCameraFocusRequest = position;
+            CameraFocusRequested?.Invoke(position);
+        }
+
+        private void RequestAreaContentsReveal(ResourceType type, int index)
+        {
+            _pendingAreaContentsReveal = (type, index);
+            AreaContentsRevealRequested?.Invoke(type, index);
+        }
 
         /// <summary>
         /// The name to show for one placement: its own if it has one, then its blueprint's, then its
@@ -1644,7 +1704,7 @@ namespace SWLOR.Toolset.Editors
             section.SelectedRow = row;
 
             if (frameCamera)
-                CameraFocusRequested?.Invoke(new Vector3(row.X, row.Y, row.Z));
+                RequestCameraFocus(new Vector3(row.X, row.Y, row.Z));
         }
 
         /// <summary>
@@ -1683,7 +1743,10 @@ namespace SWLOR.Toolset.Editors
             }
 
             if (index >= 0)
+            {
                 RevealInstance(placement.BlueprintType, index, frameCamera: true);
+                RequestAreaContentsReveal(placement.BlueprintType, index);
+            }
         }
 
         private static bool MatchesPlacementIdentity(InstanceRow row, ObjectPlacement placement) =>

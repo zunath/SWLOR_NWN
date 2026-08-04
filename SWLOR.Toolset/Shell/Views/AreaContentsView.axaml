@@ -34,7 +34,7 @@
 
     <!-- KeyDown rather than a KeyBinding: Delete acts on the row the list has selected, and the
          list is where the key lands. -->
-    <ListBox Grid.Row="1" Background="Transparent" BorderThickness="0"
+    <ListBox x:Name="RowsList" Grid.Row="1" Background="Transparent" BorderThickness="0"
              ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}"
              DoubleTapped="OnRowDoubleTapped" KeyDown="OnRowKeyDown">
       <ListBox.Styles>

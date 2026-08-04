@@ -13,6 +13,7 @@ namespace SWLOR.Toolset.Editors
     {
         private AreaEditorViewModel? _viewModel;
         private bool _viewportStateRestored;
+        private Vector3? _pendingCameraFocus;
 
         public AreaEditorView()
         {
@@ -65,6 +66,7 @@ namespace SWLOR.Toolset.Editors
             }
 
             _viewModel = null;
+            _pendingCameraFocus = null;
 
             base.OnDetachedFromVisualTree(e);
         }
@@ -98,6 +100,7 @@ namespace SWLOR.Toolset.Editors
                 _viewModel.PaintRejected -= OnPaintRejected;
             }
 
+            _pendingCameraFocus = null;
             _viewModel = next;
             if (_viewModel == null)
                 return;
@@ -108,6 +111,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.InvalidateGameResources();
             AreaView.Scene = _viewModel.AreaScene;
             RestoreViewportStateWhenReady();
+            ApplyPendingCameraFocus();
             AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
             AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
             AreaView.PlacementGhost = _viewModel.PlacementGhost;
@@ -183,6 +187,7 @@ namespace SWLOR.Toolset.Editors
             {
                 AreaView.Scene = _viewModel.AreaScene;
                 RestoreViewportStateWhenReady();
+                ApplyPendingCameraFocus();
             }
             else if (e.PropertyName == nameof(AreaEditorViewModel.GameResourceRevision))
                 AreaView.InvalidateGameResources();
@@ -218,6 +223,27 @@ namespace SWLOR.Toolset.Editors
         {
             if (_viewModel != null)
                 _viewModel.SelectedRootTabIndex = 0;
+
+            if (AreaView.Scene == null)
+            {
+                _pendingCameraFocus = position;
+                return;
+            }
+
+            _pendingCameraFocus = null;
+            AreaView.FocusOn(position);
+        }
+
+        /// <summary>
+        /// Applies a Go To request only after the area's retained camera has been restored. Focusing
+        /// from the scene setter would let the later restore overwrite the requested object.
+        /// </summary>
+        private void ApplyPendingCameraFocus()
+        {
+            if (AreaView.Scene == null || _pendingCameraFocus is not { } position)
+                return;
+
+            _pendingCameraFocus = null;
             AreaView.FocusOn(position);
         }
 

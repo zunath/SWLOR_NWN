@@ -187,7 +187,6 @@ namespace SWLOR.Toolset.Workspace
         public void RefreshCatalogEntry(ResourceType type, string resRef)
         {
             InvalidateTagIndexWhenRelevant(type);
-            InvalidatePlacementIndexWhenRelevant(type);
             InvalidateScriptUsagesWhenRelevant(type);
             if (IsCatalogIndexedType(type))
                 Catalog?.RefreshEntry(type, resRef);
@@ -202,7 +201,10 @@ namespace SWLOR.Toolset.Workspace
         public void RemoveCatalogEntry(ResourceType type, string resRef)
         {
             InvalidateTagIndexWhenRelevant(type);
-            InvalidatePlacementIndexWhenRelevant(type);
+            // Removing an area also removes every placement in its paired GIT. Ordinary ARE saves
+            // do not affect placements and deliberately avoid this module-wide rebuild.
+            if (type == ResourceType.Area)
+                InvalidatePlacementIndex();
             InvalidateScriptUsagesWhenRelevant(type);
             if (IsCatalogIndexedType(type))
                 Catalog?.RemoveEntry(type, resRef);
@@ -256,15 +258,6 @@ namespace SWLOR.Toolset.Workspace
                 Workspace?.TagIndex.Invalidate();
                 TagIndexInvalidated?.Invoke();
             }
-        }
-
-        private void InvalidatePlacementIndexWhenRelevant(ResourceType type)
-        {
-            // Blueprint contents are not placement-index inputs. Their ordinary saves must not
-            // restart a module-wide GIT scan; rename workflows that rewrite GIT references call
-            // InvalidatePlacementIndex explicitly after the rename commits.
-            if (type == ResourceType.Area)
-                InvalidatePlacementIndex();
         }
 
         private void InvalidateScriptUsagesWhenRelevant(ResourceType type)

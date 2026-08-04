@@ -20,7 +20,7 @@
       </Grid>
     </Border>
 
-    <TabControl>
+    <TabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
       <TabItem Header="Edit">
         <doors:DoorEditorView DataContext="{Binding Editor}" />
       </TabItem>

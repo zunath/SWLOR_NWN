@@ -153,7 +153,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void AreaCatalogRefreshInvalidatesPlacements()
+        public void AreaCatalogRefreshDoesNotInvalidatePlacements()
         {
             var workspace = new WorkspaceContext(
                 root => new ModuleWorkspace(root),
@@ -164,8 +164,24 @@ namespace SWLOR.Toolset.Tests
 
             workspace.RefreshCatalogEntry(ResourceType.Area, "changed_area");
 
+            notifications.Should().Be(0,
+                "ARE metadata is not an input to the module-wide GIT placement index");
+        }
+
+        [Test]
+        public void AreaCatalogRemovalInvalidatesPlacements()
+        {
+            var workspace = new WorkspaceContext(
+                root => new ModuleWorkspace(root),
+                new OutputLogService());
+            workspace.Open(_root);
+            var notifications = 0;
+            workspace.PlacementIndexInvalidated += () => notifications++;
+
+            workspace.RemoveCatalogEntry(ResourceType.Area, "deleted_area");
+
             notifications.Should().Be(1,
-                "an area save includes its GIT placement data");
+                "removing an area removes all placements from its paired GIT");
         }
     }
 }

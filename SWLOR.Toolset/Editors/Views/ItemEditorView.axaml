@@ -473,7 +473,7 @@
         </Grid>
       </Border>
 
-      <TabControl Grid.Column="1">
+      <TabControl Grid.Column="1" SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
         <TabItem Header="Basic">
           <ScrollViewer>
             <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto"

@@ -3327,6 +3327,7 @@ namespace SWLOR.Toolset.Editors
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
                     _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
+                editor.PlacementsChanged += _workspaceContext.InvalidatePlacementIndex;
                 _openAreaEditors[resRef] = editor;
                 _factory.OpenDocument(editor);
                 DispatchPendingAreaReveal(editor);

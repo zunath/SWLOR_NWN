@@ -23,6 +23,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private bool _closeApproved;
         private bool _closePromptOpen;
         private bool _disposed;
+        private int _selectedTabIndex;
 
         public CreatureEditorViewModel Editor { get; }
         public Sources.ObjectSourceSectionViewModel? Source { get; }
@@ -31,6 +32,17 @@ namespace SWLOR.Toolset.Editors.Creatures
         public bool CanRedo => _session.UndoStack.CanRedo;
         public string FilePath => _session.FilePath;
         public string ResRef { get; }
+        public int SelectedTabIndex
+        {
+            get => _selectedTabIndex;
+            set
+            {
+                if (_selectedTabIndex == value)
+                    return;
+                _selectedTabIndex = value;
+                OnPropertyChanged();
+            }
+        }
 
         public event Action<CreatureDocumentViewModel>? Closed;
         public event Action<CreatureDocumentViewModel>? CloseRequested;

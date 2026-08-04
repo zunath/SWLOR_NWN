@@ -188,7 +188,9 @@
       <TabItem Header="Properties">
     <ScrollViewer x:Name="PropertiesScroll">
       <StackPanel Margin="8" Spacing="6">
-        <Expander Header="Area Properties" IsExpanded="False" HorizontalAlignment="Stretch">
+        <Expander Header="Area Properties"
+                  IsExpanded="{Binding AreaPropertiesExpanded, Mode=TwoWay}"
+                  HorizontalAlignment="Stretch">
           <ItemsControl ItemsSource="{Binding AreaPropertyGroups}" Margin="8,4">
             <ItemsControl.ItemTemplate>
               <DataTemplate DataType="editors:EditorGroup">

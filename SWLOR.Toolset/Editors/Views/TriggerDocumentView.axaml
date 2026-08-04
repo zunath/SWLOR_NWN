@@ -30,7 +30,8 @@
       </Grid>
     </Border>
 
-    <TabControl DataContext="{Binding Editor}" x:DataType="triggers:TriggerEditorViewModel">
+    <TabControl DataContext="{Binding Editor}" x:DataType="triggers:TriggerEditorViewModel"
+                SelectedIndex="{Binding $parent[UserControl].((triggers:TriggerDocumentViewModel)DataContext).SelectedTabIndex, Mode=TwoWay}">
       <TabItem Header="Basic">
         <ScrollViewer>
           <ItemsControl ItemsSource="{Binding BasicRows}" Margin="14,10" />

@@ -116,6 +116,10 @@ namespace SWLOR.Toolset.Editors
         [ObservableProperty]
         private int _selectedRootTabIndex;
 
+        /// <summary>Whether the top-level Area Properties card is expanded in this open document.</summary>
+        [ObservableProperty]
+        private bool _areaPropertiesExpanded;
+
         /// <summary>The Properties page's retained scroll position, stored without an Avalonia dependency.</summary>
         public Vector2 PropertiesScrollOffset { get; set; }
 
@@ -2052,6 +2056,7 @@ namespace SWLOR.Toolset.Editors
             var catalogEntryChanged =
                 _areSession.UndoStack.IsDirty ||
                 _gitSession.UndoStack.IsDirty;
+            var placementsChanged = _gitSession.UndoStack.IsDirty;
             var instancePairReloaded = false;
             var tilesetBefore = TilesetResRef;
 
@@ -2168,6 +2173,8 @@ namespace SWLOR.Toolset.Editors
             {
                 CatalogEntryChanged?.Invoke();
             }
+            if (placementsChanged || gitResult.Reloaded || instancePairReloaded)
+                PlacementsChanged?.Invoke();
             return true;
         }
 
@@ -2529,8 +2536,11 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Raised after an async close prompt approves closing this tab.</summary>
         public event Action<AreaEditorViewModel>? CloseRequested;
 
-        /// <summary>Raised after the ARE resource is saved or reloaded so catalog views can re-index it.</summary>
+        /// <summary>Raised after ARE or GIT data is saved/reloaded so area-backed catalog indexes can refresh.</summary>
         public event Action? CatalogEntryChanged;
+
+        /// <summary>Raised after the paired GIT is saved or reloaded so object-source indexes can refresh.</summary>
+        public event Action? PlacementsChanged;
 
         /// <summary>Suppresses a second tab-level prompt after the window-level discard decision.</summary>
         internal void ApproveApplicationClose() => _closeApproved = true;

@@ -27,7 +27,7 @@
       </Grid>
     </Border>
 
-    <TabControl>
+    <TabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
       <TabItem Header="Edit">
         <waypoints:WaypointEditorView DataContext="{Binding Editor}" />
       </TabItem>

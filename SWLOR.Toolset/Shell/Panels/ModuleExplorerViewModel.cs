@@ -430,6 +430,7 @@ namespace SWLOR.Toolset.Shell.Panels
                     FileNewResource(resRef, targetFolder);
 
                     _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
+                    _workspaceContext.InvalidatePlacementIndex();
                     Refresh();
                     _editorService?.Invoke().TryOpenEditor(ResourceType.Area, resRef);
                 },

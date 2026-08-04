@@ -21,7 +21,7 @@
       </Grid>
     </Border>
 
-    <TabControl>
+    <TabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
       <TabItem Header="Edit">
         <sounds:SoundEditorView DataContext="{Binding Editor}" />
       </TabItem>

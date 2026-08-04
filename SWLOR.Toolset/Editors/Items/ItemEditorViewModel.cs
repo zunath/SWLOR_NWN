@@ -77,6 +77,9 @@ namespace SWLOR.Toolset.Editors.Items
         [ObservableProperty]
         private bool _isModelPreviewLoading;
 
+        [ObservableProperty]
+        private int _selectedTabIndex;
+
         /// <summary>Null unless a resolver was supplied and the item's base type has a world model to preview.</summary>
         public AreaScene? PreviewScene { get; private set; }
 

@@ -20,6 +20,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
         private bool _closeApproved;
         private bool _closePromptOpen;
         private bool _disposed;
+        private int _selectedTabIndex;
 
         public WaypointEditorViewModel Editor { get; }
         public Sources.ObjectSourceSectionViewModel? Source { get; }
@@ -29,6 +30,17 @@ namespace SWLOR.Toolset.Editors.Waypoints
         public bool CanRedo => _session.UndoStack.CanRedo;
         public string FilePath => _session.FilePath;
         public string ResRef => _resRef;
+        public int SelectedTabIndex
+        {
+            get => _selectedTabIndex;
+            set
+            {
+                if (_selectedTabIndex == value)
+                    return;
+                _selectedTabIndex = value;
+                OnPropertyChanged();
+            }
+        }
 
         public event Action<WaypointDocumentViewModel>? Closed;
         public event Action<WaypointDocumentViewModel>? CloseRequested;

@@ -421,17 +421,42 @@ namespace SWLOR.Toolset.Tests
             var section = editor.SectionFor(ResourceType.Utp)!;
             section.SelectedRow = section.Rows[0];
             var notifications = 0;
+            var placementNotifications = 0;
             editor.CatalogEntryChanged += () => notifications++;
+            editor.PlacementsChanged += () => placementNotifications++;
 
             section.DetailTag = "git_only_catalog_refresh";
 
             (await editor.TrySaveAsync()).Should().BeTrue();
             notifications.Should().Be(1,
                 "placed-instance tags and script slots are indexed from GIT, not ARE");
+            placementNotifications.Should().Be(1,
+                "a saved GIT changes the module placement index");
             new GitDocument(JsonGffDocument.Load(
                     Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json")))
                 .Placeables[0].GetStringOrNull("Tag")
                 .Should().Be("git_only_catalog_refresh");
+        }
+
+        [Test]
+        public async Task SavingAnAreOnlyEditDoesNotPublishAPlacementChange()
+        {
+            var editor = CreateEditor();
+            var comments = editor.AreaPropertyGroups
+                .SelectMany(group => group.Fields)
+                .OfType<TextFieldViewModel>()
+                .Single(field => field.Descriptor.FieldName == "Comments");
+            var catalogNotifications = 0;
+            var placementNotifications = 0;
+            editor.CatalogEntryChanged += () => catalogNotifications++;
+            editor.PlacementsChanged += () => placementNotifications++;
+
+            comments.Text = "ARE metadata only";
+
+            (await editor.TrySaveAsync()).Should().BeTrue();
+            catalogNotifications.Should().Be(1);
+            placementNotifications.Should().Be(0,
+                "ARE metadata is not part of the GIT placement index");
         }
 
         [Test]
@@ -449,11 +474,15 @@ namespace SWLOR.Toolset.Tests
                 File.GetLastWriteTimeUtc(gitPath).AddSeconds(2));
 
             var notifications = 0;
+            var placementNotifications = 0;
             editor.CatalogEntryChanged += () => notifications++;
+            editor.PlacementsChanged += () => placementNotifications++;
 
             (await editor.TrySaveAsync()).Should().BeTrue();
 
             notifications.Should().Be(1);
+            placementNotifications.Should().Be(1,
+                "reloading the paired GIT changes the placement snapshot");
             editor.SectionFor(ResourceType.Utp)!.Rows[0].Tag.Should().Be(diskTag);
         }
 

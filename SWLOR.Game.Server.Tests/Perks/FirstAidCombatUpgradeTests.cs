@@ -176,7 +176,7 @@ public class FirstAidCombatUpgradeTests
             "the rank-II heal must run after EffectResurrection settles or the engine silently discards it");
 
         var pain = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "PainSuppressantAbilityDefinition.cs").FullName);
-        pain.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, target, percent, durationSeconds)");
+        pain.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, target, \"PAIN_SUPPRESSANT\", percent, durationSeconds)");
         pain.Should().NotContain("HealPercent(activator, friendly");
 
         var koltoMist = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "KoltoMistAbilityDefinition.cs").FullName);
@@ -239,7 +239,7 @@ public class FirstAidCombatUpgradeTests
         emergencySealantStatus.Should().Contain("AbilityEffectScaling.ApplyScaledHeal(Source, creature, 4);");
 
         var cocktail = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "EmergencyCocktailAbilityDefinition.cs").FullName);
-        cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 12, duration)");
+        cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, \"EMERGENCY_COCKTAIL\", 12, duration)");
         cocktail.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
         cocktail.Should().Contain("new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }");
     }

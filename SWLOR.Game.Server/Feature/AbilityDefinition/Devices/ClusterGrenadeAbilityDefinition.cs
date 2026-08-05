@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.ClusterGrenade1,
                     ClusterTargetingRadius,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(ClusterGrenade1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             var location = GetImpactLocation(activator, target, targetLocation);
             var blastLocations = GetClusterBlastLocations(activator, location);
-            var blastRadius = DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, SmallBlastRadius);
+            var blastRadius = DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, SmallBlastRadius);
             var hasAnyTargets = HasHostileTargetInAnyBlast(activator, blastLocations, blastRadius);
 
             for (var grenadeIndex = 0; grenadeIndex < GrenadeCount; grenadeIndex++)
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 null,
                 CombatImpactAreaShape.Sphere,
                 0f,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, SmallBlastRadius),
+                DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, SmallBlastRadius),
                 0f,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,

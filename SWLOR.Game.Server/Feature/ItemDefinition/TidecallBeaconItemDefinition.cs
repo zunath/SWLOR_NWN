@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     Stat.RestoreStamina(user, GameMath.PercentOf(Stat.GetMaxStamina(user), 18));
                     TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(
                         user,
+                        "TIDECALL_BEACON",
                         12 + GameMath.PercentOf(GetMaxHitPoints(user), 6),
                         60f);
                     StatusEffect.ApplyStatusEffect(user, user, new TidecallBeaconStatusEffect(), 60f);

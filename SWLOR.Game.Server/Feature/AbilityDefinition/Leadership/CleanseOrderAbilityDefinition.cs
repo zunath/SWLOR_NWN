@@ -115,10 +115,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void ApplyTemporaryHP(uint target, int percent, float durationSeconds)
         {
-            ApplyEffectToObject(
-                DurationType.Temporary,
-                EffectTemporaryHitpoints(GameMath.PercentOf(GetMaxHitPoints(target), percent)),
+            TemporaryHitPointEffects.ApplyFlat(
                 target,
+                "CLEANSE_ORDER",
+                GameMath.PercentOf(GetMaxHitPoints(target), percent),
                 durationSeconds);
         }
     }

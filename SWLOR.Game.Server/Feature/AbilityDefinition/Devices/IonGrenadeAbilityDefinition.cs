@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.IonGrenade1,
                     3f,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(IonGrenade1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.IonGrenade2,
                     3f,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(IonGrenade2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             var creature = GetFirstObjectInShape(
                 Shape.Sphere,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 3f),
+                DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f),
                 location,
                 true);
 
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical);
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 3f), location, true);
+                creature = GetNextObjectInShape(Shape.Sphere, DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f), location, true);
             }
         }
 

@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.ConcussionGrenade1,
                     3f,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(ConcussionGrenade1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.ConcussionGrenade2,
                     3f,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(ConcussionGrenade2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 statusEffect,
                 CombatImpactAreaShape.Sphere,
                 0f,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 3f),
+                DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f),
                 0f,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Electrical,

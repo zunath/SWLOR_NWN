@@ -1101,10 +1101,10 @@ namespace SWLOR.Game.Server.Service.StatService
         DeviceShieldDurationBonusSeconds = 200,
 
         /// <summary>
-        /// Grenade radius bonus in tenths of a meter.
+        /// Explosive blast radius bonus in tenths of a meter for grenade, Remote Charge, and Overload Barrage blasts.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        GrenadeRadiusBonusTenths = 201,
+        BlastRadiusBonusTenths = 201,
 
         /// <summary>
         /// Percentage-point bonus applied to grenade control-effect potency.

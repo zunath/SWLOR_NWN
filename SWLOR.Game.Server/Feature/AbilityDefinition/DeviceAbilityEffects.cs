@@ -204,11 +204,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             StatusEffect.ApplyStatusEffect(activator, target, new OverclockRoutineStatusEffect(), 30f);
         }
 
-        public static float ApplyGrenadeRadiusBonus(uint activator, float baseRadius)
+        public static float ApplyBlastRadiusBonus(uint activator, float baseRadius)
         {
-            return CalculateGrenadeRadius(
+            return CalculateBlastRadius(
                 baseRadius,
-                Stat.GetStatAdjustment(activator, StatType.GrenadeRadiusBonusTenths));
+                Stat.GetStatAdjustment(activator, StatType.BlastRadiusBonusTenths));
         }
 
         public static float ApplyBeaconPulseRangeBonus(uint activator, float baseRadius)
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return baseRadius + Stat.GetStatAdjustment(activator, StatType.BeaconPulseRangeBonusMeters);
         }
 
-        public static float CalculateGrenadeRadius(float baseRadius, int radiusBonusTenths)
+        public static float CalculateBlastRadius(float baseRadius, int radiusBonusTenths)
         {
             return baseRadius + radiusBonusTenths / 10f;
         }

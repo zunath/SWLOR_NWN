@@ -9,7 +9,7 @@ using SWLOR.Toolset.Editors.Behaviors;
 
 namespace SWLOR.Toolset.Editors.Waypoints
 {
-    public sealed partial class WaypointEditorViewModel : ObservableObject
+    public sealed partial class WaypointEditorViewModel : ObservableObject, IDisposable
     {
         private readonly BehaviorValueStore _store;
         private WaypointBehaviorCatalog _catalog;
@@ -20,6 +20,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
         private readonly Services.IEditorPromptService? _prompts;
         private readonly Func<string, bool>? _singletonTagInUse;
         private readonly bool _isInstance;
+        private bool _disposed;
 
         public ObservableCollection<BehaviorListItemViewModel> BehaviorList { get; } = new();
         public ObservableCollection<WaypointRowViewModel> BasicRows { get; } = new();
@@ -47,6 +48,9 @@ namespace SWLOR.Toolset.Editors.Waypoints
         public string? Incomplete { get; private set; }
         public bool IsIncomplete => Incomplete != null;
 
+        private readonly Workspace.OutputLogService? _log;
+
+
         public WaypointEditorViewModel(
             JsonGffStruct waypoint,
             string headerOwner,
@@ -57,9 +61,11 @@ namespace SWLOR.Toolset.Editors.Waypoints
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             ChoicePreviewService? previews = null,
             Services.IEditorPromptService? prompts = null,
-            Func<string, bool>? singletonTagInUse = null)
+            Func<string, bool>? singletonTagInUse = null,
+            Workspace.OutputLogService? log = null)
         {
             ArgumentNullException.ThrowIfNull(waypoint);
+            _log = log;
             _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
             _store = new BehaviorValueStore(waypoint);
             _runEdit = runEdit;
@@ -83,7 +89,27 @@ namespace SWLOR.Toolset.Editors.Waypoints
             if (descriptor is not WaypointBehavior behavior || behavior.Id == Behavior.Id)
                 return;
 
-            _ = ChooseBehaviorAsync(behavior);
+            _ = ChooseBehaviorGuardedAsync(behavior);
+        }
+
+        /// <summary>
+        /// Observes the command's fire-and-forget switch. A fault would otherwise vanish as an
+        /// unobserved task while the rail stayed highlighting a behavior the document never got, so
+        /// it is handled the way a declined prompt is: put the highlight back on what the waypoint
+        /// actually is.
+        /// </summary>
+        private async Task ChooseBehaviorGuardedAsync(WaypointBehavior behavior)
+        {
+            try
+            {
+                await ChooseBehaviorAsync(behavior).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _log?.AppendLine(
+                    $"Behavior switch to '{behavior.DisplayName}' failed: {ex.Message}");
+                BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);
+            }
         }
 
         /// <summary>
@@ -321,6 +347,16 @@ namespace SWLOR.Toolset.Editors.Waypoints
             var tag = _store.GetString(BehaviorFieldStorage.Field, "Tag");
             return _catalog.IsSingletonDestinationTag(tag) &&
                    _singletonTagInUse?.Invoke(tag) == true;
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            _disposed = true;
+            foreach (var row in BasicRows.Concat(BehaviorRows))
+                row.Dispose();
         }
     }
 }

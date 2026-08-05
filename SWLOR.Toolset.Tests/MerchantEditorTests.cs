@@ -298,6 +298,53 @@ namespace SWLOR.Toolset.Tests
                 .Should().Equal("weapon_a");
             store.Inventory((int)MerchantInventoryCategory.Armor).Single().StructId.Should().Be(0);
             store.Inventory((int)MerchantInventoryCategory.Weapons).Single().StructId.Should().Be(0);
+            AssertIndexDerivedPositions(store, (int)MerchantInventoryCategory.Armor);
+            AssertIndexDerivedPositions(store, (int)MerchantInventoryCategory.Weapons);
+        }
+
+        [Test]
+        public void RemovingInventoryItemsKeepsGridPositionsIndexDerivedSoAddsCannotCollide()
+        {
+            var store = new MerchantValueStore(NewMerchant());
+            for (var slot = 0; slot < 7; slot++)
+                store.AddInventoryItem((int)MerchantInventoryCategory.Armor, $"armor_{slot}");
+
+            store.RemoveInventoryItem((int)MerchantInventoryCategory.Armor, 0);
+
+            AssertIndexDerivedPositions(store, (int)MerchantInventoryCategory.Armor);
+
+            store.AddInventoryItem((int)MerchantInventoryCategory.Armor, "armor_added");
+
+            var items = store.Inventory((int)MerchantInventoryCategory.Armor);
+            items.Select(item => item.GetStringOrNull("InventoryRes")).Should().Equal(
+                "armor_1", "armor_2", "armor_3", "armor_4", "armor_5", "armor_6", "armor_added");
+            AssertIndexDerivedPositions(store, (int)MerchantInventoryCategory.Armor);
+
+            store.RemoveInventoryItems(new[]
+            {
+                ((int)MerchantInventoryCategory.Armor, 1),
+                ((int)MerchantInventoryCategory.Armor, 4)
+            });
+            store.AddInventoryItem((int)MerchantInventoryCategory.Armor, "armor_final");
+
+            AssertIndexDerivedPositions(store, (int)MerchantInventoryCategory.Armor);
+        }
+
+        /// <summary>
+        /// Every slot's Repos position must be the one its list index dictates, which also proves
+        /// the pane has no two items sharing a grid cell — the overlap that used to survive a
+        /// remove and ship to placed store instances.
+        /// </summary>
+        private static void AssertIndexDerivedPositions(MerchantValueStore store, int paneIndex)
+        {
+            var items = store.Inventory(paneIndex);
+            for (var index = 0; index < items.Count; index++)
+            {
+                items[index].GetIntOrNull("Repos_PosX").Should().Be(
+                    index % 5 * 2, $"slot {index} must sit in its index-derived column");
+                items[index].GetIntOrNull("Repos_Posy").Should().Be(
+                    index / 5 * 2, $"slot {index} must sit in its index-derived row");
+            }
         }
 
         [Test]

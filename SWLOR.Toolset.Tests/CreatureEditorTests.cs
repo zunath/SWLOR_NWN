@@ -623,6 +623,82 @@ namespace SWLOR.Toolset.Tests
             loot.Tables.Should().ContainSingle().Which.Should().Be(table);
         }
 
+        [Test]
+        public async Task AbilityCatalogLoadFailure_LeavesTheTabRetryableOnTheNextEnsureLoadedCall()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "flaky_abilities", "Flaky Abilities"));
+            var store = new CreatureValueStore(document.Root);
+            var attempt = 0;
+            var ability = new CreatureAbilityInfo(
+                42, "Recovered Ability", "Loaded after retry", 0, "", 0, "", true);
+
+            using var abilities = new CreatureAbilitiesViewModel(
+                store,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalogLoader: () =>
+                {
+                    attempt++;
+                    return attempt == 1
+                        ? Task.FromException<CreatureAbilityCatalogData>(new InvalidOperationException("boom"))
+                        : Task.FromResult(new CreatureAbilityCatalogData(
+                            [ability], new Dictionary<int, CreaturePerkInfo>()));
+                });
+
+            await abilities.EnsureLoadedAsync();
+            abilities.IsLoaded.Should().BeFalse(
+                "a faulted load must stay retryable rather than permanently disabling the tab");
+            abilities.HasLoadError.Should().BeTrue();
+
+            await abilities.EnsureLoadedAsync();
+            attempt.Should().Be(2, "re-entering the tab after a failure must retry the load");
+            abilities.IsLoaded.Should().BeTrue();
+            abilities.HasLoadError.Should().BeFalse();
+            abilities.Matching.Should().ContainSingle().Which.Info.Should().Be(ability);
+        }
+
+        [Test]
+        public async Task LootCatalogLoadFailure_LeavesTheTabRetryableOnTheNextEnsureLoadedCall()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "flaky_loot", "Flaky Loot"));
+            var store = new CreatureValueStore(document.Root);
+            var attempt = 0;
+            var table = new CreatureLootTableInfo(
+                "RECOVERED_TABLE", "Recovered Table", false,
+                Array.Empty<CreatureLootTableItemInfo>());
+
+            using var loot = new CreatureLootViewModel(
+                store,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                tableLoader: () =>
+                {
+                    attempt++;
+                    return attempt == 1
+                        ? Task.FromException<IReadOnlyList<CreatureLootTableInfo>>(new InvalidOperationException("boom"))
+                        : Task.FromResult<IReadOnlyList<CreatureLootTableInfo>>([table]);
+                });
+
+            await loot.EnsureLoadedAsync();
+            loot.IsLoaded.Should().BeFalse(
+                "a faulted load must stay retryable rather than permanently disabling the tab");
+            loot.HasLoadError.Should().BeTrue();
+
+            await loot.EnsureLoadedAsync();
+            attempt.Should().Be(2, "re-entering the tab after a failure must retry the load");
+            loot.IsLoaded.Should().BeTrue();
+            loot.HasLoadError.Should().BeFalse();
+            loot.Tables.Should().ContainSingle().Which.Should().Be(table);
+        }
+
         [AvaloniaTest]
         public async Task CreatureEditor_DefersAppearanceProjectionUntilAppearanceIsSelected()
         {

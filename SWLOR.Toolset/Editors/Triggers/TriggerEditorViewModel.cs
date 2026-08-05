@@ -27,7 +27,7 @@ namespace SWLOR.Toolset.Editors.Triggers
     /// set the same value, and no way to desynchronise the two.
     /// </para>
     /// </remarks>
-    public sealed partial class TriggerEditorViewModel : ObservableObject
+    public sealed partial class TriggerEditorViewModel : ObservableObject, IDisposable
     {
         private readonly BehaviorValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
@@ -36,6 +36,7 @@ namespace SWLOR.Toolset.Editors.Triggers
         private readonly ChoicePreviewService? _previews;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly bool _isInstance;
+        private bool _disposed;
 
         public ObservableCollection<BehaviorListItemViewModel> BehaviorList { get; } = new();
 
@@ -72,6 +73,9 @@ namespace SWLOR.Toolset.Editors.Triggers
 
         public bool IsIncomplete => Incomplete != null;
 
+        private readonly Workspace.OutputLogService? _log;
+
+
         public TriggerEditorViewModel(
             JsonGffStruct trigger,
             string headerOwner,
@@ -81,9 +85,11 @@ namespace SWLOR.Toolset.Editors.Triggers
             Func<BehaviorTagScope, string, string?>? resolveTag = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             ChoicePreviewService? previews = null,
-            Services.IEditorPromptService? prompts = null)
+            Services.IEditorPromptService? prompts = null,
+            Workspace.OutputLogService? log = null)
         {
             ArgumentNullException.ThrowIfNull(trigger);
+            _log = log;
 
             _prompts = prompts;
             _store = new BehaviorValueStore(trigger);
@@ -114,7 +120,27 @@ namespace SWLOR.Toolset.Editors.Triggers
             if (descriptor is not TriggerBehavior behavior || behavior.Id == Behavior.Id)
                 return;
 
-            _ = ChooseBehaviorAsync(behavior);
+            _ = ChooseBehaviorGuardedAsync(behavior);
+        }
+
+        /// <summary>
+        /// Observes the command's fire-and-forget switch. A fault would otherwise vanish as an
+        /// unobserved task while the rail stayed highlighting a behavior the document never got, so
+        /// it is handled the way a declined prompt is: put the highlight back on what the trigger
+        /// actually is.
+        /// </summary>
+        private async Task ChooseBehaviorGuardedAsync(TriggerBehavior behavior)
+        {
+            try
+            {
+                await ChooseBehaviorAsync(behavior).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _log?.AppendLine(
+                    $"Behavior switch to '{behavior.DisplayName}' failed: {ex.Message}");
+                BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);
+            }
         }
 
         /// <summary>
@@ -305,6 +331,16 @@ namespace SWLOR.Toolset.Editors.Triggers
 
             OnPropertyChanged(nameof(Incomplete));
             OnPropertyChanged(nameof(IsIncomplete));
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            _disposed = true;
+            foreach (var row in BasicRows.Concat(BehaviorRows))
+                row.Dispose();
         }
     }
 }

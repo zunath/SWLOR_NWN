@@ -167,8 +167,12 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
             }
         }
 
-        /// <summary>Whether all inventory entries are in the pane selected by their BaseItem row.
-        /// A null resolver result preserves an unresolvable legacy entry in its current valid pane.</summary>
+        /// <summary>Whether all inventory entries are in the pane selected by their BaseItem row,
+        /// with index-derived struct ids and repository positions. A null resolver result preserves
+        /// an unresolvable legacy entry in its current valid pane. Slot metadata is part of the
+        /// check because this answer short-circuits <see cref="NormalizeInventoryPanes"/> - a file
+        /// whose panes are category-correct but carries stale or colliding ids/positions must still
+        /// be repaired on save.</summary>
         public bool InventoryMatchesCategories(Func<string, int?> resolveStorePanel)
         {
             ArgumentNullException.ThrowIfNull(resolveStorePanel);
@@ -179,16 +183,28 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
 
             for (var paneIndex = 0; paneIndex < panes.Count; paneIndex++)
             {
-                foreach (var item in panes[paneIndex].GetListOrEmpty("ItemList"))
+                var items = panes[paneIndex].GetListOrEmpty("ItemList");
+                for (var index = 0; index < items.Count; index++)
                 {
+                    var item = items[index];
                     var resRef = item.GetStringOrNull("InventoryRes") ?? string.Empty;
                     var expected = resolveStorePanel(resRef);
                     if (expected.HasValue && NormalizePane(expected.Value) != paneIndex)
+                        return false;
+
+                    if (!HasIndexDerivedSlotMetadata(item, index))
                         return false;
                 }
             }
 
             return true;
+        }
+
+        private static bool HasIndexDerivedSlotMetadata(JsonGffStruct item, int index)
+        {
+            return item.StructId == (uint)index &&
+                   item.GetIntOrNull("Repos_PosX") == index % InventoryColumns * InventoryCellSpacing &&
+                   item.GetIntOrNull("Repos_Posy") == index / InventoryColumns * InventoryCellSpacing;
         }
 
         /// <summary>Moves every resolvable inventory entry into its baseitems.2da StorePanel,
@@ -241,12 +257,7 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
             }
 
             foreach (var pane in storeList.Elements)
-            {
-                var items = pane.GetListOrEmpty("ItemList");
-                Renumber(items);
-                for (var index = 0; index < items.Count; index++)
-                    SetInventoryPosition(items[index], index);
-            }
+                Renumber(pane.GetListOrEmpty("ItemList"));
         }
 
         public void EnsureBuyingRuleLists()
@@ -291,10 +302,20 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
             return list;
         }
 
+        /// <summary>
+        /// Re-derives every slot's struct id and repository position from its list index. Position
+        /// must follow the id: <see cref="AddInventoryItem"/> places a new item purely from the
+        /// list count, so a survivor left on its pre-removal cell would collide with the next add,
+        /// and the overlap persists into the saved UTM and every placed store instance cloned from
+        /// it.
+        /// </summary>
         private static void Renumber(IReadOnlyList<JsonGffStruct> items)
         {
             for (var index = 0; index < items.Count; index++)
+            {
                 items[index].SetStructId((uint)index);
+                SetInventoryPosition(items[index], index);
+            }
         }
 
         private static void SetInventoryPosition(JsonGffStruct item, int index)

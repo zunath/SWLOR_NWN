@@ -67,8 +67,13 @@ namespace SWLOR.Toolset.Domain.Gff
 
         public static JsonGffField CreateScalar(GffFieldType type, byte[] rawValue)
         {
-            if (!GffFieldTypeNames.IsNumeric(type) && !GffFieldTypeNames.IsString(type))
+            // Void is a scalar (a binary payload in a string token) even though the string
+            // accessors reject it; callers encode void payloads via JsonStringCodec.EncodeBytes.
+            if (!GffFieldTypeNames.IsNumeric(type) && !GffFieldTypeNames.IsString(type)
+                && type != GffFieldType.Void)
+            {
                 throw new ArgumentException($"{type} is not a scalar field type.", nameof(type));
+            }
 
             return new JsonGffField(type) { RawValue = rawValue };
         }
@@ -159,11 +164,19 @@ namespace SWLOR.Toolset.Domain.Gff
         /// <summary>
         /// Validates an editable string value against the storage rules of its GFF field type.
         /// ResRefs are ASCII resource identifiers capped at 16 characters; an empty ResRef is
-        /// valid for optional references such as unused script slots.
+        /// valid for optional references such as unused script slots. Non-string types (Void
+        /// included - its payload is binary, not text) are rejected outright so a text setter can
+        /// never create a field the string accessors themselves refuse to touch.
         /// </summary>
         public static void ValidateStringValue(GffFieldType type, string value)
         {
             ArgumentNullException.ThrowIfNull(value);
+            if (!GffFieldTypeNames.IsString(type))
+            {
+                throw new ArgumentException(
+                    $"{type} does not hold an editable text value.", nameof(type));
+            }
+
             if (type != GffFieldType.ResRef)
                 return;
 
@@ -231,6 +244,20 @@ namespace SWLOR.Toolset.Domain.Gff
             }
         }
 
+        /// <summary>
+        /// Ensures an editor float value is a finite number. NaN and infinities have no token
+        /// the nwn_gff JSON number grammar can re-parse (<c>nan</c>/<c>inf</c> are rejected by
+        /// the reader), so storing one would produce a file nothing can reopen.
+        /// </summary>
+        public static void ValidateFiniteValue(double value)
+        {
+            if (!double.IsFinite(value))
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(value), value, "GFF float fields cannot store NaN or infinite values.");
+            }
+        }
+
         public double GetDouble()
         {
             RequireScalar();
@@ -248,6 +275,7 @@ namespace SWLOR.Toolset.Domain.Gff
             if (Type != GffFieldType.Float)
                 throw new InvalidOperationException($"Field type {Type} does not hold a float value.");
 
+            ValidateFiniteValue(value);
             EditScope.EnsureMutationAllowed();
             var oldValue = RawValue;
             var oldLocId = RawLocStringId;
@@ -261,6 +289,7 @@ namespace SWLOR.Toolset.Domain.Gff
             if (Type != GffFieldType.Double)
                 throw new InvalidOperationException($"Field type {Type} does not hold a double value.");
 
+            ValidateFiniteValue(value);
             EditScope.EnsureMutationAllowed();
             var oldValue = RawValue;
             var oldLocId = RawLocStringId;

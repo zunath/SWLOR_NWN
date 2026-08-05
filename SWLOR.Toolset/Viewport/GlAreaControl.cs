@@ -343,6 +343,9 @@ void main()
             public required IReadOnlyList<MeshRange> MeshRanges { get; init; }
             public IReadOnlyList<RenderAnimation> Animations { get; init; } = Array.Empty<RenderAnimation>();
             public IReadOnlyList<RenderEmitter> Emitters { get; init; } = Array.Empty<RenderEmitter>();
+
+            /// <summary>Frame stamp of the last draw that used this buffer, for stale eviction.</summary>
+            public long LastUsedFrame;
         }
 
         private readonly struct StaticMeshBuffer
@@ -406,6 +409,17 @@ void main()
             new(StringComparer.OrdinalIgnoreCase);
 
         private int _gameResourceInvalidationRequested;
+
+        // GPU caches only ever grew before eviction was added: an item-preview document composes a
+        // brand-new RenderModel for every part/dye edit, and each one stayed VAO/VBO/EBO-resident
+        // until the tab closed. The caps are scan triggers, not hard limits - a live working set
+        // larger than a cap is never evicted, only entries no frame has touched recently.
+        private const int ModelBufferEvictionScanThreshold = 512;
+        private const long StaleModelBufferFrames = 600;
+        private const int TextureCacheResetThreshold = 2048;
+        private const long TextureCacheResetCooldownFrames = 600;
+        private long _frameStamp;
+        private long _lastTextureCacheResetFrame;
 
         private StaticMeshBuffer? _fallbackCubeBuffer;
         private StaticMeshBuffer? _markerMeshBuffer;
@@ -2543,6 +2557,8 @@ void main()
             if (_gl == null)
                 return;
 
+            _frameStamp++;
+
             var bounds = Bounds;
             var width = (int)bounds.Width;
             var height = (int)bounds.Height;
@@ -2626,6 +2642,7 @@ void main()
                 }
 
                 DrawScene(scene, width, height);
+                EvictStaleGpuResources();
             }
             catch (Exception ex)
             {
@@ -4491,11 +4508,68 @@ void main()
         private ModelBuffer GetOrBuildModelBuffer(RenderModel model)
         {
             if (_modelBuffers.TryGetValue(model, out var existing))
+            {
+                existing.LastUsedFrame = _frameStamp;
                 return existing;
+            }
 
             var built = BuildModelBuffer(model);
+            built.LastUsedFrame = _frameStamp;
             _modelBuffers[model] = built;
             return built;
+        }
+
+        /// <summary>
+        /// Drops GPU resources no recent frame has drawn. Runs on the render thread with the GL
+        /// context current. Model buffers evict individually by last-use stamp; the texture caches
+        /// reset wholesale (they are shared by name across models, so per-entry lifetimes are not
+        /// tracked) and live textures re-upload lazily on the next frame.
+        /// </summary>
+        private void EvictStaleGpuResources()
+        {
+            if (_gl == null)
+                return;
+
+            if (_modelBuffers.Count > ModelBufferEvictionScanThreshold)
+            {
+                List<RenderModel>? stale = null;
+                foreach (var (model, buffer) in _modelBuffers)
+                {
+                    if (_frameStamp - buffer.LastUsedFrame > StaleModelBufferFrames)
+                        (stale ??= new List<RenderModel>()).Add(model);
+                }
+
+                if (stale != null)
+                {
+                    foreach (var model in stale)
+                    {
+                        var buffer = _modelBuffers[model];
+                        DeleteBuffer(buffer.Vao, buffer.Vbo, buffer.Ebo);
+                        _modelBuffers.Remove(model);
+                    }
+                }
+            }
+
+            if (_textureCache.Count + _mapTextureCache.Count > TextureCacheResetThreshold &&
+                _frameStamp - _lastTextureCacheResetFrame > TextureCacheResetCooldownFrames)
+            {
+                _lastTextureCacheResetFrame = _frameStamp;
+
+                foreach (var diffuse in _textureCache.Values)
+                {
+                    if (diffuse.TexId != 0)
+                        _gl.DeleteTexture(diffuse.TexId);
+                }
+                _textureCache.Clear();
+
+                foreach (var texId in _mapTextureCache.Values)
+                {
+                    if (texId != 0)
+                        _gl.DeleteTexture(texId);
+                }
+                _mapTextureCache.Clear();
+                _rawTextureCache.Clear();
+            }
         }
 
         private ModelBuffer BuildModelBuffer(RenderModel model)

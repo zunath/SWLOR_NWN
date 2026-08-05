@@ -129,7 +129,8 @@ namespace SWLOR.Toolset.Editors.Items
                 resourceIndex: resourceIndex,
                 armorDyeSwatches: armorDyeSwatches,
                 armorPartModels: armorPartModels,
-                placementSource: placementSource);
+                placementSource: placementSource,
+                log: log);
             UpdateTitle();
         }
 

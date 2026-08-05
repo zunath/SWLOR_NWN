@@ -202,10 +202,19 @@ public class CrossSkillPerkInteractionSafetyTests
         var consumeIndex = redirect.IndexOf(
             "StatusEffect.RemoveStatusEffectsWithStat(defender, StatType.DamageTakenRedirectToStatusSourcePercent, false)",
             StringComparison.Ordinal);
-        var damageIndex = redirect.IndexOf("EffectDamage(redirectedDamage", StringComparison.Ordinal);
+        var damageIndex = redirect.IndexOf("EffectDamage(finalRedirectedDamage", StringComparison.Ordinal);
+        damageIndex.Should().BeGreaterThanOrEqualTo(0);
         consumeIndex.Should().BeGreaterThanOrEqualTo(0);
         consumeIndex.Should().BeLessThan(damageIndex,
             "a one-shot redirect must be consumed before its damage is dispatched");
+
+        // The redirected portion runs the protector's own mitigation as a transfer, and the
+        // one-shot consume above happens before that call - so the mutual-redirect case
+        // terminates: each hop removes its own effect before recursing.
+        redirect.Should().Contain("CombatDamageDeliveryType.Transferred");
+        redirect.IndexOf("ApplyDamageTakenModifiers(", StringComparison.Ordinal)
+            .Should().BeGreaterThan(consumeIndex,
+                "the redirect must be consumed before the transfer re-enters the modifier pipeline");
     }
 
     [Test]

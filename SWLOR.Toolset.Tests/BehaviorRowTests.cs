@@ -291,10 +291,15 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task AVisualCatalogGetsSharedFacetFiltersAndSortsWithoutEditorSpecificCode()
         {
+            // Female (even-index) names run Zulu-block first, Alpha-block second, so the filtered
+            // subset is NOT ascending by default - the sort assertion below must observe a real
+            // reorder, not the incidental order the fixture was published in.
             var choices = Enumerable.Range(0, 140)
                 .Select(index => new BehaviorChoice(
                     index,
-                    index % 2 == 0 ? $"Zulu {index:D3}" : $"Alpha {index:D3}",
+                    index % 2 == 0
+                        ? index < 70 ? $"Zulu {index:D3}" : $"Alpha {index:D3}"
+                        : $"Mike {index:D3}",
                     $"portrait_{index}")
                 {
                     GalleryFacets =
@@ -321,12 +326,26 @@ namespace SWLOR.Toolset.Tests
             var gender = row.GalleryFilters.Should().ContainSingle().Subject;
             gender.Label.Should().Be("Gender");
             gender.SelectedOption = gender.Options.Single(option => option.Display == "Female");
+
+            // Changing a filter or sort fires an un-awaited background rebuild (Task.Run inside
+            // RebuildGalleryAsync); wait for it to publish before asserting or the test races it.
+            await WaitForGalleryRebuildAsync(() => row.GallerySummary == "48 of 70 choices");
             row.GalleryChoices.Should().OnlyContain(choice => choice.Value % 2 == 0);
             row.GallerySummary.Should().Be("48 of 70 choices");
 
             row.SelectedGallerySort = row.GallerySortOptions.Single(option =>
                 option.Mode == GallerySortMode.NameAscending);
+            await WaitForGalleryRebuildAsync(() =>
+                row.GalleryChoices.Count > 0 && row.GalleryChoices[0].Display == "Alpha 070");
+            row.GalleryChoices[0].Display.Should().Be("Alpha 070",
+                "the ascending sort must reorder the Zulu-block-first default order");
             row.GalleryChoices.Select(choice => choice.Display).Should().BeInAscendingOrder();
+        }
+
+        private static async Task WaitForGalleryRebuildAsync(Func<bool> published)
+        {
+            for (var attempt = 0; attempt < 400 && !published(); attempt++)
+                await Task.Delay(10);
         }
 
         [Test]

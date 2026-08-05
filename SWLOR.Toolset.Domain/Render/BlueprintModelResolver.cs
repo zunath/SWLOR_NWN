@@ -709,13 +709,35 @@ namespace SWLOR.Toolset.Domain.Render
                 equipped.GetIntOrNull("ArmorPart_Torso").HasValue ||
                 equipped.GetIntOrNull("ModelPart1").HasValue)
             {
-                return equipped;
+                return IsDegenerateEmbeddedItem(equipped) ? null : equipped;
             }
 
             var resRef = GetEquippedItemResRef(equipped);
             return string.IsNullOrWhiteSpace(resRef) || itemBlueprintLoader == null
                 ? null
                 : itemBlueprintLoader(resRef);
+        }
+
+        /// <summary>
+        /// Several shipped areas carry a leftover equipped-slot struct with a blank TemplateResRef,
+        /// BaseItem 0, and every appearance part zeroed - no blueprint identity and nothing to
+        /// draw. Rendering it would fabricate a part-000 prop no model exists for, so it counts as
+        /// an empty hand instead. Anything with a resref or a real appearance value is an item.
+        /// </summary>
+        private static bool IsDegenerateEmbeddedItem(JsonGffStruct equipped)
+        {
+            if (!string.IsNullOrWhiteSpace(equipped.GetStringOrNull("TemplateResRef")))
+                return false;
+
+            if ((equipped.GetIntOrNull("BaseItem") ?? 0) != 0 ||
+                equipped.GetIntOrNull("ArmorPart_Torso").HasValue)
+            {
+                return false;
+            }
+
+            return (ItemAppearanceValues.Read(equipped, "ModelPart1") ?? 0) == 0 &&
+                   (ItemAppearanceValues.Read(equipped, "ModelPart2") ?? 0) == 0 &&
+                   (ItemAppearanceValues.Read(equipped, "ModelPart3") ?? 0) == 0;
         }
 
         /// <summary>

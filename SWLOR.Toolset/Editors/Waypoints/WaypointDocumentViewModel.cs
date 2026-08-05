@@ -76,7 +76,8 @@ namespace SWLOR.Toolset.Editors.Waypoints
                 gameCodeIndex,
                 resolveChoices,
                 previews,
-                prompts);
+                prompts,
+                log: log);
 
             UpdateTitle();
         }
@@ -242,6 +243,7 @@ namespace SWLOR.Toolset.Editors.Waypoints
                 return base.OnClose();
 
             _disposed = true;
+            Editor.Dispose();
             _session.Dispose();
             Closed?.Invoke(this);
             return base.OnClose();

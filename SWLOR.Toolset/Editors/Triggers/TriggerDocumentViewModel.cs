@@ -81,7 +81,7 @@ namespace SWLOR.Toolset.Editors.Triggers
 
             Editor = new TriggerEditorViewModel(
                 _session.Document.Root, resRef, isInstance: false, RunEdit, gameCodeIndex, resolveTag,
-                resolveChoices, previews, prompts);
+                resolveChoices, previews, prompts, log);
 
             UpdateTitle();
         }
@@ -241,6 +241,7 @@ namespace SWLOR.Toolset.Editors.Triggers
                 return base.OnClose();
 
             _disposed = true;
+            Editor.Dispose();
             _session.Dispose();
             Closed?.Invoke(this);
             return base.OnClose();

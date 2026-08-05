@@ -96,7 +96,9 @@ namespace SWLOR.Toolset.Editors.Merchants
             PlacedInstances.Sum(instance => instance.OutOfDateItemRecords);
         public string InventorySummary =>
             $"{InventoryItems.Count} item{(InventoryItems.Count == 1 ? string.Empty : "s")} shown";
-        public string CandidateSummary => IsLoadingItemCandidates && ItemCandidates.Count == 0
+        public string CandidateSummary => ItemCandidateError != null
+            ? $"Item search failed: {ItemCandidateError}"
+            : IsLoadingItemCandidates && ItemCandidates.Count == 0
             ? "Loading items..."
             : ItemCandidates.Count == 0
                 ? "No matching items"
@@ -226,6 +228,9 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         [ObservableProperty]
         private bool _isLoadingItemCandidates;
+
+        [ObservableProperty]
+        private string? _itemCandidateError;
 
         [ObservableProperty]
         private int _selectedTabIndex;
@@ -518,6 +523,9 @@ namespace SWLOR.Toolset.Editors.Merchants
 
         partial void OnBuyingRuleSearchTextChanged(string value) => FilterBuyingRules();
 
+        partial void OnItemCandidateErrorChanged(string? value) =>
+            OnPropertyChanged(nameof(CandidateSummary));
+
         partial void OnSelectedTabIndexChanged(int value)
         {
             if (value == 3 && !ArePlacedInstancesLoaded)
@@ -792,6 +800,7 @@ namespace SWLOR.Toolset.Editors.Merchants
             _itemCandidateRequest = new CancellationTokenSource();
             ItemCandidates.Clear();
             SelectedItemCandidate = null;
+            ItemCandidateError = null;
             _itemCandidateOffset = 0;
             _itemCandidatesExhausted = SelectedInventoryCategory == null || _searchItems == null;
             IsLoadingItemCandidates = false;
@@ -824,6 +833,9 @@ namespace SWLOR.Toolset.Editors.Merchants
             }
 
             IsLoadingItemCandidates = true;
+            // A stale failure must not outlive the retry that fixes it - the summary reports the
+            // error ahead of the results, so a successful reload would otherwise still read as failed.
+            ItemCandidateError = null;
             NotifyItemCandidateShapeChanged();
             try
             {
@@ -840,21 +852,29 @@ namespace SWLOR.Toolset.Editors.Merchants
                     return;
                 }
 
-                var published = 0;
                 foreach (var candidate in page.Take(ItemCandidatePageSize))
                 {
                     if (NormalizeStorePanel(candidate.StorePanel) != category.Index)
                         continue;
 
                     ItemCandidates.Add(new MerchantItemCandidateViewModel(candidate));
-                    published++;
                 }
 
-                _itemCandidateOffset += published;
-                _itemCandidatesExhausted = page.Count <= ItemCandidatePageSize || published == 0;
+                // The search index's skip counts rows it served, before the panel re-check above,
+                // so the offset must advance by what was consumed from the page rather than by what
+                // survived: advancing only by the published rows re-serves the filtered tail as
+                // duplicates. The extra row beyond the page size is an unconsumed probe — its
+                // presence alone proves the index has more.
+                _itemCandidateOffset += Math.Min(page.Count, ItemCandidatePageSize);
+                _itemCandidatesExhausted = page.Count <= ItemCandidatePageSize;
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
+            }
+            catch (Exception ex)
+            {
+                if (generation == _itemCandidateRefreshGeneration)
+                    ItemCandidateError = ex.Message;
             }
             finally
             {

@@ -94,7 +94,8 @@ namespace SWLOR.Toolset.Editors.Doors
                 resolveModel,
                 thumbnails: thumbnails,
                 choicePreviews: choicePreviews,
-                prompts: prompts);
+                prompts: prompts,
+                log: log);
             UpdateTitle();
         }
 

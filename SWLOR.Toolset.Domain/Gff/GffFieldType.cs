@@ -69,9 +69,16 @@ namespace SWLOR.Toolset.Domain.Gff
                 or GffFieldType.Float or GffFieldType.Double;
         }
 
+        /// <summary>
+        /// True for types whose value is legitimately text. Void is deliberately excluded even
+        /// though it is stored inside a JSON string token: its payload is arbitrary binary, and
+        /// transcoding it through the UTF-8/Windows-1252 text heuristic can silently corrupt
+        /// bytes. Binary access goes through <see cref="JsonStringCodec.DecodeToBytes"/> /
+        /// <see cref="JsonStringCodec.EncodeBytes"/> instead.
+        /// </summary>
         public static bool IsString(GffFieldType type)
         {
-            return type is GffFieldType.CExoString or GffFieldType.ResRef or GffFieldType.Void;
+            return type is GffFieldType.CExoString or GffFieldType.ResRef;
         }
     }
 }

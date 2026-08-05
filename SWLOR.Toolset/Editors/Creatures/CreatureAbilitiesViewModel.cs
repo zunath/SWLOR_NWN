@@ -49,8 +49,9 @@ namespace SWLOR.Toolset.Editors.Creatures
         // Reflection over every ability and perk definition is a one-time application catalog
         // build, not part of opening a UTC. Keep one shared background task so opening the first
         // creature does not block the UI thread and subsequent editors reuse the same result.
-        private static readonly Lazy<Task<CreatureAbilityCatalogData>> SharedCatalog = new(
-            () => Task.Run(BuildSharedCatalog));
+        private static readonly object SharedCatalogLock = new();
+        private static Lazy<Task<CreatureAbilityCatalogData>> _sharedCatalog =
+            CreateSharedCatalog();
         private readonly CreatureValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<Task<CreatureAbilityCatalogData>>? _catalogLoader;
@@ -131,7 +132,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             }
             else
             {
-                _catalogLoader = catalogLoader ?? (() => SharedCatalog.Value);
+                _catalogLoader = catalogLoader ?? GetSharedCatalogAsync;
             }
         }
 
@@ -239,8 +240,15 @@ namespace SWLOR.Toolset.Editors.Creatures
                 return _loadTask;
 
             IsLoading = true;
-            _loadTask = LoadAsync();
-            return _loadTask;
+            var task = LoadAsync();
+
+            // A loader that completes synchronously (e.g. an already-faulted or already-resolved
+            // Task, as tests use) runs LoadAsync's own finally - which clears _loadTask - before
+            // this assignment executes, so this would otherwise stomp that null right back to a
+            // completed task and make every later EnsureLoadedAsync call believe a load is still
+            // in flight, permanently blocking retry after a failure.
+            _loadTask = task.IsCompleted ? null : task;
+            return task;
         }
 
         private async Task LoadAsync()
@@ -258,9 +266,10 @@ namespace SWLOR.Toolset.Editors.Creatures
                 if (_disposed)
                     return;
 
+                // Left retryable, the same way CreatureEditorViewModel.LoadAppearanceCatalogAsync
+                // leaves _appearanceCatalogLoaded false: a transient failure must not permanently
+                // disable this tab for the life of the editor instance.
                 LoadError = $"Registered abilities could not be loaded: {ex.Message}";
-                _loaded = true;
-                OnPropertyChanged(nameof(IsLoaded));
             }
             finally
             {
@@ -468,6 +477,32 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             var perks = CreaturePerkCatalog.Build();
             return new CreatureAbilityCatalogData(CreatureAbilityCatalog.Build(perks), perks);
+        }
+
+        private static Lazy<Task<CreatureAbilityCatalogData>> CreateSharedCatalog() =>
+            new(() => Task.Run(BuildSharedCatalog));
+
+        /// <summary>
+        /// Returns the shared catalog task, rebuilding it if the previous attempt faulted. Without
+        /// this, one transient failure (e.g. a definition assembly locked mid-build) would poison
+        /// the process-wide <see cref="Lazy{T}"/> and permanently disable the Abilities tab for
+        /// every creature editor opened for the rest of the session.
+        /// </summary>
+        private static Task<CreatureAbilityCatalogData> GetSharedCatalogAsync()
+        {
+            var current = _sharedCatalog;
+            if (current.IsValueCreated && current.Value.IsFaulted)
+            {
+                lock (SharedCatalogLock)
+                {
+                    if (ReferenceEquals(_sharedCatalog, current))
+                        _sharedCatalog = CreateSharedCatalog();
+                }
+
+                current = _sharedCatalog;
+            }
+
+            return current.Value;
         }
 
         private void NotifyMatchStateChanged()

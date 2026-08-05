@@ -49,6 +49,7 @@ namespace SWLOR.Toolset.Editors.Triggers
             {
                 // No "required" here: the label already carries that badge, and having both put two
                 // pieces of text in the same row from opposite ends, which is what collided.
+                IsStatusGood = true;
                 Status = null;
                 return;
             }

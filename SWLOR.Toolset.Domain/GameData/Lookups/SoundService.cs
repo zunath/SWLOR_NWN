@@ -76,8 +76,8 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                 // Prefer the DisplayName override strref if a corpus entry ever populates it,
                 // otherwise fall back to the (confusingly named) Description strref column, and
                 // finally to the resource resref itself if neither strref resolves.
-                var displayNameStrref = table.GetInt(row, "DisplayName");
-                var descriptionStrref = table.GetInt(row, "Description");
+                var displayNameStrref = TryGetInt(table, row, "DisplayName");
+                var descriptionStrref = TryGetInt(table, row, "Description");
 
                 var displayName = DisplayNameResolver.Resolve(tlk, displayNameStrref,
                     DisplayNameResolver.Resolve(tlk, descriptionStrref, resource!));
@@ -86,6 +86,22 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             }
 
             return results;
+        }
+
+        /// <summary>
+        /// Reads a cell as an integer, treating a non-numeric cell as "no value" rather than
+        /// letting <see cref="FormatException"/> propagate and poison the caller's cached lookup.
+        /// </summary>
+        private static int? TryGetInt(TwoDaTable table, int row, string column)
+        {
+            try
+            {
+                return table.GetInt(row, column);
+            }
+            catch (FormatException)
+            {
+                return null;
+            }
         }
     }
 }

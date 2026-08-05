@@ -2999,14 +2999,25 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Checks whether the target is immune to a hard-CC type, either because it still has
-        /// immunity to that specific type or because it recently suffered a different hard-CC
-        /// type and is still within the shared hard-CC immunity window.
+        /// Checks whether the target is immune to a hard-CC type: it still has immunity to that
+        /// specific type, it recently suffered a different hard-CC type and is still within the
+        /// shared post-control immunity window, or a hard-CC status is active on it right now -
+        /// controls do not stack, they queue behind the post-control window.
         /// </summary>
         public static bool HasHardCrowdControlImmunity(uint target, ImmunityType immunity)
         {
             return HasTemporaryImmunity(target, immunity) ||
-                   HasTemporaryImmunity(target, ImmunityType.HardCrowdControl);
+                   HasTemporaryImmunity(target, ImmunityType.HardCrowdControl) ||
+                   HasActiveHardCrowdControlStatus(target);
+        }
+
+        private static bool HasActiveHardCrowdControlStatus(uint target)
+        {
+            return StatusEffect.GetCreatureStatusEffects(target)
+                .GetAllEffects()
+                .Any(effect =>
+                    (effect.Categories & StatusEffectCategory.HardCrowdControl) ==
+                    StatusEffectCategory.HardCrowdControl);
         }
 
         private static string GetTemporaryImmunityEffectTag(ImmunityType immunity)

@@ -11,7 +11,7 @@ using SWLOR.Toolset.Editors.Behaviors;
 namespace SWLOR.Toolset.Editors.Sounds
 {
     /// <summary>The behavior editor shared by ambient-sound blueprints and area placements.</summary>
-    public sealed partial class SoundEditorViewModel : ObservableObject
+    public sealed partial class SoundEditorViewModel : ObservableObject, IDisposable
     {
         private readonly SoundValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
@@ -19,7 +19,11 @@ namespace SWLOR.Toolset.Editors.Sounds
         private readonly IReadOnlyList<string> _audioResources;
         private readonly Services.SoundPreviewService? _preview;
         private readonly IGameCodeIndex? _gameCodeIndex;
+
+        /// <summary>Asks before a switch throws something away. Null in tests, which never lose data.</summary>
+        private readonly Services.IEditorPromptService? _prompts;
         private readonly bool _isInstance;
+        private bool _disposed;
 
         public ObservableCollection<BehaviorListItemViewModel> BehaviorList { get; } = new();
 
@@ -56,6 +60,9 @@ namespace SWLOR.Toolset.Editors.Sounds
 
         public event Action? ValueChanged;
 
+        private readonly Workspace.OutputLogService? _log;
+
+
         public SoundEditorViewModel(
             JsonGffStruct sound,
             string headerOwner,
@@ -64,9 +71,12 @@ namespace SWLOR.Toolset.Editors.Sounds
             IGameCodeIndex? gameCodeIndex = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             IReadOnlyList<string>? audioResources = null,
-            Services.SoundPreviewService? preview = null)
+            Services.SoundPreviewService? preview = null,
+            Services.IEditorPromptService? prompts = null,
+            Workspace.OutputLogService? log = null)
         {
             ArgumentNullException.ThrowIfNull(sound);
+            _log = log;
 
             _store = new SoundValueStore(sound);
             _runEdit = runEdit;
@@ -74,6 +84,7 @@ namespace SWLOR.Toolset.Editors.Sounds
             _resolveChoices = resolveChoices;
             _audioResources = audioResources ?? Array.Empty<string>();
             _preview = preview;
+            _prompts = prompts;
             _isInstance = isInstance;
             HeaderOwner = headerOwner;
 
@@ -89,7 +100,42 @@ namespace SWLOR.Toolset.Editors.Sounds
             if (descriptor is not SoundBehavior behavior || behavior.Id == Behavior.Id)
                 return;
 
+            _ = ChooseBehaviorGuardedAsync(behavior);
+        }
+
+        /// <summary>
+        /// Observes the command's fire-and-forget switch. A fault would otherwise vanish as an
+        /// unobserved task while the rail stayed highlighting a behavior the document never got, so
+        /// it is handled the way a declined prompt is: put the highlight back on what the sound
+        /// actually is.
+        /// </summary>
+        private async Task ChooseBehaviorGuardedAsync(SoundBehavior behavior)
+        {
+            try
+            {
+                await ChooseBehaviorAsync(behavior).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _log?.AppendLine(
+                    $"Behavior switch to '{behavior.DisplayName}' failed: {ex.Message}");
+                BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);
+            }
+        }
+
+        /// <summary>
+        /// The switch itself, with the confirmation in front of it when something real is being
+        /// discarded — the same flow as the door, trigger and waypoint editors, which asked while
+        /// this editor cleared silently.
+        /// </summary>
+        public async Task ChooseBehaviorAsync(SoundBehavior behavior)
+        {
+            ArgumentNullException.ThrowIfNull(behavior);
+
             var previous = Behavior;
+            if (behavior.Id == previous.Id)
+                return;
+
             var sounds = _store.GetSounds().ToList();
             var keptSounds = behavior.IsLoop ? sounds.Take(1).ToList() : sounds;
             var droppedSounds = behavior.IsLoop ? sounds.Skip(1).ToList() : new List<string>();
@@ -102,6 +148,52 @@ namespace SWLOR.Toolset.Editors.Sounds
             // of it either, which is what makes the clear pure loss rather than a swap.
             var entersRawEditing = behavior.AllowsVariables;
 
+            // Mirrors SoundValueStore.Clear: a field the incoming preset also owns as an editable
+            // slot is kept rather than cleared, so it must not be named as a loss. Leaving Custom
+            // keeps nothing.
+            var keptByIncoming = new HashSet<string>(
+                behavior.Fields.Select(field => field.Name), StringComparer.Ordinal);
+            var losses = entersRawEditing
+                ? Array.Empty<string>()
+                : BehaviorSwitchLosses.Describe(
+                    _store,
+                    previous.Manages,
+                    previous.AllowsVariables
+                        ? previous.Fields
+                        : previous.Fields.Where(field => !keptByIncoming.Contains(field.Name)),
+                    behavior.Manages);
+
+            // Dropped sound entries are as much a loss as cleared fields: a loop switch that
+            // truncates the playlist must ask first even when no field is cleared.
+            var clauses = new List<string>();
+            if (losses.Count > 0)
+            {
+                clauses.Add(
+                    $"clears {Describe(losses)}, which {(losses.Count == 1 ? "is" : "are")} " +
+                    $"not part of {behavior.DisplayName}");
+            }
+            if (droppedSounds.Count > 0)
+            {
+                clauses.Add(
+                    $"drops {Describe(droppedSounds)} because a loop plays a single sound");
+            }
+
+            if (clauses.Count > 0 && _prompts != null)
+            {
+                var confirmed = await _prompts.ConfirmDestructiveAsync(
+                    $"Change behavior to {behavior.DisplayName}?",
+                    $"This {string.Join(" and ", clauses)}. Undo will put everything back " +
+                    "until the sound is saved.",
+                    "Change behavior").ConfigureAwait(true);
+
+                if (!confirmed)
+                {
+                    // Put the rail's highlight back on what the sound actually is.
+                    BehaviorListItemViewModel.Select(BehaviorList, previous.Id);
+                    return;
+                }
+            }
+
             var applied = RunEdit($"Set behavior to {behavior.DisplayName}", () =>
             {
                 if (!entersRawEditing)
@@ -113,7 +205,10 @@ namespace SWLOR.Toolset.Editors.Sounds
                 _store.ReplaceSounds(keptSounds);
             });
             if (!applied)
+            {
+                BehaviorListItemViewModel.Select(BehaviorList, previous.Id);
                 return;
+            }
 
             Behavior = behavior;
             BehaviorChangeNotice = droppedSounds.Count == 0
@@ -121,6 +216,16 @@ namespace SWLOR.Toolset.Editors.Sounds
                 : $"Kept {keptSounds[0]}; dropped {string.Join(", ", droppedSounds)} because a loop uses one sound.";
             RebuildBehaviorSection();
             ReloadRowsFromDocument();
+        }
+
+        /// <summary>Names the discarded slots in prose, capped so the prompt stays readable.</summary>
+        private static string Describe(IReadOnlyList<string> losses)
+        {
+            const int shown = 6;
+            var named = string.Join(", ", losses.Take(shown));
+            return losses.Count <= shown
+                ? named
+                : $"{named} and {losses.Count - shown} more";
         }
 
         public void ReloadFromDocument()
@@ -227,6 +332,16 @@ namespace SWLOR.Toolset.Editors.Sounds
                 : $"{Behavior.DisplayName} still needs {string.Join(", ", missing)}.";
             OnPropertyChanged(nameof(Incomplete));
             OnPropertyChanged(nameof(IsIncomplete));
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            _disposed = true;
+            foreach (var row in BasicRows.Concat(BehaviorRows))
+                row.Dispose();
         }
     }
 }

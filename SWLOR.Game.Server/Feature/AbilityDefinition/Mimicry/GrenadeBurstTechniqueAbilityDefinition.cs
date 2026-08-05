@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Fire,
                 VisualEffect.Vfx_Imp_Flame_M,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Fire,
-                maxRange: 10f)
+                maxRange: 10f,
+                centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)

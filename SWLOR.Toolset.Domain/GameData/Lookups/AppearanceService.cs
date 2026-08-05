@@ -91,7 +91,16 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     continue;
                 }
 
-                var strref = table.GetInt(row, definition.StrRefColumn!);
+                int? strref = null;
+                try
+                {
+                    strref = table.GetInt(row, definition.StrRefColumn!);
+                }
+                catch (FormatException)
+                {
+                    // A non-numeric cell in the strref column just means no localized text here.
+                }
+
                 var displayName = DisplayNameResolver.Resolve(tlk, strref, label!);
 
                 results.Add(new AppearanceRow(

@@ -65,9 +65,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureGraceSeconds, "6");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureReadyDurationSeconds, "9");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureWeaponAbilityDamageBonus, "15");
-        AssertSourceStat("RiflePerkDefinition.cs", StatType.RepeatedTargetDamageBonusPerHit, "3");
-        AssertSourceStat("RiflePerkDefinition.cs", StatType.RepeatedTargetDamageBonusMax, "15");
-        AssertSourceStat("RiflePerkDefinition.cs", StatType.RepeatedTargetDamageDurationSeconds, "30");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedRepeatedTargetDamageBonusPerHit, "3");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedRepeatedTargetDamageBonusMax, "15");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedRepeatedTargetDamageDurationSeconds, "30");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackChance, "15");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackDurationSeconds, "30");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackEvasionPenaltyPercent, "5");
@@ -144,7 +144,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionPercentAdjustmentSkillType, "(int)SkillType.Pistol");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionPercentAdjustment, "12");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionDurationSeconds, "30");
-        AssertSourceStat("PistolPerkDefinition.cs", StatType.AutoAttackCycleCriticalRateRequiredCount, "4");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAutoAttackCycleCriticalRateRequiredCount, "4");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.CriticalDamageHighHPTargetPercentAdjustment, "15");
 
         AssertSourceStat("SpearPerkDefinition.cs", StatType.CostlyAbilityDamageBonus, "14");

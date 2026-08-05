@@ -99,7 +99,16 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     continue;
                 }
 
-                var strref = table.GetInt(row, "StringRefGame");
+                int? strref = null;
+                try
+                {
+                    strref = table.GetInt(row, "StringRefGame");
+                }
+                catch (FormatException)
+                {
+                    // A non-numeric cell in the strref column just means no localized text here.
+                }
+
                 var displayName = DisplayNameResolver.Resolve(tlk, strref, label!);
 
                 results.Add(new DoorTypeRow(
@@ -135,7 +144,7 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     continue;
                 }
 
-                var nameStrRef = table.GetInt(row, "Name") ?? table.GetInt(row, "StrRef");
+                var nameStrRef = TryGetInt(table, row, "Name") ?? TryGetInt(table, row, "StrRef");
                 results.Add(new GenericDoorRow(
                     row,
                     label!,
@@ -144,6 +153,22 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             }
 
             return results;
+        }
+
+        /// <summary>
+        /// Reads a cell as an integer, treating a non-numeric cell as "no value" rather than
+        /// letting <see cref="FormatException"/> propagate and poison the caller's cached lookup.
+        /// </summary>
+        private static int? TryGetInt(TwoDaTable table, int row, string column)
+        {
+            try
+            {
+                return table.GetInt(row, column);
+            }
+            catch (FormatException)
+            {
+                return null;
+            }
         }
     }
 }

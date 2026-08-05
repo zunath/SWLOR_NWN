@@ -210,7 +210,8 @@ namespace SWLOR.Toolset.Editors.Items
             ResourceIndex? resourceIndex = null,
             ArmorDyeSwatchService? armorDyeSwatches = null,
             ArmorPartCatalog? armorPartModels = null,
-            Sources.ObjectSourceSectionViewModel? placementSource = null)
+            Sources.ObjectSourceSectionViewModel? placementSource = null,
+            Workspace.OutputLogService? log = null)
         {
             ArgumentNullException.ThrowIfNull(item);
 
@@ -237,7 +238,7 @@ namespace SWLOR.Toolset.Editors.Items
                 costTables);
             Stats.Rebuild(Family, Role.Id);
             Requirements = new ItemRequirementsSectionViewModel(_store, RunEdit, null, resolveChoices, costTables);
-            Roles = new ItemRoleSectionViewModel(_store, RunEdit, resolveChoices, prompts, OnRoleChosen);
+            Roles = new ItemRoleSectionViewModel(_store, RunEdit, resolveChoices, prompts, OnRoleChosen, log);
             Roles.Rebuild(Family, Role, FamilyDisplay);
             if (baseItemIcons != null && textureExists != null)
             {

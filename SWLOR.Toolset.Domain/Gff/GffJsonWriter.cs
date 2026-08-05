@@ -21,6 +21,15 @@ namespace SWLOR.Toolset.Domain.Gff
             writer.Ascii("\"__data_type\": ");
             writer.Raw(JsonStringCodec.Encode(document.DataType));
 
+            if (document.Root.RawStructId != null)
+            {
+                writer.Ascii(",");
+                writer.NewLine();
+                writer.Indent(1);
+                writer.Ascii("\"__struct_id\": ");
+                writer.Raw(document.Root.RawStructId);
+            }
+
             foreach (var (name, field) in document.Root.Entries)
             {
                 writer.Ascii(",");

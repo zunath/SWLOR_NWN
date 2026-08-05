@@ -819,6 +819,40 @@ namespace SWLOR.Toolset.Editors
             });
         }
 
+        /// <summary>
+        /// Whether the Advanced panel holds edits not yet written to the current line. The fields
+        /// commit on LostFocus, which a keyboard-shortcut save never fires — so the save path asks
+        /// this and flushes, instead of silently discarding what was typed.
+        /// </summary>
+        private bool AdvancedDraftDiffers()
+        {
+            if (_currentLine == null)
+                return false;
+
+            var displayedScript = DlgDocument.IsActionDispatcher(_currentLine.Script)
+                ? string.Empty
+                : _currentLine.Script;
+            return _currentLine.Speaker != AdvancedSpeaker
+                   || _currentLine.Sound != AdvancedSound
+                   || _currentLine.Animation != ClampedAnimation()
+                   || _currentLine.Comment != AdvancedComment
+                   || displayedScript != AdvancedScript;
+        }
+
+        /// <summary>
+        /// The Advanced panel's animation value bounded to its uint storage. The NumericUpDown
+        /// constrains normal input, but the property itself is settable to anything, and this runs
+        /// on the save path before its try block - it must never throw.
+        /// </summary>
+        private uint ClampedAnimation()
+        {
+            return AdvancedAnimation <= 0
+                ? 0u
+                : AdvancedAnimation >= uint.MaxValue
+                    ? uint.MaxValue
+                    : decimal.ToUInt32(AdvancedAnimation);
+        }
+
         [RelayCommand]
         private void CommitAdvanced()
         {
@@ -830,7 +864,7 @@ namespace SWLOR.Toolset.Editors
             {
                 line.Speaker = AdvancedSpeaker;
                 line.Sound = AdvancedSound;
-                line.Animation = decimal.ToUInt32(Math.Max(0, AdvancedAnimation));
+                line.Animation = ClampedAnimation();
                 line.Comment = AdvancedComment;
                 if (line.Actions.Count == 0)
                 {
@@ -1904,7 +1938,23 @@ namespace SWLOR.Toolset.Editors
 
         public async Task<bool> TrySaveAsync()
         {
+            // Captured ahead of CommitLine: when the line text is also dirty, CommitLine's
+            // history refresh rewrites the Advanced fields from the still-old node values, and an
+            // un-snapshotted Advanced draft would compare clean and be silently dropped.
+            var advancedDraft = AdvancedDraftDiffers()
+                ? (Speaker: AdvancedSpeaker,
+                   Sound: AdvancedSound,
+                   Animation: AdvancedAnimation,
+                   Comment: AdvancedComment,
+                   Script: AdvancedScript)
+                : ((string, string, decimal, string, string)?)null;
+
             CommitLine();
+            if (advancedDraft is { } draft)
+            {
+                (AdvancedSpeaker, AdvancedSound, AdvancedAnimation, AdvancedComment, AdvancedScript) = draft;
+                CommitAdvanced();
+            }
             if (IsMerchant && MerchantDraftDiffers())
                 RunEdit("Finish merchant dialogue", EnsureMerchantStructure);
 

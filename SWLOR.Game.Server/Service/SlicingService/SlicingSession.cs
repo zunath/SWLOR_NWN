@@ -411,7 +411,15 @@ namespace SWLOR.Game.Server.Service.SlicingService
         [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void OnPlayerDeath()
         {
-            Abort(GetLastPlayerDied());
+            var player = GetLastPlayerDied();
+            Abort(player);
+
+            // Abort() only tears down the session bookkeeping; it never closes the NUI window.
+            // Gui.TogglePlayerWindow is a strict toggle, so leaving the window open here would
+            // make the player's next lockbox/terminal use open a fresh session and then
+            // immediately close it again via the stale window's OnWindowClosed -> Abort.
+            if (Gui.IsWindowOpen(player, GuiWindowType.Slicing))
+                Gui.CloseWindow(player, GuiWindowType.Slicing, player);
         }
 
         private static string ValidateAction(uint player, out ActiveSlicingSession session)
@@ -472,11 +480,19 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 }
 
                 _sessions.Remove(owner);
-                if (GetLocalInt(target, CommittedVariable) == 1 && ResolveAbandonedFailure(target, source, tier))
-                {
-                    error = "The abandoned intrusion destabilizes and destroys the target.";
-                    return false;
-                }
+            }
+
+            // TryStart already verified this player has no live in-memory session before calling
+            // TryClaim, so any existing owner record here (whether it's this player or another)
+            // is stale. Resolve a stale committed attempt the same way regardless of who owned it,
+            // so a same-player reclaim (e.g. after a server restart wiped the session) can't dodge
+            // the abandonment penalty on a committed attempt.
+            if (!string.IsNullOrWhiteSpace(owner) &&
+                GetLocalInt(target, CommittedVariable) == 1 &&
+                ResolveAbandonedFailure(target, source, tier))
+            {
+                error = "The abandoned intrusion destabilizes and destroys the target.";
+                return false;
             }
 
             SetLocalString(target, OwnerVariable, playerId);
@@ -563,7 +579,6 @@ namespace SWLOR.Game.Server.Service.SlicingService
 
         private static void Complete(ActiveSlicingSession session)
         {
-            SetLocalInt(session.Target, "SLICING_COMPLETE", 1);
             GrantXP(session.Player, session.Tier);
 
             var reward = SlicingReward.Roll(

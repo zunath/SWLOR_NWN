@@ -29,6 +29,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private readonly ChoicePreviewService? _choicePreviews;
         private readonly Func<BehaviorChoice, string?>? _previewAudio;
         private readonly Func<IReadOnlyList<AppearanceOption>>? _appearanceOptionsLoader;
+        private readonly OutputLogService? _log;
         private readonly Dictionary<string, IReadOnlyList<BehaviorRowViewModel>> _roleRowCache =
             new(StringComparer.Ordinal);
         private readonly object _choiceLoadSync = new();
@@ -170,7 +171,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<string, int, int, int,
                 Task<IReadOnlyList<CreatureEquipmentChoice>>>? equipmentSearch = null,
             Func<IReadOnlyList<AppearanceOption>>? appearanceOptionsLoader = null,
-            Func<int, string?>? abilityIcon = null)
+            Func<int, string?>? abilityIcon = null,
+            OutputLogService? log = null)
         {
             _store = new CreatureValueStore(creature);
             _runEdit = runEdit;
@@ -180,6 +182,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             _choicePreviews = choicePreviews;
             _previewAudio = previewAudio;
             _appearanceOptionsLoader = appearanceOptionsLoader;
+            _log = log;
             HeaderOwner = headerOwner;
             ResourceIndex = resourceIndex;
 
@@ -407,11 +410,19 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         private async Task LoadSelectedBehaviorChoicesAsync()
         {
-            foreach (var row in RoleRows.Where(row => row.IsInlineSearchChoice))
+            try
             {
-                await row.ActivateChoicesAsync().ConfigureAwait(true);
-                if (_disposed)
-                    return;
+                foreach (var row in RoleRows.Where(row => row.IsInlineSearchChoice))
+                {
+                    await row.ActivateChoicesAsync().ConfigureAwait(true);
+                    if (_disposed)
+                        return;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!_disposed)
+                    _log?.AppendLine($"Could not load behavior choices for '{SelectedRole.DisplayName}': {ex.Message}");
             }
         }
 
@@ -912,6 +923,11 @@ namespace SWLOR.Toolset.Editors.Creatures
                     .Select(row => row.ActivateChoicesAsync())
                     .ToArray();
                 await Task.WhenAll(activationTasks).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                if (!_disposed)
+                    _log?.AppendLine($"Could not load appearance details: {ex.Message}");
             }
             finally
             {

@@ -47,15 +47,34 @@ namespace SWLOR.Toolset.Archives
             if (_viewModel == null)
                 return;
 
-            var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            string? path;
+            try
             {
-                Title = "Select ERF file",
-                AllowMultiple = false,
-                FileTypeFilter = new[] { ErfFileType }
-            }).ConfigureAwait(true);
-            var path = files.FirstOrDefault()?.TryGetLocalPath();
-            if (path != null)
+                var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+                {
+                    Title = "Select ERF file",
+                    AllowMultiple = false,
+                    FileTypeFilter = new[] { ErfFileType }
+                }).ConfigureAwait(true);
+                path = files.FirstOrDefault()?.TryGetLocalPath();
+            }
+            catch (Exception ex)
+            {
+                _viewModel.StatusText = $"Could not open the file picker: {ex.GetBaseException().Message}";
+                return;
+            }
+
+            if (path == null)
+                return;
+
+            try
+            {
                 await _viewModel.LoadArchiveAsync(path).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _viewModel.StatusText = $"Could not load '{path}': {ex.GetBaseException().Message}";
+            }
         }
 
         private async void OnOpenRecentClicked(object? sender, RoutedEventArgs e)
@@ -103,17 +122,36 @@ namespace SWLOR.Toolset.Archives
             if (_viewModel == null)
                 return;
 
-            var destination = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            string? path;
+            try
             {
-                Title = "Save ERF As",
-                SuggestedFileName = "swlor-assets.erf",
-                DefaultExtension = "erf",
-                ShowOverwritePrompt = true,
-                FileTypeChoices = new[] { ErfFileType }
-            }).ConfigureAwait(true);
-            var path = destination?.TryGetLocalPath();
-            if (path != null)
+                var destination = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+                {
+                    Title = "Save ERF As",
+                    SuggestedFileName = "swlor-assets.erf",
+                    DefaultExtension = "erf",
+                    ShowOverwritePrompt = true,
+                    FileTypeChoices = new[] { ErfFileType }
+                }).ConfigureAwait(true);
+                path = destination?.TryGetLocalPath();
+            }
+            catch (Exception ex)
+            {
+                _viewModel.StatusText = $"Could not open the file picker: {ex.GetBaseException().Message}";
+                return;
+            }
+
+            if (path == null)
+                return;
+
+            try
+            {
                 await _viewModel.ExportAsync(path).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _viewModel.StatusText = $"Could not export to '{path}': {ex.GetBaseException().Message}";
+            }
         }
 
         private void OnClosing(object? sender, WindowClosingEventArgs e)

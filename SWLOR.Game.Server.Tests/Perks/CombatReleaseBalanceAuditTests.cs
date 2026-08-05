@@ -163,7 +163,10 @@ public class CombatReleaseBalanceAuditTests
         StatType.DamageTakenNextSkillAbilityDamageBonus,
         StatType.CostlyAbilityDamageBonus,
         StatType.SameTargetPressureWeaponAbilityDamageBonus,
-        StatType.AreaAbilityFragmentationDamage
+        StatType.AreaAbilityFragmentationDamage,
+        StatType.RepeatedTargetDamageBonusPerHit,
+        StatType.MeleeRepeatedTargetDamageBonusPerHit,
+        StatType.RangedRepeatedTargetDamageBonusPerHit
     };
 
     private static readonly StatType[] CriticalRateStats =
@@ -186,7 +189,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.LowHPCriticalRatePercentAdjustment,
         StatType.StatusAppliedNextSkillAbilityCriticalRatePercentAdjustment,
         StatType.TargetStatusCriticalRatePercentAdjustment,
-        StatType.AutoAttackCycleCriticalRatePercentAdjustment,
+        StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment,
         StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment,
         StatType.BackAttackCriticalRatePercentAdjustment
     };

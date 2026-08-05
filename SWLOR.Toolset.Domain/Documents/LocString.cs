@@ -1,3 +1,4 @@
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Domain.Documents
@@ -56,12 +57,17 @@ namespace SWLOR.Toolset.Domain.Documents
         {
             ArgumentNullException.ThrowIfNull(source);
 
+            EditScope.EnsureMutationAllowed();
+            var oldLocStringId = _field.RawLocStringId;
+            var oldEntries = _field.LocStringEntries;
             _field.RawLocStringId = source._field.RawLocStringId?.ToArray();
             _field.LocStringEntries = source._field.LocStringEntries?
                 .Select(entry => new LocStringEntry(
                     entry.LanguageKey,
                     entry.RawText.ToArray()))
                 .ToList();
+            EditScope.Capture(new LocStringReplaceEdit(
+                _field, oldLocStringId, oldEntries, _field.RawLocStringId, _field.LocStringEntries));
         }
 
         private LocStringEntry? FindEntry(string languageKey)

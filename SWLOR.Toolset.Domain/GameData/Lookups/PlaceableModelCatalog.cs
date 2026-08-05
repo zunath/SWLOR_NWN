@@ -101,12 +101,21 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             var definition = TwoDaLookupTables.PlaceableModel;
             var requiredColumns = definition.RequiredColumns!;
             var modelColumn = requiredColumns.Single();
-            if (!twoDa.TryGetTable(definition.TableName, out var table) ||
-                table == null ||
-                !table.HasColumn(definition.LabelColumn) ||
+
+            // A missing or column-less table is a build failure, not an empty catalog: the caller
+            // records it on BuildFailure so the editor can say why the grid is empty instead of
+            // presenting a healthy-looking catalog with nothing in it.
+            if (!twoDa.TryGetTable(definition.TableName, out var table) || table == null)
+            {
+                throw new InvalidOperationException(
+                    $"2DA table '{definition.TableName}' could not be read.");
+            }
+
+            if (!table.HasColumn(definition.LabelColumn) ||
                 requiredColumns.Any(column => !table.HasColumn(column)))
             {
-                return Array.Empty<PlaceableModelRow>();
+                throw new InvalidOperationException(
+                    $"2DA table '{definition.TableName}' is missing required columns.");
             }
 
             var rows = new List<PlaceableModelRow>();

@@ -1096,10 +1096,14 @@ namespace SWLOR.Toolset.Shell.Panels
             if (!SaveCategories())
             {
                 Refresh();
+                // Refresh() rebuilds every row, so the pre-rebuild SelectedRow is now orphaned. Rename
+                // mutates the CategoryFolder in place, so the same reference finds its rebuilt row.
+                SelectedRow = _allRows.FirstOrDefault(row => ReferenceEquals(row.Folder, folder));
                 return;
             }
 
             Refresh();
+            SelectedRow = _allRows.FirstOrDefault(row => ReferenceEquals(row.Folder, folder));
             StatusMessage = $"Renamed '{previous}' to '{folder.Name}'.";
         }
 
@@ -1229,6 +1233,9 @@ namespace SWLOR.Toolset.Shell.Panels
 
             SaveCategories();
             Refresh();
+            // Refresh() rebuilds every row, so the pre-rebuild SelectedRow is now orphaned. Pinning
+            // does not replace the CategoryFolder, so the same reference finds its rebuilt row.
+            SelectedRow = _allRows.FirstOrDefault(row => ReferenceEquals(row.Folder, folder));
         }
 
         // ----- tree assembly -----

@@ -631,6 +631,57 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task SaveFlushesUncommittedAdvancedEdits()
+        {
+            ReplaceWithCleanConversation();
+            using var editor = new Disposable(Open());
+
+            // Typed into the Advanced panel, then saved by keyboard shortcut: no LostFocus ever
+            // fires, so nothing but the save path itself can commit these fields.
+            editor.Value.AdvancedComment = "Typed just before Ctrl+S.";
+
+            (await editor.Value.TrySaveAsync()).Should().BeTrue();
+
+            DlgDocument.Load(_workingCopy).Openings[0].Target.Comment
+                .Should().Be("Typed just before Ctrl+S.",
+                    "a save must flush Advanced-panel edits that never lost focus");
+        }
+
+        [Test]
+        public async Task SaveKeepsAdvancedEditsWhenTheLineTextIsAlsoDirty()
+        {
+            ReplaceWithCleanConversation();
+            using var editor = new Disposable(Open());
+
+            // Both halves pending: CommitLine's history refresh used to rewrite the Advanced
+            // fields from the old node before the save could commit them.
+            editor.Value.LineText = "Rewritten line.";
+            editor.Value.AdvancedComment = "Typed alongside the line edit.";
+
+            (await editor.Value.TrySaveAsync()).Should().BeTrue();
+
+            var saved = DlgDocument.Load(_workingCopy).Openings[0].Target;
+            saved.Text.Should().Be("Rewritten line.");
+            saved.Comment.Should().Be("Typed alongside the line edit.",
+                "a save must flush the Advanced draft even when the line text also changed");
+        }
+
+        [Test]
+        public async Task SaveClampsAnOutOfRangeAdvancedAnimationInsteadOfThrowing()
+        {
+            ReplaceWithCleanConversation();
+            using var editor = new Disposable(Open());
+
+            // The NumericUpDown bounds interactive input, but the property is settable to anything;
+            // the save path converts it before entering its try block and must never throw.
+            editor.Value.AdvancedAnimation = (decimal)uint.MaxValue + 1;
+
+            (await editor.Value.TrySaveAsync()).Should().BeTrue();
+
+            DlgDocument.Load(_workingCopy).Openings[0].Target.Animation.Should().Be(uint.MaxValue);
+        }
+
+        [Test]
         public void QuestOutcomesDoNotCreateHiddenExecutionMetadata()
         {
             using var editor = new Disposable(Open());

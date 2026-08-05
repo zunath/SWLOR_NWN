@@ -46,12 +46,18 @@ namespace SWLOR.Toolset.Editors.Behaviors
         /// <summary>The chosen option, shown large enough to actually judge.</summary>
         public const int PreviewWidth = 384;
 
+        /// <summary>
+        /// Large enough that a full pass over the biggest gallery (portraits, at both widths) mostly
+        /// stays warm, while bounding what a long session can pin — this service lives for the whole
+        /// process, so an unbounded dictionary here would only ever grow.
+        /// </summary>
+        private const int MemoryCacheCapacity = 1024;
+
         private readonly ResourceIndex? _resources;
         private readonly ThumbnailService? _models;
         private readonly Placeables.VfxPreviewService? _remoteImages;
         private readonly SemaphoreSlim _decodeSlots = new(4);
-        private readonly object _syncRoot = new();
-        private readonly Dictionary<string, Bitmap?> _cache = new(StringComparer.OrdinalIgnoreCase);
+        private readonly BitmapMemoryCache _cache = new(MemoryCacheCapacity);
 
         public ChoicePreviewService(
             ResourceIndex? resources,
@@ -161,11 +167,8 @@ namespace SWLOR.Toolset.Editors.Behaviors
                 return null;
 
             var key = CacheKey(resRef, maxWidth, cropMode);
-            lock (_syncRoot)
-            {
-                if (_cache.TryGetValue(key, out var cached))
-                    return cached;
-            }
+            if (_cache.TryGet(key, out var cached))
+                return cached;
 
             // Hundreds of item-part tiles can be published at once. Queue only a small number of
             // decodes concurrently so the editor remains responsive instead of flooding the thread
@@ -185,8 +188,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
 
             var bitmap = scaled == null ? null : await ToBitmapAsync(scaled).ConfigureAwait(true);
 
-            lock (_syncRoot)
-                _cache[key] = bitmap;
+            _cache.Set(key, bitmap);
 
             return bitmap;
         }
@@ -208,8 +210,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
             if (string.IsNullOrWhiteSpace(resRef))
                 return null;
 
-            lock (_syncRoot)
-                return _cache.GetValueOrDefault(CacheKey(resRef, maxWidth, cropMode));
+            return _cache.TryGet(CacheKey(resRef, maxWidth, cropMode), out var cached) ? cached : null;
         }
 
         private static ImageCropMode CropMode(BehaviorChoice choice, bool cropTransparentCanvas) =>

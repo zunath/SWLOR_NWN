@@ -79,7 +79,9 @@ namespace SWLOR.Toolset.Editors.Sounds
                 gameCodeIndex,
                 resolveChoices,
                 audioResources,
-                preview);
+                preview,
+                prompts,
+                log);
             UpdateTitle();
         }
 
@@ -236,6 +238,7 @@ namespace SWLOR.Toolset.Editors.Sounds
                 return base.OnClose();
 
             _disposed = true;
+            Editor.Dispose();
             _session.Dispose();
             Closed?.Invoke(this);
             return base.OnClose();

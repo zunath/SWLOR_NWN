@@ -96,6 +96,10 @@ namespace SWLOR.Toolset.Domain.Editors
 
         public static void SetFloat(JsonGffDocument document, FieldDescriptor descriptor, double value)
         {
+            // Validate the value as it will be stored: narrowing a large finite double to a
+            // 32-bit float can itself overflow to infinity.
+            JsonGffField.ValidateFiniteValue(
+                descriptor.FieldType == GffFieldType.Float ? (float)value : value);
             var field = document.Root.GetOrNull(descriptor.FieldName);
             if (field == null)
             {

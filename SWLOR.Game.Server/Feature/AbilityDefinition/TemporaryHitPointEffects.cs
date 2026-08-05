@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
     public static class TemporaryHitPointEffects
     {
         private const string EffectTagPrefix = "TEMPORARY_HP_";
-        private const string BarrierVisualEffectTag = "TEMPORARY_HP_BARRIER_VFX";
+        private const string BarrierVisualEffectTagSuffix = "_BARRIER_VFX";
 
         public static void ApplyFlatPlusPercent(
             uint target,
@@ -29,11 +29,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (string.IsNullOrWhiteSpace(effectKey))
                 throw new ArgumentException("Temporary HP effects must declare the ability key they stack under.", nameof(effectKey));
 
-            if (amount <= 0)
-                return;
-
             var effectTag = EffectTagPrefix + effectKey;
             RemoveEffectByTag(target, effectTag);
+
+            if (amount <= 0)
+                return;
 
             ApplyEffectToObject(
                 DurationType.Temporary,
@@ -51,12 +51,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             ApplyFlat(target, effectKey, amount, durationSeconds);
 
+            // The barrier visual is scoped by the same key as the HP pool: recasting the same
+            // ability refreshes its own glow, while other abilities' barrier visuals persist
+            // alongside their still-active pools.
+            var visualEffectTag = EffectTagPrefix + effectKey + BarrierVisualEffectTagSuffix;
+            RemoveEffectByTag(target, visualEffectTag);
+
             if (amount <= 0 || durationSeconds <= 0f || barrierVisualEffect == VisualEffect.None)
                 return;
 
-            RemoveEffectByTag(target, BarrierVisualEffectTag);
-
-            var visualEffect = TagEffect(EffectVisualEffect(barrierVisualEffect), BarrierVisualEffectTag);
+            var visualEffect = TagEffect(EffectVisualEffect(barrierVisualEffect), visualEffectTag);
             ApplyEffectToObject(DurationType.Temporary, visualEffect, target, durationSeconds);
         }
     }

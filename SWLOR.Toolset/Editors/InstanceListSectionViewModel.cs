@@ -339,8 +339,10 @@ namespace SWLOR.Toolset.Editors
             {
                 DoorEditor?.Dispose();
                 DoorEditor = null;
+                WaypointEditor?.Dispose();
                 WaypointEditor = null;
                 VarTableSection = null;
+                SoundEditor?.Dispose();
                 SoundEditor = null;
                 return;
             }
@@ -349,7 +351,9 @@ namespace SWLOR.Toolset.Editors
 
             DoorEditor?.Dispose();
             DoorEditor = null;
+            WaypointEditor?.Dispose();
             WaypointEditor = null;
+            SoundEditor?.Dispose();
             SoundEditor = null;
 
             if (UsesDoorEditor)
@@ -640,7 +644,10 @@ namespace SWLOR.Toolset.Editors
         {
             DoorEditor?.Dispose();
             DoorEditor = null;
+            WaypointEditor?.Dispose();
             WaypointEditor = null;
+            SoundEditor?.Dispose();
+            SoundEditor = null;
             ActivePaletteBrowser = null;
         }
 

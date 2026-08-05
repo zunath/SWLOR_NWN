@@ -585,7 +585,12 @@ namespace SWLOR.Game.Server.Native
                 damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
             }
             damage = Combat.ApplySideAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
-            damage = Combat.ApplyBackAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
+            if (isLandedAttack)
+            {
+                // Unlike its pure side-attack sibling, the back-attack modifier also consumes
+                // Ghost Protocol's primed Exposed rider - a discarded swing must not burn it.
+                damage = Combat.ApplyBackAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
+            }
 
             var canApplyRandomFlatBonusesThisDamage = damage > 0;
 

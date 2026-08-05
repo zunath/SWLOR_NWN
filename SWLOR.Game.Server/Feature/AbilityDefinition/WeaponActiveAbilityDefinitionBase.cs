@@ -1065,7 +1065,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     CombatDamageType.Physical);
             }
 
-            public void ApplyFriendlyTargetEffects(uint activator, uint target)
+            public void ApplyFriendlyTargetEffects(uint activator, uint target, string temporaryHPEffectKey)
             {
                 if (FriendlyTargetTemporaryHPPercent > 0 &&
                     FriendlyTargetTemporaryHPDurationSeconds > 0)
@@ -1073,10 +1073,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     var temporaryHP = Math.Max(
                         1,
                         GetMaxHitPoints(target) * FriendlyTargetTemporaryHPPercent / 100);
-                    ApplyEffectToObject(
-                        DurationType.Temporary,
-                        EffectTemporaryHitpoints(temporaryHP),
+                    TemporaryHitPointEffects.ApplyFlat(
                         target,
+                        temporaryHPEffectKey,
+                        temporaryHP,
                         FriendlyTargetTemporaryHPDurationSeconds);
                 }
 
@@ -1156,6 +1156,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             GeneratedWeaponAbilityProfile profile = null)
         {
             profile ??= GeneratedWeaponAbilityProfile.Empty;
+            var temporaryHPEffectKey = $"WEAPON_{ability.ActiveEffectiveLevelPerkType}";
 
             ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
 
@@ -1175,7 +1176,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         {
                             if (profile.ApplyFriendlyTargetStatus(activator, target, duration))
                             {
-                                profile.ApplyFriendlyTargetEffects(activator, target);
+                                profile.ApplyFriendlyTargetEffects(activator, target, temporaryHPEffectKey);
                                 profile.AfterActivation(activator);
                             }
                             return;
@@ -1183,7 +1184,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                         if (isFriendlyTarget && profile.HasFriendlyTargetEffects())
                         {
-                            profile.ApplyFriendlyTargetEffects(activator, target);
+                            profile.ApplyFriendlyTargetEffects(activator, target, temporaryHPEffectKey);
                             profile.AfterActivation(activator);
                             return;
                         }

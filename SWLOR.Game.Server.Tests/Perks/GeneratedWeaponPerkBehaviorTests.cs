@@ -739,7 +739,7 @@ public class GeneratedWeaponPerkBehaviorTests
         source.Should().Contain("return GuardedStatusEffect.GetActiveGuardedTarget(activator);");
         source.Should().Contain("AbilityTargeting.ValidateFriendlyTarget(activator, target, false)");
         source.Should().Contain("GuardedStatusEffect.IsActiveGuardedBySource(target, activator)");
-        source.Should().Contain("ApplyFriendlyTargetEffects(activator, target)");
+        source.Should().Contain("ApplyFriendlyTargetEffects(activator, target, temporaryHPEffectKey)");
         source.Should().Contain("statusEffect.ReassignSource(activator)");
         source.Should().Contain("if (!profile.RequiresGuardedTarget)");
         source.Should().Contain("return profile.ValidateFriendlyTargetStatus(activator, target)");

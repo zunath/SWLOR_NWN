@@ -72,25 +72,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BlastRadiusTrait)
-                .Description("Grenade abilities gain +1m blast radius.")
+                .Description("Grenade abilities, Remote Charge, and Overload Barrage gain +1m blast radius.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 5)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 10)
+                .IncreasesStat(StatType.BlastRadiusBonusTenths, 10)
 
                 .AddPerkLevel()
-                .Description("Grenade abilities gain +2m blast radius.")
+                .Description("Grenade abilities, Remote Charge, and Overload Barrage gain +2m blast radius.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 22)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 20)
+                .IncreasesStat(StatType.BlastRadiusBonusTenths, 20)
 
                 .AddPerkLevel()
-                .Description("Grenade abilities gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.")
+                .Description("Grenade abilities, Remote Charge, and Overload Barrage gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 30)
+                .IncreasesStat(StatType.BlastRadiusBonusTenths, 30)
                 .IncreasesStat(StatType.GrenadeControlPotencyBonus, 5);
         }
 
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Adhesive Grenade")
 
                 .AddPerkLevel()
-                .Description("Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Affects up to 5 targets. Consumes explosives.")
+                .Description("Slows enemies in a 4m blast for 6 seconds. Affects up to 3 targets. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.AdhesiveGrenade1)
 
                 .AddPerkLevel()
-                .Description("Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Affects up to 5 targets. Consumes explosives.")
+                .Description("Slows enemies in a 4m blast for 12 seconds. Affects up to 5 targets. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 42)
                 .RequirementCharacterType(CharacterType.Standard)

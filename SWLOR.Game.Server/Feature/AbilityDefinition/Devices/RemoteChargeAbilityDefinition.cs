@@ -43,7 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasTargetingSphere(
                     Spell.RemoteCharge1,
                     5f,
-                    AbilityTargetingFlags.HarmsEnemies)
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -66,7 +67,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasTargetingSphere(
                     Spell.RemoteCharge2,
                     5f,
-                    AbilityTargetingFlags.HarmsEnemies)
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -86,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void DetonateRemoteCharge(uint activator, uint target, Location targetLocation, int baseDamage, Type statusEffect)
         {
             var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            var blastRadius = DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 5f);
             DeviceAbilityEffects.CreateTemporaryFieldEngineerMarker(
                 impactLocation,
                 VisualEffect.Vfx_Dur_Aura_Pulse_Red_Orange,
@@ -102,13 +105,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 statusEffect,
                 CombatImpactAreaShape.Sphere,
                 3f,
-                5f,
+                blastRadius,
                 0f,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 areaVisualEffect: VisualEffect.Fnf_Fireball,
-                afterImpactAction: _ => DeviceAbilityEffects.ApplyDiagnosticSweep(activator, impactLocation, 5f),
+                afterImpactAction: _ => DeviceAbilityEffects.ApplyDiagnosticSweep(activator, impactLocation, blastRadius),
                 alwaysApplyAreaVisualEffect: true);
         }
     }

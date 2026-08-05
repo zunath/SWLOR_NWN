@@ -36486,7 +36486,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "MY_DESTINATION_WP_TAG"
+                "value": "ARK_BUILDING_FACTORY"
               }
             },
             {
@@ -36825,7 +36825,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "MY_DESTINATION_WP_TAG"
+                "value": "ARK_BUILDING_ELEVATOR"
               }
             },
             {

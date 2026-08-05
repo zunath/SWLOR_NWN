@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     // Allies get a shield that absorbs 30 damage (temporary HP) for 30 seconds.
                     foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 8.0f))
                     {
-                        ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(30), ally, 30f);
+                        TemporaryHitPointEffects.ApplyFlat(ally, "LAST_BASTION", 30, 30f);
                     }
 
                     // Nearby enemies generate +25% enmity toward the caster for the duration.

@@ -18,6 +18,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
         private AbilityDetail _activeAbility;
 
         /// <summary>
+        /// The perk the ability currently being built belongs to. Used by shared configuration
+        /// helpers that need a per-perk identity (e.g. temporary HP stacking keys).
+        /// </summary>
+        public PerkType ActiveEffectiveLevelPerkType => _activeAbility?.EffectiveLevelPerkType ?? PerkType.Invalid;
+
+        /// <summary>
         /// Creates a new ability.
         /// </summary>
         /// <param name="featType">The type of feat to link this ability to.</param>

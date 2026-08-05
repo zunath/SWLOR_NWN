@@ -163378,7 +163378,7 @@
           "id": 14662,
           "type": "cexolocstring",
           "value": {
-            "0": "This leads into Outpost Hope."
+            "0": "This leads into the Junior Mess."
           }
         },
         "DisarmDC": {
@@ -163514,7 +163514,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "WP_V_RepBaseExt_to_JuniorMess"
+          "value": "RepBaseExtJuniorMessEntrance"
         },
         "TemplateResRef": {
           "type": "resref",

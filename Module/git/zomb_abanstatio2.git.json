@@ -154213,7 +154213,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "DESTINATION_WAYPOINT"
+                "value": "DESTINATION"
               },
               "Type": {
                 "type": "dword",

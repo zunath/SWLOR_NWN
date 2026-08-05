@@ -828,7 +828,7 @@ namespace SWLOR.Game.Server.Service
             if (restoreToOneHP && currentHP <= 0)
                 SetCurrentHitPoints(defender, 1);
 
-            ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(tempHP), defender, duration);
+            TemporaryHitPointEffects.ApplyFlat(defender, "FATAL_DAMAGE_SAVE", tempHP, duration);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), defender);
 
             return true;
@@ -2694,7 +2694,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
-            ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(temporaryHP), defender, duration);
+            TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
         }
 
         private static void ApplyLowHPTemporaryHPBeforeFatalDamage(uint defender, int damage)
@@ -2723,7 +2723,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var temporaryHP = GameMath.PercentOf(maxHP, temporaryHPPercent);
-            ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(temporaryHP), defender, duration);
+            TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
         }
 
         private static void ApplyLowHPNoSaveTemporaryHPEffect(uint defender, int damage)
@@ -2741,7 +2741,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
-            ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(temporaryHP), defender, duration);
+            TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD_NO_SAVE", temporaryHP, duration);
         }
 
         private static void ApplyLowHPGuardEffect(uint defender, int damage)
@@ -6759,7 +6759,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var shieldAmount = GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent);
-            ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(shieldAmount), activator, duration);
+            TemporaryHitPointEffects.ApplyFlat(activator, "GUARDIANS_RESOLVE", shieldAmount, duration);
             StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount), duration);
         }
 
@@ -7132,11 +7132,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var temporaryHP = GameMath.PercentOf(hitPointsSpent, percent);
-            ApplyEffectToObject(
-                DurationType.Temporary,
-                EffectTemporaryHitpoints(temporaryHP),
-                activator,
-                duration);
+            TemporaryHitPointEffects.ApplyFlat(activator, "HIT_POINT_SPEND", temporaryHP, duration);
         }
 
         private static void ApplyHitPointSpendStaminaRestore(uint activator)

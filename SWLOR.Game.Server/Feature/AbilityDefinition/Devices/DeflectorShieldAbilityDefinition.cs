@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             amount = DeviceAbilityEffects.ApplyFieldSupportOutputBonus(activator, amount);
             var duration = durationSeconds;
 
-            TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(target, amount, duration);
+            TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(target, "DEFLECTOR_SHIELD", amount, duration);
             DeviceAbilityEffects.ApplyFieldSupportAllyBuffRiders(activator, target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
         }

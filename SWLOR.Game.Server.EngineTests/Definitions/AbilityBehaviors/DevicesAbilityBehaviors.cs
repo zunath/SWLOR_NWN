@@ -24,12 +24,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             return new List<AbilityBehaviorCase>
             {
                 // AdhesiveGrenadeAbilityDefinition - hostile AoE, 0 base damage but unconditional
-                // Slow (via statusEffectFactory) + Immobilize (via afterSuccessfulHit) on a landed hit.
+                // Slow (via statusEffectFactory) on a landed hit.
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.AdhesiveGrenade1,
                     Target = AbilityTargetKind.HostileCreature,
-                    ExpectedTargetStatusEffects = new[] { typeof(AdhesiveGrenadeStatusEffect), typeof(ImmobilizedStatusEffect) },
+                    ExpectedTargetStatusEffects = new[] { typeof(AdhesiveGrenadeStatusEffect) },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                     Notes = "Deals 0 base damage by design (control-only grenade); RequirementItem(\"explosives\") is skipped for non-PC casters."
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.AdhesiveGrenade2,
                     Target = AbilityTargetKind.HostileCreature,
-                    ExpectedTargetStatusEffects = new[] { typeof(AdhesiveGrenadeStatusEffect), typeof(ImmobilizedStatusEffect) },
+                    ExpectedTargetStatusEffects = new[] { typeof(AdhesiveGrenadeStatusEffect) },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                     Notes = "Deals 0 base damage by design (control-only grenade); RequirementItem(\"explosives\") is skipped for non-PC casters."

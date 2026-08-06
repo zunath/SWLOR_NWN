@@ -444,29 +444,29 @@ namespace SWLOR.Game.Server.Service.QuestService
             dbPlayer.Quests[QuestId] = quest;
             DB.Set(dbPlayer);
 
-            if (!hadActiveJournalEntry)
-                return;
-
-            // The quest was in the player's journal as active. Mirror Complete()'s journal
-            // handling: custom entries cannot be removed outright, so the entry is re-added
-            // flagged as completed and drops off entirely at the player's next login.
-            RemoveJournalQuestEntry(QuestId, player, false);
-
-            if (States.ContainsKey(quest.CurrentState))
+            if (hadActiveJournalEntry)
             {
-                PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+                // The quest was in the player's journal as active. Mirror Complete()'s journal
+                // handling: custom entries cannot be removed outright, so the entry is re-added
+                // flagged as completed and drops off entirely at the player's next login.
+                RemoveJournalQuestEntry(QuestId, player, false);
+
+                if (States.ContainsKey(quest.CurrentState))
                 {
-                    Name = Name,
-                    Text = States[quest.CurrentState].JournalText,
-                    Tag = QuestId,
-                    State = quest.CurrentState,
-                    Priority = 1,
-                    IsQuestCompleted = true,
-                    IsQuestDisplayed = true,
-                    Updated = 1,
-                    CalendarDay = GetCalendarDay(),
-                    TimeOfDay = GetTimeHour()
-                }, true);
+                    PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+                    {
+                        Name = Name,
+                        Text = States[quest.CurrentState].JournalText,
+                        Tag = QuestId,
+                        State = quest.CurrentState,
+                        Priority = 1,
+                        IsQuestCompleted = true,
+                        IsQuestDisplayed = true,
+                        Updated = 1,
+                        CalendarDay = GetCalendarDay(),
+                        TimeOfDay = GetTimeHour()
+                    }, true);
+                }
             }
 
             QuestEncounter.RefreshVisibilityForPlayer(player);

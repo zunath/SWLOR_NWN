@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public OverclockRoutineStatusEffect()
         {
-            StatGroup.Stats[StatType.DeviceAbilityOutputPercentAdjustment] = 4;
+            StatGroup.Stats[StatType.CombatReadinessPercent] = 4;
         }
     }
 }

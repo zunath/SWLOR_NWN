@@ -258,22 +258,21 @@ namespace SWLOR.Game.Server.Service
         public static int ApplyCombatReadinessToActivatedAbilityMagnitude(uint activator, int amount)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
-            if (amount <= 0 || trackedImpact == null)
+            if (trackedImpact == null)
                 return amount;
 
-            var combatReadiness = Stat.GetCombatReadinessPercent(activator);
+            return ApplyCombatReadinessMagnitude(activator, amount);
+        }
+
+        public static int ApplyCombatReadinessMagnitude(uint creature, int amount)
+        {
+            if (amount <= 0)
+                return amount;
+
+            var combatReadiness = Stat.GetCombatReadinessPercent(creature);
             if (combatReadiness > 0)
             {
                 amount += (int)Math.Ceiling(amount * (combatReadiness / 100f));
-            }
-
-            if (trackedImpact.Ability?.SkillType == SkillType.Devices)
-            {
-                var deviceOutput = Stat.GetStatAdjustment(activator, StatType.DeviceAbilityOutputPercentAdjustment);
-                if (deviceOutput > 0)
-                {
-                    amount += (int)Math.Ceiling(amount * (deviceOutput / 100f));
-                }
             }
 
             return amount;

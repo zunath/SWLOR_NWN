@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -7,6 +8,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.LogService;
 using Faction = SWLOR.Game.Server.Service.Faction;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
@@ -58,8 +61,66 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ShipStats();
             RepairShip();
             LearnAllTechniques();
+            UnlockCapstoneQuests();
 
             return _builder.Build();
+        }
+
+        private void UnlockCapstoneQuests()
+        {
+            _builder.Create("unlockcapstones")
+                .Description("Marks every perk-gating quest chain (capstone mastery lines) complete for yourself. Testing tool.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(user) || GetIsDM(user))
+                    {
+                        SendMessageToPC(user, "Only players may unlock capstone quest gates.");
+                        return;
+                    }
+
+                    var questIds = GetPerkGatingQuestChains();
+                    foreach (var questId in questIds)
+                    {
+                        Quest.ForceCompleteQuest(user, questId);
+                    }
+
+                    SendMessageToPC(user,
+                        $"Marked {questIds.Count} perk-gating quest(s) complete. Quest-gated perks can now be purchased and their abilities tested.");
+                });
+        }
+
+        private static HashSet<string> GetPerkGatingQuestChains()
+        {
+            var questIds = new HashSet<string>();
+            foreach (var perk in Perk.GetAllPerks().Values)
+            {
+                foreach (var perkLevel in perk.PerkLevels.Values)
+                {
+                    foreach (var requirement in perkLevel.Requirements.OfType<PerkRequirementQuest>())
+                    {
+                        CollectQuestChain(requirement.QuestId, questIds);
+                    }
+                }
+            }
+
+            return questIds;
+        }
+
+        private static void CollectQuestChain(string questId, ISet<string> questIds)
+        {
+            if (string.IsNullOrWhiteSpace(questId) || !questIds.Add(questId))
+                return;
+
+            var quest = Quest.GetQuestByIdOrDefault(questId);
+            if (quest == null)
+                return;
+
+            foreach (var prerequisite in quest.Prerequisites.OfType<RequiredQuestPrerequisite>())
+            {
+                CollectQuestChain(prerequisite.QuestId, questIds);
+            }
         }
 
         private void LearnAllTechniques()

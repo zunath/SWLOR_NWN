@@ -221,6 +221,18 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Marks a quest as completed for a player without granting rewards or running completion
+        /// actions. Used by DM tooling to open quest-gated content such as capstone perk unlocks.
+        /// If the quest Id is invalid, an exception will be thrown.
+        /// </summary>
+        /// <param name="player">The player whose quest record is marked complete.</param>
+        /// <param name="questId">The Id of the quest to mark complete.</param>
+        public static void ForceCompleteQuest(uint player, string questId)
+        {
+            _quests[questId].ForceComplete(player);
+        }
+
+        /// <summary>
         /// Makes a player accept a quest by the specified Id.
         /// If the quest Id is invalid, an exception will be thrown.
         /// </summary>

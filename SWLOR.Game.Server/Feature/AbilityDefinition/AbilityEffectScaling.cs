@@ -116,6 +116,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             float multiplier = 1f)
         {
             var amount = CalculateScaledPercentOfMaxHP(source, target, percent, scalingAbility, multiplier);
+            if (GetIsObjectValid(source))
+                amount = Ability.ApplyCombatReadinessMagnitude(source, amount);
             TemporaryHitPointEffects.ApplyFlat(target, effectKey, amount, durationSeconds);
         }
 

@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             float durationSeconds)
         {
             var amount = Math.Max(1, flatAmount + GameMath.PercentOf(GetMaxHitPoints(target), percent));
-            amount = DeviceAbilityEffects.ApplyFieldSupportOutputBonus(activator, amount);
+            amount = Ability.ApplyCombatReadinessMagnitude(activator, amount);
             var duration = durationSeconds;
 
             TemporaryHitPointEffects.ApplyFlat(target, "GROUP_DEFLECTOR", amount, duration);

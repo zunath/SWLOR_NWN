@@ -86,6 +86,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         Quest.ForceCompleteQuest(user, questId);
                     }
 
+                    Log.Write(LogGroup.DM,
+                        $"Player '{GetName(user)}' ({GetObjectUUID(user)}) used unlockcapstones to mark {questIds.Count} perk-gating quest(s) complete: {string.Join(", ", questIds.OrderBy(x => x))}");
+
                     SendMessageToPC(user,
                         $"Marked {questIds.Count} perk-gating quest(s) complete. Quest-gated perks can now be purchased and their abilities tested.");
                 });
@@ -110,12 +113,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
         private static void CollectQuestChain(string questId, ISet<string> questIds)
         {
-            if (string.IsNullOrWhiteSpace(questId) || !questIds.Add(questId))
+            if (string.IsNullOrWhiteSpace(questId) || questIds.Contains(questId))
                 return;
 
             var quest = Quest.GetQuestByIdOrDefault(questId);
             if (quest == null)
                 return;
+
+            questIds.Add(questId);
 
             foreach (var prerequisite in quest.Prerequisites.OfType<RequiredQuestPrerequisite>())
             {

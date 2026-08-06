@@ -430,6 +430,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var quest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : new PlayerQuest();
+            var hadActiveJournalEntry = quest.CurrentState > 0 && quest.TimesCompleted <= 0;
 
             if (quest.TimesCompleted <= 0)
             {
@@ -442,6 +443,34 @@ namespace SWLOR.Game.Server.Service.QuestService
             quest.KillProgresses.Clear();
             dbPlayer.Quests[QuestId] = quest;
             DB.Set(dbPlayer);
+
+            if (!hadActiveJournalEntry)
+                return;
+
+            // The quest was in the player's journal as active. Mirror Complete()'s journal
+            // handling: custom entries cannot be removed outright, so the entry is re-added
+            // flagged as completed and drops off entirely at the player's next login.
+            RemoveJournalQuestEntry(QuestId, player, false);
+
+            if (States.ContainsKey(quest.CurrentState))
+            {
+                PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+                {
+                    Name = Name,
+                    Text = States[quest.CurrentState].JournalText,
+                    Tag = QuestId,
+                    State = quest.CurrentState,
+                    Priority = 1,
+                    IsQuestCompleted = true,
+                    IsQuestDisplayed = true,
+                    Updated = 1,
+                    CalendarDay = GetCalendarDay(),
+                    TimeOfDay = GetTimeHour()
+                }, true);
+            }
+
+            QuestEncounter.RefreshVisibilityForPlayer(player);
+            Gui.PublishRefreshEvent(player, new QuestCompletedRefreshEvent(QuestId));
         }
 
         /// <summary>

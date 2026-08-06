@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 6, 30f);
+                SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, "GUARDIAN_WARD", 6, 30f);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
             }
         }
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 9, 30f);
+                SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, "GUARDIAN_WARD", 9, 30f);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
             }
         }
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 12, 30f);
+                SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, "GUARDIAN_WARD", 12, 30f);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
             }
         }
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 15, 30f);
+                SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, "GUARDIAN_WARD", 15, 30f);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
             }
         }

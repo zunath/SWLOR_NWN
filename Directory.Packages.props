@@ -8,8 +8,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageVersion Include="Avalonia" Version="11.3.17" />
+    <PackageVersion Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
+    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.3.13" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.17" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.17" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.17" />
+    <PackageVersion Include="Avalonia.Headless.NUnit" Version="11.3.17" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.17" />
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="Dock.Avalonia" Version="11.3.12.1" />
+    <PackageVersion Include="Dock.Avalonia.Themes.Fluent" Version="11.3.12.1" />
+    <PackageVersion Include="Dock.Model.Mvvm" Version="11.3.12.1" />
     <PackageVersion Include="Ductus.FluentDocker" Version="2.85.0" />
     <PackageVersion Include="FluentAssertions" Version="8.10.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
+    <PackageVersion Include="NAudio" Version="2.3.0" />
+    <PackageVersion Include="Pfim" Version="0.11.4" />
+    <PackageVersion Include="Silk.NET.OpenGL" Version="2.23.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.6.0" />
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.10" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10" />

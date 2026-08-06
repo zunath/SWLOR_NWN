@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:documents="clr-namespace:SWLOR.Toolset.Domain.Documents;assembly=SWLOR.Toolset.Domain"
+        x:Class="SWLOR.Toolset.Shell.Views.ScriptTemplateChoiceDialog"
+        Title="New Script Template"
+        Width="560" Height="390"
+        MinWidth="480" MinHeight="320"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+  <DockPanel Margin="16" LastChildFill="True">
+    <StackPanel DockPanel.Dock="Top" Spacing="6" Margin="0,0,0,12">
+      <TextBlock Text="Choose a script template"
+                 FontWeight="Bold" FontSize="14" />
+      <TextBlock Text="Start from the event shape the script will be attached to."
+                 TextWrapping="Wrap" />
+    </StackPanel>
+
+    <StackPanel DockPanel.Dock="Bottom"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Spacing="8"
+                Margin="0,12,0,0">
+      <Button x:Name="CreateButton"
+              Content="Create"
+              MinWidth="90"
+              IsDefault="True"
+              Click="OnCreateClicked" />
+      <Button Content="Cancel"
+              MinWidth="90"
+              IsCancel="True"
+              Click="OnCancelClicked" />
+    </StackPanel>
+
+    <ListBox x:Name="TemplateList"
+             DoubleTapped="OnTemplateDoubleTapped">
+      <ListBox.ItemTemplate>
+        <DataTemplate x:DataType="documents:ScriptTemplateDefinition">
+          <StackPanel Margin="8,6" Spacing="3">
+            <TextBlock Text="{Binding DisplayName}"
+                       FontWeight="SemiBold" />
+            <TextBlock Text="{Binding Description}"
+                       TextWrapping="Wrap" />
+          </StackPanel>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+  </DockPanel>
+</Window>

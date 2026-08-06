@@ -47,18 +47,23 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
     {
         new WeaponJam1StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-6);
         new WeaponJam1StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
-        new PowerCell1StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(4);
-        new PowerCell2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(6);
-        new PowerCell3StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(6);
+        new PowerCell1StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(4);
+        new PowerCell1StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
+        new PowerCell2StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(6);
+        new PowerCell2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
+        new PowerCell3StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(6);
+        new PowerCell3StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
         new PowerSurgeStatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(6);
         new PowerSurgeStatusEffect().StatGroup.Stats[StatType.CriticalRatePercentAdjustment].Should().Be(6);
-        new RayshieldScreen1StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(-8);
-        new RayshieldScreen2StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(-12);
+        new RayshieldScreen1StatusEffect().StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(8);
+        new RayshieldScreen1StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(0);
+        new RayshieldScreen2StatusEffect().StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(12);
+        new RayshieldScreen2StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(0);
         new DampeningField1StatusEffect().StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-6);
         new DampeningField1StatusEffect().StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-6);
         new DampeningField2StatusEffect().StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-10);
         new DampeningField2StatusEffect().StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-10);
-        new OverclockRoutineStatusEffect().StatGroup.Stats[StatType.DeviceAbilityOutputPercentAdjustment].Should().Be(4);
+        new OverclockRoutineStatusEffect().StatGroup.Stats[StatType.CombatReadinessPercent].Should().Be(4);
         new EmergencyBunker1StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(-15);
         new TacticalUplinkStatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustmentSkillType].Should().Be((int)SkillType.Devices);
         new TacticalUplinkStatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(5);
@@ -247,16 +252,16 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
             (FeatType.EmergencyBunker1, "ife_mrgncybnkr1", "M", "0x3E", "0", "sphere", "4", "****", "1", "****"),
             (FeatType.Flamethrower1, "ife_flmthrwr1", "M", "0x3E", "1", "cone", "6", "5", "17", "****"),
             (FeatType.WristRocket1, "ife_wrstrckt1", "M", "0x02", "1", "****", "****", "****", "****", "****"),
-            (FeatType.SonicBurst1, "ife_sncburst1", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
+            (FeatType.SonicBurst1, "ife_sncburst1", "M", "0x3E", "1", "sphere", "5", "****", "17", "1"),
             (FeatType.Flamethrower2, "ife_flmthrwr2", "M", "0x3E", "1", "cone", "6", "5", "17", "****"),
             (FeatType.RailDart1, "ife_rldrt1", "M", "0x02", "1", "****", "****", "****", "****", "****"),
             (FeatType.WristRocket2, "ife_wrstrckt2", "M", "0x02", "1", "****", "****", "****", "****", "****"),
-            (FeatType.SonicBurst2, "ife_sncburst2", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
+            (FeatType.SonicBurst2, "ife_sncburst2", "M", "0x3E", "1", "sphere", "5", "****", "17", "1"),
             (FeatType.CryoSprayer1, "ife_cryspryr1", "M", "0x3E", "1", "cone", "6", "5", "17", "****"),
             (FeatType.Flamethrower3, "ife_flmthrwr3", "M", "0x3E", "1", "cone", "6", "5", "17", "****"),
             (FeatType.RailDart2, "ife_rldrt2", "M", "0x02", "1", "****", "****", "****", "****", "****"),
             (FeatType.WristRocket3, "ife_wrstrckt3", "M", "0x02", "1", "****", "****", "****", "****", "****"),
-            (FeatType.SonicBurst3, "ife_sncburst3", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
+            (FeatType.SonicBurst3, "ife_sncburst3", "M", "0x3E", "1", "sphere", "5", "****", "17", "1"),
             (FeatType.OverloadBarrage1, "ife_ovldbarr1", "M", "0x02", "1", "****", "****", "****", "****", "****")
         };
         var seenIcons = new HashSet<string>();

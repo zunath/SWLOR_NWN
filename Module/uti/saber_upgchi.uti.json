@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This kit upgrades a tier 5 lightsaber to tier 5.5, the pinnacle of lightsaber engineering. The lightsaber must be unequipped."
     }
   },
   "Identified": {

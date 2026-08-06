@@ -1,0 +1,220 @@
+using System.Text.RegularExpressions;
+using FluentAssertions;
+using Newtonsoft.Json.Linq;
+using NUnit.Framework;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.ConversationService;
+
+namespace SWLOR.Game.Server.Tests.Service;
+
+public class ConversationArchitectureTests
+{
+    [Test]
+    public void ConversationGraphs_LoadOnlyAfterSnippetRegistrationCompletes()
+    {
+        var snippetCacheEvents = typeof(Snippet)
+            .GetMethod(nameof(Snippet.CacheData))!
+            .GetCustomAttributes(typeof(NWNEventHandler), false)
+            .Cast<NWNEventHandler>()
+            .Select(attribute => attribute.Script);
+        var conversationCacheEvents = typeof(Conversation)
+            .GetMethod(nameof(Conversation.CacheData))!
+            .GetCustomAttributes(typeof(NWNEventHandler), false)
+            .Cast<NWNEventHandler>()
+            .Select(attribute => attribute.Script);
+
+        snippetCacheEvents.Should().BeEquivalentTo(new[] { ScriptName.OnModuleCacheBefore });
+        conversationCacheEvents.Should().BeEquivalentTo(new[] { ScriptName.OnModuleCacheAfter },
+            "conversation graphs validate snippet operations and must load after every before-cache handler has completed");
+    }
+
+    [Test]
+    public void GeneratedDialogShellResources_DoNotExist()
+    {
+        var dialogDirectory = Path.Combine(FindRepositoryRoot().FullName, "Module", "dlg");
+        var generatedShells = Directory
+            .EnumerateFiles(dialogDirectory, "dialog*.dlg.json", SearchOption.TopDirectoryOnly)
+            .Where(path => IsGeneratedShell(Path.GetFileName(path)))
+            .Select(Path.GetFileName)
+            .ToArray();
+
+        generatedShells.Should().BeEmpty(
+            "NUI conversations must not depend on the 255 generated DLG shell resources");
+    }
+
+    [Test]
+    public void RetiredDialogServiceSources_DoNotExist()
+    {
+        var serverRoot = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server");
+
+        File.Exists(Path.Combine(serverRoot, "Service", "Dialog.cs")).Should().BeFalse();
+        var retiredDirectory = Path.Combine(serverRoot, "Service", "DialogService");
+        var retiredSources = Directory.Exists(retiredDirectory)
+            ? Directory.EnumerateFiles(retiredDirectory, "*.cs", SearchOption.AllDirectories)
+            : Array.Empty<string>();
+        retiredSources.Should().BeEmpty();
+    }
+
+    [Test]
+    public void EveryCodeDrivenDialogDefinition_UsesTheNuiConversationMenuBase()
+    {
+        var definitions = typeof(ConversationMenuDefinition).Assembly
+            .GetTypes()
+            .Where(type =>
+                type.IsClass &&
+                !type.IsAbstract &&
+                !type.IsNested &&
+                type.Namespace == "SWLOR.Game.Server.Feature.DialogDefinition")
+            .ToArray();
+
+        definitions.Should().NotBeEmpty();
+        definitions.Should().OnlyContain(type => typeof(ConversationMenuDefinition).IsAssignableFrom(type),
+            "code-driven conversations must open directly in NUI without the retired Dialog service");
+    }
+
+    [Test]
+    public void EveryAuthoredDialog_IsEitherMigratedOrAnExplicitLegacyException()
+    {
+        var root = FindRepositoryRoot().FullName;
+        var graphDirectory = Path.Combine(root, "SWLOR.Game.Server", "ConversationData");
+        var dialogDirectory = Path.Combine(root, "Module", "dlg");
+
+        var graphIds = Directory.EnumerateFiles(graphDirectory, "*.conversation.json")
+            .Select(path => Path.GetFileName(path)[..^".conversation.json".Length])
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var exceptionIds = JArray.Parse(File.ReadAllText(
+                Path.Combine(graphDirectory, "legacy-exceptions.json")))
+            .Select(item => item.Value<string>("ConversationId"))
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var authoredIds = Directory.EnumerateFiles(dialogDirectory, "*.dlg.json")
+            .Select(path => Path.GetFileName(path)[..^".dlg.json".Length])
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        graphIds.Should().NotIntersectWith(exceptionIds,
+            "a conversation cannot be both NUI-owned and delegated to native DLG");
+        graphIds.Concat(exceptionIds).Should().BeEquivalentTo(authoredIds,
+            "every authored conversation must have an explicit runtime path");
+    }
+
+    [Test]
+    public void EveryModuleReferenceToAMigratedConversation_RoutesDirectlyToNui()
+    {
+        var root = FindRepositoryRoot().FullName;
+        var graphDirectory = Path.Combine(root, "SWLOR.Game.Server", "ConversationData");
+        var graphIds = Directory.EnumerateFiles(graphDirectory, "*.conversation.json")
+            .Select(path => Path.GetFileName(path)[..^".conversation.json".Length])
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var errors = new List<string>();
+
+        foreach (var directoryName in new[] { "git", "utc", "utp", "utd" })
+        {
+            var directory = Path.Combine(root, "Module", directoryName);
+            foreach (var path in Directory.EnumerateFiles(directory, "*.json", SearchOption.TopDirectoryOnly))
+            {
+                var document = JObject.Parse(File.ReadAllText(path));
+                foreach (var resource in document.DescendantsAndSelf().OfType<JObject>())
+                {
+                    var conversationId = resource["Conversation"]?["value"]?.Value<string>();
+                    if (string.IsNullOrWhiteSpace(conversationId) || !graphIds.Contains(conversationId))
+                        continue;
+
+                    var routes = new[] { "ScriptDialogue", "OnUsed", "OnFailToOpen" }
+                        .Select(field => (Field: field, Script: resource[field]?["value"]?.Value<string>()))
+                        .Where(route => route.Script != null)
+                        .ToArray();
+                    if (routes.Length != 1 ||
+                        !routes[0].Script!.Equals("dialog_start", StringComparison.OrdinalIgnoreCase))
+                    {
+                        errors.Add($"{Path.GetRelativePath(root, path)}: '{conversationId}' is routed by " +
+                                   (routes.Length == 0
+                                       ? "no supported interaction event"
+                                       : string.Join(", ", routes.Select(route => $"{route.Field}='{route.Script}'"))));
+                    }
+                }
+            }
+        }
+
+        errors.Should().BeEmpty(
+            "migrated conversations must bypass NWN's native dialogue window at the module-resource boundary");
+    }
+
+    [Test]
+    public void NativeDialogFallbacks_CaptureTheOwnerBeforeAssigningThePlayerCommand()
+    {
+        var serviceDirectory = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service");
+        foreach (var fileName in new[] { "ConversationMenu.cs", "AI.cs" })
+        {
+            var source = File.ReadAllText(Path.Combine(serviceDirectory, fileName));
+            source.Should().NotContain("ActionStartConversation(OBJECT_SELF",
+                $"{fileName} runs the fallback as the player, where OBJECT_SELF would resolve to that player");
+            source.Should().Contain("ActionStartConversation(owner",
+                $"{fileName} must capture the event owner before queuing the fallback command");
+        }
+    }
+
+    [Test]
+    public void ConversationWindow_UsesOneNpcTextScrollbarAndAStableTitle()
+    {
+        var root = FindRepositoryRoot().FullName;
+        var definitionSource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ConversationWindowDefinition.cs"));
+
+        definitionSource.Should().Contain(".SetTitle(\"Conversation\")");
+        definitionSource.Should().NotContain(".BindTitle(model => model.WindowTitle)");
+
+        var textPanelStart = definitionSource.IndexOf(".BindText(model => model.LineTexts)", StringComparison.Ordinal);
+        var textPanelEnd = definitionSource.IndexOf("root.AddRow(row =>", textPanelStart, StringComparison.Ordinal);
+        textPanelStart.Should().BeGreaterThanOrEqualTo(0);
+        textPanelEnd.Should().BeGreaterThan(textPanelStart);
+
+        var textPanelSource = definitionSource[textPanelStart..textPanelEnd];
+        textPanelSource.Should().Contain(".SetScrollbars(NuiScrollbars.None)",
+            "dialogue text must wrap without adding a nested scrollbar");
+        textPanelSource.Should().Contain(".SetScrollbars(NuiScrollbars.Y)",
+            "the containing dialogue list owns the panel's only scrollbar");
+        textPanelSource.Should().NotContain(".SetScrollbars(NuiScrollbars.Auto)");
+    }
+
+    [Test]
+    public void OversizedConversationText_IsSplitIntoScrollableRowsWithoutCuttingWords()
+    {
+        var method = typeof(ConversationViewModel).GetMethod(
+            "SplitDialogueText",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        method.Should().NotBeNull();
+
+        var source = string.Join(" ", Enumerable.Repeat("dialogue", 100));
+        var segments = ((IEnumerable<string>)method!.Invoke(null, new object[] { source })!).ToArray();
+
+        segments.Should().HaveCountGreaterThan(1);
+        segments.Should().OnlyContain(segment => segment.Length <= 320);
+        string.Join(" ", segments).Should().Be(source);
+    }
+
+    private static bool IsGeneratedShell(string fileName)
+    {
+        var match = Regex.Match(fileName, @"^dialog(?<number>\d+)\.dlg\.json$", RegexOptions.IgnoreCase);
+        return match.Success &&
+               int.TryParse(match.Groups["number"].Value, out var number) &&
+               number is >= 1 and <= 255;
+    }
+
+    private static DirectoryInfo FindRepositoryRoot()
+    {
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+        while (current != null &&
+               !Directory.Exists(Path.Combine(current.FullName, "SWLOR.Game.Server")))
+        {
+            current = current.Parent;
+        }
+
+        return current ?? throw new DirectoryNotFoundException("Unable to locate the repository root.");
+    }
+}

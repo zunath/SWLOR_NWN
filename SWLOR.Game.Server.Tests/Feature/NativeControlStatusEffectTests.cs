@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Tests.Support;
@@ -216,6 +217,73 @@ public class NativeControlStatusEffectTests
         }
 
         throw new InvalidOperationException($"Could not extract method '{signature}'.");
+    }
+
+    [Test]
+    public void HardCrowdControlEffects_DeclareTheCategoryTheSharedGateReads()
+    {
+        // While one hard CC runs, a different one must not land: Ability.HasHardCrowdControlImmunity
+        // treats any active status carrying StatusEffectCategory.HardCrowdControl as immunity. An
+        // effect that grants post-control immunity on Remove but forgets the category would be
+        // stackable during its own duration - the regression this pins down.
+        var root = RepoPaths.FindRepositoryRootPath();
+        var definitionDirectory = Path.Combine(
+            root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition");
+
+        foreach (var file in Directory.EnumerateFiles(definitionDirectory, "*.cs"))
+        {
+            var source = File.ReadAllText(file);
+            var grantsPostControlImmunity = source.Contains("ApplyPostControlImmunity");
+            var declaresHardCrowdControl = source.Contains("StatusEffectCategory.HardCrowdControl");
+
+            declaresHardCrowdControl.Should().Be(grantsPostControlImmunity,
+                $"{Path.GetFileName(file)}: hard-CC effects grant post-control immunity AND " +
+                "declare StatusEffectCategory.HardCrowdControl - one without the other either " +
+                "stacks during its duration or blocks without ever releasing");
+        }
+
+        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Ability.cs"))
+            .Should().Contain("HasActiveHardCrowdControlStatus(target)",
+                "the shared immunity gate must treat an active hard-CC status as immunity");
+    }
+
+    [Test]
+    public void StatConfiguredIconAuditDetection_AgreesWithTheCompiledAttribute()
+    {
+        // The icon audit exempts a status effect from the one-class-one-icon model when
+        // [StatConfiguredIcon] decorates the class declaration, detected textually in PowerShell.
+        // The compiler is the ground truth for what is actually an attribute, so every definition
+        // file's textual detection must agree with reflection: a marker sitting in a comment,
+        // doc block, or string would make the audit skip a class the compiler never exempted,
+        // and a declaration shape the pattern cannot see (partial, internal, abstract) would
+        // make the audit enforce the full model on a class that is genuinely stat-configured.
+        var root = RepoPaths.FindRepositoryRootPath();
+        var definitionDirectory = Path.Combine(
+            root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition");
+
+        // Mirrors the detection in tools/UpdateGameplayIconStandards.ps1 - keep the two in sync.
+        var declarationPattern = new System.Text.RegularExpressions.Regex(
+            @"(?m)^\s*\[StatConfiguredIcon\]\s*(?:^\s*\[[^\]\r\n]+\]\s*)*(?:public|internal)\s+(?:(?:sealed|abstract|partial)\s+)*class\s");
+
+        var attributedTypes = typeof(StatusEffectBase).Assembly
+            .GetTypes()
+            .Where(type => type.GetCustomAttributes(typeof(StatConfiguredIconAttribute), false).Length > 0)
+            .Select(type => type.Name)
+            .ToHashSet();
+
+        foreach (var file in Directory.EnumerateFiles(definitionDirectory, "*.cs"))
+        {
+            var className = Path.GetFileNameWithoutExtension(file);
+            var textualDetection = declarationPattern.IsMatch(File.ReadAllText(file));
+
+            textualDetection.Should().Be(attributedTypes.Contains(className),
+                $"{className}: the audit's textual [StatConfiguredIcon] detection must agree with " +
+                "the compiled attribute - neither a marker in a comment/string nor an unsupported " +
+                "declaration shape may make them diverge");
+        }
+
+        attributedTypes.Should().Contain(nameof(MeleeRepeatedTargetDamageStatusEffect),
+            "the known stat-configured effect anchors this test's positive case");
     }
 
     private sealed class RemovalProbeStatusEffect : StatusEffectBase

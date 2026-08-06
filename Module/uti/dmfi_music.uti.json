@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This wand will allow you to change the background music of an area to any of the default NWN musical themes. \n\n~~\nOriginal Design by Lurker (merlock12@yahoo.com)"
     }
   },
   "Identified": {

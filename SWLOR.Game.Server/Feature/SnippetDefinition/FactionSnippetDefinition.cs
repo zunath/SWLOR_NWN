@@ -31,6 +31,10 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("condition-has-faction-standing")
                 .Description("Checks whether a player has standing greater than or equal to an amount with a particular faction.")
+                .Phrase("the player has at least {amount} standing with {factionId}")
+                .NegatedPhrase("the player has less than {amount} standing with {factionId}")
+                .Argument("factionId", SnippetArgumentType.FactionId)
+                .Argument("amount", SnippetArgumentType.Amount)
                 .AppearsWhenAction((player, args) =>
                 {
                     if(args.Length < 2)
@@ -75,6 +79,10 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("condition-has-faction-points")
                 .Description("Checks whether a player has faction points greater than or equal with a particular faction.")
+                .Phrase("the player has at least {amount} faction points with {factionId}")
+                .NegatedPhrase("the player has fewer than {amount} faction points with {factionId}")
+                .Argument("factionId", SnippetArgumentType.FactionId)
+                .Argument("amount", SnippetArgumentType.Amount)
                 .AppearsWhenAction((player, args) =>
                 {
                     if (args.Length < 2)
@@ -120,6 +128,9 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-give-faction-points")
                 .Description("Gives faction points toward a particular faction to a player.")
+                .Phrase("gives the player {amount} faction points with {factionId}")
+                .Argument("factionId", SnippetArgumentType.FactionId)
+                .Argument("amount", SnippetArgumentType.Amount)
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length < 2)
@@ -127,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-give-faction-points' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to find by faction Id
@@ -136,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-give-faction-points' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to read second argument as the amount
@@ -145,13 +156,13 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-give-faction-points' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var factionType = (FactionType)factionId;
                     amount = Math.Abs(amount);
                     Faction.AdjustPlayerFactionPoints(player, factionType, amount);
-
+                    return true;
                 });
         }
 
@@ -159,6 +170,9 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-take-faction-points")
                 .Description("Takes faction points toward a particular faction from a player.")
+                .Phrase("takes {amount} faction points from the player with {factionId}")
+                .Argument("factionId", SnippetArgumentType.FactionId)
+                .Argument("amount", SnippetArgumentType.Amount)
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length < 2)
@@ -166,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-take-faction-points' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to find by faction Id
@@ -175,7 +189,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-take-faction-points' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to read second argument as the amount
@@ -184,12 +198,13 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-take-faction-points' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var factionType = (FactionType)factionId;
                     amount = Math.Abs(amount);
                     Faction.AdjustPlayerFactionPoints(player, factionType, -amount);
+                    return true;
                 });
         }
 
@@ -197,6 +212,9 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-give-faction-standing")
                 .Description("Gives faction standing toward a particular faction to a player.")
+                .Phrase("gives the player {amount} standing with {factionId}")
+                .Argument("factionId", SnippetArgumentType.FactionId)
+                .Argument("amount", SnippetArgumentType.Amount)
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length < 2)
@@ -204,7 +222,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-give-faction-standing' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to find by faction Id
@@ -213,7 +231,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-give-faction-standing' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to read second argument as the amount
@@ -222,12 +240,13 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-give-faction-standing' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var factionType = (FactionType)factionId;
                     amount = Math.Abs(amount);
                     Faction.AdjustPlayerFactionStanding(player, factionType, amount);
+                    return true;
                 });
         }
 
@@ -235,6 +254,9 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-take-faction-standing")
                 .Description("Takes faction standing toward a particular faction from a player.")
+                .Phrase("takes {amount} standing from the player with {factionId}")
+                .Argument("factionId", SnippetArgumentType.FactionId)
+                .Argument("amount", SnippetArgumentType.Amount)
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length < 2)
@@ -242,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-take-faction-standing' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to find by faction Id
@@ -251,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-take-faction-standing' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     // Try to read second argument as the amount
@@ -260,12 +282,13 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-take-faction-standing' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var factionType = (FactionType)factionId;
                     amount = Math.Abs(amount);
                     Faction.AdjustPlayerFactionStanding(player, factionType, -amount);
+                    return true;
                 });
         }
 

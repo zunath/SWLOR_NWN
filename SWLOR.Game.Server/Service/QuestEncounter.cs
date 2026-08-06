@@ -219,7 +219,11 @@ namespace SWLOR.Game.Server.Service
             NPCGroupType npcGroupType,
             IReadOnlyCollection<string> possibleQuests)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return;
             if (GetArea(player) != GetArea(encounterCreature)) return;
             if (GetDistanceBetween(player, encounterCreature) > ParticipantCreditRange) return;
 

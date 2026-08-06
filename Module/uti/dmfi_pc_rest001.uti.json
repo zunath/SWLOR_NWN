@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This piece of Firewood can create a DMFI Campfire, a rest placeable."
     }
   },
   "Identified": {

@@ -5,9 +5,9 @@ The EnhancementItemBuilder generates JSON files for enhancement items used in th
 
 ## Command
 ```bash
-SWLOR.CLI.exe -e
+RunCLI.cmd -e
 # or
-SWLOR.CLI.exe --enhancement
+RunCLI.cmd --enhancement
 ```
 
 ## Functionality

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public RayshieldScreen1StatusEffect()
         {
-            StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment] = -8;
+            StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 8;
         }
     }
 }

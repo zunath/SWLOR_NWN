@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This wand allows you to place sound effects anywhere in your module.\n\nTry Option 6 followed by Option 1.\n\n~~\nRedesigned by Hahnsoo\nOriginal Design by volition (tyworsham@msn.com)"
     }
   },
   "Identified": {

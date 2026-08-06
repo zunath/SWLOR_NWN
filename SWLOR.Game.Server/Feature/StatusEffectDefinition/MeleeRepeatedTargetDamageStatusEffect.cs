@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
+    [StatConfiguredIcon]
     public sealed class MeleeRepeatedTargetDamageStatusEffect : StatusEffectBase
     {
         private const float VisualDurationSeconds = 10f;

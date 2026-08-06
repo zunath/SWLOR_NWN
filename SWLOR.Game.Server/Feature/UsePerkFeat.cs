@@ -321,13 +321,18 @@ namespace SWLOR.Game.Server.Feature
         {
             float CalculateActivationDelay()
             {
-                if (Combat.ConsumeNextAbilityNoDelay(activator, ability))
+                var delayReductionPercent = Combat.ConsumeNextAbilityDelayReductionPercent(activator, ability);
+                if (delayReductionPercent >= 100)
                     return 0f;
 
                 var abilityDelay = ability.ActivationDelay?.Invoke(activator, target, ability.AbilityLevel) ?? 0.0f;
                 var delayAdjustment = Stat.GetStatAdjustment(activator, StatType.ActivationDelayFlatAdjustment);
+                var delay = Math.Max(0f, abilityDelay + delayAdjustment);
 
-                return Math.Max(0f, abilityDelay + delayAdjustment);
+                if (delayReductionPercent > 0)
+                    delay *= (100 - delayReductionPercent) / 100f;
+
+                return delay;
             }
 
             // Handles displaying animation and visual effects.

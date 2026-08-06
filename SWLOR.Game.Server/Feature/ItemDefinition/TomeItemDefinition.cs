@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     SetLocalObject(user, "XP_TOME_OBJECT", item);
                     AssignCommand(user, () => ClearAllActions());
 
-                    Dialog.StartConversation(user, user, nameof(XPTomeDialog));
+                    ConversationMenu.Start(user, user, nameof(XPTomeDialog));
                 });
         }
 

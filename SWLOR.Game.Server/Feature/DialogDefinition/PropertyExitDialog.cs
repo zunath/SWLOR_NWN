@@ -1,17 +1,17 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class PropertyExitDialog: DialogBase
+    public class PropertyExitDialog: ConversationMenuDefinition
     {
         private const string MainPageId = "MAIN_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .AddPage(MainPageId, MainPageInit);
 
 
@@ -48,9 +48,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             return true;
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
+            var player = Player;
             var area = GetArea(player);
             var propertyId = Property.GetPropertyId(area);
             var property = DB.Get<WorldProperty>(propertyId);

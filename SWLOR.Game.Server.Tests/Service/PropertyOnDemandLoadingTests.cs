@@ -477,7 +477,7 @@ public class PropertyOnDemandLoadingTests
             "DialogDefinition",
             "PropertyExitDialog.cs")).Replace("\r\n", "\n");
         var returnBody = ExtractMethod(source, "private bool ReturnToLastDockedPosition(uint player, PropertyLocation propertyLocation)");
-        var pageBody = ExtractMethod(source, "private void MainPageInit(DialogPage page)");
+        var pageBody = ExtractMethod(source, "private void MainPageInit(ConversationMenuPage page)");
 
         returnBody.Should().Contain("return false;");
         returnBody.Should().Contain("return true;");
@@ -495,7 +495,7 @@ public class PropertyOnDemandLoadingTests
             "Feature",
             "DialogDefinition",
             "StarportDockDialog.cs")).Replace("\r\n", "\n");
-        var pageBody = ExtractMethod(source, "private void MainPageInit(DialogPage page)");
+        var pageBody = ExtractMethod(source, "private void MainPageInit(ConversationMenuPage page)");
 
         pageBody.Should().Contain("Property.GetPropertyLoadState(dockPoint.PropertyId)");
         pageBody.Should().Contain("starportLoadState != PropertyLoadState.Loaded");

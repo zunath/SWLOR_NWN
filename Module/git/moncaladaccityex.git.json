@@ -7515,7 +7515,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -8653,7 +8653,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -9312,7 +9312,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -567053,7 +567053,7 @@
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 55
+                      "value": 58
                     },
                     "Plot": {
                       "type": "byte",
@@ -567253,7 +567253,7 @@
                     },
                     "xModelPart3": {
                       "type": "word",
-                      "value": 55
+                      "value": 58
                     },
                     "XOrientation": {
                       "type": "float",

@@ -25,10 +25,12 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-open-store")
                 .Description("Opens a store. If store tag isn't specified, the nearest store to the NPC will be opened.")
+                .Phrase("opens the shop")
+                .Argument("storeTag", SnippetArgumentType.StoreTag, isOptional: true)
                 .ActionsTakenAction((player, args) =>
                 {
 
-                    var npc = OBJECT_SELF;
+                    var npc = Snippet.GetExecutionOwner();
                     var store = GetNearestObject(ObjectType.Store, npc);
                     if (args.Length > 0)
                     {
@@ -39,9 +41,11 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     if (!GetIsObjectValid(store))
                     {
                         Log.Write(LogGroup.Error, $"{GetName(npc)} could not locate a valid store. Check conversation for incorrect snippet parameters.", true);
+                        return false;
                     }
 
                     NWScript.OpenStore(store, player);
+                    return true;
                 });
         }
 

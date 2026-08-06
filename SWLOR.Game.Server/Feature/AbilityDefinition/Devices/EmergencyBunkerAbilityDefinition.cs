@@ -70,8 +70,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void ApplyBunkerTemporaryHP(uint activator, uint target, float durationSeconds)
         {
             var temporaryHP = 60 + GameMath.PercentOf(GetMaxHitPoints(target), 8);
-            temporaryHP = DeviceAbilityEffects.ApplyFieldSupportOutputBonus(activator, temporaryHP);
-            TemporaryHitPointEffects.ApplyFlat(target, temporaryHP, durationSeconds);
+            temporaryHP = Ability.ApplyCombatReadinessMagnitude(activator, temporaryHP);
+            TemporaryHitPointEffects.ApplyFlat(target, "EMERGENCY_BUNKER", temporaryHP, durationSeconds);
             DeviceAbilityEffects.ApplyFieldSupportAllyBuffRiders(activator, target);
         }
     }

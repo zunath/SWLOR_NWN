@@ -79,6 +79,10 @@ namespace SWLOR.CLI
             {
                 Description = "Module root containing git, uti, and utm folders. Defaults to ./Module."
             };
+            var noPromptOption = new Option<bool>("--no-prompt")
+            {
+                Description = "Skips the 'Press any key to end' prompt after packing or unpacking a module."
+            };
 
             var rootCommand = new RootCommand("SWLOR build and content tools.");
             rootCommand.Options.Add(adHocToolOption);
@@ -97,6 +101,7 @@ namespace SWLOR.CLI
             rootCommand.Options.Add(syncStoreInstancesOption);
             rootCommand.Options.Add(createMissingStoreBlueprintsOption);
             rootCommand.Options.Add(storeModuleRootOption);
+            rootCommand.Options.Add(noPromptOption);
 
             rootCommand.SetAction(parseResult =>
             {
@@ -128,13 +133,13 @@ namespace SWLOR.CLI
                 var modulePath = parseResult.GetValue(modulePackerOption);
                 if (!string.IsNullOrWhiteSpace(modulePath))
                 {
-                    _modulePacker.PackModule(modulePath);
+                    _modulePacker.PackModule(modulePath, parseResult.GetValue(noPromptOption));
                 }
 
                 var unpackPath = parseResult.GetValue(moduleUnpackOption);
                 if (!string.IsNullOrWhiteSpace(unpackPath))
                 {
-                    _modulePacker.UnpackModule(unpackPath);
+                    _modulePacker.UnpackModule(unpackPath, parseResult.GetValue(noPromptOption));
                 }
 
                 if (parseResult.GetValue(recipeOption))

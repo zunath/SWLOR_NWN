@@ -116,7 +116,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This appears to be the clothes worn by the old hermit, Jhoren."
+    }
   },
   "Identified": {
     "type": "byte",

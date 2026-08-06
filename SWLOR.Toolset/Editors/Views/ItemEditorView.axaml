@@ -1,0 +1,664 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:items="using:SWLOR.Toolset.Editors.Items"
+             xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:dworkspace="using:SWLOR.Toolset.Domain.Workspace"
+             x:Class="SWLOR.Toolset.Editors.Items.ItemEditorView"
+             x:DataType="items:ItemEditorViewModel">
+
+
+  <UserControl.Styles>
+    <Style Selector="Border.selected">
+      <Setter Property="BorderBrush" Value="{DynamicResource InkBrush}" />
+    </Style>
+
+    <Style Selector="Border.seg">
+      <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="3" />
+      <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+  </UserControl.Styles>
+
+  <UserControl.Resources>
+    <!-- A part cell's value control on its own, no label: a list of the variants that actually have
+         a model, falling back to a number box only when no such list could be built (no game data).
+         Shared so the mirrored left/right rows cannot drift from the single rows again. -->
+    <DataTemplate x:Key="PartValueTemplate" DataType="items:ItemFieldCellViewModel">
+      <Panel>
+        <ComboBox ItemsSource="{Binding Options}"
+                  SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                  IsEnabled="{Binding IsEnabled}" MinWidth="96" HorizontalAlignment="Stretch"
+                  IsVisible="{Binding HasOptions}" />
+        <NumericUpDown Value="{Binding Number, Mode=TwoWay}"
+                       Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                       IsEnabled="{Binding IsEnabled}" IsVisible="{Binding !HasOptions}"
+                       Increment="1" FormatString="0" />
+      </Panel>
+    </DataTemplate>
+
+    <!-- A two-halves segmented picker: one outlined box split down the middle, the chosen half
+         filled. This is a whole ControlTheme rather than a Style with a Template setter, because
+         RadioButton's built-in ControlTheme brings its own background, border, padding and hover
+         brushes with it - overriding only the template left the stock chrome painting a pale fill
+         behind the selected half. Replacing the theme means nothing but what is written here draws. -->
+    <ControlTheme x:Key="SegmentedRadioTheme" TargetType="RadioButton">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Name="Fill" Background="Transparent" Padding="0,3">
+            <TextBlock Name="Caption" Text="{TemplateBinding Content}" FontSize="11"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Foreground="{DynamicResource InkTertiaryBrush}" />
+          </Border>
+        </ControlTemplate>
+      </Setter>
+
+      <!-- A real brush, not a guessed key: an undefined DynamicResource resolves to null, and a
+           null Background is not hit-testable, so hovering dropped the pointer through the control,
+           which cleared :pointerover, which restored the background - the cursor flickered between
+           hand and arrow anywhere except over the glyphs, which hit-test on their own. -->
+      <Style Selector="^:pointerover /template/ Border#Fill">
+        <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+      </Style>
+      <Style Selector="^:checked /template/ Border#Fill">
+        <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+      </Style>
+      <Style Selector="^:checked /template/ TextBlock#Caption">
+        <Setter Property="Foreground" Value="{DynamicResource AccentInkBrush}" />
+      </Style>
+    </ControlTheme>
+  </UserControl.Resources>
+
+  <UserControl.DataTemplates>
+    <!-- One stat's value selector. Resolved cost tables list their real populated rows. If game
+         data is unavailable, the stored number remains visible but read-only with an explanation. -->
+    <DataTemplate DataType="items:ItemStatCellViewModel">
+      <Grid ColumnDefinitions="*,150" ColumnSpacing="8" Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                   Foreground="{DynamicResource InkSecondaryBrush}"
+                   TextTrimming="CharacterEllipsis" />
+        <StackPanel Grid.Column="1">
+          <!-- Both coded tables and numeric ladders list only their legal gameplay-facing values. -->
+          <ComboBox ItemsSource="{Binding SelectableOptions}"
+                    SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                    HorizontalAlignment="Stretch" IsVisible="{Binding HasOptions}" />
+          <NumericUpDown Value="{Binding Number, Mode=OneWay}"
+                         Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                         IsEnabled="False" IsVisible="{Binding !HasOptions}"
+                         Increment="1" FormatString="0"
+                         ToolTip.Tip="2DA cost-table metadata unavailable; stored value shown read-only." />
+          <TextBlock Text="{Binding LookupUnavailableMessage}"
+                     IsVisible="{Binding !HasOptions}"
+                     Foreground="{DynamicResource InkTertiaryBrush}"
+                     FontSize="10" TextWrapping="Wrap" Margin="0,3,0,0" />
+        </StackPanel>
+      </Grid>
+    </DataTemplate>
+
+    <!-- One stored entry of a multi-subtype property: what it is, its value, and its removal. -->
+    <DataTemplate DataType="items:ItemPropertyEntryViewModel">
+      <Grid ColumnDefinitions="*,116,24" ColumnSpacing="6" Margin="0,2">
+        <TextBlock Text="{Binding SubtypeDisplay}" VerticalAlignment="Center"
+                   Foreground="{DynamicResource InkSecondaryBrush}"
+                   TextTrimming="CharacterEllipsis" />
+        <NumericUpDown Grid.Column="1" Value="{Binding Number, Mode=TwoWay}"
+                       Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                       IsVisible="{Binding HasEditableValue}"
+                       Increment="1" FormatString="0" />
+        <TextBlock Grid.Column="1" Text="No value"
+                   IsVisible="{Binding !HasEditableValue}"
+                   Foreground="{DynamicResource InkTertiaryBrush}"
+                   HorizontalAlignment="Right" VerticalAlignment="Center"
+                   ToolTip.Tip="This property is a subtype marker and has no cost value." />
+        <Button Grid.Column="2" Content="&#x00D7;" Classes="close"
+                Command="{Binding RemoveCommand}" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="items:ItemPropertyEntryListViewModel">
+      <StackPanel Margin="0,6,0,2">
+        <TextBlock Text="{Binding Label}" Classes="section" Margin="0,0,0,4" />
+        <ItemsControl ItemsSource="{Binding Entries}" />
+        <TextBox Text="{Binding AddSearchText, Mode=TwoWay}"
+                 Watermark="{Binding AddWatermark}" Margin="0,4,0,0" />
+        <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
+                ClipToBounds="True" Margin="0,4,0,0"
+                IsVisible="{Binding !!AddChoices.Count}">
+          <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding AddChoices}">
+              <!-- Virtualized: the list publishes every match (hundreds of perks), and only the
+                   rows actually on screen are realized. -->
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+                  <Button Classes="behavior" Margin="2" Padding="8,4"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                          Content="{Binding Display}"
+                          Command="{Binding $parent[ItemsControl].((items:ItemPropertyEntryListViewModel)DataContext).AddCommand}"
+                          CommandParameter="{Binding}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </Border>
+      </StackPanel>
+    </DataTemplate>
+
+    <!-- An exclusive multi-subtype choice (WeaponDamageType): pick one subtype, or none. -->
+    <DataTemplate DataType="items:ItemExclusiveChoiceViewModel">
+      <Grid ColumnDefinitions="*,150" ColumnSpacing="8" Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                   Foreground="{DynamicResource InkSecondaryBrush}"
+                   TextTrimming="CharacterEllipsis" />
+        <ComboBox Grid.Column="1" ItemsSource="{Binding Options}"
+                  SelectedItem="{Binding Selected, Mode=TwoWay}"
+                  HorizontalAlignment="Stretch">
+          <ComboBox.ItemTemplate>
+            <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+              <TextBlock Text="{Binding Display}" TextTrimming="CharacterEllipsis" />
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="items:ItemStatGroupViewModel">
+      <Border Classes="card" Width="300" Margin="0,0,10,10" Padding="12,9,12,11"
+              VerticalAlignment="Top">
+        <StackPanel>
+          <TextBlock Text="{Binding Title}" Classes="section" Margin="0,0,0,6" />
+          <ItemsControl ItemsSource="{Binding Cells}" />
+          <ItemsControl ItemsSource="{Binding ExclusiveChoices}" />
+          <ItemsControl ItemsSource="{Binding EntryLists}" />
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+
+    <!-- Base-game properties older items still carry: visible and removable, never added.
+         Templated rather than placed, so it can be dealt into a stats column like any other card. -->
+    <DataTemplate DataType="items:ItemEngineLegacySectionViewModel">
+      <Border Classes="card" Width="300" Margin="0,0,10,10" Padding="12,9,12,11"
+              VerticalAlignment="Top" IsVisible="{Binding HasEntries, FallbackValue=False}">
+        <StackPanel>
+          <TextBlock Text="Engine — base game" Classes="section" Margin="0,0,0,6" />
+          <ItemsControl ItemsSource="{Binding Entries}" />
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+
+    <!-- One picture tile of an appearance gallery. Composite-part artwork is cropped to its
+         visible pixels before it reaches this template, so the larger canvas shows the part
+         itself instead of magnifying the texture's transparent padding. -->
+    <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+      <StackPanel Width="100">
+        <Border Height="92" Background="{DynamicResource FieldBrush}"
+                BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
+          <Panel>
+            <Image Source="{Binding Thumbnail}" Stretch="Uniform" Margin="3"
+                   IsVisible="{Binding Thumbnail, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            <TextBlock Text="{Binding Glyph}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Classes="dim"
+                       IsVisible="{Binding Thumbnail, Converter={x:Static ObjectConverters.IsNull}}" />
+          </Panel>
+        </Border>
+        <TextBlock Text="{Binding Display}" Classes="count" HorizontalAlignment="Center"
+                   Margin="0,2,0,0" />
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="items:GalleryViewModel">
+      <ListBox ItemsSource="{Binding Options}" SelectedItem="{Binding Selected, Mode=TwoWay}"
+               Background="Transparent" BorderThickness="0">
+        <ListBox.ItemsPanel>
+          <ItemsPanelTemplate>
+            <WrapPanel />
+          </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+      </ListBox>
+    </DataTemplate>
+
+    <DataTemplate DataType="items:CompositePartViewModel">
+      <StackPanel>
+        <TextBlock Text="{Binding Label}" Classes="section" Margin="0,0,0,4" />
+        <ListBox ItemsSource="{Binding Options}" SelectedItem="{Binding Selected, Mode=TwoWay}"
+                 Background="Transparent" BorderThickness="0" MaxHeight="240"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+          <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel />
+            </ItemsPanelTemplate>
+          </ListBox.ItemsPanel>
+        </ListBox>
+      </StackPanel>
+    </DataTemplate>
+
+    <!-- One plain integer field: an optional dye swatch, its label, and its value. The swatch
+         column collapses to nothing when SwatchBrush is null, so this same template serves a bare
+         body-part cell (no swatch) and a Colors-panel dye cell (swatch first, per the mockup). -->
+    <DataTemplate DataType="items:ItemFieldCellViewModel">
+      <Grid ColumnDefinitions="Auto,*,116" ColumnSpacing="8" Margin="0,2,16,2">
+        <Border Grid.Column="0" Width="16" Height="16" CornerRadius="3" VerticalAlignment="Center"
+                Background="{Binding SwatchBrush}"
+                BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                IsVisible="{Binding SwatchBrush, Converter={x:Static ObjectConverters.IsNotNull}}" />
+        <TextBlock Grid.Column="1" Text="{Binding Label}" VerticalAlignment="Center"
+                   Foreground="{DynamicResource InkSecondaryBrush}"
+                   TextTrimming="CharacterEllipsis" />
+        <!-- A part with a known set of real variants lists them; anything else (a dye index, or
+             any cell built without a variant list) stays a number box. -->
+        <ComboBox Grid.Column="2" ItemsSource="{Binding Options}"
+                  SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                  IsEnabled="{Binding IsEnabled}" HorizontalAlignment="Stretch"
+                  IsVisible="{Binding HasOptions}" />
+        <NumericUpDown Grid.Column="2" Value="{Binding Number, Mode=TwoWay}"
+                       Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                       IsEnabled="{Binding IsEnabled}"
+                       IsVisible="{Binding !HasOptions}"
+                       Increment="1" FormatString="0" />
+      </Grid>
+    </DataTemplate>
+
+    <!-- Item and creature appearance both consume the same palette control. Item rows retain its
+         opt-in numeric fallback for sessions without base-game artwork; creature rows do not. -->
+    <DataTemplate DataType="items:ItemDyeCellViewModel">
+      <items:PaletteColorPickerView />
+    </DataTemplate>
+
+    <!-- Two-column pane: body parts (flex) beside a fixed-width Colors panel, per the approved
+         mockup. The seven left/right pairs share one row label with independent left/right value
+         boxes - the right box stays visible and read-only while mirrored, always showing the
+         left's current value (ArmorPartsViewModel keeps both cells' stored values in step; the
+         template just reflects IsReadOnly/IsEnabled). -->
+    <DataTemplate DataType="items:ArmorPartsViewModel">
+      <Grid ColumnDefinitions="*,230" ColumnSpacing="18">
+        <Border Grid.Column="0" Classes="card" Padding="12,9,12,11" VerticalAlignment="Top">
+          <StackPanel>
+            <TextBlock Text="Body parts" Classes="section" Margin="0,0,0,6" />
+            <ContentControl Content="{Binding Neck}" />
+            <ContentControl Content="{Binding Torso}" />
+            <ContentControl Content="{Binding Belt}" />
+            <ContentControl Content="{Binding Pelvis}" />
+            <ContentControl Content="{Binding Robe}" />
+
+            <Grid ColumnDefinitions="140,*,*" ColumnSpacing="10" Margin="0,10,0,2">
+              <TextBlock Grid.Column="1" Text="Left" Classes="section" />
+              <TextBlock Grid.Column="2" Text="Right" Classes="section" />
+            </Grid>
+            <Grid ColumnDefinitions="140,*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                  ColumnSpacing="10" RowSpacing="5">
+              <TextBlock Grid.Row="0" Grid.Column="0" Text="Shoulder" VerticalAlignment="Center"
+                         Foreground="{DynamicResource InkSecondaryBrush}" />
+              <ContentControl Grid.Row="0" Grid.Column="1" Content="{Binding LeftShoulder}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="0" Grid.Column="2" Content="{Binding RightShoulder}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+
+              <TextBlock Grid.Row="1" Grid.Column="0" Text="Bicep" VerticalAlignment="Center"
+                         Foreground="{DynamicResource InkSecondaryBrush}" />
+              <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding LeftBicep}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="1" Grid.Column="2" Content="{Binding RightBicep}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+
+              <TextBlock Grid.Row="2" Grid.Column="0" Text="Forearm" VerticalAlignment="Center"
+                         Foreground="{DynamicResource InkSecondaryBrush}" />
+              <ContentControl Grid.Row="2" Grid.Column="1" Content="{Binding LeftForearm}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="2" Grid.Column="2" Content="{Binding RightForearm}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+
+              <TextBlock Grid.Row="3" Grid.Column="0" Text="Hand" VerticalAlignment="Center"
+                         Foreground="{DynamicResource InkSecondaryBrush}" />
+              <ContentControl Grid.Row="3" Grid.Column="1" Content="{Binding LeftHand}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="3" Grid.Column="2" Content="{Binding RightHand}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+
+              <TextBlock Grid.Row="4" Grid.Column="0" Text="Thigh" VerticalAlignment="Center"
+                         Foreground="{DynamicResource InkSecondaryBrush}" />
+              <ContentControl Grid.Row="4" Grid.Column="1" Content="{Binding LeftThigh}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="4" Grid.Column="2" Content="{Binding RightThigh}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+
+              <TextBlock Grid.Row="5" Grid.Column="0" Text="Shin" VerticalAlignment="Center"
+                         Foreground="{DynamicResource InkSecondaryBrush}" />
+              <ContentControl Grid.Row="5" Grid.Column="1" Content="{Binding LeftShin}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="5" Grid.Column="2" Content="{Binding RightShin}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+
+              <TextBlock Grid.Row="6" Grid.Column="0" Text="Foot" VerticalAlignment="Center"
+                         Foreground="{DynamicResource InkSecondaryBrush}" />
+              <ContentControl Grid.Row="6" Grid.Column="1" Content="{Binding LeftFoot}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+              <ContentControl Grid.Row="6" Grid.Column="2" Content="{Binding RightFoot}"
+                              ContentTemplate="{StaticResource PartValueTemplate}" />
+            </Grid>
+
+            <CheckBox IsChecked="{Binding MirrorRightFromLeft, Mode=TwoWay}"
+                      Content="Mirror right from left" Margin="0,8,0,4" />
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1" Classes="card" Padding="12,9,12,11" VerticalAlignment="Top">
+          <StackPanel>
+            <TextBlock Text="Colors" Classes="section" Margin="0,0,0,6" />
+            <ContentControl Content="{Binding Cloth1}" />
+            <ContentControl Content="{Binding Cloth2}" />
+            <ContentControl Content="{Binding Leather1}" />
+            <ContentControl Content="{Binding Leather2}" />
+            <ContentControl Content="{Binding Metal1}" />
+            <ContentControl Content="{Binding Metal2}" />
+          </StackPanel>
+        </Border>
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="items:ItemRequirementGroupViewModel">
+      <Border Classes="card" Margin="0,0,0,10" Padding="12,9,12,11">
+        <StackPanel>
+          <TextBlock Text="{Binding Title}" Classes="section" Margin="0,0,0,6" />
+          <ItemsControl ItemsSource="{Binding Cells}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel ItemWidth="290" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="items:ItemStatCellViewModel">
+                <Grid ColumnDefinitions="*,116" ColumnSpacing="8" Margin="0,2,16,2">
+                  <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                             Foreground="{DynamicResource InkSecondaryBrush}"
+                             TextTrimming="CharacterEllipsis" />
+                  <StackPanel Grid.Column="1">
+                    <ComboBox ItemsSource="{Binding SelectableOptions}"
+                              SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                              HorizontalAlignment="Stretch" IsVisible="{Binding HasOptions}" />
+                    <NumericUpDown Value="{Binding Number, Mode=OneWay}"
+                                   Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                                   IsEnabled="False" IsVisible="{Binding !HasOptions}"
+                                   Increment="1" FormatString="0"
+                                   ToolTip.Tip="2DA cost-table metadata unavailable; stored value shown read-only." />
+                    <TextBlock Text="{Binding LookupUnavailableMessage}"
+                               IsVisible="{Binding !HasOptions}"
+                               Foreground="{DynamicResource InkTertiaryBrush}"
+                               FontSize="10" TextWrapping="Wrap" Margin="0,3,0,0" />
+                  </StackPanel>
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+  </UserControl.DataTemplates>
+
+  <DockPanel>
+    <behaviors:BehaviorEditorHeader DockPanel.Dock="Top"
+                                    BehaviorName="{Binding HeaderName}"
+                                    Kind="{Binding HeaderKind}"
+                                    Owner="{Binding HeaderOwner}"
+                                    IsDirty="{Binding IsDirty}" />
+
+    <Grid ColumnDefinitions="Auto,*">
+      <!-- An Auto column, not a fixed one, so the styles below can narrow or drop the preview
+           rail on a small window and give every pixel back to the fields. -->
+      <Border Grid.Column="0" Name="PreviewRail" Width="190"
+              BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0"
+              Padding="10">
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto">
+          <!-- The inventory icon always shows. Underneath it, an orbitable 3D view of the item's
+               world model appears when one resolves (weapons and other ModelType 0-2 base items,
+               and armor dressed on a mannequin) - HasModelPreview gates both this box and the
+               drag/orbit hint below. -->
+          <Border Grid.Row="0" Height="110" Background="{DynamicResource PanelRaisedBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
+            <Image Source="{Binding PreviewImage}" Stretch="Uniform" Margin="10"
+                   IsVisible="{Binding PreviewImage, Converter={x:Static ObjectConverters.IsNotNull}}" />
+          </Border>
+
+          <Border Grid.Row="1" MinHeight="260" Margin="0,8,0,0"
+                  Background="{DynamicResource PanelRaisedBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3"
+                  IsVisible="{Binding HasModelPreview}">
+            <ContentControl Content="{Binding PreviewView}" />
+          </Border>
+
+          <Border Grid.Row="1" MinHeight="260" Margin="0,8,0,0"
+                  Background="{DynamicResource PanelRaisedBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3"
+                  IsVisible="{Binding IsModelPreviewLoading}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+              <ProgressBar IsIndeterminate="True" Width="96" />
+              <TextBlock Text="Loading model..." Classes="dim" />
+            </StackPanel>
+          </Border>
+
+          <!-- Armor is previewed worn; the mannequin's body is the one thing to choose. Two halves
+               of one control rather than a switch: both bodies are named and either can be picked
+               directly, which is what the approved design shows. -->
+          <Border Grid.Row="2" Classes="seg" Margin="0,8,0,0"
+                  IsVisible="{Binding ShowsMannequinToggle}">
+            <Grid ColumnDefinitions="*,*">
+              <RadioButton Grid.Column="0" Theme="{StaticResource SegmentedRadioTheme}"
+                           Content="Male" GroupName="MannequinBody"
+                           IsChecked="{Binding PreviewMale, Mode=TwoWay}" />
+              <RadioButton Grid.Column="1" Theme="{StaticResource SegmentedRadioTheme}"
+                           Content="Female" GroupName="MannequinBody"
+                           IsChecked="{Binding PreviewFemale, Mode=TwoWay}" />
+            </Grid>
+          </Border>
+
+          <StackPanel Grid.Row="3" Margin="0,9,0,0" Spacing="3">
+            <TextBlock Text="{Binding FamilyDisplay}" Classes="mono" FontSize="10.5"
+                       TextWrapping="Wrap" />
+            <TextBlock Text="{Binding TemplateResRef}" Classes="resref" FontSize="10.5" />
+            <TextBlock Text="{Binding ItemTag}" Classes="dim" FontSize="10.5" />
+            <TextBlock Text="Left-drag to move &#x00B7; right-drag to turn &#x00B7; wheel to zoom"
+                       Classes="dim" FontSize="10" TextWrapping="Wrap"
+                       IsVisible="{Binding HasModelPreview}" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <TabControl Grid.Column="1" SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+        <TabItem Header="Basic">
+          <ScrollViewer>
+            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto"
+                  Margin="14,10,22,10" ColumnSpacing="12">
+              <ItemsControl Grid.Column="0" Grid.Row="0" ItemsSource="{Binding BasicRows}" />
+              <Border Grid.Column="1" Grid.Row="0" Name="FlagsCard" Width="250"
+                      Classes="card" Padding="12,9,12,11" VerticalAlignment="Top">
+                <StackPanel>
+                  <TextBlock Text="Flags" Classes="section" Margin="0,0,0,6" />
+                  <ItemsControl ItemsSource="{Binding FlagRows}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="behaviors:BehaviorRowViewModel">
+                        <CheckBox Content="{Binding Label}" IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                  IsEnabled="{Binding !IsReadOnly}" Margin="0,3" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </Border>
+            </Grid>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Appearance" IsVisible="{Binding ShowsAppearanceTab}">
+          <ScrollViewer>
+            <StackPanel Margin="14,10,22,10" Spacing="12"
+                        DataContext="{Binding Appearance}"
+                        x:DataType="items:ItemAppearanceSectionViewModel">
+              <ContentControl Content="{Binding Gallery}"
+                              IsVisible="{Binding Gallery, Converter={x:Static ObjectConverters.IsNotNull}}" />
+              <ContentControl Content="{Binding Top}"
+                              IsVisible="{Binding Top, Converter={x:Static ObjectConverters.IsNotNull}}" />
+              <ContentControl Content="{Binding Middle}"
+                              IsVisible="{Binding Middle, Converter={x:Static ObjectConverters.IsNotNull}}" />
+              <ContentControl Content="{Binding Bottom}"
+                              IsVisible="{Binding Bottom, Converter={x:Static ObjectConverters.IsNotNull}}" />
+              <ContentControl Content="{Binding Armor}"
+                              IsVisible="{Binding Armor, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Behavior" IsVisible="{Binding ShowsBehaviorTab}">
+          <Grid ColumnDefinitions="Auto,*">
+            <behaviors:BehaviorRailView Grid.Column="0" Name="BehaviorRail" Width="210"
+                                        Items="{Binding Roles.RoleList}"
+                                        ChooseCommand="{Binding Roles.ChooseRoleCommand}" />
+
+            <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}"
+                          BorderThickness="1,0,0,0">
+              <Border Classes="card" Margin="8,12"
+                      DataContext="{Binding Roles.Card}" x:DataType="items:ItemRoleCardViewModel"
+                      IsVisible="{Binding, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <StackPanel>
+                  <TextBlock Text="{Binding Title}" Classes="section" Margin="16,12,16,2" />
+                  <TextBlock Text="{Binding Summary}" Classes="dim" Margin="16,0,16,8"
+                             TextWrapping="Wrap"
+                             IsVisible="{Binding Summary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <ItemsControl ItemsSource="{Binding Statements}" Margin="16,0,16,10">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="x:String">
+                        <TextBlock Text="{Binding}" Classes="mono" FontSize="11" Margin="0,2" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <StackPanel IsVisible="{Binding ShowsSpellPicker}" Margin="16,0,16,12" Spacing="6">
+                    <TextBox Text="{Binding SpellSearchText, Mode=TwoWay}" Watermark="Search spells" />
+                    <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                            CornerRadius="2" ClipToBounds="True">
+                      <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding SpellChoices}">
+                          <!-- Virtualized: every matching spell is published, and only the rows
+                               on screen are realized. -->
+                          <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                              <VirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                          </ItemsControl.ItemsPanel>
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+                              <Button Classes="behavior" Classes.on="{Binding IsSelected}"
+                                      Margin="2" Padding="8,5"
+                                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                      Content="{Binding Display}"
+                                      Command="{Binding $parent[ItemsControl].((items:ItemRoleCardViewModel)DataContext).SelectSpellCommand}"
+                                      CommandParameter="{Binding}" />
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </ScrollViewer>
+                    </Border>
+                  </StackPanel>
+                </StackPanel>
+              </Border>
+            </ScrollViewer>
+          </Grid>
+        </TabItem>
+
+        <TabItem Header="Stats" IsVisible="{Binding ShowsStatsTab}">
+          <ScrollViewer>
+            <!-- Two independently packed columns rather than one wrapping row: a wrap sizes
+                 every row to its tallest card, which left a six-row hole under Defense beside
+                 the much taller Resistance card. The engine sweep is dealt into the columns with
+                 everything else - as its own block below the grid it began under the TALLER
+                 column, so the shorter one just stopped and left the difference blank. -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="14,10,22,10">
+              <ItemsControl Grid.Column="0" ItemsSource="{Binding Stats.LeftColumn}" />
+              <ItemsControl Grid.Column="1" ItemsSource="{Binding Stats.RightColumn}" />
+            </Grid>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Requirements">
+          <ScrollViewer>
+            <StackPanel Margin="14,10,22,10">
+              <ItemsControl ItemsSource="{Binding Requirements.Groups}" />
+              <Border Classes="card" Padding="12,9,12,11" Margin="0,0,0,10">
+                <StackPanel>
+                  <TextBlock Text="Other requirements" Classes="section" Margin="0,0,0,2" />
+                  <ItemsControl ItemsSource="{Binding Requirements.EntryLists}" />
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Source" IsVisible="{Binding ShowsSourceTab}">
+          <Grid RowDefinitions="Auto,*">
+            <Border Grid.Row="0" Height="260"
+                    IsVisible="{Binding PlacementSource, Converter={x:Static ObjectConverters.IsNotNull}}">
+              <sources:ObjectSourceView DataContext="{Binding PlacementSource}" />
+            </Border>
+          <ScrollViewer Grid.Row="1">
+            <StackPanel Margin="14,10,22,10" Spacing="8"
+                        DataContext="{Binding Source}"
+                        x:DataType="items:ItemSourceSectionViewModel">
+              <TextBlock Text="Player obtainability" Classes="section" Margin="0,2,0,3" />
+              <TextBlock Text="{Binding Verdict}" FontSize="12.5"
+                         Foreground="{DynamicResource GreenBrush}"
+                         IsVisible="{Binding IsObtainable}" />
+              <TextBlock Text="{Binding Verdict}" FontSize="12.5"
+                         Foreground="{DynamicResource AmberBrush}"
+                         IsVisible="{Binding !IsObtainable}" />
+              <ItemsControl ItemsSource="{Binding Groups}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="items:ItemSourceGroupViewModel">
+                    <Border Classes="card" Margin="0,0,0,8" Padding="12,9,12,11" MaxWidth="560"
+                            HorizontalAlignment="Left">
+                      <StackPanel>
+                        <TextBlock Text="{Binding Title}" Classes="section" Margin="0,0,0,6" />
+                        <ItemsControl ItemsSource="{Binding Entries}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="dworkspace:ItemSourceEntry">
+                              <StackPanel Margin="0,2,0,4">
+                                <TextBlock Text="{Binding Display}" />
+                                <TextBlock Text="{Binding Detail}" Classes="resref"
+                                           IsVisible="{Binding Detail, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                              </StackPanel>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </StackPanel>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+              <ItemsControl ItemsSource="{Binding EmptyKinds}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="x:String">
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="12,1">
+                      <TextBlock Text="{Binding}" Classes="section" />
+                      <TextBlock Text="none" Classes="dim" FontSize="11.5" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </ScrollViewer>
+          </Grid>
+        </TabItem>
+
+        <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
+          <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
+        </TabItem>
+      </TabControl>
+    </Grid>
+  </DockPanel>
+</UserControl>

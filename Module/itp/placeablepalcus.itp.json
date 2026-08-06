@@ -23168,39 +23168,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Graffiti 25"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_grft25"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Graffiti 26"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_grft026"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Graffiti 27"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_grft27"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Graffiti 28"
                     },
                     "RESREF": {
@@ -25294,17 +25261,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_hydrop2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Microscope, Old Fashioned"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_microsc"
                     }
                   },
                   {
@@ -29901,17 +29857,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Washbasin, Brass Faucet"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_sinkb"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Water Cooler"
                     },
                     "RESREF": {
@@ -31923,17 +31868,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Sink (White Porcelain)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_sink"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Target, Torso Black"
                     },
                     "RESREF": {
@@ -33614,39 +33548,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "zep_fish003"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fissure, Castle Int. Wall"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "zep_fissure_001"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fissure, City Int. Wall"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "zep_fissure_003"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fissure, Crypts Wall"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "zep_fissure_004"
                     }
                   },
                   {
@@ -37298,17 +37199,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Concede Game"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "concedegame"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Deactivated Spawn"
                     },
                     "RESREF": {
@@ -37325,17 +37215,6 @@
                     "STRREF": {
                       "type": "dword",
                       "value": 16812398
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sacrifice / Game Information"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gamepedestal"
                     }
                   },
                   {
@@ -45676,17 +45555,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "swlor_0667"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Chope Beer"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "swlor_0670"
                     }
                   },
                   {
@@ -58397,17 +58265,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "swd2_plnt032"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "[SWTOR] Plant - Burnt 01"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "daf_sw341"
                     }
                   },
                   {

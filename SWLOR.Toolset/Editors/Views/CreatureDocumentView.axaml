@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:creatures="using:SWLOR.Toolset.Editors.Creatures"
+             xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
+             x:Class="SWLOR.Toolset.Editors.Creatures.CreatureDocumentView"
+             x:DataType="creatures:CreatureDocumentViewModel">
+  <DockPanel>
+    <Border DockPanel.Dock="Bottom" Padding="16,11"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+        <StackPanel Grid.Column="0" VerticalAlignment="Center"
+                    DataContext="{Binding Editor}" x:DataType="creatures:CreatureEditorViewModel">
+          <StackPanel IsVisible="{Binding HasDeprecatedWarning}" Spacing="4">
+            <TextBlock Text="{Binding DeprecatedWarning}" Foreground="{DynamicResource AmberBrush}"
+                       FontSize="12" TextWrapping="Wrap" />
+            <ItemsControl ItemsSource="{Binding DeprecatedVariables}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="creatures:CreatureDeprecatedVariableViewModel">
+                  <Button Content="{Binding DisplayName}" Margin="0,0,5,0" Padding="7,2"
+                          Command="{Binding $parent[ItemsControl].((creatures:CreatureEditorViewModel)DataContext).RemoveDeprecatedCommand}"
+                          CommandParameter="{Binding}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+          <TextBlock Text="{Binding StatWarning}" Foreground="{DynamicResource AmberBrush}"
+                     FontSize="12" TextWrapping="Wrap" IsVisible="{Binding HasStatWarning}" />
+          <TextBlock Text="{Binding ReferenceWarning}" Foreground="{DynamicResource AmberBrush}"
+                     FontSize="12" TextWrapping="Wrap" IsVisible="{Binding HasReferenceWarning}" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+          <Button Content="Revert" MinWidth="86" Command="{Binding RevertCommand}" />
+          <Button Content="Save" MinWidth="86" Classes="primary" Command="{Binding SaveCommand}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+    <TabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+      <TabItem Header="Edit">
+        <creatures:CreatureEditorView DataContext="{Binding Editor}" />
+      </TabItem>
+      <TabItem Header="Source" IsVisible="{Binding Source, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <sources:ObjectSourceView DataContext="{Binding Source}" />
+      </TabItem>
+    </TabControl>
+  </DockPanel>
+</UserControl>

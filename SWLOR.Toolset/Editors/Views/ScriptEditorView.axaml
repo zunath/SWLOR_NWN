@@ -1,0 +1,138 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:edit="using:AvaloniaEdit"
+             xmlns:editors="using:SWLOR.Toolset.Editors"
+             xmlns:shellViews="using:SWLOR.Toolset.Shell.Views"
+             xmlns:script="using:SWLOR.Toolset.Domain.Script"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+             x:Class="SWLOR.Toolset.Editors.ScriptEditorView"
+             x:DataType="editors:ScriptEditorViewModel">
+
+  <Grid RowDefinitions="*,Auto,Auto,Auto">
+    <!-- The buffer is not bound. AvaloniaEdit owns the text, its own undo stack and the caret, so a
+         two-way binding would fight it: re-setting Text on every keystroke resets the caret to 0.
+         The code-behind seeds the document once and pushes changes out to the view model instead. -->
+    <Grid Grid.Row="0">
+      <edit:TextEditor Name="Editor"
+                       FontFamily="{DynamicResource MonoFont}"
+                       FontSize="13"
+                       Background="{DynamicResource ShellBackgroundBrush}"
+                       Foreground="{DynamicResource InkBrush}"
+                       ShowLineNumbers="True"
+                       WordWrap="False"
+                       HorizontalScrollBarVisibility="Auto"
+                       VerticalScrollBarVisibility="Auto" />
+
+      <Border Name="SearchPanel" IsVisible="False" HorizontalAlignment="Right" VerticalAlignment="Top"
+              Background="{DynamicResource PanelRaisedBrush}" BorderBrush="{DynamicResource AccentBrush}"
+              BorderThickness="1" Padding="8" Margin="0,8,24,0" CornerRadius="4">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <TextBlock Text="Find" VerticalAlignment="Center" Classes="count" />
+          <TextBox Name="FindTextBox" Width="170" KeyDown="OnSearchBoxKeyDown" />
+          <Button Content="Prev" Padding="8,3" Click="OnFindPreviousClick" />
+          <Button Content="Next" Padding="8,3" Click="OnFindNextClick" />
+          <TextBlock Name="ReplaceLabel" Text="Replace" VerticalAlignment="Center" Classes="count" />
+          <TextBox Name="ReplaceTextBox" Width="150" KeyDown="OnSearchBoxKeyDown" />
+          <Button Name="ReplaceButton" Content="Replace" Padding="8,3" Click="OnReplaceClick" />
+          <Button Name="ReplaceAllButton" Content="All" Padding="8,3" Click="OnReplaceAllClick" />
+          <CheckBox Name="MatchCaseBox" Content="Case" VerticalAlignment="Center" />
+          <Button Classes="close" Click="OnCloseSearchClick" ToolTip.Tip="Close search">
+            <Path Data="{DynamicResource ToolsetCloseIconGeometry}" />
+          </Button>
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <!-- Script-only utilities sit under the code rather than occupying the application-wide bottom
+         dock. Outline is the default; cross-script search temporarily takes its place when requested. -->
+    <Border Grid.Row="1" Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,1" Padding="14,6">
+      <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
+        <TextBlock Grid.Column="0" Classes="title" Text="OUTLINE" VerticalAlignment="Center"
+                   IsVisible="{Binding !IsWorkspaceSearchOpen}" />
+        <TextBlock Grid.Column="0" Classes="title" Text="FIND IN SCRIPTS" VerticalAlignment="Center"
+                   IsVisible="{Binding IsWorkspaceSearchOpen}" />
+
+        <Button Name="OutlineToggleButton" Grid.Column="1" Classes="utility-icon"
+                Command="{Binding ToggleOutlineCommand}" VerticalAlignment="Center"
+                IsVisible="{Binding !IsWorkspaceSearchOpen}"
+                ToolTip.Tip="Collapse or expand the script outline">
+          <Grid>
+            <Path Data="{DynamicResource ToolsetChevronDownIconGeometry}"
+                  IsVisible="{Binding IsOutlineCollapsed}" />
+            <Path Data="{DynamicResource ToolsetChevronUpIconGeometry}"
+                  IsVisible="{Binding !IsOutlineCollapsed}" />
+          </Grid>
+        </Button>
+
+        <Button Name="WorkspaceSearchToggleButton" Grid.Column="2" Classes="utility-icon"
+                Classes.active="{Binding IsWorkspaceSearchOpen}"
+                Command="{Binding ToggleWorkspaceSearchCommand}" VerticalAlignment="Center"
+                IsVisible="{Binding HasWorkspaceSearch}" ToolTip.Tip="Find in all scripts">
+          <Path Data="{DynamicResource ToolsetSearchIconGeometry}" />
+        </Button>
+
+        <!-- Compile lives on the document, not in a module-wide menu: it acts on the file in front
+             of you, and Ctrl+B does the same thing without leaving the keyboard. -->
+        <Button Grid.Column="4" Classes="primary" Content="Compile (Ctrl+B)" Padding="10,3"
+                Command="{Binding CompileCommand}" VerticalAlignment="Center"
+                ToolTip.Tip="Save and compile this script to .ncs (Ctrl+B)" />
+
+        <!-- The answer to "what is this script attached to?", which nothing else in the pipeline
+             can give: 2,250 module resources name a script by resref. -->
+        <TextBlock Grid.Column="5" Classes="count" VerticalAlignment="Center"
+                   Foreground="{DynamicResource GreenBrush}"
+                   IsVisible="{Binding HasUsageSummary}" Text="{Binding UsageSummary}" />
+        <Button Grid.Column="6" Classes="link" Content="Used by..." Padding="0"
+                Command="{Binding ShowUsagesCommand}" VerticalAlignment="Center" />
+      </Grid>
+    </Border>
+
+    <!-- Compile outcome, on the document itself. A failure has to be visible where the work happened,
+         not only in a panel that may be behind another tab. Clicking it opens Problems. -->
+    <Button Grid.Row="3" IsVisible="{Binding HasCompileStatus}"
+            Command="{Binding ShowProblemsCommand}"
+            Background="{DynamicResource PanelRaisedBrush}" BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource RuleBrush}" CornerRadius="0" Padding="14,5"
+            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <TextBlock Text="✕" FontSize="10" VerticalAlignment="Center"
+                   Foreground="#E05A5A" IsVisible="{Binding LastCompileFailed}" />
+        <TextBlock Text="●" FontSize="9" VerticalAlignment="Center"
+                   Foreground="{DynamicResource GreenBrush}" IsVisible="{Binding !LastCompileFailed}" />
+        <TextBlock Classes="count" VerticalAlignment="Center" Text="{Binding CompileStatus}" />
+      </StackPanel>
+    </Button>
+
+    <ScrollViewer Name="OutlineList" Grid.Row="2" MaxHeight="110" VerticalScrollBarVisibility="Auto"
+                  IsVisible="{Binding IsOutlineVisible}"
+                  Background="{DynamicResource PanelBrush}">
+      <ItemsControl ItemsSource="{Binding OutlineFunctions}" Margin="0,3">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="script:ScriptFunctionDeclaration">
+            <Button Background="Transparent" BorderThickness="0" Padding="14,2"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                    Command="{Binding $parent[ItemsControl].((editors:ScriptEditorViewModel)DataContext).GoToOutlineEntryCommand}"
+                    CommandParameter="{Binding}">
+              <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                <TextBlock Grid.Column="0" Text="&#402;" VerticalAlignment="Center"
+                           Foreground="{DynamicResource GoldBrush}" />
+                <TextBlock Grid.Column="1" Classes="name" Text="{Binding Display}"
+                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                <TextBlock Grid.Column="2" Classes="count" Text="{Binding Line}" VerticalAlignment="Center" />
+              </Grid>
+            </Button>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+
+    <Border Name="WorkspaceSearchPanel" Grid.Row="2" MaxHeight="220"
+            IsVisible="{Binding IsWorkspaceSearchOpen}"
+            Background="{DynamicResource PanelBrush}">
+      <shellViews:ScriptSearchView DataContext="{Binding WorkspaceSearch}" />
+    </Border>
+  </Grid>
+</UserControl>

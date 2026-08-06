@@ -6,6 +6,9 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Tests.Support;
 
@@ -363,6 +366,40 @@ public class CombatAttackDelayTests
         })
             .Should()
             .BeFalse();
+    }
+
+    [Test]
+    public void ConsumeNextAbilityDelayReduction_ReturnsNothingWhenUnarmedOrNonHostile()
+    {
+        const uint creature = 310;
+
+        Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
+        {
+            IsHostileAbility = true,
+            SkillType = SkillType.Pistol
+        }).Should().Be(0);
+
+        Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
+        {
+            IsHostileAbility = false,
+            SkillType = SkillType.Pistol
+        }).Should().Be(0);
+    }
+
+    [Test]
+    public void ReloadTempo_DeclaresThePartialDelayReductionItsDescriptionPromises()
+    {
+        // The stat family it shares with full-no-delay perks zeroes the delay when this magnitude
+        // is absent, which is how the perk shipped at 100% while describing 20%.
+        var source = File.ReadAllText(Path.Combine(
+            RepoPaths.FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server", "Feature", "PerkDefinition", "PistolPerkDefinition.cs"));
+        var reloadTempo = source[source.IndexOf("private void ReloadTempo()", StringComparison.Ordinal)..];
+        reloadTempo = reloadTempo[..reloadTempo.IndexOf("private void ", 1, StringComparison.Ordinal)];
+
+        reloadTempo.Should().Contain("attack delay reduced by 20%");
+        reloadTempo.Should().Contain(
+            ".IncreasesStat(StatType.CriticalNextAbilityDelayReductionPercent, 20)");
     }
 
     [Test]

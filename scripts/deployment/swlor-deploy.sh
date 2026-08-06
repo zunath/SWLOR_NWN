@@ -1172,7 +1172,9 @@ if (( module_inputs_changed == 1 )); then
     log "Packing $MODULE_NAME."
     (
         cd "$SOURCE_ROOT/Module"
-        dotnet "$cli_directory/SWLOR.CLI.dll" --pack "./$MODULE_NAME"
+        dotnet "$cli_directory/SWLOR.CLI.dll" \
+            --pack "./$MODULE_NAME" \
+            --no-prompt
     )
     module_temporary="$NWSYNC_MODULE_ROOT/.${MODULE_NAME}.new.$$"
     install -o root -g root -m 0644 \

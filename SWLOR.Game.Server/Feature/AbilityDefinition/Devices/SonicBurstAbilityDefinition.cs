@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasTargetingSphere(
                     Spell.SonicBurst1,
                     5f,
-                    AbilityTargetingFlags.HarmsEnemies)
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasTargetingSphere(
                     Spell.SonicBurst2,
                     5f,
-                    AbilityTargetingFlags.HarmsEnemies)
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasTargetingSphere(
                     Spell.SonicBurst3,
                     5f,
-                    AbilityTargetingFlags.HarmsEnemies)
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

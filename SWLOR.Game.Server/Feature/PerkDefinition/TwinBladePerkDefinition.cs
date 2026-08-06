@@ -212,7 +212,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EdgeRhythmTrait)
                 .Description("Every third auto-attack deals +15 DMG to one enemy within 5m.")
-                .IncreasesStat(StatType.AutoAttackCycleDamageSkillType, (int)SkillType.TwinBlade)
                 .IncreasesStat(StatType.AutoAttackCycleRequiredCount, 3)
                 .IncreasesStat(StatType.AutoAttackCycleDamage, 15)
                 .IncreasesStat(StatType.AutoAttackCycleRadiusMeters, 5)

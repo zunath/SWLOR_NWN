@@ -90,8 +90,14 @@ public class LightsaberWorkbenchTests
 
         var saberProperties = ExtractProperties(saber);
         var templateProperties = ExtractProperties(template);
-        saberProperties.Should().BeEquivalentTo(templateProperties,
-            $"{Path.GetFileName(saberPath)} must carry the exact tier 5 property set of {Path.GetFileName(templatePath)}");
+
+        // Workbench sabers glow: Light (44), no subtype, iprp_lightcost (18), Bright (4) —
+        // matching the DM-built saber template pclightsabert001 the workbench replaced.
+        var expectedProperties = templateProperties
+            .Append((PropertyName: 44, Subtype: 0, CostTable: 18, CostValue: 4))
+            .ToList();
+        saberProperties.Should().BeEquivalentTo(expectedProperties,
+            $"{Path.GetFileName(saberPath)} must carry the exact property set of {Path.GetFileName(templatePath)} plus a Bright Light property");
     }
 
     private static List<(int PropertyName, int Subtype, int CostTable, int CostValue)> ExtractProperties(JObject item)

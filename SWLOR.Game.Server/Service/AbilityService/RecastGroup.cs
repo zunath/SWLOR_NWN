@@ -492,7 +492,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ForceIntercept = 335,
         [RecastGroup("Force Leap", "Force Leap", true)]
         ForceLeap = 336,
-        [RecastGroup("Force Lightning", "Force Lightng", true)]
+        [RecastGroup("Force Lightning", "F. Lightning", true)]
         ForceLightning = 337,
         [RecastGroup("Force Push", "Force Push", true)]
         ForcePush = 340,
@@ -720,7 +720,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         VigorThrust = 447,
         [RecastGroup("Vigor Stance", "Vigor Stance", true)]
         VigorStance = 448,
-        [RecastGroup("Lacerating Twin Cut", "Lacerati Cut", true)]
+        [RecastGroup("Lacerating Twin Cut", "Twin Cut", true)]
         LaceratingTwinCut = 449,
         [RecastGroup("Serrated Arc", "Serrated Arc", true)]
         SerratedArc = 450,
@@ -750,7 +750,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         FlurryStance = 462,
         [RecastGroup("Ward Bond", "Ward Bond", true)]
         WardBond = 463,
-        [RecastGroup("Iron Guard Stance", "Iron Stanc", true)]
+        [RecastGroup("Iron Guard Stance", "Iron Guard", true)]
         IronGuardStance = 464,
         [RecastGroup("Guard Lock", "Guard Lock", true)]
         GuardLock = 465,

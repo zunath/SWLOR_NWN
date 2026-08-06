@@ -1,11 +1,11 @@
 using System.Linq;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.QuestService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class QuestRewardSelectionDialog: DialogBase
+    public class QuestRewardSelectionDialog: ConversationMenuDefinition
     {
         private class Model
         {
@@ -14,9 +14,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private const string MainPageId = "MAIN";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialize)
                 .AddPage(MainPageId, MainPageInit);
@@ -26,23 +26,23 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private void Initialize()
         {
-            var player = GetPC();
+            var player = Player;
             var questId = GetLocalString(player, "QST_REWARD_SELECTION_QUEST_ID");
-            var model = GetDataModel<Model>();
+            var model = Data<Model>();
 
             model.QuestId = questId;
             DeleteLocalString(player, "QST_REWARD_SELECTION_QUEST_ID");
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var model = GetDataModel<Model>();
+            var model = Data<Model>();
             var quest = Quest.GetQuestById(model.QuestId);
 
             void HandleRewardSelection(IQuestReward reward)
             {
-                quest.Complete(GetPC(), GetPC(), reward);
-                EndConversation();
+                quest.Complete(Player, Player, reward);
+                Close();
             }
             page.Header = "Please select a reward.";
 

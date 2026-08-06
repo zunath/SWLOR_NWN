@@ -3059,7 +3059,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalFloat(player, PropertyCityHallXVariable, position.X);
                 SetLocalFloat(player, PropertyCityHallYVariable, position.Y);
                 SetLocalFloat(player, PropertyCityHallZVariable, position.Z);
-                Dialog.StartConversation(player, player, nameof(PlaceCityHallDialog));
+                ConversationMenu.Start(player, player, nameof(PlaceCityHallDialog));
                 return;
             }
 

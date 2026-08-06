@@ -80,12 +80,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public uint MarkerObject { get; set; }
         }
 
-        public static int ApplyFieldSupportOutputBonus(uint activator, int amount)
-        {
-            var bonusPercent = Stat.GetStatAdjustment(activator, StatType.DeviceAbilityOutputPercentAdjustment);
-            return amount + amount * bonusPercent / 100;
-        }
-
         public static void ApplyPowerSurge(uint activator, uint target)
         {
             if (Stat.GetStatAdjustment(activator, StatType.PowerCellInitialTargetPowerSurge) <= 0)
@@ -162,16 +156,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static void ApplyRayshieldScreenRider(uint activator, uint target)
         {
-            var reductionPercent = Stat.GetStatAdjustment(
+            var physicalDefensePercent = Stat.GetStatAdjustment(
                 activator,
-                StatType.FieldSupportRangedPhysicalDamageReductionPercent);
+                StatType.FieldSupportPhysicalDefensePercent);
             var durationSeconds = Stat.GetStatAdjustment(
                 activator,
-                StatType.FieldSupportRangedPhysicalDamageReductionDurationSeconds);
-            if (reductionPercent <= 0 || durationSeconds <= 0)
+                StatType.FieldSupportPhysicalDefenseDurationSeconds);
+            if (physicalDefensePercent <= 0 || durationSeconds <= 0)
                 return;
 
-            StatusEffectBase statusEffect = reductionPercent >= 12
+            StatusEffectBase statusEffect = physicalDefensePercent >= 12
                 ? new RayshieldScreen2StatusEffect()
                 : new RayshieldScreen1StatusEffect();
 
@@ -204,11 +198,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             StatusEffect.ApplyStatusEffect(activator, target, new OverclockRoutineStatusEffect(), 30f);
         }
 
-        public static float ApplyGrenadeRadiusBonus(uint activator, float baseRadius)
+        public static float ApplyBlastRadiusBonus(uint activator, float baseRadius)
         {
-            return CalculateGrenadeRadius(
+            return CalculateBlastRadius(
                 baseRadius,
-                Stat.GetStatAdjustment(activator, StatType.GrenadeRadiusBonusTenths));
+                Stat.GetStatAdjustment(activator, StatType.BlastRadiusBonusTenths));
         }
 
         public static float ApplyBeaconPulseRangeBonus(uint activator, float baseRadius)
@@ -216,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return baseRadius + Stat.GetStatAdjustment(activator, StatType.BeaconPulseRangeBonusMeters);
         }
 
-        public static float CalculateGrenadeRadius(float baseRadius, int radiusBonusTenths)
+        public static float CalculateBlastRadius(float baseRadius, int radiusBonusTenths)
         {
             return baseRadius + radiusBonusTenths / 10f;
         }
@@ -351,7 +345,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Location location,
             VisualEffect markerVisualEffect,
             float markerVisualEffectScale,
-            float durationSeconds)
+            float durationSeconds,
+            string markerResref = FieldEngineerPulseMarkerResref)
         {
             if (markerVisualEffect == VisualEffect.None ||
                 durationSeconds <= 0f ||
@@ -362,14 +357,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             var marker = CreateObject(
                 ObjectType.Placeable,
-                FieldEngineerPulseMarkerResref,
+                markerResref,
                 location,
                 false,
                 FieldEngineerPulseMarkerTag);
             if (!GetIsObjectValid(marker))
             {
                 Log.Write(LogGroup.Error,
-                    $"Failed to create field marker placeable '{FieldEngineerPulseMarkerResref}' at the requested location.");
+                    $"Failed to create field marker placeable '{markerResref}' at the requested location.");
                 return OBJECT_INVALID;
             }
 

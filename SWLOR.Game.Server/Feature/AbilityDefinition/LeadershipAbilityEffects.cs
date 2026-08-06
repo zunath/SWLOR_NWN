@@ -89,10 +89,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, activator, true, radius))
             {
-                ApplyEffectToObject(
-                    DurationType.Temporary,
-                    EffectTemporaryHitpoints(GameMath.PercentOf(GetMaxHitPoints(friendly), temporaryHPPercent)),
+                TemporaryHitPointEffects.ApplyFlat(
                     friendly,
+                    "BOLSTER_RESOLVE",
+                    GameMath.PercentOf(GetMaxHitPoints(friendly), temporaryHPPercent),
                     durationSeconds);
 
                 if (rank >= 2)

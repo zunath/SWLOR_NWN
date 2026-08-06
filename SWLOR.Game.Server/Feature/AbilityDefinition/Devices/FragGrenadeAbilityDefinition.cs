@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.FragGrenade1,
                     3f,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(FragGrenade1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.FragGrenade2,
                     3f,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(FragGrenade2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.FragGrenade3,
                     3f,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(FragGrenade3ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 statusEffect,
                 CombatImpactAreaShape.Sphere,
                 0f,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 3f),
+                DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f),
                 0f,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,

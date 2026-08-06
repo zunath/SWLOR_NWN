@@ -241,7 +241,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.LightGuardianPowerAttackDeflection,
         StatType.LightGuardianTemporaryHPReflectiveBarrier,
         StatType.DeviceShieldTemporaryHPPercentAdjustment,
-        StatType.FieldSupportRangedPhysicalDamageReductionPercent,
+        StatType.FieldSupportPhysicalDefensePercent,
         StatType.FieldSupportPhysicalAndForceDamageReductionPercent,
         StatType.IncomingCriticalHitDowngradeToMinimumDamage,
         StatType.PhysicalDamageImmunity,

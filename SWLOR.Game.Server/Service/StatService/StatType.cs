@@ -2530,12 +2530,6 @@ namespace SWLOR.Game.Server.Service.StatService
         PowerCellInitialTargetPowerSurge = 447,
 
         /// <summary>
-        /// Percent adjustment applied to Devices ability output granted by Overclock Routine.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DeviceAbilityOutputPercentAdjustment = 448,
-
-        /// <summary>
         /// Enables Field Support ally abilities to apply Overclock Routine.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -2656,16 +2650,16 @@ namespace SWLOR.Game.Server.Service.StatService
         PredatorsMarkDurationSeconds = 825,
 
         /// <summary>
-        /// Ranged physical damage reduction percent applied by Field Support ally-buff riders.
+        /// Physical Defense percent applied by Field Support ally-buff riders.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        FieldSupportRangedPhysicalDamageReductionPercent = 467,
+        FieldSupportPhysicalDefensePercent = 467,
 
         /// <summary>
-        /// Duration in seconds for FieldSupportRangedPhysicalDamageReductionPercent.
+        /// Duration in seconds for FieldSupportPhysicalDefensePercent.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        FieldSupportRangedPhysicalDamageReductionDurationSeconds = 468,
+        FieldSupportPhysicalDefenseDurationSeconds = 468,
 
         /// <summary>
         /// Physical and Force damage reduction percent applied by Field Support ally-buff riders.

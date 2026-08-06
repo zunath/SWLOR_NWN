@@ -417,6 +417,63 @@ namespace SWLOR.Game.Server.Service.QuestService
         }
 
         /// <summary>
+        /// Marks this quest as completed for a player without granting rewards, running completion
+        /// actions, or requiring objectives to be met. Used by DM tooling to open quest-gated
+        /// content such as capstone perk unlocks.
+        /// </summary>
+        /// <param name="player">The player whose quest record is marked complete.</param>
+        public void ForceComplete(uint player)
+        {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var quest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : new PlayerQuest();
+            var hadActiveJournalEntry = quest.CurrentState > 0 && quest.TimesCompleted <= 0;
+
+            if (quest.TimesCompleted <= 0)
+            {
+                quest.TimesCompleted = 1;
+                quest.DateLastCompleted = DateTime.UtcNow;
+            }
+
+            quest.CurrentState = GetStates().Count();
+            quest.ItemProgresses.Clear();
+            quest.KillProgresses.Clear();
+            dbPlayer.Quests[QuestId] = quest;
+            DB.Set(dbPlayer);
+
+            if (hadActiveJournalEntry)
+            {
+                // The quest was in the player's journal as active. Mirror Complete()'s journal
+                // handling: custom entries cannot be removed outright, so the entry is re-added
+                // flagged as completed and drops off entirely at the player's next login.
+                RemoveJournalQuestEntry(QuestId, player, false);
+
+                if (States.ContainsKey(quest.CurrentState))
+                {
+                    PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+                    {
+                        Name = Name,
+                        Text = States[quest.CurrentState].JournalText,
+                        Tag = QuestId,
+                        State = quest.CurrentState,
+                        Priority = 1,
+                        IsQuestCompleted = true,
+                        IsQuestDisplayed = true,
+                        Updated = 1,
+                        CalendarDay = GetCalendarDay(),
+                        TimeOfDay = GetTimeHour()
+                    }, true);
+                }
+            }
+
+            QuestEncounter.RefreshVisibilityForPlayer(player);
+            Gui.PublishRefreshEvent(player, new QuestCompletedRefreshEvent(QuestId));
+        }
+
+        /// <summary>
         /// Completes a quest for a player. If a reward is selected, that reward will be given to the player.
         /// Otherwise, all rewards configured for this quest will be given to the player.
         /// </summary>

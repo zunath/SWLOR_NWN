@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class RemoteChargeAbilityDefinition : IAbilityListDefinition
     {
+        // Distinct "Detonator Pack" placeable so an armed charge cannot be mistaken for a beacon emitter.
+        private const string RemoteChargeMarkerResref = "_mdrn_pl_detonat";
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -93,7 +96,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 impactLocation,
                 VisualEffect.Vfx_Dur_Aura_Pulse_Red_Orange,
                 2f,
-                3f);
+                3f,
+                RemoteChargeMarkerResref);
 
             Ability.ApplyTelegraphedCombatImpact(
                 activator,

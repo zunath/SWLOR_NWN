@@ -40,8 +40,8 @@ namespace SWLOR.Toolset.Tests
             [WaypointBehaviorCatalog.CreatureSpawnPointId] = 1952,
             [WaypointBehaviorCatalog.FishingPointId] = 431,
             [WaypointBehaviorCatalog.MapNoteId] = 376,
-            [WaypointBehaviorCatalog.StuckRescuePointId] = 300,
-            [WaypointBehaviorCatalog.TransitionDestinationId] = 227,
+            [WaypointBehaviorCatalog.StuckRescuePointId] = 306,
+            [WaypointBehaviorCatalog.TransitionDestinationId] = 229,
             [WaypointBehaviorCatalog.PropertyEntranceId] = 43,
             [WaypointBehaviorCatalog.StarshipDockId] = 11,
             [WaypointBehaviorCatalog.PlanetLandingId] = 10,
@@ -49,7 +49,7 @@ namespace SWLOR.Toolset.Tests
             [WaypointBehaviorCatalog.TaxiStopId] = 4,
             [WaypointBehaviorCatalog.DeathRespawnId] = 1,
             [WaypointBehaviorCatalog.RebuildId] = 2,
-            [WaypointBehaviorCatalog.CustomId] = 548
+            [WaypointBehaviorCatalog.CustomId] = 550
         };
 
         private static string GameServerSourceRoot =>
@@ -94,7 +94,7 @@ namespace SWLOR.Toolset.Tests
                 .ToDictionary(group => group.Key, group => group.Count());
 
             counts.Should().BeEquivalentTo(ExpectedPlacementCounts);
-            counts.Values.Sum().Should().Be(3915);
+            counts.Values.Sum().Should().Be(3925);
         }
 
         [Test]

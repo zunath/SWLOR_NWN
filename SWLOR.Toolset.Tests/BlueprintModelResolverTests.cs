@@ -228,7 +228,23 @@ namespace SWLOR.Toolset.Tests
             var root = BlueprintRoot(ResourceType.Utc, "darthgravius");
             root.SetInt("BodyPart_LShoul", GffFieldType.Byte, 1);
             root.SetInt("BodyPart_RShoul", GffFieldType.Byte, 1);
-            JsonGffStruct? LoadItem(string resRef) => BlueprintRoot(ResourceType.Uti, resRef);
+            JsonGffStruct? LoadItem(string resRef)
+            {
+                var item = BlueprintRoot(ResourceType.Uti, resRef);
+                if (resRef == "jeweled_cloak")
+                {
+                    // The corpus item moved to the basic cloak (row 20: MODEL 20, TEXTURE 20,
+                    // shoulders kept) when its old appearance's models were KILLed. Pin the
+                    // divergent row 10 (MODEL 7, TEXTURE 14, hides both shoulders) so the split
+                    // geometry/texture mapping and the shoulder-hiding flags stay covered. Both
+                    // fields must move together: ItemAppearanceValues.Read prefers the larger of
+                    // the byte and its xModelPart1 word companion.
+                    item.SetInt("ModelPart1", GffFieldType.Byte, 10);
+                    item.SetInt("xModelPart1", GffFieldType.Word, 10);
+                }
+
+                return item;
+            }
 
             var result = BlueprintModelResolver.Resolve(
                 ResourceType.Utc, root, Appearances(), null, null,

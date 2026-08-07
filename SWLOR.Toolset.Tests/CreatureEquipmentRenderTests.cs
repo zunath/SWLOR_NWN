@@ -134,8 +134,8 @@ namespace SWLOR.Toolset.Tests
             cloakMeshes.Should().OnlyContain(mesh => mesh.LayerColorIndices.ContainsKey(
                 SWLOR.NWN.Formats.Plt.PltLayers.Cloth1));
             cloakMeshes.Should().OnlyContain(mesh =>
-                mesh.TextureName.Equals("pfe0_cloak_014", StringComparison.OrdinalIgnoreCase),
-                "cloak appearance 10 reuses geometry 7 but selects texture 14");
+                mesh.TextureName.Equals("pfe0_cloak_020", StringComparison.OrdinalIgnoreCase),
+                "cloak appearance 20 maps to geometry 20 and texture 20 through cloakmodel.2da");
             cloakMeshes.Select(mesh =>
                     mesh.LayerColorIndices[SWLOR.NWN.Formats.Plt.PltLayers.Cloth1])
                 .Should().OnlyContain(cloth => cloth == 45,

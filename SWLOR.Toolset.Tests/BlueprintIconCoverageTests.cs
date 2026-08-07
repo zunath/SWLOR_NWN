@@ -136,6 +136,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Every_Creature_Blueprint_Resolves_All_Requested_Model_Parts()
         {
+            HaksCorpusGuard.RequireDirectories("sw_cr_creature", "sw_cr_vehicle", "sw_pt_root");
             var unresolved = new List<string>();
 
             foreach (var resRef in Data.Workspace.EnumerateResRefs(ResourceType.Utc))
@@ -178,6 +179,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Every_Placeable_Blueprint_Resolves_Its_Model()
         {
+            HaksCorpusGuard.RequireDirectories("sw_plc", "sw_plc_cep", "sw_plc_mdrn", "sw_plc_swtor");
             var resRefs = Data.Workspace.EnumerateResRefs(ResourceType.Utp).ToList();
             var unresolved = resRefs
                 .Select(resRef => (ResRef: resRef, Failure: ModelFailure(
@@ -194,6 +196,9 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Placed_Creatures_Placeables_And_Items_Resolve_Their_Appearances()
         {
+            HaksCorpusGuard.RequireDirectories(
+                "sw_cr_creature", "sw_cr_vehicle", "sw_pt_root",
+                "sw_plc", "sw_plc_cep", "sw_plc_mdrn", "sw_plc_swtor");
             var failures = new List<string>();
 
             foreach (var path in Directory.EnumerateFiles(
@@ -221,6 +226,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Module_Visual_References_Use_Valid_2Da_Rows_And_Artwork()
         {
+            HaksCorpusGuard.RequireDirectories("sw_portrait", "sw_load");
             var failures = new List<string>();
             var tailModels = Data.TwoDa.GetTable("tailmodel");
             var wingModels = Data.TwoDa.GetTable("wingmodel");
@@ -275,6 +281,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Door_Model_Coverage_Does_Not_Regress()
         {
+            HaksCorpusGuard.RequireDirectories("sw_door");
             var resolved = Data.Workspace.EnumerateResRefs(ResourceType.Utd)
                 .Count(resRef => ResolvesModel(
                     ResourceType.Utd, Data.Workspace.LoadBlueprint(ResourceType.Utd, resRef).Fields));

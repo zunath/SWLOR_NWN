@@ -51,6 +51,8 @@ namespace SWLOR.Toolset.Tests
                 return;
             }
 
+            HaksCorpusGuard.RequireTilesetCorpus();
+
             var index = ResourceIndex.FromHakBuilderConfig(
                 Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
                 Path.Combine(RepoRoot, "SWLOR_Haks"),

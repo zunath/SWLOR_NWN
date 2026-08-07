@@ -133,6 +133,8 @@ namespace SWLOR.Toolset.Tests
                 return;
             }
 
+            HaksCorpusGuard.RequireDirectories("sw_t_scifibase");
+
             var index = ResourceIndex.FromHakBuilderConfig(
                 Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
                 Path.Combine(RepoRoot, "SWLOR_Haks"),

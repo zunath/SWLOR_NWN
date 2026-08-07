@@ -90,6 +90,9 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void MdlMeshBuilder_ForSampleOfCorpusTileModels_BuildsValidGeometryForEveryModel()
         {
+            HaksCorpusGuard.RequireDirectories(
+                "sw_t_dungeon", "sw_t_castle1", "sw_t_crypt", "sw_t_mine", "sw_t_cityext");
+
             var modelResRefs = GetSampleModelResRefs();
             modelResRefs.Count.Should().BeGreaterThanOrEqualTo(20, "the sample must cover at least 20 distinct MDL models");
 
@@ -177,6 +180,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void TextureLoader_LoadTga_ForKnownCorpusTexture_DecodesToReportedDimensions()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_cepdungeon");
             var index = BuildHakOnlyIndex();
 
             // A plain (non-BioWare-DDS) TGA texture used by the dungeon tileset.
@@ -192,6 +196,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void TextureLoader_LoadDds_ForKnownBiowareFormatCorpusTexture_DecodesToReportedDimensions()
         {
+            HaksCorpusGuard.RequireDirectories("sw_cr_creature");
             var index = BuildHakOnlyIndex();
 
             // ad_btllady.dds ships in sw_cr_creature and is in BioWare's proprietary DDS format
@@ -208,6 +213,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void TextureLoader_LoadPlt_ForKnownCorpusTexture_DecodesToReportedDimensions()
         {
+            HaksCorpusGuard.RequireDirectories("sw_cr_creature");
             var index = BuildHakOnlyIndex();
 
             // Palette TGAs (pal_skin01 etc.) ship only in the base game BIF, not in SWLOR_Haks,
@@ -235,6 +241,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void TxiInfo_Parse_EnvMapAndAlphaMean_MatchesRealCorpusFile()
         {
+            HaksCorpusGuard.RequireDirectories("sw_cr_creature");
             var path = Path.Combine(HaksDirectory, "sw_cr_creature", "hp_brain_jar.txi");
             File.Exists(path).Should().BeTrue();
 
@@ -249,6 +256,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void TxiInfo_Parse_PunchthroughBlending_MatchesRealCorpusFile()
         {
+            HaksCorpusGuard.RequireDirectories("sw_plc");
             var path = Path.Combine(HaksDirectory, "sw_plc", "ct01_treefol08.txi");
             File.Exists(path).Should().BeTrue();
 
@@ -261,6 +269,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void TxiInfo_Parse_Cube_MatchesRealCorpusFile()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_mine");
             var path = Path.Combine(HaksDirectory, "sw_t_mine", "ztall_sky.txi");
             File.Exists(path).Should().BeTrue();
 
@@ -322,6 +331,8 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void MaterialResolver_Parse_RealCorpusMtrFile_MatchesFileContents()
         {
+            HaksCorpusGuard.RequireDirectories("sw_cr_vehicle");
+
             // Located by name rather than by hak folder: the haks reorganise periodically
             // (this file has already moved from sw_cr_creature to sw_cr_vehicle), and what the
             // test cares about is that a real shipped .mtr parses, not where it currently lives.
@@ -339,6 +350,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void MaterialResolver_ResolveDiffuseTextureName_WhenMtrExistsInIndex_ReturnsTexture0()
         {
+            HaksCorpusGuard.RequireDirectories("sw_cr_vehicle");
             var index = BuildHakOnlyIndex();
 
             // c_huttbomb1.mtr ships in the haks (confirmed above) and declares texture0
@@ -378,6 +390,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void MaterialResolver_ResolveMaterialMaps_MtrNullSlot_MeansNoMapAndNoSuffixGuessing()
         {
+            HaksCorpusGuard.RequireDirectories("sw_cr_vehicle");
             var index = BuildHakOnlyIndex();
 
             // c_n_thranta.mtr declares "texture1 null" alongside real texture2/texture3 slots -
@@ -394,6 +407,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void MaterialResolver_ResolveMaterialMaps_NoMtr_FindsSuffixCompanions()
         {
+            HaksCorpusGuard.RequireDirectories("sw_plc");
             var index = BuildHakOnlyIndex();
 
             // heavy_repeater has no .mtr; heavy_repeater_s.dds ships beside heavy_repeater.dds

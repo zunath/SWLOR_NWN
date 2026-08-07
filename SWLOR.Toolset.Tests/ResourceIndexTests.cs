@@ -366,6 +366,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void FromHakBuilderConfig_OverRealCorpus_FindsTde01SetAndDungeonModel_AndScansQuickly()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_dungeon");
             var index = ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory);
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();

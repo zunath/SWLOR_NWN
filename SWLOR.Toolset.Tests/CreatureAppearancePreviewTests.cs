@@ -40,6 +40,14 @@ namespace SWLOR.Toolset.Tests
                     "The SWLOR_Haks submodule is not initialized and SWLOR_TEST_HAKS_ROOT was not supplied.");
             }
 
+            // SWLOR's custom dynamic species compose their previews from the SWLOR body-part haks.
+            // Checked against the resolved haksRoot so an SWLOR_TEST_HAKS_ROOT override still works.
+            foreach (var partFolder in new[] { "sw_pt_head", "sw_pt_chest" })
+            {
+                if (!Directory.Exists(Path.Combine(haksRoot, partFolder)))
+                    Assert.Ignore($"SWLOR_Haks/{partFolder} is not checked out.");
+            }
+
             var twoDa = new TwoDaService(Path.Combine(haksRoot, "sw_2da"));
             var tlk = TlkService.Load(Path.Combine(haksRoot, "sw_tlk", "sw_tlk.tlk.json"));
             var appearances = new AppearanceService(twoDa, tlk);

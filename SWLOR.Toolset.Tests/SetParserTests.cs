@@ -47,6 +47,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void EveryTilesetSetFile_ParsesWithoutExceptionAndHasTiles()
         {
+            HaksCorpusGuard.RequireTilesetCorpus();
             var files = EnumerateSetFiles().ToList();
             files.Count.Should().BeGreaterThan(50, "the sw_t_* tileset corpus should be present");
 
@@ -78,6 +79,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Tde01_GeneralSection_MatchesFileContents()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_dungeon");
             var tileset = SetFileParser.ParseFile(Tde01Path);
 
             tileset.Name.Should().Be("TDE01");
@@ -92,6 +94,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Tde01_Terrains_MatchFileContents()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_dungeon");
             var tileset = SetFileParser.ParseFile(Tde01Path);
 
             tileset.Terrains.Should().HaveCount(7);
@@ -108,6 +111,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Tde01_Tile6_HasExpectedModelCornersAndDoor()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_dungeon");
             var tileset = SetFileParser.ParseFile(Tde01Path);
 
             tileset.TileCount.Should().Be(1092);
@@ -130,6 +134,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Tde01_Groups_MatchFileContents()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_dungeon");
             var tileset = SetFileParser.ParseFile(Tde01Path);
 
             tileset.Groups.Should().HaveCount(60);

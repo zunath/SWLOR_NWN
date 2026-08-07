@@ -60,6 +60,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void ParallelGetOrBuild_ProducesTheSameGeometryAsSerialGetOrBuild()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_scifibase");
             var index = BuildIndex();
             var models = ZsfTileModels(index);
             models.Should().NotBeEmpty();

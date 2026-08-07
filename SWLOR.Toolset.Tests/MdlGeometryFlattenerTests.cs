@@ -36,6 +36,8 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Flatten_SwlorLeftThighPart_BringsVerticesToPartOrigin()
         {
+            HaksCorpusGuard.RequireDirectories("sw_pt_lthigh");
+
             // pfh0_legl001.mdl: raw mesh vertices span Z ≈ [-0.01..0.53] (pointing UP) and are
             // corrected by the mesh node's Position <0.026, 0.013, -0.459>. After flattening,
             // the geometry must hang DOWN from the origin like its right-leg counterpart
@@ -59,6 +61,8 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Flatten_SwlorLeftShinPart_BringsVerticesToPartOrigin()
         {
+            HaksCorpusGuard.RequireDirectories("sw_pt_lshin");
+
             // pfh0_shinl001.mdl: 'Shin' mesh vertices sit at X ≈ +0.47 / Z ≈ +0.38, corrected by
             // node Position <-0.458, -1.033, -0.562>.
             var path = Path.Combine(RepoRoot, "SWLOR_Haks", "sw_pt_lshin", "pfh0_shinl001.mdl");
@@ -74,6 +78,8 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Flatten_BaseStylePartAuthoredAtOrigin_IsUnchanged()
         {
+            HaksCorpusGuard.RequireDirectories("sw_pt_rthigh");
+
             // pfh0_legr001.mdl's mesh node transform is identity — flattening must not move it.
             var path = Path.Combine(RepoRoot, "SWLOR_Haks", "sw_pt_rthigh", "pfh0_legr001.mdl");
             var model = new MdlReader().Parse(File.ReadAllBytes(path));

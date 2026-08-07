@@ -31,6 +31,11 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void FemaleHumanSkeleton_ComposesEverySupportedRealPartCategory()
         {
+            // The attachment assertions name meshes from SWLOR's own part files (e.g. sw_pt_lshin's
+            // "Shin"), so the SWLOR body-part haks must shadow the base-game parts.
+            HaksCorpusGuard.RequireDirectories(
+                "sw_pt_root", "sw_pt_robe", "sw_pt_lthigh", "sw_pt_rthigh", "sw_pt_lshin", "sw_pt_rshin");
+
             var installRoot = NwnInstallLocator.Locate();
             installRoot.Should().NotBeNull("the explicit licensed-corpus suite requires NWN:EE");
             var baseLayer = KeyBifCatalog.Load(Path.Combine(installRoot!, "data"));

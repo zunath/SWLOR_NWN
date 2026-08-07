@@ -86,6 +86,7 @@ namespace SWLOR.Toolset.Tests.Items
             // indices straight to the texture cache, but the 3D viewport only ever sees the model -
             // so with nothing on the model, every dyed surface drew at the palette's default row and
             // changing a dye channel did nothing at all in the viewport.
+            HaksCorpusGuard.RequireDirectories("sw_pt_root", "sw_pt_chest");
             var root = CorpusItem("adren_harness");
             var renderer = BuildRenderer();
 
@@ -112,6 +113,7 @@ namespace SWLOR.Toolset.Tests.Items
             // item preview shows those layers at palette row 0. Substituting a mid-palette row to
             // make them "nicer" turned the head and hands red: a palette row is a gradient across
             // its columns, and only the brightest column is the pale tone that choice was based on.
+            HaksCorpusGuard.RequireDirectories("sw_pt_root", "sw_pt_chest");
             var root = CorpusItem("adren_harness");
             var renderer = BuildRenderer();
 
@@ -126,6 +128,7 @@ namespace SWLOR.Toolset.Tests.Items
         [Test]
         public void ChimedClothesRobeLayersCoatIdleOverWearerBind()
         {
+            HaksCorpusGuard.RequireDirectories("sw_pt_root", "sw_pt_robe", "sw_pt_chest");
             var renderer = BuildRenderer(out var index);
 
             var model = renderer.BuildModel(ResourceType.Uti, CorpusItem("chimedclothes"));

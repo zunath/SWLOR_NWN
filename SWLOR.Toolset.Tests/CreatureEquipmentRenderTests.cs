@@ -81,6 +81,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void PlacedChestArmorReplacesNakedTorsoAndKeepsArmorDyes()
         {
+            HaksCorpusGuard.RequireDirectories("sw_pt_chest");
             var dressed = _renderer.BuildModel(ResourceType.Utc, _hangarGit.Creatures.First());
 
             dressed.Should().NotBeNull();
@@ -122,6 +123,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void EquippedCloakUsesWearerGeometryTextureAndOwnDyes()
         {
+            HaksCorpusGuard.RequireDirectories("sw_pt_cloak");
             var gravius = _renderer.BuildModel(
                 ResourceType.Utc,
                 _workspace.LoadBlueprint(ResourceType.Utc, "darthgravius").Fields);
@@ -145,6 +147,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void EquippedHelmetKeepsItsOwnDyes()
         {
+            HaksCorpusGuard.RequireDirectories("sw_pt_helm");
             var commando = _renderer.BuildModel(
                 ResourceType.Utc,
                 _workspace.LoadBlueprint(ResourceType.Utc, "sith_commando").Fields);

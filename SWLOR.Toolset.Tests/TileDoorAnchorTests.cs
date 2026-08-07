@@ -14,6 +14,13 @@ namespace SWLOR.Toolset.Tests
     /// </summary>
     public class TileDoorAnchorTests
     {
+        [OneTimeSetUp]
+        public void RequireTilesetData()
+        {
+            // Every test resolves door anchors out of the sw_t_* .set files via the hak-only index.
+            HaksCorpusGuard.RequireTilesetCorpus();
+        }
+
         private static string RepoRoot
         {
             get

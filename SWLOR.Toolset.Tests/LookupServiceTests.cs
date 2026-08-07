@@ -132,6 +132,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void PortraitService_GetTgaVariants_MatchesRealPortraitResourcesInSwPortraitHak()
         {
+            HaksCorpusGuard.RequireDirectories("sw_portrait");
             var index = ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory);
             var variants = PortraitService.GetTgaVariants("hu_f_sf81_");
 
@@ -209,6 +210,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void TilesetCatalog_Tde01_ResolvesAndParsesWithTiles()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_dungeon");
             var index = ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory);
             var catalog = new TilesetCatalog(index);
 
@@ -222,6 +224,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void TilesetCatalog_GetTilesetNames_CoversTheFullSwTCorpus()
         {
+            HaksCorpusGuard.RequireTilesetCorpus();
             var index = ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory);
             var catalog = new TilesetCatalog(index);
 

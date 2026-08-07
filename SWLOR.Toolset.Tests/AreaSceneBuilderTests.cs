@@ -143,6 +143,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Build_BankArea_KnownTileResolvesExpectedModelAndGridPosition()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_modint");
             var (are, git) = LoadArea("bank");
             var index = BuildHakOnlyIndex();
             var tilesetCatalog = new TilesetCatalog(index);
@@ -179,6 +180,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Build_AnchorEntreenorArea_HeightOffsetUsesTilesetTransitionHeight()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_tatooine");
             var (are, git) = LoadArea("anchor_entreenor");
             var index = BuildHakOnlyIndex();
             var tilesetCatalog = new TilesetCatalog(index);
@@ -279,6 +281,10 @@ namespace SWLOR.Toolset.Tests
                 return;
             }
 
+            // zep_barricade's Appearance 2627 names placeables.2da model zlc_k21, which ships in
+            // the sw_plc_cep hak layer.
+            HaksCorpusGuard.RequireDirectories("sw_plc_cep");
+
             var baseLayer = KeyBifCatalog.Load(Path.Combine(installPath, "data"));
             var index = ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory, baseLayer);
             var tilesetCatalog = new TilesetCatalog(index);
@@ -305,6 +311,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Build_TileIdBeyondTilesetRange_FallsBackWithoutThrowing()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_modint");
             var (are, git) = LoadArea("bank");
 
             // Corrupt tile #0's Tile_ID to a value far beyond tfb01's tile count.

@@ -359,6 +359,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Build_WithTileWalkmeshCache_AttachesRealWalkmeshData()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_modint");
             var (are, git) = LoadArea("bank");
             var index = BuildHakOnlyIndex();
             var tilesetCatalog = new TilesetCatalog(index);

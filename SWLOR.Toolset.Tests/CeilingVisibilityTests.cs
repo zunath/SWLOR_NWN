@@ -46,6 +46,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void InteriorTileMeshes_FlagTheirCeilingsAndOnlyTheirCeilings()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_scifibase");
             var index = BuildIndex();
             var cache = new TileModelCache(index);
             new TilesetCatalog(index).TryGetTileset("zsf01", out var tileset).Should().BeTrue();
@@ -91,6 +92,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void ExteriorTilesetsAlsoFlagOverheadGeometry()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_wildwood");
             var index = BuildIndex();
             var cache = new TileModelCache(index);
 
@@ -105,6 +107,11 @@ namespace SWLOR.Toolset.Tests
         [TestCase("kashyyykpaths", false)]
         public void SceneRecordsWhetherItsTilesetIsInterior(string areaResRef, bool expected)
         {
+            // An interior verdict needs the area's zsf01 tileset to actually resolve; the exterior
+            // case asserts the unresolved default and needs no tileset data.
+            if (expected)
+                HaksCorpusGuard.RequireDirectories("sw_t_scifibase");
+
             var index = BuildIndex();
             var workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory);
             var (are, git, _) = workspace.LoadArea(areaResRef);

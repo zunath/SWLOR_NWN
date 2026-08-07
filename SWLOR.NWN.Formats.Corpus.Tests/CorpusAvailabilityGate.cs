@@ -22,6 +22,10 @@ public sealed class CorpusAvailabilityGate
         {
             _ = LicensedCorpus.HaksRoot;
             _ = LicensedCorpus.InstallRoot;
+            // A sparse SWLOR_Haks checkout (CI keeps only the data folders the
+            // unit suites read) passes the root probe above but is missing hak
+            // source directories these tests scan; treat it as unavailable.
+            _ = LicensedCorpus.HakSourceDirectories().ToList();
         }
         catch (DirectoryNotFoundException exception)
         {

@@ -82,6 +82,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void GetDisplayLabel_UsesTheReadableNameFromTheRealTileset()
         {
+            HaksCorpusGuard.RequireDirectories("sw_t_cepdesert");
             var catalog = CreateCatalog();
 
             // ztd01 declares UnlocalizedName=[CEP] Desert.
@@ -107,6 +108,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void EveryTilesetInTheHaks_GetsANonEmptyLabel()
         {
+            HaksCorpusGuard.RequireTilesetCorpus();
             var catalog = CreateCatalog();
             var names = catalog.GetTilesetNames();
 

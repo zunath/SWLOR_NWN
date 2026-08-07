@@ -40,6 +40,14 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        [OneTimeSetUp]
+        public void RequireTilesetData()
+        {
+            // Every test here builds palettes for shp02/ttd01/tmi and sweeps the sw_t_* corpus.
+            HaksCorpusGuard.RequireTilesetCorpus();
+            HaksCorpusGuard.RequireDirectories("sw_t_starship", "sw_t_tatooine", "sw_t_modint2");
+        }
+
         private static readonly Lazy<Fixture> Shared =
             new(Fixture.Build, LazyThreadSafetyMode.ExecutionAndPublication);
 

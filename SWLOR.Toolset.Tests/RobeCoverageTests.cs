@@ -33,6 +33,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void LoinclothRobe_FromCorpus_IsNotFullBody()
         {
+            HaksCorpusGuard.RequireDirectories("sw_pt_robe");
             var path = Path.Combine(RepoRoot, "SWLOR_Haks", "sw_pt_robe", "pfh0_robe033.mdl");
             var model = new MdlReader().Parse(File.ReadAllBytes(path));
 

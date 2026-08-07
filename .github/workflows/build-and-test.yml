@@ -17,10 +17,13 @@ jobs:
         uses: actions/checkout@v4
 
       # The full SWLOR_Haks working tree is ~13 GB (models, music, textures) and
-      # does not fit on a hosted runner. The unit suite only reads the data
+      # does not fit on a hosted runner. The unit suites only read the data
       # folders below (~750 MB), so clone the submodule blob-filtered and
       # sparse-checkout just those. If a future test reads a new SWLOR_Haks
-      # folder, add it to the sparse-checkout list here.
+      # folder, add it to the sparse-checkout list here. Toolset/corpus tests
+      # that depend on data absent from the runner (a local NWN:EE install,
+      # licensed corpus assets, non-sparse hak folders) skip themselves via
+      # Assert.Ignore gates rather than failing.
       - name: Sparse-checkout SWLOR_Haks data folders
         run: |
           SUBMODULE_SHA=$(git rev-parse HEAD:SWLOR_Haks)
@@ -37,5 +40,16 @@ jobs:
       - name: Build solution
         run: dotnet build SWLOR.Game.Server.sln --configuration Release -p:RunPostBuildEvent=Never
 
-      - name: Run unit tests
+      - name: Run server unit tests
         run: dotnet test SWLOR.Game.Server.Tests/SWLOR.Game.Server.Tests.csproj --no-build --configuration Release --logger "console;verbosity=minimal"
+
+      - name: Run CLI unit tests
+        run: dotnet test SWLOR.CLI.Tests/SWLOR.CLI.Tests.csproj --no-build --configuration Release --logger "console;verbosity=minimal"
+
+      - name: Run formats unit tests
+        run: |
+          dotnet test SWLOR.NWN.Formats.Tests/SWLOR.NWN.Formats.Tests.csproj --no-build --configuration Release --logger "console;verbosity=minimal"
+          dotnet test SWLOR.NWN.Formats.Corpus.Tests/SWLOR.NWN.Formats.Corpus.Tests.csproj --no-build --configuration Release --logger "console;verbosity=minimal"
+
+      - name: Run toolset unit tests
+        run: dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-build --configuration Release --logger "console;verbosity=minimal"

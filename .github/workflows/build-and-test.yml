@@ -8,13 +8,27 @@ on:
       - feature/combat-upgrade
   workflow_dispatch:
 
+# This repository's Actions policy is "local only": marketplace actions,
+# including actions/checkout and actions/setup-dotnet, are blocked and any
+# workflow referencing them dies with a startup_failure before the first
+# step. Every step below is therefore a plain `run:` script.
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      # Manual stand-in for actions/checkout. GITHUB_REF is refs/pull/N/merge
+      # for pull_request events and refs/heads/<branch> for push and
+      # workflow_dispatch, so one fetch spelling covers all three triggers.
       - name: Checkout
-        uses: actions/checkout@v4
+        run: |
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}"
+          git fetch --depth=1 origin "$GITHUB_REF"
+          git checkout --force FETCH_HEAD
 
       # The full SWLOR_Haks working tree is ~13 GB (models, music, textures) and
       # does not fit on a hosted runner. The unit suites only read the data
@@ -32,10 +46,14 @@ jobs:
           git sparse-checkout set sw_2da sw_ability sw_item sw_tlk sw_ui sw_weapon
           git checkout "$SUBMODULE_SHA"
 
+      # Manual stand-in for actions/setup-dotnet, using Microsoft's official
+      # install script.
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 10.0.x
+        run: |
+          curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh
+          bash /tmp/dotnet-install.sh --channel 10.0
+          echo "$HOME/.dotnet" >> "$GITHUB_PATH"
+          echo "DOTNET_ROOT=$HOME/.dotnet" >> "$GITHUB_ENV"
 
       - name: Build solution
         run: dotnet build SWLOR.Game.Server.sln --configuration Release -p:RunPostBuildEvent=Never

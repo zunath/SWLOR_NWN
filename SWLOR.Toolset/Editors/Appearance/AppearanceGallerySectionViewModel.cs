@@ -233,7 +233,10 @@ namespace SWLOR.Toolset.Editors.Appearance
             if (!string.IsNullOrWhiteSpace(tile.Option.ModelResRef))
             {
                 tile.PreviewRequested = true;
-                _thumbnails.RequestTileAsync(tile.Option.ModelResRef, bitmap => tile.Preview = bitmap);
+                _thumbnails.RequestTileAsync(
+                    tile.Option.ModelResRef,
+                    bitmap => tile.Preview = bitmap,
+                    renderDoorTransitionFallback: tile.Option.IsDoorTransition);
             }
         }
 
@@ -357,7 +360,9 @@ namespace SWLOR.Toolset.Editors.Appearance
             }
             else if (!string.IsNullOrWhiteSpace(tile.Option.ModelResRef))
             {
-                tile.Preview = _thumbnails.CachedTile(tile.Option.ModelResRef);
+                tile.Preview = _thumbnails.CachedTile(
+                    tile.Option.ModelResRef,
+                    renderDoorTransitionFallback: tile.Option.IsDoorTransition);
             }
 
             if (tile.Preview != null)

@@ -22,13 +22,18 @@ namespace SWLOR.Toolset.Editors.Appearance
     /// True for MODELTYPE P rows, whose representative preview composes a generic full creature
     /// for that row's race rather than rendering one fixed model resource.
     /// </param>
+    /// <param name="IsDoorTransition">
+    /// True when a door choice needs hidden editor geometry or the fixed doorway fallback instead
+    /// of an ordinary visible-model thumbnail.
+    /// </param>
     public sealed record AppearanceOption(
         string Key,
         string Caption,
         string? Detail,
         string? ModelResRef = null,
         int? CreatureAppearanceId = null,
-        bool IsSegmentedCreatureAppearance = false)
+        bool IsSegmentedCreatureAppearance = false,
+        bool IsDoorTransition = false)
     {
         /// <summary>Everything the search box matches against, lowercased once at construction.</summary>
         public string SearchText { get; } =

@@ -100,7 +100,7 @@ namespace SWLOR.Toolset.Tests
                 return new IconImage(2, 2, new byte[2 * 2 * 4]);
             }
 
-            public IconImage? RenderModel(string modelResRef) => null;
+            public IconImage? RenderModel(string modelResRef, bool renderDoorTransitionFallback = false) => null;
 
             public IconImage? RenderTileGroup(IReadOnlyList<string> slotModelResRefs, int columns, int rows) => null;
 

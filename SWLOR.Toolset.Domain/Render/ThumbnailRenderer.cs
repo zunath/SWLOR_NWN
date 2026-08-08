@@ -149,8 +149,28 @@ namespace SWLOR.Toolset.Domain.Render
             // Back to front: the far side of a model must not paint over its near side.
             projected.Sort(static (left, right) => left.Depth.CompareTo(right.Depth));
 
+            var painted = false;
             foreach (var triangle in projected)
-                FillTriangle(pixels, size, triangle, palette);
+                painted |= FillTriangle(pixels, size, triangle, palette);
+
+            if (!painted && isDoorTransition && !usingDoorTransitionFallback)
+            {
+                triangles = CollectTriangles(
+                    DoorTransitionMarker.CreateFallbackModel(),
+                    resolveTexture: null,
+                    resolveLayeredTexture: null);
+                projected = Project(triangles, view, size, out any);
+                if (!any)
+                    return null;
+
+                FillBackground(pixels, palette.Background);
+                projected.Sort(static (left, right) => left.Depth.CompareTo(right.Depth));
+                foreach (var triangle in projected)
+                    painted |= FillTriangle(pixels, size, triangle, palette);
+
+                if (!painted)
+                    return null;
+            }
 
             return pixels;
         }
@@ -361,7 +381,11 @@ namespace SWLOR.Toolset.Domain.Render
             }
         }
 
-        private static void FillTriangle(byte[] pixels, int size, ProjectedTriangle triangle, ThumbnailPalette palette)
+        private static bool FillTriangle(
+            byte[] pixels,
+            int size,
+            ProjectedTriangle triangle,
+            ThumbnailPalette palette)
         {
             var minX = Math.Max(0, (int)MathF.Floor(MathF.Min(triangle.A.X, MathF.Min(triangle.B.X, triangle.C.X))));
             var maxX = Math.Min(size - 1, (int)MathF.Ceiling(MathF.Max(triangle.A.X, MathF.Max(triangle.B.X, triangle.C.X))));
@@ -370,7 +394,7 @@ namespace SWLOR.Toolset.Domain.Render
 
             var area = EdgeFunction(triangle.A, triangle.B, triangle.C);
             if (MathF.Abs(area) < 1e-6f)
-                return;
+                return false;
 
             var shade = palette.Ambient + (1f - palette.Ambient) * triangle.Shade;
 
@@ -382,6 +406,7 @@ namespace SWLOR.Toolset.Domain.Render
             var flatB = (byte)Math.Clamp(palette.BaseB * tintB, 0, 255);
             var flatG = (byte)Math.Clamp(palette.BaseG * tintG, 0, 255);
             var flatR = (byte)Math.Clamp(palette.BaseR * tintR, 0, 255);
+            var painted = false;
 
             for (var y = minY; y <= maxY; y++)
             {
@@ -411,8 +436,11 @@ namespace SWLOR.Toolset.Domain.Render
                     pixels[offset + 1] = g;
                     pixels[offset + 2] = r;
                     pixels[offset + 3] = 255;
+                    painted = true;
                 }
             }
+
+            return painted;
         }
 
         /// <summary>

@@ -156,6 +156,24 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void A_Transition_Model_With_Collinear_Triangles_Renders_The_Doorway_Fallback()
+        {
+            var collinear = Box(1f, 0f, 0f);
+            var transition = new RenderModel
+            {
+                Name = collinear.Name,
+                Meshes = collinear.Meshes,
+                IsDoorTransitionGeometry = true
+            };
+
+            var pixels = ThumbnailRenderer.Render(transition, Size);
+
+            pixels.Should().NotBeNull();
+            OpaquePixels(pixels!).Should().BeGreaterThan(0,
+                "a nonzero projected span is not enough when every authored triangle has zero area");
+        }
+
+        [Test]
         public void A_Null_Model_Renders_Nothing()
         {
             ThumbnailRenderer.Render(null, Size).Should().BeNull();

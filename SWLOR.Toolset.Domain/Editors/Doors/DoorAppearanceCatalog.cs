@@ -16,7 +16,8 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
                     DoorAppearanceKind.Generic,
                     row.Id,
                     $"Generic \u25b8 {row.DisplayName}",
-                    row.Model))
+                    row.Model,
+                    IsDoorTransition: !row.VisibleModel))
                 .Concat(
                     doors.GetAll()
                         .Where(row => row.Id > 0 && !string.IsNullOrWhiteSpace(row.Model))
@@ -24,7 +25,8 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
                             DoorAppearanceKind.Specific,
                             row.Id,
                             $"Specific \u25b8 {row.DisplayName}",
-                            row.Model)))
+                            row.Model,
+                            IsDoorTransition: !row.VisibleModel)))
                 .ToList();
 
             return choices;

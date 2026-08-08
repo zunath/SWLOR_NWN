@@ -205,12 +205,28 @@ namespace SWLOR.Toolset.Tests
                 _workspace.LoadBlueprint(ResourceType.Utc, "agr_guildmaster").Fields);
 
             model.Should().NotBeNull();
+            var textures = new PreviewTextureCache(_resources);
+            foreach (var surface in new[]
+                     {
+                         "pmh0_legl087", "pmh0_legr087", "pmh0_shinl085", "pmh0_shinr085"
+                     })
+            {
+                var meshes = model!.Meshes
+                    .Where(mesh => mesh.TextureName.Equals(surface, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+                meshes.Should().NotBeEmpty($"the equipped armor uses body-part surface {surface}");
+                meshes.Should().OnlyContain(
+                    mesh => mesh.MaterialName.Equals(surface, StringComparison.OrdinalIgnoreCase),
+                    $"NULL-bitmap body part {surface} must receive its generated tint material");
+                textures.Get(surface, model.LayerColorIndices, resolveMaterial: true)
+                    .Should().NotBeNull($"converted tint surface {surface} must remain renderable");
+            }
+
             var head = model!.Meshes.Single(mesh =>
                 mesh.TextureName.Equals("pmh0_head038", StringComparison.OrdinalIgnoreCase));
             head.MaterialName.Should().Be("pmh0_head038",
                 "the binary model's explicit generated tint material must reach the preview renderer");
 
-            var textures = new PreviewTextureCache(_resources);
             var texture = textures.Get(
                 head.MaterialName,
                 model.LayerColorIndices,

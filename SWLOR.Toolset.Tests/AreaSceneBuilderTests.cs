@@ -303,6 +303,78 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void Build_InvisibleDoorType_PreservesAnEditorTransitionWhenItsModelIsUnavailable()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"door-transition-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "genericdoors.2da"),
+                    "2DA V2.0\r\n\r\nLabel StrRef ModelName BlockSight VisibleModel SoundAppType Name\r\n" +
+                    "0 Transition 123 missing_transition_model 0 0 **** 123\r\n");
+                File.WriteAllText(
+                    Path.Combine(scratch, "doortypes.2da"),
+                    "2DA V2.0\r\n\r\nLabel Model TileSet TemplateResRef StringRefGame BlockSight VisibleModel SoundAppType\r\n");
+                var doors = new DoorTypeService(
+                    new Domain.GameData.TwoDa.TwoDaService(scratch),
+                    new Domain.GameData.Tlk.TlkService(
+                        Domain.GameData.Tlk.TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
+
+                var (are, git) = LoadArea("dan_smugcaverns");
+                var transition = git.Doors.Single(door =>
+                    door.GetStringOrNull("Tag") == "dan_smugcave");
+                transition.Get("Appearance").SetInteger(0);
+                transition.Get("GenericType_New").SetInteger(0);
+
+                var previewReference = BlueprintModelResolver.Resolve(
+                    ResourceType.Utd, transition, null, null, doors);
+                previewReference.IsDoorTransition.Should().BeTrue(
+                    "door-editor previews and placement ghosts consume the same 2DA metadata");
+                previewReference.ModelResRef.Should().Be("missing_transition_model");
+
+                var index = BuildHakOnlyIndex();
+                var scene = AreaSceneBuilder.Build(
+                    are,
+                    git,
+                    new TilesetCatalog(index),
+                    new TileModelCache(index),
+                    doorTypes: doors);
+
+                var marker = scene.Instances.Single(instance => instance.Tag == "dan_smugcave");
+                marker.IsDoorTransition.Should().BeTrue();
+                marker.Model.Should().BeNull(
+                    "the viewport's fixed transition plane must cover a missing editor MDL");
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
+        public void BaseGameTransitionDoor_PreservesTransitionSemanticsWithoutDrawableGeometry()
+        {
+            var installPath = NwnInstallLocator.Locate();
+            if (installPath == null)
+            {
+                Assert.Ignore("No local NWN:EE installation found; transition-door MDL is base-game data.");
+                return;
+            }
+
+            var baseLayer = KeyBifCatalog.Load(Path.Combine(installPath, "data"));
+            var index = new ResourceIndex(baseLayer, Array.Empty<ResourceIndex.HakLayer>());
+            var model = new TileModelCache(index).GetOrBuildDoorTransition("tn_gdoor_08");
+
+            model.Should().NotBeNull("the generic transition door is present in the base resource layer");
+            model!.IsDoorTransitionGeometry.Should().BeTrue();
+            model.Meshes.Should().BeEmpty(
+                "tn_gdoor_08 intentionally has no drawable surfaces, so the viewport must use its fixed transition plane");
+        }
+
+        [Test]
         public void Build_TileIdBeyondTilesetRange_FallsBackWithoutThrowing()
         {
             var (are, git) = LoadArea("bank");

@@ -67,8 +67,8 @@ namespace SWLOR.Toolset.Editors
         private readonly DoorTypeService? _doorTypes;
         private readonly WaypointAppearanceService? _waypointAppearances;
 
-        /// <summary>Builds an armed blueprint's geometry for the placement ghost. Null degrades the ghost to a marker.</summary>
-        private readonly Func<ResourceType, string, bool, RenderModel?>? _resolveBlueprintModel;
+        /// <summary>Builds an armed blueprint's geometry and fallback metadata for the placement ghost.</summary>
+        private readonly Func<ResourceType, string, bool, BlueprintModelRenderResult>? _resolveBlueprintModel;
         private readonly Func<JsonGffStruct, RenderModel?>? _resolvePlacedCreatureModel;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly IEditorPromptService _prompts;
@@ -1209,17 +1209,19 @@ namespace SWLOR.Toolset.Editors
             if (kind == null)
                 return null;
 
-            RenderModel? model = null;
+            var preview = default(BlueprintModelRenderResult);
             try
             {
                 // A store has no appearance of its own. Aurora always previews it as the yellow
                 // waypoint flag, which must be the same model the completed scene build uses.
-                model = kind == InstanceMarkerKind.Store
-                    ? _tileModelCache?.GetOrBuild(WaypointMarkerModel.MerchantModelResRef)
+                preview = kind == InstanceMarkerKind.Store
+                    ? new BlueprintModelRenderResult(
+                        _tileModelCache?.GetOrBuild(WaypointMarkerModel.MerchantModelResRef),
+                        IsDoorTransition: false)
                     // Everything else is built through the same path as the palette thumbnail the
                     // builder just clicked, including segmented creatures whose body parts have to
                     // be composed.
-                    : _resolveBlueprintModel?.Invoke(type, resRef, useIndexedBlueprint);
+                    : _resolveBlueprintModel?.Invoke(type, resRef, useIndexedBlueprint) ?? default;
             }
             catch (Exception ex)
             {
@@ -1243,7 +1245,8 @@ namespace SWLOR.Toolset.Editors
                     InstanceMarkerKind.Waypoint => WaypointMarkerModel.ForwardCorrection,
                     _ => Matrix4x4.Identity
                 },
-                Model = model
+                Model = preview.Model,
+                IsDoorTransition = kind.Value == InstanceMarkerKind.Door && preview.IsDoorTransition
             };
         }
 
@@ -1492,7 +1495,7 @@ namespace SWLOR.Toolset.Editors
             Action<ResourceType, string>? openBlueprint = null,
             Func<uint, string?>? resolveStrRef = null,
             WaypointAppearanceService? waypointAppearances = null,
-            Func<ResourceType, string, bool, RenderModel?>? resolveBlueprintModel = null,
+            Func<ResourceType, string, bool, BlueprintModelRenderResult>? resolveBlueprintModel = null,
             IScriptSlotHost? scriptSlotHost = null,
             Func<JsonGffStruct, RenderModel?>? resolvePlacedCreatureModel = null,
             Doors.DoorEditorServices? doorEditorServices = null,

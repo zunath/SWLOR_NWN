@@ -13,7 +13,15 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         int Id,
         string Label,
         string DisplayName,
-        string? Model);
+        string? Model)
+    {
+        /// <summary>
+        /// Whether the door's model is visible in game. A false value identifies Aurora's
+        /// toolset-only transition planes: the engine hides their model, but an editor must still
+        /// draw their authored selection geometry so a builder can see and select them.
+        /// </summary>
+        public bool VisibleModel { get; init; } = true;
+    }
 
     /// <summary>
     /// Editor lookup over doortypes.2da and genericdoors.2da. Results are built once on first use
@@ -99,6 +107,12 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     continue;
                 }
 
+                var visibleModel = TryGetInt(table, row, "VisibleModel");
+                if (visibleModel is null)
+                {
+                    continue;
+                }
+
                 int? strref = null;
                 try
                 {
@@ -115,7 +129,10 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     row,
                     label!,
                     displayName,
-                    model));
+                    model)
+                {
+                    VisibleModel = visibleModel != 0
+                });
             }
 
             return results;
@@ -144,12 +161,21 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     continue;
                 }
 
+                var visibleModel = TryGetInt(table, row, "VisibleModel");
+                if (visibleModel is null)
+                {
+                    continue;
+                }
+
                 var nameStrRef = TryGetInt(table, row, "Name") ?? TryGetInt(table, row, "StrRef");
                 results.Add(new GenericDoorRow(
                     row,
                     label!,
                     DisplayNameResolver.Resolve(tlk, nameStrRef, label!.Replace('_', ' ')),
-                    model));
+                    model)
+                {
+                    VisibleModel = visibleModel != 0
+                });
             }
 
             return results;

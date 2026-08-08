@@ -111,6 +111,51 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void A_Transition_Model_With_No_Triangles_Renders_The_Doorway_Fallback()
+        {
+            var transition = new RenderModel
+            {
+                Name = "transition",
+                Meshes = Array.Empty<RenderMesh>(),
+                IsDoorTransitionGeometry = true
+            };
+
+            var pixels = ThumbnailRenderer.Render(transition, Size);
+
+            pixels.Should().NotBeNull();
+            OpaquePixels(pixels!).Should().BeGreaterThan(0);
+        }
+
+        [Test]
+        public void Transition_Metadata_Without_A_Model_Renders_The_Doorway_Fallback()
+        {
+            var pixels = ThumbnailRenderer.Render(
+                model: null,
+                size: Size,
+                renderDoorTransitionFallback: true);
+
+            pixels.Should().NotBeNull();
+            OpaquePixels(pixels!).Should().BeGreaterThan(0);
+        }
+
+        [Test]
+        public void A_Transition_Model_With_Unprojectable_Triangles_Renders_The_Doorway_Fallback()
+        {
+            var degenerate = Box(0f, 0f, 0f);
+            var transition = new RenderModel
+            {
+                Name = degenerate.Name,
+                Meshes = degenerate.Meshes,
+                IsDoorTransitionGeometry = true
+            };
+
+            var pixels = ThumbnailRenderer.Render(transition, Size);
+
+            pixels.Should().NotBeNull();
+            OpaquePixels(pixels!).Should().BeGreaterThan(0);
+        }
+
+        [Test]
         public void A_Null_Model_Renders_Nothing()
         {
             ThumbnailRenderer.Render(null, Size).Should().BeNull();

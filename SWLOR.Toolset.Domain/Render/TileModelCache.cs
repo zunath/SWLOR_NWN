@@ -21,6 +21,8 @@ namespace SWLOR.Toolset.Domain.Render
             new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentDictionary<string, RenderModel?> _placeablePreviewCache =
             new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, RenderModel?> _doorTransitionCache =
+            new(StringComparer.OrdinalIgnoreCase);
 
         public TileModelCache(ResourceIndex resourceIndex)
         {
@@ -32,6 +34,7 @@ namespace SWLOR.Toolset.Domain.Render
         {
             _cache.Clear();
             _placeablePreviewCache.Clear();
+            _doorTransitionCache.Clear();
         }
 
         /// <summary>
@@ -61,6 +64,19 @@ namespace SWLOR.Toolset.Domain.Render
             return _placeablePreviewCache.GetOrAdd(modelResRef, BuildPlaceablePreview);
         }
 
+        /// <summary>
+        /// Resolves an invisible transition-door model including its <c>render 0</c> editor
+        /// selection surfaces. Kept separate from the ordinary cache so the same MDL remains
+        /// invisible when used as normal game artwork.
+        /// </summary>
+        public RenderModel? GetOrBuildDoorTransition(string? modelResRef)
+        {
+            if (string.IsNullOrWhiteSpace(modelResRef))
+                return null;
+
+            return _doorTransitionCache.GetOrAdd(modelResRef, BuildDoorTransition);
+        }
+
         private RenderModel? Build(string modelResRef)
         {
             var model = Load(modelResRef);
@@ -71,6 +87,25 @@ namespace SWLOR.Toolset.Domain.Render
         {
             var model = Load(modelResRef);
             return model == null ? null : MdlMeshBuilder.BuildPlaceablePreview(model);
+        }
+
+        private RenderModel? BuildDoorTransition(string modelResRef)
+        {
+            var model = Load(modelResRef);
+            if (model == null)
+                return null;
+
+            try
+            {
+                return MdlMeshBuilder.BuildDoorTransition(model);
+            }
+            catch (Exception)
+            {
+                // Hidden editor meshes are less constrained than runtime artwork. A malformed
+                // parent chain or other mesh-build failure must fall back to the fixed transition
+                // doorway instead of aborting assembly of the entire area.
+                return null;
+            }
         }
 
         private MdlModel? Load(string modelResRef)

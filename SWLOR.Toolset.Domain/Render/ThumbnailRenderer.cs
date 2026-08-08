@@ -95,19 +95,37 @@ namespace SWLOR.Toolset.Domain.Render
         /// takes precedence over <paramref name="resolveTexture"/> and lets equipped garments keep
         /// dyes that differ from the creature's chest armor.
         /// </param>
+        /// <param name="renderDoorTransitionFallback">
+        /// Draws the fixed editor doorway when transition metadata exists but the authored model is
+        /// null, has no triangles, or has no triangles that survive projection.
+        /// </param>
         public static byte[]? Render(
             RenderModel? model,
             int size,
             ThumbnailPalette? palette = null,
             Func<string, TextureImage?>? resolveTexture = null,
-            Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture = null)
+            Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture = null,
+            bool renderDoorTransitionFallback = false)
         {
-            if (model == null || size <= 0)
+            if (size <= 0)
                 return null;
 
             palette ??= ThumbnailPalette.Default;
 
-            var triangles = CollectTriangles(model, resolveTexture, resolveLayeredTexture);
+            var isDoorTransition = renderDoorTransitionFallback || model?.IsDoorTransitionGeometry == true;
+            var usingDoorTransitionFallback = false;
+            var triangles = model == null
+                ? new List<SourceTriangle>()
+                : CollectTriangles(model, resolveTexture, resolveLayeredTexture);
+            if (triangles.Count == 0 && isDoorTransition)
+            {
+                triangles = CollectTriangles(
+                    DoorTransitionMarker.CreateFallbackModel(),
+                    resolveTexture: null,
+                    resolveLayeredTexture: null);
+                usingDoorTransitionFallback = true;
+            }
+
             if (triangles.Count == 0)
                 return null;
 
@@ -116,6 +134,15 @@ namespace SWLOR.Toolset.Domain.Render
 
             var view = BuildViewBasis();
             var projected = Project(triangles, view, size, out var any);
+            if (!any && isDoorTransition && !usingDoorTransitionFallback)
+            {
+                triangles = CollectTriangles(
+                    DoorTransitionMarker.CreateFallbackModel(),
+                    resolveTexture: null,
+                    resolveLayeredTexture: null);
+                projected = Project(triangles, view, size, out any);
+            }
+
             if (!any)
                 return null;
 

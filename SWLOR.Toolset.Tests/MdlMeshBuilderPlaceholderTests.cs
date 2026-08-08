@@ -97,6 +97,37 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void DoorTransitionBuild_KeepsHiddenSelectionGeometryOnlyForTheEditor()
+        {
+            var hiddenPlane = Trimesh("transition_plane", bitmap: null);
+            hiddenPlane.Render = false;
+
+            var ordinary = MdlMeshBuilder.Build(ModelOf(hiddenPlane));
+            var transition = MdlMeshBuilder.BuildDoorTransition(ModelOf(hiddenPlane));
+
+            ordinary.Meshes.Should().BeEmpty("render 0 geometry stays invisible in game artwork");
+            transition.Meshes.Should().ContainSingle()
+                .Which.NodeName.Should().Be("transition_plane");
+            transition.IsDoorTransitionGeometry.Should().BeTrue();
+        }
+
+        [Test]
+        public void DoorTransitionBuild_StillExcludesCollisionAndPlaceholderMeshes()
+        {
+            var hiddenPlane = Trimesh("transition_plane", bitmap: null);
+            hiddenPlane.Render = false;
+            var collision = Trimesh("collision", bitmap: null);
+            collision.IsWalkmesh = true;
+            var placeholder = Trimesh("sam", bitmap: null);
+
+            var transition = MdlMeshBuilder.BuildDoorTransition(
+                ModelOf(hiddenPlane, collision, placeholder));
+
+            transition.Meshes.Should().ContainSingle()
+                .Which.NodeName.Should().Be("transition_plane");
+        }
+
+        [Test]
         public void AMeshWhoseFacesAllReferenceMissingVertices_IsNotBuilt()
         {
             var malformed = Trimesh("malformed");
@@ -107,6 +138,29 @@ namespace SWLOR.Toolset.Tests
 
             MdlMeshBuilder.IsRenderableMesh(malformed).Should().BeFalse();
             MdlMeshBuilder.Build(ModelOf(malformed)).Meshes.Should().BeEmpty();
+        }
+
+        [Test]
+        public void AnUnsignedMinusOneFaceIndex_NeverReachesARenderBuffer()
+        {
+            var malformed = Trimesh("malformed");
+            malformed.Faces =
+            [
+                new MdlFace
+                {
+                    // MDL face indices are ushort. A raw -1 sentinel is represented as 0xFFFF,
+                    // so the existing upper-bound validation is also its non-negative guard.
+                    VertexIndex0 = unchecked((ushort)-1),
+                    VertexIndex1 = 1,
+                    VertexIndex2 = 2
+                }
+            ];
+
+            MdlMeshBuilder.IsRenderableMesh(malformed).Should().BeFalse();
+            MdlMeshBuilder.Build(ModelOf(malformed)).Meshes.Should().BeEmpty();
+
+            malformed.Render = false;
+            MdlMeshBuilder.BuildDoorTransition(ModelOf(malformed)).Meshes.Should().BeEmpty();
         }
 
         /// <summary>

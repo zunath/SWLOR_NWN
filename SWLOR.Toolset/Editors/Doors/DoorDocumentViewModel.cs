@@ -67,7 +67,7 @@ namespace SWLOR.Toolset.Editors.Doors
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             IReadOnlyList<DoorAppearanceChoice>? appearances = null,
             ResourceIndex? resourceIndex = null,
-            Func<JsonGffStruct, RenderModel?>? resolveModel = null,
+            Func<JsonGffStruct, BlueprintModelRenderResult>? resolveModel = null,
             ThumbnailService? thumbnails = null,
             ChoicePreviewService? choicePreviews = null,
             BlueprintSaveCoordinator? saveCoordinator = null,

@@ -15,7 +15,7 @@ namespace SWLOR.Toolset.Tests
     {
         private static InstanceMarker MakeMarkerInstance(
             InstanceMarkerKind kind, Vector3 position, string tag, RenderModel? model = null,
-            Matrix4x4? visualTransform = null) => new()
+            Matrix4x4? visualTransform = null, bool isDoorTransition = false) => new()
         {
             Kind = kind,
             TemplateResRef = tag,
@@ -23,7 +23,8 @@ namespace SWLOR.Toolset.Tests
             Position = position,
             Orientation = new Vector2(1f, 0f),
             VisualTransform = visualTransform ?? Matrix4x4.Identity,
-            Model = model
+            Model = model,
+            IsDoorTransition = isDoorTransition
         };
 
         private static RenderMesh MakeMesh(float[] positions, int[] indices) => new()
@@ -299,6 +300,27 @@ namespace SWLOR.Toolset.Tests
             var (min, max) = AreaPicking.ComputeInstanceWorldBounds(instance, drawsAsModel: false);
 
             (max.X - min.X).Should().BeApproximately(0.8f, 0.0001f);
+        }
+
+        [Test]
+        public void DoorTransitionWithoutResolvedGeometry_UsesTheVisibleDoorwayPlaneForBoundsAndPicking()
+        {
+            var instance = MakeMarkerInstance(
+                InstanceMarkerKind.Door,
+                new Vector3(10f, 20f, 4f),
+                "transition",
+                isDoorTransition: true);
+
+            var (min, max) = AreaPicking.ComputeInstanceWorldBounds(instance, drawsAsModel: false);
+            var hit = AreaPicking.PickClosestInstance(
+                DownwardRayAt(10f, 20f), MakeScene(instance), showPlaceableModels: true);
+
+            (max.X - min.X).Should().BeApproximately(2f, 0.0001f);
+            (max.Z - min.Z).Should().BeApproximately(3f, 0.0001f);
+            hit.Should().BeSameAs(instance,
+                "the fallback transition plane must be selectable instead of an invisible marker");
+            AreaPicking.DrawsAsModel(instance, showPlaceableModels: true).Should().BeFalse(
+                "transition geometry has its own translucent render pass");
         }
 
         // ----- PickInstance (WP5.2: single-instance hit-test for the move/rotate gizmo's press check) -----

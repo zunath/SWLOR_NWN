@@ -16,7 +16,7 @@ namespace SWLOR.Toolset.Editors.Doors
         Func<string, IReadOnlyList<BehaviorChoice>>? ResolveChoices,
         IReadOnlyList<DoorAppearanceChoice> Appearances,
         ResourceIndex? ResourceIndex,
-        Func<JsonGffStruct, RenderModel?>? ResolveModel,
+        Func<JsonGffStruct, BlueprintModelRenderResult>? ResolveModel,
         ThumbnailService? Thumbnails = null,
         ChoicePreviewService? ChoicePreviews = null,
         Services.IEditorPromptService? Prompts = null);

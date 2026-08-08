@@ -5,5 +5,12 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         int Id,
         string Label,
         string DisplayName,
-        string? Model);
+        string? Model)
+    {
+        /// <summary>
+        /// Whether the engine renders this door model. The generic transition door is deliberately
+        /// invisible in game and needs an editor-only translucent representation instead.
+        /// </summary>
+        public bool VisibleModel { get; init; } = true;
+    }
 }

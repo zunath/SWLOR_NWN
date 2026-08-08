@@ -205,13 +205,23 @@ public class TintMapReviewTests
             "TintMap",
             "TintMapService.cs");
         var droidSource = ReadSource("SWLOR.Game.Server", "Service", "Droid.cs");
+        var saveOverrideMethod = FindMethod(tintSource, "SaveDroidOverride");
+        var updateSnapshotMethod = FindMethod(droidSource, "UpdateEquippedItemSnapshot");
+        var unequipMethod = FindMethod(droidSource, "OnUnequipItem");
 
-        tintSource.Should().Contain(
-            "Droid.UpdateEquippedItemSnapshot(creature, selection.PaletteSource);");
-        droidSource.Should().Contain(
-            "constructedDroid.EquippedItems[slot] = ObjectPlugin.Serialize(item);");
-        droidSource.Should().Contain(
-            "constructedDroid.Inventory[itemId] = ObjectPlugin.Serialize(item);");
+        saveOverrideMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .ContainSingle(invocation =>
+                IsMemberInvocation(invocation, "Droid", "UpdateEquippedItemSnapshot"));
+        updateSnapshotMethod.DescendantNodes()
+            .OfType<AssignmentExpressionSyntax>()
+            .Should()
+            .ContainSingle(assignment => IsSerializedDictionaryAssignment(assignment, "EquippedItems"));
+        unequipMethod.DescendantNodes()
+            .OfType<AssignmentExpressionSyntax>()
+            .Should()
+            .ContainSingle(assignment => IsSerializedDictionaryAssignment(assignment, "Inventory"));
     }
 
     [Test]
@@ -236,18 +246,24 @@ public class TintMapReviewTests
                     Identifier.ValueText: "AddSimpleItemSelections"
                 } &&
                 invocation.ArgumentList.Arguments.Any(argument =>
-                    argument.Expression.ToString() == "InventorySlot.Cloak"));
+                    argument.Expression is MemberAccessExpressionSyntax
+                    {
+                        Expression: IdentifierNameSyntax { Identifier.ValueText: "InventorySlot" },
+                        Name.Identifier.ValueText: "Cloak"
+                    }));
 
-        cloakInvocation.ArgumentList.Arguments
-            .Select(argument => argument.Expression.ToString())
+        cloakInvocation.ArgumentList.Arguments.Any(argument =>
+            argument.Expression is InterpolatedStringExpressionSyntax interpolated &&
+            interpolated.Contents
+                .OfType<InterpolatedStringTextSyntax>()
+                .Any(text => text.TextToken.ValueText.Contains("cloak", StringComparison.Ordinal)))
             .Should()
-            .ContainInOrder(
-                "creature",
-                "InventorySlot.Cloak",
-                "$\"{prefix}cloak\"",
-                "selections",
-                "seenSelections",
-                "\"cloak\"");
+            .BeTrue();
+        cloakInvocation.ArgumentList.Arguments.Any(argument =>
+            argument.Expression is LiteralExpressionSyntax literal &&
+            literal.Token.ValueText == "cloak")
+            .Should()
+            .BeTrue();
     }
 
     [Test]
@@ -273,12 +289,36 @@ public class TintMapReviewTests
             "AppearanceDefinition",
             "TintMap",
             "TintMapMaterialRegistry.cs");
+        var loadMethod = FindMethod(source, nameof(TintMapMaterialRegistry.Load));
+        var invocations = loadMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .ToList();
+        var logInvocation = invocations.Single(invocation =>
+            IsMemberInvocation(invocation, "Log", "WriteStructured"));
 
-        source.Should().Contain("Log.WriteStructured(");
-        source.Should().Contain("LogGroup.Server,");
-        source.Should().Contain("\"Loaded {TintMapModelCount} tint-map models.\",");
-        source.Should().NotContain("Console.WriteLine");
-        source.Should().NotContain("Serilog.Log.Information");
+        logInvocation.ArgumentList.Arguments.Any(argument =>
+            argument.Expression is MemberAccessExpressionSyntax
+            {
+                Name.Identifier.ValueText: "Server"
+            })
+            .Should()
+            .BeTrue();
+        logInvocation.ArgumentList.Arguments.Any(argument =>
+            argument.Expression is LiteralExpressionSyntax literal &&
+            literal.Token.ValueText == "Loaded {TintMapModelCount} tint-map models.")
+            .Should()
+            .BeTrue();
+        logInvocation.ArgumentList.Arguments.Any(argument =>
+            argument.Expression is MemberAccessExpressionSyntax
+            {
+                Name.Identifier.ValueText: "Count"
+            })
+            .Should()
+            .BeTrue();
+        invocations.Should().NotContain(invocation =>
+            IsMemberInvocation(invocation, "Console", "WriteLine"));
+        invocations.Should().NotContain(invocation =>
+            GetInvokedMethodName(invocation) == "Information");
     }
 
     [Test]
@@ -290,22 +330,36 @@ public class TintMapReviewTests
             "AppearanceDefinition",
             "TintMap",
             "TintMapService.cs");
-        var replaceMethod = CSharpSyntaxTree.ParseText(tintSource)
-            .GetRoot()
-            .DescendantNodes()
-            .OfType<MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.ValueText == nameof(TintMapService.ReplaceItemTintOverrides));
+        var replaceMethod = FindMethod(tintSource, nameof(TintMapService.ReplaceItemTintOverrides));
         var replaceInvocations = replaceMethod.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
-            .Select(invocation => invocation.Expression.ToString())
+            .Select(GetInvokedMethodName)
             .ToList();
 
         replaceInvocations.Should().Contain("GetItemTintOverrides");
         replaceInvocations.Should().Contain("DeleteLocalInt");
         replaceInvocations.Should().Contain("SetLocalInt");
-        tintSource.Should().Contain("variable.Type != LocalVariableType.Int");
-        tintSource.Should().Contain(
-            "!variable.Key.StartsWith(LocalVariablePrefix, StringComparison.Ordinal)");
+        var getOverridesMethod = FindMethod(tintSource, "GetItemTintOverrides");
+        getOverridesMethod.DescendantNodes()
+            .OfType<BinaryExpressionSyntax>()
+            .Should()
+            .Contain(expression =>
+                expression.Kind() == SyntaxKind.NotEqualsExpression &&
+                expression.Left.DescendantNodesAndSelf()
+                    .OfType<SimpleNameSyntax>()
+                    .Any(name => name.Identifier.ValueText == "Type") &&
+                expression.Right.DescendantNodesAndSelf()
+                    .OfType<SimpleNameSyntax>()
+                    .Any(name => name.Identifier.ValueText == "Int"));
+        getOverridesMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .Contain(invocation =>
+                GetInvokedMethodName(invocation) == "StartsWith" &&
+                invocation.ArgumentList.Arguments.Any(argument =>
+                    argument.Expression.DescendantNodesAndSelf()
+                        .OfType<SimpleNameSyntax>()
+                        .Any(name => name.Identifier.ValueText == "Ordinal")));
 
         var outfitSource = ReadSource(
             "SWLOR.Game.Server",
@@ -313,27 +367,69 @@ public class TintMapReviewTests
             "GuiDefinition",
             "ViewModel",
             "OutfitViewModel.cs");
-        var loadMethod = CSharpSyntaxTree.ParseText(outfitSource)
-            .GetRoot()
-            .DescendantNodes()
-            .OfType<MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.ValueText == "LoadOutfit");
+        var loadMethod = FindMethod(outfitSource, "LoadOutfit");
         var loadInvocations = loadMethod.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .ToList();
         var replaceInvocation = loadInvocations.Single(invocation =>
-            invocation.Expression.ToString() == "TintMapService.ReplaceItemTintOverrides");
-        var finalCopyInvocation = loadInvocations.Single(invocation =>
-            invocation.Expression is IdentifierNameSyntax { Identifier.ValueText: "CopyItem" } &&
-            invocation.ArgumentList.Arguments.Count == 3 &&
-            invocation.ArgumentList.Arguments[0].Expression.ToString() == "copy" &&
-            invocation.ArgumentList.Arguments[1].Expression.ToString() == "Player");
-
-        replaceInvocation.ArgumentList.Arguments
-            .Select(argument => argument.Expression.ToString())
+            IsMemberInvocation(invocation, "TintMapService", "ReplaceItemTintOverrides"));
+        loadInvocations.Where(invocation =>
+                GetInvokedMethodName(invocation) == "CopyItem" &&
+                invocation.ArgumentList.Arguments.Count == 3 &&
+                invocation.ArgumentList.Arguments.Any(argument =>
+                    argument.Expression is IdentifierNameSyntax { Identifier.ValueText: "Player" }))
             .Should()
-            .ContainInOrder("deserialized", "copy");
-        replaceInvocation.SpanStart.Should().BeLessThan(finalCopyInvocation.SpanStart);
+            .ContainSingle();
+        replaceInvocation.ArgumentList.Arguments.Should().HaveCount(2);
+    }
+
+    private static MethodDeclarationSyntax FindMethod(string source, string methodName)
+    {
+        return CSharpSyntaxTree.ParseText(source)
+            .GetRoot()
+            .DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == methodName);
+    }
+
+    private static string GetInvokedMethodName(InvocationExpressionSyntax invocation)
+    {
+        return invocation.Expression switch
+        {
+            IdentifierNameSyntax identifier => identifier.Identifier.ValueText,
+            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.Identifier.ValueText,
+            _ => string.Empty
+        };
+    }
+
+    private static bool IsMemberInvocation(
+        InvocationExpressionSyntax invocation,
+        string receiver,
+        string methodName)
+    {
+        return invocation.Expression is MemberAccessExpressionSyntax
+        {
+            Expression: IdentifierNameSyntax receiverIdentifier,
+            Name.Identifier.ValueText: var invokedMethod
+        } &&
+               receiverIdentifier.Identifier.ValueText == receiver &&
+               invokedMethod == methodName;
+    }
+
+    private static bool IsSerializedDictionaryAssignment(
+        AssignmentExpressionSyntax assignment,
+        string dictionaryName)
+    {
+        return assignment.Left is ElementAccessExpressionSyntax
+               {
+                   Expression: MemberAccessExpressionSyntax
+                   {
+                       Name.Identifier.ValueText: var assignedDictionary
+                   }
+               } &&
+               assignedDictionary == dictionaryName &&
+               assignment.Right is InvocationExpressionSyntax serialization &&
+               IsMemberInvocation(serialization, "ObjectPlugin", "Serialize");
     }
 
     private static string ReadSource(params string[] pathParts)

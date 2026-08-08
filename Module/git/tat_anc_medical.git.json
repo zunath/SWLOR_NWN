@@ -671,7 +671,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -3679,7 +3679,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -4707,7 +4707,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -5701,7 +5701,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -6290,7 +6290,7 @@
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 19
+                "value": 24
               },
               "ArmorPart_Neck": {
                 "type": "byte",
@@ -6330,7 +6330,7 @@
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 19
+                "value": 24
               },
               "ArmorPart_Torso": {
                 "type": "byte",
@@ -6448,7 +6448,7 @@
               },
               "xArmorPart_LThig": {
                 "type": "word",
-                "value": 19
+                "value": 24
               },
               "xArmorPart_Neck": {
                 "type": "word",
@@ -6488,7 +6488,7 @@
               },
               "xArmorPart_RThig": {
                 "type": "word",
-                "value": 19
+                "value": 24
               },
               "xArmorPart_Torso": {
                 "type": "word",
@@ -6692,7 +6692,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -8812,7 +8812,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -9812,7 +9812,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -10965,7 +10965,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -11957,7 +11957,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -14225,7 +14225,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",

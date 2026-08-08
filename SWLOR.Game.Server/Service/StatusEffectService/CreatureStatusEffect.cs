@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.StatusEffectService
 {
@@ -13,8 +14,19 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
         public void Add(IStatusEffect statusEffect)
         {
+            _allActiveEffects.Add(statusEffect);
+
             foreach (var (type, value) in statusEffect.StatGroup.Stats)
             {
+                // Flag stats cannot be maintained as a running sum - two effects carrying the
+                // same flag must combine to that flag, not double it - so they are recomputed
+                // from the active set instead.
+                if (Stat.GetStatTypeAggregation(type) == StatTypeAggregation.BitwiseOr)
+                {
+                    RecomputeBitwiseOrStat(type);
+                    continue;
+                }
+
                 StatGroup.Stats.TryGetValue(type, out var current);
                 StatGroup.Stats[type] = current + value;
             }
@@ -40,8 +52,6 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
                 }
             }
 
-            _allActiveEffects.Add(statusEffect);
-
             if (statusEffect.ActivationType == StatusEffectActivationType.Tick)
             {
                 _tickEffects.Add(statusEffect);
@@ -58,8 +68,16 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
         public void Remove(IStatusEffect statusEffect)
         {
+            _allActiveEffects.Remove(statusEffect);
+
             foreach (var (type, value) in statusEffect.StatGroup.Stats)
             {
+                if (Stat.GetStatTypeAggregation(type) == StatTypeAggregation.BitwiseOr)
+                {
+                    RecomputeBitwiseOrStat(type);
+                    continue;
+                }
+
                 if (StatGroup.Stats.TryGetValue(type, out var current))
                     StatGroup.Stats[type] = current - value;
             }
@@ -85,7 +103,6 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
                 }
             }
 
-            _allActiveEffects.Remove(statusEffect);
             if (_tickEffects.Contains(statusEffect))
                 _tickEffects.Remove(statusEffect);
             if (_onHitEffects.Contains(statusEffect))
@@ -94,6 +111,18 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             if (_effectsBySourceType.ContainsKey(statusEffect.SourceType) &&
                 _effectsBySourceType[statusEffect.SourceType].Contains(statusEffect))
                 _effectsBySourceType[statusEffect.SourceType].Remove(statusEffect);
+        }
+
+        private void RecomputeBitwiseOrStat(StatType type)
+        {
+            var combined = 0;
+            foreach (var effect in _allActiveEffects)
+            {
+                if (effect.StatGroup.Stats.TryGetValue(type, out var value))
+                    combined |= value;
+            }
+
+            StatGroup.Stats[type] = combined;
         }
 
         public HashSet<IStatusEffect> GetAllEffects()

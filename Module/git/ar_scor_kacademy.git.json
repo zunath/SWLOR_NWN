@@ -1401,7 +1401,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -2345,11 +2345,11 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 0
+                "value": 512
               },
               "Charges": {
                 "type": "byte",
-                "value": 50
+                "value": 0
               },
               "Cost": {
                 "type": "dword",
@@ -2373,19 +2373,21 @@
               },
               "LocalizedName": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Sith Marauder, Initiate Lightsaber"
+                }
               },
               "ModelPart1": {
                 "type": "byte",
-                "value": 0
+                "value": 24
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 0
+                "value": 11
               },
               "ModelPart3": {
                 "type": "byte",
-                "value": 0
+                "value": 14
               },
               "Plot": {
                 "type": "byte",
@@ -2402,11 +2404,73 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 134
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 3
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 48
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 52
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 22
+                      "value": 24
                     },
                     "Param1": {
                       "type": "byte",
@@ -2437,23 +2501,23 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": ""
+                "value": "NPC1SithLightsaber"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": ""
+                "value": "sithmarinit_wp"
               },
               "xModelPart1": {
                 "type": "word",
-                "value": 0
+                "value": 24
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 0
+                "value": 11
               },
               "xModelPart3": {
                 "type": "word",
-                "value": 0
+                "value": 14
               },
               "XOrientation": {
                 "type": "float",
@@ -3920,11 +3984,11 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 0
+                "value": 511
               },
               "Charges": {
                 "type": "byte",
-                "value": 50
+                "value": 0
               },
               "Cost": {
                 "type": "dword",
@@ -3948,19 +4012,21 @@
               },
               "LocalizedName": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Sith Inquisitor, Initiate Saberstaff"
+                }
               },
               "ModelPart1": {
                 "type": "byte",
-                "value": 0
+                "value": 31
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 0
+                "value": 11
               },
               "ModelPart3": {
                 "type": "byte",
-                "value": 0
+                "value": 14
               },
               "Plot": {
                 "type": "byte",
@@ -3977,11 +4043,73 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 134
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 2
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 50
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 52
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 22
+                      "value": 29
                     },
                     "Param1": {
                       "type": "byte",
@@ -4012,23 +4140,23 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": ""
+                "value": "NPC1SithSaberstaff"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": ""
+                "value": "sithinqinit_wp"
               },
               "xModelPart1": {
                 "type": "word",
-                "value": 0
+                "value": 31
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 0
+                "value": 11
               },
               "xModelPart3": {
                 "type": "word",
-                "value": 0
+                "value": 14
               },
               "XOrientation": {
                 "type": "float",
@@ -5404,7 +5532,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 6.428568808967244e-040
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -5695,11 +5823,11 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 0
+                "value": 512
               },
               "Charges": {
                 "type": "byte",
-                "value": 50
+                "value": 0
               },
               "Cost": {
                 "type": "dword",
@@ -5723,19 +5851,21 @@
               },
               "LocalizedName": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Sith Marauder, Initiate Lightsaber"
+                }
               },
               "ModelPart1": {
                 "type": "byte",
-                "value": 0
+                "value": 24
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 0
+                "value": 11
               },
               "ModelPart3": {
                 "type": "byte",
-                "value": 0
+                "value": 14
               },
               "Plot": {
                 "type": "byte",
@@ -5752,11 +5882,73 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 134
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 3
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 48
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 52
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 22
+                      "value": 24
                     },
                     "Param1": {
                       "type": "byte",
@@ -5787,23 +5979,23 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": ""
+                "value": "NPC1SithLightsaber"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": ""
+                "value": "sithmarinit_wp"
               },
               "xModelPart1": {
                 "type": "word",
-                "value": 0
+                "value": 24
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 0
+                "value": 11
               },
               "xModelPart3": {
                 "type": "word",
-                "value": 0
+                "value": 14
               },
               "XOrientation": {
                 "type": "float",
@@ -7387,11 +7579,11 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 0
+                "value": 512
               },
               "Charges": {
                 "type": "byte",
-                "value": 50
+                "value": 0
               },
               "Cost": {
                 "type": "dword",
@@ -7415,19 +7607,21 @@
               },
               "LocalizedName": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Sith Marauder, Initiate Lightsaber"
+                }
               },
               "ModelPart1": {
                 "type": "byte",
-                "value": 0
+                "value": 24
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 0
+                "value": 11
               },
               "ModelPart3": {
                 "type": "byte",
-                "value": 0
+                "value": 14
               },
               "Plot": {
                 "type": "byte",
@@ -7444,11 +7638,73 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 134
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 3
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 48
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 52
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 22
+                      "value": 24
                     },
                     "Param1": {
                       "type": "byte",
@@ -7479,23 +7735,23 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": ""
+                "value": "NPC1SithLightsaber"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": ""
+                "value": "sithmarinit_wp"
               },
               "xModelPart1": {
                 "type": "word",
-                "value": 0
+                "value": 24
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 0
+                "value": 11
               },
               "xModelPart3": {
                 "type": "word",
-                "value": 0
+                "value": 14
               },
               "XOrientation": {
                 "type": "float",
@@ -7748,7 +8004,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 6.869585461659551e-041
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -10161,7 +10417,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -11165,7 +11421,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -13960,11 +14216,11 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 0
+                "value": 511
               },
               "Charges": {
                 "type": "byte",
-                "value": 50
+                "value": 0
               },
               "Cost": {
                 "type": "dword",
@@ -13988,19 +14244,21 @@
               },
               "LocalizedName": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "(NPC 3) Sith Saberstaff"
+                }
               },
               "ModelPart1": {
                 "type": "byte",
-                "value": 0
+                "value": 31
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 0
+                "value": 11
               },
               "ModelPart3": {
                 "type": "byte",
-                "value": 0
+                "value": 14
               },
               "Plot": {
                 "type": "byte",
@@ -14017,11 +14275,73 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 134
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 2
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 72
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 52
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 22
+                      "value": 29
                     },
                     "Param1": {
                       "type": "byte",
@@ -14052,23 +14372,23 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": ""
+                "value": "NPC3SithSaberstaff"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": ""
+                "value": "sithinq2_wp"
               },
               "xModelPart1": {
                 "type": "word",
-                "value": 0
+                "value": 31
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 0
+                "value": 11
               },
               "xModelPart3": {
                 "type": "word",
-                "value": 0
+                "value": 14
               },
               "XOrientation": {
                 "type": "float",
@@ -14575,7 +14895,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -17724,7 +18044,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": -1.834361767323155e-038
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -20218,7 +20538,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.787232789809827e-025
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -21739,7 +22059,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 4.386270477384993e-032
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -22003,7 +22323,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 4.376453042440513e-032
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -25582,7 +25902,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 6.153067925687128e-039
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -26509,7 +26829,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.930806134130311e-038
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -27103,7 +27423,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 6.120929737739267e-021
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -28172,7 +28492,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 4.175822286249693e-035
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -29288,7 +29608,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 3.893694239651955e-022
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -30262,7 +30582,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.069182460618896e-038
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -30526,7 +30846,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 6.336744523196968e-039
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -30856,7 +31176,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 6.979605607989085e-039
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -32793,7 +33113,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -33820,7 +34140,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",

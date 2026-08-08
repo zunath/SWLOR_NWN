@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PlatformTarget>x64</PlatformTarget>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="7.2.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="NUnit" Version="4.5.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+    <!-- Renders controls without a display, so a view that fails to load its XAML is a test failure
+         rather than a blank tab someone finds later. Added after the script editor shipped showing a
+         "Not Found" placeholder: a launch-and-kill smoke test proves the window appeared, not that
+         any given tab renders. Version-matched to the Avalonia pin in SWLOR.Toolset.csproj. -->
+    <PackageReference Include="Avalonia.Headless.NUnit" Version="11.3.17" />
+    <!-- Line/branch coverage, collected by the XPlat Code Coverage data collector. Analyzer-only
+         at build time; it contributes nothing to the test assembly's own output. -->
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Toolset.Domain\SWLOR.Toolset.Domain.csproj" />
+    <!-- The settings store lives in the app project. Referenced so its persistence can be tested
+         against a real file rather than inferred from the serializer's behaviour; nothing here
+         constructs a control, so no Avalonia runtime is needed. -->
+    <ProjectReference Include="..\SWLOR.Toolset\SWLOR.Toolset.csproj" />
+  </ItemGroup>
+
+</Project>

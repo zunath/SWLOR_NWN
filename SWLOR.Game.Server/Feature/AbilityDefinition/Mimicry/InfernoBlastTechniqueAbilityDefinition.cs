@@ -27,7 +27,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsAreaAbility()
-                .RequiresTarget()
                 .IsHostileAbility()
                 .RequirementStamina(10)
                 .HasActivationTargetingCone(

@@ -1,10 +1,10 @@
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class XPTomeDialog: DialogBase
+    public class XPTomeDialog: ConversationMenuDefinition
     {
         private class Model
         {
@@ -17,9 +17,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private const string SkillListPageId = "SKILL_LIST_PAGE";
         private const string ConfirmationPageId = "CONFIRMATION_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialize)
                 .AddPage(CategoryPageId, CategoryPageInit)
@@ -32,12 +32,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private void Initialize()
         {
-            var model = GetDataModel<Model>();
-            var player = GetPC();
+            var model = Data<Model>();
+            var player = Player;
             model.Item = GetLocalObject(player, "XP_TOME_OBJECT");
         }
 
-        private void CategoryPageInit(DialogPage page)
+        private void CategoryPageInit(ConversationMenuPage page)
         {
             page.Header = "This tome holds techniques lost to the ages. Select a skill to earn experience in that art.";
 
@@ -45,17 +45,17 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse(detail.Name, () =>
                 {
-                    var model = GetDataModel<Model>();
+                    var model = Data<Model>();
                     model.Category = type;
-                    ChangePage(SkillListPageId);
+                    GoToPage(SkillListPageId);
                 });
             }
 
         }
 
-        private void SkillListPageInit(DialogPage page)
+        private void SkillListPageInit(ConversationMenuPage page)
         {
-            var model = GetDataModel<Model>();
+            var model = Data<Model>();
             page.Header = "This tome holds techniques lost to the ages. Select a skill to earn experience in that art.";
 
             foreach (var (type, detail) in Skill.GetAllSkillsByCategory(model.Category))
@@ -63,15 +63,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 page.AddResponse(detail.Name, () =>
                 {
                     model.Skill = type;
-                    ChangePage(ConfirmationPageId);
+                    GoToPage(ConfirmationPageId);
                 });
             }
         }
 
-        private void ConfirmationPageInit(DialogPage page)
+        private void ConfirmationPageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
-            var model = GetDataModel<Model>();
+            var player = Player;
+            var model = Data<Model>();
             var skillDetail = Skill.GetSkillDetails(model.Skill);
             page.Header = $"Are you sure you want to improve your {skillDetail.Name} skill?";
 
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 Skill.GiveSkillXP(player, model.Skill, amount, false, false);
                 DestroyObject(model.Item);
 
-                EndConversation();
+                Close();
             });
         }
     }

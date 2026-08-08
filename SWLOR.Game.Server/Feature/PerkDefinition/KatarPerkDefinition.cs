@@ -215,6 +215,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImpenetrableGripTrait)
                 .Description("Gain +20 Mobility Resistance and +20 Mind Resistance. Guarded hits restore 4 STM.")
+                .IncreasesStat(StatType.MobilityResistance, 20)
+                .IncreasesStat(StatType.MindResistance, 20)
                 .IncreasesStat(StatType.GuardStaminaRestore, 4)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 35);

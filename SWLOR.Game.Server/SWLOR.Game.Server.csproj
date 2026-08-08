@@ -32,6 +32,10 @@
     <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="ConversationData\**\*.conversation.json" />
+  </ItemGroup>
+
   <Target Name="NWN" AfterTargets="Build">
     <ItemGroup>
       <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).dll" />
@@ -42,6 +46,6 @@
   </Target>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT' AND '$(RunPostBuildEvent)' != 'Never'">
-    <Exec Command="..\tools\SWLOR.CLI\SWLOR.CLI.exe -o" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
+    <Exec Command="call &quot;..\tools\SWLOR.CLI\RunCLI.cmd&quot; -o" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
   </Target>
 </Project>

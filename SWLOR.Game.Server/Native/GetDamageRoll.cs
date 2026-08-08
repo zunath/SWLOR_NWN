@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Native
                     out totalDamage,
                     out var effectiveCritical);
 
-                if (totalDamage > 0)
+                if (isLandedAttack && totalDamage > 0)
                 {
                     using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attacker.m_idSelf);
 
@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Native
             if (damage < 0)
                 damage = 0;
 
-            if (damage > 0 && targetObject.m_nObjectType == (int)ObjectType.Creature)
+            if (isLandedAttack && damage > 0 && targetObject.m_nObjectType == (int)ObjectType.Creature)
             {
                 Combat.ApplyDamageReflectionEffects(
                     attacker.m_idSelf,
@@ -540,13 +540,21 @@ namespace SWLOR.Game.Server.Native
                     target.m_idSelf,
                     Stat.GetDefenseNative(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             defense = Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType);
-            var guardedHitBonuses = Combat.ConsumeNextAttackGuardedHitAutoAttackBonuses(attacker.m_idSelf);
+            // Discarded swings must not burn one-shot buffs or advance cycle counters — the engine
+            // rolls damage for attacks it then throws away, so every consuming rider gates on the
+            // attack having actually landed.
+            var guardedHitBonuses = isLandedAttack
+                ? Combat.ConsumeNextAttackGuardedHitAutoAttackBonuses(attacker.m_idSelf)
+                : default;
             var statusAppliedNextAttackDamageBonus = isLandedAttack
                 ? Combat.ConsumeStatusAppliedNextAttackDamageBonus(attacker.m_idSelf)
                 : 0;
+            var cycleDamageBonus = isLandedAttack
+                ? Combat.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType)
+                : 0;
             var attackDamage = damageProfile.Damage +
                                Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType) +
-                               Combat.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType) +
+                               cycleDamageBonus +
                                guardedHitBonuses.DMGBonus +
                                statusAppliedNextAttackDamageBonus;
 
@@ -572,9 +580,17 @@ namespace SWLOR.Game.Server.Native
 
             damage = Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType, target.m_idSelf);
 
-            damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
+            if (isLandedAttack)
+            {
+                damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
+            }
             damage = Combat.ApplySideAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
-            damage = Combat.ApplyBackAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
+            if (isLandedAttack)
+            {
+                // Unlike its pure side-attack sibling, the back-attack modifier also consumes
+                // Ghost Protocol's primed Exposed rider - a discarded swing must not burn it.
+                damage = Combat.ApplyBackAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
+            }
 
             var canApplyRandomFlatBonusesThisDamage = damage > 0;
 
@@ -586,11 +602,15 @@ namespace SWLOR.Game.Server.Native
                 damageType,
                 false,
                 canApplyRandomFlatBonusesThisDamage,
+                isLandedAttack,
                 out var damageBeforeTargetStatusStage);
 
             // Saber Ward / Aegis Eternal: re-type a share of the physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
-            Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage);
+            if (isLandedAttack)
+            {
+                Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage);
+            }
 
             damage = Resistance.ApplyResistanceToDamageNative(target, damageType, damage);
 
@@ -617,7 +637,7 @@ namespace SWLOR.Game.Server.Native
                 damage,
                 damageType,
                 isLandedAttack);
-            if (damage > 0 && attackType == (uint)AttackType.Melee)
+            if (isLandedAttack && damage > 0 && attackType == (uint)AttackType.Melee)
             {
                 Combat.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
             }
@@ -627,11 +647,15 @@ namespace SWLOR.Game.Server.Native
                 damage,
                 attacker.m_idSelf,
                 damageType,
-                preTargetStatusStageDamage: damageBeforeTargetStatusStage);
-            Combat.ApplyNextAttackGuardedHitEnmityBonus(
-                attacker.m_idSelf,
-                target.m_idSelf,
-                guardedHitBonuses.EnmityBonus);
+                preTargetStatusStageDamage: damageBeforeTargetStatusStage,
+                isLandedAttack: isLandedAttack);
+            if (isLandedAttack)
+            {
+                Combat.ApplyNextAttackGuardedHitEnmityBonus(
+                    attacker.m_idSelf,
+                    target.m_idSelf,
+                    guardedHitBonuses.EnmityBonus);
+            }
             return damage;
         }
 

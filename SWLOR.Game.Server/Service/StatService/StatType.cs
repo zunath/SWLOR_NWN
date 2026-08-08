@@ -1101,10 +1101,10 @@ namespace SWLOR.Game.Server.Service.StatService
         DeviceShieldDurationBonusSeconds = 200,
 
         /// <summary>
-        /// Grenade radius bonus in tenths of a meter.
+        /// Explosive blast radius bonus in tenths of a meter for grenade, Remote Charge, and Overload Barrage blasts.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        GrenadeRadiusBonusTenths = 201,
+        BlastRadiusBonusTenths = 201,
 
         /// <summary>
         /// Percentage-point bonus applied to grenade control-effect potency.
@@ -2530,12 +2530,6 @@ namespace SWLOR.Game.Server.Service.StatService
         PowerCellInitialTargetPowerSurge = 447,
 
         /// <summary>
-        /// Percent adjustment applied to Devices ability output granted by Overclock Routine.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DeviceAbilityOutputPercentAdjustment = 448,
-
-        /// <summary>
         /// Enables Field Support ally abilities to apply Overclock Routine.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -2656,16 +2650,16 @@ namespace SWLOR.Game.Server.Service.StatService
         PredatorsMarkDurationSeconds = 825,
 
         /// <summary>
-        /// Ranged physical damage reduction percent applied by Field Support ally-buff riders.
+        /// Physical Defense percent applied by Field Support ally-buff riders.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        FieldSupportRangedPhysicalDamageReductionPercent = 467,
+        FieldSupportPhysicalDefensePercent = 467,
 
         /// <summary>
-        /// Duration in seconds for FieldSupportRangedPhysicalDamageReductionPercent.
+        /// Duration in seconds for FieldSupportPhysicalDefensePercent.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        FieldSupportRangedPhysicalDamageReductionDurationSeconds = 468,
+        FieldSupportPhysicalDefenseDurationSeconds = 468,
 
         /// <summary>
         /// Physical and Force damage reduction percent applied by Field Support ally-buff riders.
@@ -4026,7 +4020,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory flags required for status-applied stat riders.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.BitwiseOr)]
         StatusAppliedRequiredCategory = 701,
 
         /// <summary>
@@ -4216,22 +4210,17 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityRestoredFPHasteDurationSeconds = 732,
 
         /// <summary>
-        /// SkillType value whose auto attacks count toward AutoAttackCycleCriticalRatePercentAdjustment.
+        /// Required ranged auto-attack count before the cross-skill ranged cycle grants bonus
+        /// Critical Rate. Any ranged weapon skill advances the cycle.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        AutoAttackCycleCriticalRateSkillType = 733,
+        RangedAutoAttackCycleCriticalRateRequiredCount = 734,
 
         /// <summary>
-        /// Required auto-attack count for AutoAttackCycleCriticalRatePercentAdjustment.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        AutoAttackCycleCriticalRateRequiredCount = 734,
-
-        /// <summary>
-        /// Critical rate adjustment granted on the matching auto-attack cycle.
+        /// Critical rate adjustment granted on the ranged auto-attack that completes the cycle.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AutoAttackCycleCriticalRatePercentAdjustment = 735,
+        RangedAutoAttackCycleCriticalRatePercentAdjustment = 735,
 
         /// <summary>
         /// SkillType value whose non-critical abilities build next-ability Critical Rate.
@@ -5639,15 +5628,108 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         NextAttackStatusAppliedDMGBonus = 979,
 
+        /// <summary>
+        /// SkillType required for the skill-damage bleeding-target Stamina restore channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SkillDamageBleedingTargetStaminaRestoreSkillType = 980,
+
+        /// <summary>
+        /// Percent chance for matching skill damage to restore Stamina against a bleeding target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SkillDamageBleedingTargetStaminaRestoreChance = 981,
+
+        /// <summary>
+        /// Flat Stamina restored by matching skill damage against a bleeding target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SkillDamageBleedingTargetStaminaRestore = 982,
+
+        /// <summary>
+        /// Cooldown in seconds for the skill-damage bleeding-target Stamina restore channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SkillDamageBleedingTargetStaminaRestoreCooldownSeconds = 983,
+
+        /// <summary>
+        /// SkillType required for the skill-ability bleeding-target Stamina restore channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SkillAbilityBleedingTargetStaminaRestoreSkillType = 984,
+
+        /// <summary>
+        /// Percent chance for a matching skill ability to restore Stamina against a bleeding target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SkillAbilityBleedingTargetStaminaRestoreChance = 985,
+
+        /// <summary>
+        /// Flat Stamina restored by a matching skill ability against a bleeding target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SkillAbilityBleedingTargetStaminaRestore = 986,
+
+        /// <summary>
+        /// Cooldown in seconds for the skill-ability bleeding-target Stamina restore channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds = 987,
+
+        /// <summary>
+        /// Percent (1-99) the critical-hit next-ability trigger reduces the activation delay by
+        /// instead of removing it entirely. Zero or absent keeps the full no-delay behavior for
+        /// perks whose wording removes the delay outright.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CriticalNextAbilityDelayReductionPercent = 988,
+
+        /// <summary>
+        /// Internal temporary partner to NextAttackNoDelay: the percent (1-99) the armed next
+        /// matching ability's activation delay is reduced by. Absent means the armed buff removes
+        /// the delay entirely.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        NextAttackDelayReductionPercent = 989,
+
+        /// <summary>
+        /// Flat DMG gained per consecutive ranged hit against the same target. Any ranged weapon
+        /// skill builds and benefits from the stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedRepeatedTargetDamageBonusPerHit = 990,
+
+        /// <summary>
+        /// Maximum flat DMG from consecutive ranged hits against the same target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedRepeatedTargetDamageBonusMax = 991,
+
+        /// <summary>
+        /// Seconds without a qualifying ranged hit before the consecutive-hit stacks expire.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RangedRepeatedTargetDamageDurationSeconds = 992,
+
     }
 
     public class StatTypeAttribute : Attribute
     {
         public StatTypeCategory Category { get; }
+        public StatTypeAggregation Aggregation { get; }
 
-        public StatTypeAttribute(StatTypeCategory category)
+        public StatTypeAttribute(
+            StatTypeCategory category,
+            StatTypeAggregation aggregation = StatTypeAggregation.Additive)
         {
             Category = category;
+            Aggregation = aggregation;
         }
+    }
+
+    public enum StatTypeAggregation
+    {
+        Additive = 0,
+        BitwiseOr = 1
     }
 }

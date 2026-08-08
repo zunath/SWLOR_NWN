@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A double shot of malt whisky with several ice cubes. This drink is a delicacy all throughout the galaxy and only the sophisticated drink such a perfect drink."
+    }
   },
   "Identified": {
     "type": "byte",

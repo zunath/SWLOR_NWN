@@ -109,13 +109,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         public static void ApplyTemporaryHPPercent(
             uint source,
             uint target,
+            string effectKey,
             float percent,
             float durationSeconds,
             AbilityType scalingAbility = AbilityType.Willpower,
             float multiplier = 1f)
         {
             var amount = CalculateScaledPercentOfMaxHP(source, target, percent, scalingAbility, multiplier);
-            TemporaryHitPointEffects.ApplyFlat(target, amount, durationSeconds);
+            if (GetIsObjectValid(source))
+                amount = Ability.ApplyCombatReadinessMagnitude(source, amount);
+            TemporaryHitPointEffects.ApplyFlat(target, effectKey, amount, durationSeconds);
         }
 
         private static float GetScalingProgress(int stat)

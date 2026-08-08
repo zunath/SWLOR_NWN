@@ -41,7 +41,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A simple hooded cloak."
     }
   },
   "Identified": {
@@ -72,7 +72,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 10
+    "value": 20
   },
   "PaletteID": {
     "type": "byte",
@@ -124,6 +124,6 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 10
+    "value": 20
   }
 }

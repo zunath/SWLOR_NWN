@@ -54,7 +54,7 @@
   },
   "LoadScreenID": {
     "type": "word",
-    "value": 74
+    "value": 19
   },
   "ModListenCheck": {
     "type": "int",

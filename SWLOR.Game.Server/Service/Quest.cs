@@ -221,14 +221,35 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Marks a quest as completed for a player without granting rewards or running completion
+        /// actions. Used by DM tooling to open quest-gated content such as capstone perk unlocks.
+        /// If the quest Id is invalid, an exception will be thrown.
+        /// </summary>
+        /// <param name="player">The player whose quest record is marked complete.</param>
+        /// <param name="questId">The Id of the quest to mark complete.</param>
+        public static void ForceCompleteQuest(uint player, string questId)
+        {
+            _quests[questId].ForceComplete(player);
+        }
+
+        /// <summary>
         /// Makes a player accept a quest by the specified Id.
         /// If the quest Id is invalid, an exception will be thrown.
         /// </summary>
         /// <param name="player">The player who is accepting the quest</param>
         /// <param name="questId">The Id of the quest to accept.</param>
-        public static void AcceptQuest(uint player, string questId)
+        public static bool AcceptQuest(uint player, string questId)
         {
-            _quests[questId].Accept(player, OBJECT_SELF);
+            return AcceptQuest(player, OBJECT_SELF, questId);
+        }
+
+        /// <summary>
+        /// Makes a player accept a quest while preserving the creature or placeable that offered it.
+        /// Conversation callbacks attached to the quest run against this source.
+        /// </summary>
+        public static bool AcceptQuest(uint player, uint questSource, string questId)
+        {
+            return _quests[questId].Accept(player, questSource);
         }
 
         public static bool CanAcceptQuest(uint player, string questId)
@@ -243,9 +264,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player who is advancing to the next state of the quest.</param>
         /// <param name="questSource">The source of the quest. Typically an NPC or object.</param>
         /// <param name="questId">The Id of the quest to advance.</param>
-        public static void AdvanceQuest(uint player, uint questSource, string questId)
+        public static bool AdvanceQuest(uint player, uint questSource, string questId)
         {
-            _quests[questId].Advance(player, questSource);
+            return _quests[questId].Advance(player, questSource);
         }
 
         /// <summary>
@@ -253,7 +274,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player who will open the collection placeable.</param>
         /// <param name="questId">The quest to collect items for.</param>
-        public static void RequestItemsFromPlayer(uint player, string questId)
+        public static bool RequestItemsFromPlayer(uint player, string questId)
+        {
+            return RequestItemsFromPlayer(player, OBJECT_SELF, questId);
+        }
+
+        /// <summary>
+        /// Opens the quest item collector and records the conversation object that owns the hand-in.
+        /// </summary>
+        public static bool RequestItemsFromPlayer(uint player, uint questSource, string questId)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -261,7 +290,7 @@ namespace SWLOR.Game.Server.Service
             if (!dbPlayer.Quests.ContainsKey(questId))
             {
                 SendMessageToPC(player, "You have not accepted this quest yet.");
-                return;
+                return false;
             }
 
             var quest = dbPlayer.Quests[questId];
@@ -275,11 +304,11 @@ namespace SWLOR.Game.Server.Service
             if (!hasCollectItemObjective)
             {
                 SendMessageToPC(player, "There are no items to turn in for this quest. This is likely a bug. Please let the staff know.");
-                return;
+                return false;
             }
 
             var collector = CreateObject(ObjectType.Placeable, "qst_item_collect", GetLocation(player));
-            SetLocalObject(collector, "QUEST_OWNER", OBJECT_SELF);
+            SetLocalObject(collector, "QUEST_OWNER", questSource);
             SetLocalString(collector, "QUEST_ID", questId);
 
             AssignCommand(collector, () => SetFacingPoint(GetPosition(player)));
@@ -293,6 +322,8 @@ namespace SWLOR.Game.Server.Service
                 if (GetIsObjectValid(collector))
                     DestroyObject(collector);
             });
+
+            return true;
         }
 
         /// <summary>
@@ -541,7 +572,8 @@ namespace SWLOR.Game.Server.Service
             {
                 if (GetIsObjectValid(owner) && GetObjectType(owner) == ObjectType.Creature)
                 {
-                    AssignCommand(player, () => ActionStartConversation(owner, string.Empty, true, false));
+                    if (!Conversation.TryStartAssigned(player, owner))
+                        AssignCommand(player, () => ActionStartConversation(owner, string.Empty, true, false));
                 }
 
                 // The collector has served its purpose - destroy it so it doesn't linger on the

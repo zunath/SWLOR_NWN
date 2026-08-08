@@ -53,16 +53,19 @@ public class DeadPlayerXPTests
     public void QuestKillCreditAndCompletion_SkipDeadPlayersBeforeRewards()
     {
         var questSource = ReadServerSource("Service", "Quest.cs");
+        var questEncounterSource = ReadServerSource("Service", "QuestService", "QuestEncounter.cs");
         var questDetailSource = ReadServerSource("Service", "QuestService", "QuestDetail.cs");
         var killProgression = ExtractMethod(questSource, "public static void ProgressKillTargetObjectives()");
+        var encounterKillCredit = ExtractMethod(questEncounterSource, "private static void ProgressKillCredit(");
         var canComplete = ExtractMethod(questDetailSource, "public bool CanComplete(uint player)");
-        var advance = ExtractMethod(questDetailSource, "public void Advance(uint player, uint questSource)");
+        var advance = ExtractMethod(questDetailSource, "public bool Advance(uint player, uint questSource)");
         var complete = ExtractMethod(questDetailSource, "public void Complete(uint player, uint questSource, IQuestReward selectedReward)");
 
-        AssertDeadPlayerGuardExitsBefore(killProgression, "member", "continue;", "killTargetObjective.Advance(member, questId);");
-        AssertDeadPlayerGuardExitsBefore(killProgression, "member", "continue;", "questDetail.Advance(member, creature);");
+        killProgression.Should().Contain("QuestEncounter.ProgressKillCredit(creature, npcGroupType, possibleQuests);");
+        AssertDeadPlayerGuardExitsBefore(encounterKillCredit, "player", "return;", "killTargetObjective.Advance(player, questId);");
+        AssertDeadPlayerGuardExitsBefore(encounterKillCredit, "player", "return;", "questDetail.Advance(player, encounterCreature);");
         AssertDeadPlayerGuardExitsBefore(canComplete, "player", "return false;", "var playerId = GetObjectUUID(player);");
-        AssertDeadPlayerGuardExitsBefore(advance, "player", "return;", "var playerId = GetObjectUUID(player);");
+        AssertDeadPlayerGuardExitsBefore(advance, "player", "return false;", "var playerId = GetObjectUUID(player);");
         AssertDeadPlayerGuardExitsBefore(complete, "player", "return;", "if (!CanComplete(player)) return;");
         AssertDeadPlayerGuardExitsBefore(complete, "player", "return;", "reward.GiveReward(player);");
     }

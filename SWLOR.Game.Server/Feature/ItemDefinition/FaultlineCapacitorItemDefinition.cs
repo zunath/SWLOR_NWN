@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     Stat.RestoreStamina(user, GameMath.PercentOf(Stat.GetMaxStamina(user), 15));
                     TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(
                         user,
+                        "FAULTLINE_CAPACITOR",
                         10 + GameMath.PercentOf(GetMaxHitPoints(user), 5),
                         60f);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), user);

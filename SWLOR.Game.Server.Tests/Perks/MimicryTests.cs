@@ -628,13 +628,17 @@ public class MimicryTests
     }
 
     // feat.2da targeting metadata must match each technique's shape so the client presents the
-    // correct activation UX. Mirrors the weapon-archetype generator convention:
+    // correct activation UX. Mirrors the AGENTS.md area-targeting convention:
     //   - single-target hostile cast  -> HostileFeat=1, TARGETSELF blank (shows a hostile cursor)
-    //   - self-origin area / stance / self-or-ally utility -> TARGETSELF=1, HostileFeat blank
-    //     (originates on the caster; SWLOR activation targeting drives any area placement)
+    //   - aimed area (line/cone, or a sphere placed at a chosen location) -> HostileFeat=1,
+    //     TARGETSELF blank: the player picks the direction or ground point with a cursor, exactly
+    //     like Earthshatter. A cone's geometry originating on the caster does not make it
+    //     self-cast - the cursor chooses where it points.
+    //   - self-centered area / stance / self-or-ally utility -> TARGETSELF=1, HostileFeat blank
     //   - passive trait -> both blank (never cast)
-    // Guards against techniques shipping with unset targeting columns (the client would then prompt
-    // the wrong cursor, e.g. a self-centered area asking for a manual target).
+    // Guards against techniques shipping with unset or inverted targeting columns (TARGETSELF=1 on
+    // an aimed shape silently kills its declared client targeting - no cursor, always fires from
+    // the caster's facing).
     [Test]
     public void MimicryTechniques_Feat2daTargetingMatchesAbilityShape()
     {
@@ -662,19 +666,24 @@ public class MimicryTests
                 continue;
             }
 
-            // Only a single-target hostile cast presents a manual target cursor; everything that
-            // originates on the caster (areas, stances, self/ally utility) must self-cast instead.
-            var originatesOnCaster = detail.IsAreaAbility || detail.IsMimicryStance || detail.IsMimicryUtility;
+            // An aimed area lets the player choose a direction or ground point, so it keeps the
+            // hostile cursor; only self-centered areas, stances, and self/ally utility self-cast.
+            var isAimedArea = detail.Targeting is { } targeting &&
+                              (targeting.Shape is AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone ||
+                               targeting.Shape == AbilityTargetingShapeType.Sphere &&
+                               !targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf));
+            var selfCasts = !isAimedArea &&
+                            (detail.IsAreaAbility || detail.IsMimicryStance || detail.IsMimicryUtility);
 
-            if (originatesOnCaster)
+            if (selfCasts)
             {
                 targetSelf.Should().Be("1", $"{feat} originates on the caster and must not present a target cursor (TARGETSELF=1)");
                 hostile.Should().Be("****", $"{feat} originates on the caster and must not be a hostile-cursor cast");
             }
             else
             {
-                hostile.Should().Be("1", $"{feat} is a single-target hostile cast and must present a hostile target cursor (HostileFeat=1)");
-                targetSelf.Should().Be("****", $"{feat} is a single-target cast and must not self-target");
+                hostile.Should().Be("1", $"{feat} presents a hostile target cursor (HostileFeat=1)");
+                targetSelf.Should().Be("****", $"{feat} takes a manual cursor and must not self-target");
             }
         }
     }

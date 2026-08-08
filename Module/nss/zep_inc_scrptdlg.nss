@@ -19,14 +19,11 @@ const int nZEPTrapSearch2= (16818236);      //trap_on_load.nss:            Print
 const int nZEPTrapSearch3 = (16818237);     //trap_on_load.nss:            PrintString("In "+sTag+" Checking for: ="+IntToString(nID)+", found: "+GetTag(oTrap));
 const int nZEPTrapReset = (16818238);       //trap_reset.nss:    SendMessageToPC(oPC,"The lever clicks into its new =postion");
 
-//Item Properties
-const int nZEPGenderRestTXT = (16818246);   //zep_inc_main.nss:            SendMessageToPC(oPC,"You cannot equip that =item due to gender differences.");
-
 //Doors
 const int nZEPDoorLocked = (16818256);      //zep_openclose.nss:        SpeakString("Locked");
 
 //Demilich Scripts
-const int nZEPReturnToLife = (16818266);    //zep_demi_dest.nss:        SendMessageToPC(oVictimCounter,"You feel =disoriented momentarily as your soul returns to its mortal coil.");
+const int nZEPReturnToLife = (16818266);    // "You feel disoriented momentarily as your soul returns to its mortal coil."
 const int nZEPCacklingLaugh = (16818267);   //zep_demi_onspell.nss:            =DelayCommand(6.0,SpeakString("Hahhahaha....",TALKVOLUME_SHOUT));
 const int nZEPCantBeRaised = (16818268);    //zep_inc_demi.nss:const string ZEP_DEMI_RESLAY_MSG  =3D " jerks upright =and spasms for a few moments before collapsing again.";
 const int nZEPNoRaiseExplan = (16818269);   //zep_inc_demi.nss:const string ZEP_DEMI_RESLAY_MSG2 =3D "Until the =demilich's captive souls are freed, its victims cannot be raised.";
@@ -46,6 +43,4 @@ const int nZEPRustAndDest = (16818299);     //zep_rust_cmb_end.nss:          Sen
 const int nZEPRustYourTXT = (16818300);     //zep_rust_dmg.nss: "Your "
 const int nZEPRustWeapRes = (16818301);     //zep_rust_dmg.nss:                SendMessageToPC(oPC,"Your "+sWeapon+" =resists the rust effects.");
 const int nZEPRustWeapDest = (16818302);    //zep_rust_dmg.nss:                SendMessageToPC(oPC,"Your "+sWeapon+" =damages the monster, but is destroyed in the process!");
-
-const int nZEPFoundSecret = (16818316);     //zep_sarcof1use.nss: "You have discovered a secret passage!"
 

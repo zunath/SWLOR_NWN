@@ -5,8 +5,8 @@ The BeastCodeBuilder generates C# beast definition classes from the Design Bible
 
 ## Command
 ```bash
-SWLOR.CLI.exe -b
-SWLOR.CLI.exe --beast
+RunCLI.cmd -b
+RunCLI.cmd --beast
 ```
 
 ## Inputs

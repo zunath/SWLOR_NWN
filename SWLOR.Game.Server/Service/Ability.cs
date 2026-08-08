@@ -258,22 +258,21 @@ namespace SWLOR.Game.Server.Service
         public static int ApplyCombatReadinessToActivatedAbilityMagnitude(uint activator, int amount)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
-            if (amount <= 0 || trackedImpact == null)
+            if (trackedImpact == null)
                 return amount;
 
-            var combatReadiness = Stat.GetCombatReadinessPercent(activator);
+            return ApplyCombatReadinessMagnitude(activator, amount);
+        }
+
+        public static int ApplyCombatReadinessMagnitude(uint creature, int amount)
+        {
+            if (amount <= 0)
+                return amount;
+
+            var combatReadiness = Stat.GetCombatReadinessPercent(creature);
             if (combatReadiness > 0)
             {
                 amount += (int)Math.Ceiling(amount * (combatReadiness / 100f));
-            }
-
-            if (trackedImpact.Ability?.SkillType == SkillType.Devices)
-            {
-                var deviceOutput = Stat.GetStatAdjustment(activator, StatType.DeviceAbilityOutputPercentAdjustment);
-                if (deviceOutput > 0)
-                {
-                    amount += (int)Math.Ceiling(amount * (deviceOutput / 100f));
-                }
             }
 
             return amount;
@@ -2030,7 +2029,13 @@ namespace SWLOR.Game.Server.Service
 
                 ApplyDarkForceConversion(activator, target, damage);
                 Combat.ConsumeSameTargetPressureWeaponAbilityDamageBonus(activator, target, skillType, damage);
-                Combat.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
+                Combat.ApplyDamageDealtEffects(
+                    activator,
+                    target,
+                    damage,
+                    skillType,
+                    damageType,
+                    isAbilityDamage: true);
                 StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
                 Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);
             }
@@ -2993,14 +2998,25 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Checks whether the target is immune to a hard-CC type, either because it still has
-        /// immunity to that specific type or because it recently suffered a different hard-CC
-        /// type and is still within the shared hard-CC immunity window.
+        /// Checks whether the target is immune to a hard-CC type: it still has immunity to that
+        /// specific type, it recently suffered a different hard-CC type and is still within the
+        /// shared post-control immunity window, or a hard-CC status is active on it right now -
+        /// controls do not stack, they queue behind the post-control window.
         /// </summary>
         public static bool HasHardCrowdControlImmunity(uint target, ImmunityType immunity)
         {
             return HasTemporaryImmunity(target, immunity) ||
-                   HasTemporaryImmunity(target, ImmunityType.HardCrowdControl);
+                   HasTemporaryImmunity(target, ImmunityType.HardCrowdControl) ||
+                   HasActiveHardCrowdControlStatus(target);
+        }
+
+        private static bool HasActiveHardCrowdControlStatus(uint target)
+        {
+            return StatusEffect.GetCreatureStatusEffects(target)
+                .GetAllEffects()
+                .Any(effect =>
+                    (effect.Categories & StatusEffectCategory.HardCrowdControl) ==
+                    StatusEffectCategory.HardCrowdControl);
         }
 
         private static string GetTemporaryImmunityEffectTag(ImmunityType immunity)

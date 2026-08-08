@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Use this widget to dump the target unceremoniously into Jail (either an object with the tag dmfi_jail or the dmfi_jail_default waypoint in the DMFI Custom Encounter Region).\n\n~~\nBy Hahnsoo (hahns_shin@hotmail.com)"
     }
   },
   "Identified": {

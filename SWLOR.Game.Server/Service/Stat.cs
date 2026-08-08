@@ -60,6 +60,22 @@ namespace SWLOR.Game.Server.Service
                 : StatTypeCategory.NonBeneficial;
         }
 
+        public static StatTypeAggregation GetStatTypeAggregation(StatType statType)
+        {
+            EnsureStatTypeAttributesCached();
+
+            return _statTypeAttributes.TryGetValue(statType, out var attribute)
+                ? attribute.Aggregation
+                : StatTypeAggregation.Additive;
+        }
+
+        public static int AggregateStatAdjustment(StatType statType, int current, int adjustment)
+        {
+            return GetStatTypeAggregation(statType) == StatTypeAggregation.BitwiseOr
+                ? current | adjustment
+                : current + adjustment;
+        }
+
         public static bool IsBeneficialStatAdjustment(StatType statType, int value)
         {
             if (value == 0)
@@ -1927,7 +1943,7 @@ namespace SWLOR.Game.Server.Service
             var persistentAdjustment = GetStatAdjustmentExcludingTemporaryModifiers(creature, stat);
             var temporaryAdjustment = TemporaryStatModifier.GetStatAdjustment(creature, stat);
 
-            return persistentAdjustment + temporaryAdjustment;
+            return AggregateStatAdjustment(stat, persistentAdjustment, temporaryAdjustment);
         }
 
         public static int GetStatAdjustmentExcludingTemporaryModifiers(uint creature, StatType stat)
@@ -1936,7 +1952,10 @@ namespace SWLOR.Game.Server.Service
             var perkAdjustment = Perk.GetStatBonus(creature, stat);
             var mimicryTraitAdjustment = Mimicry.GetStatBonus(creature, stat);
 
-            return statusAdjustment + perkAdjustment + mimicryTraitAdjustment;
+            return AggregateStatAdjustment(
+                stat,
+                AggregateStatAdjustment(stat, statusAdjustment, perkAdjustment),
+                mimicryTraitAdjustment);
         }
 
         public static int ApplyOutgoingAbilityHealingAdjustment(uint source, int amount)

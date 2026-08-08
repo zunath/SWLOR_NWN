@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Teaches you about a skill of your choice."
     }
   },
   "Identified": {

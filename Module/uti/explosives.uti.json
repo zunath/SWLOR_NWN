@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Explosives are required to use many of the Devices perks."
+    }
   },
   "Identified": {
     "type": "byte",

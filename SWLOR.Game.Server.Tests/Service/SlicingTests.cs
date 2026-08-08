@@ -331,6 +331,56 @@ public class SlicingTests
         source.Should().Contain("failed {session.Source} slicing board {session.Board.BoardId}");
     }
 
+    [Test]
+    public void TileTooltip_SymmetricStraightTileReportsConnectionEquivalentTurns()
+    {
+        var scrambledByTwo = new SlicingTile
+        {
+            Type = SlicingTileType.Straight,
+            Orientation = 2,
+            SolutionOrientation = 0
+        };
+        var scrambledByOne = new SlicingTile
+        {
+            Type = SlicingTileType.Straight,
+            Orientation = 1,
+            SolutionOrientation = 0
+        };
+
+        Slicing.GetClockwiseSolutionRotationCost(scrambledByTwo).Should().Be(0,
+            "a Straight tile is 180-degree symmetric, so a 2-step scramble is already functionally correct");
+        Slicing.GetClockwiseSolutionRotationCost(scrambledByOne).Should().Be(1);
+    }
+
+    [Test]
+    public void StaleClaim_ResolvesAbandonedCommittedAttemptRegardlessOfClaimant()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(),
+            "SWLOR.Game.Server",
+            "Service",
+            "SlicingService",
+            "SlicingSession.cs"));
+        var tryClaim = Between(source, "private static bool TryClaim", "private static bool PrepareAction");
+
+        var ownerMismatchBlockEnd = tryClaim.IndexOf("_sessions.Remove(owner);", StringComparison.Ordinal);
+        var committedCheckConditionStart = tryClaim.IndexOf(
+            "if (!string.IsNullOrWhiteSpace(owner) &&",
+            ownerMismatchBlockEnd,
+            StringComparison.Ordinal);
+        var committedCheckIndex = tryClaim.IndexOf("ResolveAbandonedFailure(target, source, tier)", StringComparison.Ordinal);
+        var grantIndex = tryClaim.IndexOf("SetLocalString(target, OwnerVariable, playerId);", StringComparison.Ordinal);
+
+        committedCheckConditionStart.Should().BeGreaterThan(ownerMismatchBlockEnd,
+            "the committed-attempt check must live outside the other-player-only branch so a same-player reclaim reaches it too");
+        committedCheckIndex.Should().BeLessThan(grantIndex,
+            "an abandoned committed attempt must be resolved before a fresh claim is granted");
+
+        var committedCheckCondition = tryClaim[committedCheckConditionStart..committedCheckIndex];
+        committedCheckCondition.Should().NotContain("owner != playerId",
+            "the stale committed-attempt check must not be gated on the claimant being a different player");
+    }
+
     private static IEnumerable<TestCaseData> TiersAndBoardNumbers()
     {
         for (var tier = 1; tier <= 5; tier++)

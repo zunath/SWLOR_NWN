@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "An ale created by trandoshan prisoners in a toilet on Coruscant. Now brewed professionally and sold across the galaxy but no one but trandoshans can stomach it."
+    }
   },
   "Identified": {
     "type": "byte",

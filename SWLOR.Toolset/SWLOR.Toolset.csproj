@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>SWLOR.Toolset</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Taskbar/Explorer icon for the built exe. The window's own icon is the PNG below; both come
+         from the SWLOR Discord server icon. -->
+    <ApplicationIcon>Assets\swlor.ico</ApplicationIcon>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <!-- GlAreaControl uses pointer-offset DrawElements calls. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The images, the window icon and the logo - deliberately not the .axaml under here. Avalonia's
+         own default glob already carries every .axaml in the project as AvaloniaXaml, so a file this
+         glob also claims is embedded twice under one avares path, and building the asset table is a
+         ToDictionary: the second entry throws before the first window exists. -->
+    <AvaloniaResource Include="Assets\**" Exclude="Assets\**\*.axaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.17" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.17" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.17" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.17" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.17" Condition="'$(Configuration)' == 'Debug'" />
+    <!-- App.axaml pulls in this package's Fluent theme. 11.3.13 is the newest published build;
+         DataGrid trails the rest of Avalonia. -->
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.13" />
+    <!-- The NWScript editor's text surface. Pinned to the 11.3 line to match the Avalonia pin above;
+         AvaloniaEdit tracks Avalonia's minor versions, so the two must move together. MIT. -->
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <!-- Sound preview. NWN ships its audio as RIFF WAV (often IMA ADPCM, which WaveOut cannot take
+         directly) and as BMU, which is an MP3 behind an eight-byte header; NAudio reads both and
+         converts the first. MIT. -->
+    <PackageReference Include="NAudio" Version="2.3.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
+    <PackageReference Include="Dock.Avalonia" Version="11.3.12.1" />
+    <PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="11.3.12.1" />
+    <PackageReference Include="Dock.Model.Mvvm" Version="11.3.12.1" />
+    <!-- GlAreaControl uses Silk.NET.OpenGL types directly. -->
+    <PackageReference Include="Silk.NET.OpenGL" Version="2.23.0" />
+    <PackageReference Include="Serilog" Version="4.4.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Toolset.Domain\SWLOR.Toolset.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

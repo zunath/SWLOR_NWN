@@ -1,0 +1,21 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="SWLOR.Toolset.Shell.Views.TextPromptDialog"
+        Title="SWLOR Toolset"
+        Width="480" SizeToContent="Height"
+        MinHeight="180" MaxHeight="320"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+  <StackPanel Margin="16" Spacing="12">
+    <TextBlock x:Name="HeadlineText"
+               FontWeight="Bold" FontSize="14" TextWrapping="Wrap" />
+    <TextBlock x:Name="MessageText" TextWrapping="Wrap"
+               IsVisible="{Binding #MessageText.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    <TextBox x:Name="ValueBox" KeyDown="OnValueKeyDown" />
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+      <Button x:Name="ConfirmButton" MinWidth="90" IsDefault="True" Click="OnConfirmClicked" />
+      <Button Content="Cancel" MinWidth="90" IsCancel="True" Click="OnCancelClicked" />
+    </StackPanel>
+  </StackPanel>
+</Window>

@@ -1,3 +1,4 @@
+using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
@@ -52,6 +53,25 @@ public class PlayerSkillPointAccountingTests
         dbPlayer.Skills[(SkillType)9999] = new PlayerSkill { Rank = 50 };
 
         Skill.GetTotalContributingSkillRanks(dbPlayer).Should().Be(20);
+    }
+
+    [TestCase(true, Skill.SkillCap - 1, false)]
+    [TestCase(true, Skill.SkillCap, false)]
+    [TestCase(true, Skill.SkillCap + 1, true)]
+    [TestCase(false, Skill.SkillCap + 1, false)]
+    public void SkillRankDecay_OnlyOccursAboveTheContributingSkillCap(
+        bool contributesToSkillCap,
+        int totalRanks,
+        bool expected)
+    {
+        var method = typeof(Skill).GetMethod(
+            "ShouldDecaySkillRank",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        method.Should().NotBeNull();
+        var result = (bool)method!.Invoke(null, new object[] { contributesToSkillCap, totalRanks })!;
+
+        result.Should().Be(expected);
     }
 
     [Test]

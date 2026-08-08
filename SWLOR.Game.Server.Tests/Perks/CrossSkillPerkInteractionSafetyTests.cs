@@ -1,9 +1,11 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -18,6 +20,19 @@ public class CrossSkillPerkInteractionSafetyTests
         staff.Should().Contain("StatType.StatusAppliedNextAttackWindowSeconds");
         staff.Should().NotContain("StatType.StatusAppliedNextSkillAbilitySkillType",
             "Charged Blows says next attack, not next Staff ability");
+
+        Stat.GetStatTypeAggregation(StatType.StatusAppliedRequiredCategory)
+            .Should().Be(StatTypeAggregation.BitwiseOr);
+        Stat.AggregateStatAdjustment(
+                StatType.StatusAppliedRequiredCategory,
+                (int)StatusEffectCategory.Control,
+                (int)StatusEffectCategory.Control)
+            .Should().Be((int)StatusEffectCategory.Control,
+                "owning Charged Blows and Skull Rattle must not turn two Control selectors into Bleeding");
+
+        var perkSource = Read(root, "SWLOR.Game.Server", "Service", "Perk.cs");
+        var getStatBonus = ExtractMethod(perkSource, "public static int GetStatBonus(uint creature, StatType stat)");
+        getStatBonus.Should().Contain("Stat.AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature))");
 
         var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
         var statusApplied = ExtractMethod(combat, "private static void ApplyStatusAppliedEffects(");
@@ -128,6 +143,50 @@ public class CrossSkillPerkInteractionSafetyTests
     }
 
     [Test]
+    public void DirectDamageRiders_RunOnlyForTheirIntendedDeliveryPath()
+    {
+        var root = FindRepositoryRoot();
+        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var ability = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
+
+        var damageEffects = ExtractMethod(combat, "public static void ApplyDamageDealtEffects(");
+        damageEffects.Should().Contain("bool isAbilityDamage = false");
+        damageEffects.Should().Contain("if (isAbilityDamage)");
+        damageEffects.Should().Contain("ApplyPredatorsMarkEffects(attacker, defender, skillType);");
+        damageEffects.Should().Contain("else");
+        damageEffects.Should().Contain(
+            "ApplyAutoAttackSuppressionStack(attacker, defender, skillType, damageType);");
+        damageEffects.Should().Contain(
+            "ApplyRangedHitSuppressionStack(attacker, defender, skillType, damageType);");
+        damageEffects.Should().Contain(
+            "ApplyBleedingTargetStaminaRestore(attacker, defender, skillType, isAbilityDamage);");
+        damageEffects.Should().NotContain("ApplyBleedingTargetAbilityBleedRefresh(");
+        damageEffects.Should().NotContain("ApplyBleedingTargetAbilityBleedSpread(");
+
+        var abilityDamageRiders = ExtractMethod(combat, "private static void ApplyAbilityDamageRiders(");
+        abilityDamageRiders.Should().Contain(
+            "ApplyBleedingTargetAbilityBleedRefresh(activator, target, skillType);");
+        abilityDamageRiders.Should().Contain(
+            "ApplyBleedingTargetAbilityBleedSpread(activator, target, skillType, damageType);");
+        abilityDamageRiders.Should().NotContain("ApplyRangedHitSuppressionStack(",
+            "the shared direct-damage path already applies ranged-hit Suppression once");
+        abilityDamageRiders.Should().NotContain("ApplyAutoAttackSuppressionStack(");
+
+        var bleedingRestore = ExtractMethod(
+            combat,
+            "private static void ApplyBleedingTargetStaminaRestore(");
+        bleedingRestore.Should().Contain("SkillDamageBleedingTargetStaminaRestoreSkillType");
+        bleedingRestore.Should().Contain("SkillAbilityBleedingTargetStaminaRestoreSkillType");
+        bleedingRestore.Should().Contain("if (!isAbilityDamage)");
+        bleedingRestore.Should().Contain(
+            "SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds");
+
+        var hostileImpact = ExtractMethod(ability, "public static int ApplyHostileCombatImpact(");
+        hostileImpact.Should().Contain("isAbilityDamage: true",
+            "ability impacts must select ability-only riders and exclude auto-attack procs");
+    }
+
+    [Test]
     public void DamageSharingAndRedirects_HaveNoRecursiveTransferCycle()
     {
         var root = FindRepositoryRoot();
@@ -143,10 +202,19 @@ public class CrossSkillPerkInteractionSafetyTests
         var consumeIndex = redirect.IndexOf(
             "StatusEffect.RemoveStatusEffectsWithStat(defender, StatType.DamageTakenRedirectToStatusSourcePercent, false)",
             StringComparison.Ordinal);
-        var damageIndex = redirect.IndexOf("EffectDamage(redirectedDamage", StringComparison.Ordinal);
+        var damageIndex = redirect.IndexOf("EffectDamage(finalRedirectedDamage", StringComparison.Ordinal);
+        damageIndex.Should().BeGreaterThanOrEqualTo(0);
         consumeIndex.Should().BeGreaterThanOrEqualTo(0);
         consumeIndex.Should().BeLessThan(damageIndex,
             "a one-shot redirect must be consumed before its damage is dispatched");
+
+        // The redirected portion runs the protector's own mitigation as a transfer, and the
+        // one-shot consume above happens before that call - so the mutual-redirect case
+        // terminates: each hop removes its own effect before recursing.
+        redirect.Should().Contain("CombatDamageDeliveryType.Transferred");
+        redirect.IndexOf("ApplyDamageTakenModifiers(", StringComparison.Ordinal)
+            .Should().BeGreaterThan(consumeIndex,
+                "the redirect must be consumed before the transfer re-enters the modifier pipeline");
     }
 
     [Test]

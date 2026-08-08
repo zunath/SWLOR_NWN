@@ -126,10 +126,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             float durationSeconds)
         {
             var amount = Math.Max(1, flatAmount + GameMath.PercentOf(GetMaxHitPoints(target), percent));
-            amount = DeviceAbilityEffects.ApplyFieldSupportOutputBonus(activator, amount);
+            amount = Ability.ApplyCombatReadinessMagnitude(activator, amount);
             var duration = durationSeconds;
 
-            TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(target, amount, duration);
+            TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(target, "DEFLECTOR_SHIELD", amount, duration);
             DeviceAbilityEffects.ApplyFieldSupportAllyBuffRiders(activator, target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
         }

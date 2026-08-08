@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:merchants="using:SWLOR.Toolset.Editors.Merchants"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             x:Class="SWLOR.Toolset.Editors.Merchants.MerchantDocumentView"
+             x:DataType="merchants:MerchantDocumentViewModel">
+
+  <Grid>
+    <DockPanel IsHitTestVisible="{Binding !IsBusy}">
+      <behaviors:BehaviorEditorHeader DockPanel.Dock="Top"
+                                      BehaviorName="{Binding Editor.HeaderName}"
+                                      Kind="{Binding Editor.HeaderKind}"
+                                      Owner="{Binding Editor.HeaderOwner}"
+                                      IsDirty="{Binding IsDirty}" />
+
+      <Border DockPanel.Dock="Bottom" Padding="16,11"
+              BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0">
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="8">
+          <Button Content="Revert" MinWidth="86" Command="{Binding RevertCommand}" />
+          <Button Content="Save" MinWidth="86" Classes="primary" Command="{Binding SaveCommand}" />
+        </StackPanel>
+      </Border>
+
+      <merchants:MerchantEditorView DataContext="{Binding Editor}" />
+    </DockPanel>
+
+    <Border Background="#A60C0F14" IsVisible="{Binding IsBusy}">
+      <Border Width="420" Padding="24"
+              Background="{DynamicResource PanelRaisedBrush}"
+              BorderBrush="{DynamicResource AccentBorderBrush}"
+              BorderThickness="1"
+              CornerRadius="5"
+              HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel Spacing="11">
+          <TextBlock Text="{Binding Editor.InstanceOperationStatus}"
+                     FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" />
+          <ProgressBar Height="4" IsIndeterminate="True" />
+          <TextBlock Text="Writing the displayed out-of-date records. Editing resumes automatically."
+                     Classes="dim" TextAlignment="Center" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+    </Border>
+  </Grid>
+</UserControl>

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -16,7 +17,9 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    internal class StablesViewModel : GuiViewModelBase<StablesViewModel, GuiPayloadBase>
+    internal class StablesViewModel : GuiViewModelBase<StablesViewModel, GuiPayloadBase>,
+        IGuiRefreshable<PerkAcquiredRefreshEvent>,
+        IGuiRefreshable<PerkRefundedRefreshEvent>
     {
         public const string BeastDetailsPartial = "BEAST_DETAILS_PARTIAL";
         public const string PartialViewStats = "PARTIAL_VIEW_STATS";
@@ -352,7 +355,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var perkLevel = Perk.GetPerkLevel(Player, PerkType.Stabling) + 1;
             var dbQuery = new DBQuery<Beast>()
                 .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
             var dbBeasts = DB.Search(dbQuery)
@@ -379,9 +381,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             BeastNames = beastNames;
             BeastToggles = beastToggles;
             BeastNameColors = beastNameColors;
-            BeastCount = $"Beasts: {dbBeasts.Count} / {perkLevel}";
+            RefreshBeastCount(dbBeasts.Count);
             _selectedBeastIndex = -1;
             ClearSelectedBeast();
+        }
+
+        private void RefreshBeastCount(int beastCount)
+        {
+            var capacity = Perk.GetPerkLevel(Player, PerkType.Stabling) + 1;
+            BeastCount = $"Beasts: {beastCount} / {capacity}";
+        }
+
+        public void Refresh(PerkAcquiredRefreshEvent payload)
+        {
+            if (payload.Type != PerkType.Stabling)
+                return;
+
+            RefreshBeastCount(_beastIds.Count);
+        }
+
+        public void Refresh(PerkRefundedRefreshEvent payload)
+        {
+            if (payload.Type != PerkType.Stabling)
+                return;
+
+            RefreshBeastCount(_beastIds.Count);
         }
 
         private void ClearSelectedBeast()

@@ -871,13 +871,20 @@ def is_self_only_active(description):
     )
 
 
+def is_automatic_guarded_target_active(description):
+    lowered = description.lower()
+    return (
+        "only usable on your guarded target" in lowered or
+        "automatically applies to your guarded target" in lowered or
+        "automatically targets your current guarded ally" in lowered
+    )
+
+
 def is_friendly_target_active(description):
     lowered = description.lower()
     return (
         "target party ally becomes guarded" in lowered or
-        "only usable on your guarded target" in lowered or
-        "automatically applies to your guarded target" in lowered or
-        "automatically targets your current guarded ally" in lowered or
+        is_automatic_guarded_target_active(description) or
         "target ally becomes" in lowered or
         "target ally" in lowered and ("ward" in lowered or "guarded ally" in lowered)
     )
@@ -984,14 +991,15 @@ def description_stat_entries(row, base):
         add_stat(stats, "RepeatedTargetDamagePercentMax", maximum)
 
     if "consecutive ranged hit against the same target" in lowered:
-        add_stat(stats, "RepeatedTargetDamageSkillType", skill_expr)
+        # "ranged hit" is cross-skill: any ranged weapon builds and benefits, so this uses the
+        # class-gated Ranged* family rather than the exact-skill generic one.
         damage = parse_count(r"grants \+(\d+) DMG", description)
         stacks = parse_count(r"up to (\d+) stacks", description)
         if not stacks and "five stacks" in lowered:
             stacks = 5
-        add_stat(stats, "RepeatedTargetDamageBonusPerHit", damage)
-        add_stat(stats, "RepeatedTargetDamageBonusMax", damage * (stacks or 5))
-        add_stat(stats, "RepeatedTargetDamageDurationSeconds", parse_count(r"expire after (\d+) seconds", description))
+        add_stat(stats, "RangedRepeatedTargetDamageBonusPerHit", damage)
+        add_stat(stats, "RangedRepeatedTargetDamageBonusMax", damage * (stacks or 5))
+        add_stat(stats, "RangedRepeatedTargetDamageDurationSeconds", parse_count(r"expire after (\d+) seconds", description))
 
     if "consecutive melee attack against the same target" in lowered:
         damage = parse_count(r"giving \+(\d+) DMG", description)
@@ -1186,7 +1194,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "AreaAbilityUsedEvasionPercentAdjustment", parse_percent(r"gain \+(\d+)% Evasion", description))
         add_stat(stats, "AreaAbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
     if base == "Edge Rhythm":
-        add_stat(stats, "AutoAttackCycleDamageSkillType", skill_expr)
+        # "Every third auto-attack" names no weapon: omitting the skill gate makes the cycle
+        # advance on any auto-attack (SkillTypeMatchesOrGlobal on the consumption side).
         add_stat(stats, "AutoAttackCycleRequiredCount", 3)
         add_stat(stats, "AutoAttackCycleDamage", parse_count(r"deals \+(\d+) DMG", description))
         add_stat(stats, "AutoAttackCycleRadiusMeters", 5)
@@ -1278,8 +1287,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "GuardedHitSecondaryNextAttackEnmityBonus", parse_count(r"\+(\d+) Enmity", description))
         add_stat(stats, "GuardedHitSecondaryNextAttackWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     if base == "Impenetrable Grip":
-        add_stat(stats, "MobilityResistance", parse_percent(r"\+(\d+)% Knockdown Resistance", description))
-        add_stat(stats, "MindResistance", parse_percent(r"\+(\d+)% Daze Resistance", description))
+        add_stat(stats, "MobilityResistance", parse_count(r"\+(\d+) Mobility Resistance", description))
+        add_stat(stats, "MindResistance", parse_count(r"\+(\d+) Mind Resistance", description))
         add_stat(stats, "GuardStaminaRestore", parse_count(r"restore (\d+) STM", description))
     if base == "Guardian Reflexes":
         add_stat(stats, "LowHPGuardThresholdPercent", parse_percent(r"below (\d+)% HP", description))
@@ -1322,9 +1331,9 @@ def description_stat_entries(row, base):
         add_stat(stats, "RangedAbilityHitNearTargetRangeMeters", parse_count(r"within (\d+)m", description) or 5)
         add_stat(stats, "RangedAbilityHitNearTargetDurationSeconds", parse_duration(description) or 30)
     if base == "Lucky Chamber":
-        add_stat(stats, "AutoAttackCycleCriticalRateSkillType", skill_expr)
-        add_stat(stats, "AutoAttackCycleCriticalRateRequiredCount", 4)
-        add_stat(stats, "AutoAttackCycleCriticalRatePercentAdjustment", parse_percent(r"gains \+(\d+)% Critical Rate", description))
+        # "Every fourth ranged attack" is cross-skill ranged, mirroring the melee cycle family.
+        add_stat(stats, "RangedAutoAttackCycleCriticalRateRequiredCount", 4)
+        add_stat(stats, "RangedAutoAttackCycleCriticalRatePercentAdjustment", parse_percent(r"gains \+(\d+)% Critical Rate", description))
     if base == "Deadeye Reload":
         add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRateSkillType", skill_expr)
         add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment", parse_percent(r"gain \+(\d+)% Critical Rate", description))
@@ -1337,6 +1346,9 @@ def description_stat_entries(row, base):
         add_stat(stats, "CriticalNextAbilityNoDelayTriggerSkillType", skill_expr)
         add_stat(stats, "CriticalNextAbilityNoDelaySkillType", skill_expr)
         add_stat(stats, "CriticalNextAbilityNoDelayDurationSeconds", parse_count(r"within (\d+) seconds", description) or 30)
+        # An absent percent means the armed buff removes the delay entirely, so the described
+        # partial reduction has to be emitted or a regeneration silently promotes 20% to 100%.
+        add_stat(stats, "CriticalNextAbilityDelayReductionPercent", parse_percent(r"attack delay reduced by (\d+)%", description))
     if base == "Spotter's Rhythm":
         add_stat(stats, "SameTargetPressureBuildSkillType", skill_expr)
         add_stat(stats, "SameTargetPressureBuildSeconds", parse_count(r"same target for (\d+) seconds", description) or 12)
@@ -1453,8 +1465,26 @@ def description_stat_entries(row, base):
             add_stat(stats, "TwinBladeAreaAbilityStaminaRestoreMax", stamina * 3)
 
     if "restore" in lowered and "bleeding target" in lowered and "STM" in description:
-        add_stat(stats, "DamageDealtBleedingTargetStaminaRestoreChance", 100)
-        add_stat(stats, "DamageDealtBleedingTargetStaminaRestore", parse_count(r"restore[s]? (\d+) STM", description))
+        stamina_restore = parse_count(r"restore[s]? (\d+) STM", description)
+        if row["Tab"] == "Throwing" and "ability" in lowered:
+            add_stat(stats, "SkillAbilityBleedingTargetStaminaRestoreSkillType", skill_expr)
+            add_stat(stats, "SkillAbilityBleedingTargetStaminaRestoreChance", 100)
+            add_stat(stats, "SkillAbilityBleedingTargetStaminaRestore", stamina_restore)
+            add_stat(
+                stats,
+                "SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds",
+                parse_cooldown(description))
+        elif row["Tab"] == "Twin Blade":
+            add_stat(stats, "SkillDamageBleedingTargetStaminaRestoreSkillType", skill_expr)
+            add_stat(stats, "SkillDamageBleedingTargetStaminaRestoreChance", 100)
+            add_stat(stats, "SkillDamageBleedingTargetStaminaRestore", stamina_restore)
+            add_stat(
+                stats,
+                "SkillDamageBleedingTargetStaminaRestoreCooldownSeconds",
+                parse_cooldown(description))
+        else:
+            add_stat(stats, "DamageDealtBleedingTargetStaminaRestoreChance", 100)
+            add_stat(stats, "DamageDealtBleedingTargetStaminaRestore", stamina_restore)
 
     if "Critical hits deal" in description and (
         "debuffed or controlled targets" in lowered or
@@ -2715,7 +2745,8 @@ def add_missing_feats(rows):
             # ("in a line" / "in a cone") do pick a target, because the player chooses the direction.
             is_queued = row.get("CastingTime", "").strip().lower() == "queued"
             is_self_origin_area = is_area(row["Description"]) and not is_aimed_area(row)
-            no_manual_target = target_self or is_queued or is_self_origin_area
+            is_automatic_guarded_target = is_automatic_guarded_target_active(row["Description"])
+            no_manual_target = target_self or is_queued or is_self_origin_area or is_automatic_guarded_target
             hostile = (
                 row["Type"] == "Combat" and
                 not is_friendly_target_active(row["Description"]) and

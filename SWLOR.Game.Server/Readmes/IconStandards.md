@@ -46,6 +46,23 @@ If an effect has nothing worth showing — because its magnitude never varies fo
 
 `tools/UpdateGameplayIconStandards.ps1` enforces this: status effect discovery does not skip `Invalid` declarations, so any new effect without an icon fails the audit until it has an `effecticons.2da` row, artwork, and a custom TLK entry.
 
+## Stat-Configured Icons
+
+A shared status effect whose icon identity is supplied per application through a `StatType`
+adjustment — `MeleeRepeatedTargetDamageStatusEffect` reads
+`StatType.MeleeRepeatedTargetDamageStatusEffectIcon`, which Vibroblade's Rundown trait sets to
+`EffectIconType.RundownStatusEffect` — deliberately owns no icon identity of its own. The player
+always sees the *configuring perk's* icon, whose anchor class carries the enum member, manifest
+row, TLK entry, and artwork (`RundownStatusEffect` anchors `ief_rndwn`).
+
+Such a class is exempted from the one-class-one-icon model **only** when it declares
+`[StatConfiguredIcon]` (see `Service/StatusEffectService/StatConfiguredIconAttribute.cs`); the
+audit skips it entirely on that marker. The exemption does not weaken the rule above: the apply
+path must refuse to apply the effect when the configured icon resolves to
+`EffectIconType.Invalid`, so a mis-wired perk degrades to no visual rather than an invisible
+effect. Any icon value fed into the stat must be a real, anchored `EffectIconType` member —
+retire the anchor class only together with the icon identity itself.
+
 ## Force Alignment Marker
 
 Force power icons carry a **second, orthogonal axis** on top of the semantic frame: a small "gem" marker in the **top-left corner** that shows the power's Force alignment. The semantic frame still communicates effect role (Harmful, Beneficial, Control, …); the corner gem communicates the side of the Force. This lets a player read both facts at once, and complements the Perks window, which groups Force powers by discipline (Alter / Control / Sense).

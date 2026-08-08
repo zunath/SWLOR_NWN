@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This is a bottle of milk, it smells fine."
     }
   },
   "Identified": {

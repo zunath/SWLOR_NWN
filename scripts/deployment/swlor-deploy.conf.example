@@ -1,0 +1,80 @@
+# SWLOR deployment configuration.
+# Copy this file once per host, change the values for that host, and pass the
+# customized file to install.sh. The same deploy executable is used everywhere.
+
+DEPLOYMENT_NAME=swlor-test
+VOLUME_ROOT=/mnt/swlor-web-vol
+
+SOURCE_ROOT="$VOLUME_ROOT/deployment-source"
+REPOSITORY_URL=https://github.com/zunath/SWLOR_NWN
+GIT_REMOTE=origin
+BRANCH=feature/combat-upgrade
+
+# The systemd timer consumes successful manual workflow runs as outbound-only
+# deployment requests. The workflow itself holds no server credentials.
+GITHUB_DEPLOY_REPOSITORY=zunath/SWLOR_NWN
+GITHUB_DEPLOY_WORKFLOW=request-test-deployment.yml
+GITHUB_DEPLOY_WORKFLOW_BRANCH=master
+GITHUB_DEPLOY_ACTOR=zunath
+
+NWSYNC_ROOT="$VOLUME_ROOT/nwsync"
+SERVER_ROOT="$VOLUME_ROOT/nwn-server"
+COMPOSE_FILE="$SERVER_ROOT/docker-compose.yml"
+
+DEPLOYMENT_ROOT="$VOLUME_ROOT/deployment/$DEPLOYMENT_NAME"
+STATE_ROOT="$DEPLOYMENT_ROOT/state"
+CACHE_ROOT="$VOLUME_ROOT/deployment/cache"
+
+# NWSync HAK/TLK/module directories are the persistent raw inputs used to
+# generate and serve manifests. The server directories are a separate live
+# set. All seven artifact directories and CACHE_ROOT must be ordinary
+# directories on one filesystem.
+NWSYNC_BUILD_SCRIPT="$NWSYNC_ROOT/build.sh"
+NWSYNC_HAK_ROOT="$NWSYNC_ROOT/hak"
+NWSYNC_TLK_ROOT="$NWSYNC_ROOT/tlk"
+NWSYNC_MODULE_ROOT="$NWSYNC_ROOT/modules"
+SERVER_HAK_ROOT="$SERVER_ROOT/hak"
+SERVER_TLK_ROOT="$SERVER_ROOT/tlk"
+SERVER_MODULE_ROOT="$SERVER_ROOT/modules"
+SERVER_DOTNET_ROOT="$SERVER_ROOT/dotnet"
+SERVER_ENV_FILE="$SERVER_ROOT/swlor.env"
+NWSYNC_HASH_VARIABLE=NWN_NWSYNCHASH
+MODULE_NAME="Star Wars LOR v2.mod"
+HAKS_SUBMODULE_PATH=SWLOR_Haks
+
+SERVER_SERVICE=swlor-server
+SERVER_IMAGE=zunath/nwn-dotnet:8193.37.15-2
+# Keep this stable so Compose reuses the host's existing named volumes.
+# Change it in the production host configuration if production uses another
+# established Compose project name.
+COMPOSE_PROJECT_NAME=nwnserver
+
+# HAK, TLK, and module paths must be separate ordinary directories. The
+# deployer never moves or empties the NWSync directories. It pre-stages an
+# independent server copy before Compose is stopped.
+
+STOP_TIMEOUT_SECONDS=120
+HEALTH_TIMEOUT_SECONDS=300
+HEALTH_STABLE_SECONDS=120
+HEALTH_LOG_MARKER="Server: Module loaded"
+HEALTH_FATAL_LOG_PATTERN="buffer overflow|Fatal error|has crashed|Segmentation fault"
+HEALTH_LOG_TAIL_LINES=2000
+
+# Both guards check NWSYNC_ROOT's filesystem. The first protects the build.
+# Before pre-staging, the deployer additionally requires enough room for a
+# complete independent HAK/TLK/module copy plus the second configured reserve.
+MIN_FREE_GIB_BEFORE_BUILD=20
+MIN_FREE_GIB_BEFORE_CUTOVER=8
+
+NEVERWINTER_NIM_VERSION=2.1.2
+NEVERWINTER_NIM_RELEASE_URL=https://github.com/niv/neverwinter.nim/releases/download/2.1.2/neverwinter-x86_64-linux-gnu.zip
+NEVERWINTER_NIM_SHA256=f9cc2e50fbe6f750954d11b824434a92b12913cc0a3442e95dcc5eefd4ddc387
+
+# These may also be overridden for one invocation through the
+# SWLOR_DEPLOY_LOG and SWLOR_DEPLOY_LOCK environment variables.
+LOG_FILE="/var/log/$DEPLOYMENT_NAME-deploy.log"
+LOCK_FILE="/run/lock/$DEPLOYMENT_NAME-deploy.lock"
+
+# Removes only dangling Docker images after a successful deployment.
+# Images referenced by any container are never removed.
+PRUNE_DANGLING_DOCKER_IMAGES=true

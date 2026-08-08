@@ -131,7 +131,11 @@ namespace SWLOR.Game.Server.Native
                 // If we get to this point, we are fighting a creature.  Pull the target's stats.
                 var defender = CNWSCreature.FromPointer(pTarget);
 
-                if (pCombatRound.m_bRoundStarted == 1)
+                // One deflection attempt per incoming combat round: m_bRoundStarted stays 1 for the
+                // whole round, so gate the reset on the round's first attack — resetting on every
+                // attack would let the defender roll deflection against each swing of a
+                // multi-attack round.
+                if (pCombatRound.m_bRoundStarted == 1 && pCombatRound.m_nCurrentAttack == 0)
                 {
                     defender.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 0);
                 }

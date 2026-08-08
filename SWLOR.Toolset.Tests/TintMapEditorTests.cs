@@ -173,6 +173,38 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ItemEditorFiltersMannequinMaterialsWhenModelIdentifiesItemOwnedMeshes()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var editor = new TintMapEditorViewModel(
+                new VarTable(new JsonGffStruct()),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            var itemMesh = ModelWith("pmh0_robe010").Meshes.Single();
+            itemMesh.UsesItemTintOverrides = true;
+            var model = new RenderModel
+            {
+                Meshes = new[]
+                {
+                    ModelWith("pmo0_footl10").Meshes.Single(),
+                    itemMesh
+                }
+            };
+
+            editor.Reload(model, includeNonItemOwnedMaterials: false);
+
+            editor.Colors.Should().NotBeEmpty();
+            editor.Colors.Select(row => row.MaterialName)
+                .Should().OnlyContain(material => material.Equals(
+                    "pmh0_robe010", StringComparison.OrdinalIgnoreCase));
+        }
+
+        [Test]
         public void CatalogReloadClearsStaleRowsBeforeTheNewModelIsResolved()
         {
             var catalog = TintMapCatalog.Load(Resources());

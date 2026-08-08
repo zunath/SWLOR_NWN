@@ -769,7 +769,10 @@ namespace SWLOR.Toolset.Editors.Items
 
         private void ApplyPreviewScene(RenderModel? model)
         {
-            TintMapEditor?.Reload(model);
+            var hasItemOwnedMeshes = model?.Meshes.Any(mesh => mesh.UsesItemTintOverrides) == true;
+            TintMapEditor?.Reload(
+                model,
+                includeNonItemOwnedMaterials: !hasItemOwnedMeshes);
             PreviewScene = model == null
                 ? null
                 : new AreaScene

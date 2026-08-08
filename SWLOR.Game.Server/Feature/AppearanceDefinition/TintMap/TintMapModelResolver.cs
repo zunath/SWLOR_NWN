@@ -90,10 +90,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 var armorPart = usesItemColors
                     ? (AppearanceArmor)(int)part
                     : AppearanceArmor.Invalid;
-                var partId = usesItemColors
+                var creaturePartId = GetCreatureBodyPart(part, creature);
+                var armorPartId = usesItemColors
                     ? GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)armorPart)
-                    : GetCreatureBodyPart(part, creature);
-                if (partId < 0)
+                    : 0;
+                var partId = ResolvePartId(creaturePartId, armorPartId, usesItemColors);
+                if (partId <= 0)
                     continue;
 
                 var model = $"{prefix}{partName}{partId:D3}".ToLowerInvariant();
@@ -129,6 +131,14 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 selections,
                 seenSelections,
                 "cloak");
+        }
+
+        private static int ResolvePartId(int creaturePartId, int armorPartId, bool usesItemColors)
+        {
+            if (!usesItemColors || creaturePartId <= 0)
+                return creaturePartId;
+
+            return armorPartId > 0 ? armorPartId : creaturePartId;
         }
 
         private static string GetCreatureModelPrefix(uint creature)

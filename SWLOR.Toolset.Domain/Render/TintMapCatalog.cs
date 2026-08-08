@@ -75,13 +75,16 @@ namespace SWLOR.Toolset.Domain.Render
 
         public IReadOnlyList<TintMapMaterialDefinition> FindMaterials(
             RenderModel? model,
-            bool includeItemOwnedMaterials = true)
+            bool includeItemOwnedMaterials = true,
+            bool includeNonItemOwnedMaterials = true)
         {
             if (model == null)
                 return Array.Empty<TintMapMaterialDefinition>();
 
             return model.Meshes
-                .Where(mesh => includeItemOwnedMaterials || !mesh.UsesItemTintOverrides)
+                .Where(mesh =>
+                    (includeItemOwnedMaterials || !mesh.UsesItemTintOverrides) &&
+                    (includeNonItemOwnedMaterials || mesh.UsesItemTintOverrides))
                 .Select(mesh => mesh.TextureName)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .Select(material => _materials.GetValueOrDefault(material))

@@ -308,6 +308,7 @@ namespace SWLOR.Toolset.Tests
                 "texture1 base_normal\n" +
                 "customshaderVSH my_vertex_shader\n" +
                 "customshaderPSH my_pixel_shader\n" +
+                "parameter float useTexture1Alpha 1.0\n" +
                 "someunknownparam 1.0\n";
 
             var material = MaterialResolver.Parse(sample);
@@ -317,6 +318,8 @@ namespace SWLOR.Toolset.Tests
             material.GetTexture(1).Should().Be("base_normal");
             material.CustomShaders.Should().ContainKey("customshaderVSH").WhoseValue.Should().Be("my_vertex_shader");
             material.CustomShaders.Should().ContainKey("customshaderPSH").WhoseValue.Should().Be("my_pixel_shader");
+            material.Parameters.Should().ContainKey("useTexture1Alpha").WhoseValue.Should().Be("1.0");
+            material.GetAlphaTexture().Should().Be("base_normal");
         }
 
         [Test]

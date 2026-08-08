@@ -90,6 +90,26 @@ public class TintMapReviewTests
         viewModel.Should().NotContain("IsTintMapSelected");
     }
 
+    [TestCase(1, 0, true, 1)]
+    [TestCase(27, 0, true, 27)]
+    [TestCase(27, 168, true, 168)]
+    [TestCase(0, 168, true, 0)]
+    [TestCase(27, 168, false, 27)]
+    public void PartsBasedModelUsesCreaturePartWhenArmorLeavesSlotAtZero(
+        int creaturePart,
+        int armorPart,
+        bool usesItemColors,
+        int expected)
+    {
+        var method = typeof(TintMapModelResolver).GetMethod(
+            "ResolvePartId",
+            BindingFlags.Static | BindingFlags.NonPublic);
+
+        method.Should().NotBeNull();
+        method!.Invoke(null, new object[] { creaturePart, armorPart, usesItemColors })
+            .Should().Be(expected);
+    }
+
     [Test]
     public void BodyPartChangesRebuildTintMaterialAndLayerOptions()
     {

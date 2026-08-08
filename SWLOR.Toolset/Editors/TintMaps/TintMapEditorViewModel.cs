@@ -41,7 +41,10 @@ namespace SWLOR.Toolset.Editors.TintMaps
             Reload(_resolveModel?.Invoke());
         }
 
-        public void Reload(RenderModel? model, bool includeItemOwnedMaterials = true)
+        public void Reload(
+            RenderModel? model,
+            bool includeItemOwnedMaterials = true,
+            bool includeNonItemOwnedMaterials = true)
         {
             if (_catalog == null)
             {
@@ -50,7 +53,10 @@ namespace SWLOR.Toolset.Editors.TintMaps
                 return;
             }
 
-            var wanted = _catalog.FindMaterials(model, includeItemOwnedMaterials)
+            var wanted = _catalog.FindMaterials(
+                    model,
+                    includeItemOwnedMaterials,
+                    includeNonItemOwnedMaterials)
                 .SelectMany(material => material.Layers.Select(layer => (material, layer)))
                 .ToList();
             var currentKeys = Colors.Select(row => row.Key);

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -6,8 +7,9 @@ namespace SWLOR.Toolset.Domain.Render
 {
     /// <summary>
     /// Minimal parse of an NWN:EE MTR (material) file: plain-text lines declaring
-    /// <c>textureN</c> slots, a <c>renderhint</c>, and <c>customshaderXXX</c> overrides. <c>//</c>
-    /// starts a comment (to end of line); everything else is ignored.
+    /// <c>textureN</c> slots, a <c>renderhint</c>, <c>customshaderXXX</c> overrides, and named
+    /// <c>parameter</c> values. <c>//</c> starts a comment (to end of line); everything else is
+    /// ignored.
     /// </summary>
     public sealed class MtrMaterial
     {
@@ -20,14 +22,49 @@ namespace SWLOR.Toolset.Domain.Render
         public IReadOnlyDictionary<string, string> CustomShaders { get; init; } =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>Named values from <c>parameter TYPE NAME VALUE...</c> declarations.</summary>
+        public IReadOnlyDictionary<string, string> Parameters { get; init; } =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
         /// <summary>The declared texture for <paramref name="slot"/> (default: <c>texture0</c>, the diffuse map), or null.</summary>
         public string? GetTexture(int slot = 0) => Textures.TryGetValue(slot, out var texture) ? texture : null;
+
+        /// <summary>
+        /// Returns the texture selected by an enabled <c>useTextureNAlpha</c> parameter, or null.
+        /// </summary>
+        public string? GetAlphaTexture()
+        {
+            const string prefix = "useTexture";
+            const string suffix = "Alpha";
+            foreach (var (name, rawValue) in Parameters)
+            {
+                if (!name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ||
+                    !name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                var enabledText = rawValue.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
+                    .FirstOrDefault();
+                if (!float.TryParse(enabledText, NumberStyles.Float, CultureInfo.InvariantCulture, out var enabled) ||
+                    enabled <= 0f)
+                {
+                    continue;
+                }
+
+                var slotText = name.Substring(prefix.Length, name.Length - prefix.Length - suffix.Length);
+                if (int.TryParse(slotText, NumberStyles.None, CultureInfo.InvariantCulture, out var slot))
+                    return GetTexture(slot);
+            }
+
+            return null;
+        }
     }
 
     /// <summary>
     /// Parses MTR (NWN:EE material) resources and resolves the effective diffuse texture name
     /// for a mesh's bitmap/material name. This deliberately small parser does not attempt to model
-    /// render hints, custom shaders, or parameters beyond exposing them as raw data for later
+    /// render hints, custom shaders, or parameters beyond exposing their declarations for later
     /// packages to consume.
     /// </summary>
     public static class MaterialResolver
@@ -40,6 +77,7 @@ namespace SWLOR.Toolset.Domain.Render
             string? renderHint = null;
             var textures = new Dictionary<int, string>();
             var customShaders = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var parameters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var rawLine in text.Split('\n'))
             {
@@ -78,6 +116,14 @@ namespace SWLOR.Toolset.Domain.Render
                     continue;
                 }
 
+                if (key.Equals("parameter", StringComparison.OrdinalIgnoreCase))
+                {
+                    var parts = value.Split(WhitespaceChars, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 3)
+                        parameters[parts[1]] = string.Join(' ', parts.Skip(2));
+                    continue;
+                }
+
                 // Unknown keys ignored.
             }
 
@@ -85,7 +131,8 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 RenderHint = renderHint,
                 Textures = textures,
-                CustomShaders = customShaders
+                CustomShaders = customShaders,
+                Parameters = parameters
             };
         }
 

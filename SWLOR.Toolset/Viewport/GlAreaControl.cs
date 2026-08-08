@@ -170,8 +170,10 @@ uniform sampler2D roughnessTexture;
 uniform sampler2D environmentTexture;
 uniform sampler2D tintMapTexture;
 uniform sampler2D tintPaletteTexture;
+uniform sampler2D tintAlphaTexture;
 uniform bool hasTexture;
 uniform bool hasTintMap;
+uniform bool hasTintAlpha;
 uniform bool hasNormalMap;
 uniform bool hasSpecularMap;
 uniform bool hasRoughnessMap;
@@ -295,6 +297,9 @@ void main()
         ? ResolveTintMapColor()
         : hasTexture ? texture(diffuseTexture, TexCoord) : vec4(flatColor, 1.0);
 
+    if (hasTintAlpha)
+        texColor.a = texture(tintAlphaTexture, TexCoord).a;
+
     if (alphaCutoff > 0.0 && texColor.a < alphaCutoff)
         discard;
 
@@ -352,7 +357,7 @@ void main()
 
     // flatAlpha is 1.0 for every ordinary draw; the placement ghosts lower it so the scene reads
     // through the object about to be placed.
-    FragColor = vec4(result, flatAlpha);
+    FragColor = vec4(result, flatAlpha * (hasTintAlpha ? texColor.a : 1.0));
 }
 ";
 
@@ -439,7 +444,8 @@ void main()
             uint RoughnessTexId,
             uint EnvironmentTexId,
             uint TintMapTexId,
-            uint TintPaletteTexId);
+            uint TintPaletteTexId,
+            uint TintAlphaTexId);
 
         private readonly record struct UploadedDiffuse(
             uint TexId,
@@ -3005,7 +3011,9 @@ void main()
             SetUniformInt("environmentTexture", 4);
             SetUniformInt("tintMapTexture", 5);
             SetUniformInt("tintPaletteTexture", 6);
+            SetUniformInt("tintAlphaTexture", 7);
             SetUniformBool("hasTintMap", false);
+            SetUniformBool("hasTintAlpha", false);
             SetUniformBool("hasNormalMap", false);
             SetUniformBool("hasSpecularMap", false);
             SetUniformBool("hasRoughnessMap", false);
@@ -3267,7 +3275,7 @@ void main()
                             meshRange.LayerColorIndices, instance.LayerColorIndices, raw.Model);
                         BindMeshTexture(
                             meshRange.TextureName,
-                            instance.LayerColorIndices,
+                            meshRange.LayerColorIndices,
                             instance.Kind == InstanceMarkerKind.Creature && meshRange.UsesItemTintOverrides
                                 ? null
                                 : instance.TintMapOverrides);
@@ -4927,7 +4935,11 @@ void main()
                     ? layerColorIndices
                     : _layerColors;
                 BindTintMapState(textureName!, material, activeLayerColors, tintMapOverrides);
-                SetUniformFloat("alphaCutoff", material.AlphaCutoff);
+                SetUniformFloat(
+                    "alphaCutoff",
+                    material.TintAlphaTexId != 0
+                        ? MathF.Max(material.AlphaCutoff, TextureAlphaPolicy.PunchThroughCutoff)
+                        : material.AlphaCutoff);
 
                 // The display toggle gates the flags rather than the caches, so flipping it is
                 // instant - the map textures stay resident and just stop being sampled.
@@ -4954,6 +4966,7 @@ void main()
             {
                 SetUniformBool("hasTexture", false);
                 SetUniformBool("hasTintMap", false);
+                SetUniformBool("hasTintAlpha", false);
                 SetUniformBool("hasNormalMap", false);
                 SetUniformBool("hasSpecularMap", false);
                 SetUniformBool("hasRoughnessMap", false);
@@ -4996,7 +5009,7 @@ void main()
             // A mesh whose diffuse failed to resolve draws flat-colored; loading its maps
             // anyway would waste GPU memory on textures the shader never samples.
             var material = cached.TexId == 0
-                ? new MeshMaterial(0, 0f, 0, 0, 0, 0, 0, 0)
+                ? new MeshMaterial(0, 0f, 0, 0, 0, 0, 0, 0, 0)
                 : new MeshMaterial(
                     cached.TexId,
                     cached.AlphaCutoff,
@@ -5009,7 +5022,8 @@ void main()
                         : 0,
                     IsTintMapMaterial(parsedMaterial)
                         ? ResolveMapTexture(parsedMaterial!.GetTexture(10))
-                        : 0);
+                        : 0,
+                    ResolveTintAlphaTexture(parsedMaterial));
 
             _rawTextureCache[rawTextureName + _layerColorKey] = material;
             return material;
@@ -5022,6 +5036,14 @@ void main()
                        shader.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase));
         }
 
+        private uint ResolveTintAlphaTexture(MtrMaterial? material)
+        {
+            if (!IsTintMapMaterial(material))
+                return 0;
+
+            return ResolveMapTexture(material!.GetAlphaTexture());
+        }
+
         private void BindTintMapState(
             string materialName,
             MeshMaterial material,
@@ -5029,7 +5051,9 @@ void main()
             IReadOnlyDictionary<string, int>? tintMapOverrides)
         {
             var hasTintMap = material.TintMapTexId != 0 && material.TintPaletteTexId != 0;
+            var hasTintAlpha = hasTintMap && material.TintAlphaTexId != 0;
             SetUniformBool("hasTintMap", hasTintMap);
+            SetUniformBool("hasTintAlpha", hasTintAlpha);
             if (!hasTintMap)
                 return;
 
@@ -5037,6 +5061,8 @@ void main()
             _gl.BindTexture(TextureTarget.Texture2D, material.TintMapTexId);
             _gl.ActiveTexture(TextureUnit.Texture6);
             _gl.BindTexture(TextureTarget.Texture2D, material.TintPaletteTexId);
+            _gl.ActiveTexture(TextureUnit.Texture7);
+            _gl.BindTexture(TextureTarget.Texture2D, material.TintAlphaTexId);
             _gl.ActiveTexture(TextureUnit.Texture0);
 
             for (var layerValue = 0; layerValue < 10; layerValue++)

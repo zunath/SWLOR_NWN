@@ -397,7 +397,11 @@ namespace SWLOR.Toolset.Domain.Render
 
             var parts = new List<BlueprintModelPart>
             {
-                new("cloak", cloakResRef, TextureResRef: cloakTextureResRef)
+                new(
+                    "cloak",
+                    cloakResRef,
+                    TextureResRef: cloakTextureResRef,
+                    UsesItemTintOverrides: true)
             };
             parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", 1)));
             foreach (var (_, _, partType) in BodyPartFields)

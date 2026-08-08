@@ -13,6 +13,7 @@ using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Editors.Appearance;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Items;
+using SWLOR.Toolset.Editors.TintMaps;
 using SWLOR.Toolset.Viewport;
 using SWLOR.Toolset.Workspace;
 
@@ -62,6 +63,8 @@ namespace SWLOR.Toolset.Editors.Creatures
         public CreatureLootViewModel Loot { get; }
         public CreatureBodyPartsViewModel BodyParts { get; }
         public CreatureEquipmentSlotsViewModel EquipmentSlots { get; }
+        public TintMapEditorViewModel? TintMapEditor { get; }
+        public bool HasTintMapEditor => TintMapEditor != null;
         public VarTableSectionViewModel Variables { get; }
         public AppearanceGallerySectionViewModel? AppearanceGallery { get; }
         public bool HasAppearanceGallery => AppearanceGallery != null;
@@ -172,7 +175,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 Task<IReadOnlyList<CreatureEquipmentChoice>>>? equipmentSearch = null,
             Func<IReadOnlyList<AppearanceOption>>? appearanceOptionsLoader = null,
             Func<int, string?>? abilityIcon = null,
-            OutputLogService? log = null)
+            OutputLogService? log = null,
+            TintMapCatalog? tintMapCatalog = null)
         {
             _store = new CreatureValueStore(creature);
             _runEdit = runEdit;
@@ -198,6 +202,14 @@ namespace SWLOR.Toolset.Editors.Creatures
                 _store, RunEdit, openDefinition: openLootDefinition, resolveItemName: resolveItemName);
             BodyParts = new CreatureBodyPartsViewModel(
                 _store, RunEdit, appearance, armorParts, colorPalettes, OnBodyPartChanged);
+            if (tintMapCatalog != null)
+            {
+                TintMapEditor = new TintMapEditorViewModel(
+                    _store.Locals,
+                    RunEdit,
+                    tintMapCatalog,
+                    colorChanged: OnTintColorChanged);
+            }
             EquipmentSlots = new CreatureEquipmentSlotsViewModel(
                 _store,
                 Equipment,
@@ -446,6 +458,15 @@ namespace SWLOR.Toolset.Editors.Creatures
         private void OnBodyPartChanged()
         {
             QueuePreviewSceneUpdate();
+        }
+
+        private void OnTintColorChanged()
+        {
+            var model = PreviewScene?.Instances.FirstOrDefault()?.Model;
+            if (model != null)
+                ApplyPreviewScene(model);
+            else
+                QueuePreviewSceneUpdate();
         }
 
         private string CurrentAppearanceKey() =>
@@ -737,6 +758,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         private void ApplyPreviewScene(RenderModel? model)
         {
+            TintMapEditor?.Reload(model);
             PublishAnimations(model);
             PreviewScene = model == null
                 ? null
@@ -757,7 +779,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                             // The default model-preview camera sits on the -Y side while creature
                             // fronts are authored toward +Y, so turn the model around to greet the user.
                             Orientation = new Vector2(-1f, 0f),
-                            Model = model
+                            Model = model,
+                            TintMapOverrides = TintMapOverrides.Read(_store.Locals)
                         }
                     },
                     Diagnostics = new AreaSceneDiagnostics()

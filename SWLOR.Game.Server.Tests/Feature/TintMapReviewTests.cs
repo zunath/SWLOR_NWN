@@ -37,14 +37,52 @@ public class TintMapReviewTests
     public void ConstructedDroidTintOverridesSurviveSerialization()
     {
         var droid = new ConstructedDroid();
-        droid.TintOverrides["TM_droidmat_2"] = 43;
+        var savedColor = new TintMapColor(12, 34, 56).ToStoredValue();
+        droid.TintOverrides["TM_droidmat_2"] = savedColor;
 
         var serialized = JsonConvert.SerializeObject(droid);
         var restored = JsonConvert.DeserializeObject<ConstructedDroid>(serialized);
 
         restored.Should().NotBeNull();
         restored!.TintOverrides.Should().ContainSingle()
-            .Which.Should().Be(new KeyValuePair<string, int>("TM_droidmat_2", 43));
+            .Which.Should().Be(new KeyValuePair<string, int>("TM_droidmat_2", savedColor));
+    }
+
+    [TestCase(0, 0, 0)]
+    [TestCase(12, 34, 56)]
+    [TestCase(255, 255, 255)]
+    public void TintMapRgbStorageRoundTrips(byte red, byte green, byte blue)
+    {
+        var expected = new TintMapColor(red, green, blue);
+        var stored = expected.ToStoredValue();
+
+        stored.Should().BePositive();
+        TintMapColor.TryFromStoredValue(stored, out var restored).Should().BeTrue();
+        restored.Should().Be(expected);
+        TintMapColor.TryFromStoredValue(43, out _).Should().BeFalse(
+            "legacy palette values must remain distinguishable from RGB colors");
+    }
+
+    [Test]
+    public void AppearanceTintEditorUsesColorPickerInsteadOfPaletteImage()
+    {
+        var definition = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "AppearanceEditorDefinition.cs");
+        var viewModel = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+
+        definition.Should().Contain("row.AddColorPicker()");
+        definition.Should().Contain(".BindSelectedColor(model => model.SelectedTintColor)");
+        definition.Should().NotContain("TintColorSheetResref");
+        viewModel.Should().Contain("new TintMapColor(value.R, value.G, value.B)");
+        viewModel.Should().NotContain("OnSelectTintColor");
     }
 
     [Test]
@@ -360,7 +398,6 @@ public class TintMapReviewTests
                     argument.Expression.DescendantNodesAndSelf()
                         .OfType<SimpleNameSyntax>()
                         .Any(name => name.Identifier.ValueText == "Ordinal")));
-
         var outfitSource = ReadSource(
             "SWLOR.Game.Server",
             "Feature",

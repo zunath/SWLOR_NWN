@@ -512,6 +512,8 @@
                               IsVisible="{Binding Bottom, Converter={x:Static ObjectConverters.IsNotNull}}" />
               <ContentControl Content="{Binding Armor}"
                               IsVisible="{Binding Armor, Converter={x:Static ObjectConverters.IsNotNull}}" />
+              <ContentControl Content="{Binding Tints}"
+                              IsVisible="{Binding Tints, Converter={x:Static ObjectConverters.IsNotNull}}" />
             </StackPanel>
           </ScrollViewer>
         </TabItem>

@@ -397,12 +397,14 @@ namespace SWLOR.Toolset.Workspace
                 layerColors = merged;
             }
 
+            var tintMapOverrides = TintMapOverrides.Read(new VarTable(root));
             Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture =
                 _textures == null
                     ? null
                     : (texture, meshColors) => _textures.Get(
                         texture,
-                        meshColors is { Count: > 0 } ? meshColors : layerColors);
+                        meshColors is { Count: > 0 } ? meshColors : layerColors,
+                        tintMapOverrides);
             var pixels = ThumbnailRenderer.Render(
                 model, ModelRenderSize, palette: null,
                 resolveLayeredTexture: resolveLayeredTexture,

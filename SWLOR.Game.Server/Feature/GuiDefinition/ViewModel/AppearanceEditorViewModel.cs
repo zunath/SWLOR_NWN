@@ -70,6 +70,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly Dictionary<BaseItem, IWeaponAppearanceDefinition> _weaponAppearances = new();
         private Dictionary<int, int> _partIdToIndex = new();
         private IReadOnlyList<TintMapMaterialSelection> _tintMapSelections = Array.Empty<TintMapMaterialSelection>();
+        private bool _loadingTintColor;
 
         private const string OutfitBarrelTag = "OUTFIT_BARREL";
 
@@ -238,15 +239,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
 
                 var layer = TintMapMaterialRegistry.GetLayer((TintMapLayerType)value);
-                TintColorSheetResref = layer.PaletteResref;
-                TintSelectionText = $"{layer.Name}: choose a color";
+                LoadSelectedTintColor(layer);
             }
         }
 
-        public string TintColorSheetResref
+        public GuiColor SelectedTintColor
         {
-            get => Get<string>();
-            set => Set(value);
+            get => Get<GuiColor>();
+            set
+            {
+                Set(value);
+                if (_loadingTintColor || value == null ||
+                    !TryGetSelectedTintMap(out var selection, out var layerType, out var layer))
+                {
+                    return;
+                }
+
+                var color = new TintMapColor(value.R, value.G, value.B);
+                TintMapService.SetColor(_target, selection, layerType, color);
+                TintSelectionText =
+                    $"{selection.Material.Name} - {layer.Name}: #{value.R:X2}{value.G:X2}{value.B:X2}";
+            }
         }
 
         public string TintSelectionText
@@ -936,7 +949,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (SelectedTintMaterialIndex < 0 || SelectedTintMaterialIndex >= _tintMapSelections.Count)
             {
                 TintLayerOptions = layerOptions;
-                TintColorSheetResref = string.Empty;
+                SetSelectedTintColor(GuiColor.Grey);
                 TintSelectionText = "No tintable materials are currently equipped.";
                 return;
             }
@@ -950,6 +963,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             TintLayerOptions = layerOptions;
             SelectedTintLayerType = (int)material.Layers[0];
+        }
+
+        private void LoadSelectedTintColor(TintMapLayerDefinition layer)
+        {
+            if (!TryGetSelectedTintMap(out var selection, out var layerType, out _))
+            {
+                SetSelectedTintColor(GuiColor.Grey);
+                TintSelectionText = "No tintable materials are currently equipped.";
+                return;
+            }
+
+            if (TintMapService.TryGetCustomColor(selection, layerType, out var color))
+            {
+                SetSelectedTintColor(new GuiColor(color.Red, color.Green, color.Blue));
+                TintSelectionText =
+                    $"{selection.Material.Name} - {layer.Name}: #{color.Red:X2}{color.Green:X2}{color.Blue:X2}";
+                return;
+            }
+
+            SetSelectedTintColor(GuiColor.Grey);
+            TintSelectionText = $"{selection.Material.Name} - {layer.Name}: Standard color";
+        }
+
+        private void SetSelectedTintColor(GuiColor color)
+        {
+            _loadingTintColor = true;
+            try
+            {
+                SelectedTintColor = color;
+            }
+            finally
+            {
+                _loadingTintColor = false;
+            }
         }
 
         private bool TryGetSelectedTintMap(
@@ -1754,23 +1801,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TintMapService.ApplyCurrentColors(_target);
         };
 
-        public Action OnSelectTintColor() => () =>
-        {
-            if (!TryGetSelectedTintMap(out var selection, out var layerType, out var layer))
-                return;
-
-            var colorId = GetSelectedPaletteColorId();
-            TintMapService.SetColor(_target, selection, layerType, colorId);
-
-            TintSelectionText = $"{selection.Material.Name} - {layer.Name}: Color #{colorId}";
-        };
-
         public Action OnResetTintColor() => () =>
         {
             if (!TryGetSelectedTintMap(out var selection, out var layerType, out var layer))
                 return;
 
             TintMapService.ResetColor(_target, selection, layerType);
+            SetSelectedTintColor(GuiColor.Grey);
             TintSelectionText = $"{selection.Material.Name} - {layer.Name}: Standard color";
         };
 

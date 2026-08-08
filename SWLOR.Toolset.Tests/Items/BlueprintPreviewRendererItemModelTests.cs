@@ -1,6 +1,7 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.NWN.Formats.Plt;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
@@ -257,6 +258,54 @@ namespace SWLOR.Toolset.Tests.Items
             model.Meshes.Should().Contain(mesh =>
                     mesh.TextureName.Equals("pmh0_chest186", StringComparison.OrdinalIgnoreCase),
                 "row 10 keeps the selected armor chest instead of treating the coat as a full-body robe");
+        }
+
+        [Test]
+        public void ChimedClothesTintMaterialsRespondToPaletteAndRgbColors()
+        {
+            var renderer = BuildRenderer(out var index);
+            var model = renderer.BuildModel(ResourceType.Uti, CorpusItem("chimedclothes"));
+
+            model.Should().NotBeNull();
+            var catalog = TintMapCatalog.Load(index);
+            catalog.Should().NotBeNull();
+            var materials = catalog!.FindMaterials(model);
+            materials.Should().NotBeEmpty("the assembled item must expose its tintable materials");
+            materials.Select(material => material.Resref).Should().Contain("pmh0_robe010",
+                "the robe selected by chimedclothes is one of its visible tintable surfaces");
+
+            var textures = new PreviewTextureCache(index);
+            var originalColors = model!.LayerColorIndices.ToDictionary(pair => pair.Key, pair => pair.Value);
+            foreach (var material in materials)
+            {
+                var baseline = textures.Get(material.Resref, originalColors);
+                baseline.Should().NotBeNull($"{material.Resref} must resolve through its generated tint material");
+
+                foreach (var layer in material.Layers)
+                {
+                    var paletteColors = originalColors.ToDictionary(pair => pair.Key, pair => pair.Value);
+                    var originalIndex = paletteColors.GetValueOrDefault((int)layer);
+                    paletteColors[(int)layer] = originalIndex == 175 ? 0 : 175;
+                    var paletteTint = textures.Get(material.Resref, paletteColors);
+
+                    paletteTint.Should().NotBeNull(
+                        $"{material.Resref} layer {layer} must render through the palette");
+                    paletteTint!.Pixels.Should().NotEqual(baseline!.Pixels,
+                        $"changing {material.Resref} layer {layer} must visibly change its pixels");
+
+                    var overrides = new Dictionary<string, int>
+                    {
+                        [TintMapVariable.GetName(material.Resref, layer)] =
+                            new TintMapColor(17, 231, 83).ToStoredValue()
+                    };
+                    var customTint = textures.Get(material.Resref, originalColors, overrides);
+
+                    customTint.Should().NotBeNull(
+                        $"{material.Resref} layer {layer} must accept a custom RGB tint");
+                    customTint!.Pixels.Should().NotEqual(baseline.Pixels,
+                        $"custom RGB must visibly change {material.Resref} layer {layer}");
+                }
+            }
         }
 
         private static Domain.Gff.JsonGffStruct CorpusItem(string resRef) =>

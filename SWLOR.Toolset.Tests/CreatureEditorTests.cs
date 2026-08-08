@@ -1276,9 +1276,13 @@ namespace SWLOR.Toolset.Tests
 
                 var appearanceSections = FindVisual<TabControl>(view, "CreatureAppearanceSections");
                 appearanceSections.Should().NotBeNull();
-                appearanceSections!.Items.Cast<TabItem>().Select(tab => tab.Header?.ToString()).Should().Equal(
-                    "Model", "Details", "Body");
-                for (var index = 0; index < 3; index++)
+                var appearanceTabs = appearanceSections!.Items.Cast<TabItem>().ToList();
+                appearanceTabs.Select(tab => tab.Header?.ToString()).Should().Equal(
+                    "Model", "Details", "Body", "Tints");
+                appearanceTabs.Single(tab => tab.Header?.ToString() == "Tints")
+                    .IsVisible.Should().BeFalse(
+                        "the RGB editor is only useful when tintmap.2da is available");
+                for (var index = 0; index < 4; index++)
                 {
                     appearanceSections!.SelectedIndex = index;
                     Dispatcher.UIThread.RunJobs();

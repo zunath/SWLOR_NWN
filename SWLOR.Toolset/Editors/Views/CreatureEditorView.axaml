@@ -4,6 +4,7 @@
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
              xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
              xmlns:items="using:SWLOR.Toolset.Editors.Items"
+             xmlns:tints="using:SWLOR.Toolset.Editors.TintMaps"
              xmlns:editors="using:SWLOR.Toolset.Editors"
              x:Class="SWLOR.Toolset.Editors.Creatures.CreatureEditorView"
              x:DataType="creatures:CreatureEditorViewModel">
@@ -326,6 +327,13 @@
                     </Grid>
                   </StackPanel>
                 </Border>
+              </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Tints" IsVisible="{Binding HasTintMapEditor}">
+              <ScrollViewer>
+                <tints:TintMapEditorView DataContext="{Binding TintMapEditor}"
+                                         Margin="14,10,22,10" />
               </ScrollViewer>
             </TabItem>
 

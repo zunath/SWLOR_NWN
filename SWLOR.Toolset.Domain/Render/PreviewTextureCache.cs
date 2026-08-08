@@ -54,12 +54,13 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         public TextureImage? Get(
             string? textureOrMaterialName,
-            IReadOnlyDictionary<int, int>? layerColorIndices = null)
+            IReadOnlyDictionary<int, int>? layerColorIndices = null,
+            IReadOnlyDictionary<string, int>? tintMapOverrides = null)
         {
             if (string.IsNullOrWhiteSpace(textureOrMaterialName))
                 return null;
 
-            var key = CacheKey(textureOrMaterialName, layerColorIndices);
+            var key = CacheKey(textureOrMaterialName, layerColorIndices, tintMapOverrides);
             lock (_gate)
             {
                 if (_entries.TryGetValue(key, out var node))
@@ -70,7 +71,7 @@ namespace SWLOR.Toolset.Domain.Render
                 }
             }
 
-            var decoded = Decode(textureOrMaterialName, layerColorIndices);
+            var decoded = Decode(textureOrMaterialName, layerColorIndices, tintMapOverrides);
 
             lock (_gate)
             {
@@ -112,10 +113,23 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         private TextureImage? Decode(
             string textureOrMaterialName,
-            IReadOnlyDictionary<int, int>? layerColorIndices)
+            IReadOnlyDictionary<int, int>? layerColorIndices,
+            IReadOnlyDictionary<string, int>? tintMapOverrides)
         {
             try
             {
+                var material = MaterialResolver.TryParseMaterial(_resourceIndex, textureOrMaterialName);
+                if (material != null &&
+                    TintMapTextureRenderer.Render(
+                        _resourceIndex,
+                        textureOrMaterialName,
+                        material,
+                        layerColorIndices,
+                        tintMapOverrides) is { } tintMap)
+                {
+                    return tintMap;
+                }
+
                 var diffuse = MaterialResolver.ResolveDiffuseTextureName(_resourceIndex, textureOrMaterialName);
                 return TextureLoader.Load(_resourceIndex, diffuse, layerColorIndices);
             }
@@ -128,14 +142,22 @@ namespace SWLOR.Toolset.Domain.Render
 
         internal static string CacheKey(
             string textureOrMaterialName,
-            IReadOnlyDictionary<int, int>? layerColorIndices)
+            IReadOnlyDictionary<int, int>? layerColorIndices,
+            IReadOnlyDictionary<string, int>? tintMapOverrides = null)
         {
-            if (layerColorIndices == null || layerColorIndices.Count == 0)
+            if ((layerColorIndices == null || layerColorIndices.Count == 0) &&
+                (tintMapOverrides == null || tintMapOverrides.Count == 0))
                 return textureOrMaterialName;
 
-            return textureOrMaterialName + "|" +
-                   string.Join(",", layerColorIndices.OrderBy(pair => pair.Key)
-                       .Select(pair => $"{pair.Key}:{pair.Value}"));
+            var layers = layerColorIndices == null
+                ? string.Empty
+                : string.Join(",", layerColorIndices.OrderBy(pair => pair.Key)
+                    .Select(pair => $"{pair.Key}:{pair.Value}"));
+            var overrides = tintMapOverrides == null
+                ? string.Empty
+                : string.Join(",", tintMapOverrides.OrderBy(pair => pair.Key, StringComparer.Ordinal)
+                    .Select(pair => $"{pair.Key}:{pair.Value}"));
+            return $"{textureOrMaterialName}|{layers}|{overrides}";
         }
 
         private readonly record struct Entry(string Key, TextureImage? Texture, long SizeBytes);

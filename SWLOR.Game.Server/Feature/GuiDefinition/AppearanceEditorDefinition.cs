@@ -270,14 +270,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     row.AddSpacer();
 
-                    row.AddImage()
-                        .BindResref(model => model.TintColorSheetResref)
-                        .SetHeight(176f)
-                        .SetWidth(256f)
-                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetAspect(NuiAspect.ExactScaled)
-                        .BindOnMouseDown(model => model.OnSelectTintColor());
+                    row.AddColorPicker()
+                        .BindSelectedColor(model => model.SelectedTintColor)
+                        .SetHeight(220f)
+                        .SetWidth(256f);
 
                     row.AddSpacer();
                 });

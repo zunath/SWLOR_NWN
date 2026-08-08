@@ -97,7 +97,8 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, bool>? canRefileCategories = null,
             Func<string, string, CategorySaveResult>? refileCategories = null,
             BlueprintSaveCoordinator? saveCoordinator = null,
-            Sources.ObjectSourceSectionViewModel? placementSource = null)
+            Sources.ObjectSourceSectionViewModel? placementSource = null,
+            TintMapCatalog? tintMapCatalog = null)
         {
             _log = log;
             _prompts = prompts;
@@ -130,7 +131,8 @@ namespace SWLOR.Toolset.Editors.Items
                 armorDyeSwatches: armorDyeSwatches,
                 armorPartModels: armorPartModels,
                 placementSource: placementSource,
-                log: log);
+                log: log,
+                tintMapCatalog: tintMapCatalog);
             UpdateTitle();
         }
 

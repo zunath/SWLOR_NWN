@@ -4,6 +4,7 @@
              xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
              xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
              xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
+             xmlns:tints="using:SWLOR.Toolset.Editors.TintMaps"
              x:Class="SWLOR.Toolset.Editors.BlueprintEditorView"
              x:DataType="editors:BlueprintEditorViewModel">
 
@@ -43,6 +44,12 @@
     <!-- The creature Appearance tab: the same searchable picture grid the door editor uses. -->
     <DataTemplate DataType="appearance:AppearanceGallerySectionViewModel">
       <appearance:AppearanceGalleryView />
+    </DataTemplate>
+
+    <DataTemplate DataType="tints:TintMapEditorViewModel">
+      <ScrollViewer>
+        <tints:TintMapEditorView Margin="14,10,22,10" />
+      </ScrollViewer>
     </DataTemplate>
 
     <!-- The placeable Appearance tab: the shared grid, plus the two filters and the retained 3D

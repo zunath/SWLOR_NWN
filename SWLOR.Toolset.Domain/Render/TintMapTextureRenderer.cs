@@ -1,0 +1,97 @@
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Toolset.Domain.GameData.Resources;
+
+namespace SWLOR.Toolset.Domain.Render
+{
+    /// <summary>
+    /// Applies the tint-map material shader's color step on the CPU for thumbnails. Lighting,
+    /// normals, and specularity remain the thumbnail renderer's responsibility.
+    /// </summary>
+    public static class TintMapTextureRenderer
+    {
+        private const string TintShader = "fs_plt_tinter";
+
+        public static TextureImage? Render(
+            ResourceIndex resourceIndex,
+            string materialName,
+            MtrMaterial material,
+            IReadOnlyDictionary<int, int>? layerColorIndices,
+            IReadOnlyDictionary<string, int>? overrides)
+        {
+            if (!material.CustomShaders.Values.Any(shader =>
+                    shader.Equals(TintShader, StringComparison.OrdinalIgnoreCase)))
+                return null;
+
+            var tintMapName = material.GetTexture(7);
+            var paletteName = material.GetTexture(10);
+            if (string.IsNullOrWhiteSpace(tintMapName) || string.IsNullOrWhiteSpace(paletteName))
+                return null;
+
+            var tintMap = TextureLoader.Load(resourceIndex, tintMapName);
+            var palette = TextureLoader.Load(resourceIndex, paletteName);
+            if (tintMap == null || palette == null || palette.Width <= 0 || palette.Height <= 0)
+                return null;
+
+            var output = new byte[checked(tintMap.Width * tintMap.Height * 4)];
+            for (var pixel = 0; pixel < tintMap.Width * tintMap.Height; pixel++)
+            {
+                var offset = pixel * 4;
+                var shade = tintMap.Pixels[offset];
+                var layer = (TintMapLayerType)Math.Clamp(
+                    tintMap.Pixels[offset + 1] * 10 / 256,
+                    0,
+                    9);
+                var variableName = TintMapVariable.GetName(materialName, layer);
+                var savedValue = overrides != null && overrides.TryGetValue(variableName, out var saved)
+                    ? saved
+                    : 0;
+
+                if (TintMapColor.TryFromStoredValue(savedValue, out var customColor))
+                {
+                    output[offset] = Modulate(customColor.Red, shade);
+                    output[offset + 1] = Modulate(customColor.Green, shade);
+                    output[offset + 2] = Modulate(customColor.Blue, shade);
+                    output[offset + 3] = 255;
+                    continue;
+                }
+
+                var paletteIndex = savedValue > 0 &&
+                                   savedValue <= TintMapMaterialRegistry.PaletteColorCount
+                    ? savedValue - 1
+                    : layerColorIndices != null &&
+                      layerColorIndices.TryGetValue((int)layer, out var standardIndex)
+                        ? standardIndex
+                        : 0;
+                paletteIndex = Math.Clamp(
+                    paletteIndex,
+                    0,
+                    TintMapMaterialRegistry.PaletteColorCount - 1);
+
+                var definition = TintMapMaterialRegistry.GetLayer(layer);
+                var paletteX = shade * (palette.Width - 1) / 255;
+                var paletteY = Math.Clamp(
+                    definition.PaletteBaseRow + paletteIndex,
+                    0,
+                    palette.Height - 1);
+                var paletteOffset = (paletteY * palette.Width + paletteX) * 4;
+                output[offset] = palette.Pixels[paletteOffset];
+                output[offset + 1] = palette.Pixels[paletteOffset + 1];
+                output[offset + 2] = palette.Pixels[paletteOffset + 2];
+                output[offset + 3] = palette.Pixels[paletteOffset + 3];
+            }
+
+            return new TextureImage
+            {
+                Width = tintMap.Width,
+                Height = tintMap.Height,
+                Pixels = output,
+                SourceFormat = tintMap.SourceFormat
+            };
+        }
+
+        private static byte Modulate(byte color, byte shade)
+        {
+            return (byte)((color * shade + 127) / 255);
+        }
+    }
+}

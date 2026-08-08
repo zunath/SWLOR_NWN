@@ -451,7 +451,8 @@ namespace SWLOR.Toolset.Domain.Render
                 ModelResRef = modelResRef,
                 Parts = ResolveVisibleEquipment(
                     root, itemBlueprintLoader, partModelExists, baseItems, cloakModels,
-                    wearerPrefix: null).Parts
+                    wearerPrefix: null).Parts,
+                LayerColorIndices = ResolveLayerColors(root, null)
             };
         }
 
